@@ -238,7 +238,6 @@ int main(int argc,char* argv[]) {
     forceShow(mainwindow);
 
     //  Start main loop.
-
     const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();

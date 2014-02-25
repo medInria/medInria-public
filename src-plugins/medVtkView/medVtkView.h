@@ -56,13 +56,13 @@ private slots:
     void setZoomInteractionStyle(bool zoom);
     void setSLicingInteractionStyle(bool slicing);
 
-    void addLayerItem(int layer);
-    void removeLayerItem(int layer);
     void removeLayerFromCloseButton();
+    void changeCurrentLayer();
 
     void removeInternNavigatorWidget();
     void removeInternToolBarWidget();
     void removeInternViewWidget();
+
 
 private:
     medVtkViewPrivate *d;

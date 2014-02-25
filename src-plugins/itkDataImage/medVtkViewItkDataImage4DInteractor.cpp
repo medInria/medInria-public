@@ -155,10 +155,12 @@ medAbstractData *medVtkViewItkDataImage4DInteractor::data() const
 
 QWidget* medVtkViewItkDataImage4DInteractor::toolBoxWidget()
 {
+
     QWidget *tb = new QWidget;
     QVBoxLayout *tbLayout = new QVBoxLayout(tb);
     tbLayout->addWidget(medVtkViewItkDataImageInteractor::toolBoxWidget());
     tbLayout->addWidget(d->timeLineParameter->getWidget());
+
     return tb;
 }
 

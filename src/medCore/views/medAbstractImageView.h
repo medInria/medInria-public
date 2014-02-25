@@ -90,6 +90,7 @@ public slots:
     void setOrientation(medImageView::Orientation orientation);
     void setDataWindowLevel (medAbstractData* data, double &window, double &level);
     void setLayerWindowLevel (unsigned int layer, double &window, double &level);
+    void setWindowLevel(double window, double level);
     /**
       * Set the slice being viewed so that it contains the given spatial postion
        @position is expressed in real world coordinates.

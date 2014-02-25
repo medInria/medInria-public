@@ -16,8 +16,7 @@ public:
 
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
-
-    QList <int> selectedLayers;
+    unsigned int currentLayer;
 
 };
 
@@ -95,7 +94,7 @@ void medAbstractLayeredView::initialiseNavigators()
     {
         d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
         connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
-        connect(this, SIGNAL(selectedLayersChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+        connect(this, SIGNAL(currentLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
     }
 
     // extra
@@ -106,7 +105,7 @@ void medAbstractLayeredView::initialiseNavigators()
         {
             medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
             connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
-            connect(this, SIGNAL(selectedLayersChanged()), nav, SLOT(updateWidgets()));
+            connect(this, SIGNAL(currentLayerChanged()), nav, SLOT(updateWidgets()));
             d->extraNavigators << nav;
         }
     }
@@ -147,27 +146,7 @@ QList<medAbstractNavigator*> medAbstractLayeredView::extraNavigators()
 
 void medAbstractLayeredView::addLayer(medAbstractData *data)
 {
-    if(!data)
-    {
-        qWarning() << "Attempt to add a NULL data to the view: " << this;
-        return;
-    }
-
-    if ( this->contains(data))
-    {
-        qDebug() << "Attempt to add twice the same data to the view: " << this;
-        return;
-    }
-
-    d->layersDataList << data;
-    initialiseInteractors(data);
-
-    int layer = this->layer(data);
-    emit layerAdded(layer);
-
-    this->setLayerSelected(layer);
-    if(this->layersCount() < 2)
-        this->reset();
+    this->insertLayer(d->layersDataList.count(), data);
 }
 
 QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const
@@ -180,33 +159,52 @@ unsigned int medAbstractLayeredView::layer(medAbstractData * data)
     return d->layersDataList.indexOf(data);
 }
 
-bool medAbstractLayeredView::removeData(medAbstractData *data)
+void medAbstractLayeredView::removeData(medAbstractData *data)
 {
     int layer = this->layer(data);
-    int res = d->layersDataList.removeAll(data);
+    d->layersDataList.removeAll(data);
     this->removeInteractors(data);
-    return res > 0;
 
     emit layerRemoved(layer);
+    if(d->layersDataList.count() == 0)
+        this->~medAbstractLayeredView();
+    else if (layer == d->layersDataList.count())
+        this->setCurrentLayer(layer -1);
+    else
+        this->setCurrentLayer(layer);
 }
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
-    if(d->layersDataList.count() > 1)
-    {
-        this->removeInteractors(this->data(layer));
-        d->layersDataList.removeAt(layer);
-        emit layerRemoved(layer);
-    }
-    else this->~medAbstractLayeredView();
+    this->removeData(this->data(layer));
+}
+
+void medAbstractLayeredView::removeLayer()
+{
+    this->removeData(this->data(d->currentLayer));
 }
 
 void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *data)
 {
+    if(!data)
+    {
+        qWarning() << "Attempt to add a NULL data to the view: " << this;
+        return;
+    }
+
+    if ( this->contains(data))
+    {
+        qDebug() << "Attempt to add twice the same data to the view: " << this;
+        return;
+    }
+
     d->layersDataList.insert(layer, data);
     this->initialiseInteractors(data);
-
     emit layerAdded(layer);
+
+    this->setCurrentLayer(layer);
+    if(this->layersCount() == 1)
+        this->reset();
 }
 
 void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
@@ -246,6 +244,16 @@ void medAbstractLayeredView::setVisibility(bool visibility, unsigned int layer)
     emit visibilityChanged(visibility, layer);
 }
 
+void medAbstractLayeredView::setVisibility(bool visibility)
+{
+    medAbstractLayeredViewInteractor* inter = this->primaryInteractor(d->currentLayer);
+    if(!inter)
+        return;
+
+    inter->setVisibility(visibility);
+    emit visibilityChanged(visibility, d->currentLayer);
+}
+
 bool medAbstractLayeredView::visibility(unsigned int layer)
 {
     medAbstractLayeredViewInteractor* inter = this->primaryInteractor(layer);
@@ -255,55 +263,35 @@ bool medAbstractLayeredView::visibility(unsigned int layer)
     return inter->visibility();
 }
 
-void medAbstractLayeredView::setLayerSelected(int layer)
+unsigned int medAbstractLayeredView::currentLayer() const
 {
-    d->selectedLayers.append(layer);
-    emit selectedLayersChanged();
+    return d->currentLayer;
 }
 
-void medAbstractLayeredView::setLayerUnSelected(int layer)
+void medAbstractLayeredView::setCurrentLayer(unsigned int layer)
 {
-    d->selectedLayers.removeOne(layer);
-    emit selectedLayersChanged();
-}
-
-QList<int> medAbstractLayeredView::selectedLayers() const
-{
-    return d->selectedLayers;
-    emit selectedLayersChanged();
-}
-
-void medAbstractLayeredView::clearSelection()
-{
-    d->selectedLayers.clear();
+    d->currentLayer = layer;
+    emit currentLayerChanged();
 }
 
 QImage& medAbstractLayeredView::generateThumbnail(const QSize &size)
 {
-    return this->primaryInteractor(this->data(d->selectedLayers.first()))->generateThumbnail(size);
+    return this->primaryInteractor(this->data(d->currentLayer))->generateThumbnail(size);
 }
 
 //TODO not sure we need this - RDE
 QList <medAbstractInteractor*> medAbstractLayeredView::currentInteractor()
 {
     QList <medAbstractInteractor*> interactors;
-    foreach (int layer, d->selectedLayers)
-    {
-        interactors.append(this->primaryInteractor(layer));
-        interactors.append(extraInteractors(layer));
-    }
 
+    interactors.append(this->primaryInteractor(d->currentLayer));
+    interactors.append(extraInteractors(d->currentLayer));
     return interactors;
 }
 
-QList <medAbstractInteractor*>  medAbstractLayeredView::interactors()
+QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int layer)
 {
     QList <medAbstractInteractor*> interactors;
-    foreach (medAbstractData* data, d->layersDataList)
-    {
-        interactors.append(this->primaryInteractor(data));
-        interactors.append(extraInteractors(data));
-    }
-
+    interactors << this->primaryInteractor(layer) << this->extraInteractors(layer);
     return interactors;
 }

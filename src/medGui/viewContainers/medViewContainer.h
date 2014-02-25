@@ -55,6 +55,7 @@ signals:
     void maximised(bool maximised);
     void containerSelected(QUuid uuid);
     void containerUnSelected(QUuid uuid);
+    void currentLayerChanged();
     void vSplitRequest();
     void hSplitRequest();
     void splitRequest(medDataIndex, Qt::AlignmentFlag);

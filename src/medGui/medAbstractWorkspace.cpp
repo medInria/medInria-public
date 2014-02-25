@@ -25,6 +25,7 @@
 #include <medAbstractLayeredView.h>
 #include <medToolBoxHeader.h>
 #include <medAbstractInteractor.h>
+#include <medMetaDataKeys.h>
 
 class medAbstractWorkspacePrivate
 {
@@ -35,8 +36,10 @@ public:
     bool toolBoxesVisibility;
 
     medTabbedViewContainers * viewContainerStack;
-    QHash <QListWidgetItem*, QUuid> containerForLayerWidgets;
-    QHash <QUuid, QPair<int, int> > indexLayerWidgetForContainer;
+    QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
+    QHash <int, QUuid> containerForLayerWidgetRow;
+    QHash <QUuid, QPair<int, int> > layersRangeInRowsForContainer;
+
 
     QList<medToolBox*> workspaceToolBoxes;
     medToolBox *selectionToolBox;
@@ -56,7 +59,8 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->selectionToolBox->hide();
 
     d->viewContainerStack = new medTabbedViewContainers(parent);
-    connect(d->viewContainerStack, SIGNAL(selectionChanged()), this, SLOT(updateForContainerSelection()));
+    connect(d->viewContainerStack, SIGNAL(containersSelectedChanged()), this, SLOT(updateNavigatorsToolBox()));
+    connect(d->viewContainerStack, SIGNAL(currentLayerChanged()), this, SLOT(updateInteractorsToolBox()));
 
     d->databaseVisibility = true;
     d->toolBoxesVisibility = true;
@@ -77,9 +81,7 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->interactorToolBox->hide();
     d->selectionToolBox->addWidget(d->interactorToolBox);
 
-    d->layerListWidget = new QListWidget;
-    d->layerListWidget->hide();
-    d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    d->layerListWidget = NULL;
 }
 
 medAbstractWorkspace::~medAbstractWorkspace(void)
@@ -152,8 +154,10 @@ void medAbstractWorkspace::addNewTab()
     d->viewContainerStack->addContainerInTab(this->identifier());
 }
 
-void medAbstractWorkspace::updateForContainerSelection()
+void medAbstractWorkspace::updateNavigatorsToolBox()
 {
+    qDebug() << "updateNavigatorsToolBox()";
+
     d->navigatorToolBox->clear();
 
     QList<QWidget*>  navigators;
@@ -162,7 +166,6 @@ void medAbstractWorkspace::updateForContainerSelection()
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
-        connect(container, SIGNAL(viewChanged()), this, SLOT(updateForContainerSelection()));
         medAbstractView* view = container->view();
         // add nothing if the view is empty
         if(!view)
@@ -182,32 +185,25 @@ void medAbstractWorkspace::updateForContainerSelection()
         navigator->show();
     }
 
-    this->updateForLayeredViewContents();
-
-    emit selectionChanged();
+    // update the layer toolbox according to the selected containers
+    this->updateLayersToolBox();
 }
 
-
-void medAbstractWorkspace::updateForLayeredViewContents()
+void medAbstractWorkspace::updateLayersToolBox()
 {
+    qDebug() << "updateLayersToolBox()";
+
     d->layerListToolBox->clear();
-    d->indexLayerWidgetForContainer.clear();
-
-    // unparent the layers widget before clearing d->layerListWidget;
-    for(int row = 0; row < d->layerListWidget->count(); ++row)
-    {
-        QWidget *widget = d->layerListWidget->itemWidget(d->layerListWidget->item(row));
-        if(widget)
-            widget->setParent(NULL);
-    }
-
+    d->layersRangeInRowsForContainer.clear();
+    d->containerForLayerWidgetsItem.clear();
+    d->containerForLayerWidgetRow.clear();
 
     delete d->layerListWidget;
     d->layerListWidget = new QListWidget;
     d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    connect(d->layerListWidget, SIGNAL(itemSelectionChanged ()), this, SLOT(updateForLayerSelection()));
 
-    d->layerListToolBox->clear();
+    connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
+
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
         // fill the layer widget
@@ -215,53 +211,106 @@ void medAbstractWorkspace::updateForLayeredViewContents()
         medAbstractLayeredView* layerdView = dynamic_cast<medAbstractLayeredView*>(container->view());
         if(layerdView)
         {
-            connect(layerdView, SIGNAL(layerAdded(int)), this, SLOT(updateForLayeredViewContents()), Qt::UniqueConnection);
-            connect(layerdView, SIGNAL(layerRemoved(int)), this, SLOT(updateForLayeredViewContents()), Qt::UniqueConnection);
-
-            int firstLayerIndex = d->layerListWidget->count();
-            if(d->layerListWidget->count() == 0)
+            if(d->layerListWidget->count() != 0)
             {
+                // add an empty widget to separate layers from different views
                 QListWidgetItem * item = new QListWidgetItem;
                 item->setSizeHint(QSize(10, 10));
                 item->setFlags(Qt::NoItemFlags);
                 d->layerListWidget->addItem(item);
             }
-            connect(container, SIGNAL(viewRemoved()), this, SLOT(updateForEmptyContainer()), Qt::UniqueConnection);
+            int firstLayerIndex = d->layerListWidget->count();
 
-            foreach(QWidget *layerWidget, layerdView->layerWidgets())
+            qDebug() << "layerdView->layersCount()" << layerdView->layersCount();
+
+            for(int layer = 0; layer < layerdView->layersCount(); ++layer)
             {
+                QWidget *layerWidget = new QWidget;
+                layerWidget->setObjectName("layerWidget");
+
+                medAbstractData *data = layerdView->data(layer);
+                QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
+                QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
+
+                QHBoxLayout* layout = new QHBoxLayout(layerWidget);
+                layout->setContentsMargins(0,0,10,0);
+
+                QPushButton* thumbnailButton = new QPushButton(layerWidget);
+                QIcon thumbnailIcon;
+                // Set the off icon to the greyed out version of the regular icon
+                thumbnailIcon.addPixmap(QPixmap(thumbPath), QIcon::Normal, QIcon::On);
+                QStyleOption opt(0);
+                opt.palette = QApplication::palette();
+                QPixmap pix = QApplication::style()->generatedIconPixmap(QIcon::Disabled, QPixmap(thumbPath), &opt);
+                thumbnailIcon.addPixmap(pix, QIcon::Normal, QIcon::Off);
+                thumbnailButton->setFocusPolicy(Qt::NoFocus);
+                thumbnailButton->setIcon(thumbnailIcon);
+                thumbnailButton->setIconSize(QSize(22,22));
+                thumbnailButton->setCheckable(true);
+                thumbnailButton->setChecked(true);
+                thumbnailButton->setFlat(true);
+
+                QLabel *layerName = new QLabel(name, layerWidget);
+
+                QPushButton *removeButton = new QPushButton;
+                removeButton->setIcon(QIcon(":/icons/cross.svg"));
+
+                layout->addWidget(thumbnailButton);
+                layout->addWidget(layerName);
+                layout->addStretch();
+                foreach (medAbstractInteractor *interactor, layerdView->interactors(layer))
+                    layout->addWidget(interactor->layerWidget());
+
+                layout->addWidget(removeButton);
+
+                connect(thumbnailButton, SIGNAL(clicked(bool)), layerdView, SLOT(setVisibility(bool)));
+                connect(removeButton, SIGNAL(clicked()), layerdView, SLOT(removeLayer()));
+
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
                 layerWidget->resize(d->selectionToolBox->width(), 25);
 
                 QListWidgetItem * item = new QListWidgetItem;
-                d->containerForLayerWidgets.insert(item, uuid);
+                d->containerForLayerWidgetsItem.insert(item, uuid);
+                d->containerForLayerWidgetRow.insert(d->layerListWidget->count(), uuid);
                 item->setSizeHint(QSize(layerWidget->width(), 25));
                 d->layerListWidget->addItem(item);
                 d->layerListWidget->setItemWidget(item, layerWidget);
             }
-            d->indexLayerWidgetForContainer.insert(uuid, QPair<int, int>(firstLayerIndex, d->layerListWidget->count()));
+
+            d->layersRangeInRowsForContainer.insert(uuid, QPair<int, int>(firstLayerIndex, d->layerListWidget->count()));
+            qDebug() << firstLayerIndex << layerdView->currentLayer();
+            d->layerListWidget->setCurrentRow(firstLayerIndex + layerdView->currentLayer());
         }
     }
     // add the layer widgets
     d->layerListToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
     d->layerListWidget->show();
+
+    this->updateInteractorsToolBox();
 }
 
-void medAbstractWorkspace::updateForEmptyContainer()
+
+void medAbstractWorkspace::changeCurrentLayer(int row)
 {
-    medViewContainer *container = dynamic_cast<medViewContainer *>(this->sender());
+    qDebug() << "changeCurrentLayer() from workspace";
+    qDebug() << "d->containerForLayerWidgetRow" << d->containerForLayerWidgetRow;
+    QUuid uuid = d->containerForLayerWidgetRow.value(row);
+    medViewContainer* container = medViewContainerManager::instance()->container(uuid);
     if(!container)
         return;
 
-    int firstLayer = d->indexLayerWidgetForContainer.value(container->uuid()).first;
-    int layerCount = d->indexLayerWidgetForContainer.value(container->uuid()).second;
-    for(int row = firstLayer; row < layerCount; ++row)
-        delete d->layerListWidget->itemWidget(d->layerListWidget->item(row));
+    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(container->view());
+    if(!layeredView)
+        return;
+
+    int currentLayer = row - d->layersRangeInRowsForContainer.value(uuid).first;
+    layeredView->setCurrentLayer(currentLayer);
 }
 
-void medAbstractWorkspace::updateForLayerSelection()
+void medAbstractWorkspace::updateInteractorsToolBox()
 {
+    qDebug() << "updateInteractorsToolBox()";
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -270,55 +319,35 @@ void medAbstractWorkspace::updateForLayerSelection()
     d->interactorToolBox->hide();
     d->interactorToolBox->clear();
 
+    if(!d->layerListWidget)
+        return;
+
+    // Do nothing else if we have a multiSelection
+    if(d->layerListWidget->selectedItems().size() > 1)
+        return;
+
+    QListWidgetItem* item = d->layerListWidget->currentItem();
+    if(!item)
+        return;
+
     QList<QString> interactorsIdentifier;
+    QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+    medViewContainer *container = containerMng->container(containerUuid);
+    container->highlight("#FF6622");
 
-    QGroupBox *imageBox = new QGroupBox("IMAGE");
-    QVBoxLayout *imageLayout = new QVBoxLayout(imageBox);
-    QGroupBox *meshBox = new QGroupBox("MESH");
-    QVBoxLayout *meshLayout = new QVBoxLayout(meshBox);
-    QGroupBox *unknowBox = new QGroupBox("UNKNOWN");
-    QVBoxLayout *unknowLayout = new QVBoxLayout(unknowBox);
+    medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-    foreach (QListWidgetItem* item, d->layerListWidget->selectedItems())
+    foreach (medAbstractInteractor* interactor, view->currentInteractor())
     {
-        medViewContainer *container = containerMng->container(d->containerForLayerWidgets.value(item));
-        container->highlight("#FF6622");
-        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
-
-        foreach (medAbstractInteractor* interactor, view->interactors())
+        QString interactorIdentifier = interactor->identifier();
+        if(!interactorsIdentifier.contains(interactorIdentifier))
         {
-
-            QString interactorIdentifier = interactor->identifier();
-            if(!interactorsIdentifier.contains(interactorIdentifier))
-            {
-                interactorsIdentifier << interactorIdentifier;
-
-                if(interactorIdentifier.contains("itk", Qt::CaseInsensitive))
-                    imageLayout->addWidget(interactor->toolBoxWidget());
-                else if(interactorIdentifier.contains("vtk", Qt::CaseInsensitive))
-                    meshLayout->addWidget(interactor->toolBoxWidget());
-                else
-                    unknowLayout->addWidget(interactor->toolBoxWidget());
-            }
+            interactorsIdentifier << interactorIdentifier;
+            d->interactorToolBox->addWidget(interactor->toolBoxWidget());
+            interactor->toolBoxWidget()->show();
         }
     }
-
     d->interactorToolBox->show();
-    if(!imageLayout->isEmpty())
-    {
-        d->interactorToolBox->addWidget(imageBox);
-        imageBox->show();
-    }
-    if(!meshLayout->isEmpty())
-    {
-        d->interactorToolBox->addWidget(meshBox);
-        meshBox->show();
-    }
-    if(!unknowLayout->isEmpty())
-    {
-        d->interactorToolBox->addWidget(unknowBox);
-        unknowBox->show();
-    }
-
-    emit selectionChanged();
 }
+
+

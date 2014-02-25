@@ -57,8 +57,8 @@ private slots:
     void connectContainer(QUuid container);
 
 signals:
-    void newContainer(QUuid container);
-    void selectionChanged();
+    void containersSelectedChanged();
+    void currentLayerChanged();
 
 
 

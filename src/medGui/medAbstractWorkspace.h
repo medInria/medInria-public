@@ -63,16 +63,15 @@ public:
 public slots:
     virtual void clear();
     virtual void addNewTab();
+    void updateNavigatorsToolBox();
+    void updateLayersToolBox();
+    void updateInteractorsToolBox();
+    void clearWorkspaceToolBoxes();
 
-signals:
-    void selectionChanged();
 
 protected slots:
-    void updateForContainerSelection();
-    void updateForLayeredViewContents();
-    void updateForLayerSelection();
-    void updateForEmptyContainer();
-    void clearWorkspaceToolBoxes();
+    void changeCurrentLayer(int row);
+
 
 private:
     medAbstractWorkspacePrivate *d;

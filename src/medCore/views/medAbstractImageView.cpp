@@ -88,7 +88,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
     {
         medAbstractImageViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
-        connect(this, SIGNAL(selectedLayersChanged()), interactor, SLOT(updateWidgets()));
+        connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
         interactor->setData(data);
         d->primaryIntercatorsHash.insert(data, interactor);
     }
@@ -102,7 +102,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
-            connect(this, SIGNAL(selectedLayersChanged()), interactor, SLOT(updateWidgets()));
+            connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
             interactor->setData(data);
             extraIntList << interactor;
         }
@@ -125,7 +125,7 @@ void medAbstractImageView::initialiseNavigators()
     {
         d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
         connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
-        connect(this, SIGNAL(selectedLayersChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+        connect(this, SIGNAL(currentLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
     }
 
     // extra
@@ -136,7 +136,7 @@ void medAbstractImageView::initialiseNavigators()
         {
             medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
             connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
-            connect(this, SIGNAL(selectedLayersChanged()), nav, SLOT(updateWidgets()));
+            connect(this, SIGNAL(currentLayerChanged()), nav, SLOT(updateWidgets()));
             d->extraNavigators << nav;
         }
     }
@@ -209,6 +209,11 @@ void medAbstractImageView::setLayerWindowLevel(unsigned int layer, double &windo
     inter->setWindowLevel(window, level);
 
     emit windowLevelChanged(window, level);
+}
+
+void medAbstractImageView::setWindowLevel(double window, double level)
+{
+    this->setLayerWindowLevel(this->currentLayer(), window, level);
 }
 
 void medAbstractImageView::dataWindowLevel(medAbstractData *data, double &window, double &level)

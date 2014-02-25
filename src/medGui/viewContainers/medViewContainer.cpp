@@ -188,6 +188,12 @@ void medViewContainer::setView(medAbstractView *view)
         d->view = view;
         connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
+        if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
+        {
+            qDebug()<<"layeredView connected to container !!!";
+            connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
+        }
+
         d->view->toolBarWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
         d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());
         d->maximisedParameter->show();
@@ -196,7 +202,6 @@ void medViewContainer::setView(medAbstractView *view)
         d->toolBox->setTitle("Container settings");
         d->toolBox->header()->hide();
     }
-    emit viewChanged();
 }
 
 bool medViewContainer::isSelected() const
@@ -410,7 +415,7 @@ void medViewContainer::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
-//    emit viewChanged();
+    emit viewChanged();
 }
 
 void medViewContainer::selfDestroy()

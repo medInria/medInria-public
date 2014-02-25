@@ -198,8 +198,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     this->initialiseNavigators();
     this->setWindowingInteractionStyle(true);
 
-    connect(this, SIGNAL(layerAdded(int)), this, SLOT(addLayerItem(int)));
-    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(removeLayerItem(int)));
+    connect(this, SIGNAL(currentLayerChanged()), this, SLOT(changeCurrentLayer()));
 }
 
 medVtkView::~medVtkView()
@@ -283,64 +282,6 @@ QWidget* medVtkView::navigatorWidget()
 QList <QWidget*> medVtkView::layerWidgets()
 {
     return d->layerWidgets;
-}
-
-void medVtkView::addLayerItem(int layer)
-{   
-    QWidget *layerWidget = new QWidget;
-    layerWidget->setObjectName("layerWidget");
-
-    medAbstractData *data = this->data(layer);
-    QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
-    QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
-
-    QHBoxLayout* layout = new QHBoxLayout(layerWidget);
-    layout->setContentsMargins(0,0,10,0);
-
-    QPushButton* thumbnailButton = new QPushButton(layerWidget);
-    QIcon thumbnailIcon;
-    // Set the off icon to the greyed out version of the regular icon
-    thumbnailIcon.addPixmap(QPixmap(thumbPath), QIcon::Normal, QIcon::On);
-    QStyleOption opt(0);
-    opt.palette = QApplication::palette();
-    QPixmap pix = QApplication::style()->generatedIconPixmap(QIcon::Disabled, QPixmap(thumbPath), &opt);
-    thumbnailIcon.addPixmap(pix, QIcon::Normal, QIcon::Off);
-    thumbnailButton->setFocusPolicy(Qt::NoFocus);
-    thumbnailButton->setIcon(thumbnailIcon);
-    thumbnailButton->setIconSize(QSize(22,22));
-    thumbnailButton->setCheckable(true);
-    thumbnailButton->setChecked(true);
-    thumbnailButton->setFlat(true);
-
-    QLabel *layerName = new QLabel(name, layerWidget);
-
-    QPushButton *removeButton = new QPushButton;
-    d->layerCloseButtonWidgets.insert(layer, removeButton);
-    removeButton->setIcon(QIcon(":/icons/cross.svg"));
-    connect(removeButton,SIGNAL(clicked()), this, SLOT(removeLayerFromCloseButton()));
-
-    layout->addWidget(thumbnailButton);
-    layout->addWidget(layerName);
-    layout->addStretch();
-    layout->addWidget(this->primaryInteractor(data)->layerWidget());
-    foreach(medAbstractInteractor* interactor, this->extraInteractors(data))
-        layout->addWidget(interactor->layerWidget());
-    layout->addWidget(removeButton);
-
-    d->layerWidgets.append(layerWidget);
-
-
-
-    connect(thumbnailButton, SIGNAL(clicked(bool)), this->primaryInteractor(data), SLOT(setVisibility(bool)));
-}
-
-void medVtkView::removeLayerItem(int layer)
-{
-    // delete Later beacause the workspace can try to manipulate it later.
-    d->layerWidgets[layer]->deleteLater();
-    d->layerCloseButtonWidgets.removeAt(layer);
-    d->layerWidgets.removeAt(layer);
-
 }
 
 void medVtkView::removeLayerFromCloseButton()
@@ -544,3 +485,9 @@ void medVtkView::removeInternNavigatorWidget()
     d->navigatorWidget = NULL;
 }
 
+void medVtkView::changeCurrentLayer()
+{
+    qDebug() << "changeCurrentLayer()";
+    d->view2d->SetCurrentLayer(this->currentLayer());
+    d->view3d->SetCurrentLayer(this->currentLayer());
+}

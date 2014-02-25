@@ -36,7 +36,7 @@ public:
     virtual ~medAbstractLayeredView();
 
     void addLayer(medAbstractData *data);
-    bool removeData(medAbstractData *data);
+    void removeData(medAbstractData *data);
     void removeLayer(unsigned int layer);
     void insertLayer(unsigned int layer, medAbstractData *data);
     void moveLayer(unsigned int fromLayer, unsigned int toLayer);
@@ -44,27 +44,22 @@ public:
     bool contains(medAbstractData * data) const;
     unsigned int layersCount() const;
     unsigned int layer(medAbstractData * data);
-
-    virtual  QList <QWidget*> layerWidgets() = 0;
+//    virtual  QList <QWidget*> layerWidgets() = 0;
     QList <medAbstractInteractor*> currentInteractor();
-
-    virtual QList <medAbstractInteractor*>  interactors();
-
-
-
-    /**
-     * Set the visibility of the data on the corresponding layer
-     */
+    void setCurrentLayer(unsigned int layer);
+    unsigned int currentLayer() const;
+    QList <medAbstractInteractor*> interactors(unsigned int layer);
     void setVisibility (bool visibility, unsigned int layer);
-
-    /**
-     * Get the visibility of the data on the corresponding layer
-     */
     bool visibility(unsigned int layer) ;
 
     QList<dtkSmartPointer<medAbstractData> > data() const;
 
     virtual QImage& generateThumbnail(const QSize &size);
+
+public slots:
+    void setVisibility(bool visibility);
+    void removeLayer();
+
 
 signals:
 
@@ -76,9 +71,9 @@ signals:
     /**
      *  This signal is emitted when the user adds a data to the view
      */
-    void layerAdded(int layer);
-    void layerRemoved(int layer);
-    void selectedLayersChanged() const;
+    void layerAdded(unsigned int layer);
+    void layerRemoved(unsigned int layer);
+    void currentLayerChanged() const;
 
 protected:
     virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
@@ -92,14 +87,6 @@ protected:
     virtual void initialiseInteractors(medAbstractData* data);
     virtual void initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
-
-    QList <int> selectedLayers() const;
-
-protected slots:
-    void setLayerSelected(int layer);
-    void setLayerUnSelected(int layer);
-    void clearSelection();
-
 
 private:
     medAbstractLayeredViewPrivate *d;

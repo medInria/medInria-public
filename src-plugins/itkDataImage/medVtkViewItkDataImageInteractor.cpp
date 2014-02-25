@@ -49,11 +49,9 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkImageViewCollection *collection;
-    medAbstractData *data;
     medAbstractImageData *imageData;
     vtkRenderWindow *render;
 
-    unsigned int layer;
     medAbstractImageView *medVtkView;
 
     medStringListParameter *lutParam;
@@ -84,10 +82,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     d->collection->AddItem(d->view2d);
     d->collection->AddItem(d->view3d);
     d->render = backend->renWin;
-
-    d->data = NULL;
     d->imageData = NULL;
-    d->layer = 0;
 
     d->lutParam = NULL;
     d->presetParam = NULL;
@@ -157,25 +152,23 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::parameters()
 
 void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 {
-    d->layer = d->medVtkView->layer(data);
-
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
     if(!d->imageData)
         return;
 
-    if (!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->layer) ||
-          SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3", data, d->layer) ||
-          SetViewInput<itk::Image<short,3> >("itkDataImageShort3", data, d->layer) ||
-          SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3", data, d->layer) ||
-          SetViewInput<itk::Image<int,3> >("itkDataImageInt3", data, d->layer) ||
-          SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3", data, d->layer) ||
-          SetViewInput<itk::Image<long,3> >("itkDataImageLong3", data, d->layer) ||
-          SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3", data, d->layer) ||
-          SetViewInput<itk::Image<float,3> >("itkDataImageFloat3", data ,d->layer) ||
-          SetViewInput<itk::Image<double,3> >("itkDataImageDouble3", data, d->layer) ||
-          SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3", data, d->layer) ||
-          SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->layer) ||
-          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3", data, d->layer)))
+    if (!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<short,3> >("itkDataImageShort3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<int,3> >("itkDataImageInt3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<long,3> >("itkDataImageLong3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<float,3> >("itkDataImageFloat3", data ,d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<double,3> >("itkDataImageDouble3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->medVtkView->layer(d->imageData)) ||
+          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3", data, d->medVtkView->layer(d->imageData))))
     {
         qDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
         return;
@@ -186,8 +179,8 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 
 void medVtkViewItkDataImageInteractor::removeData()
 {
-    d->view2d->RemoveLayer(d->layer);
-    d->view3d->RemoveLayer(d->layer);
+    d->view2d->RemoveLayer(d->medVtkView->layer(d->imageData));
+    d->view3d->RemoveLayer(d->medVtkView->layer(d->imageData));
     if(d->medVtkView->is2D())
         d->view2d->Render();
     else
@@ -288,8 +281,8 @@ void medVtkViewItkDataImageInteractor::setOpacity (int opacity)
 
 void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
 {
-    d->view3d->SetOpacity (opacity, d->layer);
-    d->view2d->SetOpacity (opacity, d->layer);
+    d->view3d->SetOpacity (opacity, d->medVtkView->layer(d->imageData));
+    d->view2d->SetOpacity (opacity, d->medVtkView->layer(d->imageData));
 
     update();
 }
@@ -304,13 +297,13 @@ void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
 {
     if(visible)
     {
-        d->view2d->SetVisibility(1, d->layer);
-        d->view3d->SetVisibility(1, d->layer);
+        d->view2d->SetVisibility(1, d->medVtkView->layer(d->imageData));
+        d->view3d->SetVisibility(1, d->medVtkView->layer(d->imageData));
     }
     else
     {
-        d->view2d->SetVisibility(0, d->layer);
-        d->view3d->SetVisibility(0, d->layer);
+        d->view2d->SetVisibility(0, d->medVtkView->layer(d->imageData));
+        d->view3d->SetVisibility(0, d->medVtkView->layer(d->imageData));
     }
 
     update();
@@ -334,18 +327,18 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 
     Presets::GetTransferFunction(value.toStdString(), rgb, alpha );
 
-    if (d->layer == 0)
-        d->view2d->SetTransferFunctions(rgb, alpha, d->layer);
+    if (d->medVtkView->layer(d->imageData) == 0)
+        d->view2d->SetTransferFunctions(rgb, alpha, d->medVtkView->layer(d->imageData));
     else
     {
         //TODO: find out why its not the same process - RDE
         vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
-        d->view2d->SetLookupTable(lut, d->layer);
+        d->view2d->SetLookupTable(lut, d->medVtkView->layer(d->imageData));
         lut->Delete();
     }
 
-    d->view3d->SetTransferFunctions(rgb, alpha, d->layer);
-    d->view3d->SetLookupTable(vtkLookupTableManager::GetLookupTable(value.toStdString()), d->layer);
+    d->view3d->SetTransferFunctions(rgb, alpha, d->medVtkView->layer(d->imageData));
+    d->view3d->SetLookupTable(vtkLookupTableManager::GetLookupTable(value.toStdString()), d->medVtkView->layer(d->imageData));
 
     rgb->Delete();
     alpha->Delete();
@@ -459,14 +452,14 @@ void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &po
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
-    d->view2d->SetColorWindow(window, d->layer);
-    d->view3d->SetColorWindow(window, d->layer);
+    d->view2d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
+    d->view3d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
 }
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
-    d->view2d->SetColorLevel(level, d->layer);
-    d->view3d->SetColorLevel(level, d->layer);
+    d->view2d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
+    d->view3d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
 }
 
 void medVtkViewItkDataImageInteractor::update()
