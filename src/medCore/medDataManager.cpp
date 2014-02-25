@@ -16,8 +16,8 @@
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 
-#include <medDbControllerFactory.h>
-#include <medAbstractDbController.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
 #include <medMessageController.h>
 
@@ -60,7 +60,7 @@ public:
     {
         if (m_dbController == NULL)
         {
-         m_dbController = medDbControllerFactory::instance()->createDbController("DbController");
+         m_dbController = medDatabaseController::instance();
          if (!m_dbController)
              qWarning() << "No dbController registered!";
         }
@@ -71,7 +71,7 @@ public:
     {
         if (m_nonPersDbController == NULL)
         {
-            m_nonPersDbController  = medDbControllerFactory::instance()->createDbController("NonPersistentDbController");
+            m_nonPersDbController  = medDatabaseNonPersistentController::instance();
             if (!m_nonPersDbController)
                 qWarning() << "No nonPersistentDbController registered!";
         }

@@ -315,7 +315,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
     if( removeTableRow ( d->T_PATIENT, patientDbId ) )
         emit removed(medDataIndex(1, patientDbId, -1, -1, -1));
 
-    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
+    medDatabaseController * dbi = medDatabaseController::instance();
     QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientId ) );
     
     if ( patientDir.exists() )

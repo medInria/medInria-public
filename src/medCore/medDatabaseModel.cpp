@@ -24,7 +24,6 @@
 #include <medDatabaseNonPersistentController.h>
 
 #include <medAbstractDbController.h>
-#include <medDbControllerFactory.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractDatabaseItem.h>
@@ -147,7 +146,6 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
 
     connect(medDataManager::instance(), SIGNAL(dataAdded(medDataIndex)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
     connect(medDataManager::instance(), SIGNAL(dataRemoved(medDataIndex)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
-    connect(medDbControllerFactory::instance(), SIGNAL(dbControllerRegistered(const QString&)), this, SLOT(repopulate()));
 }
 
 medDatabaseModel::~medDatabaseModel(void)

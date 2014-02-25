@@ -12,7 +12,7 @@
 
 =========================================================================*/
 
-#include <medDatabaseControllerImpl.h>
+#include <medDatabaseController.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -46,7 +46,7 @@ namespace {
         return true;
     }
 }
-class medDatabaseControllerImplPrivate
+class medDatabaseControllerPrivate
 {
 public:
     void buildMetaDataLookup();
@@ -69,12 +69,12 @@ public:
     static const QString T_patient ;
 };
 
-const QString medDatabaseControllerImplPrivate::T_image = "image";
-const QString medDatabaseControllerImplPrivate::T_series = "series";
-const QString medDatabaseControllerImplPrivate::T_study = "study";
-const QString medDatabaseControllerImplPrivate::T_patient = "patient";
+const QString medDatabaseControllerPrivate::T_image = "image";
+const QString medDatabaseControllerPrivate::T_series = "series";
+const QString medDatabaseControllerPrivate::T_study = "study";
+const QString medDatabaseControllerPrivate::T_patient = "patient";
 
-void medDatabaseControllerImplPrivate::buildMetaDataLookup()
+void medDatabaseControllerPrivate::buildMetaDataLookup()
 {
 // The table defines the mapping between metadata in the medAbstractData and the database tables.
     metaDataLookup.insert(medMetaDataKeys::ThumbnailPath.key(),
@@ -153,13 +153,22 @@ void medDatabaseControllerImplPrivate::buildMetaDataLookup()
 
 }
 
+medDatabaseController * medDatabaseController::s_instance = NULL;
 
-QSqlDatabase *medDatabaseControllerImpl::database(void)
+medDatabaseController* medDatabaseController::instance() {
+    if ( ! s_instance) {
+        s_instance = new medDatabaseController();
+    }
+    return s_instance;
+}
+
+
+QSqlDatabase *medDatabaseController::database(void)
 {
     return &m_database;
 }
 
-bool medDatabaseControllerImpl::createConnection(void)
+bool medDatabaseController::createConnection(void)
 {
     medStorage::mkpath(medStorage::dataLocation() + "/");
 
@@ -195,7 +204,7 @@ bool medDatabaseControllerImpl::createConnection(void)
     return true;
 }
 
-bool medDatabaseControllerImpl::closeConnection(void)
+bool medDatabaseController::closeConnection(void)
 {
     m_database.close();
     QSqlDatabase::removeDatabase("QSQLITE");
@@ -203,12 +212,12 @@ bool medDatabaseControllerImpl::closeConnection(void)
     return true;
 }
 
-medDataIndex medDatabaseControllerImpl::indexForPatient(int id)
+medDataIndex medDatabaseController::indexForPatient(int id)
 {
     return medDataIndex::makePatientIndex(this->dataSourceId(), id);
 }
 
-medDataIndex medDatabaseControllerImpl::indexForPatient (const QString &patientName)
+medDataIndex medDatabaseController::indexForPatient (const QString &patientName)
 {
     QSqlQuery query(m_database);
     QVariant patientId = -1;
@@ -226,7 +235,7 @@ medDataIndex medDatabaseControllerImpl::indexForPatient (const QString &patientN
     return medDataIndex();
 }
 
-medDataIndex medDatabaseControllerImpl::indexForStudy(int id)
+medDataIndex medDatabaseController::indexForStudy(int id)
 {
     QSqlQuery query(m_database);
 
@@ -243,7 +252,7 @@ medDataIndex medDatabaseControllerImpl::indexForStudy(int id)
     return medDataIndex::makeStudyIndex(this->dataSourceId(), patientId.toInt(), id);
 }
 
-medDataIndex medDatabaseControllerImpl::indexForStudy(const QString &patientName, const QString &studyName)
+medDataIndex medDatabaseController::indexForStudy(const QString &patientName, const QString &studyName)
 {
     medDataIndex index = this->indexForPatient(patientName);
     if (!index.isValid())
@@ -270,7 +279,7 @@ medDataIndex medDatabaseControllerImpl::indexForStudy(const QString &patientName
     return medDataIndex();
 }
 
-medDataIndex medDatabaseControllerImpl::indexForSeries(int id)
+medDataIndex medDatabaseController::indexForSeries(int id)
 {
     QSqlQuery query(m_database);
 
@@ -296,7 +305,7 @@ medDataIndex medDatabaseControllerImpl::indexForSeries(int id)
     return medDataIndex::makeSeriesIndex(this->dataSourceId(), patientId.toInt(), studyId.toInt(), id);
 }
 
-medDataIndex medDatabaseControllerImpl::indexForSeries(const QString &patientName, const QString &studyName,
+medDataIndex medDatabaseController::indexForSeries(const QString &patientName, const QString &studyName,
                                                        const QString &seriesName)
 {
     medDataIndex index = this->indexForStudy(patientName, studyName);
@@ -323,7 +332,7 @@ medDataIndex medDatabaseControllerImpl::indexForSeries(const QString &patientNam
     return medDataIndex();
 }
 
-medDataIndex medDatabaseControllerImpl::indexForImage(int id)
+medDataIndex medDatabaseController::indexForImage(int id)
 {
     QSqlQuery query(m_database);
 
@@ -358,7 +367,7 @@ medDataIndex medDatabaseControllerImpl::indexForImage(int id)
     return medDataIndex(this->dataSourceId(),patientId.toInt(), studyId.toInt(), seriesId.toInt(), id);
 }
 
-medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName, const QString &studyName,
+medDataIndex medDatabaseController::indexForImage(const QString &patientName, const QString &studyName,
                                                       const QString &seriesName,  const QString &imageName)
 {
     medDataIndex index = this->indexForSeries(patientName, studyName, seriesName);
@@ -385,7 +394,7 @@ medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName
     return medDataIndex();
 }
 
-void medDatabaseControllerImpl::import(const QString& file, QString importUuid)
+void medDatabaseController::import(const QString& file, QString importUuid)
 {
     //No one does anything with this importUuid for the permanent db yet.
     //Just override the import(file,indexWithoutcopying method to enable this).
@@ -393,7 +402,7 @@ void medDatabaseControllerImpl::import(const QString& file, QString importUuid)
     import(file,false);
 }
 
-void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)
+void medDatabaseController::import(const QString& file,bool indexWithoutCopying)
 {
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
@@ -416,7 +425,7 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medDatabaseControllerImpl::import( medAbstractData *data, QString importUuid)
+void medDatabaseController::import( medAbstractData *data, QString importUuid)
 {    
     medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
     medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
@@ -439,7 +448,7 @@ void medDatabaseControllerImpl::import( medAbstractData *data, QString importUui
 }
 
 
-void medDatabaseControllerImpl::exportDataToFile(medAbstractData *data, const QString & filename, const QString & writer)
+void medDatabaseController::exportDataToFile(medAbstractData *data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
     QFileInfo info(filename);
@@ -453,7 +462,7 @@ void medDatabaseControllerImpl::exportDataToFile(medAbstractData *data, const QS
     QThreadPool::globalInstance()->start(exporter);    
 }
 
-dtkSmartPointer<medAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
+dtkSmartPointer<medAbstractData> medDatabaseController::read(const medDataIndex& index) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));   
     medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
@@ -469,12 +478,12 @@ dtkSmartPointer<medAbstractData> medDatabaseControllerImpl::read(const medDataIn
     return data;
 }
 
-void medDatabaseControllerImpl::showOpeningError(QObject *sender)
+void medDatabaseController::showOpeningError(QObject *sender)
 {
     medMessageController::instance()->showError("Opening item failed.", 3000);
 }
 
-void medDatabaseControllerImpl::createPatientTable(void)
+void medDatabaseController::createPatientTable(void)
 {
     QSqlQuery query(*(this->database()));
     query.exec(
@@ -489,7 +498,7 @@ void medDatabaseControllerImpl::createPatientTable(void)
             );
 }
 
-void medDatabaseControllerImpl::createStudyTable(void)
+void medDatabaseController::createStudyTable(void)
 {
     QSqlQuery query(*(this->database()));
 
@@ -505,7 +514,7 @@ void medDatabaseControllerImpl::createStudyTable(void)
             );
 }
 
-void medDatabaseControllerImpl::createSeriesTable(void)
+void medDatabaseController::createSeriesTable(void)
 {
     QSqlQuery query(*(this->database()));
     query.exec(
@@ -540,7 +549,7 @@ void medDatabaseControllerImpl::createSeriesTable(void)
             );
 }
 
-void medDatabaseControllerImpl::createImageTable(void)
+void medDatabaseController::createImageTable(void)
 {
     // Note to the reader who came here looking for the 'size' column:
     // it was removed because it was always filled with a
@@ -561,7 +570,7 @@ void medDatabaseControllerImpl::createImageTable(void)
             );
 }
 
-bool medDatabaseControllerImpl::moveDatabase( QString newLocation)
+bool medDatabaseController::moveDatabase( QString newLocation)
 {
     bool res = true;
 
@@ -626,12 +635,12 @@ bool medDatabaseControllerImpl::moveDatabase( QString newLocation)
     return res;
 }
 
-bool medDatabaseControllerImpl::isConnected() const
+bool medDatabaseController::isConnected() const
 {
     return d->isConnected;
 }
 
-medDatabaseControllerImpl::medDatabaseControllerImpl() : d(new medDatabaseControllerImplPrivate)
+medDatabaseController::medDatabaseController() : d(new medDatabaseControllerPrivate)
 {
     d->buildMetaDataLookup();
     d->isConnected = false;
@@ -639,25 +648,25 @@ medDatabaseControllerImpl::medDatabaseControllerImpl() : d(new medDatabaseContro
     connect(d->emitter, SIGNAL(message(QString)), this, SLOT(forwardMessage(QString)));
 }
 
-medDatabaseControllerImpl::~medDatabaseControllerImpl()
+medDatabaseController::~medDatabaseController()
 {
     delete d->emitter;
     delete d;
 }
 
-void medDatabaseControllerImpl::forwardMessage( QString msg)
+void medDatabaseController::forwardMessage( QString msg)
 {
     copyMessage(msg, Qt::AlignBottom, QColor(Qt::white));
 }
 
-qint64 medDatabaseControllerImpl::getEstimatedSize( const medDataIndex& index ) const
+qint64 medDatabaseController::getEstimatedSize( const medDataIndex& index ) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
     uint size = reader->getDataSize();
     return size + (size/100 * 3); // add 3% margin
 }
 
-void medDatabaseControllerImpl::remove( const medDataIndex& index )
+void medDatabaseController::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
     medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
@@ -672,7 +681,7 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
 }
 
 
-QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
+QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
     QSqlDatabase & db (*(this->database()));
     QSqlQuery query(db);
@@ -716,7 +725,7 @@ QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataIndex& in
     return newIndexList;
 }
 
-medDataIndex medDatabaseControllerImpl::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
+medDataIndex medDatabaseController::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
 {
     QSqlDatabase & db (*(this->database()));
     QSqlQuery query(db);
@@ -745,12 +754,12 @@ medDataIndex medDatabaseControllerImpl::moveSerie( const medDataIndex& indexSeri
     return newIndex;
 }
 
-QString medDatabaseControllerImpl::metaData(const medDataIndex& index,const QString& key) const
+QString medDatabaseController::metaData(const medDataIndex& index,const QString& key) const
 {
-    typedef medDatabaseControllerImplPrivate::MetaDataMap MetaDataMap;
-    typedef medDatabaseControllerImplPrivate::TableEntryList TableEntryList;
+    typedef medDatabaseControllerPrivate::MetaDataMap MetaDataMap;
+    typedef medDatabaseControllerPrivate::TableEntryList TableEntryList;
 
-    const QSqlDatabase & db (*((const_cast<medDatabaseControllerImpl*>(this)->database())));
+    const QSqlDatabase & db (*((const_cast<medDatabaseController*>(this)->database())));
     QSqlQuery query(db);
 
     // Attempt to translate the desired metadata into a table / column entry.
@@ -799,10 +808,10 @@ QString medDatabaseControllerImpl::metaData(const medDataIndex& index,const QStr
     return ret;
 }
 
-bool medDatabaseControllerImpl::setMetaData( const medDataIndex& index, const QString& key, const QString& value )
+bool medDatabaseController::setMetaData( const medDataIndex& index, const QString& key, const QString& value )
 {
-    typedef medDatabaseControllerImplPrivate::MetaDataMap MetaDataMap;
-    typedef medDatabaseControllerImplPrivate::TableEntryList TableEntryList;
+    typedef medDatabaseControllerPrivate::MetaDataMap MetaDataMap;
+    typedef medDatabaseControllerPrivate::TableEntryList TableEntryList;
 
     QSqlDatabase & db (*(this->database()));
     QSqlQuery query(db);
@@ -844,15 +853,15 @@ bool medDatabaseControllerImpl::setMetaData( const medDataIndex& index, const QS
     return success;
 }
 
-int medDatabaseControllerImpl::dataSourceId() const
+int medDatabaseController::dataSourceId() const
 {
     return 1;
 }
 
-QList<medDataIndex> medDatabaseControllerImpl::patients() const
+QList<medDataIndex> medDatabaseController::patients() const
 {
     QList<medDataIndex> ret;
-    QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
+    QSqlQuery query(*(const_cast<medDatabaseController*>(this)->database()));
     query.prepare("SELECT id FROM patient");
     EXEC_QUERY(query);
 #if QT_VERSION > 0x0406FF
@@ -865,7 +874,7 @@ QList<medDataIndex> medDatabaseControllerImpl::patients() const
 }
 
 
-QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& index ) const
+QList<medDataIndex> medDatabaseController::studies( const medDataIndex& index ) const
 {
     QList<medDataIndex> ret;
 
@@ -875,7 +884,7 @@ QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& inde
         return ret;
     }
 
-    QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
+    QSqlQuery query(*(const_cast<medDatabaseController*>(this)->database()));
     query.prepare("SELECT id FROM study WHERE patient = :patientId");
     query.bindValue(":patientId", index.patientId());
     EXEC_QUERY(query);
@@ -888,7 +897,7 @@ QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& inde
     return ret;
 }
 
-QList<medDataIndex> medDatabaseControllerImpl::series( const medDataIndex& index) const
+QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) const
 {
     QList<medDataIndex> ret;
 
@@ -898,7 +907,7 @@ QList<medDataIndex> medDatabaseControllerImpl::series( const medDataIndex& index
         return ret;
     }
 
-    QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
+    QSqlQuery query(*(const_cast<medDatabaseController*>(this)->database()));
     query.prepare("SELECT id FROM series WHERE study = :studyId");
     query.bindValue(":studyId", index.studyId());
     EXEC_QUERY(query);
@@ -911,7 +920,7 @@ QList<medDataIndex> medDatabaseControllerImpl::series( const medDataIndex& index
     return ret;
 }
 
-QList<medDataIndex> medDatabaseControllerImpl::images( const medDataIndex& index) const
+QList<medDataIndex> medDatabaseController::images( const medDataIndex& index) const
 {
     QList<medDataIndex> ret;
 
@@ -921,7 +930,7 @@ QList<medDataIndex> medDatabaseControllerImpl::images( const medDataIndex& index
         return ret;
     }
 
-    QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
+    QSqlQuery query(*(const_cast<medDatabaseController*>(this)->database()));
     query.prepare("SELECT id FROM image WHERE series = :seriesId");
     query.bindValue(":seriesId", index.seriesId());
     EXEC_QUERY(query);
@@ -934,18 +943,18 @@ QList<medDataIndex> medDatabaseControllerImpl::images( const medDataIndex& index
     return ret;
 }
 
-QImage medDatabaseControllerImpl::thumbnail( const medDataIndex& index ) const
+QImage medDatabaseController::thumbnail( const medDataIndex& index ) const
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return QImage();
 }
 
-bool medDatabaseControllerImpl::isPersistent(  ) const
+bool medDatabaseController::isPersistent(  ) const
 {
     return true;
 }
 
-QString medDatabaseControllerImpl::stringForPath( const QString & name ) const
+QString medDatabaseController::stringForPath( const QString & name ) const
 {
     QString ret = name.simplified();
     ret.replace(0x00EA, 'e');
@@ -953,7 +962,7 @@ QString medDatabaseControllerImpl::stringForPath( const QString & name ) const
     return ret;
 }
 
-bool medDatabaseControllerImpl::contains(const medDataIndex &index) const
+bool medDatabaseController::contains(const medDataIndex &index) const
 {
     if (index.isValid() && index.dataSourceId() == dataSourceId())
     {
@@ -963,7 +972,7 @@ bool medDatabaseControllerImpl::contains(const medDataIndex &index) const
         QVariant seriesId = index.seriesId();
         QVariant imageId = index.imageId();
 
-        QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
+        QSqlQuery query(*(const_cast<medDatabaseController*>(this)->database()));
         QString fromRequest = "SELECT * FROM patient";
         QString whereRequest = " WHERE patient.id = :id";
 

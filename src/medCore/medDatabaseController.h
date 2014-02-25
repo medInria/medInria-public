@@ -19,21 +19,19 @@
 
 class medAbstractData;
 class SigEmitter;
-class medDatabaseControllerImplPrivate;
+class medDatabaseControllerPrivate;
 class medJobItem;
 
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDSQL_EXPORT medDatabaseControllerImpl: public medAbstractDbController
+class MEDSQL_EXPORT medDatabaseController: public medAbstractDbController
 {
     Q_OBJECT
 
 public:
-
-    /* constructor */
-    medDatabaseControllerImpl();
-    ~medDatabaseControllerImpl();
+    static medDatabaseController* instance();
+    ~medDatabaseController();
 
     QSqlDatabase *database();
 
@@ -179,6 +177,9 @@ protected slots:
     void showOpeningError(QObject *sender);
 
 private:
+    /* constructor */
+    medDatabaseController();
+
     // helper to create tables
     void createPatientTable();
     void   createStudyTable();
@@ -187,7 +188,8 @@ private:
 
     QSqlDatabase m_database;
 
-    medDatabaseControllerImplPrivate * d;
+    medDatabaseControllerPrivate * d;
+    static medDatabaseController * s_instance;
 };
 
 

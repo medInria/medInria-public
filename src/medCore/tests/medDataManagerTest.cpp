@@ -7,7 +7,6 @@
 #include <medDataManager.h>
 
 #include <medAbstractDataFactory.h>
-#include <medDbControllerFactory.h>
 #include <medMetaDataKeys.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
@@ -46,10 +45,6 @@ void medDataManagerTestObject::initTestCase(void)
     medStorage::setDataLocation( m_storagePath );
     
     QVERIFY( medDatabaseController::instance()->createConnection() );
-    
-    //Register dbController
-    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
-    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
     
     const int persistentSourceId = 1;
     const int nonPersistentSourceId = 2;

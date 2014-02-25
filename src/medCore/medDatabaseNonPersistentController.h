@@ -22,19 +22,17 @@
 
 class medAbstractData;
 class medDatabaseNonPersistentItem;
-class medDatabaseNonPersistentControllerImplPrivate;
+class medDatabaseNonPersistentControllerPrivate;
 class medImportJobWatcher;
 
 
-class MEDSQL_EXPORT medDatabaseNonPersistentControllerImpl: public medAbstractDbController
+class MEDSQL_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
 {
     Q_OBJECT
 
 public:
-
-    medDatabaseNonPersistentControllerImpl();
-    ~medDatabaseNonPersistentControllerImpl();
-
+    static medDatabaseNonPersistentController * instance();
+    ~medDatabaseNonPersistentController();
 
     /**
     * Get the table indices
@@ -151,7 +149,10 @@ public slots:
 
 
 private:
-    medDatabaseNonPersistentControllerImplPrivate *d;
+    medDatabaseNonPersistentController();
+
+    medDatabaseNonPersistentControllerPrivate *d;
+    static medDatabaseNonPersistentController* s_instance;
 };
 
 

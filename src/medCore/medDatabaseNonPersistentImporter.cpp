@@ -54,7 +54,7 @@ medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter ()
 
 QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QString birthDate)
 {
-    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+    QPointer<medDatabaseNonPersistentController> npdc =
             medDatabaseNonPersistentController::instance();
             
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
@@ -84,7 +84,7 @@ QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QStr
 
 medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* data, QString pathToStoreThumbnails )
 {
-    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+    QPointer<medDatabaseNonPersistentController> npdc =
             medDatabaseNonPersistentController::instance();
             
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
@@ -257,7 +257,7 @@ bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* medData,
 {
     bool imageExists = false;
 
-    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+    QPointer<medDatabaseNonPersistentController> npdc =
             medDatabaseNonPersistentController::instance();
             
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
@@ -276,7 +276,7 @@ bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* medData,
 
 QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString seriesName )
 {
-    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+    QPointer<medDatabaseNonPersistentController> npdc =
         medDatabaseNonPersistentController::instance();
 
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
@@ -317,7 +317,7 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( medAbstractData*
     if (containsBasicInfo.compare("true", Qt::CaseInsensitive) != 0)
         return false;
 
-    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+    QPointer<medDatabaseNonPersistentController> npdc =
         medDatabaseNonPersistentController::instance();
 
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
