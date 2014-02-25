@@ -308,5 +308,9 @@ void medDiffusionWorkspace::resetToolBoxesInputs(dtkAbstractView *view)
 bool medDiffusionWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("diffusion").size()!=0); 
+    bool workspaceUsable = (tbFactory->toolBoxesFromCategory("diffusion-estimation").size()!=0)||
+                           (tbFactory->toolBoxesFromCategory("diffusion-scalar-maps").size()!=0)||
+                           (tbFactory->toolBoxesFromCategory("diffusion-tractography").size()!=0);
+    
+    return workspaceUsable;
 }

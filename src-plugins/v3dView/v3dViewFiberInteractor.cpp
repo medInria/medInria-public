@@ -50,7 +50,7 @@
 #ifdef WIN32
     #define isFinite(double) _finite(double)
 #else
-    #define isFinite(double) std::isFinite(double)
+    #define isFinite(double) std::isfinite(double)
 #endif
 
 
