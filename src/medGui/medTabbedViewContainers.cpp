@@ -19,6 +19,10 @@
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainerManager.h>
+#include <medAbstractView.h>
+#include <medAbstractParameter.h>
+#include <medParameterPoolManager.h>
+#include <medParameterPool.h>
 
 
 class medTabbedViewContainersPrivate
@@ -27,6 +31,7 @@ public:
     QShortcut *closeShortcut;    
     QPushButton *addTabButton;
     QHash <int, QList<QUuid> > containerSelectedForTabIndex;
+    medParameterPool *pool;
 };
 
 medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
@@ -48,7 +53,12 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(resetCurrentTab()));
 
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(disconnectTabFromSplitter(int)));
+
     connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
+
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(buildTemporaryPool()));
+
+    d->pool = new medParameterPool(this);
 }
 
 medTabbedViewContainers::~medTabbedViewContainers(void)
@@ -123,6 +133,10 @@ void medTabbedViewContainers::connectContainer(QUuid container)
     connect(cont, SIGNAL(containerSelected(QUuid)), this, SLOT(addContainerToSelection(QUuid)), Qt::UniqueConnection);
     connect(cont, SIGNAL(containerUnSelected(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)), Qt::UniqueConnection);
 
+    connect(cont, SIGNAL(linkRequested(QUuid, QString)), this, SLOT(link(QUuid, QString)));
+    connect(cont, SIGNAL(unlinkRequested(QUuid)), this, SLOT(unlink(QUuid)));
+
+
     cont->setSelected(true);
 }
 
@@ -177,6 +191,61 @@ void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
             this->disconnect(unSelectedContainer, SIGNAL(viewChanged()), 0, 0);
             emit containersSelectedChanged();
             break;
+        }
+    }
+}
+
+void medTabbedViewContainers::link(QUuid uuid, QString pool)
+{
+    if(this->containersSelected().contains(uuid))
+    {
+        qDebug() << "link selection" << this->containersSelected().count();
+        foreach(QUuid uuidSelected, this->containersSelected())
+        {
+            medViewContainer *container = medViewContainerManager::instance()->container(uuidSelected);
+            container->link(pool);
+        }
+    }
+    else
+    {
+        qDebug() << "link impacted";
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        container->link(pool);
+    }
+}
+
+void medTabbedViewContainers::unlink(QUuid uuid)
+{
+    if(this->containersSelected().contains(uuid))
+    {
+        qDebug() << "unlink selection" << this->containersSelected().count();
+        foreach(QUuid uuidSelected, this->containersSelected())
+        {
+            medViewContainer *container = medViewContainerManager::instance()->container(uuidSelected);
+            container->unlink();
+        }
+    }
+    else
+    {
+        qDebug() << "unlink impacted";
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        container->unlink();
+    }
+}
+
+void medTabbedViewContainers::buildTemporaryPool()
+{
+    d->pool->clear();
+    foreach(QUuid uuid, this->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+
+        if(!container->view())
+            continue;
+
+        foreach(medAbstractParameter *param, container->view()->navigatorsParameters())
+        {
+            d->pool->append(param);
         }
     }
 }

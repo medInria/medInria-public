@@ -40,7 +40,7 @@ medColorListParameter::~medColorListParameter()
     delete d;
 }
 
-void medColorListParameter::addColor(QString& colorName)
+void medColorListParameter::addColor(const QString& colorName)
 {
     d->colors <<  colorName;
 
@@ -57,7 +57,7 @@ void medColorListParameter::addColors(QStringList &colorNames)
             d->comboBox->addItem(createIcon(colorName), colorName);
 }
 
-void medColorListParameter::removeColor(QString &colorName)
+void medColorListParameter::removeColor(const QString &colorName)
 {
     if(!d->colors.contains(colorName))
         return;
@@ -88,7 +88,9 @@ QComboBox* medColorListParameter::getComboBox()
     if(!d->comboBox)
     {
         d->comboBox = new QComboBox;
-        d->comboBox->addItems(d->colors);
+
+        foreach(QString color, d->colors)
+            d->comboBox->addItem(createIcon(color),color);
 
         this->addToInternWidgets(d->comboBox);
         connect(d->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setValue(QString)));
@@ -110,7 +112,7 @@ void medColorListParameter::updateInternWigets()
 }
 
 
-QIcon medColorListParameter::createIcon(QString &colorName) const
+QIcon medColorListParameter::createIcon(const QString &colorName) const
 {
     QPixmap iconPixmap(32,32);
     iconPixmap.fill(QColor(colorName));

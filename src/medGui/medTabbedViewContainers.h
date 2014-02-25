@@ -55,6 +55,9 @@ private slots:
     void addContainerToSelection(QUuid container);
     void removeContainerFromSelection(QUuid container);
     void connectContainer(QUuid container);
+    void link(QUuid uuid, QString);
+    void unlink(QUuid uuid);
+    void buildTemporaryPool();
 
 signals:
     void containersSelectedChanged();

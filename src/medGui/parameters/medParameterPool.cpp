@@ -64,24 +64,48 @@ void medParameterPool::append(medAbstractParameter *parameter)
     {
         foreach(medAbstractParameter* param, group->parametersCandidateToPool())
         {
-            d->pool.insert(param->name(), param);
-            connectParam(param);
+            if(!d->pool.values(param->name()).contains(param))
+            {
+                d->pool.insert(param->name(), param);
+                connectParam(param);
+            }
         }
     }
     else
     {
-        d->pool.insert(parameter->name(), parameter);
-        connectParam(parameter);
+        if(!d->pool.values(parameter->name()).contains(parameter))
+        {
+            d->pool.insert(parameter->name(), parameter);
+            connectParam(parameter);
+        }
     }
 }
 
 void medParameterPool::remove(medAbstractParameter* parameter)
 {
-    QMultiHash<QString, medAbstractParameter*>::Iterator it;
-    for(it = d->pool.begin(); it != d->pool.end(); ++it)
+    if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(parameter))
+    {
+        foreach(medAbstractParameter *paramInGroup, group->parametersCandidateToPool())
+        {
+            remove(paramInGroup);
+        }
+        return;
+    }
+
+    disconnectParam(parameter);
+
+    QMultiHash<QString, medAbstractParameter*>::Iterator it = d->pool.begin();
+
+    while( it != d->pool.end() )
     {
         if(it.value() == parameter)
+        {
             it = d->pool.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
 
         if( d->pool.count() == 0 )
             break;

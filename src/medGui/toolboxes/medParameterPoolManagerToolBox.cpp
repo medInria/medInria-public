@@ -32,8 +32,6 @@ medParameterPoolManagerToolBox::medParameterPoolManagerToolBox() : d(new medPara
     this->setTitle("Parameters Pool Managment");
     d->mngr = medParameterPoolManager::instance();
 
-    d->mngr->setToolBox(this);
-
     d->pools = new QListWidget(this);
 
     d->parameters = new QListWidget(this);
@@ -53,11 +51,6 @@ medParameterPoolManagerToolBox::medParameterPoolManagerToolBox() : d(new medPara
     this->addWidget(new QLabel("Parameters linked:"));
     this->addWidget(d->parameters);
     this->addWidget(d->poolsSelectorWidget);
-
-    connect(d->mngr, SIGNAL(poolCreated(medParameterPool*,int)), this, SLOT(addPool(medParameterPool*,int)));
-    connect(d->mngr, SIGNAL(poolRemoved(int)), this, SLOT(removePoolFromWidget(int)));
-    connect(d->mngr, SIGNAL(multipleViewsSelected()), this, SLOT(showLinkParametersWidget()));
-    connect(d->mngr, SIGNAL(singleViewSelected()), this, SLOT(showPoolsSelectorWidget()));
 
     connect(d->pools, SIGNAL(itemSelectionChanged()), this, SLOT(displayPoolParameters()));
 

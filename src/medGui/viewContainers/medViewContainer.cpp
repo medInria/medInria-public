@@ -29,6 +29,9 @@
 #include <medViewManager.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
+#include <medColorListParameter.h>
+#include <medParameterPoolManager.h>
+#include <medParameterPool.h>
 
 class medViewContainerPrivate
 {
@@ -61,6 +64,7 @@ public:
     medToolBox *toolBox;
 
     medBoolParameter* maximisedParameter;
+    medColorListParameter *poolSelector;
 
     ~medViewContainerPrivate()
     {
@@ -127,6 +131,13 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->maximisedParameter->setValue(false);
     d->maximisedParameter->hide();
 
+    d->poolSelector = new medColorListParameter("Pool", this);
+    d->poolSelector->addColor("");
+    d->poolSelector->addColor("red");
+    d->poolSelector->addColor("green");
+    d->poolSelector->addColor("blue");
+    connect(d->poolSelector, SIGNAL(valueChanged(QString)), this, SLOT(emitLinkRequested(QString)));
+
     QWidget* toolBar = new QWidget(this);
     toolBar->setObjectName("containerToolBar");
     toolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
@@ -134,6 +145,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->toolBarLayout->setContentsMargins(5,0,5,0);
     d->toolBarLayout->setSpacing(5);
     d->toolBarLayout->addWidget(d->emptyViewToolBar);
+    d->toolBarLayout->addWidget(d->poolSelector->getComboBox());
     d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
@@ -493,4 +505,64 @@ void medViewContainer::destroyDragLabels()
 
     delete d->midDragLabel;
     d->midDragLabel = NULL;
+}
+
+
+void medViewContainer::emitLinkRequested(QString pool)
+{
+    if(pool == "")
+    {
+        emit unlinkRequested(d->uuid);
+    }
+    else
+    {
+        emit linkRequested(d->uuid, pool);
+    }
+}
+
+void medViewContainer::link(QString pool)
+{
+    if(!d->view)
+        return;
+
+    if(pool!="")
+        unlink();
+
+    int index = d->poolSelector->getComboBox()->findText(pool);
+    if( index >= 0 )
+    {
+        d->poolSelector->getComboBox()->blockSignals(true);
+        d->poolSelector->getComboBox()->setCurrentIndex(index);
+        d->poolSelector->getComboBox()->blockSignals(false);
+    }
+
+    foreach(medAbstractParameter *param, d->view->navigatorsParameters())
+    {
+        medParameterPoolManager::instance()->linkParameter(param, pool);
+    }
+
+    foreach(medParameterPool *pool, medParameterPoolManager::instance()->pools() )
+    {
+        qDebug() << "linkParameter" << pool->name() << pool->count();
+    }
+}
+
+void medViewContainer::unlink()
+{
+    if(!d->view)
+        return;
+
+    d->poolSelector->getComboBox()->blockSignals(true);
+    d->poolSelector->getComboBox()->setCurrentIndex(0);
+    d->poolSelector->getComboBox()->blockSignals(false);
+
+    foreach(medAbstractParameter *param, d->view->navigatorsParameters())
+    {
+        medParameterPoolManager::instance()->unlinkParameter(param);
+    }
+
+    foreach(medParameterPool *pool, medParameterPoolManager::instance()->pools() )
+    {
+        qDebug() << "linkParameter" << pool->name() << pool->count();
+    }
 }

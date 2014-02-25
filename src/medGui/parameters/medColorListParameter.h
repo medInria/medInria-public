@@ -32,9 +32,9 @@ public:
     medColorListParameter(QString name = "Unkow color list parameter", QObject* parent = 0);
     virtual ~medColorListParameter();
 
-    void addColor(QString& colorName);
+    void addColor(const QString& colorName);
     void addColors(QStringList& colorNames);
-    void removeColor(QString& colorNames);
+    void removeColor(const QString& colorNames);
     void clear();
 
     QStringList& colors() const;
@@ -46,7 +46,7 @@ protected:
     virtual void updateInternWigets();
 
 protected:
-    QIcon createIcon(QString& colorName) const;
+    QIcon createIcon(const QString& colorName) const;
 
 private slots:
     void removeInternComboBox();

@@ -30,22 +30,18 @@ class medParameterPoolManager : public QObject
 public:
     static medParameterPoolManager *instance();
 
-    void setToolBox(medParameterPoolManagerToolBox* tb);
-
     QList<int> poolsId(QString type);
+    QList<medParameterPool*> pools();
 
 
 public slots:
-    void removePool(int);
-    void linkAll();
-    void linkParameter(medAbstractParameter*, int poolId);
-    void unlinkParameter(medAbstractParameter*, int poolId);
+    //void removePool(int);
+    void linkParameter(medAbstractParameter*, QString poolId);
+    void unlinkParameter(medAbstractParameter*);
+    //medParameterPool* pool(int id);
+        void removePool(QString);
 
 signals:
-    void poolCreated(medParameterPool *selectedPool, int id);
-    void poolRemoved(int id);
-    void multipleViewsSelected();
-    void singleViewSelected();
 
 protected:
     medParameterPoolManager();
@@ -53,12 +49,10 @@ protected:
 protected:
     static medParameterPoolManager *s_instance;
 
-private slots:
-    void buildViewPool();
-    void addViewParamsToPool(medAbstractView*, int);
 
 private:
-    void addColorLabeltoView(medAbstractParameter* parameter, medParameterPool *selectedPool);
+
+
 
 private:
     medParameterPoolManagerPrivate *d;

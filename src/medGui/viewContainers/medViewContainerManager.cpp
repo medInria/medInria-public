@@ -17,6 +17,7 @@
 #include <QHash>
 
 #include <medViewContainer.h>
+#include <medParameterPoolManager.h>
 
 
 class medViewContainerManagerPrivate

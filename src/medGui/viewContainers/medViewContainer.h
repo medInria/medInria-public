@@ -49,6 +49,8 @@ public slots:
     void addData(medAbstractData* data);
     void highlight(QString color = "#FFBB77");
     void unHighlight();
+    void link(QString pool);
+    void unlink();
 
 signals:
     void maximised(QUuid uuid, bool maximised);
@@ -61,6 +63,8 @@ signals:
     void splitRequest(medDataIndex, Qt::AlignmentFlag);
     void viewChanged();
     void viewRemoved();
+    void linkRequested(QUuid uuid, QString);
+    void unlinkRequested(QUuid uuid);
 
 
 protected:
@@ -74,6 +78,7 @@ protected:
 
 protected slots:
     void removeView();
+    void emitLinkRequested(QString pool);
 
 private slots:
     void removeInterneView();
