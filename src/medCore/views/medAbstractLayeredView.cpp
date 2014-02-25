@@ -161,9 +161,9 @@ unsigned int medAbstractLayeredView::layer(medAbstractData * data)
 
 void medAbstractLayeredView::removeData(medAbstractData *data)
 {
+    this->removeInteractors(data);
     int layer = this->layer(data);
     d->layersDataList.removeAll(data);
-    this->removeInteractors(data);
 
     emit layerRemoved(layer);
     if(d->layersDataList.count() == 0)

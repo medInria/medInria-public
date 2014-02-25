@@ -18,6 +18,7 @@
 #include <medGuiExport.h>
 
 struct QUuid;
+class QListWidgetItem;
 
 class medToolBox;
 
@@ -71,6 +72,7 @@ public slots:
 
 protected slots:
     void changeCurrentLayer(int row);
+    void keepAtLeastOneSelectedLayer(QListWidgetItem* current, QListWidgetItem* previous);
 
 
 private:
