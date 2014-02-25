@@ -528,13 +528,9 @@ void medViewContainer::link(QString pool)
     if(pool!="")
         unlink();
 
-    int index = d->poolSelector->getComboBox()->findText(pool);
-    if( index >= 0 )
-    {
-        d->poolSelector->getComboBox()->blockSignals(true);
-        d->poolSelector->getComboBox()->setCurrentIndex(index);
-        d->poolSelector->getComboBox()->blockSignals(false);
-    }
+    d->poolSelector->blockSignals(true);
+    d->poolSelector->setCurrentColor(pool);
+    d->poolSelector->blockSignals(false);
 
     foreach(medAbstractParameter *param, d->view->navigatorsParameters())
     {
@@ -552,9 +548,9 @@ void medViewContainer::unlink()
     if(!d->view)
         return;
 
-    d->poolSelector->getComboBox()->blockSignals(true);
-    d->poolSelector->getComboBox()->setCurrentIndex(0);
-    d->poolSelector->getComboBox()->blockSignals(false);
+    d->poolSelector->blockSignals(true);
+    d->poolSelector->setCurrentColor("");
+    d->poolSelector->blockSignals(false);
 
     foreach(medAbstractParameter *param, d->view->navigatorsParameters())
     {

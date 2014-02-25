@@ -130,3 +130,14 @@ void medColorListParameter::removeInternComboBox()
     this->removeFromInternWidgets(d->comboBox);
     d->comboBox = NULL;
 }
+
+void medColorListParameter::setCurrentColor(const QString& colorName)
+{
+    if (d->comboBox)
+    {
+        int index = d->comboBox->findText(colorName);
+        d->comboBox->setCurrentIndex(index);
+    }
+
+    setValue(colorName);
+}

@@ -36,6 +36,7 @@ public:
     void addColors(QStringList& colorNames);
     void removeColor(const QString& colorNames);
     void clear();
+    void setCurrentColor(const QString& colorName);
 
     QStringList& colors() const;
     QComboBox* getComboBox();

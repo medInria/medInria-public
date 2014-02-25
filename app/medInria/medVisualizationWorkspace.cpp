@@ -17,7 +17,6 @@
 #include <medTabbedViewContainers.h>
 #include <medSettingsManager.h>
 #include <medToolBoxFactory.h>
-#include <medParameterPoolManagerToolBox.h>
 
 class medVisualizationWorkspacePrivate
 {
@@ -27,8 +26,6 @@ public:
 
 medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medVisualizationWorkspacePrivate)
 {
-    medParameterPoolManagerToolBox *poolTb = new medParameterPoolManagerToolBox;
-    this->addWorkspaceToolBox(poolTb);
 }
 
 void medVisualizationWorkspace::setupViewContainerStack()
