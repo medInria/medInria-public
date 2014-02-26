@@ -202,7 +202,9 @@ void medTimeLineToolBox::update(dtkAbstractView *view)
         return;
     }
     
-    d->view->disconnect(this);
+    if (d->view)
+        d->view->disconnect(this);
+
     d->view = qobject_cast<v3dView*>(view);
     
     d->interactor = dynamic_cast<v3dView4DInteractor*>(view->interactor ("v3dView4DInteractor"));

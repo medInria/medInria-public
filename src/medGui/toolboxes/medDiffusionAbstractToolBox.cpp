@@ -11,47 +11,20 @@
 
 =========================================================================*/
 
-#include "medDiffusionSelectorToolBox.h"
-
 #include "medDiffusionAbstractToolBox.h"
-#include "medDiffusionAbstractToolBox_p.h"
-#include <medDataManager.h>
 
-#include <dtkCore/dtkAbstractObject.h>
-
-medDiffusionAbstractToolBox::medDiffusionAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medDiffusionAbstractToolBoxPrivate)
+medDiffusionAbstractToolBox::medDiffusionAbstractToolBox(QWidget *parent) : medToolBox(parent)
 {
-    d->parent  = NULL;
-    connect(this, SIGNAL(success()), this, SLOT(processSuccess()));
 }
 
-medDiffusionAbstractToolBox::~medDiffusionAbstractToolBox(void)
+medDiffusionAbstractToolBox::~medDiffusionAbstractToolBox()
 {
-    delete d;
-
-    d = NULL;
 }
 
-void medDiffusionAbstractToolBox::setDiffusionToolBox(medDiffusionSelectorToolBox *toolBox)
+medDiffusionScalarMapsAbstractToolBox::medDiffusionScalarMapsAbstractToolBox(QWidget *parent) : medDiffusionAbstractToolBox(parent)
 {
-    d->parent = toolBox;
 }
 
-medDiffusionSelectorToolBox *medDiffusionAbstractToolBox::parentToolBox(void)
+medDiffusionScalarMapsAbstractToolBox::~medDiffusionScalarMapsAbstractToolBox()
 {
-    return d->parent;
-}
-
-
-dtkAbstractData *medDiffusionAbstractToolBox::output() const
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-    return NULL;
-}
-
-
-void medDiffusionAbstractToolBox::processSuccess()
-{
-    medDataManager::instance()->importNonPersistent ( this->output());
-    emit newOutput(this->output());
 }

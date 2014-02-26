@@ -17,10 +17,12 @@
 #include <QtCore>
 
 #include <medWorkspace.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
 
+#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCore/dtkAbstractProcess.h>
+#include <medDiffusionSelectorToolBox.h>
 
-class medTabbedViewContainers;
+class dtkAbstractView;
 class medDiffusionWorkspacePrivate;
 
 class medDiffusionWorkspace : public medWorkspace
@@ -35,10 +37,29 @@ public:
     virtual QString description() const;
     static bool isUsable();
     void setupViewContainerStack();
-
+    
 public slots:
-    void addToView(dtkAbstractData *data);
+
+    void runProcess(QString processName, QString category);
+    void getOutput();
+    void cancelProcess();
+    void resetRunningFlags();
+    
+    //Handle new data in central view, connect them to toolboxes
+    void resetToolBoxesInputs(dtkAbstractView *view);
+    void addToolBoxInput(dtkAbstractData *data);
+    
+    void connectCurrentViewSignals(dtkAbstractView *view);
+    void disconnectCurrentViewSignals(dtkAbstractView *view);
+    
+    /**
+      * @brief Adds a new tab to a workspace
+      *
+      * Re-implemented, replaces default implementation in medWorkspace
+      */
     void onAddTabClicked();
+    
+    void changeCurrentContainer(QString name);
 
 private:
     medDiffusionWorkspacePrivate *d;

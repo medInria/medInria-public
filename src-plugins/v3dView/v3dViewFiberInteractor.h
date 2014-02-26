@@ -110,36 +110,19 @@ public:
     virtual void setAllBundlesVisibility(bool visibility);
     
     /**
-     * Triggers the computation of the FA statistics of a fiber bundle.
-     * An internal call to computeBundleFAStatistics() is made. Values
-     * are cached for faster subsequent access to FA statistics.
+     * Triggers the computation of image related statistics of a fiber bundle.
+     * An internal call to computeBundleImageStatistics() is made.
      * @param name identifies the fiber bundle
-     * @param mean mean bundle FA value
-     * @param min  minimum bundle FA value
-     * @param max  maximum bundle FA value
-     * @param var  variance of bundle FA
+     * @param mean mean bundle image related values
+     * @param min  minimum bundle image related values
+     * @param max  maximum bundle image related values
+     * @param var  variance of bundle image related values
      */
-    void bundleFAStatistics (const QString &name,
-                             double &mean,
-                             double &min,
-                             double &max,
-                             double &var);
-    
-    /**
-     * Triggers the computation of the ADC statistics of a fiber bundle.
-     * An internal call to computeBundleADCStatistics() is made. Values
-     * are cached for faster subsequent access to ADC statistics.
-     * @param name identifies the fiber bundle
-     * @param mean mean bundle ADC value
-     * @param min  minimum bundle ADC value
-     * @param max  maximum bundle ADC value
-     * @param var  variance of bundle ADC
-     */
-    void bundleADCStatistics (const QString &name,
-                              double &mean,
-                              double &min,
-                              double &max,
-                              double &var);
+    void bundleImageStatistics (const QString &bundleName,
+                                QMap <QString, double> &mean,
+                                QMap <QString, double> &min,
+                                QMap <QString, double> &max,
+                                QMap <QString, double> &var);
     
     /**
      * Triggers the computation of the length statistics of a fiber bundle.
@@ -156,6 +139,12 @@ public:
                                  double &min,
                                  double &max,
                                  double &var);
+    
+    /**
+     * Save dataset bundles to individual datas in database
+     */
+    
+    virtual void saveBundles();
 
     enum RenderingMode {
         Lines,
@@ -174,6 +163,8 @@ public:
         Minus
     };
 
+    void changeBundleName(QString oldName, QString newName);
+    
 public slots:
     virtual void setVisibility (bool visible);
     virtual void setBoxVisibility (bool visible);
@@ -195,37 +186,7 @@ public slots:
     virtual void setVisible(dtkAbstractData * data, bool visible);
     virtual bool isVisible(dtkAbstractData * data) const;
 
-protected:
-    /**
-     * Internal method to actually compute the FA statistics of a fiber
-     * bundle. Should be reimplemented in subclasses.
-     * @param name identifies the fiber bundle
-     * @param mean mean bundle FA value
-     * @param min  minimum bundle FA value
-     * @param max  maximum bundle FA value
-     * @param var  variance of bundle FA
-     */
-    virtual void computeBundleFAStatistics (const QString &name,
-                                            double &mean,
-                                            double &min,
-                                            double &max,
-                                            double &var);
-    
-    /**
-     * Internal method to actually compute the ADC statistics of a fiber
-     * bundle. Should be reimplemented in subclasses.
-     * @param name identifies the fiber bundle
-     * @param mean mean bundle ADC value
-     * @param min  minimum bundle ADC value
-     * @param max  maximum bundle ADC value
-     * @param var  variance of bundle ADC
-     */
-    virtual void computeBundleADCStatistics (const QString &name,
-                                             double &mean,
-                                             double &min,
-                                             double &max,
-                                             double &var);
-    
+protected:    
     /**
      * Internal method to actually compute the Length statistics of a fiber
      * bundle. Should be reimplemented in subclasses.

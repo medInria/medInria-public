@@ -26,10 +26,9 @@ class medDataIndex;
   * @class medFiberBundlingToolBox
   * @author Pierre Fillard
   * @brief Toolbox to extract bundle from fibers and to compute statistics of those
-  * This toolbox allows to perform fiber bundling. It must be used with subclasses
-  * of @class medAbstractViewFiberInteractor. It allows to bundle fibers (i.e.,
+  * This toolbox allows to perform fiber bundling. It allows to bundle fibers (i.e.,
   * declare groups of fibers as belonging to the same anatomical bundle), name
-  * and color bundles, and compute and display FA, ADC and length statistics.
+  * and color bundles, and compute and display image and length statistics.
   */
 class V3DVIEWPLUGIN_EXPORT medFiberBundlingToolBox : public medToolBox
 {
@@ -90,6 +89,11 @@ protected slots:
       */
     virtual void addBundle (const QString &name, const QColor &color);
 
+    /**
+     * Save all bundles to database as individual files
+     */
+    virtual void saveBundles ();
+    
     /** Slot called when external ROI image finishes being imported. */
     virtual void importROI(const medDataIndex &index);
 

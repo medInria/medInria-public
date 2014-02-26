@@ -520,24 +520,26 @@ void vtkTensorVisuManager::SetUpLUTToMapEigenVector()
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(numPoints);
   
-  
-  for(int i=0;i<numPoints;i++)
-  {      
-    // Color coding with the eigenvector
+    vtkMatrix4x4 *userMatrix = this->Actor->GetUserMatrix();
     double coefs[9];
-    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
+    double vRotated[3];
 
     double **a;
     a = new double*[3];
     double *w = new double[3];
     double **v;
     v = new double*[3];
-
+    
     for( unsigned int j=0; j<3; j++)
     {
-      a[j] = new double[3];
-      v[j] = new double[3];
+        a[j] = new double[3];
+        v[j] = new double[3];
     }
+
+  for(int i=0;i<numPoints;i++)
+  {      
+    // Color coding with the eigenvector
+    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
 
     for( int nl=0; nl<3; nl++)
     {
@@ -548,6 +550,14 @@ void vtkTensorVisuManager::SetUpLUTToMapEigenVector()
     }
     
     vtkMath::Jacobi (a, w, v);
+      
+      for (unsigned int j = 0;j < 3;++j)
+      {
+          vRotated[j] = 0;
+          for (unsigned int k = 0;k < 3;++k)
+              vRotated[j] += v[k][2-this->EigenNumber] * userMatrix->GetElement(j,k);
+      }
+      
 /*
     double trace  = coefs[0] + coefs[4] + coefs[8]; // diagonal elements
     double trace2 = coefs[0]*coefs[0] + coefs[1]*coefs[1] + coefs[2]*coefs[2] +
@@ -563,9 +573,9 @@ void vtkTensorVisuManager::SetUpLUTToMapEigenVector()
     double b = 2.0*fa*fabs(v[2][2-this->EigenNumber]);
   */  
 
-	double r = fabs(v[0][2-this->EigenNumber]);
-    double g = fabs(v[1][2-this->EigenNumber]);
-    double b = fabs(v[2][2-this->EigenNumber]);
+	double r = fabs(vRotated[0]);
+    double g = fabs(vRotated[1]);
+    double b = fabs(vRotated[2]);
 
     r = (r>1.0)?1.0:r;
     g = (g>1.0)?1.0:g;
@@ -574,17 +584,17 @@ void vtkTensorVisuManager::SetUpLUTToMapEigenVector()
     lut->SetTableValue(i, r, g, b);
     
     this->EigenvectorArray->SetTuple1(i, (unsigned int)i);
+  }
 
     for( int j=0; j<3; j++)
     {
-      delete [] a[j];
-      delete [] v[j];
+        delete [] a[j];
+        delete [] v[j];
     }
     
     delete [] a;
     delete [] w;
     delete [] v;
-  }
 
   myData->GetPointData()->SetScalars( this->EigenvectorArray );
   this->Glyph->Modified();
@@ -593,7 +603,6 @@ void vtkTensorVisuManager::SetUpLUTToMapEigenVector()
 
   this->Mapper->SetLookupTable(lut);    
   this->Mapper->SetScalarRange(0,numPoints-1);
-
 
   lut->Delete();
 }
@@ -612,23 +621,23 @@ void vtkTensorVisuManager::SetUpLUTToMapEigenValue()
   this->EigenvalueArray->SetNumberOfComponents(1);
   this->EigenvalueArray->SetNumberOfTuples(numPoints); 
   
-  for(int i=0;i<numPoints;i++)
-  {
-    // Color coding with the eigenvalue
     double coefs[9];
-    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
-
     double **a;
     a = new double*[3];
     double *w = new double[3];
     double **v;
     v = new double*[3];
-
+    
     for( unsigned int j=0; j<3; j++)
     {
-      a[j] = new double[3];
-      v[j] = new double[3];
+        a[j] = new double[3];
+        v[j] = new double[3];
     }
+
+  for(int i=0;i<numPoints;i++)
+  {
+    // Color coding with the eigenvalue
+    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
 
     for( int nl=0; nl<3; nl++)
     {
@@ -643,17 +652,17 @@ void vtkTensorVisuManager::SetUpLUTToMapEigenValue()
     double val = w[2-this->EigenNumber];
   
     this->EigenvalueArray->SetTuple1(i,val);
-
+  }
+    
     for( int j=0; j<3; j++)
     {
-      delete [] a[j];
-      delete [] v[j];
+        delete [] a[j];
+        delete [] v[j];
     }
     
     delete [] a;
     delete [] w;
     delete [] v;
-  }
 
   double range[2];
   this->EigenvalueArray->GetRange (range);
@@ -696,24 +705,24 @@ void vtkTensorVisuManager::SetUpLUTToMapVolume()
   this->VolumeArray->SetNumberOfComponents(1);
   this->VolumeArray->SetNumberOfTuples(numPoints);
   
-  
-  for(int i=0;i<numPoints;i++)
-  {
-    // Color coding with the eigenvalue
     double coefs[9];
-    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
-
+  
     double **a;
     a = new double*[3];
     double *w = new double[3];
     double **v;
     v = new double*[3];
-
+    
     for( unsigned int j=0; j<3; j++)
     {
-      a[j] = new double[3];
-      v[j] = new double[3];
+        a[j] = new double[3];
+        v[j] = new double[3];
     }
+
+  for(int i=0;i<numPoints;i++)
+  {
+    // Color coding with the eigenvalue
+    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
 
     for( int nl=0; nl<3; nl++)
     {
@@ -733,19 +742,17 @@ void vtkTensorVisuManager::SetUpLUTToMapVolume()
     }
     
     this->VolumeArray->SetTuple1(i, prod);
-
-
+  }
+    
     for( int j=0; j<3; j++)
     {
-      delete [] a[j];
-      delete [] v[j];
+        delete [] a[j];
+        delete [] v[j];
     }
     
     delete [] a;
     delete [] w;
     delete [] v;
-    
-  }
 
   double range[2];
   this->VolumeArray->GetRange (range);
@@ -782,9 +789,6 @@ void vtkTensorVisuManager::SetUpLUTToMapVolume()
   
 }
 
-
-
-
 void vtkTensorVisuManager::SetUpLUTToMapTrace()
 {
   vtkDataSet* myData = this->GetInput();
@@ -795,10 +799,11 @@ void vtkTensorVisuManager::SetUpLUTToMapTrace()
   this->TraceArray->SetNumberOfComponents(1);
   this->TraceArray->SetNumberOfTuples(numPoints);
  
+    double coefs[9];
+
   for(int i=0;i<numPoints;i++)
   {
     // Color coding with the eigenvalue
-    double coefs[9];
     myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
 
 
@@ -836,8 +841,6 @@ void vtkTensorVisuManager::SetUpLUTToMapTrace()
   
 }
 
-
-
 void vtkTensorVisuManager::SetUpLUTToMapDistanceToIdentity()
 {
   vtkDataSet* myData = this->GetInput();
@@ -848,25 +851,24 @@ void vtkTensorVisuManager::SetUpLUTToMapDistanceToIdentity()
   this->DistanceArray->SetNumberOfComponents(1);
   this->DistanceArray->SetNumberOfTuples(numPoints); 
   
-  
-  for(int i=0;i<numPoints;i++)
-  {
-    // Color coding with the eigenvalue
     double coefs[9];
-    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
-
-
+    
     double **a;
     a = new double*[3];
     double *w = new double[3];
     double **v;
     v = new double*[3];
-
+    
     for( unsigned int j=0; j<3; j++)
     {
-      a[j] = new double[3];
-      v[j] = new double[3];
+        a[j] = new double[3];
+        v[j] = new double[3];
     }
+  
+  for(int i=0;i<numPoints;i++)
+  {
+    // Color coding with the eigenvalue
+    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
 
     for( int nl=0; nl<3; nl++)
     {
@@ -885,20 +887,18 @@ void vtkTensorVisuManager::SetUpLUTToMapDistanceToIdentity()
     }
     norm = sqrt (norm);
     
-    
     this->DistanceArray->SetTuple1(i,norm);
-
+  }
+    
     for( int j=0; j<3; j++)
     {
-      delete [] a[j];
-      delete [] v[j];
+        delete [] a[j];
+        delete [] v[j];
     }
     
     delete [] a;
     delete [] w;
     delete [] v;
-    
-  }
 
   double range[2];
   this->DistanceArray->GetRange (range);
@@ -938,7 +938,6 @@ void vtkTensorVisuManager::SetUpLUTToMapScalars()
   {
     return;
   }
-
 
   myData->GetPointData()->SetScalars (this->Scalars);
   this->Glyph->Modified();

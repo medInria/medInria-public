@@ -40,14 +40,6 @@
  *   medJobManager::instance()->registerJobItem(runProcess);
  *   QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
  *   @endcode
- *
- *  @warning : Using slots in a QRunnable is very risky. This is because
- *    a) the events may be processed in a different thread
- *    and
- *    b) the deletion is performed by a delete call in QThreadPool ( and not deleteLater() )
- *   This means that events pending for the object when the job finishes may cause the app to crash : see
- *   the warning in the doc for QObject::~QObject().
- * @sa  QObject::~QObject()
  */
 class MEDCORE_EXPORT medJobItem :  public QObject, public QRunnable
 {

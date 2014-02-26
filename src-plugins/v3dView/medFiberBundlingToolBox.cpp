@@ -47,7 +47,8 @@ public:
     QRadioButton *notButton;
     QRadioButton *nullButton;
     medDropSite *dropOrOpenRoi;
-
+    QPushButton *saveBundlesButton;
+    
     v3dView * view;
     v3dViewFiberInteractor * interactor;
     dtkSmartPointer<dtkAbstractData> data;
@@ -104,6 +105,8 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     d->bundlingButtonVdt = new QPushButton("Validate", bundlingPage);
     d->bundlingButtonVdt->setToolTip(tr("Save the current shown bundle and show useful information about it."));
     d->bundlingButtonAdd->setCheckable(true);
+    d->saveBundlesButton = new QPushButton("Save bundles",bundlingPage);
+    d->saveBundlesButton->setToolTip(tr("Save all bundles to database"));
 
     QHBoxLayout *bundlingButtonsLayout = new QHBoxLayout;
     bundlingButtonsLayout->addWidget(d->bundlingButtonTag);
@@ -118,6 +121,7 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     d->bundlingList->setAlternatingRowColors(true);
     d->bundlingList->setMinimumHeight(150);
     d->bundlingList->setModel (d->bundlingModel);
+    d->bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
 
     d->bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
     d->bundlingShowCheckBox->setChecked(true);
@@ -135,6 +139,7 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     bundlingLayout->addLayout(roiLayout);
     bundlingLayout->addWidget(d->bundleBoxCheckBox);
     bundlingLayout->addLayout(bundlingButtonsLayout);
+    bundlingLayout->addWidget(d->saveBundlesButton);
     bundlingLayout->addWidget(d->bundlingList);
     bundlingLayout->addWidget(d->bundlingShowCheckBox);
 
@@ -146,6 +151,8 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
 
+    connect (d->saveBundlesButton, SIGNAL(clicked()), this, SLOT(saveBundles()));
+    
     connect (d->bundlingModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(changeBundlingItem(QStandardItem*)));
 
     connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
@@ -220,12 +227,8 @@ void medFiberBundlingToolBox::validateBundling()
 
 void medFiberBundlingToolBox::showBundlingBox (bool show)
 {
-    if (!d->view)
-        return;
-
-    if (d->interactor) {
-            d->interactor->setBoxVisibility(show);
-    }
+    if (d->view && d->interactor)
+        d->interactor->setBoxVisibility(show);
 }
 
 void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &color)
@@ -235,56 +238,46 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
     QStandardItem *item = new QStandardItem (name);
     item->setCheckable(true);
     item->setTristate(false);
-    item->setEditable(false); // for now
+    item->setEditable(true);
 
-    double meanFA = 0.0;
-    double minFA  = 0.0;
-    double maxFA  = 0.0;
-    double varFA  = 0.0;
-
-    double meanADC = 0.0;
-    double minADC  = 0.0;
-    double maxADC  = 0.0;
-    double varADC  = 0.0;
+    QMap <QString, double> meanData;
+    QMap <QString, double> minData;
+    QMap <QString, double> maxData;
+    QMap <QString, double> varData;
 
     double meanLength = 0.0;
     double minLength  = 0.0;
     double maxLength  = 0.0;
     double varLength  = 0.0;
 
-    if (d->view) {
-        if (d->interactor) {
-            d->interactor->bundleFAStatistics(name, meanFA, minFA, maxFA, varFA);
-            d->interactor->bundleADCStatistics(name, meanADC, minADC, maxADC, varADC);
-            d->interactor->bundleLengthStatistics(name, meanLength, minLength, maxLength, varLength);
-        }
+    if (d->view && d->interactor)
+    {
+        d->interactor->bundleImageStatistics(name, meanData, minData, maxData, varData);
+        d->interactor->bundleLengthStatistics(name, meanLength, minLength, maxLength, varLength);
     }
 
-    QStandardItem *childItem1 = new QStandardItem (tr("FA: ") + QString::number(meanFA));
-    childItem1->setEditable(false);
-    childItem1->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanFA)));
-    childItem1->appendRow(new QStandardItem (tr("variance: ") + QString::number(varFA)));
-    childItem1->appendRow(new QStandardItem (tr("min: ")      + QString::number(minFA)));
-    childItem1->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxFA)));
+    foreach (QString key, meanData.keys())
+    {
+        QStandardItem *childItem1 = new QStandardItem (key + ": " + QString::number(meanData[key]));
+        childItem1->setEditable(false);
+        childItem1->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanData[key])));
+        childItem1->appendRow(new QStandardItem (tr("variance: ") + QString::number(varData[key])));
+        childItem1->appendRow(new QStandardItem (tr("min: ")      + QString::number(minData[key])));
+        childItem1->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxData[key])));
+        
+        item->appendRow(childItem1);
+    }
 
-    QStandardItem *childItem2 = new QStandardItem (tr("ADC: ") + QString::number(meanADC));
+    QStandardItem *childItem2 = new QStandardItem (tr("Length: ") + QString::number(meanLength));
     childItem2->setEditable(false);
-    childItem2->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanADC)));
-    childItem2->appendRow(new QStandardItem (tr("variance: ") + QString::number(varADC)));
-    childItem2->appendRow(new QStandardItem (tr("min: ")      + QString::number(minADC)));
-    childItem2->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxADC)));
+    childItem2->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanLength)));
+    childItem2->appendRow(new QStandardItem (tr("variance: ") + QString::number(varLength)));
+    childItem2->appendRow(new QStandardItem (tr("min: ")      + QString::number(minLength)));
+    childItem2->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxLength)));
 
-    QStandardItem *childItem3 = new QStandardItem (tr("Length: ") + QString::number(meanLength));
-    childItem3->setEditable(false);
-    childItem3->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanLength)));
-    childItem3->appendRow(new QStandardItem (tr("variance: ") + QString::number(varLength)));
-    childItem3->appendRow(new QStandardItem (tr("min: ")      + QString::number(minLength)));
-    childItem3->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxLength)));
-
-    item->appendRow(childItem1);
     item->appendRow(childItem2);
-    item->appendRow(childItem3);
-
+    item->setData(name,Qt::UserRole+1);
+    
     d->bundlingModel->setItem(row, item);
 
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
@@ -293,6 +286,12 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
                               color, Qt::DecorationRole);
 
+}
+
+void medFiberBundlingToolBox::saveBundles()
+{
+    if (d->view && d->interactor)
+        d->interactor->saveBundles();
 }
 
 void medFiberBundlingToolBox::importROI(const medDataIndex& index)
@@ -476,10 +475,21 @@ void medFiberBundlingToolBox::update(dtkAbstractView *view)
 
 void medFiberBundlingToolBox::changeBundlingItem(QStandardItem *item)
 {
-    if (d->view) {
-        if (d->interactor)
-            d->interactor->setBundleVisibility(item->text(), item->checkState());
+    if (!d->view)
+        return;
+    
+    if (!d->interactor)
+        return;
+    
+    QString itemOldName = item->data(Qt::UserRole+1).toString();
+    
+    if (itemOldName != item->text())
+    {
+        d->interactor->changeBundleName(itemOldName,item->text());
+        item->setData(item->text(),Qt::UserRole+1);
     }
+    
+    d->interactor->setBundleVisibility(item->text(), item->checkState());
 }
 
 void medFiberBundlingToolBox::showBundling(bool show)
