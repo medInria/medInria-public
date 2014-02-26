@@ -39,6 +39,8 @@ public:
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
     QHash <int, QUuid> containerForLayerWidgetRow;
     QHash <QUuid, QPair<int, int> > layersRangeInRowsForContainer;
+    QHash <QPushButton*, int> rowForVisibilityLayerButton;
+    QHash <QPushButton*, int> rowForRemoveLayerButton;
 
 
     QList<medToolBox*> workspaceToolBoxes;
@@ -193,6 +195,8 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layersRangeInRowsForContainer.clear();
     d->containerForLayerWidgetsItem.clear();
     d->containerForLayerWidgetRow.clear();
+    d->rowForRemoveLayerButton.clear();
+    d->rowForVisibilityLayerButton.clear();
 
     delete d->layerListWidget;
     d->layerListWidget = new QListWidget;
@@ -231,6 +235,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layout->setContentsMargins(0,0,10,0);
 
                 QPushButton* thumbnailButton = new QPushButton(layerWidget);
+                d->rowForVisibilityLayerButton.insert(thumbnailButton, d->layerListWidget->count());
                 QIcon thumbnailIcon;
                 // Set the off icon to the greyed out version of the regular icon
                 thumbnailIcon.addPixmap(QPixmap(thumbPath), QIcon::Normal, QIcon::On);
@@ -248,6 +253,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QLabel *layerName = new QLabel(name, layerWidget);
 
                 QPushButton *removeButton = new QPushButton;
+                d->rowForRemoveLayerButton.insert(removeButton, d->layerListWidget->count());
                 removeButton->setIcon(QIcon(":/icons/cross.svg"));
 
                 layout->addWidget(thumbnailButton);
@@ -258,8 +264,8 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                 layout->addWidget(removeButton);
 
-                connect(thumbnailButton, SIGNAL(clicked(bool)), layerdView, SLOT(setVisibility(bool)));
-                connect(removeButton, SIGNAL(clicked()), layerdView, SLOT(removeLayer()));
+                connect(thumbnailButton, SIGNAL(clicked(bool)), this, SLOT(setLayerVisibility(bool)));
+                connect(removeButton, SIGNAL(clicked()), this, SLOT(removeLayer()));
 
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
                 layerWidget->resize(d->selectionToolBox->width(), 25);
@@ -313,9 +319,17 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     if(!d->layerListWidget)
         return;
 
-    // Do nothing else if we have a multiSelection
+    // If we have a multiSelection we just want to colorise the container that have at least one layer selected.
     if(d->layerListWidget->selectedItems().size() > 1)
+    {
+        foreach(QListWidgetItem* item, d->layerListWidget->selectedItems())
+        {
+            QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+            medViewContainer *container = containerMng->container(containerUuid);
+            container->highlight("#FF6622");
+        }
         return;
+    }
 
     QListWidgetItem* item = d->layerListWidget->currentItem();
     if(!item)
@@ -341,4 +355,38 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     d->interactorToolBox->show();
 }
 
+void medAbstractWorkspace::setLayerVisibility(bool visibility)
+{
+    QPushButton *button = dynamic_cast<QPushButton*>(this->sender());
+    if(!button)
+        return;
 
+    int row = d->rowForVisibilityLayerButton.value(button);
+    QUuid containerUuid = d->containerForLayerWidgetRow.value(row);
+    int layer = row - d->layersRangeInRowsForContainer.value(containerUuid).first;
+
+    medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
+    if(!layerView)
+        return;
+
+    layerView->setVisibility(visibility, layer);
+}
+
+
+void medAbstractWorkspace::removeLayer()
+{
+    QPushButton *button = dynamic_cast<QPushButton*>(this->sender());
+    if(!button)
+        return;
+
+    int row = d->rowForRemoveLayerButton.value(button);
+    QUuid containerUuid = d->containerForLayerWidgetRow.value(row);
+    int layer = row - d->layersRangeInRowsForContainer.value(containerUuid).first;
+
+    medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
+    if(!layerView)
+        return;
+
+    layerView->removeLayer(layer);
+    this->updateLayersToolBox();
+}

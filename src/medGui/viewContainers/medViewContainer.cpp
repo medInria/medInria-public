@@ -242,7 +242,6 @@ void medViewContainer::setSelected(bool selec)
         emit containerUnSelected(d->uuid);
         this->unHighlight();
     }
-
     //clear focus in order to select/unselect successively twice the same container
     this->clearFocus();
 }
@@ -307,8 +306,6 @@ void medViewContainer::removeInterneView()
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
-
-    qDebug()<<"focusInEvent";
     if(event->reason() == Qt::ActiveWindowFocusReason)
         return;
 

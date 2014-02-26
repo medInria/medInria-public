@@ -68,6 +68,8 @@ public slots:
     void updateLayersToolBox();
     void updateInteractorsToolBox();
     void clearWorkspaceToolBoxes();
+    void setLayerVisibility(bool visibility);
+    void removeLayer();
 
 
 protected slots:
