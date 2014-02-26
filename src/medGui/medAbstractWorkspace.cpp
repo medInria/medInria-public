@@ -286,6 +286,8 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layerListToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
     d->layerListWidget->show();
+
+    this->updateInteractorsToolBox();
 }
 
 

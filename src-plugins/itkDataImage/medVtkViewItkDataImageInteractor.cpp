@@ -270,7 +270,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToSliceAtPosition(QVector3D)));
 
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
-//    connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double)), this, SLOT(updateWindowLevelParam(double, double)) );
 }
 
 void medVtkViewItkDataImageInteractor::setOpacity (int opacity)

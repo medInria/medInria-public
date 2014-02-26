@@ -25,6 +25,7 @@ public:
     medAbstractImageData *imageData;
 
     medTimeLineParameter *timeLineParameter;
+    QWidget *toolBoxWidget;
 
     double currentTime;
 
@@ -63,6 +64,8 @@ medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstra
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
+
+    d->toolBoxWidget = NULL;
 
     d->currentTime = 0.0;
 }
@@ -155,13 +158,15 @@ medAbstractData *medVtkViewItkDataImage4DInteractor::data() const
 
 QWidget* medVtkViewItkDataImage4DInteractor::toolBoxWidget()
 {
+    if(!d->toolBoxWidget)
+    {
+        d->toolBoxWidget = new QWidget;
+        QVBoxLayout *tbLayout = new QVBoxLayout(d->toolBoxWidget);
+        tbLayout->addWidget(medVtkViewItkDataImageInteractor::toolBoxWidget());
+        tbLayout->addWidget(d->timeLineParameter->getWidget());
+    }
 
-    QWidget *tb = new QWidget;
-    QVBoxLayout *tbLayout = new QVBoxLayout(tb);
-    tbLayout->addWidget(medVtkViewItkDataImageInteractor::toolBoxWidget());
-    tbLayout->addWidget(d->timeLineParameter->getWidget());
-
-    return tb;
+    return d->toolBoxWidget;
 }
 
 QWidget* medVtkViewItkDataImage4DInteractor::toolBarWidget()
