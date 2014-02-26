@@ -342,6 +342,8 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 
     rgb->Delete();
     alpha->Delete();
+
+    update();
 }
 
 void medVtkViewItkDataImageInteractor::setPreset(QString preset)
@@ -454,12 +456,14 @@ void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
     d->view2d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
     d->view3d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
+    update();
 }
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
     d->view2d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
     d->view3d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
+    update();
 }
 
 void medVtkViewItkDataImageInteractor::update()

@@ -68,12 +68,11 @@ public slots:
     void updateLayersToolBox();
     void updateInteractorsToolBox();
     void clearWorkspaceToolBoxes();
-    void setLayerVisibility(bool visibility);
-    void removeLayer();
-
 
 protected slots:
     void changeCurrentLayer(int row);
+    void setLayerVisibility(bool visibility);
+    void removeLayer();
 
 private:
     medAbstractWorkspacePrivate *d;

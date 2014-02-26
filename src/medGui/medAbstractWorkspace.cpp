@@ -286,8 +286,6 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layerListToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
     d->layerListWidget->show();
-
-    this->updateInteractorsToolBox();
 }
 
 
@@ -304,6 +302,8 @@ void medAbstractWorkspace::changeCurrentLayer(int row)
 
     int currentLayer = row - d->layersRangeInRowsForContainer.value(uuid).first;
     layeredView->setCurrentLayer(currentLayer);
+
+    this->updateInteractorsToolBox();
 }
 
 void medAbstractWorkspace::updateInteractorsToolBox()
