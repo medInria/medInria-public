@@ -49,6 +49,8 @@ public:
     medToolBox *interactorToolBox;
     medToolBox *navigatorToolBox;
     QListWidget* layerListWidget;
+
+    QList<QListWidgetItem*> selectedLayers;
 };
 
 medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d(new medAbstractWorkspacePrivate)
@@ -197,10 +199,12 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->containerForLayerWidgetRow.clear();
     d->rowForRemoveLayerButton.clear();
     d->rowForVisibilityLayerButton.clear();
+    d->selectedLayers.clear();
 
     delete d->layerListWidget;
     d->layerListWidget = new QListWidget;
     d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    d->layerListWidget->setFocusPolicy(Qt::NoFocus);
 
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
     connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateInteractorsToolBox()));
@@ -276,6 +280,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 item->setSizeHint(QSize(layerWidget->width(), 25));
                 d->layerListWidget->addItem(item);
                 d->layerListWidget->setItemWidget(item, layerWidget);
+                layerWidget->setFocusPolicy(Qt::NoFocus);
             }
 
             d->layersRangeInRowsForContainer.insert(uuid, QPair<int, int>(firstLayerIndex, d->layerListWidget->count()));
@@ -305,6 +310,8 @@ void medAbstractWorkspace::changeCurrentLayer(int row)
     int currentLayer = row - d->layersRangeInRowsForContainer.value(uuid).first;
     layeredView->setCurrentLayer(currentLayer);
 
+    d->selectedLayers = d->layerListWidget->selectedItems();
+
     this->updateInteractorsToolBox();
 }
 
@@ -320,6 +327,19 @@ void medAbstractWorkspace::updateInteractorsToolBox()
 
     if(!d->layerListWidget)
         return;
+
+    // Hack to always have something selected in the layerListWidget
+    // TODO: try to find a better solution...
+    if(d->layerListWidget->selectedItems().count() == 0)
+    {
+        foreach(QListWidgetItem* item, d->selectedLayers)
+        {
+            d->layerListWidget->blockSignals(true);
+            item->setSelected(true);
+            d->layerListWidget->blockSignals(false);
+        }
+    }
+    else d->selectedLayers = d->layerListWidget->selectedItems();
 
     // If we have a multiSelection we just want to colorise the container that have at least one layer selected.
     if(d->layerListWidget->selectedItems().size() > 1)
