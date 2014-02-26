@@ -39,7 +39,7 @@ medDoubleParameter::medDoubleParameter(QString name, QObject *parent):
     d(new medDoubleParameterPrivate)
 {
     d->min = 0;
-    d->max = 100;
+    d->max = 0;
     m_value = 0;
     d->spinBox = NULL;
     d->slider = NULL;
@@ -57,7 +57,9 @@ void medDoubleParameter::setValue(double value)
     if(m_value == value)
         return;
 
-    if(value < d->min)
+    if(d->min == d->max)
+       m_value = value;
+    else if(value < d->min)
         m_value = d->min;
     else if(value > d->max)
         m_value = d->max;
@@ -85,6 +87,9 @@ void medDoubleParameter::setRange(double min, double max)
 {
     d->min = min;
     d->max = max;
+
+    if(min == max)
+        return;
 
     if(d->spinBox)
         d->spinBox->setRange(min, max);

@@ -264,11 +264,6 @@ void medVtkViewNavigator::camera(QVector3D &position,
     this->cameraParallelScale(parallelScale);
 }
 
-void medVtkViewNavigator::cameraParallelScale(double &parallelScale) const
-{
-        parallelScale = d->renderer3d->GetActiveCamera()->GetParallelScale();
-}
-
 void medVtkViewNavigator::setCamera(const QVector3D &position,
                        const QVector3D &viewup,
                        const QVector3D &focal,
@@ -374,9 +369,17 @@ void medVtkViewNavigator::setCameraFocalPoint(const QVector3D& focal)
     d->view3d->Render();
 }
 
+void medVtkViewNavigator::cameraParallelScale(double &parallelScale) const
+{
+    parallelScale = d->renderer3d->GetActiveCamera()->GetParallelScale();
+}
+
 void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
 {
+    d->view3d->GetInteractorStyle()->HandleObserversOff();
     d->renderer3d->GetActiveCamera()->SetParallelScale(parallelScale);
+    d->view3d->GetInteractorStyle()->HandleObserversOn();
+
     d->view3d->Render();
 }
 
@@ -426,7 +429,6 @@ double medVtkViewNavigator::cameraViewAngle()
 
 double medVtkViewNavigator::cameraZoom()
 {
-
     //TODO it's exactly the same as zoom() - RDE
     vtkImageView *view = NULL;
 
@@ -448,7 +450,7 @@ void medVtkViewNavigator::updateCameraParam(const QVector3D& position,const QVec
     d->cameraFocalParameter->setValue(focal);
     d->cameraParallelScaleParameter->setValue(parallelScale);
 
-    d->view3d->Reset();
+    d->view3d->Render();
 }
 
 void medVtkViewNavigator::bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax) const
