@@ -156,8 +156,6 @@ void medAbstractWorkspace::addNewTab()
 
 void medAbstractWorkspace::updateNavigatorsToolBox()
 {
-    qDebug() << "updateNavigatorsToolBox()";
-
     d->navigatorToolBox->clear();
 
     QList<QWidget*>  navigators;
@@ -191,8 +189,6 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
 
 void medAbstractWorkspace::updateLayersToolBox()
 {
-    qDebug() << "updateLayersToolBox()";
-
     d->layerListToolBox->clear();
     d->layersRangeInRowsForContainer.clear();
     d->containerForLayerWidgetsItem.clear();
@@ -222,8 +218,6 @@ void medAbstractWorkspace::updateLayersToolBox()
                 d->layerListWidget->addItem(item);
             }
             int firstLayerIndex = d->layerListWidget->count();
-
-            qDebug() << "layerdView->layersCount()" << layerdView->layersCount();
 
             for(int layer = 0; layer < layerdView->layersCount(); ++layer)
             {
@@ -280,7 +274,6 @@ void medAbstractWorkspace::updateLayersToolBox()
             }
 
             d->layersRangeInRowsForContainer.insert(uuid, QPair<int, int>(firstLayerIndex, d->layerListWidget->count()));
-            qDebug() << firstLayerIndex << layerdView->currentLayer();
             d->layerListWidget->setCurrentRow(firstLayerIndex + layerdView->currentLayer());
         }
     }

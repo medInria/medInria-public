@@ -225,23 +225,33 @@ void medViewContainer::setSelected(bool selec)
 {
     if(selec == d->selected)
     {
+        qDebug()<<"set selected/unselected twice";
         if(QApplication::keyboardModifiers() == Qt::ControlModifier)
+        {
+            qDebug()<<"toggle selection";
             this->setSelected(!selec);
-
+        }
+        //clear focus in order select/unselect successively twice the same container
+        this->clearFocus();
         return;
     }
 
     d->selected = selec;
     if(d->selected)
     {
+        qDebug()<<"set selected";
         emit containerSelected(d->uuid);
         this->highlight();
     }
     else
     {
+        qDebug()<<"set unSelected";
         emit containerUnSelected(d->uuid);
         this->unHighlight();
     }
+
+    //clear focus in order select/unselect successively twice the same container
+    this->clearFocus();
 }
 
 void medViewContainer::highlight(QString color)
@@ -304,6 +314,8 @@ void medViewContainer::removeInterneView()
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
+
+    qDebug()<<"focusInEvent";
     if(event->reason() == Qt::ActiveWindowFocusReason)
         return;
 
