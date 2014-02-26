@@ -199,8 +199,7 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
-    connect(d->layerListWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
-            this, SLOT(keepAtLeastOneSelectedLayer(QListWidgetItem*,QListWidgetItem*)));
+    connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateInteractorsToolBox()));
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -342,12 +341,4 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     d->interactorToolBox->show();
 }
 
-void medAbstractWorkspace::keepAtLeastOneSelectedLayer(QListWidgetItem *current, QListWidgetItem *previous)
-{
-//    if(!current)
-//    {
-//        d->layerListWidget->setCurrentItem(previous);
-//        previous->setSelected(true);
-//    }
-}
 

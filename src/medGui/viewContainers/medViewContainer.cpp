@@ -201,10 +201,7 @@ void medViewContainer::setView(medAbstractView *view)
         connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
-        {
-            qDebug()<<"layeredView connected to container !!!";
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
-        }
 
         d->view->toolBarWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
         d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());
@@ -225,13 +222,11 @@ void medViewContainer::setSelected(bool selec)
 {
     if(selec == d->selected)
     {
-        qDebug()<<"set selected/unselected twice";
         if(QApplication::keyboardModifiers() == Qt::ControlModifier)
         {
-            qDebug()<<"toggle selection";
             this->setSelected(!selec);
         }
-        //clear focus in order select/unselect successively twice the same container
+        //clear focus in order to select/unselect successively twice the same container
         this->clearFocus();
         return;
     }
@@ -239,18 +234,16 @@ void medViewContainer::setSelected(bool selec)
     d->selected = selec;
     if(d->selected)
     {
-        qDebug()<<"set selected";
         emit containerSelected(d->uuid);
         this->highlight();
     }
     else
     {
-        qDebug()<<"set unSelected";
         emit containerUnSelected(d->uuid);
         this->unHighlight();
     }
 
-    //clear focus in order select/unselect successively twice the same container
+    //clear focus in order to select/unselect successively twice the same container
     this->clearFocus();
 }
 

@@ -72,8 +72,6 @@ public slots:
 
 protected slots:
     void changeCurrentLayer(int row);
-    void keepAtLeastOneSelectedLayer(QListWidgetItem* current, QListWidgetItem* previous);
-
 
 private:
     medAbstractWorkspacePrivate *d;

@@ -487,7 +487,6 @@ void medVtkView::removeInternNavigatorWidget()
 
 void medVtkView::changeCurrentLayer()
 {
-    qDebug() << "changeCurrentLayer()";
     d->view2d->SetCurrentLayer(this->currentLayer());
     d->view3d->SetCurrentLayer(this->currentLayer());
 }
