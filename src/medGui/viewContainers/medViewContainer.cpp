@@ -252,11 +252,22 @@ void medViewContainer::highlight(QString color)
     // temporary setStyleSheet to update the border color
     QString styleSheet = "medViewContainer {border:2px solid " + color + ";}";
     this->setStyleSheet(styleSheet);
+    if(d->view)
+    {
+        d->view->viewWidget()->updateGeometry();
+        d->view->viewWidget()->update();
+
+    }
 }
 
 void medViewContainer::unHighlight()
 {
     this->setStyleSheet("medViewContainer {border:2px solid #909090;}");
+    if(d->view)
+    {
+        d->view->viewWidget()->updateGeometry();
+        d->view->viewWidget()->update();
+    }
 }
 
 void medViewContainer::setUnSelected(bool unSelected)

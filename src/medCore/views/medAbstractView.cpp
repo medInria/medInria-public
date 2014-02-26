@@ -200,8 +200,11 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
     if(obj == this->viewWidget())
     {
         if (event->type() == QEvent::FocusIn)
+        {
             emit selectedRequest(true);
-        this->viewWidget()->clearFocus();
+            this->viewWidget()->clearFocus();
+        }
+
     }
     return dtkAbstractView::eventFilter(obj, event);
 }

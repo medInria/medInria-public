@@ -85,6 +85,8 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->interactorToolBox->hide();
     d->selectionToolBox->addWidget(d->interactorToolBox);
 
+    d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
     d->layerListWidget = NULL;
 }
 
@@ -259,6 +261,9 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QPushButton *removeButton = new QPushButton;
                 d->rowForRemoveLayerButton.insert(removeButton, d->layerListWidget->count());
                 removeButton->setIcon(QIcon(":/icons/cross.svg"));
+                //TODO - get possible to remove layer 0 - RDE
+                if(layer == 0 && layerdView->layersCount() > 1)
+                    removeButton->setDisabled(true);
 
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
@@ -290,6 +295,8 @@ void medAbstractWorkspace::updateLayersToolBox()
     // add the layer widgets
     d->layerListToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
+    d->layerListWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
     d->layerListWidget->show();
 
     this->updateInteractorsToolBox();

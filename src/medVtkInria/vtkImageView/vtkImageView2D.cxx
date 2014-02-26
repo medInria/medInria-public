@@ -1948,7 +1948,7 @@ void vtkImageView2D::RemoveLayer(int layer)
   if (layer<=0) // do not remove layer 0
     return;
 
-  vtkRenderer       *renderer = this->GetRendererForLayer(layer);
+  vtkRenderer *renderer = this->GetRendererForLayer(layer);
 
   if (this->GetRenderWindow())
   {

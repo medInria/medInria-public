@@ -175,7 +175,7 @@ void vtkDataMeshInteractor::setupParameters()
 {
     d->opacityParam = new medDoubleParameter("Opacity", this);
     d->opacityParam->setRange(0,1);
-    d->opacityParam->setSingleStep(0.2);
+    d->opacityParam->setSingleStep(0.01);
     d->opacityParam->setValue(1);
 
     d->attributesParam = new medStringListParameter("Attributes");

@@ -161,6 +161,7 @@ QWidget* medVtkViewItkDataImage4DInteractor::toolBoxWidget()
     if(!d->toolBoxWidget)
     {
         d->toolBoxWidget = new QWidget;
+        connect(d->toolBoxWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBox()));
         QVBoxLayout *tbLayout = new QVBoxLayout(d->toolBoxWidget);
         tbLayout->addWidget(medVtkViewItkDataImageInteractor::toolBoxWidget());
         tbLayout->addWidget(d->timeLineParameter->getWidget());
@@ -244,10 +245,15 @@ double medVtkViewItkDataImage4DInteractor::sequencesMinTimeStep()
 
     step = std::min ( step, (maxtime - mintime)/(number - 1.0) );
 
-
     return step;
 }
 
 void medVtkViewItkDataImage4DInteractor::updateWidgets()
 {
+
+}
+
+void medVtkViewItkDataImage4DInteractor::removeInternToolBox()
+{
+    d->toolBoxWidget = NULL;
 }
