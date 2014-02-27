@@ -75,7 +75,11 @@ protected slots:
     void removeLayer();
 
 private slots:
-        void buildTemporaryPool();
+    void buildTemporaryPool();
+    void updateParameterPool(QString);
+
+private:
+        QIcon createIcon(const QString &colorName) const;
 
 private:
     medAbstractWorkspacePrivate *d;

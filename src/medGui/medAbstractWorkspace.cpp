@@ -27,6 +27,7 @@
 #include <medAbstractInteractor.h>
 #include <medMetaDataKeys.h>
 #include <medParameterPool.h>
+#include <medParameterPoolManager.h>
 
 class medAbstractWorkspacePrivate
 {
@@ -40,9 +41,6 @@ public:
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
     QHash <int, QUuid> containerForLayerWidgetRow;
     QHash <QUuid, QPair<int, int> > layersRangeInRowsForContainer;
-    QHash <QPushButton*, int> rowForVisibilityLayerButton;
-    QHash <QPushButton*, int> rowForRemoveLayerButton;
-
 
     QList<medToolBox*> workspaceToolBoxes;
     medToolBox *selectionToolBox;
@@ -204,8 +202,6 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layersRangeInRowsForContainer.clear();
     d->containerForLayerWidgetsItem.clear();
     d->containerForLayerWidgetRow.clear();
-    d->rowForRemoveLayerButton.clear();
-    d->rowForVisibilityLayerButton.clear();
     d->selectedLayers.clear();
 
     delete d->layerListWidget;
@@ -246,7 +242,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layout->setContentsMargins(0,0,10,0);
 
                 QPushButton* thumbnailButton = new QPushButton(layerWidget);
-                d->rowForVisibilityLayerButton.insert(thumbnailButton, d->layerListWidget->count());
+                thumbnailButton->setProperty("row", d->layerListWidget->count());
                 QIcon thumbnailIcon;
                 // Set the off icon to the greyed out version of the regular icon
                 thumbnailIcon.addPixmap(QPixmap(thumbPath), QIcon::Normal, QIcon::On);
@@ -261,11 +257,27 @@ void medAbstractWorkspace::updateLayersToolBox()
                 thumbnailButton->setChecked(true);
                 thumbnailButton->setFlat(true);
 
-                QLabel *layerName = new QLabel(name, layerWidget);
+                QFont myFont;
+                QFontMetrics fm(myFont);
+                //TODO: could be nice to elide according to current width (update when resize)
+                QString text = fm.elidedText(name, Qt::ElideRight, 100);
+                QLabel *layerName = new QLabel("<font color='Black'>"+text+"</font>", layerWidget);
+                layerName->setToolTip(name);
+
+                QComboBox *poolSelector = new QComboBox;
+                poolSelector->setProperty("row", d->layerListWidget->count());
+                poolSelector->addItem("");
+                poolSelector->addItem(createIcon("orange"), "4", "orange");
+                poolSelector->addItem(createIcon("#0080C0"), "5", "#0080C0");
+                poolSelector->addItem(createIcon("yellow"), "6", "yellow");
+                //poolSelector->setFixedSize(30,20);
+                connect(poolSelector, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateParameterPool(QString)));
 
                 QPushButton *removeButton = new QPushButton;
-                d->rowForRemoveLayerButton.insert(removeButton, d->layerListWidget->count());
+                removeButton->setProperty("row", d->layerListWidget->count());
                 removeButton->setIcon(QIcon(":/icons/cross.svg"));
+                removeButton->setIconSize(QSize(15,15));
+                removeButton->setFixedSize(20,20);
                 //TODO - get possible to remove layer 0 - RDE
                 if(layer == 0 && layerdView->layersCount() > 1)
                     removeButton->setDisabled(true);
@@ -276,6 +288,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 foreach (medAbstractInteractor *interactor, layerdView->interactors(layer))
                     layout->addWidget(interactor->layerWidget());
 
+                layout->addWidget(poolSelector);
                 layout->addWidget(removeButton);
 
                 connect(thumbnailButton, SIGNAL(clicked(bool)), this, SLOT(setLayerVisibility(bool)));
@@ -285,6 +298,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layerWidget->resize(d->selectionToolBox->width(), 25);
 
                 QListWidgetItem * item = new QListWidgetItem;
+                item->setData(Qt::UserRole, layer);
                 d->containerForLayerWidgetsItem.insert(item, uuid);
                 d->containerForLayerWidgetRow.insert(d->layerListWidget->count(), uuid);
                 item->setSizeHint(QSize(layerWidget->width(), 25));
@@ -408,7 +422,6 @@ void medAbstractWorkspace::buildTemporaryPool()
 
         foreach (medAbstractInteractor* interactor, view->currentInteractor())
         {
-
             d->temporaryPoolForInteractors->append(interactor->parameters());
         }
     }
@@ -420,7 +433,7 @@ void medAbstractWorkspace::setLayerVisibility(bool visibility)
     if(!button)
         return;
 
-    int row = d->rowForVisibilityLayerButton.value(button);
+    int row = button->property("row").toInt();
     QUuid containerUuid = d->containerForLayerWidgetRow.value(row);
     int layer = row - d->layersRangeInRowsForContainer.value(containerUuid).first;
 
@@ -431,14 +444,13 @@ void medAbstractWorkspace::setLayerVisibility(bool visibility)
     layerView->setVisibility(visibility, layer);
 }
 
-
 void medAbstractWorkspace::removeLayer()
 {
     QPushButton *button = dynamic_cast<QPushButton*>(this->sender());
     if(!button)
         return;
 
-    int row = d->rowForRemoveLayerButton.value(button);
+    int row = button->property("row").toInt();
     QUuid containerUuid = d->containerForLayerWidgetRow.value(row);
     int layer = row - d->layersRangeInRowsForContainer.value(containerUuid).first;
 
@@ -448,4 +460,41 @@ void medAbstractWorkspace::removeLayer()
 
     layerView->removeLayer(layer);
     this->updateLayersToolBox();
+}
+
+void medAbstractWorkspace::updateParameterPool(QString pool)
+{
+    QComboBox *combo = dynamic_cast<QComboBox*>(this->sender());
+    if(!combo)
+        return;
+
+    foreach(QListWidgetItem* item, d->layerListWidget->selectedItems())
+    {
+        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        medViewContainer* container = medViewContainerManager::instance()->container(containerUuid);
+        if(!container)
+            break;
+
+        medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(container->view());
+        if(!layeredView)
+            break;
+
+        foreach (medAbstractInteractor* interactor, layeredView->interactors(item->data(Qt::UserRole).toInt()))
+        {
+            foreach(medAbstractParameter *param, interactor->parameters())
+            {
+                if(pool=="")
+                    medParameterPoolManager::instance()->unlinkParameter(param);
+                else medParameterPoolManager::instance()->linkParameter(param, pool);
+            }
+        }
+    }
+}
+
+QIcon medAbstractWorkspace::createIcon(const QString &colorName) const
+{
+    QPixmap iconPixmap(10,10);
+    iconPixmap.fill(QColor(colorName));
+    QIcon itemIcon(iconPixmap);
+    return itemIcon;
 }
