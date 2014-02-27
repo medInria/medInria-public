@@ -28,6 +28,7 @@
 #include <medMetaDataKeys.h>
 #include <medParameterPool.h>
 #include <medParameterPoolManager.h>
+#include <medAbstractParameter.h>
 
 class medAbstractWorkspacePrivate
 {
@@ -39,8 +40,7 @@ public:
 
     medTabbedViewContainers * viewContainerStack;
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
-    QHash <int, QUuid> containerForLayerWidgetRow;
-    QHash <QUuid, QPair<int, int> > layersRangeInRowsForContainer;
+    QMultiHash <QString, QPair<medAbstractView*,int> > layersPool;
 
     QList<medToolBox*> workspaceToolBoxes;
     medToolBox *selectionToolBox;
@@ -199,9 +199,7 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
 void medAbstractWorkspace::updateLayersToolBox()
 {
     d->layerListToolBox->clear();
-    d->layersRangeInRowsForContainer.clear();
     d->containerForLayerWidgetsItem.clear();
-    d->containerForLayerWidgetRow.clear();
     d->selectedLayers.clear();
 
     delete d->layerListWidget;
@@ -216,8 +214,8 @@ void medAbstractWorkspace::updateLayersToolBox()
     {
         // fill the layer widget
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        medAbstractLayeredView* layerdView = dynamic_cast<medAbstractLayeredView*>(container->view());
-        if(layerdView)
+        medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(container->view());
+        if(layeredView)
         {
             if(d->layerListWidget->count() != 0)
             {
@@ -229,12 +227,12 @@ void medAbstractWorkspace::updateLayersToolBox()
             }
             int firstLayerIndex = d->layerListWidget->count();
 
-            for(int layer = 0; layer < layerdView->layersCount(); ++layer)
+            for(int layer = 0; layer < layeredView->layersCount(); ++layer)
             {
                 QWidget *layerWidget = new QWidget;
                 layerWidget->setObjectName("layerWidget");
 
-                medAbstractData *data = layerdView->data(layer);
+                medAbstractData *data = layeredView->data(layer);
                 QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
                 QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
 
@@ -270,7 +268,17 @@ void medAbstractWorkspace::updateLayersToolBox()
                 poolSelector->addItem(createIcon("orange"), "4", "orange");
                 poolSelector->addItem(createIcon("#0080C0"), "5", "#0080C0");
                 poolSelector->addItem(createIcon("yellow"), "6", "yellow");
-                //poolSelector->setFixedSize(30,20);
+
+                QString pool = d->layersPool.key(QPair<medAbstractView*, int>(layeredView, layer));
+                poolSelector->setCurrentIndex(poolSelector->findText(pool));
+
+                QString tooltip = QString(tr("Link "));
+                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
+                    foreach(medAbstractParameter* param, interactor->parameters())
+                      tooltip += param->name() + ", ";
+
+                poolSelector->setToolTip(tooltip);
+
                 connect(poolSelector, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateParameterPool(QString)));
 
                 QPushButton *removeButton = new QPushButton;
@@ -279,13 +287,13 @@ void medAbstractWorkspace::updateLayersToolBox()
                 removeButton->setIconSize(QSize(15,15));
                 removeButton->setFixedSize(20,20);
                 //TODO - get possible to remove layer 0 - RDE
-                if(layer == 0 && layerdView->layersCount() > 1)
+                if(layer == 0 && layeredView->layersCount() > 1)
                     removeButton->setDisabled(true);
 
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
                 layout->addStretch();
-                foreach (medAbstractInteractor *interactor, layerdView->interactors(layer))
+                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
                     layout->addWidget(interactor->layerWidget());
 
                 layout->addWidget(poolSelector);
@@ -300,15 +308,13 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QListWidgetItem * item = new QListWidgetItem;
                 item->setData(Qt::UserRole, layer);
                 d->containerForLayerWidgetsItem.insert(item, uuid);
-                d->containerForLayerWidgetRow.insert(d->layerListWidget->count(), uuid);
                 item->setSizeHint(QSize(layerWidget->width(), 25));
                 d->layerListWidget->addItem(item);
                 d->layerListWidget->setItemWidget(item, layerWidget);
                 layerWidget->setFocusPolicy(Qt::NoFocus);
             }
 
-            d->layersRangeInRowsForContainer.insert(uuid, QPair<int, int>(firstLayerIndex, d->layerListWidget->count()));
-            d->layerListWidget->setCurrentRow(firstLayerIndex + layerdView->currentLayer());
+            d->layerListWidget->setCurrentRow(firstLayerIndex + layeredView->currentLayer());
         }
     }
     // add the layer widgets
@@ -324,7 +330,8 @@ void medAbstractWorkspace::updateLayersToolBox()
 
 void medAbstractWorkspace::changeCurrentLayer(int row)
 {
-    QUuid uuid = d->containerForLayerWidgetRow.value(row);
+    QListWidgetItem* item = d->layerListWidget->item(row);
+    QUuid uuid = d->containerForLayerWidgetsItem.value(item);
     medViewContainer* container = medViewContainerManager::instance()->container(uuid);
     if(!container)
         return;
@@ -333,7 +340,7 @@ void medAbstractWorkspace::changeCurrentLayer(int row)
     if(!layeredView)
         return;
 
-    int currentLayer = row - d->layersRangeInRowsForContainer.value(uuid).first;
+    int currentLayer = item->data(Qt::UserRole).toInt();
     layeredView->setCurrentLayer(currentLayer);
 
     d->selectedLayers = d->layerListWidget->selectedItems();
@@ -434,8 +441,10 @@ void medAbstractWorkspace::setLayerVisibility(bool visibility)
         return;
 
     int row = button->property("row").toInt();
-    QUuid containerUuid = d->containerForLayerWidgetRow.value(row);
-    int layer = row - d->layersRangeInRowsForContainer.value(containerUuid).first;
+    QListWidgetItem* item = d->layerListWidget->item(row);
+    QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+
+    int layer = item->data(Qt::UserRole).toInt();
 
     medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
     if(!layerView)
@@ -451,8 +460,10 @@ void medAbstractWorkspace::removeLayer()
         return;
 
     int row = button->property("row").toInt();
-    QUuid containerUuid = d->containerForLayerWidgetRow.value(row);
-    int layer = row - d->layersRangeInRowsForContainer.value(containerUuid).first;
+    QListWidgetItem* item = d->layerListWidget->item(row);
+    QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+
+    int layer = item->data(Qt::UserRole).toInt();
 
     medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
     if(!layerView)
@@ -471,6 +482,8 @@ void medAbstractWorkspace::updateParameterPool(QString pool)
     foreach(QListWidgetItem* item, d->layerListWidget->selectedItems())
     {
         QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        unsigned int layer = item->data(Qt::UserRole).toInt();
+
         medViewContainer* container = medViewContainerManager::instance()->container(containerUuid);
         if(!container)
             break;
@@ -479,13 +492,20 @@ void medAbstractWorkspace::updateParameterPool(QString pool)
         if(!layeredView)
             break;
 
-        foreach (medAbstractInteractor* interactor, layeredView->interactors(item->data(Qt::UserRole).toInt()))
+        QString key = d->layersPool.key(QPair<medAbstractView*, int>(layeredView, layer));
+        if(pool == "" || key != "")
+            d->layersPool.remove(key, QPair<medAbstractView*, int>(layeredView, layer));
+        if(pool != "")
+            d->layersPool.insert(pool, QPair<medAbstractView*, int>(layeredView, layer));
+
+        foreach (medAbstractInteractor* interactor, layeredView->interactors(layer))
         {
             foreach(medAbstractParameter *param, interactor->parameters())
             {
-                if(pool=="")
+                if(pool == "" || key != "")
                     medParameterPoolManager::instance()->unlinkParameter(param);
-                else medParameterPoolManager::instance()->linkParameter(param, pool);
+                if(pool != "")
+                   medParameterPoolManager::instance()->linkParameter(param, pool);
             }
         }
     }

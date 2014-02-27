@@ -210,6 +210,12 @@ void medViewContainer::setView(medAbstractView *view)
         d->toolBox = new medToolBox;
         d->toolBox->setTitle("Container settings");
         d->toolBox->header()->hide();
+
+        QString tooltip = QString(tr("Create group to link "));
+        foreach(medAbstractParameter *param, d->view->navigatorsParameters())
+            tooltip += param->name() + ", ";
+
+        d->poolSelector->setToolTip(tooltip);
     }
 }
 
