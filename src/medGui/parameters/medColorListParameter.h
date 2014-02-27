@@ -16,10 +16,11 @@
 #include <medAbstractParameter.h>
 
 #include <medGuiExport.h>
+#include <QStringList>
 
 class QComboBox;
 class QWidget;
-class QStringList;
+
 class QColor;
 class QIcon;
 
@@ -32,13 +33,13 @@ public:
     medColorListParameter(QString name = "Unkow color list parameter", QObject* parent = 0);
     virtual ~medColorListParameter();
 
-    void addColor(const QString& colorName);
-    void addColors(QStringList& colorNames);
-    void removeColor(const QString& colorNames);
+    void addColor(const QString& colorName, const QString& textDisplayed = 0);
+    void addColors(const QStringList& colorNames, const QStringList &labels = QStringList());
+    void removeColor(const QString& colorName);
     void clear();
     void setCurrentColor(const QString& colorName);
 
-    QStringList& colors() const;
+    QList<QString> colors() const;
     QComboBox* getComboBox();
 
     virtual QWidget* getWidget();
@@ -51,6 +52,7 @@ protected:
 
 private slots:
     void removeInternComboBox();
+    void setColor(const QString& label);
 
 private:
     medColorListParameterPrivate* d;

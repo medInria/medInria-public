@@ -74,6 +74,9 @@ protected slots:
     void setLayerVisibility(bool visibility);
     void removeLayer();
 
+private slots:
+        void buildTemporaryPool();
+
 private:
     medAbstractWorkspacePrivate *d;
 };

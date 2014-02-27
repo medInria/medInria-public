@@ -74,7 +74,7 @@ private:
     bool SetViewInput(const char* type, medAbstractData* data, const int layer);
 
 private slots:
-    void updateWindowLevelParam(double window, double level);
+    void updateWindowLevelParam(double window, double level, unsigned int layer);
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;

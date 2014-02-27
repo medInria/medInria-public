@@ -197,7 +197,7 @@ void medAbstractImageView::setDataWindowLevel(medAbstractData *data, double &win
 
     inter->setWindowLevel(window, level);
 
-    emit windowLevelChanged(window, level);
+    emit windowLevelChanged(window, level, this->layer(data));
 }
 
 void medAbstractImageView::setLayerWindowLevel(unsigned int layer, double &window, double &level)
@@ -208,7 +208,7 @@ void medAbstractImageView::setLayerWindowLevel(unsigned int layer, double &windo
 
     inter->setWindowLevel(window, level);
 
-    emit windowLevelChanged(window, level);
+    emit windowLevelChanged(window, level, layer);
 }
 
 void medAbstractImageView::setWindowLevel(double window, double level)

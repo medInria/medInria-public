@@ -133,9 +133,9 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
 
     d->poolSelector = new medColorListParameter("Pool", this);
     d->poolSelector->addColor("");
-    d->poolSelector->addColor("red");
-    d->poolSelector->addColor("green");
-    d->poolSelector->addColor("blue");
+    d->poolSelector->addColor("red", "1");
+    d->poolSelector->addColor("green", "2");
+    d->poolSelector->addColor("blue", "3");
     connect(d->poolSelector, SIGNAL(valueChanged(QString)), this, SLOT(emitLinkRequested(QString)));
 
     QWidget* toolBar = new QWidget(this);

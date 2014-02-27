@@ -16,6 +16,7 @@
 #include <QComboBox>
 #include <QColor>
 #include <QList>
+#include <QHash>
 #include <QIcon>
 
 
@@ -23,7 +24,7 @@ class medColorListParameterPrivate
 {
 public:
     QComboBox* comboBox;
-    QStringList colors;
+    QHash<QString, QString> colors;
 
     ~medColorListParameterPrivate(){delete comboBox;}
 };
@@ -40,21 +41,29 @@ medColorListParameter::~medColorListParameter()
     delete d;
 }
 
-void medColorListParameter::addColor(const QString& colorName)
+void medColorListParameter::addColor(const QString& colorName, const QString& textDisplayed)
 {
-    d->colors <<  colorName;
+    QString text = textDisplayed;
+
+    if(text.isEmpty())
+        text = colorName;
+
+    d->colors.insert(colorName, text);
 
     if(d->comboBox)
-        d->comboBox->addItem(createIcon(colorName), colorName);
+        d->comboBox->addItem(createIcon(colorName), text, colorName);
 }
 
-void medColorListParameter::addColors(QStringList &colorNames)
+void medColorListParameter::addColors(const QStringList &colorNames, const QStringList &labels)
 {
-    d->colors <<  colorNames;
-
-    if(d->comboBox)
-        foreach(QString colorName, colorNames)
-            d->comboBox->addItem(createIcon(colorName), colorName);
+    int i = 0;
+    foreach(QString color, colorNames)
+    {
+        QString label;
+        if(i<labels.size())
+          label = labels.at(i);
+        addColor(color, label);
+    }
 }
 
 void medColorListParameter::removeColor(const QString &colorName)
@@ -62,11 +71,10 @@ void medColorListParameter::removeColor(const QString &colorName)
     if(!d->colors.contains(colorName))
         return;
 
-    int index = d->colors.indexOf(QRegExp(colorName));
-    d->colors.removeOne(colorName);
+    d->colors.remove(colorName);
 
     if(d->comboBox)
-        d->comboBox->removeItem(index);
+        d->comboBox->removeItem(d->comboBox->findData(colorName));
 }
 
 void medColorListParameter::clear()
@@ -77,9 +85,9 @@ void medColorListParameter::clear()
         d->comboBox->clear();
 }
 
-QStringList& medColorListParameter::colors() const
+QList<QString> medColorListParameter::colors() const
 {
-    return d->colors;
+    return d->colors.keys();
 }
 
 
@@ -89,11 +97,11 @@ QComboBox* medColorListParameter::getComboBox()
     {
         d->comboBox = new QComboBox;
 
-        foreach(QString color, d->colors)
-            d->comboBox->addItem(createIcon(color),color);
+        foreach(QString color, d->colors.keys())
+            d->comboBox->addItem(createIcon(color),d->colors.value(color), color);
 
         this->addToInternWidgets(d->comboBox);
-        connect(d->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setValue(QString)));
+        connect(d->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setColor(QString)));
         connect(d->comboBox, SIGNAL(destroyed()), this, SLOT(removeInternComboBox()));
     }
     return d->comboBox;
@@ -106,7 +114,7 @@ void medColorListParameter::updateInternWigets()
 
     if (d->comboBox)
     {
-        int index = d->colors.indexOf(QRegExp(m_value));
+        int index = d->comboBox->findData(m_value);
         d->comboBox->setCurrentIndex(index);
     }
 }
@@ -135,9 +143,19 @@ void medColorListParameter::setCurrentColor(const QString& colorName)
 {
     if (d->comboBox)
     {
-        int index = d->comboBox->findText(colorName);
+        int index = d->comboBox->findData(colorName);
         d->comboBox->setCurrentIndex(index);
     }
 
     setValue(colorName);
+}
+
+void medColorListParameter::setColor(const QString& value)
+{
+    if (d->comboBox)
+    {
+        int index = d->comboBox->findText(value);
+        QString color = d->comboBox->itemData(index).toString();
+        setValue(color);
+    }
 }

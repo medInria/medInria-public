@@ -97,7 +97,8 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     {
         double level = this->view2d->GetColorLevel();
         double window = this->view2d->GetColorWindow();
-        this->emitter->emitWindowLevelChanged(window, level);
+        unsigned int layer = this->m_view->currentLayer();
+        this->emitter->emitWindowLevelChanged(window, level, layer);
 
         break;
     }

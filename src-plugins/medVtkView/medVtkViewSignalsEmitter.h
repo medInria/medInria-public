@@ -28,7 +28,7 @@ public:
     void setView (medVtkView *view);
 
     void emitSliceChanged(int);
-    void emitWindowLevelChanged(double window, double level);
+    void emitWindowLevelChanged(double window, double level, unsigned int layer);
     void emitZoomChanged(double);
     void emitPanChanged(const QVector2D&);
     void emitPositionViewedChanged(const QVector3D&);
@@ -40,7 +40,7 @@ public:
 signals:
     void orientationChanged();
     void sliceChanged(int);
-    void windowLevelChanged(double window, double level);
+    void windowLevelChanged(double window, double level, unsigned int layer);
     void zoomChanged(double);
     void panChanged(const QVector2D&);
     void positionViewedChanged(const QVector3D&);

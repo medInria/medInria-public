@@ -15,7 +15,7 @@ void medVtkViewSignalsEmitter::setView (medVtkView *view)
     m_view = view;
 
     connect(this, SIGNAL(sliceChanged(int)), m_view, SIGNAL(sliceChanged(int)));
-    connect(this, SIGNAL(windowLevelChanged(double, double)), m_view, SIGNAL(windowLevelChanged(double, double)));
+    connect(this, SIGNAL(windowLevelChanged(double, double, unsigned int)), m_view, SIGNAL(windowLevelChanged(double, double, unsigned int)));
     connect(this, SIGNAL(zoomChanged(double)), m_view, SIGNAL(zoomChanged(double)));
     connect(this, SIGNAL(panChanged(QVector2D)), m_view, SIGNAL(panChanged(QVector2D)));
     connect(this, SIGNAL(positionViewedChanged(QVector3D)), m_view, SIGNAL(positionViewedChanged(QVector3D)));
@@ -28,9 +28,9 @@ void medVtkViewSignalsEmitter::emitSliceChanged(int slice)
     emit sliceChanged(slice);
 }
 
-void medVtkViewSignalsEmitter::emitWindowLevelChanged(double window, double level)
+void medVtkViewSignalsEmitter::emitWindowLevelChanged(double window, double level, unsigned int layer)
 {
-    emit windowLevelChanged(window, level);
+    emit windowLevelChanged(window, level, layer);
 }
 
 void medVtkViewSignalsEmitter::emitZoomChanged(double zoom)

@@ -81,6 +81,14 @@ void medParameterPool::append(medAbstractParameter *parameter)
     }
 }
 
+void medParameterPool::append(QList<medAbstractParameter *> parameters)
+{
+    foreach(medAbstractParameter* param, parameters)
+    {
+        append(param);
+    }
+}
+
 void medParameterPool::remove(medAbstractParameter* parameter)
 {
     if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(parameter))
@@ -205,7 +213,7 @@ void medParameterPool::changeParamsValue(double value)
     }
 }
 
-void medParameterPool::changeParamsValue(QString& value)
+void medParameterPool::changeParamsValue(const QString &value)
 {
     medAbstractStringParameter *sender = dynamic_cast<medAbstractStringParameter*>(QObject::sender());
 

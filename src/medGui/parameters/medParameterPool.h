@@ -31,6 +31,7 @@ public:
     virtual ~medParameterPool();
 
     void append(medAbstractParameter *parameter);
+    void append(QList<medAbstractParameter *> parameters);
     void clear();
     int count() const;
     void remove (medAbstractParameter* parameter);
@@ -51,7 +52,7 @@ private slots:
     void changeParamsValue(bool value);
     void changeParamsValue(int value);
     void changeParamsValue(double value);
-    void changeParamsValue(QString& value);
+    void changeParamsValue(const QString& value);
     void changeParamsValue(const QVector2D& value);
     void changeParamsValue(const QVector3D& value);
     void changeParamsValue(const QVector4D& value);

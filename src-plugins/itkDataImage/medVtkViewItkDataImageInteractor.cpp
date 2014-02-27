@@ -146,7 +146,15 @@ bool medVtkViewItkDataImageInteractor::registered()
 
 QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::parameters()
 {
-    //return ;
+    QList<medAbstractParameter*> params;
+    params.append(d->lutParam);
+    params.append(d->presetParam);
+    params.append(d->opacityParam);
+    params.append(d->visibiltyParameter);
+    params.append(d->windowParameter);
+    params.append(d->levelParameter);
+    params.append(d->slicingParameter);
+    return params;
 }
 
 
@@ -270,6 +278,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToSliceAtPosition(QVector3D)));
 
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
+     connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double, unsigned int)), this, SLOT(updateWindowLevelParam(double,double, unsigned int)) );
 }
 
 void medVtkViewItkDataImageInteractor::setOpacity (int opacity)
@@ -493,8 +502,11 @@ void medVtkViewItkDataImageInteractor::updateWidgets()
 
 }
 
-void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, double level)
+void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, double level, unsigned int layer)
 {
+    if( d->medVtkView->layer(d->imageData) != layer )
+        return;
+
     d->windowParameter->setValue(window);
     d->levelParameter->setValue(level);
 }

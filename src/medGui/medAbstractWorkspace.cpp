@@ -26,6 +26,7 @@
 #include <medToolBoxHeader.h>
 #include <medAbstractInteractor.h>
 #include <medMetaDataKeys.h>
+#include <medParameterPool.h>
 
 class medAbstractWorkspacePrivate
 {
@@ -51,6 +52,8 @@ public:
     QListWidget* layerListWidget;
 
     QList<QListWidgetItem*> selectedLayers;
+
+    medParameterPool *temporaryPoolForInteractors;
 };
 
 medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d(new medAbstractWorkspacePrivate)
@@ -88,6 +91,8 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     d->layerListWidget = NULL;
+
+    d->temporaryPoolForInteractors = new medParameterPool(this);
 }
 
 medAbstractWorkspace::~medAbstractWorkspace(void)
@@ -357,6 +362,9 @@ void medAbstractWorkspace::updateInteractorsToolBox()
             medViewContainer *container = containerMng->container(containerUuid);
             container->highlight("#FF6622");
         }
+
+        buildTemporaryPool();
+
         return;
     }
 
@@ -382,6 +390,28 @@ void medAbstractWorkspace::updateInteractorsToolBox()
         }
     }
     d->interactorToolBox->show();
+
+    buildTemporaryPool();
+}
+
+void medAbstractWorkspace::buildTemporaryPool()
+{
+    medViewContainerManager *containerMng =  medViewContainerManager::instance();
+    d->temporaryPoolForInteractors->clear();
+
+    foreach(QListWidgetItem* item, d->layerListWidget->selectedItems())
+    {
+        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        medViewContainer *container = containerMng->container(containerUuid);
+
+        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
+
+        foreach (medAbstractInteractor* interactor, view->currentInteractor())
+        {
+
+            d->temporaryPoolForInteractors->append(interactor->parameters());
+        }
+    }
 }
 
 void medAbstractWorkspace::setLayerVisibility(bool visibility)
