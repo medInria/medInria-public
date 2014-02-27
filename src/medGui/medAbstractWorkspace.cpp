@@ -406,7 +406,10 @@ void medAbstractWorkspace::updateInteractorsToolBox()
         if(!interactorsIdentifier.contains(interactorIdentifier))
         {
             interactorsIdentifier << interactorIdentifier;
-            d->interactorToolBox->addWidget(interactor->toolBoxWidget());
+            QGroupBox *groupBox = new QGroupBox;
+            QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
+            groupBoxLayout->addWidget(interactor->toolBoxWidget());
+            d->interactorToolBox->addWidget(groupBox);
             interactor->toolBoxWidget()->show();
         }
     }
@@ -508,6 +511,11 @@ void medAbstractWorkspace::updateParameterPool(QString pool)
                    medParameterPoolManager::instance()->linkParameter(param, pool);
             }
         }
+    }
+
+    foreach(medParameterPool *pool, medParameterPoolManager::instance()->pools() )
+    {
+        qDebug() << "linkParameter" << pool->name() << pool->count();
     }
 }
 

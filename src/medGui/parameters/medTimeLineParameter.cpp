@@ -82,23 +82,23 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->speedFactorParameter->setValue(100);
     d->parametersCandidateToPool << d->speedFactorParameter;
 
-    d->playParameter = new medBoolParameter(name);
+    d->playParameter = new medBoolParameter("Play");
     d->parametersCandidateToPool << d->playParameter;
 
-    d->stopParameter = new medBoolParameter(name);
+    d->stopParameter = new medBoolParameter("Stop");
     d->parametersCandidateToPool << d->stopParameter;
 
-    d->timeParameter = new medDoubleParameter(name);
+    d->timeParameter = new medDoubleParameter("Time");
     d->parametersCandidateToPool << d->timeParameter;
 
-    d->frameLineParameter = new medIntParameter(name);
-    d->nextFrameParameter = new medTriggerParameter(name);
-    d->previousFrameParameter = new medTriggerParameter(name);
+    d->frameLineParameter = new medIntParameter("Frame");
+    d->nextFrameParameter = new medTriggerParameter("NextFrame");
+    d->previousFrameParameter = new medTriggerParameter("PreviousFrame");
 
     d->timeLine = new QTimeLine(1000, this);
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
-    d->loopParameter = new medBoolParameter(name);
+    d->loopParameter = new medBoolParameter("Loop");
     d->loopParameter->setText("Loop");
 
     this->clear();

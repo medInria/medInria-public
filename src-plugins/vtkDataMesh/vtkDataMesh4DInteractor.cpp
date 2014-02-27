@@ -134,7 +134,11 @@ QWidget* vtkDataMesh4DInteractor::layerWidget()
 
 QList<medAbstractParameter*> vtkDataMesh4DInteractor::parameters()
 {
+    QList<medAbstractParameter*> parameters;
+    parameters << d->timeLineParameter;
+    return parameters;
 }
+
 
 void vtkDataMesh4DInteractor::setCurrentTime (double time)
 {

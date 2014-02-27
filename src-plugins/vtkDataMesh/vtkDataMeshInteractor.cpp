@@ -541,7 +541,14 @@ QWidget* vtkDataMeshInteractor::toolBarWidget()
 
 QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
 {
-    return QList<medAbstractParameter*>();
+    QList<medAbstractParameter*> parameters;
+    parameters << d->opacityParam;
+    parameters << d->attributesParam;
+    parameters << d->LUTParam;
+    parameters << d->edgeVisibleParam;
+    parameters << d->colorParam;
+    parameters << d->renderingParam;
+    return parameters;
 }
 
 QImage& vtkDataMeshInteractor::generateThumbnail(const QSize &size)

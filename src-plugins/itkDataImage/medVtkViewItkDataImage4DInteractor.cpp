@@ -182,6 +182,10 @@ QWidget* medVtkViewItkDataImage4DInteractor::layerWidget()
 
 QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::parameters()
 {
+    QList<medAbstractParameter*> parameters;
+    parameters << medVtkViewItkDataImageInteractor::parameters();
+    parameters << d->timeLineParameter;
+    return parameters;
 }
 
 void medVtkViewItkDataImage4DInteractor::setCurrentTime (double time)
