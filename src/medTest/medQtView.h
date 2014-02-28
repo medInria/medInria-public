@@ -56,7 +56,6 @@ public:
 
     virtual void removeInteractors(medAbstractData *data);
 
-    virtual QList<medAbstractParameter*> viewParameters(){}
     virtual QList<medAbstractParameter*> navigatorsParameters(){}
 
 public slots:

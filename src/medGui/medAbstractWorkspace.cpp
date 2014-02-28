@@ -230,7 +230,7 @@ void medAbstractWorkspace::updateLayersToolBox()
             }
             int firstLayerIndex = d->layerListWidget->count();
 
-            for(int layer = 0; layer < layeredView->layersCount(); ++layer)
+            for(unsigned int layer = 0; layer < layeredView->layersCount(); ++layer)
             {
                 QWidget *layerWidget = new QWidget;
                 layerWidget->setObjectName("layerWidget");
@@ -405,7 +405,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
 
     medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-    foreach (medAbstractInteractor* interactor, view->currentInteractor())
+    foreach (medAbstractInteractor* interactor, view->currentInteractors())
     {
         QString interactorIdentifier = interactor->identifier();
         if(!interactorsIdentifier.contains(interactorIdentifier))
@@ -475,7 +475,7 @@ void medAbstractWorkspace::buildTemporaryPool()
 
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        foreach (medAbstractInteractor* interactor, view->currentInteractor())
+        foreach (medAbstractInteractor* interactor, view->currentInteractors())
         {
             d->temporaryPoolForInteractors->append(interactor->parameters());
         }

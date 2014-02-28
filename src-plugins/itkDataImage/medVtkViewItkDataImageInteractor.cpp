@@ -416,7 +416,7 @@ void medVtkViewItkDataImageInteractor::windowLevel(double &window, double &level
 
 void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
 {
-    unsigned int zslice = d->view2d->GetSlice();
+    int zslice = d->view2d->GetSlice();
 
     if(slice!=zslice)
       d->view2d->SetSlice ( slice );

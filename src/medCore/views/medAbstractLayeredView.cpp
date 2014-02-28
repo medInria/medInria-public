@@ -280,7 +280,7 @@ QImage& medAbstractLayeredView::generateThumbnail(const QSize &size)
 }
 
 //TODO not sure we need this - RDE
-QList <medAbstractInteractor*> medAbstractLayeredView::currentInteractor()
+QList <medAbstractInteractor*> medAbstractLayeredView::currentInteractors()
 {
     QList <medAbstractInteractor*> interactors;
 

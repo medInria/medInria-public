@@ -34,6 +34,7 @@ class medAbstractImageViewNavigator;
 class medAbstractNavigator;
 
 class medAbstractImageViewPrivate;
+
 class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
 {
     Q_OBJECT
@@ -68,21 +69,44 @@ public:
 
     medImageView::Orientation orientation();
 
-    //! Convert from world coordinates to scene coordinates.
+    /**
+     * Convert from world coordinates to scene coordinates.
+     */
     virtual QPointF mapWorldToDisplayCoordinates( const QVector3D & worldVec ) = 0;
-    //! Convert from scene coordinates to world coordinates.
+
+    /**
+     * Convert from scene coordinates to world coordinates.
+     */
     virtual QVector3D mapDisplayToWorldCoordinates( const QPointF & scenePoint ) = 0;
-    //! Get the view center vector in world space, the center of the slice for 2d views.
+
+    /**
+     * Get the view center vector in world space, the center of the slice for 2d views.
+     */
     virtual QVector3D viewCenter() = 0;
-    //! Get the view plane normal vector in world space.
+
+    /**
+     * Get the view plane normal vector in world space.
+     */
     virtual QVector3D viewPlaneNormal() = 0;
-    //! Get the view plane up vector in world space.
+
+    /**
+     * Get the view plane up vector in world space.
+     */
     virtual QVector3D viewUp() = 0;
-    //! Is the scene 2D (true) or 3D (false)
+
+    /**
+     * Is the scene 2D (true) or 3D (false)
+     */
     virtual bool is2D() = 0;
-    //! What is the thickness of the current slice (2D)
+
+    /**
+     * What is the thickness of the current slice (2D)
+     */
     virtual qreal sliceThickness() = 0;
-    //! The scale (number of pixels on screen per mm)
+
+    /**
+     * The scale (number of pixels on screen per mm)
+     */
     virtual qreal scale() = 0;
     
 
@@ -91,9 +115,10 @@ public slots:
     void setDataWindowLevel (medAbstractData* data, double &window, double &level);
     void setLayerWindowLevel (unsigned int layer, double &window, double &level);
     void setWindowLevel(double window, double level);
+
     /**
-      * Set the slice being viewed so that it contains the given spatial postion
-       @position is expressed in real world coordinates.
+     * Set the slice being viewed so that it contains the given spatial postion
+     * @position is expressed in real world coordinates.
      **/
     void moveToSliceAtPosition (const QVector3D &position);
 

@@ -99,14 +99,17 @@ void medAbstractInteractor::enable(void)
 {
 
 }
+
 void medAbstractInteractor::disable(void)
 {
 
 }
+
 void medAbstractInteractor::setData(dtkAbstractData* data, int channel)
 {
     DTK_UNUSED(data);DTK_UNUSED(channel);
 }
+
 void medAbstractInteractor::setData(dtkAbstractData* data, int channel, int frame)
 {
     DTK_UNUSED(data);DTK_UNUSED(channel);DTK_UNUSED(frame);

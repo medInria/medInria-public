@@ -39,20 +39,6 @@ class medViewBackend {
  * @class medAbstractView
  * @brief Base class for view types in medInria
  * medAbstractView specializes a dtkAbstractView in the context of medInria.
- * Two concepts are added: view synchronization and color lookup.
- *
- * View synchronization is achieved via the Qt signal/slot mecanism. 5 signals
- * were added: positionChanged(), zoomChanged(), panChanged(), windowingChanged(),
- * cameraChanged() with the corresponding slots: setPosition(), setZoom(),
- * setPan(), setWindowLevel() and setCamera(). Any subclass of medAbstractView
- * should implement those slots and emit signals when apropriate. One can activate/
- * deactivate synchronization using the corresponding setLinkPosition(),
- * setLinkWindowing(), setLinkPan(), setLinkZoom() and setLinkCamera() slots. This
- * class should be used in conjunction with the class @medViewPool, which realizes
- * the synchronization.
- *
- * Color lookup tables are specified with a QList of scalars and corresponding
- * colors using the setColorLookupTable() or setTransferFunctions() methods.
  **/
 
 class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
@@ -63,11 +49,10 @@ public:
     medAbstractView(QObject* parent = 0);
     virtual ~medAbstractView();
 
-    virtual QString description() const =0;
+    virtual QString description() const = 0;
 
     /**
        Set the view zoom factor.
-
     **/
     virtual void setZoom (double zoom);
     double zoom();
@@ -84,8 +69,6 @@ public:
     virtual QWidget* navigatorWidget() = 0;
     virtual QWidget *viewWidget() = 0;
 
-
-    virtual QList<medAbstractParameter*> viewParameters() = 0;
     virtual QList<medAbstractParameter*> navigatorsParameters();
 
     virtual QImage& generateThumbnail(const QSize &size) = 0;
@@ -95,7 +78,6 @@ public slots:
 
 signals:
     void selectedRequest(bool selected);
-
     void zoomChanged(double);
     void panChanged(const QVector2D&);
 

@@ -40,37 +40,33 @@ public:
     void removeLayer(unsigned int layer);
     void insertLayer(unsigned int layer, medAbstractData *data);
     void moveLayer(unsigned int fromLayer, unsigned int toLayer);
+
     medAbstractData * data(unsigned int layer) const;
+    QList<dtkSmartPointer<medAbstractData> > data() const;
+
     bool contains(medAbstractData * data) const;
+
     unsigned int layersCount() const;
     unsigned int layer(medAbstractData * data);
-//    virtual  QList <QWidget*> layerWidgets() = 0;
-    QList <medAbstractInteractor*> currentInteractor();
+
     void setCurrentLayer(unsigned int layer);
     unsigned int currentLayer() const;
+
     QList <medAbstractInteractor*> interactors(unsigned int layer);
+    QList <medAbstractInteractor*> currentInteractors();
+
     void setVisibility (bool visibility, unsigned int layer);
     bool visibility(unsigned int layer) ;
-
-    QList<dtkSmartPointer<medAbstractData> > data() const;
 
     virtual QImage& generateThumbnail(const QSize &size);
 
 public slots:
+    //TODO: not sure we need this
     void setVisibility(bool visibility);
     void removeLayer();
 
-
 signals:
-
-    /**
-     * This signal is emitted when the visibility of a layer has changed.
-     */
     void visibilityChanged(bool visibility, unsigned int layer);
-
-    /**
-     *  This signal is emitted when the user adds a data to the view
-     */
     void layerAdded(unsigned int layer);
     void layerRemoved(unsigned int layer);
     void currentLayerChanged() const;

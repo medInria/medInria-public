@@ -464,12 +464,6 @@ void medVtkView::setSLicingInteractionStyle(bool slicing)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
 }
 
-
-QList<medAbstractParameter*> medVtkView::viewParameters()
-{
-
-}
-
 void medVtkView::removeInternToolBarWidget()
 {
     d->toolBarWidget = NULL;

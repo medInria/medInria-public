@@ -80,13 +80,11 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->speedFactorParameter = new medIntParameter("Speed");
     d->speedFactorParameter->setRange(1,5000);
     d->speedFactorParameter->setValue(100);
-    //d->parametersCandidateToPool << d->speedFactorParameter;
 
     d->playParameter = new medBoolParameter("Play");
     d->parametersCandidateToPool << d->playParameter;
 
     d->stopParameter = new medBoolParameter("Stop");
-    //d->parametersCandidateToPool << d->stopParameter;
 
     d->timeParameter = new medDoubleParameter("Time");
     d->parametersCandidateToPool << d->timeParameter;
@@ -99,6 +97,7 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
     d->loopParameter = new medBoolParameter("Loop");
+    d->parametersCandidateToPool << d->loopParameter;
     d->loopParameter->setText("Loop");
 
     this->clear();

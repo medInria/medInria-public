@@ -154,6 +154,7 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 
 medAbstractData *medVtkViewItkDataImage4DInteractor::data() const
 {
+    return d->imageData;
 }
 
 QWidget* medVtkViewItkDataImage4DInteractor::toolBoxWidget()

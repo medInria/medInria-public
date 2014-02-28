@@ -29,8 +29,8 @@ public:
     virtual ~medAbstractLayeredViewInteractor();
 
 public:
-    virtual bool visibility() const =0;
-    virtual QWidget* layerWidget() =0;
+    virtual bool visibility() const = 0;
+    virtual QWidget* layerWidget() = 0;
 
 
 public slots:

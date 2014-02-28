@@ -15,6 +15,7 @@ public:
     typedef vtkSmartPointer <vtkActor>  ActorSmartPointer;
     typedef vtkSmartPointer <vtkProperty>  PropertySmartPointer;
 
+    medAbstractData *data;
     medAbstractImageView *view;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
@@ -32,6 +33,8 @@ public:
 vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): medAbstractInteractor(parent), d(new vtkDataMesh4DInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
+
+    d->data = 0;
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
@@ -84,6 +87,8 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
 
     if (data->identifier() == "vtkDataMesh4D" )
     {
+        d->data = data;
+
         vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
         //vtkProperty *prop = vtkProperty::New();
         if ( !sequence )
@@ -115,6 +120,7 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
 
 medAbstractData *vtkDataMesh4DInteractor::data() const
 {
+    return d->data;
 }
 
 QWidget* vtkDataMesh4DInteractor::toolBoxWidget()
@@ -124,12 +130,12 @@ QWidget* vtkDataMesh4DInteractor::toolBoxWidget()
 
 QWidget* vtkDataMesh4DInteractor::toolBarWidget()
 {
-    return new QWidget();
+    return 0;
 }
 
 QWidget* vtkDataMesh4DInteractor::layerWidget()
 {
-    return new QWidget();
+    return 0;
 }
 
 QList<medAbstractParameter*> vtkDataMesh4DInteractor::parameters()

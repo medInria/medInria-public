@@ -47,9 +47,6 @@ public:
     virtual void windowLevel(double &window, double &level) = 0;
 
 
-
-
-
 private:
     medAbstractImageViewInteractorPrivate *d;
 };
