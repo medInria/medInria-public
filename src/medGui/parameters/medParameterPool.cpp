@@ -277,7 +277,7 @@ void medParameterPool::changeParamsValue(const QVector3D& value)
         {
             vector3DParam->disconnect(this);
             vector3DParam->setValue(value);
-            connect(vector3DParam, SIGNAL(valueChanged(QVector3D&)), this, SLOT(changeParamsValue(QVector3D&)));
+            connect(vector3DParam, SIGNAL(valueChanged(QVector3D)), this, SLOT(changeParamsValue(QVector3D)));
         }
     }
 }
@@ -296,7 +296,7 @@ void medParameterPool::changeParamsValue(const QVector4D& value)
         {
             vector4DParam->disconnect(this);
             vector4DParam->setValue(value);
-            connect(vector4DParam, SIGNAL(valueChanged(QVector4D&)), this, SLOT(changeParamsValue(QVector4D&)));
+            connect(vector4DParam, SIGNAL(valueChanged(QVector4D)), this, SLOT(changeParamsValue(QVector4D)));
         }
     }
 }
@@ -340,5 +340,8 @@ void medParameterPool::connectParam(medAbstractParameter *parameter)
 
 void medParameterPool::disconnectParam(medAbstractParameter *parameter)
 {
+    if(!parameter)
+        return;
+
     parameter->disconnect(this);
 }
