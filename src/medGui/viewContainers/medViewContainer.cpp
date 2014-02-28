@@ -39,8 +39,6 @@ public:
     QUuid uuid;
 
     medAbstractView* view;
-    QFrame *emptyView;
-    QWidget *emptyViewToolBar;
 
     bool selected;
     bool maximised;
@@ -87,14 +85,6 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->southDragLabel = NULL;
     d->midDragLabel = NULL;
     d->toolBox = NULL;
-
-    d->emptyView = new QFrame(this);
-    d->emptyView->setObjectName("emptyView");;
-    d->emptyView->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
-
-    d->emptyViewToolBar = new QWidget(this);
-    d->emptyViewToolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    d->emptyViewToolBar->setFocusPolicy(Qt::NoFocus);
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
@@ -144,8 +134,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->toolBarLayout = new QHBoxLayout(toolBar);
     d->toolBarLayout->setContentsMargins(5,0,5,0);
     d->toolBarLayout->setSpacing(5);
-    d->toolBarLayout->addWidget(d->emptyViewToolBar);
-    d->toolBarLayout->addWidget(d->poolSelector->getComboBox());
+    d->toolBarLayout->addWidget(d->poolSelector->getComboBox(), 1, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
@@ -154,9 +143,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
     d->mainLayout->setSpacing(0);
-    d->mainLayout->addWidget(toolBar, 0, 0);
-    d->mainLayout->addWidget(d->emptyView, 1, 0);
-
+    d->mainLayout->addWidget(toolBar, 0, 0, Qt::AlignTop);
 
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
@@ -189,11 +176,6 @@ void medViewContainer::setView(medAbstractView *view)
 {
     if(d->view)
         delete d->view;
-    else
-    {
-        d->mainLayout->removeWidget(d->emptyView);
-        d->toolBarLayout->removeWidget(d->emptyViewToolBar);
-    }
 
     if(view)
     {
@@ -207,6 +189,7 @@ void medViewContainer::setView(medAbstractView *view)
         d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());
         d->maximisedParameter->show();
         d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
+        d->view->viewWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         d->toolBox = new medToolBox;
         d->toolBox->setTitle("Container settings");
         d->toolBox->header()->hide();
@@ -315,8 +298,6 @@ void medViewContainer::removeInterneView()
     d->view = NULL;
     d->toolBox = NULL;
     d->maximisedParameter->hide();
-    d->mainLayout->addWidget(d->emptyView, 1, 0, 1, 1);
-    d->toolBarLayout->insertWidget(0, d->emptyViewToolBar);
 
     emit viewRemoved();
 }
@@ -461,7 +442,7 @@ void medViewContainer::createDragLabels()
     d->receiverQuarterWidth = w/4;
     d->receiverQuarterHeight = h/4;
 
-    QColor labelColor(70, 70, 70);
+    QColor labelColor(80, 80, 80);
     QGridLayout *receiverLayout = new QGridLayout;
     d->mainLayout->addLayout(receiverLayout, 0, 0, -1, -1);
 
