@@ -32,6 +32,13 @@
 #include "vtkXMLStructuredGridReader.h"
 #include "vtkXMLUnstructuredGridReader.h"
 
+#include <vtkDataSetReader.h>
+
+#include <vtkUnstructuredGrid.h>
+#include <vtkPolyData.h>
+#include <vtkRectilinearGrid.h>
+#include <vtkStructuredGrid.h>
+
 #include <vtkDataManager.h>
 #include <vtkMetaImageData.h>
 #include <vtkMetaSurfaceMesh.h>
@@ -138,218 +145,52 @@ int vtkDataManagerReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
   return 1;
 }
 
-
-
-//----------------------------------------------------------------------------
-vtkXMLReader* vtkDataManagerReader::GetReaderOfType(const char* type)
+template<typename T>
+vtkDataSet * FileToDataSet_helper(const std::string& filename)
 {
-  vtkDataManagerReaderInternals::ReadersType::iterator iter =
-    this->Internal->Readers.find(type);
-  if (iter != this->Internal->Readers.end())
-    {
-    return iter->second.GetPointer();
-    }
-
-  vtkXMLReader* reader = 0;
-  if (strcmp(type, "vtkXMLImageDataReader") == 0)
-    {
-    reader = vtkXMLImageDataReader::New();
-    }
-  else if (strcmp(type,"vtkXMLUnstructuredGridReader") == 0)
-    {
-    reader = vtkXMLUnstructuredGridReader::New();
-    }
-  else if (strcmp(type,"vtkXMLPolyDataReader") == 0)
-    {
-    reader = vtkXMLPolyDataReader::New();
-    }
-  else if (strcmp(type,"vtkXMLRectilinearGridReader") == 0)
-    {
-    reader = vtkXMLRectilinearGridReader::New();
-    }
-  else if (strcmp(type,"vtkXMLStructuredGridReader") == 0)
-    {
-    reader = vtkXMLStructuredGridReader::New();
-    }
-  if (!reader)
-    {
-    // If all fails, Use the instantiator to create the reader.
-    reader = vtkXMLReader::SafeDownCast(vtkInstantiator::CreateInstance(type));
-    }
-  if (reader)
-    {
-    this->Internal->Readers[type] = reader;
+    T* reader = T::New();
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+    vtkDataSet * output = reader->GetOutputAsDataSet();
+    vtkDataSet * outputCopy = output->NewInstance();
+    outputCopy->DeepCopy(output);
     reader->Delete();
-    }
-  return reader;
+    return outputCopy;
 }
 
-// //----------------------------------------------------------------------------
-// void vtkDataManagerReader::ReadXMLData()
-// {
-//   vtkExecutive* exec = this->GetExecutive();
-//   vtkInformation* info = exec->GetOutputInformation(0);
+template<typename T>
+vtkDataSet * FileToDataSet_helper2(const std::string& filename)
+{
+    T* reader = T::New();
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+    vtkDataSet * output = reader->GetOutput();
+    vtkDataSet * outputCopy = output->NewInstance();
+    outputCopy->DeepCopy(output);
+    reader->Delete();
+    return outputCopy;
+}
 
-//   unsigned int updatePiece = static_cast<unsigned int>(
-//     info->Get(vtkStreamingDemandDrivenPipeline::UPDATE_PIECE_NUMBER()));
-//   unsigned int updateNumPieces =  static_cast<unsigned int>(
-//     info->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES()));
+//----------------------------------------------------------------------------
+vtkDataSet* vtkDataManagerReader::FileToDataSet(const char* type, const std::string& filename)
+{
+  vtkDataSet* output = 0;
+  if (strcmp(type, "vtkXMLImageDataReader") == 0) {
+      output = FileToDataSet_helper<vtkXMLImageDataReader>(filename);
+  } else if (strcmp(type,"vtkXMLUnstructuredGridReader") == 0) {
+      output = FileToDataSet_helper<vtkXMLUnstructuredGridReader>(filename);
+  } else if (strcmp(type,"vtkXMLPolyDataReader") == 0) {
+      output = FileToDataSet_helper<vtkXMLPolyDataReader>(filename);
+  } else if (strcmp(type,"vtkXMLRectilinearGridReader") == 0) {
+      output = FileToDataSet_helper<vtkXMLRectilinearGridReader>(filename);
+  } else if (strcmp(type,"vtkXMLStructuredGridReader") == 0) {
+      output = FileToDataSet_helper<vtkXMLStructuredGridReader>(filename);
+  } else if (strcmp(type,"vtkDataSetReader") == 0) {
+      output = FileToDataSet_helper2<vtkDataSetReader>(filename);
+  }
 
-//   vtkMultiGroupDataSet* hb = this->MultiGroup;
-  
-//   // Find the path to this file in case the internal files are
-//   // specified as relative paths.
-//   std::string filePath = this->FileName;
-//   std::string::size_type pos = filePath.find_last_of("/\\");
-//   if(pos != filePath.npos)
-//     {
-//     filePath = filePath.substr(0, pos);
-//     }
-//   else
-//     {
-//     filePath = "";
-//     }
-
-//   std::vector<vtkXMLDataElement*>::iterator d;
-
-//   std::vector<unsigned int> numDataSets;
-  
-//   for(d=this->Internal->MetaDataSets.begin();
-//       d != this->Internal->MetaDataSets.end(); ++d)
-//   {
-
-//     vtkXMLDataElement* ds = *d;
-    
-//     int group = 0;
-//     int dsId = 0;
-    
-//     if (!ds->GetScalarAttribute("dataset", dsId))
-//       {
-//       continue;
-//       }
-
-//     int groupRead;
-//     if (ds->GetScalarAttribute("group", groupRead))
-//       {
-//       group = groupRead;
-//       }
-
-//     if (group >= static_cast<int>(numDataSets.size()))
-//       {
-//       numDataSets.resize(group+1);
-//       numDataSets[group] = 0;
-//       }
-//     if (dsId >= static_cast<int>(numDataSets[group]))
-//       {
-//       numDataSets[group] = dsId + 1;
-//       }
-//     }
-
-//   for (unsigned int i=0; i<numDataSets.size(); i++)
-//     {
-//     hb->SetNumberOfDataSets(i, numDataSets[i]);
-//     }
-
-//   for(d=this->Internal->MetaDataSets.begin();
-//       d != this->Internal->MetaDataSets.end(); ++d)
-//     {
-//     vtkXMLDataElement* ds = *d;
-
-//     int group = 0;
-//     int dsId = 0;
-
-//     if (!ds->GetScalarAttribute("dataset", dsId))
-//       {
-//       continue;
-//       }
-
-//     int groupRead;
-//     if (ds->GetScalarAttribute("group", groupRead))
-//       {
-//       group = groupRead;
-//       }
-
-//     unsigned int numDatasets = hb->GetNumberOfDataSets(group);
-//     unsigned int numDatasetsPerPiece = 1;
-//     if (updateNumPieces < numDatasets)
-//       {
-//       numDatasetsPerPiece = numDatasets / updateNumPieces;
-//       }
-//     int minDataset = numDatasetsPerPiece*updatePiece;
-//     int maxDataset = numDatasetsPerPiece*(updatePiece+1);
-//     if (updatePiece == updateNumPieces - 1)
-//       {
-//       maxDataset = numDatasets;
-//       }
-
-//     vtkDataSet* outputCopy = 0;
-
-//     if (dsId >= minDataset && dsId < maxDataset)
-//       {
-      
-//       // Construct the name of the internal file.
-//       std::string fileName;
-//       const char* file = ds->GetAttribute("file");
-//       if(!(file[0] == '/' || file[1] == ':'))
-//         {
-//         fileName = filePath;
-//         if(fileName.length())
-//           {
-//           fileName += "/";
-//           }
-//         }
-//       fileName += file;
-      
-//       // Get the file extension.
-//       std::string ext;
-//       std::string::size_type pos2 = fileName.rfind('.');
-//       if(pos2 != fileName.npos)
-//         {
-//         ext = fileName.substr(pos2+1);
-//         }
-      
-//       // Search for the reader matching this extension.
-//       const char* rname = 0;
-//       for(const vtkDataManagerReaderEntry* r = 
-//             this->Internal->ReaderList;
-//           !rname && r->extension; ++r)
-//         {
-//         if(ext == r->extension)
-//           {
-//           rname = r->name;
-//           }
-//         }
-//       vtkXMLReader* reader = this->GetReaderOfType(rname);
-//       if (!reader)
-//         {
-//         vtkErrorMacro("Could not create reader for " << rname);
-//         continue;
-//         }
-//       reader->SetFileName(fileName.c_str());
-//       reader->Update();
-//       vtkDataSet* output = reader->GetOutputAsDataSet();
-//       if (!output)
-//         {
-//         continue;
-//         }
-//       outputCopy = output->NewInstance();
-//       outputCopy->ShallowCopy(output);
-//       output->Initialize();
-//       }
-//     this->HandleDataSet(ds, group, dsId, hb, outputCopy);
-//     if (outputCopy)
-//       {
-//       outputCopy->Delete();
-//       }
-//     }
-
-//   this->ProvideDataManagerFromMultiGroup (hb);
-//   this->RestoreMetaDataSetInformation(this->Internal->MetaDataInformation);
-  
-// }
-
-
-
+  return output;
+}
 
 //----------------------------------------------------------------------------
 vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDataElement* element)
@@ -477,28 +318,14 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDat
 	rname = r->name;
       }
     }
-    vtkXMLReader* reader = this->GetReaderOfType(rname);
-    if (!reader)
-    {
-      vtkErrorMacro("Could not create reader for " << rname);
-      return NULL;
-    }
-    reader->SetFileName(fileName.c_str());
-    reader->Update();
-    vtkDataSet* output = reader->GetOutputAsDataSet();
+    vtkDataSet* output = this->FileToDataSet(rname, fileName);
     if (!output)
     {
       vtkErrorMacro("Output is not a dataset for  " << rname);
       return NULL;
     }
 
-    vtkDataSet* outputCopy  = output->NewInstance();
-    outputCopy->ShallowCopy(output);
-    output->Initialize();
-
-    metadataset->SetDataSet (outputCopy);
-    
-    outputCopy->Delete();
+    metadataset->SetDataSet (output);
   }
   else
   {
@@ -514,9 +341,6 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDat
   }
 
   return metadataset;
-  
-    
-  
 }
 
 
@@ -593,6 +417,7 @@ vtkDataManagerReaderInternals::ReaderList[] =
   {"vti", "vtkXMLImageDataReader"},
   {"vtr", "vtkXMLRectilinearGridReader"},
   {"vts", "vtkXMLStructuredGridReader"},
+  {"vtk", "vtkDataSetReader"},
   {0, 0}
 };
 
@@ -623,60 +448,6 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromDataSet (vtkDataSet* 
   return metadataset;
 }
 
-  
-      
-
-// //----------------------------------------------------------------------------
-// void vtkDataManagerReader::ProvideDataManagerFromMultiGroup(vtkMultiGroupDataSet* group)
-// {
-
-  
-
-//   for (unsigned int i=0; i<group->GetNumberOfGroups(); i++)
-//   {
-//     vtkMetaDataSet* metadataset = 0;
-
-    
-//     unsigned int N = group->GetNumberOfDataSets(i);
-//     if (N <= 1)
-//     {
-//       vtkDataSet* dataset = vtkDataSet::SafeDownCast (group->GetDataSet (i,0));
-//       if (!dataset)
-// 	continue;
-//       std::ostringstream os;
-//       os << "dataset_"<<i;
-    
-//       metadataset = this->CreateMetaDataSetFromDataSet (dataset, os.str().c_str());
-//     }
-//     else
-//     {
-//       metadataset = vtkMetaDataSetSequence::New();
-//       for (unsigned int j=0; j<N; j++)
-//       {
-// 	std::ostringstream os;
-// 	os << "dataset_"<<i<<"_"<<j;
-	
-// 	vtkDataSet* dataset = vtkDataSet::SafeDownCast (group->GetDataSet (i,j));
-// 	if (!dataset)
-// 	  continue;
-// 	vtkMetaDataSet* frame = this->CreateMetaDataSetFromDataSet (dataset, os.str().c_str());
-// 	frame->SetTime ((double)(j*2.0) / (double)(N));
-	
-// 	vtkMetaDataSetSequence::SafeDownCast (metadataset)->AddMetaDataSet (frame);
-	
-// 	frame->Delete();
-//       }
-//     }
-
-//     this->GetOutput()->AddMetaDataSet (metadataset);
-//     metadataset->Delete();
-//   }
-  
-// }
-
-
-
-      
 
 //----------------------------------------------------------------------------
 void vtkDataManagerReader::RestoreMetaDataSetInformation (vtkXMLDataElement* element)
