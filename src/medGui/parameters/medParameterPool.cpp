@@ -312,7 +312,6 @@ void medParameterPool::removeInternParam()
     if(param)
     {
         this->remove(param);
-        qDebug()<< "remove param";
     }
 }
 

@@ -199,7 +199,6 @@ void medTabbedViewContainers::link(QUuid uuid, QString pool)
 {
     if(this->containersSelected().contains(uuid))
     {
-        qDebug() << "link selection" << this->containersSelected().count();
         foreach(QUuid uuidSelected, this->containersSelected())
         {
             medViewContainer *container = medViewContainerManager::instance()->container(uuidSelected);
@@ -208,7 +207,6 @@ void medTabbedViewContainers::link(QUuid uuid, QString pool)
     }
     else
     {
-        qDebug() << "link impacted";
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         container->link(pool);
     }
@@ -218,7 +216,6 @@ void medTabbedViewContainers::unlink(QUuid uuid)
 {
     if(this->containersSelected().contains(uuid))
     {
-        qDebug() << "unlink selection" << this->containersSelected().count();
         foreach(QUuid uuidSelected, this->containersSelected())
         {
             medViewContainer *container = medViewContainerManager::instance()->container(uuidSelected);
@@ -227,7 +224,6 @@ void medTabbedViewContainers::unlink(QUuid uuid)
     }
     else
     {
-        qDebug() << "unlink impacted";
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         container->unlink();
     }
