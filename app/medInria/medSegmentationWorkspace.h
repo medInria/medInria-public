@@ -48,7 +48,6 @@ public:
     //! Register with factory, return true if successful.
     static bool registerWithViewerWorkspaceFactory();
 
-
     //!
     medProgressionStack * progressionStack();
 
@@ -65,10 +64,6 @@ signals:
 public slots:
     void onViewAdded(medAbstractView* view);
     void onViewRemoved(medAbstractView* view);
-
-    /**@brief Connects toolboxes to the current container
-     * @param name the container name */
-    virtual void connectToolboxesToCurrentContainer(const QString &name);
 
 
 private:

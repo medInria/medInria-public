@@ -179,7 +179,11 @@ void medParameterPool::changeParamsValue(bool value)
     {
         medAbstractBoolParameter *boolParam = dynamic_cast<medAbstractBoolParameter*>(param);
         if(boolParam != sender)
+        {
+            boolParam->disconnect(this);
             boolParam->setValue(value);
+            connect(boolParam, SIGNAL(valueChanged(bool)), this, SLOT(changeParamsValue(bool)));
+        }
     }
 }
 
@@ -194,7 +198,11 @@ void medParameterPool::changeParamsValue(int value)
     {
         medAbstractIntParameter *intParam = dynamic_cast<medAbstractIntParameter*>(param);
         if(intParam != sender)
+        {
+            intParam->disconnect(this);
             intParam->setValue(value);
+            connect(intParam, SIGNAL(valueChanged(int)), this, SLOT(changeParamsValue(int)));
+        }
     }
 }
 
@@ -209,7 +217,11 @@ void medParameterPool::changeParamsValue(double value)
     {
         medAbstractDoubleParameter *doubleParam = dynamic_cast<medAbstractDoubleParameter*>(param);
         if(doubleParam != sender)
+        {
+            doubleParam->disconnect(this);
             doubleParam->setValue(value);
+            connect(doubleParam, SIGNAL(valueChanged(double)), this, SLOT(changeParamsValue(double)));
+        }
     }
 }
 
@@ -224,7 +236,11 @@ void medParameterPool::changeParamsValue(const QString &value)
     {
         medAbstractStringParameter *listParam = dynamic_cast<medAbstractStringParameter*>(param);
         if(listParam != sender)
+        {
+            listParam->disconnect(this);
             listParam->setValue(value);
+            connect(listParam, SIGNAL(valueChanged(QString)), this, SLOT(changeParamsValue(QString)));
+        }
     }
 }
 
@@ -237,9 +253,13 @@ void medParameterPool::changeParamsValue(const QVector2D& value)
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractVector2DParameter *listParam = dynamic_cast<medAbstractVector2DParameter*>(param);
-        if(listParam != sender)
-            listParam->setValue(value);
+        medAbstractVector2DParameter *vector2DParam = dynamic_cast<medAbstractVector2DParameter*>(param);
+        if(vector2DParam != sender)
+        {
+            vector2DParam->disconnect(this);
+            vector2DParam->setValue(value);
+            connect(vector2DParam, SIGNAL(valueChanged(QVector2D&)), this, SLOT(changeParamsValue(QVector2D&)));
+        }
     }
 }
 
@@ -252,9 +272,13 @@ void medParameterPool::changeParamsValue(const QVector3D& value)
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractVector3DParameter *listParam = dynamic_cast<medAbstractVector3DParameter*>(param);
-        if(listParam != sender)
-            listParam->setValue(value);
+        medAbstractVector3DParameter *vector3DParam = dynamic_cast<medAbstractVector3DParameter*>(param);
+        if(vector3DParam != sender)
+        {
+            vector3DParam->disconnect(this);
+            vector3DParam->setValue(value);
+            connect(vector3DParam, SIGNAL(valueChanged(QVector3D&)), this, SLOT(changeParamsValue(QVector3D&)));
+        }
     }
 }
 
@@ -267,9 +291,13 @@ void medParameterPool::changeParamsValue(const QVector4D& value)
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractVector4DParameter *listParam = dynamic_cast<medAbstractVector4DParameter*>(param);
-        if(listParam != sender)
-            listParam->setValue(value);
+        medAbstractVector4DParameter *vector4DParam = dynamic_cast<medAbstractVector4DParameter*>(param);
+        if(vector4DParam != sender)
+        {
+            vector4DParam->disconnect(this);
+            vector4DParam->setValue(value);
+            connect(vector4DParam, SIGNAL(valueChanged(QVector4D&)), this, SLOT(changeParamsValue(QVector4D&)));
+        }
     }
 }
 

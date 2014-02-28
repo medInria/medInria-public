@@ -456,7 +456,8 @@ void medViewContainer::selfDestroy()
 
 void medViewContainer::createDragLabels()
 {
-    int w(this->width()), h(this->height());
+    // minus 4 because we don't want to hide  the borders
+    int w(this->width() - 4), h(this->height() - 4);
     d->receiverQuarterWidth = w/4;
     d->receiverQuarterHeight = h/4;
 
