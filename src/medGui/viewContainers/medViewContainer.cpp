@@ -540,11 +540,6 @@ void medViewContainer::link(QString pool)
     {
         medParameterPoolManager::instance()->linkParameter(param, pool);
     }
-
-    foreach(medParameterPool *pool, medParameterPoolManager::instance()->pools() )
-    {
-        qDebug() << "linkParameter" << pool->name() << pool->count();
-    }
 }
 
 void medViewContainer::unlink()
@@ -559,10 +554,5 @@ void medViewContainer::unlink()
     foreach(medAbstractParameter *param, d->view->navigatorsParameters())
     {
         medParameterPoolManager::instance()->unlinkParameter(param);
-    }
-
-    foreach(medParameterPool *pool, medParameterPoolManager::instance()->pools() )
-    {
-        qDebug() << "linkParameter" << pool->name() << pool->count();
     }
 }
