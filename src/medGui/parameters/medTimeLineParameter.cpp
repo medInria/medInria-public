@@ -80,13 +80,13 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->speedFactorParameter = new medIntParameter("Speed");
     d->speedFactorParameter->setRange(1,5000);
     d->speedFactorParameter->setValue(100);
-    d->parametersCandidateToPool << d->speedFactorParameter;
+    //d->parametersCandidateToPool << d->speedFactorParameter;
 
     d->playParameter = new medBoolParameter("Play");
     d->parametersCandidateToPool << d->playParameter;
 
     d->stopParameter = new medBoolParameter("Stop");
-    d->parametersCandidateToPool << d->stopParameter;
+    //d->parametersCandidateToPool << d->stopParameter;
 
     d->timeParameter = new medDoubleParameter("Time");
     d->parametersCandidateToPool << d->timeParameter;
@@ -257,9 +257,9 @@ void medTimeLineParameter::setFrame(double time)
 
 void medTimeLineParameter::updateTimeParameter(double time)
 {
-    d->timeParameter->blockSignals(true);
+    //d->timeParameter->blockSignals(true);
     d->timeParameter->setValue(time);
-    d->timeParameter->blockSignals(false);
+    //d->timeParameter->blockSignals(false);
     emit frameChanged(time);
 }
 
