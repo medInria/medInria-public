@@ -884,186 +884,123 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 
   if (id >= this->MetaDataSetList.size())
     return;
-  
-  vtkDataSet* datasettoshow  = this->MetaDataSetList[id]->GetDataSet();  
+
+  vtkDataSet* datasettoshow  = this->MetaDataSetList[id]->GetDataSet();
 
   vtkPolyData* polydatatoshow   = vtkPolyData::SafeDownCast (datasettoshow);
   vtkPolyData* polydatatochange = vtkPolyData::SafeDownCast (this->GetDataSet());
-  
-  if (polydatatoshow && polydatatochange)
-  {
-    if (this->SameGeometryFlag )
-    {  
-//       polydatatochange->SetPoints(polydatatoshow->GetPoints());
-      polydatatochange->GetPoints()->SetData(polydatatoshow->GetPoints()->GetData());
-    }
-    else
-    {
 
+  if (polydatatoshow && polydatatochange) {
       polydatatochange->ShallowCopy (polydatatoshow);
-
-      // following code was intended to optimize the data parsing but
-      // I cound not be able to do better than a DeepCopy...
-      // however the updating time is not that much altered...
-      
-//       polydatatochange->Modified();
-      
-//       polydatatochange->SetPoints(polydatatoshow->GetPoints());
-//       polydatatochange->GetPolys ()->DeepCopy (polydatatoshow->GetPolys());
-//       polydatatochange->SetPolys (polydatatoshow->GetPolys());
-//       polydatatochange->Update();
-//       polydatatochange->UpdateData();
-//       polydatatochange->UpdateInformation();
-      
-      
-//       polydatatochange->GetPolys()->Modified();
-//       polydatatochange->GetPoints()->Modified();
-//       polydatatochange->Modified();
-
-//       polydatatochange->BuildLinks();
-      
-    }
-    
-  }
-  
-  else
-  {
-
-    vtkUnstructuredGrid* unstructuredgridtoshow   = vtkUnstructuredGrid::SafeDownCast (datasettoshow);
-    vtkUnstructuredGrid* unstructuredgridtochange = vtkUnstructuredGrid::SafeDownCast (this->GetDataSet());
-    if (unstructuredgridtoshow && unstructuredgridtochange)
-    {
-      if (this->SameGeometryFlag)
-      {
-	unstructuredgridtochange->GetPoints()->SetData (unstructuredgridtoshow->GetPoints()->GetData());
+  } else {
+      vtkUnstructuredGrid* unstructuredgridtoshow   = vtkUnstructuredGrid::SafeDownCast (datasettoshow);
+      vtkUnstructuredGrid* unstructuredgridtochange = vtkUnstructuredGrid::SafeDownCast (this->GetDataSet());
+      if (unstructuredgridtoshow && unstructuredgridtochange) {
+          unstructuredgridtochange->ShallowCopy (unstructuredgridtoshow);
       }
-      else
-      {
-	
-	unstructuredgridtochange->ShallowCopy (unstructuredgridtoshow);
-      
-      // following code was intended to optimize the data parsing but
-      // I cound not be able to do better than a DeepCopy...
-      // however the updating time is not that much altered...
-	
-// 	int t = unstructuredgridtoshow->GetCellType (0);
-// 	unstructuredgridtochange->SetCells(t, unstructuredgridtoshow->GetCells());
-// 	unstructuredgridtochange->Modified();	
-      }
-      
-    }
   }
 
   if (this->ParseAttributes)
   {
-
-    // We just copy the active scalars as we don't want to slow down the rendering...
-    // If the user need all the scalars of a specific frame, he might use the method GetMetaDataSet() instead
-
-//     if (datasettoshow->GetPointData()->GetScalars())
-//       this->GetDataSet()->GetPointData()->SetScalars(datasettoshow->GetPointData()->GetScalars());
-//     if (datasettoshow->GetCellData()->GetScalars())
-//       this->GetDataSet()->GetCellData()->SetScalars(datasettoshow->GetCellData()->GetScalars());
-
     vtkDataArray* pdscalars = this->GetDataSet()->GetPointData()->GetScalars();
     vtkDataArray* cdscalars = this->GetDataSet()->GetCellData()->GetScalars();
     vtkDataArray* pdtensors = this->GetDataSet()->GetPointData()->GetTensors();
     vtkDataArray* cdtensors = this->GetDataSet()->GetCellData()->GetTensors();
-    
+
     if (pdscalars)
     {
       const char* c_name = pdscalars->GetName();
       if ( c_name && (*c_name) )
       {
-	std::string name = c_name;
-	vtkDataArray* array = datasettoshow->GetPointData()->GetArray(name.c_str());
-	if (array)
-	{
-// 	  pdscalars->SetVoidArray (array);	  
- 	  pdscalars->DeepCopy (array);
-	}
+    std::string name = c_name;
+    vtkDataArray* array = datasettoshow->GetPointData()->GetArray(name.c_str());
+    if (array)
+    {
+// 	  pdscalars->SetVoidArray (array);
+      pdscalars->DeepCopy (array);
+    }
       }
       else
       {
-	this->GetDataSet()->GetPointData()->SetScalars(datasettoshow->GetPointData()->GetScalars());
+    this->GetDataSet()->GetPointData()->SetScalars(datasettoshow->GetPointData()->GetScalars());
       }
-      
+
       this->GetDataSet()->GetPointData()->Modified();
       this->GetDataSet()->Modified();
     }
-    
+
     if (cdscalars)
     {
       const char* c_name = cdscalars->GetName();
       if ( c_name && (*c_name) )
       {
-	std::string name = c_name;
-	vtkDataArray* array = datasettoshow->GetCellData()->GetArray(name.c_str());
-	
-	if (array)
-	{
+    std::string name = c_name;
+    vtkDataArray* array = datasettoshow->GetCellData()->GetArray(name.c_str());
+
+    if (array)
+    {
 // 	  cdscalars->SetVoidArray (array);
-	  cdscalars->DeepCopy (array);
-	}
-	
+      cdscalars->DeepCopy (array);
+    }
+
       }
       else
       {
-	this->GetDataSet()->GetCellData()->SetScalars(datasettoshow->GetCellData()->GetScalars());
+    this->GetDataSet()->GetCellData()->SetScalars(datasettoshow->GetCellData()->GetScalars());
       }
       this->GetDataSet()->GetCellData()->Modified();
-      
+
     }
     if (pdtensors)
     {
-      
+
       const char* c_name = pdtensors->GetName();
       if ( c_name && (*c_name) )
       {
-	std::string name = c_name;
-	vtkDataArray* array = datasettoshow->GetPointData()->GetArray(name.c_str());
-	if (array)
-	{
-// 	  pdscalars->SetVoidArray (array);	  
- 	  pdtensors->DeepCopy (array);
-	}
+    std::string name = c_name;
+    vtkDataArray* array = datasettoshow->GetPointData()->GetArray(name.c_str());
+    if (array)
+    {
+// 	  pdscalars->SetVoidArray (array);
+      pdtensors->DeepCopy (array);
+    }
       }
       else
       {
-	this->GetDataSet()->GetPointData()->SetTensors(datasettoshow->GetPointData()->GetTensors());
+    this->GetDataSet()->GetPointData()->SetTensors(datasettoshow->GetPointData()->GetTensors());
       }
-      
+
       this->GetDataSet()->GetPointData()->Modified();
     }
-    
+
     if (cdtensors)
     {
       const char* c_name = cdtensors->GetName();
       if ( c_name && (*c_name) )
       {
-	std::string name = c_name;
-	vtkDataArray* array = datasettoshow->GetCellData()->GetArray(name.c_str());
-	
-	if (array)
-	{
+    std::string name = c_name;
+    vtkDataArray* array = datasettoshow->GetCellData()->GetArray(name.c_str());
+
+    if (array)
+    {
 // 	  cdscalars->SetVoidArray (array);
-	  cdtensors->DeepCopy (array);
-	}
-	
+      cdtensors->DeepCopy (array);
+    }
+
       }
       else
       {
-	this->GetDataSet()->GetCellData()->SetTensors(datasettoshow->GetCellData()->GetTensors());
+    this->GetDataSet()->GetCellData()->SetTensors(datasettoshow->GetCellData()->GetTensors());
       }
       this->GetDataSet()->GetCellData()->Modified();
-      
+
     }
-        
+
   }
-  
+
   // index showing how much frames we lost
-  // vtkDebugMacro(<<"sequence losts "<< ((int)id-(int)(this->CurrentId)) << "frames");  
-  // updating the current id 
+  // vtkDebugMacro(<<"sequence losts "<< ((int)id-(int)(this->CurrentId)) << "frames");
+  // updating the current id
   this->CurrentId   = id;
 }
 
