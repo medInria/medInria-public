@@ -126,6 +126,8 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->poolSelector->addColor("red", "1");
     d->poolSelector->addColor("green", "2");
     d->poolSelector->addColor("blue", "3");
+    QPixmap icon(":/icons/link.svg");
+    d->poolSelector->getLabel()->setPixmap(icon.scaled(15,15));
     connect(d->poolSelector, SIGNAL(valueChanged(QString)), this, SLOT(emitLinkRequested(QString)));
 
     QWidget* toolBar = new QWidget(this);
@@ -134,7 +136,8 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->toolBarLayout = new QHBoxLayout(toolBar);
     d->toolBarLayout->setContentsMargins(5,0,5,0);
     d->toolBarLayout->setSpacing(5);
-    d->toolBarLayout->addWidget(d->poolSelector->getComboBox(), 1, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->poolSelector->getLabel(), 1, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->poolSelector->getComboBox(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
@@ -194,10 +197,10 @@ void medViewContainer::setView(medAbstractView *view)
         d->toolBox->setTitle("Container settings");
         d->toolBox->header()->hide();
 
-        QString tooltip = QString(tr("Create group to link "));
+        QString tooltip = QString(tr("Link View properties ("));
         foreach(medAbstractParameter *param, d->view->navigatorsParameters())
             tooltip += param->name() + ", ";
-
+        tooltip += ")";
         d->poolSelector->setToolTip(tooltip);
     }
 }
