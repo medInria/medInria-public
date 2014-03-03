@@ -258,7 +258,7 @@ void medParameterPool::changeParamsValue(const QVector2D& value)
         {
             vector2DParam->disconnect(this);
             vector2DParam->setValue(value);
-            connect(vector2DParam, SIGNAL(valueChanged(QVector2D&)), this, SLOT(changeParamsValue(QVector2D&)));
+            connect(vector2DParam, SIGNAL(valueChanged(QVector2D)), this, SLOT(changeParamsValue(QVector2D)));
         }
     }
 }
