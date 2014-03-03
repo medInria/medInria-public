@@ -80,11 +80,14 @@ void medToolBoxBody::clear()
       else
         d->layout->setColumnStretch (i, 0);
     }
+    
     foreach(QWidget *wid, d->widgets)
     {
         wid->hide();
         d->layout->removeWidget(wid);
     }
+    
+    d->widgets.clear();
 }
 void medToolBoxBody::setOrientation(Qt::Orientation orientation)
 {
