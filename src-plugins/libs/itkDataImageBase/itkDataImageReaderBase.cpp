@@ -178,6 +178,9 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 case itk::ImageIOBase::FLOAT:
                     dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorFloat3");
                     break;
+                case itk::ImageIOBase::DOUBLE:
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorDouble3");
+                    break;
                 default:
                     qDebug() << "Unrecognized component type";
                     return false;
@@ -317,6 +320,7 @@ bool itkDataImageReaderBase::read(const QString& path)
               read_image<4,double>(path,"itkDataImageDouble4")         ||
               read_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVectorUChar3") ||  //  Added by Theo.
               read_image<3,itk::Vector<float,3> >(path,"itkDataImageVectorFloat3") ||
+              read_image<3,itk::Vector<double,3> >(path,"itkDataImageVectorDouble3") ||
               read_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               read_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {

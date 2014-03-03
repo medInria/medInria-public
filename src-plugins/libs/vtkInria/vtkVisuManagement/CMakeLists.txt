@@ -33,6 +33,7 @@ set(${PROJECT_NAME}_SRCS
  vtkTransferFunctionPresets.cxx
  vtkTensorVisuManager.cxx
  vtkTensorManager.cxx
+ vtkVectorManager.cxx
  vtkVectorVisuManager.cxx
  vtkLimitVectorsToVOI.cxx
  vtkDatasetToImageGenerator.cxx
@@ -48,6 +49,8 @@ set(${PROJECT_NAME}_SRCS
  vtkTessellatedSphereSource.cxx
  vtkSphericalHarmonicSource.cxx
  vtkSphericalHarmonicGlyph.cxx
+ vtkVectorOrienter.cxx
+ vtkPolydataNormalsOrienter.cpp
 )
 
 set(vtkLandmarkManagement_SRCS
