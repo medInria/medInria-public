@@ -272,7 +272,7 @@ void medMainWindow::restoreSettings()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
 
-    const AreaType areaIndex = static_cast<AreaType>(mnger->value("medMainWindow","SatartingArea", 0).toInt());
+    const AreaType areaIndex = static_cast<AreaType>(mnger->value("medMainWindow","StartingArea", 0).toInt());
     switchToArea(areaIndex);
 
     this->restoreState(mnger->value("medMainWindow", "state").toByteArray());

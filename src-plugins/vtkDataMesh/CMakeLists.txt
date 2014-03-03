@@ -97,6 +97,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkRendering
   itksys
   medCore
+  medGui
   medLog
   medVtkInria
   )

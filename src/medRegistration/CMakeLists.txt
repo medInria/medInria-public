@@ -90,7 +90,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOTransformHDF5
   ITKIOTransformMatlab
   ITKIOTransformInsightLegacy
-  ${ITKReview_LIBRARIES} #TODO get rid of this ASASP
+  ITKIOMRC
   )
 
 

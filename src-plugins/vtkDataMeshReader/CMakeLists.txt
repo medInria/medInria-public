@@ -94,6 +94,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkFiltering
   vtkIO
   itksys
+  medCore
   medLog
   medVtkInria
   )

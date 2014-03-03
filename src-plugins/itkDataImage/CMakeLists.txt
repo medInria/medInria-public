@@ -120,6 +120,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkRendering
   vtkVolumeRendering
   medCore
+  medGui
   medLog
   medVtkInria
   )

@@ -104,6 +104,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOStimulate
   ITKIOVTK
   ITKIOMRC
+  medCore
   medLog
   )
 
