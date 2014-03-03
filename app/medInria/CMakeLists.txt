@@ -113,6 +113,9 @@ add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
   ${${PROJECT_NAME}_RC}  # Empty for Unix 
   )
 
+if (APPLE)
+  set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
+endif()
 
 ## #############################################################################
 ## Links.
