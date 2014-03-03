@@ -55,7 +55,6 @@ private slots:
     void setZoomInteractionStyle(bool zoom);
     void setSLicingInteractionStyle(bool slicing);
 
-    void removeLayerFromCloseButton();
     void changeCurrentLayer();
 
     void removeInternNavigatorWidget();

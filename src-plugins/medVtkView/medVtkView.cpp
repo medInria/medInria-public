@@ -77,7 +77,6 @@ public:
     // toolboxes
     QWidget* navigatorWidget;
     QList <QWidget*> layerWidgets;
-    QList <QWidget*> layerCloseButtonWidgets;
 
     // parameter
     medBoolGroupParameter *mouseInteractionsParameter;
@@ -86,8 +85,6 @@ public:
     medBoolParameter *slicingInteractionParameter;
 
     QScopedPointer<medVtkViewBackend> backend;
-
-    bool multiSelectionEnabled;
 };
 
 medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
@@ -193,8 +190,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->toolBarWidget = NULL;
     d->navigatorWidget = NULL;
 
-    d->multiSelectionEnabled = false;
-
     this->initialiseNavigators();
     this->setWindowingInteractionStyle(true);
 
@@ -282,15 +277,6 @@ QWidget* medVtkView::navigatorWidget()
 QList <QWidget*> medVtkView::layerWidgets()
 {
     return d->layerWidgets;
-}
-
-void medVtkView::removeLayerFromCloseButton()
-{
-    QPushButton *button = dynamic_cast<QPushButton *>(this->sender());
-    if(!button)
-        return;
-    int layer = d->layerCloseButtonWidgets.indexOf(button);
-    this->removeLayer(layer);
 }
 
 void medVtkView::reset()
