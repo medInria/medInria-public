@@ -186,6 +186,9 @@ public:
 
     virtual medViewBackend * backend() const;
 
+    virtual QImage& generateThumbnail(const QSize& size);
+
+
 signals:
     void selected();
     void unselected();

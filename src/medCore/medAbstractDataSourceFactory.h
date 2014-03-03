@@ -45,7 +45,7 @@ public:
 
 public slots:
     /** Method to instantiate a plugin */
-    medAbstractDataSource *create(QString type,QWidget* parent = NULL);
+    medAbstractDataSource *create(QString type, QWidget *parent = NULL);
 protected:
     medAbstractDataSourceFactory();
     ~medAbstractDataSourceFactory();

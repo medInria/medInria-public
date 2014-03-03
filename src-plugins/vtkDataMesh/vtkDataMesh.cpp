@@ -31,6 +31,8 @@
 
 #include <QVTKWidget.h>
 
+#include <medDatabaseThumbnailHelper.h>
+
 class vtkDataMeshPrivate
 {
 public:
@@ -157,7 +159,7 @@ void vtkDataMesh::createThumbnails()
 {
     vtkPointSet * mesh = vtkPointSet::SafeDownCast(d->mesh->GetDataSet());
 
-    unsigned int w=128, h=128;
+    unsigned int w=medDatabaseThumbnailHelper::width, h=medDatabaseThumbnailHelper::height;
     QImage img(w, h, QImage::Format_RGB32);
     img.fill(0);
 
@@ -190,5 +192,5 @@ void vtkDataMesh::createThumbnails()
     pixels->SetArray(img.bits(), w*h*4, 1);
     window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
 
-    d->thumbnails.push_back (img);
+    d->thumbnails.push_back (img.mirrored(false,true));
 }

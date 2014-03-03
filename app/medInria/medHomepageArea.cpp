@@ -437,17 +437,10 @@ void medHomepageArea::onShowInfo()
 void medHomepageArea::onShowHelp()
 {
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
-//     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
-//     msgBox->setIcon ( QMessageBox::Information );
-//     msgBox->setText ( "Help ! Help !" );
-//     msgBox->exec();
-//     delete msgBox;
 }
 
 void medHomepageArea::onShowSettings()
 {
-    // emit showSettings is not deprecated here
-//    emit showSettings();
     d->settingsEditor->setTabPosition(QTabWidget::North);
     d->settingsEditor->initialize();
     d->settingsEditor->queryWidgets();
@@ -455,5 +448,4 @@ void medHomepageArea::onShowSettings()
 
     d->settingsWidget->setFocus();
 }
-
 

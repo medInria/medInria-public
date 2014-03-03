@@ -342,6 +342,8 @@ public:
     static medLinkIcon linkIcon;
     static medLinkWLIcon linkWLIcon;
     static medMaximizeIcon maximizeIcon;
+
+    QImage thumbnail;
 };
 
 
@@ -700,6 +702,7 @@ v3dView::~v3dView()
         interactor->disable();
         interactor->deleteLater();
     }
+
 
     d->renderer2d->SetRenderWindow ( NULL );
     d->renderer3d->SetRenderWindow ( NULL );
@@ -2532,4 +2535,41 @@ void v3dView::onMainWindowDeactivated()
     //This function must contains all the different actions that we want to happen in case the software loses the focus
     if (property("ZoomMode")=="RubberBand")
         onZoomModePropertySet("Normal"); 
+}
+
+
+QImage& v3dView::generateThumbnail(const QSize &size)
+{
+    if(!d->data)
+    {
+        d->thumbnail = QImage(":/medCore/pixmaps/default_thumbnail.png");
+        return d->thumbnail;
+    }
+
+    int w(size.width()), h(size.height());
+
+    d->view2d->SetRenderer (d->renderer2d);
+    d->view2d->SetBackground ( 0.0, 0.0, 0.0 );
+    d->view2d->CursorFollowMouseOff();
+    d->view2d->ShowImageAxisOff();
+    d->view2d->ShowScalarBarOff();
+    d->view2d->ShowAnnotationsOff();
+    d->view2d->ShowRulerWidgetOff();
+
+    d->renWin->SetOffScreenRendering(1);
+    d->view2d->SetRenderWindow (d->renWin);
+
+    d->vtkWidget->SetRenderWindow(d->renWin);
+    d->widget->resize(w,h+15);
+    d->renWin->vtkRenderWindow::SetSize(w,h);
+    d->view2d->Reset();
+    d->view2d->Render();
+
+
+//    d->thumbnail = d->thumbnail.mirrored(false,true);
+    d->thumbnail =  QPixmap::grabWidget(d->vtkWidget).scaled(w,h, Qt::KeepAspectRatio).toImage().convertToFormat(QImage::Format_RGB32);
+
+    d->renWin->SetOffScreenRendering(0);
+
+    return d->thumbnail;
 }

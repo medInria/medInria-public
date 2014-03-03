@@ -32,9 +32,9 @@ public:
     QLabel * infoText;
 };
 
-medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
+medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
-    d->filesystemWidget = new QWidget(parent);
+    d->filesystemWidget = new QWidget();
 
     d->finder = new dtkFinder (d->filesystemWidget);
     d->finder->allowFileBookmarking(false);
@@ -45,7 +45,7 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     d->path->setPath(QDir::homePath());
 
     d->toolbar = new dtkFinderToolBar (d->filesystemWidget);
-    d->toolbar->setObjectName("largeToolbarWidget");
+    d->toolbar->setObjectName("toolbarWidget");
     d->toolbar->setPath(QDir::homePath());
 
     d->infoText = new QLabel(d->filesystemWidget);
@@ -53,8 +53,9 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     d->infoText->setText("");
     d->infoText->setVisible(false);
     d->infoText->setTextFormat(Qt::RichText);
+    
 
-    d->actionsToolBox = new medActionsToolBox(parent, true);
+    d->actionsToolBox = new medActionsToolBox(0, true);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;
@@ -81,7 +82,7 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexRequested()));
     connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
-    
+
     QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
     QHBoxLayout *toolbar_layout = new QHBoxLayout();
     QWidget * toolbarWidget = new QWidget;
@@ -98,7 +99,7 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     filesystem_layout->addWidget(toolbarWidget);
     filesystem_layout->addWidget(d->finder);
     filesystem_layout->addWidget(d->infoText);
-
+    
     connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));

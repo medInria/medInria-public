@@ -50,19 +50,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # db related items
   database/medDatabaseSearchPanel.h
   database/medDatabaseView.h
-  database/medDatabaseNavigator.h
-  database/medDatabaseNavigatorItem.h
-  database/medDatabaseNavigatorItemOverlay.h
-  database/medDatabaseNavigatorItemGroup.h
-  database/medDatabaseNavigatorView.h
-  database/medDatabasePreview.h
-  database/medDatabasePreviewArrow.h
-  database/medDatabasePreviewItem.h
-  database/medDatabasePreviewItemGroup.h
-  database/medDatabasePreviewSelector.h
-  database/medDatabasePreviewTooltip.h
-  database/medDatabasePreviewView.h
   database/medDatabaseEditItemDialog.h
+  database/medDatabasePreview.h
+  database/medDatabaseCompactWidget.h
+  database/medDatabaseThumbnailHelper.h
 
   # commonWidgets:
   commonWidgets/medDropSite.h
@@ -70,8 +61,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
   commonWidgets/medGroupBox.h
-  commonWidgets/medMultipleImageSelectionWidget.h
-  commonWidgets/medThumbnailContainer.h
   commonWidgets/medHomepageButton.h
 
   # factories
@@ -125,8 +114,6 @@ set(${PROJECT_NAME}_HEADERS
   LUT/medLUTToXMLWriter.h
   LUT/medXMLToLUTReader.h
 
-  database/medDatabaseNavigatorController.h
-  database/medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
@@ -148,30 +135,14 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medStatusBar.cpp
   commonWidgets/medQuickAccessMenu.cpp
   commonWidgets/medGroupBox.cpp
-  commonWidgets/medMultipleImageSelectionWidget.cpp
-  commonWidgets/medThumbnailContainer.cpp
   commonWidgets/medHomepageButton.cpp
 
   # db related items
   database/medDatabaseSearchPanel.cpp
   database/medDatabaseView.cpp
-  database/medDatabaseNavigator.cpp
-  database/medDatabaseNavigatorController.cpp
-  database/medDatabaseNavigatorItem.cpp
-  database/medDatabaseNavigatorItemOverlay.cpp
-  database/medDatabaseNavigatorItemGroup.cpp
-  database/medDatabaseNavigatorScene.cpp
-  database/medDatabaseNavigatorView.cpp
-  database/medDatabasePreview.cpp
-  database/medDatabasePreviewArrow.cpp
-  database/medDatabasePreviewController.cpp
-  database/medDatabasePreviewItem.cpp
-  database/medDatabasePreviewItemGroup.cpp
-  database/medDatabasePreviewScene.cpp
-  database/medDatabasePreviewSelector.cpp
-  database/medDatabasePreviewTooltip.cpp
-  database/medDatabasePreviewView.cpp
   database/medDatabaseEditItemDialog.cpp
+  database/medDatabasePreview.cpp
+  database/medDatabaseCompactWidget.cpp
 
   # factories
   factories/medSettingsWidgetFactory.cpp

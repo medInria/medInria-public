@@ -47,7 +47,7 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     //this hierarchy is clearly broken: medPacsDataSource inherits from QObject,
     //pacsWidget is a widget, and its parent is the browserArea,
     //see destructor.
-    d->pacsWidget = new medPacsWidget(parent);
+    d->pacsWidget = new medPacsWidget();
     d->pacsSelector = new medPacsSelector(d->pacsWidget);
     d->pacsHostToolBox = new medBrowserPacsHostToolBox(d->pacsWidget);
     d->toolBoxes.push_back(d->pacsHostToolBox);

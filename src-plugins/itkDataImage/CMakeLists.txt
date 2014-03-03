@@ -39,11 +39,18 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+# Required for thumbnail generation
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
 ## #################################################################
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC itkDataImagePlugin.h)
+set(${PROJECT_NAME}_HEADERS_MOC
+  itkDataImagePlugin.h
+)
+
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   itkDataImage.h
@@ -71,9 +78,11 @@ set(${PROJECT_NAME}_HEADERS
   itkDataImageRGB3.h
   itkDataImageRGBA3.h
   itkDataImageShort4.h
-  )
+)
 
-set(${PROJECT_NAME}_SOURCES itkDataImagePlugin.cpp)
+set(${PROJECT_NAME}_SOURCES 
+  itkDataImagePlugin.cpp
+)
 
 ## #################################################################
 ## Build rules
@@ -99,6 +108,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   dtkItkLogForwarder
+  vtkImageView
+  QVTK
   ITKStatistics
 )
 

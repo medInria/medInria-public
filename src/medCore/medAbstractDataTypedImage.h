@@ -17,7 +17,8 @@
 #include <medAbstractDataImage.h>
 
 template <unsigned DIM,typename T>
-class medAbstractDataTypedImage: public medAbstractDataImage {
+class medAbstractDataTypedImage: public medAbstractDataImage
+{
 public:
 
     medAbstractDataTypedImage() { qDebug() << "constructing medAbstractDataTypeImage";}

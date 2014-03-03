@@ -24,6 +24,12 @@ class medClutEditor;
 class QStackedWidget;
 class QSplitter;
 class medPatientSelectorToolBox;
+class medToolBoxBody;
+class medToolBoxTab;
+class medDatabaseDataSource;
+class medFileSystemDataSource;
+class medAbstractDataSource;
+class QTabWidget;
 
 
 class medWorkspaceAreaPrivate
@@ -31,24 +37,23 @@ class medWorkspaceAreaPrivate
 public:
 
     medToolBoxContainer *toolBoxContainer;
-    QFrame *navigatorContainer;
+    QWidget *navigatorContainer;    
     QWidget *viewContainer;  
-    medPatientSelectorToolBox *patientToolBox;   
-    medDatabaseNavigator *navigator;
+    
+    medDatabaseDataSource *dbSource;
+    medFileSystemDataSource *fsSource;
+    QList <medAbstractDataSource*> dataSources;
+    
     QPointer<medClutEditor>  transFun;
     QStackedWidget *stack; 
     QSplitter * splitter;
-    QGridLayout *navigatorContainerLayout;
     QMutex mutex;
     QHash<QString,medWorkspace*> workspaces;
-    QPropertyAnimation *navigatorAnimation;
 
     void restoreSplitterSize(Qt::Orientation orientation);
     void saveSplitterSize(medWorkspace::LayoutType layout);
 
 public:
-    medDataIndex currentPatient;
-    QHash<int, int> currentPatientContainer;
     QString currentWorkspaceName;
     medWorkspace *currentWorkspace;
     medWorkspace::LayoutType currentLayout;

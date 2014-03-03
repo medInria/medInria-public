@@ -37,7 +37,8 @@
 
 #include <QtGui>
 
-struct AlgorithmInfo {
+struct AlgorithmInfo 
+{
     QByteArray algName;
     QString localizedName;
     QString description;
@@ -76,12 +77,8 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
     QVBoxLayout *displayLayout = new QVBoxLayout(displayWidget);
 
     this->setTitle("Segmentation");
-
-
-
-
+    
     // Process section
-    // --- Setting up custom toolboxes list ---
     d->toolBoxes = new QComboBox(displayWidget);
     displayLayout->addWidget(d->toolBoxes);
     d->toolBoxes->addItem("Choose algorithm");
@@ -96,12 +93,16 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
             details->description,
             Qt::ToolTipRole);
     }
+
     // progression stack
     d->progression_stack = new medProgressionStack(displayWidget);
     displayLayout->addLayout( d->algorithmParameterLayout );
     displayLayout->addWidget( d->progression_stack );
-    
+
     this->addWidget(displayWidget);
+
+
+
 
     connect( d->toolBoxes, SIGNAL( currentIndexChanged(int) ), this, SLOT( onToolBoxChosen( int )) );
 

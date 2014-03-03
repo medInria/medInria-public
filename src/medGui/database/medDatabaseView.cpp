@@ -55,6 +55,7 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
         else if (dynamic_cast<QAbstractItemModel *>(m_view->model()))
             item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
+        // items that failed to open will have a pinkish background
         if(item)
         {               
             if(index.column()>0)
@@ -257,7 +258,8 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)
-        emit (open(item->dataIndex()));
+        if(item->dataIndex().isValidForSeries())
+            emit (open(item->dataIndex()));
 }
 
 void medDatabaseView::onViewSelectedItemRequested(void)
