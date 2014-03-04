@@ -1,13 +1,12 @@
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013. All rights reserved.
+See LICENSE.txt for details.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
 
@@ -27,8 +26,8 @@
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 
-#include <medDiffusionSelectorToolBox.h>
-#include <medDiffusionAbstractToolBox.h>
+#include "medDiffusionSelectorToolBox.h"
+#include "medDiffusionAbstractToolBox.h"
 
 class medDiffusionSelectorToolBoxPrivate
 {
@@ -36,20 +35,20 @@ public:
 
     QHash<QString, medDiffusionAbstractToolBox*> toolBoxes;
     medDiffusionAbstractToolBox *currentToolBox;
-    
+
     medDiffusionSelectorToolBox::SelectorType selectorType;
-    
+
     QLabel *gradientFileLabel;
     QPushButton *browseButton;
-    
+
     QPushButton *runButton;
     QPushButton *cancelButton;
-    
+
     QComboBox *methodCombo;
     QVBoxLayout *mainLayout;
-    
+
     QLabel *inputLabel;
-    
+
     dtkSmartPointer <medAbstractDataImage> input;
 };
 
@@ -61,12 +60,12 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     // /////////////////////////////////////////////////////////////////
     // main page
     // /////////////////////////////////////////////////////////////////
-    QWidget *mainPage        = new QWidget(this);
-    
+    QWidget *mainPage = new QWidget(this);
+
     QString labelTitle;
     QString toolboxCategory;
     QString runButtonText;
-    
+
     switch (type)
     {
         case Estimation:
@@ -74,13 +73,13 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
             toolboxCategory = "diffusion-estimation";
             runButtonText = tr("Estimate model");
             break;
-            
+
         case ScalarMaps:
             labelTitle = tr("Scalar maps:");
             toolboxCategory = "diffusion-scalar-maps";
             runButtonText = "";
             break;
-            
+
         case Tractography:
         default:
             labelTitle = tr("Tractography algorithm:");
@@ -88,8 +87,8 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
             runButtonText = tr("Track fibers");
             break;
     }
-    
-    QLabel  *methodLabel = new QLabel(labelTitle, mainPage);
+
+    QLabel *methodLabel = new QLabel(labelTitle, mainPage);
     d->methodCombo = new QComboBox(mainPage);
 
     QHBoxLayout *methodLayout = new QHBoxLayout;
@@ -129,14 +128,14 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     d->browseButton = 0;
     d->runButton = 0;
     d->cancelButton = 0;
-    
+
     if (d->selectorType == Estimation)
     {
         QHBoxLayout *gradientFileLayout = new QHBoxLayout;
         QLabel *gradientDescriptionLabel = new QLabel(mainPage);
         gradientDescriptionLabel->setText(tr("Gradient file:"));
         gradientFileLayout->addWidget(gradientDescriptionLabel);
-        
+
         d->gradientFileLabel = new QLabel(mainPage);
         d->gradientFileLabel->setText("None");
         d->gradientFileLabel->setAlignment(Qt::AlignRight);
@@ -147,25 +146,25 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
         d->browseButton->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
         connect(d->browseButton, SIGNAL(clicked()), this, SLOT(setInputGradientFile()));
         gradientFileLayout->addWidget(d->browseButton);
-        
+
         d->mainLayout->addLayout(gradientFileLayout);
     }
-    
+
     if (d->selectorType != ScalarMaps)
     {
         d->runButton = new QPushButton(runButtonText, mainPage);
         d->runButton->setEnabled(false);
         d->mainLayout->addWidget(d->runButton);
-        
+
         connect(d->runButton,SIGNAL(clicked()),this,SLOT(createProcess()));
-        
+
         d->cancelButton = new QPushButton(tr("Cancel"),mainPage);
         d->cancelButton->hide();
         d->mainLayout->addWidget(d->cancelButton);
-        
+
         connect(d->cancelButton,SIGNAL(clicked()),this,SIGNAL(processCancelled()));
     }
-    
+
     this->addWidget(mainPage);
     this->setEnabled(false);
 }
@@ -192,7 +191,7 @@ void medDiffusionSelectorToolBox::chooseToolBox(int id)
         {
             toolbox->header()->hide();
             d->toolBoxes[identifier] = toolbox;
-            
+
             if (d->selectorType == ScalarMaps)
             {
                 medDiffusionScalarMapsAbstractToolBox *scalarToolBox = qobject_cast <medDiffusionScalarMapsAbstractToolBox *> (toolbox);
@@ -209,11 +208,11 @@ void medDiffusionSelectorToolBox::chooseToolBox(int id)
             d->mainLayout->removeWidget ( d->currentToolBox );
             d->currentToolBox = 0;
             this->setAboutPluginVisibility(false);
-            
+
             if (d->selectorType != ScalarMaps)
                 d->runButton->setEnabled(false);
         }
-        
+
         return;
     }
 
@@ -235,7 +234,7 @@ void medDiffusionSelectorToolBox::chooseToolBox(int id)
     d->mainLayout->addWidget ( toolbox );
 
     d->currentToolBox = toolbox;
-    
+
     if (d->selectorType != ScalarMaps)
         d->runButton->setEnabled(true);
 }
@@ -244,9 +243,9 @@ void medDiffusionSelectorToolBox::selectInputImage(const medDataIndex& index)
 {
     if (!index.isValid())
         return;
-    
+
     dtkSmartPointer <medAbstractDataImage> data = medDataManager::instance()->data (index);
-    
+
     this->setInputImage(data);
 }
 
@@ -257,10 +256,10 @@ void medDiffusionSelectorToolBox::setInputImage(medAbstractDataImage *data)
 
     this->setEnabled(true);
     d->input = data;
-    
+
     d->inputLabel->setText(data->metadata(medMetaDataKeys::SeriesDescription.key()));
     d->inputLabel->setToolTip(data->metadata(medMetaDataKeys::SeriesDescription.key()));
-    
+
     if (d->selectorType == Estimation)
         this->checkInputGradientDirections();
 }
@@ -270,13 +269,13 @@ void medDiffusionSelectorToolBox::clearInput()
     d->input = 0;
     d->inputLabel->setText("Please drop an image");
     d->inputLabel->setToolTip("Please drop an image");
-    
+
     if (d->selectorType == Estimation)
     {
         d->gradientFileLabel->setText("None");
         d->gradientFileLabel->setToolTip("None");
     }
-    
+
     this->setEnabled(false);
 }
 
@@ -284,7 +283,7 @@ void medDiffusionSelectorToolBox::checkInputGradientDirections()
 {
     if (!d->input)
         return;
-        
+
     if (d->input->hasMetaData ("DiffusionGradientList"))
     {
         d->gradientFileLabel->setText("Already provided");
@@ -297,27 +296,27 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
     QFileDialog * gradientFileDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
     gradientFileDialog->setOption(QFileDialog::DontUseNativeDialog);
     gradientFileDialog->setAcceptMode(QFileDialog::AcceptOpen);
-    
+
     QCheckBox* gradientsInImageCoordinatesCheckBox = new QCheckBox(gradientFileDialog);
     gradientsInImageCoordinatesCheckBox->setChecked(true);
     gradientsInImageCoordinatesCheckBox->setToolTip(tr("Uncheck this box if your gradients are in world coordinates."));
-    
+
     QLayout* layout = gradientFileDialog->layout();
     QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
-    
+
     // nasty hack to hide the filter list
     QWidget * filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
     QWidget * filtersList = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
     filtersLabel->hide(); filtersList->hide();
-    
+
     if (gridbox)
     {
         gridbox->addWidget(new QLabel("Gradients in image coordinates?", gradientFileDialog), gridbox->rowCount()-1, 0);
         gridbox->addWidget(gradientsInImageCoordinatesCheckBox, gridbox->rowCount()-1, 1);
     }
-    
+
     gradientFileDialog->setLayout(gridbox);
-    
+
     QString fileName;
     bool gradientsInImageCoordinates = false;
     if ( gradientFileDialog->exec() )
@@ -325,31 +324,31 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
         fileName = gradientFileDialog->selectedFiles().first();
         gradientsInImageCoordinates = gradientsInImageCoordinatesCheckBox->isChecked();
     }
-    
+
     delete gradientFileDialog;
-    
+
     if (fileName.isEmpty())
         return;
-    
+
     dtkAbstractData *gradients = dtkAbstractDataFactory::instance()->create ("itkDataDiffusionGradientList");
     if (!gradients)
         return;
-    
+
     if (!gradients->read(fileName))
         return;
-    
+
     int i=0;
     QStringList gradientList;
-    
+
     medAbstractDataImage::MatrixType orientationMatrix;
     orientationMatrix = d->input->orientationMatrix();
-    
+
     while (double *grad=(double *)(gradients->data(i)))
     {
         double gradVals[3];
         for (unsigned int j = 0;j < 3;++j)
             gradVals[j] = grad[j];
-        
+
         if (!gradientsInImageCoordinates)
         {
             for (unsigned int j = 0;j < 3;++j)
@@ -359,7 +358,7 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
                     gradVals[j] += orientationMatrix[k][j] * grad[k];
             }
         }
-        
+
         QString s_gx, s_gy, s_gz;
         s_gx = QString::number (gradVals[0], 'g', 10);
         s_gy = QString::number (gradVals[1], 'g', 10);
@@ -369,7 +368,7 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
         gradientList.append (s_gz);
         i++;
     }
-    
+
     if (d->input->tDimension()==gradientList.count()/3)
     {
         d->input->setMetaData ("DiffusionGradientList", gradientList);
@@ -405,19 +404,19 @@ void medDiffusionSelectorToolBox::createProcess()
         medMessageController::instance()->showError("No diffusion gradient data provided for estimation",3000);
         return;
     }
-    
+
     QString processText;
-    
+
     switch (d->selectorType)
     {
         case Estimation:
             processText = tr("Model estimation");
             break;
-            
+
         case ScalarMaps:
             processText = tr("Scalar map computation");
             break;
-            
+
         case Tractography:
         default:
             processText = tr("Fiber tracking");
@@ -429,7 +428,7 @@ void medDiffusionSelectorToolBox::createProcess()
         d->runButton->hide();
         d->cancelButton->show();
     }
-    
+
     QString processName = d->currentToolBox->processName();
     emit processRequested(processName, processText);
 }
@@ -464,7 +463,7 @@ void medDiffusionSelectorToolBox::clear(void)
     this->setAboutPluginVisibility(false);
 
     this->clearInput();
-    
+
     if (d->selectorType != ScalarMaps)
         d->runButton->setEnabled(false);
 }

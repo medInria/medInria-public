@@ -15,7 +15,8 @@
 
 #include <typeinfo>
 #include <vector>
-#include "medCoreExport.h"
+
+#include <medCoreExport.h>
 #include <medAbstractData.h>
 
 class MEDCORE_EXPORT medAbstractImageData: public medAbstractData
@@ -34,7 +35,6 @@ public:
 
     virtual int   Dimension() const;
     virtual const PixId& PixelType() const;
-    
     virtual MatrixType orientationMatrix();
 
     virtual int xDimension();
