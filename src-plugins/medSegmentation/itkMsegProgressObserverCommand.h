@@ -32,21 +32,21 @@ namespace itk
     typedef itk::SmartPointer<Self>        Pointer;
     typedef itk::SmartPointer<const Self>  ConstPointer;
     
-    itkTypeMacro( MsegProgressObserverCommand, Command );
+    itkTypeMacro(MsegProgressObserverCommand, Command);
     itkNewMacro (Self);
     
     void Execute(Object *caller, const EventObject &event);
     void Execute(const Object *caller, const EventObject &event);
     
-    void SetAlgorithm (mseg::AlgorithmGeneric* alg)
+    void SetAlgorithm (AlgorithmGeneric* alg)
     { m_Algorithm = alg; }
 
   protected:
-    MsegProgressObserverCommand(){ m_Algorithm = 0; };
-    virtual ~MsegProgressObserverCommand(){};
+    MsegProgressObserverCommand(){ m_Algorithm = 0; }
+    virtual ~MsegProgressObserverCommand(){}
     
   private:
-    mseg::AlgorithmGeneric* m_Algorithm;
+    AlgorithmGeneric* m_Algorithm;
   };
 }
 

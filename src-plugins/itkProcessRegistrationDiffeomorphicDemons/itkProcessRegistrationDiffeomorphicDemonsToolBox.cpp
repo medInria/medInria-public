@@ -39,7 +39,7 @@ class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
-    medProgressionStack * progression_stack;
+    medProgressionStack * progressionStack;
     QComboBox * updateRuleBox;
     QComboBox * gradientTypeBox;
     QDoubleSpinBox * maxStepLengthBox;
@@ -125,13 +125,13 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     layout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
 
     // progression stack
-    d->progression_stack = new medProgressionStack(widget);
+    d->progressionStack = new medProgressionStack(widget);
 //    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-//    progressStackLayout->addWidget(d->progression_stack);
+//    progressStackLayout->addWidget(d->progressionStack);
 
     this->addWidget(widget);
     this->addWidget(runButton);
-    this->addWidget(d->progression_stack);
+    this->addWidget(d->progressionStack);
 
     //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
     medPluginManager* pm = medPluginManager::instance();
@@ -228,16 +228,16 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 
     runProcess->setProcess (process);
 
-    d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-    d->progression_stack->setActive(runProcess,true);
-    d->progression_stack->disableCancel(runProcess);
+    d->progressionStack->addJobItem(runProcess, tr("Progress:"));
+    d->progressionStack->setActive(runProcess,true);
+    d->progressionStack->disableCancel(runProcess);
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
     //First have the moving progress bar,
     //and then display the remaining % when known
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progression_stack, SLOT(setActive(QObject*,bool)));
+             d->progressionStack, SLOT(setActive(QObject*,bool)));
 
     medJobManager::instance()->registerJobItem(runProcess,process->identifier());
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));

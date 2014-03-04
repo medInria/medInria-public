@@ -36,12 +36,11 @@ class medAnnotationData;
 class dtkAbstractProcessFactory;
 class medSeedPointAnnotationData;
 
-namespace mseg {
 
 //! Custom segmentation toolbox to control a connected threshold segmentation.
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdToolbox : public medSegmentationAbstractToolBox
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     AlgorithmConnectedThresholdToolbox( QWidget *parent );
     ~AlgorithmConnectedThresholdToolbox();
@@ -62,6 +61,8 @@ public:
     //! Get a human readable name for this widget.
     /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */
     static QString s_name(const QObject * trObj =  NULL);
+
+    dtkPlugin* plugin();
 
 public slots:
     void onViewMousePress(medAbstractImageView *view, const QVector3D &vec);
@@ -84,6 +85,11 @@ protected:
 
     // update with seed point data.
     void updateTableRow(int row);
+
+signals:
+    void installEventFilterRequest(medViewEventFilter *filter);
+
+
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
@@ -105,7 +111,5 @@ private:
     QString m_noDataText;
 
 };
-
-} // namespace mseg
 
 

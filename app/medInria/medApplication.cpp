@@ -232,7 +232,8 @@ void medApplication::redirectMessageToSplash(const QString &message)
 
 //TODO see next TODO - RDE
 // Simple new function used for factories.
-namespace  {
+namespace
+{
     template< class T >
     dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
 }
@@ -260,8 +261,10 @@ void medApplication::registerToFactories()
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>("Filtering",
                                                                   tr("Filtering"),
                                                                   tr("Filter workspace"));
-    //TODO why it is noty like for the other workspace ? - RDE
-    medSegmentationWorkspace::registerWithViewerWorkspaceFactory();
+
+    viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>("Segmentation",
+                                                                     tr("Segmentation"),
+                                                                     tr("Segment Images"));
 
     //Register settingsWidgets
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
@@ -281,7 +284,7 @@ void medApplication::registerToFactories()
                                                                                 tr("Interaction"),
                                                                                 tr("View Interaction settings"));
     //Register annotations
-    //TODO there is obviously sometjing that have to be done here. - RDE
+    //TODO there is obviously something that have to be done here. - RDE
     dtkAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType(medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
 }

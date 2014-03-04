@@ -21,6 +21,7 @@
 #include <medDataIndex.h>
 #include <medSegmentationSelectorToolBox.h>
 #include <medMetaDataKeys.h>
+#include <medPluginManager.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -34,9 +35,8 @@
 #include <algorithm>
 #include <set>
 
-namespace mseg {
 
-    static const QString SEED_POINT_ANNOTATION_DATA_NAME = medSeedPointAnnotationData::s_description();
+static const QString SEED_POINT_ANNOTATION_DATA_NAME = medSeedPointAnnotationData::s_description();
 
 class SingleClickEventFilter : public medViewEventFilter
 {
@@ -143,7 +143,7 @@ void AlgorithmConnectedThresholdToolbox::onAddSeedPointPressed()
     m_viewFilter = ( new SingleClickEventFilter(this->segmentationToolBox(), this ) );
 
     m_viewState = ViewState_PickingSeedPoint;
-    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+    emit installEventFilterRequest(m_viewFilter);
 }
 
 void AlgorithmConnectedThresholdToolbox::onRemoveSeedPointPressed()
@@ -181,7 +181,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
 {
     dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
 
-    dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg =
+    dtkSmartPointer <AlgorithmConnectedThreshold> alg =
             factory->createSmartPointer( AlgorithmConnectedThreshold::s_identifier() );
 
     alg->setHighThreshold( this->m_highThresh->value() );
@@ -192,7 +192,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
         alg->addSeedPoint( m_seedPoints->centerWorld(i) );
     }
 
-    this->segmentationToolBox()->run( alg );
+//    this->segmentationToolBox()->run( alg );
 
 }
 void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *medData )
@@ -251,7 +251,7 @@ void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *medData )
 void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractImageView *view, const QVector3D &vec )
 {
     if (!m_seedPoints) {
-        setData( medSegmentationSelectorToolBox::viewData(view) );
+//        setData( medSegmentationSelectorToolBox::viewData(view) );
     }
 
     int iSeed = m_seedPoints->getNumberOfSeeds();
@@ -268,7 +268,7 @@ void AlgorithmConnectedThresholdToolbox::onViewMousePress( medAbstractImageView 
     if ( ViewState_PickingSeedPoint == m_viewState ) {
 
         this->addSeedPoint( view, vec );
-        this->segmentationToolBox()->removeViewEventFilter( m_viewFilter );
+//        this->segmentationToolBox()->removeViewEventFilter( m_viewFilter );
         m_viewState = ViewState_None;
     }
 }
@@ -344,15 +344,9 @@ void AlgorithmConnectedThresholdToolbox::updateTableRow( int row )
 }
 
 
-
-
-
-
-
-
-
-
-
-
-} // namespace mseg
-
+dtkPlugin* AlgorithmConnectedThresholdToolbox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin("segmentationPlugin");
+    return plugin;
+}

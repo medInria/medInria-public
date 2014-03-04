@@ -335,12 +335,13 @@ QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)
     // Convert VTK display coordinates to Qt (flipped in Y)
     return QPointF( dx, sizey - 1 - dy );
 }
+
 QVector3D medVtkView::mapDisplayToWorldCoordinates(const QPointF & scenePoint)
 {
     // The following code is implemented without calling ren->SetWorldPoint,
     // because that generates an unnecessary modified event.
 
-    vtkRenderer * ren = d->currentView->GetRenderer();
+    vtkRenderer * ren = d->view2d->GetRenderer();
 
     /* get physical window dimensions */
     vtkWindow * win = ren->GetVTKWindow();
@@ -368,7 +369,7 @@ QVector3D medVtkView::mapDisplayToWorldCoordinates(const QPointF & scenePoint)
         //vtkCamera * cam = ren->GetActiveCamera();
         double pointInDisplayPlane[3];
 
-        d->currentView->GetCurrentPoint(pointInDisplayPlane);
+        d->view2d->GetCurrentPoint(pointInDisplayPlane);
 
         ren->WorldToView(pointInDisplayPlane[0],pointInDisplayPlane[1],pointInDisplayPlane[2]);
         vz = pointInDisplayPlane[2];
@@ -380,8 +381,11 @@ QVector3D medVtkView::mapDisplayToWorldCoordinates(const QPointF & scenePoint)
 
 QVector3D medVtkView::viewCenter()
 {
-    vtkRenderer * ren = d->currentView->GetRenderer();
-    double fp[3];
+    vtkRenderer * ren;
+    if(this->is2D())
+        ren = d->view2d->GetRenderer();
+    else
+        ren = d->view3d->GetRenderer();    double fp[3];
     ren->GetActiveCamera()->GetFocalPoint( fp);
     return QVector3D( fp[0], fp[1], fp[2] );
 }
@@ -389,15 +393,23 @@ QVector3D medVtkView::viewCenter()
 QVector3D medVtkView::viewPlaneNormal()
 {
     double vpn[3];
-    vtkRenderer * ren = d->currentView->GetRenderer();
-    ren->GetActiveCamera()->GetViewPlaneNormal(vpn);
+    vtkRenderer * ren;
+    if(this->is2D())
+        ren = d->view2d->GetRenderer();
+    else
+        ren = d->view3d->GetRenderer();    ren->GetActiveCamera()->GetViewPlaneNormal(vpn);
     return QVector3D(vpn[0], vpn[1], vpn[2]);
 }
 
 QVector3D medVtkView::viewUp()
 {
     double vup[3];
-    vtkRenderer * ren = d->currentView->GetRenderer();
+    vtkRenderer * ren;
+    if(this->is2D())
+        ren = d->view2d->GetRenderer();
+    else
+        ren = d->view3d->GetRenderer();
+
     ren->GetActiveCamera()->GetViewUp(vup);
     return QVector3D(vup[0], vup[1], vup[2]);
 }
@@ -422,8 +434,8 @@ qreal medVtkView::scale()
     if (this->is2D())
     {
         // The height of the viewport in world coordinates
-        double camScale = d->currentView->GetRenderer()->GetActiveCamera()->GetParallelScale();
-        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        double camScale = d->view2d->GetRenderer()->GetActiveCamera()->GetParallelScale();
+        double heightInPx = d->view2d->GetRenderWindow()->GetSize()[1];
         // return pixels per world coord.
         scale = heightInPx / camScale;
     }
@@ -431,13 +443,13 @@ qreal medVtkView::scale()
     {
         // Return scale at fp.
         double vup[4];
-        d->currentView->GetRenderer()->GetActiveCamera()->GetViewUp(vup);
+        d->view3d->GetRenderer()->GetActiveCamera()->GetViewUp(vup);
         vup[3] = 0;  //intentionally zero and not one.
         double MVup[4];
-        d->currentView->GetRenderer()->GetActiveCamera()->GetViewTransformMatrix()->MultiplyPoint(vup, MVup);
+        d->view3d->GetRenderer()->GetActiveCamera()->GetViewTransformMatrix()->MultiplyPoint(vup, MVup);
         double lScale = vtkMath::Norm(MVup) / vtkMath::Norm(vup);
         //We now have the scale in viewport coords. (normalised).
-        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        double heightInPx = d->view3d->GetRenderWindow()->GetSize()[1];
         scale = heightInPx *lScale;
     }
 

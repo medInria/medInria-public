@@ -21,8 +21,6 @@
 
 #include <dtkLog/dtkLog.h>
 
-namespace mseg {
-
 QString AlgorithmGeneric::ms_interfaceName = "mseg::AlgorithmGeneric";
 
 class AlgorithmGenericPrivate 
@@ -143,7 +141,4 @@ void AlgorithmGeneric::setOutputMetadata()
 
     d->outputData->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesDesc);
 }
-
-
-} // namespace mseg
 

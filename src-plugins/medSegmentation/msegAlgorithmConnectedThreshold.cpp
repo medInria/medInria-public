@@ -23,8 +23,6 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 
-namespace mseg {
-
 template < typename TPixel, unsigned int VDimension > class AlgorithmConnectedThresholdPrivate : public HandlerFunc {
 public:
     AlgorithmConnectedThresholdPrivate( AlgorithmConnectedThreshold * self_ ) : self(self_) { }
@@ -143,6 +141,3 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( medAbstractDa
 
     return DTK_SUCCEED;
 }
-
-
-} //namespace mseg

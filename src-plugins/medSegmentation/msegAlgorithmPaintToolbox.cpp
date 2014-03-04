@@ -22,6 +22,7 @@
 #include <medMessageController.h>
 #include <medSegmentationSelectorToolBox.h>
 #include <medViewManager.h>
+#include <medPluginManager.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -42,23 +43,19 @@
 #include <algorithm>
 #include <set>
 
-namespace mseg {
-
 
 class ClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
-    ClickAndMoveEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmPaintToolbox *cb ) :
+    ClickAndMoveEventFilter(AlgorithmPaintToolbox *cb  = NULL) :
         medViewEventFilter(),
         m_cb(cb),
         m_paintState(PaintState::None),
         m_lastPaintState(PaintState::None)
         {}
 
-    virtual bool mousePressEvent(medAbstractImageView *view, QMouseEvent *mouseEvent )
+    virtual bool mousePressEvent(medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if(view->property("Orientation")=="3D")
-            return false;
         m_paintState = m_cb->paintState();
 
         if ( this->m_paintState == PaintState::DeleteStroke )
@@ -82,13 +79,17 @@ public:
 
         mouseEvent->accept();
 
-        medAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
-        m_cb->setData( viewData ); 
+        medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
+        if(!imageView)
+            return false;
 
-        if (view->is2D()) {
-            
+        medAbstractData * viewData = imageView->data(imageView->currentLayer());
+        m_cb->setData( viewData );
+
+        if (imageView->is2D())
+        {
             // Convert mouse click to a 3D point in the image.
-            QVector3D posImage = view->mapDisplayToWorldCoordinates( mouseEvent->posF() );
+            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->posF() );
 
             if (m_paintState != PaintState::Wand)
             {
@@ -96,36 +97,44 @@ public:
             }
             else
             {
-                m_cb->updateWandRegion(view, posImage);
+                m_cb->updateWandRegion(imageView, posImage);
                 m_paintState = PaintState::None; //Wand operation is over
             }
         }
         return mouseEvent->isAccepted();
     }
 
-    virtual bool mouseMoveEvent( medAbstractImageView *view, QMouseEvent *mouseEvent )
+    virtual bool mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
+        medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
+        if(!imageView)
+            return false;
+
         if ( this->m_paintState == PaintState::None )
             return false;
 
         mouseEvent->accept();
 
-        if (view->is2D())
+        if (imageView->is2D())
         {
-            QVector3D posImage = view->mapDisplayToWorldCoordinates( mouseEvent->posF() );
+            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->posF() );
             //Project vector onto plane
             this->m_points.push_back(posImage);
-            m_cb->updateStroke( this,view );
+            m_cb->updateStroke( this,imageView );
         }
         return mouseEvent->isAccepted();
     }
 
-    virtual bool mouseReleaseEvent( medAbstractImageView *view, QMouseEvent *mouseEvent )
+    virtual bool mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
+        medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
+        if(!imageView)
+            return false;
+
         if ( this->m_paintState == PaintState::None )
             return false;
         m_paintState = PaintState::None; //Painting is done
-        m_cb->updateStroke(this,view);
+        m_cb->updateStroke(this, imageView);
         this->m_points.clear();
         return true;
     }
@@ -138,6 +147,9 @@ private :
     PaintState::E m_paintState;
     PaintState::E m_lastPaintState;
 };
+
+
+
 
 AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     medSegmentationAbstractToolBox( parent),
@@ -330,8 +342,8 @@ void AlgorithmPaintToolbox::onStrokePressed()
     setPaintState(PaintState::Stroke);
     updateButtons();
     this->m_magicWandButton->setChecked(false);
-    m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
-    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+    m_viewFilter = ( new ClickAndMoveEventFilter(this) );
+    emit installEventFilterRequest(m_viewFilter);
 }
 
 void AlgorithmPaintToolbox::onMagicWandPressed()
@@ -345,8 +357,8 @@ void AlgorithmPaintToolbox::onMagicWandPressed()
     setPaintState(PaintState::Wand);
     updateButtons();
     this->m_strokeButton->setChecked(false);
-    m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
-    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+    m_viewFilter = ( new ClickAndMoveEventFilter(this) );
+    emit installEventFilterRequest(m_viewFilter);
 }
 
 void AlgorithmPaintToolbox::onApplyButtonPressed()
@@ -359,7 +371,7 @@ void AlgorithmPaintToolbox::onApplyButtonPressed()
     alg->setInput( this->m_maskData, medProcessPaintSegm::MaskChannel );
     alg->setInput( this->m_imageData, medProcessPaintSegm::ImageChannel );
 
-    this->segmentationToolBox()->run( alg );
+//    this->segmentationToolBox()->run( alg );
 }
 
 void AlgorithmPaintToolbox::onLabelChanged(int newVal)
@@ -404,7 +416,8 @@ void AlgorithmPaintToolbox::setData( medAbstractData *medData )
         return;
 
     // disconnect existing
-    if ( m_imageData ) {
+    if ( m_imageData )
+    {
         // TODO?
     }
 
@@ -617,8 +630,9 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
     {
         this->updateFromGuiItems();
 
-        if ( !m_imageData ) {
-            this->setData(this->segmentationToolBox()->viewData(view));
+        if ( !m_imageData )
+        {
+            this->setData(view->data(view->currentLayer()));
         }
         if (!m_imageData) {
             dtkWarn() << "Could not set data";
@@ -791,14 +805,14 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
         this->setWandSpinBoxValue(m_wandThresholdSizeSlider->value());
     }
 
-void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medAbstractImageView * view )
+void AlgorithmPaintToolbox::updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view)
 {
     this->updateFromGuiItems();
 
     const double radius = m_strokeRadius; // in image units.
 
     if ( !m_imageData ) {
-        this->setData(this->segmentationToolBox()->viewData(view));
+        this->setData(view->data(view->currentLayer()));
     }
     if (!m_imageData) {
         dtkWarn() << "Could not set data";
@@ -867,7 +881,8 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
     const int Ny = std::max( 1, (int)std::ceil(radius/m_sampleSpacing[1]) );
 
     MaskType::PixelType pxValue;
-    switch ( m_paintState ) {
+    switch ( m_paintState )
+    {
     case PaintState::Stroke :
         pxValue = m_strokeLabel;
         break;
@@ -901,6 +916,8 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
     m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
 
     m_maskAnnotationData->invokeModified();
+    qDebug() << "updateStroke !!";
+
 }
 
 void AlgorithmPaintToolbox::updateFromGuiItems()
@@ -968,10 +985,17 @@ void AlgorithmPaintToolbox::updateMouseInteraction() //Apply the current interac
 {
     if (m_paintState != PaintState::None)
     {
-        m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
-        this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+        m_viewFilter = ( new ClickAndMoveEventFilter(this) );
+        emit installEventFilterRequest(m_viewFilter);
     }
 }
 
-} // namespace mseg
+
+dtkPlugin* AlgorithmPaintToolbox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "segmentationPlugin" );
+    return plugin;
+}
+
 

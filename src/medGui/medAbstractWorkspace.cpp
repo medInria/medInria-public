@@ -44,7 +44,7 @@ public:
     QMultiHash <QString, QPair<medAbstractView*,int> > layersPool;
     QHash<int, QComboBox*> poolSelectors;
 
-    QList<medToolBox*> workspaceToolBoxes;
+    QList<medToolBox*> toolBoxes;
     medToolBox *selectionToolBox;
     medToolBox *layerListToolBox;
     medToolBox *interactorToolBox;
@@ -101,19 +101,19 @@ medAbstractWorkspace::~medAbstractWorkspace(void)
     d = NULL;
 }
 
-void medAbstractWorkspace::addWorkspaceToolBox(medToolBox *toolbox)
+void medAbstractWorkspace::addToolBox(medToolBox *toolbox)
 {
-    d->workspaceToolBoxes.append(toolbox);
+    d->toolBoxes.append(toolbox);
 }
 
-void medAbstractWorkspace::removeWorkspaceToolBox(medToolBox *toolbox)
+void medAbstractWorkspace::removeToolBox(medToolBox *toolbox)
 {
-    d->workspaceToolBoxes.removeOne(toolbox);
+    d->toolBoxes.removeOne(toolbox);
 }
 
-QList<medToolBox*> medAbstractWorkspace::workspaceToolBoxes() const
+QList<medToolBox*> medAbstractWorkspace::toolBoxes() const
 {
-    return d->workspaceToolBoxes;
+    return d->toolBoxes;
 }
 
 medToolBox* medAbstractWorkspace::selectionToolBox() const
@@ -156,7 +156,7 @@ bool medAbstractWorkspace::areToolBoxesVisible() const
 
 void medAbstractWorkspace::clearWorkspaceToolBoxes()
 {
-    foreach(medToolBox* tb,d->workspaceToolBoxes)
+    foreach(medToolBox* tb,d->toolBoxes)
         tb->clear();
 }
 

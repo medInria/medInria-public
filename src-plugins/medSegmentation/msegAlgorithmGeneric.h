@@ -26,8 +26,6 @@
 //Forward definitions
 class medAbstractData;
 
-namespace mseg {
-
 // Override in derived classes.
 struct HandlerFunc {
     virtual ~HandlerFunc() {}
@@ -42,7 +40,7 @@ class Controller;
 
 /** Generic segmentation algorithm */
 class AlgorithmGeneric : public medAbstractProcess {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     //! Interface name should be used by all dtkAbstractProcesses inheriting from this.
     static QString ms_interfaceName;
@@ -85,7 +83,6 @@ private:
 
 };
 
-} // namespace mseg
 
 #define MSEG_ADD_HANDLERS_FOR_ALL_SCALAR_3D_TYPES( handlerName, constructorParameters ) \
     this->addHandler( "itkDataImageChar3", new handlerName<char,3>(constructorParameters) ); \

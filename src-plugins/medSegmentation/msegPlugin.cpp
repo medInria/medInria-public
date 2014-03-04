@@ -18,7 +18,6 @@
 #include <medProcessPaintSegm.h>
 
 #include <dtkLog/dtkLog.h>
-namespace mseg {
 
 // /////////////////////////////////////////////////////////////////
 // PluginPrivate
@@ -30,7 +29,7 @@ public:
     // Class variables go here.
     static const char *s_Name;
 };
-const char * PluginPrivate::s_Name = "mseg::Plugin";
+const char * PluginPrivate::s_Name = "segmentationPlugin";
 
 // /////////////////////////////////////////////////////////////////
 // Plugin
@@ -112,5 +111,3 @@ QStringList Plugin::types() const
 }
 
 Q_EXPORT_PLUGIN2(Plugin, Plugin)
-
-} // namespace mseg

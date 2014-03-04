@@ -37,9 +37,7 @@ class medAnnotationData;
 
 class dtkAbstractProcessFactory;
 class medSeedPointAnnotationData;
-
-namespace mseg {
-    class ClickAndMoveEventFilter;
+class ClickAndMoveEventFilter;
 
 struct PaintState {
     enum E{ None, Wand, Stroke, DeleteStroke };
@@ -48,7 +46,7 @@ struct PaintState {
 //! Segmentation toolbox to allow manual painting of pixels
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegmentationAbstractToolBox
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
 
 
@@ -72,6 +70,8 @@ public:
 
     inline void setPaintState( PaintState::E value){m_paintState = value;}
     inline PaintState::E paintState(){return m_paintState;}
+
+    dtkPlugin* plugin();
 
 public slots:
     void onStrokePressed();
@@ -108,6 +108,9 @@ protected:
     void generateLabelColorMap(unsigned int numLabels);
 
     void updateButtons();
+
+signals:
+    void installEventFilterRequest(medViewEventFilter *filter);
 
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
@@ -161,6 +164,5 @@ private:
     PaintState::E m_paintState;
 };
 
-} // namespace mseg
 
 

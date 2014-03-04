@@ -42,7 +42,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
 //    }
 //    foreach(QString toolbox, toolboxNames)
 //    {
-//        this->addWorkspaceToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+//        this->addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
 //    }
 
 //    // -- Registration toolbox --
@@ -54,7 +54,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
 //    connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)),
 //            this, SLOT(removeToolBox(medToolBox *)));
 
-//    this->addWorkspaceToolBox(d->registrationToolBox);
+//    this->addToolBox(d->registrationToolBox);
 //
 }
 

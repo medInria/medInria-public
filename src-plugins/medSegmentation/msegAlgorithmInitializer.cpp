@@ -21,7 +21,6 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-namespace mseg {
 AlgorithmInitializer::AlgorithmInitializer()
 {
 }
@@ -63,5 +62,3 @@ bool AlgorithmInitializer::initializeWidgets()
 
     return ret;
 }
-
-} // namespace mseg

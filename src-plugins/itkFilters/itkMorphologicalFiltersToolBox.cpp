@@ -51,7 +51,7 @@ public:
     QComboBox * filters;
     dtkSmartPointer <itkFiltersProcessBase> process;
     
-    medProgressionStack * progression_stack;
+    medProgressionStack * progressionStack;
 };
 
 itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
@@ -97,14 +97,14 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     // Principal layout:
     QWidget *widget = new QWidget ( this );
 
-    d->progression_stack = new medProgressionStack ( widget );
+    d->progressionStack = new medProgressionStack ( widget );
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
     layout->addLayout ( dataTypeLayout );
     layout->addWidget ( d->filterWidget );
     layout->addWidget ( runButton );
-    layout->addWidget ( d->progression_stack );
+    layout->addWidget ( d->progressionStack );
     layout->addStretch ( 1 );
 
     widget->setLayout ( layout );
@@ -304,7 +304,7 @@ void itkMorphologicalFiltersToolBox::run ( void )
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess ( d->process );
 
-    d->progression_stack->addJobItem ( runProcess, tr ( "Progress:" ) );
+    d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
 
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );

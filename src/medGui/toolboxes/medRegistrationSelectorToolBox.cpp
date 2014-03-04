@@ -115,7 +115,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
         i++;
     }  
     
-    connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(onToolBoxChosen(int)));
+    connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
 
     // /////////////////////////////////////////////////////////////////
@@ -343,7 +343,7 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
  *
  * @param index The index of the toolbox that was chosen.
  */
-void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
+void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 {
     //get identifier for toolbox.
     QString id = d->toolboxes->itemData(index).toString();

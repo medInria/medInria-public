@@ -17,8 +17,8 @@
 
 
 class medAbstractView;
-class QGraphicsSceneMouseEvent;
-class medProgressionStack;
+class medViewEventFilter;
+
 class medSegmentationWorkspacePrivate;
 class medSegmentationSelectorToolBox;
 
@@ -45,25 +45,10 @@ public:
     //! Implement abstract method in base class.
     void setupViewContainerStack();
 
-    //! Register with factory, return true if successful.
-    static bool registerWithViewerWorkspaceFactory();
-
-    //!
-    medProgressionStack * progressionStack();
-
     medSegmentationSelectorToolBox * segmentationToobox();
 
-    void buildWorkspace(  );
-
-    
-
-signals:
-    void viewAdded(medAbstractView* view);
-    void viewRemoved(medAbstractView* view);
-
-public slots:
-    void onViewAdded(medAbstractView* view);
-    void onViewRemoved(medAbstractView* view);
+protected slots:
+    void addViewEventFilter(medViewEventFilter * filter );
 
 
 private:

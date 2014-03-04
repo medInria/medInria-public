@@ -227,7 +227,6 @@ void medViewContainer::setSelected(bool selec)
     if(d->selected)
     {
         emit containerSelected(d->uuid);
-        this->highlight();
     }
     else
     {

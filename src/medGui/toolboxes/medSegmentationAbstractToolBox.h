@@ -29,6 +29,8 @@ public:
              medSegmentationAbstractToolBox(QWidget *parent = 0);
     virtual ~medSegmentationAbstractToolBox();
 
+    virtual dtkPlugin* plugin() = 0;
+
 protected:
     //! Get the segmentationToolbox (usually one instance)
     medSegmentationSelectorToolBox *segmentationToolBox();

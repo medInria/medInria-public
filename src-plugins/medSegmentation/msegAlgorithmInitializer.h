@@ -13,8 +13,6 @@
 
 #pragma once
 
-namespace mseg {
-
 //! Register all algorithms with factory.
 class AlgorithmInitializer {
 public:
@@ -26,6 +24,5 @@ public:
     static bool initializeWidgets();
 };
 
-} // namespace mseg
 
 

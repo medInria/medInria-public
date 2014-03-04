@@ -20,9 +20,8 @@
 class medAbstractData;
 class dtkAbstractProcessFactory;
 
-namespace mseg {
 
-    template < typename TPixel, unsigned int N > class AlgorithmConnectedThresholdPrivate;
+template < typename TPixel, unsigned int N > class AlgorithmConnectedThresholdPrivate;
 
 /** Connected Region Growing segmentation algorithm 
  * Maintains a list of seed points and a high / low threshold.*/
@@ -73,7 +72,5 @@ private:
     double m_lowThreshold;
     double m_highThreshold;
 };
-
-} // namespace mseg
 
 

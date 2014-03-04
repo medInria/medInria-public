@@ -72,11 +72,11 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorks
 //    }
 //    foreach(QString toolbox, toolboxNames)
 //    {
-//       this->addWorkspaceToolBox(medToolBoxFactory::instance()->createToolBox(toolbox, parent));
+//       this->addToolBox(medToolBoxFactory::instance()->createToolBox(toolbox, parent));
 //    }
 
-//    this->addWorkspaceToolBox( d->diffusionToolBox );
-//    this->addWorkspaceToolBox( d->fiberBundlingToolBox );
+//    this->addToolBox( d->diffusionToolBox );
+//    this->addToolBox( d->fiberBundlingToolBox );
 
 }
 

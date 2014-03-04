@@ -50,9 +50,7 @@ public:
     virtual QString identifier() const = 0;
     virtual QString description() const = 0;
 
-    void addWorkspaceToolBox(medToolBox *toolbox);
-    void removeWorkspaceToolBox(medToolBox *toolbox);
-    QList <medToolBox*> workspaceToolBoxes() const;
+    QList <medToolBox*> toolBoxes() const;
     medToolBox* selectionToolBox() const;
     void setDatabaseVisibility(bool);
     bool isDatabaseVisible() const;
@@ -68,6 +66,8 @@ public slots:
     void updateLayersToolBox();
     void updateInteractorsToolBox();
     void clearWorkspaceToolBoxes();
+    void addToolBox(medToolBox *toolbox);
+    void removeToolBox(medToolBox *toolbox);
 
 protected slots:
     void changeCurrentLayer(int row);

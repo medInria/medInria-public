@@ -66,7 +66,7 @@ public slots:
     void onViewRemoved(dtkAbstractView*);
     void closeCompareView(int);
 
-    void onToolBoxChosen(int index);
+    void changeCurrentToolBox(int index);
     void clear();
     void onSaveTrans();
     void handleOutput(typeOfOperation type=algorithm,QString algoName="");

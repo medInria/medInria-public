@@ -64,7 +64,7 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
         i++;
     }
 
-    connect ( d->chooseFilter, SIGNAL ( activated ( int ) ), this, SLOT ( onToolBoxChosen ( int ) ) );
+    connect ( d->chooseFilter, SIGNAL ( activated ( int ) ), this, SLOT ( changeCurrentToolBox ( int ) ) );
 
     QWidget *displayWidget = new QWidget;
     d->filterLayout = new QVBoxLayout;
@@ -88,7 +88,6 @@ medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
 
 medFilteringAbstractToolBox* medFilteringSelectorToolBox::currentToolBox()
 {
-
     return d->currentToolBox;
 }
 
@@ -97,7 +96,7 @@ medAbstractData*  medFilteringSelectorToolBox::data()
     return d->inputData;
 }
 
-void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
+void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
 {    
     medFilteringAbstractToolBox *toolbox = NULL;
     //get identifier for toolbox.

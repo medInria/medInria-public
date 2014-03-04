@@ -90,10 +90,7 @@ bool medViewEventFilter::mouseMoveEvent( medAbstractView * vscene, QGraphicsScen
 bool medViewEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
     return false;
-
 }
-
-
 
 bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 {

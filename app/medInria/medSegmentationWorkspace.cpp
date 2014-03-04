@@ -22,6 +22,8 @@
 #include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
 #include <medToolBoxFactory.h>
+#include <medViewEventFilter.h>
+#include <medViewContainerManager.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -45,16 +47,18 @@ static QString msegWorkspaceSegmentationDescription = "Segmentation";
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
 medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
-    d->segmentationToolBox = new medSegmentationSelectorToolBox(this, parent );
+    d->segmentationToolBox = new medSegmentationSelectorToolBox(parent);
 
-    connect(d->segmentationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-    connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+//    connect(d->segmentationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+//    connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+    connect(d->segmentationToolBox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
+            this, SLOT(addViewEventFilter(medViewEventFilter*)));
 
     // Always have a parent.
     if (!parent)
         throw (std::runtime_error ("Must have a parent widget"));
 
-    this->addWorkspaceToolBox(d->segmentationToolBox);
+    this->addToolBox(d->segmentationToolBox);
 }
 
 void medSegmentationWorkspace::setupViewContainerStack()
@@ -73,46 +77,12 @@ medSegmentationWorkspace::~medSegmentationWorkspace(void)
     d = NULL;
 }
 
-bool medSegmentationWorkspace::registerWithViewerWorkspaceFactory()
-{
-    //TODO not to be here - RDE
-    return medWorkspaceFactory::instance()->registerWorkspace
-            <medSegmentationWorkspace>(
-                medSegmentationWorkspace::s_identifier(),
-                tr("Segmentation"),
-                tr("Segment Images"));
-}
-
 //static
 QString medSegmentationWorkspace::description( void ) const
 {
     return msegWorkspaceSegmentationDescription;
 }
 
-void medSegmentationWorkspace::onViewAdded(medAbstractView* view)
-{
-    emit viewAdded(view);
-}
-
-void medSegmentationWorkspace::onViewRemoved(medAbstractView* view)
-{
-    emit viewRemoved(view);
-}
-
-
-medProgressionStack * medSegmentationWorkspace::progressionStack()
-{
-    return d->segmentationToolBox->progressionStack();
-}
-
-void medSegmentationWorkspace::buildWorkspace(  )
-{
-    QWidget * parent = qobject_cast<QWidget *>(this->parent());
-    if ( !d->segmentationToolBox)
-        d->segmentationToolBox = new medSegmentationSelectorToolBox( this, parent );
-
-    this->addWorkspaceToolBox(d->segmentationToolBox);
-}
 
 medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 {
@@ -122,7 +92,7 @@ medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 
 QString medSegmentationWorkspace::s_identifier()
 {
-    return "msegWorkspace";
+    return "Segmentation";
 }
 
 QString medSegmentationWorkspace::identifier( void ) const
@@ -134,4 +104,15 @@ bool medSegmentationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
+}
+
+void medSegmentationWorkspace::addViewEventFilter( medViewEventFilter * filter)
+{
+    foreach(QUuid uuid, this->stackedViewContainers()->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        if(!container)
+            return;
+        filter->installOnView(container->view());
+    }
 }

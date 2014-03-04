@@ -60,7 +60,7 @@ public slots:
     /**
      * @brief instantiates the right process toolbox according to its description
      */
-    void onToolBoxChosen(int index);
+    void changeCurrentToolBox(int index);
     /**
      * @brief clear input data and the current process toolbox
      */
