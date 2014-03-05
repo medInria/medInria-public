@@ -127,8 +127,8 @@ void medViewContainerSplitter::checkIfStillDeserveToLive()
 
 void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *container)
 {
-    connect(container, SIGNAL(hSplitRequest()), this, SLOT(hSplit()));
-    connect(container, SIGNAL(vSplitRequest()), this, SLOT(vSplit()));
+    connect(container, SIGNAL(hSplitRequest()), this, SLOT(splitHorizontally()));
+    connect(container, SIGNAL(vSplitRequest()), this, SLOT(splitVertically()));
     connect(container, SIGNAL(splitRequest(medDataIndex, Qt::AlignmentFlag)),
             this, SLOT(split(medDataIndex, Qt::AlignmentFlag)));
     connect(container, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
