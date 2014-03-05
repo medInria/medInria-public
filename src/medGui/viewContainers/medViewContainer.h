@@ -71,8 +71,9 @@ signals:
     void vSplitRequest();
     void hSplitRequest();
     void splitRequest(medDataIndex, Qt::AlignmentFlag);
-    void contentChanged();
-    void contentRemoved();
+    void viewChanged();
+    void viewContentChanged();
+    void viewRemoved();
     void linkRequested(QUuid uuid, QString);
     void unlinkRequested(QUuid uuid);
 

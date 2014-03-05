@@ -182,8 +182,9 @@ void medViewContainersTestObject::testSetView()
     dtkSmartPointer<medQtView> view1 = new medQtView;
 
     // setup signal spies
-    QSignalSpy spy1 (container, SIGNAL(contentChanged()));
-    QSignalSpy spy2 (container, SIGNAL(contentRemoved()));
+    QSignalSpy spy1 (container, SIGNAL(viewChanged()));
+    QSignalSpy spy2 (container, SIGNAL(viewContentChanged()));
+    QSignalSpy spy3 (container, SIGNAL(viewRemoved()));
 
     // test setView:
     // - view should become visible
@@ -194,6 +195,7 @@ void medViewContainersTestObject::testSetView()
     QVERIFY(view1->viewWidget()->isVisible());
     QCOMPARE(container->view(), view1.data());
     QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 0);
 
     // test null view
     container->setView ((medAbstractView*)NULL);
@@ -208,15 +210,17 @@ void medViewContainersTestObject::testSetView()
     // test view replacement:
     // - view1 should be hidden
     // - view2 should become visible
-    // - spy1.count() should be 3
-    // - spy2.count() should be 2
+    // - spy1.count() should be 2
+    // - spy1.count() should be 2
+    // - spy3.count() should be 2
     // - container->view() should be view2
     container->setView(view2);
 
     QVERIFY(!view1->viewWidget()->isVisible());
     QVERIFY(view2->viewWidget()->isVisible());
     QCOMPARE(spy1.count(), 3);
-    QCOMPARE(spy2.count(), 2);
+    QCOMPARE(spy2.count(), 0);
+    QCOMPARE(spy3.count(), 2);
     QCOMPARE(container->view(), view2.data());
 
     // test closing:
@@ -225,7 +229,7 @@ void medViewContainersTestObject::testSetView()
     container->close();
 
     QVERIFY(!view2->viewWidget()->isVisible());
-    QCOMPARE(spy2.count(), 3);
+    QCOMPARE(spy3.count(), 3);
 }
 
 void medViewContainersTestObject::testAddData()
@@ -235,8 +239,8 @@ void medViewContainersTestObject::testAddData()
     container->show();
 
     // setup signal spies
-    QSignalSpy spy1 (container, SIGNAL(contentChanged()));
-    QSignalSpy spy2 (container, SIGNAL(contentRemoved()));
+    QSignalSpy spy1 (container, SIGNAL(viewChanged()));
+    QSignalSpy spy2 (container, SIGNAL(viewContentChanged()));
     QSignalSpy spy3 (container, SIGNAL(currentLayerChanged()));
 
     dtkSmartPointer<medAbstractData> data1 = createTestData();
@@ -247,8 +251,9 @@ void medViewContainersTestObject::testAddData()
     container->setView(view1);
     container->addData(data1);
 
-    // 2 contentChanged qsignals emitted, one for the view, one for the data addded
-    QCOMPARE(spy1.count(), 2);
+    // 2 viewChanged qsignals emitted, one for the view.
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 1);
     QCOMPARE(spy3.count(), 1);
 
 }

@@ -71,7 +71,7 @@ void medFilteringWorkspace::setupViewContainerStack()
         d->outputContainer->setMultiLayered(false);
         d->outputContainer->setAcceptDrops(false);
 
-        connect(d->inputContainer, SIGNAL(viewChanged()), this, SLOT(changeToolBoxInput()));
+        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
         connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
 
         this->stackedViewContainers()->lockTabs();

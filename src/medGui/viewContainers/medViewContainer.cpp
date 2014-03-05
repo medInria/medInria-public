@@ -270,7 +270,7 @@ void medViewContainer::setView(medAbstractView *view)
         tooltip += ")";
         d->poolSelector->setToolTip(tooltip);
 
-        emit contentChanged();
+        emit viewChanged();
     }
 }
 
@@ -380,7 +380,7 @@ void medViewContainer::removeInternView()
     d->toolBox = NULL;
     d->maximizedParameter->hide();
 
-    emit contentRemoved();
+    emit viewRemoved();
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
@@ -519,7 +519,7 @@ void medViewContainer::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
-    emit contentChanged();
+    emit viewContentChanged();
 }
 
 void medViewContainer::createDragLabels()
