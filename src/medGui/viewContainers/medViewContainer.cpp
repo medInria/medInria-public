@@ -642,20 +642,20 @@ void medViewContainer::unlink()
 }
 
 
-medViewContainer * medViewContainer::hSplit()
+medViewContainer * medViewContainer::splitHorizontally()
 {
     if(!d->parent)
         return NULL;
 
-    return d->parent->hSplit(this);
+    return d->parent->splitHorizontally(this);
 }
 
-medViewContainer * medViewContainer::vSplit()
+medViewContainer * medViewContainer::splitVertically()
 {
     if(!d->parent)
         return NULL;
 
-    return d->parent->vSplit(this);
+    return d->parent->splitVertically(this);
 }
 
 medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)

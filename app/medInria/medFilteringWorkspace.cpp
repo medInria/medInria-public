@@ -65,7 +65,7 @@ void medFilteringWorkspace::setupViewContainerStack()
         d->inputContainer->setUserSplittable(false);
         d->inputContainer->setMultiLayered(false);
 
-        d->outputContainer = d->inputContainer->vSplit();
+        d->outputContainer = d->inputContainer->splitVertically();
         d->outputContainer->setUserClosable(false);
         d->outputContainer->setUserSplittable(false);
         d->outputContainer->setMultiLayered(false);

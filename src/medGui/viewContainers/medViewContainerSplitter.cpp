@@ -33,12 +33,12 @@ medViewContainerSplitter::~medViewContainerSplitter()
     this->setParent(NULL);
 }
 
-medViewContainer * medViewContainerSplitter::hSplit(medViewContainer *sender)
+medViewContainer * medViewContainerSplitter::splitHorizontally(medViewContainer *sender)
 {
     return this->split(sender, Qt::AlignBottom);
 }
 
-medViewContainer * medViewContainerSplitter::vSplit(medViewContainer *sender)
+medViewContainer * medViewContainerSplitter::splitVertically(medViewContainer *sender)
 {
     return this->split(sender, Qt::AlignRight);
 }
@@ -97,12 +97,12 @@ medViewContainer *medViewContainerSplitter::split(medViewContainer *sender, Qt::
 }
 
 
-medViewContainer * medViewContainerSplitter::hSplit()
+medViewContainer * medViewContainerSplitter::splitHorizontally()
 {
     return this->split(Qt::AlignBottom);
 }
 
-medViewContainer * medViewContainerSplitter::vSplit()
+medViewContainer * medViewContainerSplitter::splitVertically()
 {
     return this->split(Qt::AlignRight);
 }

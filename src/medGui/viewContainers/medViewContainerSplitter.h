@@ -31,11 +31,11 @@ public:
 public slots:
     void addViewContainer(medViewContainer* container);
     void insertViewContainer(int index, medViewContainer* container);
-    medViewContainer* vSplit();
-    medViewContainer* hSplit();
+    medViewContainer* splitVertically();
+    medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
-    medViewContainer* vSplit(medViewContainer *sender);
-    medViewContainer* hSplit(medViewContainer *sender);
+    medViewContainer* splitVertically(medViewContainer *sender);
+    medViewContainer* splitHorizontally(medViewContainer *sender);
     medViewContainer* split(medViewContainer *sender, Qt::AlignmentFlag alignement = Qt::AlignRight);
     void split(medDataIndex index, Qt::AlignmentFlag alignement = Qt::AlignRight);
     void checkIfStillDeserveToLive();

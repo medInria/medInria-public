@@ -251,7 +251,6 @@ void medViewContainersTestObject::testAddData()
     container->setView(view1);
     container->addData(data1);
 
-    // 2 viewChanged qsignals emitted, one for the view.
     QCOMPARE(spy1.count(), 1);
     QCOMPARE(spy2.count(), 1);
     QCOMPARE(spy3.count(), 1);
@@ -260,10 +259,12 @@ void medViewContainersTestObject::testAddData()
 
 void medViewContainersTestObject::testHighlight()
 {
+    //TODO
 }
 
 void medViewContainersTestObject::testLink()
 {
+    //TODO
 }
 
 dtkSmartPointer<medAbstractData> medViewContainersTestObject::createTestData(void)

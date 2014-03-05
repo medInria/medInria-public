@@ -44,8 +44,8 @@ public:
     medAbstractView* view() const;
     QUuid uuid() const;
     void setContainerParent(medViewContainerSplitter* splitter);
-    medViewContainer* vSplit();
-    medViewContainer* hSplit();
+    medViewContainer* splitVertically();
+    medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
 
 public slots:
