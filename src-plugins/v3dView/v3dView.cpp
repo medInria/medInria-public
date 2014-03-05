@@ -204,7 +204,7 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
     case vtkCommand::KeyPressEvent:
     {
         vtkRenderWindowInteractor *iren = static_cast<vtkRenderWindowInteractor*>(caller);
-        if (iren->GetControlKey())
+        if (iren->GetControlKey() && view->property("Orientation") != "3D")
         {
             view->setProperty( "ZoomMode" , "RubberBand" );
             dynamic_cast<vtkInriaInteractorStyleRubberBandZoom*>(view->view2d()->GetInteractor()->GetInteractorStyle())->RightButtonModeOn();
