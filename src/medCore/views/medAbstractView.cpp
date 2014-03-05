@@ -424,3 +424,8 @@ void medAbstractView::setLowerRight(dtkVector3D<double> position)
 {
     DTK_UNUSED(position);
 }
+
+QWidget * medAbstractView::widget(void)
+{
+    return 0;
+}

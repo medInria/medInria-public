@@ -43,7 +43,7 @@ public:
     medViewContainerSplitter* parent;
 
     bool selected;
-    bool maximised;
+    bool maximized;
     bool userSplittable;
     bool userClosable;
     bool multiLayer;
@@ -51,8 +51,8 @@ public:
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
 
-    QPushButton* vSplittButton;
-    QPushButton* hSplittButton;
+    QPushButton* vSplitButton;
+    QPushButton* hSplitButton;
     QPushButton* closeContainerButton;
 
     QLabel *northDragLabel;
@@ -66,7 +66,7 @@ public:
 
     medToolBox *toolBox;
 
-    medBoolParameter* maximisedParameter;
+    medBoolParameter* maximizedParameter;
     medColorListParameter *poolSelector;
 
     ~medViewContainerPrivate()
@@ -86,8 +86,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     medViewContainerManager::instance()->registerNewContainer(this);
 
 
-    d->userClosable = true;
-
     d->view = NULL;
     d->northDragLabel = NULL;
     d->eastDragLabel = NULL;
@@ -98,38 +96,38 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
-    connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(selfDestroy()));
+    connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(close()));
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
 
-    d->vSplittButton = new QPushButton(this);
-    d->vSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
-    d->vSplittButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->vSplittButton->setFocusPolicy(Qt::NoFocus);
-    connect(d->vSplittButton, SIGNAL(clicked()), this, SIGNAL(vSplitRequest()));
-    d->hSplittButton = new QPushButton(this);
-    d->hSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
-    d->hSplittButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->hSplittButton->setFocusPolicy(Qt::NoFocus);
-    connect(d->hSplittButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
+    d->vSplitButton = new QPushButton(this);
+    d->vSplitButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
+    d->vSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->vSplitButton->setFocusPolicy(Qt::NoFocus);
+    connect(d->vSplitButton, SIGNAL(clicked()), this, SIGNAL(vSplitRequest()));
+    d->hSplitButton = new QPushButton(this);
+    d->hSplitButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
+    d->hSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->hSplitButton->setFocusPolicy(Qt::NoFocus);
+    connect(d->hSplitButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
 
-    // make it a parameter to get synch between state of the container and the maximised button.
-    d->maximisedParameter = new medBoolParameter("maximied view", this);
-    d->maximisedParameter->getPushButton()->setMaximumHeight(18);
-    d->maximisedParameter->getPushButton()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->maximisedParameter->getPushButton()->setFocusPolicy(Qt::NoFocus);
-    QIcon maximisedIcon(":/icons/maximize.svg");
-    maximisedIcon.addFile(":/icons/un_maximize.svg",
+    // make it a parameter to get synch between state of the container and the maximized button.
+    d->maximizedParameter = new medBoolParameter("maximied view", this);
+    d->maximizedParameter->getPushButton()->setMaximumHeight(18);
+    d->maximizedParameter->getPushButton()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->maximizedParameter->getPushButton()->setFocusPolicy(Qt::NoFocus);
+    QIcon maximizedIcon(":/icons/maximize.svg");
+    maximizedIcon.addFile(":/icons/un_maximize.svg",
                         QSize(16,16),
                         QIcon::Normal,
                         QIcon::On);
 
-    d->maximisedParameter->setIcon(maximisedIcon);
-    d->maximised = true;
-    connect(d->maximisedParameter, SIGNAL(valueChanged(bool)), this, SLOT(setMaximised(bool)));
-    connect(this, SIGNAL(maximised(bool)), d->maximisedParameter, SLOT(setValue(bool)));
-    d->maximisedParameter->setValue(false);
-    d->maximisedParameter->hide();
+    d->maximizedParameter->setIcon(maximizedIcon);
+    d->maximized = true;
+    connect(d->maximizedParameter, SIGNAL(valueChanged(bool)), this, SLOT(setMaximized(bool)));
+    connect(this, SIGNAL(maximized(bool)), d->maximizedParameter, SLOT(setValue(bool)));
+    d->maximizedParameter->setValue(false);
+    d->maximizedParameter->hide();
 
     d->poolSelector = new medColorListParameter("Pool", this);
     d->poolSelector->addColor("");
@@ -148,9 +146,9 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarLayout->setSpacing(5);
     d->toolBarLayout->addWidget(d->poolSelector->getLabel(), 1, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->poolSelector->getComboBox(), 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->maximizedParameter->getPushButton(), 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->vSplitButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->hSplitButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
@@ -169,6 +167,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
 medViewContainer::~medViewContainer()
 {
+    removeInternView();
+
     //trick to 'inform' a parented splitter
     //"you're not my dad anymore!"
     this->setParent(NULL);
@@ -197,13 +197,13 @@ void medViewContainer::setUserSplittable(bool splittable)
     d->userSplittable = splittable;
     if(d->userSplittable)
     {
-          d->hSplittButton->show();
-          d->vSplittButton->show();
+          d->hSplitButton->show();
+          d->vSplitButton->show();
     }
     else
     {
-        d->hSplittButton->hide();
-        d->vSplittButton->hide();
+        d->hSplitButton->hide();
+        d->vSplitButton->hide();
     }
 }
 
@@ -239,21 +239,27 @@ void medViewContainer::setContainerParent(medViewContainerSplitter *splitter)
 void medViewContainer::setView(medAbstractView *view)
 {
     if(d->view)
-        delete d->view;
-
+    {
+        removeInternView();
+    }
     if(view)
     {
         d->view = view;
-        connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
+        connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
 
-        d->view->toolBarWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-        d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());
-        d->maximisedParameter->show();
+        if( d->view->toolBarWidget() )
+        {
+            d->view->toolBarWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+            d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());
+        }
+
+        d->maximizedParameter->show();
         d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
         d->view->viewWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        d->view->viewWidget()->show();
         d->toolBox = new medToolBox;
         d->toolBox->setTitle("Container settings");
         d->toolBox->header()->hide();
@@ -263,6 +269,8 @@ void medViewContainer::setView(medAbstractView *view)
             tooltip += param->name() + ", ";
         tooltip += ")";
         d->poolSelector->setToolTip(tooltip);
+
+        emit contentChanged();
     }
 }
 
@@ -327,23 +335,30 @@ void medViewContainer::setUnSelected(bool unSelected)
     this->setSelected(!unSelected);
 }
 
-void medViewContainer::setMaximised(bool maxi)
+void medViewContainer::setMaximized(bool maxi)
 {
-    if(d->maximised == maxi)
+    if(d->maximized == maxi)
         return;
+
+    d->maximized = maxi;
 
     if(maxi)
     {
-        d->vSplittButton->hide();
-        d->hSplittButton->hide();
+        d->vSplitButton->hide();
+        d->hSplitButton->hide();
     }
     else if(d->userSplittable)
     {
-        d->vSplittButton->show();
-        d->hSplittButton->show();
+        d->vSplitButton->show();
+        d->hSplitButton->show();
     }
-    emit maximised(maxi);
-    emit maximised(d->uuid, maxi);
+    emit maximized(maxi);
+    emit maximized(d->uuid, maxi);
+}
+
+bool medViewContainer::isMaximized() const
+{
+    return d->maximized;
 }
 
 void medViewContainer::removeView()
@@ -356,13 +371,16 @@ void medViewContainer::removeView()
     // or whatecer else
 }
 
-void medViewContainer::removeInterneView()
+void medViewContainer::removeInternView()
 {
+    if(d->view && d->view->viewWidget())
+      d->view->viewWidget()->hide();
+
     d->view = NULL;
     d->toolBox = NULL;
-    d->maximisedParameter->hide();
+    d->maximizedParameter->hide();
 
-    emit viewRemoved();
+    emit contentRemoved();
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
@@ -501,12 +519,7 @@ void medViewContainer::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
-    emit viewChanged();
-}
-
-void medViewContainer::selfDestroy()
-{
-    this->~medViewContainer();
+    emit contentChanged();
 }
 
 void medViewContainer::createDragLabels()
@@ -651,4 +664,9 @@ medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
         return NULL;
 
     return d->parent->split(this, alignement);
+}
+
+void medViewContainer::closeEvent(QCloseEvent * event)
+{
+    this->~medViewContainer();
 }

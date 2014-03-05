@@ -14,6 +14,8 @@
 #pragma once
 
 #include <dtkCore/dtkTest.h>
+#include <medAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 class medViewContainersTestObject : public QObject
 {
@@ -50,6 +52,9 @@ private slots:
      */
     void cleanupTestCase();
 
+
+    dtkSmartPointer<medAbstractData> createTestData();
+
 private slots:
 
     // every function here is a test, unless they end with "_data"
@@ -57,9 +62,16 @@ private slots:
     // to run "testFoo()" different times
     // with different input values
     // void testFoo_data();
-    void testSingle();
-    void testMulti();
-    void testCustom();
+    void testSelection();
+    void testMaximization();
+    void testSetView();
+    void testAddData();
+    void testHighlight();
+    void testLink();
+
+
+private:
+    int m_currentId;
 };
 
 

@@ -145,6 +145,7 @@ private:
     virtual void setUpperLeft(dtkVector3D<double> position);
     virtual void setLowerLeft(dtkVector3D<double> position);
     virtual void setLowerRight(dtkVector3D<double> position);
+    virtual QWidget *widget(void);
 };
 
 

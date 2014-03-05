@@ -100,6 +100,6 @@ set_lib_install_rules(${PROJECT_NAME}
 ## #############################################################################
 
 if(MEDINRIA_BUILD_TESTS)
-  #add_subdirectory(tests)
+  add_subdirectory(tests)
   add_subdirectory(parameters/tests)
 endif()

@@ -34,6 +34,7 @@ medQtView::medQtView(QObject *parent): d(new medQtViewPrivate)
 {
     d->label = new QLabel("prout");
     d->label->setScaledContents(true);
+    d->label->setVisible(true);
 }
 
 medQtView::~medQtView()
@@ -41,12 +42,7 @@ medQtView::~medQtView()
     delete d;
 }
 
-QWidget *medQtView::widget(void)
-{
-    return d->label;
-}
-
- medAbstractLayeredViewInteractor * medQtView::primaryInteractor(medAbstractData* data)
+medAbstractLayeredViewInteractor * medQtView::primaryInteractor(medAbstractData* data)
 {
     qDebug()<< "primaryInteractor(medAbstractData* data)";
     return 0;
@@ -82,7 +78,7 @@ QWidget *medQtView::widget(void)
 
 QWidget* medQtView::viewWidget()
 {
-    return 0;
+    return d->label;
 }
 QWidget* medQtView::toolBarWidget()
 {
@@ -139,4 +135,9 @@ QString medQtView::description( void ) const
 void medQtView::reset()
 {
     qDebug() << "reset()";
+}
+
+QList<medAbstractParameter*> medQtView::navigatorsParameters()
+{
+    return QList<medAbstractParameter*>();
 }

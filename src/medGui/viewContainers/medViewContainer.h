@@ -37,8 +37,7 @@ public:
 
 
     bool isSelected() const;
-    bool isMultiSelected() const;
-    bool isMaximised() const;
+    bool isMaximized() const;
     bool isUserSplittable() const;
     bool isUserClosable() const;
     bool isMultiLayered() const;
@@ -52,7 +51,7 @@ public:
 public slots:
     void setSelected(bool selected);
     void setUnSelected(bool unSelected);
-    void setMaximised(bool maximised);
+    void setMaximized(bool maximised);
     void setUserSplittable(bool splittable);
     void setUserClosable(bool closable);
     void setMultiLayered(bool multiLayer);
@@ -64,16 +63,16 @@ public slots:
     void unlink();
 
 signals:
-    void maximised(QUuid uuid, bool maximised);
-    void maximised(bool maximised);
+    void maximized(QUuid uuid, bool maximized);
+    void maximized(bool maximized);
     void containerSelected(QUuid uuid);
     void containerUnSelected(QUuid uuid);
     void currentLayerChanged();
     void vSplitRequest();
     void hSplitRequest();
     void splitRequest(medDataIndex, Qt::AlignmentFlag);
-    void viewChanged();
-    void viewRemoved();
+    void contentChanged();
+    void contentRemoved();
     void linkRequested(QUuid uuid, QString);
     void unlinkRequested(QUuid uuid);
 
@@ -84,6 +83,7 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+    void closeEvent(QCloseEvent * event);
 
     void recomputeStyleSheet();
 
@@ -92,8 +92,7 @@ protected slots:
     void emitLinkRequested(QString pool);
 
 private slots:
-    void removeInterneView();
-    void selfDestroy();
+    void removeInternView();
     void createDragLabels();
     void destroyDragLabels();
 

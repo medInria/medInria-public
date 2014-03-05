@@ -41,6 +41,14 @@ create_test_sourcelist(${PROJECT_NAME}_TESTS ${PROJECT_NAME}.cxx
 
 
 ## #############################################################################
+## include directories.
+## #############################################################################
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${medTest_INCLUDE_DIRS}
+  )
+
+## #############################################################################
 ## Add Exe
 ## #############################################################################
 
@@ -60,6 +68,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medGui
   medCore
+  medTest
   )
 
 

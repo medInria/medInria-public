@@ -35,7 +35,6 @@ public:
     static QString s_description();
     static bool registered();
 
-    QWidget *widget();
     virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
     virtual QList<medAbstractInteractor *> extraInteractors(medAbstractData* data);
     virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
@@ -56,7 +55,7 @@ public:
 
     virtual void removeInteractors(medAbstractData *data);
 
-    virtual QList<medAbstractParameter*> navigatorsParameters(){}
+    virtual QList<medAbstractParameter*> navigatorsParameters();
 
 public slots:
     virtual void reset();

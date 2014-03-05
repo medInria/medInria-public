@@ -14,65 +14,24 @@
 #include <medViewContainersTest.h>
 
 #include <medAbstractView.h>
-#include <medSingleViewContainer.h>
-#include <medMultiViewContainer.h>
-#include <medCustomViewContainer.h>
+#include <medViewContainer.h>
+#include <medQtView.h>
+#include <medQtDataImage.h>
+#include <medAbstractDataFactory.h>
+#include <medMetaDataKeys.h>
 
 #include <QtGui>
 #include <QtTest/QSignalSpy>
 
 
-class testView : public medAbstractView
-{
-public:
-     testView();
-    ~testView();
 
-    QString identifier(void) const;
-
-public:
-    QWidget *widget(void);
-    virtual medAbstractViewCoordinates * coordinates() {return NULL;}
-
-public slots:
-    void close(void);
-
-private:
-    QWidget *m_widget;
-};
-
-testView::testView()
-{
-    m_widget = new QWidget;
-    QLabel *label = new QLabel ("testView", m_widget);
-    QHBoxLayout * layout = new QHBoxLayout (m_widget);
-    layout->addWidget(label);
-}
-
-testView::~testView()
-{
-}
-
-QString testView::identifier() const
-{
-    return "testView";
-}
-
-QWidget *testView::widget()
-{
-    return m_widget;
-}
-
-void testView::close()
-{
-    m_widget->close();
-    emit closed();
-}
-
+Q_DECLARE_METATYPE(QUuid)
 
 medViewContainersTestObject::medViewContainersTestObject(void)
 {
     qRegisterMetaType<dtkAbstractView*>("dtkAbstractView*");
+    qRegisterMetaType<QUuid>("QUuid");
+    m_currentId = 0;
 }
 
 medViewContainersTestObject::~medViewContainersTestObject(void)
@@ -81,6 +40,7 @@ medViewContainersTestObject::~medViewContainersTestObject(void)
 
 void medViewContainersTestObject::initTestCase()
 {
+     QVERIFY( medQtDataImage::registered() );
 }
 
 void medViewContainersTestObject::init()
@@ -101,20 +61,129 @@ void medViewContainersTestObject::testFoo_data()
 }
 */
 
-void medViewContainersTestObject::testSingle()
+void medViewContainersTestObject::testSelection()
 {
-    // create a view container singleViewContainer
-    medSingleViewContainer *container = new medSingleViewContainer;
+    medViewContainer *container = new medViewContainer;
+    QUuid uuid = container->uuid();
+
     container->setFixedSize(500, 500);
     container->show();
 
     // setup signal spies
-    QSignalSpy spy1 (container, SIGNAL(viewAdded(dtkAbstractView*)));
-    QSignalSpy spy2 (container, SIGNAL(viewRemoved(dtkAbstractView*)));
-    QSignalSpy spy3 (container, SIGNAL(focused(dtkAbstractView*)));
+    QSignalSpy spy1 (container, SIGNAL(containerSelected(QUuid)));
+    QSignalSpy spy2 (container, SIGNAL(containerUnSelected(QUuid)));
+
+    container->setSelected(true);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 0);
+    QList<QVariant> arguments = spy1.takeFirst();
+    QUuid receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    qDebug() << receivedUuid.toString() << uuid.toString();
+    QVERIFY( receivedUuid == uuid );
+    QVERIFY(container->isSelected() == true);
+
+    container->setSelected(false);
+
+    QCOMPARE(spy1.count(), 0);
+    QCOMPARE(spy2.count(), 1);
+    arguments = spy2.takeFirst();
+    receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    QVERIFY( receivedUuid == uuid );
+    QVERIFY(container->isSelected() == false);
+
+    container->setSelected(true);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 0);
+    arguments = spy1.takeFirst();
+    receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    QVERIFY( receivedUuid == uuid );
+    QVERIFY(container->isSelected() == true);
+}
+
+void medViewContainersTestObject::testMaximization()
+{
+    medViewContainer *container = new medViewContainer;
+    QUuid uuid = container->uuid();
+
+    container->setFixedSize(500, 500);
+    container->show();
+
+    // setup signal spies
+    QSignalSpy spy1 (container, SIGNAL(maximized(bool)));
+    QSignalSpy spy2 (container, SIGNAL(maximized(QUuid,bool)));
+
+    container->setMaximized(false);
+
+    QCOMPARE(spy1.count(), 1);
+    QVariant maximized = spy1.takeFirst().at(0);
+    QVERIFY( maximized.toBool() == false );
+
+    QCOMPARE(spy2.count(), 1);
+    QList<QVariant> arguments = spy2.takeFirst();
+    maximized = arguments.at(1);
+    QVERIFY( maximized.toBool() == false );
+    QUuid receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    QVERIFY( receivedUuid == uuid );
+    QVERIFY( container->isMaximized() == false );
+
+
+    container->setMaximized(true);
+
+    QCOMPARE(spy1.count(), 1);
+    maximized = spy1.takeFirst().at(0);
+    QVERIFY( maximized.toBool() == true );
+
+    QCOMPARE(spy2.count(), 1);
+    arguments = spy2.takeFirst();
+    maximized = arguments.at(1);
+    QVERIFY( maximized.toBool() == true );
+    receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    QVERIFY( receivedUuid == uuid );
+    QVERIFY( container->isMaximized() == true );
+
+    container->setMaximized(false);
+
+    QCOMPARE(spy1.count(), 1);
+    maximized = spy1.takeFirst().at(0);
+    QVERIFY( maximized.toBool() == false );
+
+    QCOMPARE(spy2.count(), 1);
+    arguments = spy2.takeFirst();
+    maximized = arguments.at(1);
+    QVERIFY( maximized.toBool() == false );
+    receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    QVERIFY( receivedUuid == uuid );
+    QVERIFY( container->isMaximized() == false );
+
+    container->setMaximized(true);
+
+    QCOMPARE(spy1.count(), 1);
+    maximized = spy1.takeFirst().at(0);
+    QVERIFY( maximized.toBool() == true );
+
+    QCOMPARE(spy2.count(), 1);
+    arguments = spy2.takeFirst();
+    maximized = arguments.at(1);
+    QVERIFY( maximized.toBool() == true );
+    receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    QVERIFY( receivedUuid == uuid );
+    QVERIFY( container->isMaximized() == true );
+}
+
+void medViewContainersTestObject::testSetView()
+{
+    medViewContainer *container = new medViewContainer;
+    container->setFixedSize(500, 500);
+    container->show();
 
     // create dummy view
-    dtkSmartPointer<testView>view1 = new testView;
+    dtkSmartPointer<medQtView> view1 = new medQtView;
+
+    // setup signal spies
+    QSignalSpy spy1 (container, SIGNAL(contentChanged()));
+    QSignalSpy spy2 (container, SIGNAL(contentRemoved()));
 
     // test setView:
     // - view should become visible
@@ -122,29 +191,19 @@ void medViewContainersTestObject::testSingle()
     // - syp1.count() should return 1
     container->setView(view1);
 
-    QVERIFY(view1->widget()->isVisible());
+    QVERIFY(view1->viewWidget()->isVisible());
     QCOMPARE(container->view(), view1.data());
     QCOMPARE(spy1.count(), 1);
 
-    // test focus:
-    // - container->current() should be itself
-    // - spy3.count() should be 1
-    container->setFocus (Qt::MouseFocusReason);
-    QTest::qWait(500);
-    QVERIFY (container->current()==container);
-    QCOMPARE (spy3.count(), 1);
-
     // test null view
-    container->setView ((dtkAbstractView*)NULL);
-    container->view();
-    QVERIFY(!view1->widget()->isVisible());
+    container->setView ((medAbstractView*)NULL);
     QVERIFY(container->view()==NULL);
 
     // restore view1
     container->setView(view1);
 
     // create 2nd dummy view
-    dtkSmartPointer<testView> view2 = new testView;
+    dtkSmartPointer<medQtView> view2 = new medQtView;
 
     // test view replacement:
     // - view1 should be hidden
@@ -154,8 +213,8 @@ void medViewContainersTestObject::testSingle()
     // - container->view() should be view2
     container->setView(view2);
 
-    QVERIFY(!view1->widget()->isVisible());
-    QVERIFY(view2->widget()->isVisible());
+    QVERIFY(!view1->viewWidget()->isVisible());
+    QVERIFY(view2->viewWidget()->isVisible());
     QCOMPARE(spy1.count(), 3);
     QCOMPARE(spy2.count(), 2);
     QCOMPARE(container->view(), view2.data());
@@ -163,138 +222,70 @@ void medViewContainersTestObject::testSingle()
     // test closing:
     // - view2 should be hidden
     // - spy2.count() should be 3
-    // - container->view() should be null
-    QMetaObject::invokeMethod(view2, "closing", Qt::DirectConnection);
+    container->close();
 
-    QVERIFY(!view2->widget()->isVisible());
+    QVERIFY(!view2->viewWidget()->isVisible());
     QCOMPARE(spy2.count(), 3);
-    QCOMPARE(container->view(), (dtkAbstractView*)NULL);
-
-    // cleanup before exiting test function
-    delete container;
 }
 
-void medViewContainersTestObject::testMulti()
+void medViewContainersTestObject::testAddData()
 {
-    // create a multi container
-    medMultiViewContainer *container = new medMultiViewContainer;
+    medViewContainer *container = new medViewContainer;
     container->setFixedSize(500, 500);
     container->show();
 
-    QSignalSpy spy1 (container, SIGNAL(viewAdded(dtkAbstractView*)));
-    QSignalSpy spy2 (container, SIGNAL(viewRemoved(dtkAbstractView*)));
+    // setup signal spies
+    QSignalSpy spy1 (container, SIGNAL(contentChanged()));
+    QSignalSpy spy2 (container, SIGNAL(contentRemoved()));
+    QSignalSpy spy3 (container, SIGNAL(currentLayerChanged()));
 
-    // create 4 dummy views
-    dtkSmartPointer<testView> view1 = new testView;
-    dtkSmartPointer<testView> view2 = new testView;
-    dtkSmartPointer<testView> view3 = new testView;
-    dtkSmartPointer<testView> view4 = new testView;
+    dtkSmartPointer<medAbstractData> data1 = createTestData();
 
-    // test setView:
-    // - views should be shown
-    // - child count should be 4
+    // create dummy view
+    dtkSmartPointer<medQtView> view1 = new medQtView;
+
     container->setView(view1);
-    container->setView(view2);
-    container->setView(view3);
-    container->setView(view4);
+    container->addData(data1);
 
-    // important to wait to let the event queue proceeds
-    // some events
-    QTest::qWait(500);
+    // 2 contentChanged qsignals emitted, one for the view, one for the data addded
+    QCOMPARE(spy1.count(), 2);
+    QCOMPARE(spy3.count(), 1);
 
-    QVERIFY(view1->widget()->isVisible());
-    QVERIFY(view2->widget()->isVisible());
-    QVERIFY(view3->widget()->isVisible());
-    QVERIFY(view4->widget()->isVisible());
-    QCOMPARE(spy1.count(), 4);
-    QVERIFY(container->views().contains(view1));
-    QVERIFY(container->views().contains(view2));
-    QVERIFY(container->views().contains(view3));
-    QVERIFY(container->views().contains(view4));
-    QCOMPARE(container->childContainers().count(), 4);
-
-    // test a NULL view
-    container->setView (NULL);
-    QCOMPARE(container->childContainers().count(), 4);
-
-    // test full screen
-    QMetaObject::invokeMethod(view1, "fullScreen", Qt::DirectConnection, Q_ARG(bool, true));
-    QVERIFY(view1->widget()->isVisible());
-    QVERIFY(!view2->widget()->isVisible());
-    QVERIFY(!view3->widget()->isVisible());
-    QVERIFY(!view4->widget()->isVisible());
-
-    QTest::qWait(500);
-
-    QMetaObject::invokeMethod(view1, "fullScreen", Qt::DirectConnection, Q_ARG(bool, false));
-    QVERIFY(view1->widget()->isVisible());
-    QVERIFY(view2->widget()->isVisible());
-    QVERIFY(view3->widget()->isVisible());
-    QVERIFY(view4->widget()->isVisible());
-
-    QTest::qWait(500);
-
-    // test closing
-    QMetaObject::invokeMethod(view1, "closing", Qt::DirectConnection);
-
-    QTest::qWait(500);
-
-    QMetaObject::invokeMethod(view2, "closing", Qt::DirectConnection);
-
-    QTest::qWait(500);
-
-    QMetaObject::invokeMethod(view3, "closing", Qt::DirectConnection);
-
-    QTest::qWait(500);
-
-    QMetaObject::invokeMethod(view4, "closing", Qt::DirectConnection);
-
-    QTest::qWait(500);
-
-    QVERIFY(!view1->widget()->isVisible());
-    QVERIFY(!view2->widget()->isVisible());
-    QVERIFY(!view3->widget()->isVisible());
-    QVERIFY(!view4->widget()->isVisible());
-
-    QCOMPARE(spy2.count(), 4);
-    QVERIFY(!container->views().contains(view1));
-    QVERIFY(!container->views().contains(view2));
-    QVERIFY(!container->views().contains(view3));
-    QVERIFY(!container->views().contains(view4));
-    QCOMPARE(container->childContainers().count(), 0);
-
-    delete container;
 }
 
-void medViewContainersTestObject::testCustom()
+void medViewContainersTestObject::testHighlight()
 {
-    // create the custom container
-    medCustomViewContainer *container = new medCustomViewContainer;
-    container->setFixedSize(500, 500);
-    container->setPreset (medCustomViewContainer::A);
-    container->show();
+}
 
-    for (int preset = medCustomViewContainer::A;
-         preset <= medCustomViewContainer::E; preset++) {
-        container->setPreset (preset);
-        foreach (medViewContainer *c, container->leaves()) {
-            c->setFocus (Qt::MouseFocusReason);
-            testView *view = new testView;
-            c->setView (view);
-            QVERIFY(container->views().contains(view));
-        }
+void medViewContainersTestObject::testLink()
+{
+}
 
-        QTest::qWait(500);
-    }
+dtkSmartPointer<medAbstractData> medViewContainersTestObject::createTestData(void)
+{
+    // Create a data.
+    medAbstractDataFactory *dataFactory = medAbstractDataFactory::instance();
+    dtkSmartPointer<medAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::s_description());
 
-    // my favorite: let's try to set NULL view to preset E:
-    container->setPreset (medCustomViewContainer::E);
-    foreach (medViewContainer *c, container->leaves()) {
-        c->setFocus (Qt::MouseFocusReason);
-        c->setView (NULL);
-    }
-    QCOMPARE(container->views().count(), 0);
-    delete container;
+    QString sDatetime = QDateTime::currentDateTime().toString();
+
+    medMetaDataKeys::PatientName.set(testData,"TestPatient" + QString::number(m_currentId));
+    medMetaDataKeys::StudyDescription.set(testData,"TestStudy" + QString::number(m_currentId));
+    medMetaDataKeys::SeriesDescription.set(testData,"TestSeries" + QString::number(m_currentId));
+    medMetaDataKeys::BirthDate.set(testData, sDatetime);
+    m_currentId++;
+
+    QImage testImage(QSize( 800, 500 ), QImage::Format_Mono );
+
+    QPainter painter(&testImage);
+    painter.setRenderHints(QPainter::Antialiasing);
+    painter.setPen(Qt::gray);
+    painter.fillRect(testImage.rect(), Qt::black);
+
+    painter.drawEllipse(QPoint(400,250), 300, 100);
+
+    testData->setData( &testImage );
+    return testData;
 }
 
 /**
