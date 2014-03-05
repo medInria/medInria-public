@@ -516,7 +516,7 @@ QImage& medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
 
     int w(size.width()), h(size.height());
 
-    d->view2d->SetBackground ( 0.0, 0.0, 0.0 );
+    d->view2d->SetBackground(0.0, 0.0, 0.0);
     d->view2d->CursorFollowMouseOff();
     d->view2d->ShowImageAxisOff();
     d->view2d->ShowScalarBarOff();
@@ -530,7 +530,8 @@ QImage& medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
     d->view2d->Reset();
     d->view2d->Render();
 
-    d->thumbnail = QPixmap::grabWidget(d->medVtkView->viewWidget()).scaled(w,h, Qt::KeepAspectRatio).toImage().convertToFormat(QImage::Format_RGB32);
+    QGLWidget *glWidget = dynamic_cast<QGLWidget *>(d->medVtkView->viewWidget());
+    d->thumbnail = glWidget->grabFrameBuffer();
 
     d->render->SetOffScreenRendering(0);
 

@@ -387,6 +387,10 @@ void medAbstractDatabaseImporter::importFile ( void )
                 emit showError (tr ( "Could not save data file: " ) + filesPaths[0], 5000 );
                 continue;
             }
+            else
+            {
+                atLeastOneImportSucceeded = true;
+            }
         }
 
         // and finally we populate the database
@@ -405,8 +409,12 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         itPat++;
         itSer++;
-        atLeastOneImportSucceeded = true;
     } // end of the final loop
+    if ( ! atLeastOneImportSucceeded) {
+        emit progress ( this,100 );
+        emit failure(this);
+        return;
+    }
 
     if ( ! atLeastOneImportSucceeded) {
         emit progress ( this,100 );
@@ -738,6 +746,8 @@ dtkSmartPointer<dtkAbstractDataWriter> medAbstractDatabaseImporter::getSuitableW
     // first try with the last
     for (int i=0; i<writers.size(); i++) {
         dataWriter = medAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
+        dataWriter->setData(medData);
+
         if (d->lastSuccessfulWriterDescription==dataWriter->identifier()) {
             if (dataWriter->handled().contains(medData->identifier()) && dataWriter->canWrite(filename)) {
 
@@ -752,6 +762,7 @@ dtkSmartPointer<dtkAbstractDataWriter> medAbstractDatabaseImporter::getSuitableW
     for ( int i=0; i<writers.size(); i++ )
     {
         dataWriter = medAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
+        dataWriter->setData(medData);
 
         if (dataWriter->handled().contains(medData->identifier()) &&
              dataWriter->canWrite( filename ) ) {

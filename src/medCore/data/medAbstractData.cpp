@@ -37,6 +37,7 @@ medAbstractData::medAbstractData( medAbstractData *parent )
     , d(new medAbstractDataPrivate)
 {
     qDebug() << "constructing medAbstractData: ";
+    this->moveToThread(QApplication::instance()->thread());
 }
 
 
@@ -117,17 +118,18 @@ void medAbstractData::invokeModified()
 
 QImage& medAbstractData::thumbnail()
 {
+
+    this->retain();
     if(d->thumbnail == QImage())
     {
         if (QThread::currentThread() != QApplication::instance()->thread())
-        {
-//            this->moveToThread(QApplication::instance()->thread());
+
             QMetaObject::invokeMethod(this, "generateThumbnail", Qt::BlockingQueuedConnection);
-        }
         else
             this->generateThumbnail();
     }
     return d->thumbnail;
+    this->release();
 }
 
 void medAbstractData::generateThumbnail()

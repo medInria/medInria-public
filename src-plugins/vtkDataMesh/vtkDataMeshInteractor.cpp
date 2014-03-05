@@ -41,6 +41,7 @@
 #include <vtkMetaDataSet.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkDataArrayCollection.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
 #include <medStringListParameter.h>
@@ -48,6 +49,7 @@
 #include <medAbstractData.h>
 #include <medImageViewFactory.h>
 #include <medVtkViewBackend.h>
+
 
 
 #include <vector>
@@ -553,20 +555,25 @@ QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
 
 QImage& vtkDataMeshInteractor::generateThumbnail(const QSize &size)
 {
-    int w(size.width()), h(size.height());
-
-    d->view3d->SetBackground ( 0.0, 0.0, 0.0 );
     d->render->SetOffScreenRendering(1);
-
+    int w(size.width()), h(size.height());
     d->view->viewWidget()->resize(w,h);
-    d->render->vtkRenderWindow::SetSize(w,h);
-    d->view3d->Reset();
-    d->view3d->Render();
+    d->render->vtkGenericOpenGLRenderWindow::SetSize(w,h);
+    d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+    d->view->reset();
+    //TODO find haow to remove the litlle cube at the bottom left corner.
+//    d->view3d->ShowAnnotationsOff();
+//    d->view3d->ShowActorXOff();
+//    d->view3d->ShowActorYOff();
+//    d->view3d->ShowActorYOff();
+//    d->view3d->ShowBoxWidgetOff();
+//    d->view3d->ShowPlaneWidgetOff();
+//    d->view3d->ShowScalarBarOff();
 
-    d->thumbnail = QPixmap::grabWidget(d->view->viewWidget()).scaled(w,h, Qt::KeepAspectRatio).toImage().convertToFormat(QImage::Format_RGB32);
+    QGLWidget *glWidget = dynamic_cast<QGLWidget *>(d->view->viewWidget());
+    d->thumbnail = glWidget->grabFrameBuffer();
 
     d->render->SetOffScreenRendering(0);
 
     return d->thumbnail;
-
 }

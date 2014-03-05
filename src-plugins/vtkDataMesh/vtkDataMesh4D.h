@@ -53,9 +53,6 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
     virtual QString identifier() const;
     static bool registered();
 
-    virtual QImage        &thumbnail();
-    virtual QList<QImage> &thumbnails();
-
  public slots:
     // derived from dtkAbstractData
 
@@ -70,8 +67,6 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
     int countVertices();
     int countEdges();
 
- private slots:
-    void createThumbnails();
 
 private:
 
