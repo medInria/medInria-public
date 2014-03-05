@@ -151,6 +151,7 @@ QStringList medImageViewFactory::navigatorsAbleToHandle(const QString viewType) 
 
 QStringList medImageViewFactory::interactorsAbleToHandle(const QString viewType, const QString dataType) const
 {
+    qDebug() << "dataType" << dataType;
     if(d->interactorIdentifierHash.isEmpty())
         return QStringList();
 

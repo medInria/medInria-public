@@ -30,25 +30,25 @@ medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 
 medViewContainerSplitter::~medViewContainerSplitter()
 {
-
+    this->setParent(NULL);
 }
 
-void medViewContainerSplitter::hSplit()
+medViewContainer * medViewContainerSplitter::hSplit(medViewContainer *sender)
 {
-    this->split(Qt::AlignBottom);
+    return this->split(sender, Qt::AlignBottom);
 }
 
-void medViewContainerSplitter::vSplit()
+medViewContainer * medViewContainerSplitter::vSplit(medViewContainer *sender)
 {
-    this->split(Qt::AlignRight);
+    return this->split(sender, Qt::AlignRight);
 }
 
-medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
+medViewContainer *medViewContainerSplitter::split(medViewContainer *sender, Qt::AlignmentFlag alignement)
 {
-    medViewContainer* container = dynamic_cast<medViewContainer*>(this->sender());
-    if(!container)
+    if(!sender)
         return NULL;
-    int index = this->indexOf(container);
+
+    int index = this->indexOf(sender);
     int newSize = this->sizes()[index] / 2;
 
     medViewContainer *newContainer = new medViewContainer;
@@ -62,7 +62,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-            this->insertNestedSplitter(index, newContainer, container);
+            this->insertNestedSplitter(index, newContainer, sender);
         break;
     case Qt::AlignBottom:
         if(this->orientation() == Qt::Vertical)
@@ -71,7 +71,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index, index + 1, newSize);
         }
         else
-            this->insertNestedSplitter(index, container, newContainer);
+            this->insertNestedSplitter(index, sender, newContainer);
         break;
     case Qt::AlignRight:
         if(this->orientation() == Qt::Horizontal)
@@ -80,7 +80,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index, index + 1, newSize);
         }
         else
-            this->insertNestedSplitter(index, container, newContainer);
+            this->insertNestedSplitter(index, sender, newContainer);
         break;
     case Qt::AlignTop:
         if(this->orientation() == Qt::Vertical)
@@ -89,11 +89,28 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-            this->insertNestedSplitter(index, newContainer, container);
+            this->insertNestedSplitter(index, newContainer, sender);
         break;
     }
 
     return newContainer;
+}
+
+
+medViewContainer * medViewContainerSplitter::hSplit()
+{
+    return this->split(Qt::AlignBottom);
+}
+
+medViewContainer * medViewContainerSplitter::vSplit()
+{
+    return this->split(Qt::AlignRight);
+}
+
+medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
+{
+    medViewContainer* sender = dynamic_cast<medViewContainer*>(this->sender());
+    return this->split(sender, alignement);
 }
 
 void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag alignement)
@@ -104,7 +121,7 @@ void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag align
 
 void medViewContainerSplitter::checkIfStillDeserveToLive()
 {
-    if(this->count() < 1)
+    if(this->count() == 0)
         this->~medViewContainerSplitter();
 }
 
@@ -116,7 +133,7 @@ void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *
             this, SLOT(split(medDataIndex, Qt::AlignmentFlag)));
     connect(container, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
     connect(container, SIGNAL(destroyed()), this, SIGNAL(containerRemoved()));
-
+    container->setContainerParent(this);
 
     emit newContainer(container->uuid());
 

@@ -32,6 +32,7 @@
 #include <medColorListParameter.h>
 #include <medParameterPoolManager.h>
 #include <medParameterPool.h>
+#include <medViewContainerSplitter.h>
 
 class medViewContainerPrivate
 {
@@ -39,9 +40,13 @@ public:
     QUuid uuid;
 
     medAbstractView* view;
+    medViewContainerSplitter* parent;
 
     bool selected;
     bool maximised;
+    bool userSplittable;
+    bool userClosable;
+    bool multiLayer;
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
@@ -72,11 +77,16 @@ public:
 };
 
 
-medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
+medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(parent),
     d(new medViewContainerPrivate)
 {
+    d->parent = parent;
+
     d->uuid = QUuid::createUuid();
-    medViewContainerManager::instance()->registerNewContainer(this);    
+    medViewContainerManager::instance()->registerNewContainer(this);
+
+
+    d->userClosable = true;
 
     d->view = NULL;
     d->northDragLabel = NULL;
@@ -149,6 +159,9 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->mainLayout->addWidget(toolBar, 0, 0, Qt::AlignTop);
 
     this->setAcceptDrops(true);
+    this->setUserSplittable(true);
+    this->setUserClosable(true);
+    this->setMultiLayered(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
     this->setSelected(false);
@@ -174,6 +187,54 @@ medAbstractView* medViewContainer::view() const
     return d->view;
 }
 
+bool medViewContainer::isUserSplittable() const
+{
+    return d->userSplittable;
+}
+
+void medViewContainer::setUserSplittable(bool splittable)
+{
+    d->userSplittable = splittable;
+    if(d->userSplittable)
+    {
+          d->hSplittButton->show();
+          d->vSplittButton->show();
+    }
+    else
+    {
+        d->hSplittButton->hide();
+        d->vSplittButton->hide();
+    }
+}
+
+bool medViewContainer::isUserClosable() const
+{
+    return d->userClosable;
+}
+
+void medViewContainer::setUserClosable(bool closable)
+{
+    d->userClosable = closable;
+    if(d->userClosable)
+          d->closeContainerButton->show();
+    else
+        d->closeContainerButton->hide();
+}
+
+bool medViewContainer::isMultiLayered() const
+{
+    return d->multiLayer;
+}
+
+void medViewContainer::setMultiLayered(bool multilayer)
+{
+    d->multiLayer = multilayer;
+}
+
+void medViewContainer::setContainerParent(medViewContainerSplitter *splitter)
+{
+    d->parent = splitter;
+}
 
 void medViewContainer::setView(medAbstractView *view)
 {
@@ -276,7 +337,7 @@ void medViewContainer::setMaximised(bool maxi)
         d->vSplittButton->hide();
         d->hSplittButton->hide();
     }
-    else
+    else if(d->userSplittable)
     {
         d->vSplittButton->show();
         d->hSplittButton->show();
@@ -327,48 +388,51 @@ void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 
 void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 {
-    int x(event->pos().x()), y(event->pos().y());
-    int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
+    if(d->userSplittable)
+    {
+        int x(event->pos().x()), y(event->pos().y());
+        int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
 
-    if((x > rqw && x < rqw * 3) && (y < rqh))
-    {
-        d->northDragLabel->show();
-        d->eastDragLabel->hide();
-        d->southDragLabel->hide();
-        d->westDragLabel->hide();
-        d->midDragLabel->hide();
-    }
-    else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
-    {
-        d->northDragLabel->hide();
-        d->eastDragLabel->show();
-        d->southDragLabel->hide();
-        d->westDragLabel->hide();
-        d->midDragLabel->hide();
-    }
-    else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
-    {
-        d->northDragLabel->hide();
-        d->eastDragLabel->hide();
-        d->southDragLabel->show();
-        d->westDragLabel->hide();
-        d->midDragLabel->hide();
-    }
-    else if((x < rqw) && (y > rqh && y < rqh * 3))
-    {
-        d->northDragLabel->hide();
-        d->eastDragLabel->hide();
-        d->southDragLabel->hide();
-        d->westDragLabel->show();
-        d->midDragLabel->hide();
-    }
-    else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
-    {
-        d->northDragLabel->hide();
-        d->eastDragLabel->hide();
-        d->southDragLabel->hide();
-        d->westDragLabel->hide();
-        d->midDragLabel->show();
+        if((x > rqw && x < rqw * 3) && (y < rqh))
+        {
+            d->northDragLabel->show();
+            d->eastDragLabel->hide();
+            d->southDragLabel->hide();
+            d->westDragLabel->hide();
+            d->midDragLabel->hide();
+        }
+        else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
+        {
+            d->northDragLabel->hide();
+            d->eastDragLabel->show();
+            d->southDragLabel->hide();
+            d->westDragLabel->hide();
+            d->midDragLabel->hide();
+        }
+        else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
+        {
+            d->northDragLabel->hide();
+            d->eastDragLabel->hide();
+            d->southDragLabel->show();
+            d->westDragLabel->hide();
+            d->midDragLabel->hide();
+        }
+        else if((x < rqw) && (y > rqh && y < rqh * 3))
+        {
+            d->northDragLabel->hide();
+            d->eastDragLabel->hide();
+            d->southDragLabel->hide();
+            d->westDragLabel->show();
+            d->midDragLabel->hide();
+        }
+        else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
+        {
+            d->northDragLabel->hide();
+            d->eastDragLabel->hide();
+            d->southDragLabel->hide();
+            d->westDragLabel->hide();
+            d->midDragLabel->show();
+        }
     }
 
     event->acceptProposedAction();
@@ -382,25 +446,30 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    this->destroyDragLabels();
-
     const QMimeData *mimeData = event->mimeData();
     medDataIndex index = medDataIndex::readMimeData(mimeData);
     if(!index.isValidForSeries())
         return;
 
-    int x(event->pos().x()), y(event->pos().y());
-    int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
+    if(d->userSplittable)
+    {
+        this->destroyDragLabels();
 
-    if((x > rqw && x < rqw * 3) && (y < rqh))
-        emit splitRequest(index, Qt::AlignTop);
-    else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
-        emit splitRequest(index, Qt::AlignRight);
-    else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
-        emit splitRequest(index, Qt::AlignBottom);
-    else if((x < rqw) && (y > rqh && y < rqh * 3))
-        emit splitRequest(index, Qt::AlignLeft);
-    else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
+        int x(event->pos().x()), y(event->pos().y());
+        int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
+
+        if((x > rqw && x < rqw * 3) && (y < rqh))
+            emit splitRequest(index, Qt::AlignTop);
+        else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
+            emit splitRequest(index, Qt::AlignRight);
+        else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
+            emit splitRequest(index, Qt::AlignBottom);
+        else if((x < rqw) && (y > rqh && y < rqh * 3))
+            emit splitRequest(index, Qt::AlignLeft);
+        else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
+            this->addData(medDataManager::instance()->data(index));
+    }
+    else
         this->addData(medDataManager::instance()->data(index));
 
     event->acceptProposedAction();
@@ -410,6 +479,9 @@ void medViewContainer::addData(medAbstractData *data)
 {
     if(!data)
         return;
+
+    if(!d->multiLayer)
+        delete d->view;
 
     if(!d->view)
     {
@@ -554,4 +626,29 @@ void medViewContainer::unlink()
     {
         medParameterPoolManager::instance()->unlinkParameter(param);
     }
+}
+
+
+medViewContainer * medViewContainer::hSplit()
+{
+    if(!d->parent)
+        return NULL;
+
+    return d->parent->hSplit(this);
+}
+
+medViewContainer * medViewContainer::vSplit()
+{
+    if(!d->parent)
+        return NULL;
+
+    return d->parent->vSplit(this);
+}
+
+medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
+{
+    if(!d->parent)
+        return NULL;
+
+    return d->parent->split(this, alignement);
 }

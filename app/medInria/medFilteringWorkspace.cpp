@@ -26,25 +26,28 @@
 #include <medFilteringAbstractToolBox.h>
 #include <medAbstractData.h>
 #include <medDataManager.h>
+#include <medAbstractView.h>
+#include <medAbstractLayeredView.h>
 
 class medFilteringWorkspacePrivate
 {
 public:
     medFilteringSelectorToolBox *filteringToolBox;
+    medViewContainer *inputContainer;
+    medViewContainer *outputContainer;
+
+
     dtkSmartPointer<medAbstractData> filterOutput;
     QString importUuid;
 };
 
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medFilteringWorkspacePrivate)
 {
-    // -- View toolboxes --
-//    d->filteringToolBox = new medFilteringSelectorToolBox (parent);
+    d->filteringToolBox = new medFilteringSelectorToolBox(parent);
 
-//    connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-//    connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
-//    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
+    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
 
-//    this->addToolBox(d->filteringToolBox);
+    this->addToolBox(d->filteringToolBox);
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -55,28 +58,45 @@ medFilteringWorkspace::~medFilteringWorkspace()
 
 void medFilteringWorkspace::setupViewContainerStack()
 {
-//    if ( !this->stackedViewContainers()->count() )
-//    {
-////        medViewContainer *viewContainer = new medViewContainer (this->stackedViewContainers());
+    if ( !this->stackedViewContainers()->count() )
+    {
+        d->inputContainer = this->stackedViewContainers()->addContainerInTab("Filtering");
+        d->inputContainer->setUserClosable(false);
+        d->inputContainer->setUserSplittable(false);
+        d->inputContainer->setMultiLayered(false);
 
-//        //TODO make it fit with new container -RDE
-////        connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
-////        connect(this,SIGNAL(outputDataChanged(medAbstractData *)),
-////                filteringViewContainer,SLOT(updateOutput(medAbstractData *)));
-////        connect(filteringViewContainer, SIGNAL(viewRemoved(medAbstractView *)),
-////                this, SLOT(onInputViewRemoved()));
+        d->outputContainer = d->inputContainer->vSplit();
+        d->outputContainer->setUserClosable(false);
+        d->outputContainer->setUserSplittable(false);
+        d->outputContainer->setMultiLayered(false);
+        d->outputContainer->setAcceptDrops(false);
 
-//        this->stackedViewContainers()->addContainerInTab("Filtering");
-//        //setCurrentViewContainer ("Filtering");
+        connect(d->inputContainer, SIGNAL(viewChanged()), this, SLOT(changeToolBoxInput()));
+        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
 
-//        this->stackedViewContainers()->lockTabs();
-//        this->stackedViewContainers()->hideTabBar();
-//    }
+        this->stackedViewContainers()->lockTabs();
+        this->stackedViewContainers()->hideTabBar();
+    }
 }
 
-void medFilteringWorkspace::patientChanged ( int patientId )
+void medFilteringWorkspace::changeToolBoxInput()
 {
-    d->filteringToolBox->clear();
+    if(!d->inputContainer->view())
+    {
+        d->filteringToolBox->clear();
+        return;
+    }
+
+    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
+    if(!layeredView)
+    {
+        qWarning() << "non layered view are not supported in filtering workspace yet.";
+        d->filteringToolBox->clear();
+        return;
+    }
+
+    medDataIndex dataIndex = layeredView->data(layeredView->currentLayer())->dataIndex();
+    d->filteringToolBox->onInputSelected(dataIndex);
 }
 
 void medFilteringWorkspace::onProcessSuccess()
@@ -112,26 +132,21 @@ void medFilteringWorkspace::onProcessSuccess()
     d->importUuid = QUuid::createUuid().toString();
     medDataManager::instance()->importNonPersistent ( d->filterOutput, d->importUuid );
 
-    emit outputDataChanged (d->filterOutput);
+    d->outputContainer->addData(d->filterOutput);
 }
 
-void medFilteringWorkspace::onOutputImported ( const medDataIndex& dataIndex,
-        const QString& uuid )
-{
-    if ( !uuid.isEmpty() && uuid == d->importUuid )
-    {
-        d->filteringToolBox->setDataIndex ( dataIndex );
-        d->importUuid = QString();
-    }
-}
+//void medFilteringWorkspace::onOutputImported ( const medDataIndex& dataIndex,
+//        const QString& uuid )
+//{
+//    if ( !uuid.isEmpty() && uuid == d->importUuid )
+//    {
+//        d->filteringToolBox->setDataIndex ( dataIndex );
+//        d->importUuid = QString();
+//    }
+//}
 
 QString medFilteringWorkspace::identifier() const {
     return "Filtering";
-}
-
-void medFilteringWorkspace::onInputViewRemoved ()
-{
-    d->filteringToolBox->clear();
 }
 
 

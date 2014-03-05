@@ -99,17 +99,17 @@ void medTabbedViewContainers::resetTab(int index)
         this->addContainerInTab();
 }
 
-void medTabbedViewContainers::addContainerInTab()
+medViewContainer* medTabbedViewContainers::addContainerInTab()
 {
-    this->addContainerInTab("TODO find fancy name - RDE");
+    return this->addContainerInTab("TODO find fancy name - RDE");
 }
 
-void medTabbedViewContainers::addContainerInTab(const QString &name)
+medViewContainer* medTabbedViewContainers::addContainerInTab(const QString &name)
 {
-    this->insertContainerInTab(this->count(), name);
+    return this->insertContainerInTab(this->count(), name);
 }
 
-void medTabbedViewContainers::insertContainerInTab(int index, const QString &name)
+medViewContainer *medTabbedViewContainers::insertContainerInTab(int index, const QString &name)
 {
     medViewContainerSplitter *splitter  = new medViewContainerSplitter;
     int idx = this->insertTab(index, splitter, name);
@@ -119,6 +119,8 @@ void medTabbedViewContainers::insertContainerInTab(int index, const QString &nam
     connect(splitter, SIGNAL(newContainer(QUuid)), this, SLOT(connectContainer(QUuid)), Qt::UniqueConnection);
     medViewContainer* container = new medViewContainer;
     splitter->addViewContainer(container);
+
+    return container;
 }
 
 void medTabbedViewContainers::hideTabBar()

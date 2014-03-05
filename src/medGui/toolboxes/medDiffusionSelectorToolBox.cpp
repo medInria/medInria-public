@@ -14,7 +14,7 @@ PURPOSE.
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <medPluginManager.h>
 #include <medViewManager.h>
 
@@ -49,7 +49,7 @@ public:
 
     QLabel *inputLabel;
 
-    dtkSmartPointer <medAbstractDataImage> input;
+    dtkSmartPointer <medAbstractImageData> input;
 };
 
 medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, SelectorType type) : medToolBox(parent), d(new medDiffusionSelectorToolBoxPrivate)
@@ -244,12 +244,12 @@ void medDiffusionSelectorToolBox::selectInputImage(const medDataIndex& index)
     if (!index.isValid())
         return;
 
-    dtkSmartPointer <medAbstractDataImage> data = medDataManager::instance()->data (index);
+    dtkSmartPointer <medAbstractImageData> data = medDataManager::instance()->data (index);
 
     this->setInputImage(data);
 }
 
-void medDiffusionSelectorToolBox::setInputImage(medAbstractDataImage *data)
+void medDiffusionSelectorToolBox::setInputImage(medAbstractImageData *data)
 {
     if (!data)
         return;
@@ -340,7 +340,7 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
     int i=0;
     QStringList gradientList;
 
-    medAbstractDataImage::MatrixType orientationMatrix;
+    medAbstractImageData::MatrixType orientationMatrix;
     orientationMatrix = d->input->orientationMatrix();
 
     while (double *grad=(double *)(gradients->data(i)))

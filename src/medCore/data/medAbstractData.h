@@ -85,7 +85,6 @@ public slots:
     */
     void invokeModified();
 
-private:
     void generateThumbnail();
 
 signals:

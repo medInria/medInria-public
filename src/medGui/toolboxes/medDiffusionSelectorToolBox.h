@@ -17,7 +17,7 @@ PURPOSE.
 
 class dtkAbstractProcess;
 class dtkAbstractView;
-class medAbstractDataImage;
+class medAbstractImageData;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
 
@@ -35,7 +35,7 @@ public:
      medDiffusionSelectorToolBox(QWidget *parent = 0, SelectorType type = Estimation);
     ~medDiffusionSelectorToolBox();
 
-    void setInputImage(medAbstractDataImage *data);
+    void setInputImage(medAbstractImageData *data);
     void clearInput();
 
     void setProcessParameters(dtkAbstractProcess *process);

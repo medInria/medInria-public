@@ -43,9 +43,9 @@ public:
 
 
 public slots:
-    void addContainerInTab();
-    void addContainerInTab(const QString &name);
-    void insertContainerInTab(int index, const QString &name);
+    medViewContainer* addContainerInTab();
+    medViewContainer* addContainerInTab(const QString &name);
+    medViewContainer* insertContainerInTab(int index, const QString &name);
     void resetCurrentTab();
     void resetTab(int index);
 

@@ -55,33 +55,28 @@ signals:
      */
     void outputDataChanged ( medAbstractData * );
 
-public slots:
+protected slots:
 
-    /**
-     * @brief removes filtering toolboxes when patient changes
-     *
-     * @param patientId
-     */
-    void patientChanged ( int patientId );
+    void changeToolBoxInput();
 
     /**
      * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
      */
     void onProcessSuccess();
 
-    /**
-     * @brief Imports output data in non persistent database
-     *
-     * @param dataIndex The index that was imported.
-     * @param uuid The identifier of the caller.
-     */
-    void onOutputImported ( const medDataIndex & dataIndex, const QString& uuid );
+//    /**
+//     * @brief Imports output data in non persistent database
+//     *
+//     * @param dataIndex The index that was imported.
+//     * @param uuid The identifier of the caller.
+//     */
+//    void onOutputImported ( const medDataIndex & dataIndex, const QString& uuid );
 
-    /**
-     * @brief Clear the filtering toolboxes when the input view is closed
-     *
-     */
-    void onInputViewRemoved();
+//    /**
+//     * @brief Clear the filtering toolboxes when the input view is closed
+//     *
+//     */
+//    void onInputViewRemoved();
 
 private:
     medFilteringWorkspacePrivate *d;

@@ -16,7 +16,7 @@
 #include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
-// medAbstractDataImagePrivate
+// medAbstractImageDataPrivate
 // /////////////////////////////////////////////////////////////////
 
 //  Unneeded in this case.
@@ -65,7 +65,7 @@ const medAbstractImageData::PixId& medAbstractImageData::PixelType() const
 medAbstractImageData::MatrixType medAbstractImageData::orientationMatrix()
 {
     DTK_DEFAULT_IMPLEMENTATION;
-    
+
     return MatrixType();
 }
 

@@ -26,7 +26,7 @@ class medAbstractData;
 class medTabbedViewContainers;
 class medDiffusionWorkspacePrivate;
 
-class medDiffusionWorkspace : public medWorkspace
+class medDiffusionWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
 
@@ -54,10 +54,10 @@ public slots:
     void disconnectCurrentViewSignals(dtkAbstractView *view);
     
     /**
-      * @brief Adds a new tab to a workspace
-      *
-      * Re-implemented, replaces default implementation in medWorkspace
-      */
+	* @brief Adds a new tab to a workspace
+	*
+	* Re-implemented, replaces default implementation in medAbstractWorkspace
+	*/
     void onAddTabClicked();
     
     void changeCurrentContainer(QString name);
