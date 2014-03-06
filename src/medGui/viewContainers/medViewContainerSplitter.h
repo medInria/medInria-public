@@ -50,5 +50,6 @@ private:
     void recomputeSizes(int requestIndex, int newIndex, int newSize);
     void insertNestedSplitter(int index,
                            medViewContainer *oldContainer,
-                           medViewContainer *newContainer);
+                           medViewContainer *newContainer,
+                           bool inverseOrderInSplitter = false);
 };

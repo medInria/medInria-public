@@ -163,19 +163,58 @@ void medViewContainerSplitterTestObject::testSplitVertically()
     medViewContainer *newContainer = splitter->splitVertically(container1);
 
     QCOMPARE(spy1.count(), 1);
-    QCOMPARE(splitter->count(), 2);
-    QCOMPARE(splitter->widget(0), container1);
-    QCOMPARE(splitter->widget(1), newContainer);
+    QCOMPARE(splitter->count(), 1);
+
+    medViewContainerSplitter *nestedSplitter = dynamic_cast<medViewContainerSplitter*>(splitter->widget(0));
+    QCOMPARE(nestedSplitter->widget(0), container1);
+    QCOMPARE(nestedSplitter->widget(1), newContainer);
+    QCOMPARE(nestedSplitter->orientation(), Qt::Horizontal);
 
     QList<QVariant> arguments = spy1.takeFirst();
     QUuid receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
     QCOMPARE(newContainer->uuid(), receivedUuid);
 
+    medViewContainer *newContainer2 = nestedSplitter->splitVertically(newContainer);
 
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(nestedSplitter->count(), 3);
+    QCOMPARE(nestedSplitter->widget(0), container1);
+    QCOMPARE(nestedSplitter->widget(1), newContainer);
+    QCOMPARE(nestedSplitter->widget(2), newContainer2);
 }
 
 void medViewContainerSplitterTestObject::testSplitHorizontally()
 {
+    medViewContainerSplitter *splitter = new medViewContainerSplitter();
+    splitter->setOrientation(Qt::Horizontal);
+    splitter->show();
+
+    medViewContainer *container1 = new medViewContainer;
+    splitter->addViewContainer(container1);
+
+    QSignalSpy spy1(splitter, SIGNAL(newContainer(QUuid)));
+
+    medViewContainer *newContainer = splitter->splitHorizontally(container1);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(splitter->count(), 1);
+
+    medViewContainerSplitter *nestedSplitter = dynamic_cast<medViewContainerSplitter*>(splitter->widget(0));
+    QCOMPARE(nestedSplitter->widget(0), container1);
+    QCOMPARE(nestedSplitter->widget(1), newContainer);
+    QCOMPARE(nestedSplitter->orientation(), Qt::Vertical);
+
+    QList<QVariant> arguments = spy1.takeFirst();
+    QUuid receivedUuid = qvariant_cast<QUuid>(arguments.at(0));
+    QCOMPARE(newContainer->uuid(), receivedUuid);
+
+    medViewContainer *newContainer2 = nestedSplitter->splitHorizontally(newContainer);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(nestedSplitter->count(), 3);
+    QCOMPARE(nestedSplitter->widget(0), container1);
+    QCOMPARE(nestedSplitter->widget(1), newContainer);
+    QCOMPARE(nestedSplitter->widget(2), newContainer2);
 }
 
 void medViewContainerSplitterTestObject::testSplit()

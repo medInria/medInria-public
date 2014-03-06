@@ -164,6 +164,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     this->setMultiLayered(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
+
+    d->selected = false;
     this->setSelected(false);
 }
 

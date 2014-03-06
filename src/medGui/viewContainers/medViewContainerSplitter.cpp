@@ -71,7 +71,7 @@ medViewContainer *medViewContainerSplitter::split(medViewContainer *sender, Qt::
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-            this->insertNestedSplitter(index, newContainer, sender);
+            this->insertNestedSplitter(index, sender, newContainer, true);
         break;
     case Qt::AlignBottom:
         if(this->orientation() == Qt::Vertical)
@@ -98,7 +98,7 @@ medViewContainer *medViewContainerSplitter::split(medViewContainer *sender, Qt::
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-            this->insertNestedSplitter(index, newContainer, sender);
+            this->insertNestedSplitter(index, sender, newContainer, true);
         break;
     }
 
@@ -177,21 +177,37 @@ void medViewContainerSplitter::recomputeSizes(int requestIndex, int newIndex, in
 
 void medViewContainerSplitter::insertNestedSplitter(int index,
                                                  medViewContainer *oldContainer,
-                                                 medViewContainer *newContainer)
+                                                 medViewContainer *newContainer,
+                                                 bool inverseOrderInSplitter)
 {
     Qt::Orientation ori = Qt::Vertical;
     if(this->orientation() == Qt::Vertical)
             ori = Qt::Horizontal;
 
     QList<int> savedSizes = this->sizes();
-    oldContainer->disconnect(this);
+    //oldContainer->disconnect(this);
     medViewContainerSplitter *splitter = new medViewContainerSplitter;
     splitter->setOrientation(ori);
+
     connect(splitter, SIGNAL(newContainer(QUuid)), this, SIGNAL(newContainer(QUuid)));
     connect(splitter, SIGNAL(containerRemoved()), this, SIGNAL(containerRemoved()));
     connect(splitter, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
-    splitter->addViewContainer(oldContainer);
-    splitter->addViewContainer(newContainer);
+
+    if(inverseOrderInSplitter)
+    {
+       splitter->addViewContainer(newContainer);
+       splitter->blockSignals(true);
+       splitter->addViewContainer(oldContainer);
+       splitter->blockSignals(false);
+    }
+    else
+    {
+       splitter->blockSignals(true);
+       splitter->addViewContainer(oldContainer);
+       splitter->blockSignals(false);
+       splitter->addViewContainer(newContainer);
+    }
+
     this->insertWidget(index, splitter);
     this->setCollapsible(index, false);
     this->setSizes(savedSizes); 
