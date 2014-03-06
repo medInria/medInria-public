@@ -373,8 +373,6 @@ void vtkImageViewCollectionCommand::Execute(vtkObject *caller,
 	
   if (!isi || !viewer || !viewer->GetInput())
     return;
-
-  vtkRenderWindowInteractor *rwi = viewer->GetInteractor();
   
   // Move Slice
   if (event == vtkImageView2DCommand::SliceMoveEvent)

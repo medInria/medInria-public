@@ -31,9 +31,15 @@ public:
 public:
     itkFiltersProcessBase& operator = (const itkFiltersProcessBase& other);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+    
     QString description ( void );
     
     void setInput ( medAbstractData *data );
+
+#pragma clang diagnostic pop
+
     medAbstractData *output ( void );
     
     void emitProgress(int progress);

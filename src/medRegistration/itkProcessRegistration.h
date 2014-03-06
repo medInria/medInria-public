@@ -86,6 +86,9 @@ public:
     */
     int update();
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+    
     /**
      * @brief Sets the fixed or moving image paramters of the process.
      *
@@ -95,6 +98,8 @@ public:
      * @param channel: 0 for the fixed image, 1 for the moving one.
     */
     virtual void setInput(medAbstractData *data, int channel);
+
+#pragma clang diagnostic pop
 
     /**
      * @brief Gets the registered image.

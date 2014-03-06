@@ -41,8 +41,13 @@ public:
     void insertLayer(unsigned int layer, medAbstractData *data);
     void moveLayer(unsigned int fromLayer, unsigned int toLayer);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+    
     medAbstractData * data(unsigned int layer) const;
     QList<dtkSmartPointer<medAbstractData> > data() const;
+
+#pragma clang diagnostic pop
 
     bool contains(medAbstractData * data) const;
 

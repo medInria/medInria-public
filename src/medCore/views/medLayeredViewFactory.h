@@ -23,8 +23,8 @@
 #include <medAbstractLayeredViewNavigator.h>
 #include <medAbstractLayeredViewInteractor.h>
 
-
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
 
 class medLayeredViewFactoryPrivate;
 class MEDCORE_EXPORT medLayeredViewFactory : public medViewFactory
@@ -71,10 +71,10 @@ protected:
     ~medLayeredViewFactory();
 
 private:
-     virtual bool registerView(QString identifier, QStringList typeHandled, viewCreator creator);
-     virtual bool registerNavigator(QString identifier, QStringList typeHandled, navigatorCreator creator);
-     virtual bool registerInteractor(QString identifier, QStringList typeHandled, interactorCreator creator);
 
+    virtual bool registerView(QString identifier, QStringList typeHandled, viewCreator creator);
+    virtual bool registerNavigator(QString identifier, QStringList typeHandled, navigatorCreator creator);
+    virtual bool registerInteractor(QString identifier, QStringList typeHandled, interactorCreator creator);
 
     /** Singleton holder.*/
     static medLayeredViewFactory *s_instance;
@@ -85,11 +85,13 @@ private:
     {
         return (new T(parent));
     }
+    
     template < typename T>
     static medAbstractLayeredViewNavigator* createNavigator(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
+ 
     template < typename T>
     static medAbstractLayeredViewInteractor* creatInteractor(medAbstractLayeredView* parent)
     {
@@ -100,4 +102,4 @@ private:
     medLayeredViewFactoryPrivate* d;
 };
 
-
+#pragma clang diagnostic pop

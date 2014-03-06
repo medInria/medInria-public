@@ -38,12 +38,17 @@ public:
 public:
     virtual QString description() const = 0;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+    
     virtual void setView(medAbstractView*view);
     virtual medAbstractView *view() const;
 
     virtual void setData(medAbstractData *data);
     virtual medAbstractData *data() const;
 
+#pragma clang diagnostic pop
+    
     virtual QWidget* toolBoxWidget() = 0;
     virtual QWidget* toolBarWidget() = 0;
     virtual QWidget* layerWidget() = 0;

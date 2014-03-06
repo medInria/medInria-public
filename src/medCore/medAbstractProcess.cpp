@@ -10,4 +10,5 @@ medAbstractProcess::~medAbstractProcess()
 
 medAbstractData *medAbstractProcess::output(void)
 {
+    return 0;
 }

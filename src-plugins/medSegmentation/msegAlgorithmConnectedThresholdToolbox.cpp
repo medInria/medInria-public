@@ -46,6 +46,9 @@ public:
         m_cb(cb)
         {}
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+
     virtual bool mousePressEvent( medAbstractImageView *view, QMouseEvent *mouseEvent ) MED_OVERRIDE
     {
 
@@ -64,6 +67,9 @@ public:
         }
         return mouseEvent->isAccepted();
     }
+    
+#pragma clang diagnostic pop
+    
 private :
     AlgorithmConnectedThresholdToolbox *m_cb;
 

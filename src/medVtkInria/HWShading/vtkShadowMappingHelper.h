@@ -115,9 +115,6 @@ private:
    */
   GLuint ShadowTexture;
   GLuint ShadowFBO;
-  GLuint ShadowRBO;
-  GLuint ColorTexture;
-  GLuint ColorRBO;
   GLuint DepthRBO;
 
   /**

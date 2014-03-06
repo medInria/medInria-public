@@ -162,7 +162,6 @@ void vtkDataMeshInteractor::setData(medAbstractData *data)
     if(data->identifier() == "vtkDataMesh4D" || data->identifier() == "vtkDataMesh")
     {
         vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
-        vtkPointSet * pointSet = vtkPointSet::SafeDownCast (mesh->GetDataSet());
 
         d->metaDataSet = mesh;
         d->lut = LutPair(NULL, "Default");
