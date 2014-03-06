@@ -105,6 +105,8 @@ void medFilteringWorkspace::onProcessSuccess()
     if ( !d->filterOutput )
         return;
 
+    qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
+
     dtkSmartPointer<medAbstractData> inputData(d->filteringToolBox->data());
 
     if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
@@ -130,7 +132,7 @@ void medFilteringWorkspace::onProcessSuccess()
 
     //Create a uniqueId for the request.
     d->importUuid = QUuid::createUuid().toString();
-    medDataManager::instance()->importNonPersistent ( d->filterOutput, d->importUuid );
+    medDataManager::instance()->importNonPersistent(d->filterOutput, d->importUuid);
 
     d->outputContainer->addData(d->filterOutput);
 }

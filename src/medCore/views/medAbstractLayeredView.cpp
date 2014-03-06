@@ -276,6 +276,13 @@ void medAbstractLayeredView::setCurrentLayer(unsigned int layer)
 
 QImage& medAbstractLayeredView::generateThumbnail(const QSize &size)
 {
+    medAbstractLayeredViewInteractor *primaryInteractor = this->primaryInteractor(this->data(d->currentLayer));
+    if(!primaryInteractor)
+    {
+        qWarning()<< "unable to find any primary interactor for view"  <<this->identifier() << 'and data' << this->data(d->currentLayer)->identifier();
+        QImage img;
+        return img;
+    }
     return this->primaryInteractor(this->data(d->currentLayer))->generateThumbnail(size);
 }
 

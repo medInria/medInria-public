@@ -64,8 +64,6 @@ public:
     int receiverQuarterWidth;
     int receiverQuarterHeight;
 
-    medToolBox *toolBox;
-
     medBoolParameter* maximizedParameter;
     medColorListParameter *poolSelector;
 
@@ -92,7 +90,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->westDragLabel = NULL;
     d->southDragLabel = NULL;
     d->midDragLabel = NULL;
-    d->toolBox = NULL;
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
@@ -261,9 +258,6 @@ void medViewContainer::setView(medAbstractView *view)
         d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
         d->view->viewWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         d->view->viewWidget()->show();
-        d->toolBox = new medToolBox;
-        d->toolBox->setTitle("Container settings");
-        d->toolBox->header()->hide();
 
         QString tooltip = QString(tr("Link View properties ("));
         foreach(medAbstractParameter *param, d->view->navigatorsParameters())
@@ -375,7 +369,6 @@ void medViewContainer::removeView()
 void medViewContainer::removeInternView()
 {
     d->view = NULL;
-    d->toolBox = NULL;
     d->maximizedParameter->hide();
 
     emit viewRemoved();

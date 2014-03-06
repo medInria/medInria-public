@@ -265,7 +265,8 @@ QImage medDatabaseNonPersistentControllerImpl::thumbnail( const medDataIndex &in
             }
         }
     }
-    if ( item && item->data()) {
+    if ( item && item->data())
+    {
         return item->data()->thumbnail();
     }
     else

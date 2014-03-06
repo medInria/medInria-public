@@ -490,7 +490,7 @@ void medDataManager::importNonPersistent( medAbstractData *data )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( medAbstractData *data, QString uuid)
+void medDataManager::importNonPersistent(medAbstractData *data, QString uuid)
 {
     if (!data)
         return;
