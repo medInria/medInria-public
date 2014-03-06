@@ -61,11 +61,18 @@ void medFilteringWorkspace::setupViewContainerStack()
     if ( !this->stackedViewContainers()->count() )
     {
         d->inputContainer = this->stackedViewContainers()->addContainerInTab("Filtering");
+        QLabel *inputLabel = new QLabel("INPUT");
+        inputLabel->setAlignment(Qt::AlignCenter);
+        d->inputContainer->setDefaultWidget(inputLabel);
+
         d->inputContainer->setUserClosable(false);
         d->inputContainer->setUserSplittable(false);
         d->inputContainer->setMultiLayered(false);
 
         d->outputContainer = d->inputContainer->splitVertically();
+        QLabel *outputLabel = new QLabel("OUTPUT");
+        outputLabel->setAlignment(Qt::AlignCenter);
+        d->outputContainer->setDefaultWidget(outputLabel);
         d->outputContainer->setUserClosable(false);
         d->outputContainer->setUserSplittable(false);
         d->outputContainer->setMultiLayered(false);
@@ -90,13 +97,11 @@ void medFilteringWorkspace::changeToolBoxInput()
     medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
     if(!layeredView)
     {
-        qWarning() << "non layered view are not supported in filtering workspace yet.";
+        qWarning() << "Non layered view are not supported in filtering workspace yet.";
         d->filteringToolBox->clear();
         return;
     }
-
-    medDataIndex dataIndex = layeredView->data(layeredView->currentLayer())->dataIndex();
-    d->filteringToolBox->onInputSelected(dataIndex);
+    d->filteringToolBox->onInputSelected(layeredView->data(layeredView->currentLayer()));
 }
 
 void medFilteringWorkspace::onProcessSuccess()
@@ -137,15 +142,6 @@ void medFilteringWorkspace::onProcessSuccess()
     d->outputContainer->addData(d->filterOutput);
 }
 
-//void medFilteringWorkspace::onOutputImported ( const medDataIndex& dataIndex,
-//        const QString& uuid )
-//{
-//    if ( !uuid.isEmpty() && uuid == d->importUuid )
-//    {
-//        d->filteringToolBox->setDataIndex ( dataIndex );
-//        d->importUuid = QString();
-//    }
-//}
 
 QString medFilteringWorkspace::identifier() const {
     return "Filtering";

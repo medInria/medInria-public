@@ -37,7 +37,7 @@ signals:
 public slots:
 
     void clear();
-    void update(dtkAbstractView *view);
+    void update(medAbstractData *data);
 
     void run();
 

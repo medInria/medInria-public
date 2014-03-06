@@ -100,18 +100,6 @@ medToolBoxBody *medToolBox::body(void) const
     return d->body;
 }
 
-void medToolBox::update(dtkAbstractView *view)
-{
-//    medAbstractView* medView = dynamic_cast<medAbstractView*>(view);
-//    if (medView)
-//        setContextVisibility(medView->dataTypes());
-//    else
-//    {
-//        setContextVisibility(QHash<QString, unsigned int> ());
-//    }
-//    //DTK_DEFAULT_IMPLEMENTATION;
-//    //DTK_UNUSED(view);
-}
 
 void medToolBox::clear(void)
 {

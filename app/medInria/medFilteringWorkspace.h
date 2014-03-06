@@ -64,13 +64,6 @@ protected slots:
      */
     void onProcessSuccess();
 
-//    /**
-//     * @brief Imports output data in non persistent database
-//     *
-//     * @param dataIndex The index that was imported.
-//     * @param uuid The identifier of the caller.
-//     */
-//    void onOutputImported ( const medDataIndex & dataIndex, const QString& uuid );
 
 //    /**
 //     * @brief Clear the filtering toolboxes when the input view is closed

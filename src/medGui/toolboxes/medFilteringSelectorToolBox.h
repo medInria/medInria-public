@@ -70,7 +70,7 @@ public slots:
      * @brief retrieve data from the selected input image index
      * @param index
      */
-    void onInputSelected(const medDataIndex& index);
+    void onInputSelected(medAbstractData *data);
 
 
 protected:

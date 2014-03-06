@@ -48,6 +48,10 @@ public:
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
 
+    void setDefaultWidget(QWidget *defaultWidget);
+    QWidget* defaultWidget() const;
+
+
 public slots:
     void setSelected(bool selected);
     void setUnSelected(bool unSelected);

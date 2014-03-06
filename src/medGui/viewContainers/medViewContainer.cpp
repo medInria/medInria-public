@@ -39,6 +39,8 @@ class medViewContainerPrivate
 public:
     QUuid uuid;
 
+    QWidget *defaultWidget;
+
     medAbstractView* view;
     medViewContainerSplitter* parent;
 
@@ -85,6 +87,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
 
     d->view = NULL;
+    d->defaultWidget = new QWidget;
     d->northDragLabel = NULL;
     d->eastDragLabel = NULL;
     d->westDragLabel = NULL;
@@ -152,6 +155,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
     d->mainLayout->setSpacing(0);
     d->mainLayout->addWidget(toolBar, 0, 0, Qt::AlignTop);
+    d->mainLayout->addWidget(d->defaultWidget, 1, 0, 1, 1, Qt::AlignCenter);
+    d->defaultWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     this->setAcceptDrops(true);
     this->setUserSplittable(true);
@@ -182,6 +187,23 @@ QUuid medViewContainer::uuid() const
 medAbstractView* medViewContainer::view() const
 {
     return d->view;
+}
+
+QWidget* medViewContainer::defaultWidget() const
+{
+    return d->defaultWidget;
+}
+
+void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
+{
+    defaultWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    if(!d->view)
+    {
+        d->mainLayout->removeWidget(d->defaultWidget);
+        delete d->defaultWidget;
+        d->mainLayout->addWidget(defaultWidget, 1, 0, 1, 1);
+    }
+    d->defaultWidget = defaultWidget;
 }
 
 bool medViewContainer::isUserSplittable() const
@@ -255,7 +277,8 @@ void medViewContainer::setView(medAbstractView *view)
         }
 
         d->maximizedParameter->show();
-        d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
+        d->defaultWidget->hide();
+        d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
         d->view->viewWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         d->view->viewWidget()->show();
 
@@ -370,9 +393,11 @@ void medViewContainer::removeInternView()
 {
     d->view = NULL;
     d->maximizedParameter->hide();
+    d->defaultWidget->show();
 
     emit viewRemoved();
 }
+
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
@@ -490,10 +515,7 @@ void medViewContainer::addData(medAbstractData *data)
         return;
 
     if(!d->multiLayer)
-    {
         delete d->view;
-        d->view = 0;
-    }
 
     if(!d->view)
     {

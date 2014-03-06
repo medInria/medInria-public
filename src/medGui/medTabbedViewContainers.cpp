@@ -188,9 +188,9 @@ void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
         {
             d->containerSelectedForTabIndex.insert(d->containerSelectedForTabIndex.key(containersSelected), containersSelected);
             medViewContainer *unSelectedContainer =  medViewContainerManager::instance()->container(container);
-            this->disconnect(unSelectedContainer, SIGNAL(currentLayerChanged()), 0, 0);
-            this->disconnect(unSelectedContainer, SIGNAL(viewRemoved()), 0, 0);
-            this->disconnect(unSelectedContainer, SIGNAL(viewContentChanged()), 0, 0);
+            this->disconnect(unSelectedContainer, SIGNAL(currentLayerChanged()), this, 0);
+            this->disconnect(unSelectedContainer, SIGNAL(viewRemoved()), this, 0);
+            this->disconnect(unSelectedContainer, SIGNAL(viewContentChanged()), this, 0);
             emit containersSelectedChanged();
             break;
         }

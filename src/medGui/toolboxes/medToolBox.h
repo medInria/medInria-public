@@ -201,13 +201,6 @@ public slots:
     virtual void clear();
 
     /**
-     * @brief Updates the content of the toolbox when a new view is selected.
-     *
-     * @param view The view to extract information from.
-    */
-    virtual void update(dtkAbstractView *view);
-
-    /**
      * @brief Switches from a minimized state to an extended one and vice versa.
      *
     */

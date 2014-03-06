@@ -27,12 +27,10 @@ class MEDGUI_EXPORT medFilteringAbstractToolBox : public medToolBox
 public:
              medFilteringAbstractToolBox(QWidget *parentToolBox = 0);
     virtual ~medFilteringAbstractToolBox();
-
     void setFilteringToolBox(medFilteringSelectorToolBox *toolbox);
-
     virtual medAbstractData* processOutput() = 0;
-
     virtual dtkPlugin* plugin() = 0;
+    virtual void update(medAbstractData *data) = 0;
 
 protected:
     medFilteringSelectorToolBox *parentToolBox();

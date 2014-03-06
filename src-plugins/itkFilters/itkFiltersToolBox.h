@@ -39,7 +39,7 @@ public slots:
     void onFiltersActivated(int index);
 
     void clear();
-    void update(dtkAbstractView *view);
+    void update(medAbstractData *data);
 
     void run();
 

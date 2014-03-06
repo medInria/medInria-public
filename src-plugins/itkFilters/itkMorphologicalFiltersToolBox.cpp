@@ -159,20 +159,13 @@ void itkMorphologicalFiltersToolBox::clear()
     
 }
 
-void itkMorphologicalFiltersToolBox::update ( dtkAbstractView* view )
+void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
 {
-    if ( !view )
-    {
-        clear();
-    }
+    if (!data)
+        this->clear();
     else
     {
-        if ( !this->parentToolBox()->data() )
-        {
-            return;
-        }
-
-        QString identifier = this->parentToolBox()->data()->identifier();
+        QString identifier = data->identifier();
 
         if ( identifier == "itkDataImageChar3" )
         {

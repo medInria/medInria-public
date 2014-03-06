@@ -71,7 +71,6 @@ public:
     QDoubleSpinBox * intensityOutputMaximumValue;
 
     QComboBox * filters;
-//    dtkSmartPointer <dtkAbstractProcess> process;
     dtkSmartPointer <itkFiltersProcessBase> process;
     
     medProgressionStack * progressionStack;
@@ -336,20 +335,13 @@ void itkFiltersToolBox::clear()
     d->intensityOutputMaximumValue->setValue ( 255 );
 }
 
-void itkFiltersToolBox::update ( dtkAbstractView* view )
+void itkFiltersToolBox::update (medAbstractData *data )
 {
-    if ( !view )
-    {
+    if (!data)
         clear();
-    }
     else
     {
-        if ( !this->parentToolBox()->data() )
-        {
-            return;
-        }
-
-        QString identifier = this->parentToolBox()->data()->identifier();
+        QString identifier = data->identifier();
 
         if ( identifier == "itkDataImageChar3" )
         {

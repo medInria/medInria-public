@@ -49,7 +49,16 @@ medViewContainer *medViewContainerSplitter::split(medViewContainer *sender, Qt::
         return NULL;
 
     int index = this->indexOf(sender);
-    int newSize = this->sizes()[index] / 2;
+    int newSize;
+    if(this->count() == 1)
+    {
+        if(this->orientation() == Qt::Vertical)
+            newSize = this->width() / 2;
+        else
+            newSize = this->height() / 2;
+    }
+    else
+        newSize = this->sizes()[index] / 2;
 
     medViewContainer *newContainer = new medViewContainer;
 

@@ -557,10 +557,10 @@ QImage& vtkDataMeshInteractor::generateThumbnail(const QSize &size)
     d->render->SetOffScreenRendering(1);
     int w(size.width()), h(size.height());
     d->view->viewWidget()->resize(w,h);
-    d->render->vtkGenericOpenGLRenderWindow::SetSize(w,h);
+    d->render->vtkRenderWindow::SetSize(w,h);
     d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
     d->view->reset();
-    //TODO find haow to remove the litlle cube at the bottom left corner.
+    //TODO find how to remove the litlle cube at the bottom left corner.
 //    d->view3d->ShowAnnotationsOff();
 //    d->view3d->ShowActorXOff();
 //    d->view3d->ShowActorYOff();
