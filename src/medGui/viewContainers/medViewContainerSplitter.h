@@ -31,8 +31,6 @@ public:
 public slots:
     void addViewContainer(medViewContainer* container);
     void insertViewContainer(int index, medViewContainer* container);
-    medViewContainer* splitVertically();
-    medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
     medViewContainer* splitVertically(medViewContainer *sender);
     medViewContainer* splitHorizontally(medViewContainer *sender);
@@ -43,6 +41,10 @@ public slots:
 signals:
     void newContainer(QUuid);
     void containerRemoved();
+
+private slots:
+    medViewContainer* splitVertically();
+    medViewContainer* splitHorizontally();
 
 private:
     void recomputeSizes(int requestIndex, int newIndex, int newSize);

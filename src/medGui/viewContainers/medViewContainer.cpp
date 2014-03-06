@@ -240,6 +240,7 @@ void medViewContainer::setView(medAbstractView *view)
 {
     if(d->view)
     {
+        d->view->viewWidget()->hide();
         removeInternView();
     }
     if(view)
@@ -368,14 +369,11 @@ void medViewContainer::removeView()
 
     delete d->view;
     // removeInternView should be called, so no need to set d->view to NULL
-    // or whatecer else
+    // or whatever else
 }
 
 void medViewContainer::removeInternView()
 {
-    if(d->view && d->view->viewWidget())
-      d->view->viewWidget()->hide();
-
     d->view = NULL;
     d->toolBox = NULL;
     d->maximizedParameter->hide();
@@ -499,7 +497,10 @@ void medViewContainer::addData(medAbstractData *data)
         return;
 
     if(!d->multiLayer)
+    {
         delete d->view;
+        d->view = 0;
+    }
 
     if(!d->view)
     {

@@ -185,7 +185,7 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
     splitter->addViewContainer(newContainer);
     this->insertWidget(index, splitter);
     this->setCollapsible(index, false);
-    this->setSizes(savedSizes);
+    this->setSizes(savedSizes); 
 
     // resize nested container because QVtkWidget2 is automaticlly resize to fit the its view
     // (given the fixed width/height of the splitter) when it is added to the splitter.
