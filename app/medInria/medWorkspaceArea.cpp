@@ -95,10 +95,10 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->splitter->addWidget(d->toolBoxContainer);
 
     //set up all possible workspace:
-    medWorkspaceFactory *wFactory = medWorkspaceFactory::instance();
-    QHash<QString, medWorkspaceDetails *> wDetails = wFactory->workspaceDetails();
-    foreach(QString name, wDetails.keys())
-        this->setupWorkspace(name);
+//    medWorkspaceFactory *wFactory = medWorkspaceFactory::instance();
+//    QHash<QString, medWorkspaceDetails *> wDetails = wFactory->workspaceDetails();
+//    foreach(QString name, wDetails.keys())
+//        this->setupWorkspace(name);
 
     this->addDatabaseView(medDataSourceManager::instance()->databaseDataSource());
 
@@ -163,6 +163,9 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     if (d->currentWorkspace == workspace)
         return;
 
+    if (!d->workspaces.contains(workspace->name()))
+        this->setupWorkspace(workspace->name());
+
     this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
 
     d->currentWorkspace = workspace;
@@ -191,6 +194,9 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
 
 void medWorkspaceArea::setCurrentWorkspace(const QString &name)
 {
+    if (!d->workspaces.contains(name))
+        this->setupWorkspace(name);
+
     this->setCurrentWorkspace(d->workspaces.value(name));
 }
 
@@ -203,6 +209,7 @@ void medWorkspaceArea::setupWorkspace(const QString &name)
 {
     if (d->workspaces.contains(name))
         return;
+
     medAbstractWorkspace *workspace = NULL;
 
     workspace = medWorkspaceFactory::instance()->createWorkspace(name, this);

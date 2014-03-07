@@ -50,7 +50,7 @@ public:
     QStackedWidget *stack;
     QSplitter * splitter;
     QMutex mutex;
-    QHash<QString,medAbstractWorkspace*> workspaces;
+    QHash<QString, medAbstractWorkspace*> workspaces;
     medToolBox *selectionToolBox;
 
 public:

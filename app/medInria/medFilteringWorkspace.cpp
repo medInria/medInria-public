@@ -44,9 +44,7 @@ public:
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medFilteringWorkspacePrivate)
 {
     d->filteringToolBox = new medFilteringSelectorToolBox(parent);
-
     connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
-
     this->addToolBox(d->filteringToolBox);
 }
 

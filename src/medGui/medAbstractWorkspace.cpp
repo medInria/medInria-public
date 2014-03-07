@@ -36,6 +36,8 @@ class medAbstractWorkspacePrivate
 public:
     QWidget *parent;
 
+    QString name;
+
     bool databaseVisibility;
     bool toolBoxesVisibility;
 
@@ -164,6 +166,16 @@ void medAbstractWorkspace::clearWorkspaceToolBoxes()
 void medAbstractWorkspace::addNewTab()
 {
     d->viewContainerStack->addContainerInTab(this->identifier());
+}
+
+void medAbstractWorkspace::setName(QString &name)
+{
+    d->name = name;
+}
+
+QString& medAbstractWorkspace::name() const
+{
+    return d->name;
 }
 
 void medAbstractWorkspace::updateNavigatorsToolBox()
@@ -554,3 +566,5 @@ void medAbstractWorkspace::open(const medDataIndex &index)
     if(index.isValidForSeries())
         container->addData(medDataManager::instance()->data(index));
 }
+
+

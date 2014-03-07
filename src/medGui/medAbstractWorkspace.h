@@ -59,6 +59,9 @@ public:
     virtual void setupViewContainerStack()=0;
     medTabbedViewContainers * stackedViewContainers() const;
 
+    void setName(QString &name);
+    QString& name() const;
+
 public slots:
     virtual void clear();
     virtual void addNewTab();

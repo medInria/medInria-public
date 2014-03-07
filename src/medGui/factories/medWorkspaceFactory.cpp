@@ -64,6 +64,7 @@ medAbstractWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget*
         return NULL;
 
     medAbstractWorkspace * workspace = d->creators[type]->creator(parent);
+    workspace->setName(type);
 
     return workspace;
 }
