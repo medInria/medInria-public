@@ -45,6 +45,8 @@ public:
      */
     void setupViewContainerStack ();
 
+    virtual void open(const medDataIndex &index);
+
 signals:
 
     /**

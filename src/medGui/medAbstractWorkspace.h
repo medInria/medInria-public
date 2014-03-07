@@ -69,6 +69,8 @@ public slots:
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
 
+    virtual void open(const medDataIndex& index);
+
 protected slots:
     void changeCurrentLayer(int row);
     void setLayerVisibility(bool visibility);

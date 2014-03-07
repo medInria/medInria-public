@@ -158,3 +158,11 @@ bool medFilteringWorkspace::isUsable()
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("filtering").size()!=0); 
 }
+
+void medFilteringWorkspace::open(const medDataIndex &index)
+{
+    if(!index.isValidForSeries() || !d->inputContainer->isSelected())
+        return;
+
+    d->inputContainer->addData(medDataManager::instance()->data(index));
+}

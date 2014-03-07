@@ -29,6 +29,7 @@
 #include <medParameterPool.h>
 #include <medParameterPoolManager.h>
 #include <medAbstractParameter.h>
+#include <medDataManager.h>
 
 class medAbstractWorkspacePrivate
 {
@@ -541,4 +542,15 @@ QIcon medAbstractWorkspace::createIcon(const QString &colorName) const
     iconPixmap.fill(QColor(colorName));
     QIcon itemIcon(iconPixmap);
     return itemIcon;
+}
+
+void medAbstractWorkspace::open(const medDataIndex &index)
+{
+    QList<QUuid> containersSelected = d->viewContainerStack->containersSelected();
+    if(containersSelected.size() != 1)
+        return;
+
+    medViewContainer *container = medViewContainerManager::instance()->container(containersSelected.first());
+    if(index.isValidForSeries())
+        container->addData(medDataManager::instance()->data(index));
 }

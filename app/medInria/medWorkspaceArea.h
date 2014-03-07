@@ -69,6 +69,10 @@ protected:
 
 private slots:
     void removeInternSelectionToolBox();
+
+signals:
+    void open(const medDataIndex&);
+
 private:
     friend class medMessageController;
 

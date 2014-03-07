@@ -17,6 +17,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QUuid>
+#include <QFileDialog>
 
 #include <medViewContainerManager.h>
 #include <medAbstractView.h>
@@ -33,6 +34,9 @@
 #include <medParameterPoolManager.h>
 #include <medParameterPool.h>
 #include <medViewContainerSplitter.h>
+#include <medDataManager.h>
+#include <medSettingsManager.h>
+
 
 class medViewContainerPrivate
 {
@@ -87,12 +91,21 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
 
     d->view = NULL;
-    d->defaultWidget = new QWidget;
     d->northDragLabel = NULL;
     d->eastDragLabel = NULL;
     d->westDragLabel = NULL;
     d->southDragLabel = NULL;
     d->midDragLabel = NULL;
+
+    d->defaultWidget = new QWidget;
+    d->defaultWidget->setObjectName("defaultWidget");
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series here from the left panel or"));
+    QPushButton *openButton = new QPushButton(tr("open a file from your system"));
+    QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
+    defaultLayout->addWidget(defaultLabel);
+    defaultLayout->addWidget(openButton);
+    connect(openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()));
+
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
@@ -155,8 +168,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
     d->mainLayout->setSpacing(0);
     d->mainLayout->addWidget(toolBar, 0, 0, Qt::AlignTop);
-    d->mainLayout->addWidget(d->defaultWidget, 1, 0, 1, 1, Qt::AlignCenter);
-    d->defaultWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    d->mainLayout->addWidget(d->defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
 
     this->setAcceptDrops(true);
     this->setUserSplittable(true);
@@ -198,12 +210,11 @@ QWidget* medViewContainer::defaultWidget() const
 
 void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
 {
-    defaultWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     if(!d->view)
     {
         d->mainLayout->removeWidget(d->defaultWidget);
         delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 1, 0, 1, 1);
+        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
     }
     d->defaultWidget = defaultWidget;
 }
@@ -517,7 +528,7 @@ void medViewContainer::addData(medAbstractData *data)
         return;
 
     if(!d->multiLayer)
-        delete d->view;
+        this->removeView();
 
     if(!d->view)
     {
@@ -687,4 +698,20 @@ medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
 void medViewContainer::closeEvent(QCloseEvent * event)
 {
     this->~medViewContainer();
+}
+
+void medViewContainer::openFromSystem()
+{
+    //  get last directory opened in settings.
+    QString path = medSettingsManager::instance()->value("path", "medViewContainer", QDir::homePath()).toString();
+    path = QFileDialog::getOpenFileName(0, tr("Open"), path);
+
+    if (path.isEmpty())
+        return;
+
+    //TODO wait for deataManager refactoring and open the file in the container - RDE
+//    medDataManager::instance()->importNonPersistent(path);
+
+    //  save last directory opened in settings.
+    medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }

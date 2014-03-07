@@ -163,7 +163,10 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     if (d->currentWorkspace == workspace)
         return;
 
+    this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
+
     d->currentWorkspace = workspace;
+    connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
 
     //clean toolboxes
     d->toolBoxContainer->hide();
@@ -226,10 +229,9 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     //little tricks to force to recompute the stylesheet.
     dataSource->compactViewWidget()->setStyleSheet("/* */");
 
-    //TODO: make it fit with the new API - RDE
-//    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
-//            this, SLOT(open(const medDataIndex&)),
-//            Qt::UniqueConnection);
+    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
+            this, SIGNAL(open(const medDataIndex&)),
+            Qt::UniqueConnection);
 }
 
 void medWorkspaceArea::removeInternSelectionToolBox()

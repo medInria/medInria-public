@@ -95,6 +95,7 @@ protected:
 protected slots:
     void removeView();
     void emitLinkRequested(QString pool);
+    void openFromSystem();
 
 private slots:
     void removeInternView();
