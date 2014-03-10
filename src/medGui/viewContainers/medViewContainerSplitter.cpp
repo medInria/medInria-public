@@ -185,7 +185,7 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
             ori = Qt::Horizontal;
 
     QList<int> savedSizes = this->sizes();
-    //oldContainer->disconnect(this);
+    oldContainer->disconnect(this);
     medViewContainerSplitter *splitter = new medViewContainerSplitter;
     splitter->setOrientation(ori);
 
