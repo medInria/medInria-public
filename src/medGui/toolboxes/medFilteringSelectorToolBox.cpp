@@ -129,10 +129,8 @@ void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
     if (d->currentToolBox)
     {
         d->currentToolBox->hide();
-        emit removeToolBox ( d->currentToolBox );
         d->filterLayout->removeWidget ( d->currentToolBox );
         d->currentToolBox = NULL;
-
     }
 
     d->currentToolBox = toolbox;

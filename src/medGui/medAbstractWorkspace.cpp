@@ -69,6 +69,7 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->selectionToolBox->hide();
 
     d->viewContainerStack = new medTabbedViewContainers(parent);
+
     connect(d->viewContainerStack, SIGNAL(containersSelectedChanged()), this, SLOT(updateNavigatorsToolBox()));
     connect(d->viewContainerStack, SIGNAL(currentLayerChanged()), this, SLOT(updateInteractorsToolBox()));
 
@@ -225,6 +226,8 @@ void medAbstractWorkspace::updateLayersToolBox()
 
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
     connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateInteractorsToolBox()));
+
+//    qDebug() << "d->viewContainerStack->containersSelected()" <<  d->viewContainerStack->containersSelected();
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {

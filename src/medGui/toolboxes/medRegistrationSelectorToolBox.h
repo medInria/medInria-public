@@ -32,14 +32,8 @@ public:
      medRegistrationSelectorToolBox(QWidget *parent = 0);
     ~medRegistrationSelectorToolBox();
 
-    medAbstractImageView *fixedView();
-    medAbstractImageView *movingView();
-
-    medAbstractImageData *fixedData();
-    medAbstractImageData *movingData();
-
-    void setFuseView(dtkAbstractView *view);
-    medAbstractImageView *fuseView();
+    medAbstractData *fixedData();
+    medAbstractData *movingData();
 
     dtkAbstractProcess * process();
     void setProcess(dtkAbstractProcess* process);
@@ -49,22 +43,20 @@ public:
 
     QString getNameOfCurrentAlgorithm();
 
+    void setFixedData(medAbstractData* data);
+    void setMovingData(medAbstractData* data);
+
     enum typeOfOperation { algorithm, undo, redo, reset };
 
 signals:
-    void setupLayoutCompare();
-    void setupLayoutFuse();
     void showError (const QString&,unsigned int timeout);
     void showInfo(const QString&,unsigned int timeout);
-    void newFuseView(dtkAbstractView *fuseView);
-    void viewRemoved();
+    void movingDataRegistered();
 
 public slots:
     void onMovingImageDropped(const medDataIndex& index);
     void onFixedImageDropped(const medDataIndex& index);
 
-    void onViewRemoved(dtkAbstractView*);
-    void closeCompareView(int);
 
     void changeCurrentToolBox(int index);
     void clear();
@@ -72,11 +64,6 @@ public slots:
     void handleOutput(typeOfOperation type=algorithm,QString algoName="");
     void enableSelectorToolBox(bool enable = true);
     void onJobAdded(medJobItem* item, QString jobName);
-    
-    void synchroniseWindowLevel(QObject * sender = NULL);
-    void synchronisePosition(const QVector3D &position);
-
-    
 
 private:
     medRegistrationSelectorToolBoxPrivate *d;

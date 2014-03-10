@@ -161,6 +161,9 @@ unsigned int medAbstractLayeredView::layer(medAbstractData * data)
 
 void medAbstractLayeredView::removeData(medAbstractData *data)
 {
+    if(!d->layersDataList.contains(data))
+        return;
+
     this->removeInteractors(data);
     int layer = this->layer(data);
     d->layersDataList.removeAll(data);
@@ -291,7 +294,7 @@ QList <medAbstractInteractor*> medAbstractLayeredView::currentInteractors()
 {
     QList <medAbstractInteractor*> interactors;
 
-    interactors.append(this->primaryInteractor(d->currentLayer));
+     interactors.append(this->primaryInteractor(d->currentLayer));
     interactors.append(extraInteractors(d->currentLayer));
     return interactors;
 }

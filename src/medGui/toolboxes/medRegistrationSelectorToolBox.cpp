@@ -46,18 +46,17 @@ public:
     QPushButton * saveTransButton;
 
     QComboBox *toolboxes;
-    dtkSmartPointer<medAbstractImageView> fixedView;
-    dtkSmartPointer<medAbstractImageView> movingView;
-    dtkSmartPointer<medAbstractImageView> fuseView;
 
-    dtkSmartPointer<medAbstractImageData> fixedData;
-    dtkSmartPointer<medAbstractImageData> movingData;
+    QVBoxLayout *toolBoxLayout;
+
+    medAbstractData *fixedData;
+    medAbstractData *movingData;
     
     dtkSmartPointer<dtkAbstractProcess> process;
     dtkSmartPointer<dtkAbstractProcess> undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
-    medRegistrationAbstractToolBox * customToolBox;
+    medRegistrationAbstractToolBox * currentToolBox;
     QString nameOfCurrentAlgorithm;
     QString savePath;
 
@@ -65,11 +64,8 @@ public:
 
 medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
 {
-    d->fuseView = NULL;
     d->fixedData  = NULL;
     d->movingData = NULL;
-    d->fixedView  = NULL;
-    d->movingView = NULL;
     d->process = NULL;
     d->undoRedoProcess = NULL;
     d->undoRedoToolBox = NULL;
@@ -92,7 +88,8 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
                     " amongst the loaded plugins" ));
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
     
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration")){
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration"))
+    {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
         if(!tb)
@@ -117,12 +114,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     
     connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
-
-    // /////////////////////////////////////////////////////////////////
-    // Setup
-    // /////////////////////////////////////////////////////////////////
-
-
     // ---
     QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
     layoutButtonGroup->addButton(d->saveTransButton);
@@ -130,20 +121,20 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
     layoutButtonLayout->addWidget(d->saveTransButton);
 
-    QVBoxLayout *layoutLayout = new QVBoxLayout;
-    layoutLayout->addLayout(layoutButtonLayout);
-    layoutLayout->addWidget(d->toolboxes);
 
-    QWidget * layoutSection = new QWidget(this);
-    layoutSection->setLayout(layoutLayout);
+    QWidget *toolBoxWidget =  new QWidget;
+    d->toolBoxLayout = new QVBoxLayout(toolBoxWidget);
+    d->toolBoxLayout->addLayout(layoutButtonLayout);
+    d->toolBoxLayout->addWidget(d->toolboxes);
 
     if (d->undoRedoToolBox)
-        addWidget(d->undoRedoToolBox);
-    addWidget(layoutSection);
+        this->addWidget(d->undoRedoToolBox);
+
+    this->addWidget(toolBoxWidget);
 
 
     this->setTitle(tr("Registration"));
-    d->customToolBox = NULL;
+    d->currentToolBox = NULL;
 
     //Connect Message Controller:
     connect(this,SIGNAL(showError(const QString&,unsigned int)),
@@ -160,32 +151,14 @@ medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
     d = NULL;
 }
 
-//! Gets the fixedView.
-medAbstractImageView *medRegistrationSelectorToolBox::fixedView(void)
-{
-    return d->fixedView;
-}
-
-//! Gets the movingView.
-medAbstractImageView *medRegistrationSelectorToolBox::movingView(void)
-{
-    return d->movingView;
-}
-
-//! Gets the fuseView.
-medAbstractImageView *medRegistrationSelectorToolBox::fuseView(void)
-{
-    return d->fuseView;
-}
-
 //! Gets the fixedData.
-medAbstractImageData *medRegistrationSelectorToolBox::fixedData(void)
+medAbstractData *medRegistrationSelectorToolBox::fixedData(void)
 {
     return d->fixedData;
 }
 
 //! Gets the movingData.
-medAbstractImageData *medRegistrationSelectorToolBox::movingData(void)
+medAbstractData *medRegistrationSelectorToolBox::movingData(void)
 {
     return d->movingData;
 }
@@ -198,67 +171,67 @@ medAbstractImageData *medRegistrationSelectorToolBox::movingData(void)
 void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& index)
 {
 
-    if(!d->fuseView)
-    {
-        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView");
-        setFuseView(newView);
-        d->fuseView->setProperty("Closable","false");
-        emit newFuseView( d->fuseView);
-    }
+//    if(!d->fuseView)
+//    {
+//        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView");
+//        setFuseView(newView);
+//        d->fuseView->setProperty("Closable","false");
+//        emit newFuseView( d->fuseView);
+//    }
 
-    if (!index.isValid())
-        return;
+//    if (!index.isValid())
+//        return;
 
-    d->fixedData = medDataManager::instance()->data(index);
+//    d->fixedData = medDataManager::instance()->data(index);
 
-    if (!d->fixedData)
-        return;
+//    if (!d->fixedData)
+//        return;
 
-    d->fixedView = dynamic_cast<medAbstractImageView*>
-                   (medViewManager::instance()->views(index).first());
+//    d->fixedView = dynamic_cast<medAbstractImageView*>
+//                   (medViewManager::instance()->views(index).first());
 
-    if(!d->fixedView) {
-        qDebug() << "Unable to retrieve fixed view";
-	return;
-    }
+//    if(!d->fixedView) {
+//        qDebug() << "Unable to retrieve fixed view";
+//	return;
+//    }
 
-    if (d->fuseView)
-    {
-        d->fuseView->blockSignals(true);
+//    if (d->fuseView)
+//    {
+//        d->fuseView->blockSignals(true);
 
-//        d->fuseView->show();
-        d->fuseView->removeLayer(1);
-        d->fuseView->removeLayer(0);
+////        d->fuseView->show();
+//        d->fuseView->removeLayer(1);
+//        d->fuseView->removeLayer(0);
 
-        if (d->movingView && d->fuseView->layersCount()==1)
-        {
+//        if (d->movingView && d->fuseView->layersCount()==1)
+//        {
 
-            //only the moving view has been set: shift it to layer 1
-            d->fuseView->addLayer(d->fixedData);
-            d->fuseView->addLayer(d->movingData);
-            if(d->undoRedoProcess)
-            {
-                d->undoRedoProcess->setInput(d->fixedData,  0);
-                d->undoRedoProcess->setInput(d->movingData, 1);
-            }
-        }
-        else
-        {
-            //either both views are set, or only the fixed view
-            d->fuseView->addLayer(d->fixedData);
-        }
-//        d->fuseView->reset();
-        this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
-        this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
-        d->fuseView->blockSignals(false);
-    }
-    connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-    connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-    if (!d->movingView)
-    {
-        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-    }
+//            //only the moving view has been set: shift it to layer 1
+//            d->fuseView->addLayer(d->fixedData);
+//            d->fuseView->addLayer(d->movingData);
+//            if(d->undoRedoProcess)
+//            {
+//                d->undoRedoProcess->setInput(d->fixedData,  0);
+//                d->undoRedoProcess->setInput(d->movingData, 1);
+//            }
+//        }
+//        else
+//        {
+//            //either both views are set, or only the fixed view
+//            d->fuseView->addLayer(d->fixedData);
+//        }
+////        d->fuseView->reset();
+//        this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
+//        this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
+//        d->fuseView->blockSignals(false);
+//    }
+//    connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+//    connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+//    if (!d->movingView)
+//    {
+//        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+//        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+//    }
 
 }
 
@@ -267,75 +240,77 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
  *
  * @param index The index that was imported.
  */
+
+
 void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& index)
 {
 
-    if(!d->fuseView)
-    {
-        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView");
-        setFuseView(newView);
-        d->fuseView->setProperty("Closable","false");
-        emit newFuseView( d->fuseView);
-    }
+//    if(!d->fuseView)
+//    {
+//        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView");
+//        setFuseView(newView);
+//        d->fuseView->setProperty("Closable","false");
+//        emit newFuseView( d->fuseView);
+//    }
 
-    if (!index.isValid())
-        return;
+//    if (!index.isValid())
+//        return;
 
-    d->movingData = medDataManager::instance()->data(index);
+//    d->movingData = medDataManager::instance()->data(index);
 
-    if (!d->movingData)
-        return;
+//    if (!d->movingData)
+//        return;
 
-    d->movingView = dynamic_cast<medAbstractImageView*>
-                    (medViewManager::instance()->views
-                     (index).first());
+//    d->movingView = dynamic_cast<medAbstractImageView*>
+//                    (medViewManager::instance()->views
+//                     (index).first());
 
-    if(!d->movingView)
-    {
-        qDebug() << "Unable to retrieve moving view";
-        return;
-    }
+//    if(!d->movingView)
+//    {
+//        qDebug() << "Unable to retrieve moving view";
+//        return;
+//    }
 
-    if (d->fixedView) {
-//        d->movingView->update();
-    }
+//    if (d->fixedView) {
+////        d->movingView->update();
+//    }
 
-    d->fuseView->blockSignals(true);
+//    d->fuseView->blockSignals(true);
 
-//    d->fuseView->show();
-    d->fuseView->removeLayer(1);
-    d->fuseView->removeLayer(0);
+////    d->fuseView->show();
+//    d->fuseView->removeLayer(1);
+//    d->fuseView->removeLayer(0);
 
-    if (d->fixedData)
-    {
-        //already one layer present
-        d->fuseView->addLayer(d->fixedData);
-        d->fuseView->addLayer(d->movingData);
-        if(d->undoRedoProcess)
-        { 
-            d->undoRedoProcess->setInput(d->fixedData,  0);
-            d->undoRedoProcess->setInput(d->movingData, 1);
-        }
-    }
-    else
-    {
-        //only the moving view is set
-        d->fuseView->addLayer(d->movingData);
-    }
-//    d->fuseView->reset();
-//    d->fuseView->update();
-    this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
-    this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
-    d->fuseView->blockSignals(false);
+//    if (d->fixedData)
+//    {
+//        //already one layer present
+//        d->fuseView->addLayer(d->fixedData);
+//        d->fuseView->addLayer(d->movingData);
+//        if(d->undoRedoProcess)
+//        {
+//            d->undoRedoProcess->setInput(d->fixedData,  0);
+//            d->undoRedoProcess->setInput(d->movingData, 1);
+//        }
+//    }
+//    else
+//    {
+//        //only the moving view is set
+//        d->fuseView->addLayer(d->movingData);
+//    }
+////    d->fuseView->reset();
+////    d->fuseView->update();
+//    this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
+//    this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
+//    d->fuseView->blockSignals(false);
 
     
-    connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-    connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-    if (!d->fixedView)
-    {
-        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-    }
+//    connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+//    connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+//    if (!d->fixedView)
+//    {
+//        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+//        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+//    }
 }
 
 /** 
@@ -345,6 +320,14 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
  */
 void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 {
+    //get rid of old toolBox
+    if (d->currentToolBox)
+    {
+        d->currentToolBox->hide();
+        d->toolBoxLayout->removeWidget(d->currentToolBox);
+        d->currentToolBox = NULL;
+    }
+
     //get identifier for toolbox.
     QString id = d->toolboxes->itemData(index).toString();
 
@@ -358,15 +341,10 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
 
     toolbox->setRegistrationToolBox(this);
-    //get rid of old toolBox
-    if (d->customToolBox)
-    {
-        emit removeToolBox(d->customToolBox);
-        delete d->customToolBox;
-    }
-    d->customToolBox = toolbox;
-    toolbox->show();
-    emit addToolBox(toolbox);
+    d->currentToolBox = toolbox;
+    d->currentToolBox->show();
+    d->currentToolBox->header()->hide();
+    d->toolBoxLayout->addWidget(d->currentToolBox);
 
     connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
@@ -379,32 +357,14 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     }
 }
 
-/** 
- * Sets the fuseView.
- *
- * @param view The new fuseView.
- */
-void medRegistrationSelectorToolBox::setFuseView(dtkAbstractView *view)
-{
-    if (!view)
-        return;
-
-    if( d->fuseView )
-    {
-        disconnect(d->fuseView, SIGNAL(dataRemoved(int)), this, SLOT(closeCompareView(int)));
-    }
-
-    d->fuseView = dynamic_cast <medAbstractImageView*> (view);
-    connect(d->fuseView, SIGNAL(dataRemoved(int)), this, SLOT(closeCompareView(int)));
-}
 
 //! Clears the toolbox.
 void medRegistrationSelectorToolBox::clear(void)
 {
 
-    //maybe clear the customtoolbox?
-    if (d->customToolBox)
-        d->customToolBox->clear();
+    //maybe clear the currentToolBox?
+    if (d->currentToolBox)
+        d->currentToolBox->clear();
 }
 
 //! Gets the process.
@@ -533,8 +493,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     d->savePath = QDir::homePath();
 }
 
-// TODO CHANGE COMMENTARY
-//! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
+
 void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString algoName)
 {   
     dtkSmartPointer<medAbstractData> output(NULL); //initialisation : UGLY but necessary
@@ -592,18 +551,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     if (type==algorithm)
         medDataManager::instance()->importNonPersistent(output);
 
-    if(output)
-    {   
-        d->movingData = output;
-
-        d->movingView->addLayer(output);
-        // calling reset() will reset all the view parameters (position - zoom - window/level) to default
-//        d->movingView->reset();
-//        d->movingView->update();
-        
-        d->fuseView->addLayer(output);
-//        d->fuseView->update();
-    }
+    emit movingDataRegistered();
 }
 
 void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
@@ -619,116 +567,71 @@ void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobNam
         }
 }
 
-//! Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView, and the layer 0 of the movingView with the layer 1 of the fuseView. 
-void medRegistrationSelectorToolBox::synchroniseWindowLevel(QObject * sender){ 
-			
-    double window,level;
-    QObject * senderView;
-    if (sender)
-        senderView = sender;
-    else
-        senderView = QObject::sender();
-
-    if (d->fixedView==senderView)
-    {
-        d->fixedView->layerWindowLevel(0, window, level);
-        d->fuseView->setLayerWindowLevel(0, window, level);
-    }
-    else if (d->movingView==senderView)
-    {
-        d->movingView->layerWindowLevel(0, window, level);
-        d->fuseView->setLayerWindowLevel(1, window, level);
-    }
-    else
-    {		
-        d->fuseView->layerWindowLevel(0, window, level);
-        //TODO:  take API change into account - RDE
-        //if (d->fixedView && d->fixedView->isWindowingLinked() && d->movingView && d->movingView->isWindowingLinked())
-        if (d->fixedView && d->movingView)
-        {
-            d->fixedView->setLayerWindowLevel(0, window, level);
-            d->movingView->setLayerWindowLevel(0, window, level);
-            d->fuseView->setLayerWindowLevel(0, window, level);
-        }
-        d->fixedView->setLayerWindowLevel(0, window, level);
-        if (d->movingView && d->fuseView->layersCount() == 1)
-                d->movingView->setLayerWindowLevel(0, window, level);
-        // In the case that the currentLayer>1 we do nothing.
-    }
-}
-
-//! Synchronises the position between the compare and the fuse mode.
-void medRegistrationSelectorToolBox::synchronisePosition(const QVector3D &position){ 
-   
-    if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
-    {
-        //TODO:  take API change into account - RDE
-        //if (d->fixedView && d->fixedView->isPositionLinked() && d->movingView &&  d->movingView->isPositionLinked())
-        if (d->fixedView  && d->movingView) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
-            d->fuseView->moveToSliceAtPosition(position);
-    }
-    else // the changes in fuseView are propagated to the fixedView and movingView.
-    {		
-        if (d->fixedView)
-            d->fixedView->moveToSliceAtPosition(position);
-        if (d->movingView)
-            d->movingView->moveToSliceAtPosition(position);
-    }
-}
 
 
-void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
+
+//void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
+//{
+//    medAbstractView* closedView = dynamic_cast <medAbstractView*> (view);
+
+//    d->fuseView->blockSignals(true);
+
+//    if(closedView == d->movingView)
+//    {
+//        d->fuseView->removeLayer(1);
+//        d->movingData = NULL;
+
+//        if(!d->fixedData)
+//        {
+////            d->fuseView->close();
+//        }
+//    }
+//    else if(closedView == d->fixedView)
+//    {
+//        //Reset the Undo Redo stack if needed.
+//        d->fixedData = NULL;
+
+//        if(d->movingData)
+//        {
+//            d->fuseView->removeLayer(1);
+//            double window, level;
+//            d->movingView->layerWindowLevel(0, window, level);
+//            d->fuseView->removeLayer(0);
+//            d->fuseView->addLayer(d->movingData);
+//            d->fuseView->setLayerWindowLevel(0, window, level);
+//        }
+//        else
+//        {
+//            d->fuseView->removeLayer(0);
+////            d->fuseView->close();
+//        }
+//    }
+
+//    emit viewRemoved();
+//    d->fuseView->blockSignals(false);
+//}
+
+
+//void medRegistrationSelectorToolBox::closeCompareView(int layer)
+//{
+//    if(layer == 0)
+//    {
+////        d->fixedView->close();
+//        d->fixedData = NULL;
+//    }
+//    else if(layer == 1)
+//    {
+////        d->movingView->close();
+//        d->movingData = NULL;
+//    }
+//}
+
+void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
-    medAbstractView* closedView = dynamic_cast <medAbstractView*> (view);
-
-    d->fuseView->blockSignals(true);
-
-    if(closedView == d->movingView)
-    {
-        d->fuseView->removeLayer(1);
-        d->movingData = NULL;
-
-        if(!d->fixedData)
-        {
-//            d->fuseView->close();
-        }
-    }
-    else if(closedView == d->fixedView)
-    {
-        //Reset the Undo Redo stack if needed.
-        d->fixedData = NULL;
-
-        if(d->movingData)
-        {
-            d->fuseView->removeLayer(1);
-            double window, level;
-            d->movingView->layerWindowLevel(0, window, level);
-            d->fuseView->removeLayer(0);
-            d->fuseView->addLayer(d->movingData);
-            d->fuseView->setLayerWindowLevel(0, window, level);
-        }
-        else
-        {
-            d->fuseView->removeLayer(0);
-//            d->fuseView->close();
-        }
-    }
-
-    emit viewRemoved();
-    d->fuseView->blockSignals(false);
+    d->fixedData = data;
 }
 
-
-void medRegistrationSelectorToolBox::closeCompareView(int layer)
+void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
-    if(layer == 0)
-    {
-//        d->fixedView->close();
-        d->fixedData = NULL;
-    }
-    else if(layer == 1)
-    {
-//        d->movingView->close();
-        d->movingData = NULL;
-    }
+    d->movingData = data;
 }

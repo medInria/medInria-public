@@ -37,6 +37,10 @@ public:
 public slots:
     void patientChanged(int patientId);
 
+protected slots:
+    void updateFixedData();
+    void updateMovingData();
+
 private:
     medRegistrationWorkspacePrivate *d;
 };

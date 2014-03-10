@@ -51,12 +51,10 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     d->closeShortcut = new QShortcut(this);
     d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
     connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(resetCurrentTab()));
-
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(disconnectTabFromSplitter(int)));
-
     connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
-
     connect(this, SIGNAL(containersSelectedChanged()), this, SLOT(buildTemporaryPool()));
+    connect(this, SIGNAL(currentChanged(int)), this, SIGNAL(containersSelectedChanged()));
 
     d->pool = new medParameterPool(this);
 }
@@ -162,6 +160,8 @@ void medTabbedViewContainers::disconnectTabFromSplitter(int index)
 void medTabbedViewContainers::addContainerToSelection(QUuid container)
 {
     QList<QUuid> containersSelected = d->containerSelectedForTabIndex.value(this->currentIndex());
+    qDebug() << " containersSelected" << containersSelected;
+
     if(QApplication::keyboardModifiers() != Qt::ControlModifier)
     {
         foreach (QUuid uuid, containersSelected)
@@ -174,27 +174,32 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
     medViewContainer *newSelectedContainer =  medViewContainerManager::instance()->container(container);
     d->containerSelectedForTabIndex.insert(this->currentIndex(), containersSelected);
 
-    emit containersSelectedChanged();
     connect(newSelectedContainer, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()), Qt::UniqueConnection);
     connect(newSelectedContainer, SIGNAL(viewRemoved()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
     connect(newSelectedContainer, SIGNAL(viewContentChanged()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
+
+    emit containersSelectedChanged();
+    qDebug() << " add" << d->containerSelectedForTabIndex;
+    qDebug() << "currentIndex" << this->currentIndex();
 }
 
 void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
 {
     foreach(QList<QUuid> containersSelected, d->containerSelectedForTabIndex.values())
     {
+        int tabIndex = d->containerSelectedForTabIndex.key(containersSelected);
         if(containersSelected.removeOne(container))
         {
-            d->containerSelectedForTabIndex.insert(d->containerSelectedForTabIndex.key(containersSelected), containersSelected);
+            d->containerSelectedForTabIndex.insert(tabIndex, containersSelected);
             medViewContainer *unSelectedContainer =  medViewContainerManager::instance()->container(container);
             this->disconnect(unSelectedContainer, SIGNAL(currentLayerChanged()), this, 0);
             this->disconnect(unSelectedContainer, SIGNAL(viewRemoved()), this, 0);
             this->disconnect(unSelectedContainer, SIGNAL(viewContentChanged()), this, 0);
             emit containersSelectedChanged();
-            break;
         }
     }
+    qDebug() << "rm" << d->containerSelectedForTabIndex;
+    qDebug() << "currentIndex" << this->currentIndex();
 }
 
 void medTabbedViewContainers::link(QUuid uuid, QString pool)
