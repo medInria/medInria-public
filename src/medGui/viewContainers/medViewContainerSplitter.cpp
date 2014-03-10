@@ -30,6 +30,7 @@ medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 
 medViewContainerSplitter::~medViewContainerSplitter()
 {
+    emit aboutTobeDestroyed();
     this->setParent(NULL);
 }
 
