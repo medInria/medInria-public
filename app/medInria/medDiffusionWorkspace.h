@@ -52,17 +52,8 @@ public slots:
     
     void connectCurrentViewSignals(dtkAbstractView *view);
     void disconnectCurrentViewSignals(dtkAbstractView *view);
-    
-    /**
-	* @brief Adds a new tab to a workspace
-	*
-	* Re-implemented, replaces default implementation in medAbstractWorkspace
-	*/
-    void onAddTabClicked();
-    
-    void changeCurrentContainer(QString name);
 
-    void changeCurrentContainer(QString name);
+    void changeCurrentContainer();
 
 private:
     medDiffusionWorkspacePrivate *d;
