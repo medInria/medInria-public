@@ -36,10 +36,13 @@ class medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
 {
     Q_OBJECT
 public:
-    medDatabasePreviewDynamicScene(QMap<QString, medDataIndex> &seriesDescriptionDataIndexMap,
-                                 QObject *parent = NULL);
+    medDatabasePreviewDynamicScene(const QList<QPair<medDataIndex, QString> > & seriesDescriptionDataIndexList,
+                                   QObject * parent = NULL);
     virtual ~medDatabasePreviewDynamicScene();
     void previewMouseMoveEvent(QMouseEvent *event, int width);
+
+signals:
+    void updateLabel(const QString & description);
 
 private:
     medDatabasePreviewDynamicScenePrivate *d;
@@ -62,13 +65,14 @@ public :
         SERIES
     };
 
+    QLabel* label() const;
+
 public slots:
     void showSeriesPreview(const medDataIndex &index);
     void showStudyPreview(const medDataIndex &index);
     void showPatientPreview(const medDataIndex &index);
 
-    QLabel* label() const;
-
+    void setLabel(const QString & text);
 
 protected:
     void resizeEvent(QResizeEvent *event);

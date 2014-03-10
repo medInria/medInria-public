@@ -11,8 +11,8 @@ class medAbstractLayeredViewPrivate
 {
 public:
     QList <dtkSmartPointer<medAbstractData> > layersDataList;
-    QHash<dtkSmartPointer<medAbstractData>,  medAbstractLayeredViewInteractor*> primaryIntercatorsHash;
-    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraIntercatorsHash;
+    QHash<dtkSmartPointer<medAbstractData>,  medAbstractLayeredViewInteractor*> primaryInteractorsHash;
+    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraInteractorsHash;
 
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
@@ -32,11 +32,11 @@ medAbstractLayeredView::~medAbstractLayeredView()
 
 void medAbstractLayeredView::removeInteractors(medAbstractData *data)
 {
-    medAbstractLayeredViewInteractor* pInteractor = d->primaryIntercatorsHash.take(data);
+    medAbstractLayeredViewInteractor* pInteractor = d->primaryInteractorsHash.take(data);
     pInteractor->removeData();
     delete pInteractor;
 
-    QList<medAbstractInteractor*> extraInt =  d->extraIntercatorsHash.take(data);
+    QList<medAbstractInteractor*> extraInt =  d->extraInteractorsHash.take(data);
     foreach(medAbstractInteractor* extra, extraInt)
     {
         delete extra;
@@ -53,13 +53,13 @@ void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     if(primaryInt.isEmpty())
     {
         qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
-         d->primaryIntercatorsHash.insert(data, NULL);
+         d->primaryInteractorsHash.insert(data, NULL);
     }
     else
     {
         medAbstractLayeredViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
         interactor->setData(data);
-        d->primaryIntercatorsHash.insert(data, interactor);
+        d->primaryInteractorsHash.insert(data, interactor);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
 
@@ -75,7 +75,7 @@ void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
             extraIntList << interactor;
         }
-        d->extraIntercatorsHash.insert(data, extraIntList);
+        d->extraInteractorsHash.insert(data, extraIntList);
     }
 }
 
@@ -113,25 +113,25 @@ void medAbstractLayeredView::initialiseNavigators()
 
 medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(medAbstractData* data)
 {
-    if(d->primaryIntercatorsHash.isEmpty())
+    if(d->primaryInteractorsHash.isEmpty())
         return NULL;
 
-    return d->primaryIntercatorsHash.value(data);
+    return d->primaryInteractorsHash.value(data);
 }
 
 QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractors(medAbstractData* data)
 {
-    return d->extraIntercatorsHash.value(data);
+    return d->extraInteractorsHash.value(data);
 }
 
 medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(unsigned int layer)
 {
-    return d->primaryIntercatorsHash.value(this->data(layer));
+    return d->primaryInteractorsHash.value(this->data(layer));
 }
 
 QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractors(unsigned int layer)
 {
-    return d->extraIntercatorsHash.value(this->data(layer));
+    return d->extraInteractorsHash.value(this->data(layer));
 }
 
 medAbstractLayeredViewNavigator* medAbstractLayeredView::primaryNavigator()

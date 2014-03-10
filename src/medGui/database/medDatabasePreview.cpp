@@ -5,13 +5,29 @@
 #include <medDataManager.h>
 #include <medImageFileLoader.h>
 
-
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 
 #include <medDatabaseThumbnailHelper.h>
 
+
+static QPixmap getOrCreateThumbnail(const medDataIndex & index) {
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
+
+    QImage thumbnailImg;
+
+    if (!thumbpath.isEmpty())
+        thumbnailImg = QImage(thumbpath);
+    else
+        thumbnailImg = dbc->thumbnail(index);
+
+    if(!thumbnailImg.isNull())
+        return QPixmap::fromImage(thumbnailImg);
+    else
+        return QPixmap(":/medCore/pixmaps/default_thumbnail.png");
+}
 
 
 class medDatabasePreviewStaticScenePrivate
@@ -45,24 +61,19 @@ medDatabasePreviewStaticScene::~medDatabasePreviewStaticScene()
 
 void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
 {
+    this->clear();
     d->currentDataIndex = index;
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    QImage thumbnailImg;
-
-    if (!thumbpath.isEmpty())
-        thumbnailImg = QImage(thumbpath);
-    else
-        thumbnailImg = dbc->thumbnail(index);
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    pixmap->setPixmap(getOrCreateThumbnail(index));
     this->addItem(pixmap);
 
-    if(!thumbnailImg.isNull())
-        pixmap->setPixmap(QPixmap::fromImage(thumbnailImg));
-    else
-        pixmap->setPixmap(QPixmap(":/medCore/pixmaps/default_thumbnail.png"));
+    if( ! this->views().isEmpty()) {
+        foreach(QGraphicsView * v, this->views()) {
+            v->fitInView(pixmap, Qt::KeepAspectRatio);
+        }
+    }
+
 }
 
 // medDatabasePreviewStudyScene
@@ -74,63 +85,50 @@ void medDatabasePreviewStaticScene::addImage(const medDataIndex &index)
     if(nbItem > 5)
         return;
 
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    QImage thumbnailImg;
-
-    if (!thumbpath.isEmpty())
-        thumbnailImg = QImage(thumbpath);
-    else
-        thumbnailImg = dbc->thumbnail(index);
-
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    pixmap->setPixmap(getOrCreateThumbnail(index));
+    pixmap->scale(d->baseWidth / pixmap->boundingRect().width(),
+                  d->baseHeight / pixmap->boundingRect().height());
     this->addItem(pixmap);
-
-    if(!thumbnailImg.isNull())
-        pixmap->setPixmap(QPixmap::fromImage(thumbnailImg));
-    else
-        pixmap->setPixmap(QPixmap(":/medCore/pixmaps/default_thumbnail.png"));
-
 
     switch(nbItem)
     {
-    case 1:
-    {
-        this->addLine(d->baseWidth + d->pen.width()/2,
-                0,
-                d->baseWidth + d->pen.width()/2,
-                (d->baseHeight + d->pen.width()/2) * 2,
-                d->pen
-                );
-        this->addLine(0,
-                d->baseHeight + d->pen.width()/2,
-                (d->baseWidth + d->pen.width()/2) * 2,
-                d->baseHeight + d->pen.width()/2,
-                d->pen
-                );
+        case 1:
+        {
+            this->addLine(d->baseWidth + d->pen.width()/2,
+                          0,
+                          d->baseWidth + d->pen.width()/2,
+                          (d->baseHeight + d->pen.width()/2) * 2,
+                          d->pen
+                          );
+            this->addLine(0,
+                          d->baseHeight + d->pen.width()/2,
+                          (d->baseWidth + d->pen.width()/2) * 2,
+                          d->baseHeight + d->pen.width()/2,
+                          d->pen
+                          );
 
-        pixmap->moveBy(d->baseWidth + d->pen.width() + 1,
-                0
-                );
-        break;
-    }
-    case 4:
-    {
-        pixmap->moveBy(0,
-                d->baseHeight + d->pen.width() +1
-                );
-        break;
-    }
-    case 5:
-    {
-        pixmap->moveBy(d->baseWidth + d->pen.width() +1,
-                d->baseHeight + d->pen.width() + 1
-                );
-        break;
-    }
-    default:
-        break;
+            pixmap->moveBy(d->baseWidth + d->pen.width() + 1,
+                           0
+                           );
+            break;
+        }
+        case 4:
+        {
+            pixmap->moveBy(0,
+                           d->baseHeight + d->pen.width() +1
+                           );
+            break;
+        }
+        case 5:
+        {
+            pixmap->moveBy(d->baseWidth + d->pen.width() +1,
+                           d->baseHeight + d->pen.width() + 1
+                           );
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -152,22 +150,7 @@ void medDatabasePreviewStaticScene::mouseMoveEvent(QGraphicsSceneMouseEvent *eve
 {
     if(!d->isMulti && event->buttons() == Qt::LeftButton)
     {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->currentDataIndex.dataSourceId());
-        QString thumbpath = dbc->metaData(d->currentDataIndex, medMetaDataKeys::ThumbnailPath);
-
-        QImage thumbnailImg;
-
-        if (!thumbpath.isEmpty())
-            thumbnailImg = QImage(thumbpath);
-        else
-            thumbnailImg = dbc->thumbnail(d->currentDataIndex);
-
-
-        QPixmap pixmap;
-        if(!thumbnailImg.isNull())
-            pixmap = QPixmap::fromImage(thumbnailImg);
-        else
-            pixmap = QPixmap(":/medCore/pixmaps/default_thumbnail.png");
+        QPixmap pixmap = getOrCreateThumbnail(d->currentDataIndex);
 
         QMimeData *data = d->currentDataIndex.createMimeData();
         data->setImageData(pixmap);
@@ -182,22 +165,24 @@ void medDatabasePreviewStaticScene::mouseMoveEvent(QGraphicsSceneMouseEvent *eve
     QGraphicsScene::mouseMoveEvent(event);
 }
 
-
 // medDatabasePreviewStudyScene
 class medDatabasePreviewDynamicScenePrivate
 {
 public:
-    QMap <QString, medDataIndex> seriesDescriptionDataIndexMap;
-    QList <QString> seriesDescriptions;
+    QList<QPair<medDataIndex,QString> > seriesDescriptionDataIndexPairList;
 };
 
-medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(QMap<QString, medDataIndex> &seriesDescriptionDataIndexMap,
-                                                           QObject *parent):
+bool stringMedDataIndexPairLessThan(const QPair<medDataIndex,QString> & a,
+                                    const QPair<medDataIndex,QString> & b) {
+    return (a.second < b.second);
+}
+
+medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(const QList<QPair<medDataIndex,QString> > & seriesDescriptionDataIndexList,
+                                                               QObject * parent):
     d(new medDatabasePreviewDynamicScenePrivate)
 {
-    d->seriesDescriptionDataIndexMap = seriesDescriptionDataIndexMap;
-    d->seriesDescriptions = d->seriesDescriptionDataIndexMap.keys();
-    qSort(d->seriesDescriptions.begin(), d->seriesDescriptions.end());
+    d->seriesDescriptionDataIndexPairList = seriesDescriptionDataIndexList;
+    qSort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
 }
 
 medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()
@@ -209,11 +194,10 @@ medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()
 
 void medDatabasePreviewDynamicScene::previewMouseMoveEvent(QMouseEvent *event, int width)
 {
-    int seriesIndex = event->x() / (width / d->seriesDescriptions.size());
-    if(seriesIndex < d->seriesDescriptions.size())
-    {
-        this->setImage(d->seriesDescriptionDataIndexMap.value(d->seriesDescriptions[seriesIndex]));
-    }
+    int seriesIndex = event->x() / (width / (double)d->seriesDescriptionDataIndexPairList.size());
+    seriesIndex = qBound(0, seriesIndex, d->seriesDescriptionDataIndexPairList.size()-1);
+    this->setImage(d->seriesDescriptionDataIndexPairList.at(seriesIndex).first);
+    emit updateLabel(d->seriesDescriptionDataIndexPairList.at(seriesIndex).second);
 }
 
 
@@ -226,7 +210,7 @@ public:
     medDatabasePreviewDynamicScene *dynamicScene;
 
     QLabel *label;
-
+    QString defaultText;
 };
 
 
@@ -286,7 +270,6 @@ void medDatabasePreview::showSeriesPreview(const medDataIndex &index)
     QString itemDescription = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
     d->label->setText(itemDescription);
 
-
     this->setScene(d->staticScene);
     this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
 }
@@ -307,24 +290,24 @@ void medDatabasePreview::showStudyPreview(const medDataIndex &index)
 
     this->setScene(d->staticScene);
 
-
-
     QList<medDataIndex> seriesIndex = dbc->series(index);
-    QMap <QString, medDataIndex> seriesDescriptionDataIndexMap;
+    QList<QPair<medDataIndex,QString> > seriesDescriptionDataIndexPairList;
 
     foreach (medDataIndex serieIndex, seriesIndex)
     {
         d->staticScene->addImage(serieIndex);
         QString seriesDescription = dbc->metaData(serieIndex, medMetaDataKeys::SeriesDescription);
-        seriesDescriptionDataIndexMap.insert(seriesDescription, serieIndex);
+        seriesDescriptionDataIndexPairList.append(qMakePair(serieIndex, seriesDescription));
     }
 
-    d->dynamicScene = new medDatabasePreviewDynamicScene(seriesDescriptionDataIndexMap);
+    d->dynamicScene = new medDatabasePreviewDynamicScene(seriesDescriptionDataIndexPairList);
     connect(d->dynamicScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+    connect(d->dynamicScene, SIGNAL(updateLabel(QString)), this, SLOT(setLabel(QString)));
 
 
     QString itemDescription = dbc->metaData(index, medMetaDataKeys::StudyDescription);
     d->label->setText(itemDescription);
+    d->defaultText = itemDescription;
     this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
 }
 
@@ -349,6 +332,11 @@ void medDatabasePreview::showPatientPreview(const medDataIndex &index)
     this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
 }
 
+void medDatabasePreview::setLabel(const QString &text)
+{
+    d->label->setText(text);
+}
+
 
 QLabel* medDatabasePreview::label() const
 {
@@ -359,20 +347,20 @@ void medDatabasePreview::enterEvent(QEvent *event)
 {
     switch(d->currentDataType)
     {
-    case medDatabasePreview::SERIES:
-    {
-        break;
-    }
-    case medDatabasePreview::STUDY:
-    {
-        this->setScene(d->dynamicScene);
-        this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
-        break;
-    }
-    case medDatabasePreview::PATIENT:
-    {
-        break;
-    }
+        case medDatabasePreview::SERIES:
+        {
+            break;
+        }
+        case medDatabasePreview::STUDY:
+        {
+            this->setScene(d->dynamicScene);
+            this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+            break;
+        }
+        case medDatabasePreview::PATIENT:
+        {
+            break;
+        }
     }
     QGraphicsView::enterEvent(event);
 
@@ -383,20 +371,21 @@ void medDatabasePreview::leaveEvent(QEvent *event)
 {
     switch(d->currentDataType)
     {
-    case medDatabasePreview::SERIES:
-    {
-        break;
-    }
-    case medDatabasePreview::STUDY:
-    {
-        this->setScene(d->staticScene);
-        this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
-        break;
-    }
-    case medDatabasePreview::PATIENT:
-    {
-        break;
-    }
+        case medDatabasePreview::SERIES:
+        {
+            break;
+        }
+        case medDatabasePreview::STUDY:
+        {
+            this->setScene(d->staticScene);
+            this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+            this->setLabel(d->defaultText);
+            break;
+        }
+        case medDatabasePreview::PATIENT:
+        {
+            break;
+        }
     }
     QGraphicsView::leaveEvent(event);
 }
@@ -405,22 +394,22 @@ void medDatabasePreview::mouseMoveEvent(QMouseEvent *event)
 {
     switch(d->currentDataType)
     {
-    case medDatabasePreview::SERIES:
-    {
-        break;
-    }
-    case medDatabasePreview::STUDY:
-    {
-        if (event->buttons() == Qt::LeftButton)
+        case medDatabasePreview::SERIES:
+        {
             break;
-        d->dynamicScene->previewMouseMoveEvent(event, this->width());
-        this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
-        break;
-    }
-    case medDatabasePreview::PATIENT:
-    {
-        break;
-    }
+        }
+        case medDatabasePreview::STUDY:
+        {
+            if (event->buttons() == Qt::LeftButton)
+                break;
+            d->dynamicScene->previewMouseMoveEvent(event, this->width());
+            this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+            break;
+        }
+        case medDatabasePreview::PATIENT:
+        {
+            break;
+        }
     }
     QGraphicsView::mouseMoveEvent(event);
 }
