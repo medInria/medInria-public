@@ -14,10 +14,6 @@ PURPOSE.
 
 #include <QObject>
 
-#include "medCoreExport.h"
-
-
-
 class medAbstractDataSource;
 class medDataSourceManagerPrivate;
 class medDataIndex;
@@ -25,7 +21,7 @@ class medAbstractData;
 class medDatabaseDataSource;
 
 
-class MEDCORE_EXPORT medDataSourceManager : public QObject
+class medDataSourceManager : public QObject
 {
     Q_OBJECT
 

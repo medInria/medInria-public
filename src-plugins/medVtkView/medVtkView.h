@@ -14,13 +14,14 @@
 #pragma once
 
 #include <medAbstractImageView.h>
+#include <medVtkViewPluginExport.h>
 
 class medVtkViewPrivate;
 class medAbstractData;
 class medAbstractImageData;
 
 
-class medVtkView : public medAbstractImageView
+class MEDVTKVIEWPLUGIN_EXPORT medVtkView : public medAbstractImageView
 {
     Q_OBJECT
     

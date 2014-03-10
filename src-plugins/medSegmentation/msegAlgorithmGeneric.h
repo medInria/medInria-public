@@ -39,7 +39,7 @@ class Controller;
 
 
 /** Generic segmentation algorithm */
-class AlgorithmGeneric : public medAbstractProcess {
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmGeneric : public medAbstractProcess {
     Q_OBJECT
 public:
     //! Interface name should be used by all dtkAbstractProcesses inheriting from this.

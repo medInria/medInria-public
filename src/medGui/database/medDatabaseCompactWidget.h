@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QWidget>
+#include <medGuiExport.h>
 
 class medDatabaseCompactWidgetPrivate;
 class medDatabaseView;
@@ -24,7 +25,7 @@ class medDataIndex;
 /**
 * @brief
 */
-class medDatabaseCompactWidget: public QWidget
+class MEDGUI_EXPORT medDatabaseCompactWidget: public QWidget
 {
     Q_OBJECT
 public :

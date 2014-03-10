@@ -15,10 +15,11 @@ PURPOSE.
 
 #include <QObject>
 #include <QVector2D>
+#include <medVtkViewPluginExport.h>
 
 class medVtkView;
 
-class medVtkViewSignalsEmitter : QObject
+class MEDVTKVIEWPLUGIN_EXPORT medVtkViewSignalsEmitter : QObject
 {
     Q_OBJECT
 

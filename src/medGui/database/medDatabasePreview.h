@@ -3,14 +3,14 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QImage>
-
+#include <medGuiExport.h>
 
 class medDataIndex;
 class QLabel;
 
 
 class medDatabasePreviewStaticScenePrivate;
-class medDatabasePreviewStaticScene: public QGraphicsScene
+class MEDGUI_EXPORT medDatabasePreviewStaticScene: public QGraphicsScene
 {
     Q_OBJECT
 public:
@@ -32,7 +32,7 @@ private :
 
 
 class medDatabasePreviewDynamicScenePrivate;
-class medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
+class MEDGUI_EXPORT medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
 {
     Q_OBJECT
 public:
@@ -51,7 +51,7 @@ private:
 
 
 class medDatabasePreviewPrivate;
-class medDatabasePreview: public QGraphicsView
+class MEDGUI_EXPORT medDatabasePreview: public QGraphicsView
 {
     Q_OBJECT
 public :

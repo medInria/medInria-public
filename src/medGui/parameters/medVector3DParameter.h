@@ -14,11 +14,12 @@
 #pragma once
 
 #include <medAbstractParameter.h>
+#include <medGuiExport.h>
 
 class medVector3DParameterPrivate;
 class QVector3D;
 
-class medVector3DParameter : public medAbstractVector3DParameter
+class MEDGUI_EXPORT medVector3DParameter : public medAbstractVector3DParameter
 {
 public:
     medVector3DParameter(QString name = "Unknow Vector 3D parameter", QObject* parent = 0);

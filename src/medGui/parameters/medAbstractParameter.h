@@ -75,7 +75,7 @@ class medTestParameterPrivate;
  * @brief The medTestParameter class is just a dummy implementaion of
  * medAbstractParameter to test its interface.
  */
-class medTestParameter : public medAbstractParameter
+class MEDGUI_EXPORT medTestParameter : public medAbstractParameter
 {
     Q_OBJECT
 
@@ -98,7 +98,7 @@ private:
 
 //--------------------------------------------------------------------------
 //  medAbstractTriggerParameter
-class medAbstractTriggerParameter : public medAbstractParameter
+class MEDGUI_EXPORT medAbstractTriggerParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:

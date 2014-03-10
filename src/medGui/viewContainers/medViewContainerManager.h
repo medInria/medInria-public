@@ -15,14 +15,14 @@
 
 #include <QObject>
 
-#include <medCoreExport.h>
+#include <medGuiExport.h>
 
 struct QUuid;
 class medViewContainer;
 
 class medViewContainerManagerPrivate;
 
-class MEDCORE_EXPORT medViewContainerManager : public QObject
+class MEDGUI_EXPORT medViewContainerManager : public QObject
 {
     Q_OBJECT
 
