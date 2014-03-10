@@ -78,10 +78,11 @@ protected slots:
     void changeCurrentLayer(int row);
     void setLayerVisibility(bool visibility);
     void removeLayer();
+    void updateParameterPool(QString);
+
 
 private slots:
     void buildTemporaryPool();
-    void updateParameterPool(QString);
 
 private:
         QIcon createIcon(const QString &colorName) const;

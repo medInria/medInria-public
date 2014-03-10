@@ -58,6 +58,7 @@ private slots:
     void link(QUuid uuid, QString);
     void unlink(QUuid uuid);
     void buildTemporaryPool();
+    void connectContainerSelectedForCurrentTab();
 
 signals:
     void containersSelectedChanged();

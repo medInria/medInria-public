@@ -22,6 +22,7 @@
 #include <medTabbedViewContainers.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medAbstractLayeredView.h>
+#include <medParameterPoolManager.h>
 
 #include <medToolBoxFactory.h>
 
@@ -60,13 +61,12 @@ QString medRegistrationWorkspace::description() const {
 
 void medRegistrationWorkspace::setupViewContainerStack()
 {
-    //TODO make it fit with new container - RDE
 
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
-        d->fixedContainer = this->stackedViewContainers()->addContainerInTab("Compare");
-        QLabel *fixedLabel = new QLabel("FIXED");
+        d->fixedContainer = this->stackedViewContainers()->addContainerInTab(tr("Compare"));
+        QLabel *fixedLabel = new QLabel(tr("FIXED"));
         fixedLabel->setAlignment(Qt::AlignCenter);
         d->fixedContainer->setDefaultWidget(fixedLabel);
         d->fixedContainer->setMultiLayered(false);
@@ -74,7 +74,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fixedContainer->setUserSplittable(false);
 
         d->movingContainer = d->fixedContainer->splitVertically();
-        QLabel *movingLabel = new QLabel("MOVING");
+        QLabel *movingLabel = new QLabel(tr("MOVING"));
         movingLabel->setAlignment(Qt::AlignCenter);
         d->movingContainer->setDefaultWidget(movingLabel);
         d->movingContainer->setUserClosable(false);
@@ -82,8 +82,8 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->movingContainer->setMultiLayered(false);
 
 
-        d->fuseContainer = this->stackedViewContainers()->addContainerInTab("Fuse");
-        QLabel *fuseLabel = new QLabel("FUSE");
+        d->fuseContainer = this->stackedViewContainers()->addContainerInTab(tr("Fuse"));
+        QLabel *fuseLabel = new QLabel(tr("FUSE"));
         fuseLabel->setAlignment(Qt::AlignCenter);
         d->fuseContainer->setDefaultWidget(fuseLabel);
         d->fuseContainer->setUserClosable(false);
@@ -122,7 +122,16 @@ void medRegistrationWorkspace::updateMovingData()
     {
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
         if(fuseView)
-            fuseView->removeData(d->registrationToolBox->movingData());
+        {
+            if(fuseView->layer(d->registrationToolBox->movingData()) == 0)
+            {
+                d->fuseContainer->setView(NULL);
+                d->fuseContainer->addData(d->registrationToolBox->fixedData());
+            }
+            else
+                fuseView->removeLayer(1);
+
+        }
 
         d->registrationToolBox->setMovingData(NULL);
         return;
@@ -143,6 +152,9 @@ void medRegistrationWorkspace::updateMovingData()
 
     d->fuseContainer->addData(movingData);
 
+    d->movingContainer->link("1");
+    d->fuseContainer->link("1");
+
     d->registrationToolBox->setMovingData(movingData);
 }
 
@@ -152,7 +164,16 @@ void medRegistrationWorkspace::updateFixedData()
     {
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
         if(fuseView)
-            fuseView->removeData(d->registrationToolBox->fixedData());
+        {
+            if(fuseView->layer(d->registrationToolBox->fixedData()) == 0)
+            {
+                d->fuseContainer->setView(NULL);
+                d->fuseContainer->addData(d->registrationToolBox->movingData());
+            }
+            else
+                fuseView->removeLayer(1);
+
+        }
 
         d->registrationToolBox->setFixedData(NULL);
         return;
@@ -171,5 +192,11 @@ void medRegistrationWorkspace::updateFixedData()
         fuseView->removeData(fixedData);
 
     d->fuseContainer->addData(fixedData);
+
+    d->fixedContainer->link("1");
+    d->fuseContainer->link("1");
+
+
     d->registrationToolBox->setFixedData(fixedData);
 }
+

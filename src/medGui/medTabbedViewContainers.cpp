@@ -54,7 +54,7 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(disconnectTabFromSplitter(int)));
     connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
     connect(this, SIGNAL(containersSelectedChanged()), this, SLOT(buildTemporaryPool()));
-    connect(this, SIGNAL(currentChanged(int)), this, SIGNAL(containersSelectedChanged()));
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(connectContainerSelectedForCurrentTab()));
 
     d->pool = new medParameterPool(this);
 }
@@ -198,6 +198,36 @@ void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
     }
 }
 
+void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
+{
+    foreach(QList<QUuid> containersSelected, d->containerSelectedForTabIndex.values())
+    {
+        int tabIndex = d->containerSelectedForTabIndex.key(containersSelected);
+        if(tabIndex == this->currentIndex())
+        {
+            foreach (QUuid uuid, containersSelected)
+            {
+                medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
+                connect(container, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()), Qt::UniqueConnection);
+                connect(container, SIGNAL(viewRemoved()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
+                connect(container, SIGNAL(viewContentChanged()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
+            }
+        }
+        else
+        {
+            foreach (QUuid uuid, containersSelected)
+            {
+                medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
+                this->disconnect(container, SIGNAL(currentLayerChanged()), this, 0);
+                this->disconnect(container, SIGNAL(viewRemoved()), this, 0);
+                this->disconnect(container, SIGNAL(viewContentChanged()), this, 0);
+            }
+        }
+    }
+    emit containersSelectedChanged();
+}
+
+
 void medTabbedViewContainers::link(QUuid uuid, QString pool)
 {
     if(this->containersSelected().contains(uuid))
@@ -248,3 +278,4 @@ void medTabbedViewContainers::buildTemporaryPool()
         }
     }
 }
+
