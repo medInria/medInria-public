@@ -206,7 +206,6 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
             foreach (QUuid uuid, containersSelected)
             {
                 medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
-                connect(container, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()), Qt::UniqueConnection);
                 connect(container, SIGNAL(viewRemoved()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
                 connect(container, SIGNAL(viewContentChanged()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
             }
@@ -216,7 +215,6 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
             foreach (QUuid uuid, containersSelected)
             {
                 medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
-                this->disconnect(container, SIGNAL(currentLayerChanged()), this, 0);
                 this->disconnect(container, SIGNAL(viewRemoved()), this, 0);
                 this->disconnect(container, SIGNAL(viewContentChanged()), this, 0);
             }

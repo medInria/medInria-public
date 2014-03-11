@@ -68,6 +68,10 @@ private slots:
     void testAddData();
     void testHighlight();
     void testLink();
+    void testUserSplittable();
+    void testUserClosable();
+    void testMultiLayered();
+    void testDefaultWidget();
 
 
 private:

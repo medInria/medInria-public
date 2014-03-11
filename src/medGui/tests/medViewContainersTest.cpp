@@ -269,19 +269,122 @@ void medViewContainersTestObject::testAddData()
     QCOMPARE(spy2.count(), 3);
     QCOMPARE(spy3.count(), 3);
 
+    container->addData(data2);
 
-
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 4);
+    QCOMPARE(spy3.count(), 4);
 }
 
 void medViewContainersTestObject::testHighlight()
 {
     //TODO
+    QVERIFY(false);
 }
 
 void medViewContainersTestObject::testLink()
 {
     //TODO
+    QVERIFY(false);
 }
+
+void medViewContainersTestObject::testUserSplittable()
+{
+    medViewContainer *container = new medViewContainer;
+
+    container->setUserSplittable(true);
+    QVERIFY(container->isUserSplittable());
+
+    container->setUserSplittable(false);
+    QVERIFY(!container->isUserSplittable());
+
+    container->setUserSplittable(true);
+    QVERIFY(container->isUserSplittable());
+}
+
+void medViewContainersTestObject::testUserClosable()
+{
+    medViewContainer *container = new medViewContainer;
+
+    container->setUserClosable(true);
+    QVERIFY(container->isUserClosable());
+
+    container->setUserClosable(false);
+    QVERIFY(!container->isUserClosable());
+
+    container->setUserClosable(true);
+    QVERIFY(container->isUserClosable());
+}
+
+void medViewContainersTestObject::testMultiLayered()
+{
+    medViewContainer *container = new medViewContainer;
+
+    container->setMultiLayered(true);
+    QVERIFY(container->isMultiLayered());
+
+    container->setMultiLayered(false);
+    QVERIFY(!container->isMultiLayered());
+
+    container->setMultiLayered(true);
+    QVERIFY(container->isMultiLayered());
+
+
+    QSignalSpy spy1 (container, SIGNAL(viewChanged()));
+    QSignalSpy spy2 (container, SIGNAL(viewContentChanged()));
+    QSignalSpy spy3 (container, SIGNAL(currentLayerChanged()));
+
+    dtkSmartPointer<medAbstractData> data1 = createTestData();
+
+    // create dummy view
+    dtkSmartPointer<medQtView> view1 = new medQtView;
+
+    container->setView(view1);
+    container->addData(data1);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 1);
+    QCOMPARE(spy3.count(), 1);
+
+    dtkSmartPointer<medAbstractData> data2 = createTestData();
+
+    container->addData(data2);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 2);
+    QCOMPARE(spy3.count(), 2);
+
+    view1->removeData(data2);
+
+    container->setMultiLayered(false);
+
+    container->addData(data2);
+
+    // a new view should have been created
+    // TODO: actually the medVtkView plugin is not loaded
+    // so the view creation fails
+    // QCOMPARE(spy1.count(), 2);
+    // QCOMPARE(spy2.count(), 3);
+    // QCOMPARE(spy3.count(), 3);
+}
+
+
+void medViewContainersTestObject::testDefaultWidget()
+{
+    medViewContainer *container = new medViewContainer;
+
+    QLabel *labelTest = new QLabel("Test");
+    container->setDefaultWidget(labelTest);
+
+    QCOMPARE(container->defaultWidget(), labelTest);
+
+    QLabel *labelTest2 = new QLabel("Test2");
+    container->setDefaultWidget(labelTest2);
+
+    QCOMPARE(container->defaultWidget(), labelTest2);
+}
+
+
 
 dtkSmartPointer<medAbstractData> medViewContainersTestObject::createTestData(void)
 {
