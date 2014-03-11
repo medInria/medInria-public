@@ -62,9 +62,6 @@ private slots:
 
 signals:
     void containersSelectedChanged();
-    void currentLayerChanged();
-
-
 
 private:
     medTabbedViewContainersPrivate *d;

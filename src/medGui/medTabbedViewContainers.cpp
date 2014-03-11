@@ -173,7 +173,6 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
     medViewContainer *newSelectedContainer =  medViewContainerManager::instance()->container(container);
     d->containerSelectedForTabIndex.insert(this->currentIndex(), containersSelected);
 
-    connect(newSelectedContainer, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()), Qt::UniqueConnection);
     connect(newSelectedContainer, SIGNAL(viewRemoved()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
     connect(newSelectedContainer, SIGNAL(viewContentChanged()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
 
@@ -189,7 +188,6 @@ void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
         {
             d->containerSelectedForTabIndex.insert(tabIndex, containersSelected);
             medViewContainer *unSelectedContainer =  medViewContainerManager::instance()->container(container);
-            this->disconnect(unSelectedContainer, SIGNAL(currentLayerChanged()), this, 0);
             this->disconnect(unSelectedContainer, SIGNAL(viewRemoved()), this, 0);
             this->disconnect(unSelectedContainer, SIGNAL(viewContentChanged()), this, 0);
             emit containersSelectedChanged();

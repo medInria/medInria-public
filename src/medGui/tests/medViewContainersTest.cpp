@@ -255,6 +255,22 @@ void medViewContainersTestObject::testAddData()
     QCOMPARE(spy2.count(), 1);
     QCOMPARE(spy3.count(), 1);
 
+    dtkSmartPointer<medAbstractData> data2 = createTestData();
+
+    container->addData(data2);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 2);
+    QCOMPARE(spy3.count(), 2);
+
+    view1->removeData(data2);
+
+    QCOMPARE(spy1.count(), 1);
+    QCOMPARE(spy2.count(), 3);
+    QCOMPARE(spy3.count(), 3);
+
+
+
 }
 
 void medViewContainersTestObject::testHighlight()

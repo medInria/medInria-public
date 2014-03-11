@@ -71,7 +71,6 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->viewContainerStack = new medTabbedViewContainers(parent);
 
     connect(d->viewContainerStack, SIGNAL(containersSelectedChanged()), this, SLOT(updateNavigatorsToolBox()));
-    connect(d->viewContainerStack, SIGNAL(currentLayerChanged()), this, SLOT(updateInteractorsToolBox()));
 
     d->databaseVisibility = true;
     d->toolBoxesVisibility = true;
@@ -333,9 +332,13 @@ void medAbstractWorkspace::updateLayersToolBox()
                 d->layerListWidget->addItem(item);
                 d->layerListWidget->setItemWidget(item, layerWidget);
                 layerWidget->setFocusPolicy(Qt::NoFocus);
-            }
 
-            d->layerListWidget->setCurrentRow(firstLayerIndex + layeredView->currentLayer());
+                d->layerListWidget->blockSignals(true);
+                d->layerListWidget->clearSelection();
+                d->layerListWidget->setCurrentItem(item);
+                d->layerListWidget->blockSignals(false);
+
+            }
         }
     }
     // add the layer widgets
@@ -414,6 +417,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     if(!item)
         return;
 
+    int currentLayer = item->data(Qt::UserRole).toInt();
     QList<QString> interactorsIdentifier;
     QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
     medViewContainer *container = containerMng->container(containerUuid);
@@ -421,7 +425,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
 
     medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-    foreach (medAbstractInteractor* interactor, view->currentInteractors())
+    foreach (medAbstractInteractor* interactor, view->interactors(currentLayer))
     {
         QString interactorIdentifier = interactor->identifier();
         if(!interactorsIdentifier.contains(interactorIdentifier))
@@ -488,10 +492,11 @@ void medAbstractWorkspace::buildTemporaryPool()
     {
         QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
         medViewContainer *container = containerMng->container(containerUuid);
+        int layer = item->data(Qt::UserRole).toInt();
 
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        foreach (medAbstractInteractor* interactor, view->currentInteractors())
+        foreach (medAbstractInteractor* interactor, view->interactors(layer))
         {
             d->temporaryPoolForInteractors->append(interactor->parameters());
         }

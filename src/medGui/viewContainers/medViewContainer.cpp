@@ -281,7 +281,11 @@ void medViewContainer::setView(medAbstractView *view)
         connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
+        {
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
+            connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()));
+            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
+        }
 
         if( d->view->toolBarWidget() )
         {
@@ -548,7 +552,8 @@ void medViewContainer::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
-    emit viewContentChanged();
+
+    setSelected(true);
 }
 
 void medViewContainer::createDragLabels()
