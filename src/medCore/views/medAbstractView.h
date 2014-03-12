@@ -71,7 +71,7 @@ public:
 
     virtual QList<medAbstractParameter*> navigatorsParameters();
 
-    virtual QImage& generateThumbnail(const QSize &size) = 0;
+    virtual QImage generateThumbnail(const QSize &size) = 0;
 
 public slots:
     virtual void reset() = 0;

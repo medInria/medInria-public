@@ -8,8 +8,8 @@
 class medAbstractImageViewPrivate
 {
 public:
-    QHash<dtkSmartPointer<medAbstractData>,  medAbstractImageViewInteractor*> primaryIntercatorsHash;
-    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraIntercatorsHash;
+    QHash<dtkSmartPointer<medAbstractData>,  medAbstractImageViewInteractor*> primaryInteractorsHash;
+    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraInteractorsHash;
 
     medAbstractImageViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
@@ -28,25 +28,25 @@ medAbstractImageView::~medAbstractImageView()
 
 medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(medAbstractData* data)
 {
-    if(d->primaryIntercatorsHash.isEmpty())
+    if(d->primaryInteractorsHash.isEmpty())
         return NULL;
 
-    return d->primaryIntercatorsHash.value(data);
+    return d->primaryInteractorsHash.value(data);
 }
 
 QList<medAbstractInteractor*> medAbstractImageView::extraInteractors(medAbstractData* data)
 {
-    return d->extraIntercatorsHash.value(data);
+    return d->extraInteractorsHash.value(data);
 }
 
 medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(unsigned int layer)
 {
-    return d->primaryIntercatorsHash.value(this->layerData(layer));
+    return d->primaryInteractorsHash.value(this->layerData(layer));
 }
 
 QList<medAbstractInteractor*> medAbstractImageView::extraInteractors(unsigned int layer)
 {
-    return d->extraIntercatorsHash.value(this->layerData(layer));
+    return d->extraInteractorsHash.value(this->layerData(layer));
 }
 
 medAbstractImageViewNavigator* medAbstractImageView::primaryNavigator()
@@ -61,11 +61,11 @@ QList<medAbstractNavigator*> medAbstractImageView::extraNavigators()
 
 void medAbstractImageView::removeInteractors(medAbstractData *data)
 {
-    medAbstractLayeredViewInteractor* pInteractor = d->primaryIntercatorsHash.take(data);
+    medAbstractLayeredViewInteractor* pInteractor = d->primaryInteractorsHash.take(data);
     pInteractor->removeData();
     delete pInteractor;
 
-    QList<medAbstractInteractor*> extraInt =  d->extraIntercatorsHash.take(data);
+    QList<medAbstractInteractor*> extraInt =  d->extraInteractorsHash.take(data);
     foreach(medAbstractInteractor* extra, extraInt)
     {
         delete extra;
@@ -82,7 +82,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
     if(primaryInt.isEmpty())
     {
         qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
-         d->primaryIntercatorsHash.insert(data, NULL);
+         d->primaryInteractorsHash.insert(data, NULL);
     }
     else
     {
@@ -90,7 +90,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
         interactor->setData(data);
-        d->primaryIntercatorsHash.insert(data, interactor);
+        d->primaryInteractorsHash.insert(data, interactor);
     }
 
     // extra
@@ -106,7 +106,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
             interactor->setData(data);
             extraIntList << interactor;
         }
-        d->extraIntercatorsHash.insert(data, extraIntList);
+        d->extraInteractorsHash.insert(data, extraIntList);
     }
 }
 
