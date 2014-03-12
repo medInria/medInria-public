@@ -45,8 +45,6 @@ public:
     medAbstractNavigator* createAdditionalNavigator(QString identifier, medAbstractView *parent);
     medAbstractInteractor*  createAdditionalInteractor(QString identifier, medAbstractView *parent);
 
-
-
     template <typename T>
     bool registerView(QString identifier, QStringList typeHandled)
     {

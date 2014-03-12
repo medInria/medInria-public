@@ -51,13 +51,8 @@ public:
 
     virtual QString localizedName() = 0;
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-    
     //! Override dtkAbstractProcess
     void setInput( medAbstractData * data) MED_OVERRIDE;
-
-#pragma clang diagnostic pop
 
     virtual int update() MED_OVERRIDE;
     medAbstractData * output() MED_OVERRIDE;
@@ -87,6 +82,7 @@ protected:
 private:
     AlgorithmGenericPrivate *d;
 
+    using medAbstractProcess::setInput;
 };
 
 

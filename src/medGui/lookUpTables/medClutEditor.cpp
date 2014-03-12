@@ -1558,7 +1558,7 @@ void medClutEditor::setData(medAbstractData *data)
 void medClutEditor::setView(medAbstractImageView *view, bool force)
 {
     medAbstractImageData * image =
-        static_cast<medAbstractImageData *>(view->data(0));
+        static_cast<medAbstractImageData *>(view->layerData(0));
     this->setData(image);
 
     if (!force && view == d->med_view)

@@ -31,14 +31,9 @@ public:
 public:
     itkFiltersProcessBase& operator = (const itkFiltersProcessBase& other);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-    
     QString description ( void );
     
     void setInput ( medAbstractData *data );
-
-#pragma clang diagnostic pop
 
     medAbstractData *output ( void );
     
@@ -46,6 +41,9 @@ public:
     
 private:
     DTK_DECLARE_PRIVATE(itkFiltersProcessBase)
+    
+    using dtkAbstractProcess::description;
+    using dtkAbstractProcess::setInput;
 };
 
 //ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersProcessBase& process);

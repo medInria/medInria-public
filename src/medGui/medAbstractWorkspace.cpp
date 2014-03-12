@@ -250,7 +250,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QWidget *layerWidget = new QWidget;
                 layerWidget->setObjectName("layerWidget");
 
-                medAbstractData *data = layeredView->data(layer);
+                medAbstractData *data = layeredView->layerData(layer);
                 QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
                 QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
 

@@ -23,9 +23,6 @@
 #include <medAbstractLayeredViewNavigator.h>
 #include <medAbstractLayeredViewInteractor.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-
 class medLayeredViewFactoryPrivate;
 class MEDCORE_EXPORT medLayeredViewFactory : public medViewFactory
 {
@@ -101,5 +98,3 @@ private:
 private:
     medLayeredViewFactoryPrivate* d;
 };
-
-#pragma clang diagnostic pop

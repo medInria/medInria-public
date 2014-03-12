@@ -144,7 +144,7 @@ void medRegistrationWorkspace::updateMovingData()
         return;
     }
 
-    medAbstractData *movingData = movingView->data(movingView->currentLayer());
+    medAbstractData *movingData = movingView->layerData(movingView->currentLayer());
 
     medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     if(fuseView)
@@ -186,7 +186,7 @@ void medRegistrationWorkspace::updateFixedData()
         return;
     }
 
-    medAbstractData *fixedData = fixedView->data(fixedView->currentLayer());
+    medAbstractData *fixedData = fixedView->layerData(fixedView->currentLayer());
     medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     if(fuseView)
         fuseView->removeData(fixedData);

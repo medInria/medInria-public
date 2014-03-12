@@ -41,12 +41,12 @@ QList<medAbstractInteractor*> medAbstractImageView::extraInteractors(medAbstract
 
 medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(unsigned int layer)
 {
-    return d->primaryIntercatorsHash.value(this->data(layer));
+    return d->primaryIntercatorsHash.value(this->layerData(layer));
 }
 
 QList<medAbstractInteractor*> medAbstractImageView::extraInteractors(unsigned int layer)
 {
-    return d->extraIntercatorsHash.value(this->data(layer));
+    return d->extraIntercatorsHash.value(this->layerData(layer));
 }
 
 medAbstractImageViewNavigator* medAbstractImageView::primaryNavigator()
@@ -144,7 +144,7 @@ void medAbstractImageView::initialiseNavigators()
 
 void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
 {
-    foreach (medAbstractData *data, this->data())
+    foreach (medAbstractData *data, this->dataList())
     {
         medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
         if(!inter)
@@ -158,7 +158,7 @@ void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
 
 void medAbstractImageView::moveToSlice (int slice)
 {
-    foreach (medAbstractData *data, this->data())
+    foreach (medAbstractData *data, this->dataList())
     {
         medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
         if(!inter)

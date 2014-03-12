@@ -99,7 +99,7 @@ void medFilteringWorkspace::changeToolBoxInput()
         d->filteringToolBox->clear();
         return;
     }
-    d->filteringToolBox->onInputSelected(layeredView->data(layeredView->currentLayer()));
+    d->filteringToolBox->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
 }
 
 void medFilteringWorkspace::onProcessSuccess()

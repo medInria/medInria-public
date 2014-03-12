@@ -35,13 +35,8 @@ public:
 public:
     virtual QString description() const = 0;
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-    
     virtual void setView(medAbstractView *view);
     virtual medAbstractView *view() const;
-
-#pragma clang diagnostic pop
 
     virtual QWidget* widgetForToolBox() const = 0;
     virtual QWidget* widgetForToolBar() const = 0;
@@ -58,16 +53,17 @@ private:
                          NOT IMPLEMENTED ON PURPOSE
 *=========================================================================*/
 private:
-    virtual void setData(dtkAbstractData *data);
-    virtual dtkAbstractData* data();
-    virtual dtkAbstractData *output (void);
-    virtual dtkAbstractData *output (int channel);
-    virtual dtkAbstractData *output (int channel, int frame);
-    virtual void predraw(void);
-    virtual void draw(void);
-    virtual void postdraw(void);
-    bool enabled(void) const;
-    virtual void enable(void);
-    virtual void disable(void);
+    using dtkAbstractViewNavigator::setView;
+    using dtkAbstractViewNavigator::view;
+
+    using dtkAbstractViewNavigator::setData;
+    using dtkAbstractViewNavigator::data;
+    using dtkAbstractViewNavigator::output;
+    using dtkAbstractViewNavigator::predraw;
+    using dtkAbstractViewNavigator::draw;
+    using dtkAbstractViewNavigator::postdraw;
+    using dtkAbstractViewNavigator::enabled;
+    using dtkAbstractViewNavigator::enable;
+    using dtkAbstractViewNavigator::disable;
 
 };

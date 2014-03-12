@@ -83,7 +83,7 @@ public:
         if(!imageView)
             return false;
 
-        medAbstractData * viewData = imageView->data(imageView->currentLayer());
+        medAbstractData * viewData = imageView->layerData(imageView->currentLayer());
         m_cb->setData( viewData );
 
         if (imageView->is2D())
@@ -632,7 +632,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
 
         if ( !m_imageData )
         {
-            this->setData(view->data(view->currentLayer()));
+            this->setData(view->layerData(view->currentLayer()));
         }
         if (!m_imageData) {
             dtkWarn() << "Could not set data";
@@ -812,7 +812,7 @@ void AlgorithmPaintToolbox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     const double radius = m_strokeRadius; // in image units.
 
     if ( !m_imageData ) {
-        this->setData(view->data(view->currentLayer()));
+        this->setData(view->layerData(view->currentLayer()));
     }
     if (!m_imageData) {
         dtkWarn() << "Could not set data";

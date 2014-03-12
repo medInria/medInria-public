@@ -126,12 +126,12 @@ QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractors(medAbstra
 
 medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(unsigned int layer)
 {
-    return d->primaryInteractorsHash.value(this->data(layer));
+    return d->primaryInteractorsHash.value(this->layerData(layer));
 }
 
 QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractors(unsigned int layer)
 {
-    return d->extraInteractorsHash.value(this->data(layer));
+    return d->extraInteractorsHash.value(this->layerData(layer));
 }
 
 medAbstractLayeredViewNavigator* medAbstractLayeredView::primaryNavigator()
@@ -149,7 +149,7 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     this->insertLayer(d->layersDataList.count(), data);
 }
 
-QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const
+QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::dataList() const
 {
     return d->layersDataList;
 }
@@ -179,12 +179,12 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
-    this->removeData(this->data(layer));
+    this->removeData(this->layerData(layer));
 }
 
 void medAbstractLayeredView::removeLayer()
 {
-    this->removeData(this->data(d->currentLayer));
+    this->removeData(this->layerData(d->currentLayer));
 }
 
 void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *data)
@@ -216,7 +216,7 @@ void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLa
     //TODO I'm not sure we really want this. find out which signal emit. - RDE.
 }
 
-medAbstractData * medAbstractLayeredView::data(unsigned int layer) const
+medAbstractData * medAbstractLayeredView::layerData(unsigned int layer) const
 {
     if (layer > (unsigned int)d->layersDataList.size())
     {
@@ -279,14 +279,14 @@ void medAbstractLayeredView::setCurrentLayer(unsigned int layer)
 
 QImage& medAbstractLayeredView::generateThumbnail(const QSize &size)
 {
-    medAbstractLayeredViewInteractor *primaryInteractor = this->primaryInteractor(this->data(d->currentLayer));
+    medAbstractLayeredViewInteractor *primaryInteractor = this->primaryInteractor(this->layerData(d->currentLayer));
     if(!primaryInteractor)
     {
-        qWarning()<< "unable to find any primary interactor for view"  <<this->identifier() << 'and data' << this->data(d->currentLayer)->identifier();
+        qWarning()<< "unable to find any primary interactor for view"  <<this->identifier() << "and data" << this->layerData(d->currentLayer)->identifier();
         QImage img;
         return img;
     }
-    return this->primaryInteractor(this->data(d->currentLayer))->generateThumbnail(size);
+    return this->primaryInteractor(this->layerData(d->currentLayer))->generateThumbnail(size);
 }
 
 //TODO not sure we need this - RDE

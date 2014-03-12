@@ -48,12 +48,7 @@ public:
     enum { ImageChannel = 0, MaskChannel = 1};
 
     //! Override dtkAbstractProcess
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-    
     virtual void setInput(medAbstractData *data, int channel);
-
-#pragma clang diagnostic pop
     
     virtual  int update();
     virtual void *data();
@@ -64,6 +59,8 @@ protected:
 
 private:
     medProcessPaintSegmPrivate *d;
+    
+    using medAbstractProcess::setInput;
 };
 
 

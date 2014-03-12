@@ -46,11 +46,9 @@ medVtkViewPlugin::~medVtkViewPlugin()
 
 bool medVtkViewPlugin::initialize()
 {
-    if (!medVtkView::registered())
-        dtkWarn() << "Unable to register medVtkView type";
+    if (!medVtkView::registered()) { dtkWarn() << "Unable to register medVtkView type"; }
 
-    if (!medVtkViewNavigator::registered())
-        dtkWarn() << "Unable to register medVtkViewNavigator type";
+    if (!medVtkViewNavigator::registered()) { dtkWarn() << "Unable to register medVtkViewNavigator type"; }
 
     return true;
 }

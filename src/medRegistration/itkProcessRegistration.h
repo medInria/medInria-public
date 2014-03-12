@@ -85,9 +85,6 @@ public:
      * @return int 0 if it succeeded, any other value is an error. (could be used as error code)
     */
     int update();
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
     
     /**
      * @brief Sets the fixed or moving image paramters of the process.
@@ -98,8 +95,6 @@ public:
      * @param channel: 0 for the fixed image, 1 for the moving one.
     */
     virtual void setInput(medAbstractData *data, int channel);
-
-#pragma clang diagnostic pop
 
     /**
      * @brief Gets the registered image.
@@ -208,6 +203,7 @@ protected :
 private:
     itkProcessRegistrationPrivate *d;
 
+    using dtkAbstractProcess::setInput;
 };
 
 //Implement this function only in actual implementation of registration Plugins
