@@ -62,7 +62,7 @@ public:
     virtual QWidget* toolBarWidget();
     virtual QList<medAbstractParameter*> parameters();
 
-    QImage& generateThumbnail(const QSize &size);
+    QImage generateThumbnail(const QSize &size);
 
 public slots:
     void setOpacity(double value);

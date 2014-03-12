@@ -552,7 +552,7 @@ QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
     return parameters;
 }
 
-QImage& vtkDataMeshInteractor::generateThumbnail(const QSize &size)
+QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
 {
     d->render->SetOffScreenRendering(1);
     int w(size.width()), h(size.height());

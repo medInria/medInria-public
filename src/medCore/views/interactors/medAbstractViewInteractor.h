@@ -26,7 +26,7 @@ public:
             medAbstractViewInteractor(medAbstractView* parent);
     virtual ~medAbstractViewInteractor();
 
-    virtual QImage& generateThumbnail(const QSize &size) = 0;
+    virtual QImage generateThumbnail(const QSize &size) = 0;
 
     virtual void removeData() = 0;
 

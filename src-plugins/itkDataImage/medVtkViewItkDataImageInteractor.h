@@ -48,7 +48,7 @@ public:
     virtual double opacity() const;
     virtual QStringList handled() const;
 
-    virtual QImage& generateThumbnail(const QSize &size);
+    virtual QImage generateThumbnail(const QSize &size);
 
 public slots:
     virtual void setOpacity (int opacity);

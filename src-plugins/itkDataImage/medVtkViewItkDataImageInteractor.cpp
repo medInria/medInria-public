@@ -511,9 +511,8 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
     d->levelParameter->setValue(level);
 }
 
-QImage& medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
+QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
 {
-
     int w(size.width()), h(size.height());
 
     d->view2d->SetBackground(0.0, 0.0, 0.0);

@@ -58,7 +58,7 @@ public:
     void setVisibility (bool visibility, unsigned int layer);
     bool visibility(unsigned int layer) ;
 
-    virtual QImage& generateThumbnail(const QSize &size);
+    virtual QImage generateThumbnail(const QSize &size);
 
 public slots:
     //TODO: not sure we need this
