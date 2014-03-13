@@ -41,6 +41,7 @@ public:
     bool isUserSplittable() const;
     bool isUserClosable() const;
     bool isMultiLayered() const;
+    bool isUserPoolable() const;
     medAbstractView* view() const;
     QUuid uuid() const;
     void setContainerParent(medViewContainerSplitter* splitter);
@@ -59,6 +60,7 @@ public slots:
     void setUserSplittable(bool splittable);
     void setUserClosable(bool closable);
     void setMultiLayered(bool multiLayer);
+    void setUserPoolable(bool poolable);
     void setView(medAbstractView* view);
     void addData(medAbstractData* data);
     void highlight(QString color = "#FFBB77");

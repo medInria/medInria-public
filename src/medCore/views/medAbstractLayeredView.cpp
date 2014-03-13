@@ -168,13 +168,21 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     int layer = this->layer(data);
     d->layersDataList.removeAll(data);
 
-    emit layerRemoved(layer);
-    if(d->layersDataList.count() == 0)
-        this->~medAbstractLayeredView();
-    else if (layer == d->layersDataList.count())
+
+    if(d->layersDataList.count() != 0  && layer == d->layersDataList.count())
+    {
         this->setCurrentLayer(layer -1);
-    else
+        emit layerRemoved(layer);
+    }
+    else if(d->layersDataList.count() != 0)
+    {
         this->setCurrentLayer(layer);
+        emit layerRemoved(layer);
+    }
+    else
+        this->~medAbstractLayeredView();
+
+
 }
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
@@ -203,11 +211,12 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
 
     d->layersDataList.insert(layer, data);
     this->initialiseInteractors(data);
-    emit layerAdded(layer);
 
     this->setCurrentLayer(layer);
     if(this->layersCount() == 1)
         this->reset();
+
+    emit layerAdded(layer);
 }
 
 void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)

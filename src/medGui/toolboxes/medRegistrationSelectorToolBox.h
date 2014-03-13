@@ -23,6 +23,7 @@ class medAbstractImageView;
 class medAbstractImageData;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
+class medAbstractProcess;
 
 class MEDGUI_EXPORT medRegistrationSelectorToolBox : public medToolBox
 {
@@ -35,11 +36,11 @@ public:
     medAbstractData *fixedData();
     medAbstractData *movingData();
 
-    dtkAbstractProcess * process();
-    void setProcess(dtkAbstractProcess* process);
+    medAbstractProcess * process();
+    void setProcess(medAbstractProcess *process);
 
-    dtkAbstractProcess * undoRedoProcess();
-    void setUndoRedoProcess(dtkAbstractProcess *proc);
+    medAbstractProcess * undoRedoProcess();
+    void setUndoRedoProcess(medAbstractProcess *proc);
 
     QString getNameOfCurrentAlgorithm();
 
@@ -51,12 +52,9 @@ public:
 signals:
     void showError (const QString&,unsigned int timeout);
     void showInfo(const QString&,unsigned int timeout);
-    void movingDataRegistered();
+    void movingDataRegistered(medAbstractData *output);
 
 public slots:
-    void onMovingImageDropped(const medDataIndex& index);
-    void onFixedImageDropped(const medDataIndex& index);
-
 
     void changeCurrentToolBox(int index);
     void clear();

@@ -70,7 +70,7 @@ public:
 // itkProcessRegistration
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistration::itkProcessRegistration() : dtkAbstractProcess(), d(new itkProcessRegistrationPrivate)
+itkProcessRegistration::itkProcessRegistration() : medAbstractProcess(), d(new itkProcessRegistrationPrivate)
 {
     d->fixedImage = NULL;
     d->output = NULL;
@@ -93,6 +93,7 @@ itkProcessRegistration::~itkProcessRegistration()
 // /////////////////////////////////////////////////////////////////
 //
 // /////////////////////////////////////////////////////////////////
+
 template <typename PixelType>
         void itkProcessRegistrationPrivate::setInput(medAbstractData * data,int channel)
 {
@@ -349,6 +350,16 @@ void itkProcessRegistration::setInput(medAbstractData *data, int channel)
         d->setInput<float>(convertedData,channel);
     }
 
+}
+
+void itkProcessRegistration::setFixedInput(medAbstractData *data)
+{
+    this->setInput(data, 0);
+}
+
+void itkProcessRegistration::setMovingInput(medAbstractData *data)
+{
+    this->setInput(data, 1);
 }
 
 int itkProcessRegistration::update(itkProcessRegistration::ImageType)

@@ -40,6 +40,8 @@ public:
 
     bool databaseVisibility;
     bool toolBoxesVisibility;
+    bool userLayerPoolable;
+    bool userLayerClosable;
 
     medTabbedViewContainers * viewContainerStack;
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
@@ -96,6 +98,9 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->layerListWidget = NULL;
 
     d->temporaryPoolForInteractors = new medParameterPool(this);
+
+    this->setUserLayerClosable(true);
+    this->setUserLayerPoolable(true);
 }
 
 medAbstractWorkspace::~medAbstractWorkspace(void)
@@ -243,7 +248,6 @@ void medAbstractWorkspace::updateLayersToolBox()
                 item->setFlags(Qt::NoItemFlags);
                 d->layerListWidget->addItem(item);
             }
-            int firstLayerIndex = d->layerListWidget->count();
 
             for(unsigned int layer = 0; layer < layeredView->layersCount(); ++layer)
             {
@@ -272,6 +276,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 thumbnailButton->setCheckable(true);
                 thumbnailButton->setChecked(true);
                 thumbnailButton->setFlat(true);
+                connect(thumbnailButton, SIGNAL(clicked(bool)), this, SLOT(setLayerVisibility(bool)));
 
                 QFont myFont;
                 QFontMetrics fm(myFont);
@@ -280,47 +285,52 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QLabel *layerName = new QLabel("<font color='Black'>"+text+"</font>", layerWidget);
                 layerName->setToolTip(name);
 
-                QComboBox *poolSelector = new QComboBox;
-                poolSelector->setProperty("row", d->layerListWidget->count());
-                poolSelector->addItem("");
-                poolSelector->addItem(createIcon("orange"), "4", "orange");
-                poolSelector->addItem(createIcon("#0080C0"), "5", "#0080C0");
-                poolSelector->addItem(createIcon("yellow"), "6", "yellow");
-
-                QString pool = d->layersPool.key(QPair<medAbstractView*, int>(layeredView, layer));
-                poolSelector->setCurrentIndex(poolSelector->findText(pool));
-
-                QString tooltip = QString(tr("Link Layer properties( "));
-                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
-                    foreach(medAbstractParameter* param, interactor->parameters())
-                      tooltip += param->name() + ", ";
-                tooltip += ")";
-
-                poolSelector->setToolTip(tooltip);
-                d->poolSelectors.insert(d->layerListWidget->count(), poolSelector);
-
-                connect(poolSelector, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateParameterPool(QString)));
-
-                QPushButton *removeButton = new QPushButton;
-                removeButton->setProperty("row", d->layerListWidget->count());
-                removeButton->setIcon(QIcon(":/icons/cross.svg"));
-                removeButton->setIconSize(QSize(15,15));
-                removeButton->setFixedSize(20,20);
-                //TODO - get possible to remove layer 0 - RDE
-                if(layer == 0 && layeredView->layersCount() > 1)
-                    removeButton->setDisabled(true);
-
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
                 layout->addStretch();
                 foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
                     layout->addWidget(interactor->layerWidget());
 
-                layout->addWidget(poolSelector);
-                layout->addWidget(removeButton);
+                if(d->userLayerPoolable)
+                {
+                    QComboBox *poolSelector = new QComboBox;
+                    poolSelector->setProperty("row", d->layerListWidget->count());
+                    poolSelector->addItem("");
+                    poolSelector->addItem(createIcon("orange"), "4", "orange");
+                    poolSelector->addItem(createIcon("#0080C0"), "5", "#0080C0");
+                    poolSelector->addItem(createIcon("yellow"), "6", "yellow");
 
-                connect(thumbnailButton, SIGNAL(clicked(bool)), this, SLOT(setLayerVisibility(bool)));
-                connect(removeButton, SIGNAL(clicked()), this, SLOT(removeLayer()));
+                    QString pool = d->layersPool.key(QPair<medAbstractView*, int>(layeredView, layer));
+                    poolSelector->setCurrentIndex(poolSelector->findText(pool));
+
+                    QString tooltip = QString(tr("Link Layer properties( "));
+                    foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
+                        foreach(medAbstractParameter* param, interactor->parameters())
+                          tooltip += param->name() + ", ";
+                    tooltip += ")";
+
+                    poolSelector->setToolTip(tooltip);
+                    d->poolSelectors.insert(d->layerListWidget->count(), poolSelector);
+
+                    connect(poolSelector, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateParameterPool(QString)));
+                    layout->addWidget(poolSelector);
+                }
+
+                if(d->userLayerClosable)
+                {
+                    QPushButton *removeButton = new QPushButton;
+                    removeButton->setProperty("row", d->layerListWidget->count());
+                    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+                    removeButton->setIconSize(QSize(15,15));
+                    removeButton->setFixedSize(20,20);
+                    //TODO - get possible to remove layer 0 - RDE
+                    if(layer == 0 && layeredView->layersCount() > 1)
+                        removeButton->setDisabled(true);
+
+                    layout->addWidget(removeButton);
+                    connect(removeButton, SIGNAL(clicked()), this, SLOT(removeLayer()));
+
+                }
 
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
                 layerWidget->resize(d->selectionToolBox->width(), 25);
@@ -575,4 +585,25 @@ void medAbstractWorkspace::open(const medDataIndex &index)
         container->addData(medDataManager::instance()->data(index));
 }
 
+void medAbstractWorkspace::setUserLayerPoolable(bool poolable)
+{
+    d->userLayerPoolable = poolable;
+    this->updateLayersToolBox();
 
+}
+
+void medAbstractWorkspace::setUserLayerClosable(bool Closable)
+{
+    d->userLayerClosable = Closable;
+    this->updateLayersToolBox();
+}
+
+bool medAbstractWorkspace::isUserLayerPoolable() const
+{
+    return d->userLayerPoolable;
+}
+
+bool medAbstractWorkspace::isUserLayerClosable() const
+{
+    return d->userLayerClosable;
+}

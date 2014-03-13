@@ -59,6 +59,12 @@ public:
     virtual void setupViewContainerStack()=0;
     medTabbedViewContainers * stackedViewContainers() const;
 
+    void setUserLayerPoolable(bool poolable);
+    void setUserLayerClosable(bool Closable);
+    bool isUserLayerPoolable() const;
+    bool isUserLayerClosable() const;
+
+
     void setName(QString &name);
     QString& name() const;
 

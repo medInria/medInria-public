@@ -61,7 +61,8 @@ void undoRedoRegistration::setInput(medAbstractData *data, int channel)
     registrationFactory::instance()->reset();
 }
 
-void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * process){
+void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * process)
+{
     typedef itk::Image< float, 3 > RegImageType;
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     if (m_factory->GetFixedImage()!=NULL && m_factory->GetMovingImage()!=NULL){

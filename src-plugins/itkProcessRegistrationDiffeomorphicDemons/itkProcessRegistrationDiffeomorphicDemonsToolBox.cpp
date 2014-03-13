@@ -165,7 +165,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 
     if(!this->parentToolBox())
         return;
-    dtkSmartPointer<dtkAbstractProcess> process;
+    medAbstractProcess *process;
 
     if (this->parentToolBox()->process() && (this->parentToolBox()->process()->identifier() == "itkProcessRegistrationDiffeomorphicDemons"))
     {
@@ -173,7 +173,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     }
     else
     {
-        process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons");
+        process = dynamic_cast<medAbstractProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
         this->parentToolBox()->setProcess(process);
     }
 
@@ -186,7 +186,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     // Many choices here
 
     itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process.data());
+            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
@@ -210,19 +210,8 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
         return;
     }
 
-    // process->setMyWonderfullParameter(fronTheGui);
-    // process->setMyWonderfullParameter(fronTheGui);
-
-    // or ...
-
-    // itkProcessRegistrationDiffeomorphicDemons *process = new itkProcessRegistrationDiffeomorphicDemons;
-    // process->setMyWonderfullParameter(fronTheGui);
-    // process->setMyWonderfullParameter(fronTheGui);
-
-    // ----
-
-    process->setInput(fixedData,  0);
-    process->setInput(movingData, 1);
+    process_Registration->setFixedInput(fixedData);
+    process_Registration->setMovingInput(movingData);
 
     medRunnableProcess *runProcess = new medRunnableProcess;
 

@@ -20,6 +20,7 @@
 
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
+class medAbstractData;
 
 class medRegistrationWorkspace : public medAbstractWorkspace
 {
@@ -38,8 +39,10 @@ public slots:
     void patientChanged(int patientId);
 
 protected slots:
-    void updateFixedData();
-    void updateMovingData();
+    void updateFromFixedContainer();
+    void updateFromMovingContainer();
+    void updateUserLayerClosable(int tabIndex);
+    void updateFromRegistrationSuccess(medAbstractData *output);
 
 private:
     medRegistrationWorkspacePrivate *d;

@@ -28,6 +28,7 @@
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 #include <medAbstractImageView.h>
+#include <medAbstractRegistrationProcess.h>
 
 #include <medAbstractImageData.h>
 #include <medRunnableProcess.h>
@@ -52,8 +53,8 @@ public:
     medAbstractData *fixedData;
     medAbstractData *movingData;
     
-    dtkSmartPointer<dtkAbstractProcess> process;
-    dtkSmartPointer<dtkAbstractProcess> undoRedoProcess;
+    medAbstractRegistrationProcess *process;
+    medAbstractRegistrationProcess *undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
     medRegistrationAbstractToolBox * currentToolBox;
@@ -163,155 +164,6 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
     return d->movingData;
 }
 
-/** 
- * Sets up the fixedView and the layer 0 of the fuseView.
- *
- * @param index The index that was imported.
- */
-void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& index)
-{
-
-//    if(!d->fuseView)
-//    {
-//        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView");
-//        setFuseView(newView);
-//        d->fuseView->setProperty("Closable","false");
-//        emit newFuseView( d->fuseView);
-//    }
-
-//    if (!index.isValid())
-//        return;
-
-//    d->fixedData = medDataManager::instance()->data(index);
-
-//    if (!d->fixedData)
-//        return;
-
-//    d->fixedView = dynamic_cast<medAbstractImageView*>
-//                   (medViewManager::instance()->views(index).first());
-
-//    if(!d->fixedView) {
-//        qDebug() << "Unable to retrieve fixed view";
-//	return;
-//    }
-
-//    if (d->fuseView)
-//    {
-//        d->fuseView->blockSignals(true);
-
-////        d->fuseView->show();
-//        d->fuseView->removeLayer(1);
-//        d->fuseView->removeLayer(0);
-
-//        if (d->movingView && d->fuseView->layersCount()==1)
-//        {
-
-//            //only the moving view has been set: shift it to layer 1
-//            d->fuseView->addLayer(d->fixedData);
-//            d->fuseView->addLayer(d->movingData);
-//            if(d->undoRedoProcess)
-//            {
-//                d->undoRedoProcess->setInput(d->fixedData,  0);
-//                d->undoRedoProcess->setInput(d->movingData, 1);
-//            }
-//        }
-//        else
-//        {
-//            //either both views are set, or only the fixed view
-//            d->fuseView->addLayer(d->fixedData);
-//        }
-////        d->fuseView->reset();
-//        this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
-//        this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
-//        d->fuseView->blockSignals(false);
-//    }
-//    connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-//    connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-//    if (!d->movingView)
-//    {
-//        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-//        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-//    }
-
-}
-
-/** 
- * Sets up the movingView and the layer 1 of the fuseView.
- *
- * @param index The index that was imported.
- */
-
-
-void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& index)
-{
-
-//    if(!d->fuseView)
-//    {
-//        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView");
-//        setFuseView(newView);
-//        d->fuseView->setProperty("Closable","false");
-//        emit newFuseView( d->fuseView);
-//    }
-
-//    if (!index.isValid())
-//        return;
-
-//    d->movingData = medDataManager::instance()->data(index);
-
-//    if (!d->movingData)
-//        return;
-
-//    d->movingView = dynamic_cast<medAbstractImageView*>
-//                    (medViewManager::instance()->views
-//                     (index).first());
-
-//    if(!d->movingView)
-//    {
-//        qDebug() << "Unable to retrieve moving view";
-//        return;
-//    }
-
-//    if (d->fixedView) {
-////        d->movingView->update();
-//    }
-
-//    d->fuseView->blockSignals(true);
-
-////    d->fuseView->show();
-//    d->fuseView->removeLayer(1);
-//    d->fuseView->removeLayer(0);
-
-//    if (d->fixedData)
-//    {
-//        //already one layer present
-//        d->fuseView->addLayer(d->fixedData);
-//        d->fuseView->addLayer(d->movingData);
-//        if(d->undoRedoProcess)
-//        {
-//            d->undoRedoProcess->setInput(d->fixedData,  0);
-//            d->undoRedoProcess->setInput(d->movingData, 1);
-//        }
-//    }
-//    else
-//    {
-//        //only the moving view is set
-//        d->fuseView->addLayer(d->movingData);
-//    }
-////    d->fuseView->reset();
-////    d->fuseView->update();
-//    this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
-//    this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
-//    d->fuseView->blockSignals(false);
-
-    
-//    connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-//    connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-//    if (!d->fixedView)
-//    {
-//        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-//        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-//    }
-}
 
 /** 
  * Sets up the toolbox chosen and remove the old one.
@@ -368,7 +220,7 @@ void medRegistrationSelectorToolBox::clear(void)
 }
 
 //! Gets the process.
-dtkAbstractProcess * medRegistrationSelectorToolBox::process(void)
+medAbstractProcess * medRegistrationSelectorToolBox::process(void)
 {
     return d->process;
 }
@@ -378,17 +230,17 @@ dtkAbstractProcess * medRegistrationSelectorToolBox::process(void)
  *
  * @param proc The new process.
  */
-void medRegistrationSelectorToolBox::setProcess(dtkAbstractProcess* proc)
+void medRegistrationSelectorToolBox::setProcess(medAbstractProcess* proc)
 {
     d->process = proc;
 }
 
-dtkAbstractProcess * medRegistrationSelectorToolBox::undoRedoProcess()
+medAbstractProcess * medRegistrationSelectorToolBox::undoRedoProcess()
 {
     return d->undoRedoProcess;
 }
 
-void medRegistrationSelectorToolBox::setUndoRedoProcess(dtkAbstractProcess *proc)
+void medRegistrationSelectorToolBox::setUndoRedoProcess(medAbstractProcess *proc)
 {
     d->undoRedoProcess = proc;
 }
@@ -498,7 +350,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
 {   
     dtkSmartPointer<medAbstractData> output(NULL); //initialisation : UGLY but necessary
     
-    if (type==algorithm)
+    if (type == algorithm)
         if (d->process)
             output = dynamic_cast<medAbstractData*>(d->process->output());
         else return;
@@ -519,17 +371,17 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
             algoName = d->nameOfCurrentAlgorithm.remove(" "); // we remove the spaces to reduce the size of the QString as much as possible
         }
         if (newDescription.contains("registered"))
-            newDescription += "-"+ algoName + "\n";
+            newDescription += "-" + algoName + "\n";
         else
             newDescription += " registered\n-" + algoName+ "\n";
     }
-    else if (type==undo)
+    else if (type == undo)
     {
         newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1);
         if (newDescription.count("-") == 0)
             newDescription.remove(" registered\n");
     }
-    else if (type==reset)
+    else if (type == reset)
     {
         if (newDescription.lastIndexOf(" registered") != -1)
             newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
@@ -551,7 +403,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     if (type==algorithm)
         medDataManager::instance()->importNonPersistent(output);
 
-    emit movingDataRegistered();
+    emit movingDataRegistered(output);
 }
 
 void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
@@ -566,72 +418,14 @@ void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobNam
                 enableSelectorToolBox(false);
         }
 }
-
-
-
-
-//void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
-//{
-//    medAbstractView* closedView = dynamic_cast <medAbstractView*> (view);
-
-//    d->fuseView->blockSignals(true);
-
-//    if(closedView == d->movingView)
-//    {
-//        d->fuseView->removeLayer(1);
-//        d->movingData = NULL;
-
-//        if(!d->fixedData)
-//        {
-////            d->fuseView->close();
-//        }
-//    }
-//    else if(closedView == d->fixedView)
-//    {
-//        //Reset the Undo Redo stack if needed.
-//        d->fixedData = NULL;
-
-//        if(d->movingData)
-//        {
-//            d->fuseView->removeLayer(1);
-//            double window, level;
-//            d->movingView->layerWindowLevel(0, window, level);
-//            d->fuseView->removeLayer(0);
-//            d->fuseView->addLayer(d->movingData);
-//            d->fuseView->setLayerWindowLevel(0, window, level);
-//        }
-//        else
-//        {
-//            d->fuseView->removeLayer(0);
-////            d->fuseView->close();
-//        }
-//    }
-
-//    emit viewRemoved();
-//    d->fuseView->blockSignals(false);
-//}
-
-
-//void medRegistrationSelectorToolBox::closeCompareView(int layer)
-//{
-//    if(layer == 0)
-//    {
-////        d->fixedView->close();
-//        d->fixedData = NULL;
-//    }
-//    else if(layer == 1)
-//    {
-////        d->movingView->close();
-//        d->movingData = NULL;
-//    }
-//}
-
 void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
+    d->undoRedoProcess->setFixedInput(d->fixedData);
 }
 
 void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
+    d->undoRedoProcess->setMovingInput(d->movingData);
 }

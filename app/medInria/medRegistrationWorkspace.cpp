@@ -42,6 +42,10 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
     this->addToolBox(d->registrationToolBox);
 
+    this->setUserLayerPoolable(false);
+    connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
+    connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
+
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -50,11 +54,13 @@ medRegistrationWorkspace::~medRegistrationWorkspace(void)
     d = NULL;
 }
 
-QString medRegistrationWorkspace::identifier() const {
+QString medRegistrationWorkspace::identifier() const
+{
     return "Registration";
 }
 
-QString medRegistrationWorkspace::description() const {
+QString medRegistrationWorkspace::description() const
+{
     return tr("Registration");
 }
 
@@ -72,6 +78,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fixedContainer->setMultiLayered(false);
         d->fixedContainer->setUserClosable(false);
         d->fixedContainer->setUserSplittable(false);
+        d->fixedContainer->setUserPoolable(false);
 
         d->movingContainer = d->fixedContainer->splitVertically();
         QLabel *movingLabel = new QLabel(tr("MOVING"));
@@ -80,6 +87,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->movingContainer->setUserClosable(false);
         d->movingContainer->setUserSplittable(false);
         d->movingContainer->setMultiLayered(false);
+        d->movingContainer->setUserPoolable(false);
 
 
         d->fuseContainer = this->stackedViewContainers()->addContainerInTab(tr("Fuse"));
@@ -89,16 +97,22 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fuseContainer->setUserClosable(false);
         d->fuseContainer->setUserSplittable(false);
         d->fuseContainer->setAcceptDrops(false);
+        d->fuseContainer->setUserPoolable(false);
 
         connect(d->fixedContainer, SIGNAL(viewContentChanged()),
-                this, SLOT(updateFixedData()));
+                this, SLOT(updateFromFixedContainer()));
         connect(d->movingContainer,SIGNAL(viewContentChanged()),
-                this, SLOT(updateMovingData()));
+                this, SLOT(updateFromMovingContainer()));
 
         connect(d->fixedContainer,SIGNAL(viewRemoved()),
-                this, SLOT(updateFixedData()));
+                this, SLOT(updateFromFixedContainer()));
         connect(d->movingContainer,SIGNAL(viewRemoved()),
-                this, SLOT(updateMovingData()));
+                this, SLOT(updateFromMovingContainer()));
+
+        connect(d->fuseContainer,SIGNAL(viewContentChanged()),
+                this, SLOT(updateFromFuseContainer()));
+        connect(d->fuseContainer,SIGNAL(viewRemoved()),
+                this, SLOT(updateFromFuseContainer()));
 
         this->stackedViewContainers()->lockTabs();
         this->stackedViewContainers()->setCurrentIndex(0);
@@ -116,7 +130,7 @@ bool medRegistrationWorkspace::isUsable()
     return (tbFactory->toolBoxesFromCategory("registration").size()!=0); 
 }
 
-void medRegistrationWorkspace::updateMovingData()
+void medRegistrationWorkspace::updateFromMovingContainer()
 {
     if(!d->movingContainer->view())
     {
@@ -155,10 +169,19 @@ void medRegistrationWorkspace::updateMovingData()
     d->movingContainer->link("1");
     d->fuseContainer->link("1");
 
+    foreach(medAbstractInteractor *intercator, movingView->interactors(0))
+        foreach (medAbstractParameter *parameter, intercator->parameters())
+            medParameterPoolManager::instance()->linkParameter(parameter, "movingIntercators");
+
+    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
+    foreach(medAbstractInteractor *intercator, fuseView->interactors(fuseView->layer(movingData)))
+        foreach (medAbstractParameter *parameter, intercator->parameters())
+            medParameterPoolManager::instance()->linkParameter(parameter, "movingIntercators");
+
     d->registrationToolBox->setMovingData(movingData);
 }
 
-void medRegistrationWorkspace::updateFixedData()
+void medRegistrationWorkspace::updateFromFixedContainer()
 {
     if(!d->fixedContainer->view())
     {
@@ -196,7 +219,29 @@ void medRegistrationWorkspace::updateFixedData()
     d->fixedContainer->link("1");
     d->fuseContainer->link("1");
 
+    foreach(medAbstractInteractor *intercator, fixedView->interactors(0))
+        foreach (medAbstractParameter *parameter, intercator->parameters())
+            medParameterPoolManager::instance()->linkParameter(parameter, "fixedIntercators");
+
+    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
+    foreach(medAbstractInteractor *intercator, fuseView->interactors(fuseView->layer(fixedData)))
+        foreach (medAbstractParameter *parameter, intercator->parameters())
+            medParameterPoolManager::instance()->linkParameter(parameter, "fixedIntercators");
 
     d->registrationToolBox->setFixedData(fixedData);
 }
 
+
+void medRegistrationWorkspace::updateUserLayerClosable(int tabIndex)
+{
+    if(tabIndex == 0)
+        this->setUserLayerClosable(true);
+    else
+        this->setUserLayerClosable(false);
+}
+
+void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *output)
+{
+    d->movingContainer->setView(NULL);
+    d->movingContainer->addData(output);
+}

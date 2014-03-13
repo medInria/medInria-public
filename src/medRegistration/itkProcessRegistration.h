@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractRegistrationProcess.h>
 #include <medAbstractData.h>
 #include <itkImage.h>
 #include <itkTransform.h>
@@ -42,7 +42,7 @@ class itkProcessRegistrationPrivate;
  *
  *
 */
-class MEDREGISTRATIONFACTORY_EXPORT itkProcessRegistration : public dtkAbstractProcess
+class MEDREGISTRATIONFACTORY_EXPORT itkProcessRegistration : public medAbstractRegistrationProcess
 {
     Q_OBJECT
 
@@ -94,7 +94,8 @@ public:
      * @param data: Pointer to an itkDataImageXXY.
      * @param channel: 0 for the fixed image, 1 for the moving one.
     */
-    virtual void setInput(medAbstractData *data, int channel);
+    virtual void setFixedInput(medAbstractData *data);
+    virtual void setMovingInput(medAbstractData *data);
 
     /**
      * @brief Gets the registered image.
@@ -199,6 +200,8 @@ protected :
      * @return int
     */
     virtual int update(ImageType);
+
+    virtual void setInput(medAbstractData *data, int channel);
 
 private:
     itkProcessRegistrationPrivate *d;

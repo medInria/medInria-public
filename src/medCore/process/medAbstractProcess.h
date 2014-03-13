@@ -36,11 +36,12 @@ public:
 public slots:
     virtual medAbstractData *output(void);
 
+
+    //TODO: to complete hiding dtkAbstractProcess API
 private slots:
     virtual dtkAbstractData *output(int channel){return 0;}
     virtual dtkAbstractData *output(int channel, int frame){return 0;}
 
-    //TODO: to complete hiding dtkAbstractProcess API
 
 private:
     medAbstractProcessPrivate* d;

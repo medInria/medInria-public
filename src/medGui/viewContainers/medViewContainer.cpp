@@ -53,6 +53,7 @@ public:
     bool userSplittable;
     bool userClosable;
     bool multiLayer;
+    bool userPoolable;
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
@@ -174,6 +175,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     this->setUserSplittable(true);
     this->setUserClosable(true);
     this->setMultiLayered(true);
+    this->setUserPoolable(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
 
@@ -719,4 +721,19 @@ void medViewContainer::openFromSystem()
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
+}
+
+void medViewContainer::setUserPoolable(bool poolable)
+{
+    d->userPoolable = poolable;
+    if(d->userPoolable)
+        d->poolSelector->show();
+    else
+        d->poolSelector->hide();
+}
+
+
+bool medViewContainer::isUserPoolable() const
+{
+    return d->userPoolable;
 }

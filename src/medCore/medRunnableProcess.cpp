@@ -67,7 +67,7 @@ void medRunnableProcess::run()
     setAutoDelete(false);
 
     if (d->process) {
-        if (d->process->update()==0)
+        if (d->process->update() == 0)
             emit success (this);
         else
             emit failure (this);
