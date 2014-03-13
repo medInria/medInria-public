@@ -14,6 +14,7 @@
 #include <QtCore>
 #include <QShortcut>
 
+#include <dtkCore/dtkAbstractView.h>
 #include "medTabbedViewContainers.h"
 
 #include "medViewContainer.h"
@@ -80,6 +81,8 @@ void medTabbedViewContainers::deleteContainerShortcutActivated()
 
 void medTabbedViewContainers::deleteContainerClicked(int index)
 {
+    QString tabName = this->tabText(index);
+
     if (this->count() == 1)
     {
         QString name = this->current()->identifier();
@@ -95,7 +98,8 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
         if (newTab != NULL)
         {
             this->blockSignals(true);
-            QString tabName = this->tabText(index);
+            foreach(dtkAbstractView * view, d->containers[tabName]->views())
+                view->close();
             this->removeTab(index);
             this->insertContainer(index,tabName,newTab);
             this->setCurrentIndex(index);
@@ -106,6 +110,8 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
     }
     else
     {
+        foreach(dtkAbstractView * view, d->containers[tabName]->views())
+                view->close();
         d->containers.remove(this->tabText(index));
         this->removeTab(index);
     }
