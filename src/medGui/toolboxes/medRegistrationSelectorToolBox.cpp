@@ -53,8 +53,8 @@ public:
     medAbstractData *fixedData;
     medAbstractData *movingData;
     
-    medAbstractRegistrationProcess *process;
-    medAbstractRegistrationProcess *undoRedoProcess;
+    dtkSmartPointer <medAbstractRegistrationProcess> process;
+    dtkSmartPointer <medAbstractRegistrationProcess> undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
     medRegistrationAbstractToolBox * currentToolBox;
@@ -232,6 +232,9 @@ medAbstractRegistrationProcess * medRegistrationSelectorToolBox::process(void)
  */
 void medRegistrationSelectorToolBox::setProcess(medAbstractRegistrationProcess* proc)
 {
+    if(d->process)
+        delete d->process;
+
     d->process = proc;
 }
 
@@ -348,8 +351,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 
 void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString algoName)
 {   
-    dtkSmartPointer<medAbstractData> output(NULL); //initialisation : UGLY but necessary
-    
+    medAbstractData *output(NULL);
     if (type == algorithm)
         if (d->process)
             output = dynamic_cast<medAbstractData*>(d->process->output());
