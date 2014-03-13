@@ -33,8 +33,10 @@ registrationFactory::~registrationFactory( void ){
     d = NULL;
 }
 
-void registrationFactory::reset(){
-    if (getGeneralTransform()->GetNumberOfTransformsInStack()>0){
+void registrationFactory::reset()
+{
+    if (getGeneralTransform()->GetNumberOfTransformsInStack()>0)
+    {
         d->m_Factory->Reset();
         emit transformationStackReset();
     }

@@ -13,6 +13,8 @@
 
 #include <medRegistrationWorkspace.h>
 
+#include <dtkCore/dtkSignalBlocker.h>
+
 #include <medViewFactory.h>
 #include <medAbstractView.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -108,11 +110,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
                 this, SLOT(updateFromFixedContainer()));
         connect(d->movingContainer,SIGNAL(viewRemoved()),
                 this, SLOT(updateFromMovingContainer()));
-
-        connect(d->fuseContainer,SIGNAL(viewContentChanged()),
-                this, SLOT(updateFromFuseContainer()));
-        connect(d->fuseContainer,SIGNAL(viewRemoved()),
-                this, SLOT(updateFromFuseContainer()));
 
         this->stackedViewContainers()->lockTabs();
         this->stackedViewContainers()->setCurrentIndex(0);
@@ -242,6 +239,20 @@ void medRegistrationWorkspace::updateUserLayerClosable(int tabIndex)
 
 void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *output)
 {
+    //TODO disconnect because we dont want to change input of the undo redo process.
+    //  find a better way to do it ? - RDE
+    d->movingContainer->disconnect(this);
+
     d->movingContainer->setView(NULL);
     d->movingContainer->addData(output);
+
+    d->fuseContainer->setView(NULL);
+    d->fuseContainer->addData(d->registrationToolBox->fixedData());
+    d->fuseContainer->addData(output);
+
+    connect(d->movingContainer,SIGNAL(viewContentChanged()),
+            this, SLOT(updateFromMovingContainer()));
+
+    connect(d->movingContainer,SIGNAL(viewRemoved()),
+            this, SLOT(updateFromMovingContainer()));
 }

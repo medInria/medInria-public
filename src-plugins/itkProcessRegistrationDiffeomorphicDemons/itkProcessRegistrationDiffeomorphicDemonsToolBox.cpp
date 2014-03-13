@@ -165,17 +165,14 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 
     if(!this->parentToolBox())
         return;
-    medAbstractProcess *process;
 
-    if (this->parentToolBox()->process() && (this->parentToolBox()->process()->identifier() == "itkProcessRegistrationDiffeomorphicDemons"))
-    {
-        process = this->parentToolBox()->process();
-    }
-    else
-    {
-        process = dynamic_cast<medAbstractProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
-        this->parentToolBox()->setProcess(process);
-    }
+    medAbstractRegistrationProcess *process;
+    process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+    if(!process)
+        return;
+
+    this->parentToolBox()->setProcess(process);
+
 
     dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
     dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());

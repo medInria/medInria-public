@@ -34,14 +34,19 @@ public:
     virtual ~medAbstractProcess();
 
 public slots:
-    virtual medAbstractData *output(void);
+    virtual medAbstractData *output() = 0;
 
-
-    //TODO: to complete hiding dtkAbstractProcess API
-private slots:
-    virtual dtkAbstractData *output(int channel){return 0;}
-    virtual dtkAbstractData *output(int channel, int frame){return 0;}
-
+private:
+    using dtkAbstractProcess::update;
+    using dtkAbstractProcess::onCanceled;
+    using dtkAbstractProcess::read;
+    using dtkAbstractProcess::write;
+    using dtkAbstractProcess::setParameter;
+    using dtkAbstractProcess::setInput;
+    using dtkAbstractProcess::setData;
+    using dtkAbstractProcess::output;
+    using dtkAbstractProcess::data;
+    using dtkAbstractProcess::channelCount;
 
 private:
     medAbstractProcessPrivate* d;

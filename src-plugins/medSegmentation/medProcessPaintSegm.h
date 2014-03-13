@@ -48,6 +48,7 @@ public:
     enum { ImageChannel = 0, MaskChannel = 1};
 
     //! Override dtkAbstractProcess
+    //TODO nope - RDE
     virtual void setInput(medAbstractData *data, int channel);
     
     virtual  int update();
@@ -59,8 +60,6 @@ protected:
 
 private:
     medProcessPaintSegmPrivate *d;
-    
-    using medAbstractProcess::setInput;
 };
 
 

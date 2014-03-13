@@ -11,7 +11,8 @@
 
 class registrationFactoryPrivate;
 
-class MEDREGISTRATIONFACTORY_EXPORT registrationFactory : public QObject {
+class MEDREGISTRATIONFACTORY_EXPORT registrationFactory : public QObject
+{
 
     Q_OBJECT;
 

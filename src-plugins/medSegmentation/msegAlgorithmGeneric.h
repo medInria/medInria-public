@@ -39,7 +39,8 @@ class Controller;
 
 
 /** Generic segmentation algorithm */
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmGeneric : public medAbstractProcess {
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmGeneric : public medAbstractProcess
+{
     Q_OBJECT
 public:
     //! Interface name should be used by all dtkAbstractProcesses inheriting from this.
@@ -81,8 +82,6 @@ protected:
 
 private:
     AlgorithmGenericPrivate *d;
-
-    using medAbstractProcess::setInput;
 };
 
 

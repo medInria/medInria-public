@@ -17,13 +17,11 @@
 #include <medGuiExport.h>
 #include <medJobItem.h>
 
-class dtkAbstractView;
-class dtkAbstractProcess;
+class medAbstractRegistrationProcess;
 class medAbstractImageView;
 class medAbstractImageData;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
-class medAbstractProcess;
 
 class MEDGUI_EXPORT medRegistrationSelectorToolBox : public medToolBox
 {
@@ -36,11 +34,11 @@ public:
     medAbstractData *fixedData();
     medAbstractData *movingData();
 
-    medAbstractProcess * process();
-    void setProcess(medAbstractProcess *process);
+    medAbstractRegistrationProcess * process();
+    void setProcess(medAbstractRegistrationProcess *process);
 
-    medAbstractProcess * undoRedoProcess();
-    void setUndoRedoProcess(medAbstractProcess *proc);
+    medAbstractRegistrationProcess * undoRedoProcess();
+    void setUndoRedoProcess(medAbstractRegistrationProcess *proc);
 
     QString getNameOfCurrentAlgorithm();
 

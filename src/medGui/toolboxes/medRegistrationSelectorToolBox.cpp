@@ -142,7 +142,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
-    connect(medJobManager::instance(),SIGNAL(jobRegistered(medJobItem*,QString)),this,SLOT(onJobAdded(medJobItem*,QString)));
+//    connect(medJobManager::instance(),SIGNAL(jobRegistered(medJobItem*,QString)),this,SLOT(onJobAdded(medJobItem*,QString)));
 }
 
 medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
@@ -220,7 +220,7 @@ void medRegistrationSelectorToolBox::clear(void)
 }
 
 //! Gets the process.
-medAbstractProcess * medRegistrationSelectorToolBox::process(void)
+medAbstractRegistrationProcess * medRegistrationSelectorToolBox::process(void)
 {
     return d->process;
 }
@@ -230,17 +230,17 @@ medAbstractProcess * medRegistrationSelectorToolBox::process(void)
  *
  * @param proc The new process.
  */
-void medRegistrationSelectorToolBox::setProcess(medAbstractProcess* proc)
+void medRegistrationSelectorToolBox::setProcess(medAbstractRegistrationProcess* proc)
 {
     d->process = proc;
 }
 
-medAbstractProcess * medRegistrationSelectorToolBox::undoRedoProcess()
+medAbstractRegistrationProcess * medRegistrationSelectorToolBox::undoRedoProcess()
 {
     return d->undoRedoProcess;
 }
 
-void medRegistrationSelectorToolBox::setUndoRedoProcess(medAbstractProcess *proc)
+void medRegistrationSelectorToolBox::setUndoRedoProcess(medAbstractRegistrationProcess *proc)
 {
     d->undoRedoProcess = proc;
 }
@@ -403,6 +403,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     if (type==algorithm)
         medDataManager::instance()->importNonPersistent(output);
 
+    d->movingData = output;
     emit movingDataRegistered(output);
 }
 
@@ -421,11 +422,21 @@ void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobNam
 void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
-    d->undoRedoProcess->setFixedInput(d->fixedData);
+
+    if(d->undoRedoProcess)
+    {
+        d->undoRedoProcess->setFixedInput(d->fixedData);
+        d->undoRedoProcess->setMovingInput(d->movingData);
+    }
 }
 
 void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
-    d->undoRedoProcess->setMovingInput(d->movingData);
+
+    if(d->undoRedoProcess)
+    {
+        d->undoRedoProcess->setFixedInput(d->fixedData);
+        d->undoRedoProcess->setMovingInput(d->movingData);
+    }
 }
