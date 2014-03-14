@@ -16,9 +16,9 @@
 #include <medCoreExport.h>
 #include <medAbstractData.h>
 
-class medAbstractDataVertex;
-class medAbstractDataEdge;
-class medAbstractDataMeshPrivate;
+//class medAbstractDataVertex;
+//class medAbstractDataEdge;
+class medAbstractMeshDataPrivate;
 
 class MEDCORE_EXPORT medAbstractMeshData : public medAbstractData
 {
@@ -42,7 +42,7 @@ public:
     
 
 private:
-    medAbstractDataMeshPrivate *d;
+    medAbstractMeshDataPrivate *d;
 };
 
 

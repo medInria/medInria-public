@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medAbstractTypedImageData.h>
+#include <medAbstractTypedDiffusionModelImageData.h>
 
 #include <itkDataTensorImagePluginExport.h>
 
 class itkDataTensorImageFloat3Private;
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstractTypedImageData<3,float>
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstractTypedDiffusionModelImageData<3,float>
 {
     Q_OBJECT
 

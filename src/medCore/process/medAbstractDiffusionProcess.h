@@ -13,14 +13,20 @@
 
 #pragma once
 
-namespace medData
+#include <medCoreExport.h>
+
+#include <medAbstractProcess.h>
+
+class medAbstractData;
+
+class MEDCORE_EXPORT medAbstractDiffusionProcess : public medAbstractProcess
 {
-enum Category
-{
-    MASK,
-    MESH,
-    IMAGE,
-    DIFFUSION_MODEL,
-    FIBERS
+    Q_OBJECT
+
+public:
+    medAbstractDiffusionProcess(medAbstractProcess *parent = NULL);
+    virtual ~medAbstractDiffusionProcess();
+
+    virtual void setInputImage(medAbstractData *data) = 0;
+
 };
-}

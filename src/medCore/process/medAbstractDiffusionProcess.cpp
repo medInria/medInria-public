@@ -11,16 +11,15 @@
 
 =========================================================================*/
 
-#pragma once
+#include <medAbstractDiffusionProcess.h>
 
-namespace medData
+medAbstractDiffusionProcess::medAbstractDiffusionProcess(medAbstractProcess *parent):
+    medAbstractProcess(parent)
 {
-enum Category
+
+}
+
+medAbstractDiffusionProcess::~medAbstractDiffusionProcess()
 {
-    MASK,
-    MESH,
-    IMAGE,
-    DIFFUSION_MODEL,
-    FIBERS
-};
+
 }

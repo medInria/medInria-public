@@ -13,11 +13,12 @@ PURPOSE.
 #include "medDiffusionWorkspace.h"
 
 #include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractDiffusionProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <medAbstractLayeredView.h>
 #include <medAbstractImageData.h>
+#include <medAbstractDiffusionModelImageData.h>
 #include <medDataManager.h>
 
 #include <medViewContainer.h>
@@ -41,7 +42,7 @@ public:
     medDiffusionSelectorToolBox *diffusionScalarMapsToolBox;
     medDiffusionSelectorToolBox *diffusionTractographyToolBox;
 
-    dtkSmartPointer <dtkAbstractProcess> currentProcess;
+    dtkSmartPointer <medAbstractDiffusionProcess> currentProcess;
     bool processRunning;
 };
 
@@ -127,8 +128,8 @@ void medDiffusionWorkspace::setupViewContainerStack()
         d->diffusionContainer->setUserSplittable(false);
         d->diffusionContainer->setMultiLayered(true);
         
-//        connect(singleViewContainer,SIGNAL(viewRemoved(dtkAbstractView *)),this,SLOT(resetToolBoxesInputs(dtkAbstractView *)));
-//        connect(singleViewContainer,SIGNAL(viewAdded(dtkAbstractView *)),this,SLOT(connectCurrentViewSignals(dtkAbstractView *)));
+//        connect(singleViewContainer,SIGNAL(viewRemoved(medAbstractView *)),this,SLOT(resetToolBoxesInputs(medAbstractView *)));
+//        connect(singleViewContainer,SIGNAL(viewAdded(medAbstractView *)),this,SLOT(connectCurrentViewSignals(medAbstractView *)));
 
         connect(this->stackedViewContainers(),SIGNAL(containersSelectedChanged()),this,SLOT(changeCurrentContainer()));
     }
@@ -146,9 +147,9 @@ void medDiffusionWorkspace::runProcess(QString processName, QString category)
     if (!originToolbox)
         return;
 
-    d->currentProcess = dtkAbstractProcessFactory::instance()->create(processName);
+    d->currentProcess = dynamic_cast <medAbstractDiffusionProcess *> (dtkAbstractProcessFactory::instance()->create(processName));
     originToolbox->setProcessParameters(d->currentProcess);
-
+    
     runProcess->setProcess(d->currentProcess);
 
     d->processRunning = true;
@@ -216,30 +217,29 @@ void medDiffusionWorkspace::changeCurrentContainer()
     if (!containersSelectedList.size())
         return;
 
-    qDebug() << "Change current container";
     // This cannot happen while a process is running, container stack is disabled at that point
 
 //    // For security, disconnect current connections
-//    disconnect(d->diffusionContainer,SIGNAL(viewRemoved(dtkAbstractView *)),this,SLOT(resetToolBoxesInputs(dtkAbstractView *)));
-//    disconnect(d->diffusionContainer,SIGNAL(viewAdded(dtkAbstractView *)),this,SLOT(connectCurrentViewSignals(dtkAbstractView *)));
+//    disconnect(d->diffusionContainer,SIGNAL(viewRemoved(medAbstractView *)),this,SLOT(resetToolBoxesInputs(medAbstractView *)));
+//    disconnect(d->diffusionContainer,SIGNAL(viewAdded(medAbstractView *)),this,SLOT(connectCurrentViewSignals(medAbstractView *)));
 //    this->disconnectCurrentViewSignals(d->diffusionContainer->view());
 
     // Now connect new container
     d->diffusionContainer = medViewContainerManager::instance()->container(containersSelectedList.first());
-//    connect(d->diffusionContainer,SIGNAL(viewRemoved(dtkAbstractView *)),this,SLOT(resetToolBoxesInputs(dtkAbstractView *)));
-//    connect(d->diffusionContainer,SIGNAL(viewAdded(dtkAbstractView *)),this,SLOT(connectCurrentViewSignals(dtkAbstractView *)));
+//    connect(d->diffusionContainer,SIGNAL(viewRemoved(medAbstractView *)),this,SLOT(resetToolBoxesInputs(medAbstractView *)));
+//    connect(d->diffusionContainer,SIGNAL(viewAdded(medAbstractView *)),this,SLOT(connectCurrentViewSignals(medAbstractView *)));
 
     d->diffusionEstimationToolBox->clearInput();
     d->diffusionScalarMapsToolBox->clearInput();
     d->diffusionTractographyToolBox->clearInput();
 
     this->resetToolBoxesInputs(d->diffusionContainer->view());
-    //this->connectCurrentViewSignals(d->diffusionContainer->view());
+    this->connectCurrentViewSignals(d->diffusionContainer->view());
 }
 
-void medDiffusionWorkspace::connectCurrentViewSignals(dtkAbstractView *view)
+void medDiffusionWorkspace::connectCurrentViewSignals(medAbstractView *view)
 {
-    dtkSmartPointer <medAbstractLayeredView> medView = dynamic_cast <medAbstractLayeredView *> (view);
+    medAbstractLayeredView *medView = dynamic_cast <medAbstractLayeredView *> (view);
 
     if (!medView)
         return;
@@ -247,23 +247,23 @@ void medDiffusionWorkspace::connectCurrentViewSignals(dtkAbstractView *view)
     unsigned int layersCount = medView->layersCount();
     for (unsigned int i = 0;i < layersCount;++i)
     {
-        this->addToolBoxInput(medView->data(i));
+        this->addToolBoxInput(medView->layerData(i));
     }
 
-    //connect(medView,SIGNAL(dataAdded(dtkAbstractData *)),this,SLOT(addToolBoxInput(dtkAbstractData *)));
+    //connect(medView,SIGNAL(dataAdded(medAbstractData *)),this,SLOT(addToolBoxInput(medAbstractData *)));
 }
 
-void medDiffusionWorkspace::disconnectCurrentViewSignals(dtkAbstractView *view)
+void medDiffusionWorkspace::disconnectCurrentViewSignals(medAbstractView *view)
 {
-    dtkSmartPointer <medAbstractLayeredView> medView = dynamic_cast <medAbstractLayeredView *> (view);
+    medAbstractLayeredView *medView = dynamic_cast <medAbstractLayeredView *> (view);
 
     if (!medView)
         return;
 
-//    disconnect(medView,SIGNAL(dataAdded(dtkAbstractData *)),this,SLOT(addToolBoxInput(dtkAbstractData *)));
+//    disconnect(medView,SIGNAL(dataAdded(medAbstractData *)),this,SLOT(addToolBoxInput(medAbstractData *)));
 }
 
-void medDiffusionWorkspace::addToolBoxInput(dtkAbstractData *data)
+void medDiffusionWorkspace::addToolBoxInput(medAbstractData *data)
 {
     dtkSmartPointer <medAbstractImageData> medData = dynamic_cast <medAbstractImageData *> (data);
     if (!medData)
@@ -272,15 +272,14 @@ void medDiffusionWorkspace::addToolBoxInput(dtkAbstractData *data)
     if (medData->Dimension() == 4)
         d->diffusionEstimationToolBox->setInputImage(medData);
 
-    if ((medData->identifier().startsWith("itkDataTensorImage"))||
-        (medData->identifier().startsWith("itkDataSHImage")))
+    if (medData->dataCategory() == medData::DIFFUSION_MODEL)
     {
         d->diffusionScalarMapsToolBox->setInputImage(medData);
         d->diffusionTractographyToolBox->setInputImage(medData);
     }
 }
 
-void medDiffusionWorkspace::resetToolBoxesInputs(dtkAbstractView *view)
+void medDiffusionWorkspace::resetToolBoxesInputs(medAbstractView *view)
 {
     DTK_UNUSED(view);
 

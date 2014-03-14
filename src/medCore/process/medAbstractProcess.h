@@ -35,9 +35,9 @@ public:
 
 public slots:
     virtual medAbstractData *output() = 0;
+    virtual int update () = 0;
 
 private:
-    using dtkAbstractProcess::update;
     using dtkAbstractProcess::onCanceled;
     using dtkAbstractProcess::read;
     using dtkAbstractProcess::write;

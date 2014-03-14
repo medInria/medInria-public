@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medAbstractData.h>
+#include <medAbstractFibersData.h>
 
 #include <v3dDataPluginExport.h>
 
 class v3dDataFibersPrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataFibers : public medAbstractData
+class V3DDATAPLUGIN_EXPORT v3dDataFibers : public medAbstractFibersData
 {
     Q_OBJECT
 

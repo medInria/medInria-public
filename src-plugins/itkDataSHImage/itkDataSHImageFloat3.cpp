@@ -39,7 +39,7 @@ public:
 // itkDataSHImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataSHImageFloat3::itkDataSHImageFloat3(): medAbstractTypedImageData<3,float>(), d(new itkDataSHImageFloat3Private)
+itkDataSHImageFloat3::itkDataSHImageFloat3(): medAbstractTypedDiffusionModelImageData<3,float>(), d(new itkDataSHImageFloat3Private)
 {
     d->shs = 0;
 }

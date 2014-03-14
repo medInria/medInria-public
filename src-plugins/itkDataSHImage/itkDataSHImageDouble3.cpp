@@ -38,7 +38,7 @@ public:
 // itkDataSHImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataSHImageDouble3::itkDataSHImageDouble3(): medAbstractTypedImageData<3,double>(), d(new itkDataSHImageDouble3Private)
+itkDataSHImageDouble3::itkDataSHImageDouble3(): medAbstractTypedDiffusionModelImageData<3,double>(), d(new itkDataSHImageDouble3Private)
 {
     d->shs = 0;
 }

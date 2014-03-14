@@ -15,8 +15,7 @@ PURPOSE.
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class dtkAbstractProcess;
-class dtkAbstractView;
+class medAbstractDiffusionProcess;
 class medAbstractImageData;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
@@ -38,7 +37,7 @@ public:
     void setInputImage(medAbstractImageData *data);
     void clearInput();
 
-    void setProcessParameters(dtkAbstractProcess *process);
+    void setProcessParameters(medAbstractDiffusionProcess *process);
 
 public slots:
     void clear();

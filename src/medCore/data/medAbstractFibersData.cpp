@@ -11,39 +11,39 @@
 
 =========================================================================*/
 
-#include <medAbstractMeshData.h>
+#include <medAbstractFibersData.h>
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// medAbstractMeshDataPrivate
+// medAbstractFibersDataPrivate
 // /////////////////////////////////////////////////////////////////
 
-class medAbstractMeshDataPrivate
+class medAbstractFibersDataPrivate
 {
 public:
 };
 
 // /////////////////////////////////////////////////////////////////
-// medAbstractMeshData
+// medAbstractFibersData
 // /////////////////////////////////////////////////////////////////
 
-medAbstractMeshData::medAbstractMeshData(void) : medAbstractData(), d(new medAbstractMeshDataPrivate)
+medAbstractFibersData::medAbstractFibersData(void) : medAbstractData(), d(new medAbstractFibersDataPrivate)
 {
-    this->setDataCategory(medData::MESH);
+    this->setDataCategory(medData::FIBERS);
 }
 
-medAbstractMeshData::medAbstractMeshData(const  medAbstractMeshData& other): medAbstractData(other), d(new medAbstractMeshDataPrivate)
+medAbstractFibersData::medAbstractFibersData(const  medAbstractFibersData& other): medAbstractData(other), d(new medAbstractFibersDataPrivate)
 {
-    this->setDataCategory(medData::MESH);
+    this->setDataCategory(medData::FIBERS);
 }
 
-medAbstractMeshData::~medAbstractMeshData(void)
+medAbstractFibersData::~medAbstractFibersData(void)
 {
     delete d;
     d = NULL;
 }
 
-void *medAbstractMeshData::mesh(void)
+void *medAbstractFibersData::fibers(void)
 {
     return this->data();
 }

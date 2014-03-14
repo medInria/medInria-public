@@ -16,14 +16,10 @@ PURPOSE.
 #include <QtCore>
 
 #include <medAbstractWorkspace.h>
-
-#include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkAbstractProcess.h>
 #include <medDiffusionSelectorToolBox.h>
 
-class dtkAbstractView;
 class medAbstractData;
-class medTabbedViewContainers;
+class medAbstractView;
 class medDiffusionWorkspacePrivate;
 
 class medDiffusionWorkspace : public medAbstractWorkspace
@@ -47,11 +43,11 @@ public slots:
     void resetRunningFlags();
     
     //Handle new data in central view, connect them to toolboxes
-    void resetToolBoxesInputs(dtkAbstractView *view);
-    void addToolBoxInput(dtkAbstractData *data);
-    
-    void connectCurrentViewSignals(dtkAbstractView *view);
-    void disconnectCurrentViewSignals(dtkAbstractView *view);
+    void resetToolBoxesInputs(medAbstractView *view);
+    void addToolBoxInput(medAbstractData *data);
+
+    void connectCurrentViewSignals(medAbstractView *view);
+    void disconnectCurrentViewSignals(medAbstractView *view);
 
     void changeCurrentContainer();
 

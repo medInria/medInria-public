@@ -82,6 +82,8 @@ protected:
 
 private:
     AlgorithmGenericPrivate *d;
+    
+    using dtkAbstractProcess::setInput;
 };
 
 

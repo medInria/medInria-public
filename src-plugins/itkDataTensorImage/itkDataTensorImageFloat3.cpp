@@ -42,7 +42,7 @@ public:
 // itkDataTensorImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImageFloat3::itkDataTensorImageFloat3() : medAbstractTypedImageData<3,float>(), d(new itkDataTensorImageFloat3Private)
+itkDataTensorImageFloat3::itkDataTensorImageFloat3() : medAbstractTypedDiffusionModelImageData<3,float>(), d(new itkDataTensorImageFloat3Private)
 {
     d->tensors = 0;
 }

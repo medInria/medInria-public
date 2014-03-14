@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medAbstractTypedImageData.h>
+#include <medAbstractTypedDiffusionModelImageData.h>
 
 #include <itkDataSHImagePluginExport.h>
 
 class itkDataSHImageFloat3Private;
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageFloat3 : public medAbstractTypedImageData<3,float>
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageFloat3 : public medAbstractTypedDiffusionModelImageData<3,float>
 {
     Q_OBJECT
 

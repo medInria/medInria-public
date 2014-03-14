@@ -10,8 +10,8 @@ PURPOSE.
 
 =========================================================================*/
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractDiffusionProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <medAbstractImageData.h>
@@ -324,13 +324,13 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
         fileName = gradientFileDialog->selectedFiles().first();
         gradientsInImageCoordinates = gradientsInImageCoordinatesCheckBox->isChecked();
     }
-
+    
     delete gradientFileDialog;
 
     if (fileName.isEmpty())
         return;
 
-    dtkAbstractData *gradients = dtkAbstractDataFactory::instance()->create ("itkDataDiffusionGradientList");
+    medAbstractData *gradients = medAbstractDataFactory::instance()->create ("itkDataDiffusionGradientList");
     if (!gradients)
         return;
 
@@ -433,9 +433,9 @@ void medDiffusionSelectorToolBox::createProcess()
     emit processRequested(processName, processText);
 }
 
-void medDiffusionSelectorToolBox::setProcessParameters(dtkAbstractProcess *process)
+void medDiffusionSelectorToolBox::setProcessParameters(medAbstractDiffusionProcess *process)
 {
-    process->setInput(d->input);
+    process->setInputImage(d->input);
     d->currentToolBox->setProcessParameters(process);
 }
 

@@ -108,7 +108,6 @@ public:
      * The scale (number of pixels on screen per mm)
      */
     virtual qreal scale() = 0;
-    
 
 public slots:
     void setOrientation(medImageView::Orientation orientation);
