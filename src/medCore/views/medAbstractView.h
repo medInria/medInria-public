@@ -20,7 +20,6 @@
 
 class medAbstractViewPrivate;
 
-class medAbstractViewCoordinates;
 class medViewBackend;
 class medAbstractData;
 class medAbstractViewNavigator;

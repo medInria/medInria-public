@@ -34,6 +34,9 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
 
 ## #############################################################################
 ## List Sources
@@ -41,6 +44,7 @@ include(${ITK_USE_FILE})
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  annotations
   )
 
 set(${PROJECT_NAME}_QRC medSegmentation.qrc)
@@ -96,6 +100,10 @@ target_link_libraries(${PROJECT_NAME}
   ITKCommon  
   medCore
   medGui
+  vtkCommon
+  vtkRendering
+  vtkVolumeRendering
+  QVTK
   )
 
 

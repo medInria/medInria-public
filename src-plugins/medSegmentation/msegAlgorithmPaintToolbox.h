@@ -101,6 +101,8 @@ protected:
 
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
 
+    void setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData);
+
     void updateFromGuiItems();
 
     void showButtons( bool value);

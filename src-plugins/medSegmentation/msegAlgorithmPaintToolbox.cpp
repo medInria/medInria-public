@@ -23,6 +23,7 @@
 #include <medSegmentationSelectorToolBox.h>
 #include <medViewManager.h>
 #include <medPluginManager.h>
+#include <medDataManager.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -83,8 +84,17 @@ public:
         if(!imageView)
             return false;
 
-        medAbstractData * viewData = imageView->layerData(imageView->currentLayer());
-        m_cb->setData( viewData );
+        // let's take the first non medImageMaskAnnotationData as the reference data
+        // TODO: to improve...
+        foreach(medAbstractData * data, imageView->data())
+        {
+            medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
+            if(!existingMaskAnnData)
+            {
+                m_cb->setData( data );
+                break;
+            }
+        }
 
         if (imageView->is2D())
         {
@@ -264,8 +274,8 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     layout->addLayout( labelSelectionLayout );
 
-    m_applyButton = new QPushButton( tr("Create Database Item") , displayWidget);
-    m_applyButton->setToolTip(tr("Save result to the Temporary Database"));
+    m_applyButton = new QPushButton( tr("Save") , displayWidget);
+    m_applyButton->setToolTip(tr("Save result to the Database"));
 
     m_clearMaskButton = new QPushButton( tr("Clear Mask") , displayWidget);
     m_clearMaskButton->setToolTip(tr("Resets the mask."));
@@ -296,40 +306,40 @@ AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
 {
 }
 
-    void AlgorithmPaintToolbox::setWandSliderValue(double val)
+void AlgorithmPaintToolbox::setWandSliderValue(double val)
+{
+    double perc = 4000.0 * val / (m_MaxValueImage - m_MinValueImage);
+
+    unsigned int percRound = (unsigned int)floor(perc);
+
+    m_wandThresholdSizeSlider->blockSignals(true);
+    m_wandThresholdSizeSlider->setValue(percRound);
+    m_wandThresholdSizeSlider->blockSignals(false);
+}
+
+void AlgorithmPaintToolbox::setWandSpinBoxValue(int val)
+{
+    double realValue = val * (m_MaxValueImage - m_MinValueImage) / 4000.0;
+
+    // Determine number of decimals necessary
+
+    double testValue = (m_MaxValueImage - m_MinValueImage) / 4.0;
+
+    unsigned int powTestValue = 1;
+    while (testValue < 1)
     {
-        double perc = 4000.0 * val / (m_MaxValueImage - m_MinValueImage);
-
-        unsigned int percRound = (unsigned int)floor(perc);
-
-        m_wandThresholdSizeSlider->blockSignals(true);
-        m_wandThresholdSizeSlider->setValue(percRound);
-        m_wandThresholdSizeSlider->blockSignals(false);
+        ++powTestValue;
+        testValue *= 10;
     }
 
-    void AlgorithmPaintToolbox::setWandSpinBoxValue(int val)
-    {
-        double realValue = val * (m_MaxValueImage - m_MinValueImage) / 4000.0;
+    if (powTestValue < 2)
+        powTestValue = 2;
 
-        // Determine number of decimals necessary
-
-        double testValue = (m_MaxValueImage - m_MinValueImage) / 4.0;
-
-        unsigned int powTestValue = 1;
-        while (testValue < 1)
-        {
-            ++powTestValue;
-            testValue *= 10;
-        }
-
-        if (powTestValue < 2)
-            powTestValue = 2;
-
-        m_wandThresholdSizeSpinBox->setDecimals(powTestValue);
-        m_wandThresholdSizeSpinBox->blockSignals(true);
-        m_wandThresholdSizeSpinBox->setValue(realValue);
-        m_wandThresholdSizeSpinBox->blockSignals(false);
-    }
+    m_wandThresholdSizeSpinBox->setDecimals(powTestValue);
+    m_wandThresholdSizeSpinBox->blockSignals(true);
+    m_wandThresholdSizeSpinBox->setValue(realValue);
+    m_wandThresholdSizeSpinBox->blockSignals(false);
+}
 
 void AlgorithmPaintToolbox::onStrokePressed()
 {
@@ -371,6 +381,8 @@ void AlgorithmPaintToolbox::onApplyButtonPressed()
     alg->setInput( this->m_maskData, medProcessPaintSegm::MaskChannel );
     alg->setInput( this->m_imageData, medProcessPaintSegm::ImageChannel );
 
+    setOutputMetadata(m_imageData, m_maskData);
+    medDataManager::instance()->import(m_maskData);
 //    this->segmentationToolBox()->run( alg );
 }
 
@@ -463,10 +475,6 @@ void AlgorithmPaintToolbox::setData( medAbstractData *medData )
                 dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create " << medProcessPaintSegm::MaskImageTypeIdentifier();
                 return;
             }
-
-        //    if ( this->m_maskAnnotationData ) {
-        //        m_maskAnnotationData->parentData()->removeAttachedData(m_maskAnnotationData);
-        //    }
 
             m_maskAnnotationData = new medImageMaskAnnotationData;
             this->initializeMaskData( m_imageData, m_maskData );
@@ -915,8 +923,16 @@ void AlgorithmPaintToolbox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     m_itkMask->GetPixelContainer()->Modified();
     m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
 
+    if(!view->contains(m_maskAnnotationData))
+    {
+        view->addLayer(m_maskAnnotationData);
+        setOutputMetadata(m_imageData, m_maskData);
+        medDataManager::instance()->importNonPersistent(m_maskData);
+    }
+
     m_maskAnnotationData->invokeModified();
-    qDebug() << "updateStroke !!";
+
+    //qDebug() << "updateStroke !!";
 
 }
 
@@ -996,6 +1012,25 @@ dtkPlugin* AlgorithmPaintToolbox::plugin()
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin ( "segmentationPlugin" );
     return plugin;
+}
+
+void AlgorithmPaintToolbox::setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData)
+{
+    Q_ASSERT(outputData && inputData);
+
+    QStringList metaDataToCopy;
+    metaDataToCopy
+        << medMetaDataKeys::PatientName.key()
+        << medMetaDataKeys::StudyDescription.key();
+
+    foreach( const QString & key, metaDataToCopy ) {
+        outputData->setMetaData(key, inputData->metadatas(key));
+    }
+
+    QString seriesDesc;
+    seriesDesc = tr("Segmented from ") + medMetaDataKeys::SeriesDescription.getFirstValue( inputData );
+
+    medMetaDataKeys::SeriesDescription.set(outputData,seriesDesc);
 }
 
 

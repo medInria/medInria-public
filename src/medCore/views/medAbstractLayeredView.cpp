@@ -23,6 +23,7 @@ public:
 medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
 {
     d->primaryNavigator = NULL;
+    d->currentLayer = 0;
 }
 
 medAbstractLayeredView::~medAbstractLayeredView()

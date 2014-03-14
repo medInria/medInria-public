@@ -13,10 +13,6 @@
 
 #include <medSegmentationSelectorToolBox.h>
 
-
-
-
-
 #include <medToolBoxFactory.h>
 #include <medToolBoxTab.h>
 #include <medSegmentationAbstractToolBox.h>
