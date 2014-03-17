@@ -213,7 +213,8 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
     }
 
     d->layersDataList.insert(layer, data);
-    if(!this->initialiseInteractors(data));
+    bool initSuccess = this->initialiseInteractors(data);
+    if(!initSuccess)
     {
         d->layersDataList.removeOne(data);
         return;
