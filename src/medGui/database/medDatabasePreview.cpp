@@ -12,7 +12,11 @@
 #include <medDatabaseThumbnailHelper.h>
 
 
-static QPixmap getOrCreateThumbnail(const medDataIndex & index) {
+static QPixmap getOrCreateThumbnail(const medDataIndex & index)
+{
+    if(!index.isValidForSeries())
+        return QPixmap(":/medCore/pixmaps/default_thumbnail.png");
+
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
 
