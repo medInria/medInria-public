@@ -212,10 +212,12 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
         return;
     }
 
-    if(!this->initialiseInteractors(data));
-        return;
-
     d->layersDataList.insert(layer, data);
+    if(!this->initialiseInteractors(data));
+    {
+        d->layersDataList.removeOne(data);
+        return;
+    }
 
     this->setCurrentLayer(layer);
     if(this->layersCount() == 1)
