@@ -45,6 +45,7 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
 {
     d->filteringToolBox = new medFilteringSelectorToolBox(parent);
     connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
+    connect(d->filteringToolBox, SIGNAL(destroyed()), this, SLOT(removeInternSelectorToolBox()));
     this->addToolBox(d->filteringToolBox);
 }
 
@@ -86,6 +87,9 @@ void medFilteringWorkspace::setupViewContainerStack()
 
 void medFilteringWorkspace::changeToolBoxInput()
 {
+    if(!d->filteringToolBox)
+        return;
+
     if(!d->inputContainer->view())
     {
         d->filteringToolBox->clear();
@@ -104,6 +108,9 @@ void medFilteringWorkspace::changeToolBoxInput()
 
 void medFilteringWorkspace::onProcessSuccess()
 {
+    if(!d->filteringToolBox)
+        return;
+
     d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
     if ( !d->filterOutput )
         return;
@@ -163,4 +170,10 @@ void medFilteringWorkspace::open(const medDataIndex &index)
         return;
 
     d->inputContainer->addData(medDataManager::instance()->data(index));
+}
+
+
+void medFilteringWorkspace::removeInternSelectorToolBox()
+{
+    d->filteringToolBox = NULL;
 }

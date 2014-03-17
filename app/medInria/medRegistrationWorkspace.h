@@ -35,14 +35,14 @@ public:
     static bool isUsable();
     void setupViewContainerStack ();
 
-public slots:
-    void patientChanged(int patientId);
-
 protected slots:
     void updateFromFixedContainer();
     void updateFromMovingContainer();
     void updateUserLayerClosable(int tabIndex);
     void updateFromRegistrationSuccess(medAbstractData *output);
+
+private slots:
+    void removeSlectorInternToolBox();
 
 private:
     medRegistrationWorkspacePrivate *d;

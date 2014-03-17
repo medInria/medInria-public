@@ -47,6 +47,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     this->setUserLayerPoolable(false);
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
     connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
+    connect(d->registrationToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));
 
 }
 
@@ -116,11 +117,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
     }
 }
 
-void medRegistrationWorkspace::patientChanged(int patientId)
-{
-    d->registrationToolBox->clear();
-}
-
 bool medRegistrationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
@@ -129,6 +125,9 @@ bool medRegistrationWorkspace::isUsable()
 
 void medRegistrationWorkspace::updateFromMovingContainer()
 {
+    if(!d->registrationToolBox)
+        return;
+
     if(!d->movingContainer->view())
     {
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
@@ -180,6 +179,9 @@ void medRegistrationWorkspace::updateFromMovingContainer()
 
 void medRegistrationWorkspace::updateFromFixedContainer()
 {
+    if(!d->registrationToolBox)
+        return;
+
     if(!d->fixedContainer->view())
     {
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
@@ -239,6 +241,9 @@ void medRegistrationWorkspace::updateUserLayerClosable(int tabIndex)
 
 void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *output)
 {
+    if(!d->registrationToolBox)
+        return;
+
     //TODO disconnect because we dont want to change input of the undo redo process.
     //  find a better way to do it ? - RDE
     d->movingContainer->disconnect(this);
@@ -255,4 +260,9 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
 
     connect(d->movingContainer,SIGNAL(viewRemoved()),
             this, SLOT(updateFromMovingContainer()));
+}
+
+void medRegistrationWorkspace::removeSlectorInternToolBox()
+{
+    d->registrationToolBox = NULL;
 }

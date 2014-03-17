@@ -49,7 +49,6 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
 medToolBoxContainer::~medToolBoxContainer(void)
 {
     delete d;
-
     d = NULL;
 }
 
