@@ -66,7 +66,7 @@ public:
     virtual bool visibility() const;
     virtual double opacity() const;
 
-    virtual QImage& generateThumbnail(const QSize &size);
+    virtual QImage generateThumbnail(const QSize &size);
     
     //! Whether the interactor should be on when the view is in 2d and 3d mode.
     virtual bool showIn2dView() const;

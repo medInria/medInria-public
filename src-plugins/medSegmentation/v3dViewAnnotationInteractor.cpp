@@ -397,7 +397,7 @@ double v3dViewAnnotationInteractor::opacity() const
     return 100;
 }
 
-QImage& v3dViewAnnotationInteractor::generateThumbnail(const QSize &size)
+QImage v3dViewAnnotationInteractor::generateThumbnail(const QSize &size)
 {
   /*  int w(size.width()), h(size.height());
 

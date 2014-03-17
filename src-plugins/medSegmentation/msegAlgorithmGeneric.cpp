@@ -80,7 +80,7 @@ bool AlgorithmGeneric::isHandled( const QString & dataId ) const
     return ( it != d->handlers.end() );
 }
 
-void AlgorithmGeneric::setInput( medAbstractData * data )
+void AlgorithmGeneric::setInputData( medAbstractData * data )
 {
     this->d->inputData = data;
 }

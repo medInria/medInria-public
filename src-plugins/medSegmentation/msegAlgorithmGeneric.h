@@ -53,7 +53,7 @@ public:
     virtual QString localizedName() = 0;
 
     //! Override dtkAbstractProcess
-    void setInput( medAbstractData * data) MED_OVERRIDE;
+    void setInputData( medAbstractData * data) MED_OVERRIDE;
 
     virtual int update() MED_OVERRIDE;
     medAbstractData * output() MED_OVERRIDE;
@@ -82,8 +82,6 @@ protected:
 
 private:
     AlgorithmGenericPrivate *d;
-    
-    using dtkAbstractProcess::setInput;
 };
 
 

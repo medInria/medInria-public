@@ -45,8 +45,6 @@ public:
      * @return QString
      */
     virtual QString description(void) const;
-
-    virtual void setInput(medAbstractData *data, int channel);
     
     /**
      * @brief tries to register the process with the factory.
@@ -73,6 +71,8 @@ protected :
      * @return bool successful or not.
      */
     virtual bool writeTransform(const QString& file);
+
+    virtual void setInputData(medAbstractData *data, int channel);
 
 private:
     undoRedoRegistrationPrivate *d;

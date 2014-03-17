@@ -86,7 +86,7 @@ public:
 
         // let's take the first non medImageMaskAnnotationData as the reference data
         // TODO: to improve...
-        foreach(medAbstractData * data, imageView->data())
+        foreach(medAbstractData * data, imageView->dataList())
         {
             medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
             if(!existingMaskAnnData)

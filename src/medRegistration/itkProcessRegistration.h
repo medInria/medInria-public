@@ -201,12 +201,10 @@ protected :
     */
     virtual int update(ImageType);
 
-    virtual void setInput(medAbstractData *data, int channel);
+    virtual void setInputData(medAbstractData *data, int channel);
 
 private:
     itkProcessRegistrationPrivate *d;
-
-    using dtkAbstractProcess::setInput;
 };
 
 //Implement this function only in actual implementation of registration Plugins

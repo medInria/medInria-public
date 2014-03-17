@@ -47,9 +47,9 @@ void undoRedoRegistration::redo()
     generateOutput();
 }
 
-void undoRedoRegistration::setInput(medAbstractData *data, int channel)
+void undoRedoRegistration::setInputData(medAbstractData *data, int channel)
 {
-    itkProcessRegistration::setInput(data,channel);
+    itkProcessRegistration::setInputData(data,channel);
     typedef itk::Image< float, 3 > RegImageType;
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
 

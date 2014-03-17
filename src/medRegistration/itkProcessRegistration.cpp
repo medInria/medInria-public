@@ -214,7 +214,7 @@ template <typename PixelType>
 }
 
 
-void itkProcessRegistration::setInput(medAbstractData *data, int channel)
+void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 {
     if (!data)
         return;
@@ -354,12 +354,12 @@ void itkProcessRegistration::setInput(medAbstractData *data, int channel)
 
 void itkProcessRegistration::setFixedInput(medAbstractData *data)
 {
-    this->setInput(data, 0);
+    this->setInputData(data, 0);
 }
 
 void itkProcessRegistration::setMovingInput(medAbstractData *data)
 {
-    this->setInput(data, 1);
+    this->setInputData(data, 1);
 }
 
 int itkProcessRegistration::update(itkProcessRegistration::ImageType)

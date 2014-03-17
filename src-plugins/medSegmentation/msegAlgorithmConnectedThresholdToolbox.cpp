@@ -189,7 +189,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
     alg->setHighThreshold( this->m_highThresh->value() );
     alg->setLowThreshold( this->m_lowThresh->value() );
 
-    alg->setInput(this->m_data);
+    alg->setInputData(this->m_data);
     for ( int i(0); i < m_seedPoints->getNumberOfSeeds(); ++i ) {
         alg->addSeedPoint( m_seedPoints->centerWorld(i) );
     }
