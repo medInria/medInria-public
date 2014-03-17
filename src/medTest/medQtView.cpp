@@ -95,14 +95,14 @@ QList<QWidget *> medQtView::layerWidgets()
     return QList<QWidget*>();
 }
 
-void medQtView::initialiseInteractors(medAbstractData* data)
+bool medQtView::initialiseInteractors(medAbstractData* data)
 {
-
+    return true;
 }
 
-void medQtView::initialiseNavigators()
+bool medQtView::initialiseNavigators()
 {
-
+    return true;
 }
 
 void medQtView::removeInteractors(medAbstractData *data)

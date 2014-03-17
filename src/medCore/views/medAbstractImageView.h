@@ -150,8 +150,8 @@ protected:
     virtual medAbstractImageViewNavigator* primaryNavigator();
     virtual QList<medAbstractNavigator*> extraNavigators();
 
-    virtual void initialiseInteractors(medAbstractData* data);
-    virtual void initialiseNavigators();
+    virtual bool initialiseInteractors(medAbstractData* data);
+    virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
 

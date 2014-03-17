@@ -56,7 +56,7 @@ void medAbstractView::removeInteractors(medAbstractData *data)
     d->extraIntercators.clear();
 }
 
-void medAbstractView::initialiseInteractors(medAbstractData *data)
+bool medAbstractView::initialiseInteractors(medAbstractData *data)
 {
     // primary
 
@@ -65,7 +65,7 @@ void medAbstractView::initialiseInteractors(medAbstractData *data)
     if(primaryInt.isEmpty())
     {
         qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
-         d->primaryIntercator = NULL;
+        return false;
     }
     else
     {
@@ -89,9 +89,10 @@ void medAbstractView::initialiseInteractors(medAbstractData *data)
         }
         d->extraIntercators = extraIntList;
     }
+    return true;
 }
 
-void medAbstractView::initialiseNavigators()
+bool medAbstractView::initialiseNavigators()
 {
     // primary
     medViewFactory* factory = medViewFactory::instance();
@@ -99,8 +100,7 @@ void medAbstractView::initialiseNavigators()
     if(primaryNav.isEmpty())
     {
         qWarning() << "Unable to find any primary navigator for: " << this->identifier();
-        d->primaryNavigator = NULL;
-
+        return false;
     }
     else
     {
@@ -119,6 +119,7 @@ void medAbstractView::initialiseNavigators()
             d->extraNavigators << nav;
         }
     }
+    return true;
 }
 
 medAbstractViewInteractor* medAbstractView::primaryInteractor(medAbstractData* data)

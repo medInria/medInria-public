@@ -44,7 +44,7 @@ void medAbstractLayeredView::removeInteractors(medAbstractData *data)
     extraInt.clear();
 }
 
-void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
+bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
 {
     // primary
 
@@ -53,7 +53,7 @@ void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     if(primaryInt.isEmpty())
     {
         qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
-         d->primaryInteractorsHash.insert(data, NULL);
+        return false;
     }
     else
     {
@@ -77,9 +77,11 @@ void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
         }
         d->extraInteractorsHash.insert(data, extraIntList);
     }
+
+    return true;
 }
 
-void medAbstractLayeredView::initialiseNavigators()
+bool medAbstractLayeredView::initialiseNavigators()
 {
     // primary
     medLayeredViewFactory* factory = medLayeredViewFactory::instance();
@@ -87,7 +89,7 @@ void medAbstractLayeredView::initialiseNavigators()
     if(primaryNav.isEmpty())
     {
         qWarning() << "Unable to find any primary navigator for: " << this->identifier();
-        d->primaryNavigator = NULL;
+        return false;
 
     }
     else
@@ -109,6 +111,7 @@ void medAbstractLayeredView::initialiseNavigators()
             d->extraNavigators << nav;
         }
     }
+    return true;
 }
 
 medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(medAbstractData* data)
@@ -209,8 +212,10 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
         return;
     }
 
+    if(!this->initialiseInteractors(data));
+        return;
+
     d->layersDataList.insert(layer, data);
-    this->initialiseInteractors(data);
 
     this->setCurrentLayer(layer);
     if(this->layersCount() == 1)

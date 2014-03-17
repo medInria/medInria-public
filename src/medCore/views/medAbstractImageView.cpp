@@ -73,7 +73,7 @@ void medAbstractImageView::removeInteractors(medAbstractData *data)
     extraInt.clear();
 }
 
-void medAbstractImageView::initialiseInteractors(medAbstractData *data)
+bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
 {
     // primary
 
@@ -82,7 +82,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
     if(primaryInt.isEmpty())
     {
         qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
-         d->primaryInteractorsHash.insert(data, NULL);
+        return false;
     }
     else
     {
@@ -108,9 +108,10 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
         }
         d->extraInteractorsHash.insert(data, extraIntList);
     }
+    return true;
 }
 
-void medAbstractImageView::initialiseNavigators()
+bool medAbstractImageView::initialiseNavigators()
 {
     // primary
     medImageViewFactory* factory = medImageViewFactory::instance();
@@ -118,8 +119,7 @@ void medAbstractImageView::initialiseNavigators()
     if(primaryNav.isEmpty())
     {
         qWarning() << "Unable to find any primary navigator for: " << this->identifier();
-        d->primaryNavigator = NULL;
-
+        return false;
     }
     else
     {
@@ -140,6 +140,7 @@ void medAbstractImageView::initialiseNavigators()
             d->extraNavigators << nav;
         }
     }
+    return true;
 }
 
 void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)

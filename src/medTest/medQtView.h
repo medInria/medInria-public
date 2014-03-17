@@ -48,8 +48,8 @@ public:
     virtual QWidget* navigatorWidget();
     virtual QList <QWidget*> layerWidgets();
 
-    virtual void initialiseInteractors(medAbstractData* data);
-    virtual void initialiseNavigators();
+    virtual bool initialiseInteractors(medAbstractData* data);
+    virtual bool initialiseNavigators();
 
     virtual medViewBackend * backend() const;
 
