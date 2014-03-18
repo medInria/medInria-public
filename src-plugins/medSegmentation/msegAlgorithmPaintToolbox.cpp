@@ -53,7 +53,7 @@ public:
         m_cb(cb),
         m_paintState(PaintState::None),
         m_lastPaintState(PaintState::None)
-        {}
+    {}
 
     virtual bool mousePressEvent(medAbstractView *view, QMouseEvent *mouseEvent )
     {
@@ -285,19 +285,19 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     layout->addLayout(dataButtonsLayout);
 
     connect (m_strokeButton,     SIGNAL(pressed()),
-        this, SLOT(activateStroke ()));
+             this, SLOT(activateStroke ()));
 
     connect (m_magicWandButton, SIGNAL(pressed()),
              this,SLOT(activateMagicWand()));
 
     connect (m_clearMaskButton,     SIGNAL(pressed()),
-        this, SLOT(clearMask()));
+             this, SLOT(clearMask()));
 
     connect (m_applyButton,     SIGNAL(pressed()),
-        this, SLOT(import()));
+             this, SLOT(import()));
 
-    connect (medViewManager::instance(), SIGNAL(viewOpened()), 
-        this, SLOT(updateMouseInteraction()));
+    connect (medViewManager::instance(), SIGNAL(viewOpened()),
+             this, SLOT(updateMouseInteraction()));
 
     showButtons(false);
 }
@@ -509,7 +509,7 @@ void AlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
 
 //static
 medSegmentationAbstractToolBox *
-    AlgorithmPaintToolbox::createInstance(QWidget *parent )
+AlgorithmPaintToolbox::createInstance(QWidget *parent )
 {
     return new AlgorithmPaintToolbox( parent );
 }
@@ -564,54 +564,54 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
 
     switch (mImage->Dimension())
     {
-        case 2:
+    case 2:
+    {
+        itk::ImageBase <2> * imageDataOb = dynamic_cast<itk::ImageBase <2> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+
+        for (unsigned int i = 0;i < maxIndex;++i)
         {
-            itk::ImageBase <2> * imageDataOb = dynamic_cast<itk::ImageBase <2> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+            for (unsigned int j = 0;j < maxIndex;++j)
+                direction(i,j) = imageDataOb->GetDirection()(i,j);
 
-            for (unsigned int i = 0;i < maxIndex;++i)
-            {
-                for (unsigned int j = 0;j < maxIndex;++j)
-                    direction(i,j) = imageDataOb->GetDirection()(i,j);
-
-                spacing[i] = imageDataOb->GetSpacing()[i];
-                origin[i] = imageDataOb->GetOrigin()[i];
-            }
-
-            break;
+            spacing[i] = imageDataOb->GetSpacing()[i];
+            origin[i] = imageDataOb->GetOrigin()[i];
         }
 
-        case 4:
+        break;
+    }
+
+    case 4:
+    {
+        itk::ImageBase <4> * imageDataOb = dynamic_cast<itk::ImageBase <4> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+
+        for (unsigned int i = 0;i < maxIndex;++i)
         {
-            itk::ImageBase <4> * imageDataOb = dynamic_cast<itk::ImageBase <4> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+            for (unsigned int j = 0;j < maxIndex;++j)
+                direction(i,j) = imageDataOb->GetDirection()(i,j);
 
-            for (unsigned int i = 0;i < maxIndex;++i)
-            {
-                for (unsigned int j = 0;j < maxIndex;++j)
-                    direction(i,j) = imageDataOb->GetDirection()(i,j);
-
-                spacing[i] = imageDataOb->GetSpacing()[i];
-                origin[i] = imageDataOb->GetOrigin()[i];
-            }
-
-            break;
+            spacing[i] = imageDataOb->GetSpacing()[i];
+            origin[i] = imageDataOb->GetOrigin()[i];
         }
 
-        case 3:
-        default:
+        break;
+    }
+
+    case 3:
+    default:
+    {
+        itk::ImageBase <3> * imageDataOb = dynamic_cast<itk::ImageBase <3> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+
+        for (unsigned int i = 0;i < maxIndex;++i)
         {
-            itk::ImageBase <3> * imageDataOb = dynamic_cast<itk::ImageBase <3> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+            for (unsigned int j = 0;j < maxIndex;++j)
+                direction(i,j) = imageDataOb->GetDirection()(i,j);
 
-            for (unsigned int i = 0;i < maxIndex;++i)
-            {
-                for (unsigned int j = 0;j < maxIndex;++j)
-                    direction(i,j) = imageDataOb->GetDirection()(i,j);
-
-                spacing[i] = imageDataOb->GetSpacing()[i];
-                origin[i] = imageDataOb->GetOrigin()[i];
-            }
-
-            break;
+            spacing[i] = imageDataOb->GetSpacing()[i];
+            origin[i] = imageDataOb->GetOrigin()[i];
         }
+
+        break;
+    }
     }
 
     mask->SetOrigin(origin);
@@ -625,184 +625,184 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
     maskData->setData((QObject*)(mask.GetPointer()));
 }
 
-    void AlgorithmPaintToolbox::updateWandRegion(medAbstractImageView * view, QVector3D &vec)
+void AlgorithmPaintToolbox::updateWandRegion(medAbstractImageView * view, QVector3D &vec)
+{
+    this->updateFromGuiItems();
+
+    if ( !m_imageData )
     {
-        this->updateFromGuiItems();
+        this->setData(view->layerData(view->currentLayer()));
+    }
+    if (!m_imageData) {
+        dtkWarn() << "Could not set data";
+        return;
+    }
 
-        if ( !m_imageData )
-        {
-            this->setData(view->layerData(view->currentLayer()));
-        }
-        if (!m_imageData) {
-            dtkWarn() << "Could not set data";
-            return;
-        }
-
-        if ((m_imageData->identifier().contains("4"))||
+    if ((m_imageData->identifier().contains("4"))||
             (m_imageData->identifier().contains("RGB"))||
             (m_imageData->identifier().contains("Vector"))||
             (m_imageData->identifier().contains("2")))
-        {
-            medMessageController::instance()->showError(tr("Magic wand option is only available for 3D images"),3000);
-            return;
-        }
-
-        const QVector3D vpn = view->viewPlaneNormal();
-
-        const MaskType::DirectionType & direction = m_itkMask->GetDirection();
-
-        typedef  MaskType::DirectionType::InternalMatrixType::element_type ElemType;
-        vnl_vector_fixed<ElemType, 3> vecVpn(vpn.x(), vpn.y(), vpn.z() );
-
-        double absDotProductMax = 0;
-        unsigned int planeIndex = 0;
-        for (unsigned int i = 0;i < 3;++i)
-        {
-            double dotProduct = 0;
-            for (unsigned int j = 0;j < 3;++j)
-                dotProduct += direction(j,i) * vecVpn[j];
-
-            if (fabs(dotProduct) > absDotProductMax)
-            {
-                planeIndex = i;
-                absDotProductMax = fabs(dotProduct);
-            }
-        }
-
-        MaskType::PointType point;
-        MaskType::IndexType index;
-
-        point[0] = vec.x();
-        point[1] = vec.y();
-        point[2] = vec.z();
-
-        bool isInside = m_itkMask->TransformPhysicalPointToIndex (point, index);
-
-        if (isInside)
-        {
-            RunConnectedFilter < itk::Image <char,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <unsigned char,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <short,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <unsigned short,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <int,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <unsigned int,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <long,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <unsigned long,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <float,3> > (index,planeIndex);
-            RunConnectedFilter < itk::Image <double,3> > (index,planeIndex);
-        }
-    }
-
-    template <typename IMAGE>
-    void
-    AlgorithmPaintToolbox::RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex)
     {
-        IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
-
-        MaskType::PixelType pxValue = m_strokeLabel;
-
-        if (!tmpPtr)
-            return;
-
-        typedef itk::ConnectedThresholdImageFilter<IMAGE, MaskType> ConnectedThresholdImageFilterType;
-        typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
-
-        double value = tmpPtr->GetPixel(index);
-
-        ctiFilter->SetUpper( value + m_wandRadius );
-        ctiFilter->SetLower( value - m_wandRadius );
-
-        MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
-        regionRequested.SetIndex(planeIndex, index[planeIndex]);
-        regionRequested.SetSize(planeIndex, 1);
-        MaskType::RegionType outRegion = regionRequested;
-        outRegion.SetIndex(planeIndex,0);
-
-        if (m_wand3DCheckbox->checkState() == Qt::Unchecked)
-        {
-            typename IMAGE::Pointer workPtr = IMAGE::New();
-            workPtr->Initialize();
-            workPtr->SetDirection(tmpPtr->GetDirection());
-            workPtr->SetSpacing(tmpPtr->GetSpacing());
-            workPtr->SetOrigin(tmpPtr->GetOrigin());
-            workPtr->SetRegions(outRegion);
-            workPtr->Allocate();
-
-            itk::ImageRegionConstIterator < IMAGE > inputItr (tmpPtr, regionRequested);
-            itk::ImageRegionIterator < IMAGE > workItr (workPtr, outRegion);
-
-            while (!workItr.IsAtEnd())
-            {
-                workItr.Set(inputItr.Get());
-
-                ++workItr;
-                ++inputItr;
-            }
-
-            ctiFilter->SetInput( workPtr );
-            index[planeIndex] = 0;
-            ctiFilter->AddSeed( index );
-
-            ctiFilter->Update();
-
-            itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
-            itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
-            while (!maskFilterItr.IsAtEnd())
-            {
-                if (outFilterItr.Get() != 0)
-                    maskFilterItr.Set(pxValue);
-
-                ++outFilterItr;
-                ++maskFilterItr;
-            }
-        }
-        else
-        {
-            ctiFilter->SetInput( tmpPtr );
-            ctiFilter->AddSeed( index );
-
-            ctiFilter->Update();
-
-            itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), tmpPtr->GetLargestPossibleRegion());
-            itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, tmpPtr->GetLargestPossibleRegion());
-            while (!maskFilterItr.IsAtEnd())
-            {
-                if (outFilterItr.Get() != 0)
-                    maskFilterItr.Set(pxValue);
-
-                ++outFilterItr;
-                ++maskFilterItr;
-            }
-        }
-
-        m_itkMask->Modified();
-        m_itkMask->GetPixelContainer()->Modified();
-        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
-
-        m_maskAnnotationData->invokeModified();
+        medMessageController::instance()->showError(tr("Magic wand option is only available for 3D images"),3000);
+        return;
     }
 
-    template <typename IMAGE>
-    void
-    AlgorithmPaintToolbox::GenerateMinMaxValuesFromImage ()
+    const QVector3D vpn = view->viewPlaneNormal();
+
+    const MaskType::DirectionType & direction = m_itkMask->GetDirection();
+
+    typedef  MaskType::DirectionType::InternalMatrixType::element_type ElemType;
+    vnl_vector_fixed<ElemType, 3> vecVpn(vpn.x(), vpn.y(), vpn.z() );
+
+    double absDotProductMax = 0;
+    unsigned int planeIndex = 0;
+    for (unsigned int i = 0;i < 3;++i)
     {
-        IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
+        double dotProduct = 0;
+        for (unsigned int j = 0;j < 3;++j)
+            dotProduct += direction(j,i) * vecVpn[j];
 
-        if (!tmpPtr)
-            return;
-
-        typedef typename itk::MinimumMaximumImageCalculator< IMAGE > MinMaxCalculatorType;
-
-        typename MinMaxCalculatorType::Pointer minMaxFilter = MinMaxCalculatorType::New();
-
-        minMaxFilter->SetImage(tmpPtr);
-        minMaxFilter->Compute();
-
-        m_MinValueImage = minMaxFilter->GetMinimum();
-        m_MaxValueImage = minMaxFilter->GetMaximum();
-
-        this->setWandSpinBoxValue(m_wandThresholdSizeSlider->value());
+        if (fabs(dotProduct) > absDotProductMax)
+        {
+            planeIndex = i;
+            absDotProductMax = fabs(dotProduct);
+        }
     }
+
+    MaskType::PointType point;
+    MaskType::IndexType index;
+
+    point[0] = vec.x();
+    point[1] = vec.y();
+    point[2] = vec.z();
+
+    bool isInside = m_itkMask->TransformPhysicalPointToIndex (point, index);
+
+    if (isInside)
+    {
+        RunConnectedFilter < itk::Image <char,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <unsigned char,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <short,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <unsigned short,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <int,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <unsigned int,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <long,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <unsigned long,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <float,3> > (index,planeIndex);
+        RunConnectedFilter < itk::Image <double,3> > (index,planeIndex);
+    }
+}
+
+template <typename IMAGE>
+void
+AlgorithmPaintToolbox::RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex)
+{
+    IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
+
+    MaskType::PixelType pxValue = m_strokeLabel;
+
+    if (!tmpPtr)
+        return;
+
+    typedef itk::ConnectedThresholdImageFilter<IMAGE, MaskType> ConnectedThresholdImageFilterType;
+    typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
+
+    double value = tmpPtr->GetPixel(index);
+
+    ctiFilter->SetUpper( value + m_wandRadius );
+    ctiFilter->SetLower( value - m_wandRadius );
+
+    MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
+    regionRequested.SetIndex(planeIndex, index[planeIndex]);
+    regionRequested.SetSize(planeIndex, 1);
+    MaskType::RegionType outRegion = regionRequested;
+    outRegion.SetIndex(planeIndex,0);
+
+    if (m_wand3DCheckbox->checkState() == Qt::Unchecked)
+    {
+        typename IMAGE::Pointer workPtr = IMAGE::New();
+        workPtr->Initialize();
+        workPtr->SetDirection(tmpPtr->GetDirection());
+        workPtr->SetSpacing(tmpPtr->GetSpacing());
+        workPtr->SetOrigin(tmpPtr->GetOrigin());
+        workPtr->SetRegions(outRegion);
+        workPtr->Allocate();
+
+        itk::ImageRegionConstIterator < IMAGE > inputItr (tmpPtr, regionRequested);
+        itk::ImageRegionIterator < IMAGE > workItr (workPtr, outRegion);
+
+        while (!workItr.IsAtEnd())
+        {
+            workItr.Set(inputItr.Get());
+
+            ++workItr;
+            ++inputItr;
+        }
+
+        ctiFilter->SetInput( workPtr );
+        index[planeIndex] = 0;
+        ctiFilter->AddSeed( index );
+
+        ctiFilter->Update();
+
+        itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
+        itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
+        while (!maskFilterItr.IsAtEnd())
+        {
+            if (outFilterItr.Get() != 0)
+                maskFilterItr.Set(pxValue);
+
+            ++outFilterItr;
+            ++maskFilterItr;
+        }
+    }
+    else
+    {
+        ctiFilter->SetInput( tmpPtr );
+        ctiFilter->AddSeed( index );
+
+        ctiFilter->Update();
+
+        itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), tmpPtr->GetLargestPossibleRegion());
+        itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, tmpPtr->GetLargestPossibleRegion());
+        while (!maskFilterItr.IsAtEnd())
+        {
+            if (outFilterItr.Get() != 0)
+                maskFilterItr.Set(pxValue);
+
+            ++outFilterItr;
+            ++maskFilterItr;
+        }
+    }
+
+    m_itkMask->Modified();
+    m_itkMask->GetPixelContainer()->Modified();
+    m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+
+    m_maskAnnotationData->invokeModified();
+}
+
+template <typename IMAGE>
+void
+AlgorithmPaintToolbox::GenerateMinMaxValuesFromImage ()
+{
+    IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
+
+    if (!tmpPtr)
+        return;
+
+    typedef typename itk::MinimumMaximumImageCalculator< IMAGE > MinMaxCalculatorType;
+
+    typename MinMaxCalculatorType::Pointer minMaxFilter = MinMaxCalculatorType::New();
+
+    minMaxFilter->SetImage(tmpPtr);
+    minMaxFilter->Compute();
+
+    m_MinValueImage = minMaxFilter->GetMinimum();
+    m_MaxValueImage = minMaxFilter->GetMaximum();
+
+    this->setWandSpinBoxValue(m_wandThresholdSizeSlider->value());
+}
 
 void AlgorithmPaintToolbox::updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view)
 {
@@ -1008,8 +1008,8 @@ void AlgorithmPaintToolbox::setOutputMetadata(const medAbstractData * inputData,
 
     QStringList metaDataToCopy;
     metaDataToCopy
-        << medMetaDataKeys::PatientName.key()
-        << medMetaDataKeys::StudyDescription.key();
+            << medMetaDataKeys::PatientName.key()
+            << medMetaDataKeys::StudyDescription.key();
 
     foreach( const QString & key, metaDataToCopy ) {
         outputData->setMetaData(key, inputData->metadatas(key));
