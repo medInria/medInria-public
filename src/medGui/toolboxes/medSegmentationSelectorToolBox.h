@@ -18,6 +18,7 @@
 
 class medViewEventFilter;
 class medSegmentationAbstractToolBox;
+class medAbstractProcess;
 
 class medSegmentationSelectorToolBoxPrivate;
 class MEDGUI_EXPORT medSegmentationSelectorToolBox : public medToolBox
@@ -38,6 +39,7 @@ signals:
 
 public slots:
     void changeCurrentToolBox(int index);
+
 
 private:
     medSegmentationSelectorToolBoxPrivate *d;

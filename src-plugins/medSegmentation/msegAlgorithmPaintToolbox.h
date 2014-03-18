@@ -73,6 +73,8 @@ public:
 
     dtkPlugin* plugin();
 
+    medAbstractData* processOutput();
+
 public slots:
     void activateStroke();
     void activateMagicWand();

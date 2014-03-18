@@ -50,6 +50,8 @@ public:
 protected slots:
     void addViewEventFilter(medViewEventFilter * filter );
 
+    void onSuccess();
+
 
 private:
     static QString s_identifier();

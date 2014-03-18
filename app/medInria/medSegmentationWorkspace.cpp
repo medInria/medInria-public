@@ -14,6 +14,7 @@
 #include <medSegmentationWorkspace.h>
 
 #include <medSegmentationSelectorToolBox.h>
+#include <medSegmentationAbstractToolBox.h>
 
 #include <medAbstractView.h>
 
@@ -24,6 +25,10 @@
 #include <medToolBoxFactory.h>
 #include <medViewEventFilter.h>
 #include <medViewContainerManager.h>
+#include <medRunnableProcess.h>
+#include <medDataManager.h>
+#include <medJobManager.h>
+#include <medMetaDataKeys.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -51,6 +56,8 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     connect(d->segmentationToolBox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
             this, SLOT(addViewEventFilter(medViewEventFilter*)));
+
+    connect(d->segmentationToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
 
     // Always have a parent.
     if (!parent)
@@ -113,4 +120,12 @@ void medSegmentationWorkspace::addViewEventFilter( medViewEventFilter * filter)
             return;
         filter->installOnView(container->view());
     }
+}
+
+//TODO: not tested yet
+void medSegmentationWorkspace::onSuccess()
+{
+    medAbstractData *output = d->segmentationToolBox->currentToolBox()->processOutput();
+
+    medDataManager::instance()->importNonPersistent( output );
 }

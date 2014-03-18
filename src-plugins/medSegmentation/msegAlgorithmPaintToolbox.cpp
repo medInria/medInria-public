@@ -306,6 +306,11 @@ AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
 {
 }
 
+medAbstractData* AlgorithmPaintToolbox::processOutput()
+{
+    return m_maskData;
+}
+
 void AlgorithmPaintToolbox::setWandSliderValue(double val)
 {
     double perc = 4000.0 * val / (m_MaxValueImage - m_MinValueImage);
