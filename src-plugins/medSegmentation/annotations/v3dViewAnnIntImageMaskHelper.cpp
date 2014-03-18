@@ -47,7 +47,8 @@ v3dViewAnnIntImageMaskHelper::v3dViewAnnIntImageMaskHelper(v3dViewAnnotationInte
 
 v3dViewAnnIntImageMaskHelper::~v3dViewAnnIntImageMaskHelper()
 {
-    delete d; d = NULL;
+    delete d;
+    d = NULL;
 }
 
 bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
@@ -56,7 +57,6 @@ bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
     if ( !imad )
         return false;
 
-    medAbstractImageData * dataImage = imad->maskData();
     medAbstractImageView * view = this->getView();
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
 

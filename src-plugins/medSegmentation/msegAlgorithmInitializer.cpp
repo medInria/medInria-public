@@ -13,9 +13,6 @@
 
 #include <msegAlgorithmInitializer.h>
 
-#include <msegAlgorithmConnectedThreshold.h>
-#include <msegAlgorithmConnectedThresholdToolbox.h>
-#include <medProcessPaintSegm.h>
 #include <msegAlgorithmPaintToolbox.h>
 #include <medToolBoxFactory.h>
 
@@ -38,15 +35,7 @@ bool AlgorithmInitializer::initialize()
 
 bool AlgorithmInitializer::initializeProcesses()
 {
-    dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
-
-    bool ret (true);
-
-    if (! factory->registerProcessType( medProcessPaintSegm::s_identifier(),
-            medProcessPaintSegm::create, AlgorithmGeneric::ms_interfaceName ) ) {
-        ret = false;
-    }
-    return ret;
+    return true;
 }
 
 bool AlgorithmInitializer::initializeWidgets()

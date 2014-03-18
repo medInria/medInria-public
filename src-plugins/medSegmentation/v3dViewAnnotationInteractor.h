@@ -80,12 +80,9 @@ public:
 signals:
 
 public slots:
-    virtual bool onAddAnnotation( medAnnotationData * annItem );
-    virtual void onRemoveAnnotation( medAnnotationData * annItem );
-
     //! Respond to add / removal of attached data to data items viewed.
-    virtual void onAttachedDataAdded(medAttachedData* data);
-    virtual void onAttachedDataRemoved(medAttachedData* data);
+    virtual void attachData(medAttachedData* data);
+    virtual void removeAttachedData(medAttachedData* data);
     
     //! Called when the annotation data is altered.
     virtual void onDataModified(medAbstractData* data);

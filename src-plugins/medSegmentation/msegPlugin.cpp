@@ -14,8 +14,6 @@
 #include <msegPlugin.h>
 
 #include <msegAlgorithmInitializer.h>
-#include <msegAlgorithmConnectedThreshold.h>
-#include <medProcessPaintSegm.h>
 #include <v3dViewAnnotationInteractor.h>
 
 #include <dtkLog/dtkLog.h>
@@ -110,7 +108,7 @@ QStringList Plugin::tags() const
 
 QStringList Plugin::types() const
 {
-    return QStringList() << medProcessPaintSegm::s_identifier();
+    return QStringList();
 }
 
 Q_EXPORT_PLUGIN2(Plugin, Plugin)

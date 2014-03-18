@@ -17,8 +17,6 @@
 
 #include <msegPluginExport.h>
 
-#include <medProcessPaintSegm.h>
-
 #include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -30,6 +28,8 @@
 #include <QTextEdit>
 
 #include <vector>
+
+#include <itkImage.h>
 
 class medAbstractData;
 class medAbstractImageView;
@@ -74,14 +74,14 @@ public:
     dtkPlugin* plugin();
 
 public slots:
-    void onStrokePressed();
-    void onMagicWandPressed();
+    void activateStroke();
+    void activateMagicWand();
 
-    void onApplyButtonPressed();
-    void onClearMaskPressed();
+    void import();
+    void clearMask();
 
-    void onLabelChanged(int newVal);
-    void onSelectLabelColor();
+    void setLabel(int newVal);
+    void setLabelColor();
 
     void setWandSliderValue(double val);
     void setWandSpinBoxValue(int val);

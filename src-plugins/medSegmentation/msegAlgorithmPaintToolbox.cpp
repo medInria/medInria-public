@@ -254,7 +254,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_strokeLabelSpinBox->setMinimum(1);
     m_strokeLabelSpinBox->setMaximum(24);
     m_strokeLabelSpinBox->hide();
-    connect (m_strokeLabelSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onLabelChanged(int)));
+    connect (m_strokeLabelSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLabel(int)));
 
     m_labelColorWidget = new QPushButton(displayWidget);
     m_labelColorWidget->setToolTip(tr("Current label color"));
@@ -262,7 +262,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_labelColorWidget->setCheckable(false);
     m_labelColorWidget->setText("");
     m_labelColorWidget->hide();
-    connect(m_labelColorWidget, SIGNAL(clicked()), this, SLOT(onSelectLabelColor()));
+    connect(m_labelColorWidget, SIGNAL(clicked()), this, SLOT(setLabelColor()));
 
     m_colorLabel = new QLabel(tr("Label:"), displayWidget);
     m_colorLabel->hide();
@@ -285,16 +285,16 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     layout->addLayout(dataButtonsLayout);
 
     connect (m_strokeButton,     SIGNAL(pressed()),
-        this, SLOT(onStrokePressed ()));
+        this, SLOT(activateStroke ()));
 
     connect (m_magicWandButton, SIGNAL(pressed()),
-             this,SLOT(onMagicWandPressed()));
+             this,SLOT(activateMagicWand()));
 
     connect (m_clearMaskButton,     SIGNAL(pressed()),
-        this, SLOT(onClearMaskPressed ()));
+        this, SLOT(clearMask()));
 
     connect (m_applyButton,     SIGNAL(pressed()),
-        this, SLOT(onApplyButtonPressed()));
+        this, SLOT(import()));
 
     connect (medViewManager::instance(), SIGNAL(viewOpened()), 
         this, SLOT(updateMouseInteraction()));
@@ -341,7 +341,7 @@ void AlgorithmPaintToolbox::setWandSpinBoxValue(int val)
     m_wandThresholdSizeSpinBox->blockSignals(false);
 }
 
-void AlgorithmPaintToolbox::onStrokePressed()
+void AlgorithmPaintToolbox::activateStroke()
 {
     if ( this->m_strokeButton->isChecked() ) {
         this->m_viewFilter->removeFromAllViews();
@@ -356,7 +356,7 @@ void AlgorithmPaintToolbox::onStrokePressed()
     emit installEventFilterRequest(m_viewFilter);
 }
 
-void AlgorithmPaintToolbox::onMagicWandPressed()
+void AlgorithmPaintToolbox::activateMagicWand()
 {
     if ( this->m_magicWandButton->isChecked() ) {
         this->m_viewFilter->removeFromAllViews();
@@ -371,28 +371,19 @@ void AlgorithmPaintToolbox::onMagicWandPressed()
     emit installEventFilterRequest(m_viewFilter);
 }
 
-void AlgorithmPaintToolbox::onApplyButtonPressed()
+void AlgorithmPaintToolbox::import()
 {
-    dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
-
-    dtkSmartPointer <medProcessPaintSegm> alg =
-            factory->createSmartPointer( medProcessPaintSegm::s_identifier() );
-
-    alg->setInput( this->m_maskData, medProcessPaintSegm::MaskChannel );
-    alg->setInput( this->m_imageData, medProcessPaintSegm::ImageChannel );
-
     setOutputMetadata(m_imageData, m_maskData);
     medDataManager::instance()->import(m_maskData);
-//    this->segmentationToolBox()->run( alg );
 }
 
-void AlgorithmPaintToolbox::onLabelChanged(int newVal)
+void AlgorithmPaintToolbox::setLabel(int newVal)
 {
     QColor labelColor = m_labelColorMap[newVal-1].second;
     m_labelColorWidget->setStyleSheet("background-color: " + labelColor.name() + ";border:0;border-radius: 0px;width:20px;height:20px;");
 }
 
-void AlgorithmPaintToolbox::onSelectLabelColor()
+void AlgorithmPaintToolbox::setLabelColor()
 {
     QColor currentColor = m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second;
     QColor newColor = QColorDialog::getColor(currentColor,this);
@@ -406,11 +397,11 @@ void AlgorithmPaintToolbox::onSelectLabelColor()
             m_maskAnnotationData->invokeModified();
         }
 
-        this->onLabelChanged(m_strokeLabelSpinBox->value());
+        this->setLabel(m_strokeLabelSpinBox->value());
     }
 }
 
-void AlgorithmPaintToolbox::onClearMaskPressed()
+void AlgorithmPaintToolbox::clearMask()
 {
     if ( m_maskData && m_itkMask ){
         m_itkMask->FillBuffer( medSegmentationSelectorToolBox::MaskPixelValues::Unset );
@@ -469,10 +460,10 @@ void AlgorithmPaintToolbox::setData( medAbstractData *medData )
         } else {
 
             m_maskData =
-                    medAbstractDataFactory::instance()->createSmartPointer( medProcessPaintSegm::MaskImageTypeIdentifier() );
+                    medAbstractDataFactory::instance()->createSmartPointer( "itkDataImageUChar3" );
 
             if ( !m_maskData ) {
-                dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create " << medProcessPaintSegm::MaskImageTypeIdentifier();
+                dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create itkDataImageUChar3";
                 return;
             }
 
@@ -931,9 +922,6 @@ void AlgorithmPaintToolbox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     }
 
     m_maskAnnotationData->invokeModified();
-
-    //qDebug() << "updateStroke !!";
-
 }
 
 void AlgorithmPaintToolbox::updateFromGuiItems()

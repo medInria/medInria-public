@@ -49,8 +49,6 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
     d->segmentationToolBox = new medSegmentationSelectorToolBox(parent);
 
-//    connect(d->segmentationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-//    connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
     connect(d->segmentationToolBox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
             this, SLOT(addViewEventFilter(medViewEventFilter*)));
 
