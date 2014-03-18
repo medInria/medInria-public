@@ -691,6 +691,13 @@ void AlgorithmPaintToolbox::updateWandRegion(medAbstractImageView * view, QVecto
         RunConnectedFilter < itk::Image <float,3> > (index,planeIndex);
         RunConnectedFilter < itk::Image <double,3> > (index,planeIndex);
     }
+
+    if(!view->contains(m_maskAnnotationData))
+    {
+        view->addLayer(m_maskAnnotationData);
+        setOutputMetadata(m_imageData, m_maskData);
+        medDataManager::instance()->importNonPersistent(m_maskData);
+    }
 }
 
 template <typename IMAGE>
