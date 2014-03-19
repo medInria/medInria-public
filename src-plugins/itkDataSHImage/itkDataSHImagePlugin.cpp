@@ -15,6 +15,7 @@
 
 #include <itkDataSHImageDouble3.h>
 #include <itkDataSHImageFloat3.h>
+#include <itkDataSHImageVtkViewInteractor.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>
@@ -48,6 +49,7 @@ itkDataSHImagePlugin::~itkDataSHImagePlugin() {
 bool itkDataSHImagePlugin::initialize() {
     if (!itkDataSHImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataSHImageDouble3 type"; }
     if (!itkDataSHImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataSHImageFloat3 type";  }
+    if (!itkDataSHImageVtkViewInteractor::registered())  { dtkWarn() << "Unable to register itkDataSHImageVtkViewInteractor type";  }
 
     return true;
 }

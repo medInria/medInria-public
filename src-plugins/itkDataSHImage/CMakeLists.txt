@@ -34,6 +34,9 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
 
 ## #############################################################################
 ## List Sources
@@ -109,6 +112,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOMRC
   medLog
   medCore
+  medVtkInria
   )
 
 

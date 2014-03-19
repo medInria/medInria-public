@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medAbstractVtkViewInteractor.h>
-#include <v3dViewPluginExport.h>
+#include <medAbstractImageViewInteractor.h>
+#include <itkDataSHImagePluginExport.h>
 
-class v3dViewSHInteractorPrivate;
+class itkDataSHImageVtkViewInteractorPrivate;
 
 class medAbstractData;
 class dtkAbstractView;
 
 /**
- * @class v3dViewSHInteractor
+ * @class itkDataSHImageVtkViewInteractor
  * @brief Extents a view by providing Spherical harmonics viewing/managing capabilities.
  *
  * An interactor is an extension to a view (v3dView in this case)
@@ -30,34 +30,16 @@ class dtkAbstractView;
  * adding SH handling capabilities like visualization and SH-specific
  * properties.
  */
-class V3DVIEWPLUGIN_EXPORT v3dViewSHInteractor: public medAbstractVtkViewInteractor
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageVtkViewInteractor: public medAbstractImageViewInteractor
 {
 
     Q_OBJECT
 
 public:
-    v3dViewSHInteractor();
-    virtual ~v3dViewSHInteractor();
+    itkDataSHImageVtkViewInteractor(medAbstractImageView* parent);
+    virtual ~itkDataSHImageVtkViewInteractor();
 
-    virtual QString description() const;
-    virtual QString identifier() const;
-    virtual QStringList handled() const;
-    bool isDataTypeHandled(QString dataType) const;
-
-    static bool registered();
-
-    virtual void setData(medAbstractData *data);
-    medAbstractData *data ();
-
-    virtual void setView(dtkAbstractView *view);
-    dtkAbstractView *view ();
-
-    virtual void enable();
-    virtual void disable();
-
-    /** get the image size it is used to set med gui slider appropiate size*/
-    virtual void imageSize(int* range);
-
+public:
 
     enum TesselationType
     {
@@ -75,6 +57,34 @@ public:
         SHMatrixTournier,
         SHMatrixRshBasis
     };
+
+    virtual QString description() const;
+    virtual QString identifier() const;
+    virtual QStringList handled() const;
+
+    static bool registered();
+
+    virtual void setData(medAbstractData * data);
+
+    virtual void moveToSliceAtPosition    (const QVector3D &position);
+    virtual void moveToSlice  (int slice);
+
+    virtual void windowLevel(double &window, double &level);
+
+    double opacity() const;
+    bool visibility() const;
+
+
+    virtual QWidget* layerWidget();
+    virtual QWidget* toolBoxWidget();
+    virtual QWidget* toolBarWidget();
+    virtual QList<medAbstractParameter*> parameters();
+
+    QImage generateThumbnail(const QSize &size);
+    void removeData();
+
+    /** get the image size it is used to set med gui slider appropiate size*/
+    virtual void imageSize(int* range);
 
 public slots:
 
@@ -135,21 +145,23 @@ public slots:
     /** Change the position of the slices */
     void setPosition(const QVector3D& position, bool propagate);
 
-    virtual void setOpacity(dtkAbstractData * data, double opacity);
-    virtual double opacity(dtkAbstractData * data) const;
 
-    virtual void setVisible(dtkAbstractData * data, bool visible);
-    virtual bool isVisible(dtkAbstractData * data) const;
+    void setOpacity(double opacity);
+    void setVisibility(bool visibility);
+    void setWindowLevel(double &window, double &level);
 
 
 protected:
     void computeBounds();
     void updateBounds(const double bounds[]);
-    void setupParameters(dtkAbstractData *data);
+    void setupParameters();
+
+private:
+    static QStringList dataHandled();
+
+    void update();
 
 private:
 
-    v3dViewSHInteractorPrivate* d;
+    itkDataSHImageVtkViewInteractorPrivate* d;
 };
-
-dtkAbstractViewInteractor *createV3dViewSHInteractor();
