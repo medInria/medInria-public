@@ -13,15 +13,15 @@
 
 #pragma once
 
-#include <v3dViewAnnotationInteractor.h>
+#include <msegAnnotationInteractor.h>
 
-class v3dViewAnnIntImageMaskHelperPrivate;
+class msegAnnIntImageMaskHelperPrivate;
 
-class v3dViewAnnIntImageMaskHelper : public v3dViewAnnIntHelper {
+class msegAnnIntImageMaskHelper : public msegAnnIntHelper {
 
 public:
-    v3dViewAnnIntImageMaskHelper(v3dViewAnnotationInteractor * annInt);
-    virtual ~v3dViewAnnIntImageMaskHelper();
+    msegAnnIntImageMaskHelper(msegAnnotationInteractor * annInt);
+    virtual ~msegAnnIntImageMaskHelper();
 
     enum { AnnotationId = 2 };
     bool addAnnotation( medAnnotationData * annData );
@@ -32,7 +32,7 @@ private:
     void setColorLookupTable ( QList<double> scalars, QList<QColor> colors );
 
 private:
-    v3dViewAnnIntImageMaskHelperPrivate * d;
+    msegAnnIntImageMaskHelperPrivate * d;
 };
 
 

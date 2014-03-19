@@ -21,33 +21,33 @@
 #include <msegPluginExport.h>
 
 
-class v3dViewAnnotationInteractorPrivate;
-class v3dViewAnnotationInteractor;
+class msegAnnotationInteractorPrivate;
+class msegAnnotationInteractor;
 
-// Helper class for v3dViewAnnotationInteractor
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT v3dViewAnnIntHelper {
+// Helper class for msegAnnotationInteractor
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT msegAnnIntHelper {
 public :
-    v3dViewAnnIntHelper(v3dViewAnnotationInteractor * annInt);
-    virtual ~v3dViewAnnIntHelper();
+    msegAnnIntHelper(msegAnnotationInteractor * annInt);
+    virtual ~msegAnnIntHelper();
     virtual bool addAnnotation( medAnnotationData* annData ) = 0;
     virtual void removeAnnotation( medAnnotationData * annData ) = 0;
     virtual void annotationModified( medAnnotationData* annData ) = 0;
 protected:
     medAbstractImageView * getView();
-    v3dViewAnnotationInteractor * m_v3dViewAnnInt;
+    msegAnnotationInteractor * m_msegAnnInt;
 };
 
 
-//! Interface between annotations and the v3dview.
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT v3dViewAnnotationInteractor: public medAbstractImageViewInteractor
+//! Interface between annotations and the mseg.
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT msegAnnotationInteractor: public medAbstractImageViewInteractor
 {
     typedef medAbstractImageViewInteractor BaseClass;
 
     Q_OBJECT
 
 public:
-    v3dViewAnnotationInteractor(medAbstractImageView *parent);
-    virtual ~v3dViewAnnotationInteractor();
+    msegAnnotationInteractor(medAbstractImageView *parent);
+    virtual ~msegAnnotationInteractor();
 
     //! Override dtkAbstractObject
     virtual QString description() const;
@@ -112,8 +112,8 @@ protected:
     void addAnnotation( medAnnotationData * annData );
     void removeAnnotation( medAnnotationData * annData );
 
-    friend class v3dViewAnnotationInteractorPrivate;
-    friend class v3dViewAnnIntHelper;
+    friend class msegAnnotationInteractorPrivate;
+    friend class msegAnnIntHelper;
 
 private slots:
     void enableWindowLevelInteraction();
@@ -122,14 +122,14 @@ private:
      static QStringList dataHandled();
 
 private:
-    v3dViewAnnotationInteractorPrivate *d;
+    msegAnnotationInteractorPrivate *d;
 };
 
 
 // Inline this for speed.
-inline medAbstractImageView * v3dViewAnnIntHelper::getView()
+inline medAbstractImageView * msegAnnIntHelper::getView()
 {
-    return m_v3dViewAnnInt->getView();
+    return m_msegAnnInt->getView();
 }
 
 

@@ -11,11 +11,11 @@
 
 =========================================================================*/
 
-#include <v3dViewAnnIntImageMaskHelper.h>
+#include <msegAnnIntImageMaskHelper.h>
 
 #include <medImageMaskAnnotationData.h>
 
-#include <v3dViewAnnotationInteractor.h>
+#include <msegAnnotationInteractor.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -35,23 +35,23 @@
 #include <medVtkViewBackend.h>
 
 
-class v3dViewAnnIntImageMaskHelperPrivate {
+class msegAnnIntImageMaskHelperPrivate {
 public:
 };
 
-v3dViewAnnIntImageMaskHelper::v3dViewAnnIntImageMaskHelper(v3dViewAnnotationInteractor * annInt)
-    : v3dViewAnnIntHelper(annInt) ,
-    d(new v3dViewAnnIntImageMaskHelperPrivate)
+msegAnnIntImageMaskHelper::msegAnnIntImageMaskHelper(msegAnnotationInteractor * annInt)
+    : msegAnnIntHelper(annInt) ,
+    d(new msegAnnIntImageMaskHelperPrivate)
 {
 }
 
-v3dViewAnnIntImageMaskHelper::~v3dViewAnnIntImageMaskHelper()
+msegAnnIntImageMaskHelper::~msegAnnIntImageMaskHelper()
 {
     delete d;
     d = NULL;
 }
 
-bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
+bool msegAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
 {
     medImageMaskAnnotationData * imad = qobject_cast<medImageMaskAnnotationData*>(annData);
     if ( !imad )
@@ -78,7 +78,7 @@ bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
     setColorLookupTable(scalars,colors);
 
     backend->view2D->GetWindowLevel(maskLayer)->GetLookupTable()->SetRange(
-        scalars.first() - 1, // v3dView pads the data by one.
+        scalars.first() - 1, // mseg pads the data by one.
         scalars.back()  + 1);
 
     view->setCurrentLayer(oldLayer);
@@ -89,7 +89,7 @@ bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
 }
 
 
-void v3dViewAnnIntImageMaskHelper::setColorLookupTable ( QList<double> scalars, QList<QColor> colors )
+void msegAnnIntImageMaskHelper::setColorLookupTable ( QList<double> scalars, QList<QColor> colors )
 {
     medAbstractImageView * view = this->getView();
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
@@ -140,13 +140,13 @@ void v3dViewAnnIntImageMaskHelper::setColorLookupTable ( QList<double> scalars, 
     delete [] alphaTable;
 }
 
-void v3dViewAnnIntImageMaskHelper::removeAnnotation( medAnnotationData * annData )
+void msegAnnIntImageMaskHelper::removeAnnotation( medAnnotationData * annData )
 {
     medAbstractImageView * view = this->getView();
     view->removeData(annData);
 }
 
-void v3dViewAnnIntImageMaskHelper::annotationModified( medAnnotationData * annData )
+void msegAnnIntImageMaskHelper::annotationModified( medAnnotationData * annData )
 {
     medImageMaskAnnotationData * imad = qobject_cast<medImageMaskAnnotationData*>(annData);
     medAbstractImageView * view = this->getView();

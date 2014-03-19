@@ -11,11 +11,11 @@
 
 =========================================================================*/
 
-#include <v3dViewAnnIntSeedPointHelper.h>
+#include <msegAnnIntSeedPointHelper.h>
 
 #include <medSeedPointAnnotationData.h>
 
-#include <v3dViewAnnotationInteractor.h>
+#include <msegAnnotationInteractor.h>
 
 #include <vtkSeedPointHandle.h>
 
@@ -84,32 +84,32 @@ public:
             }
         }
     }
-    v3dViewAnnIntSeedPointHelper * helper;
+    msegAnnIntSeedPointHelper * helper;
 protected:
     vtkSeedCallback() : vtkCommandWithDisable() {}
 };
 
 
-class v3dViewAnnIntSeedPointHelperPrivate {
+class msegAnnIntSeedPointHelperPrivate {
 public:
-    v3dViewAnnIntSeedPointHelper::ActorMap actors;
+    msegAnnIntSeedPointHelper::ActorMap actors;
 
     vtkSmartPointer<vtkSeedCallback> spCbk;
 };
 
-v3dViewAnnIntSeedPointHelper::v3dViewAnnIntSeedPointHelper(v3dViewAnnotationInteractor * annInt) 
-    : v3dViewAnnIntHelper(annInt) ,
-    d(new v3dViewAnnIntSeedPointHelperPrivate)
+msegAnnIntSeedPointHelper::msegAnnIntSeedPointHelper(msegAnnotationInteractor * annInt)
+    : msegAnnIntHelper(annInt) ,
+    d(new msegAnnIntSeedPointHelperPrivate)
 {
     d->spCbk = vtkSmartPointer<vtkSeedCallback>::New();
 }
 
-v3dViewAnnIntSeedPointHelper::~v3dViewAnnIntSeedPointHelper()
+msegAnnIntSeedPointHelper::~msegAnnIntSeedPointHelper()
 {
     delete d; d = NULL;
 }
 
-bool v3dViewAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
+bool msegAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
 {
     medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annData);
     if ( !spad ) 
@@ -162,7 +162,7 @@ bool v3dViewAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
 }
 
 
-void v3dViewAnnIntSeedPointHelper::removeAnnotation( medAnnotationData * annData )
+void msegAnnIntSeedPointHelper::removeAnnotation( medAnnotationData * annData )
 {
     medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annData);
 
@@ -180,7 +180,7 @@ void v3dViewAnnIntSeedPointHelper::removeAnnotation( medAnnotationData * annData
     backend->view3D->Render();
 }
 
-void v3dViewAnnIntSeedPointHelper::annotationModified( medAnnotationData* annData )
+void msegAnnIntSeedPointHelper::annotationModified( medAnnotationData* annData )
 {
     medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annData);
 
@@ -237,7 +237,7 @@ void v3dViewAnnIntSeedPointHelper::annotationModified( medAnnotationData* annDat
     medAbstractImageView * view = this->getView();
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
 
-    //this->getV3dView()->currentView()->Modified();
+    //this->getmseg()->currentView()->Modified();
 
     backend->view2D->Render();
     backend->view3D->Render();
@@ -245,7 +245,7 @@ void v3dViewAnnIntSeedPointHelper::annotationModified( medAnnotationData* annDat
     return;
 }
 
-void v3dViewAnnIntSeedPointHelper::refreshFromWidget( vtkSeedWidget * spW )
+void msegAnnIntSeedPointHelper::refreshFromWidget( vtkSeedWidget * spW )
 {
     ActorMap::iterator it;
     if ( ! this->findActorMapForWidget(spW, it) ){
@@ -270,12 +270,12 @@ void v3dViewAnnIntSeedPointHelper::refreshFromWidget( vtkSeedWidget * spW )
     }
 }
 
-v3dViewAnnIntSeedPointHelper::ActorMap & v3dViewAnnIntSeedPointHelper::getActorMap()
+msegAnnIntSeedPointHelper::ActorMap & msegAnnIntSeedPointHelper::getActorMap()
 {
     return d->actors;
 }
 
-bool v3dViewAnnIntSeedPointHelper::findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it)
+bool msegAnnIntSeedPointHelper::findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it)
 {
     for( it = d->actors.begin(); it != d->actors.end(); ++it ) {
         if ( ( it->second.actor2d == w ) ||

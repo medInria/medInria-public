@@ -14,7 +14,7 @@
 #include <msegPlugin.h>
 
 #include <msegAlgorithmInitializer.h>
-#include <v3dViewAnnotationInteractor.h>
+#include <msegAnnotationInteractor.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -47,7 +47,7 @@ Plugin::~Plugin()
 
 bool Plugin::initialize()
 {
-    if(!v3dViewAnnotationInteractor::registered())
+    if(!msegAnnotationInteractor::registered())
         qDebug() << "Unable to register v3dViewAnnotationInteractor";
     return AlgorithmInitializer::initialize();
 }

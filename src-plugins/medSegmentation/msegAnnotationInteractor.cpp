@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <v3dViewAnnotationInteractor.h>
+#include <msegAnnotationInteractor.h>
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -25,8 +25,8 @@
 #include <medDoubleParameter.h>
 #include <medBoolParameter.h>
 
-#include <v3dViewAnnIntSeedPointHelper.h>
-#include <v3dViewAnnIntImageMaskHelper.h>
+#include <msegAnnIntSeedPointHelper.h>
+#include <msegAnnIntImageMaskHelper.h>
 
 #include <vtkProperty2D.h>
 #include <vtkRenderer.h>
@@ -41,10 +41,10 @@
 
 
 // pImpl
-class v3dViewAnnotationInteractorPrivate
+class msegAnnotationInteractorPrivate
 {
 public:
-    typedef QVector<v3dViewAnnIntHelper *> HelperVecType;
+    typedef QVector<msegAnnIntHelper *> HelperVecType;
     HelperVecType helpers;
 
     typedef std::map< medAnnotationData*, HelperVecType::size_type> HelperMap;
@@ -70,11 +70,11 @@ public:
 };
 
 // Implementation
-v3dViewAnnotationInteractor::v3dViewAnnotationInteractor(medAbstractImageView* parent):
-    medAbstractImageViewInteractor(parent), d(new v3dViewAnnotationInteractorPrivate)
+msegAnnotationInteractor::msegAnnotationInteractor(medAbstractImageView* parent):
+    medAbstractImageViewInteractor(parent), d(new msegAnnotationInteractorPrivate)
 {
-    d->helpers.push_back(new v3dViewAnnIntSeedPointHelper(this));
-    d->helpers.push_back(new v3dViewAnnIntImageMaskHelper(this));
+    d->helpers.push_back(new msegAnnIntSeedPointHelper(this));
+    d->helpers.push_back(new msegAnnIntImageMaskHelper(this));
 
     d->medVtkView = parent;
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
@@ -92,54 +92,54 @@ v3dViewAnnotationInteractor::v3dViewAnnotationInteractor(medAbstractImageView* p
     connect(parent, SIGNAL(currentLayerChanged()), this, SLOT(enableWindowLevelInteraction()));
 }
 
-v3dViewAnnotationInteractor::~v3dViewAnnotationInteractor()
+msegAnnotationInteractor::~msegAnnotationInteractor()
 {
     qDeleteAll(d->helpers);
     delete d;
     d = NULL;
 }
 
-QStringList v3dViewAnnotationInteractor::dataHandled()
+QStringList msegAnnotationInteractor::dataHandled()
 {
     QStringList d = QStringList() << "medImageMaskAnnotationData";
     return  d;
 }
 
-QStringList v3dViewAnnotationInteractor::handled() const
+QStringList msegAnnotationInteractor::handled() const
 {
-    return v3dViewAnnotationInteractor::dataHandled();
+    return msegAnnotationInteractor::dataHandled();
 }
 
-QString v3dViewAnnotationInteractor::description() const
+QString msegAnnotationInteractor::description() const
 {
     return tr("Interactor displaying annotations");
 }
 
-QString v3dViewAnnotationInteractor::identifier() const
+QString msegAnnotationInteractor::identifier() const
 {
     return s_identifier();
 }
 
-bool v3dViewAnnotationInteractor::registered()
+bool msegAnnotationInteractor::registered()
 {
     medImageViewFactory *factory = medImageViewFactory::instance();
-    return factory->registerInteractor<v3dViewAnnotationInteractor>("v3dViewAnnotationInteractor",
+    return factory->registerInteractor<msegAnnotationInteractor>("msegAnnotationInteractor",
                                                                   QStringList () << "medVtkView" <<
-                                                                  v3dViewAnnotationInteractor::dataHandled());
+                                                                  msegAnnotationInteractor::dataHandled());
 }
 
-QString v3dViewAnnotationInteractor::s_identifier()
+QString msegAnnotationInteractor::s_identifier()
 {
-    return "v3dViewAnnotationInteractor";
+    return "msegAnnotationInteractor";
 }
 
 
-medAbstractImageView * v3dViewAnnotationInteractor::getView()
+medAbstractImageView * msegAnnotationInteractor::getView()
 {
     return d->medVtkView;
 }
 
-void v3dViewAnnotationInteractor::setData(medAbstractData *data)
+void msegAnnotationInteractor::setData(medAbstractData *data)
 {
     if ( d->imageData ) {
         disconnect(d->imageData, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
@@ -178,7 +178,7 @@ void v3dViewAnnotationInteractor::setData(medAbstractData *data)
     connect(d->visibiltyParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
 }
 
-void v3dViewAnnotationInteractor::removeData()
+void msegAnnotationInteractor::removeData()
 {
     d->view2d->RemoveLayer(d->medVtkView->layer(d->imageData));
     d->view3d->RemoveLayer(d->medVtkView->layer(d->imageData));
@@ -189,49 +189,49 @@ void v3dViewAnnotationInteractor::removeData()
 }
 
 
-bool v3dViewAnnotationInteractor::showIn2dView() const
+bool msegAnnotationInteractor::showIn2dView() const
 {
     return true;
 }
 
-bool v3dViewAnnotationInteractor::showIn3dView() const
+bool msegAnnotationInteractor::showIn3dView() const
 {
     return true;
 }
 
-bool v3dViewAnnotationInteractor::isInSlice( const QVector3D & slicePoint, const QVector3D & sliceNormal,
+bool msegAnnotationInteractor::isInSlice( const QVector3D & slicePoint, const QVector3D & sliceNormal,
                                             qreal thickness ) const
 {
     return true;
 }
 
 
-void v3dViewAnnotationInteractor::onDataModified( medAbstractData* data )
+void msegAnnotationInteractor::onDataModified( medAbstractData* data )
 {
     medAnnotationData * annData = qobject_cast<medAnnotationData*>(data);
     if (!annData)
         return;
 
-    v3dViewAnnotationInteractorPrivate::HelperMap::iterator it = d->dataToHelperIdMap.find(annData);
+    msegAnnotationInteractorPrivate::HelperMap::iterator it = d->dataToHelperIdMap.find(annData);
 
     if ( it == d->dataToHelperIdMap.end() )
         return;
 
-    v3dViewAnnIntHelper * helper = d->helpers.at( it->second );
+    msegAnnIntHelper * helper = d->helpers.at( it->second );
     helper->annotationModified(annData);
 }
 
 
-void v3dViewAnnotationInteractor::addAnnotation( medAnnotationData * annData )
+void msegAnnotationInteractor::addAnnotation( medAnnotationData * annData )
 {
     if ( d->installedAnnotations.contains(annData) ) {
         return;
     }
     
-    typedef v3dViewAnnotationInteractorPrivate::HelperVecType::size_type IndexType;
+    typedef msegAnnotationInteractorPrivate::HelperVecType::size_type IndexType;
     bool isAdded = false;
     for (IndexType i(0), end(d->helpers.size()); i<end; ++i){
-        v3dViewAnnIntHelper * helper = d->helpers[i];
+        msegAnnIntHelper * helper = d->helpers[i];
         if ( helper->addAnnotation(annData) ) {
             isAdded = true;
             d->dataToHelperIdMap[annData] = i;
@@ -246,17 +246,17 @@ void v3dViewAnnotationInteractor::addAnnotation( medAnnotationData * annData )
     }
 }
 
-void v3dViewAnnotationInteractor::removeAnnotation( medAnnotationData * annData )
+void msegAnnotationInteractor::removeAnnotation( medAnnotationData * annData )
 {
     if ( !d->installedAnnotations.contains(annData) ) {
         return;
     }
 
-    v3dViewAnnotationInteractorPrivate::HelperMap::iterator it = d->dataToHelperIdMap.find(annData);
+    msegAnnotationInteractorPrivate::HelperMap::iterator it = d->dataToHelperIdMap.find(annData);
     if ( it == d->dataToHelperIdMap.end() )
         return;
 
-    typedef v3dViewAnnotationInteractorPrivate::HelperVecType::size_type IndexType;
+    typedef msegAnnotationInteractorPrivate::HelperVecType::size_type IndexType;
     IndexType iHelper = it->second;
 
     d->helpers[iHelper]->removeAnnotation( annData );
@@ -265,7 +265,7 @@ void v3dViewAnnotationInteractor::removeAnnotation( medAnnotationData * annData 
     d->installedAnnotations.remove( annData );
 }
 
-void v3dViewAnnotationInteractor::attachData( medAttachedData* data )
+void msegAnnotationInteractor::attachData( medAttachedData* data )
 {
     medAnnotationData * annData = qobject_cast<medAnnotationData *>(data);
     if ( annData ) {
@@ -273,7 +273,7 @@ void v3dViewAnnotationInteractor::attachData( medAttachedData* data )
     }
 }
 
-void v3dViewAnnotationInteractor::removeAttachedData( medAttachedData* data )
+void msegAnnotationInteractor::removeAttachedData( medAttachedData* data )
 {
     medAnnotationData * annData = qobject_cast<medAnnotationData *>(data);
     if ( annData ) {
@@ -281,22 +281,22 @@ void v3dViewAnnotationInteractor::removeAttachedData( medAttachedData* data )
     }
 }
 
-QPointF v3dViewAnnotationInteractor::worldToScene( const QVector3D & worldVec ) const
+QPointF msegAnnotationInteractor::worldToScene( const QVector3D & worldVec ) const
 {
     return d->medVtkView->mapWorldToDisplayCoordinates( worldVec );
 }
 
-QVector3D v3dViewAnnotationInteractor::sceneToWorld( const QPointF & sceneVec ) const
+QVector3D msegAnnotationInteractor::sceneToWorld( const QPointF & sceneVec ) const
 {
     return d->medVtkView->mapDisplayToWorldCoordinates( sceneVec );
 }
 
-QVector3D v3dViewAnnotationInteractor::viewUp() const
+QVector3D msegAnnotationInteractor::viewUp() const
 {
     return d->medVtkView->viewUp( );
 }
 
-bool v3dViewAnnotationInteractor::isPointInSlice(const QVector3D & testPoint, const QVector3D & slicePoint,
+bool msegAnnotationInteractor::isPointInSlice(const QVector3D & testPoint, const QVector3D & slicePoint,
                                                  const QVector3D & sliceNormal, qreal thickness ) const
 {
     qreal distanceToPlane = QVector3D::dotProduct( (testPoint - slicePoint), sliceNormal );
@@ -306,13 +306,13 @@ bool v3dViewAnnotationInteractor::isPointInSlice(const QVector3D & testPoint, co
     return ( distanceToPlane >= -thickness ) && ( distanceToPlane < thickness );
 }
 
-bool v3dViewAnnotationInteractor::isPointInCurrentSlice( const QVector3D & testPoint ) const
+bool msegAnnotationInteractor::isPointInCurrentSlice( const QVector3D & testPoint ) const
 {
     return this->isPointInSlice(testPoint, d->medVtkView->viewCenter(), d->medVtkView->viewPlaneNormal(),
                                 0.5*d->medVtkView->sliceThickness());
 }
 
-void v3dViewAnnotationInteractor::setVisibility(bool visible)
+void msegAnnotationInteractor::setVisibility(bool visible)
 {
     if(visible)
     {
@@ -329,12 +329,12 @@ void v3dViewAnnotationInteractor::setVisibility(bool visible)
     d->view3d->Render();
 }
 
-bool v3dViewAnnotationInteractor::visibility() const
+bool msegAnnotationInteractor::visibility() const
 {
     return d->visibiltyParameter->value();
 }
 
-QWidget* v3dViewAnnotationInteractor::toolBarWidget()
+QWidget* msegAnnotationInteractor::toolBarWidget()
 {
     if(!d->toolbar)
     {
@@ -343,7 +343,7 @@ QWidget* v3dViewAnnotationInteractor::toolBarWidget()
     return d->toolbar;
 }
 
-QWidget* v3dViewAnnotationInteractor::toolBoxWidget()
+QWidget* msegAnnotationInteractor::toolBoxWidget()
 {
     if(!d->toolbox)
     {
@@ -352,14 +352,14 @@ QWidget* v3dViewAnnotationInteractor::toolBoxWidget()
     return d->toolbox;
 }
 
-QWidget* v3dViewAnnotationInteractor::layerWidget()
+QWidget* msegAnnotationInteractor::layerWidget()
 {
     QSlider *slider = d->opacityParam->getSlider();
     slider->setOrientation(Qt::Horizontal);
     return d->opacityParam->getSlider();
 }
 
-void v3dViewAnnotationInteractor::moveToSlice(int slice)
+void msegAnnotationInteractor::moveToSlice(int slice)
 {
     int zslice = d->view2d->GetSlice();
 
@@ -372,7 +372,7 @@ void v3dViewAnnotationInteractor::moveToSlice(int slice)
         d->view3d->Render();
 }
 
-void v3dViewAnnotationInteractor::moveToSliceAtPosition(const QVector3D &position)
+void msegAnnotationInteractor::moveToSliceAtPosition(const QVector3D &position)
 {
     double pos[3];
     pos[0] = position.x();
@@ -389,17 +389,17 @@ void v3dViewAnnotationInteractor::moveToSliceAtPosition(const QVector3D &positio
     }
 }
 
-void v3dViewAnnotationInteractor::setWindowLevel (double &window, double &level)
+void msegAnnotationInteractor::setWindowLevel (double &window, double &level)
 {
 
 }
 
-void v3dViewAnnotationInteractor::windowLevel(double &window, double &level)
+void msegAnnotationInteractor::windowLevel(double &window, double &level)
 {
 
 }
 
-void v3dViewAnnotationInteractor::setOpacity(double opacity)
+void msegAnnotationInteractor::setOpacity(double opacity)
 {
     d->view3d->SetOpacity (opacity, d->medVtkView->layer(d->imageData));
     d->view2d->SetOpacity (opacity, d->medVtkView->layer(d->imageData));
@@ -408,19 +408,19 @@ void v3dViewAnnotationInteractor::setOpacity(double opacity)
     d->view3d->Render();
 }
 
-double v3dViewAnnotationInteractor::opacity() const
+double msegAnnotationInteractor::opacity() const
 {
      double opacity = d->opacityParam->value();
      return opacity;
 }
 
 
-QImage v3dViewAnnotationInteractor::generateThumbnail(const QSize &size)
+QImage msegAnnotationInteractor::generateThumbnail(const QSize &size)
 {
     return QImage();
 }
 
-QList<medAbstractParameter*> v3dViewAnnotationInteractor::parameters()
+QList<medAbstractParameter*> msegAnnotationInteractor::parameters()
 {
     QList<medAbstractParameter*> params;
     params.append(d->opacityParam);
@@ -429,7 +429,7 @@ QList<medAbstractParameter*> v3dViewAnnotationInteractor::parameters()
 }
 
 
-void v3dViewAnnotationInteractor::enableWindowLevelInteraction()
+void msegAnnotationInteractor::enableWindowLevelInteraction()
 {
     if(d->medVtkView->currentLayer() == d->medVtkView->layer(d->imageData))
     {
@@ -442,16 +442,16 @@ void v3dViewAnnotationInteractor::enableWindowLevelInteraction()
 }
 
 ////////////////////////////
-// v3dViewAnnIntHelper
+// msegAnnIntHelper
 ////////////////////////////
 
-v3dViewAnnIntHelper::v3dViewAnnIntHelper( v3dViewAnnotationInteractor * annInt)
-    : m_v3dViewAnnInt( annInt )
+msegAnnIntHelper::msegAnnIntHelper( msegAnnotationInteractor * annInt)
+    : m_msegAnnInt( annInt )
 {
 
 }
 
-v3dViewAnnIntHelper::~v3dViewAnnIntHelper()
+msegAnnIntHelper::~msegAnnIntHelper()
 {
 
 }
