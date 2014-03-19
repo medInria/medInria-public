@@ -16,6 +16,7 @@
 
 #include <itkDataTensorImageDouble3.h>
 #include <itkDataTensorImageFloat3.h>
+#include <itkDataTensorImageVtkViewInteractor.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -61,6 +62,7 @@ bool itkDataTensorImagePlugin::initialize()
 {
     if (!itkDataTensorImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataTensorImageDouble3 type"; }
     if (!itkDataTensorImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataTensorImageFloat3 type";  }
+    if (!itkDataTensorImageVtkViewInteractor::registered())  { dtkWarn() << "Unable to register itkDataTensorImageVtkViewInteractor type";  }
 
     return true;
 }
