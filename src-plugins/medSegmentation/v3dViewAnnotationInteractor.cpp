@@ -154,10 +154,7 @@ void v3dViewAnnotationInteractor::setData(medAbstractData *data)
     d->imageData = data;
 
     if (d->imageData)
-    {
-        connect( d->imageData, SIGNAL(attachedDataAdded(medAttachedData*)), this,  SLOT(attachData(medAttachedData*)) );
-        connect( d->imageData, SIGNAL(attachedDataRemoved(medAttachedData*)), this,  SLOT(removeAttachedData(medAttachedData*)) );
-        
+    {        
         typedef itk::Image<unsigned char, 3> MaskType;
         medImageMaskAnnotationData *maskAnnData = dynamic_cast<medImageMaskAnnotationData*>(data);
         if (MaskType* image = dynamic_cast<MaskType*>((itk::Object*)(maskAnnData->maskData()->data())))
@@ -168,15 +165,6 @@ void v3dViewAnnotationInteractor::setData(medAbstractData *data)
 
         medAnnotationData *annItem = qobject_cast<medAnnotationData*>(data);
         attachData(annItem);
-
-        // Add any existing annotations on the data to our list.
-        QList<medAttachedData*> attached = d->imageData->attachedData();
-        foreach( medAttachedData* item,  attached ) {
-            medAnnotationData *annItem = qobject_cast<medAnnotationData*>(item);
-            if (annItem) {
-                this->attachData(annItem);
-            }
-        }
     }
 
     d->opacityParam = new medDoubleParameter("Opacity", this);
@@ -396,7 +384,7 @@ void v3dViewAnnotationInteractor::moveToSliceAtPosition(const QVector3D &positio
 
     if(d->medVtkView->is2D())
     {
-        unsigned int zslice = d->view2d->GetSlice();
+        //unsigned int zslice = d->view2d->GetSlice();
         //d->slicingParameter->setValue ( zslice );
     }
 }
@@ -434,7 +422,10 @@ QImage v3dViewAnnotationInteractor::generateThumbnail(const QSize &size)
 
 QList<medAbstractParameter*> v3dViewAnnotationInteractor::parameters()
 {
-    return QList<medAbstractParameter*>();
+    QList<medAbstractParameter*> params;
+    params.append(d->opacityParam);
+    params.append(d->visibiltyParameter);
+    return params;
 }
 
 
