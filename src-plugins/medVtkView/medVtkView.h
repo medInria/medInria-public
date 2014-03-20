@@ -54,7 +54,8 @@ public slots:
 private slots:
     void setWindowingInteractionStyle(bool windowing);
     void setZoomInteractionStyle(bool zoom);
-    void setSLicingInteractionStyle(bool slicing);
+    void setSlicingInteractionStyle(bool slicing);
+    void displayDataInfo(uint layer);
 
     void changeCurrentLayer();
 

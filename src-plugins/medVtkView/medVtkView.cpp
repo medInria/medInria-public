@@ -456,7 +456,7 @@ void medVtkView::setZoomInteractionStyle(bool zoom)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
 }
 
-void medVtkView::setSLicingInteractionStyle(bool slicing)
+void medVtkView::setSlicingInteractionStyle(bool slicing)
 {
     if(slicing)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
@@ -479,6 +479,33 @@ void medVtkView::removeInternNavigatorWidget()
 
 void medVtkView::changeCurrentLayer()
 {
-    d->view2d->SetCurrentLayer(this->currentLayer());
-    d->view3d->SetCurrentLayer(this->currentLayer());
+    displayDataInfo(this->currentLayer());
+}
+
+void medVtkView::displayDataInfo(uint layer)
+{
+    medAbstractData *data = layerData(layer);
+    if ( data )
+    {
+        if ( data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
+        {
+            const QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+            d->view2d->SetPatientName ( patientName.toAscii().constData() );
+            d->view3d->SetPatientName ( patientName.toAscii().constData() );
+        }
+
+        if ( data->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) )
+        {
+            const QString studyName = data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
+            d->view2d->SetStudyName ( studyName.toAscii().constData() );
+            d->view3d->SetStudyName ( studyName.toAscii().constData() );
+        }
+
+        if ( data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+        {
+            const QString seriesName = data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
+            d->view2d->SetSeriesName ( seriesName.toAscii().constData() );
+            d->view3d->SetSeriesName ( seriesName.toAscii().constData() );
+        }
+    }
 }
