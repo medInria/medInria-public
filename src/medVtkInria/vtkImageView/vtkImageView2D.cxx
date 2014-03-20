@@ -1664,6 +1664,15 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
   this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 }
 
+int vtkImageView2D::AddInput (vtkImageData *image, vtkMatrix4x4 *matrix)
+{
+  int layer = GetNumberOfLayers();
+
+  SetInput (image, matrix, layer);
+
+  return layer;
+}
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4 *matrix, int layer)
 {
@@ -1978,7 +1987,15 @@ void vtkImageView2D::RemoveAllLayers()
 //----------------------------------------------------------------------------
 int vtkImageView2D::GetNumberOfLayers() const
 {
-  return this->LayerInfoVec.size();
+    // I don't really know why, but LayerInfoVec size is set to 1 at initialisation time,
+    // so we need one more check to know the real number of layer
+    if( this->LayerInfoVec.size() == 1)
+    {
+        if( this->LayerInfoVec.at(0).ImageDisplay->GetInput() == NULL)
+            return 0;
+        else return 1;
+    }
+    else return this->LayerInfoVec.size();
 }
 
 vtkImage2DDisplay * vtkImageView2D::GetImage2DDisplayForLayer( int layer ) const

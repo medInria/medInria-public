@@ -32,23 +32,20 @@ public:
 };
 
 template <typename TYPE>
-bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMetaDataSetSequence* sequence) {
+bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMetaDataSetSequence* sequence, int& layer) {
 
     if (itk::Image<TYPE,4>* image = dynamic_cast<itk::Image<TYPE,4>*>(static_cast<itk::Object*>(data->data()))) {
-        unsigned int layer = view->layersCount();
 
         medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
-
-        if (layer==1 && !backend->view2D->GetInput())
-            layer = 0;
 
         sequence->SetITKDataSet<TYPE>(image);
 
         vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
         vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(sequence->GetDataSet());
 
-        backend->view2D->SetInput(vtkimage,metaimage->GetOrientationMatrix(),layer);
-        backend->view3D->SetInput(vtkimage,metaimage->GetOrientationMatrix(),layer);
+        backend->view2D->AddInput(vtkimage,metaimage->GetOrientationMatrix());
+
+        layer = backend->view2D->GetNumberOfLayers()-1;
 
         return true;
     }
@@ -126,14 +123,17 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 
         d->sequence = vtkMetaDataSetSequence::New();
 
-        if (  AppendImageSequence<char>(data,d->view,d->sequence)           ||
-              AppendImageSequence<unsigned char>(data,d->view,d->sequence)  ||
-              AppendImageSequence<short>(data,d->view,d->sequence)          ||
-              AppendImageSequence<unsigned short>(data,d->view,d->sequence) ||
-              AppendImageSequence<float>(data,d->view,d->sequence)          ||
-              AppendImageSequence<double>(data,d->view,d->sequence)) {
+        int layer = -1;
+
+        if (  AppendImageSequence<char>(data,d->view,d->sequence, layer)           ||
+              AppendImageSequence<unsigned char>(data,d->view,d->sequence, layer)  ||
+              AppendImageSequence<short>(data,d->view,d->sequence, layer)          ||
+              AppendImageSequence<unsigned short>(data,d->view,d->sequence, layer) ||
+              AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
+              AppendImageSequence<double>(data,d->view,d->sequence, layer)) {
 
             initParameters(d->imageData);
+            setImageViewInternalLayer(layer);
 
             d->timeLineParameter = new medTimeLineParameter("Time");
 

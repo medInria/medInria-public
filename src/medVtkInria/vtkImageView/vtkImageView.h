@@ -603,6 +603,21 @@ class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput (itk::Image<RGBAPixelType, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<FloatVector3Type, 3>::Pointer input, int layer=0);
+
+  virtual void AddITKInput (itk::Image<double, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<float, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<int, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<unsigned int, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<short, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<unsigned short, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<long, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<unsigned long, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<char, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<unsigned char, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<RGBPixelType, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<RGBAPixelType, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<UCharVector3Type, 3>::Pointer input);
+  virtual void AddITKInput (itk::Image<FloatVector3Type, 3>::Pointer input);
   itk::ImageBase<3>*  GetITKInput (int layer = 0) const;
 
   /**
@@ -625,6 +640,22 @@ class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput4 (itk::Image<RGBAPixelType, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<UCharVector3Type, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<FloatVector3Type, 4>::Pointer input, int layer=0);
+
+  virtual void AddITKInput4 (itk::Image<double, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<float, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<int, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<unsigned int, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<short, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<unsigned short, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<long, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<unsigned long, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<char, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<unsigned char, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<RGBPixelType, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<RGBAPixelType, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<UCharVector3Type, 4>::Pointer input);
+  virtual void AddITKInput4 (itk::Image<FloatVector3Type, 4>::Pointer input);
+
   itk::ImageBase<4>* GetTemporalITKInput() const;
 
 
@@ -707,10 +738,16 @@ class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
       template < class T >
          void SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer=0);
 
+      template < class T >
+         void AddITKInput (typename itk::Image<T, 3>::Pointer itkImage);
+
     //! Template function which implements SetInput4 for all types.
     // Defined locally and not exposed.
       template < class T >
          void SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer=0);
+
+      template < class T >
+         void AddITKInput4 (typename itk::Image<T, 4>::Pointer itkImage);
 
     //! Template function which sets the time step.
     // Defined locally and not exposed.

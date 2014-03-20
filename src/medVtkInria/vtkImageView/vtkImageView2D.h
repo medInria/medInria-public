@@ -117,6 +117,9 @@ public:
   virtual void SetInputConnection (vtkAlgorithmOutput* arg,
                                    vtkMatrix4x4 *matrix = 0,
                                    int layer=0);
+
+  int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
+
   vtkImageData *GetImageInput(int layer) const;
   vtkImageData *GetInput(int layer = 0) const;
 

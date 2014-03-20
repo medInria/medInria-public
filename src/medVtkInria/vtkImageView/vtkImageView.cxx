@@ -1718,6 +1718,14 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   matrix->Delete();
 }
 
+
+template < class T >
+inline void vtkImageView::AddITKInput (typename itk::Image<T, 3>::Pointer itkImage)
+{
+    int layer = GetNumberOfLayers();
+    SetITKInput<T>(itkImage, layer);
+}
+
 template < class T >
 inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer)
 {
@@ -1763,6 +1771,13 @@ inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkIm
   // itkImage3->DisconnectPipeline();
 }
 
+template < class T >
+inline void vtkImageView::AddITKInput4 (typename itk::Image<T, 4>::Pointer itkImage)
+{
+    int layer = GetNumberOfLayers();
+    SetITKInput4<T>(itkImage, layer);
+}
+
 #define vtkImplementSetITKInputMacro(type)				\
 void vtkImageView::SetITKInput (itk::Image<type, 3>::Pointer itkImage, int layer) \
 {									\
@@ -1782,6 +1797,26 @@ vtkImplementSetITKInputMacro (RGBPixelType);
 vtkImplementSetITKInputMacro (RGBAPixelType);
 vtkImplementSetITKInputMacro (UCharVector3Type);
 vtkImplementSetITKInputMacro (FloatVector3Type);
+
+#define vtkImplementAddITKInputMacro(type)				\
+void vtkImageView::AddITKInput (itk::Image<type, 3>::Pointer itkImage) \
+{									\
+AddITKInput < type > (itkImage);					\
+}
+vtkImplementAddITKInputMacro (double);
+vtkImplementAddITKInputMacro (float);
+vtkImplementAddITKInputMacro (int);
+vtkImplementAddITKInputMacro (unsigned int);
+vtkImplementAddITKInputMacro (short);
+vtkImplementAddITKInputMacro (unsigned short);
+vtkImplementAddITKInputMacro (long);
+vtkImplementAddITKInputMacro (unsigned long);
+vtkImplementAddITKInputMacro (char);
+vtkImplementAddITKInputMacro (unsigned char);
+vtkImplementAddITKInputMacro (RGBPixelType);
+vtkImplementAddITKInputMacro (RGBAPixelType);
+vtkImplementAddITKInputMacro (UCharVector3Type);
+vtkImplementAddITKInputMacro (FloatVector3Type);
 
 itk::ImageBase<3>* vtkImageView::GetITKInput (int layer) const
 {
@@ -1810,6 +1845,27 @@ vtkImplementSetITKInput4Macro (RGBPixelType);
 vtkImplementSetITKInput4Macro (RGBAPixelType);
 vtkImplementSetITKInput4Macro (UCharVector3Type);
 vtkImplementSetITKInput4Macro (FloatVector3Type);
+
+#define vtkImplementAddITKInput4Macro(type)				\
+void vtkImageView::AddITKInput4 (itk::Image<type, 4>::Pointer itkImage) \
+{									\
+AddITKInput4 < type > (itkImage);					\
+}
+
+vtkImplementAddITKInput4Macro (double);
+vtkImplementAddITKInput4Macro (float);
+vtkImplementAddITKInput4Macro (int);
+vtkImplementAddITKInput4Macro (unsigned int);
+vtkImplementAddITKInput4Macro (short);
+vtkImplementAddITKInput4Macro (unsigned short);
+vtkImplementAddITKInput4Macro (long);
+vtkImplementAddITKInput4Macro (unsigned long);
+vtkImplementAddITKInput4Macro (char);
+vtkImplementAddITKInput4Macro (unsigned char);
+vtkImplementAddITKInput4Macro (RGBPixelType);
+vtkImplementAddITKInput4Macro (RGBAPixelType);
+vtkImplementAddITKInput4Macro (UCharVector3Type);
+vtkImplementAddITKInput4Macro (FloatVector3Type);
 
 itk::ImageBase<4>* vtkImageView::GetTemporalITKInput() const
 {
