@@ -214,6 +214,7 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
     }
 
     d->layersDataList.insert(layer, data);
+
     bool initSuccess = this->initialiseInteractors(data);
     if(!initSuccess)
     {
