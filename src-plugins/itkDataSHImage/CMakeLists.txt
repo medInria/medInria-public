@@ -112,6 +112,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOMRC
   medLog
   medCore
+  medGui
   medVtkInria
   )
 
