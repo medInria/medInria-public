@@ -19,7 +19,6 @@ PURPOSE.
 #include <medDiffusionSelectorToolBox.h>
 
 class medAbstractData;
-class medAbstractView;
 class medDiffusionWorkspacePrivate;
 
 class medDiffusionWorkspace : public medAbstractWorkspace
@@ -43,11 +42,9 @@ public slots:
     void resetRunningFlags();
     
     //Handle new data in central view, connect them to toolboxes
-    void resetToolBoxesInputs(medAbstractView *view);
+    void resetToolBoxesInputs();
+    void updateToolBoxesInputs();
     void addToolBoxInput(medAbstractData *data);
-
-    void connectCurrentViewSignals(medAbstractView *view);
-    void disconnectCurrentViewSignals(medAbstractView *view);
 
     void changeCurrentContainer();
 

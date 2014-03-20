@@ -124,13 +124,11 @@ void medDiffusionWorkspace::setupViewContainerStack()
     {
         d->diffusionContainer = this->stackedViewContainers()->addContainerInTab(identifier());
 
-        d->diffusionContainer->setUserClosable(false);
+        d->diffusionContainer->setUserClosable(true);
         d->diffusionContainer->setUserSplittable(false);
         d->diffusionContainer->setMultiLayered(true);
         
-//        connect(singleViewContainer,SIGNAL(viewRemoved(medAbstractView *)),this,SLOT(resetToolBoxesInputs(medAbstractView *)));
-//        connect(singleViewContainer,SIGNAL(viewAdded(medAbstractView *)),this,SLOT(connectCurrentViewSignals(medAbstractView *)));
-
+        connect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
         connect(this->stackedViewContainers(),SIGNAL(containersSelectedChanged()),this,SLOT(changeCurrentContainer()));
     }
 }
@@ -219,48 +217,34 @@ void medDiffusionWorkspace::changeCurrentContainer()
 
     // This cannot happen while a process is running, container stack is disabled at that point
 
-//    // For security, disconnect current connections
-//    disconnect(d->diffusionContainer,SIGNAL(viewRemoved(medAbstractView *)),this,SLOT(resetToolBoxesInputs(medAbstractView *)));
-//    disconnect(d->diffusionContainer,SIGNAL(viewAdded(medAbstractView *)),this,SLOT(connectCurrentViewSignals(medAbstractView *)));
-//    this->disconnectCurrentViewSignals(d->diffusionContainer->view());
+    // For security, disconnect current connections
+    if (d->diffusionContainer)
+        disconnect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
 
     // Now connect new container
     d->diffusionContainer = medViewContainerManager::instance()->container(containersSelectedList.first());
-//    connect(d->diffusionContainer,SIGNAL(viewRemoved(medAbstractView *)),this,SLOT(resetToolBoxesInputs(medAbstractView *)));
-//    connect(d->diffusionContainer,SIGNAL(viewAdded(medAbstractView *)),this,SLOT(connectCurrentViewSignals(medAbstractView *)));
-
-    d->diffusionEstimationToolBox->clearInput();
-    d->diffusionScalarMapsToolBox->clearInput();
-    d->diffusionTractographyToolBox->clearInput();
-
-    this->resetToolBoxesInputs(d->diffusionContainer->view());
-    this->connectCurrentViewSignals(d->diffusionContainer->view());
-}
-
-void medDiffusionWorkspace::connectCurrentViewSignals(medAbstractView *view)
-{
-    medAbstractLayeredView *medView = dynamic_cast <medAbstractLayeredView *> (view);
-
-    if (!medView)
-        return;
-
-    unsigned int layersCount = medView->layersCount();
-    for (unsigned int i = 0;i < layersCount;++i)
+    if (d->diffusionContainer)
     {
-        this->addToolBoxInput(medView->layerData(i));
+        d->diffusionContainer->setUserClosable(true);
+        d->diffusionContainer->setUserSplittable(false);
+        d->diffusionContainer->setMultiLayered(true);
+
+        connect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
     }
 
-    //connect(medView,SIGNAL(dataAdded(medAbstractData *)),this,SLOT(addToolBoxInput(medAbstractData *)));
+    this->resetToolBoxesInputs();
 }
 
-void medDiffusionWorkspace::disconnectCurrentViewSignals(medAbstractView *view)
+void medDiffusionWorkspace::updateToolBoxesInputs()
 {
-    medAbstractLayeredView *medView = dynamic_cast <medAbstractLayeredView *> (view);
+    medAbstractLayeredView *medView = dynamic_cast <medAbstractLayeredView *> (d->diffusionContainer->view());
 
     if (!medView)
         return;
-
-//    disconnect(medView,SIGNAL(dataAdded(medAbstractData *)),this,SLOT(addToolBoxInput(medAbstractData *)));
+    
+    unsigned int layersCount = medView->layersCount();
+    for (unsigned int i = 0;i < layersCount;++i)
+        this->addToolBoxInput(medView->layerData(i));
 }
 
 void medDiffusionWorkspace::addToolBoxInput(medAbstractData *data)
@@ -279,13 +263,13 @@ void medDiffusionWorkspace::addToolBoxInput(medAbstractData *data)
     }
 }
 
-void medDiffusionWorkspace::resetToolBoxesInputs(medAbstractView *view)
+void medDiffusionWorkspace::resetToolBoxesInputs()
 {
-    DTK_UNUSED(view);
-
     d->diffusionEstimationToolBox->clearInput();
     d->diffusionScalarMapsToolBox->clearInput();
     d->diffusionTractographyToolBox->clearInput();
+    
+    this->updateToolBoxesInputs();
 }
 
 bool medDiffusionWorkspace::isUsable()
