@@ -184,15 +184,9 @@ void medDiffusionWorkspace::getOutput()
     // TO DO change this, we should allow only one data of each type in the view
     medAbstractLayeredView *medView = dynamic_cast <medAbstractLayeredView *> (d->diffusionContainer->view());
     if (!medView)
-    {
-        // Should not happen as views are not closable
         d->diffusionContainer->addData(outputData);
-    }
     else
-    {
-        medView->removeLayer(0);
-        medView->insertLayer(0,outputData);
-    }
+        medView->addLayer(outputData);
 
     QString uuid = QUuid::createUuid().toString();
     medDataManager::instance()->importNonPersistent (outputData, uuid);
