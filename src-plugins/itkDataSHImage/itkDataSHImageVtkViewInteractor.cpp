@@ -60,6 +60,9 @@ public:
     vtkSphericalHarmonicManager* manager;
     double                       imageBounds[6];
 
+    int minorScaling;
+    int majorScalingExponent;
+
     //  The filters will convert from itk SH image format to vtkStructuredPoint (format handled by the SH manager)
 
     itk::SphericalHarmonicITKToVTKFilter<itk::VectorImage<float,3> >::Pointer  filterFloat;
@@ -118,6 +121,9 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractImag
     d->filterFloat = 0;
     d->filterDouble = 0;
 
+    d->minorScaling = 1;
+    d->majorScalingExponent = 0;
+
     //  Set default properties
     d->manager->SetTesselationType(0);
     d->manager->SetTesselationBasis(0);
@@ -128,8 +134,8 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractImag
 
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor(),d->renderer3d);
 
-    connect(d->view, SIGNAL(positionChanged(const QVector3D&,bool)),
-            this,    SLOT(setPosition(const QVector3D&,bool)));
+    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)),
+            this,    SLOT(setPosition(QVector3D)));
 
     d->toolbox = NULL;
 }
@@ -210,19 +216,19 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 {
     QStringList tesselationTypeList;
     tesselationTypeList << "Icosahedron" << "Octahedron" << "Tetrahedron";
-    medStringListParameter *tesselationTypeParam = new medStringListParameter("tesselationType");
+    medStringListParameter *tesselationTypeParam = new medStringListParameter("Tesselation Type");
     tesselationTypeParam->addItems(tesselationTypeList);
 
     //  Combobox to control the spherical Harmonics basis
 
     QStringList tesselationBasisList;
     tesselationBasisList << "SHMatrix" << "SHMatrixMaxThesis" << "SHMatrixTournier" << "SHMatrixRshBasis";
-    medStringListParameter * tesselationBasisParam = new medStringListParameter("tesselationBasis");
+    medStringListParameter * tesselationBasisParam = new medStringListParameter("Tesselation Basis");
     tesselationBasisParam->addItems(tesselationBasisList);
 
     //  Control sample rate
 
-    medIntParameter *sampleRateParam = new medIntParameter("sampleRate");
+    medIntParameter *sampleRateParam = new medIntParameter("Sample Rate");
     sampleRateParam->setRange(1,10);
     sampleRateParam->setValue(1);
 
@@ -238,7 +244,7 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 
     //  Control glyph resolution
 
-    medIntParameter *glyphResolutionParam = new medIntParameter("glyphResolution");
+    medIntParameter *glyphResolutionParam = new medIntParameter("Resolution");
     glyphResolutionParam->setRange(0,10);
     glyphResolutionParam->setValue(2);
 
@@ -248,25 +254,25 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 
     //  Minor scaling
 
-    medIntParameter *minorScalingParam = new medIntParameter("minorScaling");
+    medIntParameter *minorScalingParam = new medIntParameter("Scale");
     minorScalingParam->setRange(0,9);
     minorScalingParam->setValue(3);
 
 
     //  Major scaling
 
-    medIntParameter *majorScalingParam = new medIntParameter("majorScaling");
+    medIntParameter *majorScalingParam = new medIntParameter("x10^");
     majorScalingParam->setRange(-10,10);
     majorScalingParam->setValue(0);
 
 
     //  Hide or show axial, coronal, and sagittal
 
-    medBoolParameter *showAxialParam = new medBoolParameter("ShowAxial");
+    medBoolParameter *showAxialParam = new medBoolParameter("Show axial");
     showAxialParam->setValue(true);
-    medBoolParameter *showCoronalParam = new medBoolParameter("ShowCoronal");
+    medBoolParameter *showCoronalParam = new medBoolParameter("Show coronal");
     showCoronalParam->setValue(true);
-    medBoolParameter *showSagittalParam = new medBoolParameter("ShowSagittal");
+    medBoolParameter *showSagittalParam = new medBoolParameter("Show sagittal");
     showSagittalParam->setValue(true);
 
 
@@ -284,16 +290,16 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     d->parameters.append(showCoronalParam);
     d->parameters.append(showSagittalParam);
 
-    connect(tesselationTypeParam, SIGNAL(valueChanged(int)), this, SLOT(setTesselationType(TesselationType)));
-    connect(tesselationBasisParam, SIGNAL(valueChanged(int)), this, SLOT(setTesselationBasis(TesselationBasis)));
+    connect(tesselationTypeParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationType(QString)));
+    connect(tesselationBasisParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationBasis(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
     connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
     connect(flipYParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipY(bool)));
     connect(flipZParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipZ(bool)));
     connect(enhanceParam, SIGNAL(valueChanged(bool)), this, SLOT(setNormalization(bool)));
     connect(glyphResolutionParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphResolution(int)));
-    //connect(minorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(set(TesselationType)));
-    //connect(majorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setTesselationType(TesselationType)));
+    connect(minorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setMinorScaling(int)));
+    connect(majorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setMajorScaling(int)));
     connect(showAxialParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowAxial(bool)));
     connect(showCoronalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowCoronal(bool)));
     connect(showSagittalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowSagittal(bool)));
@@ -336,13 +342,25 @@ void itkDataSHImageVtkViewInteractor::imageSize(int* imSize) {
     d->manager->GetSphericalHarmonicDimensions(imSize);
 }
 
-void itkDataSHImageVtkViewInteractor::setTesselationType(TesselationType tesselationType) {
-    d->manager->SetTesselationType(tesselationType);
+void itkDataSHImageVtkViewInteractor::setTesselationType(QString tesselationType) {
+    if(tesselationType == "Icosahedron")
+      d->manager->SetTesselationType(Icosahedron);
+    else if(tesselationType == "Octahedron")
+        d->manager->SetTesselationType(Octahedron);
+    if(tesselationType == "Tetrahedron")
+      d->manager->SetTesselationType(Tetrahedron);
     update();
 }
 
-void itkDataSHImageVtkViewInteractor::setTesselationBasis(TesselationBasis tesselationBasis) {
-    d->manager->SetTesselationBasis(tesselationBasis);
+void itkDataSHImageVtkViewInteractor::setTesselationBasis(QString tesselationBasis) {
+    if(tesselationBasis == "SHMatrix")
+      d->manager->SetTesselationBasis(SHMatrix);
+    else if(tesselationBasis == "SHMatrixMaxThesis")
+      d->manager->SetTesselationBasis(SHMatrixMaxThesis);
+    else if(tesselationBasis == "SHMatrixTournier")
+      d->manager->SetTesselationBasis(SHMatrixTournier);
+    else if(tesselationBasis == "SHMatrixRshBasis")
+      d->manager->SetTesselationBasis(SHMatrixRshBasis);
     update();
 }
 
@@ -356,9 +374,28 @@ void itkDataSHImageVtkViewInteractor::setGlyphResolution(int glyphResolution) {
     update();
 }
 
-void itkDataSHImageVtkViewInteractor::setScaling(double scale) {
+void itkDataSHImageVtkViewInteractor::setScale(double scale) {
     d->manager->SetGlyphScale((float)scale);
     update();
+}
+
+void itkDataSHImageVtkViewInteractor::setMajorScaling(int majorScalingExponent)
+{
+     d->majorScalingExponent = majorScalingExponent;
+     setScale(d->minorScaling, d->majorScalingExponent);
+}
+
+void itkDataSHImageVtkViewInteractor::setMinorScaling(int minorScaling)
+{
+     d->minorScaling = minorScaling;
+     setScale(d->minorScaling, d->majorScalingExponent);
+}
+
+void itkDataSHImageVtkViewInteractor::setScale(int minorScale, int majorScaleExponent)
+{
+    double majorScale = pow(10.0, majorScaleExponent);
+    double scale = majorScale * minorScale;
+    setScale(scale);
 }
 
 void itkDataSHImageVtkViewInteractor::setXSlice(int xSlice) {
@@ -428,7 +465,7 @@ void itkDataSHImageVtkViewInteractor::setNormalization(const bool Norma) {
     update();
 }
 
-void itkDataSHImageVtkViewInteractor::setPosition(const QVector3D& position,bool propagate) {
+void itkDataSHImageVtkViewInteractor::setPosition(const QVector3D& position) {
     d->manager->SetCurrentPosition(position.x(),position.y(),position.z());
     update();
 }
@@ -534,8 +571,5 @@ QList<medAbstractParameter*> itkDataSHImageVtkViewInteractor::parameters()
 
 void itkDataSHImageVtkViewInteractor::update()
 {
-    if(d->view->is2D())
-        d->view2d->Render();
-    else
-        d->view3d->Render();
+    d->render->Render();
 }

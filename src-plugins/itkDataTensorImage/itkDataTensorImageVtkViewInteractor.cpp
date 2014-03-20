@@ -116,8 +116,8 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     // otherwise a new renderer is created
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor(), d->renderer3d);
 
-    connect(d->view, SIGNAL(positionChanged(const QVector3D&,bool)),
-            this,    SLOT(changePosition(const QVector3D&,bool)));
+    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)),
+            this,    SLOT(changePosition(QVector3D)));
 
     d->toolbox = NULL;
 
@@ -299,7 +299,7 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     d->parameters << multiplierParam;
 
     medBoolParameter *showsAxialParam = new medBoolParameter("Show axial", data);
-    medBoolParameter *showSagitalParam = new medBoolParameter("Show sagital", data);
+    medBoolParameter *showSagitalParam = new medBoolParameter("Show sagittal", data);
     medBoolParameter *showCoronalParam = new medBoolParameter("Show coronal", data);
     showCoronalParam->setValue(true);
     showsAxialParam->setValue(true);
@@ -485,7 +485,7 @@ void itkDataTensorImageVtkViewInteractor::setFlipZ(bool flip)
     this->update();
 }
 
-void itkDataTensorImageVtkViewInteractor::changePosition(const QVector3D& position, bool propagate)
+void itkDataTensorImageVtkViewInteractor::changePosition(const QVector3D& position)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
     this->update();

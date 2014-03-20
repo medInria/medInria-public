@@ -120,7 +120,7 @@ public slots:
     void setShowSagittal(bool show);
 
     /** Change position of the slices */
-    void changePosition(const QVector3D& position, bool propagate);
+    void changePosition(const QVector3D& position);
 
 
     void setMajorScaling(int majorScalingExponent);

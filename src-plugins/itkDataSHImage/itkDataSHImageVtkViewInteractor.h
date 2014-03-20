@@ -89,10 +89,10 @@ public:
 public slots:
 
     /** Change glyph shape */
-    void setTesselationType (TesselationType tesselationType);
+    void setTesselationType (QString tesselationType);
 
     /** Change glyph shape */
-    void setTesselationBasis (TesselationBasis tesselationBasis);
+    void setTesselationBasis (QString tesselationBasis);
 
     /** Modify sample rate */
     void setSampleRate (int sampleRate);
@@ -122,7 +122,7 @@ public slots:
     //    void onReverseBackgroundColorPropertySet (bool isWhite);
 
     /** Scaling changed */
-    void setScaling (double scale);
+    void setScale (double scale);
 
     /** Slice x changed */
     void setXSlice (int xSlice);
@@ -143,7 +143,12 @@ public slots:
     void setShowSagittal(bool show);
 
     /** Change the position of the slices */
-    void setPosition(const QVector3D& position, bool propagate);
+    void setPosition(const QVector3D& position);
+
+
+    void setMajorScaling(int majorScalingExponent);
+    void setMinorScaling(int minorScaling);
+    void setScale(int minorScale, int majorScaleExponent);
 
 
     void setOpacity(double opacity);
