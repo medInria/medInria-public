@@ -84,7 +84,7 @@ public slots:
     void setWindowLevel(double &window, double &level);
 
     /** Change glyph shape */
-    void setGlyphShape(int glyphShape);
+    void setGlyphShape(QString glyphShape);
 
     /** Modify sample rate */
     void setSampleRate(int sampleRate);
@@ -97,6 +97,9 @@ public slots:
 
     /** Flip tensors along the Z axis */
     void setFlipZ(bool flip);
+
+    /** A new eigenvector for mapping the color mode is set */
+    void setEigenVector(QString color);
 
     /** A new eigenvector for mapping the color mode is set */
     void setEigenVector(int eigenVector);
@@ -129,6 +132,7 @@ public slots:
 protected:
     void computeBounds();
     void updateBounds(const double bounds[]);
+    void update();
 
 private:
     static QStringList dataHandled();

@@ -36,6 +36,7 @@
 #include <medStringListParameter.h>
 #include <medIntParameter.h>
 #include <medBoolParameter.h>
+#include <medBoolGroupParameter.h>
 #include <medColorListParameter.h>
 #include <medAbstractImageView.h>
 #include <medImageViewFactory.h>
@@ -276,11 +277,11 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     medBoolParameter *flipZParam = new medBoolParameter("FlipZ", data);
     d->parameters << flipXParam << flipYParam << flipZParam;
 
-    medColorListParameter *colorParam = new medColorListParameter("Color", data);
-    QStringList colors = QStringList() << "red" << "green" << "blue";
-    QStringList labels = QStringList() << "v1" << "v2" << "v3";
-    colorParam->addColors(colors, labels);
-    d->parameters << colorParam;
+    medStringListParameter *eigenParam = new medStringListParameter("Color with", data);
+    QStringList colorMode = QStringList() << "v1" << "v2" << "v3";
+    eigenParam->addItems(colorMode);
+    eigenParam->setValue("v1");
+    d->parameters << eigenParam;
 
     medIntParameter *resolutionParam = new medIntParameter("Resolution", data);
     resolutionParam->setRange(2, 20);
@@ -300,15 +301,18 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     medBoolParameter *showsAxialParam = new medBoolParameter("Show axial", data);
     medBoolParameter *showSagitalParam = new medBoolParameter("Show sagital", data);
     medBoolParameter *showCoronalParam = new medBoolParameter("Show coronal", data);
+    showCoronalParam->setValue(true);
+    showsAxialParam->setValue(true);
+    showSagitalParam->setValue(true);
 
     d->parameters << showCoronalParam << showSagitalParam << showsAxialParam;
 
-    connect(shapeParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphShape(int)));
+    connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
     connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
     connect(flipYParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipY(bool)));
     connect(flipZParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipZ(bool)));
-   // connect(colorParam, SIGNAL(), this, SLOT());
+    connect(eigenParam, SIGNAL(valueChanged(QString)), this, SLOT(setEigenVector(QString)));
     connect(resolutionParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphResolution(int)));
     connect(scaleParam, SIGNAL(valueChanged(int)), this, SLOT(setMinorScaling(int)));
     connect(multiplierParam, SIGNAL(valueChanged(int)), this, SLOT(setMajorScaling(int)));
@@ -350,68 +354,78 @@ bool itkDataTensorImageVtkViewInteractor::visibility() const
     return true;
 }
 
-void itkDataTensorImageVtkViewInteractor::setGlyphShape(int glyphShape)
+void itkDataTensorImageVtkViewInteractor::setGlyphShape(QString glyphShape)
 {
-    switch(glyphShape)
-    {
-        case itkDataTensorImageVtkViewInteractor::Lines:
-            d->manager->SetGlyphShapeToLine();
-            break;
-        case itkDataTensorImageVtkViewInteractor::Disks:
-            d->manager->SetGlyphShapeToDisk();
-            break;
-        case itkDataTensorImageVtkViewInteractor::Arrows:
-            d->manager->SetGlyphShapeToArrow();
-            break;
-        case itkDataTensorImageVtkViewInteractor::Cubes:
-            d->manager->SetGlyphShapeToCube();
-            break;
-        case itkDataTensorImageVtkViewInteractor::Cylinders:
-            d->manager->SetGlyphShapeToCylinder();
-            break;
-        case itkDataTensorImageVtkViewInteractor::Ellipsoids:
-            d->manager->SetGlyphShapeToSphere();
-            break;
-        case itkDataTensorImageVtkViewInteractor::Superquadrics:
-            d->manager->SetGlyphShapeToSuperquadric();
-            break;
-        default:
-            qDebug() << "Unknown glyph type";
-    }
+    if(glyphShape == "Lines")
+         d->manager->SetGlyphShapeToLine();
+    else if(glyphShape == "Disks")
+        d->manager->SetGlyphShapeToDisk();
+    else if(glyphShape == "Arrows")
+        d->manager->SetGlyphShapeToArrow();
+    else if(glyphShape == "Cubes")
+        d->manager->SetGlyphShapeToCube();
+    else if(glyphShape == "Cylinders")
+        d->manager->SetGlyphShapeToCylinder();
+    else if(glyphShape == "Ellipsoids")
+        d->manager->SetGlyphShapeToSphere();
+    else if(glyphShape == "Superquadrics")
+        d->manager->SetGlyphShapeToSuperquadric();
+
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setSampleRate(int sampleRate)
 {
     d->manager->SetSampleRate(sampleRate, sampleRate, sampleRate);
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setEigenVector(int eigenVector)
 {
     // we need to substract 1 because the manager receives an index
     d->manager->SetColorModeToEigenvector(eigenVector-1);
+    this->update();
+}
+
+void itkDataTensorImageVtkViewInteractor::setEigenVector(QString colorMode)
+{
+    if(colorMode == "v1")
+        this->setEigenVector(1);
+    else if (colorMode == "v2")
+        this->setEigenVector(2);
+    else if(colorMode == "v3")
+        this->setEigenVector(3);
+
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setGlyphResolution(int glyphResolution)
 {
     d->manager->SetGlyphResolution(glyphResolution);
+    this->update();
 }
 
 
 void itkDataTensorImageVtkViewInteractor::setScale(double scale)
 {
     d->manager->SetGlyphScale((float)scale);
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setMajorScaling(int majorScalingExponent)
 {
      d->majorScalingExponent = majorScalingExponent;
      setScale(d->minorScaling, d->majorScalingExponent);
+
+     this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setMinorScaling(int minorScaling)
 {
      d->minorScaling = minorScaling;
      setScale(d->minorScaling, d->majorScalingExponent);
+
+     this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setScale(int minorScale, int majorScaleExponent)
@@ -419,6 +433,8 @@ void itkDataTensorImageVtkViewInteractor::setScale(int minorScale, int majorScal
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     setScale(scale);
+
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setShowAxial(bool show)
@@ -427,6 +443,8 @@ void itkDataTensorImageVtkViewInteractor::setShowAxial(bool show)
         d->manager->SetAxialSliceVisibility(1);
     else
         d->manager->SetAxialSliceVisibility(0);
+
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setShowCoronal(bool show)
@@ -435,6 +453,8 @@ void itkDataTensorImageVtkViewInteractor::setShowCoronal(bool show)
         d->manager->SetCoronalSliceVisibility(1);
     else
         d->manager->SetCoronalSliceVisibility(0);
+
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setShowSagittal(bool show)
@@ -443,26 +463,32 @@ void itkDataTensorImageVtkViewInteractor::setShowSagittal(bool show)
         d->manager->SetSagittalSliceVisibility(1);
     else
         d->manager->SetSagittalSliceVisibility(0);
+
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setFlipX(bool flip)
 {
     d->manager->FlipX(flip);
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setFlipY(bool flip)
 {
     d->manager->FlipY(flip);
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::setFlipZ(bool flip)
 {
     d->manager->FlipZ(flip);
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::changePosition(const QVector3D& position, bool propagate)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
+    this->update();
 }
 
 void itkDataTensorImageVtkViewInteractor::computeBounds()
@@ -548,3 +574,7 @@ QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()
     return d->parameters;
 }
 
+void itkDataTensorImageVtkViewInteractor::update()
+{
+    d->render->Render();
+}

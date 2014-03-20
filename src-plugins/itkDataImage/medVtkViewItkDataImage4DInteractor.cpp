@@ -262,3 +262,4 @@ void medVtkViewItkDataImage4DInteractor::removeInternToolBox()
 {
     d->toolBoxWidget = NULL;
 }
+

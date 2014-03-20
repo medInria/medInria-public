@@ -57,6 +57,7 @@ public slots:
 private:
     static QStringList dataHandled();
 
+
 private slots:
     void removeInternToolBox();
 
