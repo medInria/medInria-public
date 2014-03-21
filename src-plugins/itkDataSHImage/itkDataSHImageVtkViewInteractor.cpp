@@ -329,13 +329,18 @@ double itkDataSHImageVtkViewInteractor::opacity() const
 
 void itkDataSHImageVtkViewInteractor::setVisibility(bool visibility)
 {
-    //TODO
+    int v = (visibility) ? 1 : 0;
+
+    d->manager->GetSHVisuManagerAxial()->GetActor()->SetVisibility(v);
+    d->manager->GetSHVisuManagerSagittal()->GetActor()->SetVisibility(v);
+    d->manager->GetSHVisuManagerCoronal()->GetActor()->SetVisibility(v);
+
+    this->update();
 }
 
 bool itkDataSHImageVtkViewInteractor::visibility() const
 {
-    //TODO
-    return true;
+    return (d->manager->GetSHVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
 
 void itkDataSHImageVtkViewInteractor::imageSize(int* imSize) {

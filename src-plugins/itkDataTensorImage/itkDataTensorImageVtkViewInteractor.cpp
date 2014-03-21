@@ -345,13 +345,18 @@ double itkDataTensorImageVtkViewInteractor::opacity() const
 
 void itkDataTensorImageVtkViewInteractor::setVisibility(bool visibility)
 {
-    //TODO
+    int v = (visibility) ? 1 : 0;
+
+    d->manager->GetTensorVisuManagerAxial()->GetActor()->SetVisibility(v);
+    d->manager->GetTensorVisuManagerSagittal()->GetActor()->SetVisibility(v);
+    d->manager->GetTensorVisuManagerCoronal()->GetActor()->SetVisibility(v);
+
+    this->update();
 }
 
 bool itkDataTensorImageVtkViewInteractor::visibility() const
 {
-    //TODO
-    return true;
+    return (d->manager->GetTensorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
 
 void itkDataTensorImageVtkViewInteractor::setGlyphShape(QString glyphShape)
