@@ -34,11 +34,13 @@
 #include <itkDataImageDouble3.h>
 #include <itkDataImageVectorUChar3.h>
 #include <itkDataImageVectorFloat3.h>
+#include <itkDataImageVectorDouble3.h>
 #include <itkDataImageRGB3.h>
 #include <itkDataImageRGBA3.h>
 
 #include <medVtkViewItkDataImageInteractor.h>
 #include <medVtkViewItkDataImage4DInteractor.h>
+#include <v3dViewVectorFieldInteractor.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>
@@ -102,11 +104,12 @@ bool itkDataImagePlugin::initialize()
     if(!itkDataImageDouble4::registered()) qDebug() << "Unable to register itkDataImageDouble4 type";
     if(!itkDataImageVectorUChar3::registered()) qDebug() << "Unable to register itkDataImageVectorUChar3 type";
     if(!itkDataImageVectorFloat3::registered()) qDebug() << "Unable to register itkDataImageVectorFloat3 type";
+    if(!itkDataImageVectorDouble3::registered()) qDebug() << "Unable to register itkDataImageVectorDouble3 type";
     if(!itkDataImageRGB3::registered()) qDebug() << "Unable to register itkDataImageRGB3 type";
     if(!itkDataImageRGBA3::registered()) qDebug() << "Unable to register itkDataImageRGBA3 type";
     if(!medVtkViewItkDataImageInteractor::registered()) qDebug() << "Unable to register medVtkViewItkDataImageInteractor";
     if(!medVtkViewItkDataImage4DInteractor::registered()) qDebug() << "Unable to register medVtkViewItkDataImage4DInteractor";
-
+    if(!v3dViewVectorFieldInteractor::registered()) qDebug() << "Unable to register v3dViewVectorFieldInteractor";
     return true;
 }
 
@@ -159,6 +162,7 @@ QStringList itkDataImagePlugin::types() const
             << "itkDataImageDouble4"
             << "itkDataImageVectorUChar3"
             << "itkDataImageVectorFloat3"
+            << "itkDataImageVectorDouble3"
             << "itkDataImageRGB3"
             << "itkDataImageRGBA3";
 }
