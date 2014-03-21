@@ -100,6 +100,8 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->parametersCandidateToPool << d->loopParameter;
     d->loopParameter->setText("Loop");
 
+    d->duration = 1;
+
     this->clear();
 
     connect(d->timeLine, SIGNAL(frameChanged(int)), d->frameLineParameter, SIGNAL(valueChanged(int)));
@@ -124,7 +126,7 @@ medTimeLineParameter::~medTimeLineParameter()
 void medTimeLineParameter::clear()
 {
     this->setSpeedFactor(1);
-    this->setDuration(0.0);
+    this->setDuration(1);
     this->setNumberOfFrame(1);
     this->setFrame(0);
     this->setStepFrame(1);
@@ -226,7 +228,7 @@ void medTimeLineParameter::setStepFrame(int stepFrame)
 void medTimeLineParameter::setDuration(const double& timeDuration)
 {
     d->duration = timeDuration;
-    d->timeParameter->setRange(0,d->duration);
+    d->timeParameter->setRange(0, d->duration);
     if(d->duration != 0)
         d->timeBetweenFrames = d->duration / d->numberOfFrame;
     else
@@ -313,7 +315,7 @@ QWidget* medTimeLineParameter::getWidget()
         QHBoxLayout *sliderLayout = new QHBoxLayout;
         sliderLayout->addWidget(d->timeParameter->getValueLabel());
         sliderLayout->addWidget(d->frameLineParameter->getSlider());
-        sliderLayout->addWidget(new QLabel(QString::number(d->duration, 'f', 2)));
+        sliderLayout->addWidget(new QLabel(QString::number(d->duration - 1, 'f', 2))); // duration - 1 beacause the first moment is 0s
 
         widgetLayout->addLayout(buttonsLayout);
         widgetLayout->addLayout(sliderLayout);

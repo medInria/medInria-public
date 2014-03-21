@@ -561,4 +561,6 @@ void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
         return;
 
     d->view2d->SetCurrentLayer(d->imageViewInternalLayer);
+    d->view3d->SetCurrentLayer(d->imageViewInternalLayer);
+
 }
