@@ -45,6 +45,7 @@ public:
     QList<dtkSmartPointer<medAbstractData> > dataList() const;
 
     bool contains(medAbstractData * data) const;
+    bool contains(QString identifier) const;
 
     unsigned int layersCount() const;
     unsigned int layer(medAbstractData * data);

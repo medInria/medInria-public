@@ -1120,7 +1120,15 @@ void vtkImageView3D::AddLayer (int layer)
 //----------------------------------------------------------------------------
 int vtkImageView3D::GetNumberOfLayers() const
 {
-  return this->LayerInfoVec.size();
+    // I don't really know why, but LayerInfoVec size is set to 1 at initialisation time,
+    // so we need one more check to know the real number of layer
+    if( this->LayerInfoVec.size() == 1)
+    {
+        if( this->LayerInfoVec.at(0).ImageDisplay->GetInput() == NULL)
+            return 0;
+        else return 1;
+    }
+    else return this->LayerInfoVec.size();
 }
 
 //----------------------------------------------------------------------------

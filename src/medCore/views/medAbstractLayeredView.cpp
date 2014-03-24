@@ -250,6 +250,17 @@ bool medAbstractLayeredView::contains(medAbstractData * data) const
     return d->layersDataList.contains(data);
 }
 
+bool medAbstractLayeredView::contains(QString identifier) const
+{
+    foreach(medAbstractData *data, d->layersDataList)
+    {
+        if(data->identifier() == identifier)
+            return true;
+    }
+
+    return false;
+}
+
 unsigned int medAbstractLayeredView::layersCount() const
 {
     return d->layersDataList.count();

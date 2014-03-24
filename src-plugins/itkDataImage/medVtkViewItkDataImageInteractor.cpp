@@ -158,6 +158,7 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::parameters()
     params.append(d->windowParameter);
     params.append(d->levelParameter);
     params.append(d->slicingParameter);
+
     return params;
 }
 
@@ -564,3 +565,4 @@ void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
     d->view3d->SetCurrentLayer(d->imageViewInternalLayer);
 
 }
+
