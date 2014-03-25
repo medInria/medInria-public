@@ -42,6 +42,7 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->mode3DParameter = new medStringListParameter("3D Mode");
     QStringList modes = QStringList() << "VR" << "MIP - Maximum" << "MIP - Minimum" << "MPR" << "Off";
     d->mode3DParameter->addItems(modes);
+    d->mode3DParameter->setValue("MPR");
     connect(d->mode3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(set3DMode(QString)));
 
     d->renderer3DParameter = new medStringListParameter("Renderer");
@@ -57,6 +58,8 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->parameters.append(d->croppingParameter);
 
     connect(d->medVtkView, SIGNAL(orientationChanged()), this, SLOT(updateVisibility()));
+
+    d->toolbox = NULL;
 }
 
 medVtkViewItkDataImageNavigator::~medVtkViewItkDataImageNavigator()

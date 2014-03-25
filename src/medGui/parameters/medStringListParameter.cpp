@@ -91,6 +91,9 @@ QComboBox* medStringListParameter::getComboBox()
         d->comboBox->addItems(d->items);
 
         this->addToInternWidgets(d->comboBox);
+
+        updateInternWigets();
+
         connect(d->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setValue(QString)));
         connect(d->comboBox, SIGNAL(destroyed()), this, SLOT(removeInternComboBox()));
     }
