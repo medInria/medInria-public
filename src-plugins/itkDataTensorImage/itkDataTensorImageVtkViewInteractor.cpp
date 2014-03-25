@@ -82,10 +82,11 @@ public:
 
     QList <medAbstractParameter*> parameters;
 
+    medDoubleParameter *opacityParam;
+
     QImage thumbnail;
 
     QWidget *toolbox;
-    QWidget *layerWidget;
 
     PropertySmartPointer actorProperty;
 };
@@ -271,14 +272,11 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     d->manager->GetTensorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );
 
 
-    medDoubleParameter *opacityParam = new medDoubleParameter("Opacity", this);
-    opacityParam->setRange(0,1);
-    opacityParam->setSingleStep(0.01);
-    opacityParam->setValue(1);
-    d->parameters << opacityParam;
-    QSlider *slider = opacityParam->getSlider();
-    slider->setOrientation(Qt::Horizontal);
-    d->layerWidget = slider;
+    d->opacityParam = new medDoubleParameter("Opacity", this);
+    d->opacityParam->setRange(0,1);
+    d->opacityParam->setSingleStep(0.01);
+    d->opacityParam->setValue(1);
+    d->parameters << d->opacityParam;
 
     medStringListParameter *shapeParam = new medStringListParameter("Shape", data);
     d->parameters << shapeParam;
@@ -317,7 +315,7 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     multiplierParam->setValue(0);
     d->parameters << multiplierParam;
 
-    connect(opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
+    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
     connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
@@ -547,7 +545,9 @@ void itkDataTensorImageVtkViewInteractor::moveToSlice(int slice)
 
 QWidget* itkDataTensorImageVtkViewInteractor::layerWidget()
 {
-    return d->layerWidget;
+    QSlider *slider = d->opacityParam->getSlider();
+    slider->setOrientation(Qt::Horizontal);
+    return slider;
 }
 
 QWidget* itkDataTensorImageVtkViewInteractor::toolBoxWidget()

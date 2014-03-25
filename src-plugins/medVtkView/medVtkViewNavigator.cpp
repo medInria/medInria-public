@@ -336,7 +336,6 @@ void medVtkViewNavigator::setCameraPosition(double x, double y, double z)
 void medVtkViewNavigator::setCameraPosition(const QVector3D& position)
 {
     setCameraPosition(position.x(), position.y(), position.z());
-    d->currentView->Render();
 }
 
 
