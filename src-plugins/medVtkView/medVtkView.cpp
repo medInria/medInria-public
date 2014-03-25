@@ -403,8 +403,8 @@ QVector3D medVtkView::viewUp()
 bool medVtkView::is2D()
 {
     return this->orientation() == medImageView::VIEW_ORIENTATION_AXIAL ||
-            medImageView::VIEW_ORIENTATION_CORONAL ||
-            medImageView::VIEW_ORIENTATION_SAGITTAL;
+           this->orientation() == medImageView::VIEW_ORIENTATION_CORONAL ||
+           this->orientation() == medImageView::VIEW_ORIENTATION_SAGITTAL;
 }
 
 qreal medVtkView::sliceThickness()
