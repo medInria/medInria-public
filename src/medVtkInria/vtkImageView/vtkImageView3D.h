@@ -179,6 +179,7 @@ public:
   virtual unsigned int GetCroppingMode ();
 
   virtual void SetInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0, int layer = 0);
+  virtual void AddInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0);
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
 
   using vtkImageView::SetColorWindow;

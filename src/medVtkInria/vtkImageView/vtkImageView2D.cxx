@@ -1844,21 +1844,6 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
           box.AddBounds( widget->GetSource()->GetBounds() );
       }
 
-      /////
-      // TODO GPR, in progress
-      vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
-      unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
-      imagegenerator->SetOutputImageSize(imSize);
-
-      imagegenerator->SetOutputImageBounds(widget->GetSource()->GetBounds());
-      vtkImageData * image = imagegenerator->GetOutput();
-
-      SetInput(image, 0);
-      vtkImageActor *actor = GetImageActor(0);
-      actor->SetOpacity(0.0);
-      imagegenerator->Delete();
-      /////
-
     double center[3];
     box.GetCenter(center);
     this->SetCurrentPoint(center);
@@ -1869,6 +1854,68 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   }
 
   return widget->GetActor();
+}
+
+void vtkImageView2D::updateBounds (const double bounds[6], const int imageSize[3])
+{
+    bool isImageOutBounded = false;
+    double imageBounds[6];
+
+    if( GetNumberOfLayers() == 0 )
+    {
+        for (int i=0; i<6; i++)
+        {
+            imageBounds[i]=bounds[i];
+        }
+        isImageOutBounded = true;
+    }
+    else
+    {
+        GetInputBounds ( imageBounds );
+
+        for (int i=0; i<6; i=i+2)
+        {
+            if (bounds[i] < imageBounds[i])
+            {
+                imageBounds[i]=bounds[i];
+                isImageOutBounded=true;
+            }
+        }
+        for (int i=1; i<6; i=i+2)
+        {
+            if (bounds[i] > imageBounds[i])
+            {
+                imageBounds[i]=bounds[i];
+                isImageOutBounded=true;
+            }
+        }
+    }
+
+    if(isImageOutBounded && GetNumberOfLayers() == 0)
+    {
+        vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
+        unsigned int imSize [3];
+        if( imageSize != 0 )
+        {
+            imSize[0] = imageSize[0], imSize[1] = imageSize[1], imSize[2] = imageSize[2];
+        }
+        else
+        {
+            imSize[0]=100; imSize[1]=100; imSize[2]=100;
+        }
+
+        imagegenerator->SetOutputImageSize(imSize);
+
+        imagegenerator->SetOutputImageBounds(imageBounds);
+        vtkImageData * image = imagegenerator->GetOutput();
+
+        SetInput(image, 0);
+        vtkImageActor *actor = GetImageActor(0);
+        actor->SetOpacity(0.0);
+        isImageOutBounded=false;
+        imagegenerator->Delete();
+        ResetCamera();
+    }
 }
 
 //----------------------------------------------------------------------------

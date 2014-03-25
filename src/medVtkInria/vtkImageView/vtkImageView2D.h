@@ -555,6 +555,8 @@ public:
   virtual void StoreColorWindow(double s,int layer);
   virtual void StoreColorLevel(double s,int layer);
 
+  virtual void updateBounds (const double bounds[6], const int imageSize[3] = 0);
+
 protected:
   vtkImageView2D();
   ~vtkImageView2D();

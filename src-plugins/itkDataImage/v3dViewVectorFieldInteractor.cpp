@@ -60,6 +60,8 @@ public:
     DoubleFilterType::Pointer        doubleFilter;
 
     vtkVectorManager                 *manager;
+
+    double imageBounds[6];
 };
 
 v3dViewVectorFieldInteractor::v3dViewVectorFieldInteractor(medAbstractImageView* parent):
@@ -80,16 +82,17 @@ v3dViewVectorFieldInteractor::v3dViewVectorFieldInteractor(medAbstractImageView*
     d->manager = vtkVectorManager::New();
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor(),d->renderer3d);
 
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)),
-            this,    SLOT(setPosition(QVector3D)));
+    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(setPosition(QVector3D)));
 
     d->toolbox = NULL;
+
+    for (int i=0; i<6; i++)
+        d->imageBounds[i] = 0;
 }
 
 
 v3dViewVectorFieldInteractor::~v3dViewVectorFieldInteractor()
 {
-    d->manager->Delete();
     delete d;
     d = 0;
 }
@@ -207,6 +210,11 @@ void v3dViewVectorFieldInteractor::setData(medAbstractData *data)
     d->renderer2d->AddActor (d->manager->GetVectorVisuManagerSagittal()->GetActor());
     d->renderer2d->AddActor (d->manager->GetVectorVisuManagerCoronal()->GetActor());
 
+    if(d->view->layersCount() == 1)
+    {
+        computeBounds();
+    }
+
     setupParameters();
 
     update();
@@ -282,7 +290,6 @@ bool v3dViewVectorFieldInteractor::visibility() const
 {
     return (d->manager->GetVectorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
-
 
 void v3dViewVectorFieldInteractor::setScale(double scale)
 {
@@ -416,4 +423,36 @@ QList<medAbstractParameter*> v3dViewVectorFieldInteractor::parameters()
 void v3dViewVectorFieldInteractor::update()
 {
     d->render->Render();
+}
+
+void v3dViewVectorFieldInteractor::computeBounds()
+{
+    d->manager->GetVectorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
+
+    updateBounds(d->manager->GetVectorVisuManagerSagittal()->GetActor()->GetBounds());
+    updateBounds(d->manager->GetVectorVisuManagerCoronal()->GetActor()->GetBounds());
+
+    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
+    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
+    // so we need to increase bounds by +1 to have the correct image size
+    d->imageBounds[0] = round(d->imageBounds[0]);
+    d->imageBounds[1] = round(d->imageBounds[1])+1;
+    d->imageBounds[2] = round(d->imageBounds[2]);
+    d->imageBounds[3] = round(d->imageBounds[3])+1;
+    d->imageBounds[4] = round(d->imageBounds[4]);
+    d->imageBounds[5] = round(d->imageBounds[5])+1;
+
+    d->view2d->updateBounds(d->imageBounds, d->manager->GetInput()->GetDimensions());
+}
+
+void v3dViewVectorFieldInteractor::updateBounds(const double bounds[])
+{
+    for (int i=0; i<6; i=i+2)
+        if (bounds[i] < d->imageBounds[i])
+            d->imageBounds[i]=bounds[i];
+
+    for (int i=1; i<6; i=i+2)
+        if (bounds[i] > d->imageBounds[i])
+            d->imageBounds[i]=bounds[i];
+
 }

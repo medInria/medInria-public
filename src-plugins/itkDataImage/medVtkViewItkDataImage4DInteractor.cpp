@@ -44,6 +44,7 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
         vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(sequence->GetDataSet());
 
         backend->view2D->AddInput(vtkimage,metaimage->GetOrientationMatrix());
+        backend->view3D->AddInput(vtkimage,metaimage->GetOrientationMatrix());
 
         layer = backend->view2D->GetNumberOfLayers()-1;
 

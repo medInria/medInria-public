@@ -614,6 +614,12 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
   this->InternalUpdate();
 }
 
+void vtkImageView3D::AddInput (vtkImageData* input, vtkMatrix4x4 *matrix)
+{
+    int layer = GetNumberOfLayers();
+    SetInput (input, matrix, layer);
+}
+
 //----------------------------------------------------------------------------
 void vtkImageView3D::InternalUpdate()
 {

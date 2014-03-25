@@ -438,6 +438,8 @@ void vtkDataMeshInteractor::updatePipeline ()
             d->actorProperty = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
             d->actor2d->SetProperty( d->actorProperty );
             d->actor3d->SetProperty( d->actorProperty );
+
+            d->view2d->updateBounds(pointSet->GetBounds());
         }
     }
     d->view3d->ResetCamera();

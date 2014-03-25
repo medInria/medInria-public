@@ -116,11 +116,9 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     // otherwise a new renderer is created
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor(), d->renderer3d);
 
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)),
-            this,    SLOT(changePosition(QVector3D)));
+    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
 
     d->toolbox = NULL;
-
 }
 
 
@@ -201,10 +199,9 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 
             d->manager->Update();
 
-            if(d->view->layersCount() == 0)
+            if(d->view->layersCount() == 1)
             {
                 computeBounds();
-//                d->view->changeBounds( d->imageBounds );
             }
 
             if (d->view) {
@@ -242,10 +239,9 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 
             d->manager->Update();
 
-            if(d->view->layersCount() == 0)
+            if(d->view->layersCount() == 1)
             {
                 computeBounds();
-//                d->view->changeBounds( d->imageBounds );
             }
 
             if (d->view) {
@@ -298,14 +294,6 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     multiplierParam->setValue(0);
     d->parameters << multiplierParam;
 
-    medBoolParameter *showsAxialParam = new medBoolParameter("Show axial", data);
-    medBoolParameter *showSagitalParam = new medBoolParameter("Show sagittal", data);
-    medBoolParameter *showCoronalParam = new medBoolParameter("Show coronal", data);
-    showCoronalParam->setValue(true);
-    showsAxialParam->setValue(true);
-    showSagitalParam->setValue(true);
-
-    d->parameters << showCoronalParam << showSagitalParam << showsAxialParam;
 
     connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
@@ -316,9 +304,6 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     connect(resolutionParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphResolution(int)));
     connect(scaleParam, SIGNAL(valueChanged(int)), this, SLOT(setMinorScaling(int)));
     connect(multiplierParam, SIGNAL(valueChanged(int)), this, SLOT(setMajorScaling(int)));
-    connect(showsAxialParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowAxial(bool)));
-    connect(showSagitalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowSagittal(bool)));
-    connect(showCoronalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowCoronal(bool)));
 }
 
 
@@ -358,6 +343,7 @@ bool itkDataTensorImageVtkViewInteractor::visibility() const
 {
     return (d->manager->GetTensorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
+
 
 void itkDataTensorImageVtkViewInteractor::setGlyphShape(QString glyphShape)
 {
@@ -493,27 +479,10 @@ void itkDataTensorImageVtkViewInteractor::setFlipZ(bool flip)
 void itkDataTensorImageVtkViewInteractor::changePosition(const QVector3D& position)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
+
     this->update();
 }
 
-void itkDataTensorImageVtkViewInteractor::computeBounds()
-{
-    d->manager->GetTensorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
-
-    updateBounds(d->manager->GetTensorVisuManagerSagittal()->GetActor()->GetBounds());
-    updateBounds(d->manager->GetTensorVisuManagerCoronal()->GetActor()->GetBounds());
-}
-
-void itkDataTensorImageVtkViewInteractor::updateBounds(const double bounds[])
-{
-    for (int i=0; i<6; i=i+2)
-        if (bounds[i] < d->imageBounds[i])
-            d->imageBounds[i]=bounds[i];
-
-    for (int i=1; i<6; i=i+2)
-        if (bounds[i] > d->imageBounds[i])
-            d->imageBounds[i]=bounds[i];
-}
 
 QImage itkDataTensorImageVtkViewInteractor::generateThumbnail(const QSize &size)
 {
@@ -582,4 +551,36 @@ QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()
 void itkDataTensorImageVtkViewInteractor::update()
 {
     d->render->Render();
+}
+
+void itkDataTensorImageVtkViewInteractor::computeBounds()
+{
+    d->manager->GetTensorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
+
+    updateBounds(d->manager->GetTensorVisuManagerSagittal()->GetActor()->GetBounds());
+    updateBounds(d->manager->GetTensorVisuManagerCoronal()->GetActor()->GetBounds());
+
+    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
+    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
+    // so we need to increase bounds by +1 to have the correct image size
+    d->imageBounds[0] = round(d->imageBounds[0]);
+    d->imageBounds[1] = round(d->imageBounds[1])+1;
+    d->imageBounds[2] = round(d->imageBounds[2]);
+    d->imageBounds[3] = round(d->imageBounds[3])+1;
+    d->imageBounds[4] = round(d->imageBounds[4]);
+    d->imageBounds[5] = round(d->imageBounds[5])+1;
+
+    d->view2d->updateBounds(d->imageBounds, d->manager->GetInput()->GetDimensions());
+}
+
+void itkDataTensorImageVtkViewInteractor::updateBounds(const double bounds[])
+{
+    for (int i=0; i<6; i=i+2)
+        if (bounds[i] < d->imageBounds[i])
+            d->imageBounds[i]=bounds[i];
+
+    for (int i=1; i<6; i=i+2)
+        if (bounds[i] > d->imageBounds[i])
+            d->imageBounds[i]=bounds[i];
+
 }

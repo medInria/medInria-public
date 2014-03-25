@@ -134,6 +134,7 @@ protected:
     void updateBounds(const double bounds[]);
     void update();
 
+
 private:
     static QStringList dataHandled();
 

@@ -196,12 +196,9 @@ void itkDataSHImageVtkViewInteractor::setData(medAbstractData *data) {
     d->renderer2d->AddActor(d->manager->GetSHVisuManagerSagittal()->GetActor());
     d->renderer2d->AddActor(d->manager->GetSHVisuManagerCoronal()->GetActor());
 
-    if(d->view->layersCount() == 0)
+    if(d->view->layersCount() == 1)
     {
-        int imSize[3];
-        imageSize(imSize);
         computeBounds();
-        //d->view->changeBounds(d->imageBounds, imSize);
     }
 
     setupParameters();
@@ -265,17 +262,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     majorScalingParam->setRange(-10,10);
     majorScalingParam->setValue(0);
 
-
-    //  Hide or show axial, coronal, and sagittal
-
-    medBoolParameter *showAxialParam = new medBoolParameter("Show axial");
-    showAxialParam->setValue(true);
-    medBoolParameter *showCoronalParam = new medBoolParameter("Show coronal");
-    showCoronalParam->setValue(true);
-    medBoolParameter *showSagittalParam = new medBoolParameter("Show sagittal");
-    showSagittalParam->setValue(true);
-
-
     d->parameters.append(tesselationTypeParam);
     d->parameters.append(tesselationBasisParam);
     d->parameters.append(sampleRateParam);
@@ -286,9 +272,7 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     d->parameters.append(glyphResolutionParam);
     d->parameters.append(minorScalingParam);
     d->parameters.append(majorScalingParam);
-    d->parameters.append(showAxialParam);
-    d->parameters.append(showCoronalParam);
-    d->parameters.append(showSagittalParam);
+
 
     connect(tesselationTypeParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationType(QString)));
     connect(tesselationBasisParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationBasis(QString)));
@@ -300,9 +284,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     connect(glyphResolutionParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphResolution(int)));
     connect(minorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setMinorScaling(int)));
     connect(majorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setMajorScaling(int)));
-    connect(showAxialParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowAxial(bool)));
-    connect(showCoronalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowCoronal(bool)));
-    connect(showSagittalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowSagittal(bool)));
 
 }
 
@@ -491,6 +472,10 @@ void itkDataSHImageVtkViewInteractor::computeBounds()
     d->imageBounds[3] = round(d->imageBounds[3])+1;
     d->imageBounds[4] = round(d->imageBounds[4]);
     d->imageBounds[5] = round(d->imageBounds[5])+1;
+
+    int imSize[3];
+    imageSize(imSize);
+    d->view2d->updateBounds(d->imageBounds, imSize);
 }
 
 void itkDataSHImageVtkViewInteractor::updateBounds(const double bounds[])

@@ -73,7 +73,8 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     case vtkImageView::CurrentPointChangedEvent:
     {
         const double *pos = this->view2d->GetCurrentPoint();
-        QVector3D qpos(doubleToQtVector3D(pos));
+        QVector3D qpos ( doubleToQtVector3D ( pos ) );
+
         this->emitter->emitPositionViewedChanged(qpos);
 
         unsigned int zslice = this->view2d->GetSlice();
