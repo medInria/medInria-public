@@ -21,11 +21,16 @@
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
 #include <medAbstractDataFactory.h>
+#include <medAbstractDbController.h>
 
 #include <medBoolParameter.h>
 #include <medBoolGroupParameter.h>
 #include <medTriggerParameter.h>
 #include <medDoubleParameter.h>
+
+#include <medDropSite.h>
+
+#include <medImageFileLoader.h>
 
 #include <vtkActor.h>
 #include <vtkSmartPointer.h>
@@ -63,8 +68,8 @@ public:
     medAbstractData        *data;
     medAbstractImageView   *view;
     medAbstractData        *projectionData;
-    vtkFiberDataSetManager *manager;
-    vtkIsosurfaceManager   *roiManager;
+    vtkSmartPointer<vtkFiberDataSetManager> manager;
+    vtkSmartPointer<vtkIsosurfaceManager>   roiManager;
     vtkSmartPointer<vtkFiberDataSet> dataset;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
@@ -79,6 +84,7 @@ public:
     QWidget *toolboxWidget;
     QWidget *layerWidget;
     QWidget *toolbarWidget;
+    QWidget *bundleToolboxWidget;
 
     QMap<QString, double> meanLengthList;
     QMap<QString, double> minLengthList;
@@ -86,6 +92,13 @@ public:
     QMap<QString, double> varLengthList;
 
     QList<medAbstractParameter*> parameters;
+
+    medDropSite *dropOrOpenRoi;
+    QComboBox    *roiComboBox;
+
+    medBoolParameter *andParameter;
+    medBoolParameter *notParameter;
+    medBoolParameter *nullParameter;
 
     medTriggerParameter *saveParameter;
     medTriggerParameter *validateParameter;
@@ -95,11 +108,12 @@ public:
     medBoolGroupParameter *bundleOperationtGroupParameter;
     medDoubleParameter* opacityParam;
 
-
     medBoolParameter *showAllBundleParameter;
     medBoolParameter *showBundleBox;
 
     QStandardItemModel *bundlingModel;
+
+    QTreeView *bundlingList;
 };
 
 v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): medAbstractImageViewInteractor(parent),
@@ -131,52 +145,49 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): 
     lut->Delete();
 
     d->toolboxWidget = NULL;
+    d->bundleToolboxWidget = NULL;
 
-    medBoolParameter *andParameter = new medBoolParameter("andFiberParameter", this);
-    andParameter->setToolTip(tr("If \"AND\" is selected fibers will need to overlap with this ROI to be displayed."));
-    andParameter->setText("AND");
-    andParameter->setValue(true);
+    d->andParameter = new medBoolParameter("andFiberParameter", this);
+    d->andParameter->setToolTip(tr("If \"AND\" is selected fibers will need to overlap with this ROI to be displayed."));
+    d->andParameter->setText("AND");
+    d->andParameter->setValue(true);
+    d->andParameter->getLabel()->hide();
 
-    medBoolParameter *notParameter = new medBoolParameter("notFiberParameter", this);
-    andParameter->setToolTip(tr("If \"NOT\" is selected fibers overlapping with this ROI will not be displayed."));
-    andParameter->setText("NOT");
+    d->notParameter = new medBoolParameter("notFiberParameter", this);
+    d->notParameter->setToolTip(tr("If \"NOT\" is selected fibers overlapping with this ROI will not be displayed."));
+    d->notParameter->setText("NOT");
+    d->notParameter->getLabel()->hide();
 
-    medBoolParameter *nullParameter = new medBoolParameter("nullFiberParameter", this);
-    nullParameter->setToolTip(tr("If \"NULL\" is selected this ROI won't be taken into account."));
-    nullParameter->setText("NULL");
+    d->nullParameter = new medBoolParameter("nullFiberParameter", this);
+    d->nullParameter->setToolTip(tr("If \"NULL\" is selected this ROI won't be taken into account."));
+    d->nullParameter->setText("NULL");
+    d->nullParameter->getLabel()->hide();
 
     d->bundleOperationtGroupParameter = new medBoolGroupParameter("bundleOperationtGroupParameter", this);
-    d->bundleOperationtGroupParameter->addParameter(andParameter);
-    d->bundleOperationtGroupParameter->addParameter(notParameter);
-    d->bundleOperationtGroupParameter->addParameter(nullParameter);
-    d->parameters << d->bundleOperationtGroupParameter;
-
+    d->bundleOperationtGroupParameter->addParameter(d->andParameter);
+    d->bundleOperationtGroupParameter->addParameter(d->notParameter);
+    d->bundleOperationtGroupParameter->addParameter(d->nullParameter);
 
     d->tagParameter = new medTriggerParameter("tagFiberParameter", this);
     d->tagParameter->setToolTip(tr("Tag the currently shown bundle to let medInria memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
     d->tagParameter->setButtonText("Tag");
-    d->parameters << d->tagParameter;
 
     d->addParameter = new medBoolParameter("addFiberParameter", this);
     d->addParameter->setToolTip(tr("Select to either include the fibers that overlap with the bundling box, or to include the ones that do not overlap."));
     d->addParameter->setText("Add");
     d->addParameter->setValue(true);
-    d->parameters << d->addParameter;
 
     d->resetParameter = new medTriggerParameter("resetFiberParameter", this);
     d->resetParameter->setToolTip(tr("Reset all previously tagged bundling boxes."));
     d->resetParameter->setButtonText("Reset");
-    d->parameters << d->resetParameter;
 
     d->validateParameter = new medTriggerParameter("validateFiberParameter", this);
     d->validateParameter->setToolTip(tr("Save the current shown bundle and show useful information about it."));
     d->validateParameter->setButtonText("Validate");
-    d->parameters << d->validateParameter;
 
     d->saveParameter = new medTriggerParameter("saveFiberParameter", this);
     d->saveParameter->setToolTip(tr("Save all bundles to database"));
     d->saveParameter->setButtonText("Save");
-    d->parameters << d->saveParameter;
 
     d->showAllBundleParameter = new medBoolParameter("showAllBundleFiberParameter", this);
     d->showAllBundleParameter->setValue(true);
@@ -188,7 +199,6 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): 
     d->showBundleBox->setToolTip(tr("Select to activate and show the fiber bundling box on the screen."));
     d->showBundleBox->setText("Activate bundling box");
     d->showBundleBox->setValue(false);
-    d->parameters << d->showBundleBox;
 
     d->bundlingModel = new QStandardItemModel(0, 1, this);
     d->bundlingModel->setHeaderData(0, Qt::Horizontal, tr("Fiber bundles"));
@@ -197,6 +207,7 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): 
     d->opacityParam->setRange(0,1);
     d->opacityParam->setSingleStep(0.01);
     d->opacityParam->setValue(1);
+    d->parameters << d->opacityParam;
 
     connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
 
@@ -208,18 +219,17 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): 
     connect (d->resetParameter, SIGNAL(triggered()), this, SLOT(resetSelection()));
     connect (d->saveParameter, SIGNAL(triggered()), this, SLOT(saveBundlesInDataBase()));
 
-//    connect (andParameter, SIGNAL(valueChanged(bool)), this, SLOT(setRoiAddOperation(bool)));
-//    connect (notParameter, SIGNAL(valueChanged(bool)), this, SLOT(setRoiNotOperation(bool)));
-//    connect (nullParameter, SIGNAL(valueChanged(bool)), this, SLOT(setRoiNullOperation(bool)));
+    connect (d->andParameter, SIGNAL(valueChanged(bool)), this, SLOT(setRoiAddOperation(bool)));
+    connect (d->notParameter, SIGNAL(valueChanged(bool)), this, SLOT(setRoiNotOperation(bool)));
+    connect (d->nullParameter, SIGNAL(valueChanged(bool)), this, SLOT(setRoiNullOperation(bool)));
 
     connect (d->bundlingModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(changeBundlingItem(QStandardItem*)));
+    connect(d->view, SIGNAL(orientationChanged()), this, SLOT(updateWidgets()));
 
 }
 
 v3dDataFibersInteractor::~v3dDataFibersInteractor()
 {
-    d->manager->Delete();
-    d->roiManager->Delete();
     delete d;
     d = NULL;
 }
@@ -430,12 +440,13 @@ void v3dDataFibersInteractor::setBoxBooleanOperation(BooleanOperation op)
 void v3dDataFibersInteractor::tagSelection()
 {
     d->manager->SwapInputOutput();
-
+    d->render->Render();
 }
 
 void v3dDataFibersInteractor::resetSelection()
 {
     d->manager->Reset();
+    d->render->Render();
 }
 
 void v3dDataFibersInteractor::validateSelection(const QString &name, const QColor &color)
@@ -770,6 +781,7 @@ int v3dDataFibersInteractor::roiBoolean(int roi)
 void v3dDataFibersInteractor::setBundleVisibility(const QString &name, bool visibility)
 {
     d->manager->SetBundleVisibility(name.toAscii().constData(), (int)visibility);
+    d->render->Render();
 
 }
 
@@ -781,9 +793,18 @@ bool v3dDataFibersInteractor::bundleVisibility(const QString &name) const
 void v3dDataFibersInteractor::setAllBundlesVisibility(bool visibility)
 {
     if (visibility)
+    {
         d->manager->ShowAllBundles();
+        for(int i = 0; i < d->bundlingModel->rowCount(); ++i)
+            d->bundlingModel->item(i)->setCheckState(Qt::Checked);
+    }
     else
+    {
         d->manager->HideAllBundles();
+        for(int i = 0; i < d->bundlingModel->rowCount(); ++i)
+            d->bundlingModel->item(i)->setCheckState(Qt::Unchecked);
+    }
+
 
     d->render->Render();
 }
@@ -807,6 +828,7 @@ void v3dDataFibersInteractor::addBundle (const QString &name, const QColor &colo
     item->setCheckable(true);
     item->setTristate(false);
     item->setEditable(true);
+    item->setCheckState(Qt::Checked);
 
     QMap <QString, double> meanData;
     QMap <QString, double> minData;
@@ -851,6 +873,105 @@ void v3dDataFibersInteractor::addBundle (const QString &name, const QColor &colo
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
                               color, Qt::DecorationRole);
 
+}
+
+
+void v3dDataFibersInteractor::setRoiAddOperation(bool value)
+{
+    int roi = d->roiComboBox->currentIndex();
+    if (value)
+        this->setRoiBoolean(roi+1, 2);
+}
+
+void v3dDataFibersInteractor::setRoiNotOperation(bool value)
+{
+    int roi = d->roiComboBox->currentIndex();
+    if (value)
+        this->setRoiBoolean(roi+1, 1);
+}
+
+void v3dDataFibersInteractor::setRoiNullOperation(bool value)
+{
+    int roi = d->roiComboBox->currentIndex();
+    if (value)
+        this->setRoiBoolean(roi+1, 0);
+}
+
+
+void v3dDataFibersInteractor::importROI(const medDataIndex& index)
+{
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(index);
+
+    // we accept only ROIs (itkDataImageUChar3)
+    // TODO try dynamic_cast of medAbstractMaskData would be better - RDE
+    if (!data || data->identifier() != "itkDataImageUChar3")
+        return;
+
+    // put the thumbnail in the medDropSite as well
+    // (code copied from @medDatabasePreviewItem)
+    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
+
+    bool shouldSkipLoading = false;
+    if ( thumbpath.isEmpty() )
+    {
+        // first try to get it from controller
+        QImage thumbImage = dbc->thumbnail(index);
+        if (!thumbImage.isNull())
+        {
+            d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
+            shouldSkipLoading = true;
+        }
+    }
+
+    if (!shouldSkipLoading)
+    {
+        medImageFileLoader *loader = new medImageFileLoader(thumbpath);
+        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
+        QThreadPool::globalInstance()->start(loader);
+    }
+
+    this->setROI(data);
+}
+
+void v3dDataFibersInteractor::clearRoi(void)
+{
+    // create dummy mask image
+    medAbstractData *data = medAbstractDataFactory::instance()->create("itkDataImageUChar3");
+
+    this->setROI(data);
+    //TODO sound like a ugly hack - RDE
+    data->deleteLater();
+
+    // clear medDropSite and put text again
+    d->dropOrOpenRoi->clear();
+    d->dropOrOpenRoi->setText(tr("Drag-and-drop a ROI\nfrom the database."));
+}
+
+void v3dDataFibersInteractor::selectRoi(int value)
+{
+    int boolean = this->roiBoolean (value);
+    switch (boolean)
+    {
+    case 2:
+        d->andParameter->blockSignals(true);
+        d->andParameter->setValue(true);
+        d->andParameter->blockSignals(false);
+        break;
+
+    case 1:
+        d->notParameter->blockSignals(true);
+        d->notParameter->setValue(true);
+        d->notParameter->blockSignals(false);
+        break;
+
+    case 0:
+    default:
+        d->nullParameter->blockSignals(true);
+        d->nullParameter->setValue(true);
+        d->nullParameter->blockSignals(false);
+        break;
+    }
 }
 
 void v3dDataFibersInteractor::setOpacity(double opacity)
@@ -915,8 +1036,41 @@ QWidget* v3dDataFibersInteractor::toolBoxWidget()
         d->toolboxWidget = new QWidget;
         QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolboxWidget);
 
+        d->bundleToolboxWidget = new QWidget(d->toolboxWidget);
+        QVBoxLayout *bundleToolboxLayout = new QVBoxLayout(d->bundleToolboxWidget);
 
-        toolBoxLayout->addWidget(d->showBundleBox->getCheckBox());
+        toolBoxLayout->addWidget(d->bundleToolboxWidget);
+
+        d->dropOrOpenRoi = new medDropSite(d->toolboxWidget);
+        d->dropOrOpenRoi->setToolTip(tr("Drag-and-drop A ROI from the database."));
+        d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
+        d->dropOrOpenRoi->setCanAutomaticallyChangeAppereance(false);
+
+        QPushButton *clearRoiButton = new QPushButton("Clear ROI", d->toolboxWidget);
+        clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
+
+        //TODO : what the ... why 255 ? - RDE
+        d->roiComboBox = new QComboBox(d->bundleToolboxWidget);
+        for (int i=0; i<255; i++)
+            d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
+        d->roiComboBox->setCurrentIndex(0);
+        d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed."));
+
+        bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
+        bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);
+
+        connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
+        connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(onDropSiteClicked()));
+        connect (clearRoiButton,   SIGNAL(clicked()), this, SLOT(clearRoi()));
+        connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(selectRoi(int)));
+
+        QHBoxLayout *roiLayout = new QHBoxLayout(d->bundleToolboxWidget);
+        roiLayout->addWidget(d->roiComboBox);
+        d->bundleOperationtGroupParameter->setRadioButtonDirection(QBoxLayout::LeftToRight);
+        roiLayout->addWidget(d->bundleOperationtGroupParameter->getRadioButtonGroup());
+
+        bundleToolboxLayout->addLayout(roiLayout);
+        bundleToolboxLayout->addWidget(d->showBundleBox->getCheckBox());
 
         QHBoxLayout *bundlingLayout = new QHBoxLayout;
         bundlingLayout->addWidget(d->tagParameter->getPushButton());
@@ -924,18 +1078,19 @@ QWidget* v3dDataFibersInteractor::toolBoxWidget()
         bundlingLayout->addWidget(d->resetParameter->getPushButton());
         bundlingLayout->addWidget(d->validateParameter->getPushButton());
 
-        toolBoxLayout->addLayout(bundlingLayout);
-        toolBoxLayout->addWidget(d->saveParameter->getPushButton());
+        bundleToolboxLayout->addLayout(bundlingLayout);
+        bundleToolboxLayout->addWidget(d->saveParameter->getPushButton());
 
-        QTreeView *bundlingList = new QTreeView(d->toolboxWidget);
-        bundlingList->setAlternatingRowColors(true);
-        bundlingList->setMinimumHeight(150);
-        bundlingList->setModel(d->bundlingModel);
-        bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
+        d->bundlingList = new QTreeView(d->toolboxWidget);
+        d->bundlingList->setAlternatingRowColors(true);
+        d->bundlingList->setMinimumHeight(150);
+        d->bundlingList->setModel(d->bundlingModel);
+        d->bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
 
-        toolBoxLayout->addWidget(bundlingList);
-        toolBoxLayout->addWidget(d->showAllBundleParameter->getPushButton());
+        bundleToolboxLayout->addWidget(d->bundlingList);
+        bundleToolboxLayout->addWidget(d->showAllBundleParameter->getPushButton());
 
+        this->updateWidgets();
     }
 
     return d->toolboxWidget;
@@ -984,4 +1139,15 @@ QImage v3dDataFibersInteractor::generateThumbnail(const QSize &size)
 QList<medAbstractParameter*> v3dDataFibersInteractor::parameters()
 {
     return d->parameters;
+}
+
+void v3dDataFibersInteractor::updateWidgets()
+{
+    if(!d->toolboxWidget)
+        return;
+
+    if(d->view->orientation() == medImageView::VIEW_ORIENTATION_3D)
+        d->bundleToolboxWidget->show();
+    else
+        d->bundleToolboxWidget->hide();
 }

@@ -161,6 +161,12 @@ public slots:
     void validateBundling();
     void saveBundlesInDataBase();
     void changeBundlingItem(QStandardItem *item);
+    void setRoiAddOperation (bool value);
+    void setRoiNotOperation (bool value);
+    void setRoiNullOperation (bool value);
+    void importROI(const medDataIndex &index);
+    void selectRoi(int value);
+
 
     void setAllBundlesVisibility(bool visibility);
     void setBundleVisibility(const QString &name, bool visibility);
@@ -181,7 +187,13 @@ public slots:
     virtual void windowLevel(double &window, double &level);
 
     virtual void moveToSliceAtPosition    (const QVector3D &position);
+
+    virtual void clearRoi();
+
     virtual void moveToSlice  (int slice);
+
+protected slots:
+    virtual void updateWidgets();
 
 protected:
     /**
@@ -201,7 +213,6 @@ protected:
 
     void addBundle (const QString &name, const QColor &color);
     void setBoxBooleanOperation (BooleanOperation op);
-
 
     void removeData();
 
