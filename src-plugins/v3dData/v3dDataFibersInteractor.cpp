@@ -718,7 +718,8 @@ void v3dDataFibersInteractor::setROI(medAbstractData *data)
 
     ROIType::Pointer roiImage = static_cast<ROIType*>(data->data());
 
-    if (!roiImage.IsNull()) {
+    if (!roiImage.IsNull())
+    {
         itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
         converter->SetReferenceCount(2);
         converter->SetInput(roiImage);
@@ -765,6 +766,8 @@ void v3dDataFibersInteractor::setROI(medAbstractData *data)
 
         d->roiManager->ResetData();
     }
+
+    d->render->Render();
 }
 
 void v3dDataFibersInteractor::setRoiBoolean(int roi, int meaning)
@@ -945,7 +948,9 @@ void v3dDataFibersInteractor::clearRoi(void)
 
     // clear medDropSite and put text again
     d->dropOrOpenRoi->clear();
-    d->dropOrOpenRoi->setText(tr("Drag-and-drop a ROI\nfrom the database."));
+    d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
+
+    d->render->Render();
 }
 
 void v3dDataFibersInteractor::selectRoi(int value)
