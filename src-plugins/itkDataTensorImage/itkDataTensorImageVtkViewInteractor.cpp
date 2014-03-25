@@ -27,6 +27,8 @@
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkRenderer.h>
+#include <vtkSmartPointer.h>
+#include <vtkProperty.h>
 
 #include <itkITKTensorsToVTKTensorsFilter.h>
 #include <itkImage.h>
@@ -38,6 +40,7 @@
 #include <medBoolParameter.h>
 #include <medBoolGroupParameter.h>
 #include <medColorListParameter.h>
+#include <medDoubleParameter.h>
 #include <medAbstractImageView.h>
 #include <medImageViewFactory.h>
 #include <medVtkViewBackend.h>
@@ -54,6 +57,8 @@ typedef TensorImageTypeDouble::Pointer TensorImagePointerDouble;
 class itkDataTensorImageVtkViewInteractorPrivate
 {
 public:
+    typedef vtkSmartPointer <vtkProperty>  PropertySmartPointer;
+
     medAbstractImageView *view;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
@@ -80,6 +85,9 @@ public:
     QImage thumbnail;
 
     QWidget *toolbox;
+    QWidget *layerWidget;
+
+    PropertySmartPointer actorProperty;
 };
 
 itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbstractImageView* parent):
@@ -119,7 +127,6 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
 
     d->toolbox = NULL;
-
 }
 
 
@@ -258,6 +265,21 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
         qDebug() << "Unrecognized tensor data type: " << identifier;
     }
 
+    d->actorProperty = itkDataTensorImageVtkViewInteractorPrivate::PropertySmartPointer::New();
+    d->manager->GetTensorVisuManagerAxial()->GetActor()->SetProperty( d->actorProperty );
+    d->manager->GetTensorVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
+    d->manager->GetTensorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );
+
+
+    medDoubleParameter *opacityParam = new medDoubleParameter("Opacity", this);
+    opacityParam->setRange(0,1);
+    opacityParam->setSingleStep(0.01);
+    opacityParam->setValue(1);
+    d->parameters << opacityParam;
+    QSlider *slider = opacityParam->getSlider();
+    slider->setOrientation(Qt::Horizontal);
+    d->layerWidget = slider;
+
     medStringListParameter *shapeParam = new medStringListParameter("Shape", data);
     d->parameters << shapeParam;
     QStringList shapes;
@@ -295,7 +317,7 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     multiplierParam->setValue(0);
     d->parameters << multiplierParam;
 
-
+    connect(opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
     connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
@@ -320,13 +342,14 @@ void itkDataTensorImageVtkViewInteractor::windowLevel(double &window, double &le
 
 void itkDataTensorImageVtkViewInteractor::setOpacity(double opacity)
 {
-    //TODO
+    d->actorProperty->SetOpacity(opacity);
+
+    d->render->Render();
 }
 
 double itkDataTensorImageVtkViewInteractor::opacity() const
 {
-    //TODO
-    return 100;
+    return d->actorProperty->GetOpacity();
 }
 
 void itkDataTensorImageVtkViewInteractor::setVisibility(bool visibility)
@@ -344,6 +367,7 @@ bool itkDataTensorImageVtkViewInteractor::visibility() const
 {
     return (d->manager->GetTensorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
+
 
 void itkDataTensorImageVtkViewInteractor::setGlyphShape(QString glyphShape)
 {
@@ -479,8 +503,10 @@ void itkDataTensorImageVtkViewInteractor::setFlipZ(bool flip)
 void itkDataTensorImageVtkViewInteractor::changePosition(const QVector3D& position)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
+
     this->update();
 }
+
 
 QImage itkDataTensorImageVtkViewInteractor::generateThumbnail(const QSize &size)
 {
@@ -521,7 +547,7 @@ void itkDataTensorImageVtkViewInteractor::moveToSlice(int slice)
 
 QWidget* itkDataTensorImageVtkViewInteractor::layerWidget()
 {
-    return NULL;
+    return d->layerWidget;
 }
 
 QWidget* itkDataTensorImageVtkViewInteractor::toolBoxWidget()
@@ -538,7 +564,7 @@ QWidget* itkDataTensorImageVtkViewInteractor::toolBoxWidget()
 
 QWidget* itkDataTensorImageVtkViewInteractor::toolBarWidget()
 {
-    return NULL;
+    return new QWidget;
 }
 
 QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()
