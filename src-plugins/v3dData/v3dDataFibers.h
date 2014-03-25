@@ -31,16 +31,10 @@ public:
     virtual QString identifier() const;
     static bool registered();
 
-    virtual QImage        &thumbnail();
-    virtual QList<QImage> &thumbnails();
-
 public:
     void *data();
 
     void setData(void *data);
-
-protected:
-    void generateThumbnails() const;
 
 private:
     v3dDataFibersPrivate *d;

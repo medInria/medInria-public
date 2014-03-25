@@ -61,7 +61,7 @@ void medTriggerParameter::setButtonIconSize(QSize& size)
     }
 }
 
-void medTriggerParameter::setButtonText(QString& value)
+void medTriggerParameter::setButtonText(QString value)
 {
     d->text = value;
 

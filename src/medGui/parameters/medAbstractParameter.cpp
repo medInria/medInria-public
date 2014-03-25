@@ -64,7 +64,7 @@ QLabel* medAbstractParameter::getLabel()
     return d->label;
 }
 
-void medAbstractParameter::setToolTip(QString &tooltip)
+void medAbstractParameter::setToolTip(QString tooltip)
 {
     d->toolTip = tooltip;
 

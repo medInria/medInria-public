@@ -37,6 +37,8 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -103,6 +105,7 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   medLog
   medVtkInria
+  ttkAlgorithms
   )
 
 

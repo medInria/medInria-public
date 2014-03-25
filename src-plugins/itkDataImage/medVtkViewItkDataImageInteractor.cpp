@@ -25,8 +25,6 @@
 #include <vtkRenderWindow.h>
 #include <vtkImageData.h>
 
-#include <QVTKWidget2.h>
-
 #include <medVtkViewBackend.h>
 #include <medAbstractData.h>
 #include <medImageViewFactory.h>

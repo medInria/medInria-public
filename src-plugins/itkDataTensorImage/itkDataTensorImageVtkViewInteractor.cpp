@@ -119,6 +119,7 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
 
     d->toolbox = NULL;
+
 }
 
 
@@ -344,7 +345,6 @@ bool itkDataTensorImageVtkViewInteractor::visibility() const
     return (d->manager->GetTensorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
 
-
 void itkDataTensorImageVtkViewInteractor::setGlyphShape(QString glyphShape)
 {
     if(glyphShape == "Lines")
@@ -479,10 +479,8 @@ void itkDataTensorImageVtkViewInteractor::setFlipZ(bool flip)
 void itkDataTensorImageVtkViewInteractor::changePosition(const QVector3D& position)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
-
     this->update();
 }
-
 
 QImage itkDataTensorImageVtkViewInteractor::generateThumbnail(const QSize &size)
 {
@@ -523,7 +521,7 @@ void itkDataTensorImageVtkViewInteractor::moveToSlice(int slice)
 
 QWidget* itkDataTensorImageVtkViewInteractor::layerWidget()
 {
-    return new QWidget;
+    return NULL;
 }
 
 QWidget* itkDataTensorImageVtkViewInteractor::toolBoxWidget()
@@ -540,7 +538,7 @@ QWidget* itkDataTensorImageVtkViewInteractor::toolBoxWidget()
 
 QWidget* itkDataTensorImageVtkViewInteractor::toolBarWidget()
 {
-    return new QWidget;
+    return NULL;
 }
 
 QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()

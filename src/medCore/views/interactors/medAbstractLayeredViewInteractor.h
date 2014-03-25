@@ -30,8 +30,6 @@ public:
 
 public:
     virtual bool visibility() const = 0;
-    virtual QWidget* layerWidget() = 0;
-
 
 public slots:
     virtual void setVisibility (bool visibility) = 0;

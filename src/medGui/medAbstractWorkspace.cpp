@@ -288,8 +288,11 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
                 layout->addStretch();
-                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
-                    layout->addWidget(interactor->layerWidget());
+                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))   
+                {
+                    if(interactor->layerWidget())
+                        layout->addWidget(interactor->layerWidget());
+                }
 
                 if(d->userLayerPoolable)
                 {
@@ -443,6 +446,8 @@ void medAbstractWorkspace::updateInteractorsToolBox()
             interactorsIdentifier << interactorIdentifier;
             QGroupBox *groupBox = new QGroupBox;
             QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
+
+            groupBoxLayout->setContentsMargins(0,0,0,0);
             groupBoxLayout->addWidget(interactor->toolBoxWidget());
             d->interactorToolBox->addWidget(groupBox);
             interactor->toolBoxWidget()->show();

@@ -42,6 +42,7 @@
 #include <vtkMetaDataSetSequence.h>
 #include <vtkDataArrayCollection.h>
 #include <vtkGenericOpenGLRenderWindow.h>
+
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
 #include <medStringListParameter.h>

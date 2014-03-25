@@ -289,7 +289,7 @@ void medViewContainer::setView(medAbstractView *view)
             connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
         }
 
-        if( d->view->toolBarWidget() )
+        if(d->view->toolBarWidget())
         {
             d->view->toolBarWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
             d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());

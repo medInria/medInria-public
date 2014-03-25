@@ -25,6 +25,7 @@
 #include <v3dDataFibers.h>
 #include <v3dDataFibersWriter.h>
 #include <v3dDataFibersReader.h>
+#include <v3dDataFibersInteractor.h>
 
 // /////////////////////////////////////////////////////////////////
 // v3dDataPluginPrivate
@@ -81,6 +82,11 @@ bool v3dDataPlugin::initialize()
 
     if (!v3dDataFibersReader::registered()) {
         dtkWarn() << "Unable to register v3dDataFibersReader type";
+    }
+
+
+    if (!v3dDataFibersInteractor::registered()) {
+        dtkWarn() << "Unable to register v3dDataFibersIntrecator";
     }
 
     return true;

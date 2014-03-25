@@ -46,7 +46,7 @@ public:
     void show();
     void hide();
 
-    void setToolTip(QString& tooltip);
+    void setToolTip(QString tooltip);
 
 protected:
     void addToInternWidgets(QWidget * widget);

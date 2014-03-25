@@ -31,7 +31,7 @@ public:
 
     void setButtonIcon(QIcon& icon);
     void setButtonIconSize(QSize& size);
-    void setButtonText(QString&  text);
+    void setButtonText(QString text);
     QPushButton* getPushButton();
 
     virtual QWidget* getWidget();
