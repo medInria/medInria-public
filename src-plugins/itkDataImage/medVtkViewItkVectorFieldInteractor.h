@@ -17,15 +17,15 @@
 
 #include <itkDataImagePluginExport.h>
 
-class v3dViewVectorFieldInteractorPrivate;
+class medVtkViewItkVectorFieldInteractorPrivate;
 
-class ITKDATAIMAGEPLUGIN_EXPORT v3dViewVectorFieldInteractor : public medAbstractImageViewInteractor
+class ITKDATAIMAGEPLUGIN_EXPORT medVtkViewItkVectorFieldInteractor : public medAbstractImageViewInteractor
 {
     Q_OBJECT
 
 public:
-    v3dViewVectorFieldInteractor(medAbstractImageView* parent);
-    ~v3dViewVectorFieldInteractor();
+    medVtkViewItkVectorFieldInteractor(medAbstractImageView* parent);
+    ~medVtkViewItkVectorFieldInteractor();
 
     virtual QString description() const;
     virtual QString identifier() const;
@@ -82,5 +82,5 @@ private:
 
 
 private:
-    v3dViewVectorFieldInteractorPrivate* d;
+    medVtkViewItkVectorFieldInteractorPrivate* d;
 };

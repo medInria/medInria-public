@@ -40,7 +40,7 @@
 
 #include <medVtkViewItkDataImageInteractor.h>
 #include <medVtkViewItkDataImage4DInteractor.h>
-#include <v3dViewVectorFieldInteractor.h>
+#include <medVtkViewItkVectorFieldInteractor.h>
 #include <medVtkViewItkDataImageNavigator.h>
 
 #include <dtkLog/dtkLog.h>
@@ -110,7 +110,7 @@ bool itkDataImagePlugin::initialize()
     if(!itkDataImageRGBA3::registered()) qDebug() << "Unable to register itkDataImageRGBA3 type";
     if(!medVtkViewItkDataImageInteractor::registered()) qDebug() << "Unable to register medVtkViewItkDataImageInteractor";
     if(!medVtkViewItkDataImage4DInteractor::registered()) qDebug() << "Unable to register medVtkViewItkDataImage4DInteractor";
-    if(!v3dViewVectorFieldInteractor::registered()) qDebug() << "Unable to register v3dViewVectorFieldInteractor";
+    if(!medVtkViewItkVectorFieldInteractor::registered()) qDebug() << "Unable to register medVtkViewItkVectorFieldInteractor";
     if(!medVtkViewItkDataImageNavigator::registered()) qDebug() << "Unable to register medVtkViewItkDataImageNavigator";
 
     return true;

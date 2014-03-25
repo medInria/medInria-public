@@ -1,4 +1,4 @@
-#include "v3dViewVectorFieldInteractor.h"
+#include "medVtkViewItkVectorFieldInteractor.h"
 
 //#include <dtkCore/dtkAbstractData.h>
 //#include <dtkCore/dtkAbstractDataFactory.h>
@@ -37,7 +37,7 @@ typedef itk::Image< itk::Vector< double, 3 >,  ImageDimension >   VectorDoubleIm
 typedef itk::ImageToVTKImageFilter< VectorFloatImageType > FloatFilterType;
 typedef itk::ImageToVTKImageFilter< VectorDoubleImageType > DoubleFilterType;
 
-class v3dViewVectorFieldInteractorPrivate
+class medVtkViewItkVectorFieldInteractorPrivate
 {
 public:
     medAbstractData* data;
@@ -64,9 +64,9 @@ public:
     double imageBounds[6];
 };
 
-v3dViewVectorFieldInteractor::v3dViewVectorFieldInteractor(medAbstractImageView* parent):
+medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstractImageView* parent):
     medAbstractImageViewInteractor(parent),
-    d(new v3dViewVectorFieldInteractorPrivate)
+    d(new medVtkViewItkVectorFieldInteractorPrivate)
 {
     d->data    = 0;
 
@@ -91,43 +91,43 @@ v3dViewVectorFieldInteractor::v3dViewVectorFieldInteractor(medAbstractImageView*
 }
 
 
-v3dViewVectorFieldInteractor::~v3dViewVectorFieldInteractor()
+medVtkViewItkVectorFieldInteractor::~medVtkViewItkVectorFieldInteractor()
 {
     delete d;
     d = 0;
 }
 
-QString v3dViewVectorFieldInteractor::description() const
+QString medVtkViewItkVectorFieldInteractor::description() const
 {
     return tr("Interactor helping display vector fields");
 }
 
-QString v3dViewVectorFieldInteractor::identifier() const
+QString medVtkViewItkVectorFieldInteractor::identifier() const
 {
-    return "v3dViewVectorFieldInteractor";
+    return "medVtkViewItkVectorFieldInteractor";
 }
 
-QStringList v3dViewVectorFieldInteractor::handled() const
+QStringList medVtkViewItkVectorFieldInteractor::handled() const
 {
-    return v3dViewVectorFieldInteractor::dataHandled();
+    return medVtkViewItkVectorFieldInteractor::dataHandled();
 }
 
-QStringList v3dViewVectorFieldInteractor::dataHandled()
+QStringList medVtkViewItkVectorFieldInteractor::dataHandled()
 {
     QStringList datahandled = QStringList() << "itkDataImageVectorFloat3" << "itkDataImageVectorDouble3";
     return  datahandled;
 }
 
-bool v3dViewVectorFieldInteractor::registered()
+bool medVtkViewItkVectorFieldInteractor::registered()
 {
     medImageViewFactory *factory = medImageViewFactory::instance();
-    factory->registerInteractor<v3dViewVectorFieldInteractor>("v3dViewVectorFieldInteractor",
+    factory->registerInteractor<medVtkViewItkVectorFieldInteractor>("medVtkViewItkVectorFieldInteractor",
                                                                      QStringList () << "medVtkView" <<
-                                                                     v3dViewVectorFieldInteractor::dataHandled());
+                                                                     medVtkViewItkVectorFieldInteractor::dataHandled());
     return true;
 }
 
-void v3dViewVectorFieldInteractor::setData(medAbstractData *data)
+void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
 {
     if (!data)
         return;
@@ -220,12 +220,12 @@ void v3dViewVectorFieldInteractor::setData(medAbstractData *data)
     update();
 }
 
-void v3dViewVectorFieldInteractor::removeData()
+void medVtkViewItkVectorFieldInteractor::removeData()
 {
     d->manager->Delete();
 }
 
-void v3dViewVectorFieldInteractor::setupParameters()
+void medVtkViewItkVectorFieldInteractor::setupParameters()
 {
     medDoubleParameter *scaleFactor = new medDoubleParameter("Scale");
     scaleFactor->setRange(1,10);
@@ -254,28 +254,28 @@ void v3dViewVectorFieldInteractor::setupParameters()
 }
 
 
-void v3dViewVectorFieldInteractor::setWindowLevel(double &window, double &level)
+void medVtkViewItkVectorFieldInteractor::setWindowLevel(double &window, double &level)
 {
     //TODO
 }
 
-void v3dViewVectorFieldInteractor::windowLevel(double &window, double &level)
+void medVtkViewItkVectorFieldInteractor::windowLevel(double &window, double &level)
 {
     //TODO
 }
 
-void v3dViewVectorFieldInteractor::setOpacity(double opacity)
+void medVtkViewItkVectorFieldInteractor::setOpacity(double opacity)
 {
     //TODO
 }
 
-double v3dViewVectorFieldInteractor::opacity() const
+double medVtkViewItkVectorFieldInteractor::opacity() const
 {
     //TODO
     return 100;
 }
 
-void v3dViewVectorFieldInteractor::setVisibility(bool visibility)
+void medVtkViewItkVectorFieldInteractor::setVisibility(bool visibility)
 {
     int v = (visibility) ? 1 : 0;
 
@@ -286,24 +286,24 @@ void v3dViewVectorFieldInteractor::setVisibility(bool visibility)
     this->update();
 }
 
-bool v3dViewVectorFieldInteractor::visibility() const
+bool medVtkViewItkVectorFieldInteractor::visibility() const
 {
     return (d->manager->GetVectorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
 
-void v3dViewVectorFieldInteractor::setScale(double scale)
+void medVtkViewItkVectorFieldInteractor::setScale(double scale)
 {
     d->manager->SetGlyphScale((float)scale);
     this->update();
 }
 
-void v3dViewVectorFieldInteractor::setSampleRate(int sampleRate)
+void medVtkViewItkVectorFieldInteractor::setSampleRate(int sampleRate)
 {
     d->manager->SetSampleRate(sampleRate,sampleRate,sampleRate);
     this->update();
 }
 
-void v3dViewVectorFieldInteractor::setColorMode(QString mode)
+void medVtkViewItkVectorFieldInteractor::setColorMode(QString mode)
 {
     if(mode == "Vector Magnitude")
         d->manager->SetColorMode(0);
@@ -313,20 +313,20 @@ void v3dViewVectorFieldInteractor::setColorMode(QString mode)
 }
 
 
-void v3dViewVectorFieldInteractor::setProjection(bool enable)
+void medVtkViewItkVectorFieldInteractor::setProjection(bool enable)
 {
     d->manager->SetProjection(enable);
     this->update();
 }
 
 
-void v3dViewVectorFieldInteractor::setPosition(const QVector3D& position)
+void medVtkViewItkVectorFieldInteractor::setPosition(const QVector3D& position)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
     this->update();
 }
 
-void v3dViewVectorFieldInteractor::setShowAxial(bool show)
+void medVtkViewItkVectorFieldInteractor::setShowAxial(bool show)
 {
     if(show)
         d->manager->SetAxialSliceVisibility(1);
@@ -336,7 +336,7 @@ void v3dViewVectorFieldInteractor::setShowAxial(bool show)
     this->update();
 }
 
-void v3dViewVectorFieldInteractor::setShowCoronal(bool show)
+void medVtkViewItkVectorFieldInteractor::setShowCoronal(bool show)
 {
     if(show)
         d->manager->SetCoronalSliceVisibility(1);
@@ -346,7 +346,7 @@ void v3dViewVectorFieldInteractor::setShowCoronal(bool show)
     this->update();
 }
 
-void v3dViewVectorFieldInteractor::setShowSagittal(bool show)
+void medVtkViewItkVectorFieldInteractor::setShowSagittal(bool show)
 {
     if(show)
         d->manager->SetSagittalSliceVisibility(1);
@@ -357,7 +357,7 @@ void v3dViewVectorFieldInteractor::setShowSagittal(bool show)
 }
 
 
-QImage v3dViewVectorFieldInteractor::generateThumbnail(const QSize &size)
+QImage medVtkViewItkVectorFieldInteractor::generateThumbnail(const QSize &size)
 {
     int w(size.width()), h(size.height());
 
@@ -383,22 +383,22 @@ QImage v3dViewVectorFieldInteractor::generateThumbnail(const QSize &size)
     return d->thumbnail;
 }
 
-void v3dViewVectorFieldInteractor::moveToSliceAtPosition(const QVector3D &position)
+void medVtkViewItkVectorFieldInteractor::moveToSliceAtPosition(const QVector3D &position)
 {
     //TODO
 }
 
-void v3dViewVectorFieldInteractor::moveToSlice(int slice)
+void medVtkViewItkVectorFieldInteractor::moveToSlice(int slice)
 {
     //TODO
 }
 
-QWidget* v3dViewVectorFieldInteractor::layerWidget()
+QWidget* medVtkViewItkVectorFieldInteractor::layerWidget()
 {
     return new QWidget;
 }
 
-QWidget* v3dViewVectorFieldInteractor::toolBoxWidget()
+QWidget* medVtkViewItkVectorFieldInteractor::toolBoxWidget()
 {
     if(!d->toolbox)
     {
@@ -410,22 +410,22 @@ QWidget* v3dViewVectorFieldInteractor::toolBoxWidget()
     return d->toolbox;
 }
 
-QWidget* v3dViewVectorFieldInteractor::toolBarWidget()
+QWidget* medVtkViewItkVectorFieldInteractor::toolBarWidget()
 {
     return new QWidget;
 }
 
-QList<medAbstractParameter*> v3dViewVectorFieldInteractor::parameters()
+QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::parameters()
 {
     return d->parameters;
 }
 
-void v3dViewVectorFieldInteractor::update()
+void medVtkViewItkVectorFieldInteractor::update()
 {
     d->render->Render();
 }
 
-void v3dViewVectorFieldInteractor::computeBounds()
+void medVtkViewItkVectorFieldInteractor::computeBounds()
 {
     d->manager->GetVectorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
 
@@ -445,7 +445,7 @@ void v3dViewVectorFieldInteractor::computeBounds()
     d->view2d->updateBounds(d->imageBounds, d->manager->GetInput()->GetDimensions());
 }
 
-void v3dViewVectorFieldInteractor::updateBounds(const double bounds[])
+void medVtkViewItkVectorFieldInteractor::updateBounds(const double bounds[])
 {
     for (int i=0; i<6; i=i+2)
         if (bounds[i] < d->imageBounds[i])
