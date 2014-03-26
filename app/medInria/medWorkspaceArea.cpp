@@ -21,7 +21,6 @@ PURPOSE.
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
 
-
 #include <medAbstractDbController.h>
 #include <medSettingsManager.h>
 #include <medDataIndex.h>
@@ -32,6 +31,8 @@ PURPOSE.
 #include <medViewFactory.h>
 #include <medAbstractView.h>
 #include <medAbstractImageView.h>
+#include <medViewContainerSplitter.h>
+#include <medViewContainer.h>
 
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseController.h>
@@ -46,7 +47,7 @@ PURPOSE.
 #include "medDataSourceManager.h"
 
 #include <QtGui>
-
+#include <QGLWidget>
 
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
@@ -126,9 +127,15 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    //TODO - return a list of QPixmap for each container slected ?
-//    return QPixmap::grabWidget(d->currentWorkspace->currentViewContainer());
-    return QPixmap();
+    medViewContainerSplitter *splitt = dynamic_cast<medViewContainerSplitter*>(d->currentWorkspace->stackedViewContainers()->currentWidget());
+    medViewContainer *container = dynamic_cast<medViewContainer *>(splitt->widget(0));
+    QGLWidget *glWidget = dynamic_cast<QGLWidget*>(container->view()->viewWidget());
+
+
+    QImage img = glWidget->grabFrameBuffer();
+    QPixmap pixmap;
+    pixmap.convertFromImage(img);
+    return pixmap;
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
