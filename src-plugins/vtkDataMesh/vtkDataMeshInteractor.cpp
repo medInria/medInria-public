@@ -557,6 +557,8 @@ QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
 
 QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
 {
+    d->view->blockSignals(true); //we dont want to send things that would ending up on updating some gui things or whatever. - RDE
+
     d->render->SetOffScreenRendering(1);
     int w(size.width()), h(size.height());
     d->view->viewWidget()->resize(w,h);
