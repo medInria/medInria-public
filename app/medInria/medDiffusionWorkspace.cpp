@@ -98,7 +98,6 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorks
     this->addToolBox( d->diffusionEstimationToolBox );
     this->addToolBox( d->diffusionScalarMapsToolBox );
     this->addToolBox( d->diffusionTractographyToolBox );
-    //this->addToolBox( d->fiberBundlingToolBox );
 
     d->processRunning = false;
 }
@@ -181,12 +180,7 @@ void medDiffusionWorkspace::getOutput()
     if (!outputData)
         return;
 
-    // TO DO change this, we should allow only one data of each type in the view
-    medAbstractLayeredView *medView = dynamic_cast <medAbstractLayeredView *> (d->diffusionContainer->view());
-    if (!medView)
-        d->diffusionContainer->addData(outputData);
-    else
-        medView->addLayer(outputData);
+    d->diffusionContainer->addData(outputData);
 
     QString uuid = QUuid::createUuid().toString();
     medDataManager::instance()->importNonPersistent (outputData, uuid);
@@ -248,20 +242,20 @@ void medDiffusionWorkspace::addToolBoxInput(medAbstractData *data)
         return;
 
     if (medData->Dimension() == 4)
-        d->diffusionEstimationToolBox->setInputImage(medData);
+        d->diffusionEstimationToolBox->addInputImage(medData);
 
     if (medData->dataCategory() == medData::DIFFUSION_MODEL)
     {
-        d->diffusionScalarMapsToolBox->setInputImage(medData);
-        d->diffusionTractographyToolBox->setInputImage(medData);
+        d->diffusionScalarMapsToolBox->addInputImage(medData);
+        d->diffusionTractographyToolBox->addInputImage(medData);
     }
 }
 
 void medDiffusionWorkspace::resetToolBoxesInputs()
 {
-    d->diffusionEstimationToolBox->clearInput();
-    d->diffusionScalarMapsToolBox->clearInput();
-    d->diffusionTractographyToolBox->clearInput();
+    d->diffusionEstimationToolBox->clearInputs();
+    d->diffusionScalarMapsToolBox->clearInputs();
+    d->diffusionTractographyToolBox->clearInputs();
     
     this->updateToolBoxesInputs();
 }

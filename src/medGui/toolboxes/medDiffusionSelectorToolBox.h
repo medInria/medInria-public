@@ -34,15 +34,14 @@ public:
      medDiffusionSelectorToolBox(QWidget *parent = 0, SelectorType type = Estimation);
     ~medDiffusionSelectorToolBox();
 
-    void setInputImage(medAbstractImageData *data);
-    void clearInput();
+    void addInputImage(medAbstractImageData *data);
+    void clearInputs();
 
     void setProcessParameters(medAbstractDiffusionProcess *process);
 
 public slots:
     void clear();
 
-    void selectInputImage(const medDataIndex& index);
     void setInputGradientFile();
     void createProcess();
 
