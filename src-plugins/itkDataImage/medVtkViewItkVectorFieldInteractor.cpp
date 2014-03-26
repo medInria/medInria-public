@@ -227,20 +227,20 @@ void medVtkViewItkVectorFieldInteractor::removeData()
 
 void medVtkViewItkVectorFieldInteractor::setupParameters()
 {
-    medDoubleParameter *scaleFactor = new medDoubleParameter("Scale");
+    medDoubleParameter *scaleFactor = new medDoubleParameter("Scale", this);
     scaleFactor->setRange(1,10);
     scaleFactor->setValue(1.0);
 
-    medIntParameter *sampleRateControl = new medIntParameter("Sample Rate");
+    medIntParameter *sampleRateControl = new medIntParameter("Sample Rate", this);
     sampleRateControl->setRange(1,10);
     sampleRateControl->setValue(1);
 
-    medStringListParameter *colorMode = new medStringListParameter("Color mode");
+    medStringListParameter *colorMode = new medStringListParameter("Color mode", this);
     QStringList colorModes = QStringList() << "Vector Magnitude" << "Vector Direction";
     colorMode->addItems(colorModes);
     colorMode->setValue("Vector Magnitude");
 
-    medBoolParameter *projection = new medBoolParameter("Projection");
+    medBoolParameter *projection = new medBoolParameter("Projection", this);
 
     d->parameters.append(scaleFactor);
     d->parameters.append(sampleRateControl);

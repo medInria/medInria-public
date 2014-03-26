@@ -268,7 +268,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->levelParameter->setValue(level);
 
     //TODO GPR-RDE: Shouldn't it be a navigator parameter?
-    d->slicingParameter = new medIntParameter("Slicing");
+    d->slicingParameter = new medIntParameter("Slicing", this);
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
     int orientationId = d->view2d->GetSliceOrientation();
     if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
@@ -280,7 +280,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
 
-    d->positionParameter = new medVector3DParameter("position");
+    d->positionParameter = new medVector3DParameter("position", , this);
     connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToSliceAtPosition(QVector3D)));
 
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );

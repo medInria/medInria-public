@@ -100,7 +100,7 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
         case vtkMetaDataSet::VTK_META_VOLUME_MESH:
             d->sequence = sequence;
 
-            d->timeLineParameter = new medTimeLineParameter("Time");
+            d->timeLineParameter = new medTimeLineParameter("Time", this);
 
             sequencesRange (range);
             mintimestep = sequencesMinTimeStep();
