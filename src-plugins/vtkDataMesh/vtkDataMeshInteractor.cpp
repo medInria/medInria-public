@@ -180,15 +180,15 @@ void vtkDataMeshInteractor::setupParameters()
     d->opacityParam->setSingleStep(0.01);
     d->opacityParam->setValue(1);
 
-    d->attributesParam = new medStringListParameter("Attributes");
+    d->attributesParam = new medStringListParameter("Attributes", this);
     d->attributesParam->addItems(QStringList("Solid"));
 
-    d->LUTParam = new medStringListParameter("LUT");
+    d->LUTParam = new medStringListParameter("LUT", this);
     d->LUTParam->addItems(QStringList("Default"));
 
-    d->edgeVisibleParam = new medBoolParameter("Edge Visible");
+    d->edgeVisibleParam = new medBoolParameter("Edge Visible", this);
 
-    d->colorParam = new medColorListParameter("Color");
+    d->colorParam = new medColorListParameter("Color", this);
     QStringList colors;
 
     colors << "#000000";
@@ -214,7 +214,7 @@ void vtkDataMeshInteractor::setupParameters()
 
     d->colorParam->addColors(colors);
 
-    d->renderingParam = new medStringListParameter("Rendering");
+    d->renderingParam = new medStringListParameter("Rendering", this);
     QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
     d->renderingParam->addItems(renderings);
 
@@ -565,8 +565,8 @@ QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
     d->render->vtkRenderWindow::SetSize(w,h);
     d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
     d->view->reset();
+    d->view3d->ShowAnnotationsOff();
     //TODO find how to remove the litlle cube at the bottom left corner.
-//    d->view3d->ShowAnnotationsOff();
 //    d->view3d->ShowActorXOff();
 //    d->view3d->ShowActorYOff();
 //    d->view3d->ShowActorYOff();

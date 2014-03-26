@@ -289,28 +289,28 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     sampleRateParam->setRange(1, 10);
     sampleRateParam->setValue(2);
 
-    medBoolParameter *flipXParam = new medBoolParameter("FlipX", data);
-    medBoolParameter *flipYParam = new medBoolParameter("FlipY", data);
-    medBoolParameter *flipZParam = new medBoolParameter("FlipZ", data);
+    medBoolParameter *flipXParam = new medBoolParameter("FlipX", this);
+    medBoolParameter *flipYParam = new medBoolParameter("FlipY", this);
+    medBoolParameter *flipZParam = new medBoolParameter("FlipZ", this);
     d->parameters << flipXParam << flipYParam << flipZParam;
 
-    medStringListParameter *eigenParam = new medStringListParameter("Color with", data);
+    medStringListParameter *eigenParam = new medStringListParameter("Color with", this);
     QStringList colorMode = QStringList() << "v1" << "v2" << "v3";
     eigenParam->addItems(colorMode);
     eigenParam->setValue("v1");
     d->parameters << eigenParam;
 
-    medIntParameter *resolutionParam = new medIntParameter("Resolution", data);
+    medIntParameter *resolutionParam = new medIntParameter("Resolution", this);
     resolutionParam->setRange(2, 20);
     resolutionParam->setValue(6);
     d->parameters << resolutionParam;
 
-    medIntParameter *scaleParam = new medIntParameter("Scale", data);
+    medIntParameter *scaleParam = new medIntParameter("Scale", this);
     scaleParam->setRange(1, 9);
     scaleParam->setValue(1);
     d->parameters << scaleParam;
 
-    medIntParameter *multiplierParam = new medIntParameter("x10^", data);
+    medIntParameter *multiplierParam = new medIntParameter("x10^", this);
     multiplierParam->setRange(-10, 10);
     multiplierParam->setValue(0);
     d->parameters << multiplierParam;

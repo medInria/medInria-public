@@ -213,35 +213,35 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 {
     QStringList tesselationTypeList;
     tesselationTypeList << "Icosahedron" << "Octahedron" << "Tetrahedron";
-    medStringListParameter *tesselationTypeParam = new medStringListParameter("Tesselation Type");
+    medStringListParameter *tesselationTypeParam = new medStringListParameter("Tesselation Type", this);
     tesselationTypeParam->addItems(tesselationTypeList);
 
     //  Combobox to control the spherical Harmonics basis
 
     QStringList tesselationBasisList;
     tesselationBasisList << "SHMatrix" << "SHMatrixMaxThesis" << "SHMatrixTournier" << "SHMatrixRshBasis";
-    medStringListParameter * tesselationBasisParam = new medStringListParameter("Tesselation Basis");
+    medStringListParameter * tesselationBasisParam = new medStringListParameter("Tesselation Basis", this);
     tesselationBasisParam->addItems(tesselationBasisList);
 
     //  Control sample rate
 
-    medIntParameter *sampleRateParam = new medIntParameter("Sample Rate");
+    medIntParameter *sampleRateParam = new medIntParameter("Sample Rate", this);
     sampleRateParam->setRange(1,10);
     sampleRateParam->setValue(1);
 
 
     //  flipX, flipY, flipZ and Enhance checkboxes
 
-    medBoolParameter *flipXParam = new medBoolParameter("FlipX");
-    medBoolParameter *flipYParam = new medBoolParameter("FlipY");
-    medBoolParameter *flipZParam = new medBoolParameter("FlipZ");
+    medBoolParameter *flipXParam = new medBoolParameter("FlipX", this);
+    medBoolParameter *flipYParam = new medBoolParameter("FlipY", this);
+    medBoolParameter *flipZParam = new medBoolParameter("FlipZ", this);
     flipZParam->setValue(true);
 
-    medBoolParameter *enhanceParam = new medBoolParameter("Enhance");
+    medBoolParameter *enhanceParam = new medBoolParameter("Enhance", this);
 
     //  Control glyph resolution
 
-    medIntParameter *glyphResolutionParam = new medIntParameter("Resolution");
+    medIntParameter *glyphResolutionParam = new medIntParameter("Resolution", this);
     glyphResolutionParam->setRange(0,10);
     glyphResolutionParam->setValue(2);
 
@@ -251,14 +251,14 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 
     //  Minor scaling
 
-    medIntParameter *minorScalingParam = new medIntParameter("Scale");
+    medIntParameter *minorScalingParam = new medIntParameter("Scale", this);
     minorScalingParam->setRange(0,9);
     minorScalingParam->setValue(3);
 
 
     //  Major scaling
 
-    medIntParameter *majorScalingParam = new medIntParameter("x10^");
+    medIntParameter *majorScalingParam = new medIntParameter("x10^", this);
     majorScalingParam->setRange(-10,10);
     majorScalingParam->setValue(0);
 
