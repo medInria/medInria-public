@@ -523,7 +523,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
             this->addData(medDataManager::instance()->data(index));
     }
     else
-        this->addData(medDataManager::instance()->data(index));
+        this->addData(index);
 
     event->acceptProposedAction();
 }
@@ -556,6 +556,12 @@ void medViewContainer::addData(medAbstractData *data)
     view->addLayer(data);
 
     setSelected(true);
+}
+
+void medViewContainer::addData(medDataIndex index)
+{
+    medDataManager::instance()->disconnect(this);
+    this->addData(medDataManager::instance()->data(index));
 }
 
 void medViewContainer::createDragLabels()
@@ -717,7 +723,9 @@ void medViewContainer::openFromSystem()
         return;
 
     //TODO wait for deataManager refactoring and open the file in the container - RDE
-//    medDataManager::instance()->importNonPersistent(path);
+    connect(medDataManager::instance(), SIGNAL(dataAdded(medDataIndex)), this, SLOT(addData(medDataIndex)));
+    medDataManager::instance()->importNonPersistent(path);
+
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);

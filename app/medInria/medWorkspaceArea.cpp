@@ -95,12 +95,6 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->splitter->addWidget(d->viewContainer);
     d->splitter->addWidget(d->toolBoxContainer);
 
-    //set up all possible workspace:
-//    medWorkspaceFactory *wFactory = medWorkspaceFactory::instance();
-//    QHash<QString, medWorkspaceDetails *> wDetails = wFactory->workspaceDetails();
-//    foreach(QString name, wDetails.keys())
-//        this->setupWorkspace(name);
-
     this->addDatabaseView(medDataSourceManager::instance()->databaseDataSource());
 
     if (!d->splitter->restoreState(medSettingsManager::instance()->value("medWorkspaceArea", "splitterState").toByteArray()))
@@ -127,15 +121,17 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    medViewContainerSplitter *splitt = dynamic_cast<medViewContainerSplitter*>(d->currentWorkspace->stackedViewContainers()->currentWidget());
-    medViewContainer *container = dynamic_cast<medViewContainer *>(splitt->widget(0));
-    QGLWidget *glWidget = dynamic_cast<QGLWidget*>(container->view()->viewWidget());
+//    medViewContainerSplitter *splitt = dynamic_cast<medViewContainerSplitter*>(d->currentWorkspace->stackedViewContainers()->currentWidget());
+//    medViewContainer *container = dynamic_cast<medViewContainer *>(splitt->widget(0));
+//    QGLWidget *glWidget = dynamic_cast<QGLWidget*>(container->view()->viewWidget());
 
 
-    QImage img = glWidget->grabFrameBuffer();
-    QPixmap pixmap;
-    pixmap.convertFromImage(img);
-    return pixmap;
+//    QImage img = glWidget->grabFrameBuffer();
+//    QPixmap pixmap;
+//    pixmap.convertFromImage(img);
+
+    //TODO find a way to kwow if we have to use grabe buffer or grabWidget.
+    return QPixmap();
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)

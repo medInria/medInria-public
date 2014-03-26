@@ -97,6 +97,7 @@ protected:
 protected slots:
     void removeView();
     void emitLinkRequested(QString pool);
+    void addData(medDataIndex index);
     void openFromSystem();
 
 private slots:
