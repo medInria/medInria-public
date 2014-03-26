@@ -152,9 +152,11 @@ public:
 public slots:
     void setVisibility (bool visible);
     void setBoxVisibility (bool visible);
-    void setRenderingMode (RenderingMode mode);
+    void selectLineMode(bool);
+    void selectRibbonMode(bool);
+    void selectTubeMode(bool);
     void activateGPU (bool activate);
-    void setColorMode (ColorMode mode);
+    void setFiberColorMode(QString mode);
     void setBoxBooleanOperation(bool value);
     void setProjection (const QString& value);
     void setRadius(int value);
@@ -213,6 +215,8 @@ protected:
 
     void addBundle (const QString &name, const QColor &color);
     void setBoxBooleanOperation (BooleanOperation op);
+    void setColorMode (ColorMode mode);
+    void setRenderingMode (RenderingMode mode);
 
     void removeData();
 

@@ -27,6 +27,8 @@
 #include <medBoolGroupParameter.h>
 #include <medTriggerParameter.h>
 #include <medDoubleParameter.h>
+#include <medStringListParameter.h>
+#include <medIntParameter.h>
 
 #include <medDropSite.h>
 
@@ -93,6 +95,14 @@ public:
 
     QList<medAbstractParameter*> parameters;
 
+    medStringListParameter *colorFiberParameter;
+    medBoolParameter *gpuParameter;
+    medBoolGroupParameter *shapesDisplayedGroupParameter;
+    medBoolParameter *displayPolylinesParameter;
+    medBoolParameter *displayRibbonsParameter;
+    medBoolParameter *displayTubesParameter;
+    medIntParameter *radiusParameter;
+
     medDropSite *dropOrOpenRoi;
     QComboBox    *roiComboBox;
 
@@ -147,6 +157,53 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): 
     d->toolboxWidget = NULL;
     d->bundleToolboxWidget = NULL;
 
+    d->colorFiberParameter = new medStringListParameter("colorFiberParameter", this);
+    d->colorFiberParameter->setToolTip(tr("Choose the coloring method of the fibers."));
+    d->colorFiberParameter->getLabel()->setText(tr("Color fibers by:"));
+    QStringList colorModes = QStringList() << "Local orientation" << "Global orientation" << "Fractional anisotropy";
+    d->colorFiberParameter->addItems(colorModes);
+    d->parameters << d->colorFiberParameter;
+
+    d->gpuParameter = new medBoolParameter("gpuFiberParameter", this);
+    d->gpuParameter->setToolTip(tr("Select to use GPU hardware acceleration when possible."));
+    d->gpuParameter->setText(tr("Use hardware acceleration"));
+    d->gpuParameter->getCheckBox()->setEnabled(false);
+    d->parameters << d->gpuParameter;
+
+    d->shapesDisplayedGroupParameter = new medBoolGroupParameter("shapesDisplayedGroupParameter", this);
+    d->parameters << d->shapesDisplayedGroupParameter;
+
+    d->displayPolylinesParameter = new medBoolParameter("displayPolylinesParameter", this);
+    d->displayPolylinesParameter->setToolTip(tr("Use polylines to draw the fibers."));
+    d->displayPolylinesParameter->setText(tr("Display fibers as polylines"));
+    d->displayPolylinesParameter->getLabel()->hide();
+    d->shapesDisplayedGroupParameter->addParameter(d->displayPolylinesParameter);
+    d->displayRibbonsParameter = new medBoolParameter("displayRibbonsParameter", this);
+    d->displayRibbonsParameter->setToolTip(tr("Use ribbons to draw the fibers."));
+    d->displayRibbonsParameter->setText(tr("Display fibers as ribbons"));
+    d->displayRibbonsParameter->getLabel()->hide();
+    d->shapesDisplayedGroupParameter->addParameter(d->displayRibbonsParameter);
+    d->displayTubesParameter = new medBoolParameter("displayTubesParameter", this);
+    d->displayTubesParameter->setToolTip(tr("Use tubes to draw the fibers."));
+    d->displayTubesParameter->setText(tr("Display fibers as tubes"));
+    d->displayTubesParameter->getLabel()->hide();
+    d->shapesDisplayedGroupParameter->addParameter(d->displayTubesParameter);
+
+    d->displayPolylinesParameter->setValue(true);
+
+    d->radiusParameter = new medIntParameter("fibersRadiusParameter", this);
+    d->radiusParameter->setToolTip(tr("Increase of decrease the radius of the fibers (except if there are being drawn with polylines)."));
+    d->radiusParameter->getLabel()->setText(tr("Fibers radius:"));
+    d->radiusParameter->setRange(1, 10);
+
+    connect (d->colorFiberParameter, SIGNAL(valueChanged(QString)), this, SLOT(setFiberColorMode(QString)));
+    connect (d->gpuParameter, SIGNAL(valueChanged(bool)), this, SLOT(activateGPU(bool)));
+    connect (d->displayPolylinesParameter, SIGNAL(valueChanged(bool)), this, SLOT(selectLineMode (bool)));
+    connect (d->displayRibbonsParameter, SIGNAL(valueChanged(bool)), this, SLOT(selectRibbonMode(bool)));
+    connect (d->displayTubesParameter, SIGNAL(valueChanged(bool)), this, SLOT(selectTubeMode(bool)));
+    connect (d->radiusParameter, SIGNAL(valueChanged(int)),  this, SLOT(setRadius(int)));
+
+    //--Bundling
     d->andParameter = new medBoolParameter("andFiberParameter", this);
     d->andParameter->setToolTip(tr("If \"AND\" is selected fibers will need to overlap with this ROI to be displayed."));
     d->andParameter->setText("AND");
@@ -346,6 +403,24 @@ void v3dDataFibersInteractor::setBoxVisibility(bool visible)
     d->manager->SetBoxWidget(visible);
 }
 
+void v3dDataFibersInteractor::selectLineMode(bool value)
+{
+    if(value)
+        this->setRenderingMode(v3dDataFibersInteractor::Lines);
+}
+
+void v3dDataFibersInteractor::selectRibbonMode(bool value)
+{
+    if(value)
+        this->setRenderingMode(v3dDataFibersInteractor::Ribbons);
+}
+
+void v3dDataFibersInteractor::selectTubeMode(bool value)
+{
+    if(value)
+        this->setRenderingMode(v3dDataFibersInteractor::Tubes);
+}
+
 void v3dDataFibersInteractor::setRenderingMode(RenderingMode mode)
 {
     switch(mode)
@@ -364,19 +439,31 @@ void v3dDataFibersInteractor::setRenderingMode(RenderingMode mode)
         default:
             qDebug() << "v3dDataFibersInteractor: unknown rendering mode";
     }
+    d->render->Render();
 }
 
 void v3dDataFibersInteractor::activateGPU(bool activate)
 {
-    if (activate) {
+    if (activate)
+    {
         vtkFibersManager::UseHardwareShadersOn();
         d->manager->ChangeMapperToUseHardwareShaders();
-    } else {
+    } else
+    {
         vtkFibersManager::UseHardwareShadersOff();
         d->manager->ChangeMapperToDefault();
     }
-
 }
+
+void v3dDataFibersInteractor::setFiberColorMode(QString mode)
+{
+    if (mode == "Local orientation")
+        this->setColorMode(v3dDataFibersInteractor::Local);
+    else if (mode == "Global orientation")
+        this->setColorMode(v3dDataFibersInteractor::Global);
+    else if (mode == "Fractional anisotropy")
+        this->setColorMode(v3dDataFibersInteractor::FA);
+ }
 
 void v3dDataFibersInteractor::setColorMode(ColorMode mode)
 {
@@ -392,9 +479,11 @@ void v3dDataFibersInteractor::setColorMode(ColorMode mode)
 
         case v3dDataFibersInteractor::FA:
             d->manager->SetColorModeToLocalFiberOrientation();
-            for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++) {
-                if (d->manager->GetPointArrayName (i)) {
-                    if (strcmp ( d->manager->GetPointArrayName (i), "FA")==0)
+            for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
+            {
+                if (d->manager->GetPointArrayName (i))
+                {
+                    if (strcmp ( d->manager->GetPointArrayName (i), "FA") == 0)
                     {
                         d->manager->SetColorModeToPointArray (i);
                         break;
@@ -406,6 +495,7 @@ void v3dDataFibersInteractor::setColorMode(ColorMode mode)
         default:
             qDebug() << "v3dDataFibersInteractor: unknown color mode";
     }
+    d->render->Render();
 }
 
 void v3dDataFibersInteractor::setBoxBooleanOperation(bool value)
@@ -704,6 +794,7 @@ void v3dDataFibersInteractor::setProjection(const QString& value)
 void v3dDataFibersInteractor::setRadius (int value)
 {
     d->manager->SetRadius (value);
+    d->render->Render();
 }
 
 void v3dDataFibersInteractor::setROI(medAbstractData *data)
@@ -807,8 +898,6 @@ void v3dDataFibersInteractor::setAllBundlesVisibility(bool visibility)
         for(int i = 0; i < d->bundlingModel->rowCount(); ++i)
             d->bundlingModel->item(i)->setCheckState(Qt::Unchecked);
     }
-
-
     d->render->Render();
 }
 
@@ -1040,6 +1129,14 @@ QWidget* v3dDataFibersInteractor::toolBoxWidget()
     {
         d->toolboxWidget = new QWidget;
         QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolboxWidget);
+
+        toolBoxLayout->addWidget(d->colorFiberParameter->getComboBox());
+        toolBoxLayout->addWidget(d->gpuParameter->getCheckBox());
+        toolBoxLayout->addWidget(d->shapesDisplayedGroupParameter->getRadioButtonGroup());
+        toolBoxLayout->addWidget(d->radiusParameter->getLabel());
+        d->radiusParameter->getSlider()->setOrientation(Qt::Horizontal);
+        toolBoxLayout->addWidget(d->radiusParameter->getSlider());
+
 
         d->bundleToolboxWidget = new QWidget(d->toolboxWidget);
         QVBoxLayout *bundleToolboxLayout = new QVBoxLayout(d->bundleToolboxWidget);
