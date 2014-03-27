@@ -103,6 +103,8 @@ QComboBox* medColorListParameter::getComboBox()
         this->addToInternWidgets(d->comboBox);
         connect(d->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setColor(QString)));
         connect(d->comboBox, SIGNAL(destroyed()), this, SLOT(removeInternComboBox()));
+
+        this->updateInternWigets();
     }
     return d->comboBox;
 }

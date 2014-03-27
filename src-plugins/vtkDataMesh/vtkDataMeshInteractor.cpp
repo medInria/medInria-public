@@ -246,7 +246,7 @@ void vtkDataMeshInteractor::setupParameters()
 
     d->colorParam->addColors(colors);
     connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
-    d->colorParam->setValue("#0080C0");
+    d->colorParam->setValue("#FFFFFF");
     d->parameters << d->colorParam;
 
     d->renderingParam = new medStringListParameter("Rendering", this);
