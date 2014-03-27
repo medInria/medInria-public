@@ -1130,6 +1130,7 @@ QWidget* v3dDataFibersInteractor::toolBoxWidget()
         d->toolboxWidget = new QWidget;
         QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolboxWidget);
 
+        toolBoxLayout->addWidget(d->colorFiberParameter->getLabel());
         toolBoxLayout->addWidget(d->colorFiberParameter->getComboBox());
         toolBoxLayout->addWidget(d->gpuParameter->getCheckBox());
         toolBoxLayout->addWidget(d->shapesDisplayedGroupParameter->getRadioButtonGroup());
