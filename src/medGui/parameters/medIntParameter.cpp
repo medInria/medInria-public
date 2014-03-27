@@ -115,7 +115,7 @@ QSpinBox* medIntParameter::getSpinBox()
         d->spinBox->setValue(m_value);
 
         this->addToInternWidgets(d->spinBox);
-        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(removeInternSlider()));
+        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(removeInternSpinBox()));
         connect(d->spinBox, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
     }
     return d->spinBox;
