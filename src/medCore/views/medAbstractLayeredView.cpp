@@ -237,7 +237,7 @@ void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLa
 
 medAbstractData * medAbstractLayeredView::layerData(unsigned int layer) const
 {
-    if (layer > (unsigned int)d->layersDataList.size())
+    if (layer >= (unsigned int)d->layersDataList.size())
     {
         qWarning() << "Unable to retreive data at layer:" <<layer << "from: "<< this->description();
         return NULL;
