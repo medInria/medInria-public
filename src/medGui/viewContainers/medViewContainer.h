@@ -99,6 +99,7 @@ protected slots:
     void emitLinkRequested(QString pool);
     void addData(medDataIndex index);
     void openFromSystem();
+    void updateToolBar();
 
 private slots:
     void removeInternView();

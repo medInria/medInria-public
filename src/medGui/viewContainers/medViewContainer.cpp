@@ -36,6 +36,7 @@
 #include <medViewContainerSplitter.h>
 #include <medDataManager.h>
 #include <medSettingsManager.h>
+#include <medAbstractInteractor.h>
 
 
 class medViewContainerPrivate
@@ -285,14 +286,9 @@ void medViewContainer::setView(medAbstractView *view)
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
         {
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
+//            connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()));
             connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()));
             connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
-        }
-
-        if(d->view->toolBarWidget())
-        {
-            d->view->toolBarWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-            d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());
         }
 
         d->maximizedParameter->show();
@@ -744,4 +740,19 @@ void medViewContainer::setUserPoolable(bool poolable)
 bool medViewContainer::isUserPoolable() const
 {
     return d->userPoolable;
+}
+
+void medViewContainer::updateToolBar()
+{
+    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(d->view);
+    if(layeredView)
+    {
+        QWidget *tbWidget = new QWidget;
+        QHBoxLayout *tbLayout = new QHBoxLayout(tbWidget);
+        foreach(medAbstractInteractor *interactor, layeredView->currentInteractors())
+            tbLayout->addWidget(interactor->toolBarWidget());
+
+        tbWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+        d->toolBarLayout->insertWidget(0, tbWidget);
+    }
 }

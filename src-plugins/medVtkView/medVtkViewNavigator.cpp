@@ -87,30 +87,30 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     d->render = backend->renWin;
 
 
-    d->orientationParameter = new medBoolGroupParameter("Orientation", parent);
+    d->orientationParameter = new medBoolGroupParameter("Orientation", this);
     d->orientationParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
     d->orientationParameter->getLabel()->hide();
 
 
-    d->oAxialParameter = new medBoolParameter("axial", parent);
+    d->oAxialParameter = new medBoolParameter("axial", this);
     d->oAxialParameter->setIcon(QIcon(":/icons/AxialIcon.png"));
     d->oAxialParameter->setIconSize(QSize(64,64));
     connect(d->oAxialParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setAxial(bool)));
 
-    d->oCoronalParameter = new medBoolParameter("coronal", parent);
+    d->oCoronalParameter = new medBoolParameter("coronal", this);
     d->oCoronalParameter->setIcon(QIcon(":/icons/CoronalIcon.png"));
     d->oCoronalParameter->setIconSize(QSize(64,64));
     connect(d->oCoronalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setCoronal(bool)));
 
-    d->oSagittalParameter = new medBoolParameter("sagittal", parent);
+    d->oSagittalParameter = new medBoolParameter("sagittal", this);
     d->oSagittalParameter->setIcon(QIcon(":/icons/SagittalIcon.png"));
     d->oSagittalParameter->setIconSize(QSize(64,64));
     connect(d->oSagittalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setSagittal(bool)));
 
-    d->o3dParameter = new medBoolParameter("3d", parent);
+    d->o3dParameter = new medBoolParameter("3d", this);
     d->o3dParameter->setIcon(QIcon(":/icons/3DIcon.png"));
     d->o3dParameter->setIconSize(QSize(64,64));
     connect(d->o3dParameter, SIGNAL(valueChanged(bool)),
@@ -122,19 +122,19 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     d->orientationParameter->addParameter(d->o3dParameter);
     d->oAxialParameter->setValue(true);
 
-    d->zoomParameter = new medDoubleParameter("zoom");
+    d->zoomParameter = new medDoubleParameter("zoom", this);
     connect(d->zoomParameter, SIGNAL(valueChanged(double)),this, SLOT(setZoom(double)));
     connect(parent, SIGNAL(zoomChanged(double)), d->zoomParameter, SLOT(setValue(double)));
     d->zoomParameter->setValue(1);
 
-    d->panParameter = new medVector2DParameter("pan");
+    d->panParameter = new medVector2DParameter("pan", this);
     connect(d->panParameter, SIGNAL(valueChanged(QVector2D)),this, SLOT(setPan(QVector2D)));
     connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
 
-    d->cameraPositionParameter = new medVector3DParameter("cameraPosition");
-    d->cameraViewUpParameter = new medVector3DParameter("cameraViewUp");
-    d->cameraFocalParameter = new medVector3DParameter("cameraFocal");
-    d->cameraParallelScaleParameter = new medDoubleParameter("cameraParallelScale");
+    d->cameraPositionParameter = new medVector3DParameter("cameraPosition", this);
+    d->cameraViewUpParameter = new medVector3DParameter("cameraViewUp", this);
+    d->cameraFocalParameter = new medVector3DParameter("cameraFocal", this);
+    d->cameraParallelScaleParameter = new medDoubleParameter("cameraParallelScale", this);
 
     connect(d->cameraPositionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraPosition(QVector3D)));
     connect(d->cameraViewUpParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraUp(QVector3D)));

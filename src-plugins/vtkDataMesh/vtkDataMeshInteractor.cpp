@@ -174,6 +174,8 @@ void vtkDataMeshInteractor::setData(medAbstractData *data)
 
         setupParameters();
     }
+
+    qDebug() << d->metaDataSet->GetType();
 }
 
 void vtkDataMeshInteractor::setupParameters()
@@ -188,26 +190,24 @@ void vtkDataMeshInteractor::setupParameters()
     if(!(d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
          d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
     {
-        d->attributesParam = new medStringListParameter("Attributes", this);
-        QStringList nameList("Default");
-
         d->LUTParam = new medStringListParameter("LUT", this);
         d->LUTParam->addItems(QStringList("Default"));
+        // TODO some LUT are missing for some attribute - RDE
         connect(d->LUTParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
         d->LUTParam->setValue("Default");
         d->parameters << d->LUTParam;
 
+        d->attributesParam = new medStringListParameter("Attributes", this);
+        QStringList nameList("Default");
+
         for (int i = 0; i < d->metaDataSet->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
-        {
-            if (d->metaDataSet->GetDataSet()->GetPointData()->GetArray(i)->GetNumberOfComponents() == 1)
-                nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetPointData()->GetArrayName(i));
-        }
+            nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetPointData()->GetArrayName(i));
 
         for (int i = 0;  i < d->metaDataSet->GetDataSet()->GetCellData()->GetNumberOfArrays(); i++)
-        {
-            if (d->metaDataSet->GetDataSet()->GetCellData()->GetArray(i)->GetNumberOfComponents() == 1)
-                nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetCellData()->GetArrayName(i));
-        }
+            nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetCellData()->GetArrayName(i));
+
+        for (int i = 0;  i < d->metaDataSet->GetDataSet()->GetFieldData()->GetNumberOfArrays(); i++)
+            nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetFieldData()->GetArrayName(i));
 
         d->attributesParam->addItems(nameList);
         connect(d->attributesParam, SIGNAL(valueChanged(QString)), this, SLOT(setAttribute(QString)));
@@ -370,15 +370,23 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
     if (attributes)
     {
-        QStringList luts;
-        const std::vector<std::string> & vec = vtkLookupTableManager::GetAvailableLookupTables();
-        for(std::vector<std::string>::const_iterator it = vec.begin(); it < vec.end(); ++it)
-            luts.append(QString::fromStdString(*it));
-        d->LUTParam->clear();
-        d->LUTParam->addItems(luts);
 
-        d->attribute = attributes->GetArray(qPrintable(attributeName));
-        attributes->SetActiveScalars(qPrintable(attributeName));
+        if(d->colorParam)
+            d->colorParam->hide();
+        if(d->LUTParam)
+        {
+            QStringList luts;
+            const std::vector<std::string> & vec = vtkLookupTableManager::GetAvailableLookupTables();
+            for(std::vector<std::string>::const_iterator it = vec.begin(); it < vec.end(); ++it)
+                luts.append(QString::fromStdString(*it));
+            d->LUTParam->clear();
+            d->LUTParam->addItems(luts);
+
+            d->attribute = attributes->GetArray(qPrintable(attributeName));
+            attributes->SetActiveScalars(qPrintable(attributeName));
+
+            d->LUTParam->show();
+        }
 
         mapper2d->SelectColorArray(qPrintable(attributeName));
         mapper3d->SelectColorArray(qPrintable(attributeName));
@@ -390,9 +398,10 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     }
     else
     {
-        QStringList luts("Default");
-        d->LUTParam->clear();
-        d->LUTParam->addItems(luts);
+        if(d->LUTParam)
+            d->LUTParam->hide();
+        if(d->colorParam)
+            d->colorParam->show();
 
         d->attribute = NULL;
         mapper2d->SetScalarVisibility(0);
@@ -405,32 +414,6 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 QString vtkDataMeshInteractor::attribute() const
 {
     return QString::fromUtf8(d->actor2d->GetMapper()->GetArrayName());
-}
-
-
-QStringList vtkDataMeshInteractor::getAllAttributes() const
-{
-    vtkMetaDataSet * metadataset = d->metaDataSet;
-
-    if (!metadataset || (metadataset->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
-                         metadataset->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
-        return QStringList();
-
-    QStringList nameList;
-
-    for (int i = 0; i < metadataset->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
-    {
-        if (metadataset->GetDataSet()->GetPointData()->GetArray(i)->GetNumberOfComponents() == 1)
-            nameList << QString::fromUtf8(metadataset->GetDataSet()->GetPointData()->GetArrayName(i));
-    }
-
-    for (int i = 0;  i < metadataset->GetDataSet()->GetCellData()->GetNumberOfArrays(); i++)
-    {
-        if (metadataset->GetDataSet()->GetCellData()->GetArray(i)->GetNumberOfComponents() == 1)
-            nameList << QString::fromUtf8(metadataset->GetDataSet()->GetCellData()->GetArrayName(i));
-    }
-
-    return nameList;
 }
 
 
@@ -451,19 +434,6 @@ void vtkDataMeshInteractor::setLut(const QString & lutName)
 QString vtkDataMeshInteractor::lut() const
 {
     return d->lut.second;
-}
-
-
-QStringList vtkDataMeshInteractor::getAllLUTs() const
-{
-    static QStringList luts;
-    if( luts.isEmpty() )
-    {
-        const std::vector<std::string> & vec = vtkLookupTableManager::GetAvailableLookupTables();
-        for(std::vector<std::string>::const_iterator it = vec.begin(); it < vec.end(); ++it)
-            luts.append(QString::fromStdString(*it));
-    }
-    return luts;
 }
 
 

@@ -76,7 +76,6 @@ public:
 
     // toolboxes
     QWidget* navigatorWidget;
-    QList <QWidget*> layerWidgets;
 
     // parameter
     medBoolGroupParameter *mouseInteractionsParameter;
@@ -274,10 +273,7 @@ QWidget* medVtkView::navigatorWidget()
     return d->navigatorWidget;
 }
 
-QList <QWidget*> medVtkView::layerWidgets()
-{
-    return d->layerWidgets;
-}
+
 
 void medVtkView::reset()
 {

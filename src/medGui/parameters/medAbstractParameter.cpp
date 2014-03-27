@@ -24,6 +24,8 @@ public:
     QLabel *label;
     QString toolTip;
 
+    bool hide;
+
     ~medAbstractParameterPrivate() {delete label;}
 };
 
@@ -34,6 +36,7 @@ medAbstractParameter::medAbstractParameter(QString name, QObject *parent):
     d->label = NULL;
     d->toolTip = QString();
     this->setName(name);
+    d->hide = false;
 }
 
 medAbstractParameter::~medAbstractParameter(void)
@@ -79,12 +82,16 @@ bool medAbstractParameter::match(medAbstractParameter const *other)
 
 void medAbstractParameter::show()
 {
+    d->hide = false;
+
     foreach (QWidget *widget, d->internWidget)
         widget->show();
 }
 
 void medAbstractParameter::hide()
 {
+    d->hide = true;
+
     foreach (QWidget *widget, d->internWidget)
         widget->hide();
 }
@@ -98,6 +105,11 @@ void medAbstractParameter::removeInternLabel()
 void medAbstractParameter::addToInternWidgets(QWidget *widget)
 {
     widget->setToolTip(d->toolTip);
+    if(d->hide)
+        widget->hide();
+    else
+        widget->show();
+
     d->internWidget << widget;
 }
 void medAbstractParameter::removeFromInternWidgets(QWidget *widget)

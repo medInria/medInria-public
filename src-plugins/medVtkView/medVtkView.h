@@ -38,7 +38,6 @@ public:
     virtual QWidget *viewWidget();
     virtual QWidget* toolBarWidget();
     virtual QWidget* navigatorWidget();
-    virtual QList <QWidget*> layerWidgets();
     virtual QPointF mapWorldToDisplayCoordinates(const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates(const QPointF & scenePoint );
     virtual QVector3D viewCenter();

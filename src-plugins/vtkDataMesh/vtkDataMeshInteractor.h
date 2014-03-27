@@ -53,9 +53,7 @@ public:
     QColor color() const;
     QString renderingType() const;
     QString attribute() const;
-    QStringList getAllAttributes() const;
     QString lut() const;
-    QStringList getAllLUTs() const;
 
     virtual QWidget* layerWidget();
     virtual QWidget* toolBoxWidget();

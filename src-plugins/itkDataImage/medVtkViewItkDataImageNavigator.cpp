@@ -39,18 +39,18 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
 
     d->render = backend->renWin;
 
-    d->mode3DParameter = new medStringListParameter("3D Mode");
+    d->mode3DParameter = new medStringListParameter("3D Mode", this);
     QStringList modes = QStringList() << "VR" << "MIP - Maximum" << "MIP - Minimum" << "MPR" << "Off";
     d->mode3DParameter->addItems(modes);
     d->mode3DParameter->setValue("MPR");
     connect(d->mode3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(set3DMode(QString)));
 
-    d->renderer3DParameter = new medStringListParameter("Renderer");
+    d->renderer3DParameter = new medStringListParameter("Renderer", this);
     QStringList renderers = QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default";
     d->renderer3DParameter->addItems(renderers);
     connect(d->renderer3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setRenderer(QString)));
 
-    d->croppingParameter = new medBoolParameter("Cropping");
+    d->croppingParameter = new medBoolParameter("Cropping", this);
     connect(d->croppingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableCropping(bool)));
 
     d->parameters.append(d->mode3DParameter);
@@ -124,6 +124,9 @@ void medVtkViewItkDataImageNavigator::set3DMode(QString mode)
     {
         d->view3d->SetRenderingModeToVR();
         d->view3d->SetVolumeRayCastFunctionToComposite();
+        d->renderer3DParameter->show();
+        d->croppingParameter->show();
+        this->enableCropping(d->croppingParameter->value());
     }
     else if ( mode == "MPR" )
     {
@@ -131,16 +134,25 @@ void medVtkViewItkDataImageNavigator::set3DMode(QString mode)
         d->view3d->ShowActorXOn();
         d->view3d->ShowActorYOn();
         d->view3d->ShowActorZOn();
+        d->renderer3DParameter->hide();
+        d->croppingParameter->hide();
+        this->enableCropping(false);
     }
     else if ( mode == "MIP - Maximum" )
     {
         d->view3d->SetRenderingModeToVR();
         d->view3d->SetVolumeRayCastFunctionToMaximumIntensityProjection();
+        d->renderer3DParameter->show();
+        d->croppingParameter->show();
+        this->enableCropping(d->croppingParameter->value());
     }
     else if ( mode == "MIP - Minimum" )
     {
         d->view3d->SetRenderingModeToVR();
         d->view3d->SetVolumeRayCastFunctionToMinimumIntensityProjection();
+        d->renderer3DParameter->show();
+        d->croppingParameter->show();
+        this->enableCropping(d->croppingParameter->value());
     }
     else if ( mode == "Off" )
     {
@@ -148,6 +160,9 @@ void medVtkViewItkDataImageNavigator::set3DMode(QString mode)
         d->view3d->ShowActorXOff();
         d->view3d->ShowActorYOff();
         d->view3d->ShowActorZOff();
+        d->renderer3DParameter->hide();
+        d->croppingParameter->hide();
+        this->enableCropping(false);
     }
 
     d->render->Render();

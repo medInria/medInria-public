@@ -80,19 +80,10 @@ QWidget* medQtView::viewWidget()
 {
     return d->label;
 }
-QWidget* medQtView::toolBarWidget()
-{
-    return 0;
-}
 
 QWidget* medQtView::navigatorWidget()
 {
     return 0;
-}
-
-QList<QWidget *> medQtView::layerWidgets()
-{
-    return QList<QWidget*>();
 }
 
 bool medQtView::initialiseInteractors(medAbstractData* data)
