@@ -181,6 +181,7 @@ void vtkDataMeshInteractor::setupParameters()
     d->opacityParam = new medDoubleParameter("Opacity", this);
     d->opacityParam->setRange(0,1);
     d->opacityParam->setSingleStep(0.01);
+    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     d->opacityParam->setValue(1);
     d->parameters << d->opacityParam;
 
@@ -189,6 +190,12 @@ void vtkDataMeshInteractor::setupParameters()
     {
         d->attributesParam = new medStringListParameter("Attributes", this);
         QStringList nameList("Default");
+
+        d->LUTParam = new medStringListParameter("LUT", this);
+        d->LUTParam->addItems(QStringList("Default"));
+        connect(d->LUTParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
+        d->LUTParam->setValue("Default");
+        d->parameters << d->LUTParam;
 
         for (int i = 0; i < d->metaDataSet->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
         {
@@ -204,16 +211,13 @@ void vtkDataMeshInteractor::setupParameters()
 
         d->attributesParam->addItems(nameList);
         connect(d->attributesParam, SIGNAL(valueChanged(QString)), this, SLOT(setAttribute(QString)));
-
+        d->attributesParam->setValue("Default");
         d->parameters << d->attributesParam;
     }
 
-
-    d->LUTParam = new medStringListParameter("LUT", this);
-    d->LUTParam->addItems(QStringList("Default"));
-    d->parameters << d->LUTParam;
-
     d->edgeVisibleParam = new medBoolParameter("Edge Visible", this);
+    connect(d->edgeVisibleParam, SIGNAL(valueChanged(bool)), this, SLOT(setEdgeVisibility(bool)));
+    d->edgeVisibleParam->setValue(false);
     d->parameters << d->edgeVisibleParam;
 
     d->colorParam = new medColorListParameter("Color", this);
@@ -241,19 +245,16 @@ void vtkDataMeshInteractor::setupParameters()
     colors << "#0080C0";
 
     d->colorParam->addColors(colors);
+    connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
+    d->colorParam->setValue("#0080C0");
     d->parameters << d->colorParam;
 
     d->renderingParam = new medStringListParameter("Rendering", this);
     QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
     d->renderingParam->addItems(renderings);
-    d->parameters << d->renderingParam;
-
-    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
-    connect(d->LUTParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
-    connect(d->edgeVisibleParam, SIGNAL(valueChanged(bool)), this, SLOT(setEdgeVisibility(bool)));
-    connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
     connect(d->renderingParam, SIGNAL(valueChanged(QString)), this, SLOT(setRenderingType(QString)));
-
+    d->renderingParam->setValue("Surface");
+    d->parameters << d->renderingParam;
 }
 
 void vtkDataMeshInteractor::setOpacity(double value)
@@ -369,6 +370,13 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
     if (attributes)
     {
+        QStringList luts;
+        const std::vector<std::string> & vec = vtkLookupTableManager::GetAvailableLookupTables();
+        for(std::vector<std::string>::const_iterator it = vec.begin(); it < vec.end(); ++it)
+            luts.append(QString::fromStdString(*it));
+        d->LUTParam->clear();
+        d->LUTParam->addItems(luts);
+
         d->attribute = attributes->GetArray(qPrintable(attributeName));
         attributes->SetActiveScalars(qPrintable(attributeName));
 
@@ -382,11 +390,14 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     }
     else
     {
+        QStringList luts("Default");
+        d->LUTParam->clear();
+        d->LUTParam->addItems(luts);
+
         d->attribute = NULL;
         mapper2d->SetScalarVisibility(0);
         mapper3d->SetScalarVisibility(0);
     }
-
     d->render->Render();
 }
 
