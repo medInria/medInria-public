@@ -43,6 +43,7 @@
 #include <vtkDataArrayCollection.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 
+#include <medAbstractParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
 #include <medStringListParameter.h>
@@ -91,6 +92,8 @@ public:
     QWidget* toolbar;
 
     QImage thumbnail;
+
+    QList <medAbstractParameter*> parameters;
 };
 
 
@@ -179,14 +182,39 @@ void vtkDataMeshInteractor::setupParameters()
     d->opacityParam->setRange(0,1);
     d->opacityParam->setSingleStep(0.01);
     d->opacityParam->setValue(1);
+    d->parameters << d->opacityParam;
 
-    d->attributesParam = new medStringListParameter("Attributes", this);
-    d->attributesParam->addItems(QStringList("Solid"));
+    if(!(d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
+         d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
+    {
+        d->attributesParam = new medStringListParameter("Attributes", this);
+        QStringList nameList("Default");
+
+        for (int i = 0; i < d->metaDataSet->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
+        {
+            if (d->metaDataSet->GetDataSet()->GetPointData()->GetArray(i)->GetNumberOfComponents() == 1)
+                nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetPointData()->GetArrayName(i));
+        }
+
+        for (int i = 0;  i < d->metaDataSet->GetDataSet()->GetCellData()->GetNumberOfArrays(); i++)
+        {
+            if (d->metaDataSet->GetDataSet()->GetCellData()->GetArray(i)->GetNumberOfComponents() == 1)
+                nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetCellData()->GetArrayName(i));
+        }
+
+        d->attributesParam->addItems(nameList);
+        connect(d->attributesParam, SIGNAL(valueChanged(QString)), this, SLOT(setAttribute(QString)));
+
+        d->parameters << d->attributesParam;
+    }
+
 
     d->LUTParam = new medStringListParameter("LUT", this);
     d->LUTParam->addItems(QStringList("Default"));
+    d->parameters << d->LUTParam;
 
     d->edgeVisibleParam = new medBoolParameter("Edge Visible", this);
+    d->parameters << d->edgeVisibleParam;
 
     d->colorParam = new medColorListParameter("Color", this);
     QStringList colors;
@@ -213,13 +241,14 @@ void vtkDataMeshInteractor::setupParameters()
     colors << "#0080C0";
 
     d->colorParam->addColors(colors);
+    d->parameters << d->colorParam;
 
     d->renderingParam = new medStringListParameter("Rendering", this);
     QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
     d->renderingParam->addItems(renderings);
+    d->parameters << d->renderingParam;
 
     connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
-    connect(d->attributesParam, SIGNAL(valueChanged(QString)), this, SLOT(setAttribute(QString)));
     connect(d->LUTParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
     connect(d->edgeVisibleParam, SIGNAL(valueChanged(bool)), this, SLOT(setEdgeVisibility(bool)));
     connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
@@ -529,7 +558,9 @@ QWidget* vtkDataMeshInteractor::toolBoxWidget()
     {
         d->toolbox = new QWidget;
         QFormLayout *layout = new QFormLayout(d->toolbox);
-        layout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
+        if(d->attributesParam)
+            layout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
+
         layout->addRow(d->LUTParam->getLabel(), d->LUTParam->getComboBox());
         layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
         layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
@@ -545,14 +576,7 @@ QWidget* vtkDataMeshInteractor::toolBarWidget()
 
 QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
 {
-    QList<medAbstractParameter*> parameters;
-    parameters << d->opacityParam;
-    parameters << d->attributesParam;
-    parameters << d->LUTParam;
-    parameters << d->edgeVisibleParam;
-    parameters << d->colorParam;
-    parameters << d->renderingParam;
-    return parameters;
+    return d->parameters;
 }
 
 QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)

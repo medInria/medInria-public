@@ -27,8 +27,11 @@ public:
 
     ~medIntParameterPrivate()
     {
-        delete spinBox;
-        delete slider;
+        if(spinBox)
+            delete spinBox;
+
+        if(slider)
+            delete slider;
     }
 };
 

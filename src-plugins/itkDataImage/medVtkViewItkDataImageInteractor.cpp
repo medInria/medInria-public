@@ -280,7 +280,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
 
-    d->positionParameter = new medVector3DParameter("position", , this);
+    d->positionParameter = new medVector3DParameter("position", this);
     connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToSliceAtPosition(QVector3D)));
 
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );

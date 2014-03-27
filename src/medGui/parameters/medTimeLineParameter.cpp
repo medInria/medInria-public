@@ -58,14 +58,8 @@ public:
 
     ~medTimeLineParameterPrivate()
     {
-        delete widget;
-        delete frameLineParameter;
-        delete speedFactorParameter;
-        delete playParameter;
-        delete nextFrameParameter;
-        delete previousFrameParameter;
-        delete timeParameter;
-        delete loopParameter;
+        if(widget)
+            delete widget;
     }
 };
 
