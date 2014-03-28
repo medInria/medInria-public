@@ -71,7 +71,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     // Setting up toolbox container
     d->toolBoxContainer = new medToolBoxContainer(this);
     d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    d->toolBoxContainer->setMinimumWidth(340);
+    d->toolBoxContainer->setMinimumWidth(360);
 
     // Setting up view container
     d->viewContainer = new QWidget(this);
