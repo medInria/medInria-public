@@ -224,7 +224,10 @@ void medVtkViewItkDataImageNavigator::updateVisibility()
               d->medVtkView->contains("itkDataImageRGB3"   ) ||
               d->medVtkView->contains("itkDataImageRGBA3"  ) ) )
     {
-        d->toolbox->show();
+        if(d->toolbox)
+            d->toolbox->show();
     }
-    else d->toolbox->hide();
+    else
+        if(d->toolbox)
+            d->toolbox->hide();
 }

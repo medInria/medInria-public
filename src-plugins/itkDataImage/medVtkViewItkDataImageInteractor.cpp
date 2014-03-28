@@ -286,6 +286,22 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
     connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double, unsigned int)), this, SLOT(updateWindowLevelParam(double,double, unsigned int)) );
     connect(d->medVtkView, SIGNAL(currentLayerChanged()), this, SLOT(updateImageViewInternalLayer()));
+
+    if(d->medVtkView->layer(d->imageData) == 0)
+    {
+        switch(d->view2d->GetViewOrientation())
+        {
+        case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+            d->medVtkView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+            d->medVtkView->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+            d->medVtkView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+            break;
+        }
+    }
 }
 
 void medVtkViewItkDataImageInteractor::setOpacity (int opacity)
