@@ -66,6 +66,12 @@ class medVtkViewNavigatorPrivate
     medVector3DParameter *cameraFocalParameter;
     medDoubleParameter   *cameraParallelScaleParameter;
 
+    medBoolParameter *showAxesParameter;
+    medBoolParameter *showRulerParameter;
+    medBoolParameter *showAnnotationParameter;
+    medBoolParameter *showScalarBarParameter;
+    QWidget* showOptionsWidget;
+
 };
 
 medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
@@ -77,6 +83,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     d->renWin = backend->renWin;
 
     d->currentView = NULL;
+    d->showOptionsWidget = NULL;
 
     d->renderer2d = d->view2d->GetRenderer();
     d->renderer3d = d->view3d->GetRenderer();
@@ -143,15 +150,44 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     connect(parent, SIGNAL(cameraChanged(QVector3D,QVector3D,QVector3D,double)),
             this,SLOT(updateCameraParam(QVector3D,QVector3D,QVector3D,double)));
 
+    d->showAxesParameter = new medBoolParameter("Axes", this);
+    d->showRulerParameter = new medBoolParameter("Ruler", this);
+    d->showAnnotationParameter = new medBoolParameter("Annotations", this);
+    d->showScalarBarParameter = new medBoolParameter("Scalar Bar", this);
+
+    d->showAxesParameter->setText("Axes");
+    d->showRulerParameter->setText("Ruler");
+    d->showAnnotationParameter->setText("Annotations");
+    d->showScalarBarParameter->setText("Scalar Bar");
+
+    connect(d->showAxesParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAxes(bool)));
+    connect(d->showRulerParameter, SIGNAL(valueChanged(bool)), this, SLOT(showRuler(bool)));
+    connect(d->showAnnotationParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAnnotations(bool)));
+    connect(d->showScalarBarParameter, SIGNAL(valueChanged(bool)), this, SLOT(showScalarBar(bool)));
+
+    d->showAxesParameter->setValue(false);
+    d->showRulerParameter->setValue(true);
+    d->showAnnotationParameter->setValue(true);
+    d->showScalarBarParameter->setValue(false);
+
     d->widgetForToolBar = NULL;
     d->widgetForToolBox = new QWidget();
+
+    d->showOptionsWidget = new QWidget;
+    QHBoxLayout* showOptionsLayout = new QHBoxLayout(d->showOptionsWidget);
+    showOptionsLayout->addWidget(d->showAxesParameter->getCheckBox());
+    showOptionsLayout->addWidget(d->showRulerParameter->getCheckBox());
+    showOptionsLayout->addWidget(d->showAnnotationParameter->getCheckBox());
+    showOptionsLayout->addWidget(d->showScalarBarParameter->getCheckBox());
+
     QVBoxLayout* layout = new QVBoxLayout(d->widgetForToolBox);
     layout->addWidget(d->orientationParameter->getLabel());
     layout->addWidget(d->orientationParameter->getPushButtonGroup());
+    layout->addWidget(d->showOptionsWidget);
+
 
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()), parent, SIGNAL(orientationChanged()));
-
 }
 
 medVtkViewNavigator::~medVtkViewNavigator()
@@ -169,6 +205,10 @@ QList<medAbstractParameter*> medVtkViewNavigator::parameters()
     params.append(d->cameraViewUpParameter);
     params.append(d->cameraFocalParameter);
     params.append(d->cameraParallelScaleParameter);
+    params.append(d->showAxesParameter);
+    params.append(d->showRulerParameter);
+    params.append(d->showAnnotationParameter);
+    params.append(d->showRulerParameter);
 
     return params;
 }
@@ -582,6 +622,13 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
         break;
     }
 
+    if(d->showOptionsWidget)
+    {
+        if(orientation == medImageView::VIEW_ORIENTATION_3D)
+            d->showOptionsWidget->hide();
+        else d->showOptionsWidget->show();
+    }
+
     d->currentView->SetRenderWindow(d->renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->SetTimeIndex(timeIndex);
@@ -590,4 +637,30 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     d->orientation = orientation;
 
     emit orientationChanged();
+}
+
+void medVtkViewNavigator::showAxes(bool show)
+{
+    d->collection->SyncSetShowImageAxis( show );
+    d->currentView->InvokeEvent ( vtkImageView2D::CurrentPointChangedEvent );
+    d->currentView->Render();
+}
+
+void medVtkViewNavigator::showRuler(bool show)
+{
+    d->collection->SyncSetShowRulerWidget( show );
+    d->currentView->Render();
+}
+
+void medVtkViewNavigator::showAnnotations(bool show)
+{
+    d->collection->SyncSetShowAnnotations( show );
+    d->currentView->Render();
+}
+
+void medVtkViewNavigator::showScalarBar(bool show)
+{
+    d->collection->SyncSetShowScalarBar( show );
+    d->view3d->SetShowScalarBar(show);
+    d->currentView->Render();
 }

@@ -77,6 +77,9 @@ protected:
     void cameraParallelScale(double &parallelScale) const;
     void setCameraPosition(double x, double y, double z);
     void setCameraClippingRange(double nearRange, double farRange);
+    QString cameraProjectionMode();
+    double cameraViewAngle();
+    double cameraZoom();
 
 protected slots:
     void setAxial(bool axial);
@@ -88,10 +91,10 @@ protected slots:
     void setCameraFocalPoint(const QVector3D& focal);
     void setCameraParallelScale(double parallelScale);
     void updateCameraParam(const QVector3D& postion,const QVector3D& viewUp,const QVector3D& focal,double parallelScale);
-
-    QString cameraProjectionMode();
-    double cameraViewAngle();
-    double cameraZoom();
+    void showAxes(bool);
+    void showRuler(bool);
+    void showAnnotations(bool);
+    void showScalarBar(bool);
 
 private:
     void changeOrientation(medImageView::Orientation orientation);
