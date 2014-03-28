@@ -285,6 +285,22 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     connect(minorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setMinorScaling(int)));
     connect(majorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setMajorScaling(int)));
 
+    if(d->view->layer(d->data) == 0)
+    {
+        switch(d->view2d->GetViewOrientation())
+        {
+        case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+            break;
+        }
+    }
+
 }
 
 void itkDataSHImageVtkViewInteractor::setWindowLevel(double &window, double &level)

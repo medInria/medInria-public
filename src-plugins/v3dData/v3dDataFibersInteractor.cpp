@@ -283,6 +283,23 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): 
     connect (d->bundlingModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(changeBundlingItem(QStandardItem*)));
     connect(d->view, SIGNAL(orientationChanged()), this, SLOT(updateWidgets()));
 
+
+    if(d->view->layer(d->data) == 0)
+    {
+        switch(d->view2d->GetViewOrientation())
+        {
+        case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+            break;
+        }
+    }
+
 }
 
 v3dDataFibersInteractor::~v3dDataFibersInteractor()

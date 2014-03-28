@@ -53,6 +53,8 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->croppingParameter = new medBoolParameter("Cropping", this);
     connect(d->croppingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableCropping(bool)));
 
+    this->set3DMode("MPR");
+
     d->parameters.append(d->mode3DParameter);
     d->parameters.append(d->renderer3DParameter);
     d->parameters.append(d->croppingParameter);

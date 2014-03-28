@@ -149,6 +149,22 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
             d->timeLineParameter->setDuration((maxtime+mintimestep));
 
             connect(d->timeLineParameter, SIGNAL(frameChanged(double)), this, SLOT(setCurrentTime(double)));
+
+            if(d->view->layer(d->imageData) == 0)
+            {
+                switch(d->view2d->GetViewOrientation())
+                {
+                case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+                    d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+                    break;
+                case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+                    d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+                    break;
+                case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+                    d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+                    break;
+                }
+            }
         }
     }
 }

@@ -251,6 +251,22 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     connect(sampleRateControl,SIGNAL(valueChanged(int)),this,SLOT(setSampleRate(int)));
     connect(colorMode, SIGNAL(valueChanged(QString)), this, SLOT(setColorMode(QString)));
     connect(projection, SIGNAL(valueChanged(bool)), this, SLOT(setProjection(bool)));
+
+    if(d->view->layer(d->data) == 0)
+    {
+        switch(d->view2d->GetViewOrientation())
+        {
+        case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+            break;
+        case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+            break;
+        }
+    }
 }
 
 
