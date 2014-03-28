@@ -562,8 +562,8 @@ void medViewContainer::addData(medDataIndex index)
 
 void medViewContainer::createDragLabels()
 {
-    // minus 4 because we don't want to hide  the borders
-    int w(this->width() - 4), h(this->height() - 4);
+    // minus 4 because we don't want to hide  the borders and minus 8 otherwise it resizes the splitters.
+    int w(this->width() - 8), h(this->height() - 4);
     d->receiverQuarterWidth = w/4;
     d->receiverQuarterHeight = h/4;
 
