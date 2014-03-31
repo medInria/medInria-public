@@ -63,17 +63,14 @@ public:
     QPushButton* hSplitButton;
     QPushButton* closeContainerButton;
 
-    QLabel *northDragLabel;
-    QLabel *eastDragLabel;
-    QLabel *southDragLabel;
-    QLabel *westDragLabel;
-    QLabel *midDragLabel;
-
     int receiverQuarterWidth;
     int receiverQuarterHeight;
 
     medBoolParameter* maximizedParameter;
     medColorListParameter *poolSelector;
+
+    QString defaultStyleSheet;
+    QString highlightColor;
 
     ~medViewContainerPrivate()
     {
@@ -91,13 +88,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->uuid = QUuid::createUuid();
     medViewContainerManager::instance()->registerNewContainer(this);
 
-
     d->view = NULL;
-    d->northDragLabel = NULL;
-    d->eastDragLabel = NULL;
-    d->westDragLabel = NULL;
-    d->southDragLabel = NULL;
-    d->midDragLabel = NULL;
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
@@ -182,6 +173,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->selected = false;
     this->setSelected(false);
+
+    d->defaultStyleSheet = this->styleSheet();
 }
 
 medViewContainer::~medViewContainer()
@@ -349,8 +342,9 @@ void medViewContainer::highlight(QString color)
     {
         d->view->viewWidget()->updateGeometry();
         d->view->viewWidget()->update();
-
     }
+
+    d->highlightColor = color;
 }
 
 void medViewContainer::unHighlight()
@@ -431,7 +425,6 @@ void medViewContainer::recomputeStyleSheet()
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
-    this->createDragLabels();
     event->acceptProposedAction();
 }
 
@@ -439,48 +432,32 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 {
     if(d->userSplittable)
     {
+        int w(this->width()), h(this->height());
+        d->receiverQuarterWidth = w/4;
+        d->receiverQuarterHeight = h/4;
+
         int x(event->pos().x()), y(event->pos().y());
         int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
 
         if((x > rqw && x < rqw * 3) && (y < rqh))
         {
-            d->northDragLabel->show();
-            d->eastDragLabel->hide();
-            d->southDragLabel->hide();
-            d->westDragLabel->hide();
-            d->midDragLabel->hide();
+            this->setStyleSheet("medViewContainer {border-top: 3px solid #0080FF}");
         }
         else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
         {
-            d->northDragLabel->hide();
-            d->eastDragLabel->show();
-            d->southDragLabel->hide();
-            d->westDragLabel->hide();
-            d->midDragLabel->hide();
+            this->setStyleSheet("medViewContainer {border-right: 3px solid #0080FF}");
         }
         else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
         {
-            d->northDragLabel->hide();
-            d->eastDragLabel->hide();
-            d->southDragLabel->show();
-            d->westDragLabel->hide();
-            d->midDragLabel->hide();
+            this->setStyleSheet("medViewContainer {border-bottom: 3px solid #0080FF}");
         }
         else if((x < rqw) && (y > rqh && y < rqh * 3))
         {
-            d->northDragLabel->hide();
-            d->eastDragLabel->hide();
-            d->southDragLabel->hide();
-            d->westDragLabel->show();
-            d->midDragLabel->hide();
+            this->setStyleSheet("medViewContainer {border-left: 3px solid #0080FF}");
         }
         else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
         {
-            d->northDragLabel->hide();
-            d->eastDragLabel->hide();
-            d->southDragLabel->hide();
-            d->westDragLabel->hide();
-            d->midDragLabel->show();
+            this->setStyleSheet(d->defaultStyleSheet);
         }
     }
 
@@ -489,7 +466,10 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 
 void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    this->destroyDragLabels();
+    this->setStyleSheet(d->defaultStyleSheet);
+    if(d->selected)
+        this->highlight(d->highlightColor);
+
     event->accept();
 }
 
@@ -502,8 +482,6 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
     if(d->userSplittable)
     {
-        this->destroyDragLabels();
-
         int x(event->pos().x()), y(event->pos().y());
         int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
 
@@ -520,6 +498,8 @@ void medViewContainer::dropEvent(QDropEvent *event)
     }
     else
         this->addData(index);
+
+    this->setStyleSheet(d->defaultStyleSheet);
 
     event->acceptProposedAction();
 }
@@ -559,80 +539,6 @@ void medViewContainer::addData(medDataIndex index)
     medDataManager::instance()->disconnect(this);
     this->addData(medDataManager::instance()->data(index));
 }
-
-void medViewContainer::createDragLabels()
-{
-    // minus 4 because we don't want to hide  the borders and minus 8 otherwise it resizes the splitters.
-    int w(this->width() - 8), h(this->height() - 4);
-    d->receiverQuarterWidth = w/4;
-    d->receiverQuarterHeight = h/4;
-
-    QColor labelColor(80, 80, 80);
-    QGridLayout *receiverLayout = new QGridLayout;
-    d->mainLayout->addLayout(receiverLayout, 0, 0, -1, -1);
-
-    QImage hImg, vImg, mImg;
-    if(h < w)
-    {
-        hImg = QImage(w, h/4, QImage::Format_ARGB32);
-        vImg = QImage(h/4, h, QImage::Format_ARGB32);
-    }
-    else
-    {
-        hImg = QImage(w, w/4, QImage::Format_ARGB32);
-        vImg = QImage(w/4, h, QImage::Format_ARGB32);
-    }
-    mImg = QImage(w/2, h/2, QImage::Format_ARGB32);
-
-    hImg.fill(labelColor);
-    vImg.fill(labelColor);
-    mImg.fill(labelColor);
-
-    d->northDragLabel = new QLabel;
-    d->northDragLabel->setPixmap(QPixmap::fromImage(hImg));
-    receiverLayout->addWidget(d->northDragLabel, 0, 1, 1, 1, Qt::AlignTop);
-
-    d->eastDragLabel = new QLabel;
-    d->eastDragLabel->setPixmap(QPixmap::fromImage(vImg));
-    receiverLayout->addWidget(d->eastDragLabel, 1, 2, 1, 1, Qt::AlignRight);
-
-    d->southDragLabel = new QLabel;
-    d->southDragLabel->setPixmap(QPixmap::fromImage(hImg));
-    receiverLayout->addWidget(d->southDragLabel, 2, 1, 1, 1, Qt::AlignBottom);
-
-    d->westDragLabel = new QLabel;
-    d->westDragLabel->setPixmap(QPixmap::fromImage(vImg));
-    receiverLayout->addWidget(d->westDragLabel, 1, 0, 1, 1, Qt::AlignLeft);
-
-    d->midDragLabel = new QLabel;
-    d->midDragLabel->setPixmap(QPixmap::fromImage(mImg));
-    receiverLayout->addWidget(d->midDragLabel, 1, 1, 1, 1, Qt::AlignCenter);
-
-    d->northDragLabel->hide();
-    d->eastDragLabel->hide();
-    d->southDragLabel->hide();
-    d->westDragLabel->hide();
-    d->midDragLabel->hide();
-}
-
-void medViewContainer::destroyDragLabels()
-{
-    delete d->northDragLabel;
-    d->northDragLabel = NULL;
-
-    delete d->eastDragLabel;
-    d->eastDragLabel = NULL;
-
-    delete d->southDragLabel;
-    d->southDragLabel = NULL;
-
-    delete d->westDragLabel;
-    d->westDragLabel = NULL;
-
-    delete d->midDragLabel;
-    d->midDragLabel = NULL;
-}
-
 
 void medViewContainer::emitLinkRequested(QString pool)
 {

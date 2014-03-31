@@ -103,9 +103,6 @@ protected slots:
 
 private slots:
     void removeInternView();
-    void createDragLabels();
-    void destroyDragLabels();
-
 
 private:
     medViewContainerPrivate *d;
