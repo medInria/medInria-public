@@ -107,8 +107,6 @@ void medAbstractParameter::addToInternWidgets(QWidget *widget)
     widget->setToolTip(d->toolTip);
     if(d->hide)
         widget->hide();
-    else
-        widget->show();
 
     d->internWidget << widget;
 }
