@@ -30,6 +30,7 @@ PURPOSE.
 #include <medVector2DParameter.h>
 #include <medVector3DParameter.h>
 #include <medDoubleParameter.h>
+#include <medCompositeParameter.h>
 
 class medVtkViewNavigatorPrivate
 {
@@ -61,10 +62,7 @@ class medVtkViewNavigatorPrivate
 
     medVector2DParameter *panParameter;
 
-    medVector3DParameter *cameraPositionParameter;
-    medVector3DParameter *cameraViewUpParameter;
-    medVector3DParameter *cameraFocalParameter;
-    medDoubleParameter   *cameraParallelScaleParameter;
+    medCompositeParameter *cameraParameter;
 
     medBoolParameter *showAxesParameter;
     medBoolParameter *showRulerParameter;
@@ -138,15 +136,9 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     connect(d->panParameter, SIGNAL(valueChanged(QVector2D)),this, SLOT(setPan(QVector2D)));
     connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
 
-    d->cameraPositionParameter = new medVector3DParameter("cameraPosition", this);
-    d->cameraViewUpParameter = new medVector3DParameter("cameraViewUp", this);
-    d->cameraFocalParameter = new medVector3DParameter("cameraFocal", this);
-    d->cameraParallelScaleParameter = new medDoubleParameter("cameraParallelScale", this);
+    d->cameraParameter = new medCompositeParameter("Camera", this);
 
-    connect(d->cameraPositionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraPosition(QVector3D)));
-    connect(d->cameraViewUpParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraUp(QVector3D)));
-    connect(d->cameraFocalParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraFocalPoint(QVector3D)));
-    connect(d->cameraParallelScaleParameter, SIGNAL(valueChanged(double)), this, SLOT(setCameraParallelScale(double)));
+    connect(d->cameraParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setCamera(QList<QVariant>)));
     connect(parent, SIGNAL(cameraChanged(QVector3D,QVector3D,QVector3D,double)),
             this,SLOT(updateCameraParam(QVector3D,QVector3D,QVector3D,double)));
 
@@ -201,10 +193,7 @@ QList<medAbstractParameter*> medVtkViewNavigator::parameters()
     params.append(d->orientationParameter);
     params.append(d->zoomParameter);
     params.append(d->panParameter);
-    params.append(d->cameraPositionParameter);
-    params.append(d->cameraViewUpParameter);
-    params.append(d->cameraFocalParameter);
-    params.append(d->cameraParallelScaleParameter);
+    params.append(d->cameraParameter);
     params.append(d->showAxesParameter);
     params.append(d->showRulerParameter);
     params.append(d->showAnnotationParameter);
@@ -316,6 +305,27 @@ void medVtkViewNavigator::setCamera(const QVector3D &position,
     d->currentView->Render();
 }
 
+void medVtkViewNavigator::setCamera(QList<QVariant> cameraOptions)
+{
+    if(cameraOptions.count() != 10)
+    {
+        qWarning() << "Camera options are incorrect.";
+        return;
+    }
+
+    QVector3D cameraPostion(cameraOptions.at(0).toReal(), cameraOptions.at(1).toReal(), cameraOptions.at(2).toReal() );
+    QVector3D cameraUp(cameraOptions.at(3).toReal(), cameraOptions.at(4).toReal(), cameraOptions.at(5).toReal() );
+    QVector3D cameraFocalPoint(cameraOptions.at(6).toReal(), cameraOptions.at(7).toReal(), cameraOptions.at(8).toReal() );
+    double parallelScale = cameraOptions.at(9).toReal();
+
+    setCameraPosition(cameraPostion);
+    setCameraUp(cameraUp);
+    setCameraFocalPoint(cameraFocalPoint);
+    setCameraParallelScale(parallelScale);
+
+    d->currentView->Render();
+}
+
 void medVtkViewNavigator::cameraUp (double *coordinates) const
 {
     if (d->orientation != medImageView::VIEW_ORIENTATION_3D)
@@ -341,8 +351,6 @@ void medVtkViewNavigator::setCameraUp(const QVector3D& viewup)
     d->view3d->GetInteractorStyle()->HandleObserversOff();
     d->renderer3d->GetActiveCamera()->SetViewUp(vup);
     d->view3d->GetInteractorStyle()->HandleObserversOn();
-
-    d->view3d->Render();
 }
 
 void medVtkViewNavigator::cameraPosition(double *coordinates) const
@@ -369,8 +377,6 @@ void medVtkViewNavigator::setCameraPosition(double x, double y, double z)
     camera->SetPosition (x, y, z);
     d->renderer3d->ResetCameraClippingRange();
     d->view3d->GetInteractorStyle()->HandleObserversOn();
-
-    d->view3d->Render();
 }
 
 void medVtkViewNavigator::setCameraPosition(const QVector3D& position)
@@ -404,8 +410,6 @@ void medVtkViewNavigator::setCameraFocalPoint(const QVector3D& focal)
     d->view3d->GetInteractorStyle()->HandleObserversOff();
     d->renderer3d->GetActiveCamera()->SetFocalPoint(foc);
     d->view3d->GetInteractorStyle()->HandleObserversOn();
-
-    d->view3d->Render();
 }
 
 void medVtkViewNavigator::cameraParallelScale(double &parallelScale) const
@@ -418,8 +422,6 @@ void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
     d->view3d->GetInteractorStyle()->HandleObserversOff();
     d->renderer3d->GetActiveCamera()->SetParallelScale(parallelScale);
     d->view3d->GetInteractorStyle()->HandleObserversOn();
-
-    d->view3d->Render();
 }
 
 void medVtkViewNavigator::setCameraClippingRange(double nearRange, double farRange)
@@ -429,7 +431,6 @@ void medVtkViewNavigator::setCameraClippingRange(double nearRange, double farRan
 
     vtkCamera *camera = d->renderer3d->GetActiveCamera();
     camera->SetClippingRange(nearRange, farRange);
-    d->view3d->Render();
 }
 
 //TODO is that usefull ?
@@ -484,12 +485,19 @@ double medVtkViewNavigator::cameraZoom()
 
 void medVtkViewNavigator::updateCameraParam(const QVector3D& position,const QVector3D& viewUp,const QVector3D& focal,double parallelScale)
 {
-    d->cameraPositionParameter->setValue(position);
-    d->cameraViewUpParameter->setValue(viewUp);
-    d->cameraFocalParameter->setValue(focal);
-    d->cameraParallelScaleParameter->setValue(parallelScale);
+    QList<QVariant> options;
+    options.append( position.x() );
+    options.append( position.y() );
+    options.append( position.z() );
+    options.append( viewUp.x() );
+    options.append( viewUp.y() );
+    options.append( viewUp.z() );
+    options.append( focal.x() );
+    options.append( focal.y() );
+    options.append( focal.z() );
+    options.append( parallelScale );
 
-    d->view3d->Render();
+    d->cameraParameter->setValue(options);
 }
 
 void medVtkViewNavigator::bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax) const

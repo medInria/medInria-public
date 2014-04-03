@@ -60,6 +60,7 @@ public slots:
     virtual void setVisibility(bool visibility);
     void setWindow(double window);
     void setLevel(double level);
+    void setWindowLevel(QList<QVariant>);
     virtual void removeData();
 
     virtual void updateWidgets();

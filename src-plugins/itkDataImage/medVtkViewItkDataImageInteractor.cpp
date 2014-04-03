@@ -35,6 +35,7 @@
 #include <medSlicingParameter.h>
 #include <medVector3DParameter.h>
 #include <medAbstractImageData.h>
+#include <medCompositeParameter.h>
 
 #include <QFormLayout>
 
@@ -56,8 +57,7 @@ public:
     medStringListParameter *presetParam;
     medIntParameter *opacityParam;
     medBoolParameter *visibiltyParameter;
-    medDoubleParameter *windowParameter;
-    medDoubleParameter *levelParameter;
+    medCompositeParameter *windowLevelParameter;
     //medSlicingParameter *slicingParameter;
     medIntParameter *slicingParameter;
 
@@ -88,9 +88,8 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     d->presetParam = NULL;
     d->opacityParam = NULL;
     d->visibiltyParameter = NULL;
-    d->windowParameter = NULL;
-    d->levelParameter = NULL;
     d->slicingParameter = NULL;
+    d->windowLevelParameter = NULL;
 
     d->toolbox = NULL;
     d->toolbar = NULL;
@@ -153,8 +152,7 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::parameters()
     params.append(d->presetParam);
     params.append(d->opacityParam);
     params.append(d->visibiltyParameter);
-    params.append(d->windowParameter);
-    params.append(d->levelParameter);
+    params.append(d->windowLevelParameter);
     params.append(d->slicingParameter);
 
     return params;
@@ -251,8 +249,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->visibiltyParameter->setValue(true);
     connect(d->visibiltyParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
 
-    d->windowParameter = new medDoubleParameter("Window", this);
-    d->levelParameter = new medDoubleParameter("Level", this);
 
 
     d->view2d->GetInput()->Update();
@@ -260,12 +256,10 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
-    d->windowParameter->setRange(range[0], range[1]);
-    d->levelParameter->setRange(range[0], range[1]);
-    connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
-    connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
-    d->windowParameter->setValue(window);
-    d->levelParameter->setValue(level);
+    d->windowLevelParameter = new medCompositeParameter("WindowLevel", this);
+    connect(d->windowLevelParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setWindowLevel(QList<QVariant>)));
+    d->windowLevelParameter->addVariant("Window", QVariant(window), QVariant(range[0]), QVariant(range[1]));
+    d->windowLevelParameter->addVariant("Level", QVariant(level), QVariant(range[0]), QVariant(range[1]));
 
     //TODO GPR-RDE: Shouldn't it be a navigator parameter?
     d->slicingParameter = new medIntParameter("Slicing", this);
@@ -410,8 +404,7 @@ QWidget* medVtkViewItkDataImageInteractor::toolBoxWidget()
     {
         d->toolbox = new QWidget;
         QFormLayout *layout = new QFormLayout(d->toolbox);
-        layout->addRow(d->windowParameter->getLabel(), d->windowParameter->getSpinBox());
-        layout->addRow(d->levelParameter->getLabel(), d->levelParameter->getSpinBox());
+        layout->addRow(d->windowLevelParameter->getWidget());
         layout->addRow(d->lutParam->getLabel(), d->lutParam->getComboBox());
         layout->addRow(d->presetParam->getLabel(), d->presetParam->getComboBox());
     }
@@ -427,14 +420,16 @@ QWidget* medVtkViewItkDataImageInteractor::layerWidget()
 
 void medVtkViewItkDataImageInteractor::setWindowLevel (double &window, double &level)
 {
-    d->windowParameter->setValue(window);
-    d->levelParameter->setValue(level);
+    QList<QVariant> value;
+    value.append(QVariant(window));
+    value.append(QVariant(level));
+    d->windowLevelParameter->setValue(value);
 }
 
 void medVtkViewItkDataImageInteractor::windowLevel(double &window, double &level)
 {
-    window = d->windowParameter->value();
-    level = d->levelParameter->value();
+    window = d->windowLevelParameter->value().at(0).toDouble();
+    level = d->windowLevelParameter->value().at(1).toDouble();
 }
 
 void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
@@ -487,13 +482,24 @@ void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
     d->view2d->SetColorWindow(window, imageViewInternalLayer());
     d->view3d->SetColorWindow(window, imageViewInternalLayer());
-    update();
 }
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
     d->view2d->SetColorLevel(level, imageViewInternalLayer());
     d->view3d->SetColorLevel(level, imageViewInternalLayer());
+
+}
+
+void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
+{
+    if(values.size() != 2 )
+    {
+        qWarning() << "Window/Level parameters are incorrect";
+        return;
+    }
+    setWindow(values.at(0).toDouble());
+    setLevel(values.at(1).toDouble());
     update();
 }
 
@@ -530,8 +536,10 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
     if( d->medVtkView->layer(d->imageData) != layer )
         return;
 
-    d->windowParameter->setValue(window);
-    d->levelParameter->setValue(level);
+    QList<QVariant> values;
+    values.append(QVariant(window));
+    values.append(QVariant(level));
+    d->windowLevelParameter->setValue(values);
 }
 
 QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
