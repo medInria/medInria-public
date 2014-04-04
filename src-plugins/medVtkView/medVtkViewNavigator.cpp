@@ -137,6 +137,10 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
 
     d->cameraParameter = new medCompositeParameter("Camera", this);
+    d->cameraParameter->addVariant("Camera Position", QVariant(QVector3D()));
+    d->cameraParameter->addVariant("Camera Up", QVariant(QVector3D()));
+    d->cameraParameter->addVariant("Camera Focal", QVariant(QVector3D()));
+    d->cameraParameter->addVariant("Parallel Scale", QVariant((double)0.0));
 
     connect(d->cameraParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setCamera(QList<QVariant>)));
     connect(parent, SIGNAL(cameraChanged(QVector3D,QVector3D,QVector3D,double)),
@@ -307,16 +311,17 @@ void medVtkViewNavigator::setCamera(const QVector3D &position,
 
 void medVtkViewNavigator::setCamera(QList<QVariant> cameraOptions)
 {
-    if(cameraOptions.count() != 10)
+    if(cameraOptions.count() != 4)
     {
         qWarning() << "Camera options are incorrect.";
         return;
     }
 
-    QVector3D cameraPostion(cameraOptions.at(0).toReal(), cameraOptions.at(1).toReal(), cameraOptions.at(2).toReal() );
-    QVector3D cameraUp(cameraOptions.at(3).toReal(), cameraOptions.at(4).toReal(), cameraOptions.at(5).toReal() );
-    QVector3D cameraFocalPoint(cameraOptions.at(6).toReal(), cameraOptions.at(7).toReal(), cameraOptions.at(8).toReal() );
-    double parallelScale = cameraOptions.at(9).toReal();
+    QVector3D cameraPostion(cameraOptions.at(0).value<QVector3D>());
+    QVector3D cameraUp(cameraOptions.at(1).value<QVector3D>());
+    QVector3D cameraFocalPoint(cameraOptions.at(2).value<QVector3D>());
+
+    double parallelScale = cameraOptions.at(3).toReal();
 
     setCameraPosition(cameraPostion);
     setCameraUp(cameraUp);
@@ -486,15 +491,9 @@ double medVtkViewNavigator::cameraZoom()
 void medVtkViewNavigator::updateCameraParam(const QVector3D& position,const QVector3D& viewUp,const QVector3D& focal,double parallelScale)
 {
     QList<QVariant> options;
-    options.append( position.x() );
-    options.append( position.y() );
-    options.append( position.z() );
-    options.append( viewUp.x() );
-    options.append( viewUp.y() );
-    options.append( viewUp.z() );
-    options.append( focal.x() );
-    options.append( focal.y() );
-    options.append( focal.z() );
+    options.append( QVariant::fromValue(position) );
+    options.append( QVariant::fromValue(viewUp) );
+    options.append( QVariant::fromValue(focal) );
     options.append( parallelScale );
 
     d->cameraParameter->setValue(options);
