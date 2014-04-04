@@ -7,13 +7,20 @@ class medCompositeParameterPrivate
 {
 public:
 
-    QList<QVariant> value;
-    QList<medAbstractParameter*> parameters;
     QHash<QString, QVariant> variants;
     QHash<QString, QWidget*> widgets;
 
     ~medCompositeParameterPrivate()
     {
+        variants.clear();
+        QHash<QString, QWidget*>::iterator i = widgets.begin();
+        while (i != widgets.end())
+        {
+            QWidget* w = i.value();
+            delete i.value();
+            i++;
+        }
+        widgets.clear();
     }
 };
 
@@ -26,7 +33,7 @@ medCompositeParameter::medCompositeParameter(QString name, QObject* parent):
 
 medCompositeParameter::~medCompositeParameter()
 {
-
+    delete d;
 }
 
 QWidget* medCompositeParameter::getWidget()
@@ -45,9 +52,23 @@ QWidget* medCompositeParameter::getWidget()
 
 void medCompositeParameter::setValue(const QList<QVariant> value)
 {
-    if(d->value == value)
+    if(d->variants.values() == value)
         return;
-    d->value = value;
+
+    if(value.size() != d->variants.values().size())
+    {
+        qDebug() << "medCompositeParameter::setValue: Wrong number of arguments.";
+        return;
+    }
+
+    QHash<QString, QVariant>::iterator i = d->variants.begin();
+    int index = 0;
+    while (i != d->variants.end())
+    {
+        i.value() = value[index];
+        index++;
+        i++;
+    }
 
     //  update intern widget
     this->blockInternWidgetsSignals(true);
@@ -59,7 +80,7 @@ void medCompositeParameter::setValue(const QList<QVariant> value)
 
 QList<QVariant> medCompositeParameter::value() const
 {
-    return d->value;
+    return d->variants.values();
 }
 
 void medCompositeParameter::updateInternWigets()
@@ -89,19 +110,18 @@ void medCompositeParameter::updateInternWigets()
 
 void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant min, QVariant max, QVariant step)
 {
-    d->value.append(QVariant());
     d->variants.insert(name, variant);
 
     if(variant.type() == QVariant::Bool)
     {
         QCheckBox *checkbox = new QCheckBox(name);
         d->widgets.insert(name, checkbox);
+        addToInternWidgets(checkbox);
         connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(updateValue(bool)));
     }
     else if(variant.type() == QVariant::Int)
     {
         QSpinBox *spinbox = new QSpinBox;
-        spinbox->setValue(variant.toInt());
         if(min != QVariant() && max != QVariant())
         {
             spinbox->setMinimum(min.toInt());
@@ -111,13 +131,14 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         {
             spinbox->setSingleStep(step.toInt());
         }
+        spinbox->setValue(variant.toInt());
         d->widgets.insert(name, spinbox);
+        addToInternWidgets(spinbox);
         connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(updateValue(int)));
     }
     else if(variant.type() == QVariant::Double )
     {
-        QDoubleSpinBox *spinbox = new QDoubleSpinBox;
-        spinbox->setValue(variant.toDouble());
+        QDoubleSpinBox *spinbox = new QDoubleSpinBox;      
         if(min != QVariant() && max != QVariant())
         {
             spinbox->setMinimum(min.toDouble());
@@ -127,7 +148,9 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         {
             spinbox->setSingleStep(step.toDouble());
         }
+        spinbox->setValue(variant.toDouble());
         d->widgets.insert(name, spinbox);
+        addToInternWidgets(spinbox);
         connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(updateValue(double)));
     }
 
