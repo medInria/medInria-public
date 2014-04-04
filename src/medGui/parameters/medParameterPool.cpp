@@ -160,7 +160,7 @@ void medParameterPool::triggerParams()
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractTriggerParameter *triggerParam = dynamic_cast<medAbstractTriggerParameter*>(param);
-        if(triggerParam != sender)
+        if(triggerParam && triggerParam != sender)
         {
             triggerParam->disconnect(this);
             triggerParam->trigger();
@@ -179,7 +179,7 @@ void medParameterPool::changeParamsValue(bool value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractBoolParameter *boolParam = dynamic_cast<medAbstractBoolParameter*>(param);
-        if(boolParam != sender)
+        if(boolParam && boolParam != sender)
         {
             boolParam->disconnect(this);
             boolParam->setValue(value);
@@ -198,7 +198,7 @@ void medParameterPool::changeParamsValue(int value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractIntParameter *intParam = dynamic_cast<medAbstractIntParameter*>(param);
-        if(intParam != sender)
+        if(intParam && intParam != sender)
         {
             intParam->disconnect(this);
             intParam->setValue(value);
@@ -217,7 +217,7 @@ void medParameterPool::changeParamsValue(double value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractDoubleParameter *doubleParam = dynamic_cast<medAbstractDoubleParameter*>(param);
-        if(doubleParam != sender)
+        if(doubleParam && doubleParam != sender)
         {
             doubleParam->disconnect(this);
             doubleParam->setValue(value);
@@ -236,7 +236,7 @@ void medParameterPool::changeParamsValue(const QString &value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractStringParameter *listParam = dynamic_cast<medAbstractStringParameter*>(param);
-        if(listParam != sender)
+        if(listParam && listParam != sender)
         {
             listParam->disconnect(this);
             listParam->setValue(value);
@@ -255,7 +255,7 @@ void medParameterPool::changeParamsValue(const QVector2D& value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractVector2DParameter *vector2DParam = dynamic_cast<medAbstractVector2DParameter*>(param);
-        if(vector2DParam != sender)
+        if(vector2DParam && vector2DParam != sender)
         {
             vector2DParam->disconnect(this);
             vector2DParam->setValue(value);
@@ -274,7 +274,7 @@ void medParameterPool::changeParamsValue(const QVector3D& value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractVector3DParameter *vector3DParam = dynamic_cast<medAbstractVector3DParameter*>(param);
-        if(vector3DParam != sender)
+        if(vector3DParam && vector3DParam != sender)
         {
             vector3DParam->disconnect(this);
             vector3DParam->setValue(value);
@@ -293,7 +293,7 @@ void medParameterPool::changeParamsValue(const QVector4D& value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medAbstractVector4DParameter *vector4DParam = dynamic_cast<medAbstractVector4DParameter*>(param);
-        if(vector4DParam != sender)
+        if(vector4DParam && vector4DParam != sender)
         {
             vector4DParam->disconnect(this);
             vector4DParam->setValue(value);
@@ -312,7 +312,7 @@ void medParameterPool::changeParamsValue(const QList<QVariant>& value)
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
         medCompositeParameter *compositeParam = dynamic_cast<medCompositeParameter*>(param);
-        if(compositeParam != sender)
+        if(compositeParam && compositeParam != sender)
         {
             compositeParam->disconnect(this);
             compositeParam->setValue(value);
