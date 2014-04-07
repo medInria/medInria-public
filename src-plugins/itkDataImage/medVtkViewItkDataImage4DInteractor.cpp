@@ -136,7 +136,7 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
             initParameters(d->imageData);
             setImageViewInternalLayer(layer);
 
-            d->timeLineParameter = new medTimeLineParameter("Time", this);
+            d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
 
             sequencesRange (range);
             mintimestep = sequencesMinTimeStep();

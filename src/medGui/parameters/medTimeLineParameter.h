@@ -50,7 +50,6 @@ public slots:
     void setNumberOfFrame(int numberOfFrame);
     void setDuration(const double& timeDuration);
     void setStepFrame(int stepFrame);
-    void setFrame(double time);
     void setFrame(int frame);
     void setLoop(bool loop);
 
@@ -65,10 +64,8 @@ signals:
     void frameChanged(double time);
 
 private slots:
+    void updateTime(double time);
     void removeInternWidget();
-	void updateFrameParameter(int frame);
-    void updateTimeParameter(double time);
-
 
 private:
     medTimeLineParameterPrivate* d;
