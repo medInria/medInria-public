@@ -13,12 +13,11 @@ public:
     ~medCompositeParameterPrivate()
     {
         variants.clear();
-        QHash<QString, QWidget*>::iterator i = widgets.begin();
-        while (i != widgets.end())
+        QHashIterator<QString, QWidget*> i(widgets);
+        while (i.hasNext())
         {
-            QWidget* w = i.value();
+            i.next();
             delete i.value();
-            i++;
         }
         widgets.clear();
     }
@@ -92,15 +91,15 @@ void medCompositeParameter::updateInternWigets()
         QVariant var = i.value();
         QWidget* widget = d->widgets.value(name);
 
-        if(QCheckBox *checkbox = dynamic_cast<QCheckBox*>(widget))
+        if(QCheckBox *checkbox = qobject_cast<QCheckBox*>(widget))
         {
             checkbox->setChecked(var.toBool());
         }
-        else if(QSpinBox *spinBox = dynamic_cast<QSpinBox*>(widget))
+        else if(QSpinBox *spinBox = qobject_cast<QSpinBox*>(widget))
         {
             spinBox->setValue(var.toInt());
         }
-        else if(QDoubleSpinBox *doubleSpinBox = dynamic_cast<QDoubleSpinBox*>(widget))
+        else if(QDoubleSpinBox *doubleSpinBox = qobject_cast<QDoubleSpinBox*>(widget))
         {
             doubleSpinBox->setValue(var.toDouble());
         }
@@ -118,6 +117,7 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         d->widgets.insert(name, checkbox);
         addToInternWidgets(checkbox);
         connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(updateValue(bool)));
+        connect(checkbox, SIGNAL(destroyed(QObject*)), this, SLOT(removeInternWidget(QObject*)));
     }
     else if(variant.type() == QVariant::Int)
     {
@@ -135,6 +135,7 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         d->widgets.insert(name, spinbox);
         addToInternWidgets(spinbox);
         connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(updateValue(int)));
+        connect(spinbox, SIGNAL(destroyed(QObject*)), this, SLOT(removeInternWidget(QObject*)));
     }
     else if(variant.type() == QVariant::Double )
     {
@@ -152,6 +153,7 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         d->widgets.insert(name, spinbox);
         addToInternWidgets(spinbox);
         connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(updateValue(double)));
+        connect(spinbox, SIGNAL(destroyed(QObject*)), this, SLOT(removeInternWidget(QObject*)));
     }
 
     //TODO: to complete with other QVariant types
@@ -160,7 +162,7 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
 
 void medCompositeParameter::updateValue(bool value)
 {
-    QCheckBox *checkbox = dynamic_cast<QCheckBox*>(QObject::sender());
+    QCheckBox *checkbox = qobject_cast<QCheckBox*>(QObject::sender());
     if(checkbox)
     {
         QString name = d->widgets.key(checkbox);
@@ -172,7 +174,7 @@ void medCompositeParameter::updateValue(bool value)
 
 void medCompositeParameter::updateValue(double value)
 {
-    QDoubleSpinBox *spinbox = dynamic_cast<QDoubleSpinBox*>(QObject::sender());
+    QDoubleSpinBox *spinbox = qobject_cast<QDoubleSpinBox*>(QObject::sender());
     if(spinbox)
     {
         QString name = d->widgets.key(spinbox);
@@ -183,11 +185,27 @@ void medCompositeParameter::updateValue(double value)
 
 void medCompositeParameter::updateValue(int value)
 {
-    QSpinBox *spinbox = dynamic_cast<QSpinBox*>(QObject::sender());
+    QSpinBox *spinbox = qobject_cast<QSpinBox*>(QObject::sender());
     if(spinbox)
     {
         QString name = d->widgets.key(spinbox);
         d->variants[name] = QVariant(value);
         emit valueChanged(d->variants.values());
+    }
+}
+
+void medCompositeParameter::removeInternWidget(QObject *widget)
+{
+    QWidget *w = qobject_cast<QWidget*>(widget);
+    if(!w)
+        return;
+
+    this->removeFromInternWidgets(w);
+    QHashIterator<QString, QWidget*> i(d->widgets);
+    while (i.hasNext())
+    {
+        i.next();
+        if(w == i.value())
+            d->widgets.remove(i.key());
     }
 }

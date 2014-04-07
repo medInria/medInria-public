@@ -31,7 +31,7 @@ public:
     virtual QWidget* getWidget();
 
     void addVariant(QString name, QVariant variant,
-                    QVariant min = QVariant(), QVariant max = QVariant(), QVariant step = QVariant());
+                    QVariant min = QVariant(0), QVariant max = QVariant(100), QVariant step = QVariant(1));
 
     virtual QList<QVariant> value() const;
 
@@ -48,6 +48,8 @@ private slots:
     void updateValue(bool value);
     void updateValue(int value);
     void updateValue(double value);
+
+    void removeInternWidget(QObject *widget);
 
 private:
     medCompositeParameterPrivate* d;
