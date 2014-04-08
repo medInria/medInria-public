@@ -4,7 +4,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractLayeredViewInteractor.h>
-#include <medLayeredViewFactory.h>
+#include <medViewFactory.h>
 
 
 class medAbstractLayeredViewPrivate
@@ -49,7 +49,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
 {
     // primary
 
-    medLayeredViewFactory* factory = medLayeredViewFactory::instance();
+    medViewFactory* factory = medViewFactory::instance();
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
@@ -58,7 +58,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     }
     else
     {
-        medAbstractLayeredViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
+        medAbstractLayeredViewInteractor* interactor = factory->createInteractor<medAbstractLayeredViewInteractor>(primaryInt.first(), this);
         interactor->setData(data);
         d->primaryInteractorsHash.insert(data, interactor);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
@@ -85,7 +85,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
 bool medAbstractLayeredView::initialiseNavigators()
 {
     // primary
-    medLayeredViewFactory* factory = medLayeredViewFactory::instance();
+    medViewFactory* factory = medViewFactory::instance();
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
@@ -95,7 +95,7 @@ bool medAbstractLayeredView::initialiseNavigators()
     }
     else
     {
-        d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+        d->primaryNavigator = factory->createNavigator<medAbstractLayeredViewNavigator>(primaryNav.first(), this);
         connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
         connect(this, SIGNAL(currentLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
     }

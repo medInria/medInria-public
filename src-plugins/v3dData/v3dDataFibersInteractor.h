@@ -41,7 +41,7 @@ class V3DDATAPLUGIN_EXPORT v3dDataFibersInteractor: public medAbstractImageViewI
     Q_OBJECT
 
 public:
-    v3dDataFibersInteractor(medAbstractImageView *parent = NULL);
+    v3dDataFibersInteractor(medAbstractView *parent = NULL);
     virtual ~v3dDataFibersInteractor();
 
     virtual QString description() const;

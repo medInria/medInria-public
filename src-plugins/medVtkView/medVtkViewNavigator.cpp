@@ -23,7 +23,8 @@ PURPOSE.
 #include <QVTKWidget2.h>
 
 #include <medVtkViewBackend.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
+#include <medAbstractImageView.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
@@ -72,10 +73,10 @@ class medVtkViewNavigatorPrivate
 
 };
 
-medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
+medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     medAbstractImageViewNavigator(parent), d(new medVtkViewNavigatorPrivate)
 {
-    medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
+    medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(dynamic_cast<medAbstractImageView*>(parent)->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->renWin = backend->renWin;
@@ -223,7 +224,7 @@ QStringList medVtkViewNavigator::handled(void) const
 
 bool medVtkViewNavigator::registered()
 {
-    medImageViewFactory * factory = medImageViewFactory::instance();
+    medViewFactory * factory = medViewFactory::instance();
     return factory->registerNavigator<medVtkViewNavigator>(medVtkViewNavigator::s_identifier(),
                                                            QStringList() << "medVtkView");
 }

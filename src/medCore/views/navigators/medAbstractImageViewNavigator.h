@@ -26,7 +26,7 @@ class MEDCORE_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredVi
     Q_OBJECT
 
 public:
-             medAbstractImageViewNavigator(medAbstractImageView* parent);
+             medAbstractImageViewNavigator(medAbstractView* parent);
     virtual ~medAbstractImageViewNavigator();
 
 

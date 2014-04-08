@@ -39,40 +39,46 @@ class MEDCORE_EXPORT medViewFactory : public dtkAbstractFactory
 public:
     static medViewFactory *instance();
 
-    virtual medAbstractView* createView(QString identifier, QObject *parent = 0);
-    virtual medAbstractViewNavigator* createNavigator(QString identifier, medAbstractView *parent);
-    virtual medAbstractViewInteractor*  createInteractor(QString identifier, medAbstractView *parent);
+    template <typename T>
+    T* createView(QString identifier, QObject *parent = 0);
+
+    template <typename T>
+    T* createNavigator(QString identifier, medAbstractView *parent);
+
+    template <typename T>
+    T* createInteractor(QString identifier, medAbstractView *parent);
+
     medAbstractNavigator* createAdditionalNavigator(QString identifier, medAbstractView *parent);
     medAbstractInteractor*  createAdditionalInteractor(QString identifier, medAbstractView *parent);
 
     template <typename T>
     bool registerView(QString identifier, QStringList typeHandled)
     {
-        viewCreator creator = createView<T>;
+        viewCreator creator = newView<T>;
         return registerView(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerNavigator(QString identifier, QStringList typeHandled)
     {
-        navigatorCreator creator = createNavigator<T>;
+        navigatorCreator creator = newNavigator<T>;
         return registerNavigator(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerInteractor(QString identifier, QStringList typeHandled)
     {
-        interactorCreator creator = creatInteractor<T>;
+        interactorCreator creator = newInteractor<T>;
         return registerInteractor(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerAdditionalNavigator(QString identifier, QStringList typeHandled)
     {
-        addNavigatorCreator creator = createAdditionalNavigator<T>;
+        addNavigatorCreator creator = newAdditionalNavigator<T>;
         return registerAdditionalNavigator(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerAdditionalInteractor(QString identifier, QStringList typeHandled)
     {
-        addInteractorCreator creator = creatAdditionalInteractor<T>;
+        addInteractorCreator creator = newAdditionalInteractor<T>;
         return registerAdditionalInteractor(identifier, typeHandled, creator);
     }
 
@@ -94,33 +100,37 @@ private:
      bool registerAdditionalNavigator(QString identifier, QStringList typeHandled, addNavigatorCreator creator);
      bool registerAdditionalInteractor(QString identifier, QStringList typeHandled, addInteractorCreator creator);
 
+     viewCreator       getViewCreator(QString identifier);
+     interactorCreator getInteractorCreator(QString identifier);
+     navigatorCreator  getNavigatorCreator(QString identifier);
+
 
     /** Singleton holder.*/
     static medViewFactory *s_instance;
 
 
     template < typename T>
-    static medAbstractView* createView(QObject* parent)
+    static medAbstractView* newView(QObject* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractViewNavigator* createNavigator(medAbstractView* parent)
+    static medAbstractViewNavigator* newNavigator(medAbstractView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractViewInteractor* creatInteractor(medAbstractView* parent)
+    static medAbstractViewInteractor* newInteractor(medAbstractView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractNavigator* createAdditionalNavigator(medAbstractView* parent)
+    static medAbstractNavigator* newAdditionalNavigator(medAbstractView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractInteractor* creatAdditionalInteractor(medAbstractView* parent)
+    static medAbstractInteractor* newAdditionalInteractor(medAbstractView* parent)
     {
         return (new T(parent));
     }
@@ -129,4 +139,53 @@ private:
     medViewFactoryPrivate* d;
 };
 
+// ----------------- template definitions -----------------
 
+template <typename T>
+T* medViewFactory::createView(QString identifier, QObject *parent)
+{
+    medAbstractView* view = NULL;
+    viewCreator c = NULL;
+    c = this->getViewCreator(identifier);
+    if(c)
+        view = (c)(parent);
+
+    T* viewCast = dynamic_cast<T*>(view);
+    if (!viewCast)
+        delete view;
+
+    return viewCast;
+}
+
+template <typename T>
+T* medViewFactory::createNavigator(QString identifier, medAbstractView *parent)
+{
+
+    medAbstractViewNavigator* navigator = NULL;
+    navigatorCreator c = NULL;
+    c = this->getNavigatorCreator(identifier);
+    if(c)
+        navigator = (c)(parent);
+
+    T* navigatorCast = dynamic_cast<T*>(navigator);
+    if (!navigatorCast)
+        delete navigator;
+
+    return navigatorCast;
+}
+
+template <typename T>
+T*  medViewFactory::createInteractor(QString identifier, medAbstractView *parent)
+{
+    medAbstractViewInteractor* interactor = NULL;
+    interactorCreator c = NULL;
+    c = this->getInteractorCreator(identifier);
+    if(c)
+        interactor = (c)(parent);
+
+    T* interactorCast = dynamic_cast<T*>(interactor);
+    if (!interactorCast)
+        delete interactor;
+
+    return interactorCast;
+}

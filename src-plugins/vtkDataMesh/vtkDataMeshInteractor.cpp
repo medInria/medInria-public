@@ -49,7 +49,8 @@
 #include <medStringListParameter.h>
 #include <medColorListParameter.h>
 #include <medAbstractData.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
+#include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
 
 
@@ -97,10 +98,10 @@ public:
 };
 
 
-vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractImageView* parent):
+vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     medAbstractImageViewInteractor(parent), d(new vtkDataMeshInteractorPrivate)
 {
-    d->view = parent;
+    d->view = dynamic_cast<medAbstractImageView*>(parent);
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
@@ -154,7 +155,7 @@ QStringList vtkDataMeshInteractor::dataHandled()
 
 bool vtkDataMeshInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     return factory->registerInteractor<vtkDataMeshInteractor>("vtkDataMeshInteractor",
                                                                   QStringList () << "medVtkView" <<
                                                                   vtkDataMeshInteractor::dataHandled());

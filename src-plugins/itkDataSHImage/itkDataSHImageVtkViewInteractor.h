@@ -36,7 +36,7 @@ class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageVtkViewInteractor: public medAbs
     Q_OBJECT
 
 public:
-    itkDataSHImageVtkViewInteractor(medAbstractImageView* parent);
+    itkDataSHImageVtkViewInteractor(medAbstractView* parent);
     virtual ~itkDataSHImageVtkViewInteractor();
 
 public:

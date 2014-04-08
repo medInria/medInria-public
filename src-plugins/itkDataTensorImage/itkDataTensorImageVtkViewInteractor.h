@@ -37,7 +37,7 @@ class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageVtkViewInteractor: publi
     Q_OBJECT
 
 public:
-    itkDataTensorImageVtkViewInteractor(medAbstractImageView* parent);
+    itkDataTensorImageVtkViewInteractor(medAbstractView* parent);
     virtual ~itkDataTensorImageVtkViewInteractor();
 
     enum GlyphShapeType

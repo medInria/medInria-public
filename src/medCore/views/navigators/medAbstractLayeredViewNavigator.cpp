@@ -15,7 +15,7 @@ PURPOSE.
 
 #include <medAbstractLayeredView.h>
 
-medAbstractLayeredViewNavigator::medAbstractLayeredViewNavigator(medAbstractLayeredView* parent):
+medAbstractLayeredViewNavigator::medAbstractLayeredViewNavigator(medAbstractView *parent):
     medAbstractViewNavigator(parent)
 {
 

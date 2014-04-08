@@ -22,7 +22,7 @@ class medVtkViewItkDataImage4DInteractor : public medVtkViewItkDataImageInteract
     Q_OBJECT
 
 public:
-    medVtkViewItkDataImage4DInteractor(medAbstractImageView* parent);
+    medVtkViewItkDataImage4DInteractor(medAbstractView* parent);
     ~medVtkViewItkDataImage4DInteractor();
 
 public:

@@ -26,7 +26,7 @@ class MEDVTKVIEWPLUGIN_EXPORT medVtkViewNavigator : public medAbstractImageViewN
     Q_OBJECT
 
 public:
-             medVtkViewNavigator(medAbstractImageView* parent);
+             medVtkViewNavigator(medAbstractView* parent);
     virtual ~medVtkViewNavigator();
 
     virtual QString  identifier() const;

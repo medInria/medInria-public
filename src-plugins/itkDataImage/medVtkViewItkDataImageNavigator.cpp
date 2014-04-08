@@ -5,7 +5,8 @@
 
 #include <medVtkViewBackend.h>
 
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
+#include <medAbstractImageView.h>
 #include <medStringListParameter.h>
 #include <medBoolParameter.h>
 
@@ -81,7 +82,7 @@ QString  medVtkViewItkDataImageNavigator::s_identifier()
 
 bool medVtkViewItkDataImageNavigator::registered()
 {
-    medImageViewFactory * factory = medImageViewFactory::instance();
+    medViewFactory * factory = medViewFactory::instance();
     return factory->registerAdditionalNavigator<medVtkViewItkDataImageNavigator>(medVtkViewItkDataImageNavigator::s_identifier(),
                                                            QStringList() << "medVtkView");
 

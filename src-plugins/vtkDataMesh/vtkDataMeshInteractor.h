@@ -31,7 +31,7 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshInteractor: public medAbstractImageVie
     Q_OBJECT
 
 public:
-    vtkDataMeshInteractor(medAbstractImageView* parent);
+    vtkDataMeshInteractor(medAbstractView* parent);
     virtual ~vtkDataMeshInteractor();
 
     virtual QString description() const;

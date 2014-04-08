@@ -2,7 +2,7 @@
 
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkActor.h>
 #include <vtkProperty.h>
@@ -53,7 +53,7 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
     return false;
 }
 
-medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstractImageView* parent):
+medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstractView *parent):
     medVtkViewItkDataImageInteractor(parent), d(new medVtkViewItkDataImage4DInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
@@ -104,7 +104,7 @@ QStringList medVtkViewItkDataImage4DInteractor::dataHandled()
 
 bool medVtkViewItkDataImage4DInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     return factory->registerInteractor<medVtkViewItkDataImage4DInteractor>("medVtkViewItkDataImage4DInteractor",
                                                                           QStringList () << "medVtkView" <<
                                                                           medVtkViewItkDataImage4DInteractor::dataHandled());

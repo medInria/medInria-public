@@ -26,7 +26,7 @@ class MEDCORE_EXPORT medAbstractImageViewInteractor : public medAbstractLayeredV
     Q_OBJECT
 
 public:
-             medAbstractImageViewInteractor(medAbstractImageView* parent);
+             medAbstractImageViewInteractor(medAbstractView* parent);
     virtual ~medAbstractImageViewInteractor();
 
     virtual void moveToSliceAtPosition    (const QVector3D &position) = 0;

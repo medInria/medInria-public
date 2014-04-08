@@ -60,40 +60,6 @@ medViewFactory::~medViewFactory()
 //--------------------------------------------------------------------------
 //  create
 
-medAbstractView* medViewFactory::createView(QString identifier, QObject *parent)
-{
-    medAbstractView* view = NULL;
-    viewCreator c = NULL;
-    c = d->viewCreators.value(identifier);
-    if(c)
-        view = (c)(parent);
-
-    return view;
-}
-
-medAbstractViewNavigator* medViewFactory::createNavigator(QString identifier, medAbstractView *parent)
-{
-
-    medAbstractViewNavigator* navigator = NULL;
-    navigatorCreator c = NULL;
-    c = d->navigatorCreators.value(identifier);
-    if(c)
-        navigator = (c)(parent);
-
-    return navigator;
-}
-
-medAbstractViewInteractor*  medViewFactory::createInteractor(QString identifier, medAbstractView *parent)
-{
-    medAbstractViewInteractor* interactor = NULL;
-    interactorCreator c = NULL;
-    c = d->intercatorCreators.value(identifier);
-    if(c)
-        interactor = (c)(parent);
-
-    return interactor;
-}
-
 medAbstractNavigator* medViewFactory::createAdditionalNavigator(QString identifier, medAbstractView *parent)
 {
 
@@ -116,7 +82,6 @@ medAbstractInteractor*  medViewFactory::createAdditionalInteractor(QString ident
 
     return interactor;
 }
-
 
 //--------------------------------------------------------------------------
 //  register
@@ -172,6 +137,23 @@ bool medViewFactory::registerAdditionalInteractor(QString identifier, QStringLis
     return true;
 }
 
+//--------------------------------------------------------------------------
+//  get creators
+
+viewCreator medViewFactory::getViewCreator(QString identifier)
+{
+    return d->viewCreators.value(identifier);
+}
+
+interactorCreator medViewFactory::getInteractorCreator(QString identifier)
+{
+    return d->intercatorCreators.value(identifier);
+}
+
+navigatorCreator medViewFactory::getNavigatorCreator(QString identifier)
+{
+    return d->navigatorCreators.value(identifier);
+}
 
 //--------------------------------------------------------------------------
 //  get handler

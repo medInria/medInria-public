@@ -25,8 +25,8 @@
 #include <medDataIndex.h>
 #include <medAbstractData.h>
 #include <medDataManager.h>
-#include <medImageViewFactory.h>
-#include <medLayeredViewFactory.h>
+#include <medViewFactory.h>
+#include <medAbstractLayeredView.h>
 #include <medViewManager.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
@@ -516,7 +516,7 @@ void medViewContainer::addData(medAbstractData *data)
     {
         //TODO find from data(factory?) which view have to be created - RDE
         medAbstractLayeredView* view;
-        view = medImageViewFactory::instance()->createView("medVtkView", this);
+        view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView", this);
         if(!view)
         {
             qWarning() << "medViewContainer: Unable to create a medVtkView";

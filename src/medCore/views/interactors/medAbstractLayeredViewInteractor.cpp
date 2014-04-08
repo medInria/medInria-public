@@ -15,7 +15,7 @@ PURPOSE.
 
 #include <medAbstractLayeredView.h>
 
-medAbstractLayeredViewInteractor::medAbstractLayeredViewInteractor(medAbstractLayeredView* parent):
+medAbstractLayeredViewInteractor::medAbstractLayeredViewInteractor(medAbstractView* parent):
     medAbstractViewInteractor(parent)
 {
 

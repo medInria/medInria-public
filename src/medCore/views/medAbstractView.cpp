@@ -69,7 +69,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     }
     else
     {
-        medAbstractViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
+        medAbstractViewInteractor* interactor = factory->createInteractor<medAbstractViewInteractor>(primaryInt.first(), this);
         interactor->setData(data);
         d->primaryIntercator = interactor;
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
@@ -104,7 +104,7 @@ bool medAbstractView::initialiseNavigators()
     }
     else
     {
-        d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+        d->primaryNavigator = factory->createNavigator<medAbstractViewNavigator>(primaryNav.first(), this);
         connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
     }
 

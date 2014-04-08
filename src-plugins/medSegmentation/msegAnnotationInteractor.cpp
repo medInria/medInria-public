@@ -21,7 +21,8 @@
 #include <medSeedPointAnnotationData.h>
 #include <medImageMaskAnnotationData.h>
 
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
+#include <medAbstractImageView.h>
 #include <medDoubleParameter.h>
 #include <medBoolParameter.h>
 
@@ -70,13 +71,13 @@ public:
 };
 
 // Implementation
-msegAnnotationInteractor::msegAnnotationInteractor(medAbstractImageView* parent):
+msegAnnotationInteractor::msegAnnotationInteractor(medAbstractView *parent):
     medAbstractImageViewInteractor(parent), d(new msegAnnotationInteractorPrivate)
 {
     d->helpers.push_back(new msegAnnIntSeedPointHelper(this));
     d->helpers.push_back(new msegAnnIntImageMaskHelper(this));
 
-    d->medVtkView = parent;
+    d->medVtkView = dynamic_cast<medAbstractImageView*>(parent);
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
@@ -122,7 +123,7 @@ QString msegAnnotationInteractor::identifier() const
 
 bool msegAnnotationInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     return factory->registerInteractor<msegAnnotationInteractor>("msegAnnotationInteractor",
                                                                   QStringList () << "medVtkView" <<
                                                                   msegAnnotationInteractor::dataHandled());

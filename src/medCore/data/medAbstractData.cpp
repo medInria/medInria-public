@@ -16,7 +16,7 @@
 #include <medDataIndex.h>
 #include <medAttachedData.h>
 #include <medAbstractLayeredView.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <medAbstractImageView.h>
 #include <medDatabaseThumbnailHelper.h>
 
@@ -133,7 +133,7 @@ QImage& medAbstractData::thumbnail()
 void medAbstractData::generateThumbnail()
 {
     //TODO find which view is handled by this type of data - RDE
-    dtkSmartPointer<medAbstractImageView> view = medImageViewFactory::instance()->createView("medVtkView");
+    dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
     view->addLayer(this);
 
     d->thumbnail = view->generateThumbnail(QSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height));

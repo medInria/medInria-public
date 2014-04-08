@@ -27,7 +27,8 @@
 
 #include <medVtkViewBackend.h>
 #include <medAbstractData.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
+#include <medAbstractImageView.h>
 #include <medStringListParameter.h>
 #include <medIntParameter.h>
 #include <medBoolParameter.h>
@@ -71,10 +72,10 @@ public:
 };
 
 
-medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractImageView* parent):
+medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractView *parent):
     medAbstractImageViewInteractor(parent), d(new medVtkViewItkDataImageInteractorPrivate)
 {
-    d->medVtkView = parent;
+    d->medVtkView = dynamic_cast<medAbstractImageView*>(parent);
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
@@ -139,7 +140,7 @@ QString medVtkViewItkDataImageInteractor::identifier() const
 
 bool medVtkViewItkDataImageInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     return factory->registerInteractor<medVtkViewItkDataImageInteractor>("medVtkViewItkDataImageInteractor",
                                                                   QStringList () << "medVtkView" <<
                                                                   medVtkViewItkDataImageInteractor::dataHandled());

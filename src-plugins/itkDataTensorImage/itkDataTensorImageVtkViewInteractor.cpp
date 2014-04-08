@@ -42,7 +42,7 @@
 #include <medColorListParameter.h>
 #include <medDoubleParameter.h>
 #include <medAbstractImageView.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <medVtkViewBackend.h>
 
 
@@ -91,11 +91,11 @@ public:
     PropertySmartPointer actorProperty;
 };
 
-itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbstractImageView* parent):
+itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbstractView *parent):
     medAbstractImageViewInteractor(parent),
     d(new itkDataTensorImageVtkViewInteractorPrivate)
 {
-    d->view = parent;
+    d->view = dynamic_cast<medAbstractImageView*>(parent);
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
@@ -166,7 +166,7 @@ QStringList itkDataTensorImageVtkViewInteractor::dataHandled()
 
 bool itkDataTensorImageVtkViewInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     factory->registerInteractor<itkDataTensorImageVtkViewInteractor>("itkDataTensorImageVtkViewInteractor",
                                                                      QStringList () << "medVtkView" <<
                                                                      itkDataTensorImageVtkViewInteractor::dataHandled());

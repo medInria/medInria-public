@@ -46,7 +46,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT msegAnnotationInteractor: public medAbstr
     Q_OBJECT
 
 public:
-    msegAnnotationInteractor(medAbstractImageView *parent);
+    msegAnnotationInteractor(medAbstractView *parent);
     virtual ~msegAnnotationInteractor();
 
     //! Override dtkAbstractObject

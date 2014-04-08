@@ -2,7 +2,7 @@
 
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkActor.h>
 #include <vtkProperty.h>
@@ -72,7 +72,7 @@ QStringList vtkDataMesh4DInteractor::dataHandled()
 
 bool vtkDataMesh4DInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     return factory->registerAdditionalInteractor<vtkDataMesh4DInteractor>("vtkDataMesh4DInteractor",
                                                                           QStringList () << "medVtkView" <<
                                                                           vtkDataMesh4DInteractor::dataHandled());

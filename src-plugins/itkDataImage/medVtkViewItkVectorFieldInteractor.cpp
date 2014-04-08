@@ -16,7 +16,7 @@
 #include <vtkImageView3D.h>
 
 #include <medAbstractImageView.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <medVtkViewBackend.h>
 
 #include <itkVector.h>
@@ -64,13 +64,13 @@ public:
     double imageBounds[6];
 };
 
-medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstractImageView* parent):
+medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstractView *parent):
     medAbstractImageViewInteractor(parent),
     d(new medVtkViewItkVectorFieldInteractorPrivate)
 {
     d->data    = 0;
 
-    d->view = parent;
+    d->view = dynamic_cast<medAbstractImageView*>(parent);
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
@@ -120,7 +120,7 @@ QStringList medVtkViewItkVectorFieldInteractor::dataHandled()
 
 bool medVtkViewItkVectorFieldInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     factory->registerInteractor<medVtkViewItkVectorFieldInteractor>("medVtkViewItkVectorFieldInteractor",
                                                                      QStringList () << "medVtkView" <<
                                                                      medVtkViewItkVectorFieldInteractor::dataHandled());

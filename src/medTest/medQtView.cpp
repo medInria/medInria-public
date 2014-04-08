@@ -13,7 +13,7 @@
 
 #include <medQtView.h>
 
-#include <medLayeredViewFactory.h>
+#include <medViewFactory.h>
 #include <medAbstractData.h>
 
 #include <medAbstractNavigator.h>
@@ -109,7 +109,7 @@ medViewBackend* medQtView::backend() const
 
 bool medQtView::registered()
 {
-    return medLayeredViewFactory::instance()->registerView<medQtView>("medQtView", QStringList() << "prout");
+    return medViewFactory::instance()->registerView<medQtView>("medQtView", QStringList() << "prout");
 }
 
 QString medQtView::s_description()

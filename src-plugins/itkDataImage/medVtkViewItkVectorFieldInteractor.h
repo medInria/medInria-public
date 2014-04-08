@@ -24,7 +24,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT medVtkViewItkVectorFieldInteractor : public medA
     Q_OBJECT
 
 public:
-    medVtkViewItkVectorFieldInteractor(medAbstractImageView* parent);
+    medVtkViewItkVectorFieldInteractor(medAbstractView* parent);
     ~medVtkViewItkVectorFieldInteractor();
 
     virtual QString description() const;

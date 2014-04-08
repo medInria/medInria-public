@@ -3,7 +3,7 @@
 #include <medAbstractData.h>
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 
 class medAbstractImageViewPrivate
 {
@@ -77,7 +77,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
 {
     // primary
 
-    medImageViewFactory* factory = medImageViewFactory::instance();
+    medViewFactory* factory = medViewFactory::instance();
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
@@ -86,7 +86,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
     }
     else
     {
-        medAbstractImageViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
+        medAbstractImageViewInteractor* interactor = factory->createInteractor<medAbstractImageViewInteractor>(primaryInt.first(), this);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
         interactor->setData(data);
@@ -114,7 +114,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
 bool medAbstractImageView::initialiseNavigators()
 {
     // primary
-    medImageViewFactory* factory = medImageViewFactory::instance();
+    medViewFactory* factory = medViewFactory::instance();
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
@@ -123,7 +123,7 @@ bool medAbstractImageView::initialiseNavigators()
     }
     else
     {
-        d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+        d->primaryNavigator = factory->createNavigator<medAbstractImageViewNavigator>(primaryNav.first(), this);
         connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
         connect(this, SIGNAL(currentLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
     }

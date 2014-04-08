@@ -28,7 +28,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT medVtkViewItkDataImageInteractor: public medAbst
     Q_OBJECT
 
 public:
-    medVtkViewItkDataImageInteractor(medAbstractImageView *parent);
+    medVtkViewItkDataImageInteractor(medAbstractView *parent);
     virtual ~medVtkViewItkDataImageInteractor();
 
     virtual QString description() const;

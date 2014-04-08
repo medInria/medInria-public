@@ -32,7 +32,7 @@
 #include <medBoolParameter.h>
 #include <medColorListParameter.h>
 #include <medAbstractImageView.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <medVtkViewBackend.h>
 
 #include <itkSphericalHarmonicITKToVTKFilter.h>
@@ -101,13 +101,13 @@ public:
     }
 };
 
-itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractImageView* parent):
+itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView *parent):
     medAbstractImageViewInteractor(parent),
     d(new itkDataSHImageVtkViewInteractorPrivate) {
 
     d->data    = 0;
 
-    d->view = parent;
+    d->view = dynamic_cast<medAbstractImageView*>(parent);
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
@@ -166,7 +166,7 @@ QStringList itkDataSHImageVtkViewInteractor::dataHandled()
 }
 
 bool itkDataSHImageVtkViewInteractor::registered() {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     factory->registerInteractor<itkDataSHImageVtkViewInteractor>("itkDataSHImageVtkViewInteractor",
                                                                      QStringList () << "medVtkView" <<
                                                                      itkDataSHImageVtkViewInteractor::dataHandled());

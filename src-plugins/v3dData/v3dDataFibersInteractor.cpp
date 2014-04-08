@@ -16,7 +16,7 @@
 #include <medMessageController.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
@@ -126,12 +126,12 @@ public:
     QTreeView *bundlingList;
 };
 
-v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractImageView *parent): medAbstractImageViewInteractor(parent),
+v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
     d(new v3dDataFibersInteractorPrivate)
 {
     d->data    = NULL;
     d->dataset = NULL;
-    d->view    = parent;
+    d->view    = dynamic_cast<medAbstractImageView*>(parent);
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
@@ -342,7 +342,7 @@ bool v3dDataFibersInteractor::isDataTypeHandled(QString dataType) const
 
 bool v3dDataFibersInteractor::registered()
 {
-    medImageViewFactory *factory = medImageViewFactory::instance();
+    medViewFactory *factory = medViewFactory::instance();
     factory->registerInteractor<v3dDataFibersInteractor>("v3dDataFibersInteractor",
                                                          QStringList () << "medVtkView" <<
                                                          v3dDataFibersInteractor::dataHandled());

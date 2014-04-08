@@ -34,7 +34,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkMath.h>
 
-#include <medImageViewFactory.h>
+#include <medViewFactory.h>
 #include <medVtkViewBackend.h>
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
@@ -224,7 +224,7 @@ QString medVtkView::identifier() const
 
 bool medVtkView::registered()
 {
-    return medImageViewFactory::instance()->registerView<medVtkView>(QString("medVtkView"), QStringList()<<"medAbstractData");
+    return medViewFactory::instance()->registerView<medVtkView>(QString("medVtkView"), QStringList()<<"medAbstractData");
 }
 
 medViewBackend * medVtkView::backend() const
