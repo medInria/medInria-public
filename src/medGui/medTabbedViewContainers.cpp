@@ -136,6 +136,8 @@ void medTabbedViewContainers::connectContainer(QUuid container)
     connect(cont, SIGNAL(linkRequested(QUuid, QString)), this, SLOT(link(QUuid, QString)));
     connect(cont, SIGNAL(unlinkRequested(QUuid)), this, SLOT(unlink(QUuid)));
 
+    connect(cont, SIGNAL(maximized(QUuid,bool)), this, SLOT(minimizeOtherContainers(QUuid,bool)));
+
 
     cont->setSelected(true);
 }
@@ -275,3 +277,53 @@ void medTabbedViewContainers::buildTemporaryPool()
     }
 }
 
+void medTabbedViewContainers::minimizeOtherContainers(QUuid containerMaximized, bool maximized)
+{
+    medViewContainerSplitter *splitter = dynamic_cast<medViewContainerSplitter*>(this->widget(this->currentIndex()));
+
+    if(!splitter)
+        return;
+
+    // hide/show all other containers and their splitter
+    minimizeSplitterContainers(containerMaximized, maximized, splitter);
+
+    if(maximized)
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(containerMaximized);
+        //container->show();
+
+        QWidget *parent = container->parentWidget();
+
+        //iterates through parents to restablish splitter visibility (hidden by minimizeSplitterContainers)
+        while(parent)
+        {
+            parent->show();
+            parent = parent->parentWidget();
+        }
+    }
+}
+
+void medTabbedViewContainers::minimizeSplitterContainers(QUuid containerMaximized, bool maximized,
+                                                         medViewContainerSplitter *splitter)
+{
+    for(int i=0; i<splitter->count(); i++)
+    {
+        if(medViewContainerSplitter *nestedSplitter = dynamic_cast<medViewContainerSplitter*>(splitter->widget(i)))
+        {
+            minimizeSplitterContainers(containerMaximized, maximized, nestedSplitter);
+        }
+        else if(medViewContainer *container = dynamic_cast<medViewContainer*>(splitter->widget(i)))
+        {
+            if(container->uuid() != containerMaximized)
+            {
+                if(maximized)
+                    container->hide();
+                else container->show();
+            }
+        }
+    }
+
+    if(maximized)
+        splitter->hide();
+    else splitter->show();
+}

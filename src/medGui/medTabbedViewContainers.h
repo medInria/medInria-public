@@ -21,6 +21,7 @@
 class medAbstractView;
 class medDataIndex;
 class medViewContainer;
+class medViewContainerSplitter;
 class medTabbedViewContainersPrivate;
 
 /**
@@ -59,6 +60,9 @@ private slots:
     void unlink(QUuid uuid);
     void buildTemporaryPool();
     void connectContainerSelectedForCurrentTab();
+    void minimizeOtherContainers(QUuid containerMaximized, bool maximized);
+    void minimizeSplitterContainers(QUuid containerMaximized, bool maximized,
+                                                             medViewContainerSplitter *splitter);
 
 signals:
     void containersSelectedChanged();

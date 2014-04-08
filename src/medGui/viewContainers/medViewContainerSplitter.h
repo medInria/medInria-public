@@ -28,6 +28,8 @@ public:
     medViewContainerSplitter(QWidget* parent = 0);
     virtual ~medViewContainerSplitter();
 
+    QList<medViewContainer*> containers();
+
 public slots:
     void addViewContainer(medViewContainer* container);
     void insertViewContainer(int index, medViewContainer* container);

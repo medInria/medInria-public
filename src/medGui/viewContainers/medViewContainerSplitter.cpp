@@ -223,3 +223,22 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
     splitter->recomputeSizes(0, 1, newSize);
 
 }
+
+QList<medViewContainer*> medViewContainerSplitter::containers()
+{
+    QList<medViewContainer*> containers;
+    for(int i=0; i<this->count(); i++)
+    {
+        QWidget *widget = this->widget(i);
+
+        if(medViewContainer *container = dynamic_cast<medViewContainer *>(widget))
+        {
+            containers.append( container );
+        }
+        else if(medViewContainerSplitter *nestedSplitter = dynamic_cast<medViewContainerSplitter *>(widget))
+        {
+            containers.append( nestedSplitter->containers() );
+        }
+    }
+    return containers;
+}

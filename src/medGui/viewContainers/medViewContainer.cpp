@@ -129,7 +129,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
                         QIcon::On);
 
     d->maximizedParameter->setIcon(maximizedIcon);
-    d->maximized = true;
+    d->maximized = false;
     connect(d->maximizedParameter, SIGNAL(valueChanged(bool)), this, SLOT(setMaximized(bool)));
     connect(this, SIGNAL(maximized(bool)), d->maximizedParameter, SLOT(setValue(bool)));
     d->maximizedParameter->setValue(false);
