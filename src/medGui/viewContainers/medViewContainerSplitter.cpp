@@ -242,3 +242,28 @@ QList<medViewContainer*> medViewContainerSplitter::containers()
     }
     return containers;
 }
+
+void medViewContainerSplitter::adjustContainersSize()
+{
+    QList<int> currentSizes = this->sizes();
+    int splitterSize = 0;
+
+    //compute splitter size
+    foreach(int s, currentSizes)
+        splitterSize+=s;
+
+    int newSize = splitterSize / this->count();
+    QList<int> newSizes;
+    foreach(int s, currentSizes)
+        newSizes.append(newSize);
+
+    this->setSizes(newSizes);
+
+    for(int i=0; i<this->count(); i++)
+    {
+        if(medViewContainerSplitter *nestedSplitter = dynamic_cast<medViewContainerSplitter *>(this->widget(i)))
+        {
+            nestedSplitter->adjustContainersSize();
+        }
+    }
+}

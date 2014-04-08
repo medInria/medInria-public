@@ -28,6 +28,8 @@
 #include <medEmptyDbWarning.h>
 #include <medSaveModifiedDialog.h>
 #include <medJobManager.h>
+#include <medAbstractWorkspace.h>
+#include <medTabbedViewContainers.h>
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
@@ -74,6 +76,7 @@ public:
     medQuickAccessPushButton* quickAccessButton;
     QToolButton*                quitButton;
     QToolButton*              fullscreenButton;
+    QToolButton*              adjustSizeButton;
     QList<QString>            importUuids;
     medQuickAccessMenu * quickAccessWidget;
     bool controlPressed;
@@ -205,11 +208,22 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->screenshotButton->setToolTip(tr("Capture screenshot"));
     QObject::connect(d->screenshotButton, SIGNAL(clicked()), this, SLOT(captureScreenshot()));
 
+    QIcon adjustIcon;
+    adjustIcon.addPixmap(QPixmap(":icons/adjustSize.png"),QIcon::Normal);
+    d->adjustSizeButton = new QToolButton(this);
+    d->adjustSizeButton->setIcon(adjustIcon);
+    d->adjustSizeButton->setObjectName("adjustSizeButton");
+    d->adjustSizeButton->setShortcut(Qt::AltModifier + Qt::Key_S);
+    d->adjustSizeButton->setToolTip(tr("Adjust containers size"));
+    QObject::connect(d->adjustSizeButton, SIGNAL(clicked()), this, SLOT(adjustContainersSize()));
+
+
     //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
     d->rightEndButtons = new QWidget(this);
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->adjustSizeButton );
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
     rightEndButtonsLayout->addWidget( d->quitButton );
@@ -427,6 +441,7 @@ void medMainWindow::switchToHomepageArea()
     d->homepageArea->onShowInfo();
 
     d->screenshotButton->setEnabled(false);
+    d->adjustSizeButton->setEnabled(false);
 
     if (d->homepageArea->getAnimation())
         d->homepageArea->getAnimation()->start();
@@ -451,6 +466,7 @@ void medMainWindow::switchToBrowserArea()
         this->hideShortcutAccess();
 
     d->screenshotButton->setEnabled(false);
+    d->adjustSizeButton->setEnabled(false);
     d->stack->setCurrentWidget(d->browserArea);
 }
 
@@ -469,6 +485,7 @@ void medMainWindow::switchToWorkspaceArea()
         this->hideShortcutAccess();
 
     d->screenshotButton->setEnabled(true);
+    d->adjustSizeButton->setEnabled(true);
     d->stack->setCurrentWidget(d->workspaceArea);
 
     // Dialog window to recall users if database is empty
@@ -655,4 +672,9 @@ bool medMainWindow::event(QEvent * e)
         break;
     } ;
     return QMainWindow::event(e) ;
+}
+
+void medMainWindow::adjustContainersSize()
+{
+    d->workspaceArea->currentWorkspace()->stackedViewContainers()->adjustContainersSize();
 }

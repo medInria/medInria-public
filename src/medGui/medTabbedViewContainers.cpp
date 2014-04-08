@@ -327,3 +327,9 @@ void medTabbedViewContainers::minimizeSplitterContainers(QUuid containerMaximize
         splitter->hide();
     else splitter->show();
 }
+
+void medTabbedViewContainers::adjustContainersSize()
+{
+    medViewContainerSplitter *splitter = dynamic_cast<medViewContainerSplitter*>(this->widget(this->currentIndex()));
+    splitter->adjustContainersSize();
+}

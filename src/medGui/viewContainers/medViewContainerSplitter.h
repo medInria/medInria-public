@@ -29,6 +29,7 @@ public:
     virtual ~medViewContainerSplitter();
 
     QList<medViewContainer*> containers();
+    void adjustContainersSize();
 
 public slots:
     void addViewContainer(medViewContainer* container);

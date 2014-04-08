@@ -41,6 +41,7 @@ public:
     void unlockTabs();
     void hideTabBar();
     QList<QUuid> containersSelected();
+    void adjustContainersSize();
 
 
 public slots:
