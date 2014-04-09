@@ -150,6 +150,6 @@
         <file>pixmaps/arrow-left.png</file>
         <file>pixmaps/arrow-bot-disabled.png</file>
         <file>pixmaps/arrow-bot.png</file>
-        <file>icons/adjustSize.png</file>
+        <file>icons/adjust_size.png</file>
     </qresource>
 </RCC>

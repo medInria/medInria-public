@@ -209,7 +209,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect(d->screenshotButton, SIGNAL(clicked()), this, SLOT(captureScreenshot()));
 
     QIcon adjustIcon;
-    adjustIcon.addPixmap(QPixmap(":icons/adjustSize.png"),QIcon::Normal);
+    adjustIcon.addPixmap(QPixmap(":icons/adjust_size.png"),QIcon::Normal);
     d->adjustSizeButton = new QToolButton(this);
     d->adjustSizeButton->setIcon(adjustIcon);
     d->adjustSizeButton->setObjectName("adjustSizeButton");
