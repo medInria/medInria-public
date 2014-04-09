@@ -867,11 +867,6 @@ void vtkTensorVisuManager::SetUpLUTToMapDistanceToIdentity()
     // Color coding with the eigenvalue
     myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
 
-  for(int i=0;i<numPoints;i++)
-  {
-    // Color coding with the eigenvalue
-    myData->GetPointData()->GetTensors()->GetTuple(i,coefs);
-
     for( int nl=0; nl<3; nl++)
     {
       for( int nc=0; nc<3; nc++)

@@ -193,10 +193,6 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
     )
 endif()
 
-if (APPLE)
-  set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
-endif()
-
 
 
 
