@@ -580,8 +580,7 @@ QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
 //    d->view3d->ShowPlaneWidgetOff();
 //    d->view3d->ShowScalarBarOff();
 
-    QGLWidget *glWidget = dynamic_cast<QGLWidget *>(d->view->viewWidget());
-    d->thumbnail = glWidget->grabFrameBuffer();
+    d->thumbnail = QPixmap::grabWidget(d->view->viewWidget()).toImage();
 
     d->render->SetOffScreenRendering(0);
 

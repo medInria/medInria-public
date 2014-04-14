@@ -561,8 +561,8 @@ QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
     d->view2d->Reset();
     d->view2d->Render();
 
-    QGLWidget *glWidget = dynamic_cast<QGLWidget *>(d->medVtkView->viewWidget());
-    d->thumbnail = glWidget->grabFrameBuffer();
+
+    d->thumbnail = QPixmap::grabWidget(d->medVtkView->viewWidget()).toImage();
 
     d->render->SetOffScreenRendering(0);
 

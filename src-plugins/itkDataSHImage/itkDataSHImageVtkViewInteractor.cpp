@@ -530,8 +530,7 @@ QImage itkDataSHImageVtkViewInteractor::generateThumbnail(const QSize &size)
     d->view2d->Reset();
     d->view2d->Render();
 
-    QGLWidget *glWidget = dynamic_cast<QGLWidget *>(d->view->viewWidget());
-    d->thumbnail = glWidget->grabFrameBuffer();
+    d->thumbnail = QPixmap::grabWidget(d->view->viewWidget()).toImage();
 
     d->render->SetOffScreenRendering(0);
 
