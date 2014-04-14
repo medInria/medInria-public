@@ -16,7 +16,7 @@
 #include <QWidget>
 #include <QHash>
 
-#include <QVTKWidget2.h>
+#include <QVTKWidget.h>
 
 #include <vtkRenderer.h>
 #include <vtkImageView2D.h>
@@ -55,7 +55,7 @@ public:
     vtkInteractorStyle *interactorStyle3D;
 
     // renderers
-    vtkGenericOpenGLRenderWindow *renWin;
+    vtkRenderWindow *renWin;
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
 
@@ -68,7 +68,7 @@ public:
     QVBoxLayout *mainLayout;
     QHBoxLayout *toolbarLayout;
     QWidget *toolBarWidget;
-    QVTKWidget2 *viewWidget;
+    QVTKWidget *viewWidget;
     static const int toolWidth = 15;
     static const int toolheight = 15;
 
@@ -97,7 +97,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
     // construct render window
         // renWin
-    d->renWin = vtkGenericOpenGLRenderWindow::New();
+    d->renWin = vtkRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
             // needed for imersive room
@@ -162,7 +162,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewCollection->AddItem(d->view2d);
     d->viewCollection->AddItem(d->view3d);
 
-    d->viewWidget = new QVTKWidget2();
+    d->viewWidget = new QVTKWidget;
     connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
