@@ -121,17 +121,7 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-//    medViewContainerSplitter *splitt = dynamic_cast<medViewContainerSplitter*>(d->currentWorkspace->stackedViewContainers()->currentWidget());
-//    medViewContainer *container = dynamic_cast<medViewContainer *>(splitt->widget(0));
-//    QGLWidget *glWidget = dynamic_cast<QGLWidget*>(container->view()->viewWidget());
-
-
-//    QImage img = glWidget->grabFrameBuffer();
-//    QPixmap pixmap;
-//    pixmap.convertFromImage(img);
-
-    //TODO find a way to kwow if we have to use grabe buffer or grabWidget.
-    return QPixmap();
+    return QPixmap::grabWidget(this->currentWorkspace()->stackedViewContainers());
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
