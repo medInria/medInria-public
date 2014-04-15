@@ -13,11 +13,8 @@
 
 #include <vtkDataMeshInteractor.h>
 
-#include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkLog/dtkLog.h>
+#include <QVTKWidget.h>
+
 #include <vtkCamera.h>
 #include <vtkActor.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -41,8 +38,10 @@
 #include <vtkMetaDataSet.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkDataArrayCollection.h>
-#include <vtkGenericOpenGLRenderWindow.h>
 
+#include <dtkLog/dtkLog.h>
+
+#include <medAbstractData.h>
 #include <medAbstractParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
@@ -52,8 +51,6 @@
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
-
-
 
 #include <vector>
 
@@ -70,6 +67,7 @@ public:
     medAbstractImageView *view;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
+    vtkRenderer *renderer3d;
     medAbstractData *data;
 
     vtkRenderWindow *render;
@@ -107,6 +105,7 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
+    d->renderer3d = backend->renderer3D;
 
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
@@ -565,10 +564,8 @@ QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
 {
     d->view->blockSignals(true); //we dont want to send things that would ending up on updating some gui things or whatever. - RDE
 
-    d->render->SetOffScreenRendering(1);
     int w(size.width()), h(size.height());
     d->view->viewWidget()->resize(w,h);
-    d->render->vtkRenderWindow::SetSize(w,h);
     d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
     d->view->reset();
     d->view3d->ShowAnnotationsOff();
@@ -580,9 +577,22 @@ QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
 //    d->view3d->ShowPlaneWidgetOff();
 //    d->view3d->ShowScalarBarOff();
 
-    d->thumbnail = QPixmap::grabWidget(d->view->viewWidget()).toImage();
+    vtkRenderWindow *renWin = vtkRenderWindow::New();
+    renWin->SetOffScreenRendering(1);
+    renWin->AddRenderer(d->renderer3d);
+    d->view3d->SetRenderWindow(renWin);
+    QVTKWidget *vtkWidget = dynamic_cast<QVTKWidget *>(d->view->viewWidget());
+    if(!vtkWidget)
+        return d->thumbnail;
 
-    d->render->SetOffScreenRendering(0);
+    vtkWidget->SetRenderWindow(renWin);
+    vtkWidget->resize(w,h);
+    renWin->SetSize(w,h);
+    renWin->Render();
+
+    d->thumbnail = QPixmap::grabWidget(vtkWidget).toImage();
+
+    renWin->Delete();
 
     return d->thumbnail;
 }

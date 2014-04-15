@@ -13,11 +13,7 @@
 
 #include <itkDataTensorImageVtkViewInteractor.h>
 
-#include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <QVTKWidget.h>
 
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
@@ -34,6 +30,7 @@
 #include <itkImage.h>
 #include <itkTensor.h>
 
+#include <medAbstractData.h>
 #include <medAbstractParameter.h>
 #include <medStringListParameter.h>
 #include <medIntParameter.h>
@@ -533,16 +530,23 @@ QImage itkDataTensorImageVtkViewInteractor::generateThumbnail(const QSize &size)
     d->view2d->ShowAnnotationsOff();
     d->view2d->ShowRulerWidgetOff();
 
-    d->render->SetOffScreenRendering(1);
+    vtkRenderWindow *renWin = vtkRenderWindow::New();
+    renWin->SetOffScreenRendering(1);
+    renWin->AddRenderer(d->renderer2d);
+    d->view2d->SetRenderWindow(renWin);
+    QVTKWidget *vtkWidget = dynamic_cast<QVTKWidget *>(d->view->viewWidget());
+    if(!vtkWidget)
+        return d->thumbnail;
 
-    d->view->viewWidget()->resize(w,h);
-    d->render->vtkRenderWindow::SetSize(w,h);
+    vtkWidget->SetRenderWindow(renWin);
+    vtkWidget->resize(w,h);
+    renWin->SetSize(w,h);
     d->view2d->Reset();
-    d->view2d->Render();
+    renWin->Render();
 
-    d->thumbnail = QPixmap::grabWidget(d->view->viewWidget()).toImage();
+    d->thumbnail = QPixmap::grabWidget(vtkWidget).toImage();
 
-    d->render->SetOffScreenRendering(0);
+    renWin->Delete();
 
     return d->thumbnail;
 }
