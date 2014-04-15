@@ -545,6 +545,10 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
 
 QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
 {
+
+    qDebug() << "current thread :"  << QThread::currentThread();
+    qDebug() << "thread graphique :" << QApplication::instance()->thread();
+
     int w(size.width()), h(size.height());
 
     d->view2d->SetBackground(0.0, 0.0, 0.0);
@@ -562,11 +566,15 @@ QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
     d->view2d->Render();
 
 
-    d->thumbnail = QPixmap::grabWidget(d->medVtkView->viewWidget()).toImage();
+    vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
+    QImage img(w, h, QImage::Format_RGB32);
+    img.fill(0);
+    pixels->SetArray(img.bits(), w*h*4, 1);
+    d->render->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
 
     d->render->SetOffScreenRendering(0);
 
-    return d->thumbnail;
+    return d->thumbnail = img.mirrored();
 }
 
 int medVtkViewItkDataImageInteractor::imageViewInternalLayer()
