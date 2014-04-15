@@ -126,8 +126,9 @@ QImage& medAbstractData::thumbnail()
         else
             this->generateThumbnail();
     }
-    return d->thumbnail;
     this->release();
+
+    return d->thumbnail;
 }
 
 void medAbstractData::generateThumbnail()

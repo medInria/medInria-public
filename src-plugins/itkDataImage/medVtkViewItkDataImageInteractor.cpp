@@ -13,6 +13,7 @@
 
 #include <medVtkViewItkDataImageInteractor.h>
 
+#include <QVTKWidget.h>
 
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
@@ -51,6 +52,7 @@ public:
     vtkImageViewCollection *collection;
     medAbstractImageData *imageData;
     vtkRenderWindow *render;
+    vtkRenderer *renderer2d;
 
     medAbstractImageView *medVtkView;
 
@@ -83,6 +85,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     d->collection->AddItem(d->view2d);
     d->collection->AddItem(d->view3d);
     d->render = backend->renWin;
+    d->renderer2d = backend->renderer2D;
     d->imageData = NULL;
 
     d->lutParam = NULL;
@@ -545,10 +548,6 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
 
 QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
 {
-
-    qDebug() << "current thread :"  << QThread::currentThread();
-    qDebug() << "thread graphique :" << QApplication::instance()->thread();
-
     int w(size.width()), h(size.height());
 
     d->view2d->SetBackground(0.0, 0.0, 0.0);
@@ -558,23 +557,25 @@ QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
     d->view2d->ShowAnnotationsOff();
     d->view2d->ShowRulerWidgetOff();
 
-    d->render->SetOffScreenRendering(1);
+    vtkRenderWindow *renWin = vtkRenderWindow::New();
+    renWin->SetOffScreenRendering(1);
+    renWin->AddRenderer(d->renderer2d);
+    d->view2d->SetRenderWindow(renWin);
+    QVTKWidget *vtkWidget = dynamic_cast<QVTKWidget *>(d->medVtkView->viewWidget());
+    if(!vtkWidget)
+        return d->thumbnail;
 
-    d->medVtkView->viewWidget()->resize(w,h);
-    d->render->vtkRenderWindow::SetSize(w,h);
+    vtkWidget->SetRenderWindow(renWin);
+    vtkWidget->resize(w,h);
+    renWin->SetSize(w,h);
     d->view2d->Reset();
-    d->view2d->Render();
+    renWin->Render();
 
+    d->thumbnail = QPixmap::grabWidget(vtkWidget).toImage();
 
-    vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
-    QImage img(w, h, QImage::Format_RGB32);
-    img.fill(0);
-    pixels->SetArray(img.bits(), w*h*4, 1);
-    d->render->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
+    renWin->Delete();
 
-    d->render->SetOffScreenRendering(0);
-
-    return d->thumbnail = img.mirrored();
+    return d->thumbnail;
 }
 
 int medVtkViewItkDataImageInteractor::imageViewInternalLayer()
