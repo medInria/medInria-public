@@ -318,18 +318,50 @@ void medVtkViewNavigator::setCamera(QList<QVariant> cameraOptions)
         return;
     }
 
+    bool needUpdate = false;
+
     QVector3D cameraPostion(cameraOptions.at(0).value<QVector3D>());
     QVector3D cameraUp(cameraOptions.at(1).value<QVector3D>());
     QVector3D cameraFocalPoint(cameraOptions.at(2).value<QVector3D>());
-
     double parallelScale = cameraOptions.at(3).toReal();
 
-    setCameraPosition(cameraPostion);
-    setCameraUp(cameraUp);
-    setCameraFocalPoint(cameraFocalPoint);
-    setCameraParallelScale(parallelScale);
+    double pos[3];
+    this->cameraPosition(pos);
+    QVector3D currentPos(pos[0], pos[1], pos[2]);
+    if(cameraPostion != currentPos)
+    {
+        setCameraPosition(cameraPostion);
+        needUpdate = true;
+    }
 
-    d->currentView->Render();
+    double up[3];
+    this->cameraUp(up);
+    QVector3D currentUp(up[0], up[1], up[2]);
+    if(cameraUp != currentUp)
+    {
+        setCameraUp(cameraUp);
+        needUpdate = true;
+    }
+
+    double fp[3];
+    this->cameraFocalPoint(fp);
+    QVector3D currentFp(fp[0], fp[1], fp[2]);
+    if(cameraFocalPoint != currentFp)
+    {
+        setCameraFocalPoint(cameraFocalPoint);
+        needUpdate = true;
+    }
+
+    double db;
+    this->cameraParallelScale(db);
+    if(db != parallelScale)
+    {
+        setCameraParallelScale(parallelScale);
+        needUpdate = true;
+    }
+
+    if(needUpdate)
+        d->currentView->Render();
 }
 
 void medVtkViewNavigator::cameraUp (double *coordinates) const
