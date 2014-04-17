@@ -502,9 +502,21 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
         qWarning() << "Window/Level parameters are incorrect";
         return;
     }
-    setWindow(values.at(0).toDouble());
-    setLevel(values.at(1).toDouble());
-    update();
+
+    bool needUpdate = false;
+    if (d->view2d->GetColorWindow(imageViewInternalLayer()) != values.at(0))
+    {
+        setWindow(values.at(0).toDouble());
+        needUpdate = true;
+    }
+    if (d->view2d->GetColorLevel(imageViewInternalLayer()) != values.at(1))
+    {
+        setLevel(values.at(1).toDouble());
+        needUpdate = true;
+    }
+
+    if(needUpdate)
+        update();
 }
 
 void medVtkViewItkDataImageInteractor::update()

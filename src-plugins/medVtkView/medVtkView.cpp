@@ -169,6 +169,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum );
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
     d->viewWidget->SetRenderWindow(d->renWin);
+    d->viewWidget->setCursor(QCursor(Qt::CrossCursor));
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d, d->renderer2d, d->renderer3d, d->renWin));
 
