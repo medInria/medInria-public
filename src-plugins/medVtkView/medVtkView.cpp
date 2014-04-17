@@ -120,7 +120,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     // construct views
         // view2d
     d->view2d = vtkImageView2D::New();
-    d->view2d->SetRenderer(d->renderer2d);
     d->view2d->SetBackground(0.0, 0.0, 0.0);
     d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
     d->view2d->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);

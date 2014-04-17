@@ -78,6 +78,7 @@
 #include <cmath>
 
 #include <vtkImageFromBoundsSource.h>
+#include <vtkRendererCollection.h>
 
 class vtkImage2DDisplay : public vtkObject
 {
@@ -199,8 +200,11 @@ vtkImageView2D::vtkImageView2D()
   this->Command             = vtkImageView2DCommand::New();
   this->OrientationAnnotation = vtkOrientationAnnotation::New();
 
+  this->CurrentLayer = 0;
+
   this->LayerInfoVec.resize(1);
   this->LayerInfoVec[0].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
+  this->LayerInfoVec[0].Renderer = vtkSmartPointer<vtkRenderer>::New();
 
   this->SliceOrientation = vtkImageView2D::SLICE_ORIENTATION_XY;
 
@@ -255,6 +259,9 @@ vtkImageView2D::vtkImageView2D()
   style->Delete();
 
   this->SetTransferFunctions(NULL, NULL, 0);
+
+  SetRenderer(this->LayerInfoVec[0].Renderer);
+
 }
 
 //----------------------------------------------------------------------------
@@ -460,7 +467,7 @@ void vtkImageView2D::SetSlice(int slice)
   // callled in SetCurrentPoint()
 
   // Shift the camera with the slice, so that the slice does not go behind the camera.
-  vtkCamera *camera = this->Renderer->GetActiveCamera();
+  vtkCamera *camera = this->GetRenderer()->GetActiveCamera();
   if (camera)
   {
     // This shifts both the camera position and the focal point.
@@ -530,7 +537,7 @@ void vtkImageView2D::UpdateDisplayExtent()
   if (this->LayerInfoVec.empty())
     return;
 
-  vtkImageData * input = this->GetImage2DDisplayForLayer(0)->GetInput();
+  vtkImageData * input = this->GetImage2DDisplayForLayer(GetFirstLayer())->GetInput();
   if (!input) {
     return;
   }
@@ -589,14 +596,14 @@ void vtkImageView2D::UpdateDisplayExtent()
   }
 
   // Figure out the correct clipping range
-  if (this->Renderer)
+  if (this->GetRenderer())
   {
       // the clipping range is adjusted so that it englobles the slice +/- 0.5 * spacing in the
       // direction given by ViewOrientation. It allows to automatically clip polygonal datasets
       // without having to use a time consuming vtkCutter. In case of oblique slices (i.e., when
       // a non-identity OrientationTransform is used, a large margin is used
       // resulting in a too large clipping range. To be futher investigated.
-      vtkCamera *cam = this->Renderer->GetActiveCamera();
+      vtkCamera *cam = this->GetRenderer()->GetActiveCamera();
       if (cam)
       {
         double pos[3];
@@ -742,7 +749,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
 void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 {
   this->Superclass::SetOrientationMatrix (matrix);
-  this->GetImage2DDisplayForLayer(0)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+  this->GetImage2DDisplayForLayer(GetFirstLayer())->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
   this->UpdateOrientation();
 
   // The slice might have changed in the process
@@ -911,7 +918,7 @@ int vtkImageView2D::SetCameraFromOrientation()
   // We entirely rely on the slice orientation this->SliceOrientation
   // The ViewOrientation is "estimated", returned as id
 
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return -1;
 
@@ -1013,7 +1020,7 @@ void vtkImageView2D::SetAnnotationsFromOrientation()
 
   std::string solution[4]={"L","P","R","A"};
 
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (cam)
   {
 
@@ -1187,7 +1194,7 @@ void vtkImageView2D::UpdateCenter()
 {
   if (!this->GetInput())
     return;
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return;
   int* dimensions = this->GetInput()->GetDimensions();
@@ -1227,8 +1234,8 @@ void vtkImageView2D::SetPan (double* arg)
   // If mapWorldToDisplayCoordinates is called when RenderWindow has never been rendered, nans are returned
   // Reason: mapWorldToDisplayCoordinates needs to now the window size, which detected when the vtk renderwindow
   // has been rendered at least once
-  vtkCamera *camera = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
-  if (!camera || !this->Renderer || !this->RenderWindow || this->RenderWindow->GetNeverRendered())
+  vtkCamera *camera = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
+  if (!camera || !this->GetRenderer() || !this->RenderWindow || this->RenderWindow->GetNeverRendered())
   {
     return;
   }
@@ -1240,32 +1247,32 @@ void vtkImageView2D::SetPan (double* arg)
   camera->GetFocalPoint (focalpoint);
   camera->GetPosition(position);
 
-  this->Renderer->SetWorldPoint (focalpoint[0], focalpoint[1], focalpoint[2], 1.0);
-  this->Renderer->WorldToDisplay();
-  focaldepth = this->Renderer->GetDisplayPoint()[2];
+  this->GetRenderer()->SetWorldPoint (focalpoint[0], focalpoint[1], focalpoint[2], 1.0);
+  this->GetRenderer()->WorldToDisplay();
+  focaldepth = this->GetRenderer()->GetDisplayPoint()[2];
 
-  this->Renderer->ComputeVisiblePropBounds (bounds);
+  this->GetRenderer()->ComputeVisiblePropBounds (bounds);
   center[0] = (bounds[0] + bounds[1])/2.0;
   center[1] = (bounds[2] + bounds[3])/2.0;
   center[2] = (bounds[4] + bounds[5])/2.0;
 
-  this->Renderer->SetWorldPoint (center[0], center[1], center[2], 1.0);
-  this->Renderer->WorldToDisplay();
-  this->Renderer->GetDisplayPoint (center);
+  this->GetRenderer()->SetWorldPoint (center[0], center[1], center[2], 1.0);
+  this->GetRenderer()->WorldToDisplay();
+  this->GetRenderer()->GetDisplayPoint (center);
   center[0] += this->Pan[0];
   center[1] += this->Pan[1];
 
-  this->Renderer->SetDisplayPoint (center[0], center[1], focaldepth);
-  this->Renderer->DisplayToWorld();
+  this->GetRenderer()->SetDisplayPoint (center[0], center[1], focaldepth);
+  this->GetRenderer()->DisplayToWorld();
 
   // Camera motion is reversed
-  motion[0] = focalpoint[0] - this->Renderer->GetWorldPoint()[0];
-  motion[1] = focalpoint[1] - this->Renderer->GetWorldPoint()[1];
-  motion[2] = focalpoint[2] - this->Renderer->GetWorldPoint()[2];
+  motion[0] = focalpoint[0] - this->GetRenderer()->GetWorldPoint()[0];
+  motion[1] = focalpoint[1] - this->GetRenderer()->GetWorldPoint()[1];
+  motion[2] = focalpoint[2] - this->GetRenderer()->GetWorldPoint()[2];
 
-  camera->SetFocalPoint(this->Renderer->GetWorldPoint()[0],
-                        this->Renderer->GetWorldPoint()[1],
-                        this->Renderer->GetWorldPoint()[2]);
+  camera->SetFocalPoint(this->GetRenderer()->GetWorldPoint()[0],
+                        this->GetRenderer()->GetWorldPoint()[1],
+                        this->GetRenderer()->GetWorldPoint()[2]);
 
   camera->SetPosition(- motion[0] + position[0],
                       - motion[1] + position[1],
@@ -1273,7 +1280,7 @@ void vtkImageView2D::SetPan (double* arg)
 
   if (this->Interactor && this->Interactor->GetLightFollowCamera())
   {
-    this->Renderer->UpdateLightsGeometryToFollowCamera();
+    this->GetRenderer()->UpdateLightsGeometryToFollowCamera();
   }
 
   this->InvokeEvent (vtkImageView::PanChangedEvent);
@@ -1290,8 +1297,8 @@ double* vtkImageView2D::GetPan ()
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetPan (double pan[2])
 {
-  vtkCamera *camera = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
-  if (!camera || !this->Renderer || !this->RenderWindow || this->RenderWindow->GetNeverRendered())
+  vtkCamera *camera = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
+  if (!camera || !this->GetRenderer() || !this->RenderWindow || this->RenderWindow->GetNeverRendered())
   {
     pan[0] = this->Pan[0];
     pan[1] = this->Pan[1];
@@ -1301,19 +1308,19 @@ void vtkImageView2D::GetPan (double pan[2])
   double bounds[6], center[3], viewFocus[4];
 
   camera->GetFocalPoint(viewFocus);
-  this->Renderer->ComputeVisiblePropBounds (bounds);
+  this->GetRenderer()->ComputeVisiblePropBounds (bounds);
 
   center[0] = (bounds[0] + bounds[1])/2.0;
   center[1] = (bounds[2] + bounds[3])/2.0;
   center[2] = (bounds[4] + bounds[5])/2.0;
 
-  this->Renderer->SetWorldPoint (center[0], center[1], center[2], 0.0);
-  this->Renderer->WorldToDisplay();
-  this->Renderer->GetDisplayPoint (center);
+  this->GetRenderer()->SetWorldPoint (center[0], center[1], center[2], 0.0);
+  this->GetRenderer()->WorldToDisplay();
+  this->GetRenderer()->GetDisplayPoint (center);
 
-  this->Renderer->SetWorldPoint (viewFocus[0], viewFocus[1], viewFocus[2], 1.0);
-  this->Renderer->WorldToDisplay();
-  this->Renderer->GetDisplayPoint (viewFocus);
+  this->GetRenderer()->SetWorldPoint (viewFocus[0], viewFocus[1], viewFocus[2], 1.0);
+  this->GetRenderer()->WorldToDisplay();
+  this->GetRenderer()->GetDisplayPoint (viewFocus);
 
   pan[0] = -center[0] + viewFocus[0];
   pan[1] = -center[1] + viewFocus[1];
@@ -1344,7 +1351,7 @@ void vtkImageView2D::SetShowAnnotations (int val)
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position)
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
   {
     position[0] = position[1] = position[2] = 0;
@@ -1353,7 +1360,7 @@ void vtkImageView2D::GetWorldCoordinatesFromDisplayPosition (int xy[2], double* 
 
   this->GetRenderer()->SetDisplayPoint (xy[0], xy[1], 0);
   this->GetRenderer()->DisplayToWorld();
-  vtkPlane::ProjectPoint(this->Renderer->GetWorldPoint(), this->CurrentPoint, cam->GetViewPlaneNormal(), position);
+  vtkPlane::ProjectPoint(this->GetRenderer()->GetWorldPoint(), this->CurrentPoint, cam->GetViewPlaneNormal(), position);
 }
 
 //----------------------------------------------------------------------------
@@ -1361,11 +1368,11 @@ void vtkImageView2D::InstallPipeline()
 {
   this->Superclass::InstallPipeline();
 
-  if (this->Renderer)
+  if (this->GetRenderer())
   {
-    //this->Renderer->AddViewProp( this->ImageActor );
-    this->Renderer->AddViewProp( this->OrientationAnnotation );
-    this->Renderer->GetActiveCamera()->ParallelProjectionOn();
+    //this->GetRenderer()->AddViewProp( this->ImageActor );
+    this->GetRenderer()->AddViewProp( this->OrientationAnnotation );
+    this->GetRenderer()->GetActiveCamera()->ParallelProjectionOn();
   }
 
   if( this->InteractorStyle )
@@ -1456,6 +1463,7 @@ void vtkImageView2D::InstallInteractor()
 
   if (this->RenderWindow)
   {
+
     for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it!=this->LayerInfoVec.end(); ++it)
     {
       if (vtkRenderer *renderer = it->Renderer)
@@ -1477,7 +1485,7 @@ void vtkImageView2D::InstallInteractor()
   if ( this->AngleWidget->GetInteractor() && this->ShowAngleWidget)
     this->AngleWidget->On();
 
-  if( this->ShowImageAxis && this->RenderWindow && this->Renderer)
+  if( this->ShowImageAxis && this->RenderWindow && this->GetRenderer())
     this->Axes2DWidget->On();
 
   for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
@@ -1582,6 +1590,47 @@ void vtkImageView2D::ApplyColorTransferFunction(vtkScalarsToColors * colors, int
 //  }
 //}
 
+void vtkImageView2D::SetFirstLayer (vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
+{
+    if(image)
+    {
+        if( layer > 0 )
+          this->AddLayer(layer);
+
+        this->GetImage2DDisplayForLayer(layer)->SetInput(image);
+        this->Superclass::SetInput (image, matrix, 0);
+        this->GetWindowLevel(layer)->SetInput(image);
+        double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
+        this->SetColorRange(range,layer);
+        this->Reset();
+    }
+}
+
+bool vtkImageView2D::IsFirstLayer(int layer) const
+{
+    bool firstLayer = true;
+    for ( size_t i(0); i<this->LayerInfoVec.size() && i<layer; ++i )
+    {
+        if (this->LayerInfoVec[i].ImageDisplay && this->LayerInfoVec[i].ImageDisplay->GetInput() != NULL)
+        {
+            firstLayer = false;
+            break;
+        }
+    }
+    return firstLayer;
+}
+
+int vtkImageView2D::GetFirstLayer() const
+{
+    for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
+    {
+        if (this->LayerInfoVec[i].ImageDisplay && this->LayerInfoVec[i].ImageDisplay->GetInput() != NULL)
+        {
+            return i;
+        }
+    }
+}
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
 {
@@ -1590,78 +1639,99 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 
   vtkRenderer *renderer = 0;
 
-  if (layer==0)
+  if ( layer == 0 || IsFirstLayer(layer))
   {
-    if (this->GetInput())
-    {
-      this->RemoveAllLayers();
-    }
-
-    if(image)
-    {
-        this->GetImage2DDisplayForLayer(0)->SetInput(image);
-        this->Superclass::SetInput (image, matrix, layer);
-        this->GetWindowLevel(0)->SetInput(image);
-        double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
-        this->SetColorRange(range,0);
-    }
-
-    renderer = this->GetRenderer();
+      SetFirstLayer(image, matrix, layer);
   }
   else // layer >0
   {
-    if (!this->GetInput())
-    {
-      vtkErrorMacro (<< "Set input prior to adding layers");
-      return;
-    }
+      this->AddLayer(layer);
 
-    vtkImageData *reslicedImage = this->ResliceImageToInput(image, matrix);
-    if (!reslicedImage)
-    {
-      vtkErrorMacro (<< "Could not reslice image to input");
-      return;
-    }
+      if (!this->GetInput())
+      {
+          vtkErrorMacro (<< "Set input prior to adding layers");
+          return;
+      }
 
-    this->AddLayer(layer);
+      vtkImageData *reslicedImage = this->ResliceImageToInput(image, matrix);
+      if (!reslicedImage)
+      {
+          vtkErrorMacro (<< "Could not reslice image to input");
+          return;
+      }
 
-    // AddLayer must have created the proper vtkRenderer
-    renderer = this->GetRendererForLayer(layer);
+      // determine the scalar range. Copy the update extent to match the input's one
+      double range[2];
+      reslicedImage->SetUpdateExtent (this->GetInput()->GetUpdateExtent());
+      reslicedImage->PropagateUpdateExtent();
+      reslicedImage->Update();
+      reslicedImage->GetScalarRange (range);
 
-    // determine the scalar range. Copy the update extent to match the input's one
-    double range[2];
-    reslicedImage->SetUpdateExtent (this->GetInput()->GetUpdateExtent());
-    reslicedImage->PropagateUpdateExtent();
-    reslicedImage->Update();
-    reslicedImage->GetScalarRange (range);
+      vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable("Default");
+      lut->SetTableRange (range[0], range[1]);
+      vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+      imageDisplay->SetInput (reslicedImage);
+      imageDisplay->SetUseLookupTable(true);
+      imageDisplay->GetWindowLevel()->SetLookupTable (lut);
+      imageDisplay->GetImageActor()->SetOpacity(1.0);
+      imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+      this->SetColorRange(range,layer);
 
-    vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable("Default");
-    lut->SetTableRange (range[0], range[1]);
-    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-    imageDisplay->SetInput (reslicedImage);
-    imageDisplay->SetUseLookupTable(true);
-    imageDisplay->GetWindowLevel()->SetLookupTable (lut);
-    imageDisplay->GetImageActor()->SetOpacity(1.0);
-    imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-    this->SetColorRange(range,layer);
+      // this->GetImage2DDisplayForLayer(layer)->GetInput()->UpdateInformation();
 
-    // this->GetImage2DDisplayForLayer(layer)->GetInput()->UpdateInformation();
-
-    reslicedImage->Delete();
-    lut->Delete();
+      reslicedImage->Delete();
+      lut->Delete();
   }
 
+  renderer = this->GetRendererForLayer(layer);
   if (!renderer)
     return;
 
   if ( this->GetImage2DDisplayForLayer(layer) )
     renderer->AddViewProp (this->GetImage2DDisplayForLayer(layer)->GetImageActor());
 
+  this->SetCurrentLayer(layer);
   this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
   this->UpdateDisplayExtent();
   // this->UpdateCenter();
   this->UpdateSlicePlane();
   this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
+}
+
+void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[])
+{
+    vtkRenderer *renderer = 0;
+
+    this->AddLayer(layer);
+
+    renderer = this->GetRendererForLayer(layer);
+    if (!renderer)
+      return;
+
+    renderer->AddActor(actor);
+
+    this->SetCurrentLayer(layer);
+    this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
+    this->UpdateDisplayExtent();
+    // this->UpdateCenter();
+    this->UpdateSlicePlane();
+    this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
+
+    double bounds[6];
+    actor->GetBounds(bounds);
+
+    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
+    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
+    // so we need to increase bounds by +1 to have the correct image size
+    bounds[0] = round(bounds[0]);
+    bounds[1] = round(bounds[1])+1;
+    bounds[2] = round(bounds[2]);
+    bounds[3] = round(bounds[3])+1;
+    bounds[4] = round(bounds[4]);
+    bounds[5] = round(bounds[5])+1;
+
+    UpdateBounds(bounds, imageSize, layer);
+
 }
 
 int vtkImageView2D::AddInput (vtkImageData *image, vtkMatrix4x4 *matrix)
@@ -1696,10 +1766,14 @@ void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4
 //----------------------------------------------------------------------------
 vtkImageActor *vtkImageView2D::GetImageActor(int layer) const
 {
-  if (!this->HasLayer(layer))
-    return NULL;
+    int tempLayer = layer;
+    if(tempLayer == 0)
+        tempLayer = GetFirstLayer();
 
-  return this->GetImage2DDisplayForLayer(layer)->GetImageActor();
+    if (!this->HasLayer(tempLayer))
+        return NULL;
+
+    return this->GetImage2DDisplayForLayer(tempLayer)->GetImageActor();
 }
 
 //----------------------------------------------------------------------------
@@ -1713,7 +1787,10 @@ vtkImageData *vtkImageView2D::GetImageInput(int layer) const
 
 vtkImageData *vtkImageView2D::GetInput(int layer) const
 {
-  return GetImageInput(layer);
+    int tempLayer = layer;
+    if(tempLayer == 0)
+        tempLayer = GetFirstLayer();
+    return GetImageInput(tempLayer);
 }
 
 //----------------------------------------------------------------------------
@@ -1765,7 +1842,7 @@ void vtkImageView2D::SetShowAngleWidget (int val)
 void vtkImageView2D::SetShowImageAxis (int val)
 {
   this->ShowImageAxis = val;
-  if (this->Axes2DWidget->GetImageView() && this->RenderWindow && this->Renderer)
+  if (this->Axes2DWidget->GetImageView() && this->RenderWindow && this->GetRenderer())
   {
     this->Axes2DWidget->SetEnabled(val);
     this->Modified();
@@ -1849,14 +1926,14 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
     this->SetCurrentPoint(center);
     double bounds[6];
     box.GetBounds(bounds);
-    this->Renderer->ResetCamera(bounds);
+    this->GetRenderer()->ResetCamera(bounds);
 
   }
 
   return widget->GetActor();
 }
 
-void vtkImageView2D::updateBounds (const double bounds[6], const int imageSize[3])
+void vtkImageView2D::UpdateBounds (const double bounds[6], const int imageSize[3], int layer)
 {
     bool isImageOutBounded = false;
     double imageBounds[6];
@@ -1891,7 +1968,7 @@ void vtkImageView2D::updateBounds (const double bounds[6], const int imageSize[3
         }
     }
 
-    if(isImageOutBounded && GetNumberOfLayers() == 0)
+    if(isImageOutBounded)
     {
         vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
         unsigned int imSize [3];
@@ -1909,8 +1986,8 @@ void vtkImageView2D::updateBounds (const double bounds[6], const int imageSize[3
         imagegenerator->SetOutputImageBounds(imageBounds);
         vtkImageData * image = imagegenerator->GetOutput();
 
-        SetInput(image, 0);
-        vtkImageActor *actor = GetImageActor(0);
+        SetInput(image, 0, layer);
+        vtkImageActor *actor = GetImageActor(layer);
         actor->SetOpacity(0.0);
         isImageOutBounded=false;
         imagegenerator->Delete();
@@ -1985,7 +2062,7 @@ void vtkImageView2D::AddLayer(int layer)
         this->OverlayRenderer->SetLayer(numLayers);
         ++numLayers;
     }
-    this->GetRenderWindow()->SetNumberOfLayers (numLayers);
+    this->GetRenderWindow()->SetNumberOfLayers (numLayers+1);
     this->GetRenderWindow()->AddRenderer(renderer);
   }
 
@@ -2001,12 +2078,9 @@ void vtkImageView2D::RemoveLayer(int layer)
   if (!this->HasLayer(layer))
     return;
 
-  if (layer<=0) // do not remove layer 0
-    return;
-
   vtkRenderer *renderer = this->GetRendererForLayer(layer);
 
-  if (this->GetRenderWindow())
+  if (renderer && this->GetRenderWindow())
   {
     this->GetRenderWindow()->RemoveRenderer(renderer);
     this->Modified();
@@ -2015,11 +2089,21 @@ void vtkImageView2D::RemoveLayer(int layer)
   // Delete is handled by SmartPointers.
   this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
 
-  // Make contiguous
-  for ( size_t i(layer); i<this->LayerInfoVec.size(); ++i )
+  if(this->LayerInfoVec.size() == 0)
   {
-      this->LayerInfoVec[i].Renderer->SetLayer(i);
+    this->LayerInfoVec.resize(1);
+    this->LayerInfoVec[0].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
+    this->LayerInfoVec[0].Renderer = vtkSmartPointer<vtkRenderer>::New();
   }
+
+  // Make contiguous
+  for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
+  {
+      if( this->LayerInfoVec[i].Renderer )
+        this->LayerInfoVec[i].Renderer->SetLayer(i);
+      this->SetCurrentLayer(i);
+  }
+
 }
 
 //----------------------------------------------------------------------------
@@ -2061,6 +2145,11 @@ vtkRenderer * vtkImageView2D::GetRendererForLayer( int layer ) const
         return this->LayerInfoVec.at(layer).Renderer;
     }
     else return NULL;
+}
+
+vtkRenderer * vtkImageView2D::GetRenderer() const
+{
+    return this->LayerInfoVec.at(this->CurrentLayer).Renderer;
 }
 
 vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ ) const

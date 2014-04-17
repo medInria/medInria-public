@@ -130,8 +130,6 @@ public slots:
     void setScale(int minorScale, int majorScaleExponent);
 
 protected:
-    void computeBounds();
-    void updateBounds(const double bounds[]);
     void update();
 
 

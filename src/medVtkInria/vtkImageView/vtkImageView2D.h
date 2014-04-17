@@ -114,6 +114,8 @@ public:
   virtual void SetInput (vtkImageData *image,
                          vtkMatrix4x4 *matrix = 0,
                          int layer=0);
+  virtual void SetInput (vtkActor *actor, int layer = 0, const int imageSize[3] = 0);
+
   virtual void SetInputConnection (vtkAlgorithmOutput* arg,
                                    vtkMatrix4x4 *matrix = 0,
                                    int layer=0);
@@ -555,7 +557,9 @@ public:
   virtual void StoreColorWindow(double s,int layer);
   virtual void StoreColorLevel(double s,int layer);
 
-  virtual void updateBounds (const double bounds[6], const int imageSize[3] = 0);
+  virtual void UpdateBounds (const double bounds[6], const int imageSize[3] = 0, int layer = 0);
+
+  virtual vtkRenderer * GetRenderer() const;
 
 protected:
   vtkImageView2D();
@@ -678,9 +682,15 @@ protected:
   vtkImage2DDisplay * GetImage2DDisplayForLayer(int layer) const;
   vtkRenderer * GetRendererForLayer(int layer) const;
 
+
   //BTX
   std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
   //ETX
+
+  void SetFirstLayer (vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
+  bool IsFirstLayer(int layer) const;
+  int GetFirstLayer() const;
+
   /**
    local instances
    */

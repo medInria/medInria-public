@@ -72,10 +72,6 @@ public slots:
 protected:
     void setupParameters();
 
-    void computeBounds();
-    void updateBounds(const double bounds[]);
-
-
 private:
     static QStringList dataHandled();
     void update();

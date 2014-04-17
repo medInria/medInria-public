@@ -69,8 +69,6 @@ public:
     QWidget* toolbox;
     QWidget* toolbar;
     QImage thumbnail;
-
-    int imageViewInternalLayer;
 };
 
 
@@ -97,9 +95,6 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
 
     d->toolbox = NULL;
     d->toolbar = NULL;
-
-    d->imageViewInternalLayer = 0;
-
 }
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
@@ -169,19 +164,19 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     if(!d->imageData)
         return;
 
-    if (!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<short,3> >("itkDataImageShort3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<int,3> >("itkDataImageInt3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<long,3> >("itkDataImageLong3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<float,3> >("itkDataImageFloat3", data , d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<double,3> >("itkDataImageDouble3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->imageViewInternalLayer) ||
-          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3", data, d->imageViewInternalLayer)))
+    if (!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<short,3> >("itkDataImageShort3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<int,3> >("itkDataImageInt3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<long,3> >("itkDataImageLong3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<float,3> >("itkDataImageFloat3", data , d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<double,3> >("itkDataImageDouble3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->medVtkView->layer(data)) ||
+          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3", data, d->medVtkView->layer(data))))
     {
         qDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
         return;
@@ -192,8 +187,8 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 
 void medVtkViewItkDataImageInteractor::removeData()
 {
-    d->view2d->RemoveLayer(imageViewInternalLayer());
-    d->view3d->RemoveLayer(imageViewInternalLayer());
+    d->view2d->RemoveLayer(d->medVtkView->layer(d->imageData));
+    d->view3d->RemoveLayer(d->medVtkView->layer(d->imageData));
     if(d->medVtkView->is2D())
         d->view2d->Render();
     else
@@ -202,17 +197,15 @@ void medVtkViewItkDataImageInteractor::removeData()
 
 
 template <typename IMAGE>
-bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstractData* data, int& layer)
+bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstractData* data, int layer)
 {
     if (data->identifier() != type)
         return false;
 
     if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
     {
-        d->view2d->AddITKInput(image);
-        d->view3d->AddITKInput(image);
-
-        layer = d->view2d->GetNumberOfLayers()-1;
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
 
         return true;
     }
@@ -256,7 +249,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
 
     d->view2d->GetInput()->Update();
-    double* range = d->view2d->GetInput(d->imageViewInternalLayer)->GetScalarRange();
+    double* range = d->view2d->GetInput(d->medVtkView->layer(data))->GetScalarRange();
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
@@ -310,8 +303,8 @@ void medVtkViewItkDataImageInteractor::setOpacity (int opacity)
 
 void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
 {
-    d->view3d->SetOpacity (opacity, imageViewInternalLayer());
-    d->view2d->SetOpacity (opacity, imageViewInternalLayer());
+    d->view3d->SetOpacity (opacity, d->medVtkView->layer(d->imageData));
+    d->view2d->SetOpacity (opacity, d->medVtkView->layer(d->imageData));
 
     update();
 }
@@ -326,13 +319,13 @@ void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
 {
     if(visible)
     {
-        d->view2d->SetVisibility(1, imageViewInternalLayer());
-        d->view3d->SetVisibility(1, imageViewInternalLayer());
+        d->view2d->SetVisibility(1, d->medVtkView->layer(d->imageData));
+        d->view3d->SetVisibility(1, d->medVtkView->layer(d->imageData));
     }
     else
     {
-        d->view2d->SetVisibility(0, imageViewInternalLayer());
-        d->view3d->SetVisibility(0, imageViewInternalLayer());
+        d->view2d->SetVisibility(0, d->medVtkView->layer(d->imageData));
+        d->view3d->SetVisibility(0, d->medVtkView->layer(d->imageData));
     }
 
     update();
@@ -356,18 +349,18 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 
     Presets::GetTransferFunction(value.toStdString(), rgb, alpha );
 
-    if (imageViewInternalLayer() == 0)
-        d->view2d->SetTransferFunctions(rgb, alpha, imageViewInternalLayer());
+    if (d->medVtkView->layer(d->imageData) == 0)
+        d->view2d->SetTransferFunctions(rgb, alpha, d->medVtkView->layer(d->imageData));
     else
     {
         //TODO: find out why its not the same process - RDE
         vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
-        d->view2d->SetLookupTable(lut, imageViewInternalLayer());
+        d->view2d->SetLookupTable(lut, d->medVtkView->layer(d->imageData));
         lut->Delete();
     }
 
-    d->view3d->SetTransferFunctions(rgb, alpha, imageViewInternalLayer());
-    d->view3d->SetLookupTable(vtkLookupTableManager::GetLookupTable(value.toStdString()), imageViewInternalLayer());
+    d->view3d->SetTransferFunctions(rgb, alpha, d->medVtkView->layer(d->imageData));
+    d->view3d->SetLookupTable(vtkLookupTableManager::GetLookupTable(value.toStdString()), d->medVtkView->layer(d->imageData));
 
     rgb->Delete();
     alpha->Delete();
@@ -484,15 +477,14 @@ void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &po
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
-    d->view2d->SetColorWindow(window, imageViewInternalLayer());
-    d->view3d->SetColorWindow(window, imageViewInternalLayer());
+    d->view2d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
+    d->view3d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
 }
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
-    d->view2d->SetColorLevel(level, imageViewInternalLayer());
-    d->view3d->SetColorLevel(level, imageViewInternalLayer());
-
+    d->view2d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
+    d->view3d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
 }
 
 void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
@@ -590,23 +582,14 @@ QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
     return d->thumbnail;
 }
 
-int medVtkViewItkDataImageInteractor::imageViewInternalLayer()
-{
-    return d->imageViewInternalLayer;
-}
-
-void medVtkViewItkDataImageInteractor::setImageViewInternalLayer(int layer)
-{
-    d->imageViewInternalLayer = layer;
-}
 
 void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
 {
     if( d->medVtkView->layer(d->imageData) != d->medVtkView->currentLayer() )
         return;
 
-    d->view2d->SetCurrentLayer(d->imageViewInternalLayer);
-    d->view3d->SetCurrentLayer(d->imageViewInternalLayer);
+    d->view2d->SetCurrentLayer(d->medVtkView->layer(d->imageData));
+    d->view3d->SetCurrentLayer(d->medVtkView->layer(d->imageData));
 
 }
 

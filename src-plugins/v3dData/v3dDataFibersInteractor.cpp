@@ -372,11 +372,10 @@ void v3dDataFibersInteractor::setData(medAbstractData *data)
         d->opacityProperty = vtkSmartPointer <vtkProperty>::New();
         d->actor->SetProperty(d->opacityProperty);
 
-        d->renderer2d->AddActor(d->actor);
-        d->renderer3d->AddActor(d->actor);
-
-
         d->data = data;
+
+        d->view2d->SetInput(d->actor, d->view->layer(d->data));
+        d->renderer3d->AddActor(d->actor);
     }
 }
 
@@ -1135,6 +1134,7 @@ void v3dDataFibersInteractor::moveToSlice (int slice)
 
 void v3dDataFibersInteractor::removeData()
 {
+    d->view2d->RemoveLayer(d->view->layer(d->data));
     d->manager->Delete();
 }
 

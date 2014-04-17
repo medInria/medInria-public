@@ -200,14 +200,10 @@ void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
     d->manager->ResetPosition();
     d->manager->Update();
 
-    d->renderer2d->AddActor (d->manager->GetVectorVisuManagerAxial()->GetActor());
-    d->renderer2d->AddActor (d->manager->GetVectorVisuManagerSagittal()->GetActor());
-    d->renderer2d->AddActor (d->manager->GetVectorVisuManagerCoronal()->GetActor());
-
-    if(d->view->layersCount() == 1)
-    {
-        computeBounds();
-    }
+    int *dim = d->manager->GetInput()->GetDimensions();
+    d->view2d->SetInput(d->manager->GetVectorVisuManagerAxial()->GetActor(), d->view->layer(data), dim);
+    d->view2d->SetInput(d->manager->GetVectorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim);
+    d->view2d->SetInput(d->manager->GetVectorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
 
     setupParameters();
 
@@ -216,6 +212,7 @@ void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
 
 void medVtkViewItkVectorFieldInteractor::removeData()
 {
+    d->view2d->RemoveLayer(d->view->layer(d->data));
     d->manager->Delete();
 }
 
@@ -439,36 +436,4 @@ QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::parameters()
 void medVtkViewItkVectorFieldInteractor::update()
 {
     d->render->Render();
-}
-
-void medVtkViewItkVectorFieldInteractor::computeBounds()
-{
-    d->manager->GetVectorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
-
-    updateBounds(d->manager->GetVectorVisuManagerSagittal()->GetActor()->GetBounds());
-    updateBounds(d->manager->GetVectorVisuManagerCoronal()->GetActor()->GetBounds());
-
-    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
-    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
-    // so we need to increase bounds by +1 to have the correct image size
-    d->imageBounds[0] = round(d->imageBounds[0]);
-    d->imageBounds[1] = round(d->imageBounds[1])+1;
-    d->imageBounds[2] = round(d->imageBounds[2]);
-    d->imageBounds[3] = round(d->imageBounds[3])+1;
-    d->imageBounds[4] = round(d->imageBounds[4]);
-    d->imageBounds[5] = round(d->imageBounds[5])+1;
-
-    d->view2d->updateBounds(d->imageBounds, d->manager->GetInput()->GetDimensions());
-}
-
-void medVtkViewItkVectorFieldInteractor::updateBounds(const double bounds[])
-{
-    for (int i=0; i<6; i=i+2)
-        if (bounds[i] < d->imageBounds[i])
-            d->imageBounds[i]=bounds[i];
-
-    for (int i=1; i<6; i=i+2)
-        if (bounds[i] > d->imageBounds[i])
-            d->imageBounds[i]=bounds[i];
-
 }

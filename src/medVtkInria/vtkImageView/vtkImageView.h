@@ -181,7 +181,9 @@ class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
   // Get the internal render window, renderer,
   // image map and interactor instances.
   vtkGetObjectMacro(RenderWindow,    vtkRenderWindow);
-  vtkGetObjectMacro(Renderer,        vtkRenderer); // LAYER
+  //vtkGetObjectMacro(Renderer,        vtkRenderer); // LAYER
+  virtual vtkRenderer * GetRenderer() const{return Renderer;}
+
   vtkGetObjectMacro(OverlayRenderer, vtkRenderer);
   //Is it useful for 2d and 3d?
 //  virtual vtkImageMapToColors *GetWindowLevel(int layer=0);

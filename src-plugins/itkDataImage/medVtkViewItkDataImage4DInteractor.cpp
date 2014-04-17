@@ -43,8 +43,8 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
         vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
         vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(sequence->GetDataSet());
 
-        backend->view2D->AddInput(vtkimage,metaimage->GetOrientationMatrix());
-        backend->view3D->AddInput(vtkimage,metaimage->GetOrientationMatrix());
+        backend->view2D->SetInput(vtkimage,metaimage->GetOrientationMatrix(), layer);
+        backend->view3D->SetInput(vtkimage,metaimage->GetOrientationMatrix(), layer);
 
         layer = backend->view2D->GetNumberOfLayers()-1;
 
@@ -124,7 +124,7 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 
         d->sequence = vtkMetaDataSetSequence::New();
 
-        int layer = -1;
+        int layer = d->view->layer(data);
 
         if (  AppendImageSequence<char>(data,d->view,d->sequence, layer)           ||
               AppendImageSequence<unsigned char>(data,d->view,d->sequence, layer)  ||
@@ -134,7 +134,6 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
               AppendImageSequence<double>(data,d->view,d->sequence, layer)) {
 
             initParameters(d->imageData);
-            setImageViewInternalLayer(layer);
 
             d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
 
@@ -272,7 +271,7 @@ double medVtkViewItkDataImage4DInteractor::sequencesMinTimeStep()
 
 void medVtkViewItkDataImage4DInteractor::updateWidgets()
 {
-
+    medVtkViewItkDataImageInteractor::updateWidgets();
 }
 
 void medVtkViewItkDataImage4DInteractor::removeInternToolBox()

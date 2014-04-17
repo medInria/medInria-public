@@ -68,15 +68,12 @@ public slots:
 protected:
     void initParameters(medAbstractImageData* data);
 
-    int imageViewInternalLayer();
-    void setImageViewInternalLayer(int layer);
-
 private:
     static QStringList dataHandled();
     virtual void update();
 
     template <typename IMAGE>
-    bool SetViewInput(const char* type, medAbstractData* data, int& layer);
+    bool SetViewInput(const char* type, medAbstractData* data, int layer);
 
 private slots:
     void updateWindowLevelParam(double window, double level, unsigned int layer);

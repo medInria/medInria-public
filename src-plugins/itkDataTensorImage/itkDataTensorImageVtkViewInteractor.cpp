@@ -136,6 +136,7 @@ itkDataTensorImageVtkViewInteractor::~itkDataTensorImageVtkViewInteractor()
 
 void itkDataTensorImageVtkViewInteractor::removeData()
 {
+    d->view2d->RemoveLayer(d->view->layer(d->data));
     d->manager->Delete();
 }
 
@@ -205,15 +206,11 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 
             d->manager->Update();
 
-            if(d->view->layersCount() == 1)
-            {
-                computeBounds();
-            }
-
             if (d->view) {
-                d->renderer2d->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
-                d->renderer2d->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
-                d->renderer2d->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+                int* dim = d->manager->GetInput()->GetDimensions();
+                d->view2d->SetInput( d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), dim );
+                d->view2d->SetInput( d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim );
+                d->view2d->SetInput( d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
             }
 
             d->data = data;
@@ -245,15 +242,11 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 
             d->manager->Update();
 
-            if(d->view->layersCount() == 1)
-            {
-                computeBounds();
-            }
-
             if (d->view) {
-                d->renderer2d->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
-                d->renderer2d->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
-                d->renderer2d->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+                int* dim = d->manager->GetInput()->GetDimensions();
+                d->view2d->SetInput(d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), dim);
+                d->view2d->SetInput(d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim);
+                d->view2d->SetInput(d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
             }
 
             d->data = data;
@@ -594,36 +587,4 @@ QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()
 void itkDataTensorImageVtkViewInteractor::update()
 {
     d->render->Render();
-}
-
-void itkDataTensorImageVtkViewInteractor::computeBounds()
-{
-    d->manager->GetTensorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
-
-    updateBounds(d->manager->GetTensorVisuManagerSagittal()->GetActor()->GetBounds());
-    updateBounds(d->manager->GetTensorVisuManagerCoronal()->GetActor()->GetBounds());
-
-    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
-    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
-    // so we need to increase bounds by +1 to have the correct image size
-    d->imageBounds[0] = round(d->imageBounds[0]);
-    d->imageBounds[1] = round(d->imageBounds[1])+1;
-    d->imageBounds[2] = round(d->imageBounds[2]);
-    d->imageBounds[3] = round(d->imageBounds[3])+1;
-    d->imageBounds[4] = round(d->imageBounds[4]);
-    d->imageBounds[5] = round(d->imageBounds[5])+1;
-
-    d->view2d->updateBounds(d->imageBounds, d->manager->GetInput()->GetDimensions());
-}
-
-void itkDataTensorImageVtkViewInteractor::updateBounds(const double bounds[])
-{
-    for (int i=0; i<6; i=i+2)
-        if (bounds[i] < d->imageBounds[i])
-            d->imageBounds[i]=bounds[i];
-
-    for (int i=1; i<6; i=i+2)
-        if (bounds[i] > d->imageBounds[i])
-            d->imageBounds[i]=bounds[i];
-
 }

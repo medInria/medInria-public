@@ -46,6 +46,7 @@
 #include <itkExtractImageBufferFilter.h>
 #include <itkImageToVTKImageFilter.h>
 #include <itkMatrix.h>
+#include <vtkRendererCollection.h>
 //#include <vnl/algo/vnl_qr.h>
 
 vtkCxxRevisionMacro(vtkImageView, "$Revision: 1 $");
@@ -450,9 +451,11 @@ void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *mat
 //----------------------------------------------------------------------------
 void vtkImageView::InstallPipeline()
 {
-  if (this->RenderWindow && this->Renderer && !this->RenderWindow->HasRenderer (this->Renderer))
+  int t = 0;
+  if (this->RenderWindow && this->GetRenderer() && !this->RenderWindow->HasRenderer (this->GetRenderer()))
   {
-    this->RenderWindow->AddRenderer(this->Renderer);
+    this->RenderWindow->AddRenderer(this->GetRenderer());
+    t = this->RenderWindow->GetRenderers()->GetNumberOfItems();
   }
 
   if (this->Interactor)
@@ -460,12 +463,12 @@ void vtkImageView::InstallPipeline()
     this->Interactor->SetRenderWindow(this->RenderWindow);
   }
 
-  if (this->Renderer)
+  if (this->GetRenderer())
   {
-    this->Renderer->AddViewProp ( this->CornerAnnotation );
-    this->Renderer->AddViewProp ( this->ScalarBar );
+    this->GetRenderer()->AddViewProp ( this->CornerAnnotation );
+    this->GetRenderer()->AddViewProp ( this->ScalarBar );
 
-    this->Renderer->GetActiveCamera()->ParallelProjectionOn();
+    this->GetRenderer()->GetActiveCamera()->ParallelProjectionOn();
   }
 
   this->InstallInteractor();
@@ -476,15 +479,15 @@ void vtkImageView::UnInstallPipeline()
 {
   this->UnInstallInteractor();
 
-  if (this->Renderer)
+  if (this->GetRenderer())
   {
-    this->Renderer->RemoveViewProp(this->CornerAnnotation);
-    this->Renderer->RemoveViewProp(this->ScalarBar);
+    this->GetRenderer()->RemoveViewProp(this->CornerAnnotation);
+    this->GetRenderer()->RemoveViewProp(this->ScalarBar);
   }
 
-  if (this->RenderWindow && this->Renderer)
+  if (this->RenderWindow && this->GetRenderer())
   {
-    this->RenderWindow->RemoveRenderer(this->Renderer);
+    this->RenderWindow->RemoveRenderer(this->GetRenderer());
   }
 }
 
@@ -1226,14 +1229,14 @@ void vtkImageView::Start()
 //----------------------------------------------------------------------------
 void vtkImageView::SetBackground(double rgb[3])
 {
-  if (this->Renderer)
-    this->Renderer->SetBackground(rgb);
+  if (this->GetRenderer())
+    this->GetRenderer()->SetBackground(rgb);
 }
 //----------------------------------------------------------------------------
 double* vtkImageView::GetBackground() const
 {
-  if (this->Renderer)
-    return this->Renderer->GetBackground();
+  if (GetRenderer())
+    return this->GetRenderer()->GetBackground();
   return NULL;
 }
 
@@ -1243,7 +1246,7 @@ void vtkImageView::SetZoom (double arg)
   if (!this->GetInput())
     return;
 
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return;
 
@@ -1276,7 +1279,7 @@ double vtkImageView::GetZoom()
   if (!this->GetInput())
     return 1.0;
 
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return 1.0;
 
@@ -1299,19 +1302,19 @@ double vtkImageView::GetZoom()
 //----------------------------------------------------------------------------
 void vtkImageView::ResetCamera()
 {
-  if (this->Renderer)
+  if (this->GetRenderer())
   {
     //  ResetCamera calls ResetCameraClippingRange anyway...
-    //      this->Renderer->ResetCameraClippingRange();
+    //      this->GetRenderer()->ResetCameraClippingRange();
 
      if ( this->GetInput () )
       {
           double bounds [6];
           this->GetInputBoundsInWorldCoordinates (bounds);
-          this->Renderer->ResetCamera (bounds);
+          this->GetRenderer()->ResetCamera (bounds);
       } else {
           // No op.
-          this->Renderer->ResetCamera();
+          this->GetRenderer()->ResetCamera();
       }
   }
   this->SetZoom (1.0);
@@ -1322,7 +1325,7 @@ void vtkImageView::ResetCamera()
 //----------------------------------------------------------------------------
 void vtkImageView::SetCameraPosition (double* arg)
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return;
   cam->SetPosition (arg);
@@ -1333,7 +1336,7 @@ void vtkImageView::SetCameraPosition (double* arg)
 //----------------------------------------------------------------------------
 double* vtkImageView::GetCameraPosition() const
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return NULL;
   return cam->GetPosition ();
@@ -1342,7 +1345,7 @@ double* vtkImageView::GetCameraPosition() const
 //----------------------------------------------------------------------------
 void vtkImageView::SetCameraFocalPoint (double* arg)
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return;
   cam->SetFocalPoint (arg);
@@ -1353,7 +1356,7 @@ void vtkImageView::SetCameraFocalPoint (double* arg)
 //----------------------------------------------------------------------------
 double* vtkImageView::GetCameraFocalPoint() const
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return NULL;
   return cam->GetFocalPoint ();
@@ -1362,7 +1365,7 @@ double* vtkImageView::GetCameraFocalPoint() const
 //----------------------------------------------------------------------------
 void vtkImageView::SetCameraViewUp (double* arg)
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return;
   cam->SetViewUp (arg);
@@ -1373,7 +1376,7 @@ void vtkImageView::SetCameraViewUp (double* arg)
 //----------------------------------------------------------------------------
 double* vtkImageView::GetCameraViewUp() const
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return NULL;
   return cam->GetViewUp ();
@@ -1383,7 +1386,7 @@ double* vtkImageView::GetCameraViewUp() const
 //----------------------------------------------------------------------------
 void vtkImageView::SetCameraParallelScale (double arg)
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return;
   cam->SetParallelScale (arg);
@@ -1394,7 +1397,7 @@ void vtkImageView::SetCameraParallelScale (double arg)
 //----------------------------------------------------------------------------
 double vtkImageView::GetCameraParallelScale() const
 {
-  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
   if (!cam)
     return 1.0;
   return cam->GetParallelScale ();
@@ -1979,10 +1982,10 @@ void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "RenderWindow:\n";
     this->RenderWindow->PrintSelf(os,indent.GetNextIndent());
   }
-  if (this->Renderer)
+  if (this->GetRenderer())
   {
     os << indent << "Renderer:\n";
-    this->Renderer->PrintSelf(os,indent.GetNextIndent());
+    this->GetRenderer()->PrintSelf(os,indent.GetNextIndent());
   }
   if (this->InteractorStyle)
   {

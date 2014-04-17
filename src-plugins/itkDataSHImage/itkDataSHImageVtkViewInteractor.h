@@ -155,10 +155,7 @@ public slots:
     void setVisibility(bool visibility);
     void setWindowLevel(double &window, double &level);
 
-
 protected:
-    void computeBounds();
-    void updateBounds(const double bounds[]);
     void setupParameters();
 
 private:

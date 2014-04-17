@@ -326,9 +326,6 @@ void medAbstractWorkspace::updateLayersToolBox()
                     removeButton->setIcon(QIcon(":/icons/cross.svg"));
                     removeButton->setIconSize(QSize(15,15));
                     removeButton->setFixedSize(20,20);
-                    //TODO - get possible to remove layer 0 - RDE
-                    if(layer == 0 && layeredView->layersCount() > 1)
-                        removeButton->setDisabled(true);
 
                     layout->addWidget(removeButton);
                     connect(removeButton, SIGNAL(clicked()), this, SLOT(removeLayer()));
