@@ -1629,6 +1629,7 @@ int vtkImageView2D::GetFirstLayer() const
             return i;
         }
     }
+    return 0;
 }
 
 //----------------------------------------------------------------------------

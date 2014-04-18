@@ -246,8 +246,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->visibiltyParameter->setValue(true);
     connect(d->visibiltyParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
 
-
-
     d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput(d->medVtkView->layer(data))->GetScalarRange();
     double window = range[1]-range[0];
