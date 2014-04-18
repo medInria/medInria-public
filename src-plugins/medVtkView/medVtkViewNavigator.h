@@ -47,6 +47,8 @@ public:
     virtual QVector2D pan() const;
 
 public slots:
+    void updateWidgets();
+
     virtual void setOrientation(medImageView::Orientation orientation);
     virtual void setCamera(const QVector3D &position,
                            const QVector3D &viewup,

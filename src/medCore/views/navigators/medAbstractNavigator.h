@@ -35,18 +35,23 @@ public:
 public:
     virtual QString description() const = 0;
 
-    virtual void setView(medAbstractView *view);
-    virtual medAbstractView *view() const;
-
     QWidget* toolBoxWidget();
     QWidget* toolBarWidget();
 
-
     virtual QList<medAbstractParameter*> parameters() = 0;
 
-
 protected:
+    /**
+     * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+     * view settings toolBox when the container of the parent view is single selected.
+     * @return
+     */
     virtual QWidget* buildToolBoxWidget() = 0;
+    /**
+     * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+     * toolbar of the container where the parent view is dsiplayed.
+     * @return
+     */
     virtual QWidget* buildToolBarWidget() = 0;
 
 private slots:
@@ -57,11 +62,18 @@ private:
     medAbstractNavigatorPrivate *d;
 
 /*=========================================================================
-                         NOT IMPLEMENTED ON PURPOSE
+                        NOT IMPLEMENTED HERE ON PURPOSE
 *=========================================================================*/
+public slots:
+    /**
+     * @brief updateWidgets reimplemts it to reupdate your
+     * widgets when data in view or orientation change.
+     */
+    virtual void updateWidgets(){}
+
 private:
-//    using dtkAbstractViewNavigator::setView;
-//    using dtkAbstractViewNavigator::view;
+    using dtkAbstractViewNavigator::setView;
+    using dtkAbstractViewNavigator::view;
 
     using dtkAbstractViewNavigator::setData;
     using dtkAbstractViewNavigator::data;

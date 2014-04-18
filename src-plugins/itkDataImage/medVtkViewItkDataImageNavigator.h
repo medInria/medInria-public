@@ -34,17 +34,15 @@ public:
     virtual QList<medAbstractParameter*> parameters();
 
 public slots:
-    void set3DMode(QString);
+    void updateWidgets();
+
+    void setMode3D(QString);
     void setRenderer(QString);
     void enableCropping(bool);
 
 protected:
     virtual QWidget * buildToolBoxWidget();
     virtual QWidget * buildToolBarWidget();
-
-private slots:
-    void updateVisibility();
-
 
 private:
     medVtkViewItkDataImageNavigatorPrivate *d;

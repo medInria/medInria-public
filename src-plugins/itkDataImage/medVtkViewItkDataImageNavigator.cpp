@@ -10,12 +10,22 @@
 #include <medStringListParameter.h>
 #include <medBoolParameter.h>
 
+
+/*=========================================================================
+
+    D pointer
+
+=========================================================================*/
+
+
 class medVtkViewItkDataImageNavigatorPrivate
 {
 public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkRenderWindow *render;
+
+    medAbstractImageView *imageView;
 
     QList <medAbstractParameter*> parameters;
 
@@ -25,20 +35,29 @@ public:
 
 };
 
+
+/*=========================================================================
+
+    public
+
+=========================================================================*/
+
+
 medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView* parent):
     medAbstractNavigator(parent), d(new medVtkViewItkDataImageNavigatorPrivate)
 {
+    d->imageView =dynamic_cast<medAbstractImageView*>(parent);
+
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-
     d->render = backend->renWin;
 
     d->mode3DParameter = new medStringListParameter("3D Mode", this);
     QStringList modes = QStringList() << "VR" << "MIP - Maximum" << "MIP - Minimum" << "MPR" << "Off";
     d->mode3DParameter->addItems(modes);
     d->mode3DParameter->setValue("MPR");
-    connect(d->mode3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(set3DMode(QString)));
+    connect(d->mode3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setMode3D(QString)));
 
     d->renderer3DParameter = new medStringListParameter("Renderer", this);
     QStringList renderers = QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default";
@@ -48,15 +67,11 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->croppingParameter = new medBoolParameter("Cropping", this);
     connect(d->croppingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableCropping(bool)));
 
-    this->set3DMode("MPR");
+    this->setMode3D("MPR");
 
     d->parameters.append(d->mode3DParameter);
     d->parameters.append(d->renderer3DParameter);
     d->parameters.append(d->croppingParameter);
-
-    connect(dynamic_cast<medAbstractImageView*>(this->view()), SIGNAL(orientationChanged()),
-            this, SLOT(updateVisibility()));
-
 }
 
 medVtkViewItkDataImageNavigator::~medVtkViewItkDataImageNavigator()
@@ -79,7 +94,6 @@ bool medVtkViewItkDataImageNavigator::registered()
     medViewFactory * factory = medViewFactory::instance();
     return factory->registerAdditionalNavigator<medVtkViewItkDataImageNavigator>(medVtkViewItkDataImageNavigator::s_identifier(),
                                                            QStringList() << "medVtkView");
-
 }
 
 QStringList medVtkViewItkDataImageNavigator::handled(void) const
@@ -92,29 +106,37 @@ QString medVtkViewItkDataImageNavigator::description() const
     return "Navigator to interact with itk images in a medVtkView";
 }
 
-QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
-{
-    QWidget *toolBoxWidget = new QWidget;
-    QFormLayout *layout = new QFormLayout(toolBoxWidget);
-    foreach(medAbstractParameter *parameter, d->parameters)
-        layout->addRow(parameter->getLabel(), parameter->getWidget());
-    toolBoxWidget->hide();
-    return toolBoxWidget;
-}
-
-QWidget *medVtkViewItkDataImageNavigator::buildToolBarWidget()
-{
-    QWidget *toolBarWidget = new QWidget;
-    toolBarWidget->hide();
-    return toolBarWidget;
-}
-
 QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::parameters()
 {
     return d->parameters;
 }
 
-void medVtkViewItkDataImageNavigator::set3DMode(QString mode)
+void medVtkViewItkDataImageNavigator::updateWidgets()
+{
+    if(d->imageView->orientation() == medImageView::VIEW_ORIENTATION_3D &&
+        (d->imageView->contains("itkDataImageChar3")     ||
+         d->imageView->contains("itkDataImageUChar3")    ||
+         d->imageView->contains("itkDataImageShort3")    ||
+         d->imageView->contains("itkDataImageUShort3")   ||
+         d->imageView->contains("itkDataImageInt3")      ||
+         d->imageView->contains("itkDataImageLong3")     ||
+         d->imageView->contains("itkDataImageULong3")    ||
+         d->imageView->contains("itkDataImageFloat3")    ||
+         d->imageView->contains("itkDataImageDouble3")   ||
+         d->imageView->contains("itkDataImageRGB3")      ||
+         d->imageView->contains("itkDataImageRGBA3"))
+        )
+    {
+        if(this->toolBoxWidget())
+            this->toolBoxWidget()->show();
+
+    }
+    else
+        if(this->toolBoxWidget())
+            this->toolBoxWidget()->hide();
+}
+
+void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
 {
     if ( mode == "VR" )
     {
@@ -204,29 +226,32 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
     //TODO: Shouldn't we be able to save the cropping after?
 }
 
-void medVtkViewItkDataImageNavigator::updateVisibility()
-{
-    medAbstractImageView *imageView = dynamic_cast<medAbstractImageView*>(this->view());
-    if(!imageView)
-        return;
 
-    if( imageView->orientation() == medImageView::VIEW_ORIENTATION_3D &&
-            ( imageView->contains("itkDataImageChar3"  ) ||
-              imageView->contains("itkDataImageUChar3" ) ||
-              imageView->contains("itkDataImageShort3" ) ||
-              imageView->contains("itkDataImageUShort3") ||
-              imageView->contains("itkDataImageInt3"   ) ||
-              imageView->contains("itkDataImageLong3"  ) ||
-              imageView->contains("itkDataImageULong3" ) ||
-              imageView->contains("itkDataImageFloat3" ) ||
-              imageView->contains("itkDataImageDouble3") ||
-              imageView->contains("itkDataImageRGB3"   ) ||
-              imageView->contains("itkDataImageRGBA3"  )))
-    {
-        if(this->toolBoxWidget())
-            this->toolBoxWidget()->show();
-    }
-    else
-        if(this->toolBoxWidget())
-            this->toolBoxWidget()->hide();
+/*=========================================================================
+
+    protected
+
+=========================================================================*/
+
+
+QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
+{
+    QWidget *toolBoxWidget = new QWidget;
+    QFormLayout *layout = new QFormLayout(toolBoxWidget);
+    foreach(medAbstractParameter *parameter, d->parameters)
+        layout->addRow(parameter->getLabel(), parameter->getWidget());
+    toolBoxWidget->hide();
+    return toolBoxWidget;
 }
+
+QWidget *medVtkViewItkDataImageNavigator::buildToolBarWidget()
+{
+    QWidget *toolBarWidget = new QWidget;
+    toolBarWidget->hide();
+    return toolBarWidget;
+}
+
+
+
+
+

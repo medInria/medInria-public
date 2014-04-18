@@ -71,6 +71,8 @@ class medVtkViewNavigatorPrivate
 
     QWidget *showOptionsWidget;
 
+    QList<medAbstractParameter*> parameters;
+
 };
 
 
@@ -174,6 +176,16 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showAnnotationParameter->setValue(true);
     d->showScalarBarParameter->setValue(false);
 
+
+    d->parameters << d->orientationParameter
+                    << d->zoomParameter
+                    << d->panParameter
+                    << d->cameraParameter
+                    << d->showAxesParameter
+                    << d->showRulerParameter
+                    << d->showAnnotationParameter
+                    << d->showRulerParameter;
+
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),
             dynamic_cast<medAbstractImageView*>(parent), SIGNAL(orientationChanged()));
@@ -214,17 +226,7 @@ QString medVtkViewNavigator::description() const
 
 QList<medAbstractParameter*> medVtkViewNavigator::parameters()
 {
-    QList<medAbstractParameter*> params;
-    params.append(d->orientationParameter);
-    params.append(d->zoomParameter);
-    params.append(d->panParameter);
-    params.append(d->cameraParameter);
-    params.append(d->showAxesParameter);
-    params.append(d->showRulerParameter);
-    params.append(d->showAnnotationParameter);
-    params.append(d->showRulerParameter);
-
-    return params;
+    return d->parameters;
 }
 
 
@@ -602,13 +604,6 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
         break;
     }
 
-    if(d->showOptionsWidget)
-    {
-        if(orientation == medImageView::VIEW_ORIENTATION_3D)
-            d->showOptionsWidget->hide();
-        else d->showOptionsWidget->show();
-    }
-
     d->currentView->SetRenderWindow(d->renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->SetTimeIndex(timeIndex);
@@ -617,6 +612,16 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     d->orientation = orientation;
 
     emit orientationChanged();
+}
+
+void medVtkViewNavigator::updateWidgets()
+{
+    if(this->toolBoxWidget())
+    {
+        if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
+            d->showOptionsWidget->hide();
+        else d->showOptionsWidget->show();
+    }
 }
 
 void medVtkViewNavigator::updateCameraParam(const QVector3D& position, const QVector3D& viewUp, const QVector3D& focal, double parallelScale)

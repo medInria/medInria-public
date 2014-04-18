@@ -39,17 +39,6 @@ medAbstractNavigator::~medAbstractNavigator()
     delete d;
 }
 
-void medAbstractNavigator::setView(medAbstractView *view)
-{
-    this->setParent(view);
-    d->view = view;
-}
-
-medAbstractView* medAbstractNavigator::view() const
-{
-    return d->view;
-}
-
 QWidget* medAbstractNavigator::toolBoxWidget()
 {
     if(!d->toolBoxWidget)
