@@ -619,7 +619,7 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     emit orientationChanged();
 }
 
-void medVtkViewNavigator::updateCameraParam(const QVector3D& position,const QVector3D& viewUp,const QVector3D& focal,double parallelScale)
+void medVtkViewNavigator::updateCameraParam(const QVector3D& position, const QVector3D& viewUp, const QVector3D& focal, double parallelScale)
 {
     QList<QVariant> options;
     options.append( QVariant::fromValue(position) );

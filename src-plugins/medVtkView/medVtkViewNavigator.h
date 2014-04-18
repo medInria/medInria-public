@@ -91,7 +91,7 @@ protected slots:
     void showScalarBar(bool);
 
 
-private:
+private slots:
     void changeOrientation(medImageView::Orientation orientation);
     void updateCameraParam(const QVector3D& postion,const QVector3D& viewUp,const QVector3D& focal,double parallelScale);
 
