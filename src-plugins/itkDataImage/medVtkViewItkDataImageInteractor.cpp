@@ -496,12 +496,12 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
     }
 
     bool needUpdate = false;
-    if (d->view2d->GetColorWindow(imageViewInternalLayer()) != values.at(0))
+    if (d->view2d->GetColorWindow(d->medVtkView->layer(d->imageData)) != values.at(0))
     {
         setWindow(values.at(0).toDouble());
         needUpdate = true;
     }
-    if (d->view2d->GetColorLevel(imageViewInternalLayer()) != values.at(1))
+    if (d->view2d->GetColorLevel(d->medVtkView->layer(d->imageData)) != values.at(1))
     {
         setLevel(values.at(1).toDouble());
         needUpdate = true;
