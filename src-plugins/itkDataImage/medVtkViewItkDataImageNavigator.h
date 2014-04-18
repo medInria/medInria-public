@@ -26,24 +26,21 @@ public:
     virtual ~medVtkViewItkDataImageNavigator();
 
 public:
-
     virtual QString  identifier() const;
     static QString  s_identifier();
-
     static bool registered();
     virtual QStringList handled(void) const;
-
     virtual QString description() const;
-
-    virtual QWidget* widgetForToolBox() const;
-    virtual QWidget* widgetForToolBar() const;
-
     virtual QList<medAbstractParameter*> parameters();
 
 public slots:
     void set3DMode(QString);
     void setRenderer(QString);
     void enableCropping(bool);
+
+protected:
+    virtual QWidget * buildToolBoxWidget();
+    virtual QWidget * buildToolBarWidget();
 
 private slots:
     void updateVisibility();

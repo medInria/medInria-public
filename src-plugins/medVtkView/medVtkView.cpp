@@ -265,9 +265,9 @@ QWidget* medVtkView::navigatorWidget()
         connect(d->navigatorWidget, SIGNAL(destroyed()), this, SLOT(removeInternNavigatorWidget()));
         QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
 
-        navigatorLayout->addWidget(primaryNavigator()->widgetForToolBox());
+        navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
         foreach (medAbstractNavigator* navigator, this->extraNavigators())
-            navigatorLayout->addWidget(navigator->widgetForToolBox());
+            navigatorLayout->addWidget(navigator->toolBoxWidget());
     }
 
     return d->navigatorWidget;

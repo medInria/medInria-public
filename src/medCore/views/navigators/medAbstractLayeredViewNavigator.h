@@ -17,9 +17,6 @@ PURPOSE.
 
 #include <medCoreExport.h>
 
-class medAbstractLayeredView;
-
-class medAbstractLayeredViewNavigatorPrivate;
 class MEDCORE_EXPORT medAbstractLayeredViewNavigator : public medAbstractViewNavigator
 {
     Q_OBJECT
@@ -27,8 +24,4 @@ class MEDCORE_EXPORT medAbstractLayeredViewNavigator : public medAbstractViewNav
 public:
              medAbstractLayeredViewNavigator(medAbstractView* parent);
     virtual ~medAbstractLayeredViewNavigator();
-
-
-private:
-    medAbstractLayeredViewNavigatorPrivate *d;
 };

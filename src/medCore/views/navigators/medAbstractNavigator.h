@@ -38,13 +38,20 @@ public:
     virtual void setView(medAbstractView *view);
     virtual medAbstractView *view() const;
 
-    virtual QWidget* widgetForToolBox() const = 0;
-    virtual QWidget* widgetForToolBar() const = 0;
+    QWidget* toolBoxWidget();
+    QWidget* toolBarWidget();
+
 
     virtual QList<medAbstractParameter*> parameters() = 0;
 
-public slots:
-    virtual void updateWidgets(){}
+
+protected:
+    virtual QWidget* buildToolBoxWidget() = 0;
+    virtual QWidget* buildToolBarWidget() = 0;
+
+private slots:
+    void removeInternToolBoxWidget();
+    void removeInternToolBarWidget();
 
 private:
     medAbstractNavigatorPrivate *d;
@@ -53,8 +60,8 @@ private:
                          NOT IMPLEMENTED ON PURPOSE
 *=========================================================================*/
 private:
-    using dtkAbstractViewNavigator::setView;
-    using dtkAbstractViewNavigator::view;
+//    using dtkAbstractViewNavigator::setView;
+//    using dtkAbstractViewNavigator::view;
 
     using dtkAbstractViewNavigator::setData;
     using dtkAbstractViewNavigator::data;

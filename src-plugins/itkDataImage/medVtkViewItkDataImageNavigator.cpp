@@ -15,14 +15,9 @@ class medVtkViewItkDataImageNavigatorPrivate
 public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-
     vtkRenderWindow *render;
 
-    medAbstractImageView *medVtkView;
-
     QList <medAbstractParameter*> parameters;
-
-    QWidget *toolbox;
 
     medStringListParameter *mode3DParameter;
     medStringListParameter *renderer3DParameter;
@@ -33,7 +28,6 @@ public:
 medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView* parent):
     medAbstractNavigator(parent), d(new medVtkViewItkDataImageNavigatorPrivate)
 {
-    d->medVtkView = dynamic_cast<medAbstractImageView*>(parent);
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
@@ -60,9 +54,9 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->parameters.append(d->renderer3DParameter);
     d->parameters.append(d->croppingParameter);
 
-    connect(d->medVtkView, SIGNAL(orientationChanged()), this, SLOT(updateVisibility()));
+    connect(dynamic_cast<medAbstractImageView*>(this->view()), SIGNAL(orientationChanged()),
+            this, SLOT(updateVisibility()));
 
-    d->toolbox = NULL;
 }
 
 medVtkViewItkDataImageNavigator::~medVtkViewItkDataImageNavigator()
@@ -98,22 +92,21 @@ QString medVtkViewItkDataImageNavigator::description() const
     return "Navigator to interact with itk images in a medVtkView";
 }
 
-QWidget* medVtkViewItkDataImageNavigator::widgetForToolBox() const
+QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
 {
-    if(!d->toolbox)
-    {
-        d->toolbox = new QWidget;
-        QFormLayout *layout = new QFormLayout(d->toolbox);
-        foreach(medAbstractParameter *parameter, d->parameters)
-            layout->addRow(parameter->getLabel(), parameter->getWidget());
-        d->toolbox->hide();
-    }
-    return d->toolbox;
+    QWidget *toolBoxWidget = new QWidget;
+    QFormLayout *layout = new QFormLayout(toolBoxWidget);
+    foreach(medAbstractParameter *parameter, d->parameters)
+        layout->addRow(parameter->getLabel(), parameter->getWidget());
+    toolBoxWidget->hide();
+    return toolBoxWidget;
 }
 
-QWidget* medVtkViewItkDataImageNavigator::widgetForToolBar() const
+QWidget *medVtkViewItkDataImageNavigator::buildToolBarWidget()
 {
-    return new QWidget();
+    QWidget *toolBarWidget = new QWidget;
+    toolBarWidget->hide();
+    return toolBarWidget;
 }
 
 QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::parameters()
@@ -208,29 +201,32 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
     }
 
     d->render->Render();
-
     //TODO: Shouldn't we be able to save the cropping after?
 }
 
 void medVtkViewItkDataImageNavigator::updateVisibility()
 {
-    if( d->medVtkView->orientation() == medImageView::VIEW_ORIENTATION_3D &&
-            ( d->medVtkView->contains("itkDataImageChar3"  ) ||
-              d->medVtkView->contains("itkDataImageUChar3" ) ||
-              d->medVtkView->contains("itkDataImageShort3" ) ||
-              d->medVtkView->contains("itkDataImageUShort3") ||
-              d->medVtkView->contains("itkDataImageInt3"   ) ||
-              d->medVtkView->contains("itkDataImageLong3"  ) ||
-              d->medVtkView->contains("itkDataImageULong3" ) ||
-              d->medVtkView->contains("itkDataImageFloat3" ) ||
-              d->medVtkView->contains("itkDataImageDouble3") ||
-              d->medVtkView->contains("itkDataImageRGB3"   ) ||
-              d->medVtkView->contains("itkDataImageRGBA3"  ) ) )
+    medAbstractImageView *imageView = dynamic_cast<medAbstractImageView*>(this->view());
+    if(!imageView)
+        return;
+
+    if( imageView->orientation() == medImageView::VIEW_ORIENTATION_3D &&
+            ( imageView->contains("itkDataImageChar3"  ) ||
+              imageView->contains("itkDataImageUChar3" ) ||
+              imageView->contains("itkDataImageShort3" ) ||
+              imageView->contains("itkDataImageUShort3") ||
+              imageView->contains("itkDataImageInt3"   ) ||
+              imageView->contains("itkDataImageLong3"  ) ||
+              imageView->contains("itkDataImageULong3" ) ||
+              imageView->contains("itkDataImageFloat3" ) ||
+              imageView->contains("itkDataImageDouble3") ||
+              imageView->contains("itkDataImageRGB3"   ) ||
+              imageView->contains("itkDataImageRGBA3"  )))
     {
-        if(d->toolbox)
-            d->toolbox->show();
+        if(this->toolBoxWidget())
+            this->toolBoxWidget()->show();
     }
     else
-        if(d->toolbox)
-            d->toolbox->hide();
+        if(this->toolBoxWidget())
+            this->toolBoxWidget()->hide();
 }
