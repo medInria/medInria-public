@@ -333,3 +333,20 @@ void medTabbedViewContainers::adjustContainersSize()
     medViewContainerSplitter *splitter = dynamic_cast<medViewContainerSplitter*>(this->widget(this->currentIndex()));
     splitter->adjustContainersSize();
 }
+
+QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
+{
+    QList<medAbstractView*> views;
+    medViewContainerSplitter *splitter = dynamic_cast<medViewContainerSplitter*>(this->widget(index));
+
+    if(!splitter)
+        return views;
+
+    QList<medViewContainer*> containers = splitter->containers();
+    foreach(medViewContainer *container, containers)
+    {
+        views << container->view();
+    }
+
+    return views;
+}

@@ -137,12 +137,12 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->orientationParameter->addParameter(d->o3dParameter);
     d->oAxialParameter->setValue(true);
 
-    d->zoomParameter = new medDoubleParameter("zoom", this);
+    d->zoomParameter = new medDoubleParameter("Zoom", this);
     connect(d->zoomParameter, SIGNAL(valueChanged(double)),this, SLOT(setZoom(double)));
     connect(parent, SIGNAL(zoomChanged(double)), d->zoomParameter, SLOT(setValue(double)));
     d->zoomParameter->setValue(1);
 
-    d->panParameter = new medVector2DParameter("pan", this);
+    d->panParameter = new medVector2DParameter("Pan", this);
     connect(d->panParameter, SIGNAL(valueChanged(QVector2D)),this, SLOT(setPan(QVector2D)));
     connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
 
@@ -184,7 +184,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showAxesParameter
                     << d->showRulerParameter
                     << d->showAnnotationParameter
-                    << d->showRulerParameter;
+                    << d->showScalarBarParameter;
 
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),

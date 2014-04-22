@@ -42,6 +42,7 @@ public:
     void hideTabBar();
     QList<QUuid> containersSelected();
     void adjustContainersSize();
+    QList<medAbstractView*> viewsInTab(int index = 0);
 
 
 public slots:
