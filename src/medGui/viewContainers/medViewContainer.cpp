@@ -146,7 +146,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     QWidget* toolBar = new QWidget(this);
     toolBar->setObjectName("containerToolBar");
-    toolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     d->toolBarLayout = new QHBoxLayout(toolBar);
     d->toolBarLayout->setContentsMargins(5,0,5,0);
     d->toolBarLayout->setSpacing(5);
@@ -287,7 +287,7 @@ void medViewContainer::setView(medAbstractView *view)
         d->maximizedParameter->show();
         d->defaultWidget->hide();
         d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
-        d->view->viewWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        d->view->viewWidget()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
         d->view->viewWidget()->show();
 
         QString tooltip = QString(tr("Link View properties ("));
@@ -658,7 +658,7 @@ void medViewContainer::updateToolBar()
         foreach(medAbstractInteractor *interactor, layeredView->currentInteractors())
             tbLayout->addWidget(interactor->toolBarWidget());
 
-        tbWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+        tbWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
         d->toolBarLayout->insertWidget(0, tbWidget);
     }
 }

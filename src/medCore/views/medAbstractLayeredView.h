@@ -59,8 +59,6 @@ public:
     void setVisibility (bool visibility, unsigned int layer);
     bool visibility(unsigned int layer) ;
 
-    virtual QImage generateThumbnail(const QSize &size);
-
 public slots:
     //TODO: not sure we need this
     void setVisibility(bool visibility);
@@ -84,6 +82,9 @@ protected:
     virtual bool initialiseInteractors(medAbstractData* data);
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
+
+protected slots:
+    virtual void setUpViewForThumbnail();
 
 private:
     medAbstractLayeredViewPrivate *d;

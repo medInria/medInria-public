@@ -560,15 +560,13 @@ QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
     return d->parameters;
 }
 
-QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
+void vtkDataMeshInteractor::setUpViewForThumbnail()
 {
-    d->view->blockSignals(true); //we dont want to send things that would ending up on updating some gui things or whatever. - RDE
 
-    int w(size.width()), h(size.height());
-    d->view->viewWidget()->resize(w,h);
     d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
     d->view->reset();
     d->view3d->ShowAnnotationsOff();
+
     //TODO find how to remove the litlle cube at the bottom left corner.
 //    d->view3d->ShowActorXOff();
 //    d->view3d->ShowActorYOff();
@@ -577,22 +575,4 @@ QImage vtkDataMeshInteractor::generateThumbnail(const QSize &size)
 //    d->view3d->ShowPlaneWidgetOff();
 //    d->view3d->ShowScalarBarOff();
 
-    vtkRenderWindow *renWin = vtkRenderWindow::New();
-    renWin->SetOffScreenRendering(1);
-    renWin->AddRenderer(d->renderer3d);
-    d->view3d->SetRenderWindow(renWin);
-    QVTKWidget *vtkWidget = dynamic_cast<QVTKWidget *>(d->view->viewWidget());
-    if(!vtkWidget)
-        return d->thumbnail;
-
-    vtkWidget->SetRenderWindow(renWin);
-    vtkWidget->resize(w,h);
-    renWin->SetSize(w,h);
-    renWin->Render();
-
-    d->thumbnail = QPixmap::grabWidget(vtkWidget).toImage();
-
-    renWin->Delete();
-
-    return d->thumbnail;
 }

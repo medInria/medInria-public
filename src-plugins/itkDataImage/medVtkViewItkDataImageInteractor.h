@@ -48,8 +48,6 @@ public:
     virtual double opacity() const;
     virtual QStringList handled() const;
 
-    virtual QImage generateThumbnail(const QSize &size);
-
 public slots:
     virtual void setOpacity (int opacity);
     virtual void setOpacity (double opacity);
@@ -64,6 +62,8 @@ public slots:
     virtual void removeData();
 
     virtual void updateWidgets();
+
+    virtual void setUpViewForThumbnail();
 
 protected:
     void initParameters(medAbstractImageData* data);

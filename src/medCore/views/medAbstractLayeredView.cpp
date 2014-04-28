@@ -24,6 +24,7 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
 {
     d->primaryNavigator = NULL;
     d->currentLayer = 0;
+    connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
 }
 
 medAbstractLayeredView::~medAbstractLayeredView()
@@ -279,12 +280,7 @@ void medAbstractLayeredView::setVisibility(bool visibility, unsigned int layer)
 
 void medAbstractLayeredView::setVisibility(bool visibility)
 {
-    medAbstractLayeredViewInteractor* inter = this->primaryInteractor(d->currentLayer);
-    if(!inter)
-        return;
-
-    inter->setVisibility(visibility);
-    emit visibilityChanged(visibility, d->currentLayer);
+   this->setVisibility(visibility, d->currentLayer);
 }
 
 bool medAbstractLayeredView::visibility(unsigned int layer)
@@ -307,15 +303,14 @@ void medAbstractLayeredView::setCurrentLayer(unsigned int layer)
     emit currentLayerChanged();
 }
 
-QImage medAbstractLayeredView::generateThumbnail(const QSize &size)
+void medAbstractLayeredView::setUpViewForThumbnail()
 {
     medAbstractLayeredViewInteractor *primaryInteractor = this->primaryInteractor(this->layerData(d->currentLayer));
     if(!primaryInteractor)
-    {
         qWarning()<< "unable to find any primary interactor for view"  <<this->identifier() << "and data" << this->layerData(d->currentLayer)->identifier();
-        return QImage();
-    }
-    return this->primaryInteractor(this->layerData(d->currentLayer))->generateThumbnail(size);
+
+    else
+        this->primaryInteractor(this->layerData(d->currentLayer))->setUpViewForThumbnail();
 }
 
 //TODO not sure we need this - RDE
@@ -323,7 +318,7 @@ QList <medAbstractInteractor*> medAbstractLayeredView::currentInteractors()
 {
     QList <medAbstractInteractor*> interactors;
 
-     interactors.append(this->primaryInteractor(d->currentLayer));
+    interactors.append(this->primaryInteractor(d->currentLayer));
     interactors.append(extraInteractors(d->currentLayer));
     return interactors;
 }

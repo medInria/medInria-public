@@ -75,7 +75,6 @@ public slots:
     virtual QWidget* toolBarWidget();
     virtual QList<medAbstractParameter*> parameters();
 
-    QImage generateThumbnail(const QSize &size);
     void removeData();
 
 public slots:
@@ -128,6 +127,8 @@ public slots:
     void setMinorScaling(int minorScaling);
 
     void setScale(int minorScale, int majorScaleExponent);
+
+    virtual void setUpViewForThumbnail();
 
 protected:
     void update();

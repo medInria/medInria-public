@@ -134,6 +134,7 @@ QImage& medAbstractData::thumbnail()
 void medAbstractData::generateThumbnail()
 {
     //TODO find which view is handled by this type of data - RDE
+
     dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
     view->addLayer(this);
 

@@ -416,9 +416,9 @@ double msegAnnotationInteractor::opacity() const
 }
 
 
-QImage msegAnnotationInteractor::generateThumbnail(const QSize &size)
+void msegAnnotationInteractor::setUpViewForThumbnail()
 {
-    return QImage();
+
 }
 
 QList<medAbstractParameter*> msegAnnotationInteractor::parameters()

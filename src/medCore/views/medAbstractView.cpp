@@ -209,3 +209,10 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
     }
     return dtkAbstractView::eventFilter(obj, event);
 }
+
+
+QImage medAbstractView::generateThumbnail(const QSize &size)
+{
+    emit aboutToBuildThumbnail();
+    return this->buildThumbnail(size);
+}

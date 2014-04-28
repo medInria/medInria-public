@@ -80,7 +80,6 @@ public:
     virtual QWidget* toolBarWidget();
     virtual QList<medAbstractParameter*> parameters();
 
-    QImage generateThumbnail(const QSize &size);
     void removeData();
 
     /** get the image size it is used to set med gui slider appropiate size*/
@@ -154,6 +153,8 @@ public slots:
     void setOpacity(double opacity);
     void setVisibility(bool visibility);
     void setWindowLevel(double &window, double &level);
+
+    virtual void setUpViewForThumbnail();
 
 protected:
     void setupParameters();

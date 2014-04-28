@@ -62,6 +62,8 @@ private slots:
     void removeInternToolBarWidget();
     void removeInternViewWidget();
 
+private:
+    virtual QImage buildThumbnail(const QSize &size);
 
 private:
     medVtkViewPrivate *d;

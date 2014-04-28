@@ -81,7 +81,6 @@ public:
     vtkSmartPointer <vtkActor> actor;
     vtkSmartPointer <vtkProperty> opacityProperty;
 
-    QImage thumbnail;
     QWidget *toolboxWidget;
     QWidget *layerWidget;
     QWidget *toolbarWidget;
@@ -1229,36 +1228,15 @@ QWidget* v3dDataFibersInteractor::toolBarWidget()
 }
 
 
-QImage v3dDataFibersInteractor::generateThumbnail(const QSize &size)
+void v3dDataFibersInteractor::setUpViewForThumbnail()
 {
-    int w(size.width()), h(size.height());
-
+    d->view2d->Reset();
     d->view2d->SetBackground(0.0, 0.0, 0.0);
     d->view2d->CursorFollowMouseOff();
     d->view2d->ShowImageAxisOff();
     d->view2d->ShowScalarBarOff();
     d->view2d->ShowAnnotationsOff();
     d->view2d->ShowRulerWidgetOff();
-
-    vtkRenderWindow *renWin = vtkRenderWindow::New();
-    renWin->SetOffScreenRendering(1);
-    renWin->AddRenderer(d->renderer2d);
-    d->view2d->SetRenderWindow(renWin);
-    QVTKWidget *vtkWidget = dynamic_cast<QVTKWidget *>(d->view->viewWidget());
-    if(!vtkWidget)
-        return d->thumbnail;
-
-    vtkWidget->SetRenderWindow(renWin);
-    vtkWidget->resize(w,h);
-    renWin->SetSize(w,h);
-    d->view2d->Reset();
-    renWin->Render();
-
-    d->thumbnail = QPixmap::grabWidget(vtkWidget).toImage();
-
-    renWin->Delete();
-
-    return d->thumbnail;
 }
 
 QList<medAbstractParameter*> v3dDataFibersInteractor::parameters()

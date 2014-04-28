@@ -733,6 +733,10 @@ class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
      the closest position that lies within the image boundaries.
    */
   virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
+  /**
+      Set the precision of the scalarBar values
+    */
+   void SetScalarBarLabelFormat(double* range);
 
   private:
     //! Template function which implements SetInput for all types.

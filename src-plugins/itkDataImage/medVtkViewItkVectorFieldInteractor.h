@@ -48,8 +48,7 @@ public:
     virtual QWidget* toolBarWidget();
     virtual QList<medAbstractParameter*> parameters();
 
-    QImage generateThumbnail(const QSize &size);
-    void removeData();
+    virtual void removeData();
 
 public slots:
 
@@ -67,6 +66,8 @@ public slots:
     void setOpacity(double opacity);
     void setVisibility(bool visibility);
     void setWindowLevel(double &window, double &level);
+
+    virtual void setUpViewForThumbnail();
 
 
 protected:

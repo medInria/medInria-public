@@ -58,7 +58,8 @@ public:
 public slots:
     virtual void reset();
 
-protected:
+private:
+    virtual QImage buildThumbnail(const QSize &size);
 
 private:
     medQtViewPrivate *d;

@@ -69,7 +69,8 @@ public:
 
     virtual QList<medAbstractParameter*> navigatorsParameters();
 
-    virtual QImage generateThumbnail(const QSize &size) = 0;
+    QImage generateThumbnail(const QSize &size);
+
 
 public slots:
     virtual void reset() = 0;
@@ -78,6 +79,7 @@ signals:
     void selectedRequest(bool selected);
     void zoomChanged(double);
     void panChanged(const QVector2D&);
+    void aboutToBuildThumbnail();
 
 protected:
     virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
@@ -90,6 +92,8 @@ protected:
     virtual void removeInteractors(medAbstractData *data);
     virtual bool eventFilter(QObject *, QEvent *);
 
+private:
+    virtual QImage buildThumbnail(const QSize &size) = 0;
 
 private:
     medAbstractViewPrivate *d;

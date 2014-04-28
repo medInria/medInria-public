@@ -49,6 +49,10 @@
 #include <vtkRendererCollection.h>
 //#include <vnl/algo/vnl_qr.h>
 
+#ifdef WIN32
+    #define snprintf _snprintf_s
+#endif
+
 vtkCxxRevisionMacro(vtkImageView, "$Revision: 1 $");
 //vtkStandardNewMacro(vtkImageView); // pure virtual class
 
@@ -859,8 +863,26 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
 
     //probably should change the lookuptable of this scalar bar?
     //no, done in setLookupTable.
+
+    this->SetScalarBarLabelFormat(targetRange);
     this->ScalarBar->Modified();
   }
+}
+
+void vtkImageView::SetScalarBarLabelFormat(double* intensityRange)
+{
+    double diff = fabs(fabs(intensityRange[1])-fabs(intensityRange[0]));
+
+    if (diff>1 || diff == 0)
+    {
+        this->ScalarBar->SetLabelFormat ("%.f");
+        return;
+    }
+
+    int precision = -floor(log10(diff))+1; //+1 for the third value displayed (mean) not to be rounded
+    char format[10];
+    snprintf(format, 10, "%%.%df", precision);
+    this->ScalarBar->SetLabelFormat (format);
 }
 
 //----------------------------------------------------------------------------

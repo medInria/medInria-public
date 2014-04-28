@@ -132,3 +132,11 @@ QList<medAbstractParameter*> medQtView::navigatorsParameters()
 {
     return QList<medAbstractParameter*>();
 }
+
+QImage medQtView::buildThumbnail(const QSize &size)
+{
+    QImage img = QImage(size, QImage::Format_ARGB32);
+    img.fill(Qt::black);
+
+    return img;
+}

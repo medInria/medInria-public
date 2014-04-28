@@ -165,7 +165,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
-    d->viewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum );
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
     d->viewWidget->SetRenderWindow(d->renWin);
     d->viewWidget->setCursor(QCursor(Qt::CrossCursor));
@@ -248,7 +247,7 @@ QWidget* medVtkView::toolBarWidget()
     {
         d->toolBarWidget = new QWidget;
         connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
-        d->toolBarWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        d->toolBarWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
         d->toolbarLayout = new QHBoxLayout(d->toolBarWidget);
         d->toolbarLayout->setContentsMargins(0, 0, 0, 0);
         d->toolbarLayout->setSpacing(0);
@@ -504,4 +503,37 @@ void medVtkView::displayDataInfo(uint layer)
             d->view3d->SetSeriesName ( seriesName.toAscii().constData() );
         }
     }
+}
+
+QImage medVtkView::buildThumbnail(const QSize &size)
+{
+    this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
+    int w(size.width()), h(size.height());
+    vtkRenderWindow *renWin = vtkRenderWindow::New();
+
+    // Works only if SetOffScreenRendering is call before SetRenderWindow (sic) - RDE
+    renWin->SetOffScreenRendering(1);
+
+    if(this->orientation() == medImageView::VIEW_ORIENTATION_3D)
+    {
+        renWin->AddRenderer(d->renderer3d);
+        d->view3d->SetRenderWindow(renWin);
+    }
+    else
+    {
+        renWin->AddRenderer(d->renderer2d);
+        d->view2d->SetRenderWindow(renWin);
+    }
+
+    d->viewWidget->SetRenderWindow(renWin);
+    d->viewWidget->resize(w,h);
+    renWin->SetSize(w,h);
+    renWin->Render();
+
+    QImage thumbnail = QPixmap::grabWidget(d->viewWidget).toImage();
+
+    renWin->Delete();
+
+    this->blockSignals(false);
+    return thumbnail;
 }

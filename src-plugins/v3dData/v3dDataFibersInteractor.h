@@ -55,7 +55,6 @@ public:
     virtual void setData(medAbstractData *data);
 
     virtual QWidget* layerWidget();
-    virtual QImage generateThumbnail(const QSize &size);
     virtual QWidget* toolBoxWidget();
     virtual QWidget* toolBarWidget();
 
@@ -193,6 +192,8 @@ public slots:
     virtual void clearRoi();
 
     virtual void moveToSlice  (int slice);
+
+    virtual void setUpViewForThumbnail();
 
 protected slots:
     virtual void updateWidgets();

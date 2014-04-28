@@ -68,7 +68,6 @@ public:
 
     QWidget* toolbox;
     QWidget* toolbar;
-    QImage thumbnail;
 };
 
 
@@ -548,36 +547,15 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
     d->windowLevelParameter->setValue(values);
 }
 
-QImage medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
+void medVtkViewItkDataImageInteractor::setUpViewForThumbnail()
 {
-    int w(size.width()), h(size.height());
-
+    d->view2d->Reset();
     d->view2d->SetBackground(0.0, 0.0, 0.0);
     d->view2d->CursorFollowMouseOff();
     d->view2d->ShowImageAxisOff();
     d->view2d->ShowScalarBarOff();
     d->view2d->ShowAnnotationsOff();
     d->view2d->ShowRulerWidgetOff();
-
-    vtkRenderWindow *renWin = vtkRenderWindow::New();
-    renWin->SetOffScreenRendering(1);
-    renWin->AddRenderer(d->renderer2d);
-    d->view2d->SetRenderWindow(renWin);
-    QVTKWidget *vtkWidget = dynamic_cast<QVTKWidget *>(d->medVtkView->viewWidget());
-    if(!vtkWidget)
-        return d->thumbnail;
-
-    vtkWidget->SetRenderWindow(renWin);
-    vtkWidget->resize(w,h);
-    renWin->SetSize(w,h);
-    d->view2d->Reset();
-    renWin->Render();
-
-    d->thumbnail = QPixmap::grabWidget(vtkWidget).toImage();
-
-    renWin->Delete();
-
-    return d->thumbnail;
 }
 
 
