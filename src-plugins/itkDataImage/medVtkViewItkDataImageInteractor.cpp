@@ -34,7 +34,6 @@
 #include <medIntParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
-#include <medSlicingParameter.h>
 #include <medVector3DParameter.h>
 #include <medAbstractImageData.h>
 #include <medCompositeParameter.h>
@@ -61,7 +60,6 @@ public:
     medIntParameter *opacityParam;
     medBoolParameter *visibiltyParameter;
     medCompositeParameter *windowLevelParameter;
-    //medSlicingParameter *slicingParameter;
     medIntParameter *slicingParameter;
 
     medVector3DParameter *positionParameter;
@@ -91,6 +89,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     d->visibiltyParameter = NULL;
     d->slicingParameter = NULL;
     d->windowLevelParameter = NULL;
+    d->positionParameter = NULL;
 
     d->toolbox = NULL;
     d->toolbar = NULL;
@@ -151,7 +150,7 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::parameters()
     params.append(d->opacityParam);
     params.append(d->visibiltyParameter);
     params.append(d->windowLevelParameter);
-    params.append(d->slicingParameter);
+    params.append(d->positionParameter);
 
     return params;
 }
@@ -270,6 +269,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     d->positionParameter = new medVector3DParameter("position", this);
     connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToSliceAtPosition(QVector3D)));
+    connect(d->medVtkView, SIGNAL(positionViewedChanged(QVector3D)), d->positionParameter, SLOT(setValue(QVector3D)));
 
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
     connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double, unsigned int)), this, SLOT(updateWindowLevelParam(double,double, unsigned int)) );
@@ -430,46 +430,25 @@ void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
 {
     int zslice = d->view2d->GetSlice();
 
-    if(slice!=zslice)
-      d->view2d->SetSlice ( slice );
+    if(slice != zslice)
+      d->view2d->SetSlice(slice);
 
-    /*  double *pos = view->GetCurrentPoint();
-        QVector3D position ( pos[0], pos[1], pos[2] );
-        emit positionChanged ( position, this->positionLinked() );*/
     update();
 }
 
 void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &position)
 {
-//    double pos[3];
-//    pos[0] = position.x();
-//    pos[1] = position.y();
-//    pos[2] = position.z();
-//    d->observer->lock();
-//    d->currentView->SetCurrentPoint ( pos );
-//    d->currentView->UpdateCursorPosition(pos);
-//    d->observer->unlock();
+    if(!d->medVtkView->is2D())
+        return;
 
-//    // update slider, if currentView is 2D view
-//    if ( vtkImageView2D *view2d = vtkImageView2D::SafeDownCast ( d->currentView ) )
-//    {
-//        unsigned int zslice = view2d->GetSlice();
-//        dtkSignalBlocker sliderBlocker( d->slider );
-//        d->slider->setValue ( zslice );
-//    }
     double pos[3];
     pos[0] = position.x();
     pos[1] = position.y();
     pos[2] = position.z();
 
-    d->view2d->SetCurrentPoint ( pos );
-    d->view2d->UpdateCursorPosition(pos);
-
-    if(d->medVtkView->is2D())
-    {
-        unsigned int zslice = d->view2d->GetSlice();
-        d->slicingParameter->setValue ( zslice );
-    }
+    unsigned int zslice = d->view2d->GetSliceForWorldCoordinates(pos);
+    if(zslice != d->view2d->GetSlice())
+        d->slicingParameter->setValue(zslice);
 }
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
