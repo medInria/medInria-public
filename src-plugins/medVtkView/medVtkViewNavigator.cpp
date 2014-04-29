@@ -40,6 +40,8 @@ PURPOSE.
 class medVtkViewNavigatorPrivate
 {
     public:
+    medAbstractImageView *parent;
+
     vtkRenderWindow *render;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
@@ -59,10 +61,10 @@ class medVtkViewNavigatorPrivate
     medBoolParameter *o3dParameter;
 
     medDoubleParameter *zoomParameter;
-
     medVector2DParameter *panParameter;
-
     medCompositeParameter *cameraParameter;
+
+    medVector3DParameter *positionParameter;
 
     medBoolParameter *showAxesParameter;
     medBoolParameter *showRulerParameter;
@@ -85,7 +87,9 @@ class medVtkViewNavigatorPrivate
 medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     medAbstractImageViewNavigator(parent), d(new medVtkViewNavigatorPrivate)
 {
-    medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(dynamic_cast<medAbstractImageView*>(parent)->backend());
+    d->parent = dynamic_cast<medAbstractImageView*>(parent);
+
+    medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(d->parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->renWin = backend->renWin;
@@ -152,6 +156,11 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->cameraParameter->addVariant("Camera Focal", QVariant(QVector3D()));
     d->cameraParameter->addVariant("Parallel Scale", QVariant((double)0.0));
 
+
+    d->positionParameter = new medVector3DParameter("Position", this);
+    connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToPosition(QVector3D)));
+    connect(d->parent, SIGNAL(positionViewedChanged(QVector3D)), d->positionParameter, SLOT(setValue(QVector3D)));
+
     connect(d->cameraParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setCamera(QList<QVariant>)));
     connect(parent, SIGNAL(cameraChanged(QVector3D,QVector3D,QVector3D,double)),
             this,SLOT(updateCameraParam(QVector3D,QVector3D,QVector3D,double)));
@@ -184,7 +193,8 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showAxesParameter
                     << d->showRulerParameter
                     << d->showAnnotationParameter
-                    << d->showScalarBarParameter;
+                    << d->showScalarBarParameter
+                    << d->positionParameter;
 
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),
@@ -230,11 +240,6 @@ QList<medAbstractParameter*> medVtkViewNavigator::parameters()
 }
 
 
-QVector3D medVtkViewNavigator::positionBeingViewed() const
-{
-    // TODO todo - RDE
-    return QVector3D(0.0,0.0,0.0);
-}
 
 medImageView::Orientation medVtkViewNavigator::orientation() const
 {
@@ -356,14 +361,48 @@ void medVtkViewNavigator::setZoom(double zoom)
     }
 }
 
-
-
 void medVtkViewNavigator::setPan(const QVector2D &pan)
 {
     if(pan != this->pan())
     {
         double stdpan[2] = {pan.x(), pan.y()};
         d->view2d->SetPan(stdpan);
+        d->view2d->Render();
+    }
+}
+
+QVector3D medVtkViewNavigator::positionBeingViewed() const
+{
+    double pos[3];
+    if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
+        d->view3d->GetCurrentPoint(pos);
+    else
+        d->view2d->GetCurrentPoint(pos);
+
+    return QVector3D(pos[0], pos[1], pos[2]);
+}
+
+void medVtkViewNavigator::moveToPosition(const QVector3D &position)
+{
+    if(this->positionBeingViewed() == position)
+        return;
+
+    double pos[3];
+    pos[0] = position.x();
+    pos[1] = position.y();
+    pos[2] = position.z();
+
+    if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
+    {
+        //TODO not sure that is what we want, maybe moveToPosition should be only avilable in 2D
+        // (moveTo2DPosition ?) - RDE
+        d->view3d->SetCurrentPoint(pos);
+        d->view3d->Render();
+    }
+    else
+    {
+        d->view2d->SetCurrentPoint(pos);
+        d->view2d->UpdateCursorPosition(pos);
         d->view2d->Render();
     }
 }

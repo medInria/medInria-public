@@ -66,18 +66,15 @@ public:
 
     virtual void setData(medAbstractData * data);
 
-    virtual void moveToSliceAtPosition    (const QVector3D &position);
-    virtual void moveToSlice  (int slice);
-
     virtual void windowLevel(double &window, double &level);
 
     double opacity() const;
     bool visibility() const;
 
 
-    virtual QWidget* layerWidget();
-    virtual QWidget* toolBoxWidget();
-    virtual QWidget* toolBarWidget();
+    virtual QWidget* buildLayerWidget();
+    virtual QWidget* buildToolBoxWidget();
+    virtual QWidget* buildToolBarWidget();
     virtual QList<medAbstractParameter*> parameters();
 
     void removeData();
@@ -155,6 +152,10 @@ public slots:
     void setWindowLevel(double &window, double &level);
 
     virtual void setUpViewForThumbnail();
+
+    virtual void updateWidgets();
+
+    virtual void moveToSlice  (int slice);
 
 protected:
     void setupParameters();

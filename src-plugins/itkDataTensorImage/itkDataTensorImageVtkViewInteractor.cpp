@@ -80,8 +80,8 @@ public:
     QList <medAbstractParameter*> parameters;
 
     medDoubleParameter *opacityParam;
+    medIntParameter *slicingParameter;
 
-    QWidget *toolbox;
 
     PropertySmartPointer actorProperty;
 };
@@ -122,7 +122,7 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
 
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
 
-    d->toolbox = NULL;
+    d->slicingParameter = new medIntParameter("Slicing", this);
 }
 
 
@@ -329,6 +329,9 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
             break;
         }
     }
+
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    this->updateWidgets();
 }
 
 
@@ -521,39 +524,33 @@ void itkDataTensorImageVtkViewInteractor::setUpViewForThumbnail()
     d->view2d->ShowRulerWidgetOff();
 }
 
-
-void itkDataTensorImageVtkViewInteractor::moveToSliceAtPosition(const QVector3D &position)
-{
-    //TODO
-}
-
 void itkDataTensorImageVtkViewInteractor::moveToSlice(int slice)
 {
     //TODO
 }
 
-QWidget* itkDataTensorImageVtkViewInteractor::layerWidget()
+QWidget* itkDataTensorImageVtkViewInteractor::buildLayerWidget()
 {
     QSlider *slider = d->opacityParam->getSlider();
     slider->setOrientation(Qt::Horizontal);
     return slider;
 }
 
-QWidget* itkDataTensorImageVtkViewInteractor::toolBoxWidget()
+QWidget* itkDataTensorImageVtkViewInteractor::buildToolBoxWidget()
 {
-    if(!d->toolbox)
-    {
-        d->toolbox = new QWidget;
-        QFormLayout *layout = new QFormLayout(d->toolbox);
-        foreach(medAbstractParameter *parameter, d->parameters)
-            layout->addRow(parameter->getLabel(), parameter->getWidget());
-    }
-    return d->toolbox;
+
+    QWidget *toolbox = new QWidget;
+    QFormLayout *layout = new QFormLayout(toolbox);
+    foreach(medAbstractParameter *parameter, d->parameters)
+        layout->addRow(parameter->getLabel(), parameter->getWidget());
+
+        return toolbox;
 }
 
-QWidget* itkDataTensorImageVtkViewInteractor::toolBarWidget()
+QWidget* itkDataTensorImageVtkViewInteractor::buildToolBarWidget()
 {
-    return new QWidget;
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
+    return d->slicingParameter->getSlider();
 }
 
 QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()
@@ -564,4 +561,25 @@ QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()
 void itkDataTensorImageVtkViewInteractor::update()
 {
     d->render->Render();
+}
+
+void itkDataTensorImageVtkViewInteractor::updateWidgets()
+{
+    // slice orientation may differ from view orientation. Adapt slider range accordingly.
+    int orientationId = d->view2d->GetSliceOrientation();
+    int *dim = d->manager->GetInput()->GetDimensions();
+
+    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+        d->slicingParameter->setRange(0, dim[2] - 1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+        d->slicingParameter->setRange (0, dim[1] - 1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+        d->slicingParameter->setRange (0, dim[0] - 1);
+
+    // update slider position
+    if(d->view->is2D())
+    {
+        unsigned int zslice = d->view2d->GetSlice();
+        d->slicingParameter->setValue(zslice);
+    }
 }

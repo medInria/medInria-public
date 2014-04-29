@@ -36,9 +36,9 @@ public:
     virtual void setData(medAbstractData *data);
     virtual medAbstractData *data() const;
 
-    virtual QWidget* toolBoxWidget();
-    virtual QWidget* toolBarWidget();
-    virtual QWidget* layerWidget();
+    virtual QWidget* buildLayerWidget();
+    virtual QWidget* buildToolBarWidget();
+    virtual QWidget* buildToolBoxWidget();
 
     virtual QList<medAbstractParameter*> parameters();
 

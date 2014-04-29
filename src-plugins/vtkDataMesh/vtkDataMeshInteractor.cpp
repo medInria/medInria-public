@@ -50,6 +50,7 @@
 #include <medAbstractData.h>
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
+#include <medIntParameter.h>
 #include <medVtkViewBackend.h>
 
 #include <vector>
@@ -87,12 +88,9 @@ public:
     medColorListParameter *colorParam;
     medStringListParameter *renderingParam;
 
-    QWidget* toolbox;
-    QWidget* toolbar;
-
-    QImage thumbnail;
-
     QList <medAbstractParameter*> parameters;
+
+    medIntParameter *slicingParameter;
 };
 
 
@@ -116,9 +114,7 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->edgeVisibleParam = NULL;
     d->colorParam = NULL;
     d->renderingParam = NULL;
-
-    d->toolbox = NULL;
-    d->toolbar = NULL;
+    d->slicingParameter = NULL;
 }
 
 
@@ -255,6 +251,11 @@ void vtkDataMeshInteractor::setupParameters()
     connect(d->renderingParam, SIGNAL(valueChanged(QString)), this, SLOT(setRenderingType(QString)));
     d->renderingParam->setValue("Surface");
     d->parameters << d->renderingParam;
+
+    d->slicingParameter = new medIntParameter("Slicing", this);
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+
+    this->updateWidgets();
 }
 
 void vtkDataMeshInteractor::setOpacity(double value)
@@ -506,11 +507,6 @@ void vtkDataMeshInteractor::removeData()
     }
 }
 
-void vtkDataMeshInteractor::moveToSliceAtPosition    (const QVector3D &position)
-{
-    // TODO
-}
-
 void vtkDataMeshInteractor::moveToSlice  (int slice)
 {
     // TODO
@@ -526,33 +522,32 @@ void vtkDataMeshInteractor::windowLevel(double &window, double &level)
     // TODO
 }
 
-QWidget* vtkDataMeshInteractor::layerWidget()
+QWidget* vtkDataMeshInteractor::buildLayerWidget()
 {
     QSlider *slider = d->opacityParam->getSlider();
     slider->setOrientation(Qt::Horizontal);
     return slider;
 }
 
-QWidget* vtkDataMeshInteractor::toolBoxWidget()
+QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
 {
-    if(!d->toolbox)
-    {
-        d->toolbox = new QWidget;
-        QFormLayout *layout = new QFormLayout(d->toolbox);
-        if(d->attributesParam)
-            layout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
+    QWidget *toolbox = new QWidget;
+    QFormLayout *layout = new QFormLayout(toolbox);
+    if(d->attributesParam)
+        layout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
 
-        layout->addRow(d->LUTParam->getLabel(), d->LUTParam->getComboBox());
-        layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
-        layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
-        layout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
-    }
-    return d->toolbox;
+    layout->addRow(d->LUTParam->getLabel(), d->LUTParam->getComboBox());
+    layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
+    layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
+    layout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
+
+    return toolbox;
 }
 
-QWidget* vtkDataMeshInteractor::toolBarWidget()
+QWidget* vtkDataMeshInteractor::buildToolBarWidget()
 {
-    return 0;
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
+    return d->slicingParameter->getSlider();
 }
 
 QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
@@ -575,4 +570,15 @@ void vtkDataMeshInteractor::setUpViewForThumbnail()
 //    d->view3d->ShowPlaneWidgetOff();
 //    d->view3d->ShowScalarBarOff();
 
+}
+
+void vtkDataMeshInteractor::updateWidgets()
+{
+    d->slicingParameter->setRange(0, d->view2d->GetSliceMax() - 1);
+
+    if(d->view->is2D())
+    {
+        unsigned int zslice = d->view2d->GetSlice();
+        d->slicingParameter->setValue(zslice);
+    }
 }

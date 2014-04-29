@@ -19,8 +19,6 @@ PURPOSE.
 class medAbstractNavigatorPrivate
 {
 public:
-    medAbstractView* view;
-
     QWidget *toolBoxWidget;
     QWidget *toolBarWidget;
 };
@@ -28,8 +26,6 @@ public:
 medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
     d(new medAbstractNavigatorPrivate)
 {
-    this->setView(parent);
-
     d->toolBarWidget = NULL;
     d->toolBoxWidget = NULL;
 }

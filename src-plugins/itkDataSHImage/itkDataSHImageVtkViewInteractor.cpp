@@ -49,14 +49,14 @@ public:
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
 
-    QWidget *toolbox;
-
     QList <medAbstractParameter*> parameters;
     vtkSphericalHarmonicManager* manager;
     double                       imageBounds[6];
 
     int minorScaling;
     int majorScalingExponent;
+
+    medIntParameter *slicingParameter;
 
     //  The filters will convert from itk SH image format to vtkStructuredPoint (format handled by the SH manager)
 
@@ -132,7 +132,8 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)),
             this,    SLOT(setPosition(QVector3D)));
 
-    d->toolbox = NULL;
+    d->slicingParameter = new medIntParameter("Slicing", this);
+
 }
 
 itkDataSHImageVtkViewInteractor::~itkDataSHImageVtkViewInteractor() {
@@ -292,6 +293,9 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
             break;
         }
     }
+
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    this->updateWidgets();
 
 }
 
@@ -475,36 +479,30 @@ void itkDataSHImageVtkViewInteractor::setUpViewForThumbnail()
     d->view2d->ShowRulerWidgetOff();
 }
 
-void itkDataSHImageVtkViewInteractor::moveToSliceAtPosition(const QVector3D &position)
-{
-    //TODO
-}
-
 void itkDataSHImageVtkViewInteractor::moveToSlice(int slice)
 {
     //TODO
 }
 
-QWidget* itkDataSHImageVtkViewInteractor::layerWidget()
+QWidget* itkDataSHImageVtkViewInteractor::buildLayerWidget()
 {
     return new QWidget;
 }
 
-QWidget* itkDataSHImageVtkViewInteractor::toolBoxWidget()
+QWidget* itkDataSHImageVtkViewInteractor::buildToolBoxWidget()
 {
-    if(!d->toolbox)
-    {
-        d->toolbox = new QWidget;
-        QFormLayout *layout = new QFormLayout(d->toolbox);
-        foreach(medAbstractParameter *parameter, d->parameters)
-            layout->addRow(parameter->getLabel(), parameter->getWidget());
-    }
-    return d->toolbox;
+    QWidget *toolbox = new QWidget;
+    QFormLayout *layout = new QFormLayout(toolbox);
+    foreach(medAbstractParameter *parameter, d->parameters)
+        layout->addRow(parameter->getLabel(), parameter->getWidget());
+
+    return toolbox;
 }
 
-QWidget* itkDataSHImageVtkViewInteractor::toolBarWidget()
+QWidget* itkDataSHImageVtkViewInteractor::buildToolBarWidget()
 {
-    return new QWidget;
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
+    return d->slicingParameter->getSlider();
 }
 
 QList<medAbstractParameter*> itkDataSHImageVtkViewInteractor::parameters()
@@ -515,4 +513,26 @@ QList<medAbstractParameter*> itkDataSHImageVtkViewInteractor::parameters()
 void itkDataSHImageVtkViewInteractor::update()
 {
     d->render->Render();
+}
+
+void itkDataSHImageVtkViewInteractor::updateWidgets()
+{
+    // slice orientation may differ from view orientation. Adapt slider range accordingly.
+    int orientationId = d->view2d->GetSliceOrientation();
+    int dim[3];
+    d->manager->GetSphericalHarmonicDimensions(dim);
+
+    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+        d->slicingParameter->setRange(0, dim[2] - 1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+        d->slicingParameter->setRange (0, dim[1] - 1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+        d->slicingParameter->setRange (0, dim[0] - 1);
+
+    // update slider position
+    if(d->view->is2D())
+    {
+        unsigned int zslice = d->view2d->GetSlice();
+        d->slicingParameter->setValue(zslice);
+    }
 }

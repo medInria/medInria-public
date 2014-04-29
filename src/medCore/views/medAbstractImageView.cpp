@@ -143,30 +143,23 @@ bool medAbstractImageView::initialiseNavigators()
     return true;
 }
 
-void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
+void medAbstractImageView::moveToPosition (const QVector3D &position)
 {
-    foreach (medAbstractData *data, this->dataList())
-    {
-        medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
-        if(!inter)
-            break;
+    medAbstractImageViewNavigator * nav = this->primaryNavigator();
+    if(!nav)
+        return;
 
-        inter->moveToSliceAtPosition(position);
-    }
-
+    nav->moveToPosition(position);
     emit positionViewedChanged(position);
 }
 
-void medAbstractImageView::moveToSlice (int slice)
+void medAbstractImageView::moveToSlice (unsigned int layer, unsigned int slice)
 {
-    foreach (medAbstractData *data, this->dataList())
-    {
-        medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
-        if(!inter)
-            break;
+    medAbstractImageViewInteractor* inter = this->primaryInteractor(layer);
+    if(!inter)
+        return;
 
-        inter->moveToSlice(slice);
-    }
+    inter->moveToSlice(slice);
 
     emit sliceChanged(slice);
 }

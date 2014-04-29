@@ -56,9 +56,9 @@ public:
 
     static bool registered();
 
-    virtual QWidget* toolBarWidget();
-    virtual QWidget* toolBoxWidget();
-    virtual QWidget* layerWidget();
+    virtual QWidget* buildLayerWidget();
+    virtual QWidget* buildToolBarWidget();
+    virtual QWidget* buildToolBoxWidget();
     virtual QList<medAbstractParameter*> parameters();
     virtual void setData(medAbstractData * data);
     virtual void setWindowLevel (double &window, double &level);
@@ -93,7 +93,6 @@ public slots:
     virtual void setVisibility (bool visibility);
 
     void moveToSlice(int slice);
-    virtual void moveToSliceAtPosition(const QVector3D &position);
 
     virtual void removeData();
 

@@ -29,7 +29,6 @@ public:
              medAbstractImageViewInteractor(medAbstractView* parent);
     virtual ~medAbstractImageViewInteractor();
 
-    virtual void moveToSliceAtPosition    (const QVector3D &position) = 0;
     virtual void moveToSlice  (int slice) = 0;
 
     /**

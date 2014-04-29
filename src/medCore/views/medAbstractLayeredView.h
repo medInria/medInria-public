@@ -54,7 +54,6 @@ public:
     unsigned int currentLayer() const;
 
     QList <medAbstractInteractor*> interactors(unsigned int layer);
-    QList <medAbstractInteractor*> currentInteractors();
 
     void setVisibility (bool visibility, unsigned int layer);
     bool visibility(unsigned int layer) ;

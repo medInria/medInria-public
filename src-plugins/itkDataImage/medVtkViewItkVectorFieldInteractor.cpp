@@ -42,8 +42,6 @@ public:
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
 
-    QWidget *toolbox;
-
     QList <medAbstractParameter*> parameters;
 
     VectorFloatImageType::Pointer    floatData;
@@ -52,6 +50,8 @@ public:
     DoubleFilterType::Pointer        doubleFilter;
 
     vtkVectorManager                 *manager;
+
+    medIntParameter *slicingParameter;
 
     double imageBounds[6];
 };
@@ -76,10 +76,10 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
 
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(setPosition(QVector3D)));
 
-    d->toolbox = NULL;
-
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
+
+    d->slicingParameter = new medIntParameter("Slicing", this);
 }
 
 
@@ -256,6 +256,9 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
             break;
         }
     }
+
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    this->updateWidgets();
 }
 
 
@@ -373,36 +376,31 @@ void medVtkViewItkVectorFieldInteractor::setUpViewForThumbnail()
     d->view2d->ShowRulerWidgetOff();
 }
 
-void medVtkViewItkVectorFieldInteractor::moveToSliceAtPosition(const QVector3D &position)
-{
-    //TODO
-}
 
 void medVtkViewItkVectorFieldInteractor::moveToSlice(int slice)
 {
     //TODO
 }
 
-QWidget* medVtkViewItkVectorFieldInteractor::layerWidget()
+QWidget* medVtkViewItkVectorFieldInteractor::buildLayerWidget()
 {
     return new QWidget;
 }
 
-QWidget* medVtkViewItkVectorFieldInteractor::toolBoxWidget()
+QWidget* medVtkViewItkVectorFieldInteractor::buildToolBoxWidget()
 {
-    if(!d->toolbox)
-    {
-        d->toolbox = new QWidget;
-        QFormLayout *layout = new QFormLayout(d->toolbox);
-        foreach(medAbstractParameter *parameter, d->parameters)
-            layout->addRow(parameter->getLabel(), parameter->getWidget());
-    }
-    return d->toolbox;
+    QWidget *toolbox = new QWidget;
+    QFormLayout *layout = new QFormLayout(toolbox);
+    foreach(medAbstractParameter *parameter, d->parameters)
+        layout->addRow(parameter->getLabel(), parameter->getWidget());
+
+    return toolbox;
 }
 
-QWidget* medVtkViewItkVectorFieldInteractor::toolBarWidget()
+QWidget* medVtkViewItkVectorFieldInteractor::buildToolBarWidget()
 {
-    return new QWidget;
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
+    return d->slicingParameter->getSlider();
 }
 
 QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::parameters()
@@ -413,4 +411,25 @@ QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::parameters()
 void medVtkViewItkVectorFieldInteractor::update()
 {
     d->render->Render();
+}
+
+void medVtkViewItkVectorFieldInteractor::updateWidgets()
+{
+    // slice orientation may differ from view orientation. Adapt slider range accordingly.
+    int orientationId = d->view2d->GetSliceOrientation();
+    int *dim = d->manager->GetInput()->GetDimensions();
+
+    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+        d->slicingParameter->setRange(0, dim[2] - 1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+        d->slicingParameter->setRange (0, dim[1] - 1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+        d->slicingParameter->setRange (0, dim[0] - 1);
+
+    // update slider position
+    if(d->view->is2D())
+    {
+        unsigned int zslice = d->view2d->GetSlice();
+        d->slicingParameter->setValue(zslice);
+    }
 }

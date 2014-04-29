@@ -19,30 +19,24 @@ PURPOSE.
 class medAbstractInteractorPrivate
 {
 public:
-    medAbstractView* view;
     medAbstractData* data;
+
+    QWidget *toolBoxWidget;
+    QWidget *toolBarWidget;
+    QWidget *layerWidget;
 };
 
 medAbstractInteractor::medAbstractInteractor(medAbstractView *parent):
     d(new medAbstractInteractorPrivate)
 {
-    this->setView(parent);
+    d->toolBarWidget = NULL;
+    d->toolBoxWidget = NULL;
+    d->layerWidget = NULL;
 }
 
 medAbstractInteractor::~medAbstractInteractor()
 {
     delete d;
-}
-
-void medAbstractInteractor::setView(medAbstractView *view)
-{
-    this->setParent(view);
-    d->view = view;
-}
-
-medAbstractView* medAbstractInteractor::view() const
-{
-    return d->view;
 }
 
 void medAbstractInteractor::setData(medAbstractData* data)
@@ -53,4 +47,52 @@ void medAbstractInteractor::setData(medAbstractData* data)
 medAbstractData* medAbstractInteractor::data() const
 {
     return d->data;
+}
+
+QWidget* medAbstractInteractor::toolBoxWidget()
+{
+    if(!d->toolBoxWidget)
+    {
+        d->toolBoxWidget = this->buildToolBoxWidget();
+        connect(d->toolBoxWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBoxWidget()));
+    }
+
+    return d->toolBoxWidget;
+}
+
+QWidget* medAbstractInteractor::toolBarWidget()
+{
+    if(!d->toolBarWidget)
+    {
+        d->toolBarWidget = this->buildToolBarWidget();
+        connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
+    }
+
+    return d->toolBarWidget;
+}
+
+QWidget* medAbstractInteractor::layerWidget()
+{
+    if(!d->layerWidget)
+    {
+        d->layerWidget = this->buildLayerWidget();
+        connect(d->layerWidget, SIGNAL(destroyed()), this, SLOT(removeInternLayerWidget()));
+    }
+
+    return d->layerWidget;
+}
+
+void medAbstractInteractor::removeInternToolBoxWidget()
+{
+    d->toolBoxWidget = NULL;
+}
+
+void medAbstractInteractor::removeInternToolBarWidget()
+{
+    d->toolBarWidget = NULL;
+}
+
+void medAbstractInteractor::removeInternLayerWidget()
+{
+    d->layerWidget = NULL;
 }

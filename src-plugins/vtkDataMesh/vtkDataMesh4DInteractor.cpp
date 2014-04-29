@@ -123,19 +123,19 @@ medAbstractData *vtkDataMesh4DInteractor::data() const
     return d->data;
 }
 
-QWidget* vtkDataMesh4DInteractor::toolBoxWidget()
+QWidget* vtkDataMesh4DInteractor::buildToolBoxWidget()
 {
     return d->timeLineParameter->getWidget();
 }
 
-QWidget* vtkDataMesh4DInteractor::toolBarWidget()
+QWidget* vtkDataMesh4DInteractor::buildToolBarWidget()
 {
-    return 0;
+    return new QWidget;
 }
 
-QWidget* vtkDataMesh4DInteractor::layerWidget()
+QWidget* vtkDataMesh4DInteractor::buildLayerWidget()
 {
-    return 0;
+    return new QWidget;
 }
 
 QList<medAbstractParameter*> vtkDataMesh4DInteractor::parameters()

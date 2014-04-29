@@ -25,8 +25,6 @@ public:
     medAbstractImageData *imageData;
 
     medTimeLineParameter *timeLineParameter;
-    QWidget *toolBoxWidget;
-
     double currentTime;
 
 };
@@ -62,8 +60,6 @@ medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstra
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
-
-    d->toolBoxWidget = NULL;
 
     d->currentTime = 0.0;
 }
@@ -173,28 +169,24 @@ medAbstractData *medVtkViewItkDataImage4DInteractor::data() const
     return d->imageData;
 }
 
-QWidget* medVtkViewItkDataImage4DInteractor::toolBoxWidget()
+QWidget* medVtkViewItkDataImage4DInteractor::buildToolBoxWidget()
 {
-    if(!d->toolBoxWidget)
-    {
-        d->toolBoxWidget = new QWidget;
-        connect(d->toolBoxWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBox()));
-        QVBoxLayout *tbLayout = new QVBoxLayout(d->toolBoxWidget);
-        tbLayout->addWidget(medVtkViewItkDataImageInteractor::toolBoxWidget());
-        tbLayout->addWidget(d->timeLineParameter->getWidget());
-    }
+    QWidget *toolBoxWidget = new QWidget;
+    QVBoxLayout *tbLayout = new QVBoxLayout(toolBoxWidget);
+    tbLayout->addWidget(medVtkViewItkDataImageInteractor::buildToolBoxWidget());
+    tbLayout->addWidget(d->timeLineParameter->getWidget());
 
-    return d->toolBoxWidget;
+    return toolBoxWidget;
 }
 
-QWidget* medVtkViewItkDataImage4DInteractor::toolBarWidget()
+QWidget* medVtkViewItkDataImage4DInteractor::buildToolBarWidget()
 {
-    return medVtkViewItkDataImageInteractor::toolBarWidget();
+    return medVtkViewItkDataImageInteractor::buildToolBarWidget();
 }
 
-QWidget* medVtkViewItkDataImage4DInteractor::layerWidget()
+QWidget* medVtkViewItkDataImage4DInteractor::buildLayerWidget()
 {
-    return medVtkViewItkDataImageInteractor::layerWidget();
+    return medVtkViewItkDataImageInteractor::buildLayerWidget();
 }
 
 QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::parameters()
@@ -274,8 +266,4 @@ void medVtkViewItkDataImage4DInteractor::updateWidgets()
     medVtkViewItkDataImageInteractor::updateWidgets();
 }
 
-void medVtkViewItkDataImage4DInteractor::removeInternToolBox()
-{
-    d->toolBoxWidget = NULL;
-}
 

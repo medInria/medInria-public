@@ -62,8 +62,6 @@ public:
 
     medAbstractData *imageData;
 
-    QWidget* toolbox;
-    QWidget* toolbar;
     QImage thumbnail;
 
     medDoubleParameter *opacityParam;
@@ -83,9 +81,6 @@ msegAnnotationInteractor::msegAnnotationInteractor(medAbstractView *parent):
     d->view3d = backend->view3D;
 
     d->imageData = NULL;
-
-    d->toolbox = NULL;
-    d->toolbar = NULL;
 
     d->opacityParam = NULL;
     d->visibiltyParameter = NULL;
@@ -335,25 +330,19 @@ bool msegAnnotationInteractor::visibility() const
     return d->visibiltyParameter->value();
 }
 
-QWidget* msegAnnotationInteractor::toolBarWidget()
+QWidget* msegAnnotationInteractor::buildToolBarWidget()
 {
-    if(!d->toolbar)
-    {
-        d->toolbar = new QWidget;
-    }
-    return d->toolbar;
+
+    return new QWidget;
 }
 
-QWidget* msegAnnotationInteractor::toolBoxWidget()
+QWidget* msegAnnotationInteractor::buildToolBoxWidget()
 {
-    if(!d->toolbox)
-    {
-        d->toolbox = new QWidget;
-    }
-    return d->toolbox;
+
+    return new QWidget;
 }
 
-QWidget* msegAnnotationInteractor::layerWidget()
+QWidget* msegAnnotationInteractor::buildLayerWidget()
 {
     QSlider *slider = d->opacityParam->getSlider();
     slider->setOrientation(Qt::Horizontal);
@@ -371,23 +360,6 @@ void msegAnnotationInteractor::moveToSlice(int slice)
         d->view2d->Render();
     else
         d->view3d->Render();
-}
-
-void msegAnnotationInteractor::moveToSliceAtPosition(const QVector3D &position)
-{
-    double pos[3];
-    pos[0] = position.x();
-    pos[1] = position.y();
-    pos[2] = position.z();
-
-    d->view2d->SetCurrentPoint ( pos );
-    d->view2d->UpdateCursorPosition(pos);
-
-    if(d->medVtkView->is2D())
-    {
-        //unsigned int zslice = d->view2d->GetSlice();
-        //d->slicingParameter->setValue ( zslice );
-    }
 }
 
 void msegAnnotationInteractor::setWindowLevel (double &window, double &level)

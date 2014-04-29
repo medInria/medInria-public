@@ -151,8 +151,7 @@ vtkImageView::vtkImageView()
 
   this->ScalarBar->SetLabelFormat ("%.0f");
   this->ScalarBar->SetNumberOfLabels (3);
-  this->ScalarBar->GetPositionCoordinate()->
-  SetCoordinateSystemToNormalizedViewport();
+  this->ScalarBar->GetPositionCoordinate()->SetCoordinateSystemToNormalizedViewport();
   this->ScalarBar->SetLabelTextProperty (this->TextProperty);
   this->ScalarBar->GetLabelTextProperty()->SetFontSize (1);
   this->ScalarBar->GetLabelTextProperty()->BoldOff();
@@ -314,7 +313,7 @@ void vtkImageView::Render()
 
     if (!this->RenderWindow->GetNeverRendered())
     {
-      if( this->GetMTime()>this->InternalMTime )
+      if( this->GetMTime() > this->InternalMTime )
       {
         this->RenderWindow->Render();
         this->InternalMTime = this->GetMTime();
@@ -1919,7 +1918,7 @@ void vtkImageView::GetInputBounds ( double * bounds )
 void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
 {
   double imageBounds [6];
-  this->GetInput()->UpdateInformation ();
+  this->GetInput()->UpdateInformation();
 
   const int * wholeExtent = this->GetInput ()->GetWholeExtent ();
   const double * spacing = this->GetInput ()->GetSpacing ();

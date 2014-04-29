@@ -54,9 +54,9 @@ public:
 
     virtual void setData(medAbstractData *data);
 
-    virtual QWidget* layerWidget();
-    virtual QWidget* toolBoxWidget();
-    virtual QWidget* toolBarWidget();
+    virtual QWidget* buildLayerWidget();
+    virtual QWidget* buildToolBarWidget();
+    virtual QWidget* buildToolBoxWidget();
 
     virtual QList<medAbstractParameter*> parameters();
 
@@ -187,8 +187,6 @@ public slots:
     virtual void setWindowLevel (double &window, double &level);
     virtual void windowLevel(double &window, double &level);
 
-    virtual void moveToSliceAtPosition    (const QVector3D &position);
-
     virtual void clearRoi();
 
     virtual void moveToSlice  (int slice);
@@ -226,8 +224,12 @@ protected:
      */
     void clearStatistics();
 
+
 private:
     static QStringList dataHandled();
+
+private slots:
+    void removeInternBundleToolBoxWidget();
 
 private:
     v3dDataFibersInteractorPrivate *d;

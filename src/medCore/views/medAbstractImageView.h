@@ -119,9 +119,9 @@ public slots:
      * Set the slice being viewed so that it contains the given spatial postion
      * @position is expressed in real world coordinates.
      **/
-    void moveToSliceAtPosition (const QVector3D &position);
+    void moveToPosition (const QVector3D &position);
 
-    void moveToSlice (int slice);
+    void moveToSlice (unsigned int layer, unsigned int slice);
 
     /**
        Set the camera settings of the view.

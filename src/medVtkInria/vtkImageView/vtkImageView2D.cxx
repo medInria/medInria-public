@@ -1666,14 +1666,14 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
       reslicedImage->SetUpdateExtent (this->GetInput()->GetUpdateExtent());
       reslicedImage->PropagateUpdateExtent();
       reslicedImage->Update();
-      reslicedImage->GetScalarRange (range);
+      reslicedImage->GetScalarRange(range);
 
       vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable("Default");
       lut->SetTableRange (range[0], range[1]);
       vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-      imageDisplay->SetInput (reslicedImage);
+      imageDisplay->SetInput(reslicedImage);
       imageDisplay->SetUseLookupTable(true);
-      imageDisplay->GetWindowLevel()->SetLookupTable (lut);
+      imageDisplay->GetWindowLevel()->SetLookupTable(lut);
       imageDisplay->GetImageActor()->SetOpacity(1.0);
       imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
       this->SetColorRange(range,layer);
@@ -1949,7 +1949,7 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], const int imageSize[3
     }
     else
     {
-        GetInputBounds ( imageBounds );
+        GetInputBounds(imageBounds);
 
         for (int i=0; i<6; i=i+2)
         {

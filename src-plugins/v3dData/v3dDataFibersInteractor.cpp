@@ -82,8 +82,6 @@ public:
     vtkSmartPointer <vtkProperty> opacityProperty;
 
     QWidget *toolboxWidget;
-    QWidget *layerWidget;
-    QWidget *toolbarWidget;
     QWidget *bundleToolboxWidget;
 
     QMap<QString, double> meanLengthList;
@@ -122,6 +120,8 @@ public:
     QStandardItemModel *bundlingModel;
 
     QTreeView *bundlingList;
+
+    medIntParameter *slicingParameter;
 };
 
 v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
@@ -298,6 +298,8 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractView *parent): medAb
         }
     }
 
+    d->slicingParameter = new medIntParameter("Slicing", this);
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
 }
 
 v3dDataFibersInteractor::~v3dDataFibersInteractor()
@@ -347,8 +349,6 @@ bool v3dDataFibersInteractor::registered()
     return true;
 }
 
-
-
 void v3dDataFibersInteractor::setData(medAbstractData *data)
 {
     if (!data)
@@ -375,6 +375,7 @@ void v3dDataFibersInteractor::setData(medAbstractData *data)
 
         d->view2d->SetInput(d->actor, d->view->layer(d->data));
         d->renderer3d->AddActor(d->actor);
+        this->updateWidgets();
     }
 }
 
@@ -1121,11 +1122,6 @@ void v3dDataFibersInteractor::windowLevel(double &window, double &level)
 }
 
 
-void v3dDataFibersInteractor::moveToSliceAtPosition (const QVector3D &position)
-{
-
-}
-
 void v3dDataFibersInteractor::moveToSlice (int slice)
 {
 
@@ -1138,83 +1134,82 @@ void v3dDataFibersInteractor::removeData()
 }
 
 
-QWidget* v3dDataFibersInteractor::toolBoxWidget()
+QWidget* v3dDataFibersInteractor::buildToolBoxWidget()
 {
-    if(!d->toolboxWidget)
-    {
-        d->toolboxWidget = new QWidget;
-        QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolboxWidget);
 
-        toolBoxLayout->addWidget(d->colorFiberParameter->getLabel());
-        toolBoxLayout->addWidget(d->colorFiberParameter->getComboBox());
-        toolBoxLayout->addWidget(d->gpuParameter->getCheckBox());
-        toolBoxLayout->addWidget(d->shapesDisplayedGroupParameter->getRadioButtonGroup());
-        toolBoxLayout->addWidget(d->radiusParameter->getLabel());
-        d->radiusParameter->getSlider()->setOrientation(Qt::Horizontal);
-        toolBoxLayout->addWidget(d->radiusParameter->getSlider());
+    d->toolboxWidget = new QWidget;
+    QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolboxWidget);
+
+    toolBoxLayout->addWidget(d->colorFiberParameter->getLabel());
+    toolBoxLayout->addWidget(d->colorFiberParameter->getComboBox());
+    toolBoxLayout->addWidget(d->gpuParameter->getCheckBox());
+    toolBoxLayout->addWidget(d->shapesDisplayedGroupParameter->getRadioButtonGroup());
+    toolBoxLayout->addWidget(d->radiusParameter->getLabel());
+    d->radiusParameter->getSlider()->setOrientation(Qt::Horizontal);
+    toolBoxLayout->addWidget(d->radiusParameter->getSlider());
 
 
-        d->bundleToolboxWidget = new QWidget(d->toolboxWidget);
-        QVBoxLayout *bundleToolboxLayout = new QVBoxLayout(d->bundleToolboxWidget);
+    d->bundleToolboxWidget = new QWidget(d->toolboxWidget);
+    connect(d->bundleToolboxWidget, SIGNAL(destroyed()), this, SLOT(removeInternBundleToolBoxWidget()));
+    QVBoxLayout *bundleToolboxLayout = new QVBoxLayout(d->bundleToolboxWidget);
 
-        toolBoxLayout->addWidget(d->bundleToolboxWidget);
+    toolBoxLayout->addWidget(d->bundleToolboxWidget);
 
-        d->dropOrOpenRoi = new medDropSite(d->toolboxWidget);
-        d->dropOrOpenRoi->setToolTip(tr("Drag-and-drop A ROI from the database."));
-        d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
-        d->dropOrOpenRoi->setCanAutomaticallyChangeAppereance(false);
+    d->dropOrOpenRoi = new medDropSite(d->toolboxWidget);
+    d->dropOrOpenRoi->setToolTip(tr("Drag-and-drop A ROI from the database."));
+    d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
+    d->dropOrOpenRoi->setCanAutomaticallyChangeAppereance(false);
 
-        QPushButton *clearRoiButton = new QPushButton("Clear ROI", d->toolboxWidget);
-        clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
+    QPushButton *clearRoiButton = new QPushButton("Clear ROI", d->toolboxWidget);
+    clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
 
-        //TODO : what the ... why 255 ? - RDE
-        d->roiComboBox = new QComboBox(d->bundleToolboxWidget);
-        for (int i=0; i<255; i++)
-            d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
-        d->roiComboBox->setCurrentIndex(0);
-        d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed."));
+    //TODO : what the ... why 255 ? - RDE
+    d->roiComboBox = new QComboBox(d->bundleToolboxWidget);
+    for (int i=0; i<255; i++)
+        d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
+    d->roiComboBox->setCurrentIndex(0);
+    d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed."));
 
-        bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
-        bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);
+    bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
+    bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);
 
-        connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
-        connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(onDropSiteClicked()));
-        connect (clearRoiButton,   SIGNAL(clicked()), this, SLOT(clearRoi()));
-        connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(selectRoi(int)));
+    connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
+    connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(onDropSiteClicked()));
+    connect (clearRoiButton,   SIGNAL(clicked()), this, SLOT(clearRoi()));
+    connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(selectRoi(int)));
 
-        QHBoxLayout *roiLayout = new QHBoxLayout(d->bundleToolboxWidget);
-        roiLayout->addWidget(d->roiComboBox);
-        d->bundleOperationtGroupParameter->setRadioButtonDirection(QBoxLayout::LeftToRight);
-        roiLayout->addWidget(d->bundleOperationtGroupParameter->getRadioButtonGroup());
+    QHBoxLayout *roiLayout = new QHBoxLayout(d->bundleToolboxWidget);
+    roiLayout->addWidget(d->roiComboBox);
+    d->bundleOperationtGroupParameter->setRadioButtonDirection(QBoxLayout::LeftToRight);
+    roiLayout->addWidget(d->bundleOperationtGroupParameter->getRadioButtonGroup());
 
-        bundleToolboxLayout->addLayout(roiLayout);
-        bundleToolboxLayout->addWidget(d->showBundleBox->getCheckBox());
+    bundleToolboxLayout->addLayout(roiLayout);
+    bundleToolboxLayout->addWidget(d->showBundleBox->getCheckBox());
 
-        QHBoxLayout *bundlingLayout = new QHBoxLayout;
-        bundlingLayout->addWidget(d->tagParameter->getPushButton());
-        bundlingLayout->addWidget(d->addParameter->getPushButton());
-        bundlingLayout->addWidget(d->resetParameter->getPushButton());
-        bundlingLayout->addWidget(d->validateParameter->getPushButton());
+    QHBoxLayout *bundlingLayout = new QHBoxLayout;
+    bundlingLayout->addWidget(d->tagParameter->getPushButton());
+    bundlingLayout->addWidget(d->addParameter->getPushButton());
+    bundlingLayout->addWidget(d->resetParameter->getPushButton());
+    bundlingLayout->addWidget(d->validateParameter->getPushButton());
 
-        bundleToolboxLayout->addLayout(bundlingLayout);
-        bundleToolboxLayout->addWidget(d->saveParameter->getPushButton());
+    bundleToolboxLayout->addLayout(bundlingLayout);
+    bundleToolboxLayout->addWidget(d->saveParameter->getPushButton());
 
-        d->bundlingList = new QTreeView(d->toolboxWidget);
-        d->bundlingList->setAlternatingRowColors(true);
-        d->bundlingList->setMinimumHeight(150);
-        d->bundlingList->setModel(d->bundlingModel);
-        d->bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
+    d->bundlingList = new QTreeView(d->toolboxWidget);
+    d->bundlingList->setAlternatingRowColors(true);
+    d->bundlingList->setMinimumHeight(150);
+    d->bundlingList->setModel(d->bundlingModel);
+    d->bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
 
-        bundleToolboxLayout->addWidget(d->bundlingList);
-        bundleToolboxLayout->addWidget(d->showAllBundleParameter->getPushButton());
+    bundleToolboxLayout->addWidget(d->bundlingList);
+    bundleToolboxLayout->addWidget(d->showAllBundleParameter->getPushButton());
 
-        this->updateWidgets();
-    }
+    this->updateWidgets();
 
     return d->toolboxWidget;
 }
 
-QWidget* v3dDataFibersInteractor::layerWidget()
+QWidget* v3dDataFibersInteractor::buildLayerWidget()
 {
     QSlider *slider = d->opacityParam->getSlider();
     slider->setOrientation(Qt::Horizontal);
@@ -1222,9 +1217,10 @@ QWidget* v3dDataFibersInteractor::layerWidget()
 }
 
 
-QWidget* v3dDataFibersInteractor::toolBarWidget()
+QWidget* v3dDataFibersInteractor::buildToolBarWidget()
 {
-    return NULL;
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
+    return d->slicingParameter->getSlider();
 }
 
 
@@ -1245,12 +1241,24 @@ QList<medAbstractParameter*> v3dDataFibersInteractor::parameters()
 }
 
 void v3dDataFibersInteractor::updateWidgets()
-{
-    if(!d->toolboxWidget)
-        return;
+{   
+    d->slicingParameter->setRange(0, d->view2d->GetSliceMax() - 1);
 
-    if(d->view->orientation() == medImageView::VIEW_ORIENTATION_3D)
+    if(!d->view->is2D())
+    {
         d->bundleToolboxWidget->show();
+    }
     else
-        d->bundleToolboxWidget->hide();
+    {
+        if(d->bundleToolboxWidget)
+            d->bundleToolboxWidget->hide();
+
+        unsigned int zslice = d->view2d->GetSlice();
+        d->slicingParameter->setValue(zslice);
+    }
+}
+
+void v3dDataFibersInteractor::removeInternBundleToolBoxWidget()
+{
+    d->bundleToolboxWidget = NULL;
 }

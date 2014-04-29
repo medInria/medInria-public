@@ -313,16 +313,6 @@ void medAbstractLayeredView::setUpViewForThumbnail()
         this->primaryInteractor(this->layerData(d->currentLayer))->setUpViewForThumbnail();
 }
 
-//TODO not sure we need this - RDE
-QList <medAbstractInteractor*> medAbstractLayeredView::currentInteractors()
-{
-    QList <medAbstractInteractor*> interactors;
-
-    interactors.append(this->primaryInteractor(d->currentLayer));
-    interactors.append(extraInteractors(d->currentLayer));
-    return interactors;
-}
-
 QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int layer)
 {
     QList <medAbstractInteractor*> interactors;

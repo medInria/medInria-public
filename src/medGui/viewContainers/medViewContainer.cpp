@@ -45,6 +45,7 @@ public:
     QUuid uuid;
 
     QWidget *defaultWidget;
+    QWidget *viewToolbar;
 
     medAbstractView* view;
     medViewContainerSplitter* parent;
@@ -89,6 +90,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     medViewContainerManager::instance()->registerNewContainer(this);
 
     d->view = NULL;
+    d->viewToolbar = NULL;
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
@@ -279,7 +281,7 @@ void medViewContainer::setView(medAbstractView *view)
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
         {
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
-//            connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()));
+            connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()));
             connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()));
             connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
         }
@@ -403,6 +405,7 @@ void medViewContainer::removeInternView()
     d->view = NULL;
     d->maximizedParameter->hide();
     d->defaultWidget->show();
+    this->updateToolBar();
 
     emit viewRemoved();
 }
@@ -650,15 +653,40 @@ bool medViewContainer::isUserPoolable() const
 
 void medViewContainer::updateToolBar()
 {
+    if(d->viewToolbar)
+    {
+        delete d->viewToolbar;
+        d->viewToolbar = NULL;
+    }
+
     medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(d->view);
     if(layeredView)
     {
-        QWidget *tbWidget = new QWidget;
-        QHBoxLayout *tbLayout = new QHBoxLayout(tbWidget);
-        foreach(medAbstractInteractor *interactor, layeredView->currentInteractors())
-            tbLayout->addWidget(interactor->toolBarWidget());
+        foreach(medAbstractInteractor *interactor, layeredView->interactors(layeredView->currentLayer()))
+        {
+            QWidget* widget = interactor->toolBarWidget();
+            if(widget)
+            {
+                if(!d->viewToolbar)
+                {
+                    d->viewToolbar = new QWidget;
+                    QHBoxLayout *tbLayout = new QHBoxLayout(d->viewToolbar);
+                    tbLayout->setContentsMargins(0, 0, 0, 0);
+                    tbLayout->setSpacing(0);
+                }
+                d->viewToolbar->layout()->addWidget(widget);
+            }
+        }
 
-        tbWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-        d->toolBarLayout->insertWidget(0, tbWidget);
+        if(d->viewToolbar)
+        {
+            d->toolBarLayout->setStretch(0,0);
+            d->viewToolbar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+            d->toolBarLayout->insertWidget(0, d->viewToolbar);
+        }
+    }
+    else
+    {
+        d->toolBarLayout->setStretch(0,1);
     }
 }

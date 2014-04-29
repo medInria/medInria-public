@@ -38,20 +38,43 @@ public:
 public:
     virtual QString description() const = 0;
 
-    virtual void setView(medAbstractView*view);
-    virtual medAbstractView *view() const;
-
     virtual void setData(medAbstractData *data);
     virtual medAbstractData *data() const;
     
-    virtual QWidget* toolBoxWidget() = 0;
-    virtual QWidget* toolBarWidget() = 0;
-    virtual QWidget* layerWidget() = 0;
+    virtual QWidget* toolBoxWidget();
+    virtual QWidget* toolBarWidget();
+    virtual QWidget* layerWidget();
 
     virtual QList<medAbstractParameter*> parameters() = 0;
 
 public slots:
     virtual void updateWidgets(){}
+
+protected:
+    /**
+    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+    * view settings toolBox when the container of the parent view is single selected.
+    * @return
+    */
+    virtual QWidget* buildToolBoxWidget() = 0;
+    /**
+    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+    * toolbar of the container where the parent view is dsiplayed.
+    * @return
+    */
+    virtual QWidget* buildToolBarWidget() = 0;
+    /**
+    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+    * layer toolbox when the container of the parent view is selected.
+    * @return
+    */
+    virtual QWidget* buildLayerWidget() = 0;
+
+private slots:
+    void removeInternToolBoxWidget();
+    void removeInternToolBarWidget();
+    void removeInternLayerWidget();
+
 
 private:
     medAbstractInteractorPrivate *d;

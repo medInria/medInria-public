@@ -35,9 +35,9 @@ public:
     virtual QString identifier() const;
     static bool registered();
 
-    virtual QWidget* toolBarWidget();
-    virtual QWidget* toolBoxWidget();
-    virtual QWidget* layerWidget();
+    virtual QWidget* buildToolBoxWidget();
+    virtual QWidget* buildToolBarWidget();
+    virtual QWidget* buildLayerWidget();
     virtual QList<medAbstractParameter*> parameters();
     virtual void setData(medAbstractData * data);
     virtual QString lut() const;
@@ -54,7 +54,6 @@ public slots:
     void setPreset(QString value);
     virtual void setLut(QString lut);
     void moveToSlice(int slice);
-    virtual void moveToSliceAtPosition(const QVector3D &position);
     virtual void setVisibility(bool visibility);
     void setWindow(double window);
     void setLevel(double level);

@@ -57,6 +57,8 @@ public slots:
     virtual void setZoom (double zoom);
     virtual void setPan (const QVector2D &pan);
 
+    virtual void moveToPosition(const QVector3D &position);
+
 
 signals:
     void orientationChanged();
