@@ -80,5 +80,6 @@ private slots:
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;
+
 };
 

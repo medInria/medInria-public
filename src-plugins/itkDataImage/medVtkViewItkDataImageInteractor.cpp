@@ -41,7 +41,6 @@
 #include <QFormLayout>
 
 
-
 class medVtkViewItkDataImageInteractorPrivate
 {
 public:
@@ -61,6 +60,9 @@ public:
     medBoolParameter *visibiltyParameter;
     medCompositeParameter *windowLevelParameter;
     medIntParameter *slicingParameter;
+
+    medDoubleParameter *windowParameter;
+    medDoubleParameter *levelParameter;
 };
 
 
@@ -244,6 +246,14 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->windowLevelParameter->addVariant("Window", QVariant(window), QVariant(range[0]), QVariant(range[1]));
     d->windowLevelParameter->addVariant("Level", QVariant(level), QVariant(range[0]), QVariant(range[1]));
 
+    d->windowParameter = new medDoubleParameter("Window", this);
+    connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
+    d->windowParameter->setRange(range[0], range[1]);
+
+    d->levelParameter = new medDoubleParameter("Level", this);
+    connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
+    d->levelParameter->setRange(range[0], range[1]);
+
     //TODO GPR-RDE: Shouldn't it be a navigator parameter?
     d->slicingParameter = new medIntParameter("Slicing", this);
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
@@ -374,7 +384,18 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
 
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
-    layout->addRow(d->windowLevelParameter->getWidget());
+    QHBoxLayout *wLayout = new QHBoxLayout;
+    d->windowParameter->getSlider()->setOrientation(Qt::Horizontal);
+    wLayout->addWidget(d->windowParameter->getSlider());
+    wLayout->addWidget(d->windowParameter->getSpinBox());
+
+    QHBoxLayout *lLayout = new QHBoxLayout;
+    d->levelParameter->getSlider()->setOrientation(Qt::Horizontal);
+    lLayout->addWidget(d->levelParameter->getSlider());
+    lLayout->addWidget(d->levelParameter->getSpinBox());
+
+    layout->addRow(d->windowParameter->getLabel(), wLayout);
+    layout->addRow(d->levelParameter->getLabel(), lLayout);
     layout->addRow(d->lutParam->getLabel(), d->lutParam->getComboBox());
     layout->addRow(d->presetParam->getLabel(), d->presetParam->getComboBox());
 
@@ -383,6 +404,7 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
 
 QWidget* medVtkViewItkDataImageInteractor::buildLayerWidget()
 {
+
     d->opacityParam->getSlider()->setOrientation(Qt::Horizontal);
     return d->opacityParam->getSlider();
 }
@@ -408,14 +430,24 @@ void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
+    if (d->view2d->GetColorWindow(d->medVtkView->layer(d->imageData)) == window)
+        return;
+
     d->view2d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
     d->view3d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
+
+    this->update();
 }
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
+    if (d->view2d->GetColorLevel(d->medVtkView->layer(d->imageData)) == level)
+        return;
+
     d->view2d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
     d->view3d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
+
+    this->update();
 }
 
 void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
@@ -429,17 +461,21 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
     bool needUpdate = false;
     if (d->view2d->GetColorWindow(d->medVtkView->layer(d->imageData)) != values.at(0))
     {
-        setWindow(values.at(0).toDouble());
+        double w = values.at(0).toDouble();
+        d->view2d->SetColorWindow(w, d->medVtkView->layer(d->imageData));
+        d->view3d->SetColorWindow(w, d->medVtkView->layer(d->imageData));
         needUpdate = true;
     }
     if (d->view2d->GetColorLevel(d->medVtkView->layer(d->imageData)) != values.at(1))
     {
-        setLevel(values.at(1).toDouble());
+        double l = values.at(1).toDouble();
+        d->view2d->SetColorLevel(l, d->medVtkView->layer(d->imageData));
+        d->view3d->SetColorLevel(l, d->medVtkView->layer(d->imageData));
         needUpdate = true;
     }
 
     if(needUpdate)
-        update();
+        this->update();
 }
 
 void medVtkViewItkDataImageInteractor::update()
@@ -478,6 +514,8 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
     values.append(QVariant(window));
     values.append(QVariant(level));
     d->windowLevelParameter->setValue(values);
+    d->windowParameter->setValue(window);
+    d->levelParameter->setValue(level);
 }
 
 void medVtkViewItkDataImageInteractor::setUpViewForThumbnail()
@@ -499,6 +537,4 @@ void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
 
     d->view2d->SetCurrentLayer(d->medVtkView->layer(d->imageData));
     d->view3d->SetCurrentLayer(d->medVtkView->layer(d->imageData));
-
 }
-
