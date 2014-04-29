@@ -17,7 +17,6 @@
 
 #include <medCoreExport.h>
 
-class medDataIndexPrivate;
 class QMimeData;
 
 /** class medDataIndex

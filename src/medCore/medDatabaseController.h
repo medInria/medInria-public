@@ -122,6 +122,7 @@ public slots:
     */
     dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const;
 
+    QSharedPointer<medAbstractData> retrieve(const medDataIndex &index) const;
     /**
     * Import data into the db read from file
     * @params const QString & file The file containing the data

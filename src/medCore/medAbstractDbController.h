@@ -107,6 +107,8 @@ public slots:
     */
     virtual dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const = 0;
 
+    virtual QSharedPointer<medAbstractData> retrieve(const medDataIndex& index) const = 0;
+
     /**
     * @brief Imports a file into the db.
     * This method doesn't return any value since it should be run asynchronously. updated(const medDataIndex &) is called when the importation is complete.
