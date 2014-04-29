@@ -161,9 +161,9 @@ $WIDGET_BORDER                  = 0px;
 
 $GROUP_BOX_BORDER               = 1px solid $GREY10;
 
-$CONTAINER_BORDER               = 2px solid $GREY09;
+$CONTAINER_BORDER               = 1px solid $GREY09;
 
-$CONTAINER_SELECTED_BORDER      = 2px solid $HIGHLIGHT_COLOR;
+$CONTAINER_SELECTED_BORDER      = 1px solid $HIGHLIGHT_COLOR;
 
 $MENU_SEPARATOR_BORDER          = 2px solid $GREY10;
 
@@ -173,7 +173,7 @@ $BROWSER_CONTAINER_BORDER       = 2px solid $GREY06;
 
 $DROP_SITE_BORDER               = 1px solid $GREY06;
 
-$DEATABASE_PREVIEW_BORDER       = $CONTAINER_BORDER;
+$DATABASE_PREVIEW_BORDER       = $CONTAINER_BORDER;
 
 /*******************************************************************************
     SIZES
@@ -192,7 +192,7 @@ $PUSH_BUTTON_SIZE               = 20px;
 
 $COMBO_BOX_SIZE                 = 20px;
 
-$SCROLL_BAR_WIDTH               = 12px;
+$SCROLL_BAR_WIDTH               = 9px;
 $SCROLL_BAR_MIN_SIZE            = 28px;
 
 $TAB_HEIGHT                     = 28px;
@@ -229,7 +229,7 @@ $PUSH_BUTTON_RADIUS             = 3px;
 
 $GROUP_BOX_RADIUS               = 3px;
 
-$SCROLL_BAR_RADIUS              = 5px;
+$SCROLL_BAR_RADIUS              = 4px;
 
 $COMBO_BOX_RADIUS               = 3px;
 $VIEW_PROPERTY_COMBO_BOX_RADIUS = 2px;
@@ -1161,7 +1161,7 @@ QWidget#settingsWidget QTabWidget::pane
  *******************************************************************************/
 medDatabasePreview
 {
-    border: 2px solid $GREY07;
+    border: 1px solid $GREY07;
 }
 
 QLabel#previewLabel
@@ -1169,7 +1169,7 @@ QLabel#previewLabel
     color: $TAB_COLOR;
     background: $TOOLBOX_HEADER_BACKGROUND;
     min-height: $STATUS_BAR_HEIGHT;
-    border: 2px solid $GREY07;
+    border: 1px solid $GREY07;
     border-top: none;
 }
 

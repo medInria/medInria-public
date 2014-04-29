@@ -338,7 +338,7 @@ void medViewContainer::highlight(QString color)
 {
     // TODO: recomputeStyleSheet deosn't seem to work here
     // temporary setStyleSheet to update the border color
-    QString styleSheet = "medViewContainer {border:2px solid " + color + ";}";
+    QString styleSheet = "medViewContainer {border:1px solid " + color + ";}";
     this->setStyleSheet(styleSheet);
     if(d->view)
     {
@@ -351,7 +351,7 @@ void medViewContainer::highlight(QString color)
 
 void medViewContainer::unHighlight()
 {
-    this->setStyleSheet("medViewContainer {border:2px solid #909090;}");
+    this->setStyleSheet("medViewContainer {border:1px solid #909090;}");
     if(d->view)
     {
         d->view->viewWidget()->updateGeometry();
@@ -444,19 +444,19 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 
         if((x > rqw && x < rqw * 3) && (y < rqh))
         {
-            this->setStyleSheet("medViewContainer {border-top: 3px solid #0080FF}");
+            this->setStyleSheet("medViewContainer {border-top: 1px solid #0080FF}");
         }
         else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
         {
-            this->setStyleSheet("medViewContainer {border-right: 3px solid #0080FF}");
+            this->setStyleSheet("medViewContainer {border-right: 1px solid #0080FF}");
         }
         else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
         {
-            this->setStyleSheet("medViewContainer {border-bottom: 3px solid #0080FF}");
+            this->setStyleSheet("medViewContainer {border-bottom: 1px solid #0080FF}");
         }
         else if((x < rqw) && (y > rqh && y < rqh * 3))
         {
-            this->setStyleSheet("medViewContainer {border-left: 3px solid #0080FF}");
+            this->setStyleSheet("medViewContainer {border-left: 1px solid #0080FF}");
         }
         else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
         {
@@ -503,6 +503,8 @@ void medViewContainer::dropEvent(QDropEvent *event)
         this->addData(index);
 
     this->setStyleSheet(d->defaultStyleSheet);
+    if(d->selected)
+        this->highlight(d->highlightColor);
 
     event->acceptProposedAction();
 }

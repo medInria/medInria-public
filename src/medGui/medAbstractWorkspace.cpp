@@ -415,7 +415,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
         {
             QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
             medViewContainer *container = containerMng->container(containerUuid);
-            container->highlight("#FF6622");
+            container->highlight("#FF8844");
         }
 
         buildTemporaryPool();
@@ -431,7 +431,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     QList<QString> interactorsIdentifier;
     QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
     medViewContainer *container = containerMng->container(containerUuid);
-    container->highlight("#FF6622");
+    container->highlight("#FF8844");
 
     medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 

@@ -63,7 +63,7 @@ public slots:
     void setUserPoolable(bool poolable);
     void setView(medAbstractView* view);
     void addData(medAbstractData* data);
-    void highlight(QString color = "#FFBB77");
+    void highlight(QString color = "#FFAA88");
     void unHighlight();
     void link(QString pool);
     void unlink();
