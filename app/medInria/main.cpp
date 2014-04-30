@@ -97,9 +97,6 @@ int main(int argc,char* argv[]) {
 
     medSettingsManager* mnger = medSettingsManager::instance();
 
-    //TODO GPR: instanciate somewhereelse
-    medParameterPoolManager::instance();
-
     QStringList posargs;
     for (int i=1;i<application.argc();++i) {
         const QString arg = application.argv()[i];
