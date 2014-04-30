@@ -134,9 +134,11 @@ public slots:
 protected:
     void update();
 
-
 private:
     static QStringList dataHandled();
+
+private slots:
+    void updateSlicingParam();
 
 private:
     itkDataTensorImageVtkViewInteractorPrivate *d;

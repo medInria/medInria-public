@@ -300,6 +300,7 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractView *parent): medAb
 
     d->slicingParameter = new medIntParameter("Slicing", this);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 }
 
 v3dDataFibersInteractor::~v3dDataFibersInteractor()
@@ -1257,16 +1258,21 @@ void v3dDataFibersInteractor::updateWidgets()
         if(d->bundleToolboxWidget)
             d->bundleToolboxWidget->hide();
 
-        //TODO Should be set according to the real number of slice of this data and
-        // not according to vtkInria (ie. first layer droped) - RDE
-        d->slicingParameter->blockSignals(true);
-        d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
-        d->slicingParameter->blockSignals(false);
-
-        // update slider position
-        if(d->view->is2D())
-            d->slicingParameter->setValue(d->view2d->GetSlice());
+        this->updateSlicingParam();
     }
+}
+
+void v3dDataFibersInteractor::updateSlicingParam()
+{
+    if(!d->view->is2D())
+        return;
+    //TODO Should be set according to the real number of slice of this data and
+    // not according to vtkInria (ie. first layer droped) - RDE
+    d->slicingParameter->blockSignals(true);
+    d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
+    d->slicingParameter->blockSignals(false);
+
+    d->slicingParameter->setValue(d->view2d->GetSlice());
 }
 
 void v3dDataFibersInteractor::removeInternBundleToolBoxWidget()

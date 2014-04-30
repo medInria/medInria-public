@@ -230,6 +230,7 @@ private:
 
 private slots:
     void removeInternBundleToolBoxWidget();
+    void updateSlicingParam();
 
 private:
     v3dDataFibersInteractorPrivate *d;

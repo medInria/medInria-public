@@ -78,6 +78,9 @@ private:
     static QStringList dataHandled();
     void update();
 
+private slots:
+    void updateSlicingParam();
+
 
 private:
     medVtkViewItkVectorFieldInteractorPrivate* d;

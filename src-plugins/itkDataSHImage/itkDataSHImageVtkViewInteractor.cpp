@@ -295,6 +295,7 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     }
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
     this->updateWidgets();
 
 }
@@ -523,6 +524,14 @@ void itkDataSHImageVtkViewInteractor::update()
 
 void itkDataSHImageVtkViewInteractor::updateWidgets()
 {
+    this->updateSlicingParam();
+}
+
+void itkDataSHImageVtkViewInteractor::updateSlicingParam()
+{
+    if(!d->view->is2D())
+        return;
+
     //TODO Should be set according to the real number of slice of this data and
     // not according to vtkInria (ie. first layer droped) - RDE
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
@@ -541,7 +550,5 @@ void itkDataSHImageVtkViewInteractor::updateWidgets()
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
     d->slicingParameter->blockSignals(false);
 
-    // update slider position
-    if(d->view->is2D())
-        d->slicingParameter->setValue(d->view2d->GetSlice());
+    d->slicingParameter->setValue(d->view2d->GetSlice());
 }
