@@ -526,7 +526,13 @@ void itkDataTensorImageVtkViewInteractor::setUpViewForThumbnail()
 
 void itkDataTensorImageVtkViewInteractor::moveToSlice(int slice)
 {
-    //TODO
+    //TODO find a way to get woorldCoordinate for slice from vtkInria.
+    // instead of moving to the slice corresponding on the first layer dropped.
+    if(d->view->is2D() && slice != d->view2d->GetSlice())
+    {
+        d->view2d->SetSlice(slice);
+        d->view2d->Render();
+    }
 }
 
 QWidget* itkDataTensorImageVtkViewInteractor::buildLayerWidget()
@@ -565,21 +571,24 @@ void itkDataTensorImageVtkViewInteractor::update()
 
 void itkDataTensorImageVtkViewInteractor::updateWidgets()
 {
+    //TODO Should be set according to the real number of slice of this data and
+    // not according to vtkInria (ie. first layer droped) - RDE
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
-    int orientationId = d->view2d->GetSliceOrientation();
-    int *dim = d->manager->GetInput()->GetDimensions();
+//    int orientationId = d->view2d->GetSliceOrientation();
+//    int *dim = d->manager->GetInput()->GetDimensions();
 
-    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
-        d->slicingParameter->setRange(0, dim[2] - 1);
-    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
-        d->slicingParameter->setRange (0, dim[1] - 1);
-    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
-        d->slicingParameter->setRange (0, dim[0] - 1);
+//    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+//        d->slicingParameter->setRange(0, dim[2] - 1);
+//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+//        d->slicingParameter->setRange (0, dim[1] - 1);
+//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+//        d->slicingParameter->setRange (0, dim[0] - 1);
+
+    d->slicingParameter->blockSignals(true);
+    d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
+    d->slicingParameter->blockSignals(false);
 
     // update slider position
     if(d->view->is2D())
-    {
-        unsigned int zslice = d->view2d->GetSlice();
-        d->slicingParameter->setValue(zslice);
-    }
+        d->slicingParameter->setValue(d->view2d->GetSlice());
 }

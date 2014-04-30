@@ -57,12 +57,6 @@ public slots:
 private:
     static QStringList dataHandled();
 
-
-private slots:
-    void removeInternToolBox();
-
-
-
 private:
     medVtkViewItkDataImage4DInteractorPrivate *d;
 };

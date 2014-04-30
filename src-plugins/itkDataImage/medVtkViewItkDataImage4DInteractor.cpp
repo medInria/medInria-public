@@ -1,11 +1,14 @@
 #include "medVtkViewItkDataImage4DInteractor.h"
 
-#include <medAbstractImageView.h>
-#include <medVtkViewBackend.h>
-#include <medViewFactory.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkActor.h>
 #include <vtkProperty.h>
+#include <vtkImageActor.h>
+#include <vtkImageProperty.h>
+
+#include <medAbstractImageView.h>
+#include <medVtkViewBackend.h>
+#include <medViewFactory.h>
 #include <medTimeLineParameter.h>
 #include <medAbstractImageData.h>
 
@@ -127,8 +130,10 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
               AppendImageSequence<short>(data,d->view,d->sequence, layer)          ||
               AppendImageSequence<unsigned short>(data,d->view,d->sequence, layer) ||
               AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
-              AppendImageSequence<double>(data,d->view,d->sequence, layer)) {
+              AppendImageSequence<double>(data,d->view,d->sequence, layer))
+        {
 
+            d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
 
             d->timeLineParameter = new medTimeLineParameter("TimeLine", this);

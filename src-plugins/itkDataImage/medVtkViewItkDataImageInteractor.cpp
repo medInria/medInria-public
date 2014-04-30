@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -25,6 +25,8 @@
 #include <vtkImageViewCollection.h>
 #include <vtkRenderWindow.h>
 #include <vtkImageData.h>
+#include <vtkImageActor.h>
+#include <vtkImageProperty.h>
 
 #include <medVtkViewBackend.h>
 #include <medAbstractData.h>
@@ -172,6 +174,7 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
         return;
     }
 
+    d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
     initParameters(d->imageData);
 }
 
@@ -196,7 +199,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
     {
         d->view2d->SetITKInput(image, layer);
         d->view3d->SetITKInput(image, layer);
-
         return true;
     }
     return false;
@@ -254,7 +256,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
     d->levelParameter->setRange(range[0], range[1]);
 
-    //TODO GPR-RDE: Shouldn't it be a navigator parameter?
     d->slicingParameter = new medIntParameter("Slicing", this);
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
     int orientationId = d->view2d->GetSliceOrientation();
@@ -426,13 +427,16 @@ void medVtkViewItkDataImageInteractor::windowLevel(double &window, double &level
 void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
 {
     //TODO find a way to get woorldCoordinate for slice from vtkInria.
+    // instead of moving to the slice corresponding on the first layer dropped.
+    if(d->medVtkView->is2D() && slice != d->view2d->GetSlice())
+    {
+        d->view2d->SetSlice(slice);
+        d->view2d->Render();
+    }
 }
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
-    if (d->view2d->GetColorWindow(d->medVtkView->layer(d->imageData)) == window)
-        return;
-
     d->view2d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
     d->view3d->SetColorWindow(window, d->medVtkView->layer(d->imageData));
 
@@ -441,9 +445,6 @@ void medVtkViewItkDataImageInteractor::setWindow(double window)
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
-    if (d->view2d->GetColorLevel(d->medVtkView->layer(d->imageData)) == level)
-        return;
-
     d->view2d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
     d->view3d->SetColorLevel(level, d->medVtkView->layer(d->imageData));
 
@@ -488,21 +489,26 @@ void medVtkViewItkDataImageInteractor::update()
 
 void medVtkViewItkDataImageInteractor::updateWidgets()
 {
+
+    //TODO Should be set according to the real number of slice of this data and
+    // not according to vtkInria (ie. first layer droped) - RDE
+
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
-    int orientationId = d->view2d->GetSliceOrientation();
-    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
-        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
-    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
-        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
-    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
-        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
+//    int orientationId = d->view2d->GetSliceOrientation();
+//    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+//        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
+//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+//        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
+//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+//        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
+
+    d->slicingParameter->blockSignals(true);
+    d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
+    d->slicingParameter->blockSignals(false);
 
     // update slider position
     if(d->medVtkView->is2D())
-    {
-        unsigned int zslice = d->view2d->GetSlice();
-        d->slicingParameter->setValue(zslice);
-    }
+        d->slicingParameter->setValue(d->view2d->GetSlice());
 }
 
 void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, double level, unsigned int layer)
@@ -513,9 +519,14 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
     QList<QVariant> values;
     values.append(QVariant(window));
     values.append(QVariant(level));
+
+    d->windowParameter->blockSignals(true);
+    d->levelParameter->blockSignals(true);
     d->windowLevelParameter->setValue(values);
     d->windowParameter->setValue(window);
     d->levelParameter->setValue(level);
+    d->windowParameter->blockSignals(false);
+    d->levelParameter->blockSignals(false);
 }
 
 void medVtkViewItkDataImageInteractor::setUpViewForThumbnail()

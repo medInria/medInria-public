@@ -189,7 +189,7 @@ QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
     QList<medAbstractParameter*>  params;
     params.append(this->primaryNavigator()->parameters());
 
-    foreach(medAbstractNavigator* nav,  d->extraNavigators)
+    foreach(medAbstractNavigator* nav,  this->extraNavigators())
     {
         params.append(nav->parameters());
     }

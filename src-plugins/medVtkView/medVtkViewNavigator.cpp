@@ -631,15 +631,14 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     case medImageView::VIEW_ORIENTATION_AXIAL:
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
         d->currentView = d->view2d;
-      break;
+        break;
     case medImageView::VIEW_ORIENTATION_CORONAL:
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
         d->currentView = d->view2d;
-      break;
+        break;
     case medImageView::VIEW_ORIENTATION_SAGITTAL:
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
         d->currentView = d->view2d;
-
         break;
     }
 
