@@ -490,7 +490,13 @@ void medVtkViewItkDataImageInteractor::update()
 
 void medVtkViewItkDataImageInteractor::updateWidgets()
 {
-    this->updateSlicingParam();
+    if(!d->view->is2D())
+        d->slicingParameter->getSlider()->setEnabled(false);
+    else
+    {
+        d->slicingParameter->getSlider()->setEnabled(true);
+        this->updateSlicingParam();
+    }
 }
 
 void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, double level, unsigned int layer)

@@ -55,6 +55,8 @@ $STATUS_BAR_BACKGROUND                  = qlineargradient(x1: 0, y1: 0, x2: 0, y
 
 $SLIDER_HORIZONTAL_BACKGROUND           = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $GREY07, stop: 1 $GREY04);
 $SLIDER_VERTICAL_BACKGROUND             = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $GREY07, stop: 1 $GREY04);
+$SLIDER_DISABLED__HORIZONTAL_BACKGROUND = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $GREY09, stop: 1 $GREY06);
+$SLIDER_DISABLED__VERTICAL_BACKGROUND   = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $GREY09, stop: 1 $GREY06);
 
 $PUSH_BUTTON_BACKGROUND                 = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $PUSH_BUTTON_DISABLED_BACKGROUND        = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY05, stop: 1 $GREY04);
@@ -129,6 +131,7 @@ $PROGRESS_BAR_COLOR                 = $HIGHLIGHT_COLOR;
 $PROGRESS_BAR_TEXT_COLOR            = $GREY00;
 
 $SLIDER_COLOR                       = qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 $GREY11, stop: 1 $GREY10);
+$SLIDER_DISABLED_COLOR              = qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 $GREY09, stop: 1 $GREY08);
 
 $COMBO_BOX_ITEM_SELECTED_COLOR      = $HIGHLIGHT_COLOR;
 
@@ -719,6 +722,28 @@ QSlider::handle:vertical
     background: $SLIDER_COLOR;
     height: $SLIDER_SIZE;
     border-radius: $SLIDER_RADIUS;
+}
+
+
+QSlider::groove:horizontal:disabled
+{
+    background: $SLIDER_DISABLED_HORIZONTAL_BACKGROUND;
+}
+
+QSlider::handle:horizontal:disabled
+{
+    background: $SLIDER_DISABLED_COLOR;
+}
+
+QSlider::groove:vertical:disabled
+{
+
+    background: $SLIDER_DISABLED_VERTICAL_BACKGROUND;
+}
+
+QSlider::handle:vertical:disabled
+{
+    background: $SLIDER_DISABLED_COLOR;
 }
 
 

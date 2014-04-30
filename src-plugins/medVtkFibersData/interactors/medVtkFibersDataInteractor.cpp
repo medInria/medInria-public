@@ -1252,12 +1252,13 @@ void medVtkFibersDataInteractor::updateWidgets()
     if(!d->view->is2D())
     {
         d->bundleToolboxWidget->show();
+        d->slicingParameter->getSlider()->setEnabled(false);
     }
     else
     {
         if(d->bundleToolboxWidget)
             d->bundleToolboxWidget->hide();
-
+        d->slicingParameter->getSlider()->setEnabled(true);
         this->updateSlicingParam();
     }
 }
