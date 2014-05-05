@@ -7,7 +7,6 @@
 class medVtkView;
 class vtkImageView2D;
 class vtkImageView3D;
-class medVtkViewSignalsEmitter;
 
 class MEDVTKVIEWPLUGIN_EXPORT medVtkViewObserver : public vtkCommand
 {
@@ -23,11 +22,11 @@ public:
 
     inline void   lock()
     {
-        this->m_lock = 1;
+        this->m_locked = true;
     }
     inline void unlock()
     {
-        this->m_lock = 0;
+        this->m_locked = false;
     }
 
     void Execute (vtkObject *caller, unsigned long event, void *callData);
@@ -38,9 +37,8 @@ protected:
     ~medVtkViewObserver();
 
 private:
-    int m_lock;
+    bool m_locked;
     medVtkView *m_view;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    medVtkViewSignalsEmitter *emitter;
 };

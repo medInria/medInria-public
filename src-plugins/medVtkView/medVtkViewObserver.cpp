@@ -10,12 +10,10 @@
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
 #include <medVtkViewBackend.h>
-#include <medVtkViewSignalsEmitter.h>
-#include <dtkCore/dtkSignalBlocker.h>
 
 #include <medVtkView.h>
 
-//=============================================================================
+
 // Construct a QVector3d from pointer-to-double
 inline QVector3D doubleToQtVector3D ( const double * v )
 {
@@ -38,9 +36,7 @@ inline void qtColorToDouble ( const QColor & color, double * cv )
 
 medVtkViewObserver::medVtkViewObserver()
 {
-    this->m_lock = 0;
-
-    this->emitter = new medVtkViewSignalsEmitter();
+    this->m_locked = false;
 }
 
 medVtkViewObserver::~medVtkViewObserver()
@@ -55,14 +51,11 @@ void medVtkViewObserver::setView (medVtkView *view)
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
     this->view2d = backend->view2D;
     this->view3d = backend->view3D;
-
-    this->emitter->setView(m_view);
-
 }
 
 void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *callData)
 {
-    if(this->m_lock)
+    if(this->m_locked)
         return;
 
     if(!this->m_view)
@@ -75,20 +68,20 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         const double *pos = this->view2d->GetCurrentPoint();
         QVector3D qpos(doubleToQtVector3D(pos));
 
-        this->emitter->emitPositionViewedChanged(qpos);
+        m_view->positionViewedChanged(qpos);
         break;
     }
     case vtkImageView2DCommand::CameraZoomEvent:
     {
         double zoom = this->view2d->GetZoom();
-        this->emitter->emitZoomChanged(zoom);
+        m_view->zoomChanged(zoom);
         break;
     }
     case vtkImageView2DCommand::CameraPanEvent:
     {
         const double *pan = this->view2d->GetPan();
         QVector2D qpan (pan[0], pan[1]);
-        this->emitter->emitPanChanged(qpan);
+        m_view->panChanged(qpan);
         break;
     }
     case vtkImageView::WindowLevelChangedEvent:
@@ -96,7 +89,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         unsigned int layer = this->m_view->currentLayer();
         double level = this->view2d->GetColorLevel(layer);
         double window = this->view2d->GetColorWindow(layer);
-        this->emitter->emitWindowLevelChanged(window, level, layer);
+        m_view->windowLevelChanged(window, level, layer);
 
         break;
     }
@@ -109,7 +102,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         QVector3D position(doubleToQtVector3D(pos));
         QVector3D viewup(doubleToQtVector3D(vup));
         QVector3D focal(doubleToQtVector3D(foc));
-        this->emitter->emitCameraChanged(position, viewup, focal, ps);
+        m_view->cameraChanged(position, viewup, focal, ps);
         break;
     }
     case vtkCommand::KeyPressEvent:

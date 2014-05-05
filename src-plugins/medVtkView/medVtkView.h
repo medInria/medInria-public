@@ -19,7 +19,7 @@
 class medVtkViewPrivate;
 class medAbstractData;
 class medAbstractImageData;
-
+class medVtkViewObserver;
 
 class MEDVTKVIEWPLUGIN_EXPORT medVtkView : public medAbstractImageView
 {
@@ -67,5 +67,6 @@ private:
 
 private:
     medVtkViewPrivate *d;
+    friend class medVtkViewObserver; 
 };
 
