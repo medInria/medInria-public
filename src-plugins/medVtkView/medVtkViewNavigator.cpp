@@ -113,25 +113,29 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
 
     d->oAxialParameter = new medBoolParameter("axial", this);
     d->oAxialParameter->setIcon(QIcon(":/icons/AxialIcon.png"));
-    d->oAxialParameter->setIconSize(QSize(64,64));
+    d->oAxialParameter->setIconSize(QSize(40,40));
+    d->oAxialParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oAxialParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setAxial(bool)));
 
     d->oCoronalParameter = new medBoolParameter("coronal", this);
     d->oCoronalParameter->setIcon(QIcon(":/icons/CoronalIcon.png"));
-    d->oCoronalParameter->setIconSize(QSize(64,64));
+    d->oCoronalParameter->setIconSize(QSize(40,40));
+    d->oCoronalParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oCoronalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setCoronal(bool)));
 
     d->oSagittalParameter = new medBoolParameter("sagittal", this);
     d->oSagittalParameter->setIcon(QIcon(":/icons/SagittalIcon.png"));
-    d->oSagittalParameter->setIconSize(QSize(64,64));
+    d->oSagittalParameter->setIconSize(QSize(40,40));
+    d->oSagittalParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oSagittalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setSagittal(bool)));
 
     d->o3dParameter = new medBoolParameter("3d", this);
     d->o3dParameter->setIcon(QIcon(":/icons/3DIcon.png"));
-    d->o3dParameter->setIconSize(QSize(64,64));
+    d->o3dParameter->setIconSize(QSize(40,40));
+    d->o3dParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->o3dParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(set3d(bool)));
 

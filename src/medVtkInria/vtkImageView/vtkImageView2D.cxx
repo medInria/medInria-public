@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -736,7 +736,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
   if (slice_orientation == -1)
   {
     vtkErrorMacro("Error - No slice-orientation corresponding to the required view-orientation "<< orientation
-		  <<"\n Please consider switch ON vtkINRIA3D_HACK_OBLIQUE_ORIENTATION ");
+          <<"\n Please consider switch ON vtkINRIA3D_HACK_OBLIQUE_ORIENTATION ");
     slice_orientation = orientation;
   }
 
@@ -1668,20 +1668,15 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
       reslicedImage->Update();
       reslicedImage->GetScalarRange(range);
 
-      vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable("Default");
-      lut->SetTableRange (range[0], range[1]);
       vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
       imageDisplay->SetInput(reslicedImage);
-      imageDisplay->SetUseLookupTable(true);
-      imageDisplay->GetWindowLevel()->SetLookupTable(lut);
-      imageDisplay->GetImageActor()->SetOpacity(1.0);
+      imageDisplay->GetImageActor()->SetOpacity(0.5);
       imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
       this->SetColorRange(range,layer);
 
-      // this->GetImage2DDisplayForLayer(layer)->GetInput()->UpdateInformation();
+      this->GetImage2DDisplayForLayer(layer)->GetInput()->UpdateInformation();
 
       reslicedImage->Delete();
-      lut->Delete();
   }
 
   renderer = this->GetRendererForLayer(layer);

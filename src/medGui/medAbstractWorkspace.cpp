@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -288,7 +288,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
                 layout->addStretch();
-                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))   
+                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
                 {
                     if(interactor->layerWidget())
                         layout->addWidget(interactor->layerWidget());
