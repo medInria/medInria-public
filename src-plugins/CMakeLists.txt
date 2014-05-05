@@ -54,7 +54,6 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 ## you want to include in the build, 
 set(PLUGIN_LIST
   v3dData                                   ON
-  v3dView                                   ON
   itkDataImage                              ON
   itkDataImageReader                        ON
   itkDataImageWriter                        ON
