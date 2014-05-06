@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -47,6 +47,8 @@
 #include <itkImageToVTKImageFilter.h>
 #include <itkMatrix.h>
 #include <vtkRendererCollection.h>
+#include <vtkImageReader2.h>
+
 //#include <vnl/algo/vnl_qr.h>
 
 #ifdef WIN32
@@ -164,6 +166,7 @@ vtkImageView::vtkImageView()
   this->ScalarBar->VisibilityOn();
 
 
+
   for(int i=0; i<3; i++)
     this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
 
@@ -188,7 +191,7 @@ vtkImageView::vtkImageView()
 vtkImageView::~vtkImageView()
 {
   std::cout<<"deleting a view"<<std::endl;
-  
+
   this->OrientationTransform->SetInput ( NULL );
 
   this->OrientationMatrix->Delete();
@@ -238,7 +241,7 @@ vtkImageView::~vtkImageView()
 
   std::cout<<"deleting a view. done"<<std::endl;
 
-  
+
 }
 
 //----------------------------------------------------------------------------
@@ -1431,7 +1434,7 @@ void vtkImageView::Reset()
   this->ResetWindowLevel();
   // this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
   this->ResetCamera();
-  
+
 }
 
 //----------------------------------------------------------------------------

@@ -249,12 +249,17 @@ void medAbstractWorkspace::updateLayersToolBox()
                 d->layerListWidget->addItem(item);
             }
 
-            for(unsigned int layer = 0; layer < layeredView->layersCount(); ++layer)
+            for(int layer = layeredView->layersCount() - 1; layer >= 0; --layer)
             {
-                QWidget *layerWidget = new QWidget;
-                layerWidget->setObjectName("layerWidget");
+                if(layer < 0)
+                    break;
 
                 medAbstractData *data = layeredView->layerData(layer);
+                if(!data)
+                    continue;
+
+                QWidget *layerWidget = new QWidget;
+                layerWidget->setObjectName("layerWidget");
                 QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
                 QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
 

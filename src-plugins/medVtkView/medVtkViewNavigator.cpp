@@ -105,6 +105,29 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->collection->AddItem(d->view3d);
     d->render = backend->renWin;
 
+    d->zoomParameter = new medDoubleParameter("Zoom", this);
+    connect(d->zoomParameter, SIGNAL(valueChanged(double)),this, SLOT(setZoom(double)));
+    connect(parent, SIGNAL(zoomChanged(double)), d->zoomParameter, SLOT(setValue(double)));
+    d->zoomParameter->setValue(1);
+
+    d->panParameter = new medVector2DParameter("Pan", this);
+    connect(d->panParameter, SIGNAL(valueChanged(QVector2D)),this, SLOT(setPan(QVector2D)));
+    connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
+
+    d->cameraParameter = new medCompositeParameter("Camera", this);
+    d->cameraParameter->addVariant("Camera Position", QVariant(QVector3D()));
+    d->cameraParameter->addVariant("Camera Up", QVariant(QVector3D()));
+    d->cameraParameter->addVariant("Camera Focal", QVariant(QVector3D()));
+    d->cameraParameter->addVariant("Parallel Scale", QVariant((double)0.0));
+
+    d->positionParameter = new medVector3DParameter("Position", this);
+    connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToPosition(QVector3D)));
+    connect(d->parent, SIGNAL(positionViewedChanged(QVector3D)), d->positionParameter, SLOT(setValue(QVector3D)));
+
+    connect(d->cameraParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setCamera(QList<QVariant>)));
+    connect(parent, SIGNAL(cameraChanged(QVector3D,QVector3D,QVector3D,double)),
+            this,SLOT(updateCameraParam(QVector3D,QVector3D,QVector3D,double)));
+
 
     d->orientationParameter = new medBoolGroupParameter("Orientation", this);
     d->orientationParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
@@ -145,30 +168,6 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->orientationParameter->addParameter(d->o3dParameter);
     d->oAxialParameter->setValue(true);
 
-    d->zoomParameter = new medDoubleParameter("Zoom", this);
-    connect(d->zoomParameter, SIGNAL(valueChanged(double)),this, SLOT(setZoom(double)));
-    connect(parent, SIGNAL(zoomChanged(double)), d->zoomParameter, SLOT(setValue(double)));
-    d->zoomParameter->setValue(1);
-
-    d->panParameter = new medVector2DParameter("Pan", this);
-    connect(d->panParameter, SIGNAL(valueChanged(QVector2D)),this, SLOT(setPan(QVector2D)));
-    connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
-
-    d->cameraParameter = new medCompositeParameter("Camera", this);
-    d->cameraParameter->addVariant("Camera Position", QVariant(QVector3D()));
-    d->cameraParameter->addVariant("Camera Up", QVariant(QVector3D()));
-    d->cameraParameter->addVariant("Camera Focal", QVariant(QVector3D()));
-    d->cameraParameter->addVariant("Parallel Scale", QVariant((double)0.0));
-
-
-    d->positionParameter = new medVector3DParameter("Position", this);
-    connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToPosition(QVector3D)));
-    connect(d->parent, SIGNAL(positionViewedChanged(QVector3D)), d->positionParameter, SLOT(setValue(QVector3D)));
-
-    connect(d->cameraParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setCamera(QList<QVariant>)));
-    connect(parent, SIGNAL(cameraChanged(QVector3D,QVector3D,QVector3D,double)),
-            this,SLOT(updateCameraParam(QVector3D,QVector3D,QVector3D,double)));
-
     d->showAxesParameter = new medBoolParameter("Axes", this);
     d->showRulerParameter = new medBoolParameter("Ruler", this);
     d->showAnnotationParameter = new medBoolParameter("Annotations", this);
@@ -203,6 +202,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),
             dynamic_cast<medAbstractImageView*>(parent), SIGNAL(orientationChanged()));
+
 }
 
 medVtkViewNavigator::~medVtkViewNavigator()
@@ -616,6 +616,10 @@ void medVtkViewNavigator::showScalarBar(bool show)
 
 void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientation)
 {
+    // prevent from vtk event send by the resend by the observer. - RDE
+    d->zoomParameter->blockSignals(true);
+    d->cameraParameter->blockSignals(true);
+
     double pos[3];
     int timeIndex = 0;
     if(d->currentView)
@@ -654,6 +658,9 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     d->orientation = orientation;
 
     emit orientationChanged();
+
+    d->zoomParameter->blockSignals(false);
+    d->cameraParameter->blockSignals(false);
 }
 
 void medVtkViewNavigator::updateWidgets()
