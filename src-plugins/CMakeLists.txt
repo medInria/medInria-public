@@ -55,9 +55,6 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 set(PLUGIN_LIST
   v3dData                                   ON
   itkDataImage                              ON
-  itkDataImageReader                        ON
-  itkDataImageWriter                        ON
-  itkDCMTKDataImageReader                   ON
   vtkDataMesh                               ON
   itkDataDiffusionGradientList              ON
   itkDataTensorImage                        ON

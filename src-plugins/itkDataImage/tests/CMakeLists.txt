@@ -16,7 +16,7 @@ project(itkDataImagePluginTests) #TODO : doesn't work by now
 ## #############################################################################
 ## Sources
 ## #############################################################################
-
+return()
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )

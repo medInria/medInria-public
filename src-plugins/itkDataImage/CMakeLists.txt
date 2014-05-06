@@ -34,6 +34,16 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+if (ITK_USE_SYSTEM_GDCM)
+  add_definitions(-DITK_USE_SYSTEM_GDCM)
+endif()
+
+find_package(DCMTK REQUIRED)
+if (APPLE)
+  include(FixDCMTKMacInstall)
+  FixDCMTKMacInstall()
+endif()
+
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
@@ -43,7 +53,12 @@ include(${VTK_USE_FILE})
 ## #############################################################################
 
 list_source_files(${PROJECT_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  . # current dir
+  datas
+  interactors
+  navigators
+  readers
+  writers
   )
 
 
@@ -113,19 +128,39 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  QVTK
   dtkCore
   dtkLog
+  ITKIOBioRad
+  ITKIOBMP
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOHDF5
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPhilipsREC
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
   ITKStatistics
+  ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
+  medCore
+  medGui
+  medImageIO
+  medLog
+  medVtkInria
+  QVTK
   vtkCommon
   vtkRendering
   vtkVolumeRendering
-  medCore
-  medGui
-  medLog
-  medVtkInria
   )
 
+# needed because of link  with medImageIO
+if(APPLE)
+  FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})  
+endif(APPLE)
 
 ## #############################################################################
 ## Install rules
