@@ -18,6 +18,14 @@
 #include <itkDataTensorImageFloat3.h>
 #include <itkDataTensorImageVtkViewInteractor.h>
 
+#include <itkMetaDataTensorImageWriter.h>
+#include <itkNiftiDataTensorImageWriter.h>
+#include <itkNrrdDataTensorImageWriter.h>
+
+#include <itkNrrdDataTensorImageReader.h>
+#include <itkNiftiDataTensorImageReader.h>
+#include <itkMetaDataTensorImageReader.h>
+
 #include <dtkLog/dtkLog.h>
 
 #include <itkLogForwarder.h>
@@ -64,6 +72,14 @@ bool itkDataTensorImagePlugin::initialize()
     if (!itkDataTensorImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataTensorImageFloat3 type";  }
     if (!itkDataTensorImageVtkViewInteractor::registered())  { dtkWarn() << "Unable to register itkDataTensorImageVtkViewInteractor type";  }
 
+    if (!itkMetaDataTensorImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageWriter type";  }
+    if (!itkNiftiDataTensorImageWriter::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageWriter type"; }
+    if (!itkNrrdDataTensorImageWriter::registered())  { dtkWarn() << "Unable to register itkNrrdDataTensorImageWriter type";  }
+
+    if (!itkMetaDataTensorImageReader::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageReader type";  }
+    if (!itkNiftiDataTensorImageReader::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageReader type"; }
+    if (!itkNrrdDataTensorImageReader::registered())  { dtkWarn() << "Unable to register itkNrrdDataTensorImageReader type";  }
+
     return true;
 }
 
@@ -84,7 +100,7 @@ QString itkDataTensorImagePlugin::description() const
 
 QStringList itkDataTensorImagePlugin::tags() const
 {
-    return QStringList() << "itk" << "data" << "tensor" << "image";
+    return QStringList() << "itk" << "data" << "tensor" << "image" << "reader" << "writer";
 }
 
 QString itkDataTensorImagePlugin::version() const
@@ -96,7 +112,13 @@ QString itkDataTensorImagePlugin::version() const
 QStringList itkDataTensorImagePlugin::types() const
 {
     return QStringList() << "itkDataTensorImageFloat3"
-			 << "itkDataTensorImageDouble3";
+			                   << "itkDataTensorImageDouble3"
+                         << "itkMetaDataTensorImageWriter"
+                         << "itkNiftiDataTensorImageWriter"
+                         << "itkNrrdDataTensorImageWriter"
+                         << "itkMetaDataTensorImageReader"
+                         << "itkNiftiDataTensorImageReader"
+                         << "itkNrrdDataTensorImageReader";
 }
 
 Q_EXPORT_PLUGIN2(itkDataTensorImagePlugin, itkDataTensorImagePlugin)

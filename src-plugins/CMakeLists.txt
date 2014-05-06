@@ -61,8 +61,6 @@ set(PLUGIN_LIST
   vtkDataMesh                               ON
   itkDataDiffusionGradientList              ON
   itkDataTensorImage                        ON
-  itkDataTensorImageWriter                  ON
-  itkDataTensorImageReader                  ON
   medSegmentation                           ON
   itkFilters                                ON
   qtdcmDataSource                           ON

@@ -15,18 +15,19 @@
 
 #include <itkDataTensorImageWriterBase.h>
 
-#include <itkDataTensorImageWriterPluginExport.h>
+#include <itkDataTensorImagePluginExport.h>
 
-class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkNiftiDataTensorImageWriter : public itkDataTensorImageWriterBase
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkNrrdDataTensorImageWriter : public itkDataTensorImageWriterBase
 {
     Q_OBJECT
 
 public:
-    itkNiftiDataTensorImageWriter();
-    virtual ~itkNiftiDataTensorImageWriter();
+    itkNrrdDataTensorImageWriter();
+    virtual ~itkNrrdDataTensorImageWriter();
 
     virtual QString identifier()  const;
     virtual QString description() const;
+    virtual QStringList supportedFileExtensions() const;
 
     static bool registered();
 

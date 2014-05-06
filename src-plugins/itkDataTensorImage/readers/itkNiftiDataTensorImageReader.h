@@ -13,23 +13,21 @@
 
 #pragma once
 
-#include <itkDataTensorImageWriterBase.h>
+#include <itkDataTensorImageReaderBase.h>
+#include <itkDataTensorImagePluginExport.h>
 
-#include <itkDataTensorImageWriterPluginExport.h>
-
-class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkNrrdDataTensorImageWriter : public itkDataTensorImageWriterBase
-{
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkNiftiDataTensorImageReader: public itkDataTensorImageReaderBase {
     Q_OBJECT
-
+	
 public:
-    itkNrrdDataTensorImageWriter();
-    virtual ~itkNrrdDataTensorImageWriter();
 
+    itkNiftiDataTensorImageReader();
+    virtual ~itkNiftiDataTensorImageReader();
+	
     virtual QString identifier()  const;
     virtual QString description() const;
-    virtual QStringList supportedFileExtensions() const;
-
+	
     static bool registered();
 
-    static dtkAbstractDataWriter* create();
+    static dtkAbstractDataReader * create();
 };

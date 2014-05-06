@@ -13,32 +13,32 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractDataWriter.h>
+#include <dtkCore/dtkAbstractDataReader.h>
 
-#include <itkDataTensorImageWriterPluginExport.h>
+#include <itkDataTensorImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkDataTensorImageWriterBase : public dtkAbstractDataWriter
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageReaderBase : public dtkAbstractDataReader
 {
     Q_OBJECT
 
 public:
-    itkDataTensorImageWriterBase();
-    virtual ~itkDataTensorImageWriterBase();
+             itkDataTensorImageReaderBase();
+    virtual ~itkDataTensorImageReaderBase();
 
     virtual QStringList handled() const;
-
-    virtual QStringList supportedFileExtensions() const;
 
     static QStringList s_handled();
 
 public slots:
-    bool write    (const QString& path);
-    bool canWrite (const QString& path);
-
-private:
-    template <class PixelType>
-    bool write(const QString& path, PixelType dummyArgument);
+    virtual bool canRead (const QString &path);
+    virtual bool canRead (const QStringList &paths);
+    
+    virtual bool readInformation (const QString &path);
+    virtual bool readInformation (const QStringList &paths);
+    
+    virtual bool read (const QString &path);
+    virtual bool read (const QStringList &paths);
 
 protected:
     itk::ImageIOBase::Pointer io;

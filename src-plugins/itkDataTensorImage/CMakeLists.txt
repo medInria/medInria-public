@@ -46,7 +46,11 @@ include(${VTK_USE_FILE})
 ## #############################################################################
 
 list_source_files(${PROJECT_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  . # current dir
+  datas
+  interactors
+  readers
+  writers
   )
 
 set(${PROJECT_NAME}_QRC itkDataTensorImage.qrc)
@@ -97,28 +101,28 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  QVTK
   dtkCore
   dtkLog
-  ITKIOBMP
   ITKIOBioRad
-  ITKIOHDF5
+  ITKIOBMP
   ITKIOGDCM
   ITKIOGIPL
+  ITKIOHDF5
   ITKIOJPEG
   ITKIOLSM
   ITKIOMeta
+  ITKIOMRC
   ITKIONIFTI
   ITKIONRRD
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ITKIOMRC
   ITKTensor
   medCore
   medGui
   medLog
   medVtkInria
+  QVTK
   )
 
 
