@@ -15,10 +15,10 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include <itkDataSHImageWriterPluginExport.h>
+#include <itkDataSHImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataSHImageWriterBase : public dtkAbstractDataWriter
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageWriterBase : public dtkAbstractDataWriter
 {
     Q_OBJECT
 

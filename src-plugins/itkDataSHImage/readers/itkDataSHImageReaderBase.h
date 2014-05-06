@@ -16,10 +16,10 @@
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
-#include <itkDataSHImageReaderPluginExport.h>
+#include <itkDataSHImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkDataSHImageReaderBase : public dtkAbstractDataReader
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageReaderBase : public dtkAbstractDataReader
 {
     Q_OBJECT
 

@@ -14,15 +14,15 @@
 #pragma once
 
 #include <itkDataSHImageReaderBase.h>
-#include <itkDataSHImageReaderPluginExport.h>
+#include <itkDataSHImagePluginExport.h>
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkNiftiDataSHImageReader : public itkDataSHImageReaderBase
+class ITKDATASHIMAGEPLUGIN_EXPORT itkNrrdDataSHImageReader: public itkDataSHImageReaderBase
 {
     Q_OBJECT
 	
 public:
-    itkNiftiDataSHImageReader();
-    virtual ~itkNiftiDataSHImageReader();
+    itkNrrdDataSHImageReader();
+    virtual ~itkNrrdDataSHImageReader();
 	
     virtual QString description() const;
     virtual QString identifier() const;
@@ -30,4 +30,4 @@ public:
     static bool registered();	
 };
 
-dtkAbstractDataReader *createItkNiftiDataSHImageReader();
+dtkAbstractDataReader *createItkNrrdDataSHImageReader();

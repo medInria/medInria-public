@@ -14,9 +14,9 @@
 #pragma once
 
 #include <itkDataSHImageReaderBase.h>
-#include <itkDataSHImageReaderPluginExport.h>
+#include <itkDataSHImagePluginExport.h>
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkMetaDataSHImageReader: public itkDataSHImageReaderBase
+class ITKDATASHIMAGEPLUGIN_EXPORT itkMetaDataSHImageReader: public itkDataSHImageReaderBase
 {
     Q_OBJECT
 	

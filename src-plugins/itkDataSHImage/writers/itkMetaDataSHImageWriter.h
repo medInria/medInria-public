@@ -13,21 +13,21 @@
 
 #pragma once
 
-#include <itkDataSHImageReaderBase.h>
-#include <itkDataSHImageReaderPluginExport.h>
+#include <itkDataSHImageWriterBase.h>
+#include <itkDataSHImagePluginExport.h>
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkNrrdDataSHImageReader: public itkDataSHImageReaderBase
+class ITKDATASHIMAGEPLUGIN_EXPORT itkMetaDataSHImageWriter : public itkDataSHImageWriterBase
 {
     Q_OBJECT
-	
-public:
-    itkNrrdDataSHImageReader();
-    virtual ~itkNrrdDataSHImageReader();
-	
-    virtual QString description() const;
-    virtual QString identifier() const;
-	
-    static bool registered();	
-};
 
-dtkAbstractDataReader *createItkNrrdDataSHImageReader();
+public:
+    itkMetaDataSHImageWriter();
+    virtual ~itkMetaDataSHImageWriter();
+
+    virtual QString identifier()  const;
+    virtual QString description() const;
+
+    static bool registered();
+
+    static dtkAbstractDataWriter* create();
+};

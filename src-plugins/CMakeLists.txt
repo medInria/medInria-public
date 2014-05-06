@@ -65,8 +65,6 @@ set(PLUGIN_LIST
   itkFilters                                ON
   qtdcmDataSource                           ON
   itkDataSHImage                            ON
-  itkDataSHImageWriter                      ON
-  itkDataSHImageReader                      ON
   undoRedoRegistration                      ON
   itkProcessRegistrationDiffeomorphicDemons ON
   medVtkView                                ON
