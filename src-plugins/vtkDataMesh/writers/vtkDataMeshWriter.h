@@ -15,10 +15,10 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include <vtkDataMeshWriterPluginExport.h>
+#include <vtkDataMeshPluginExport.h>
 class vtkDataSetWriter;
 
-class VTKDATAMESHWRITERPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataWriter
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataWriter
 {
     Q_OBJECT
 

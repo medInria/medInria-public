@@ -43,7 +43,12 @@ include(${ITK_USE_FILE})
 ## #############################################################################
 
 list_source_files(${PROJECT_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  .
+  datas
+  interactors
+  navigators
+  readers
+  writers
   )
 
 
@@ -89,17 +94,18 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  QVTK
   dtkCore
   dtkLog
-  QVTK
-  vtkCommon
-  vtkFiltering
-  vtkRendering
   itksys
   medCore
   medGui
   medLog
   medVtkInria
+  vtkCommon
+  vtkFiltering
+  vtkIO
+  vtkRendering
   )
 
 

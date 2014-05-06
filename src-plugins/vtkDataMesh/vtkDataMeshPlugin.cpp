@@ -18,6 +18,12 @@
 #include <vtkDataMesh4DInteractor.h>
 #include <vtkDataMeshNavigator.h>
 
+#include <vtkDataMeshReader.h>
+#include <vtkDataMesh4DReader.h>
+
+#include <vtkDataMeshWriter.h>
+#include <vtkDataMesh4DWriter.h>
+
 #include <dtkLog/dtkLog.h>
 
 #include <vtkLogForwarder.h>
@@ -58,11 +64,18 @@ vtkDataMeshPlugin::~vtkDataMeshPlugin()
 
 bool vtkDataMeshPlugin::initialize()
 {
-  if(!vtkDataMesh::registered()) qDebug() << "Unable to register vtkDataMesh type";
-  if(!vtkDataMesh4D::registered()) qDebug() << "Unable to register vtkDataMesh4D type";
-  if(!vtkDataMeshInteractor::registered()) qDebug() << "Unable to register vtkDataMeshInteractor type";
-  if(!vtkDataMesh4DInteractor::registered()) qDebug() << "Unable to register vtkDataMesh4DInteractor type";
-  if(!vtkDataMeshNavigator::registered()) qDebug() << "Unable to register vtkDataMeshNavigator type";
+  if ( ! vtkDataMesh::registered()) { dtkWarn() << "Unable to register vtkDataMesh type"; }
+  if ( ! vtkDataMesh4D::registered()) { dtkWarn() << "Unable to register vtkDataMesh4D type"; }
+  if ( ! vtkDataMeshInteractor::registered()) { dtkWarn() << "Unable to register vtkDataMeshInteractor type"; }
+  if ( ! vtkDataMesh4DInteractor::registered()) { dtkWarn() << "Unable to register vtkDataMesh4DInteractor type"; }
+  if ( ! vtkDataMeshNavigator::registered()) { dtkWarn() << "Unable to register vtkDataMeshNavigator type"; }
+  
+  if ( ! vtkDataMeshReader::registered())   { dtkWarn() << "Unable to register vtkDataMeshReader type"; }
+  if ( ! vtkDataMesh4DReader::registered()) { dtkWarn() << "Unable to register vtkDataMesh4DReader type"; }
+  
+  if ( ! vtkDataMeshWriter::registered())   { dtkWarn() << "Unable to register vtkDataMeshWriter type"; }
+  if ( ! vtkDataMesh4DWriter::registered()) { dtkWarn() << "Unable to register vtkDataMesh4DWriter type"; }
+  
   return true;
 }
 
@@ -88,12 +101,16 @@ QString vtkDataMeshPlugin::version() const
 
 QStringList vtkDataMeshPlugin::tags() const
 {
-  return QStringList() << "vtk" << "data" << "mesh" << "4D";
+  return QStringList() << "vtk" << "data" << "mesh" << "4D" << "reader" << "writer";
 }
 
 QStringList vtkDataMeshPlugin::types() const
 {
-  return QStringList() << "vtkDataMesh";
+  return QStringList() << "vtkDataMesh"
+                       << "vtkDataMeshWriter"
+                       << "vtkDataMesh4DWriter"
+                       << "vtkDataMeshWriter"
+                       << "vtkDataMesh4DWriter";
 }
 
 Q_EXPORT_PLUGIN2(vtkDataMeshPlugin, vtkDataMeshPlugin)

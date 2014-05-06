@@ -59,8 +59,6 @@ set(PLUGIN_LIST
   itkDataImageWriter                        ON
   itkDCMTKDataImageReader                   ON
   vtkDataMesh                               ON
-  vtkDataMeshReader                         ON
-  vtkDataMeshWriter                         ON
   itkDataDiffusionGradientList              ON
   itkDataTensorImage                        ON
   itkDataTensorImageWriter                  ON

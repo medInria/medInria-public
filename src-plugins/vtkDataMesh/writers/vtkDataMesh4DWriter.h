@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include <vtkDataMeshWriterPluginExport.h>
+#include <vtkDataMeshPluginExport.h>
 class vtkDataManagerWriter;
 
 
@@ -37,7 +37,7 @@ class vtkDataManagerWriter;
 */
 
 
-class VTKDATAMESHWRITERPLUGIN_EXPORT vtkDataMesh4DWriter : public dtkAbstractDataWriter
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4DWriter : public dtkAbstractDataWriter
 {
     Q_OBJECT
 
