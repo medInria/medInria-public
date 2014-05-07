@@ -64,9 +64,6 @@ public:
     QPushButton* hSplitButton;
     QPushButton* closeContainerButton;
 
-    int receiverQuarterWidth;
-    int receiverQuarterHeight;
-
     medBoolParameter* maximizedParameter;
     medColorListParameter *poolSelector;
 
@@ -411,6 +408,7 @@ void medViewContainer::removeInternView()
 }
 
 
+
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
     if(event->reason() == Qt::ActiveWindowFocusReason)
@@ -435,32 +433,25 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 {
     if(d->userSplittable)
     {
-        int w(this->width()), h(this->height());
-        d->receiverQuarterWidth = w/4;
-        d->receiverQuarterHeight = h/4;
-
-        int x(event->pos().x()), y(event->pos().y());
-        int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
-
-        if((x > rqw && x < rqw * 3) && (y < rqh))
-        {
-            this->setStyleSheet("medViewContainer {border-top: 1px solid #0080FF}");
-        }
-        else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
-        {
-            this->setStyleSheet("medViewContainer {border-right: 1px solid #0080FF}");
-        }
-        else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
-        {
-            this->setStyleSheet("medViewContainer {border-bottom: 1px solid #0080FF}");
-        }
-        else if((x < rqw) && (y > rqh && y < rqh * 3))
-        {
-            this->setStyleSheet("medViewContainer {border-left: 1px solid #0080FF}");
-        }
-        else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
-        {
-            this->setStyleSheet(d->defaultStyleSheet);
+        DropArea area = computeDropArea(event->pos().x(), event->pos().y());
+        switch(area) {
+            case AREA_TOP:
+                this->setStyleSheet("medViewContainer {border-top: 1px solid #0080FF}");
+                break;
+            case AREA_RIGHT:
+                this->setStyleSheet("medViewContainer {border-right: 1px solid #0080FF}");
+                break;
+            case AREA_BOTTOM:
+                this->setStyleSheet("medViewContainer {border-bottom: 1px solid #0080FF}");
+                break;
+            case AREA_LEFT:
+                this->setStyleSheet("medViewContainer {border-left: 1px solid #0080FF}");
+                break;
+            case AREA_CENTER:
+                this->setStyleSheet("medViewContainer {border: 1px solid #0080FF}");
+                break;
+            default:
+                qDebug("Unsupported DropArea value");
         }
     }
 
@@ -485,18 +476,17 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
     if(d->userSplittable)
     {
-        int x(event->pos().x()), y(event->pos().y());
-        int rqw(d->receiverQuarterWidth), rqh(d->receiverQuarterHeight);
+        DropArea area = computeDropArea(event->pos().x(), event->pos().y());
 
-        if((x > rqw && x < rqw * 3) && (y < rqh))
+        if(area == AREA_TOP)
             emit splitRequest(index, Qt::AlignTop);
-        else if((x > rqw * 3) && (y > rqh && y < rqh * 3))
+        else if(area == AREA_RIGHT)
             emit splitRequest(index, Qt::AlignRight);
-        else if((x > rqw && x < rqw * 3) && (y > rqh * 3))
+        else if(area == AREA_BOTTOM)
             emit splitRequest(index, Qt::AlignBottom);
-        else if((x < rqw) && (y > rqh && y < rqh * 3))
+        else if(area == AREA_LEFT)
             emit splitRequest(index, Qt::AlignLeft);
-        else if((x > rqw && x < rqw * 3) && (y > rqh && y < rqh * 3))
+        else if(area == AREA_CENTER)
             this->addData(medDataManager::instance()->data(index));
     }
     else
@@ -508,6 +498,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
     event->acceptProposedAction();
 }
+
 
 void medViewContainer::addData(medAbstractData *data)
 {
@@ -691,4 +682,43 @@ void medViewContainer::updateToolBar()
     {
         d->toolBarLayout->setStretch(0,1);
     }
+}
+
+medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
+{
+    int w = this->width(), h = this->height();
+    if (x >= w || x < 0 || y >= h || y < 0)
+        return AREA_OUT;
+
+    /*
+     *                        top trigger zone
+     *              +--------------------------------------+
+     *              |\                                    /|
+     *              | \ ________________________________ / |
+     * Left trigger |  |                                |  | Right trigger
+     *    zone      |  |________________________________|  |     zone
+     *              | /scccccccccccccccccccccccccccccccce\ |
+     *              |/ssccccccccccccccccccccccccccccccccee\|
+     *              +--------------------------------------+
+     *                       bottom trigger zone
+     *
+     * Each 'if' condition below is structured in the same way :
+     * first we test if we are inside the concerned zone (ex. bottom trigger zone)
+     * if yes, then we test whether we are inside one of the three parts of that
+     * zone: the center part ("ccc"), or the correct side of either triangular
+     * ends ("sss" or "eee").
+     */
+
+    int ltw = qMin(50,w/4), tth = qMin(50,h/4); // left trigger width, top trigger height
+    int rtw = w - ltw, bth = h - tth;           // right trigger width, bottom trigger height
+
+    if(x < ltw && ((y >= tth && y < bth) || (y < tth && y > x) || (y >= bth && (h-y) > x)))
+        return AREA_LEFT;
+    else if(x >= rtw && ((y >= tth && y < bth) || (y < tth && y > (w-x)) || (y >= bth && (h-y) > (w-x))))
+        return AREA_RIGHT;
+    else if(y < tth && ((x >= ltw && x < rtw) || (x < ltw && x > y) || (x >= rtw && (w-x) > y)))
+        return AREA_TOP;
+    else if(y >= bth && ((x >= ltw && x < rtw) || (x < ltw && x > (h-y)) || (x >= rtw && (w-x) > (h-y))))
+        return AREA_BOTTOM;
+    return AREA_CENTER;
 }

@@ -105,6 +105,9 @@ private slots:
     void removeInternView();
 
 private:
+    enum DropArea {AREA_OUT = 0, AREA_TOP,AREA_BOTTOM,AREA_LEFT,AREA_RIGHT,AREA_CENTER};
+    DropArea computeDropArea(int x, int y);
+
     medViewContainerPrivate *d;
 
 };
