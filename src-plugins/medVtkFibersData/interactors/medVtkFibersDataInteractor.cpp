@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <v3dDataFibersInteractor.h>
+#include <medVtkFibersDataInteractor.h>
 
 #include <QVTKWidget.h>
 
@@ -63,7 +63,7 @@
 #endif
 
 
-class v3dDataFibersInteractorPrivate
+class medVtkFibersDataInteractorPrivate
 {
 public:
     medAbstractData        *data;
@@ -124,8 +124,8 @@ public:
     medIntParameter *slicingParameter;
 };
 
-v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
-    d(new v3dDataFibersInteractorPrivate)
+medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
+    d(new medVtkFibersDataInteractorPrivate)
 {
     d->data    = NULL;
     d->dataset = NULL;
@@ -303,59 +303,59 @@ v3dDataFibersInteractor::v3dDataFibersInteractor(medAbstractView *parent): medAb
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 }
 
-v3dDataFibersInteractor::~v3dDataFibersInteractor()
+medVtkFibersDataInteractor::~medVtkFibersDataInteractor()
 {
     delete d;
     d = NULL;
 }
 
-QString v3dDataFibersInteractor::description() const
+QString medVtkFibersDataInteractor::description() const
 {
     return tr("Interactor to help visualising Fibers");
 }
 
-QString v3dDataFibersInteractor::identifier() const
+QString medVtkFibersDataInteractor::identifier() const
 {
-    return "v3dDataFibersInteractor";
+    return "medVtkFibersDataInteractor";
 }
 
-QStringList v3dDataFibersInteractor::handled() const
+QStringList medVtkFibersDataInteractor::handled() const
 {
-    return v3dDataFibersInteractor::dataHandled();
+    return medVtkFibersDataInteractor::dataHandled();
 }
 
 
-QStringList v3dDataFibersInteractor::dataHandled()
+QStringList medVtkFibersDataInteractor::dataHandled()
 {
-    QStringList d = QStringList() << "v3dDataFibers";
+    QStringList d = QStringList() << "medVtkFibersData";
 
     return  d;
 }
 
-bool v3dDataFibersInteractor::isDataTypeHandled(QString dataType) const
+bool medVtkFibersDataInteractor::isDataTypeHandled(QString dataType) const
 {
-    if (dataType == "v3dDataFibers")
+    if (dataType == "medVtkFibersData")
         return true;
 
     return false;
 }
 
 
-bool v3dDataFibersInteractor::registered()
+bool medVtkFibersDataInteractor::registered()
 {
     medViewFactory *factory = medViewFactory::instance();
-    factory->registerInteractor<v3dDataFibersInteractor>("v3dDataFibersInteractor",
+    factory->registerInteractor<medVtkFibersDataInteractor>("medVtkFibersDataInteractor",
                                                          QStringList () << "medVtkView" <<
-                                                         v3dDataFibersInteractor::dataHandled());
+                                                         medVtkFibersDataInteractor::dataHandled());
     return true;
 }
 
-void v3dDataFibersInteractor::setData(medAbstractData *data)
+void medVtkFibersDataInteractor::setData(medAbstractData *data)
 {
     if (!data)
         return;
 
-    if(data->identifier() != "v3dDataFibers")
+    if(data->identifier() != "medVtkFibersData")
         return;
 
 
@@ -380,7 +380,7 @@ void v3dDataFibersInteractor::setData(medAbstractData *data)
     }
 }
 
-void v3dDataFibersInteractor::changeBundlingItem(QStandardItem *item)
+void medVtkFibersDataInteractor::changeBundlingItem(QStandardItem *item)
 {
     QString itemOldName = item->data(Qt::UserRole+1).toString();
 
@@ -393,7 +393,7 @@ void v3dDataFibersInteractor::changeBundlingItem(QStandardItem *item)
     this->setBundleVisibility(item->text(), item->checkState());
 }
 
-void v3dDataFibersInteractor::changeBundleName(QString oldName, QString newName)
+void medVtkFibersDataInteractor::changeBundleName(QString oldName, QString newName)
 {
     if (!d->dataset)
         return;
@@ -401,12 +401,12 @@ void v3dDataFibersInteractor::changeBundleName(QString oldName, QString newName)
     d->dataset->ChangeBundleName(oldName.toStdString(), newName.toStdString());
 }
 
-void v3dDataFibersInteractor::setVisibility(bool visible)
+void medVtkFibersDataInteractor::setVisibility(bool visible)
 {
     d->manager->SetVisibility(visible);
 }
 
-void v3dDataFibersInteractor::setBoxVisibility(bool visible)
+void medVtkFibersDataInteractor::setBoxVisibility(bool visible)
 {
     if (d->view && d->view->orientation() != medImageView::VIEW_ORIENTATION_3D)
     {
@@ -419,46 +419,46 @@ void v3dDataFibersInteractor::setBoxVisibility(bool visible)
     d->manager->SetBoxWidget(visible);
 }
 
-void v3dDataFibersInteractor::selectLineMode(bool value)
+void medVtkFibersDataInteractor::selectLineMode(bool value)
 {
     if(value)
-        this->setRenderingMode(v3dDataFibersInteractor::Lines);
+        this->setRenderingMode(medVtkFibersDataInteractor::Lines);
 }
 
-void v3dDataFibersInteractor::selectRibbonMode(bool value)
+void medVtkFibersDataInteractor::selectRibbonMode(bool value)
 {
     if(value)
-        this->setRenderingMode(v3dDataFibersInteractor::Ribbons);
+        this->setRenderingMode(medVtkFibersDataInteractor::Ribbons);
 }
 
-void v3dDataFibersInteractor::selectTubeMode(bool value)
+void medVtkFibersDataInteractor::selectTubeMode(bool value)
 {
     if(value)
-        this->setRenderingMode(v3dDataFibersInteractor::Tubes);
+        this->setRenderingMode(medVtkFibersDataInteractor::Tubes);
 }
 
-void v3dDataFibersInteractor::setRenderingMode(RenderingMode mode)
+void medVtkFibersDataInteractor::setRenderingMode(RenderingMode mode)
 {
     switch(mode)
     {
-        case v3dDataFibersInteractor::Lines:
+        case medVtkFibersDataInteractor::Lines:
             d->manager->SetRenderingModeToPolyLines();
             break;
 
-        case v3dDataFibersInteractor::Ribbons:
+        case medVtkFibersDataInteractor::Ribbons:
             d->manager->SetRenderingModeToRibbons();
             break;
 
-        case v3dDataFibersInteractor::Tubes:
+        case medVtkFibersDataInteractor::Tubes:
             d->manager->SetRenderingModeToTubes();
             break;
         default:
-            qDebug() << "v3dDataFibersInteractor: unknown rendering mode";
+            qDebug() << "medVtkFibersDataInteractor: unknown rendering mode";
     }
     d->render->Render();
 }
 
-void v3dDataFibersInteractor::activateGPU(bool activate)
+void medVtkFibersDataInteractor::activateGPU(bool activate)
 {
     if (activate)
     {
@@ -471,29 +471,29 @@ void v3dDataFibersInteractor::activateGPU(bool activate)
     }
 }
 
-void v3dDataFibersInteractor::setFiberColorMode(QString mode)
+void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
 {
     if (mode == "Local orientation")
-        this->setColorMode(v3dDataFibersInteractor::Local);
+        this->setColorMode(medVtkFibersDataInteractor::Local);
     else if (mode == "Global orientation")
-        this->setColorMode(v3dDataFibersInteractor::Global);
+        this->setColorMode(medVtkFibersDataInteractor::Global);
     else if (mode == "Fractional anisotropy")
-        this->setColorMode(v3dDataFibersInteractor::FA);
+        this->setColorMode(medVtkFibersDataInteractor::FA);
  }
 
-void v3dDataFibersInteractor::setColorMode(ColorMode mode)
+void medVtkFibersDataInteractor::setColorMode(ColorMode mode)
 {
     switch(mode)
     {
-        case v3dDataFibersInteractor::Local:
+        case medVtkFibersDataInteractor::Local:
             d->manager->SetColorModeToLocalFiberOrientation();
             break;
 
-        case v3dDataFibersInteractor::Global:
+        case medVtkFibersDataInteractor::Global:
             d->manager->SetColorModelToGlobalFiberOrientation();
             break;
 
-        case v3dDataFibersInteractor::FA:
+        case medVtkFibersDataInteractor::FA:
             d->manager->SetColorModeToLocalFiberOrientation();
             for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
             {
@@ -509,33 +509,33 @@ void v3dDataFibersInteractor::setColorMode(ColorMode mode)
             break;
 
         default:
-            qDebug() << "v3dDataFibersInteractor: unknown color mode";
+            qDebug() << "medVtkFibersDataInteractor: unknown color mode";
     }
     d->render->Render();
 }
 
-void v3dDataFibersInteractor::setBoxBooleanOperation(bool value)
+void medVtkFibersDataInteractor::setBoxBooleanOperation(bool value)
 {
     if (value)
-        this->setBoxBooleanOperation(v3dDataFibersInteractor::Plus);
+        this->setBoxBooleanOperation(medVtkFibersDataInteractor::Plus);
     else
-        this->setBoxBooleanOperation(v3dDataFibersInteractor::Minus);
+        this->setBoxBooleanOperation(medVtkFibersDataInteractor::Minus);
 }
 
-void v3dDataFibersInteractor::setBoxBooleanOperation(BooleanOperation op)
+void medVtkFibersDataInteractor::setBoxBooleanOperation(BooleanOperation op)
 {
     switch(op)
     {
-        case v3dDataFibersInteractor::Plus:
+        case medVtkFibersDataInteractor::Plus:
             d->manager->GetVOILimiter()->SetBooleanOperationToAND();
             break;
 
-        case v3dDataFibersInteractor::Minus:
+        case medVtkFibersDataInteractor::Minus:
             d->manager->GetVOILimiter()->SetBooleanOperationToNOT();
             break;
 
         default:
-            qDebug() << "v3dDataFibersInteractor: Unknown boolean operations";
+            qDebug() << "medVtkFibersDataInteractor: Unknown boolean operations";
     }
 
     d->manager->GetVOILimiter()->Modified();
@@ -543,19 +543,19 @@ void v3dDataFibersInteractor::setBoxBooleanOperation(BooleanOperation op)
 
 }
 
-void v3dDataFibersInteractor::tagSelection()
+void medVtkFibersDataInteractor::tagSelection()
 {
     d->manager->SwapInputOutput();
     d->render->Render();
 }
 
-void v3dDataFibersInteractor::resetSelection()
+void medVtkFibersDataInteractor::resetSelection()
 {
     d->manager->Reset();
     d->render->Render();
 }
 
-void v3dDataFibersInteractor::validateSelection(const QString &name, const QColor &color)
+void medVtkFibersDataInteractor::validateSelection(const QString &name, const QColor &color)
 {
     if (!d->data)
         return;
@@ -576,7 +576,7 @@ void v3dDataFibersInteractor::validateSelection(const QString &name, const QColo
 
 }
 
-void v3dDataFibersInteractor::saveBundlesInDataBase()
+void medVtkFibersDataInteractor::saveBundlesInDataBase()
 {
     if (!d->dataset)
         return;
@@ -588,7 +588,7 @@ void v3dDataFibersInteractor::saveBundlesInDataBase()
 
     while (it!=bundles.end())
     {
-        tmpBundle = medAbstractDataFactory::instance()->createSmartPointer("v3dDataFibers");
+        tmpBundle = medAbstractDataFactory::instance()->createSmartPointer("medVtkFibersData");
         if (!tmpBundle)
             return;
 
@@ -624,7 +624,7 @@ void v3dDataFibersInteractor::saveBundlesInDataBase()
     }
 }
 
-void v3dDataFibersInteractor::bundleImageStatistics (const QString &bundleName,
+void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleName,
                                                     QMap <QString, double> &mean,
                                                     QMap <QString, double> &min,
                                                     QMap <QString, double> &max,
@@ -743,7 +743,7 @@ void v3dDataFibersInteractor::bundleImageStatistics (const QString &bundleName,
     }
 }
 
-void v3dDataFibersInteractor::computeBundleLengthStatistics (const QString &name,
+void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &name,
                                                             double &mean,
                                                             double &min,
                                                             double &max,
@@ -768,7 +768,7 @@ void v3dDataFibersInteractor::computeBundleLengthStatistics (const QString &name
     statCalculator->GetLengthStatistics(mean, min, max, var);
 }
 
-void v3dDataFibersInteractor::bundleLengthStatistics(const QString &name,
+void medVtkFibersDataInteractor::bundleLengthStatistics(const QString &name,
                                                     double &mean,
                                                     double &min,
                                                     double &max,
@@ -789,7 +789,7 @@ void v3dDataFibersInteractor::bundleLengthStatistics(const QString &name,
     }
 }
 
-void v3dDataFibersInteractor::clearStatistics(void)
+void medVtkFibersDataInteractor::clearStatistics(void)
 {
     d->meanLengthList.clear();
     d->minLengthList.clear();
@@ -797,7 +797,7 @@ void v3dDataFibersInteractor::clearStatistics(void)
     d->varLengthList.clear();
 }
 
-void v3dDataFibersInteractor::setProjection(const QString& value)
+void medVtkFibersDataInteractor::setProjection(const QString& value)
 {
     if (!d->view)
         return;
@@ -807,13 +807,13 @@ void v3dDataFibersInteractor::setProjection(const QString& value)
     }
 }
 
-void v3dDataFibersInteractor::setRadius (int value)
+void medVtkFibersDataInteractor::setRadius (int value)
 {
     d->manager->SetRadius (value);
     d->render->Render();
 }
 
-void v3dDataFibersInteractor::setROI(medAbstractData *data)
+void medVtkFibersDataInteractor::setROI(medAbstractData *data)
 {
     if (!data)
         return;
@@ -877,30 +877,30 @@ void v3dDataFibersInteractor::setROI(medAbstractData *data)
     d->render->Render();
 }
 
-void v3dDataFibersInteractor::setRoiBoolean(int roi, int meaning)
+void medVtkFibersDataInteractor::setRoiBoolean(int roi, int meaning)
 {
     d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
 
 }
 
-int v3dDataFibersInteractor::roiBoolean(int roi)
+int medVtkFibersDataInteractor::roiBoolean(int roi)
 {
     return d->manager->GetROILimiter()->GetBooleanOperationVector()[roi+1];
 }
 
-void v3dDataFibersInteractor::setBundleVisibility(const QString &name, bool visibility)
+void medVtkFibersDataInteractor::setBundleVisibility(const QString &name, bool visibility)
 {
     d->manager->SetBundleVisibility(name.toAscii().constData(), (int)visibility);
     d->render->Render();
 
 }
 
-bool v3dDataFibersInteractor::bundleVisibility(const QString &name) const
+bool medVtkFibersDataInteractor::bundleVisibility(const QString &name) const
 {
     return d->manager->GetBundleVisibility(name.toAscii().constData());
 }
 
-void v3dDataFibersInteractor::setAllBundlesVisibility(bool visibility)
+void medVtkFibersDataInteractor::setAllBundlesVisibility(bool visibility)
 {
     if (visibility)
     {
@@ -918,7 +918,7 @@ void v3dDataFibersInteractor::setAllBundlesVisibility(bool visibility)
 }
 
 
-void v3dDataFibersInteractor::validateBundling()
+void medVtkFibersDataInteractor::validateBundling()
 {
     QString text = tr("Fiber bundle #") + QString::number(d->bundlingModel->rowCount()+1);
 
@@ -928,7 +928,7 @@ void v3dDataFibersInteractor::validateBundling()
 }
 
 
-void v3dDataFibersInteractor::addBundle (const QString &name, const QColor &color)
+void medVtkFibersDataInteractor::addBundle (const QString &name, const QColor &color)
 {
     int row = d->bundlingModel->rowCount();
 
@@ -984,21 +984,21 @@ void v3dDataFibersInteractor::addBundle (const QString &name, const QColor &colo
 }
 
 
-void v3dDataFibersInteractor::setRoiAddOperation(bool value)
+void medVtkFibersDataInteractor::setRoiAddOperation(bool value)
 {
     int roi = d->roiComboBox->currentIndex();
     if (value)
         this->setRoiBoolean(roi+1, 2);
 }
 
-void v3dDataFibersInteractor::setRoiNotOperation(bool value)
+void medVtkFibersDataInteractor::setRoiNotOperation(bool value)
 {
     int roi = d->roiComboBox->currentIndex();
     if (value)
         this->setRoiBoolean(roi+1, 1);
 }
 
-void v3dDataFibersInteractor::setRoiNullOperation(bool value)
+void medVtkFibersDataInteractor::setRoiNullOperation(bool value)
 {
     int roi = d->roiComboBox->currentIndex();
     if (value)
@@ -1006,7 +1006,7 @@ void v3dDataFibersInteractor::setRoiNullOperation(bool value)
 }
 
 
-void v3dDataFibersInteractor::importROI(const medDataIndex& index)
+void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
 {
     dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(index);
 
@@ -1042,7 +1042,7 @@ void v3dDataFibersInteractor::importROI(const medDataIndex& index)
     this->setROI(data);
 }
 
-void v3dDataFibersInteractor::clearRoi(void)
+void medVtkFibersDataInteractor::clearRoi(void)
 {
     // create dummy mask image
     medAbstractData *data = medAbstractDataFactory::instance()->create("itkDataImageUChar3");
@@ -1058,7 +1058,7 @@ void v3dDataFibersInteractor::clearRoi(void)
     d->render->Render();
 }
 
-void v3dDataFibersInteractor::selectRoi(int value)
+void medVtkFibersDataInteractor::selectRoi(int value)
 {
     int boolean = this->roiBoolean (value);
     switch (boolean)
@@ -1084,19 +1084,19 @@ void v3dDataFibersInteractor::selectRoi(int value)
     }
 }
 
-void v3dDataFibersInteractor::setOpacity(double opacity)
+void medVtkFibersDataInteractor::setOpacity(double opacity)
 {
     d->opacityProperty->SetOpacity(opacity);
 
     d->render->Render();
 }
 
-double v3dDataFibersInteractor::opacity() const
+double medVtkFibersDataInteractor::opacity() const
 {
     return d->opacityProperty->GetOpacity();
 }
 
-void v3dDataFibersInteractor::setVisible(bool visible)
+void medVtkFibersDataInteractor::setVisible(bool visible)
 {
     int v = (visible) ? 1 : 0;
     d->actor->SetVisibility(v);
@@ -1106,24 +1106,24 @@ void v3dDataFibersInteractor::setVisible(bool visible)
     d->render->Render();
 }
 
-bool v3dDataFibersInteractor::visibility() const
+bool medVtkFibersDataInteractor::visibility() const
 {
     return (d->actor->GetVisibility() == 1);
 }
 
 
-void v3dDataFibersInteractor::setWindowLevel (double &window, double &level)
+void medVtkFibersDataInteractor::setWindowLevel (double &window, double &level)
 {
 
 }
 
-void v3dDataFibersInteractor::windowLevel(double &window, double &level)
+void medVtkFibersDataInteractor::windowLevel(double &window, double &level)
 {
 
 }
 
 
-void v3dDataFibersInteractor::moveToSlice (int slice)
+void medVtkFibersDataInteractor::moveToSlice (int slice)
 {
     //TODO find a way to get woorldCoordinate for slice from vtkInria.
     // instead of moving to the slice corresponding on the first layer dropped.
@@ -1134,14 +1134,14 @@ void v3dDataFibersInteractor::moveToSlice (int slice)
     }
 }
 
-void v3dDataFibersInteractor::removeData()
+void medVtkFibersDataInteractor::removeData()
 {
     d->view2d->RemoveLayer(d->view->layer(d->data));
     d->manager->Delete();
 }
 
 
-QWidget* v3dDataFibersInteractor::buildToolBoxWidget()
+QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
 {
 
     d->toolboxWidget = new QWidget;
@@ -1216,7 +1216,7 @@ QWidget* v3dDataFibersInteractor::buildToolBoxWidget()
     return d->toolboxWidget;
 }
 
-QWidget* v3dDataFibersInteractor::buildLayerWidget()
+QWidget* medVtkFibersDataInteractor::buildLayerWidget()
 {
     QSlider *slider = d->opacityParam->getSlider();
     slider->setOrientation(Qt::Horizontal);
@@ -1224,14 +1224,14 @@ QWidget* v3dDataFibersInteractor::buildLayerWidget()
 }
 
 
-QWidget* v3dDataFibersInteractor::buildToolBarWidget()
+QWidget* medVtkFibersDataInteractor::buildToolBarWidget()
 {
     d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
     return d->slicingParameter->getSlider();
 }
 
 
-void v3dDataFibersInteractor::setUpViewForThumbnail()
+void medVtkFibersDataInteractor::setUpViewForThumbnail()
 {
     d->view2d->Reset();
     d->view2d->SetBackground(0.0, 0.0, 0.0);
@@ -1242,12 +1242,12 @@ void v3dDataFibersInteractor::setUpViewForThumbnail()
     d->view2d->ShowRulerWidgetOff();
 }
 
-QList<medAbstractParameter*> v3dDataFibersInteractor::parameters()
+QList<medAbstractParameter*> medVtkFibersDataInteractor::parameters()
 {
     return d->parameters;
 }
 
-void v3dDataFibersInteractor::updateWidgets()
+void medVtkFibersDataInteractor::updateWidgets()
 {
     if(!d->view->is2D())
     {
@@ -1262,7 +1262,7 @@ void v3dDataFibersInteractor::updateWidgets()
     }
 }
 
-void v3dDataFibersInteractor::updateSlicingParam()
+void medVtkFibersDataInteractor::updateSlicingParam()
 {
     if(!d->view->is2D())
         return;
@@ -1275,7 +1275,7 @@ void v3dDataFibersInteractor::updateSlicingParam()
     d->slicingParameter->setValue(d->view2d->GetSlice());
 }
 
-void v3dDataFibersInteractor::removeInternBundleToolBoxWidget()
+void medVtkFibersDataInteractor::removeInternBundleToolBoxWidget()
 {
     d->bundleToolboxWidget = NULL;
 }

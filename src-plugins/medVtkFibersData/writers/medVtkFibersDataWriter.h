@@ -15,17 +15,15 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include <v3dDataPluginExport.h>
+#include <medVtkFibersDataPluginExport.h>
 
-class v3dDataFibersWriterPrivate;
-
-class V3DDATAPLUGIN_EXPORT v3dDataFibersWriter : public dtkAbstractDataWriter
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataWriter : public dtkAbstractDataWriter
 {
     Q_OBJECT
 
 public:
-             v3dDataFibersWriter();
-    virtual ~v3dDataFibersWriter();
+             medVtkFibersDataWriter();
+    virtual ~medVtkFibersDataWriter();
 
     virtual QStringList handled() const;
     
@@ -40,12 +38,9 @@ public:
 public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);
-
- private:
-    v3dDataFibersWriterPrivate *d;
 };
 
 
-dtkAbstractDataWriter *createV3dDataFibersWriter();
+dtkAbstractDataWriter *create_medVtkFibersDataWriter();
 
 

@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(v3dDataPlugin)
+project(medVtkFibersDataPlugin)
 
 ## #############################################################################
 ## Setup version numbering
@@ -45,10 +45,14 @@ include(${TTK_USE_FILE})
 ## #############################################################################
 
 list_source_files(${PROJECT_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  . #current dir
+  datas
+  interactors
+  readers
+  writers
   )
 
-set(${PROJECT_NAME}_QRC v3dData.qrc)
+set(${PROJECT_NAME}_QRC medVtkFibersData.qrc)
 
 
 ## #############################################################################

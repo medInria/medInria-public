@@ -13,44 +13,33 @@
 
 #pragma once
 
-#include <medAbstractImageData.h>
+#include <medAbstractFibersData.h>
 
-#include <v3dDataPluginExport.h>
+#include <medVtkFibersDataPluginExport.h>
 
-class v3dDataImagePrivate;
+class medVtkFibersDataPrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataImage : public medAbstractImageData
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersData : public medAbstractFibersData
 {
     Q_OBJECT
 
 public:
-             v3dDataImage();
-    virtual ~v3dDataImage();
+             medVtkFibersData();
+    virtual ~medVtkFibersData();
 
     virtual QString description() const;
     virtual QString identifier() const;
     static bool registered();
 
 public:
-    bool read(const QString& file);
-    bool write(const QString& file);
-
-    void *output();
     void *data();
 
     void setData(void *data);
 
-public:
-    // derived from medAbstractImageData
-    int xDimension();
-    int yDimension();
-    int zDimension();
-
-
 private:
-    v3dDataImagePrivate *d;
+    medVtkFibersDataPrivate *d;
 };
 
-medAbstractData *createV3dDataImage();
+medAbstractData *create_medVtkFibersData();
 
 

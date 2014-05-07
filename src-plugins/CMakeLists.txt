@@ -53,7 +53,7 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 ## ADD here any new plugin with a default compilation value, 
 ## you want to include in the build, 
 set(PLUGIN_LIST
-  v3dData                                   ON
+  medVtkFibersData                          ON
   itkDataImage                              ON
   vtkDataMesh                               ON
   itkDataDiffusionGradientList              ON

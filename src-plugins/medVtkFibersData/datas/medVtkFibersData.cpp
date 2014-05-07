@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <v3dDataFibers.h>
+#include <medVtkFibersData.h>
 
 #include <medAbstractDataFactory.h>
 
@@ -30,56 +30,52 @@
 #include <QVTKWidget.h>
 
 // /////////////////////////////////////////////////////////////////
-// v3dDataFibersPrivate
+// medVtkFibersDataPrivate
 // /////////////////////////////////////////////////////////////////
 
-class v3dDataFibersPrivate
+class medVtkFibersDataPrivate
 {
 public:
     vtkSmartPointer<vtkFiberDataSet> data;
-    QList<QImage>          thumbnails;
-    QImage thumbnail;
 };
 
 // /////////////////////////////////////////////////////////////////
-// v3dDataFibers
+// medVtkFibersData
 // /////////////////////////////////////////////////////////////////
 
-v3dDataFibers::v3dDataFibers() : medAbstractFibersData(), d(new v3dDataFibersPrivate)
+medVtkFibersData::medVtkFibersData() : medAbstractFibersData(), d(new medVtkFibersDataPrivate)
 {
     d->data = 0;
-    d->thumbnail = QImage(":v3dData/icons/fibers.png");
-    d->thumbnails.push_back (d->thumbnail);
 }
 
-v3dDataFibers::~v3dDataFibers()
+medVtkFibersData::~medVtkFibersData()
 {
     delete d;
     d = 0;
 }
 
-bool v3dDataFibers::registered()
+bool medVtkFibersData::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType("v3dDataFibers", createV3dDataFibers);
+    return medAbstractDataFactory::instance()->registerDataType("medVtkFibersData", create_medVtkFibersData);
 }
 
-QString v3dDataFibers::description() const
+QString medVtkFibersData::description() const
 {
-    return tr("v3d fibers data") ;
+    return tr("VTK fibers data") ;
 }
 
-QString v3dDataFibers::identifier() const
+QString medVtkFibersData::identifier() const
 {
-    return "v3dDataFibers";
+    return "medVtkFibersData";
 }
 
-void v3dDataFibers::setData(void *data)
+void medVtkFibersData::setData(void *data)
 {
   if (vtkFiberDataSet *dataset = vtkFiberDataSet::SafeDownCast (static_cast<vtkObject*>(data)))
       d->data = dataset;
 }
 
-void *v3dDataFibers::data()
+void *medVtkFibersData::data()
 {
     return d->data;
 }
@@ -89,8 +85,8 @@ void *v3dDataFibers::data()
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-medAbstractData *createV3dDataFibers()
+medAbstractData *create_medVtkFibersData()
 {
-    return new v3dDataFibers;
+    return new medVtkFibersData;
 }
 

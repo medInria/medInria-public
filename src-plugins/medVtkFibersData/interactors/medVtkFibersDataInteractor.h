@@ -15,16 +15,16 @@
 
 #include <medAbstractImageViewInteractor.h>
 
-#include <v3dDataPluginExport.h>
+#include <medVtkFibersDataPluginExport.h>
 
 class medAbstractData;
 class medAbstractImageView;
 class medAbstractParameter;
 
-class v3dDataFibersInteractorPrivate;
+class medVtkFibersDataInteractorPrivate;
 
 /**
- * @class v3dDataFibersInteractor
+ * @class medVtkFibersDataInteractor
  * @brief Class for view interactor to display fibers.
  * Fiber visualization can be controlled with Regions of Interest (ROI), which
  * are images of unsigned char defining regions of voxels where fibers should
@@ -36,13 +36,13 @@ class v3dDataFibersInteractorPrivate;
  * FA, ADC, etc. statistics of the entire bundle.
  * Fiber bundle visibility can also be controlled.
  */
-class V3DDATAPLUGIN_EXPORT v3dDataFibersInteractor: public medAbstractImageViewInteractor
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataInteractor: public medAbstractImageViewInteractor
 {
     Q_OBJECT
 
 public:
-    v3dDataFibersInteractor(medAbstractView *parent = NULL);
-    virtual ~v3dDataFibersInteractor();
+    medVtkFibersDataInteractor(medAbstractView *parent = NULL);
+    virtual ~medVtkFibersDataInteractor();
 
     virtual QString description() const;
     virtual QString identifier() const;
@@ -233,7 +233,7 @@ private slots:
     void updateSlicingParam();
 
 private:
-    v3dDataFibersInteractorPrivate *d;
+    medVtkFibersDataInteractorPrivate *d;
 };
 
 

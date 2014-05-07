@@ -14,19 +14,18 @@
 #pragma once
 
 #include <dtkCore/dtkPlugin.h>
+#include <medVtkFibersDataPluginExport.h>
 
-#include <v3dDataPluginExport.h>
+class medVtkFibersDataPluginPrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataPluginPrivate;
-
-class V3DDATAPLUGIN_EXPORT v3dDataPlugin : public dtkPlugin
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataPlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     v3dDataPlugin(QObject *parent = 0);
-    ~v3dDataPlugin();
+     medVtkFibersDataPlugin(QObject *parent = 0);
+    ~medVtkFibersDataPlugin();
 
     virtual bool initialize();
     virtual bool uninitialize();
@@ -39,7 +38,7 @@ public:
     virtual QStringList types() const;
 
 private:
-     v3dDataPluginPrivate *d;
+     medVtkFibersDataPluginPrivate *d;
 };
 
 

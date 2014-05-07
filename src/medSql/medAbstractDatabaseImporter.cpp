@@ -897,7 +897,7 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
             extension = ".vtk";
         } else if (identifier == "vtkDataMesh4D") {
             extension = ".v4d";
-        } else if (identifier == "v3dDataFibers") {
+        } else if (identifier == "medVtkFibersData") {
             extension = ".xml";
         } else if (identifier.contains("vistal")) {
             extension = ".dim";

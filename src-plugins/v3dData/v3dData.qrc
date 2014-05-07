@@ -1,5 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-    <qresource prefix="/v3dData/">
-        <file>icons/fibers.png</file>
-    </qresource>
-</RCC>

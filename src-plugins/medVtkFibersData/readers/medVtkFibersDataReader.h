@@ -14,16 +14,16 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractDataReader.h>
-#include <v3dDataPluginExport.h>
+#include <medVtkFibersDataPluginExport.h>
 
-class v3dDataFibersReaderPrivate;
+class medVtkFibersDataReaderPrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataFibersReader: public dtkAbstractDataReader {
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataReader: public dtkAbstractDataReader {
     Q_OBJECT
 
 public:
-    v3dDataFibersReader();
-    virtual ~v3dDataFibersReader();
+    medVtkFibersDataReader();
+    virtual ~medVtkFibersDataReader();
 
     virtual QStringList handled() const;
 
@@ -46,11 +46,11 @@ public slots:
 
 private:
 
-    v3dDataFibersReaderPrivate* d;
+    medVtkFibersDataReaderPrivate* d;
 
     static const char ID[];
 };
 
-dtkAbstractDataReader *createV3dDataFibersReader();
+dtkAbstractDataReader *create_medVtkFibersDataReader();
 
 

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <v3dDataFibersReader.h>
+#include <medVtkFibersDataReader.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
@@ -20,44 +20,44 @@
 #include <vtkXMLFiberDataSetReader.h>
 #include <vtkFiberDataSet.h>
 
-class v3dDataFibersReaderPrivate {
+class medVtkFibersDataReaderPrivate {
 public:
     vtkXMLFiberDataSetReader *reader;
 };
 
-const char v3dDataFibersReader::ID[] = "v3dDataFibersReader";
+const char medVtkFibersDataReader::ID[] = "medVtkFibersDataReader";
 
-v3dDataFibersReader::v3dDataFibersReader(): d(new v3dDataFibersReaderPrivate) {
+medVtkFibersDataReader::medVtkFibersDataReader(): d(new medVtkFibersDataReaderPrivate) {
     d->reader = vtkXMLFiberDataSetReader::New();
 }
 
-v3dDataFibersReader::~v3dDataFibersReader() {
+medVtkFibersDataReader::~medVtkFibersDataReader() {
     d->reader->Delete();
     delete d;
     d = NULL;
 }
 
-QStringList v3dDataFibersReader::handled() const {
-    return QStringList() << "v3dDataFibers";
+QStringList medVtkFibersDataReader::handled() const {
+    return QStringList() << "medVtkFibersData";
 }
 
-bool v3dDataFibersReader::canRead (const QString& path) {
+bool medVtkFibersDataReader::canRead (const QString& path) {
     return d->reader->CanReadFile (path.toAscii().constData());
 }
 
-bool v3dDataFibersReader::canRead (const QStringList& paths) {
+bool medVtkFibersDataReader::canRead (const QStringList& paths) {
     if (!paths.count())
         return false;
     return this->canRead (paths[0]);
 }
 
-bool v3dDataFibersReader::readInformation (const QString& path) {
+bool medVtkFibersDataReader::readInformation (const QString& path) {
     // d->reader->SetFileName (path.toAscii().constData());
 
     dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
 
     if (!medData) {
-        medData = medAbstractDataFactory::instance()->createSmartPointer ("v3dDataFibers");
+        medData = medAbstractDataFactory::instance()->createSmartPointer ("medVtkFibersData");
         if (medData)
             this->setData (medData);
     }
@@ -65,13 +65,13 @@ bool v3dDataFibersReader::readInformation (const QString& path) {
     return true;
 }
 
-bool v3dDataFibersReader::readInformation (const QStringList& paths) {
+bool medVtkFibersDataReader::readInformation (const QStringList& paths) {
     if (!paths.count())
         return false;
     return this->readInformation ( paths[0].toAscii().constData() );
 }
 
-bool v3dDataFibersReader::read (const QString& path) {
+bool medVtkFibersDataReader::read (const QString& path) {
   this->setProgress (0);
 
   this->readInformation (path);
@@ -111,35 +111,35 @@ bool v3dDataFibersReader::read (const QString& path) {
   return true;
 }
 
-bool v3dDataFibersReader::read (const QStringList& paths) {
+bool medVtkFibersDataReader::read (const QStringList& paths) {
     if (!paths.count())
         return false;
     return this->read ( paths[0].toAscii().constData() );
 }
   
-void v3dDataFibersReader::setProgress (int value) {
+void medVtkFibersDataReader::setProgress (int value) {
     emit progressed (value);
 }
 
-QString v3dDataFibersReader::identifier() const {
+QString medVtkFibersDataReader::identifier() const {
     return ID;
 }
 
-QString v3dDataFibersReader::description() const {
-    return "Reader for v3d fibers";
+QString medVtkFibersDataReader::description() const {
+    return "Reader for medVtkFibersData";
 }
 
-bool v3dDataFibersReader::registered() {
+bool medVtkFibersDataReader::registered() {
   return medAbstractDataFactory::instance()->registerDataReaderType(ID,
-								    QStringList() << "v3dDataFibers",
-								    createV3dDataFibersReader);
+								    QStringList() << "medVtkFibersData",
+                                    create_medVtkFibersDataReader);
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createV3dDataFibersReader() {
-  return new v3dDataFibersReader;
+dtkAbstractDataReader *create_medVtkFibersDataReader() {
+  return new medVtkFibersDataReader;
 }
 

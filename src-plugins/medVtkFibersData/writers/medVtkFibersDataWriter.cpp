@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <v3dDataFibersWriter.h>
+#include <medVtkFibersDataWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <medAbstractDataFactory.h>
@@ -26,37 +26,30 @@
 #include <QFile>
 #include <QXmlStreamWriter>
 
-class v3dDataFibersWriterPrivate
-{
-public:
-};
-
-v3dDataFibersWriter::v3dDataFibersWriter(): d (new v3dDataFibersWriterPrivate)
+medVtkFibersDataWriter::medVtkFibersDataWriter()
 {
 }
 
-v3dDataFibersWriter::~v3dDataFibersWriter()
+medVtkFibersDataWriter::~medVtkFibersDataWriter()
 {
-   delete d;
-   d = NULL;
 }
 
-QStringList v3dDataFibersWriter::handled() const
+QStringList medVtkFibersDataWriter::handled() const
 {
-    return QStringList() << "v3dDataFibers";
+    return QStringList() << "medVtkFibersData";
 }
 
-bool v3dDataFibersWriter::canWrite(const QString& path)
+bool medVtkFibersDataWriter::canWrite(const QString& path)
 {
   return true;
 }
 
-bool v3dDataFibersWriter::write(const QString& path)
+bool medVtkFibersDataWriter::write(const QString& path)
 {  
   if (!this->data())
       return false;
 
-  if (this->data()->identifier()!="v3dDataFibers")
+  if (this->data()->identifier()!="medVtkFibersData")
       return false;
 
   vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet*>(this->data()->data());
@@ -76,22 +69,22 @@ bool v3dDataFibersWriter::write(const QString& path)
   return true;
 }
 
-QString v3dDataFibersWriter::identifier() const {
-    return "v3dDataFibersWriter";
+QString medVtkFibersDataWriter::identifier() const {
+    return "medVtkFibersDataWriter";
 }
 
-QString v3dDataFibersWriter::description() const {
-    return "v3dDataFibersWriter";
+QString medVtkFibersDataWriter::description() const {
+    return "medVtkFibersDataWriter";
 }
 
-bool v3dDataFibersWriter::registered()
+bool medVtkFibersDataWriter::registered()
 {
-  return medAbstractDataFactory::instance()->registerDataWriterType("v3dDataFibersWriter",
-								    QStringList() << "v3dDataFibers",
-								    createV3dDataFibersWriter);
+  return medAbstractDataFactory::instance()->registerDataWriterType("medVtkFibersDataWriter",
+                                    QStringList() << "medVtkFibersData",
+                                    create_medVtkFibersDataWriter);
 }
 
-QStringList v3dDataFibersWriter::supportedFileExtensions() const
+QStringList medVtkFibersDataWriter::supportedFileExtensions() const
 {
     QStringList ret;
     vtkSmartPointer<vtkXMLFiberDataSetWriter> writer = vtkSmartPointer<vtkXMLFiberDataSetWriter>::New();
@@ -105,7 +98,7 @@ QStringList v3dDataFibersWriter::supportedFileExtensions() const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createV3dDataFibersWriter()
+dtkAbstractDataWriter *create_medVtkFibersDataWriter()
 {
-  return new v3dDataFibersWriter;
+  return new medVtkFibersDataWriter;
 }
