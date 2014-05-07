@@ -24,7 +24,6 @@ class medAbstractWorkspace;
 class medClutEditor;
 class QStackedWidget;
 class QSplitter;
-class medPatientSelectorToolBox;
 class medToolBoxBody;
 class medToolBoxTab;
 class medDatabaseDataSource;
