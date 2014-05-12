@@ -11,7 +11,9 @@
 
 =========================================================================*/
 
-#include "vtkVectorVisuManager.h"
+#include <vtkVectorVisuManager.h>
+
+#include <limits>
 
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
@@ -171,17 +173,56 @@ void vtkVectorVisuManager::SetProjection(bool enable)
 
 void vtkVectorVisuManager::SetColorByVectorMagnitude()
 {
-    this->Glyph->SetColorModeToColorByVector();
-    this->Mapper->SetLookupTable(0);
+    vtkDataSet *data = Orienter->GetOutput();
 
-    double range[2];
-    if(this->Orienter->GetOutput()->GetPointData()->GetScalars())
+    int numPoints    = data->GetNumberOfPoints();
+
+    this->ValueArray->Initialize();
+    this->ValueArray->SetNumberOfComponents(1);
+    this->ValueArray->SetNumberOfTuples(numPoints);
+
+    vtkLookupTable* lut = vtkLookupTable::New();
+    lut->SetNumberOfTableValues(numPoints);
+    double norm[numPoints];
+    double min(std::numeric_limits<double>::max()), max(0);
+
+    for(int i=0;i<numPoints;i++)
     {
-        this->Orienter->GetOutput()->GetPointData()->GetScalars()->GetRange(range);
-        this->Mapper->SetScalarRange(range[0],range[1]);
+      // Color coding with the eigenvector
+      double vect[3];
+      data->GetPointData()->GetVectors()->GetTuple(i,vect);
+      norm[i] = vtkMath::Norm(vect);
+      if(norm[i] < min)
+          min = norm[i];
+
+      if(norm[i] > max)
+          max = norm[i];
     }
 
-    this->Mapper->Modified();
+    for(int i=0;i<numPoints;i++)
+    {
+
+
+      double hue =   (2.0/3.0)/(min-max) * norm[i] + (2 * max / 3)/(max-min);
+
+      double hsv[3] = {hue, 1, 1};
+      double rgb[3];
+      vtkMath::HSVToRGB(hsv, rgb);
+
+      lut->SetTableValue(i, rgb[0], rgb[1], rgb[2]);
+      this->ValueArray->SetTuple1(i, (unsigned int)i);
+    }
+
+    data->GetPointData()->SetScalars( this->ValueArray );
+
+    this->Glyph->SetColorModeToColorByScalar();
+
+    this->Glyph->Modified();
+
+    this->Mapper->SetLookupTable(lut);
+    this->Mapper->SetScalarRange(0, numPoints);
+
+    lut->Delete();
 }
 
 void vtkVectorVisuManager::SetUpLUTToMapVectorDirection()

@@ -59,7 +59,8 @@ public:
     typedef typename itk::Statistics::ScalarImageToHistogramGenerator<ImageType> HistogramGeneratorType;
     typedef typename HistogramGeneratorType::HistogramType HistogramType;
 
-    itkDataImagePrivate() {
+    itkDataImagePrivate()
+    {
         image = 0;
         histogram = 0;
         range_computed = false;

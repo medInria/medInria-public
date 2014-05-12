@@ -80,6 +80,7 @@ private:
 
 private slots:
     void updateSlicingParam();
+    void updatePlaneVisibility();
 
 
 private:

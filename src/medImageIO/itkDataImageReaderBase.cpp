@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -169,7 +169,6 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             }
         }
         else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR) { //   Added by Theo.
-            qDebug() << "this->io->GetPixelType()" << this->io->GetComponentType();
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
@@ -241,7 +240,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         medData->addMetaData ("FilePath", QStringList() << path);
 
     }
-    
+
     return true;
 }
 

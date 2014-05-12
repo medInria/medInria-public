@@ -22,6 +22,7 @@
 #include <medIntParameter.h>
 #include <medStringListParameter.h>
 #include <medBoolParameter.h>
+#include <medAbstractImageData.h>
 
 
 const int ImageDimension = 3;
@@ -121,6 +122,8 @@ bool medVtkViewItkVectorFieldInteractor::registered()
 
 void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
 {
+
+
     if (!data)
         return;
 
@@ -154,10 +157,10 @@ void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
 
         d->floatFilter = FloatFilterType::New();
         d->floatFilter->SetInput( d->floatData );
+        d->floatFilter->UpdateOutputInformation();
         d->floatFilter->Update();
 
         vtkImageData *vtkImage = d->floatFilter->GetOutput();
-
         d->manager->SetInput(vtkImage);
     }
 
@@ -168,6 +171,7 @@ void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
 
         d->doubleData = static_cast<ImageType* >(data->data());
 
+        d->doubleData->UpdateOutputInformation();
         ImageType::DirectionType direction = d->doubleData->GetDirection();
         ImageType::PointType i_origin =  d->doubleData->GetOrigin();
 
@@ -185,26 +189,25 @@ void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
 
         d->doubleFilter = DoubleFilterType::New();
         d->doubleFilter->SetInput( d->doubleData );
+        d->doubleFilter->UpdateOutputInformation();
         d->doubleFilter->Update();
 
         vtkImageData *vtkImage = d->doubleFilter->GetOutput();
-
         d->manager->SetInput(vtkImage);
     }
 
     else return;
-
     d->manager->SetDirectionMatrix(mat);
     d->manager->ResetPosition();
     d->manager->Update();
+    int *dim;
+    dim = d->manager->GetInput()->GetDimensions();
 
-    int *dim = d->manager->GetInput()->GetDimensions();
     d->view2d->SetInput(d->manager->GetVectorVisuManagerAxial()->GetActor(), d->view->layer(data), dim);
     d->view2d->SetInput(d->manager->GetVectorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim);
     d->view2d->SetInput(d->manager->GetVectorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
 
     setupParameters();
-
     update();
 }
 
@@ -217,7 +220,7 @@ void medVtkViewItkVectorFieldInteractor::removeData()
 void medVtkViewItkVectorFieldInteractor::setupParameters()
 {
     medDoubleParameter *scaleFactor = new medDoubleParameter("Scale", this);
-    scaleFactor->setRange(1,10);
+    scaleFactor->setRange(0.001,10);
     scaleFactor->setValue(1.0);
 
     medIntParameter *sampleRateControl = new medIntParameter("Sample Rate", this);
@@ -243,22 +246,24 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
 
     if(d->view->layer(d->data) == 0)
     {
-        switch(d->view2d->GetViewOrientation())
+        switch(d->view2d->GetSliceOrientation())
         {
-        case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+        case 0:
             d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
             break;
-        case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
-            break;
-        case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+        case 1:
             d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+            break;
+        case 2:
+            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
             break;
         }
     }
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
+    connect(d->view, SIGNAL(orientationChanged()), this, SLOT(updatePlaneVisibility()));
+
     this->updateWidgets();
 }
 
@@ -380,8 +385,8 @@ void medVtkViewItkVectorFieldInteractor::setUpViewForThumbnail()
 
 void medVtkViewItkVectorFieldInteractor::moveToSlice(int slice)
 {
-    //TODO find a way to get woorldCoordinate for slice from vtkInria.
-    // instead of moving to the slice corresponding on the first layer dropped.
+    // TODO find a way to get woorldCoordinate for slice from vtkInria.
+    //  instead of moving to the slice corresponding on the first layer dropped.
     if(d->view->is2D() && slice != d->view2d->GetSlice())
     {
         d->view2d->SetSlice(slice);
@@ -455,4 +460,42 @@ void medVtkViewItkVectorFieldInteractor::updateSlicingParam()
     d->slicingParameter->blockSignals(false);
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
+}
+
+void medVtkViewItkVectorFieldInteractor::updatePlaneVisibility()
+{
+
+    //TODO make it workes even if the SLICE_ORIENTATION is not X/Y
+    //     (ie the acquisition orientaion of the image is something else than axial)
+    //     - RDE
+
+//    switch(d->view->orientation())
+//    {
+//        case medImageView::VIEW_ORIENTATION_3D:
+//        d->manager->SetAxialSliceVisibility(0);
+//        d->manager->SetCoronalSliceVisibility(0);
+//        d->manager->SetSagittalSliceVisibility(1);
+//        d->manager->SetProjection(false);
+//        break;
+//    case medImageView::VIEW_ORIENTATION_AXIAL:
+//        d->manager->SetAxialSliceVisibility(1);
+//        d->manager->SetCoronalSliceVisibility(1);
+//        d->manager->SetSagittalSliceVisibility(1);
+//        d->manager->SetProjection(true);
+//        break;
+//    case medImageView::VIEW_ORIENTATION_CORONAL:
+//        d->manager->SetAxialSliceVisibility(1);
+//        d->manager->SetCoronalSliceVisibility(1);
+//        d->manager->SetSagittalSliceVisibility(1);
+//        d->manager->SetProjection(true);
+//        break;
+//    case medImageView::VIEW_ORIENTATION_SAGITTAL:
+//        d->manager->SetAxialSliceVisibility(1);
+//        d->manager->SetCoronalSliceVisibility(1);
+//        d->manager->SetSagittalSliceVisibility(1);
+//        d->manager->SetProjection(true);
+//        break;
+//    }
+
+//    this->update();
 }
