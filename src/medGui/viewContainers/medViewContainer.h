@@ -35,6 +35,9 @@ public:
     medViewContainer(medViewContainerSplitter* parent = 0);
     ~medViewContainer();
 
+    medAbstractView* view() const;
+    QUuid uuid() const;
+    void setContainerParent(medViewContainerSplitter* splitter);
 
     bool isSelected() const;
     bool isMaximized() const;
@@ -42,9 +45,7 @@ public:
     bool isUserClosable() const;
     bool isMultiLayered() const;
     bool isUserPoolable() const;
-    medAbstractView* view() const;
-    QUuid uuid() const;
-    void setContainerParent(medViewContainerSplitter* splitter);
+
     medViewContainer* splitVertically();
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
@@ -52,8 +53,11 @@ public:
     void setDefaultWidget(QWidget *defaultWidget);
     QWidget* defaultWidget() const;
 
-
 public slots:
+    void setView(medAbstractView* view);
+    void removeView();
+    void addData(medAbstractData* data);
+
     void setSelected(bool selected);
     void setUnSelected(bool unSelected);
     void setMaximized(bool maximised);
@@ -61,10 +65,10 @@ public slots:
     void setUserClosable(bool closable);
     void setMultiLayered(bool multiLayer);
     void setUserPoolable(bool poolable);
-    void setView(medAbstractView* view);
-    void addData(medAbstractData* data);
+
     void highlight(QString color = "#FFAA88");
     void unHighlight();
+
     void link(QString pool);
     void unlink();
 
@@ -95,7 +99,6 @@ protected:
     void recomputeStyleSheet();
 
 protected slots:
-    void removeView();
     void emitLinkRequested(QString pool);
     void addData(medDataIndex index);
     void openFromSystem();

@@ -26,6 +26,7 @@ public:
 medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
     d(new medAbstractNavigatorPrivate)
 {
+    setParent(parent);
     d->toolBarWidget = NULL;
     d->toolBoxWidget = NULL;
 }

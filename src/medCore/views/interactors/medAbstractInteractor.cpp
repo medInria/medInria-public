@@ -29,6 +29,7 @@ public:
 medAbstractInteractor::medAbstractInteractor(medAbstractView *parent):
     d(new medAbstractInteractorPrivate)
 {
+    setParent(parent);
     d->toolBarWidget = NULL;
     d->toolBoxWidget = NULL;
     d->layerWidget = NULL;

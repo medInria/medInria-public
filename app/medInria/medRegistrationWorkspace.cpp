@@ -248,10 +248,10 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
     //  find a better way to do it ? - RDE
     d->movingContainer->disconnect(this);
 
-    d->movingContainer->setView(NULL);
+    d->movingContainer->removeView();
     d->movingContainer->addData(output);
 
-    d->fuseContainer->setView(NULL);
+    d->fuseContainer->removeView();
     d->fuseContainer->addData(d->registrationToolBox->fixedData());
     d->fuseContainer->addData(output);
 
