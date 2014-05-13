@@ -105,13 +105,12 @@ void medParameterPool::remove(medAbstractParameter* parameter)
     disconnectParam(parameter);
 
     QHashIterator<QString, medAbstractParameter*> it(d->pool);
-    while( it.hasNext() )
+
+    while(it.hasNext())
     {
         it.next();
         if(it.value() == parameter)
-        {
             d->pool.remove(it.key(), it.value());
-        }
     }
 }
 
@@ -188,6 +187,8 @@ void medParameterPool::changeParamsValue(int value)
 
     if(!sender)
         return;
+
+    qDebug() << "pool size :"<<  d->pool.count();
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
@@ -302,6 +303,8 @@ void medParameterPool::changeParamsValue(const QList<QVariant>& value)
 
     if(!sender)
         return;
+
+    qDebug() << "pool size :"<<  d->pool.count();
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {

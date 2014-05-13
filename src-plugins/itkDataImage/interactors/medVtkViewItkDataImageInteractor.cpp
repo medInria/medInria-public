@@ -142,9 +142,9 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameter
     QList<medAbstractParameter*> params;
     params.append(d->lutParam);
     params.append(d->presetParam);
-    params.append(d->opacityParam);
     params.append(d->visibiltyParameter);
     params.append(d->windowLevelParameter);
+    params.append(d->opacityParam);
 
     return params;
 }
