@@ -244,21 +244,23 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     connect(colorMode, SIGNAL(valueChanged(QString)), this, SLOT(setColorMode(QString)));
     connect(projection, SIGNAL(valueChanged(bool)), this, SLOT(setProjection(bool)));
 
-    if(d->view->layer(d->data) == 0)
-    {
-        switch(d->view2d->GetSliceOrientation())
-        {
-        case 0:
-            d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
-            break;
-        case 1:
-            d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
-            break;
-        case 2:
-            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
-            break;
-        }
-    }
+
+    //TODO - should be done automaticly from vtkImageView - RDE
+//    if(d->view->layer(d->data) == 0)
+//    {
+//        switch(d->view2d->GetSliceOrientation())
+//        {
+//        case 0:
+//            d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+//            break;
+//        case 1:
+//            d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+//            break;
+//        case 2:
+//            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+//            break;
+//        }
+//    }
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));

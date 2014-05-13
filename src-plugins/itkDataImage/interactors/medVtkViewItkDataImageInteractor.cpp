@@ -231,8 +231,12 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     d->opacityParam = new medIntParameter("Opacity", this);
     d->opacityParam->setRange(0, 100);
-    d->opacityParam->setValue(100);
+
     connect(d->opacityParam, SIGNAL(valueChanged(int)), this, SLOT(setOpacity(int)));
+    if(d->view->layer(data) > 0)
+        d->opacityParam->setValue(50);
+    else
+        d->opacityParam->setValue(100);
 
     d->visibiltyParameter = new medBoolParameter("Visibility", this);
     d->visibiltyParameter->setValue(true);

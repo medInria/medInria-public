@@ -237,6 +237,7 @@ vtkImageView2D::vtkImageView2D()
 
   this->CornerAnnotation->SetImageActor (this->GetImageActor());
   this->CornerAnnotation->ShowSliceAndImageOn();
+  this->CornerAnnotation->GetProperty()->SetDisplayLocationToForeground();
 
   this->RulerWidget->KeyPressActivationOff();
 
@@ -1671,7 +1672,6 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 
       vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
       imageDisplay->SetInput(reslicedImage);
-      imageDisplay->GetImageActor()->SetOpacity(0.5);
       imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
       this->SetColorRange(range,layer);
 
@@ -1693,6 +1693,12 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
   // this->UpdateCenter();
   this->UpdateSlicePlane();
   this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
+
+  // So ugly to do it, for each new layer,
+  // but it 's the only way i found so far to get the annotation correctly rendered ... - RDE
+  renderer->AddViewProp(this->CornerAnnotation);
+  renderer->AddViewProp(this->ScalarBar);
+  renderer->AddViewProp(this->OrientationAnnotation);
 }
 
 void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[])

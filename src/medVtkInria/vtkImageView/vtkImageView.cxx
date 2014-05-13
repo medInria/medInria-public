@@ -442,7 +442,6 @@ void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer)
     }
 
   }
-
 }
 
 //----------------------------------------------------------------------------
@@ -471,9 +470,6 @@ void vtkImageView::InstallPipeline()
 
   if (this->GetRenderer())
   {
-    this->GetRenderer()->AddViewProp ( this->CornerAnnotation );
-    this->GetRenderer()->AddViewProp ( this->ScalarBar );
-
     this->GetRenderer()->GetActiveCamera()->ParallelProjectionOn();
   }
 
