@@ -39,7 +39,7 @@ class medViewFactoryPrivate
     navigatorIdCreatorHash    navigatorCreators;
     interactorIdCreatorHash   intercatorCreators;
     addNavigatorIdCreatorHash    addNavigatorCreators;
-    addInteractorIdCreatorHash   addIntercatorCreators;
+    addInteractorIdCreatorHash   addInteractorCreators;
 
     identifierHandledTypeHash viewIdentifierHash;
     identifierHandledTypeHash navigatorIdentifierHash;
@@ -76,7 +76,7 @@ medAbstractInteractor*  medViewFactory::createAdditionalInteractor(QString ident
 {
     medAbstractInteractor* interactor = NULL;
     addInteractorCreator c = NULL;
-    c = d->addIntercatorCreators.value(identifier);
+    c = d->addInteractorCreators.value(identifier);
     if(c)
         interactor = (c)(parent);
 
@@ -129,10 +129,10 @@ bool medViewFactory::registerAdditionalNavigator(QString identifier, QStringList
 
 bool medViewFactory::registerAdditionalInteractor(QString identifier, QStringList typeHandled, addInteractorCreator creator)
 {
-    if(d->addIntercatorCreators.contains(identifier))
+    if(d->addInteractorCreators.contains(identifier))
         return false;
 
-    d->addIntercatorCreators.insert(identifier, creator);
+    d->addInteractorCreators.insert(identifier, creator);
     d->addInteractorIdentifierHash.insert(identifier, typeHandled);
     return true;
 }

@@ -27,8 +27,8 @@ class medAbstractViewPrivate
 public:
     bool    closable;
 
-    medAbstractViewInteractor* primaryIntercator;
-    QList<medAbstractInteractor*>  extraIntercators;
+    medAbstractViewInteractor* primaryInteractor;
+    QList<medAbstractInteractor*>  extraInteractors;
 
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
@@ -39,7 +39,7 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     this->setParent(parent);
     d->closable = true;
 
-    d->primaryIntercator = NULL;
+    d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
 }
 
@@ -51,9 +51,9 @@ medAbstractView::~medAbstractView( void )
 
 void medAbstractView::removeInteractors(medAbstractData *data)
 {
-    delete d->primaryIntercator;
-    d->primaryIntercator = NULL;
-    d->extraIntercators.clear();
+    delete d->primaryInteractor;
+    d->primaryInteractor = NULL;
+    d->extraInteractors.clear();
 }
 
 bool medAbstractView::initialiseInteractors(medAbstractData *data)
@@ -71,7 +71,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     {
         medAbstractViewInteractor* interactor = factory->createInteractor<medAbstractViewInteractor>(primaryInt.first(), this);
         interactor->setData(data);
-        d->primaryIntercator = interactor;
+        d->primaryInteractor = interactor;
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
 
@@ -87,7 +87,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
             extraIntList << interactor;
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         }
-        d->extraIntercators = extraIntList;
+        d->extraInteractors = extraIntList;
     }
     return true;
 }
@@ -125,13 +125,13 @@ bool medAbstractView::initialiseNavigators()
 medAbstractViewInteractor* medAbstractView::primaryInteractor(medAbstractData* data)
 {
     DTK_UNUSED(data);
-    return d->primaryIntercator;
+    return d->primaryInteractor;
 }
 
 QList<medAbstractInteractor*> medAbstractView::extraInteractors(medAbstractData* data)
 {
     DTK_UNUSED(data);
-    return d->extraIntercators;
+    return d->extraInteractors;
 }
 
 

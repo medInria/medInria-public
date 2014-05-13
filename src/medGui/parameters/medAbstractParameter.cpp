@@ -13,7 +13,7 @@
 
 #include <medAbstractParameter.h>
 
-#include <QLabel>
+#include <QtGui>
 
 
 class medAbstractParameterPrivate

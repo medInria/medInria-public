@@ -14,6 +14,7 @@
 #include <medParameterPool.h>
 
 #include <QMultiHash>
+#include <QHashIterator>
 #include <QDebug>
 
 #include <medAbstractParameter.h>
@@ -103,21 +104,14 @@ void medParameterPool::remove(medAbstractParameter* parameter)
 
     disconnectParam(parameter);
 
-    QMultiHash<QString, medAbstractParameter*>::Iterator it = d->pool.begin();
-
-    while( it != d->pool.end() )
+    QHashIterator<QString, medAbstractParameter*> it(d->pool);
+    while( it.hasNext() )
     {
+        it.next();
         if(it.value() == parameter)
         {
-            it = d->pool.erase(it);
+            d->pool.remove(it.key(), it.value());
         }
-        else
-        {
-            ++it;
-        }
-
-        if( d->pool.count() == 0 )
-            break;
     }
 }
 

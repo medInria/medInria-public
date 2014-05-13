@@ -135,7 +135,7 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         {
             if(fuseView->layer(d->registrationToolBox->movingData()) == 0)
             {
-                d->fuseContainer->setView(NULL);
+                d->fuseContainer->removeView();
                 d->fuseContainer->addData(d->registrationToolBox->fixedData());
             }
             else
@@ -167,12 +167,12 @@ void medRegistrationWorkspace::updateFromMovingContainer()
 
     foreach(medAbstractInteractor *intercator, movingView->interactors(0))
         foreach (medAbstractParameter *parameter, intercator->parameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "movingIntercators");
+            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
 
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     foreach(medAbstractInteractor *intercator, fuseView->interactors(fuseView->layer(movingData)))
         foreach (medAbstractParameter *parameter, intercator->parameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "movingIntercators");
+            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
 
     d->registrationToolBox->setMovingData(movingData);
 }
@@ -189,7 +189,7 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         {
             if(fuseView->layer(d->registrationToolBox->fixedData()) == 0)
             {
-                d->fuseContainer->setView(NULL);
+                d->fuseContainer->removeView();
                 d->fuseContainer->addData(d->registrationToolBox->movingData());
             }
             else
@@ -220,12 +220,12 @@ void medRegistrationWorkspace::updateFromFixedContainer()
 
     foreach(medAbstractInteractor *intercator, fixedView->interactors(0))
         foreach (medAbstractParameter *parameter, intercator->parameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "fixedIntercators");
+            medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
 
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     foreach(medAbstractInteractor *intercator, fuseView->interactors(fuseView->layer(fixedData)))
         foreach (medAbstractParameter *parameter, intercator->parameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "fixedIntercators");
+            medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
 
     d->registrationToolBox->setFixedData(fixedData);
 }
