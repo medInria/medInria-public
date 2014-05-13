@@ -194,10 +194,10 @@ QWidget* medVtkViewItkDataImage4DInteractor::buildLayerWidget()
     return medVtkViewItkDataImageInteractor::buildLayerWidget();
 }
 
-QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::parameters()
+QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> parameters;
-    parameters << medVtkViewItkDataImageInteractor::parameters();
+    parameters << medVtkViewItkDataImageInteractor::linkableParameters();
     parameters << d->timeLineParameter;
     return parameters;
 }

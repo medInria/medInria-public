@@ -238,11 +238,10 @@ QString medVtkViewNavigator::description() const
     return "Navigator to interact with a medVtkView";
 }
 
-QList<medAbstractParameter*> medVtkViewNavigator::parameters()
+QList<medAbstractParameter*> medVtkViewNavigator::linkableParameters()
 {
     return d->parameters;
 }
-
 
 
 medImageView::Orientation medVtkViewNavigator::orientation() const

@@ -45,7 +45,7 @@ public:
     virtual QWidget* toolBarWidget();
     virtual QWidget* layerWidget();
 
-    virtual QList<medAbstractParameter*> parameters() = 0;
+    virtual QList<medAbstractParameter*> linkableParameters() = 0;
 
 public slots:
     virtual void updateWidgets(){}

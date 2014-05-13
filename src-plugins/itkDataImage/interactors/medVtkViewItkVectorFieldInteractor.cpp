@@ -417,7 +417,7 @@ QWidget* medVtkViewItkVectorFieldInteractor::buildToolBarWidget()
     return d->slicingParameter->getSlider();
 }
 
-QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::parameters()
+QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::linkableParameters()
 {
     return d->parameters;
 }

@@ -75,7 +75,7 @@ public:
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBoxWidget();
     virtual QWidget* buildToolBarWidget();
-    virtual QList<medAbstractParameter*> parameters();
+    virtual QList<medAbstractParameter*> linkableParameters();
 
     void removeData();
 

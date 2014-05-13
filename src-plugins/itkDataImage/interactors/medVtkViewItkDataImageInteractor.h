@@ -38,7 +38,7 @@ public:
     virtual QWidget* buildToolBoxWidget();
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildLayerWidget();
-    virtual QList<medAbstractParameter*> parameters();
+    virtual QList<medAbstractParameter*> linkableParameters();
     virtual void setData(medAbstractData * data);
     virtual QString lut() const;
     virtual QString preset() const;

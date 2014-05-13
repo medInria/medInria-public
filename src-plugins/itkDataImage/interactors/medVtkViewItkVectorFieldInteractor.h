@@ -44,7 +44,7 @@ public:
     virtual QWidget* buildToolBoxWidget();
     virtual QWidget* buildToolBarWidget();
 
-    virtual QList<medAbstractParameter*> parameters();
+    virtual QList<medAbstractParameter*> linkableParameters();
 
     virtual void removeData();
 

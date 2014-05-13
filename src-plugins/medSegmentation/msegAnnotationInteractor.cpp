@@ -393,7 +393,7 @@ void msegAnnotationInteractor::setUpViewForThumbnail()
 
 }
 
-QList<medAbstractParameter*> msegAnnotationInteractor::parameters()
+QList<medAbstractParameter*> msegAnnotationInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> params;
     params.append(d->opacityParam);

@@ -313,7 +313,7 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                     QString tooltip = QString(tr("Link Layer properties( "));
                     foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
-                        foreach(medAbstractParameter* param, interactor->parameters())
+                        foreach(medAbstractParameter* param, interactor->linkableParameters())
                           tooltip += param->name() + ", ";
                     tooltip += ")";
 
@@ -515,7 +515,7 @@ void medAbstractWorkspace::buildTemporaryPool()
 
         foreach (medAbstractInteractor* interactor, view->interactors(layer))
         {
-            d->temporaryPoolForInteractors->append(interactor->parameters());
+            d->temporaryPoolForInteractors->append(interactor->linkableParameters());
         }
     }
 }
@@ -562,7 +562,7 @@ void medAbstractWorkspace::updateParameterPool(QString pool)
 
         foreach (medAbstractInteractor* interactor, layeredView->interactors(layer))
         {
-            foreach(medAbstractParameter *param, interactor->parameters())
+            foreach(medAbstractParameter *param, interactor->linkableParameters())
             {
                 if(pool == "" || key != "")
                     medParameterPoolManager::instance()->unlinkParameter(param);

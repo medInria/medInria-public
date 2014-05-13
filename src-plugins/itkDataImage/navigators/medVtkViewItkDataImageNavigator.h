@@ -31,7 +31,7 @@ public:
     static bool registered();
     virtual QStringList handled(void) const;
     virtual QString description() const;
-    virtual QList<medAbstractParameter*> parameters();
+    virtual QList<medAbstractParameter*> linkableParameters();
 
 public slots:
     void updateWidgets();

@@ -557,7 +557,7 @@ QWidget* vtkDataMeshInteractor::buildToolBarWidget()
     return d->slicingParameter->getSlider();
 }
 
-QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
+QList<medAbstractParameter*> vtkDataMeshInteractor::linkableParameters()
 {
     return d->parameters;
 }

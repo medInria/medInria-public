@@ -93,7 +93,7 @@ QString vtkDataMeshNavigator::description() const
     return "Navigator to interact with meshes in a medVtkView";
 }
 
-QList<medAbstractParameter*> vtkDataMeshNavigator::parameters()
+QList<medAbstractParameter*> vtkDataMeshNavigator::linkableParameters()
 {
     return d->parameters;
 }

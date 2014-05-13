@@ -20,6 +20,8 @@
 #include <medViewContainerSplitter.h>
 #include <medViewContainerManager.h>
 #include <medAbstractView.h>
+#include <medAbstractNavigator.h>
+#include <medAbstractViewNavigator.h>
 #include <medAbstractParameter.h>
 #include <medParameterPoolManager.h>
 #include <medParameterPool.h>
@@ -270,7 +272,14 @@ void medTabbedViewContainers::buildTemporaryPool()
         if(!container->view())
             continue;
 
-        foreach(medAbstractParameter *param, container->view()->navigatorsParameters())
+        QList<medAbstractParameter*>  params;
+        params.append(container->view()->primaryNavigator()->linkableParameters());
+        foreach(medAbstractNavigator* nav,  container->view()->extraNavigators())
+        {
+            params.append(nav->linkableParameters());
+        }
+
+        foreach(medAbstractParameter *param, params)
         {
             d->pool->append(param);
         }

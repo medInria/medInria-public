@@ -165,13 +165,13 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     d->movingContainer->link("1");
     d->fuseContainer->link("1");
 
-    foreach(medAbstractInteractor *intercator, movingView->interactors(0))
-        foreach (medAbstractParameter *parameter, intercator->parameters())
+    foreach(medAbstractInteractor *interactor, movingView->interactors(0))
+        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
 
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-    foreach(medAbstractInteractor *intercator, fuseView->interactors(fuseView->layer(movingData)))
-        foreach (medAbstractParameter *parameter, intercator->parameters())
+    foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(movingData)))
+        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
 
     d->registrationToolBox->setMovingData(movingData);
@@ -218,13 +218,13 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     d->fixedContainer->link("1");
     d->fuseContainer->link("1");
 
-    foreach(medAbstractInteractor *intercator, fixedView->interactors(0))
-        foreach (medAbstractParameter *parameter, intercator->parameters())
+    foreach(medAbstractInteractor *interactor, fixedView->interactors(0))
+        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
 
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-    foreach(medAbstractInteractor *intercator, fuseView->interactors(fuseView->layer(fixedData)))
-        foreach (medAbstractParameter *parameter, intercator->parameters())
+    foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(fixedData)))
+        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
 
     d->registrationToolBox->setFixedData(fixedData);

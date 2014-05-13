@@ -1242,7 +1242,7 @@ void medVtkFibersDataInteractor::setUpViewForThumbnail()
     d->view2d->ShowRulerWidgetOff();
 }
 
-QList<medAbstractParameter*> medVtkFibersDataInteractor::parameters()
+QList<medAbstractParameter*> medVtkFibersDataInteractor::linkableParameters()
 {
     return d->parameters;
 }

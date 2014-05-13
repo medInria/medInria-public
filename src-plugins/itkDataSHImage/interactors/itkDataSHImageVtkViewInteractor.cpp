@@ -512,7 +512,7 @@ QWidget* itkDataSHImageVtkViewInteractor::buildToolBarWidget()
     return d->slicingParameter->getSlider();
 }
 
-QList<medAbstractParameter*> itkDataSHImageVtkViewInteractor::parameters()
+QList<medAbstractParameter*> itkDataSHImageVtkViewInteractor::linkableParameters()
 {
     return d->parameters;
 }

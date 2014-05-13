@@ -24,6 +24,7 @@ class medAbstractData;
 class medDataIndex;
 class medToolBox;
 class medViewContainerSplitter;
+class medAbstractParameter;
 
 class medViewContainerPrivate;
 class MEDGUI_EXPORT medViewContainer: public QFrame
@@ -110,6 +111,7 @@ private slots:
 private:
     enum DropArea {AREA_OUT = 0, AREA_TOP,AREA_BOTTOM,AREA_LEFT,AREA_RIGHT,AREA_CENTER};
     DropArea computeDropArea(int x, int y);
+    QList<medAbstractParameter*> navigatorsParameters();
 
     medViewContainerPrivate *d;
 

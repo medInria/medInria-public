@@ -67,9 +67,13 @@ public:
     virtual QWidget* navigatorWidget() = 0;
     virtual QWidget *viewWidget() = 0;
 
-    virtual QList<medAbstractParameter*> navigatorsParameters();
 
     QImage generateThumbnail(const QSize &size);
+
+    virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
+    virtual medAbstractViewNavigator* primaryNavigator();
+    virtual QList<medAbstractNavigator*> extraNavigators();
 
 
 public slots:
@@ -82,11 +86,6 @@ signals:
     void aboutToBuildThumbnail();
 
 protected:
-    virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
-    virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
-    virtual medAbstractViewNavigator* primaryNavigator();
-    virtual QList<medAbstractNavigator*> extraNavigators();
-
     virtual bool initialiseInteractors(medAbstractData* data);
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);

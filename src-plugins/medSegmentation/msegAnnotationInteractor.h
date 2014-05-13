@@ -59,7 +59,7 @@ public:
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildToolBoxWidget();
-    virtual QList<medAbstractParameter*> parameters();
+    virtual QList<medAbstractParameter*> linkableParameters();
     virtual void setData(medAbstractData * data);
     virtual void setWindowLevel (double &window, double &level);
     virtual void windowLevel(double &window, double &level);

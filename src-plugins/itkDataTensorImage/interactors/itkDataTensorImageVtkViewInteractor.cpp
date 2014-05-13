@@ -560,7 +560,7 @@ QWidget* itkDataTensorImageVtkViewInteractor::buildToolBarWidget()
     return d->slicingParameter->getSlider();
 }
 
-QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::parameters()
+QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::linkableParameters()
 {
     return d->parameters;
 }

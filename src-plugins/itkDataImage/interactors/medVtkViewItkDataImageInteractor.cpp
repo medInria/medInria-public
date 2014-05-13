@@ -137,7 +137,7 @@ bool medVtkViewItkDataImageInteractor::registered()
                                                                   medVtkViewItkDataImageInteractor::dataHandled());
 }
 
-QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::parameters()
+QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> params;
     params.append(d->lutParam);

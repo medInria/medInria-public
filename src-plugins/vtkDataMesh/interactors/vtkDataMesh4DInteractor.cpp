@@ -138,7 +138,7 @@ QWidget* vtkDataMesh4DInteractor::buildLayerWidget()
     return new QWidget;
 }
 
-QList<medAbstractParameter*> vtkDataMesh4DInteractor::parameters()
+QList<medAbstractParameter*> vtkDataMesh4DInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> parameters;
     parameters << d->timeLineParameter;

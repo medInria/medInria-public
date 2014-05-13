@@ -40,7 +40,7 @@ public:
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildLayerWidget();
 
-    virtual QList<medAbstractParameter*> parameters();
+    virtual QList<medAbstractParameter*> linkableParameters();
 
     double getCurrentTime();
     /** Assigns ranfe array the minimum and maximum time of the sequence */

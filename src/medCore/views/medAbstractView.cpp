@@ -184,18 +184,6 @@ QVector2D medAbstractView::pan(void)
     return nav->pan();
 }
 
-QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
-{
-    QList<medAbstractParameter*>  params;
-    params.append(this->primaryNavigator()->parameters());
-
-    foreach(medAbstractNavigator* nav,  this->extraNavigators())
-    {
-        params.append(nav->parameters());
-    }
-    return params;
-}
-
 bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
 {
     if(obj == this->viewWidget())

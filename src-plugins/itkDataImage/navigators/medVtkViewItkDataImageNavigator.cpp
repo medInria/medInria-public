@@ -106,7 +106,7 @@ QString medVtkViewItkDataImageNavigator::description() const
     return "Navigator to interact with itk images in a medVtkView";
 }
 
-QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::parameters()
+QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::linkableParameters()
 {
     return d->parameters;
 }

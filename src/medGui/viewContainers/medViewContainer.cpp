@@ -290,7 +290,7 @@ void medViewContainer::setView(medAbstractView *view)
         d->view->viewWidget()->show();
 
         QString tooltip = QString(tr("Link View properties ("));
-        foreach(medAbstractParameter *param, d->view->navigatorsParameters())
+        foreach(medAbstractParameter *param, navigatorsParameters())
             tooltip += param->name() + ", ";
         tooltip += ")";
         d->poolSelector->setToolTip(tooltip);
@@ -548,6 +548,18 @@ void medViewContainer::emitLinkRequested(QString pool)
     }
 }
 
+QList<medAbstractParameter*> medViewContainer::navigatorsParameters()
+{
+    QList<medAbstractParameter*>  params;
+    params.append(d->view->primaryNavigator()->linkableParameters());
+
+    foreach(medAbstractNavigator* nav,  d->view->extraNavigators())
+    {
+        params.append(nav->linkableParameters());
+    }
+    return params;
+}
+
 void medViewContainer::link(QString pool)
 {
     if(!d->view)
@@ -560,7 +572,7 @@ void medViewContainer::link(QString pool)
     d->poolSelector->setCurrentColor(pool);
     d->poolSelector->blockSignals(false);
 
-    foreach(medAbstractParameter *param, d->view->navigatorsParameters())
+    foreach(medAbstractParameter *param, navigatorsParameters())
     {
         medParameterPoolManager::instance()->linkParameter(param, pool);
     }
@@ -575,7 +587,7 @@ void medViewContainer::unlink()
     d->poolSelector->setCurrentColor("");
     d->poolSelector->blockSignals(false);
 
-    foreach(medAbstractParameter *param, d->view->navigatorsParameters())
+    foreach(medAbstractParameter *param, navigatorsParameters())
     {
         medParameterPoolManager::instance()->unlinkParameter(param);
     }
