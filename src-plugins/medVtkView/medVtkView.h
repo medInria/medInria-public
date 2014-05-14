@@ -47,6 +47,8 @@ public:
     virtual qreal sliceThickness();
     virtual qreal scale();
 
+    virtual void enableRubberBandZoom(bool);
+
 public slots:
     virtual void reset();
 

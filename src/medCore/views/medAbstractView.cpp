@@ -188,10 +188,11 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
 {
     if(obj == this->viewWidget())
     {
-        if (event->type() == QEvent::FocusIn)
+        if (event->type() == QEvent::MouseButtonPress)
         {
-            emit selectedRequest(true);
-            this->viewWidget()->clearFocus();
+            QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(event);
+            if(mouseEvent && mouseEvent->button() == Qt::LeftButton)
+              emit selectedRequest(true);
         }
 
     }

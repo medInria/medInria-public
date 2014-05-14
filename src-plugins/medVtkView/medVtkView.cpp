@@ -76,6 +76,8 @@ public:
 
     medVtkViewObserver *observer;
 
+    medBoolParameter *rubberBandZoomParameter;
+
     // toolboxes
     QWidget* navigatorWidget;
     QWidget* mouseInteractionWidget;
@@ -184,6 +186,8 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->toolBarWidget = NULL;
     d->navigatorWidget = NULL;
     d->mouseInteractionWidget = NULL;
+
+    d->rubberBandZoomParameter = new medBoolParameter("RubberBandZoom", this);
 
     this->initialiseNavigators();
     this->setWindowingInteractionStyle(true);
@@ -581,4 +585,26 @@ void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
         if(parameter)
             medSettingsManager::instance()->setValue("interactions","mouse", parameter->name());
     }
+}
+
+void medVtkView::enableRubberBandZoom(bool enable)
+{
+    if(enable)
+    {
+        medSettingsManager * mnger = medSettingsManager::instance();
+        QString interaction = mnger->value("interactions","mouse", "Windowing").toString();
+
+        vtkInriaInteractorStyleRubberBandZoom * interactorStyle = vtkInriaInteractorStyleRubberBandZoom::New();
+        interactorStyle->AddObserver( vtkImageView2DCommand::CameraZoomEvent,d->observer,0 );
+        interactorStyle->AddObserver( vtkImageView2DCommand::CameraPanEvent,d->observer,0 );
+
+        interactorStyle->RightButtonModeOn();
+        if(interaction != "Zooming")
+            interactorStyle->LeftButtonModeOff();
+
+        d->view2d->GetInteractor()->SetInteractorStyle(interactorStyle);
+        interactorStyle->Delete();
+    }
+    else
+        d->view2d->GetInteractor()->SetInteractorStyle(d->interactorStyle2D);
 }

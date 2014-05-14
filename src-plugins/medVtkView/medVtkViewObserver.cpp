@@ -107,24 +107,20 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     }
     case vtkCommand::KeyPressEvent:
     {
-       /* vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
+        vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
         if (windowInteractor->GetControlKey())
         {
-            m_view->setProperty( "ZoomMode" , "RubberBand" );
-            dynamic_cast<vtkInriaInteractorStyleRubberBandZoom*>(m_view->view2d()->GetInteractor()->GetInteractorStyle())->RightButtonModeOn();
-            if (m_view->property("MouseInteraction")!="Zooming")
-                dynamic_cast<vtkInriaInteractorStyleRubberBandZoom*>(m_view->view2d()->GetInteractor()->GetInteractorStyle())->LeftButtonModeOff();
-        }*/
+            m_view->enableRubberBandZoom(true);
+        }
         break;
     }
     case vtkCommand::KeyReleaseEvent:
     {
-       /* vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
+        vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
         if (!windowInteractor->GetControlKey())
         {
-            if (this->m_view->property("ZoomMode")=="RubberBand")
-              this->m_view->setProperty( "ZoomMode" , "Normal" );
-        }*/
+            m_view->enableRubberBandZoom(false);
+        }
         break;
     }
     }// switch end
