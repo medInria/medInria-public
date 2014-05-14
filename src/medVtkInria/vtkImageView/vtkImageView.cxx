@@ -456,11 +456,9 @@ void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *mat
 //----------------------------------------------------------------------------
 void vtkImageView::InstallPipeline()
 {
-  int t = 0;
   if (this->RenderWindow && this->GetRenderer() && !this->RenderWindow->HasRenderer (this->GetRenderer()))
   {
     this->RenderWindow->AddRenderer(this->GetRenderer());
-    t = this->RenderWindow->GetRenderers()->GetNumberOfItems();
   }
 
   if (this->Interactor)
