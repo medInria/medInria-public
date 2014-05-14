@@ -262,6 +262,7 @@ void medAbstractWorkspace::updateLayersToolBox()
 
     delete d->layerListWidget;
     d->layerListWidget = new QListWidget;
+    d->layerListWidget->setAlternatingRowColors(true);
     d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     d->layerListWidget->setFocusPolicy(Qt::NoFocus);
 
@@ -386,8 +387,11 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layerWidget->setFocusPolicy(Qt::NoFocus);
 
                 d->layerListWidget->blockSignals(true);
-                d->layerListWidget->clearSelection();
-                d->layerListWidget->setCurrentItem(item);
+                if(layeredView->currentLayer() == item->data(Qt::UserRole).toInt())
+                {
+                    d->layerListWidget->setCurrentItem(item);
+                    item->setSelected(true);
+                }
                 d->layerListWidget->blockSignals(false);
 
             }
