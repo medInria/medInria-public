@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -56,7 +56,7 @@ vtkAxes2DWidget::vtkAxes2DWidget()
   this->Mapper = vtkPolyDataMapper::New();
   this->Actor  = vtkActor::New();
   this->Renderer = vtkRenderer::New();
-  
+
 
   this->Source->SetPoints (this->Points);
   this->Mapper->SetInputConnection (this->Source->GetProducerPort());
@@ -66,19 +66,19 @@ vtkAxes2DWidget::vtkAxes2DWidget()
   this->Renderer->SetLayer (1);
   this->Renderer->InteractiveOff();
   this->Renderer->SetViewport (0.0, 0.0, 1.0, 1.0);
- 
+
   this->Points->InsertNextPoint (0,0,0);
   this->Points->InsertNextPoint (0,0,0);
   this->Points->InsertNextPoint (0,0,0);
   this->Points->InsertNextPoint (0,0,0);
 
-  this->Source->Allocate();  
+  this->Source->Allocate();
   vtkIdType line[2];
   line[0] = 0; line[1] = 1;
   this->Source->InsertNextCell (VTK_LINE, 2, line);
   line[0] = 2; line[1] = 3;
   this->Source->InsertNextCell (VTK_LINE, 2, line);
-  
+
   this->Command = vtkAxes2DWidgetCommand::New();
   this->Command->SetWidget (this);
 
@@ -93,7 +93,7 @@ vtkAxes2DWidget::vtkAxes2DWidget()
   this->ColorArray->InsertNextTupleValue (red);
 
   this->Source->GetPointData()->SetScalars (this->ColorArray);
-  
+
   this->Enabled = 0;
 }
 
@@ -107,7 +107,7 @@ vtkAxes2DWidget::~vtkAxes2DWidget()
   this->Source->Delete();
   this->Points->Delete();
   this->Mapper->Delete();
-  this->Actor->Delete();  
+  this->Actor->Delete();
   this->Renderer->Delete();
   this->Command->Delete();
   this->ColorArray->Delete();
@@ -124,7 +124,7 @@ void vtkAxes2DWidget::SetImageView(vtkImageView2D* arg)
   }
 
   this->ImageView = arg;
-  
+
   if (this->ImageView)
   {
     this->ComputePlanes();
@@ -157,17 +157,17 @@ void vtkAxes2DWidget::SetEnabled(int enabling)
 
   if (this->RenderWindow->GetNeverRendered())
     return;
-  
+
   if (this->ImageView)
   {
     if (enabling)
-    { 
+    {
       if (!this->ImageView->HasObserver (vtkImageView2D::CurrentPointChangedEvent, this->Command))
-      {  
+      {
         this->ImageView->AddObserver (vtkImageView2D::CurrentPointChangedEvent, this->Command, 20.0);
         this->ImageView->AddObserver (vtkImageView2D::OrientationChangedEvent, this->Command, 20.0);
       }
-      
+
       if (this->RenderWindow->GetNumberOfLayers() < 2)
         this->RenderWindow->SetNumberOfLayers( 2 );
 
@@ -183,7 +183,7 @@ void vtkAxes2DWidget::SetEnabled(int enabling)
       if( this->RenderWindow )
         this->RenderWindow->RemoveRenderer (this->Renderer);
     }
-  }    
+  }
 }
 
 //----------------------------------------------------------------------
@@ -191,50 +191,50 @@ void vtkAxes2DWidget::ComputePlanes()
 {
   if (!this->ImageView || !this->ImageView->GetRenderer() || !this->ImageView->GetImageActor())
     return;
-  
+
   unsigned char red[3]   = {0,0,0};
   unsigned char green[3] = {0,0,0};
   unsigned char blue[3]  = {0,0,0};
   red[0] = 255; green[1] = 255; blue[2] = 255;
-  
+
   unsigned char* colorX, *colorY;
   switch (this->ImageView->GetViewOrientation())
   {
       case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-	colorX = green;
-	colorY = blue;
-	break;
+    colorX = blue;
+    colorY = green;
+    break;
       case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-	colorX = red;
-	colorY = blue;
-	break;
+    colorX = blue;
+    colorY = red;
+    break;
       case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
       default:
-	colorX = red;
-	colorY = green;
-	break;
+    colorX = green;
+    colorY = red;
+    break;
   }
-  
+
   this->ColorArray->SetTupleValue (0, colorX);
   this->ColorArray->SetTupleValue (1, colorX);
   this->ColorArray->SetTupleValue (2, colorY);
   this->ColorArray->SetTupleValue (3, colorY);
-  
+
   vtkCamera* cam = this->ImageView->GetRenderer()->GetActiveCamera();
   double* normal = cam->GetViewPlaneNormal();
   double* axisy = cam->GetViewUp();
   double axisx[3];
   vtkMath::Cross (axisy, normal, axisx);
-  
+
   this->PlaneXmin->SetNormal (axisx);
   this->PlaneXmax->SetNormal (axisx);
   this->PlaneYmin->SetNormal (axisy);
   this->PlaneYmax->SetNormal (axisy);
-  
+
   int* ext = this->ImageView->GetImageActor()->GetDisplayExtent();
-  
+
   int imageposition[3];
-  
+
   imageposition[0] = ext[0]; imageposition[1] = ext[2]; imageposition[2] = ext[4];
   double p1[3];
   this->ImageView->GetWorldCoordinatesFromImageCoordinates (imageposition, p1);
@@ -260,14 +260,14 @@ void vtkAxes2DWidget::ComputePlanes()
 void vtkAxes2DWidget::ComputeLyingPoints(double* pos)
 {
   //this->ComputePlanes(); // image may have changed, so we need to re-compute planes
-  
+
   double p0[3], p1[3], p2[3], p3[3];
-  
+
   vtkPlane::ProjectPoint (pos, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), p0);
   vtkPlane::ProjectPoint (pos, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), p1);
   vtkPlane::ProjectPoint (pos, this->PlaneYmin->GetOrigin(), this->PlaneYmin->GetNormal(), p2);
   vtkPlane::ProjectPoint (pos, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), p3);
-  
+
   if (this->PlaneYmax->EvaluateFunction (pos) > 0)
   {
     vtkPlane::ProjectPoint (p0, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), p0);
@@ -280,7 +280,7 @@ void vtkAxes2DWidget::ComputeLyingPoints(double* pos)
   }
   if (this->PlaneXmax->EvaluateFunction (pos) > 0)
   {
-    vtkPlane::ProjectPoint (p2, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), p2); 
+    vtkPlane::ProjectPoint (p2, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), p2);
     vtkPlane::ProjectPoint (p3, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), p3);
   }
   if (this->PlaneXmin->EvaluateFunction (pos) < 0)
@@ -288,12 +288,12 @@ void vtkAxes2DWidget::ComputeLyingPoints(double* pos)
     vtkPlane::ProjectPoint (p2, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), p2);
     vtkPlane::ProjectPoint (p3, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), p3);
   }
-  
+
   this->Points->SetPoint (0, p0);
   this->Points->SetPoint (1, p1);
   this->Points->SetPoint (2, p2);
   this->Points->SetPoint (3, p3);
-  
+
   this->Source->Modified();
 }
 
@@ -306,31 +306,31 @@ void vtkAxes2DWidget::PrintSelf(ostream& os, vtkIndent indent)
 
 //----------------------------------------------------------------------------------
 void vtkAxes2DWidgetCommand::Execute(vtkObject *caller,
-				     unsigned long event,
-				     void *callData)
+                     unsigned long event,
+                     void *callData)
 {
   if (event == vtkImageView2D::CurrentPointChangedEvent)
   {
-    
+
     if (!this->Widget)
       return;
-    
+
     vtkImageView *view = vtkImageView::SafeDownCast(caller);
     if (!view)
       return;
-    
+
     double* pos = view->GetCurrentPoint();
     this->Widget->ComputeLyingPoints (pos);
   }
   if (event == vtkImageView2D::OrientationChangedEvent)
   {
-    
+
     if (!this->Widget)
       return;
     vtkImageView *view = vtkImageView::SafeDownCast(caller);
     if (!view)
       return;
-    
+
     double* pos = view->GetCurrentPoint();
     this->Widget->SetEnabled(this->Widget->GetEnabled());
     this->Widget->ComputePlanes();
