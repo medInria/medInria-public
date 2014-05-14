@@ -565,6 +565,12 @@ QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::linkableParame
     return d->parameters;
 }
 
+QList<medBoolParameter*> itkDataTensorImageVtkViewInteractor::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
+
 void itkDataTensorImageVtkViewInteractor::update()
 {
     d->render->Render();

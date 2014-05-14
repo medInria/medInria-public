@@ -279,10 +279,6 @@ void medApplication::registerToFactories()
     settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>("Database",
                                                                              tr("Database"),
                                                                              tr("Database related settings"));
-
-    settingsWidgetFactory->registerSettingsWidget<medInteractionSettingsWidget>("Interaction",
-                                                                                tr("Interaction"),
-                                                                                tr("View Interaction settings"));
     //Register annotations
     //TODO there is obviously something that have to be done here. - RDE
     dtkAbstractDataFactory * datafactory = medAbstractDataFactory::instance();

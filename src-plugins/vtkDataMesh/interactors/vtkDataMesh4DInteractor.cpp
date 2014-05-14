@@ -145,6 +145,11 @@ QList<medAbstractParameter*> vtkDataMesh4DInteractor::linkableParameters()
     return parameters;
 }
 
+QList<medBoolParameter*> vtkDataMesh4DInteractor::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
 
 void vtkDataMesh4DInteractor::setCurrentTime (double time)
 {

@@ -98,6 +98,12 @@ QList<medAbstractParameter*> vtkDataMeshNavigator::linkableParameters()
     return d->parameters;
 }
 
+QList<medBoolParameter*> vtkDataMeshNavigator::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
+
 void vtkDataMeshNavigator::updateWidgets()
 {
     if(d->imageView->orientation() == medImageView::VIEW_ORIENTATION_3D &&

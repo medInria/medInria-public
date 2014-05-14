@@ -21,6 +21,7 @@ PURPOSE.
 
 class medAbstractView;
 class medAbstractParameter;
+class medBoolParameter;
 
 
 class medAbstractNavigatorPrivate;
@@ -39,6 +40,7 @@ public:
     QWidget* toolBarWidget();
 
     virtual QList<medAbstractParameter*> linkableParameters() = 0;
+    virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
 
 protected:
     /**

@@ -517,6 +517,12 @@ QList<medAbstractParameter*> itkDataSHImageVtkViewInteractor::linkableParameters
     return d->parameters;
 }
 
+QList<medBoolParameter*> itkDataSHImageVtkViewInteractor::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
+
 void itkDataSHImageVtkViewInteractor::update()
 {
     d->render->Render();

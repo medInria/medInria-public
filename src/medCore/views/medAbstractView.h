@@ -66,6 +66,7 @@ public:
 
     virtual QWidget* navigatorWidget() = 0;
     virtual QWidget *viewWidget() = 0;
+    virtual QWidget *mouseInteractionWidget() = 0;
 
 
     QImage generateThumbnail(const QSize &size);

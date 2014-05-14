@@ -72,6 +72,7 @@ public slots:
     virtual void clear();
     virtual void addNewTab();
     void updateNavigatorsToolBox();
+    void updateMouseInteractionToolBox();
     void updateLayersToolBox();
     void updateInteractorsToolBox();
     void clearWorkspaceToolBoxes();

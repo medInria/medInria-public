@@ -37,7 +37,7 @@ public:
     virtual QString description() const;
     virtual QWidget *viewWidget();
     virtual QWidget* toolBarWidget();
-    virtual QWidget* navigatorWidget();
+    virtual QWidget *mouseInteractionWidget();
     virtual QPointF mapWorldToDisplayCoordinates(const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates(const QPointF & scenePoint );
     virtual QVector3D viewCenter();
@@ -61,6 +61,9 @@ private slots:
     void removeInternNavigatorWidget();
     void removeInternToolBarWidget();
     void removeInternViewWidget();
+
+    void buildMouseInteractionParamPool(uint layer);
+    void saveMouseInteractionSettings(bool parameterEnabled);
 
 private:
     virtual QImage buildThumbnail(const QSize &size);

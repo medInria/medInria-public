@@ -45,6 +45,7 @@ public:
 
     virtual QWidget *viewWidget();
     virtual QWidget* navigatorWidget();
+    virtual QWidget* mouseInteractionWidget();
 
     virtual bool initialiseInteractors(medAbstractData* data);
     virtual bool initialiseNavigators();

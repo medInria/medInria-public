@@ -422,6 +422,12 @@ QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::linkableParamet
     return d->parameters;
 }
 
+QList<medBoolParameter*> medVtkViewItkVectorFieldInteractor::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
+
 void medVtkViewItkVectorFieldInteractor::update()
 {
     d->render->Render();

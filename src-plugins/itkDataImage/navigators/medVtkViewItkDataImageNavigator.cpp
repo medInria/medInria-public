@@ -111,6 +111,12 @@ QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::linkableParameters
     return d->parameters;
 }
 
+QList<medBoolParameter*> medVtkViewItkDataImageNavigator::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
+
 void medVtkViewItkDataImageNavigator::updateWidgets()
 {
     if(d->imageView->orientation() == medImageView::VIEW_ORIENTATION_3D &&

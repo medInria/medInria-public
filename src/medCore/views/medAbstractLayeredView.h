@@ -58,6 +58,8 @@ public:
     void setVisibility (bool visibility, unsigned int layer);
     bool visibility(unsigned int layer) ;
 
+    virtual QWidget* navigatorWidget();
+
 public slots:
     //TODO: not sure we need this
     void setVisibility(bool visibility);

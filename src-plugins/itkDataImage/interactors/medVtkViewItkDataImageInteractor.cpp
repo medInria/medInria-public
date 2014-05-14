@@ -61,6 +61,7 @@ public:
     medIntParameter *opacityParam;
     medBoolParameter *visibiltyParameter;
     medCompositeParameter *windowLevelParameter;
+    medBoolParameter *enableWindowLevelParameter;
     medIntParameter *slicingParameter;
 
     medDoubleParameter *windowParameter;
@@ -88,6 +89,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     d->visibiltyParameter = NULL;
     d->slicingParameter = NULL;
     d->windowLevelParameter = NULL;
+    d->enableWindowLevelParameter = NULL;
 }
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
@@ -149,6 +151,13 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameter
     return params;
 }
 
+QList<medBoolParameter*> medVtkViewItkDataImageInteractor::mouseInteractionParameters()
+{
+    QList<medBoolParameter*> params;
+    params.append(d->enableWindowLevelParameter);
+
+    return params;
+}
 
 void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 {
@@ -271,6 +280,11 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
         d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+
+    d->enableWindowLevelParameter = new medBoolParameter("Windowing", this);
+    d->enableWindowLevelParameter->setIcon(QIcon (":/icons/wlww.png"));
+    d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
+    connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWIndowLevel(bool)));
 
     connect(d->view, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
     connect(d->view, SIGNAL(windowLevelChanged(double,double, unsigned int)), this, SLOT(updateWindowLevelParam(double,double, unsigned int)) );
@@ -564,4 +578,11 @@ void medVtkViewItkDataImageInteractor::updateSlicingParam()
     d->slicingParameter->blockSignals(false);
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
+}
+
+void medVtkViewItkDataImageInteractor::enableWIndowLevel(bool enable)
+{
+    if(enable)
+        d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeWindowLevel );
+
 }

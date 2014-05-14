@@ -1247,6 +1247,12 @@ QList<medAbstractParameter*> medVtkFibersDataInteractor::linkableParameters()
     return d->parameters;
 }
 
+QList<medBoolParameter*> medVtkFibersDataInteractor::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
+
 void medVtkFibersDataInteractor::updateWidgets()
 {
     if(!d->view->is2D())

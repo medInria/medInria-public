@@ -43,13 +43,15 @@
 #include <medBoolParameter.h>
 #include <medToolBox.h>
 #include <medMetaDataKeys.h>
+#include <medParameterPool.h>
+#include <medParameterPoolManager.h>
+#include <medSettingsManager.h>
 
 class medVtkViewPrivate
 {
 public:
     // internal state
     vtkImageView *currentView; //2d or 3d dependig on the navigator orientation.
-    medAbstractData *currentData; //ie the data corresponding to the selected layer.
 
     vtkInteractorStyle *interactorStyle2D;
     vtkInteractorStyle *interactorStyle3D;
@@ -76,12 +78,7 @@ public:
 
     // toolboxes
     QWidget* navigatorWidget;
-
-    // parameter
-    medBoolGroupParameter *mouseInteractionsParameter;
-    medBoolParameter *windowingInteractionParameter;
-    medBoolParameter *zoomInteractionParameter;
-    medBoolParameter *slicingInteractionParameter;
+    QWidget* mouseInteractionWidget;
 
     QScopedPointer<medVtkViewBackend> backend;
 };
@@ -91,7 +88,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 {
     // setup initial internal state of the view
     d->currentView = NULL;
-    d->currentData = NULL;
     d->interactorStyle2D = NULL;
     d->interactorStyle3D = NULL;
 
@@ -187,11 +183,13 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
     d->toolBarWidget = NULL;
     d->navigatorWidget = NULL;
+    d->mouseInteractionWidget = NULL;
 
     this->initialiseNavigators();
     this->setWindowingInteractionStyle(true);
 
     connect(this, SIGNAL(currentLayerChanged()), this, SLOT(changeCurrentLayer()));
+    connect(this, SIGNAL(layerAdded(uint)), this, SLOT(buildMouseInteractionParamPool(uint)));
 }
 
 medVtkView::~medVtkView()
@@ -256,23 +254,34 @@ QWidget* medVtkView::toolBarWidget()
     return d->toolBarWidget;
 }
 
-QWidget* medVtkView::navigatorWidget()
-{
-    if(!d->navigatorWidget)
-    {
-        d->navigatorWidget = new QWidget;
-        connect(d->navigatorWidget, SIGNAL(destroyed()), this, SLOT(removeInternNavigatorWidget()));
-        QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
 
-        navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
+QWidget* medVtkView::mouseInteractionWidget()
+{
+    if(!d->mouseInteractionWidget)
+    {
+        d->mouseInteractionWidget = new QWidget;
+        connect(d->mouseInteractionWidget, SIGNAL(destroyed()), this, SLOT(removeInternNavigatorWidget()));
+
+        QList<medBoolParameter*> params;
+
+        params.append(primaryInteractor(this->currentLayer())->mouseInteractionParameters());
+        foreach (medAbstractInteractor* interactor, this->extraInteractors(this->currentLayer()))
+            params.append(interactor->mouseInteractionParameters());
+
+        params.append(primaryNavigator()->mouseInteractionParameters());
         foreach (medAbstractNavigator* navigator, this->extraNavigators())
-            navigatorLayout->addWidget(navigator->toolBoxWidget());
+            params.append(navigator->mouseInteractionParameters());
+
+        medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
+        groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
+        foreach (medBoolParameter* param, params)
+            groupParam->addParameter(param);
+
+        d->mouseInteractionWidget = groupParam->getPushButtonGroup();
     }
 
-    return d->navigatorWidget;
+    return d->mouseInteractionWidget;
 }
-
-
 
 void medVtkView::reset()
 {
@@ -536,4 +545,40 @@ QImage medVtkView::buildThumbnail(const QSize &size)
 
     this->blockSignals(false);
     return thumbnail;
+}
+
+void medVtkView::buildMouseInteractionParamPool(uint layer)
+{
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString interaction = mnger->value("interactions","mouse", "Windowing").toString();
+
+    QList<medBoolParameter*> params;
+    params.append(primaryNavigator()->mouseInteractionParameters());
+    foreach (medAbstractNavigator* navigator, this->extraNavigators())
+        params.append(navigator->mouseInteractionParameters());
+
+    params.append(primaryInteractor(layer)->mouseInteractionParameters());
+    foreach (medAbstractInteractor* interactor, this->extraInteractors(layer))
+        params.append(interactor->mouseInteractionParameters());
+
+    // add all mouse interaction params of the view in the "Mouse interaction" pool
+    foreach (medBoolParameter* param, params)
+    {
+        medParameterPoolManager::instance()->linkParameter(param, "Mouse Interaction");
+        connect(param, SIGNAL(valueChanged(bool)), this, SLOT(saveMouseInteractionSettings(bool)));
+
+        // and activate the new inserted parameter according to what was activated in other views
+        if(param->name() == interaction)
+            param->setValue(true);
+    }
+}
+
+void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
+{
+    if(parameterEnabled)
+    {
+        medBoolParameter *parameter = dynamic_cast<medBoolParameter *>(this->sender());
+        if(parameter)
+            medSettingsManager::instance()->setValue("interactions","mouse", parameter->name());
+    }
 }

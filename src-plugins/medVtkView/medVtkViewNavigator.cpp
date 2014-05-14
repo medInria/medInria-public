@@ -64,6 +64,10 @@ class medVtkViewNavigatorPrivate
     medVector2DParameter *panParameter;
     medCompositeParameter *cameraParameter;
 
+    medBoolParameter *enableZooming;
+    medBoolParameter *enableSlicing;
+    medBoolParameter *enableMeasuring;
+
     medVector3DParameter *positionParameter;
 
     medBoolParameter *showAxesParameter;
@@ -188,6 +192,20 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showAnnotationParameter->setValue(true);
     d->showScalarBarParameter->setValue(false);
 
+    d->enableZooming = new medBoolParameter("Zooming", this);
+    d->enableZooming->setIcon(QIcon (":/icons/magnify.png"));
+    d->enableZooming->setToolTip(tr("Zooming"));
+    connect(d->enableZooming, SIGNAL(valueChanged(bool)), this, SLOT(enableZooming(bool)));
+
+    d->enableSlicing = new medBoolParameter("Slicing", this);
+    d->enableSlicing->setIcon(QIcon (":/icons/stack.png"));
+    d->enableSlicing->setToolTip(tr("Slicing"));
+    connect(d->enableSlicing, SIGNAL(valueChanged(bool)), this, SLOT(enableSlicing(bool)));
+
+    d->enableMeasuring = new medBoolParameter("Measuring", this);
+    d->enableMeasuring->setIcon (QIcon (":/icons/length.png"));
+    d->enableMeasuring->setToolTip(tr("Measuring"));
+    connect(d->enableMeasuring, SIGNAL(valueChanged(bool)), this, SLOT(enableMeasuring(bool)));
 
     d->parameters << d->orientationParameter
                     << d->zoomParameter
@@ -243,6 +261,14 @@ QList<medAbstractParameter*> medVtkViewNavigator::linkableParameters()
     return d->parameters;
 }
 
+QList<medBoolParameter*> medVtkViewNavigator::mouseInteractionParameters()
+{
+    QList<medBoolParameter*> params;
+    params.append(d->enableZooming);
+    params.append(d->enableSlicing);
+    params.append(d->enableMeasuring);
+    return params;
+}
 
 medImageView::Orientation medVtkViewNavigator::orientation() const
 {
@@ -681,4 +707,29 @@ void medVtkViewNavigator::updateCameraParam(const QVector3D& position, const QVe
     options.append( parallelScale );
 
     d->cameraParameter->setValue(options);
+}
+
+void medVtkViewNavigator::enableZooming(bool enable)
+{
+    if(enable)
+        d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeZoom );
+
+}
+
+void medVtkViewNavigator::enableSlicing(bool enable)
+{
+    if(enable)
+        d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeSlice );
+}
+
+void medVtkViewNavigator::enableMeasuring(bool enable)
+{
+    if(enable)
+    {
+        d->view2d->ShowDistanceWidgetOn();
+    }
+    else
+    {
+        d->view2d->ShowDistanceWidgetOff();
+    }
 }

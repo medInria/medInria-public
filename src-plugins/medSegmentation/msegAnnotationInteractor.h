@@ -60,6 +60,7 @@ public:
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildToolBoxWidget();
     virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medBoolParameter*> mouseInteractionParameters();
     virtual void setData(medAbstractData * data);
     virtual void setWindowLevel (double &window, double &level);
     virtual void windowLevel(double &window, double &level);

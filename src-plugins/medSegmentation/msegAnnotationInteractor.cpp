@@ -401,6 +401,13 @@ QList<medAbstractParameter*> msegAnnotationInteractor::linkableParameters()
     return params;
 }
 
+QList<medBoolParameter*> msegAnnotationInteractor::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    // TODO: actually segmentation is directly related to mouse interaction
+    // maybe we should investigate to add a "paint" button in the mouse interaction widget
+    return QList<medBoolParameter*>();
+}
 
 void msegAnnotationInteractor::enableWindowLevelInteraction()
 {

@@ -562,6 +562,12 @@ QList<medAbstractParameter*> vtkDataMeshInteractor::linkableParameters()
     return d->parameters;
 }
 
+QList<medBoolParameter*> vtkDataMeshInteractor::mouseInteractionParameters()
+{
+    // no parameters related to mouse interactions
+    return QList<medBoolParameter*>();
+}
+
 void vtkDataMeshInteractor::setUpViewForThumbnail()
 {
 

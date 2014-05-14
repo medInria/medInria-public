@@ -73,6 +73,7 @@ public slots:
     virtual QWidget* buildToolBoxWidget();
     virtual QWidget* buildToolBarWidget();
     virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medBoolParameter*> mouseInteractionParameters();
 
     void removeData();
 

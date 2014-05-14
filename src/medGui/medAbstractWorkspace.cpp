@@ -54,6 +54,7 @@ public:
     medToolBox *layerListToolBox;
     medToolBox *interactorToolBox;
     medToolBox *navigatorToolBox;
+    medToolBox *mouseInteractionToolBox;
     QListWidget* layerListWidget;
 
     QList<QListWidgetItem*> selectedLayers;
@@ -81,6 +82,11 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->navigatorToolBox->setTitle("View settings");
     d->navigatorToolBox->hide();
     d->selectionToolBox->addWidget(d->navigatorToolBox);
+
+    d->mouseInteractionToolBox = new medToolBox;
+    d->mouseInteractionToolBox->setTitle("Mouse Interaction");
+    d->mouseInteractionToolBox->hide();
+    d->selectionToolBox->addWidget(d->mouseInteractionToolBox);
 
     d->layerListToolBox = new medToolBox;
     d->layerListToolBox->setTitle("Layer settings");
@@ -212,8 +218,39 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         navigator->show();
     }
 
-    // update the layer toolbox according to the selected containers
+    // update the mouse interaction and layer toolboxes according to the selected containers
+    this->updateMouseInteractionToolBox();
     this->updateLayersToolBox();
+}
+
+void medAbstractWorkspace::updateMouseInteractionToolBox()
+{
+    d->mouseInteractionToolBox->clear();
+
+    QList<QWidget*>  navigators;
+    QStringList viewType;
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        // update the toolbox when the content of the view change
+        medAbstractView* view = container->view();
+        // add nothing if the view is empty
+        if(!view)
+            continue;
+        // get only one navigator per view type
+        if(!viewType.contains(view->identifier()))
+        {
+            viewType << view->identifier();
+            navigators << view->mouseInteractionWidget();
+        }
+    }
+    // add the navigators widgets
+    d->mouseInteractionToolBox->show();
+    foreach(QWidget* navigator, navigators)
+    {
+        d->mouseInteractionToolBox->addWidget(navigator);
+        navigator->show();
+    }
 }
 
 void medAbstractWorkspace::updateLayersToolBox()

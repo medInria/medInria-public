@@ -18,12 +18,16 @@ public:
     QList<medAbstractNavigator*> extraNavigators;
     unsigned int currentLayer;
 
+    // toolboxes
+    QWidget* navigatorWidget;
+
 };
 
 medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
 {
     d->primaryNavigator = NULL;
     d->currentLayer = 0;
+    d->navigatorWidget = NULL;
     connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
 }
 
@@ -318,4 +322,21 @@ QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int
     QList <medAbstractInteractor*> interactors;
     interactors << this->primaryInteractor(layer) << this->extraInteractors(layer);
     return interactors;
+}
+
+
+QWidget* medAbstractLayeredView::navigatorWidget()
+{
+    if(!d->navigatorWidget)
+    {
+        d->navigatorWidget = new QWidget;
+        connect(d->navigatorWidget, SIGNAL(destroyed()), this, SLOT(removeInternNavigatorWidget()));
+        QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
+
+        navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
+        foreach (medAbstractNavigator* navigator, this->extraNavigators())
+            navigatorLayout->addWidget(navigator->toolBoxWidget());
+    }
+
+    return d->navigatorWidget;
 }

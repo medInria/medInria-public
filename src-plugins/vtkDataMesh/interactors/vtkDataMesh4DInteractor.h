@@ -41,7 +41,7 @@ public:
     virtual QWidget* buildToolBoxWidget();
 
     virtual QList<medAbstractParameter*> linkableParameters();
-
+    virtual QList<medBoolParameter*> mouseInteractionParameters();
 
 
     double getCurrentTime();

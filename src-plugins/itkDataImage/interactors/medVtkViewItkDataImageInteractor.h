@@ -39,6 +39,7 @@ public:
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildLayerWidget();
     virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medBoolParameter*> mouseInteractionParameters();
     virtual void setData(medAbstractData * data);
     virtual QString lut() const;
     virtual QString preset() const;
@@ -58,6 +59,8 @@ public slots:
     void setWindow(double window);
     void setLevel(double level);
     void setWindowLevel(QList<QVariant>);
+    void enableWIndowLevel(bool enable);
+
     virtual void removeData();
 
     virtual void updateWidgets();

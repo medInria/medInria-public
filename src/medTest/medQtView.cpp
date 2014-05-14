@@ -86,6 +86,11 @@ QWidget* medQtView::navigatorWidget()
     return 0;
 }
 
+QWidget* medQtView::mouseInteractionWidget()
+{
+    return 0;
+}
+
 bool medQtView::initialiseInteractors(medAbstractData* data)
 {
     return true;

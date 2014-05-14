@@ -31,16 +31,14 @@ class MEDGUI_EXPORT medParameterPoolManager : public QObject
 public:
     static medParameterPoolManager *instance();
 
-    QList<int> poolsId(QString type);
     QList<medParameterPool*> pools();
+    medParameterPool* pool(QString poolId);
 
 
 public slots:
-    //void removePool(int);
     void linkParameter(medAbstractParameter*, QString poolId);
     void unlinkParameter(medAbstractParameter*);
-    //medParameterPool* pool(int id);
-        void removePool(QString);
+    void removePool(QString);
 
 signals:
 

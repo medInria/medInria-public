@@ -65,7 +65,11 @@ void medParameterPoolManager::unlinkParameter(medAbstractParameter* param)
 QList<medParameterPool*> medParameterPoolManager::pools()
 {
     return d->pools.values();
+}
 
+medParameterPool* medParameterPoolManager::pool(QString poolId)
+{
+    return d->pools.value(poolId);
 }
 
 medParameterPoolManager *medParameterPoolManager::s_instance = NULL;

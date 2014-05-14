@@ -35,6 +35,7 @@ public:
     virtual QStringList handled(void) const;
     virtual QString description() const;
     virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medBoolParameter*> mouseInteractionParameters();
 
 
     virtual QVector3D positionBeingViewed() const;
@@ -93,6 +94,10 @@ protected slots:
     void showRuler(bool);
     void showAnnotations(bool);
     void showScalarBar(bool);
+
+    void enableZooming(bool);
+    void enableSlicing(bool);
+    void enableMeasuring(bool);
 
 
 private slots:
