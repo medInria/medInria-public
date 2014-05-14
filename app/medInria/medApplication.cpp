@@ -41,7 +41,6 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medAbstractDataFactory.h>
 #include <medSettingsWidget.h>
-#include <medInteractionSettingsWidget.h>
 
 
 class medApplicationPrivate

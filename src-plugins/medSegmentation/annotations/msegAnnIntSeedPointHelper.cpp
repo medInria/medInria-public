@@ -190,8 +190,6 @@ void msegAnnIntSeedPointHelper::annotationModified( medAnnotationData* annData )
     vtkSeedWidget * seedActor2d =  vtkSeedWidget::SafeDownCast(actorInfo.actor2d);
     vtkSeedWidget * seedActor3d =  vtkSeedWidget::SafeDownCast(actorInfo.actor3d);
 
-    double p[3];
-
     const int numSeeds = spad->getNumberOfSeeds();
 
     // Delete excess seeds, and add new seeds.
