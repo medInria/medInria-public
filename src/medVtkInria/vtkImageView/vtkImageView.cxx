@@ -470,6 +470,8 @@ void vtkImageView::InstallPipeline()
 
   if (this->GetRenderer())
   {
+      this->GetRenderer()->AddViewProp(this->CornerAnnotation);
+      this->GetRenderer()->AddViewProp(this->ScalarBar);
     this->GetRenderer()->GetActiveCamera()->ParallelProjectionOn();
   }
 
