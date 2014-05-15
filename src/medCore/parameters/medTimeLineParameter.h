@@ -15,14 +15,14 @@
 
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 class QWidget;
 
 class medBoolParameter;
 
 class medTimeLineParameterPrivate;
-class MEDGUI_EXPORT medTimeLineParameter : public medAbstractGroupParameter
+class MEDCORE_EXPORT medTimeLineParameter : public medAbstractGroupParameter
 {
     Q_OBJECT
 

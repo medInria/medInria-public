@@ -25,6 +25,7 @@
 #include <medAbstractInteractor.h>
 
 class medAbstractData;
+class medAbstractBoolParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -53,20 +54,16 @@ public:
     void setCurrentLayer(unsigned int layer);
     unsigned int currentLayer() const;
 
-    QList <medAbstractInteractor*> interactors(unsigned int layer);
+    medAbstractBoolParameter* visibilityParameter(unsigned int layer);
 
-    void setVisibility (bool visibility, unsigned int layer);
-    bool visibility(unsigned int layer) ;
+    QList <medAbstractInteractor*> interactors(unsigned int layer);
 
     virtual QWidget* navigatorWidget();
 
 public slots:
-    //TODO: not sure we need this
-    void setVisibility(bool visibility);
     void removeLayer();
 
 signals:
-    void visibilityChanged(bool visibility, unsigned int layer);
     void layerAdded(unsigned int layer);
     void layerRemoved(unsigned int layer);
     void currentLayerChanged() const;

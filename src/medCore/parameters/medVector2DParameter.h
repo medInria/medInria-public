@@ -14,16 +14,16 @@
 #pragma once
 
 #include <medAbstractParameter.h>
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
-class medVector3DParameterPrivate;
-class QVector3D;
+class medVector2DParameterPrivate;
+class QVector2D;
 
-class MEDGUI_EXPORT medVector3DParameter : public medAbstractVector3DParameter
+class MEDCORE_EXPORT medVector2DParameter : public medAbstractVector2DParameter
 {
 public:
-    medVector3DParameter(QString name = "Unknow Vector 3D parameter", QObject* parent = 0);
-    virtual ~medVector3DParameter();
+    medVector2DParameter(QString name = "Unknow Vector 2D parameter", QObject* parent = 0);
+    virtual ~medVector2DParameter();
 
     virtual QWidget* getWidget();
 
@@ -31,6 +31,6 @@ protected:
     virtual void updateInternWigets();
 
 private:
-    medVector3DParameterPrivate *d;
+    medVector2DParameterPrivate *d;
 
 };

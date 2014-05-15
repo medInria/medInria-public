@@ -15,7 +15,7 @@
 
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 #include <QBoxLayout>
 
@@ -24,7 +24,7 @@ class QWidget;
 class medBoolParameter;
 
 class medBoolGroupParameterPrivate;
-class MEDGUI_EXPORT medBoolGroupParameter : public medAbstractGroupParameter
+class MEDCORE_EXPORT medBoolGroupParameter : public medAbstractGroupParameter
 {
     Q_OBJECT
 

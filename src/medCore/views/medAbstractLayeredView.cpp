@@ -272,29 +272,17 @@ unsigned int medAbstractLayeredView::layersCount() const
 }
 
 
-void medAbstractLayeredView::setVisibility(bool visibility, unsigned int layer)
-{
-    medAbstractLayeredViewInteractor* inter = this->primaryInteractor(layer);
-    if(!inter)
-        return;
+ medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned int layer)
+ {
+     medAbstractLayeredViewInteractor* pInteractor = this->primaryInteractor(layer);
+     if(!pInteractor)
+     {
+         qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
+         return NULL;
+     }
 
-    inter->setVisibility(visibility);
-    emit visibilityChanged(visibility, layer);
-}
-
-void medAbstractLayeredView::setVisibility(bool visibility)
-{
-   this->setVisibility(visibility, d->currentLayer);
-}
-
-bool medAbstractLayeredView::visibility(unsigned int layer)
-{
-    medAbstractLayeredViewInteractor* inter = this->primaryInteractor(layer);
-    if(!inter)
-        return true;
-
-    return inter->visibility();
-}
+     return pInteractor->visibiltyParameter();
+ }
 
 unsigned int medAbstractLayeredView::currentLayer() const
 {

@@ -19,8 +19,6 @@
 
 class medVtkViewItkDataImageInteractorPrivate;
 
-//class dtkAbstractData;
-//class dtkAbstractView;
 class medAbstractImageData;
 
 class ITKDATAIMAGEPLUGIN_EXPORT medVtkViewItkDataImageInteractor: public medAbstractImageViewInteractor
@@ -45,7 +43,6 @@ public:
     virtual QString preset() const;
     virtual void setWindowLevel (double &window, double &level);
     virtual void windowLevel(double &window, double &level);
-    virtual bool visibility() const;
     virtual double opacity() const;
     virtual QStringList handled() const;
 
@@ -55,11 +52,12 @@ public slots:
     void setPreset(QString value);
     virtual void setLut(QString lut);
     void moveToSlice(int slice);
-    virtual void setVisibility(bool visibility);
     void setWindow(double window);
     void setLevel(double level);
     void setWindowLevel(QList<QVariant>);
     void enableWIndowLevel(bool enable);
+
+    void setVisibility(bool);
 
     virtual void removeData();
 

@@ -15,7 +15,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 class medParameterPoolManagerPrivate;
 
@@ -24,7 +24,7 @@ class medAbstractParameter;
 class medParameterPool;
 class medAbstractView;
 
-class MEDGUI_EXPORT medParameterPoolManager : public QObject
+class MEDCORE_EXPORT medParameterPoolManager : public QObject
 {
     Q_OBJECT
 

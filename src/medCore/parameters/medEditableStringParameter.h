@@ -11,33 +11,32 @@
 
 =========================================================================*/
 
+#pragma once
+
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
-class QIcon;
-class QPushButton;
-class QSize;
 class QWidget;
 
-class medTriggerParameterPrivate;
-class MEDGUI_EXPORT medTriggerParameter : public medAbstractTriggerParameter
+class medEditableStringParameterPrivate;
+class MEDCORE_EXPORT medEditableStringParameter: public medAbstractStringParameter
 {
     Q_OBJECT
 
 public:
-    medTriggerParameter(QString name = "Unknow trigger parameter", QObject* parent = 0);
-    virtual ~medTriggerParameter();
-
-    void setButtonIcon(QIcon& icon);
-    void setButtonIconSize(QSize& size);
-    void setButtonText(QString text);
-    QPushButton* getPushButton();
+    medEditableStringParameter(QString name = "Unknow string parameter", QObject* parent = 0);
+    virtual ~medEditableStringParameter();
+    void clear();
 
     virtual QWidget* getWidget();
+
+protected:
+    virtual void updateInternWigets();
+
 private slots:
-    void removeInternPushButton();
+    void removeInternWidget();
 
 private:
-    medTriggerParameterPrivate* d;
+    medEditableStringParameterPrivate* d;
 };

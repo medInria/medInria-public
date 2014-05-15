@@ -15,7 +15,7 @@
 
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 class QWidget;
 class QDoubleSpinBox;
@@ -23,7 +23,7 @@ class QSlider;
 
 
 class medDoubleParameterPrivate;
-class MEDGUI_EXPORT medDoubleParameter : public medAbstractDoubleParameter
+class MEDCORE_EXPORT medDoubleParameter : public medAbstractDoubleParameter
 {
     Q_OBJECT
 

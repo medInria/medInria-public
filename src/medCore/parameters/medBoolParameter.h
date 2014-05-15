@@ -15,7 +15,7 @@
 
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 class QCheckBox;
 class QPushButton;
@@ -24,7 +24,7 @@ class QSize;
 class QIcon;
 
 class medBoolParameterPrivate;
-class MEDGUI_EXPORT medBoolParameter : public medAbstractBoolParameter
+class MEDCORE_EXPORT medBoolParameter : public medAbstractBoolParameter
 {
     Q_OBJECT
 

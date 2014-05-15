@@ -18,6 +18,7 @@ PURPOSE.
 #include <medCoreExport.h>
 
 class medAbstractLayeredView;
+class medAbstractBoolParameter;
 
 class medAbstractLayeredViewInteractorPrivate;
 class MEDCORE_EXPORT medAbstractLayeredViewInteractor : public medAbstractViewInteractor
@@ -29,10 +30,11 @@ public:
     virtual ~medAbstractLayeredViewInteractor();
 
 public:
-    virtual bool visibility() const = 0;
+    virtual medAbstractBoolParameter *visibiltyParameter();
 
-public slots:
-    virtual void setVisibility (bool visibility) = 0;
+private slots:
+    virtual void setVisibility(bool) = 0;
+
 
 private:
     medAbstractLayeredViewInteractorPrivate *d;

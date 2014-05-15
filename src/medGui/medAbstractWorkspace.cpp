@@ -26,6 +26,7 @@
 #include <medToolBoxHeader.h>
 #include <medAbstractInteractor.h>
 #include <medMetaDataKeys.h>
+#include <medBoolParameter.h>
 #include <medParameterPool.h>
 #include <medParameterPoolManager.h>
 #include <medAbstractParameter.h>
@@ -269,8 +270,6 @@ void medAbstractWorkspace::updateLayersToolBox()
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
     connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateInteractorsToolBox()));
 
-//    qDebug() << "d->viewContainerStack->containersSelected()" <<  d->viewContainerStack->containersSelected();
-
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
         // fill the layer widget
@@ -298,28 +297,14 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                 QWidget *layerWidget = new QWidget;
                 layerWidget->setObjectName("layerWidget");
-                QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
+
                 QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
 
                 QHBoxLayout* layout = new QHBoxLayout(layerWidget);
                 layout->setContentsMargins(0,0,10,0);
 
-                QPushButton* thumbnailButton = new QPushButton(layerWidget);
-                thumbnailButton->setProperty("row", d->layerListWidget->count());
-                QIcon thumbnailIcon;
-                // Set the off icon to the greyed out version of the regular icon
-                thumbnailIcon.addPixmap(QPixmap(thumbPath), QIcon::Normal, QIcon::On);
-                QStyleOption opt(0);
-                opt.palette = QApplication::palette();
-                QPixmap pix = QApplication::style()->generatedIconPixmap(QIcon::Disabled, QPixmap(thumbPath), &opt);
-                thumbnailIcon.addPixmap(pix, QIcon::Normal, QIcon::Off);
-                thumbnailButton->setFocusPolicy(Qt::NoFocus);
-                thumbnailButton->setIcon(thumbnailIcon);
-                thumbnailButton->setIconSize(QSize(22,22));
-                thumbnailButton->setCheckable(true);
-                thumbnailButton->setChecked(true);
-                thumbnailButton->setFlat(true);
-                connect(thumbnailButton, SIGNAL(clicked(bool)), this, SLOT(setLayerVisibility(bool)));
+                medBoolParameter* visibilityParam = dynamic_cast<medBoolParameter*>(layeredView->visibilityParameter(layer));
+                QPushButton* thumbnailButton = visibilityParam->getPushButton();
 
                 QFont myFont;
                 QFontMetrics fm(myFont);
@@ -395,7 +380,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 d->layerListWidget->blockSignals(false);
 
             }
-        }
+        }    
     }
     // add the layer widgets
     d->layerListToolBox->show();
@@ -501,24 +486,6 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     buildTemporaryPool();
 }
 
-void medAbstractWorkspace::setLayerVisibility(bool visibility)
-{
-    QPushButton *button = dynamic_cast<QPushButton*>(this->sender());
-    if(!button)
-        return;
-
-    int row = button->property("row").toInt();
-    QListWidgetItem* item = d->layerListWidget->item(row);
-    QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
-
-    int layer = item->data(Qt::UserRole).toInt();
-
-    medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
-    if(!layerView)
-        return;
-
-    layerView->setVisibility(visibility, layer);
-}
 
 void medAbstractWorkspace::removeLayer()
 {

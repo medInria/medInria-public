@@ -26,6 +26,7 @@ list_source_files(${PROJECT_NAME}
   views
   views/interactors
   views/navigators
+  parameters
   )
 
 set(${PROJECT_NAME}_QRC medCore.qrc)
@@ -95,6 +96,7 @@ set_lib_install_rules(${PROJECT_NAME}
 
 if(MEDINRIA_BUILD_TESTS)
   add_subdirectory(tests)
+  add_subdirectory(parameters/tests)
   #add_subdirectory(view/tests)
   #add_subdirectory(data/tests)
   #add_subdirectory(process/tests)

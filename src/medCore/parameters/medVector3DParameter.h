@@ -14,29 +14,23 @@
 #pragma once
 
 #include <medAbstractParameter.h>
+#include <medCoreExport.h>
 
-#include <medGuiExport.h>
+class medVector3DParameterPrivate;
+class QVector3D;
 
-class QWidget;
-
-class medEditableStringParameterPrivate;
-class MEDGUI_EXPORT medEditableStringParameter: public medAbstractStringParameter
+class MEDCORE_EXPORT medVector3DParameter : public medAbstractVector3DParameter
 {
-    Q_OBJECT
-
 public:
-    medEditableStringParameter(QString name = "Unknow string parameter", QObject* parent = 0);
-    virtual ~medEditableStringParameter();
-    void clear();
+    medVector3DParameter(QString name = "Unknow Vector 3D parameter", QObject* parent = 0);
+    virtual ~medVector3DParameter();
 
     virtual QWidget* getWidget();
 
 protected:
     virtual void updateInternWigets();
 
-private slots:
-    void removeInternWidget();
-
 private:
-    medEditableStringParameterPrivate* d;
+    medVector3DParameterPrivate *d;
+
 };

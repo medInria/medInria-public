@@ -83,7 +83,6 @@ public slots:
 
 protected slots:
     void changeCurrentLayer(int row);
-    void setLayerVisibility(bool visibility);
     void removeLayer();
     void updateParameterPool(QString);
 

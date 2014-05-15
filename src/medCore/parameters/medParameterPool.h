@@ -17,12 +17,12 @@
 #include <QColor>
 #include <QVector2D>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 class medAbstractParameter;
 
 class medParameterPoolPrivate;
-class MEDGUI_EXPORT medParameterPool : public QObject
+class MEDCORE_EXPORT medParameterPool : public QObject
 {
     Q_OBJECT
 

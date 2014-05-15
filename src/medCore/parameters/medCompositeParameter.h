@@ -16,11 +16,11 @@
 #include <medAbstractParameter.h>
 #include <QVariant>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 class medCompositeParameterPrivate;
 
-class MEDGUI_EXPORT medCompositeParameter : public medAbstractParameter
+class MEDCORE_EXPORT medCompositeParameter : public medAbstractParameter
 {
     Q_OBJECT
 

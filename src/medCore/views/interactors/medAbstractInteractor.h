@@ -88,7 +88,7 @@ private:
     using dtkAbstractViewInteractor::setView;
     using dtkAbstractViewInteractor::view;
     using dtkAbstractViewInteractor::setData;
-    using dtkAbstractViewInteractor::data;
+//    using dtkAbstractViewInteractor::data;
 
     using dtkAbstractViewInteractor::output;
     using dtkAbstractViewInteractor::predraw;

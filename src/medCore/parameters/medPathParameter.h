@@ -15,14 +15,14 @@
 
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
 class QSize;
 class QWidget;
 class QIcon;
 
 class medPathParameterPrivate;
-class MEDGUI_EXPORT medPathParameter: public medAbstractStringParameter
+class MEDCORE_EXPORT medPathParameter: public medAbstractStringParameter
 {
     Q_OBJECT
 

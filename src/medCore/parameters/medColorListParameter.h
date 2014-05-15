@@ -15,7 +15,7 @@
 
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 #include <QStringList>
 
 class QComboBox;
@@ -25,7 +25,7 @@ class QColor;
 class QIcon;
 
 class medColorListParameterPrivate;
-class MEDGUI_EXPORT medColorListParameter: public medAbstractStringParameter
+class MEDCORE_EXPORT medColorListParameter: public medAbstractStringParameter
 {
     Q_OBJECT
 

@@ -15,37 +15,38 @@
 
 #include <medAbstractParameter.h>
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 
-class QComboBox;
 class QWidget;
-class QStringList;
+class QSpinBox;
+class QSlider;
 
-class medStringListParameterPrivate;
-class MEDGUI_EXPORT medStringListParameter: public medAbstractStringParameter
+
+class medIntParameterPrivate;
+class MEDCORE_EXPORT medIntParameter : public medAbstractIntParameter
 {
     Q_OBJECT
 
 public:
-    medStringListParameter(QString name = "Unkow string list parameter", QObject* parent = 0);
-    virtual ~medStringListParameter();
+    medIntParameter(QString name = "Unknow int parameter", QObject* parent = 0);
+    virtual ~medIntParameter();
 
-    void addItem(QString& item);
-    void addItems(const QStringList& items);
-    void removeItem(QString& item);
-    void clear();
-
-    QStringList& items() const;
-    QComboBox* getComboBox();
+    void setRange(int min, int max);
+    QSpinBox* getSpinBox();
+    QSlider* getSlider();
 
     virtual QWidget* getWidget();
+
+public slots:
+    void setValue(int value);
 
 protected:
     virtual void updateInternWigets();
 
 private slots:
-    void removeInternComboBox();
+    void removeInternSpinBox();
+    void removeInternSlider();
 
 private:
-    medStringListParameterPrivate* d;
+    medIntParameterPrivate* d;
 };

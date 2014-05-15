@@ -59,7 +59,6 @@ public:
     medStringListParameter *lutParam;
     medStringListParameter *presetParam;
     medIntParameter *opacityParam;
-    medBoolParameter *visibiltyParameter;
     medCompositeParameter *windowLevelParameter;
     medBoolParameter *enableWindowLevelParameter;
     medIntParameter *slicingParameter;
@@ -86,7 +85,6 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     d->lutParam = NULL;
     d->presetParam = NULL;
     d->opacityParam = NULL;
-    d->visibiltyParameter = NULL;
     d->slicingParameter = NULL;
     d->windowLevelParameter = NULL;
     d->enableWindowLevelParameter = NULL;
@@ -144,7 +142,7 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameter
     QList<medAbstractParameter*> params;
     params.append(d->lutParam);
     params.append(d->presetParam);
-    params.append(d->visibiltyParameter);
+    params.append(this->visibiltyParameter());
     params.append(d->windowLevelParameter);
     params.append(d->opacityParam);
 
@@ -161,6 +159,7 @@ QList<medBoolParameter*> medVtkViewItkDataImageInteractor::mouseInteractionParam
 
 void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 {
+    medAbstractInteractor::setData(data);
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
     if(!d->imageData)
         return;
@@ -246,10 +245,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
         d->opacityParam->setValue(50);
     else
         d->opacityParam->setValue(100);
-
-    d->visibiltyParameter = new medBoolParameter("Visibility", this);
-    d->visibiltyParameter->setValue(true);
-    connect(d->visibiltyParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
 
     d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput(d->view->layer(data))->GetScalarRange();
@@ -342,11 +337,6 @@ void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
     }
 
     update();
-}
-
-bool medVtkViewItkDataImageInteractor::visibility() const
-{
-    return d->visibiltyParameter->value();
 }
 
 QString medVtkViewItkDataImageInteractor::lut() const
