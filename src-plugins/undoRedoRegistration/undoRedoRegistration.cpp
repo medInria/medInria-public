@@ -68,7 +68,7 @@ void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * pr
     if (m_factory->GetFixedImage()!=NULL && m_factory->GetMovingImage()!=NULL){
         m_factory->Update();
         itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
-        //result->DisconnectPipeline();
+        result->DisconnectPipeline();
         if (algorithm && process)
         { 
             if (process->output())

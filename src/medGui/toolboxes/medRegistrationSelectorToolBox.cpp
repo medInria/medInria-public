@@ -232,9 +232,6 @@ medAbstractRegistrationProcess * medRegistrationSelectorToolBox::process(void)
  */
 void medRegistrationSelectorToolBox::setProcess(medAbstractRegistrationProcess* proc)
 {
-    if(d->process)
-        delete d->process;
-
     d->process = proc;
 }
 
