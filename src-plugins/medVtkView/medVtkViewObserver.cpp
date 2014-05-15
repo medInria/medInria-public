@@ -108,7 +108,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     case vtkCommand::KeyPressEvent:
     {
         vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
-        if (windowInteractor->GetControlKey())
+        if (windowInteractor->GetShiftKey())
         {
             m_view->enableRubberBandZoom(true);
         }
@@ -117,7 +117,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     case vtkCommand::KeyReleaseEvent:
     {
         vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
-        if (!windowInteractor->GetControlKey())
+        if (!windowInteractor->GetShiftKey())
         {
             m_view->enableRubberBandZoom(false);
         }
