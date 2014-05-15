@@ -105,8 +105,8 @@ int main(int argc,char* argv[]) {
             const QStringList options = (QStringList()
                     << "--fullscreen"
                     << "--no-fullscreen"
-                    << "--wall" 
-                    << "--tracker" 
+                    << "--wall"
+                    << "--tracker"
                     << "--stereo"
                     << "--view");
             for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
@@ -178,12 +178,14 @@ int main(int argc,char* argv[]) {
         }
     }
     // END OF DATABASE INITIALISATION
-
     medPluginManager::instance()->initialize();
 
-    medMainWindow mainwindow;
+    //Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
+    medMainWindow *mainwindow = new medMainWindow;
+    mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
+
     if (DirectView)
-        mainwindow.setStartup(medMainWindow::WorkSpace,posargs);
+        mainwindow->setStartup(medMainWindow::WorkSpace,posargs);
 
     bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
 
@@ -197,7 +199,7 @@ int main(int argc,char* argv[]) {
         dtkWarn() << "Conflicting command line parameters between --fullscreen, --no-fullscreen and -wall. Ignoring.";
     else {
         if (hasWallArg) {
-            mainwindow.setWallScreen(true);
+            mainwindow->setWallScreen(true);
             fullScreen = false;
         }
 
@@ -208,7 +210,7 @@ int main(int argc,char* argv[]) {
             fullScreen = false;
     }
 
-    mainwindow.setFullScreen(fullScreen);
+    mainwindow->setFullScreen(fullScreen);
 
 
     if(application.arguments().contains("--stereo")) {
@@ -221,18 +223,18 @@ int main(int argc,char* argv[]) {
     }
 
     if (show_splash)
-        splash.finish(&mainwindow);
+        splash.finish(mainwindow);
 
     if (medPluginManager::instance()->plugins().isEmpty()) {
-        QMessageBox::warning(&mainwindow,
+        QMessageBox::warning(mainwindow,
                              QObject::tr("No plugin loaded"),
                              QObject::tr("Warning : no plugin loaded successfully."));
     }
 
-    application.setActivationWindow(&mainwindow);
-    application.setMainWindow(&mainwindow);
+    application.setActivationWindow(mainwindow);
+    application.setMainWindow(mainwindow);
 
-    forceShow(mainwindow);
+    forceShow(*mainwindow);
 
     //  Start main loop.
     const int status = application.exec();

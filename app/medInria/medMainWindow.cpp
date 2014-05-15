@@ -91,7 +91,7 @@ public:
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
 {
 
-//    this->setAttribute(Qt::WA_DeleteOnClose, true);
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
 
     //  Etch-disabled-text stylesheet property was deprecated.
     //  This is the only way I found to avoid the label's text look like etched when disabled
@@ -645,7 +645,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
         return;
     }
-    this->hide();
+//    this->hide();
     this->saveSettings();
     event->accept();
 }
