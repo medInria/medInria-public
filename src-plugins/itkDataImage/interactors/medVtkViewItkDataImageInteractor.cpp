@@ -259,10 +259,12 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->windowParameter = new medDoubleParameter("Window", this);
     connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
     d->windowParameter->setRange(range[0], range[1]);
+    d->windowParameter->setValue(window);
 
     d->levelParameter = new medDoubleParameter("Level", this);
     connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
     d->levelParameter->setRange(range[0], range[1]);
+    d->levelParameter->setValue(level);
 
     d->slicingParameter = new medIntParameter("Slicing", this);
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
