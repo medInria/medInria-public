@@ -12,6 +12,9 @@
 #include <medVtkViewBackend.h>
 #include <medBoolParameter.h>
 
+#include <medAbstractParameter.h>
+#include <medCompositeParameter.h>
+
 #include <medVtkView.h>
 
 
@@ -62,14 +65,16 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     if(!this->m_view)
         return;
 
+    unsigned int layer = this->m_view->currentLayer();
+
     switch(event)
     {
     case vtkImageView::CurrentPointChangedEvent:
     {
         const double *pos = this->view2d->GetCurrentPoint();
         QVector3D qpos(doubleToQtVector3D(pos));
-
-        emit m_view->positionViewedChanged(qpos);
+        if(m_view->positionBeinViewedParameter())
+          m_view->positionBeinViewedParameter()->setValue(qpos);
         break;
     }
     case vtkImageView2DCommand::CameraZoomEvent:
@@ -86,12 +91,14 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         break;
     }
     case vtkImageView::WindowLevelChangedEvent:
-    {
-        unsigned int layer = this->m_view->currentLayer();
+    {  
         double level = this->view2d->GetColorLevel(layer);
         double window = this->view2d->GetColorWindow(layer);
-        m_view->windowLevelChanged(window, level, layer);
-
+        QList<QVariant> wl;
+        wl.append(QVariant(window));
+        wl.append(QVariant(level));
+        if(m_view->windowLevelParameter(layer))
+          m_view->windowLevelParameter(layer)->setValue(wl);
         break;
     }
     case vtkCommand::InteractionEvent:
@@ -103,7 +110,13 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         QVector3D position(doubleToQtVector3D(pos));
         QVector3D viewup(doubleToQtVector3D(vup));
         QVector3D focal(doubleToQtVector3D(foc));
-        m_view->cameraChanged(position, viewup, focal, ps);
+        QList<QVariant> cam;
+        cam.append(QVariant(position));
+        cam.append(QVariant(viewup));
+        cam.append(QVariant(focal));
+        cam.append(QVariant(ps));
+        if(m_view->cameraParameter())
+          m_view->cameraParameter()->setValue(cam);
         break;
     }
     case vtkCommand::KeyPressEvent:

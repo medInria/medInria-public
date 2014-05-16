@@ -54,7 +54,6 @@ public:
     typedef QSet< dtkSmartPointer<medAnnotationData> > AnnotationHash;
     AnnotationHash installedAnnotations;
 
-
     medAbstractImageView *medVtkView;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
@@ -63,9 +62,6 @@ public:
     medAbstractData *imageData;
 
     QImage thumbnail;
-
-    medDoubleParameter *opacityParam;
-    medBoolParameter *visibiltyParameter;
 };
 
 // Implementation
@@ -81,9 +77,6 @@ msegAnnotationInteractor::msegAnnotationInteractor(medAbstractView *parent):
     d->view3d = backend->view3D;
 
     d->imageData = NULL;
-
-    d->opacityParam = NULL;
-    d->visibiltyParameter = NULL;
 
     connect(parent, SIGNAL(currentLayerChanged()), this, SLOT(enableWindowLevelInteraction()));
 }
@@ -164,16 +157,6 @@ void msegAnnotationInteractor::setData(medAbstractData *data)
         medAnnotationData *annItem = qobject_cast<medAnnotationData*>(data);
         attachData(annItem);
     }
-
-    d->opacityParam = new medDoubleParameter("Opacity", this);
-    d->opacityParam->setRange(0,1);
-    d->opacityParam->setValue(1);
-    d->opacityParam->setSingleStep(0.01);
-    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
-
-    d->visibiltyParameter = new medBoolParameter("Visibility", this);
-    d->visibiltyParameter->setValue(true);
-    connect(d->visibiltyParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
 }
 
 void msegAnnotationInteractor::removeData()
@@ -331,11 +314,6 @@ void msegAnnotationInteractor::setVisibility(bool visible)
     d->view3d->Render();
 }
 
-bool msegAnnotationInteractor::visibility() const
-{
-    return d->visibiltyParameter->value();
-}
-
 QWidget* msegAnnotationInteractor::buildToolBarWidget()
 {
 
@@ -350,9 +328,9 @@ QWidget* msegAnnotationInteractor::buildToolBoxWidget()
 
 QWidget* msegAnnotationInteractor::buildLayerWidget()
 {
-    QSlider *slider = d->opacityParam->getSlider();
+    QSlider *slider = this->opacityParameter()->getSlider();
     slider->setOrientation(Qt::Horizontal);
-    return d->opacityParam->getSlider();
+    return slider;
 }
 
 void msegAnnotationInteractor::moveToSlice(int slice)
@@ -368,12 +346,7 @@ void msegAnnotationInteractor::moveToSlice(int slice)
         d->view3d->Render();
 }
 
-void msegAnnotationInteractor::setWindowLevel (double &window, double &level)
-{
-
-}
-
-void msegAnnotationInteractor::windowLevel(double &window, double &level)
+void msegAnnotationInteractor::setWindowLevel (QList<QVariant>)
 {
 
 }
@@ -387,12 +360,6 @@ void msegAnnotationInteractor::setOpacity(double opacity)
     d->view3d->Render();
 }
 
-double msegAnnotationInteractor::opacity() const
-{
-     double opacity = d->opacityParam->value();
-     return opacity;
-}
-
 
 void msegAnnotationInteractor::setUpViewForThumbnail()
 {
@@ -402,8 +369,8 @@ void msegAnnotationInteractor::setUpViewForThumbnail()
 QList<medAbstractParameter*> msegAnnotationInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> params;
-    params.append(d->opacityParam);
-    params.append(d->visibiltyParameter);
+    params.append(this->opacityParameter());
+    params.append(this->visibiltyParameter());
     return params;
 }
 

@@ -304,12 +304,7 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 
 }
 
-void itkDataSHImageVtkViewInteractor::setWindowLevel(double &window, double &level)
-{
-    //TODO
-}
-
-void itkDataSHImageVtkViewInteractor::windowLevel(double &window, double &level)
+void itkDataSHImageVtkViewInteractor::setWindowLevel(QList<QVariant>)
 {
     //TODO
 }
@@ -317,12 +312,6 @@ void itkDataSHImageVtkViewInteractor::windowLevel(double &window, double &level)
 void itkDataSHImageVtkViewInteractor::setOpacity(double opacity)
 {
     //TODO
-}
-
-double itkDataSHImageVtkViewInteractor::opacity() const
-{
-    //TODO
-    return 100;
 }
 
 void itkDataSHImageVtkViewInteractor::setVisibility(bool visibility)

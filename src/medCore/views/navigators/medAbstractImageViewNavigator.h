@@ -19,6 +19,8 @@ PURPOSE.
 #include <medCoreExport.h>
 
 class medAbstractImageView;
+class medCompositeParameter;
+class medAbstractVector3DParameter;
 
 class medAbstractImageViewNavigatorPrivate;
 class MEDCORE_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredViewNavigator
@@ -32,17 +34,16 @@ public:
 
 public:
     virtual medImageView::Orientation orientation() const = 0;
-    virtual void camera(QVector3D &position,
-                        QVector3D &viewup,
-                        QVector3D &focal,
-                        double &parallelScale) const = 0;
-    virtual QVector3D positionBeingViewed() const = 0;
+
+    virtual medCompositeParameter* cameraParameter();
+
+    virtual medAbstractVector3DParameter* positionBeingViewedParameter();
+
+public slots:
 
     virtual void setOrientation(medImageView::Orientation orientation) = 0;
-    virtual void setCamera(const QVector3D &position,
-                           const QVector3D &viewup,
-                           const QVector3D &focal,
-                           double parallelScale) = 0;
+
+    virtual void setCamera(QList<QVariant>) = 0;
 
     virtual void moveToPosition (const QVector3D &position) = 0;
 

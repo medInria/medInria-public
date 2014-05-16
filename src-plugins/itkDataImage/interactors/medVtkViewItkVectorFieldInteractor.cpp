@@ -271,25 +271,15 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
 }
 
 
-void medVtkViewItkVectorFieldInteractor::setWindowLevel(double &window, double &level)
+void medVtkViewItkVectorFieldInteractor::setWindowLevel(QList<QVariant>)
 {
     //TODO
 }
 
-void medVtkViewItkVectorFieldInteractor::windowLevel(double &window, double &level)
-{
-    //TODO
-}
 
 void medVtkViewItkVectorFieldInteractor::setOpacity(double opacity)
 {
     //TODO
-}
-
-double medVtkViewItkVectorFieldInteractor::opacity() const
-{
-    //TODO
-    return 100;
 }
 
 void medVtkViewItkVectorFieldInteractor::setVisibility(bool visibility)

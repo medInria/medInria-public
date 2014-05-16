@@ -19,6 +19,8 @@ PURPOSE.
 #include <medCoreExport.h>
 
 class medAbstractImageView;
+class medDoubleParameter;
+class medCompositeParameter;
 
 class medAbstractImageViewInteractorPrivate;
 class MEDCORE_EXPORT medAbstractImageViewInteractor : public medAbstractLayeredViewInteractor
@@ -29,21 +31,17 @@ public:
              medAbstractImageViewInteractor(medAbstractView* parent);
     virtual ~medAbstractImageViewInteractor();
 
-    virtual void moveToSlice  (int slice) = 0;
+    virtual medDoubleParameter* opacityParameter();
 
-    /**
-    * Set the opacity of the data on the corresponding layer
-    */
+    virtual medCompositeParameter* windowLevelParameter();
+
+public slots:
+
     virtual void setOpacity (double opacity) = 0;
 
-    /**
-    * Get the opacity of the data on the corresponding layer
-    */
-    virtual double opacity() const = 0;
+    virtual void setWindowLevel(QList<QVariant>) = 0;
 
-    virtual void setWindowLevel (double &window, double &level) = 0;
-    virtual void windowLevel(double &window, double &level) = 0;
-
+    virtual void moveToSlice  (int slice) = 0;
 
 private:
     medAbstractImageViewInteractorPrivate *d;

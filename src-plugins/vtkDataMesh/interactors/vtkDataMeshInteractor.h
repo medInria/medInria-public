@@ -41,9 +41,7 @@ public:
     static bool registered();
 
     virtual void setData(medAbstractData * data);
-    virtual void windowLevel(double &window, double &level);
 
-    double opacity() const;
     bool edgeVisibility() const;
     QColor color() const;
     QString renderingType() const;
@@ -58,6 +56,7 @@ public:
 
 public slots:
     void setOpacity(double value);
+    void setWindowLevel (QList<QVariant>);
     void setColor(const QString &color);
     void setColor(QColor color);
     void setVisibility(bool visible);
@@ -65,7 +64,7 @@ public slots:
     void setRenderingType(const QString &type);
     void setAttribute(const QString & attribute);
     void setLut(const QString &lutName);
-    virtual void setWindowLevel (double &window, double &level);
+
     virtual void removeData();
     virtual void setUpViewForThumbnail();
     virtual void moveToSlice  (int slice);

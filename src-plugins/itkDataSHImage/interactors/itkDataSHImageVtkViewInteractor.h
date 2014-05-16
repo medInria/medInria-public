@@ -66,10 +66,6 @@ public:
 
     virtual void setData(medAbstractData * data);
 
-    virtual void windowLevel(double &window, double &level);
-
-    double opacity() const;
-
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBoxWidget();
     virtual QWidget* buildToolBarWidget();
@@ -148,7 +144,7 @@ public slots:
 
     void setOpacity(double opacity);
     void setVisibility(bool visibility);
-    void setWindowLevel(double &window, double &level);
+    void setWindowLevel(QList<QVariant>);
 
     virtual void setUpViewForThumbnail();
 

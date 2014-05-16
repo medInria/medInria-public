@@ -33,6 +33,10 @@ class medAbstractInteractor;
 class medAbstractImageViewNavigator;
 class medAbstractNavigator;
 
+class medDoubleParameter;
+class medCompositeParameter;
+class medAbstractVector3DParameter;
+
 class medAbstractImageViewPrivate;
 
 class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
@@ -43,31 +47,23 @@ public:
     medAbstractImageView(QObject * parent = 0);
     virtual ~medAbstractImageView();
 
-    unsigned int sliceAtPosition(unsigned int layer, QVector3D &position);
-    QVector3D positionBeingViewed();
-
-
-    void dataWindowLevel(medAbstractData* data, double &window, double &level);
-    void layerWindowLevel(unsigned int layer, double &window, double &level);
-
-    void camera(QVector3D &position,
-                QVector3D &viewup,
-                QVector3D &focal,
-                double &parallelScale);
-
-    /**
-     * Set the opacity of the data on the corresponding layer
-     */
-    void setOpacity (unsigned int layer, double opacity);
-    void setOpacity (medAbstractData* data, double opacity);
-
-    /**
-     * Get the opacity of the data on the corresponding layer
-     */
-    double opacity(unsigned int layer) ;
-    double opacity(medAbstractData* data) ;
-
     medImageView::Orientation orientation();
+
+    /**
+     * Return a composite parameter made of:
+     * QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale
+     */
+    medCompositeParameter *cameraParameter();
+
+    medAbstractVector3DParameter *positionBeinViewedParameter();
+
+    /**
+     * Return a composite parameter made of:
+     * double &window, double level
+     */
+    medCompositeParameter *windowLevelParameter(unsigned int layer);
+
+    medDoubleParameter *opacityParameter(unsigned int layer);
 
     /**
      * Convert from world coordinates to scene coordinates.
@@ -111,35 +107,11 @@ public:
 
 public slots:
     void setOrientation(medImageView::Orientation orientation);
-    void setDataWindowLevel (medAbstractData* data, double &window, double &level);
-    void setLayerWindowLevel (unsigned int layer, double &window, double &level);
-    void setWindowLevel(double window, double level);
 
-    /**
-     * Set the slice being viewed so that it contains the given spatial postion
-     * @position is expressed in real world coordinates.
-     **/
-    void moveToPosition (const QVector3D &position);
-
-    void moveToSlice (unsigned int layer, unsigned int slice);
-
-    /**
-       Set the camera settings of the view.
-    **/
-    void setCamera(const QVector3D &position,
-                           const QVector3D &viewup,
-                           const QVector3D &focal,
-                           double parallelScale);
 
 signals:
     void orientationChanged();
-    void sliceChanged(int);
-    void windowLevelChanged(double window, double level, unsigned int layer);
-    void positionViewedChanged(const QVector3D &position);
-    void cameraChanged(const QVector3D &position,
-                       const QVector3D &viewup,
-                       const QVector3D &focal,
-                       double parallelScale);
+
 
 protected:
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data);

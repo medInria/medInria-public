@@ -58,8 +58,6 @@ public:
 
     medStringListParameter *lutParam;
     medStringListParameter *presetParam;
-    medIntParameter *opacityParam;
-    medCompositeParameter *windowLevelParameter;
     medBoolParameter *enableWindowLevelParameter;
     medIntParameter *slicingParameter;
 
@@ -84,9 +82,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
 
     d->lutParam = NULL;
     d->presetParam = NULL;
-    d->opacityParam = NULL;
     d->slicingParameter = NULL;
-    d->windowLevelParameter = NULL;
     d->enableWindowLevelParameter = NULL;
 }
 
@@ -143,8 +139,8 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameter
     params.append(d->lutParam);
     params.append(d->presetParam);
     params.append(this->visibiltyParameter());
-    params.append(d->windowLevelParameter);
-    params.append(d->opacityParam);
+    params.append(this->windowLevelParameter());
+    params.append(this->opacityParameter());
 
     return params;
 }
@@ -237,24 +233,18 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
 
-    d->opacityParam = new medIntParameter("Opacity", this);
-    d->opacityParam->setRange(0, 100);
-
-    connect(d->opacityParam, SIGNAL(valueChanged(int)), this, SLOT(setOpacity(int)));
     if(d->view->layer(data) > 0)
-        d->opacityParam->setValue(50);
+        this->opacityParameter()->setValue(0.5);
     else
-        d->opacityParam->setValue(100);
+       this->opacityParameter()->setValue(1);
 
     d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput(d->view->layer(data))->GetScalarRange();
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
-    d->windowLevelParameter = new medCompositeParameter("WindowLevel", this);
-    connect(d->windowLevelParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setWindowLevel(QList<QVariant>)));
-    d->windowLevelParameter->addVariant("Window", QVariant(window), QVariant(range[0]), QVariant(range[1]));
-    d->windowLevelParameter->addVariant("Level", QVariant(level), QVariant(range[0]), QVariant(range[1]));
+    this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(range[0]), QVariant(range[1]));
+    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(range[0]), QVariant(range[1]));
 
     d->windowParameter = new medDoubleParameter("Window", this);
     connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
@@ -305,24 +295,12 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     }
 }
 
-void medVtkViewItkDataImageInteractor::setOpacity (int opacity)
-{
-    double value = (double)(opacity) / 100.0;
-    setOpacity(value);
-}
-
 void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
 {
     d->view3d->SetOpacity (opacity, d->view->layer(d->imageData));
     d->view2d->SetOpacity (opacity, d->view->layer(d->imageData));
 
     update();
-}
-
-double medVtkViewItkDataImageInteractor::opacity() const
-{
-     double opacity = static_cast<double>(d->opacityParam->value()) / 100.0;
-     return opacity;
 }
 
 void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
@@ -393,7 +371,6 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBarWidget()
 
 QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
 {
-
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
     QHBoxLayout *wLayout = new QHBoxLayout;
@@ -416,34 +393,8 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
 
 QWidget* medVtkViewItkDataImageInteractor::buildLayerWidget()
 {
-
-    d->opacityParam->getSlider()->setOrientation(Qt::Horizontal);
-    return d->opacityParam->getSlider();
-}
-
-void medVtkViewItkDataImageInteractor::setWindowLevel (double &window, double &level)
-{
-    QList<QVariant> value;
-    value.append(QVariant(window));
-    value.append(QVariant(level));
-    d->windowLevelParameter->setValue(value);
-}
-
-void medVtkViewItkDataImageInteractor::windowLevel(double &window, double &level)
-{
-    window = d->windowLevelParameter->value().at(0).toDouble();
-    level = d->windowLevelParameter->value().at(1).toDouble();
-}
-
-void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
-{
-    //TODO find a way to get woorldCoordinate for slice from vtkInria.
-    // instead of moving to the slice corresponding on the first layer dropped.
-    if(d->view->is2D() && slice != d->view2d->GetSlice())
-    {
-        d->view2d->SetSlice(slice);
-        d->view2d->Render();
-    }
+        this->opacityParameter()->getSlider()->setOrientation(Qt::Horizontal);
+        return this->opacityParameter()->getSlider();
 }
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
@@ -490,6 +441,17 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
         this->update();
 }
 
+void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
+{
+    //TODO find a way to get woorldCoordinate for slice from vtkInria.
+    // instead of moving to the slice corresponding on the first layer dropped.
+    if(d->view->is2D() && slice != d->view2d->GetSlice())
+    {
+        d->view2d->SetSlice(slice);
+        d->view2d->Render();
+     }
+ }
+
 void medVtkViewItkDataImageInteractor::update()
 {
     if(d->view->is2D())
@@ -520,7 +482,6 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
 
     d->windowParameter->blockSignals(true);
     d->levelParameter->blockSignals(true);
-    d->windowLevelParameter->setValue(values);
     d->windowParameter->setValue(window);
     d->levelParameter->setValue(level);
     d->windowParameter->blockSignals(false);

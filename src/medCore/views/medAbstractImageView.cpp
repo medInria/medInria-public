@@ -143,26 +143,6 @@ bool medAbstractImageView::initialiseNavigators()
     return true;
 }
 
-void medAbstractImageView::moveToPosition (const QVector3D &position)
-{
-    medAbstractImageViewNavigator * nav = this->primaryNavigator();
-    if(!nav)
-        return;
-
-    nav->moveToPosition(position);
-    emit positionViewedChanged(position);
-}
-
-void medAbstractImageView::moveToSlice (unsigned int layer, unsigned int slice)
-{
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(layer);
-    if(!inter)
-        return;
-
-    inter->moveToSlice(slice);
-
-    emit sliceChanged(slice);
-}
 
 void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
 {
@@ -174,114 +154,53 @@ void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
     emit orientationChanged();
 }
 
-QVector3D medAbstractImageView::positionBeingViewed(void)
-{
-    medAbstractImageViewNavigator * nav = this->primaryNavigator();
-    if(!nav)
-        return QVector3D(0.0,0.0,0.0);
 
-    return nav->positionBeingViewed();
+medCompositeParameter *medAbstractImageView::cameraParameter()
+{
+    medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
+    if(!pNavigator)
+    {
+        qWarning() << "Unable to retrieve primary navigator";
+        return NULL;
+    }
+
+    return pNavigator->cameraParameter();
 }
 
-void medAbstractImageView::setDataWindowLevel(medAbstractData *data, double &window, double &level)
+medAbstractVector3DParameter *medAbstractImageView::positionBeinViewedParameter()
 {
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
-    if(!inter)
-        return;
+    medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
+    if(!pNavigator)
+    {
+        qWarning() << "Unable to retrieve primary navigator";
+        return NULL;
+    }
 
-    inter->setWindowLevel(window, level);
-
-    emit windowLevelChanged(window, level, this->layer(data));
+    return pNavigator->positionBeingViewedParameter();
 }
 
-void medAbstractImageView::setLayerWindowLevel(unsigned int layer, double &window, double &level)
+medDoubleParameter *medAbstractImageView::opacityParameter(unsigned int layer)
 {
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(layer);
-    if(!inter)
-        return;
+    medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);
+    if(!pInteractor)
+    {
+        qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
+        return NULL;
+    }
 
-    inter->setWindowLevel(window, level);
-
-    emit windowLevelChanged(window, level, layer);
+    return pInteractor->opacityParameter();
 }
 
-void medAbstractImageView::setWindowLevel(double window, double level)
+medCompositeParameter *medAbstractImageView::windowLevelParameter(unsigned int layer)
 {
-    this->setLayerWindowLevel(this->currentLayer(), window, level);
-}
+    medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);
+    if(!pInteractor)
+    {
+        qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
+        return NULL;
+    }
 
-void medAbstractImageView::dataWindowLevel(medAbstractData *data, double &window, double &level)
-{
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
-    if(!inter)
-        return;
-
-    inter->windowLevel(window, level);
-}
-
-void medAbstractImageView::layerWindowLevel(unsigned int layer, double &window, double &level)
-{
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(layer);
-    if(!inter)
-        return;
-
-    inter->windowLevel(window, level);
-}
-
-void medAbstractImageView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
-{
-    medAbstractImageViewNavigator * nav = this->primaryNavigator();
-    if(!nav)
-        return;
-
-    nav->setCamera(position, viewup, focal, parallelScale);
-
-    emit cameraChanged(position, viewup, focal, parallelScale);
-}
-
-void medAbstractImageView::camera (QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale)
-{
-    medAbstractImageViewNavigator * nav = this->primaryNavigator();
-    if(!nav)
-        return;
-
-    nav->camera(position, viewup, focal, parallelScale);
-}
-
-void medAbstractImageView::setOpacity(unsigned int layer, double opacity)
-{
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(layer);
-    if(!inter)
-        return;
-
-    inter->setOpacity(opacity);
-}
-
-void medAbstractImageView::setOpacity(medAbstractData *data, double opacity)
-{
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
-    if(!inter)
-        return;
-
-    inter->setOpacity(opacity);
-}
-
-double medAbstractImageView::opacity(unsigned int layer)
-{
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(layer);
-    if(!inter)
-        return 1;
-
-    return inter->opacity();
-}
-
-double medAbstractImageView::opacity(medAbstractData *data)
-{
-    medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
-    if(!inter)
-        return 1;
-
-    return inter->opacity();
+    return pInteractor->windowLevelParameter();
 }
 
 medImageView::Orientation medAbstractImageView::orientation()

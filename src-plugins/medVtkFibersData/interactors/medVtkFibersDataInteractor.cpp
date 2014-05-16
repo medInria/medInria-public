@@ -1095,11 +1095,6 @@ void medVtkFibersDataInteractor::setOpacity(double opacity)
     d->render->Render();
 }
 
-double medVtkFibersDataInteractor::opacity() const
-{
-    return d->opacityProperty->GetOpacity();
-}
-
 void medVtkFibersDataInteractor::setVisible(bool visible)
 {
     int v = (visible) ? 1 : 0;
@@ -1110,12 +1105,7 @@ void medVtkFibersDataInteractor::setVisible(bool visible)
     d->render->Render();
 }
 
-void medVtkFibersDataInteractor::setWindowLevel (double &window, double &level)
-{
-
-}
-
-void medVtkFibersDataInteractor::windowLevel(double &window, double &level)
+void medVtkFibersDataInteractor::setWindowLevel (QList<QVariant>)
 {
 
 }

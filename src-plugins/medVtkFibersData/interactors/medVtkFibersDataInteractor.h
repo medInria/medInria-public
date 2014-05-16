@@ -180,12 +180,8 @@ public slots:
 
     // Mandatory implementations from medVtkViewInteractor
     virtual void setOpacity(double opacity);
-    virtual double opacity() const;
-
     virtual void setVisible(bool visible);
-
-    virtual void setWindowLevel (double &window, double &level);
-    virtual void windowLevel(double &window, double &level);
+    virtual void setWindowLevel (QList<QVariant>);
 
     virtual void clearRoi();
 

@@ -37,13 +37,8 @@ public:
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
 
-
-    virtual QVector3D positionBeingViewed() const;
     virtual medImageView::Orientation orientation() const ;
-    virtual void camera(QVector3D &position,
-                        QVector3D &viewup,
-                        QVector3D &focal,
-                        double &parallelScale) const;
+
     virtual double zoom() const;
     virtual QVector2D pan() const;
 
@@ -51,14 +46,16 @@ public slots:
     void updateWidgets();
 
     virtual void setOrientation(medImageView::Orientation orientation);
-    virtual void setCamera(const QVector3D &position,
-                           const QVector3D &viewup,
-                           const QVector3D &focal,
-                           double parallelScale);
+
     virtual void setZoom (double zoom);
     virtual void setPan (const QVector2D &pan);
 
     virtual void moveToPosition(const QVector3D &position);
+
+    void setCamera(const QVector3D &position,
+                           const QVector3D &viewup,
+                           const QVector3D &focal,
+                           double parallelScale);
 
 
 signals:
@@ -102,8 +99,6 @@ protected slots:
 
 private slots:
     void changeOrientation(medImageView::Orientation orientation);
-    void updateCameraParam(const QVector3D& postion,const QVector3D& viewUp,const QVector3D& focal,double parallelScale);
-
 
 private:
     medVtkViewNavigatorPrivate *d;

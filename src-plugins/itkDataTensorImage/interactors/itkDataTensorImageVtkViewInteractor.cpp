@@ -340,12 +340,7 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 }
 
 
-void itkDataTensorImageVtkViewInteractor::setWindowLevel(double &window, double &level)
-{
-    //TODO
-}
-
-void itkDataTensorImageVtkViewInteractor::windowLevel(double &window, double &level)
+void itkDataTensorImageVtkViewInteractor::setWindowLevel(QList<QVariant>)
 {
     //TODO
 }
@@ -357,10 +352,6 @@ void itkDataTensorImageVtkViewInteractor::setOpacity(double opacity)
     d->render->Render();
 }
 
-double itkDataTensorImageVtkViewInteractor::opacity() const
-{
-    return d->actorProperty->GetOpacity();
-}
 
 void itkDataTensorImageVtkViewInteractor::setVisibility(bool visibility)
 {

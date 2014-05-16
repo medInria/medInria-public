@@ -81,7 +81,6 @@ public:
     AttributeSmartPointer attribute;
     double imageBounds[6];
 
-    medDoubleParameter* opacityParam;
     medStringListParameter *attributesParam;
     medStringListParameter *LUTParam;
     medBoolParameter *edgeVisibleParam;
@@ -108,7 +107,6 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
 
-    d->opacityParam = NULL;
     d->attributesParam = NULL;
     d->LUTParam = NULL;
     d->edgeVisibleParam = NULL;
@@ -178,12 +176,7 @@ void vtkDataMeshInteractor::setData(medAbstractData *data)
 
 void vtkDataMeshInteractor::setupParameters()
 {
-    d->opacityParam = new medDoubleParameter("Opacity", this);
-    d->opacityParam->setRange(0,1);
-    d->opacityParam->setSingleStep(0.01);
-    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
-    d->opacityParam->setValue(1);
-    d->parameters << d->opacityParam;
+    d->parameters << this->opacityParameter();
 
     if(!(d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
          d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
@@ -269,13 +262,6 @@ void vtkDataMeshInteractor::setOpacity(double value)
 
     d->render->Render();
 }
-
-
-double vtkDataMeshInteractor::opacity() const
-{
-    return d->actorProperty->GetOpacity();
-}
-
 
 void vtkDataMeshInteractor::setVisibility(bool visible)
 {
@@ -517,19 +503,14 @@ void vtkDataMeshInteractor::moveToSlice  (int slice)
     }
 }
 
-void vtkDataMeshInteractor::setWindowLevel (double &window, double &level)
-{
-    // TODO
-}
-
-void vtkDataMeshInteractor::windowLevel(double &window, double &level)
+void vtkDataMeshInteractor::setWindowLevel (QList<QVariant>)
 {
     // TODO
 }
 
 QWidget* vtkDataMeshInteractor::buildLayerWidget()
 {
-    QSlider *slider = d->opacityParam->getSlider();
+    QSlider *slider = this->opacityParameter()->getSlider();
     slider->setOrientation(Qt::Horizontal);
     return slider;
 }

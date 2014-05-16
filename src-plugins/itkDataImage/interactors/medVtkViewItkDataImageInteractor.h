@@ -41,17 +41,13 @@ public:
     virtual void setData(medAbstractData * data);
     virtual QString lut() const;
     virtual QString preset() const;
-    virtual void setWindowLevel (double &window, double &level);
-    virtual void windowLevel(double &window, double &level);
-    virtual double opacity() const;
     virtual QStringList handled() const;
 
 public slots:
-    virtual void setOpacity (int opacity);
     virtual void setOpacity (double opacity);
+    void moveToSlice(int slice);
     void setPreset(QString value);
     virtual void setLut(QString lut);
-    void moveToSlice(int slice);
     void setWindow(double window);
     void setLevel(double level);
     void setWindowLevel(QList<QVariant>);

@@ -62,10 +62,6 @@ public:
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
     virtual void setData(medAbstractData * data);
-    virtual void setWindowLevel (double &window, double &level);
-    virtual void windowLevel(double &window, double &level);
-    virtual bool visibility() const;
-    virtual double opacity() const;
 
     virtual void setUpViewForThumbnail();
     
@@ -92,6 +88,8 @@ public slots:
     virtual void setOpacity(double opacity);
 
     virtual void setVisibility (bool visibility);
+
+    virtual void setWindowLevel (QList<QVariant>);
 
     void moveToSlice(int slice);
 
