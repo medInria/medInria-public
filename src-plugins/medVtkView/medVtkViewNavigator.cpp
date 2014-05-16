@@ -60,9 +60,6 @@ class medVtkViewNavigatorPrivate
     medBoolParameter *oCoronalParameter;
     medBoolParameter *o3dParameter;
 
-    medDoubleParameter *zoomParameter;
-    medVector2DParameter *panParameter;
-
     medBoolParameter *enableZooming;
     medBoolParameter *enableSlicing;
     medBoolParameter *enableMeasuring;
@@ -106,19 +103,9 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->collection->AddItem(d->view3d);
     d->render = backend->renWin;
 
-    d->zoomParameter = new medDoubleParameter("Zoom", this);
-    connect(d->zoomParameter, SIGNAL(valueChanged(double)),this, SLOT(setZoom(double)));
-    connect(parent, SIGNAL(zoomChanged(double)), d->zoomParameter, SLOT(setValue(double)));
-    d->zoomParameter->setValue(1);
-
-    d->panParameter = new medVector2DParameter("Pan", this);
-    connect(d->panParameter, SIGNAL(valueChanged(QVector2D)),this, SLOT(setPan(QVector2D)));
-    connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
-
     d->orientationParameter = new medBoolGroupParameter("Orientation", this);
     d->orientationParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
     d->orientationParameter->getLabel()->hide();
-
 
     d->oAxialParameter = new medBoolParameter("axial", this);
     d->oAxialParameter->setIcon(QIcon(":/icons/AxialIcon.png"));
@@ -190,8 +177,8 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     connect(d->enableMeasuring, SIGNAL(valueChanged(bool)), this, SLOT(enableMeasuring(bool)));
 
     d->parameters << d->orientationParameter
-                    << d->zoomParameter
-                    << d->panParameter
+                    << this->zoomParameter()
+                    << this->panParameter()
                     << this->cameraParameter()
                     << d->showAxesParameter
                     << d->showRulerParameter
@@ -255,23 +242,6 @@ QList<medBoolParameter*> medVtkViewNavigator::mouseInteractionParameters()
 medImageView::Orientation medVtkViewNavigator::orientation() const
 {
     return d->orientation;
-}
-
-
-double medVtkViewNavigator::zoom() const
-{
-    if(d->orientation != medImageView::VIEW_ORIENTATION_3D)
-        return d->view2d->GetZoom();
-    else
-        return d->view3d->GetZoom();
-}
-
-QVector2D medVtkViewNavigator::pan() const
-{
-    const double* pan = d->view2d->GetPan();
-
-    QVector2D qpan(pan[0], pan[1]);
-    return qpan;
 }
 
 void medVtkViewNavigator::setOrientation(medImageView::Orientation orientation)
@@ -345,22 +315,17 @@ void medVtkViewNavigator::setCamera(const QVector3D &position,
 }
 
 void medVtkViewNavigator::setZoom(double zoom)
-{
-    if(zoom != this->zoom())
-    {
-        d->currentView->SetZoom(zoom);
-        d->currentView->Render();
-    }
+{   
+    d->currentView->SetZoom(zoom);
+    d->currentView->Render();
+
 }
 
 void medVtkViewNavigator::setPan(const QVector2D &pan)
 {
-    if(pan != this->pan())
-    {
-        double stdpan[2] = {pan.x(), pan.y()};
-        d->view2d->SetPan(stdpan);
-        d->view2d->Render();
-    }
+    double stdpan[2] = {pan.x(), pan.y()};
+    d->view2d->SetPan(stdpan);
+    d->view2d->Render();
 }
 
 void medVtkViewNavigator::moveToPosition(const QVector3D &position)
@@ -591,7 +556,7 @@ void medVtkViewNavigator::showScalarBar(bool show)
 void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientation)
 {
     // prevent from vtk event send by the resend by the observer. - RDE
-    d->zoomParameter->blockSignals(true);
+    this->zoomParameter()->blockSignals(true);
     this->cameraParameter()->blockSignals(true);
 
     double pos[3];
@@ -633,7 +598,7 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
 
     emit orientationChanged();
 
-    d->zoomParameter->blockSignals(false);
+    this->zoomParameter()->blockSignals(false);
     this->cameraParameter()->blockSignals(false);
 }
 

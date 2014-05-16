@@ -122,7 +122,7 @@ bool medVtkViewItkVectorFieldInteractor::registered()
 
 void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
 {
-
+    medAbstractInteractor::setData(data);
 
     if (!data)
         return;

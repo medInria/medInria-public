@@ -10,9 +10,10 @@
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
 #include <medVtkViewBackend.h>
-#include <medBoolParameter.h>
 
 #include <medAbstractParameter.h>
+#include <medBoolParameter.h>
+#include <medDoubleParameter.h>
 #include <medCompositeParameter.h>
 
 #include <medVtkView.h>
@@ -80,14 +81,14 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     case vtkImageView2DCommand::CameraZoomEvent:
     {
         double zoom = this->view2d->GetZoom();
-        m_view->zoomChanged(zoom);
+        m_view->zoomParameter()->setValue(zoom);
         break;
     }
     case vtkImageView2DCommand::CameraPanEvent:
     {
         const double *pan = this->view2d->GetPan();
         QVector2D qpan (pan[0], pan[1]);
-        m_view->panChanged(qpan);
+        m_view->panParameter()->setValue(qpan);
         break;
     }
     case vtkImageView::WindowLevelChangedEvent:

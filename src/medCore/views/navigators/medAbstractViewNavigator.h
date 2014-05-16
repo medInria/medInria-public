@@ -17,6 +17,11 @@ PURPOSE.
 
 #include <medCoreExport.h>
 
+class medDoubleParameter;
+class medAbstractVector2DParameter;
+
+class medAbstractViewNavigatorPrivate;
+
 class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractNavigator
 {
     Q_OBJECT
@@ -25,11 +30,16 @@ public:
     medAbstractViewNavigator(medAbstractView* parent);
     virtual ~medAbstractViewNavigator();
 
-    virtual double zoom() const = 0;
-    virtual QVector2D pan() const = 0;
+    medDoubleParameter* zoomParameter();
 
+    medAbstractVector2DParameter* panParameter();
 
 public slots:
+
      virtual void setZoom (double zoom) = 0;
+
      virtual void setPan (const QVector2D &pan) = 0;
+
+private:
+    medAbstractViewNavigatorPrivate *d;
 };

@@ -27,6 +27,8 @@ class medAbstractNavigator;
 class medAbstractInteractor;
 class medAbstractViewInteractor;
 class medAbstractParameter;
+class medDoubleParameter;
+class medAbstractVector2DParameter;
 
 // derive and implement if you need to provide access to your backend
 class medViewBackend {
@@ -50,24 +52,15 @@ public:
 
     virtual QString description() const = 0;
 
-    /**
-       Set the view zoom factor.
-    **/
-    virtual void setZoom (double zoom);
-    double zoom();
+    medDoubleParameter* zoomParameter();
 
-    /**
-       Set the view pan.
-    **/
-    virtual void setPan (const QVector2D &pan);
-    QVector2D pan();
+    medAbstractVector2DParameter* panParameter();
 
     virtual medViewBackend * backend() const = 0;
 
     virtual QWidget* navigatorWidget() = 0;
     virtual QWidget *viewWidget() = 0;
     virtual QWidget *mouseInteractionWidget() = 0;
-
 
     QImage generateThumbnail(const QSize &size);
 
@@ -82,8 +75,6 @@ public slots:
 
 signals:
     void selectedRequest(bool selected);
-    void zoomChanged(double);
-    void panChanged(const QVector2D&);
     void aboutToBuildThumbnail();
 
 protected:

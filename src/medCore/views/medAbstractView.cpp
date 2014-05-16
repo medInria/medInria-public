@@ -145,43 +145,26 @@ QList<medAbstractNavigator*> medAbstractView::extraNavigators()
     return d->extraNavigators;
 }
 
-void medAbstractView::setZoom (double zoom)
+medDoubleParameter* medAbstractView::zoomParameter()
 {
-    medAbstractViewNavigator* nav = this->primaryNavigator();
-    if(!nav)
-        return
+    medAbstractViewNavigator* pNavigator = this->primaryNavigator();
+    if(!pNavigator)
+    {
+        return NULL;
+    }
 
-    nav->setZoom(zoom);
-    emit zoomChanged(zoom);
+    return pNavigator->zoomParameter();
 }
 
-double medAbstractView::zoom(void)
+medAbstractVector2DParameter* medAbstractView::panParameter()
 {
-    medAbstractViewNavigator* nav = this->primaryNavigator();
-    if(!nav)
-        return 1;
+    medAbstractViewNavigator* pNavigator = this->primaryNavigator();
+    if(!pNavigator)
+    {
+        return NULL;
+    }
 
-    return nav->zoom();
-}
-
-void medAbstractView::setPan (const QVector2D &pan)
-{
-
-    medAbstractViewNavigator* nav = this->primaryNavigator();
-    if(!nav)
-        return
-
-    nav->setPan(pan);
-    emit panChanged(pan);
-}
-
-QVector2D medAbstractView::pan(void)
-{
-    medAbstractViewNavigator* nav = this->primaryNavigator();
-    if(!nav)
-        return QVector2D(0.0,0.0);
-
-    return nav->pan();
+    return pNavigator->panParameter();
 }
 
 bool medAbstractView::eventFilter(QObject * obj, QEvent * event)

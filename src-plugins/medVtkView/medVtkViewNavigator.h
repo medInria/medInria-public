@@ -39,9 +39,6 @@ public:
 
     virtual medImageView::Orientation orientation() const ;
 
-    virtual double zoom() const;
-    virtual QVector2D pan() const;
-
 public slots:
     void updateWidgets();
 
@@ -56,7 +53,6 @@ public slots:
                            const QVector3D &viewup,
                            const QVector3D &focal,
                            double parallelScale);
-
 
 signals:
     void orientationChanged();
