@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -120,7 +120,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
 bool medRegistrationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("registration").size()!=0); 
+    return (tbFactory->toolBoxesFromCategory("registration").size()!=0);
 }
 
 void medRegistrationWorkspace::updateFromMovingContainer()
@@ -254,6 +254,35 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
     d->fuseContainer->removeView();
     d->fuseContainer->addData(d->registrationToolBox->fixedData());
     d->fuseContainer->addData(output);
+
+
+    // Relink the views...
+    medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->movingContainer->view());
+    if(!movingView)
+    {
+        qWarning() << "Non layered view are not suported yet in registration workspace.";
+        return;
+    }
+
+
+    medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
+    if(!fuseView)
+    {
+        qWarning() << "Non layered view are not suported yet in registration workspace.";
+        return;
+    }
+
+    foreach(medAbstractInteractor *interactor, movingView->interactors(0))
+        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
+            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
+
+    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
+    foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(output)))
+        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
+            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
+
+    d->movingContainer->link("1");
+    d->fuseContainer->link("1");
 
     connect(d->movingContainer,SIGNAL(viewContentChanged()),
             this, SLOT(updateFromMovingContainer()));
