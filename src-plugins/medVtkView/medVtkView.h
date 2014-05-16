@@ -20,11 +20,12 @@ class medVtkViewPrivate;
 class medAbstractData;
 class medAbstractImageData;
 class medVtkViewObserver;
+class medBoolParameter;
 
 class MEDVTKVIEWPLUGIN_EXPORT medVtkView : public medAbstractImageView
 {
     Q_OBJECT
-    
+
 public:
 
     medVtkView(QObject* parent = 0);
@@ -47,7 +48,7 @@ public:
     virtual qreal sliceThickness();
     virtual qreal scale();
 
-    virtual void enableRubberBandZoom(bool);
+    medBoolParameter* rubberBandZoomParameter() const;
 
 public slots:
     virtual void reset();
@@ -66,12 +67,15 @@ private slots:
 
     void buildMouseInteractionParamPool(uint layer);
     void saveMouseInteractionSettings(bool parameterEnabled);
+    void resetKeyboardInteractionModifier();
+
+    virtual void enableRubberBandZoom(bool);
 
 private:
     virtual QImage buildThumbnail(const QSize &size);
 
 private:
     medVtkViewPrivate *d;
-    friend class medVtkViewObserver; 
+    friend class medVtkViewObserver;
 };
 

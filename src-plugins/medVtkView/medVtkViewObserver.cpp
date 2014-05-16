@@ -10,6 +10,7 @@
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
 #include <medVtkViewBackend.h>
+#include <medBoolParameter.h>
 
 #include <medVtkView.h>
 
@@ -110,7 +111,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
         if (windowInteractor->GetShiftKey())
         {
-            m_view->enableRubberBandZoom(true);
+            m_view->rubberBandZoomParameter()->setValue(true);
         }
         break;
     }
@@ -119,7 +120,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         vtkRenderWindowInteractor *windowInteractor = static_cast<vtkRenderWindowInteractor*>(caller);
         if (!windowInteractor->GetShiftKey())
         {
-            m_view->enableRubberBandZoom(false);
+            m_view->rubberBandZoomParameter()->setValue(false);
         }
         break;
     }

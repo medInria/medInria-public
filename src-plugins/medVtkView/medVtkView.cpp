@@ -188,6 +188,13 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->mouseInteractionWidget = NULL;
 
     d->rubberBandZoomParameter = new medBoolParameter("RubberBandZoom", this);
+    connect(d->rubberBandZoomParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableRubberBandZoom(bool)));
+
+    // Disable rubberBandMode if we leave tha application.
+    QMainWindow * mainWindowApp = dynamic_cast<QMainWindow *>
+            (qApp->property( "MainWindow" ).value<QObject *>());
+
+    connect(mainWindowApp, SIGNAL(mainWindowDeactivated()), this, SLOT(resetKeyboardInteractionModifier()));
 
     this->initialiseNavigators();
     this->setWindowingInteractionStyle(true);
@@ -557,6 +564,7 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     QString interaction = mnger->value("interactions","mouse", "Windowing").toString();
 
     QList<medBoolParameter*> params;
+
     params.append(primaryNavigator()->mouseInteractionParameters());
     foreach (medAbstractNavigator* navigator, this->extraNavigators())
         params.append(navigator->mouseInteractionParameters());
@@ -568,13 +576,15 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     // add all mouse interaction params of the view in the "Mouse interaction" pool
     foreach (medBoolParameter* param, params)
     {
-        medParameterPoolManager::instance()->linkParameter(param, "Mouse Interaction");
         connect(param, SIGNAL(valueChanged(bool)), this, SLOT(saveMouseInteractionSettings(bool)));
 
         // and activate the new inserted parameter according to what was activated in other views
         if(param->name() == interaction)
             param->setValue(true);
     }
+
+    // Deal with rubber Zoom mode.
+    medParameterPoolManager::instance()->linkParameter(d->rubberBandZoomParameter, "Mouse Interaction");
 }
 
 void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
@@ -607,4 +617,15 @@ void medVtkView::enableRubberBandZoom(bool enable)
     }
     else
         d->view2d->GetInteractor()->SetInteractorStyle(d->interactorStyle2D);
+}
+
+medBoolParameter* medVtkView::rubberBandZoomParameter() const
+{
+    return d->rubberBandZoomParameter;
+}
+
+
+void medVtkView::resetKeyboardInteractionModifier()
+{
+    d->rubberBandZoomParameter->setValue(false);
 }
