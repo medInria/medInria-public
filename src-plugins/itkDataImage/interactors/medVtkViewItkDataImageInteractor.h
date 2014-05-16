@@ -72,7 +72,6 @@ private:
     bool SetViewInput(const char* type, medAbstractData* data, int layer);
 
 private slots:
-    void updateWindowLevelParam(QList<QVariant>);
     void updateSlicingParam();
     void updateImageViewInternalLayer();
 

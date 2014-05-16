@@ -75,7 +75,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         const double *pos = this->view2d->GetCurrentPoint();
         QVector3D qpos(doubleToQtVector3D(pos));
         if(m_view->positionBeinViewedParameter())
-          m_view->positionBeinViewedParameter()->setValue(qpos);
+            m_view->positionBeinViewedParameter()->setValue(qpos);
         break;
     }
     case vtkImageView2DCommand::CameraZoomEvent:
@@ -92,14 +92,14 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         break;
     }
     case vtkImageView::WindowLevelChangedEvent:
-    {  
+    {
         double level = this->view2d->GetColorLevel(layer);
         double window = this->view2d->GetColorWindow(layer);
         QList<QVariant> wl;
         wl.append(QVariant(window));
         wl.append(QVariant(level));
         if(m_view->windowLevelParameter(layer))
-          m_view->windowLevelParameter(layer)->setValue(wl);
+            m_view->windowLevelParameter(layer)->setValue(wl);
         break;
     }
     case vtkCommand::InteractionEvent:
@@ -117,7 +117,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         cam.append(QVariant(focal));
         cam.append(QVariant(ps));
         if(m_view->cameraParameter())
-          m_view->cameraParameter()->setValue(cam);
+             m_view->cameraParameter()->setValue(cam);
         break;
     }
     case vtkCommand::KeyPressEvent:

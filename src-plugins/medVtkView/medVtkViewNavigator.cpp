@@ -330,13 +330,19 @@ void medVtkViewNavigator::setPan(const QVector2D &pan)
 
 void medVtkViewNavigator::moveToPosition(const QVector3D &position)
 {
-    double pos[3];
-    pos[0] = position.x();
-    pos[1] = position.y();
-    pos[2] = position.z();
-
     if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
     {
+        double op[3];
+        d->view3d->GetCurrentPoint(op);
+        QVector3D oldPos(op[0], op[1], op[2]);
+        if(position == oldPos)
+            return;
+
+        double pos[3];
+        pos[0] = position.x();
+        pos[1] = position.y();
+        pos[2] = position.z();
+
         //TODO not sure that is what we want, maybe moveToPosition should be only avilable in 2D
         // (moveTo2DPosition ?) - RDE
         d->view3d->SetCurrentPoint(pos);
@@ -344,6 +350,17 @@ void medVtkViewNavigator::moveToPosition(const QVector3D &position)
     }
     else
     {
+        double op[3];
+        d->view2d->GetCurrentPoint(op);
+        QVector3D oldPos(op[0], op[1], op[2]);
+        if(position == oldPos)
+            return;
+
+        double pos[3];
+        pos[0] = position.x();
+        pos[1] = position.y();
+        pos[2] = position.z();
+
         d->view2d->SetCurrentPoint(pos);
         d->view2d->UpdateCursorPosition(pos);
         d->view2d->Render();

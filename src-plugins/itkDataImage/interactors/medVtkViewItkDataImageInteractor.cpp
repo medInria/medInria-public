@@ -273,8 +273,8 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWIndowLevel(bool)));
 
-    connect(this->windowLevelParameter(), SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(updateWindowLevelParam(QList<QVariant>)));
-    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
+    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)),
+            this, SLOT(updateSlicingParam()));
     connect(d->view, SIGNAL(currentLayerChanged()), this, SLOT(updateImageViewInternalLayer()));
 
     if(d->view->layer(d->imageData) == 0)
@@ -398,6 +398,9 @@ QWidget* medVtkViewItkDataImageInteractor::buildLayerWidget()
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
+    if(d->view2d->GetColorWindow(d->view->layer(d->imageData)) == window)
+        return;
+
     d->view2d->SetColorWindow(window, d->view->layer(d->imageData));
     d->view3d->SetColorWindow(window, d->view->layer(d->imageData));
 
@@ -406,6 +409,9 @@ void medVtkViewItkDataImageInteractor::setWindow(double window)
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
+    if(d->view2d->GetColorLevel(d->view->layer(d->imageData)) == level)
+        return;
+
     d->view2d->SetColorLevel(level, d->view->layer(d->imageData));
     d->view3d->SetColorLevel(level, d->view->layer(d->imageData));
 
@@ -438,6 +444,9 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
 
     if(needUpdate)
         this->update();
+
+    d->levelParameter->setValue(values.at(1).toDouble());
+    d->windowParameter->setValue(values.at(0).toDouble());
 }
 
 void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
@@ -468,21 +477,6 @@ void medVtkViewItkDataImageInteractor::updateWidgets()
         d->slicingParameter->getSlider()->setEnabled(true);
         this->updateSlicingParam();
     }
-}
-
-void medVtkViewItkDataImageInteractor::updateWindowLevelParam(QList<QVariant> windowLevel)
-{
-    if(windowLevel.size() != 2)
-    {
-        qWarning() << "Incorrect WindowLevel values.";
-        return;
-    }
-    d->windowParameter->blockSignals(true);
-    d->levelParameter->blockSignals(true);
-    d->windowParameter->setValue(windowLevel.at(0).toDouble());
-    d->levelParameter->setValue(windowLevel.at(1).toDouble());
-    d->windowParameter->blockSignals(false);
-    d->levelParameter->blockSignals(false);
 }
 
 void medVtkViewItkDataImageInteractor::setUpViewForThumbnail()
