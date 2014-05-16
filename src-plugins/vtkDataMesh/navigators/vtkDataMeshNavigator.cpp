@@ -107,7 +107,9 @@ QList<medBoolParameter*> vtkDataMeshNavigator::mouseInteractionParameters()
 void vtkDataMeshNavigator::updateWidgets()
 {
     if(d->imageView->orientation() == medImageView::VIEW_ORIENTATION_3D &&
-        (d->imageView->contains("vtkDataMesh") || d->imageView->contains("vtkDataMesh4D")))
+        (d->imageView->contains("vtkDataMesh")
+         || d->imageView->contains("vtkDataMesh4D")
+         ))
     {
         if(this->toolBoxWidget())
             this->toolBoxWidget()->show();
