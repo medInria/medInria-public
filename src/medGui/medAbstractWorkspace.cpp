@@ -380,7 +380,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 d->layerListWidget->blockSignals(false);
 
             }
-        }    
+        }
     }
     // add the layer widgets
     d->layerListToolBox->show();
@@ -476,9 +476,13 @@ void medAbstractWorkspace::updateInteractorsToolBox()
             QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
 
             groupBoxLayout->setContentsMargins(0,0,0,0);
-            groupBoxLayout->addWidget(interactor->toolBoxWidget());
-            d->interactorToolBox->addWidget(groupBox);
-            interactor->toolBoxWidget()->show();
+            QWidget *intercatorWidget = interactor->toolBoxWidget();
+            if(intercatorWidget)
+            {
+                groupBoxLayout->addWidget(interactor->toolBoxWidget());
+                d->interactorToolBox->addWidget(groupBox);
+                interactor->toolBoxWidget()->show();
+            }
         }
     }
     d->interactorToolBox->show();

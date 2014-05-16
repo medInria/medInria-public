@@ -55,7 +55,8 @@ QWidget* medAbstractInteractor::toolBoxWidget()
     if(!d->toolBoxWidget)
     {
         d->toolBoxWidget = this->buildToolBoxWidget();
-        connect(d->toolBoxWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBoxWidget()));
+        if(d->toolBoxWidget)
+            connect(d->toolBoxWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBoxWidget()));
     }
 
     return d->toolBoxWidget;
@@ -66,7 +67,8 @@ QWidget* medAbstractInteractor::toolBarWidget()
     if(!d->toolBarWidget)
     {
         d->toolBarWidget = this->buildToolBarWidget();
-        connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
+        if(d->toolBarWidget)
+            connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
     }
 
     return d->toolBarWidget;
@@ -77,7 +79,8 @@ QWidget* medAbstractInteractor::layerWidget()
     if(!d->layerWidget)
     {
         d->layerWidget = this->buildLayerWidget();
-        connect(d->layerWidget, SIGNAL(destroyed()), this, SLOT(removeInternLayerWidget()));
+        if(d->layerWidget)
+            connect(d->layerWidget, SIGNAL(destroyed()), this, SLOT(removeInternLayerWidget()));
     }
 
     return d->layerWidget;

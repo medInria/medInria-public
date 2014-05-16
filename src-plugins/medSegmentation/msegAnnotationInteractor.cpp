@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -137,6 +137,8 @@ medAbstractImageView * msegAnnotationInteractor::getView()
 
 void msegAnnotationInteractor::setData(medAbstractData *data)
 {
+    this->medAbstractInteractor::setData(data);
+
     if ( d->imageData ) {
         disconnect(d->imageData, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
         // Remove annotations
@@ -146,11 +148,11 @@ void msegAnnotationInteractor::setData(medAbstractData *data)
             }
         }
     }
-    
+
     d->imageData = data;
 
     if (d->imageData)
-    {        
+    {
         typedef itk::Image<unsigned char, 3> MaskType;
         medImageMaskAnnotationData *maskAnnData = dynamic_cast<medImageMaskAnnotationData*>(data);
         if (MaskType* image = dynamic_cast<MaskType*>((itk::Object*)(maskAnnData->maskData()->data())))
@@ -215,6 +217,10 @@ void msegAnnotationInteractor::onDataModified( medAbstractData* data )
 
     msegAnnIntHelper * helper = d->helpers.at( it->second );
     helper->annotationModified(annData);
+    if(d->medVtkView->is2D())
+        d->view2d->Render();
+    else
+        d->view3d->Render();
 }
 
 
@@ -223,7 +229,7 @@ void msegAnnotationInteractor::addAnnotation( medAnnotationData * annData )
     if ( d->installedAnnotations.contains(annData) ) {
         return;
     }
-    
+
     typedef msegAnnotationInteractorPrivate::HelperVecType::size_type IndexType;
     bool isAdded = false;
     for (IndexType i(0), end(d->helpers.size()); i<end; ++i){
@@ -234,10 +240,10 @@ void msegAnnotationInteractor::addAnnotation( medAnnotationData * annData )
             break;
         }
     }
-    
+
     if ( isAdded ) {
         d->installedAnnotations.insert( annData );
-        
+
         connect(annData, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
     }
 }
@@ -296,9 +302,9 @@ bool msegAnnotationInteractor::isPointInSlice(const QVector3D & testPoint, const
                                                  const QVector3D & sliceNormal, qreal thickness ) const
 {
     qreal distanceToPlane = QVector3D::dotProduct( (testPoint - slicePoint), sliceNormal );
-    
+
     distanceToPlane = distanceToPlane / sliceNormal.length();
-    
+
     return ( distanceToPlane >= -thickness ) && ( distanceToPlane < thickness );
 }
 
@@ -333,13 +339,13 @@ bool msegAnnotationInteractor::visibility() const
 QWidget* msegAnnotationInteractor::buildToolBarWidget()
 {
 
-    return new QWidget;
+    return NULL;
 }
 
 QWidget* msegAnnotationInteractor::buildToolBoxWidget()
 {
 
-    return new QWidget;
+    return NULL;
 }
 
 QWidget* msegAnnotationInteractor::buildLayerWidget()
