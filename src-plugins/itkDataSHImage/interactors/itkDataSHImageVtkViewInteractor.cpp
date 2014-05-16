@@ -129,7 +129,7 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
 
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor(),d->renderer3d);
 
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)),
+    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)),
             this,    SLOT(setPosition(QVector3D)));
 
     d->slicingParameter = new medIntParameter("Slicing", this);

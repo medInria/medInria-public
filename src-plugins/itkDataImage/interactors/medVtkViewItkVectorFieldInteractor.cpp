@@ -264,7 +264,7 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
 //    }
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
+    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
     connect(d->view, SIGNAL(orientationChanged()), this, SLOT(updatePlaneVisibility()));
 
     this->updateWidgets();
@@ -275,7 +275,6 @@ void medVtkViewItkVectorFieldInteractor::setWindowLevel(QList<QVariant>)
 {
     //TODO
 }
-
 
 void medVtkViewItkVectorFieldInteractor::setOpacity(double opacity)
 {

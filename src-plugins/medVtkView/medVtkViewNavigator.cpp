@@ -363,22 +363,8 @@ void medVtkViewNavigator::setPan(const QVector2D &pan)
     }
 }
 
-//QVector3D medVtkViewNavigator::positionBeingViewed() const
-//{
-//    double pos[3];
-//    if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
-//        d->view3d->GetCurrentPoint(pos);
-//    else
-//        d->view2d->GetCurrentPoint(pos);
-
-//    return QVector3D(pos[0], pos[1], pos[2]);
-//}
-
 void medVtkViewNavigator::moveToPosition(const QVector3D &position)
 {
-    if(this->positionBeingViewedParameter()->value() == position)
-        return;
-
     double pos[3];
     pos[0] = position.x();
     pos[1] = position.y();

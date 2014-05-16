@@ -300,7 +300,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
 
     d->slicingParameter = new medIntParameter("Slicing", this);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
+    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 }
 
 medVtkFibersDataInteractor::~medVtkFibersDataInteractor()

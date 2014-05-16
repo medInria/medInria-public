@@ -120,7 +120,7 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     // otherwise a new renderer is created
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor(), d->renderer3d);
 
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
+    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
 
     d->slicingParameter = new medIntParameter("Slicing", this);
 }

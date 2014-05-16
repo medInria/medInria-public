@@ -273,9 +273,8 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWIndowLevel(bool)));
 
-    connect(d->view, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
-    connect(d->view, SIGNAL(windowLevelChanged(double,double, unsigned int)), this, SLOT(updateWindowLevelParam(double,double, unsigned int)) );
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
+    connect(this->windowLevelParameter(), SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(updateWindowLevelParam(QList<QVariant>)));
+    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
     connect(d->view, SIGNAL(currentLayerChanged()), this, SLOT(updateImageViewInternalLayer()));
 
     if(d->view->layer(d->imageData) == 0)
@@ -471,19 +470,17 @@ void medVtkViewItkDataImageInteractor::updateWidgets()
     }
 }
 
-void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, double level, unsigned int layer)
+void medVtkViewItkDataImageInteractor::updateWindowLevelParam(QList<QVariant> windowLevel)
 {
-    if( d->view->layer(d->imageData) != layer )
+    if(windowLevel.size() != 2)
+    {
+        qWarning() << "Incorrect WindowLevel values.";
         return;
-
-    QList<QVariant> values;
-    values.append(QVariant(window));
-    values.append(QVariant(level));
-
+    }
     d->windowParameter->blockSignals(true);
     d->levelParameter->blockSignals(true);
-    d->windowParameter->setValue(window);
-    d->levelParameter->setValue(level);
+    d->windowParameter->setValue(windowLevel.at(0).toDouble());
+    d->levelParameter->setValue(windowLevel.at(1).toDouble());
     d->windowParameter->blockSignals(false);
     d->levelParameter->blockSignals(false);
 }
