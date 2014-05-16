@@ -44,7 +44,6 @@ public:
     virtual void windowLevel(double &window, double &level);
 
     double opacity() const;
-    bool visibility() const;
     bool edgeVisibility() const;
     QColor color() const;
     QString renderingType() const;

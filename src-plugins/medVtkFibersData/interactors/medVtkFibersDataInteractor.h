@@ -183,7 +183,6 @@ public slots:
     virtual double opacity() const;
 
     virtual void setVisible(bool visible);
-    virtual bool visibility() const;
 
     virtual void setWindowLevel (double &window, double &level);
     virtual void windowLevel(double &window, double &level);

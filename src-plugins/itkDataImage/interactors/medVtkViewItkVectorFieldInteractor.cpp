@@ -238,6 +238,7 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     d->parameters.append(sampleRateControl);
     d->parameters.append(colorMode);
     d->parameters.append(projection);
+    d->parameters.append(this->visibiltyParameter());
 
     connect(scaleFactor, SIGNAL(valueChanged(double)), this, SLOT(setScale(double)));
     connect(sampleRateControl,SIGNAL(valueChanged(int)),this,SLOT(setSampleRate(int)));
@@ -302,10 +303,6 @@ void medVtkViewItkVectorFieldInteractor::setVisibility(bool visibility)
     this->update();
 }
 
-bool medVtkViewItkVectorFieldInteractor::visibility() const
-{
-    return (d->manager->GetVectorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
-}
 
 void medVtkViewItkVectorFieldInteractor::setScale(double scale)
 {

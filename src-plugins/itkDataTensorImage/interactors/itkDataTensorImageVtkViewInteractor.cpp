@@ -171,6 +171,8 @@ bool itkDataTensorImageVtkViewInteractor::registered()
 
 void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 {
+    medAbstractInteractor::setData(data);
+
     if (!data)
         return;
 
@@ -303,6 +305,8 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     multiplierParam->setValue(0);
     d->parameters << multiplierParam;
 
+    d->parameters << visibiltyParameter();
+
     connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
@@ -368,12 +372,6 @@ void itkDataTensorImageVtkViewInteractor::setVisibility(bool visibility)
 
     this->update();
 }
-
-bool itkDataTensorImageVtkViewInteractor::visibility() const
-{
-    return (d->manager->GetTensorVisuManagerAxial()->GetActor()->GetVisibility() == 1);
-}
-
 
 void itkDataTensorImageVtkViewInteractor::setGlyphShape(QString glyphShape)
 {

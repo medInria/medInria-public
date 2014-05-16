@@ -38,7 +38,6 @@ public:
     virtual void windowLevel(double &window, double &level);
 
     double opacity() const;
-    bool visibility() const;
 
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBoxWidget();

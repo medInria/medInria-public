@@ -159,6 +159,8 @@ bool vtkDataMeshInteractor::registered()
 
 void vtkDataMeshInteractor::setData(medAbstractData *data)
 {
+    medAbstractInteractor::setData(data);
+
     if(data->identifier() == "vtkDataMesh4D" || data->identifier() == "vtkDataMesh")
     {
         vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
@@ -256,6 +258,8 @@ void vtkDataMeshInteractor::setupParameters()
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 
+    d->parameters << this->visibiltyParameter();
+
     this->updateWidgets();
 }
 
@@ -281,12 +285,6 @@ void vtkDataMeshInteractor::setVisibility(bool visible)
 
     d->render->Render();
 }
-
-bool vtkDataMeshInteractor::visibility() const
-{
-    return (d->actor2d->GetVisibility() == 1);
-}
-
 
 void vtkDataMeshInteractor::setEdgeVisibility(bool visible)
 {

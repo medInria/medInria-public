@@ -352,6 +352,8 @@ bool medVtkFibersDataInteractor::registered()
 
 void medVtkFibersDataInteractor::setData(medAbstractData *data)
 {
+    medAbstractInteractor::setData(data);
+
     if (!data)
         return;
 
@@ -378,6 +380,8 @@ void medVtkFibersDataInteractor::setData(medAbstractData *data)
         d->renderer3d->AddActor(d->actor);
         this->updateWidgets();
     }
+
+    d->parameters << visibiltyParameter();
 }
 
 void medVtkFibersDataInteractor::changeBundlingItem(QStandardItem *item)
@@ -1105,12 +1109,6 @@ void medVtkFibersDataInteractor::setVisible(bool visible)
     d->renderer3d->Render();
     d->render->Render();
 }
-
-bool medVtkFibersDataInteractor::visibility() const
-{
-    return (d->actor->GetVisibility() == 1);
-}
-
 
 void medVtkFibersDataInteractor::setWindowLevel (double &window, double &level)
 {

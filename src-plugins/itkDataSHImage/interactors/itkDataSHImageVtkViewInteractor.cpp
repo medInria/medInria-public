@@ -161,7 +161,8 @@ QStringList itkDataSHImageVtkViewInteractor::dataHandled()
     return  datahandled;
 }
 
-bool itkDataSHImageVtkViewInteractor::registered() {
+bool itkDataSHImageVtkViewInteractor::registered()
+{
     medViewFactory *factory = medViewFactory::instance();
     factory->registerInteractor<itkDataSHImageVtkViewInteractor>("itkDataSHImageVtkViewInteractor",
                                                                      QStringList () << "medVtkView" <<
@@ -169,7 +170,9 @@ bool itkDataSHImageVtkViewInteractor::registered() {
     return true;
 }
 
-void itkDataSHImageVtkViewInteractor::setData(medAbstractData *data) {
+void itkDataSHImageVtkViewInteractor::setData(medAbstractData *data)
+{
+    medAbstractInteractor::setData(data);
 
     if (!data || !data->data())
         return;
@@ -265,6 +268,7 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     d->parameters.append(glyphResolutionParam);
     d->parameters.append(minorScalingParam);
     d->parameters.append(majorScalingParam);
+    d->parameters.append(visibiltyParameter());
 
 
     connect(tesselationTypeParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationType(QString)));
@@ -330,11 +334,6 @@ void itkDataSHImageVtkViewInteractor::setVisibility(bool visibility)
     d->manager->GetSHVisuManagerCoronal()->GetActor()->SetVisibility(v);
 
     this->update();
-}
-
-bool itkDataSHImageVtkViewInteractor::visibility() const
-{
-    return (d->manager->GetSHVisuManagerAxial()->GetActor()->GetVisibility() == 1);
 }
 
 void itkDataSHImageVtkViewInteractor::imageSize(int* imSize) {
