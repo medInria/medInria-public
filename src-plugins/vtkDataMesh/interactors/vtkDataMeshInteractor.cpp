@@ -436,7 +436,7 @@ void vtkDataMeshInteractor::updatePipeline ()
             d->actor2d->SetProperty( d->actorProperty );
             d->actor3d->SetProperty( d->actorProperty );
 
-            d->view2d->UpdateBounds(pointSet->GetBounds());
+            d->view2d->UpdateBounds(pointSet->GetBounds(), 0, d->view->layer(this->data()));
         }
     }
     d->view3d->ResetCamera();
