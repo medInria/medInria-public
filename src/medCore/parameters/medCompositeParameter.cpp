@@ -67,6 +67,7 @@ void medCompositeParameter::setValues(const QList<QVariant> value)
     int index = 0;
     while (i != d->variants.end())
     {
+        i.value() = value[index];
         QString name = i.key();
         if(d->ranges.contains(name))
         {
@@ -90,9 +91,6 @@ void medCompositeParameter::setValues(const QList<QVariant> value)
                     i.value() = value[index];
             }
         }
-        else
-            i.value() = value[index];
-
         index++;
         i++;
     }
