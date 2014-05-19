@@ -1,6 +1,7 @@
 #include "medCompositeParameter.h"
 
 #include <QtGui>
+#include <QPair>
 
 
 class medCompositeParameterPrivate
@@ -8,6 +9,8 @@ class medCompositeParameterPrivate
 public:
 
     QHash<QString, QVariant> variants;
+    QHash<QString, QPair <QVariant, QVariant> > ranges;
+    QHash<QString, QVariant> steps;
     QHash<QString, QWidget*> widgets;
 
     ~medCompositeParameterPrivate()
@@ -64,7 +67,28 @@ void medCompositeParameter::setValue(const QList<QVariant> value)
     int index = 0;
     while (i != d->variants.end())
     {
-        i.value() = value[index];
+        QString name = i.key();
+        if(d->ranges.contains(name))
+        {
+            // Check if we're not going over ranges.
+            if(i.value().type() == QVariant::Double)
+            {
+                i.value() = (value[index].toDouble() < d->ranges.value(name).first.toDouble())?
+                                                     d->ranges.value(name).first : value[index];
+                i.value() = (value[index].toDouble() > d->ranges.value(name).second.toDouble())?
+                                                     d->ranges.value(name).second : value[index];
+            }
+            else if(i.value().type() == QVariant::Int)
+            {
+                i.value() = (value[index].toInt() < d->ranges.value(name).first.toInt())?
+                                                     d->ranges.value(name).first : value[index];
+                i.value() = (value[index].toInt() > d->ranges.value(name).second.toInt())?
+                                                     d->ranges.value(name).second : value[index];
+            }
+        }
+        else
+            i.value() = value[index];
+
         index++;
         i++;
     }
@@ -126,10 +150,12 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         {
             spinbox->setMinimum(min.toInt());
             spinbox->setMaximum(max.toInt());
+            d->ranges.insert(name, QPair<QVariant, QVariant>(min, max));
         }
         if(step != QVariant())
         {
             spinbox->setSingleStep(step.toInt());
+            d->steps.insert(name, step);
         }
         spinbox->setValue(variant.toInt());
         d->widgets.insert(name, spinbox);
@@ -139,15 +165,17 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
     }
     else if(variant.type() == QVariant::Double )
     {
-        QDoubleSpinBox *spinbox = new QDoubleSpinBox;      
+        QDoubleSpinBox *spinbox = new QDoubleSpinBox;
         if(min != QVariant() && max != QVariant())
         {
             spinbox->setMinimum(min.toDouble());
             spinbox->setMaximum(max.toDouble());
+            d->ranges.insert(name, QPair<QVariant, QVariant>(min, max));
         }
         if(step != QVariant())
         {
             spinbox->setSingleStep(step.toDouble());
+            d->steps.insert(name, step);
         }
         spinbox->setValue(variant.toDouble());
         d->widgets.insert(name, spinbox);

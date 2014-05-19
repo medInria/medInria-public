@@ -240,20 +240,21 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput(d->view->layer(data))->GetScalarRange();
+    range[0] = (range[0] <= 0)? 0.01: range[0];
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
-    this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(range[0]), QVariant(range[1]));
-    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(range[0]), QVariant(range[1]));
+    this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(range[0]), QVariant(range[1] + 2*level));
+    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(range[0] -level), QVariant(range[1] + level));
 
     d->windowParameter = new medDoubleParameter("Window", this);
     connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
-    d->windowParameter->setRange(range[0], range[1]);
+    d->windowParameter->setRange(range[0], range[1]+ 2*level);
     d->windowParameter->setValue(window);
 
     d->levelParameter = new medDoubleParameter("Level", this);
     connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
-    d->levelParameter->setRange(range[0], range[1]);
+    d->levelParameter->setRange(range[0]-level, range[1]+level);
     d->levelParameter->setValue(level);
 
     d->slicingParameter = new medIntParameter("Slicing", this);
