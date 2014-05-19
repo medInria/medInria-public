@@ -33,16 +33,18 @@ public:
     void addVariant(QString name, QVariant variant,
                     QVariant min = QVariant(0), QVariant max = QVariant(100), QVariant step = QVariant(1));
 
-    virtual QList<QVariant> value() const;
+    virtual QList<QVariant> values() const;
+    QList<QPair <QVariant, QVariant> > ranges() const;
+    QList<QVariant> steps() const;
 
 public slots:
-    virtual void setValue(const QList<QVariant> );
+    virtual void setValues(const QList<QVariant> );
 
 protected:
     virtual void updateInternWigets();
 
 signals:
-    void valueChanged(const QList<QVariant>& );
+    void valuesChanged(const QList<QVariant>& );
 
 private slots:
     void updateValue(bool value);

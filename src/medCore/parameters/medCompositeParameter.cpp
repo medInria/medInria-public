@@ -52,7 +52,7 @@ QWidget* medCompositeParameter::getWidget()
     return mainWidget;
 }
 
-void medCompositeParameter::setValue(const QList<QVariant> value)
+void medCompositeParameter::setValues(const QList<QVariant> value)
 {
     if(d->variants.values() == value)
         return;
@@ -73,17 +73,21 @@ void medCompositeParameter::setValue(const QList<QVariant> value)
             // Check if we're not going over ranges.
             if(i.value().type() == QVariant::Double)
             {
-                i.value() = (value[index].toDouble() < d->ranges.value(name).first.toDouble())?
-                                                     d->ranges.value(name).first : value[index];
-                i.value() = (value[index].toDouble() > d->ranges.value(name).second.toDouble())?
-                                                     d->ranges.value(name).second : value[index];
+                if(value[index].toDouble() < d->ranges.value(name).first.toDouble())
+                    i.value() = d->ranges.value(name).first;
+                else if(value[index].toDouble() > d->ranges.value(name).second.toDouble())
+                    i.value() = d->ranges.value(name).second;
+                else
+                    i.value() = value[index];
             }
             else if(i.value().type() == QVariant::Int)
             {
-                i.value() = (value[index].toInt() < d->ranges.value(name).first.toInt())?
-                                                     d->ranges.value(name).first : value[index];
-                i.value() = (value[index].toInt() > d->ranges.value(name).second.toInt())?
-                                                     d->ranges.value(name).second : value[index];
+                if(value[index].toInt() < d->ranges.value(name).first.toInt())
+                    i.value() = d->ranges.value(name).first;
+                else if(value[index].toInt() > d->ranges.value(name).second.toInt())
+                    i.value() = d->ranges.value(name).second;
+                else
+                    i.value() = value[index];
             }
         }
         else
@@ -98,10 +102,10 @@ void medCompositeParameter::setValue(const QList<QVariant> value)
     this->updateInternWigets();
     this->blockInternWidgetsSignals(false);
 
-    emit valueChanged(value);
+    emit valuesChanged(d->variants.values());
 }
 
-QList<QVariant> medCompositeParameter::value() const
+QList<QVariant> medCompositeParameter::values() const
 {
     return d->variants.values();
 }
@@ -116,17 +120,12 @@ void medCompositeParameter::updateInternWigets()
         QWidget* widget = d->widgets.value(name);
 
         if(QCheckBox *checkbox = qobject_cast<QCheckBox*>(widget))
-        {
             checkbox->setChecked(var.toBool());
-        }
         else if(QSpinBox *spinBox = qobject_cast<QSpinBox*>(widget))
-        {
             spinBox->setValue(var.toInt());
-        }
         else if(QDoubleSpinBox *doubleSpinBox = qobject_cast<QDoubleSpinBox*>(widget))
-        {
             doubleSpinBox->setValue(var.toDouble());
-        }
+
         ++i;
     }
 }
@@ -139,7 +138,7 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
     {
         QCheckBox *checkbox = new QCheckBox(name);
         d->widgets.insert(name, checkbox);
-        addToInternWidgets(checkbox);
+        this->addToInternWidgets(checkbox);
         connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(updateValue(bool)));
         connect(checkbox, SIGNAL(destroyed(QObject*)), this, SLOT(removeInternWidget(QObject*)));
     }
@@ -159,7 +158,7 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         }
         spinbox->setValue(variant.toInt());
         d->widgets.insert(name, spinbox);
-        addToInternWidgets(spinbox);
+        this->addToInternWidgets(spinbox);
         connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(updateValue(int)));
         connect(spinbox, SIGNAL(destroyed(QObject*)), this, SLOT(removeInternWidget(QObject*)));
     }
@@ -179,7 +178,7 @@ void medCompositeParameter::addVariant(QString name, QVariant variant, QVariant 
         }
         spinbox->setValue(variant.toDouble());
         d->widgets.insert(name, spinbox);
-        addToInternWidgets(spinbox);
+        this->addToInternWidgets(spinbox);
         connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(updateValue(double)));
         connect(spinbox, SIGNAL(destroyed(QObject*)), this, SLOT(removeInternWidget(QObject*)));
     }
@@ -195,7 +194,7 @@ void medCompositeParameter::updateValue(bool value)
     {
         QString name = d->widgets.key(checkbox);
         d->variants[name] = QVariant(value);
-        emit valueChanged(d->variants.values());
+        emit valuesChanged(d->variants.values());
     }
 
 }
@@ -207,7 +206,7 @@ void medCompositeParameter::updateValue(double value)
     {
         QString name = d->widgets.key(spinbox);
         d->variants[name] = QVariant(value);
-        emit valueChanged(d->variants.values());
+        emit valuesChanged(d->variants.values());
     }
 }
 
@@ -218,7 +217,7 @@ void medCompositeParameter::updateValue(int value)
     {
         QString name = d->widgets.key(spinbox);
         d->variants[name] = QVariant(value);
-        emit valueChanged(d->variants.values());
+        emit valuesChanged(d->variants.values());
     }
 }
 
@@ -236,4 +235,14 @@ void medCompositeParameter::removeInternWidget(QObject *widget)
         if(w == i.value())
             d->widgets.remove(i.key());
     }
+}
+
+QList<QPair<QVariant, QVariant> > medCompositeParameter::ranges() const
+{
+    return d->ranges.values();
+}
+
+QList<QVariant> medCompositeParameter::steps() const
+{
+    return d->steps.values();
 }

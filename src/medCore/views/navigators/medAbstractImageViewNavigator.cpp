@@ -50,7 +50,7 @@ medCompositeParameter* medAbstractImageViewNavigator::cameraParameter()
         d->cameraParameter->addVariant("Camera Up", QVariant(QVector3D()));
         d->cameraParameter->addVariant("Camera Focal", QVariant(QVector3D()));
         d->cameraParameter->addVariant("Parallel Scale", QVariant((double)0.0));
-        connect(d->cameraParameter, SIGNAL(valueChanged(QList<QVariant>)), this, SLOT(setCamera(QList<QVariant>)));
+        connect(d->cameraParameter, SIGNAL(valuesChanged(QList<QVariant>)), this, SLOT(setCamera(QList<QVariant>)));
     }
     return d->cameraParameter;
 }

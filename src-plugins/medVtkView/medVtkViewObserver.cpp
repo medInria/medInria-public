@@ -99,7 +99,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         wl.append(QVariant(window));
         wl.append(QVariant(level));
         if(m_view->windowLevelParameter(layer))
-            m_view->windowLevelParameter(layer)->setValue(wl);
+            m_view->windowLevelParameter(layer)->setValues(wl);
         break;
     }
     case vtkCommand::InteractionEvent:
@@ -117,7 +117,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         cam.append(QVariant(focal));
         cam.append(QVariant(ps));
         if(m_view->cameraParameter())
-             m_view->cameraParameter()->setValue(cam);
+             m_view->cameraParameter()->setValues(cam);
         break;
     }
     case vtkCommand::KeyPressEvent:
