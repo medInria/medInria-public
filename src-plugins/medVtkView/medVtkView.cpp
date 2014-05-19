@@ -599,6 +599,9 @@ void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
 
 void medVtkView::enableRubberBandZoom(bool enable)
 {
+    if(this->orientation() == medImageView::VIEW_ORIENTATION_3D)
+        return;
+
     if(enable)
     {
         medSettingsManager * mnger = medSettingsManager::instance();
