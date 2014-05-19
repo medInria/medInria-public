@@ -264,7 +264,7 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
 //    }
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
-    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
+    connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
     connect(d->view, SIGNAL(orientationChanged()), this, SLOT(updatePlaneVisibility()));
 
     this->updateWidgets();

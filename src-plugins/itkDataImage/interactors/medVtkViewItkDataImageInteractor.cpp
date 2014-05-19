@@ -273,7 +273,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWIndowLevel(bool)));
 
-    connect(d->view->positionBeinViewedParameter(), SIGNAL(valueChanged(QVector3D)),
+    connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)),
             this, SLOT(updateSlicingParam()));
     connect(d->view, SIGNAL(currentLayerChanged()), this, SLOT(updateImageViewInternalLayer()));
 

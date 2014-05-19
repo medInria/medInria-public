@@ -74,8 +74,8 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     {
         const double *pos = this->view2d->GetCurrentPoint();
         QVector3D qpos(doubleToQtVector3D(pos));
-        if(m_view->positionBeinViewedParameter())
-            m_view->positionBeinViewedParameter()->setValue(qpos);
+        if(m_view->positionBeingViewedParameter())
+            m_view->positionBeingViewedParameter()->setValue(qpos);
         break;
     }
     case vtkImageView2DCommand::CameraZoomEvent:

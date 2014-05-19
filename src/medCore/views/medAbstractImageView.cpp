@@ -167,7 +167,7 @@ medCompositeParameter *medAbstractImageView::cameraParameter()
     return pNavigator->cameraParameter();
 }
 
-medAbstractVector3DParameter *medAbstractImageView::positionBeinViewedParameter()
+medAbstractVector3DParameter *medAbstractImageView::positionBeingViewedParameter()
 {
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)

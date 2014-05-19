@@ -55,7 +55,7 @@ public:
      */
     medCompositeParameter *cameraParameter();
 
-    medAbstractVector3DParameter *positionBeinViewedParameter();
+    medAbstractVector3DParameter *positionBeingViewedParameter();
 
     /**
      * Return a composite parameter made of:
