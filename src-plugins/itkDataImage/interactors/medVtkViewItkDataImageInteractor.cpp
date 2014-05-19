@@ -240,7 +240,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput(d->view->layer(data))->GetScalarRange();
-    range[0] = (range[0] <= 0)? 0.01: range[0];
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
