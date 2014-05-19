@@ -263,6 +263,8 @@ void medVtkViewNavigator::setOrientation(medImageView::Orientation orientation)
     case medImageView::VIEW_ORIENTATION_SAGITTAL:
         d->oSagittalParameter->setValue(true);
         break;
+    default:
+        break;
     }
 
     d->orientation = orientation;
@@ -603,6 +605,8 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     case medImageView::VIEW_ORIENTATION_SAGITTAL:
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
         d->currentView = d->view2d;
+        break;
+    default:
         break;
     }
 

@@ -148,7 +148,7 @@ int medTimeLineParameter::stepFrame() const
     return d->stepFrame;
 }
 
-int medTimeLineParameter::mapTimeToFrame(const double& time)
+unsigned int medTimeLineParameter::mapTimeToFrame(const double& time)
 {
     return floor(time / d->timeBetweenFrames);
 }
@@ -228,27 +228,23 @@ void medTimeLineParameter::setDuration(const double& timeDuration)
 
 void medTimeLineParameter::setFrame(int frame)
 {
-    if(frame < 0)
-        d->currentFrame = 0;
-    else if(frame > d->numberOfFrame)
+    unsigned int fr = (unsigned int)frame;
+    if(fr > d->numberOfFrame)
         d->currentFrame = d->numberOfFrame;
-    else d->currentFrame = frame;
+    else d->currentFrame = fr;
 
-    double time = this->mapFrameToTime(frame);
+    double time = this->mapFrameToTime(fr);
 
     d->timeParameter->setValue(time);
 
     emit frameChanged(time);
-
 }
 
 void medTimeLineParameter::updateTime(double time)
 {
-    int frame = this->mapTimeToFrame(time);
+    unsigned int frame = this->mapTimeToFrame(time);
 
-    if(frame < 0)
-        d->currentFrame = 0;
-    else if(frame > d->numberOfFrame)
+    if(frame > d->numberOfFrame)
         d->currentFrame = d->numberOfFrame;
     else d->currentFrame = frame;
 

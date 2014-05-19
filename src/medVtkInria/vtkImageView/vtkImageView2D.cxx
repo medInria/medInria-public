@@ -1611,7 +1611,7 @@ void vtkImageView2D::SetFirstLayer (vtkImageData *image, vtkMatrix4x4 *matrix, i
 bool vtkImageView2D::IsFirstLayer(int layer) const
 {
     bool firstLayer = true;
-    for ( size_t i(0); i<this->LayerInfoVec.size() && i<layer; ++i )
+    for ( size_t i(0); i<this->LayerInfoVec.size() && i<(unsigned int)layer; ++i )
     {
         if (this->LayerInfoVec[i].ImageDisplay && this->LayerInfoVec[i].ImageDisplay->GetInput() != NULL)
         {

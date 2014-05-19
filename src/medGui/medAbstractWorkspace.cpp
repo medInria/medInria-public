@@ -372,7 +372,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layerWidget->setFocusPolicy(Qt::NoFocus);
 
                 d->layerListWidget->blockSignals(true);
-                if(layeredView->currentLayer() == item->data(Qt::UserRole).toInt())
+                if(layeredView->currentLayer() == item->data(Qt::UserRole).toUInt())
                 {
                     d->layerListWidget->setCurrentItem(item);
                     item->setSelected(true);

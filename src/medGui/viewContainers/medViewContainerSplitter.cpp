@@ -101,6 +101,8 @@ medViewContainer *medViewContainerSplitter::split(medViewContainer *sender, Qt::
         else
             this->insertNestedSplitter(index, sender, newContainer, true);
         break;
+    default:
+        break;
     }
 
     return newContainer;
@@ -254,7 +256,8 @@ void medViewContainerSplitter::adjustContainersSize()
 
     int newSize = splitterSize / this->count();
     QList<int> newSizes;
-    foreach(int s, currentSizes)
+
+    for(int i=0; i<currentSizes.size(); i++)
         newSizes.append(newSize);
 
     this->setSizes(newSizes);

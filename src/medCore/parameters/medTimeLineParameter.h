@@ -40,7 +40,7 @@ public:
     double& duration() const;
     int stepFrame() const;
 
-    int mapTimeToFrame(const double& time);
+    unsigned int mapTimeToFrame(const double& time);
     double mapFrameToTime(int frame);
 
 public slots:
