@@ -29,6 +29,7 @@ class medAbstractViewInteractor;
 class medAbstractParameter;
 class medDoubleParameter;
 class medAbstractVector2DParameter;
+class medColorListParameter;
 
 // derive and implement if you need to provide access to your backend
 class medViewBackend {
@@ -56,6 +57,8 @@ public:
 
     medAbstractVector2DParameter* panParameter();
 
+    medColorListParameter *linkParameter();
+
     virtual medViewBackend * backend() const = 0;
 
     virtual QWidget* navigatorWidget() = 0;
@@ -69,7 +72,6 @@ public:
     virtual medAbstractViewNavigator* primaryNavigator();
     virtual QList<medAbstractNavigator*> extraNavigators();
 
-
 public slots:
     virtual void reset() = 0;
 
@@ -82,6 +84,12 @@ protected:
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
     virtual bool eventFilter(QObject *, QEvent *);
+
+    virtual QList<medAbstractParameter*> navigatorsParameters();
+
+protected slots:
+    virtual void link(QString);
+    virtual void unlink();
 
 private:
     virtual QImage buildThumbnail(const QSize &size) = 0;

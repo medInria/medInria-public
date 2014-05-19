@@ -30,6 +30,7 @@ PURPOSE.
 #include <medVector3DParameter.h>
 #include <medDoubleParameter.h>
 #include <medCompositeParameter.h>
+#include <medColorListParameter.h>
 
 /*=========================================================================
 

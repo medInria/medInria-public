@@ -25,6 +25,7 @@
 #include <medAbstractParameter.h>
 #include <medParameterPoolManager.h>
 #include <medParameterPool.h>
+#include <medColorListParameter.h>
 
 
 class medTabbedViewContainersPrivate
@@ -135,11 +136,7 @@ void medTabbedViewContainers::connectContainer(QUuid container)
     connect(cont, SIGNAL(containerSelected(QUuid)), this, SLOT(addContainerToSelection(QUuid)), Qt::UniqueConnection);
     connect(cont, SIGNAL(containerUnSelected(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)), Qt::UniqueConnection);
 
-    connect(cont, SIGNAL(linkRequested(QUuid, QString)), this, SLOT(link(QUuid, QString)));
-    connect(cont, SIGNAL(unlinkRequested(QUuid)), this, SLOT(unlink(QUuid)));
-
     connect(cont, SIGNAL(maximized(QUuid,bool)), this, SLOT(minimizeOtherContainers(QUuid,bool)));
-
 
     cont->setSelected(true);
 }
@@ -228,40 +225,6 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
 }
 
 
-void medTabbedViewContainers::link(QUuid uuid, QString pool)
-{
-    if(this->containersSelected().contains(uuid))
-    {
-        foreach(QUuid uuidSelected, this->containersSelected())
-        {
-            medViewContainer *container = medViewContainerManager::instance()->container(uuidSelected);
-            container->link(pool);
-        }
-    }
-    else
-    {
-        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        container->link(pool);
-    }
-}
-
-void medTabbedViewContainers::unlink(QUuid uuid)
-{
-    if(this->containersSelected().contains(uuid))
-    {
-        foreach(QUuid uuidSelected, this->containersSelected())
-        {
-            medViewContainer *container = medViewContainerManager::instance()->container(uuidSelected);
-            container->unlink();
-        }
-    }
-    else
-    {
-        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        container->unlink();
-    }
-}
-
 void medTabbedViewContainers::buildTemporaryPool()
 {
     d->pool->clear();
@@ -283,6 +246,8 @@ void medTabbedViewContainers::buildTemporaryPool()
         {
             d->pool->append(param);
         }
+
+        d->pool->append(container->view()->linkParameter());
     }
 }
 

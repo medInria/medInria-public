@@ -21,6 +21,8 @@
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
 #include <medViewFactory.h>
+#include <medColorListParameter.h>
+#include <medParameterPoolManager.h>
 
 class medAbstractViewPrivate
 {
@@ -32,6 +34,8 @@ public:
 
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
+
+    medColorListParameter *linkParameter;
 };
 
 medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate)
@@ -41,6 +45,8 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
 
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
+
+    d->linkParameter = NULL;
 }
 
 medAbstractView::~medAbstractView( void )
@@ -167,6 +173,52 @@ medAbstractVector2DParameter* medAbstractView::panParameter()
     return pNavigator->panParameter();
 }
 
+medColorListParameter* medAbstractView::linkParameter()
+{
+    if(!d->linkParameter)
+    {
+        d->linkParameter = new medColorListParameter("Link", this);
+        d->linkParameter->addColor("");
+        d->linkParameter->addColor("red", "Group 1");
+        d->linkParameter->addColor("green", "Group 2");
+        d->linkParameter->addColor("blue", "Group 3");
+
+        QString tooltip = QString(tr("Link View properties ("));
+        foreach(medAbstractParameter *param, this->navigatorsParameters())
+            tooltip += param->name() + ", ";
+        tooltip += ")";
+        d->linkParameter->setToolTip(tooltip);
+
+        connect(d->linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(link(QString)));
+    }
+    return d->linkParameter;
+}
+
+void medAbstractView::link(QString pool)
+{
+    unlink();
+
+    foreach(medAbstractParameter *param, this->navigatorsParameters())
+        medParameterPoolManager::instance()->linkParameter(param, pool);
+}
+
+void medAbstractView::unlink()
+{
+    foreach(medAbstractParameter *param, this->navigatorsParameters())
+        medParameterPoolManager::instance()->unlinkParameter(param);
+}
+
+QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
+{
+    QList<medAbstractParameter*>  params;
+    params.append(this->primaryNavigator()->linkableParameters());
+
+    foreach(medAbstractNavigator* nav,  this->extraNavigators())
+        params.append(nav->linkableParameters());
+
+    return params;
+}
+
 bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
 {
     if(obj == this->viewWidget())
@@ -181,7 +233,6 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
     }
     return dtkAbstractView::eventFilter(obj, event);
 }
-
 
 QImage medAbstractView::generateThumbnail(const QSize &size)
 {

@@ -18,13 +18,12 @@ PURPOSE.
 #include <medDoubleParameter.h>
 #include <medVector2DParameter.h>
 
-
 class medAbstractViewNavigatorPrivate
 {
 public:
     medAbstractView *view;
     medDoubleParameter *zoomParameter;
-    medVector2DParameter *panParameter;
+    medVector2DParameter *panParameter;   
 };
 
 medAbstractViewNavigator::medAbstractViewNavigator(medAbstractView* parent):

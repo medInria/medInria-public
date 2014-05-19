@@ -65,10 +65,11 @@ public:
     QPushButton* closeContainerButton;
 
     medBoolParameter* maximizedParameter;
-    medColorListParameter *poolSelector;
 
     QString defaultStyleSheet;
     QString highlightColor;
+
+    QLabel* poolIndicator;
 
     ~medViewContainerPrivate()
     {
@@ -134,14 +135,10 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->maximizedParameter->setValue(false);
     d->maximizedParameter->hide();
 
-    d->poolSelector = new medColorListParameter("Pool", this);
-    d->poolSelector->addColor("");
-    d->poolSelector->addColor("red", "1");
-    d->poolSelector->addColor("green", "2");
-    d->poolSelector->addColor("blue", "3");
-    QPixmap icon(":/icons/link.svg");
-    d->poolSelector->getLabel()->setPixmap(icon.scaled(15,15));
-    connect(d->poolSelector, SIGNAL(valueChanged(QString)), this, SLOT(emitLinkRequested(QString)));
+    d->poolIndicator = new QLabel;
+    QPixmap pix(16,16);
+    pix.fill(QColor("Black"));
+    d->poolIndicator->setPixmap(pix);
 
     QWidget* toolBar = new QWidget(this);
     toolBar->setObjectName("containerToolBar");
@@ -149,8 +146,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarLayout = new QHBoxLayout(toolBar);
     d->toolBarLayout->setContentsMargins(5,0,5,0);
     d->toolBarLayout->setSpacing(5);
-    d->toolBarLayout->addWidget(d->poolSelector->getLabel(), 1, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->poolSelector->getComboBox(), 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->poolIndicator, 1, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->maximizedParameter->getPushButton(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->vSplitButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplitButton, 0, Qt::AlignRight);
@@ -166,7 +162,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     this->setUserSplittable(true);
     this->setUserClosable(true);
     this->setMultiLayered(true);
-    this->setUserPoolable(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
 
@@ -268,6 +263,7 @@ void medViewContainer::setView(medAbstractView *view)
     if(d->view)
     {
         d->view->viewWidget()->hide();
+        disconnect(d->view->linkParameter(), SIGNAL(valueChanged(QString)), this, SLOT(updatePoolIndicator(QString)));
         removeInternView();
     }
     if(view)
@@ -275,6 +271,7 @@ void medViewContainer::setView(medAbstractView *view)
         d->view = view;
         connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
+        connect(d->view->linkParameter(), SIGNAL(valueChanged(QString)), this, SLOT(updatePoolIndicator(QString)));
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
         {
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
@@ -288,12 +285,6 @@ void medViewContainer::setView(medAbstractView *view)
         d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
         d->view->viewWidget()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
         d->view->viewWidget()->show();
-
-        QString tooltip = QString(tr("Link View properties ("));
-        foreach(medAbstractParameter *param, navigatorsParameters())
-            tooltip += param->name() + ", ";
-        tooltip += ")";
-        d->poolSelector->setToolTip(tooltip);
 
         emit viewChanged();
     }
@@ -536,63 +527,6 @@ void medViewContainer::addData(medDataIndex index)
     this->addData(medDataManager::instance()->data(index));
 }
 
-void medViewContainer::emitLinkRequested(QString pool)
-{
-    if(pool == "")
-    {
-        emit unlinkRequested(d->uuid);
-    }
-    else
-    {
-        emit linkRequested(d->uuid, pool);
-    }
-}
-
-QList<medAbstractParameter*> medViewContainer::navigatorsParameters()
-{
-    QList<medAbstractParameter*>  params;
-    params.append(d->view->primaryNavigator()->linkableParameters());
-
-    foreach(medAbstractNavigator* nav,  d->view->extraNavigators())
-    {
-        params.append(nav->linkableParameters());
-    }
-    return params;
-}
-
-void medViewContainer::link(QString pool)
-{
-    if(!d->view)
-        return;
-
-    if(pool!="")
-        unlink();
-
-    d->poolSelector->blockSignals(true);
-    d->poolSelector->setCurrentColor(pool);
-    d->poolSelector->blockSignals(false);
-
-    foreach(medAbstractParameter *param, navigatorsParameters())
-    {
-        medParameterPoolManager::instance()->linkParameter(param, pool);
-    }
-}
-
-void medViewContainer::unlink()
-{
-    if(!d->view)
-        return;
-
-    d->poolSelector->blockSignals(true);
-    d->poolSelector->setCurrentColor("");
-    d->poolSelector->blockSignals(false);
-
-    foreach(medAbstractParameter *param, navigatorsParameters())
-    {
-        medParameterPoolManager::instance()->unlinkParameter(param);
-    }
-}
-
 
 medViewContainer * medViewContainer::splitHorizontally()
 {
@@ -639,21 +573,6 @@ void medViewContainer::openFromSystem()
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
-}
-
-void medViewContainer::setUserPoolable(bool poolable)
-{
-    d->userPoolable = poolable;
-    if(d->userPoolable)
-        d->poolSelector->show();
-    else
-        d->poolSelector->hide();
-}
-
-
-bool medViewContainer::isUserPoolable() const
-{
-    return d->userPoolable;
 }
 
 void medViewContainer::updateToolBar()
@@ -737,4 +656,12 @@ medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
     else if(y >= bth && ((x >= ltw && x < rtw) || (x < ltw && x > (h-y)) || (x >= rtw && (w-x) > (h-y))))
         return AREA_BOTTOM;
     return AREA_CENTER;
+}
+
+
+void medViewContainer::updatePoolIndicator(QString group)
+{
+    QPixmap pix(16,16);
+    pix.fill(QColor(group));
+    d->poolIndicator->setPixmap(pix);
 }

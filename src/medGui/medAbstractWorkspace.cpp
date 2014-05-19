@@ -27,6 +27,7 @@
 #include <medAbstractInteractor.h>
 #include <medMetaDataKeys.h>
 #include <medBoolParameter.h>
+#include <medColorListParameter.h>
 #include <medParameterPool.h>
 #include <medParameterPoolManager.h>
 #include <medAbstractParameter.h>
@@ -194,13 +195,14 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
 {
     d->navigatorToolBox->clear();
 
+    medAbstractView* view = NULL;
     QList<QWidget*>  navigators;
     QStringList viewType;
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
-        medAbstractView* view = container->view();
+        view = container->view();
         // add nothing if the view is empty
         if(!view)
             continue;
@@ -217,6 +219,22 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
     {
         d->navigatorToolBox->addWidget(navigator);
         navigator->show();
+    }
+
+    // add link parameter
+    if(view)
+    {
+        QWidget *linkWidget = new QWidget;
+        QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+
+        view->linkParameter()->getLabel()->setText(tr("Link view properties: "));
+        linkLayout->addWidget(view->linkParameter()->getLabel());
+        linkLayout->addWidget(view->linkParameter()->getComboBox());
+
+        d->navigatorToolBox->addWidget(linkWidget);
+
+        view->linkParameter()->getLabel()->show();
+        view->linkParameter()->getComboBox()->show();
     }
 
     // update the mouse interaction and layer toolboxes according to the selected containers

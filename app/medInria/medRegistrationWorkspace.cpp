@@ -25,6 +25,7 @@
 #include <medRegistrationSelectorToolBox.h>
 #include <medAbstractLayeredView.h>
 #include <medParameterPoolManager.h>
+#include <medColorListParameter.h>
 
 #include <medToolBoxFactory.h>
 
@@ -81,7 +82,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fixedContainer->setMultiLayered(false);
         d->fixedContainer->setUserClosable(false);
         d->fixedContainer->setUserSplittable(false);
-        d->fixedContainer->setUserPoolable(false);
 
         d->movingContainer = d->fixedContainer->splitVertically();
         QLabel *movingLabel = new QLabel(tr("MOVING"));
@@ -90,8 +90,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->movingContainer->setUserClosable(false);
         d->movingContainer->setUserSplittable(false);
         d->movingContainer->setMultiLayered(false);
-        d->movingContainer->setUserPoolable(false);
-
 
         d->fuseContainer = this->stackedViewContainers()->addContainerInTab(tr("Fuse"));
         QLabel *fuseLabel = new QLabel(tr("FUSE"));
@@ -100,7 +98,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fuseContainer->setUserClosable(false);
         d->fuseContainer->setUserSplittable(false);
         d->fuseContainer->setAcceptDrops(false);
-        d->fuseContainer->setUserPoolable(false);
 
         connect(d->fixedContainer, SIGNAL(viewContentChanged()),
                 this, SLOT(updateFromFixedContainer()));
@@ -161,15 +158,15 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         fuseView->removeData(movingData);
 
     d->fuseContainer->addData(movingData);
+    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    d->movingContainer->link("1");
-    d->fuseContainer->link("1");
+    movingView->linkParameter()->setCurrentColor("TODO");
+    fuseView->linkParameter()->setCurrentColor("TODO");
 
     foreach(medAbstractInteractor *interactor, movingView->interactors(0))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
 
-    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(movingData)))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
@@ -214,15 +211,15 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         fuseView->removeData(fixedData);
 
     d->fuseContainer->addData(fixedData);
+    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    d->fixedContainer->link("1");
-    d->fuseContainer->link("1");
+    fixedView->linkParameter()->setCurrentColor("TODO");
+    fuseView->linkParameter()->setCurrentColor("TODO");
 
     foreach(medAbstractInteractor *interactor, fixedView->interactors(0))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
 
-    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(fixedData)))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
@@ -281,8 +278,8 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
 
-    d->movingContainer->link("1");
-    d->fuseContainer->link("1");
+    movingView->linkParameter()->setCurrentColor("TODO");
+    fuseView->linkParameter()->setCurrentColor("TODO");
 
     connect(d->movingContainer,SIGNAL(viewContentChanged()),
             this, SLOT(updateFromMovingContainer()));

@@ -36,9 +36,9 @@ public:
 
 public slots:
 
-     virtual void setZoom (double zoom) = 0;
+    virtual void setZoom (double zoom) = 0;
 
-     virtual void setPan (const QVector2D &pan) = 0;
+    virtual void setPan (const QVector2D &pan) = 0;
 
 private:
     medAbstractViewNavigatorPrivate *d;

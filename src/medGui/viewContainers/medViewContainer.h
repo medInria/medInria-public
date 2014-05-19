@@ -45,7 +45,6 @@ public:
     bool isUserSplittable() const;
     bool isUserClosable() const;
     bool isMultiLayered() const;
-    bool isUserPoolable() const;
 
     medViewContainer* splitVertically();
     medViewContainer* splitHorizontally();
@@ -65,13 +64,9 @@ public slots:
     void setUserSplittable(bool splittable);
     void setUserClosable(bool closable);
     void setMultiLayered(bool multiLayer);
-    void setUserPoolable(bool poolable);
 
     void highlight(QString color = "#FFAA88");
     void unHighlight();
-
-    void link(QString pool);
-    void unlink();
 
 signals:
     void maximized(QUuid uuid, bool maximized);
@@ -85,8 +80,6 @@ signals:
     void viewChanged();
     void viewContentChanged();
     void viewRemoved();
-    void linkRequested(QUuid uuid, QString);
-    void unlinkRequested(QUuid uuid);
 
 
 protected:
@@ -100,10 +93,10 @@ protected:
     void recomputeStyleSheet();
 
 protected slots:
-    void emitLinkRequested(QString pool);
     void addData(medDataIndex index);
     void openFromSystem();
     void updateToolBar();
+    void updatePoolIndicator(QString);
 
 private slots:
     void removeInternView();
@@ -111,7 +104,6 @@ private slots:
 private:
     enum DropArea {AREA_OUT = 0, AREA_TOP,AREA_BOTTOM,AREA_LEFT,AREA_RIGHT,AREA_CENTER};
     DropArea computeDropArea(int x, int y);
-    QList<medAbstractParameter*> navigatorsParameters();
 
     medViewContainerPrivate *d;
 
