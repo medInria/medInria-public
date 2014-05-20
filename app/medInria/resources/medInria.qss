@@ -108,7 +108,9 @@ $FILE_SYSTEM_INFO_TEXT_BACKGROUND       = $GREY03;
 
 $DROP_SITE_BACKGROUND                   = $GREY01;
 
-$QUICK_ACCESS_MENU_HEADER_BACKGROND     = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY00, stop: 1 $GREY01);
+$QUICK_ACCESS_MENU_HEADER_BACKGROUND     = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY00, stop: 1 $GREY01);
+
+$QUICK_ACCESS_MENU_BACKGROUND            = rgba(200,200,200,150);
 
 
 /*******************************************************************************
@@ -160,23 +162,25 @@ $HOME_PAGE_BUTTON_COLOR            = $HIGHLIGHT_COLOR;
 /*******************************************************************************
     BORDER
  *******************************************************************************/
-$WIDGET_BORDER                  = 0px;
+$WIDGET_BORDER                      = 0px;
 
-$GROUP_BOX_BORDER               = 1px solid $GREY10;
+$GROUP_BOX_BORDER                   = 1px solid $GREY10;
 
-$CONTAINER_BORDER               = 1px solid $GREY09;
+$CONTAINER_BORDER                   = 1px solid $GREY09;
 
-$CONTAINER_SELECTED_BORDER      = 1px solid $HIGHLIGHT_COLOR;
+$CONTAINER_SELECTED_BORDER          = 1px solid $HIGHLIGHT_COLOR;
 
-$MENU_SEPARATOR_BORDER          = 2px solid $GREY10;
+$MENU_SEPARATOR_BORDER              = 2px solid $GREY10;
 
-$PROGRESS_BAR_BORDER            = 1px solid $GREY01;
+$PROGRESS_BAR_BORDER                = 1px solid $GREY01;
 
-$BROWSER_CONTAINER_BORDER       = 2px solid $GREY06;
+$BROWSER_CONTAINER_BORDER           = 2px solid $GREY06;
 
-$DROP_SITE_BORDER               = 1px solid $GREY06;
+$DROP_SITE_BORDER                   = 1px solid $GREY06;
 
-$DATABASE_PREVIEW_BORDER       = $CONTAINER_BORDER;
+$DATABASE_PREVIEW_BORDER            = $CONTAINER_BORDER;
+
+$QUICK_ACCESS_PUSH_BUTTON_BORDER    = 0PX;
 
 /*******************************************************************************
     SIZES
@@ -240,6 +244,8 @@ $VIEW_PROPERTY_COMBO_BOX_RADIUS = 2px;
 $FINDER_TOOLBAR_RADIUS          = 2px;
 
 $VIEW_CONTAINER_BUTTON_RADIUS   = 2px;
+
+$QUICK_ACCESS_MENU_RADIUS       = 10px;
 
 
 /*******************************************************************************
@@ -1061,10 +1067,15 @@ medHomepageButton:hover
 
 QLabel#quickAccessMenuHeader
 {
-    background: $QUICK_ACCESS_MENU_HEADER_BACKGROND;
+    background: $QUICK_ACCESS_MENU_HEADER_BACKGROUND;
     //padding-top: 4px;
 }
 
+medQuickAccessMenu
+{
+    background-color: $QUICK_ACCESS_MENU_BACKGROUND;
+    border-radius: $QUICK_ACCESS_MENU_RADIUS;
+}
 
 /*******************************************************************************
       medToolBox
@@ -1205,6 +1216,15 @@ QLabel#previewLabel
 QWidget#defaultWidget
 {
     background: none;
+}
+
+/*******************************************************************************
+     medQuickAccessPushButton
+ *******************************************************************************/
+
+medQuickAccessPushButton
+{
+    border: QUICK_ACCESS_PUSH_BUTTON_BORDER;
 }
 
 /*******************************************************************************

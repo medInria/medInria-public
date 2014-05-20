@@ -228,9 +228,6 @@ void medApplication::redirectMessageToSplash(const QString &message)
     emit showMessage(message,d->msgAlignment,d->msgColor);
 }
 
-
-//TODO see next TODO - RDE
-// Simple new function used for factories.
 namespace
 {
     template< class T >

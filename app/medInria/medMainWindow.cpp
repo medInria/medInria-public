@@ -132,8 +132,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton = new medQuickAccessPushButton ( this );
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
     d->quickAccessButton->setMinimumHeight(31);
-    //TODO do it in the qss - RDE
-    d->quickAccessButton->setStyleSheet("border: 0px;");
     d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText(tr("Workspaces access menu"));
@@ -153,8 +151,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->shortcutAccessWidget = new medQuickAccessMenu( false, this );
     d->shortcutAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->shortcutAccessWidget->setProperty("pos", QPoint(0, -500));
-    //TODO do it in the qss - RDE
-    d->shortcutAccessWidget->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
+
     connect(d->shortcutAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideShortcutAccess()));
     connect(d->shortcutAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->shortcutAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
@@ -333,7 +330,7 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
 void medMainWindow::resizeEvent ( QResizeEvent* event )
 {
     QWidget::resizeEvent ( event );
-    d->quickAccessWidget->move(QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ));
+    d->quickAccessWidget->move(QPoint (0, this->height() - d->quickAccessWidget->height() - 30 ));
     this->hideQuickAccess();
 }
 
@@ -475,11 +472,8 @@ void medMainWindow::switchToWorkspaceArea()
 
     d->currentArea = d->workspaceArea;
 
-    if (d->quickAccessWidget->isVisible())
-        this->hideQuickAccess();
-
-    if (d->shortcutAccessVisible)
-        this->hideShortcutAccess();
+    this->hideQuickAccess();
+    this->hideShortcutAccess();
 
     d->screenshotButton->setEnabled(true);
     d->adjustSizeButton->setEnabled(true);
@@ -516,6 +510,9 @@ void medMainWindow::showWorkspace(QString workspace)
     d->shortcutAccessWidget->updateSelected(workspace);
     d->quickAccessWidget->updateSelected(workspace);
     d->workspaceArea->setCurrentWorkspace(workspace);
+
+    this->hideQuickAccess();
+    this->hideShortcutAccess();
 }
 
 /**
@@ -523,12 +520,6 @@ void medMainWindow::showWorkspace(QString workspace)
  */
 void medMainWindow::showQuickAccess()
 {
-    if ( d->quickAccessWidget->isVisible())
-    {
-        this->hideQuickAccess();
-        return;
-    }
-
     d->quickAccessWidget->reset(false);
     d->quickAccessWidget->setFocus();
     d->quickAccessWidget->setMouseTracking(true);
@@ -540,9 +531,6 @@ void medMainWindow::showQuickAccess()
  */
 void medMainWindow::hideQuickAccess()
 {
-    if (!d->quickAccessWidget->isVisible())
-        return;
-
     d->quickAccessWidget->hide();
     d->quickAccessWidget->setMouseTracking(false);
 }
@@ -552,7 +540,7 @@ void medMainWindow::hideQuickAccess()
  */
 void medMainWindow::showShortcutAccess()
 {
-    if ( d->shortcutAccessVisible )
+    if (d->shortcutAccessVisible)
     {
         d->shortcutAccessWidget->updateCurrentlySelectedRight();
         return;
