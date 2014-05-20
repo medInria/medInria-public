@@ -160,7 +160,6 @@ medCompositeParameter *medAbstractImageView::cameraParameter()
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        qWarning() << "Unable to retrieve primary navigator";
         return NULL;
     }
 
@@ -172,7 +171,6 @@ medAbstractVector3DParameter *medAbstractImageView::positionBeingViewedParameter
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        qWarning() << "Unable to retrieve primary navigator";
         return NULL;
     }
 
@@ -184,7 +182,6 @@ medDoubleParameter *medAbstractImageView::opacityParameter(unsigned int layer)
     medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);
     if(!pInteractor)
     {
-        qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
         return NULL;
     }
 
@@ -196,7 +193,6 @@ medCompositeParameter *medAbstractImageView::windowLevelParameter(unsigned int l
     medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);
     if(!pInteractor)
     {
-        qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
         return NULL;
     }
 

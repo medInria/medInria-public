@@ -290,7 +290,6 @@ medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned i
     medAbstractLayeredViewInteractor* pInteractor = this->primaryInteractor(layer);
     if(!pInteractor)
     {
-        qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
         return NULL;
     }
 
