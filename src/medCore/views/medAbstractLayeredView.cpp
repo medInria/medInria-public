@@ -322,7 +322,7 @@ medStringListParameter* medAbstractLayeredView::createLinkParameter()
 
     linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
     linkParameter->addItem("Layer group 1", medStringListParameter::createIconFromColor("orange"));
-    linkParameter->addItem("Layer group 2", medStringListParameter::createIconFromColor("darkGreen"));
+    linkParameter->addItem("Layer group 2", medStringListParameter::createIconFromColor("lightGreen"));
     linkParameter->addItem("Layer group 3", medStringListParameter::createIconFromColor("#0080C0"));
 
     connect(linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(linkLayer(QString)));
