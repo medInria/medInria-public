@@ -576,6 +576,7 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     // add all mouse interaction params of the view in the "Mouse interaction" pool
     foreach (medBoolParameter* param, params)
     {
+        medParameterPoolManager::instance()->linkParameter(param, "Mouse Interaction");
         connect(param, SIGNAL(valueChanged(bool)), this, SLOT(saveMouseInteractionSettings(bool)));
 
         // and activate the new inserted parameter according to what was activated in other views
