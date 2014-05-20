@@ -127,6 +127,8 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
 
 itkDataTensorImageVtkViewInteractor::~itkDataTensorImageVtkViewInteractor()
 {
+    d->manager->Delete();
+
     delete d;
     d = NULL;
 }

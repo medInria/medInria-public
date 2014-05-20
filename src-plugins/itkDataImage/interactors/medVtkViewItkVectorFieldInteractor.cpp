@@ -75,7 +75,7 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
     d->manager = vtkVectorManager::New();
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor(),d->renderer3d);
 
-    connect(d->view, SIGNAL(positionViewedChanged(QVector3D)), this, SLOT(setPosition(QVector3D)));
+    connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(setPosition(QVector3D)));
 
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
@@ -86,6 +86,8 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
 
 medVtkViewItkVectorFieldInteractor::~medVtkViewItkVectorFieldInteractor()
 {
+    d->manager->Delete();
+
     delete d;
     d = 0;
 }
