@@ -54,14 +54,20 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->render = backend->renWin;
 
     d->mode3DParameter = new medStringListParameter("3D Mode", this);
-    QStringList modes = QStringList() << "VR" << "MIP - Maximum" << "MIP - Minimum" << "MPR" << "Off";
-    d->mode3DParameter->addItems(modes);
+    d->mode3DParameter->addItem("VR");
+    d->mode3DParameter->addItem("MIP - Maximum");
+    d->mode3DParameter->addItem("MIP - Minimum");
+    d->mode3DParameter->addItem("MPR");
+    d->mode3DParameter->addItem("Off");
     d->mode3DParameter->setValue("MPR");
     connect(d->mode3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setMode3D(QString)));
 
     d->renderer3DParameter = new medStringListParameter("Renderer", this);
-    QStringList renderers = QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default";
-    d->renderer3DParameter->addItems(renderers);
+    d->renderer3DParameter->addItem("GPU");
+    d->renderer3DParameter->addItem("Ray Cast / Texture");
+    d->renderer3DParameter->addItem("Ray Cast");
+    d->renderer3DParameter->addItem("Texture");
+    d->renderer3DParameter->addItem("Default");
     connect(d->renderer3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setRenderer(QString)));
 
     d->croppingParameter = new medBoolParameter("Cropping", this);

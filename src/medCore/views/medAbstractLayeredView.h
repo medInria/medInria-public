@@ -26,7 +26,7 @@
 
 class medAbstractData;
 class medAbstractBoolParameter;
-class medColorListParameter;
+class medStringListParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -57,7 +57,7 @@ public:
 
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
 
-    medColorListParameter *layerLinkParameter(unsigned int layer);
+    medStringListParameter *layerLinkParameter(unsigned int layer);
 
     QList <medAbstractInteractor*> interactors(unsigned int layer);
 
@@ -92,7 +92,7 @@ protected slots:
     virtual void unlinkLayer(unsigned int layer = -1);
 
  private:
-    medColorListParameter* createLinkParameter();
+    medStringListParameter* createLinkParameter();
 
 private:
     medAbstractLayeredViewPrivate *d;

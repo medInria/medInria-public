@@ -22,6 +22,7 @@ class medStringListParameterPrivate
 public:
     QComboBox* comboBox;
     QStringList items;
+    QHash <QString, QIcon> iconForItem;
 
     ~medStringListParameterPrivate(){delete comboBox;}
 };
@@ -38,26 +39,25 @@ medStringListParameter::~medStringListParameter()
     delete d;
 }
 
-void medStringListParameter::addItem(QString& item)
+void medStringListParameter::addItem(QString item, QIcon icon)
 {
     if(item == "")
         return;
 
     d->items <<  item;
+    d->iconForItem.insert(item, icon);
 
     if(d->comboBox)
-        d->comboBox->addItem(item);
+        d->comboBox->addItem(icon, item);
 }
 
-void medStringListParameter::addItems(const QStringList &items)
+void medStringListParameter::addItems(QStringList items)
 {
-    d->items <<  items;
-
-    if(d->comboBox)
-        d->comboBox->addItems(items);
+    foreach(QString item, items)
+        this->addItem(item);
 }
 
-void medStringListParameter::removeItem(QString &item)
+void medStringListParameter::removeItem(QString item)
 {
     if(!d->items.contains(item))
         return;
@@ -77,7 +77,7 @@ void medStringListParameter::clear()
         d->comboBox->clear();
 }
 
-QStringList& medStringListParameter::items() const
+QStringList medStringListParameter::items() const
 {
     return d->items;
 }
@@ -88,7 +88,8 @@ QComboBox* medStringListParameter::getComboBox()
     if(!d->comboBox)
     {
         d->comboBox = new QComboBox;
-        d->comboBox->addItems(d->items);
+        foreach(QString item, d->items)
+            d->comboBox->addItem(d->iconForItem.value(item), item);
 
         this->addToInternWidgets(d->comboBox);
 
@@ -124,4 +125,12 @@ void medStringListParameter::removeInternComboBox()
 {
     this->removeFromInternWidgets(d->comboBox);
     d->comboBox = NULL;
+}
+
+QIcon medStringListParameter::createIconFromColor(const QString &colorName)
+{
+    QPixmap iconPixmap(32,32);
+    iconPixmap.fill(QColor(colorName));
+    QIcon itemIcon(iconPixmap);
+    return itemIcon;
 }

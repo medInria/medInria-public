@@ -36,7 +36,6 @@
 #include <medIntParameter.h>
 #include <medBoolParameter.h>
 #include <medBoolGroupParameter.h>
-#include <medColorListParameter.h>
 #include <medDoubleParameter.h>
 #include <medAbstractImageView.h>
 #include <medViewFactory.h>
@@ -270,9 +269,14 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 
     medStringListParameter *shapeParam = new medStringListParameter("Shape", data);
     d->parameters << shapeParam;
-    QStringList shapes;
-    shapes << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
-    shapeParam->addItems(shapes);
+
+    shapeParam->addItem("Lines");
+    shapeParam->addItem("Disks");
+    shapeParam->addItem("Arrows");
+    shapeParam->addItem("Cubes");
+    shapeParam->addItem("Cylinders");
+    shapeParam->addItem("Ellipsoids");
+    shapeParam->addItem("Superquadrics");
 
     medIntParameter *sampleRateParam = new medIntParameter("Sample Rate", data);
     d->parameters << sampleRateParam;
@@ -285,8 +289,9 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     d->parameters << flipXParam << flipYParam << flipZParam;
 
     medStringListParameter *eigenParam = new medStringListParameter("Color with", this);
-    QStringList colorMode = QStringList() << "v1" << "v2" << "v3";
-    eigenParam->addItems(colorMode);
+    eigenParam->addItem("v1");
+    eigenParam->addItem("v2");
+    eigenParam->addItem("v3");
     eigenParam->setValue("v1");
     d->parameters << eigenParam;
 

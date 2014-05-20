@@ -27,11 +27,12 @@
 #include <medAbstractInteractor.h>
 #include <medMetaDataKeys.h>
 #include <medBoolParameter.h>
-#include <medColorListParameter.h>
+#include <medStringListParameter.h>
 #include <medParameterPool.h>
 #include <medParameterPoolManager.h>
 #include <medAbstractParameter.h>
 #include <medDataManager.h>
+#include <medPoolIndicator.h>
 
 class medAbstractWorkspacePrivate
 {
@@ -334,6 +335,13 @@ void medAbstractWorkspace::updateLayersToolBox()
                 {
                     if(interactor->layerWidget())
                         layout->addWidget(interactor->layerWidget());
+                }
+
+                if(d->userLayerPoolable)
+                {
+                    medPoolIndicator *poolIndicator = new medPoolIndicator;
+                    poolIndicator->setLinkParameter(layeredView->layerLinkParameter(layer));
+                    layout->addWidget(poolIndicator);
                 }
 
                 if(d->userLayerClosable)

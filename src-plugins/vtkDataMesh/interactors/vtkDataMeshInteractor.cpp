@@ -46,7 +46,6 @@
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
 #include <medStringListParameter.h>
-#include <medColorListParameter.h>
 #include <medAbstractData.h>
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
@@ -84,7 +83,7 @@ public:
     medStringListParameter *attributesParam;
     medStringListParameter *LUTParam;
     medBoolParameter *edgeVisibleParam;
-    medColorListParameter *colorParam;
+    medStringListParameter *colorParam;
     medStringListParameter *renderingParam;
 
     QList <medAbstractParameter*> parameters;
@@ -182,7 +181,7 @@ void vtkDataMeshInteractor::setupParameters()
          d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
     {
         d->LUTParam = new medStringListParameter("LUT", this);
-        d->LUTParam->addItems(QStringList("Default"));
+        d->LUTParam->addItem("Default");
         // TODO some LUT are missing for some attribute - RDE
         connect(d->LUTParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
         d->LUTParam->setValue("Default");
@@ -200,7 +199,9 @@ void vtkDataMeshInteractor::setupParameters()
         for (int i = 0;  i < d->metaDataSet->GetDataSet()->GetFieldData()->GetNumberOfArrays(); i++)
             nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetFieldData()->GetArrayName(i));
 
-        d->attributesParam->addItems(nameList);
+        foreach(QString name, nameList)
+            d->attributesParam->addItem(name);
+
         connect(d->attributesParam, SIGNAL(valueChanged(QString)), this, SLOT(setAttribute(QString)));
         d->attributesParam->setValue("Default");
         d->parameters << d->attributesParam;
@@ -211,10 +212,9 @@ void vtkDataMeshInteractor::setupParameters()
     d->edgeVisibleParam->setValue(false);
     d->parameters << d->edgeVisibleParam;
 
-    d->colorParam = new medColorListParameter("Color", this);
+    d->colorParam = new medStringListParameter("Color", this);
     QStringList colors;
 
-    colors << "#000000";
     colors << "#FFFFFF";
     colors << "#808080";
     colors << "#800000";
@@ -235,14 +235,17 @@ void vtkDataMeshInteractor::setupParameters()
     colors << "#0080FF";
     colors << "#0080C0";
 
-    d->colorParam->addColors(colors);
+    foreach(QString color, colors)
+        d->colorParam->addItem(color, medStringListParameter::createIconFromColor(color));
+
     connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
     d->colorParam->setValue("#FFFFFF");
     d->parameters << d->colorParam;
 
     d->renderingParam = new medStringListParameter("Rendering", this);
-    QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
-    d->renderingParam->addItems(renderings);
+    d->renderingParam->addItem("WireFrame");
+    d->renderingParam->addItem("Surface");
+    d->renderingParam->addItem("Points");
     connect(d->renderingParam, SIGNAL(valueChanged(QString)), this, SLOT(setRenderingType(QString)));
     d->renderingParam->setValue("Surface");
     d->parameters << d->renderingParam;
@@ -366,7 +369,8 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
             for(std::vector<std::string>::const_iterator it = vec.begin(); it < vec.end(); ++it)
                 luts.append(QString::fromStdString(*it));
             d->LUTParam->clear();
-            d->LUTParam->addItems(luts);
+            foreach(QString lut, luts)
+                d->LUTParam->addItem(lut);
 
             d->attribute = attributes->GetArray(qPrintable(attributeName));
             attributes->SetActiveScalars(qPrintable(attributeName));

@@ -96,7 +96,6 @@ protected slots:
     void addData(medDataIndex index);
     void openFromSystem();
     void updateToolBar();
-    void updatePoolIndicator(QString);
 
 private slots:
     void removeInternView();

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <medAbstractParameter.h>
+#include <QIcon>
 
 #include <medCoreExport.h>
 
@@ -27,15 +28,18 @@ class MEDCORE_EXPORT medStringListParameter: public medAbstractStringParameter
     Q_OBJECT
 
 public:
+    static QIcon createIconFromColor(const QString &colorName);
+
+
     medStringListParameter(QString name = "Unkow string list parameter", QObject* parent = 0);
     virtual ~medStringListParameter();
 
-    void addItem(QString& item);
-    void addItems(const QStringList& items);
-    void removeItem(QString& item);
+    void addItem(QString item, QIcon icon = QIcon());
+    void addItems(QStringList items);
+    void removeItem(QString item);
     void clear();
 
-    QStringList& items() const;
+    QStringList items() const;
     QComboBox* getComboBox();
 
     virtual QWidget* getWidget();

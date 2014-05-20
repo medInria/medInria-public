@@ -30,13 +30,14 @@
 #include <medViewManager.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
-#include <medColorListParameter.h>
+#include <medStringListParameter.h>
 #include <medParameterPoolManager.h>
 #include <medParameterPool.h>
 #include <medViewContainerSplitter.h>
 #include <medDataManager.h>
 #include <medSettingsManager.h>
 #include <medAbstractInteractor.h>
+#include <medPoolIndicator.h>
 
 
 class medViewContainerPrivate
@@ -69,7 +70,7 @@ public:
     QString defaultStyleSheet;
     QString highlightColor;
 
-    QLabel* poolIndicator;
+    medPoolIndicator* poolIndicator;
 
     ~medViewContainerPrivate()
     {
@@ -135,10 +136,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->maximizedParameter->setValue(false);
     d->maximizedParameter->hide();
 
-    d->poolIndicator = new QLabel;
-    QPixmap pix(16,16);
-    pix.fill(QColor("Black"));
-    d->poolIndicator->setPixmap(pix);
+    d->poolIndicator = new medPoolIndicator;
 
     QWidget* toolBar = new QWidget(this);
     toolBar->setObjectName("containerToolBar");
@@ -263,15 +261,15 @@ void medViewContainer::setView(medAbstractView *view)
     if(d->view)
     {
         d->view->viewWidget()->hide();
-        disconnect(d->view->linkParameter(), SIGNAL(valueChanged(QString)), this, SLOT(updatePoolIndicator(QString)));
-        removeInternView();
+        this->removeInternView();
     }
     if(view)
     {
         d->view = view;
         connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
-        connect(d->view->linkParameter(), SIGNAL(valueChanged(QString)), this, SLOT(updatePoolIndicator(QString)));
+        d->poolIndicator->setLinkParameter(view->linkParameter());
+
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
         {
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
@@ -644,7 +642,7 @@ medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
      * ends ("sss" or "eee").
      */
 
-    int ltw = qMin(50,w/4), tth = qMin(50,h/4); // left trigger width, top trigger height
+    int ltw = qMin(150,w/4), tth = qMin(150,h/4); // left trigger width, top trigger height
     int rtw = w - ltw, bth = h - tth;           // right trigger width, bottom trigger height
 
     if(x < ltw && ((y >= tth && y < bth) || (y < tth && y > x) || (y >= bth && (h-y) > x)))
@@ -658,10 +656,3 @@ medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
     return AREA_CENTER;
 }
 
-
-void medViewContainer::updatePoolIndicator(QString group)
-{
-    QPixmap pix(16,16);
-    pix.fill(QColor(group));
-    d->poolIndicator->setPixmap(pix);
-}

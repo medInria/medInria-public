@@ -630,7 +630,6 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
         return;
     }
-//    this->hide();
     this->saveSettings();
     event->accept();
 }

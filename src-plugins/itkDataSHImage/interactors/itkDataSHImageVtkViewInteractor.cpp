@@ -28,7 +28,6 @@
 #include <medStringListParameter.h>
 #include <medIntParameter.h>
 #include <medBoolParameter.h>
-#include <medColorListParameter.h>
 #include <medAbstractImageView.h>
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>

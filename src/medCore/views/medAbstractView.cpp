@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -21,7 +21,7 @@
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
 #include <medViewFactory.h>
-#include <medColorListParameter.h>
+#include <medStringListParameter.h>
 #include <medParameterPoolManager.h>
 
 class medAbstractViewPrivate
@@ -35,7 +35,7 @@ public:
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
-    medColorListParameter *linkParameter;
+    medStringListParameter *linkParameter;
 };
 
 medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate)
@@ -173,15 +173,16 @@ medAbstractVector2DParameter* medAbstractView::panParameter()
     return pNavigator->panParameter();
 }
 
-medColorListParameter* medAbstractView::linkParameter()
+
+medStringListParameter* medAbstractView::linkParameter()
 {
     if(!d->linkParameter)
     {
-        d->linkParameter = new medColorListParameter("Link", this);
-        d->linkParameter->addColor("None");
-        d->linkParameter->addColor("red", "Group 1");
-        d->linkParameter->addColor("green", "Group 2");
-        d->linkParameter->addColor("blue", "Group 3");
+        d->linkParameter = new medStringListParameter("Link view", this);
+        d->linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
+        d->linkParameter->addItem("View group 1", medStringListParameter::createIconFromColor("red"));
+        d->linkParameter->addItem("View group 2", medStringListParameter::createIconFromColor("green"));
+        d->linkParameter->addItem("View group 3", medStringListParameter::createIconFromColor("blue"));
 
         QString tooltip = QString(tr("Link View properties ("));
         foreach(medAbstractParameter *param, this->navigatorsParameters())
@@ -190,6 +191,8 @@ medColorListParameter* medAbstractView::linkParameter()
         d->linkParameter->setToolTip(tooltip);
 
         connect(d->linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(link(QString)));
+
+        d->linkParameter->setValue("None");
     }
     return d->linkParameter;
 }

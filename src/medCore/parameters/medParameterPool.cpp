@@ -19,6 +19,7 @@
 
 #include <medAbstractParameter.h>
 #include <medCompositeParameter.h>
+#include <medStringListParameter.h>
 
 class medParameterPoolPrivate
 {
@@ -367,3 +368,6 @@ void medParameterPool::disconnectParam(medAbstractParameter *parameter)
 
     parameter->disconnect(this);
 }
+
+
+

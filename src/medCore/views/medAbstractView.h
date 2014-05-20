@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -29,7 +29,7 @@ class medAbstractViewInteractor;
 class medAbstractParameter;
 class medDoubleParameter;
 class medAbstractVector2DParameter;
-class medColorListParameter;
+class medStringListParameter;
 
 // derive and implement if you need to provide access to your backend
 class medViewBackend {
@@ -47,7 +47,7 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 {
     Q_OBJECT
 
-public:    
+public:
     medAbstractView(QObject* parent = 0);
     virtual ~medAbstractView();
 
@@ -57,7 +57,7 @@ public:
 
     medAbstractVector2DParameter* panParameter();
 
-    virtual medColorListParameter *linkParameter();
+    virtual medStringListParameter *linkParameter();
 
     virtual medViewBackend * backend() const = 0;
 

@@ -213,14 +213,16 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->imageData = data;
 
     d->lutParam = new medStringListParameter("Lut", this);
-    QStringList lut = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
+    QStringList luts = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
                                      << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2"
                                      << "Asymmetry" << "P-Value" << "Red Black Alpha"
                                      << "Green Black Alpha" << "Blue Black Alpha"
                                      << "Muscles & Bones" << "Bones" << "Red Vessels"
                                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
-    d->lutParam->addItems(lut);
+    foreach(QString lut, luts)
+        d->lutParam->addItem(lut);
+
     connect(d->lutParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
 
 
@@ -229,7 +231,8 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
                                         << "Standard" << "Soft" << "Soft on White"
                                         << "Soft on Blue" << "Red on White" << "Glossy" ;
-    d->presetParam->addItems(presets);
+    foreach(QString preset, presets)
+        d->presetParam->addItem(preset);
 
     connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
 

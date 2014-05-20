@@ -25,7 +25,7 @@
 #include <medRegistrationSelectorToolBox.h>
 #include <medAbstractLayeredView.h>
 #include <medParameterPoolManager.h>
-#include <medColorListParameter.h>
+#include <medStringListParameter.h>
 
 #include <medToolBoxFactory.h>
 
@@ -160,8 +160,8 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     d->fuseContainer->addData(movingData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    movingView->linkParameter()->setCurrentColor("TODO");
-    fuseView->linkParameter()->setCurrentColor("TODO");
+    movingView->linkParameter()->setValue("View group 1");
+    fuseView->linkParameter()->setValue("View group 1");
 
     foreach(medAbstractInteractor *interactor, movingView->interactors(0))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
@@ -213,8 +213,8 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     d->fuseContainer->addData(fixedData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    fixedView->linkParameter()->setCurrentColor("TODO");
-    fuseView->linkParameter()->setCurrentColor("TODO");
+    fixedView->linkParameter()->setValue("View group 1");
+    fuseView->linkParameter()->setValue("View group 1");
 
     foreach(medAbstractInteractor *interactor, fixedView->interactors(0))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
@@ -278,8 +278,8 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
             medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
 
-    movingView->linkParameter()->setCurrentColor("TODO");
-    fuseView->linkParameter()->setCurrentColor("TODO");
+    movingView->linkParameter()->setValue("View group 1");
+    fuseView->linkParameter()->setValue("View group 1");
 
     connect(d->movingContainer,SIGNAL(viewContentChanged()),
             this, SLOT(updateFromMovingContainer()));

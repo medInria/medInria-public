@@ -16,10 +16,12 @@
 #include <QObject>
 #include <QColor>
 #include <QVector2D>
+#include <QLabel>
 
 #include <medCoreExport.h>
 
 class medAbstractParameter;
+class medStringListParameter;
 
 class medParameterPoolPrivate;
 class MEDCORE_EXPORT medParameterPool : public QObject
@@ -67,3 +69,6 @@ private:
 private:
     medParameterPoolPrivate *d;
 };
+
+
+

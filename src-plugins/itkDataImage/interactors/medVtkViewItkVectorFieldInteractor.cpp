@@ -228,8 +228,8 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     sampleRateControl->setValue(1);
 
     medStringListParameter *colorMode = new medStringListParameter("Color mode", this);
-    QStringList colorModes = QStringList() << "Vector Magnitude" << "Vector Direction";
-    colorMode->addItems(colorModes);
+    colorMode->addItem("Vector Magnitude");
+    colorMode->addItem("Vector Direction");
     colorMode->setValue("Vector Magnitude");
 
     medBoolParameter *projection = new medBoolParameter("Projection", this);

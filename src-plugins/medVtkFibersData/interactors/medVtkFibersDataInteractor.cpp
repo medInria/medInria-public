@@ -158,8 +158,9 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->colorFiberParameter = new medStringListParameter("colorFiberParameter", this);
     d->colorFiberParameter->setToolTip(tr("Choose the coloring method of the fibers."));
     d->colorFiberParameter->getLabel()->setText(tr("Color fibers by:"));
-    QStringList colorModes = QStringList() << "Local orientation" << "Global orientation" << "Fractional anisotropy";
-    d->colorFiberParameter->addItems(colorModes);
+    d->colorFiberParameter->addItem("Local orientation");
+    d->colorFiberParameter->addItem("Global orientation");
+    d->colorFiberParameter->addItem("Fractional anisotropy");
     d->parameters << d->colorFiberParameter;
 
     d->gpuParameter = new medBoolParameter("gpuFiberParameter", this);

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -25,13 +25,13 @@
 #include <medAbstractParameter.h>
 #include <medParameterPoolManager.h>
 #include <medParameterPool.h>
-#include <medColorListParameter.h>
+#include <medStringListParameter.h>
 
 
 class medTabbedViewContainersPrivate
 {
 public:
-    QShortcut *closeShortcut;    
+    QShortcut *closeShortcut;
     QPushButton *addTabButton;
     QHash <int, QList<QUuid> > containerSelectedForTabIndex;
     medParameterPool *pool;
@@ -48,9 +48,9 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     d->addTabButton->setObjectName("addTabButton");
     d->addTabButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
     this->setCornerWidget(d->addTabButton);
- 
+
     connect(d->addTabButton,SIGNAL(clicked()), this, SLOT(addContainerInTab()));
-    
+
     d->closeShortcut = new QShortcut(this);
     d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
     connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(resetCurrentTab()));
