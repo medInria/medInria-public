@@ -5,6 +5,8 @@
 #include <medAbstractData.h>
 #include <medAbstractLayeredViewInteractor.h>
 #include <medViewFactory.h>
+#include <medColorListParameter.h>
+#include <medParameterPoolManager.h>
 
 
 class medAbstractLayeredViewPrivate
@@ -16,6 +18,8 @@ public:
 
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
+
+    QList<medColorListParameter*> linkparameters;
     unsigned int currentLayer;
 
     // toolboxes
@@ -177,6 +181,8 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     int layer = this->layer(data);
     d->layersDataList.removeAll(data);
 
+    // remove the link parameter of this layer
+    d->linkparameters.removeAt(layer);
 
     if(d->layersDataList.count() != 0  && layer == d->layersDataList.count())
     {
@@ -190,8 +196,6 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     }
     else
         this->~medAbstractLayeredView();
-
-
 }
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
@@ -226,6 +230,15 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
         d->layersDataList.removeOne(data);
         return;
     }
+
+    // create a link parameter for this layer and add it to the list
+    medColorListParameter *linkParameter = this->createLinkParameter();
+    QString tooltip = QString(tr("Link layer properties ("));
+    foreach(medAbstractParameter *param, this->interactorsParameters(layer))
+        tooltip += param->name() + ", ";
+    tooltip += ")";
+    linkParameter->setToolTip(tooltip);
+    d->linkparameters.insert(layer, linkParameter);
 
     this->setCurrentLayer(layer);
     if(this->layersCount() == 1)
@@ -272,17 +285,50 @@ unsigned int medAbstractLayeredView::layersCount() const
 }
 
 
- medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned int layer)
- {
-     medAbstractLayeredViewInteractor* pInteractor = this->primaryInteractor(layer);
-     if(!pInteractor)
-     {
-         qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
-         return NULL;
-     }
+medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned int layer)
+{
+    medAbstractLayeredViewInteractor* pInteractor = this->primaryInteractor(layer);
+    if(!pInteractor)
+    {
+        qWarning() << "Unable to retrieve primary interactor for layer:" << layer;
+        return NULL;
+    }
 
-     return pInteractor->visibiltyParameter();
- }
+    return pInteractor->visibiltyParameter();
+}
+
+medColorListParameter* medAbstractLayeredView::layerLinkParameter(unsigned int layer)
+{
+    medColorListParameter *linkParameter = d->linkparameters.at(layer);
+
+    //this should not happened
+    if(!linkParameter)
+    {
+        // create a link parameter for this layer and add it to the list
+        medColorListParameter *linkParameter = this->createLinkParameter();
+        QString tooltip = QString(tr("Link layer properties ("));
+        foreach(medAbstractParameter *param, this->interactorsParameters(layer))
+            tooltip += param->name() + ", ";
+        tooltip += ")";
+        linkParameter->setToolTip(tooltip);
+        d->linkparameters.insert(layer, linkParameter);
+    }
+
+    return linkParameter;
+}
+
+medColorListParameter* medAbstractLayeredView::createLinkParameter()
+{
+    medColorListParameter *linkParameter =  new medColorListParameter("Link", this);
+    linkParameter->addColor("None");
+    linkParameter->addColor("orange", "Group 4");
+    linkParameter->addColor("#0080C0", "Group 5");
+    linkParameter->addColor("darkGreen", "Group 6");
+
+    connect(linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(linkLayer(QString)));
+
+    return linkParameter;
+}
 
 unsigned int medAbstractLayeredView::currentLayer() const
 {
@@ -327,4 +373,43 @@ QWidget* medAbstractLayeredView::navigatorWidget()
     }
 
     return d->navigatorWidget;
+}
+
+QList<medAbstractParameter*> medAbstractLayeredView::interactorsParameters(unsigned int layer)
+{
+    QList<medAbstractParameter*>  params;
+    foreach (medAbstractInteractor* interactor, this->interactors(layer))
+    {
+        foreach(medAbstractParameter *param, interactor->linkableParameters())
+        {
+            params.append(param);
+        }
+    }
+
+    return params;
+}
+
+void medAbstractLayeredView::linkLayer(QString pool)
+{
+    medColorListParameter *linkParam = dynamic_cast<medColorListParameter *>(this->sender());
+    if(!linkParam)
+        return;
+
+    int layer = d->linkparameters.indexOf(linkParam);
+    if(layer == -1)
+        return;
+
+    unlinkLayer(layer);
+
+    if(pool!="None")
+    {
+        foreach(medAbstractParameter *param, this->interactorsParameters(layer))
+            medParameterPoolManager::instance()->linkParameter(param, pool);
+    }
+}
+
+void medAbstractLayeredView::unlinkLayer(unsigned int layer)
+{
+    foreach(medAbstractParameter *param, this->interactorsParameters(layer))
+        medParameterPoolManager::instance()->unlinkParameter(param);
 }

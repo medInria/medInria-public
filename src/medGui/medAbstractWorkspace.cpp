@@ -48,9 +48,6 @@ public:
     medTabbedViewContainers * viewContainerStack;
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
 
-    QMultiHash <QString, QPair<medAbstractView*,int> > layersPool;
-    QHash<int, QComboBox*> poolSelectors;
-
     QList<medToolBox*> toolBoxes;
     medToolBox *selectionToolBox;
     medToolBox *layerListToolBox;
@@ -80,15 +77,15 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->databaseVisibility = true;
     d->toolBoxesVisibility = true;
 
-    d->navigatorToolBox = new medToolBox;
-    d->navigatorToolBox->setTitle("View settings");
-    d->navigatorToolBox->hide();
-    d->selectionToolBox->addWidget(d->navigatorToolBox);
-
     d->mouseInteractionToolBox = new medToolBox;
     d->mouseInteractionToolBox->setTitle("Mouse Interaction");
     d->mouseInteractionToolBox->hide();
     d->selectionToolBox->addWidget(d->mouseInteractionToolBox);
+
+    d->navigatorToolBox = new medToolBox;
+    d->navigatorToolBox->setTitle("View settings");
+    d->navigatorToolBox->hide();
+    d->selectionToolBox->addWidget(d->navigatorToolBox);
 
     d->layerListToolBox = new medToolBox;
     d->layerListToolBox->setTitle("Layer settings");
@@ -277,7 +274,6 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layerListToolBox->clear();
     d->containerForLayerWidgetsItem.clear();
     d->selectedLayers.clear();
-    d->poolSelectors.clear();
 
     delete d->layerListWidget;
     d->layerListWidget = new QListWidget;
@@ -338,31 +334,6 @@ void medAbstractWorkspace::updateLayersToolBox()
                 {
                     if(interactor->layerWidget())
                         layout->addWidget(interactor->layerWidget());
-                }
-
-                if(d->userLayerPoolable)
-                {
-                    QComboBox *poolSelector = new QComboBox;
-                    poolSelector->setProperty("row", d->layerListWidget->count());
-                    poolSelector->addItem("");
-                    poolSelector->addItem(createIcon("orange"), "4", "orange");
-                    poolSelector->addItem(createIcon("#0080C0"), "5", "#0080C0");
-                    poolSelector->addItem(createIcon("yellow"), "6", "yellow");
-
-                    QString pool = d->layersPool.key(QPair<medAbstractView*, int>(layeredView, layer));
-                    poolSelector->setCurrentIndex(poolSelector->findText(pool));
-
-                    QString tooltip = QString(tr("Link Layer properties( "));
-                    foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
-                        foreach(medAbstractParameter* param, interactor->linkableParameters())
-                          tooltip += param->name() + ", ";
-                    tooltip += ")";
-
-                    poolSelector->setToolTip(tooltip);
-                    d->poolSelectors.insert(d->layerListWidget->count(), poolSelector);
-
-                    connect(poolSelector, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateParameterPool(QString)));
-                    layout->addWidget(poolSelector);
                 }
 
                 if(d->userLayerClosable)
@@ -457,6 +428,36 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     }
     else d->selectedLayers = d->layerListWidget->selectedItems();
 
+    QListWidgetItem* item = d->layerListWidget->currentItem();
+    if(!item)
+        return;
+
+    int currentLayer = item->data(Qt::UserRole).toInt();
+    QList<QString> interactorsIdentifier;
+    QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+    medViewContainer *container = containerMng->container(containerUuid);
+    container->highlight("#FF8844");
+
+    medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
+
+    // add link parameter
+    if(view &&  d->userLayerPoolable)
+    {
+        QWidget *linkWidget = new QWidget;
+        QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+
+        view->layerLinkParameter(currentLayer)->getLabel()->setText(tr("Link layer properties: "));
+        linkLayout->addWidget(view->layerLinkParameter(currentLayer)->getLabel());
+        linkLayout->addWidget(view->layerLinkParameter(currentLayer)->getComboBox());
+
+        d->interactorToolBox->addWidget(linkWidget);
+
+        view->layerLinkParameter(currentLayer)->getLabel()->show();
+        view->layerLinkParameter(currentLayer)->getComboBox()->show();
+
+        d->interactorToolBox->show();
+    }
+
     // If we have a multiSelection we just want to colorise the container that have at least one layer selected.
     if(d->layerListWidget->selectedItems().size() > 1)
     {
@@ -471,18 +472,6 @@ void medAbstractWorkspace::updateInteractorsToolBox()
 
         return;
     }
-
-    QListWidgetItem* item = d->layerListWidget->currentItem();
-    if(!item)
-        return;
-
-    int currentLayer = item->data(Qt::UserRole).toInt();
-    QList<QString> interactorsIdentifier;
-    QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
-    medViewContainer *container = containerMng->container(containerUuid);
-    container->highlight("#FF8844");
-
-    medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
     foreach (medAbstractInteractor* interactor, view->interactors(currentLayer))
     {
@@ -547,59 +536,8 @@ void medAbstractWorkspace::buildTemporaryPool()
         {
             d->temporaryPoolForInteractors->append(interactor->linkableParameters());
         }
-    }
-}
 
-void medAbstractWorkspace::updateParameterPool(QString pool)
-{
-    QComboBox *combo = dynamic_cast<QComboBox*>(this->sender());
-    if(!combo)
-        return;
-
-    int row = combo->property("row").toInt();
-
-    QList<int> selectedRows;
-    QList<QListWidgetItem*> itemstoUpdate;
-
-    foreach(QListWidgetItem* item, d->layerListWidget->selectedItems())
-        selectedRows.append(d->layerListWidget->row(item));
-
-    if(selectedRows.contains(row))
-        itemstoUpdate = d->layerListWidget->selectedItems();
-    else itemstoUpdate.append(d->layerListWidget->item(row));
-
-    foreach(QListWidgetItem* item, itemstoUpdate)
-    {
-        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
-        unsigned int layer = item->data(Qt::UserRole).toInt();
-        int itemRow = d->layerListWidget->row(item);
-
-        d->poolSelectors.value(itemRow)->setCurrentIndex( d->poolSelectors.value(itemRow)->findText(pool) );
-
-        medViewContainer* container = medViewContainerManager::instance()->container(containerUuid);
-        if(!container)
-            break;
-
-        medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(container->view());
-        if(!layeredView)
-            break;
-
-        QString key = d->layersPool.key(QPair<medAbstractView*, int>(layeredView, layer));
-        if(pool == "" || key != "")
-            d->layersPool.remove(key, QPair<medAbstractView*, int>(layeredView, layer));
-        if(pool != "")
-            d->layersPool.insert(pool, QPair<medAbstractView*, int>(layeredView, layer));
-
-        foreach (medAbstractInteractor* interactor, layeredView->interactors(layer))
-        {
-            foreach(medAbstractParameter *param, interactor->linkableParameters())
-            {
-                if(pool == "" || key != "")
-                    medParameterPoolManager::instance()->unlinkParameter(param);
-                if(pool != "")
-                   medParameterPoolManager::instance()->linkParameter(param, pool);
-            }
-        }
+        d->temporaryPoolForInteractors->append(view->layerLinkParameter(layer));
     }
 }
 

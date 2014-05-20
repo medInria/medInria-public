@@ -57,7 +57,7 @@ public:
 
     medAbstractVector2DParameter* panParameter();
 
-    medColorListParameter *linkParameter();
+    virtual medColorListParameter *linkParameter();
 
     virtual medViewBackend * backend() const = 0;
 

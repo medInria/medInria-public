@@ -84,8 +84,6 @@ public slots:
 protected slots:
     void changeCurrentLayer(int row);
     void removeLayer();
-    void updateParameterPool(QString);
-
 
 private slots:
     void buildTemporaryPool();

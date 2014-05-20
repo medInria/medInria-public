@@ -178,7 +178,7 @@ medColorListParameter* medAbstractView::linkParameter()
     if(!d->linkParameter)
     {
         d->linkParameter = new medColorListParameter("Link", this);
-        d->linkParameter->addColor("");
+        d->linkParameter->addColor("None");
         d->linkParameter->addColor("red", "Group 1");
         d->linkParameter->addColor("green", "Group 2");
         d->linkParameter->addColor("blue", "Group 3");
@@ -198,8 +198,11 @@ void medAbstractView::link(QString pool)
 {
     unlink();
 
-    foreach(medAbstractParameter *param, this->navigatorsParameters())
-        medParameterPoolManager::instance()->linkParameter(param, pool);
+    if(pool!="None")
+    {
+        foreach(medAbstractParameter *param, this->navigatorsParameters())
+            medParameterPoolManager::instance()->linkParameter(param, pool);
+    }
 }
 
 void medAbstractView::unlink()

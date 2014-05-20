@@ -26,6 +26,7 @@
 
 class medAbstractData;
 class medAbstractBoolParameter;
+class medColorListParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -56,6 +57,8 @@ public:
 
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
 
+    medColorListParameter *layerLinkParameter(unsigned int layer);
+
     QList <medAbstractInteractor*> interactors(unsigned int layer);
 
     virtual QWidget* navigatorWidget();
@@ -81,8 +84,15 @@ protected:
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
+    virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);
+
 protected slots:
     virtual void setUpViewForThumbnail();
+    virtual void linkLayer(QString);
+    virtual void unlinkLayer(unsigned int layer = -1);
+
+ private:
+    medColorListParameter* createLinkParameter();
 
 private:
     medAbstractLayeredViewPrivate *d;
