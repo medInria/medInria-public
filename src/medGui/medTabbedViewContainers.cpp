@@ -95,6 +95,9 @@ void medTabbedViewContainers::resetCurrentTab()
 
 void medTabbedViewContainers::resetTab(int index)
 {
+    foreach(medViewContainer* container, containersInTab(index))
+        container->close();
+
     this->removeTab(index);
     if(this->count() < 1)
         this->addContainerInTab();
@@ -323,4 +326,14 @@ QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
     }
 
     return views;
+}
+
+QList<medViewContainer*> medTabbedViewContainers::containersInTab(int index)
+{
+    medViewContainerSplitter *splitter = dynamic_cast<medViewContainerSplitter*>(this->widget(index));
+
+    if(!splitter)
+        return QList<medViewContainer*>();
+
+    return splitter->containers();
 }

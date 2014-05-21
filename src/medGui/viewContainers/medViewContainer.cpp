@@ -502,6 +502,7 @@ void medViewContainer::addData(medAbstractData *data)
         //TODO find from data(factory?) which view have to be created - RDE
         medAbstractLayeredView* view;
         view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView", this);
+
         if(!view)
         {
             qWarning() << "medViewContainer: Unable to create a medVtkView";

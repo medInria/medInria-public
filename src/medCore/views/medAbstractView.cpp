@@ -46,11 +46,12 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
 
-    d->linkParameter = NULL;
+    d->linkParameter = NULL;  
 }
 
 medAbstractView::~medAbstractView( void )
 {
+    emit closed();
     delete d;
     d = NULL;
 }

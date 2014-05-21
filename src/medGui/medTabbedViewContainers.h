@@ -43,6 +43,7 @@ public:
     QList<QUuid> containersSelected();
     void adjustContainersSize();
     QList<medAbstractView*> viewsInTab(int index = 0);
+    QList<medViewContainer*> containersInTab(int index = 0);
 
 
 public slots:
