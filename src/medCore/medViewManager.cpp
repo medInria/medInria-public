@@ -135,33 +135,4 @@ QList<medDataIndex> medViewManager::indices(medAbstractView *view) const
     return indices;
 }
 
-void medViewManager::addToSelection(medAbstractView *view)
-{
-    if(!view)
-        return;
-
-    d->selectedViews.append(view);
-
-    qDebug() << "Selected Views: " << d->selectedViews.count();
-
-    emit viewsSelectionChanged();
-}
-
-void medViewManager::removeFromSelection(medAbstractView *view)
-{
-    if(!view)
-        return;
-
-    d->selectedViews.removeAll(view);
-
-    qDebug() << "Selected Views: " << d->selectedViews.count();
-
-    emit viewsSelectionChanged();
-}
-
-QList<medAbstractView *> medViewManager::selectedViews()
-{
-    return d->selectedViews;
-}
-
 medViewManager *medViewManager::s_instance = NULL;

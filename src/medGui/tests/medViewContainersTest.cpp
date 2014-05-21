@@ -55,12 +55,6 @@ void medViewContainersTestObject::cleanupTestCase()
 {
 }
 
-/*
-void medViewContainersTestObject::testFoo_data()
-{
-}
-*/
-
 void medViewContainersTestObject::testSelection()
 {
     medViewContainer *container = new medViewContainer;
@@ -277,12 +271,6 @@ void medViewContainersTestObject::testAddData()
 }
 
 void medViewContainersTestObject::testHighlight()
-{
-    //TODO
-    QVERIFY(false);
-}
-
-void medViewContainersTestObject::testLink()
 {
     //TODO
     QVERIFY(false);
