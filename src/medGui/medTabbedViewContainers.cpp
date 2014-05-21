@@ -105,7 +105,7 @@ void medTabbedViewContainers::resetTab(int index)
 
 medViewContainer* medTabbedViewContainers::addContainerInTab()
 {
-    return this->addContainerInTab("TODO find fancy name - RDE");
+    return this->addContainerInTab("Tab" + QString::number(this->count()+1));
 }
 
 medViewContainer* medTabbedViewContainers::addContainerInTab(const QString &name)
