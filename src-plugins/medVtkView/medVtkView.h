@@ -37,7 +37,6 @@ public:
     virtual medViewBackend * backend() const;
     virtual QString description() const;
     virtual QWidget *viewWidget();
-    virtual QWidget *mouseInteractionWidget();
     virtual QPointF mapWorldToDisplayCoordinates(const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates(const QPointF & scenePoint );
     virtual QVector3D viewCenter();
@@ -54,10 +53,7 @@ public slots:
 
 private slots:
     void displayDataInfo(uint layer);
-
     void changeCurrentLayer();
-
-    void removeInternNavigatorWidget();
     void removeInternViewWidget();
 
     void buildMouseInteractionParamPool(uint layer);

@@ -7,6 +7,7 @@
 #include <medViewFactory.h>
 #include <medStringListParameter.h>
 #include <medParameterPoolManager.h>
+#include <medBoolGroupParameter.h>
 
 
 class medAbstractLayeredViewPrivate
@@ -24,6 +25,7 @@ public:
 
     // toolboxes
     QWidget* navigatorWidget;
+    QWidget* mouseInteractionWidget;
 
 };
 
@@ -32,6 +34,7 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
     d->primaryNavigator = NULL;
     d->currentLayer = 0;
     d->navigatorWidget = NULL;
+    d->mouseInteractionWidget = NULL;
     connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
 }
 
@@ -370,6 +373,34 @@ QWidget* medAbstractLayeredView::navigatorWidget()
     return d->navigatorWidget;
 }
 
+QWidget* medAbstractLayeredView::mouseInteractionWidget()
+{
+    if(!d->mouseInteractionWidget)
+    {
+        d->mouseInteractionWidget = new QWidget;
+        connect(d->mouseInteractionWidget, SIGNAL(destroyed()), this, SLOT(removeInternMouseInteractionWidget()));
+
+        QList<medBoolParameter*> params;
+
+        params.append(primaryInteractor(this->currentLayer())->mouseInteractionParameters());
+        foreach (medAbstractInteractor* interactor, this->extraInteractors(this->currentLayer()))
+            params.append(interactor->mouseInteractionParameters());
+
+        params.append(primaryNavigator()->mouseInteractionParameters());
+        foreach (medAbstractNavigator* navigator, this->extraNavigators())
+            params.append(navigator->mouseInteractionParameters());
+
+        medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
+        groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
+        foreach (medBoolParameter* param, params)
+            groupParam->addParameter(param);
+
+        d->mouseInteractionWidget = groupParam->getPushButtonGroup();
+    }
+
+    return d->mouseInteractionWidget;
+}
+
 QList<medAbstractParameter*> medAbstractLayeredView::interactorsParameters(unsigned int layer)
 {
     QList<medAbstractParameter*>  params;
@@ -407,4 +438,14 @@ void medAbstractLayeredView::unlinkLayer(unsigned int layer)
 {
     foreach(medAbstractParameter *param, this->interactorsParameters(layer))
         medParameterPoolManager::instance()->unlinkParameter(param);
+}
+
+void medAbstractLayeredView::removeInternNavigatorWidget()
+{
+    d->navigatorWidget = NULL;
+}
+
+void medAbstractLayeredView::removeInternMouseInteractionWidget()
+{
+    d->mouseInteractionWidget = NULL;
 }

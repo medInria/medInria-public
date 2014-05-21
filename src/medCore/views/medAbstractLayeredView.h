@@ -61,6 +61,7 @@ public:
     QList <medAbstractInteractor*> interactors(unsigned int layer);
 
     virtual QWidget* navigatorWidget();
+    virtual QWidget* mouseInteractionWidget();
 
 public slots:
     void removeLayer();
@@ -89,6 +90,10 @@ protected slots:
     virtual void setUpViewForThumbnail();
     virtual void linkLayer(QString);
     virtual void unlinkLayer(unsigned int layer = -1);
+
+private slots:
+    void removeInternNavigatorWidget();
+    void removeInternMouseInteractionWidget();
 
  private:
     medStringListParameter* createLinkParameter();

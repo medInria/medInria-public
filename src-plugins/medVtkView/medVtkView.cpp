@@ -242,34 +242,6 @@ QWidget* medVtkView::viewWidget()
     return d->viewWidget;
 }
 
-QWidget* medVtkView::mouseInteractionWidget()
-{
-    if(!d->mouseInteractionWidget)
-    {
-        d->mouseInteractionWidget = new QWidget;
-        connect(d->mouseInteractionWidget, SIGNAL(destroyed()), this, SLOT(removeInternNavigatorWidget()));
-
-        QList<medBoolParameter*> params;
-
-        params.append(primaryInteractor(this->currentLayer())->mouseInteractionParameters());
-        foreach (medAbstractInteractor* interactor, this->extraInteractors(this->currentLayer()))
-            params.append(interactor->mouseInteractionParameters());
-
-        params.append(primaryNavigator()->mouseInteractionParameters());
-        foreach (medAbstractNavigator* navigator, this->extraNavigators())
-            params.append(navigator->mouseInteractionParameters());
-
-        medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
-        groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
-        foreach (medBoolParameter* param, params)
-            groupParam->addParameter(param);
-
-        d->mouseInteractionWidget = groupParam->getPushButtonGroup();
-    }
-
-    return d->mouseInteractionWidget;
-}
-
 void medVtkView::reset()
 {
     d->view2d->Reset();
@@ -438,11 +410,6 @@ qreal medVtkView::scale()
 void medVtkView::removeInternViewWidget()
 {
     d->viewWidget = NULL;
-}
-
-void medVtkView::removeInternNavigatorWidget()
-{
-    d->navigatorWidget = NULL;
 }
 
 void medVtkView::changeCurrentLayer()
