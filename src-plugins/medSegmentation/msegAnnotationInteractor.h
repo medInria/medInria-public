@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -64,7 +64,7 @@ public:
     virtual void setData(medAbstractData * data);
 
     virtual void setUpViewForThumbnail();
-    
+
     //! Whether the interactor should be on when the view is in 2d and 3d mode.
     virtual bool showIn2dView() const;
     virtual bool showIn3dView() const;
@@ -80,7 +80,7 @@ public slots:
     //! Respond to add / removal of attached data to data items viewed.
     virtual void attachData(medAttachedData* data);
     virtual void removeAttachedData(medAttachedData* data);
-    
+
     //! Called when the annotation data is altered.
     virtual void onDataModified(medAbstractData* data);
 
@@ -95,18 +95,20 @@ public slots:
 
     virtual void removeData();
 
-protected:    
+    virtual void updateWidgets();
+
+protected:
     medAbstractImageView * getView();
 
     virtual QPointF worldToScene( const QVector3D & worldVec ) const;
     virtual QVector3D sceneToWorld( const QPointF & sceneVec ) const;
-    
+
     //! Get the view plane up vector in world space.
     virtual QVector3D viewUp() const;
-    
+
     bool isPointInSlice( const QVector3D & testPoint, const QVector3D & slicePoint, const QVector3D & sliceNormal,  qreal thickness) const;
     bool isPointInCurrentSlice( const QVector3D & testPoint) const;
-    
+
     void addAnnotation( medAnnotationData * annData );
     void removeAnnotation( medAnnotationData * annData );
 
@@ -115,6 +117,7 @@ protected:
 
 private slots:
     void enableWindowLevelInteraction();
+    void updateSlicingParam();
 
 private:
      static QStringList dataHandled();

@@ -25,6 +25,7 @@
 #include <medAbstractImageView.h>
 #include <medDoubleParameter.h>
 #include <medBoolParameter.h>
+#include <medIntParameter.h>
 
 #include <msegAnnIntSeedPointHelper.h>
 #include <msegAnnIntImageMaskHelper.h>
@@ -58,6 +59,7 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkRenderWindow *render;
+    medIntParameter *slicingParameter;
 
     medAbstractData *imageData;
 
@@ -77,6 +79,9 @@ msegAnnotationInteractor::msegAnnotationInteractor(medAbstractView *parent):
     d->view3d = backend->view3D;
 
     d->imageData = NULL;
+
+    d->slicingParameter = new medIntParameter("Slicing", this);
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
 
     connect(parent, SIGNAL(currentLayerChanged()), this, SLOT(enableWindowLevelInteraction()));
 }
@@ -156,6 +161,8 @@ void msegAnnotationInteractor::setData(medAbstractData *data)
 
         medAnnotationData *annItem = qobject_cast<medAnnotationData*>(data);
         attachData(annItem);
+
+        this->updateSlicingParam();
     }
 }
 
@@ -316,8 +323,8 @@ void msegAnnotationInteractor::setVisibility(bool visible)
 
 QWidget* msegAnnotationInteractor::buildToolBarWidget()
 {
-
-    return NULL;
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
+    return d->slicingParameter->getSlider();
 }
 
 QWidget* msegAnnotationInteractor::buildToolBoxWidget()
@@ -335,15 +342,13 @@ QWidget* msegAnnotationInteractor::buildLayerWidget()
 
 void msegAnnotationInteractor::moveToSlice(int slice)
 {
-    int zslice = d->view2d->GetSlice();
-
-    if(slice!=zslice)
-      d->view2d->SetSlice ( slice );
-
-    if(d->medVtkView->is2D())
+    //TODO find a way to get woorldCoordinate for slice from vtkInria.
+    // instead of moving to the slice corresponding on the first layer dropped.
+    if(d->medVtkView->is2D() && slice != d->view2d->GetSlice())
+    {
+        d->view2d->SetSlice(slice);
         d->view2d->Render();
-    else
-        d->view3d->Render();
+     }
 }
 
 void msegAnnotationInteractor::setWindowLevel (QList<QVariant>)
@@ -372,6 +377,29 @@ QList<medAbstractParameter*> msegAnnotationInteractor::linkableParameters()
     params.append(this->opacityParameter());
     params.append(this->visibiltyParameter());
     return params;
+}
+
+void msegAnnotationInteractor::updateWidgets()
+{
+    if(!d->medVtkView->is2D())
+        d->slicingParameter->getSlider()->setEnabled(false);
+    else
+    {
+        d->slicingParameter->getSlider()->setEnabled(true);
+        this->updateSlicingParam();
+    }
+}
+
+void msegAnnotationInteractor::updateSlicingParam()
+{
+    if(!d->medVtkView->is2D())
+        return;
+
+    d->slicingParameter->blockSignals(true);
+    d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
+    d->slicingParameter->blockSignals(false);
+
+    d->slicingParameter->setValue(d->view2d->GetSlice());
 }
 
 QList<medBoolParameter*> msegAnnotationInteractor::mouseInteractionParameters()
