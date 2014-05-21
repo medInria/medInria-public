@@ -247,12 +247,6 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
     emit layerAdded(layer);
 }
 
-void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
-{
-    d->layersDataList.move(fromLayer, toLayer);
-    //TODO I'm not sure we really want this. find out which signal emit. - RDE.
-}
-
 medAbstractData * medAbstractLayeredView::layerData(unsigned int layer) const
 {
     if (layer >= (unsigned int)d->layersDataList.size())

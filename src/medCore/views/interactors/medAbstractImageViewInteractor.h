@@ -41,8 +41,6 @@ public slots:
 
     virtual void setWindowLevel(QList<QVariant>) = 0;
 
-    virtual void moveToSlice  (int slice) = 0;
-
 private:
     medAbstractImageViewInteractorPrivate *d;
 };

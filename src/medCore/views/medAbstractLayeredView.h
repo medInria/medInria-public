@@ -41,7 +41,6 @@ public:
     void removeData(medAbstractData *data);
     void removeLayer(unsigned int layer);
     void insertLayer(unsigned int layer, medAbstractData *data);
-    void moveLayer(unsigned int fromLayer, unsigned int toLayer);
 
     medAbstractData * layerData(unsigned int layer) const;
     QList<dtkSmartPointer<medAbstractData> > dataList() const;

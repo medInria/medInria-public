@@ -67,12 +67,7 @@ public:
     vtkImageViewCollection *viewCollection;
 
     // widgets
-    QVBoxLayout *mainLayout;
-    QHBoxLayout *toolbarLayout;
-    QWidget *toolBarWidget;
     QVTKWidget *viewWidget;
-    static const int toolWidth = 15;
-    static const int toolheight = 15;
 
     medVtkViewObserver *observer;
 
@@ -183,7 +178,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
 
-    d->toolBarWidget = NULL;
     d->navigatorWidget = NULL;
     d->mouseInteractionWidget = NULL;
 
@@ -197,7 +191,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     connect(mainWindowApp, SIGNAL(mainWindowDeactivated()), this, SLOT(resetKeyboardInteractionModifier()));
 
     this->initialiseNavigators();
-    this->setWindowingInteractionStyle(true);
 
     connect(this, SIGNAL(currentLayerChanged()), this, SLOT(changeCurrentLayer()));
     connect(this, SIGNAL(layerAdded(uint)), this, SLOT(buildMouseInteractionParamPool(uint)));
@@ -214,7 +207,6 @@ medVtkView::~medVtkView()
     d->renderer3d->Delete();
     d->renWin->Delete();
     d->viewCollection->Delete();
-    delete d->toolBarWidget;
     delete d->viewWidget;
 
     delete d;
@@ -249,22 +241,6 @@ QWidget* medVtkView::viewWidget()
 {
     return d->viewWidget;
 }
-
-QWidget* medVtkView::toolBarWidget()
-{
-    if(!d->toolBarWidget)
-    {
-        d->toolBarWidget = new QWidget;
-        connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
-        d->toolBarWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-        d->toolbarLayout = new QHBoxLayout(d->toolBarWidget);
-        d->toolbarLayout->setContentsMargins(0, 0, 0, 0);
-        d->toolbarLayout->setSpacing(0);
-        d->toolBarWidget->setLayout(d->toolbarLayout);
-    }
-    return d->toolBarWidget;
-}
-
 
 QWidget* medVtkView::mouseInteractionWidget()
 {
@@ -457,29 +433,6 @@ qreal medVtkView::scale()
     if (scale < 0)
         scale *= -1;
     return scale;
-}
-
-void medVtkView::setWindowingInteractionStyle(bool windowing)
-{
-    if(windowing)
-        d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-}
-
-void medVtkView::setZoomInteractionStyle(bool zoom)
-{
-    if(zoom)
-        d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-}
-
-void medVtkView::setSlicingInteractionStyle(bool slicing)
-{
-    if(slicing)
-        d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
-}
-
-void medVtkView::removeInternToolBarWidget()
-{
-    d->toolBarWidget = NULL;
 }
 
 void medVtkView::removeInternViewWidget()

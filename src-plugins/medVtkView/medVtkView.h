@@ -37,7 +37,6 @@ public:
     virtual medViewBackend * backend() const;
     virtual QString description() const;
     virtual QWidget *viewWidget();
-    virtual QWidget* toolBarWidget();
     virtual QWidget *mouseInteractionWidget();
     virtual QPointF mapWorldToDisplayCoordinates(const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates(const QPointF & scenePoint );
@@ -54,15 +53,11 @@ public slots:
     virtual void reset();
 
 private slots:
-    void setWindowingInteractionStyle(bool windowing);
-    void setZoomInteractionStyle(bool zoom);
-    void setSlicingInteractionStyle(bool slicing);
     void displayDataInfo(uint layer);
 
     void changeCurrentLayer();
 
     void removeInternNavigatorWidget();
-    void removeInternToolBarWidget();
     void removeInternViewWidget();
 
     void buildMouseInteractionParamPool(uint layer);
