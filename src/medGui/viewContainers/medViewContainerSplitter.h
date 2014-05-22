@@ -44,7 +44,6 @@ public slots:
 signals:
     void newContainer(QUuid);
     void containerRemoved();
-    void aboutTobeDestroyed();
 
 private slots:
     medViewContainer* splitVertically();
