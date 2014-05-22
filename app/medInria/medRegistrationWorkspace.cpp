@@ -45,7 +45,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
     this->addToolBox(d->registrationToolBox);
 
-    this->setUserLayerPoolable(false);
+//    this->setUserLayerPoolable(false);
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
     connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
     connect(d->registrationToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));
@@ -163,13 +163,13 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     movingView->linkParameter()->setValue("View group 1");
     fuseView->linkParameter()->setValue("View group 1");
 
-    foreach(medAbstractInteractor *interactor, movingView->interactors(0))
-        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
+    medStringListParameter *movingPoolParameter = movingView->layerLinkParameter(0);
+    movingPoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
+    movingPoolParameter->setValue("Moving group");
 
-    foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(movingData)))
-        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
+    medStringListParameter *fusePoolParameter = fuseView->layerLinkParameter(fuseView->layer(movingData));
+    fusePoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
+    fusePoolParameter->setValue("Moving group");
 
     d->registrationToolBox->setMovingData(movingData);
 }
@@ -216,13 +216,13 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     fixedView->linkParameter()->setValue("View group 1");
     fuseView->linkParameter()->setValue("View group 1");
 
-    foreach(medAbstractInteractor *interactor, fixedView->interactors(0))
-        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
+    medStringListParameter *fixedPoolParameter = fixedView->layerLinkParameter(0);
+    fixedPoolParameter->addItem("Fixed group", medStringListParameter::createIconFromColor("yellow"));
+    fixedPoolParameter->setValue("Fixed group");
 
-    foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(fixedData)))
-        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "fixedInteractors");
+    medStringListParameter *fusePoolParameter = fuseView->layerLinkParameter(fuseView->layer(fixedData));
+    fusePoolParameter->addItem("Fixed group", medStringListParameter::createIconFromColor("yellow"));
+    fusePoolParameter->setValue("Fixed group");
 
     d->registrationToolBox->setFixedData(fixedData);
 }
@@ -271,12 +271,12 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
 
     foreach(medAbstractInteractor *interactor, movingView->interactors(0))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
+            medParameterPoolManager::instance()->linkParameter(parameter, "Layer group 1");
 
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(output)))
         foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "movingInteractors");
+            medParameterPoolManager::instance()->linkParameter(parameter, "Layer group 1");
 
     movingView->linkParameter()->setValue("View group 1");
     fuseView->linkParameter()->setValue("View group 1");

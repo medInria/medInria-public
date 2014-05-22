@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -60,8 +60,10 @@ public:
     medTabbedViewContainers * stackedViewContainers() const;
 
     void setUserLayerPoolable(bool poolable);
+    void setUserViewPoolable(bool poolable);
     void setUserLayerClosable(bool Closable);
     bool isUserLayerPoolable() const;
+    bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
 
 

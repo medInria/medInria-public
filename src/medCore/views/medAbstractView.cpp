@@ -46,7 +46,7 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
 
-    d->linkParameter = NULL;  
+    d->linkParameter = NULL;
 }
 
 medAbstractView::~medAbstractView( void )
@@ -181,9 +181,9 @@ medStringListParameter* medAbstractView::linkParameter()
     {
         d->linkParameter = new medStringListParameter("Link view", this);
         d->linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
-        d->linkParameter->addItem("View group 1", medStringListParameter::createIconFromColor("red"));
-        d->linkParameter->addItem("View group 2", medStringListParameter::createIconFromColor("green"));
-        d->linkParameter->addItem("View group 3", medStringListParameter::createIconFromColor("blue"));
+        d->linkParameter->addItem("View group 1", medStringListParameter::createIconFromColor("darkred"));
+        d->linkParameter->addItem("View group 2", medStringListParameter::createIconFromColor("darkgreen"));
+        d->linkParameter->addItem("View group 3", medStringListParameter::createIconFromColor("darkblue"));
 
         QString tooltip = QString(tr("Link View properties ("));
         foreach(medAbstractParameter *param, this->navigatorsParameters())

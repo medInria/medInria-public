@@ -73,6 +73,7 @@ public:
     bool toolBoxesVisibility;
     bool userLayerPoolable;
     bool userLayerClosable;
+    bool userViewPoolable;
 
     medTabbedViewContainers * viewContainerStack;
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
@@ -135,6 +136,7 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
 
     this->setUserLayerClosable(true);
     this->setUserLayerPoolable(true);
+    this->setUserViewPoolable(true);
 }
 
 medAbstractWorkspace::~medAbstractWorkspace(void)
@@ -248,7 +250,7 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
     }
 
     // add link parameter
-    if(view)
+    if(view && d->userViewPoolable)
     {
         QWidget *linkWidget = new QWidget;
         QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
@@ -595,6 +597,13 @@ void medAbstractWorkspace::setUserLayerPoolable(bool poolable)
 
 }
 
+void medAbstractWorkspace::setUserViewPoolable(bool poolable)
+{
+    d->userViewPoolable = poolable;
+    this->updateNavigatorsToolBox();
+
+}
+
 void medAbstractWorkspace::setUserLayerClosable(bool Closable)
 {
     d->userLayerClosable = Closable;
@@ -605,6 +614,12 @@ bool medAbstractWorkspace::isUserLayerPoolable() const
 {
     return d->userLayerPoolable;
 }
+
+bool medAbstractWorkspace::isUserViewPoolable() const
+{
+    return d->userViewPoolable;
+}
+
 
 bool medAbstractWorkspace::isUserLayerClosable() const
 {
