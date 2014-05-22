@@ -1733,12 +1733,12 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[]
     // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
     // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
     // so we need to increase bounds by +1 to have the correct image size
-    bounds[0] = round(bounds[0]);
-    bounds[1] = round(bounds[1])+1;
-    bounds[2] = round(bounds[2]);
-    bounds[3] = round(bounds[3])+1;
-    bounds[4] = round(bounds[4]);
-    bounds[5] = round(bounds[5])+1;
+    bounds[0] = floor(bounds[0]+0.5);
+    bounds[1] = floor(bounds[1]+0.5)+1;
+    bounds[2] = floor(bounds[2]+0.5);
+    bounds[3] = floor(bounds[3]+0.5)+1;
+    bounds[4] = floor(bounds[4]+0.5);
+    bounds[5] = floor(bounds[5]+0.5)+1;
 
     UpdateBounds(bounds, imageSize, layer);
 

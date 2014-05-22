@@ -183,7 +183,7 @@ void vtkVectorVisuManager::SetColorByVectorMagnitude()
 
     vtkLookupTable* lut = vtkLookupTable::New();
     lut->SetNumberOfTableValues(numPoints);
-    double norm[numPoints];
+    std::vector<double> norm;
     double min(std::numeric_limits<double>::max()), max(0);
 
     for(int i=0;i<numPoints;i++)
@@ -191,7 +191,7 @@ void vtkVectorVisuManager::SetColorByVectorMagnitude()
       // Color coding with the eigenvector
       double vect[3];
       data->GetPointData()->GetVectors()->GetTuple(i,vect);
-      norm[i] = vtkMath::Norm(vect);
+      norm.push_back(vtkMath::Norm(vect));
       if(norm[i] < min)
           min = norm[i];
 
