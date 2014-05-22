@@ -110,14 +110,6 @@ void medTabbedViewContainers::closeTab(int index)
         container->close();
 
     this->resetTabState();
-
-    // Update the containerSelectedForTabIndex hash since indexs has changed.
-    foreach(QUuid uuid, this->containersSelected())
-    {
-        this->removeContainerFromSelection(uuid);
-        this->addContainerToSelection(uuid);
-    }
-    emit containersSelectedChanged();
 }
 
 void medTabbedViewContainers::resetTabState()
