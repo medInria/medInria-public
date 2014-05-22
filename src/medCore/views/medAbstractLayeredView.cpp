@@ -343,7 +343,12 @@ void medAbstractLayeredView::setUpViewForThumbnail()
 {
     medAbstractLayeredViewInteractor *primaryInteractor = this->primaryInteractor(this->layerData(d->currentLayer));
     if(!primaryInteractor)
-        qWarning()<< "unable to find any primary interactor for view"  <<this->identifier() << "and data" << this->layerData(d->currentLayer)->identifier();
+    {
+        QString msg = "Unable to find any primary interactor for view "  + this->identifier();
+        if(this->layerData(d->currentLayer))
+            msg += "and data" + this->layerData(d->currentLayer)->identifier();
+        qWarning() << msg;
+    }
 
     else
         this->primaryInteractor(this->layerData(d->currentLayer))->setUpViewForThumbnail();
