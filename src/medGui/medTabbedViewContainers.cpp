@@ -104,6 +104,8 @@ void medTabbedViewContainers::closeTab(int index)
 
     foreach(medViewContainer* container, containersInTab(index))
         container->close();
+
+    resetTabState();
 }
 
 void medTabbedViewContainers::resetTabState()

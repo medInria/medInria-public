@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -20,28 +20,28 @@ project(MEDINRIA)
 ## Set version
 ## #############################################################################
 
-set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING 
-  "medInria major version number." 
+set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING
+  "medInria major version number."
   )
 mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 
-set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING 
-  "medInria minor version number." 
+set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING
+  "medInria minor version number."
   )
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 
-set(${PROJECT_NAME}_VERSION_PATCH 2 CACHE STRING 
-  "medInria build version number." 
+set(${PROJECT_NAME}_VERSION_PATCH 2 CACHE STRING
+  "medInria build version number."
   )
 mark_as_advanced(${PROJECT_NAME}_VERSION_PATCH)
 
-set(${PROJECT_NAME}_VERSION_TWEAK git CACHE STRING 
-  "medInria development marker." 
+set(${PROJECT_NAME}_VERSION_TWEAK git CACHE STRING
+  "medInria development marker."
   )
 mark_as_advanced(${PROJECT_NAME}_VERSION_TWEAK)
 
 if (NOT ${${PROJECT_NAME}_VERSION_TWEAK} STREQUAL "")
-  set(${PROJECT_NAME}_VERSION 
+  set(${PROJECT_NAME}_VERSION
     ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}.${${PROJECT_NAME}_VERSION_TWEAK}
     )
 else()
@@ -55,10 +55,10 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
 
 ## #############################################################################
-## Options 
+## Options
 ## #############################################################################
 
-option(${PROJECT_NAME}_BUILD_TESTS 
+option(${PROJECT_NAME}_BUILD_TESTS
   "Build tests"
   OFF
   )
@@ -66,28 +66,28 @@ if(${PROJECT_NAME}_BUILD_TESTS)
     enable_testing()
 endif()
 
-option(${PROJECT_NAME}_BUILD_DOCUMENTATION 
-  "Build documentation" 
+option(${PROJECT_NAME}_BUILD_DOCUMENTATION
+  "Build documentation"
   OFF
   )
-  
+
 
 ## #############################################################################
-## Additionals modules 
+## Additionals modules
 ## #############################################################################
 
 set(${PROJECT_NAME}_CMAKE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/module 
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/module
   )
 
-set(CMAKE_MODULE_PATH 
+set(CMAKE_MODULE_PATH
   ${${PROJECT_NAME}_CMAKE_DIR}
   ${CMAKE_MODULE_PATH}
   )
 
 include(list_source_files)
-include(list_header_directories_to_include) 
+include(list_header_directories_to_include)
 include(set_exe_install_rules)
 include(set_lib_install_rules)
 include(set_plugin_install_rules)
@@ -99,7 +99,7 @@ endif()
 
 ## #############################################################################
 ## Find package
-## ############################################################################# 
+## #############################################################################
 
 find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
@@ -134,7 +134,11 @@ endif()
 
 add_definitions(${QT_DEFINITIONS}) #TODO :wath was it for ? (it is empty)
 add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
+
+if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  message("Add -DQT_NO_DEBUG")
+  add_definitions(-DQT_NO_DEBUG)
+endif()
 
 
 ## #############################################################################
@@ -148,12 +152,12 @@ endif()
 
 if(MSVC)
   include(dtkPch)
-  option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers" 
+  option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers"
     OFF
     )
 endif()
 if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
-	message("WARNING precompiled headers are not functional so far.")
+    message("WARNING precompiled headers are not functional so far.")
 endif()
 
 ## #############################################################################

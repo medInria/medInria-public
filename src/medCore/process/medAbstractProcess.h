@@ -44,7 +44,8 @@ private:
     using dtkAbstractProcess::setParameter;
     using dtkAbstractProcess::setInput;
     using dtkAbstractProcess::setData;
-    using dtkAbstractProcess::output;
+    //TODO rename our output methode
+    //using dtkAbstractProcess::output;
     using dtkAbstractProcess::data;
     using dtkAbstractProcess::channelCount;
 

@@ -97,9 +97,10 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  ITKCommon  
+  ITKCommon
   medCore
   medGui
+  medVtkInria
   vtkCommon
   vtkRendering
   vtkVolumeRendering
