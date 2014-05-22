@@ -86,8 +86,6 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
 
 medVtkViewItkVectorFieldInteractor::~medVtkViewItkVectorFieldInteractor()
 {
-    d->manager->Delete();
-
     delete d;
     d = 0;
 }
