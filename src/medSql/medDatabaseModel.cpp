@@ -1048,7 +1048,7 @@ QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString val
             break;
         case QVariant::Char:
             if(value.isEmpty())
-                res = QVariant('?');
+                res = QVariant(QChar());
             else
                 res = value.at(0);
             break;
