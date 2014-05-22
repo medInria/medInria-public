@@ -1055,7 +1055,6 @@ QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString val
         default:
             res = value;
     }
-
     return res;
 }
 

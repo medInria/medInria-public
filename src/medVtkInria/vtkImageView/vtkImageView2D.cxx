@@ -1699,6 +1699,13 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
   renderer->AddViewProp(this->CornerAnnotation);
   renderer->AddViewProp(this->ScalarBar);
   renderer->AddViewProp(this->OrientationAnnotation);
+
+  if(this->ShowRulerWidget)
+  {
+    this->ShowRulerWidgetOff();
+    this->ShowRulerWidgetOn();
+  }
+
 }
 
 void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[])
