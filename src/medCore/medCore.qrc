@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/medCore">
-        <file>pixmaps/default_thumbnail.png</file>
-    </qresource>
-</RCC>

@@ -29,8 +29,6 @@ list_source_files(${PROJECT_NAME}
   parameters
   )
 
-set(${PROJECT_NAME}_QRC medCore.qrc)
-
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
@@ -62,7 +60,6 @@ endif()
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_QRC}
   )
 
 

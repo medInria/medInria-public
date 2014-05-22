@@ -4,5 +4,6 @@
         <file>pixmaps/closebutton.png</file>
         <file>pixmaps/splitbutton_horizontal.png</file>
         <file>pixmaps/splitbutton_vertical.png</file>
+        <file>pixmaps/default_thumbnail.png</file>
     </qresource>
 </RCC>
