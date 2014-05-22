@@ -44,19 +44,20 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     this->setTabsClosable(true);
     this->setMovable(true);
 
-    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(resetTab(int)));
+
 
     d->addTabButton = new QPushButton(this);
     d->addTabButton->setObjectName("addTabButton");
     d->addTabButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
     this->setCornerWidget(d->addTabButton);
 
-    connect(d->addTabButton,SIGNAL(clicked()), this, SLOT(addContainerInTab()));
-
     d->closeShortcut = new QShortcut(this);
     d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
-    connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(resetCurrentTab()));
+
+    connect(d->addTabButton,SIGNAL(clicked()), this, SLOT(addContainerInTab()));
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(disconnectTabFromSplitter(int)));
+    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
+    connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(closeCurrentTab()));
     connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
     connect(this, SIGNAL(containersSelectedChanged()), this, SLOT(buildTemporaryPool()));
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(connectContainerSelectedForCurrentTab()));
@@ -89,20 +90,29 @@ void medTabbedViewContainers::unlockTabs()
     d->addTabButton->show();
 }
 
-void medTabbedViewContainers::resetCurrentTab()
+void medTabbedViewContainers::closeCurrentTab()
 {
     int index = this->currentIndex();
-    this->resetTab(index);
+    this->closeTab(index);
 }
 
-void medTabbedViewContainers::resetTab(int index)
+void medTabbedViewContainers::closeTab(int index)
 {
+    // We don't want to repopulate the tab, we want to close it.
+    this->widget(index)->disconnect(this, SLOT(repopulateCurrentTab()));
+
     foreach(medViewContainer* container, containersInTab(index))
         container->close();
+}
 
+void medTabbedViewContainers::resetTabState()
+{
     for(int i = 0; i < this->count(); ++i)
         if(this->tabText(i).isEmpty() || this->tabText(i).startsWith("Tab", Qt::CaseSensitive))
             this->setTabText(i, "Tab" +  QString::number(i+1));
+
+    if(this->count() < 1)
+        this->addContainerInTab();
 }
 
 medViewContainer* medTabbedViewContainers::addContainerInTab()
