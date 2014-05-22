@@ -1222,13 +1222,9 @@ QWidget* medVtkFibersDataInteractor::buildToolBarWidget()
 
 void medVtkFibersDataInteractor::setUpViewForThumbnail()
 {
-    d->view2d->Reset();
-    d->view2d->SetBackground(0.0, 0.0, 0.0);
-    d->view2d->CursorFollowMouseOff();
-    d->view2d->ShowImageAxisOff();
-    d->view2d->ShowScalarBarOff();
-    d->view2d->ShowAnnotationsOff();
-    d->view2d->ShowRulerWidgetOff();
+    d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+    d->view->reset();
+    d->view3d->ShowAnnotationsOff();
 }
 
 QList<medAbstractParameter*> medVtkFibersDataInteractor::linkableParameters()
@@ -1246,7 +1242,8 @@ void medVtkFibersDataInteractor::updateWidgets()
 {
     if(!d->view->is2D())
     {
-        d->bundleToolboxWidget->show();
+        if(d->bundleToolboxWidget)
+            d->bundleToolboxWidget->show();
         d->slicingParameter->getSlider()->setEnabled(false);
     }
     else
