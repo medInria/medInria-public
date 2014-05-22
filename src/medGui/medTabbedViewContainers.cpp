@@ -97,7 +97,7 @@ void medTabbedViewContainers::closeCurrentTab()
 
 void medTabbedViewContainers::closeTab(int index)
 {
-    // Repopopulate would be called because of the destruction of the root
+    // Repopulate would be called because of the destruction of the root
     // splitter after closing all the container in it.
     // We don't want to repopulate the tab, we want to close it.
     this->widget(index)->disconnect(this, SLOT(repopulateCurrentTab()));
@@ -105,7 +105,7 @@ void medTabbedViewContainers::closeTab(int index)
     foreach(medViewContainer* container, containersInTab(index))
         container->close();
 
-    resetTabState();
+    this->resetTabState();
 }
 
 void medTabbedViewContainers::resetTabState()
