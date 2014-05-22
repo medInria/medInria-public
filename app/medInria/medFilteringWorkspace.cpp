@@ -136,10 +136,6 @@ void medFilteringWorkspace::onProcessSuccess()
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    QObject::connect ( medDatabaseNonPersistentController::instance(),
-                       SIGNAL ( updated ( const medDataIndex&,const QString& ) ),
-                       this, SLOT ( onOutputImported ( const medDataIndex&,const QString& ) ) );
-
     //Create a uniqueId for the request.
     d->importUuid = QUuid::createUuid().toString();
     medDataManager::instance()->importNonPersistent(d->filterOutput, d->importUuid);

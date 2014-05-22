@@ -43,12 +43,6 @@ public:
      */
     medFilteringAbstractToolBox* currentToolBox();
 
-    /**
-     * @brief set data index
-     * @param index
-     */
-    void setDataIndex(medDataIndex index);
-
 signals:
     /**
      * @brief signals emitted whenever a filtering process is successful
