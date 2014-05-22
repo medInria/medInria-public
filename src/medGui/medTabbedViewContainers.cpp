@@ -35,6 +35,8 @@ public:
     QPushButton *addTabButton;
     QHash <int, QList<QUuid> > containerSelectedForTabIndex;
     medParameterPool *pool;
+
+    int currentIdx;
 };
 
 medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
@@ -98,9 +100,8 @@ void medTabbedViewContainers::resetTab(int index)
     foreach(medViewContainer* container, containersInTab(index))
         container->close();
 
-    this->removeTab(index);
-    if(this->count() < 1)
-        this->addContainerInTab();
+    for(int i = 0; i < this->count(); ++i)
+        this->setTabText(i, "Tab" +  QString::number(i+1));
 }
 
 medViewContainer* medTabbedViewContainers::addContainerInTab()
