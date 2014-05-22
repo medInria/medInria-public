@@ -101,7 +101,8 @@ void medTabbedViewContainers::resetTab(int index)
         container->close();
 
     for(int i = 0; i < this->count(); ++i)
-        this->setTabText(i, "Tab" +  QString::number(i+1));
+        if(this->tabText(i).isEmpty() || this->tabText(i).startsWith("Tab", Qt::CaseSensitive))
+            this->setTabText(i, "Tab" +  QString::number(i+1));
 }
 
 medViewContainer* medTabbedViewContainers::addContainerInTab()
