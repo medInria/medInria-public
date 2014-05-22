@@ -81,6 +81,8 @@ void medTabbedViewContainers::lockTabs()
     this->setTabsClosable(false);
     this->setMovable(false);
     d->addTabButton->hide();
+    d->closeShortcut->blockSignals(true);
+    d->addTabButton->blockSignals(true);
 }
 
 void medTabbedViewContainers::unlockTabs()
@@ -88,6 +90,8 @@ void medTabbedViewContainers::unlockTabs()
     this->setTabsClosable(true);
     this->setMovable(true);
     d->addTabButton->show();
+    d->closeShortcut->blockSignals(false);
+    d->addTabButton->blockSignals(false);
 }
 
 void medTabbedViewContainers::closeCurrentTab()
@@ -106,6 +110,14 @@ void medTabbedViewContainers::closeTab(int index)
         container->close();
 
     this->resetTabState();
+
+    // Update the containerSelectedForTabIndex hash since indexs has changed.
+    foreach(QUuid uuid, this->containersSelected())
+    {
+        this->removeContainerFromSelection(uuid);
+        this->addContainerToSelection(uuid);
+    }
+    emit containersSelectedChanged();
 }
 
 void medTabbedViewContainers::resetTabState()
