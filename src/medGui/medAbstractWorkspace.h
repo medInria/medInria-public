@@ -89,9 +89,6 @@ private slots:
     void buildTemporaryPool();
 
 private:
-        QIcon createIcon(const QString &colorName) const;
-
-private:
     medAbstractWorkspacePrivate *d;
 };
 

@@ -34,6 +34,34 @@
 #include <medDataManager.h>
 #include <medPoolIndicator.h>
 
+
+/**
+  * QListWidget doesn't seem to be able to resize itself to its content
+  * medLayerListWidget should do so.
+  */
+class medLayerListWidget : public QListWidget
+{
+public:
+    virtual QSize sizeHint() const
+    {
+        int height = 0;
+        for(int i=0; i< this->count(); i++)
+        {
+           QListWidgetItem* item = this->item(i);
+           if(this->itemWidget(item))
+             height += this->itemWidget(item)->height();
+           else height += 10;
+        }
+        height += 10;
+
+        if(this->count() == 0)
+            return QListWidget::sizeHint();
+        else return QSize(QListWidget::sizeHint().width()-10, height);
+    }
+};
+
+
+
 class medAbstractWorkspacePrivate
 {
 public:
@@ -55,7 +83,7 @@ public:
     medToolBox *interactorToolBox;
     medToolBox *navigatorToolBox;
     medToolBox *mouseInteractionToolBox;
-    QListWidget* layerListWidget;
+    medLayerListWidget* layerListWidget;
 
     QList<QListWidgetItem*> selectedLayers;
 
@@ -277,10 +305,12 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->selectedLayers.clear();
 
     delete d->layerListWidget;
-    d->layerListWidget = new QListWidget;
+    d->layerListWidget = new medLayerListWidget;
     d->layerListWidget->setAlternatingRowColors(true);
+
     d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     d->layerListWidget->setFocusPolicy(Qt::NoFocus);
+    d->layerListWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
     connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateInteractorsToolBox()));
@@ -382,13 +412,11 @@ void medAbstractWorkspace::updateLayersToolBox()
     // add the layer widgets
     d->layerListToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
-    d->layerListWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     d->layerListWidget->show();
 
     this->updateInteractorsToolBox();
 }
-
 
 void medAbstractWorkspace::changeCurrentLayer(int row)
 {
@@ -547,14 +575,6 @@ void medAbstractWorkspace::buildTemporaryPool()
 
         d->temporaryPoolForInteractors->append(view->layerLinkParameter(layer));
     }
-}
-
-QIcon medAbstractWorkspace::createIcon(const QString &colorName) const
-{
-    QPixmap iconPixmap(10,10);
-    iconPixmap.fill(QColor(colorName));
-    QIcon itemIcon(iconPixmap);
-    return itemIcon;
 }
 
 void medAbstractWorkspace::open(const medDataIndex &index)
