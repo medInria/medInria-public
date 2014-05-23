@@ -39,7 +39,6 @@ public slots:
     medViewContainer* splitHorizontally(medViewContainer *sender);
     medViewContainer* split(medViewContainer *sender, Qt::AlignmentFlag alignement = Qt::AlignRight);
     void split(medDataIndex index, Qt::AlignmentFlag alignement = Qt::AlignRight);
-    void checkIfStillDeserveToLive();
 
 signals:
     void newContainer(QUuid);
@@ -58,8 +57,15 @@ private slots:
     medViewContainer* splitVertically();
     medViewContainer* splitHorizontally();
 
+    /**
+     * @brief checkIfStillDeserveToLive
+     * Check the number of child widget and call the destuctor if there is no one.
+     */
+    void checkIfStillDeserveToLive();
+
 private:
     void recomputeSizes(int requestIndex, int newIndex, int newSize);
+
     void insertNestedSplitter(int index,
                            medViewContainer *oldContainer,
                            medViewContainer *newContainer,

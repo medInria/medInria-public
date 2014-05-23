@@ -21,7 +21,6 @@
 #include <vtkRenderer.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
-#include <vtkImageViewCollection.h>
 #include <vtkRenderer.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkInteractorStyleTrackballCamera2.h>
@@ -64,7 +63,6 @@ public:
     // views
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    vtkImageViewCollection *viewCollection;
 
     // widgets
     QVTKWidget *viewWidget;
@@ -141,18 +139,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->UnInstallInteractor();
     d->renWin->RemoveRenderer(d->renderer3d);
     d->interactorStyle3D = d->view3d->GetInteractorStyle(); // save interactorStyle
-        // collection.
-    d->viewCollection = vtkImageViewCollection::New();
-    d->viewCollection->SetLinkCurrentPoint(0);
-    d->viewCollection->SetLinkSliceMove(0);
-    d->viewCollection->SetLinkColorWindowLevel(0);
-    d->viewCollection->SetLinkCamera (0);
-    d->viewCollection->SetLinkZoom(0);
-    d->viewCollection->SetLinkPan(0);
-    d->viewCollection->SetLinkTimeChange(0);
-    d->viewCollection->SetLinkRequestedPosition(0);
-    d->viewCollection->AddItem(d->view2d);
-    d->viewCollection->AddItem(d->view3d);
 
     d->viewWidget = new QVTKWidget;
     connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
@@ -206,7 +192,6 @@ medVtkView::~medVtkView()
     d->renderer2d->Delete();
     d->renderer3d->Delete();
     d->renWin->Delete();
-    d->viewCollection->Delete();
     delete d->viewWidget;
 
     delete d;

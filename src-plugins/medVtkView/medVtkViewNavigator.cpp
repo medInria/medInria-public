@@ -15,7 +15,6 @@ PURPOSE.
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
-#include <vtkImageViewCollection.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
@@ -51,7 +50,6 @@ class medVtkViewNavigatorPrivate
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
     vtkRenderWindow *renWin;
-    vtkImageViewCollection *collection;
 
     medImageView::Orientation orientation;
 
@@ -99,9 +97,6 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->renderer2d = d->view2d->GetRenderer();
     d->renderer3d = d->view3d->GetRenderer();
 
-    d->collection = vtkImageViewCollection::New();
-    d->collection->AddItem(d->view2d);
-    d->collection->AddItem(d->view3d);
     d->render = backend->renWin;
 
     d->orientationParameter = new medBoolGroupParameter("Orientation", this);
@@ -548,26 +543,27 @@ void medVtkViewNavigator::set3d(bool o3d)
 
 void medVtkViewNavigator::showAxes(bool show)
 {
-    d->collection->SyncSetShowImageAxis(show);
-    d->currentView->InvokeEvent(vtkImageView2D::CurrentPointChangedEvent);
-    d->currentView->Render();
+    d->view2d->SetShowImageAxis(show);
+    d->view2d->InvokeEvent(vtkImageView2D::CurrentPointChangedEvent);
+    d->view2d->Render();
 }
 
 void medVtkViewNavigator::showRuler(bool show)
 {
-    d->collection->SyncSetShowRulerWidget(show);
-    d->currentView->Render();
+    d->view2d->SetShowRulerWidget(show);
+    d->view2d->Render();
 }
 
 void medVtkViewNavigator::showAnnotations(bool show)
 {
-    d->collection->SyncSetShowAnnotations(show);
+    d->view2d->SetShowAnnotations(show);
+    d->view3d->SetShowAnnotations(show);
     d->currentView->Render();
 }
 
 void medVtkViewNavigator::showScalarBar(bool show)
 {
-    d->collection->SyncSetShowScalarBar(show);
+    d->view2d->SetShowScalarBar(show);
     d->view3d->SetShowScalarBar(show);
     d->currentView->Render();
 }

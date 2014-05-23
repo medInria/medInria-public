@@ -22,7 +22,6 @@
 #include <vtkImageView3D.h>
 #include <vtkTransferFunctionPresets.h>
 #include <vtkLookupTableManager.h>
-#include <vtkImageViewCollection.h>
 #include <vtkRenderWindow.h>
 #include <vtkImageData.h>
 #include <vtkImageActor.h>
@@ -49,7 +48,6 @@ public:
     // views
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    vtkImageViewCollection *collection;
     medAbstractImageData *imageData;
     vtkRenderWindow *render;
     vtkRenderer *renderer2d;
@@ -73,9 +71,6 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-    d->collection = vtkImageViewCollection::New();
-    d->collection->AddItem(d->view2d);
-    d->collection->AddItem(d->view3d);
     d->render = backend->renWin;
     d->renderer2d = backend->renderer2D;
     d->imageData = NULL;
