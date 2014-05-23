@@ -60,8 +60,6 @@ public:
     medAbstractData *data;
     vtkTensorManager *manager;
     vtkRenderWindow *render;
-    vtkRenderer *renderer2d;
-    vtkRenderer *renderer3d;
 
     // the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
     itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::Pointer filterFloat;
@@ -114,7 +112,7 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
 
     // be careful not to forget setting the same renderer for the interactor and the view
     // otherwise a new renderer is created
-    d->manager->SetRenderWindowInteractor(d->render->GetInteractor(), d->renderer3d);
+    d->manager->SetRenderWindowInteractor(d->render->GetInteractor(), d->view3d->GetRenderer());
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
 

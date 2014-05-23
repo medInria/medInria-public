@@ -119,13 +119,10 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->GetRenderer()->GetActiveCamera()->SetViewUp (0, 0, 1);
     d->view3d->GetRenderer()->GetActiveCamera()->SetFocalPoint(0, 0, 0);
 
-    //TODO find out what the purpose of this lines - RDE.
+    // TrackballCamera2
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
-    d->view3d->SetRenderWindowInteractor(d->renWin->GetInteractor());
-    d->view3d->SetRenderWindow(d->renWin);
-    d->view3d->UnInstallInteractor();
 
     d->viewWidget = new QVTKWidget;
     connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
@@ -173,7 +170,6 @@ medVtkView::~medVtkView()
 {
     d->view2d->Delete();
     d->view3d->Delete();
-//    d->interactorStyle2D->Delete();
     d->observer->Delete();
     d->renWin->Delete();
     delete d->viewWidget;
