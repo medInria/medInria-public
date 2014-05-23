@@ -138,15 +138,16 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 
             d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
 
-            sequencesRange (range);
-            mintimestep = sequencesMinTimeStep();
+            this->timeRange(range);
+            mintimestep = this->frameRate();
+
             mintime = range[0];
             maxtime = range[1];
 
-            numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
+            d->timeLineParameter->setNumberOfFrame(d->sequence->GetNumberOfMetaDataSets());
+            d->timeLineParameter->setDuration((maxtime));
 
-            d->timeLineParameter->setNumberOfFrame(numberofsteps);
-            d->timeLineParameter->setDuration((maxtime+mintimestep));
+            qDebug() << d->sequence->GetTimeResolution();
 
             connect(d->timeLineParameter, SIGNAL(frameChanged(double)), this, SLOT(setCurrentTime(double)));
 
@@ -208,7 +209,7 @@ void medVtkViewItkDataImage4DInteractor::setCurrentTime (double time)
         return;
 
     double range[2] = {0,0};
-    this->sequencesRange(range);
+    this->timeRange(range);
 
     time = std::min (range[1], time);
     time = std::max (range[0], time);
@@ -229,7 +230,7 @@ double medVtkViewItkDataImage4DInteractor::getCurrentTime()
     return d->currentTime;
 }
 
-void medVtkViewItkDataImage4DInteractor::sequencesRange (double* range)
+void medVtkViewItkDataImage4DInteractor::timeRange (double* range)
 {
     if (!d->sequence)
     {
@@ -248,7 +249,7 @@ void medVtkViewItkDataImage4DInteractor::sequencesRange (double* range)
     range[1] = maxtime;
 }
 
-double medVtkViewItkDataImage4DInteractor::sequencesMinTimeStep()
+double medVtkViewItkDataImage4DInteractor::frameRate()
 {
     if (!d->sequence)
     {

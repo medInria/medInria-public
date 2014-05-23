@@ -44,9 +44,9 @@ public:
 
     double getCurrentTime();
     /** Assigns ranfe array the minimum and maximum time of the sequence */
-    void sequencesRange (double* range);
+    void timeRange (double* range);
     /** Returns minimum time step for the sequence */
-    double sequencesMinTimeStep();
+    double frameRate();
 
 
 public slots:

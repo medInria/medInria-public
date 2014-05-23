@@ -39,6 +39,7 @@ public:
     medBoolParameter *loopParameter;
 
     QTimeLine *timeLine;
+    QLabel *frameLabel;
 
     unsigned int numberOfFrame;
     int currentFrame;
@@ -52,6 +53,9 @@ public:
     {
         if(widget)
             delete widget;
+
+        if(frameLabel)
+            delete frameLabel;
     }
 };
 
@@ -61,7 +65,7 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d(new medTimeLineParameterPrivate)
 {
     d->widget = NULL;
-
+    d->frameLabel = NULL;
 
     d->speedFactorParameter = new medIntParameter("Speed", this);
     d->speedFactorParameter->setRange(1,5000);
@@ -72,6 +76,7 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->stopParameter = new medBoolParameter("Stop", this);
 
     d->timeParameter = new medDoubleParameter("Time", this);
+    d->timeParameter->setValue(0);
     d->parametersCandidateToPool << d->timeParameter;
 
     d->nextFrameParameter = new medTriggerParameter("NextFrame", this);
@@ -98,6 +103,7 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     connect(d->speedFactorParameter, SIGNAL(valueChanged(int)), this, SLOT(setSpeedFactor(int)));
     connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(updateTime(double)));
     connect(d->loopParameter, SIGNAL(valueChanged(bool)), this, SLOT(setLoop(bool)));
+    connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(updateFrameLabel()));
 
     d->loopParameter->setValue(true);
 }
@@ -197,7 +203,7 @@ void medTimeLineParameter::setNumberOfFrame(int numberOfFrame)
     d->numberOfFrame = numberOfFrame;
     if(d->duration != 0)
     {
-        d->timeBetweenFrames = d->duration / d->numberOfFrame;
+        d->timeBetweenFrames = d->duration / (d->numberOfFrame - 1);
         d->timeParameter->setSingleStep(d->timeBetweenFrames);
     }
     else
@@ -217,13 +223,14 @@ void medTimeLineParameter::setDuration(const double& timeDuration)
     d->timeParameter->setRange(0, d->duration);
     if(d->duration != 0)
     {
-        d->timeBetweenFrames = d->duration / d->numberOfFrame;
+        d->timeBetweenFrames = d->duration / (d->numberOfFrame - 1);
         d->timeParameter->setSingleStep(d->timeBetweenFrames);
     }
     else
         d->timeBetweenFrames = 0;
 
     d->timeLine->setDuration(timeDuration*1000);
+
 }
 
 void medTimeLineParameter::setFrame(int frame)
@@ -286,6 +293,7 @@ QWidget* medTimeLineParameter::getWidget()
         d->widget = new QWidget;
         QVBoxLayout *widgetLayout = new QVBoxLayout(d->widget);
         QHBoxLayout *buttonsLayout = new QHBoxLayout;
+        QHBoxLayout *indiactorLayout = new QHBoxLayout;
 
         d->playParameter->setIcon(QIcon(":/icons/play.png"));
         d->stopParameter->setIcon(QIcon(":/icons/stop.png"));
@@ -300,19 +308,39 @@ QWidget* medTimeLineParameter::getWidget()
         buttonsLayout->addWidget(d->speedFactorParameter->getLabel());
         buttonsLayout->addWidget(d->speedFactorParameter->getSpinBox());
         buttonsLayout->addWidget(d->loopParameter->getCheckBox());
+        buttonsLayout->addWidget(d->frameLabel);
 
-        QHBoxLayout *sliderLayout = new QHBoxLayout;
-        sliderLayout->addWidget(d->timeParameter->getValueLabel());
-        sliderLayout->addWidget(d->timeParameter->getSlider());
-        sliderLayout->addWidget(new QLabel(QString::number(d->duration - 1, 'f', 2))); // duration - 1 beacause the first moment is 0s
+
+        if(!d->frameLabel)
+        {
+            d->frameLabel = new QLabel;
+            this->updateFrameLabel();
+            connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(updateFrameLabel()));
+            connect(d->frameLabel, SIGNAL(destroyed()), this, SLOT(removeInternFrameLabel()));
+        }
+        indiactorLayout->addWidget(d->timeParameter->getValueLabel(), 0, Qt::AlignLeft);
+        indiactorLayout->addWidget(new QLabel("/ " + QString::number(d->duration) + " second"), 0, Qt::AlignLeft);
+        indiactorLayout->addStretch(1);
+        indiactorLayout->addWidget(d->frameLabel, 0, Qt::AlignRight);
+        indiactorLayout->addWidget(new QLabel("/ " + QString::number(d->numberOfFrame) + " frame"), 0, Qt::AlignRight);
+
 
         widgetLayout->addLayout(buttonsLayout);
-        widgetLayout->addLayout(sliderLayout);
+        widgetLayout->addWidget(d->timeParameter->getSlider());
+        widgetLayout->addLayout(indiactorLayout);
 
         connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
     }
 
     return d->widget;
+}
+
+void medTimeLineParameter::updateFrameLabel()
+{
+    if(!d->frameLabel)
+        return;
+
+    d->frameLabel->setText(QString::number(d->currentFrame + 1));
 }
 
 void medTimeLineParameter::removeInternWidget()
@@ -321,3 +349,7 @@ void medTimeLineParameter::removeInternWidget()
     d->widget = NULL;
 }
 
+void medTimeLineParameter::removeInternFrameLabel()
+{
+    d->frameLabel = NULL;
+}

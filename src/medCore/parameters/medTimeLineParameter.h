@@ -65,7 +65,9 @@ signals:
 
 private slots:
     void updateTime(double time);
+    void updateFrameLabel();
     void removeInternWidget();
+    void removeInternFrameLabel();
 
 private:
     medTimeLineParameterPrivate* d;

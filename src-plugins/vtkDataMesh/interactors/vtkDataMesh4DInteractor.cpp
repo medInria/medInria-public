@@ -102,8 +102,8 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
 
             d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
 
-            sequencesRange (range);
-            mintimestep = sequencesMinTimeStep();
+            timeRange (range);
+            mintimestep = frameRate();
             mintime = range[0];
             maxtime = range[1];
 
@@ -157,7 +157,7 @@ void vtkDataMesh4DInteractor::setCurrentTime (double time)
         return;
 
     double range[2] = {0,0};
-    this->sequencesRange(range);
+    this->timeRange(range);
 
     time = std::min (range[1], time);
     time = std::max (range[0], time);
@@ -178,7 +178,7 @@ double vtkDataMesh4DInteractor::getCurrentTime()
     return d->currentTime;
 }
 
-void vtkDataMesh4DInteractor::sequencesRange (double* range)
+void vtkDataMesh4DInteractor::timeRange (double* range)
 {
     if (!d->sequence)
     {
@@ -197,7 +197,7 @@ void vtkDataMesh4DInteractor::sequencesRange (double* range)
     range[1] = maxtime;
 }
 
-double vtkDataMesh4DInteractor::sequencesMinTimeStep()
+double vtkDataMesh4DInteractor::frameRate()
 {
     if (!d->sequence)
     {

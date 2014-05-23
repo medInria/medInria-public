@@ -1984,20 +1984,21 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], const int imageSize[3
         unsigned int imSize [3];
         if( imageSize != 0 )
         {
-            switch(this->GetSliceOrientation())
-            {
-                // TODO this kind of things should be mutualized
-                // (and IMO orientation of acquisition should be accesible from medAbstractWhateverImageData) - RDE
-                case 0:
-                imSize[0] = imageSize[0], imSize[1] = imageSize[1], imSize[2] = imageSize[2];
-                break;
-                case 1:
-                imSize[0] = imageSize[1], imSize[1] = imageSize[2], imSize[2] = imageSize[0];
-                break;
-                case 2:
-                imSize[0] = imageSize[2], imSize[1] = imageSize[1], imSize[2] = imageSize[0];
-                break;
-            }
+//            switch(this->GetSliceOrientation())
+//            {
+//                // TODO this kind of things should be mutualized
+//                // (and IMO orientation of acquisition should be accesible from medAbstractWhateverImageData) - RDE
+//                case 0:
+//                imSize[0] = imageSize[0], imSize[1] = imageSize[1], imSize[2] = imageSize[2];
+//                break;
+//                case 1:
+//                imSize[0] = imageSize[1], imSize[1] = imageSize[2], imSize[2] = imageSize[0];
+//                break;
+//                case 2:
+//                imSize[0] = imageSize[2], imSize[1] = imageSize[1], imSize[2] = imageSize[0];
+//                break;
+//            }
+            imSize[0] = imageSize[0], imSize[1] = imageSize[1], imSize[2] = imageSize[2];
         }
         else
         {
