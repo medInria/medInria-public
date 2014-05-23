@@ -67,7 +67,6 @@ public:
     medAbstractImageView *view;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    vtkRenderer *renderer3d;
     medAbstractData *data;
 
     vtkRenderWindow *render;
@@ -101,7 +100,6 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
-    d->renderer3d = backend->renderer3D;
 
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;

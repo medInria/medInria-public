@@ -40,8 +40,6 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkRenderWindow *render;
-    vtkRenderer *renderer2d;
-    vtkRenderer *renderer3d;
 
     QList <medAbstractParameter*> parameters;
 
@@ -69,11 +67,9 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
-    d->renderer2d = backend->renderer2D;
-    d->renderer3d = backend->renderer3D;
 
     d->manager = vtkVectorManager::New();
-    d->manager->SetRenderWindowInteractor(d->render->GetInteractor(),d->renderer3d);
+    d->manager->SetRenderWindowInteractor(d->render->GetInteractor(), d->view3d->GetRenderer());
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(setPosition(QVector3D)));
 

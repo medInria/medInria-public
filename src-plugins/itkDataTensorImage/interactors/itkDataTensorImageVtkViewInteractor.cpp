@@ -22,7 +22,6 @@
 #include <vtkImageActor.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
-#include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkProperty.h>
 
@@ -95,8 +94,6 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
-    d->renderer2d = backend->renderer2D;
-    d->renderer3d = backend->renderer3D;
 
     d->manager = vtkTensorManager::New();
 

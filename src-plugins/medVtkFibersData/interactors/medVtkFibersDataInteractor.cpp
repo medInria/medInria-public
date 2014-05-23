@@ -74,8 +74,6 @@ public:
     vtkSmartPointer<vtkFiberDataSet> dataset;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    vtkRenderer *renderer2d;
-    vtkRenderer *renderer3d;
     vtkRenderWindow *render;
 
     vtkSmartPointer <vtkActor> actor;
@@ -134,9 +132,6 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
 
-    d->renderer2d = backend->renderer2D;
-    d->renderer3d = backend->renderer3D;
-
     d->render = backend->renWin;
 
     d->manager = vtkFiberDataSetManager::New();
@@ -146,8 +141,6 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     vtkLookupTable* lut = vtkLookupTableManager::GetSpectrumLookupTable();
     d->manager->SetLookupTable(lut);
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor());
-    d->manager->SetRenderer(d->renderer3d);
-
     d->roiManager->SetRenderWindowInteractor(d->render->GetInteractor());
 
     lut->Delete();
@@ -378,7 +371,9 @@ void medVtkFibersDataInteractor::setData(medAbstractData *data)
         d->data = data;
 
         d->view2d->SetInput(d->actor, d->view->layer(d->data));
-        d->renderer3d->AddActor(d->actor);
+
+        //TODO - harmonise all of this setInput methode in vtkImageView.
+        d->view3d->GetRenderer()->AddActor(d->actor);
         this->updateWidgets();
     }
 
@@ -569,7 +564,7 @@ void medVtkFibersDataInteractor::validateSelection(const QString &name, const QC
 
     d->manager->Validate (name.toAscii().constData(), color_d);
 
-    d->renderer2d->AddActor (d->manager->GetBundleActor(name.toAscii().constData()));
+    d->view2d->SetInput(d->manager->GetBundleActor(name.toAscii().constData()), d->view->layer(d->data));
 
     d->data->addMetaData("BundleList", name);
     d->data->addMetaData("BundleColorList", color.name());
@@ -1101,8 +1096,6 @@ void medVtkFibersDataInteractor::setVisible(bool visible)
     int v = (visible) ? 1 : 0;
     d->actor->SetVisibility(v);
 
-    d->renderer2d->Render();
-    d->renderer3d->Render();
     d->render->Render();
 }
 

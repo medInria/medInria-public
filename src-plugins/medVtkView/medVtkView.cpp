@@ -53,13 +53,9 @@ public:
     vtkImageView *currentView; //2d or 3d dependig on the navigator orientation.
 
     vtkInteractorStyle *interactorStyle2D;
-    vtkInteractorStyle *interactorStyle3D;
 
     // renderers
     vtkRenderWindow *renWin;
-    vtkRenderer *renderer2d;
-    vtkRenderer *renderer3d;
-
     // views
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
@@ -84,7 +80,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     // setup initial internal state of the view
     d->currentView = NULL;
     d->interactorStyle2D = NULL;
-    d->interactorStyle3D = NULL;
 
     // construct render window
         // renWin
@@ -98,15 +93,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->renWin->SetAlphaBitPlanes(1);
     d->renWin->SetMultiSamples(0);
 
-
-    //construct renderers
-        // renderer3d
-    d->renderer3d = vtkRenderer::New();
-    d->renderer3d->GetActiveCamera()->SetPosition(0, -1, 0);
-    d->renderer3d->GetActiveCamera()->SetViewUp (0, 0, 1);
-    d->renderer3d->GetActiveCamera()->SetFocalPoint(0, 0, 0);
-        //renderer2d
-    d->renderer2d = vtkRenderer::New();
 
     // construct views
         // view2d
@@ -124,21 +110,22 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->interactorStyle2D = d->view2d->GetInteractorStyle(); // save interactorStyle
         // view3d.
     d->view3d = vtkImageView3D::New();
-    d->view3d->SetRenderer(d->renderer3d);
     d->view3d->SetShowBoxWidget(0);
     d->view3d->SetCroppingModeToOff();
     d->view3d->ShowScalarBarOff();
     d->view3d->GetTextProperty()->SetColor(1.0, 1.0, 1.0 );
     d->view3d->ShadeOn();
-            //TODO find out what the purpose of this lines - RDE.
+    d->view3d->GetRenderer()->GetActiveCamera()->SetPosition(0, -1, 0);
+    d->view3d->GetRenderer()->GetActiveCamera()->SetViewUp (0, 0, 1);
+    d->view3d->GetRenderer()->GetActiveCamera()->SetFocalPoint(0, 0, 0);
+
+    //TODO find out what the purpose of this lines - RDE.
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
     d->view3d->SetRenderWindowInteractor(d->renWin->GetInteractor());
     d->view3d->SetRenderWindow(d->renWin);
     d->view3d->UnInstallInteractor();
-    d->renWin->RemoveRenderer(d->renderer3d);
-    d->interactorStyle3D = d->view3d->GetInteractorStyle(); // save interactorStyle
 
     d->viewWidget = new QVTKWidget;
     connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
@@ -148,7 +135,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewWidget->SetRenderWindow(d->renWin);
     d->viewWidget->setCursor(QCursor(Qt::CrossCursor));
 
-    d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d, d->renderer2d, d->renderer3d, d->renWin));
+    d->backend.reset(new medVtkViewBackend(d->view2d, d->view3d, d->renWin));
 
     d->observer = medVtkViewObserver::New();
     d->observer->setView(this);
@@ -170,7 +157,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->rubberBandZoomParameter = new medBoolParameter("RubberBandZoom", this);
     connect(d->rubberBandZoomParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableRubberBandZoom(bool)));
 
-    // Disable rubberBandMode if we leave tha application.
+    // Disable rubberBandMode if we leave the application.
     QMainWindow * mainWindowApp = dynamic_cast<QMainWindow *>
             (qApp->property( "MainWindow" ).value<QObject *>());
 
@@ -184,13 +171,10 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
 medVtkView::~medVtkView()
 {
-    d->interactorStyle2D->Delete();
-    d->interactorStyle3D->Delete();
     d->view2d->Delete();
     d->view3d->Delete();
+//    d->interactorStyle2D->Delete();
     d->observer->Delete();
-    d->renderer2d->Delete();
-    d->renderer3d->Delete();
     d->renWin->Delete();
     delete d->viewWidget;
 
@@ -358,7 +342,7 @@ bool medVtkView::is2D()
 qreal medVtkView::sliceThickness()
 {
     double cr[2] = {0, 0};
-    d->renderer2d->GetActiveCamera()->GetClippingRange(cr);
+    d->view2d->GetRenderer()->GetActiveCamera()->GetClippingRange(cr);
     return std::fabs(cr[1] - cr[0]);
 }
 
@@ -441,12 +425,12 @@ QImage medVtkView::buildThumbnail(const QSize &size)
 
     if(this->orientation() == medImageView::VIEW_ORIENTATION_3D)
     {
-        renWin->AddRenderer(d->renderer3d);
+        renWin->AddRenderer(d->view3d->GetRenderer());
         d->view3d->SetRenderWindow(renWin);
     }
     else
     {
-        renWin->AddRenderer(d->renderer2d);
+        renWin->AddRenderer(d->view2d->GetRenderer());
         d->view2d->SetRenderWindow(renWin);
     }
 

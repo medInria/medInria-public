@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -150,6 +150,7 @@ vtkStandardNewMacro(vtkImageView3D);
 //----------------------------------------------------------------------------
 vtkImageView3D::vtkImageView3D()
 {
+
   this->VolumeProperty  = vtkVolumeProperty::New();
   this->VolumeActor     = vtkVolume::New();
 
@@ -196,6 +197,8 @@ vtkImageView3D::vtkImageView3D()
   styleswitch->SetCurrentStyleToTrackballCamera();
   this->SetInteractorStyle ( styleswitch );
   styleswitch->Delete();
+
+  this->Renderer= vtkRenderer::New();
 }
 
 //----------------------------------------------------------------------------
@@ -246,7 +249,7 @@ unsigned long vtkImageView3D::GetMTime()
     if (object) {
       const MTimeType testMtime = object->GetMTime();
       if ( testMtime > mTime )
-	mTime = testMtime;
+    mTime = testMtime;
     }
   }
 

@@ -107,8 +107,6 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
-    d->renderer2d = backend->renderer2D;
-    d->renderer3d = backend->renderer3D;
 
     d->manager = vtkSphericalHarmonicManager::New();
 
