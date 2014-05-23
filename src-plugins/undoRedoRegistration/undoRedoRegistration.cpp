@@ -39,7 +39,7 @@ void undoRedoRegistration::undo()
     m_factory->Undo();
     generateOutput();
 }
-    
+
 void undoRedoRegistration::redo()
 {
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
@@ -52,6 +52,8 @@ void undoRedoRegistration::setInputData(medAbstractData *data, int channel)
     itkProcessRegistration::setInputData(data,channel);
     typedef itk::Image< float, 3 > RegImageType;
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
+
+
 
     if (channel==0)
         m_factory->SetFixedImage((RegImageType*)this->fixedImage().GetPointer());
@@ -70,7 +72,7 @@ void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * pr
         itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
         result->DisconnectPipeline();
         if (algorithm && process)
-        { 
+        {
             if (process->output())
                 process->output()->setData(result);
         }

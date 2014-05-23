@@ -45,6 +45,15 @@ signals:
     void newContainer(QUuid);
     void containerRemoved();
 
+    /**
+     * @brief aboutTobedestroyed
+     * It is emited right from the start of the destructor. It is used by the medTabbedViewContainer
+     * to repopulate the current tab when the last container is removed. We can't use the destroyed
+     * signal because it is emited too late.
+     * We want it to be emited before the splitter get unparented, otherwise the tab is already remooved.
+     */
+    void aboutTobedestroyed();
+
 private slots:
     medViewContainer* splitVertically();
     medViewContainer* splitHorizontally();

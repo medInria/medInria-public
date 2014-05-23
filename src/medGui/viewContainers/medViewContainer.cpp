@@ -173,8 +173,13 @@ medViewContainer::~medViewContainer()
 {
     removeInternView();
 
-    //trick to 'inform' a parented splitter
-    //"you're not my dad anymore!"
+
+
+    // Trick to 'inform' a parented splitter
+    // "you're not my dad anymore!"
+    // There is no  'takeItem()' or 'removeWidget()' or wathever methode to remove a widget from a QSplitter.
+    // this is used to remove the ownership of the container, If the parent splitter end up with no child it will be deleted.
+    // see medViewContainerSplitter::~medViewContainerSplitter() and medViewContainerSplitter::checkIfStillDeserveToLive()
     this->setParent(NULL);
 
     medViewContainerManager::instance()->unregisterContainer(this);

@@ -269,14 +269,13 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         return;
     }
 
-    foreach(medAbstractInteractor *interactor, movingView->interactors(0))
-        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "Layer group 1");
+    medStringListParameter *movingPoolParameter = movingView->layerLinkParameter(0);
+    movingPoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
+    movingPoolParameter->setValue("Moving group");
 
-    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-    foreach(medAbstractInteractor *interactor, fuseView->interactors(fuseView->layer(output)))
-        foreach (medAbstractParameter *parameter, interactor->linkableParameters())
-            medParameterPoolManager::instance()->linkParameter(parameter, "Layer group 1");
+    medStringListParameter *fusePoolParameter = fuseView->layerLinkParameter(fuseView->layer(output));
+    fusePoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
+    fusePoolParameter->setValue("Moving group");
 
     movingView->linkParameter()->setValue("View group 1");
     fuseView->linkParameter()->setValue("View group 1");

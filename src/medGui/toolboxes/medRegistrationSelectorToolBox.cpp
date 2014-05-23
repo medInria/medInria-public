@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -52,7 +52,7 @@ public:
 
     medAbstractData *fixedData;
     medAbstractData *movingData;
-    
+
     dtkSmartPointer <medAbstractRegistrationProcess> process;
     dtkSmartPointer <medAbstractRegistrationProcess> undoRedoProcess;
 
@@ -73,7 +73,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->nameOfCurrentAlgorithm = "";
     d->savePath = QDir::homePath();
     // Process section
-    
+
     d->saveTransButton = new QPushButton(tr("Export Last Transf."),this);
     d->saveTransButton->setToolTip(
                 tr("Export the resulting transformation of the last algorithm to the File System"));
@@ -88,7 +88,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
                 tr( "Choose the registration algorithm"
                     " amongst the loaded plugins" ));
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
-    
+
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
@@ -111,8 +111,8 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
                                   details->description,
                                   Qt::ToolTipRole);
         i++;
-    }  
-    
+    }
+
     connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
     // ---
@@ -165,7 +165,7 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
 }
 
 
-/** 
+/**
  * Sets up the toolbox chosen and remove the old one.
  *
  * @param index The index of the toolbox that was chosen.
@@ -184,7 +184,7 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     QString id = d->toolboxes->itemData(index).toString();
 
     medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
-    
+
     if(!toolbox) {
         qWarning() << "Unable to instantiate" << id << "toolbox";
         return;
@@ -225,7 +225,7 @@ medAbstractRegistrationProcess * medRegistrationSelectorToolBox::process(void)
     return d->process;
 }
 
-/** 
+/**
  * Sets the process.
  *
  * @param proc The new process.
@@ -284,23 +284,23 @@ void medRegistrationSelectorToolBox::onSaveTrans()
                 "(*.mha *.mhd *.nii *.hdr *.nrrd *.vtk)") ] = ".mha";
         }
         QHashIterator<QString, QString> i(suffix);
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             i.next();
             fileTypeSuggestion += i.key();
-            if (i.hasNext()) 
+            if (i.hasNext())
                 fileTypeSuggestion += ";;";
         }
     }
     QFileInfo file;
     QString fileName;
-    
+
     file = QFileDialog::getSaveFileName(this,tr("Save Transformation"),
         d->savePath,
         fileTypeSuggestion,&filterSelected,QFileDialog::DontUseNativeDialog);
 
     if (!file.filePath().isEmpty())
-    {   
+    {
         if (!file.completeSuffix().isEmpty())
         {
             if(!suffix.values().contains("."+file.completeSuffix()))
@@ -321,7 +321,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
                  int res = QMessageBox::warning(this, tr("Save Transformation"),
                                 tr("The file ") + file.fileName() + tr(" already exists.\nDo you want to replace it?"),
                                 QMessageBox::Yes | QMessageBox::No);
-                                
+
                 if (res==QMessageBox::No){
                     d->savePath = file.absolutePath();
                     onSaveTrans(); // call again the function.
@@ -347,7 +347,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 
 
 void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString algoName)
-{   
+{
     medAbstractData *output(NULL);
     if (type == algorithm)
         if (d->process)
@@ -395,7 +395,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
         output->addProperty(property,d->fixedData->propertyValues(property));
 
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
-    
+
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
