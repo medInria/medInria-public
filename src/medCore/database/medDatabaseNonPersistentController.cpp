@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -103,7 +103,7 @@ void medDatabaseNonPersistentController::import(const QString& file,QString impo
 {
     medDatabaseNonPersistentImporter *reader =
             new medDatabaseNonPersistentImporter(file,importUuid);
-	medMessageProgress *message = medMessageController::instance()->showProgress(tr("Opening file item"));
+    medMessageProgress *message = medMessageController::instance()->showProgress(tr("Opening file item"));
 
     connect(reader, SIGNAL(progressed(int)),
             message, SLOT(setProgress(int)));
@@ -451,15 +451,15 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     QList<medDataIndex> newIndexList;
     medDataIndex newIndex(indexStudy);
     newIndex.setPatientId(toPatient.patientId());
-    
+
     if(indexStudy == newIndex)
     {
         //the study is being moved to the same patient, nothing to do
         return newIndexList;
     }
-    
+
     medDatabaseNonPersistentItem * studyItem = NULL;
-    
+
     studyItem = d->items.find(indexStudy).value();
 
     insert(newIndex, studyItem);
@@ -470,7 +470,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
 
     if(dataPatient==NULL)
     {
-        // let's try to get patient information from its series  
+        // let's try to get patient information from its series
         QList<medDataIndex> studiesIndexList = studies(toPatient);
         foreach(medDataIndex tempStudy, studiesIndexList)
         {
@@ -480,10 +480,10 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
             {
                 dataPatient = read(seriesIndexList[0]);
                 break;
-            }      
+            }
         }
         if( dataPatient == NULL )
-            return newIndexList;     
+            return newIndexList;
     }
 
     medAbstractData *dataStudy = read(indexStudy);
@@ -497,7 +497,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
                                  QStringList() <<  dataPatient->metadata( medMetaDataKeys::PatientID.key()) );
         dataStudy->setMetaData ( medMetaDataKeys::BirthDate.key(),
                                  QStringList() <<  dataPatient->metadata( medMetaDataKeys::BirthDate.key()) );
-    
+
         if(studyItem)
         {
             //update item properties
@@ -526,13 +526,13 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType DataHashMapType;
     DataHashMapType::iterator itemIt(d->items.find(indexStudy));
     d->items.erase(itemIt);
-    
+
     if(!newIndexList.isEmpty())
     {
         emit updated(indexStudy); // to signal the study has been removed
         emit updated(newIndexList[0]); // to signal the study has been added
     }
-        
+
     return newIndexList;
 }
 
@@ -547,16 +547,16 @@ medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& i
         //the serie is being moved to the same study, nothing to do
         return indexSerie;
     }
-    
+
     // we need to update metadatas (patient, study) of the serie to move
     medAbstractData *dataSerie = read(indexSerie);
 
     //retrieve destination study information
     medAbstractData *dataStudy = read(toStudy);
-    
+
     medDatabaseNonPersistentItem * serieItem = NULL;
     serieItem = d->items.find(indexSerie).value();
-    
+
     if(dataStudy == NULL)
     {
         // let's try to get study information from its series
@@ -565,7 +565,7 @@ medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& i
             dataStudy = read(seriesIndexList[0]);
         else return newIndex;
     }
-    
+
     if(dataSerie && serieItem)
     {
         dataSerie->setMetaData ( medMetaDataKeys::PatientName.key(),
@@ -587,16 +587,23 @@ medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& i
         serieItem->setStudyName(dataStudy->metadata( medMetaDataKeys::StudyDescription.key()));
         serieItem->setStudyId(dataStudy->metadata( medMetaDataKeys::StudyID.key()));
     }
-  
+
     insert(newIndex, d->items[indexSerie]);
 
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType DataHashMapType;
     DataHashMapType::iterator itemIt(d->items.find(indexSerie));
     d->items.erase(itemIt);
-    
+
     emit updated(indexSerie); // to signal the serie has been removed
     emit updated(newIndex); // to signal the serie has been added
-    
+
     return newIndex;
 }
+
+QSharedPointer<medAbstractData> medDatabaseNonPersistentController::retrieve(const medDataIndex& index) const
+{
+    qDebug() << "YOLO";
+    return QSharedPointer<medAbstractData>(new medAbstractData);
+}
+
 

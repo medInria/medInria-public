@@ -147,6 +147,9 @@ public slots:
     /** true if the given data index matches one in our db*/
     bool contains( const medDataIndex& index) const;
 
+    virtual QSharedPointer<medAbstractData> retrieve(const medDataIndex& index) const;
+
+
 
 private:
     medDatabaseNonPersistentController();
