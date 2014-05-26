@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medSqlExport.h>
+#include <medCoreExport.h>
 
 #include <QtCore>
 #include <QtSql>
@@ -40,7 +40,7 @@ class dtkAbstractDataWriter;
 * medInria database (and as a result they can end up being aggregated by volume)
 * or they can be just indexed (by indicating so using the parameters in the constructor)
 **/
-class MEDSQL_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
+class MEDCORE_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
 {
     Q_OBJECT
 
@@ -107,7 +107,7 @@ private:
      * in 2 different steps).
      */
     bool isPartialImportAttempt ( medAbstractData* medData );
-    
+
     /**
      * Retrieves patientID. Checks if patient is already in the database
      * if so, returns his Id, otherwise creates a new guid

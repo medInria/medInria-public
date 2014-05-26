@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,7 +14,7 @@
 #pragma once
 
 
-#include <medSqlExport.h>
+#include <medCoreExport.h>
 
 #include <QSortFilterProxyModel>
 #include <QVector>
@@ -24,7 +24,7 @@
 /**
  * Proxy model that sits between a model and a view and filters + sorts items
  */
-class MEDSQL_EXPORT medDatabaseProxyModel : public QSortFilterProxyModel
+class MEDCORE_EXPORT medDatabaseProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <medSqlExport.h>
+#include <medCoreExport.h>
 
 #include <QtCore>
 #include <QtSql>
@@ -44,18 +44,18 @@ class dtkAbstractDataWriter;
 * It is designed to run as a thread, to know how to use it, check the documentation
 * of @medJobItem.
 * It defines a set of usefuls method (populateMissingMetadata, getSuitableReader,...) and implements a default run() method.
-* To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary. 
+* To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary.
 * For example, see @medDatabaseImporter and @medDatabaseNonPersistentReader
 **/
-class MEDSQL_EXPORT medAbstractDatabaseImporter : public medJobItem
+class MEDCORE_EXPORT medAbstractDatabaseImporter : public medJobItem
 {
     Q_OBJECT
 
 public:
     medAbstractDatabaseImporter ( const QString& file, bool indexWithoutImporting, const QString& callerUuid = QString() );
     medAbstractDatabaseImporter ( medAbstractData* medData, bool writePersistentFile, const QString& callerUuid = QString() );
-    
-    ~medAbstractDatabaseImporter ( void ); 
+
+    ~medAbstractDatabaseImporter ( void );
 
     /**
     * Runs the import process based on the input file
@@ -77,11 +77,11 @@ signals:
      * @param addedIndex - the @medDataIndex that was successfully added
      */
     void addedIndex ( const medDataIndex& addedIndex );
-    
+
     /**
      * This signal is emitted after a successful import/index.
      * @param addedIndex - the @medDataIndex that was successfully added
-     * @param callerUuid - the caller Uuid. If the caller Uuid has not been specified, 
+     * @param callerUuid - the caller Uuid. If the caller Uuid has not been specified,
      * the addedSignal(const medDataIndex& addedIndex) is emitted instead.
      */
     void addedIndex ( const medDataIndex& addedIndex, const QString& callerUuid );
@@ -90,54 +90,54 @@ public slots:
     void onCancel ( QObject* );
 
 
-protected:    
-    
+protected:
+
     /**
     * Returns file or directory used for import.
     **/
     QString file ( void );
-    
+
     /**
     * Returns last successful reader description.
     **/
     QString lastSuccessfulReaderDescription ( void );
-    
+
     /**
     * Returns last successful writer description.
     **/
     QString lastSuccessfulWriterDescription ( void );
-    
+
     /**
     * Returns if pocess has been cancelled.
     **/
     bool isCancelled ( void );
-    
+
     /**
     * Returns true if process is indexing without importing.
     **/
     bool indexWithoutImporting ( void );
-    
+
     /**
     * Returns information about partial import attempts .
     **/
     QList<QStringList>* partialAttemptsInfo ( void );
-    
+
     /**
     * Returns a QMap linking volume id to image file.
     **/
     QMap<int, QString> volumeIdToImageFile ( void );
-    
+
     /**
     * Returns caller Uuid.
     **/
     QString callerUuid ( void );
-    
+
     /**
       Returns the index of the data which has been read. Index is not
       valid if reading was not successful.
     */
     medDataIndex index(void) const;
-    
+
 
     /**
     * Finds if parameter @seriesName is already being used in the database
@@ -147,7 +147,7 @@ protected:
     * @return newSeriesName - a new, unused, series name
     **/
     virtual QString ensureUniqueSeriesName ( const QString seriesName ) = 0;
-    
+
     /**
      * Checks if the user is trying to perform a partial import
      * (that is, trying to import files belonging to the same volume
@@ -163,22 +163,22 @@ protected:
     * @return true if already exists, false otherwise
     **/
     virtual bool checkIfExists ( medAbstractData* medData, QString imageName ) = 0;
-    
+
     /**
      * Retrieves patientID. Checks if patient is already in the database
      * if so, returns his Id, otherwise creates a new guid
      */
     virtual QString getPatientID(QString patientName, QString birthDate) = 0;
-    
+
     /**
     * Populates database tables and generates thumbnails.
     * @param medData - a @medAbstractData object created from the original image
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
-    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails ) = 0;  
-    
-    
+    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails ) = 0;
+
+
     /**
     * Populates the missing metadata in the @medAbstractData object.
     * If metadata is not present it's filled with default or empty values.
@@ -267,12 +267,12 @@ protected:
     * @return a list of the thumbnails paths
     **/
     QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
-    
-    
-    
+
+
+
     void importData();
     void importFile();
-    
+
     medAbstractDatabaseImporterPrivate *d;
 
 

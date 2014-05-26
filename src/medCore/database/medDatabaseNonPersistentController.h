@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medAbstractDbController.h>
-#include <medSqlExport.h>
+#include <medCoreExport.h>
 #include <medDataIndex.h>
 
 #include <QtCore/QObject>
@@ -26,7 +26,7 @@ class medDatabaseNonPersistentControllerPrivate;
 class medImportJobWatcher;
 
 
-class MEDSQL_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
+class MEDCORE_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
 {
     Q_OBJECT
 
@@ -131,7 +131,7 @@ public slots:
      * @params const medDataIndex & toPatient The data index to move the study to.
      */
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
-   
+
     /**
      * Moves serie from one study to another and returns the new index of the serie
      * @params const medDataIndex & indexSerie The data index of the serie to be moved

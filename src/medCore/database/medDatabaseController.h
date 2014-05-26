@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,7 +14,8 @@
 #pragma once
 
 
-#include <medSqlExport.h>
+#include <medCoreExport.h>
+#include <medCoreExport.h>
 #include <medAbstractDbController.h>
 
 class medAbstractData;
@@ -25,7 +26,7 @@ class medJobItem;
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDSQL_EXPORT medDatabaseController: public medAbstractDbController
+class MEDCORE_EXPORT medDatabaseController: public medAbstractDbController
 {
     Q_OBJECT
 

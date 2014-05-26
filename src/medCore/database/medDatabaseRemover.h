@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -18,7 +18,7 @@
 #include <medDataIndex.h>
 #include <medJobItem.h>
 
-#include <medSqlExport.h>
+#include <medCoreExport.h>
 
 class medDatabaseRemoverPrivate;
 
@@ -26,7 +26,7 @@ class medDatabaseRemoverPrivate;
  * @class medDatabaseRemover
  * @brief Removes given data from the database.
  */
-class MEDSQL_EXPORT medDatabaseRemover : public medJobItem
+class MEDCORE_EXPORT medDatabaseRemover : public medJobItem
 {
     Q_OBJECT;
 

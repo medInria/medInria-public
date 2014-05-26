@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medSqlExport.h>
+#include <medCoreExport.h>
 
 #include <medDataIndex.h>
 
@@ -24,7 +24,7 @@ class medAbstractData;
 
 class medDatabaseNonPersistentItemPrivate;
 
-class MEDSQL_EXPORT medDatabaseNonPersistentItem : public QObject
+class MEDCORE_EXPORT medDatabaseNonPersistentItem : public QObject
 {
     Q_OBJECT
 
@@ -51,10 +51,10 @@ public:
     const QString columns(void) const;
 
     const medDataIndex& index(void) const;
-    
+
     medAbstractData *data(void);
-    
-    
+
+
     void setName(const QString& );
     void setBirthdate(const QString& );
     void setPatientId(const QString& );
@@ -66,9 +66,9 @@ public:
     void setSeriesId(const QString& );
     void setSeriesUid(const QString& );
     void setThumb(const QImage& );
-    
+
     void setIndex(const medDataIndex& );
-    
+
     void setData(medAbstractData* );
 
     bool Match(medAbstractData *);

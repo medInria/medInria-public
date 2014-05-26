@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medSqlExport.h>
+#include <medCoreExport.h>
 
 #include <QtDebug>
 #include <QtGui>
@@ -23,7 +23,7 @@
 
 class medDatabaseItemPrivate;
 
-class MEDSQL_EXPORT medDatabaseItem : public medAbstractDatabaseItem
+class MEDCORE_EXPORT medDatabaseItem : public medAbstractDatabaseItem
 {
 public:
      medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medAbstractDatabaseItem *parent = 0);
@@ -55,15 +55,15 @@ public:
     * Returns the data index for this item
     */
     const medDataIndex & dataIndex () const;
-    
+
     void setDataIndex (const medDataIndex &);
-    
+
     int rowOf(medAbstractDatabaseItem *child) const;
 
 public:
     QVariant attribute(int column);
     QVariant     value(int column);
-    
+
     QList<QVariant> attributes();
     QList<QVariant> values();
 
