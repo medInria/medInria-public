@@ -111,12 +111,13 @@ void vtkDataMeshNavigator::updateWidgets()
          || d->imageView->contains("vtkDataMesh4D")
          ))
     {
-        if(this->toolBoxWidget())
-            this->toolBoxWidget()->show();
+        foreach(medAbstractParameter *parameter, d->parameters)
+            parameter->show();
+
     }
     else
-        if(this->toolBoxWidget())
-            this->toolBoxWidget()->hide();
+        foreach(medAbstractParameter *parameter, d->parameters)
+            parameter->hide();
 }
 
 void vtkDataMeshNavigator::enableDepthPeeling(bool enabled)
@@ -148,14 +149,12 @@ QWidget *  vtkDataMeshNavigator::buildToolBoxWidget()
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
     foreach(medAbstractParameter *parameter, d->parameters)
         layout->addRow(parameter->getLabel(), parameter->getWidget());
-    toolBoxWidget->hide();
     return toolBoxWidget;
 }
 
 QWidget *vtkDataMeshNavigator::buildToolBarWidget()
 {
     QWidget *toolBarWidget = new QWidget;
-    toolBarWidget->hide();
     return toolBarWidget;
 }
 
