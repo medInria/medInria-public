@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 
 #include <%1PluginExport.h>
 
 class %1WorkspacePrivate;
     
-class %2PLUGIN_EXPORT %1Workspace : public medWorkspace
+class %2PLUGIN_EXPORT %1Workspace : public medAbstractWorkspace
 {
     Q_OBJECT
     
