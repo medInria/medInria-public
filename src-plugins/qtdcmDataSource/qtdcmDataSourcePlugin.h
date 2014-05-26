@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "qtdcmDataSourcePluginExport.h"
+#include <qtdcmDataSourcePluginExport.h>
 
 class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSourcePluginPrivate;
 

@@ -11,18 +11,18 @@
 
 =========================================================================*/
 
-#include "medFilteringSelectorToolBox.h"
-#include "medFilteringAbstractToolBox.h"
+#include <medFilteringSelectorToolBox.h>
+#include <medFilteringAbstractToolBox.h>
 
 #include <medToolBoxFactory.h>
 #include <medDropSite.h>
 #include <medToolBoxHeader.h>
 
-#include <medCore/medDataManager.h>
+#include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 
 
@@ -31,9 +31,7 @@ class medFilteringSelectorToolBoxPrivate
 public:
 
     QComboBox    *chooseFilter;
-    medAbstractView *inputView;
-    dtkAbstractData *inputData;
-    medDataIndex index;
+    medAbstractData *inputData;
     QHash<QString, medFilteringAbstractToolBox*> toolBoxes;
     QVBoxLayout *filterLayout;
     medFilteringAbstractToolBox *currentToolBox;
@@ -44,8 +42,6 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
     medToolBox ( parent ),
     d ( new medFilteringSelectorToolBoxPrivate )
 {
-    d->inputView = NULL;
-
 
     d->chooseFilter = new QComboBox;
     d->chooseFilter->addItem ( tr ( "Choose filter" ) );
@@ -64,7 +60,7 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
         i++;
     }
 
-    connect ( d->chooseFilter, SIGNAL ( activated ( int ) ), this, SLOT ( onToolBoxChosen ( int ) ) );
+    connect (d->chooseFilter, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
     QWidget *displayWidget = new QWidget;
     d->filterLayout = new QVBoxLayout;
@@ -73,8 +69,8 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
     d->filterLayout->addWidget ( d->chooseFilter );
     displayWidget->setLayout(d->filterLayout);
 
-    this->setTitle ( tr ( "Filtering View" ) );
-    this->addWidget ( displayWidget );
+    this->setTitle (tr("Filtering View"));
+    this->addWidget(displayWidget);
 
     d->inputData = NULL;
     d->currentToolBox = NULL;
@@ -88,34 +84,37 @@ medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
 
 medFilteringAbstractToolBox* medFilteringSelectorToolBox::currentToolBox()
 {
-
     return d->currentToolBox;
 }
 
-dtkAbstractData*  medFilteringSelectorToolBox::data()
+medAbstractData*  medFilteringSelectorToolBox::data()
 {
     return d->inputData;
 }
 
-void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
+void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
 {    
     medFilteringAbstractToolBox *toolbox = NULL;
     //get identifier for toolbox.
     QString identifier = d->chooseFilter->itemData(index).toString();
     if (d->toolBoxes.contains (identifier))
         toolbox = d->toolBoxes[identifier];
-    else {
+    else
+    {
         medToolBox* tb = medToolBoxFactory::instance()->createToolBox(
                     identifier, this);
         toolbox = qobject_cast<medFilteringAbstractToolBox *>(tb);
-        if (toolbox) {
+        if(toolbox)
+        {
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             d->toolBoxes[identifier] = toolbox;
         }
     }
 
-    if(!toolbox) {
-        if (d->currentToolBox) {
+    if(!toolbox)
+    {
+        if (d->currentToolBox)
+        {
             d->currentToolBox->hide();
             d->filterLayout->removeWidget ( d->currentToolBox );
             d->currentToolBox = 0;
@@ -130,10 +129,8 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
     if (d->currentToolBox)
     {
         d->currentToolBox->hide();
-        emit removeToolBox ( d->currentToolBox );
         d->filterLayout->removeWidget ( d->currentToolBox );
         d->currentToolBox = NULL;
-
     }
 
     d->currentToolBox = toolbox;
@@ -145,50 +142,31 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
 
 
     d->currentToolBox->show();
-
-    d->filterLayout->addWidget ( toolbox );
-
-    if ( d->inputView )
-        d->currentToolBox->update ( d->inputView );
-
-    connect ( d->currentToolBox,SIGNAL ( success() ),this,SIGNAL ( processFinished() ) );
+    d->filterLayout->addWidget(toolbox);
+    d->currentToolBox->update(d->inputData);
+    connect ( d->currentToolBox, SIGNAL(success()), this, SIGNAL(processFinished()));
 }
 
 
-void medFilteringSelectorToolBox::onInputSelected ( const medDataIndex& index )
-{
-    if ( !index.isValid() )
-        return;
+void medFilteringSelectorToolBox::onInputSelected(medAbstractData *data)
+{   
+    d->inputData = data;
 
-    d->inputData = medDataManager::instance()->data ( index ).data();
+    if (d->inputData != NULL && !d->inputData->dataIndex().isValidForSeries())
+        d->inputData = NULL;
 
-    if ( !d->inputData )
-        return;
-
-    d->inputView = dynamic_cast<medAbstractView*> ( medViewManager::instance()->views ( index ).first() );
-
-    if ( !d->inputView )
-    {
-        qDebug() << "Unable to retrieve input view";
-        return;
-    }
-    else
-    {
-        if ( d->currentToolBox )
-            d->currentToolBox->update ( d->inputView );
-    }
+    if(d->currentToolBox)
+        d->currentToolBox->update(d->inputData);
 }
 
 void medFilteringSelectorToolBox::clear()
 {
     d->inputData = NULL;
-    d->inputView = NULL;
-    d->index = medDataIndex();
+
+    if(d->currentToolBox)
+        d->currentToolBox->update(d->inputData);
+
 }
 
 
-void medFilteringSelectorToolBox::setDataIndex ( medDataIndex index )
-{
-    d->index = index;
-}
 

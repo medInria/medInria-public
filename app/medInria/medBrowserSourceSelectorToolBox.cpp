@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medBrowserSourceSelectorToolBox.h"
+#include <medBrowserSourceSelectorToolBox.h>
 #include <medToolBoxTab.h>
 
 #include <QtGui>
@@ -27,7 +27,6 @@ medBrowserSourceSelectorToolBox::medBrowserSourceSelectorToolBox(QWidget *parent
 {
     d->tab = new medToolBoxTab(this);
     connect(d->tab, SIGNAL(currentChanged(int)), this, SIGNAL(indexChanged(int)));
-
     this->setTitle(tr("Source selector"));
     this->setTabWidget(d->tab);
 }

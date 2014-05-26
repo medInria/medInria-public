@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medToolBoxBody.h"
-#include "medToolBoxTab.h"
+#include <medToolBoxBody.h>
+#include <medToolBoxTab.h>
 
 class medToolBoxBodyPrivate
 {
@@ -73,16 +73,21 @@ void medToolBoxBody::setTabWidget(medToolBoxTab * tab)
 
 void medToolBoxBody::clear()
 {
-    for (int i=0; i<=d->layout->count(); i++) {
+    for (int i=0; i<=d->layout->count(); i++)
+    {
       if (d->layoutOrientation==Qt::Vertical)
         d->layout->setRowStretch (i, 0);
       else
         d->layout->setColumnStretch (i, 0);
     }
-    foreach(QWidget *wid, d->widgets) {
+    
+    foreach(QWidget *wid, d->widgets)
+    {
         wid->hide();
         d->layout->removeWidget(wid);
     }
+    
+    d->widgets.clear();
 }
 void medToolBoxBody::setOrientation(Qt::Orientation orientation)
 {

@@ -17,10 +17,10 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "medCoreExport.h"
-#include "medDataIndex.h"
+#include <medCoreExport.h>
+#include <medDataIndex.h>
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractDataFactory;
 
 class medDataManagerPrivate;
@@ -42,9 +42,9 @@ public:
     /**
     * Ask the data-manager to provide the data belonging to this index using its registered controllers.
     * @params const medDataIndex & index medDataIndex for data
-    * @return dtkAbstractData * the data
+    * @return medAbstractData * the data
     */
-    dtkSmartPointer<dtkAbstractData> data(const medDataIndex& index);
+    dtkSmartPointer<medAbstractData> data(const medDataIndex& index);
     
     bool setMetaData( const medDataIndex& index, const QString& key, const QString& value );
 
@@ -52,9 +52,9 @@ public:
     * Use this function to insert data into the database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params dtkSmartPointer<dtkAbstractData> & data
+    * @params dtkSmartPointer<medAbstractData> & data
     */
-    void import(dtkSmartPointer<dtkAbstractData> &data);
+    void import(dtkSmartPointer<medAbstractData> &data);
 
     /**
     * Import data into the db read from file
@@ -68,18 +68,18 @@ public:
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params const dtkAbstractData & data
+    * @params const medAbstractData & data
     */
-    void importNonPersistent(dtkAbstractData *data);
+    void importNonPersistent(medAbstractData *data);
 
     /**
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params const dtkAbstractData & data
+    * @params const medAbstractData & data
     * @params QString uuid Universally unique identifier associated with the data
     */
-    void importNonPersistent(dtkAbstractData *data, QString uuid);
+    void importNonPersistent(medAbstractData *data, QString uuid);
 
     /**
     * Overload to insert data directly from a file into the no-persistent database
@@ -96,10 +96,10 @@ public:
 
     /**
     * Use this function to save data to a file.
-    * @params dtkAbstractData *data Pointer to some data to save
+    * @params medAbstractData *data Pointer to some data to save
     * @params const QString & filename The location in which the data will be stored in the file system
     */
-    void exportDataToFile(dtkAbstractData *data);
+    void exportDataToFile(medAbstractData *data);
 
     /**
     * Use this function to save all non-persistent data to the sql database.

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medSettingsManager.h"
+#include <medSettingsManager.h>
 
 #include <QtCore/QSettings>
 

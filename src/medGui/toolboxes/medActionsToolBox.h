@@ -15,7 +15,7 @@
 
 #include <medDataIndex.h>
 #include <medToolBox.h>
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medActionsToolBoxPrivate;
 
@@ -32,7 +32,7 @@ signals:
     /** Emitted when the 'Remove' button is clicked. */
     void removeClicked();
 
-    /** Emitted when the 'View' button is clicked. */
+    /** Emitted when the 'Interactor' button is clicked. */
     void viewClicked();
 
     /** Emitted when the 'Load' button is clicked. */
@@ -101,5 +101,3 @@ private:
 
     medActionsToolBoxPrivate* d;
 };
-
-

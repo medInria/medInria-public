@@ -15,18 +15,15 @@ cmake_minimum_required(VERSION 2.8.1)
 
 project(undoRedoRegistrationPlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}") 
+add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 ## #################################################################
 ## Resolve dependencies
@@ -44,61 +41,76 @@ endif(ITK_FOUND)
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
-## #################################################################
-## Input
-## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  undoRedoRegistrationPlugin.h
-  undoRedoRegistrationToolBox.h
-  undoRedoRegistration.h)
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_SOURCES
-  undoRedoRegistrationPlugin.cpp
-  undoRedoRegistrationToolBox.cpp
-  undoRedoRegistration.cpp
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-set(${PROJECT_NAME}_RESOURCES undoRedoRegistration.qrc)
+set(${PROJECT_NAME}_QRC undoRedoRegistration.qrc)
 
-## #################################################################
-## Build rules
-## #################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_SOURCES}
+    )
+endif()
+
+
+## #############################################################################
+## add library
+## #############################################################################
+
+
+qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_QRC}
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_QRC}
   )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
+  RegistrationAddOn
   medCore
   medGui
-  itkProcessRegistration
-  RegistrationAddOn
-  registrationFactory
-)
-
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+  medRegistration
+  )
 
 
-
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
+## #############################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+set_plugin_install_rules(${PROJECT_NAME})

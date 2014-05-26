@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medDatabaseNonPersistentItem.h"
-#include "medDatabaseNonPersistentItem_p.h"
+#include <medDatabaseNonPersistentItem.h>
+#include <medDatabaseNonPersistentItem_p.h>
 
 #include <medMetaDataKeys.h>
 
@@ -149,25 +149,25 @@ void medDatabaseNonPersistentItem::setIndex(const medDataIndex& index)
     d->index = index;
 }
 
-dtkAbstractData *medDatabaseNonPersistentItem::data(void)
+medAbstractData *medDatabaseNonPersistentItem::data(void)
 {
     return d->data;
 }
 
 
-bool medDatabaseNonPersistentItem::Match(dtkAbstractData *dtkData)
+bool medDatabaseNonPersistentItem::Match(medAbstractData *medData)
 {
-    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
-    QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
-    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);
-    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-    QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
-    QString orientation = medMetaDataKeys::Orientation.getFirstValue(dtkData);
-    QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(dtkData);
-    QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(dtkData);
-    QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(dtkData);
-    QString rows = medMetaDataKeys::Rows.getFirstValue(dtkData);
-    QString columns = medMetaDataKeys::Columns.getFirstValue(dtkData);
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
+    QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
+    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
+    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
+    QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+    QString orientation = medMetaDataKeys::Orientation.getFirstValue(medData);
+    QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
+    QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(medData);
+    QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(medData);
+    QString rows = medMetaDataKeys::Rows.getFirstValue(medData);
+    QString columns = medMetaDataKeys::Columns.getFirstValue(medData);
     
     return (
         patientName == d->name &&

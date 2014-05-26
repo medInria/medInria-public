@@ -15,9 +15,16 @@
 
 #include <itkDataSHImageDouble3.h>
 #include <itkDataSHImageFloat3.h>
+#include <itkDataSHImageVtkViewInteractor.h>
+
+#include <itkNrrdDataSHImageReader.h>
+#include <itkNiftiDataSHImageReader.h>
+#include <itkMetaDataSHImageReader.h>
+
+#include <itkMetaDataSHImageWriter.h>
 
 #include <dtkLog/dtkLog.h>
-#include <dtkItkLogForwarder/itkLogForwarder.h>
+#include <itkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataSHImagePluginPrivate
@@ -48,6 +55,13 @@ itkDataSHImagePlugin::~itkDataSHImagePlugin() {
 bool itkDataSHImagePlugin::initialize() {
     if (!itkDataSHImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataSHImageDouble3 type"; }
     if (!itkDataSHImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataSHImageFloat3 type";  }
+    if (!itkDataSHImageVtkViewInteractor::registered())  { dtkWarn() << "Unable to register itkDataSHImageVtkViewInteractor type";  }
+
+    if (!itkMetaDataSHImageReader::registered())  { dtkWarn() << "Unable to register itkMetaDataSHImageReader type";  }
+    if (!itkNiftiDataSHImageReader::registered()) { dtkWarn() << "Unable to register itkNiftiDataSHImageReader type"; }
+    if (!itkNrrdDataSHImageReader::registered())  { dtkWarn() << "Unable to register itkNrrdDataSHImageReader type";  }
+
+    if(!itkMetaDataSHImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataSHImageWriter type"; }
 
     return true;
 }
@@ -85,11 +99,16 @@ QString itkDataSHImagePlugin::description() const {
 }
 
 QStringList itkDataSHImagePlugin::tags() const {
-    return QStringList() << "itk" << "data" << "SH" << "image";
+    return QStringList() << "itk" << "data" << "SH" << "image" << "reader" << "writer";
 }
 
 QStringList itkDataSHImagePlugin::types() const {
-    return QStringList() << "itkDataSHImageFloat3" << "itkDataSHImageDouble3";
+    return QStringList() << "itkDataSHImageFloat3"
+                         << "itkDataSHImageDouble3"
+                         << "itkMetaDataSHImageReader"
+                         << "itkNiftiDataSHImageReader"
+                         << "itkNrrdDataSHImageReader"
+                         << "itkMetaDataSHImageWriter";
 }
 
 Q_EXPORT_PLUGIN2(itkDataSHImagePlugin, itkDataSHImagePlugin)

@@ -1,13 +1,12 @@
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013. All rights reserved.
+See LICENSE.txt for details.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
 
@@ -16,9 +15,8 @@
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class dtkAbstractProcess;
-class dtkAbstractView;
-class medAbstractDataImage;
+class medAbstractDiffusionProcess;
+class medAbstractImageData;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
 
@@ -32,32 +30,31 @@ public:
         ScalarMaps,
         Tractography
     };
-    
+
      medDiffusionSelectorToolBox(QWidget *parent = 0, SelectorType type = Estimation);
     ~medDiffusionSelectorToolBox();
-    
-    void setInputImage(medAbstractDataImage *data);
-    void clearInput();
-    
-    void setProcessParameters(dtkAbstractProcess *process);
+
+    void addInputImage(medAbstractImageData *data);
+    void clearInputs();
+
+    void setProcessParameters(medAbstractDiffusionProcess *process);
 
 public slots:
     void clear();
 
-    void selectInputImage(const medDataIndex& index);
     void setInputGradientFile();
     void createProcess();
-    
+
     void chooseToolBox(int id);
     void resetButtons();
-    
+
 signals:
     void processRequested(QString, QString);
     void processCancelled();
 
 protected:
     void checkInputGradientDirections();
-    
+
 private:
     medDiffusionSelectorToolBoxPrivate *d;
 };

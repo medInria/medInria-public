@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medToolBox.h>
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 
 class medDatabaseSearchPanelPrivate;

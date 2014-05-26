@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include "itkMorphologicalFiltersToolBox.h"
+#include <itkMorphologicalFiltersToolBox.h>
 
 #include <limits>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
@@ -36,7 +36,7 @@
 #include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
 #include <QtGui>
 
@@ -51,7 +51,7 @@ public:
     QComboBox * filters;
     dtkSmartPointer <itkFiltersProcessBase> process;
     
-    medProgressionStack * progression_stack;
+    medProgressionStack * progressionStack;
 };
 
 itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
@@ -97,14 +97,14 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     // Principal layout:
     QWidget *widget = new QWidget ( this );
 
-    d->progression_stack = new medProgressionStack ( widget );
+    d->progressionStack = new medProgressionStack ( widget );
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
     layout->addLayout ( dataTypeLayout );
     layout->addWidget ( d->filterWidget );
     layout->addWidget ( runButton );
-    layout->addWidget ( d->progression_stack );
+    layout->addWidget ( d->progressionStack );
     layout->addStretch ( 1 );
 
     widget->setLayout ( layout );
@@ -143,7 +143,7 @@ bool itkMorphologicalFiltersToolBox::registered()
 }
 
 
-dtkAbstractData* itkMorphologicalFiltersToolBox::processOutput()
+medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
 {
     if ( !d->process )
         return NULL;
@@ -159,20 +159,13 @@ void itkMorphologicalFiltersToolBox::clear()
     
 }
 
-void itkMorphologicalFiltersToolBox::update ( dtkAbstractView* view )
+void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
 {
-    if ( !view )
-    {
-        clear();
-    }
+    if (!data)
+        this->clear();
     else
     {
-        if ( !this->parentToolBox()->data() )
-        {
-            return;
-        }
-
-        QString identifier = this->parentToolBox()->data()->identifier();
+        QString identifier = data->identifier();
 
         if ( identifier == "itkDataImageChar3" )
         {
@@ -304,7 +297,7 @@ void itkMorphologicalFiltersToolBox::run ( void )
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess ( d->process );
 
-    d->progression_stack->addJobItem ( runProcess, tr ( "Progress:" ) );
+    d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
 
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );

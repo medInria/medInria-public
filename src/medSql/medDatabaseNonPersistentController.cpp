@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseNonPersistentController.h"
+#include <medDatabaseNonPersistentController.h>
 
 #include <medAbstractDbController.h>
 

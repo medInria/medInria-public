@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 #include <dtkCore/dtkAbstractFactory.h>
 #include <QtCore>
 

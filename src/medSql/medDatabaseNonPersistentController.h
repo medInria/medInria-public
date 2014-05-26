@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "medSqlExport.h"
-#include "medDatabaseNonPersistentControllerImpl.h"
+#include <medSqlExport.h>
+#include <medDatabaseNonPersistentControllerImpl.h>
 
 class medAbstractDbController;
 

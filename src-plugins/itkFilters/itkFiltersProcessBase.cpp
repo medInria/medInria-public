@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include "itkFiltersProcessBase_p.h"
+#include <itkFiltersProcessBase_p.h>
 
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
     : dtkAbstractProcess(*new itkFiltersProcessBasePrivate(this), parent)
@@ -60,7 +60,7 @@ QString itkFiltersProcessBase::description()
 }
 
 
-void itkFiltersProcessBase::setInput(dtkAbstractData *data)
+void itkFiltersProcessBase::setInput(medAbstractData *data)
 {
     if (!data)
         return;
@@ -69,11 +69,11 @@ void itkFiltersProcessBase::setInput(dtkAbstractData *data)
     
     QString identifier = data->identifier();
     
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
+    d->output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
     d->input = data;
 }
 
-dtkAbstractData * itkFiltersProcessBase::output ( void )
+medAbstractData * itkFiltersProcessBase::output ( void )
 {
     DTK_D(itkFiltersProcessBase);
     

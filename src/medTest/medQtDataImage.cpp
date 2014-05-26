@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medQtDataImage.h"
+#include <medQtDataImage.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>
 
 #include <QImage>
@@ -29,7 +29,7 @@ public:
     QImage::Format imageFormat;
 };
 
-static dtkAbstractData* createMedQtDataImage()
+static medAbstractData* createMedQtDataImage()
 {
     return new medQtDataImage;
 }
@@ -113,7 +113,7 @@ QImage & medQtDataImage::thumbnail( void )
     if ( !d->thumbnailValid )
         this->generateThumbnails();
 
-    return this->medAbstractDataImage::thumbnails()[0];
+    return this->medAbstractImageData::thumbnails()[0];
 }
 
 QList<QImage>& medQtDataImage::thumbnails( void )
@@ -121,22 +121,22 @@ QList<QImage>& medQtDataImage::thumbnails( void )
     if ( !d->thumbnailValid )
         this->generateThumbnails();
 
-    return this->medAbstractDataImage::thumbnails();
+    return this->medAbstractImageData::thumbnails();
 }
 
 void medQtDataImage::generateThumbnails()
 {
     QImage refImage;
-    if ( this->medAbstractDataImage::thumbnails().isEmpty() ) {
-        refImage = this->medAbstractDataImage::thumbnail();
+    if ( this->medAbstractImageData::thumbnails().isEmpty() ) {
+        refImage = this->medAbstractImageData::thumbnail();
     } else {
-        refImage = this->medAbstractDataImage::thumbnails()[0];
+        refImage = this->medAbstractImageData::thumbnails()[0];
     }
     const int sx = refImage.width();
     const int sy = refImage.height();
 
     int mid = d->images.size() / 2;
-    this->medAbstractDataImage::thumbnails().clear();
+    this->medAbstractImageData::thumbnails().clear();
 
     const QImage & unscaledImage = d->images[mid];
     QImage scaledImage;
@@ -145,13 +145,13 @@ void medQtDataImage::generateThumbnails()
     } else {
         scaledImage = unscaledImage.scaledToWidth(sx);
     }
-    this->medAbstractDataImage::thumbnails().push_back(scaledImage);
+    this->medAbstractImageData::thumbnails().push_back(scaledImage);
     d->thumbnailValid = true;
 }
 
 bool medQtDataImage::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
+    return medAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
 }
 
 void * medQtDataImage::output( void )

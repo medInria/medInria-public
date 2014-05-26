@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include "itkProcessRegistrationDiffeomorphicDemons.h"
-#include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
+#include <itkProcessRegistrationDiffeomorphicDemons.h>
+#include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
+#include <medAbstractImageData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -39,7 +39,7 @@ class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
-    medProgressionStack * progression_stack;
+    medProgressionStack * progressionStack;
     QComboBox * updateRuleBox;
     QComboBox * gradientTypeBox;
     QDoubleSpinBox * maxStepLengthBox;
@@ -125,13 +125,13 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     layout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
 
     // progression stack
-    d->progression_stack = new medProgressionStack(widget);
+    d->progressionStack = new medProgressionStack(widget);
 //    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-//    progressStackLayout->addWidget(d->progression_stack);
+//    progressStackLayout->addWidget(d->progressionStack);
 
     this->addWidget(widget);
     this->addWidget(runButton);
-    this->addWidget(d->progression_stack);
+    this->addWidget(d->progressionStack);
 
     //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
     medPluginManager* pm = medPluginManager::instance();
@@ -165,20 +165,17 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 
     if(!this->parentToolBox())
         return;
-    dtkSmartPointer<dtkAbstractProcess> process;
 
-    if (this->parentToolBox()->process() && (this->parentToolBox()->process()->identifier() == "itkProcessRegistrationDiffeomorphicDemons"))
-    {
-        process = this->parentToolBox()->process();
-    }
-    else
-    {
-        process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons");
-        this->parentToolBox()->setProcess(process);
-    }
+    medAbstractRegistrationProcess *process;
+    process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+    if(!process)
+        return;
 
-    dtkSmartPointer<dtkAbstractData> fixedData(this->parentToolBox()->fixedData());
-    dtkSmartPointer<dtkAbstractData> movingData(this->parentToolBox()->movingData());
+    this->parentToolBox()->setProcess(process);
+
+
+    dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
+    dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
 
     if (!fixedData || !movingData)
         return;
@@ -186,7 +183,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     // Many choices here
 
     itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process.data());
+            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
@@ -210,34 +207,23 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
         return;
     }
 
-    // process->setMyWonderfullParameter(fronTheGui);
-    // process->setMyWonderfullParameter(fronTheGui);
-
-    // or ...
-
-    // itkProcessRegistrationDiffeomorphicDemons *process = new itkProcessRegistrationDiffeomorphicDemons;
-    // process->setMyWonderfullParameter(fronTheGui);
-    // process->setMyWonderfullParameter(fronTheGui);
-
-    // ----
-
-    process->setInput(fixedData,  0);
-    process->setInput(movingData, 1);
+    process_Registration->setFixedInput(fixedData);
+    process_Registration->setMovingInput(movingData);
 
     medRunnableProcess *runProcess = new medRunnableProcess;
 
     runProcess->setProcess (process);
 
-    d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-    d->progression_stack->setActive(runProcess,true);
-    d->progression_stack->disableCancel(runProcess);
+    d->progressionStack->addJobItem(runProcess, tr("Progress:"));
+    d->progressionStack->setActive(runProcess,true);
+    d->progressionStack->disableCancel(runProcess);
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
     //First have the moving progress bar,
     //and then display the remaining % when known
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progression_stack, SLOT(setActive(QObject*,bool)));
+             d->progressionStack, SLOT(setActive(QObject*,bool)));
 
     medJobManager::instance()->registerJobItem(runProcess,process->identifier());
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));

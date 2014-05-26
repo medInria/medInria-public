@@ -1,13 +1,12 @@
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013. All rights reserved.
+See LICENSE.txt for details.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
 
@@ -16,7 +15,7 @@
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class dtkAbstractProcess;
+class medAbstractDiffusionProcess;
 class dtkPlugin;
 
 class MEDGUI_EXPORT medDiffusionAbstractToolBox : public medToolBox
@@ -35,7 +34,7 @@ public:
     virtual dtkPlugin *plugin()const = 0;
     
     virtual QString processName() = 0;
-    virtual void setProcessParameters(dtkAbstractProcess *process) = 0;
+    virtual void setProcessParameters(medAbstractDiffusionProcess *process) = 0;
 };
 
 class MEDGUI_EXPORT medDiffusionScalarMapsAbstractToolBox : public medDiffusionAbstractToolBox

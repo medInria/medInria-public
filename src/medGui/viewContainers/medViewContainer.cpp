@@ -4,87 +4,293 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include "medViewContainer.h"
-#include "medViewContainer_p.h"
-#include "medViewPool.h"
-#include <medDataManager.h>
-#include <medViewManager.h>
+#include <medViewContainer.h>
+
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QUuid>
+#include <QFileDialog>
+
+#include <medViewContainerManager.h>
 #include <medAbstractView.h>
+#include <medBoolParameter.h>
 #include <medDataIndex.h>
+#include <medAbstractData.h>
+#include <medDataManager.h>
+#include <medViewFactory.h>
+#include <medAbstractLayeredView.h>
+#include <medViewManager.h>
+#include <medToolBox.h>
+#include <medToolBoxHeader.h>
+#include <medStringListParameter.h>
+#include <medParameterPoolManager.h>
+#include <medParameterPool.h>
+#include <medViewContainerSplitter.h>
+#include <medDataManager.h>
+#include <medSettingsManager.h>
+#include <medAbstractInteractor.h>
+#include <medPoolIndicator.h>
 
-#include <QtGui>
 
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractData.h>
-
-
-medViewContainer::medViewContainer ( QWidget *parent )
-        : QFrame ( parent )
-        , d ( new medViewContainerPrivate )
+class medViewContainerPrivate
 {
-    d->layout = new QGridLayout ( this );
-    d->layout->setContentsMargins ( 0, 0, 0, 0 );
-    d->layout->setSpacing ( 0 );
+public:
+    QUuid uuid;
+
+    QWidget *defaultWidget;
+    QWidget *viewToolbar;
+
+    medAbstractView* view;
+    medViewContainerSplitter* parent;
+
+    bool selected;
+    bool maximized;
+    bool userSplittable;
+    bool userClosable;
+    bool multiLayer;
+    bool userPoolable;
+
+    QGridLayout* mainLayout;
+    QHBoxLayout* toolBarLayout;
+
+    QPushButton* vSplitButton;
+    QPushButton* hSplitButton;
+    QPushButton* closeContainerButton;
+
+    medBoolParameter* maximizedParameter;
+
+    QString defaultStyleSheet;
+    QString highlightColor;
+
+    medPoolIndicator* poolIndicator;
+
+    ~medViewContainerPrivate()
+    {
+        if(view)
+            delete view;
+    }
+};
+
+
+medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(parent),
+    d(new medViewContainerPrivate)
+{
+    d->parent = parent;
+
+    d->uuid = QUuid::createUuid();
+    medViewContainerManager::instance()->registerNewContainer(this);
 
     d->view = NULL;
-    d->current = this;
+    d->viewToolbar = NULL;
+
+    d->defaultWidget = new QWidget;
+    d->defaultWidget->setObjectName("defaultWidget");
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series here from the left panel or"));
+    QPushButton *openButton = new QPushButton(tr("open a file from your system"));
+    QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
+    defaultLayout->addWidget(defaultLabel);
+    defaultLayout->addWidget(openButton);
+    connect(openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()));
+
+
+    d->closeContainerButton = new QPushButton(this);
+    d->closeContainerButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
+    connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(close()));
+    d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
+
+    d->vSplitButton = new QPushButton(this);
+    d->vSplitButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
+    d->vSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->vSplitButton->setFocusPolicy(Qt::NoFocus);
+    connect(d->vSplitButton, SIGNAL(clicked()), this, SIGNAL(vSplitRequest()));
+    d->hSplitButton = new QPushButton(this);
+    d->hSplitButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
+    d->hSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->hSplitButton->setFocusPolicy(Qt::NoFocus);
+    connect(d->hSplitButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
+
+    // make it a parameter to get synch between state of the container and the maximized button.
+    d->maximizedParameter = new medBoolParameter("maximied view", this);
+    d->maximizedParameter->getPushButton()->setMaximumHeight(18);
+    d->maximizedParameter->getPushButton()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->maximizedParameter->getPushButton()->setFocusPolicy(Qt::NoFocus);
+    QIcon maximizedIcon(":/icons/maximize.svg");
+    maximizedIcon.addFile(":/icons/un_maximize.svg",
+                        QSize(16,16),
+                        QIcon::Normal,
+                        QIcon::On);
+
+    d->maximizedParameter->setIcon(maximizedIcon);
+    d->maximized = false;
+    connect(d->maximizedParameter, SIGNAL(valueChanged(bool)), this, SLOT(setMaximized(bool)));
+    connect(this, SIGNAL(maximized(bool)), d->maximizedParameter, SLOT(setValue(bool)));
+    d->maximizedParameter->setValue(false);
+    d->maximizedParameter->hide();
+
+    d->poolIndicator = new medPoolIndicator;
+
+    QWidget* toolBar = new QWidget(this);
+    toolBar->setObjectName("containerToolBar");
+    toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+    d->toolBarLayout = new QHBoxLayout(toolBar);
+    d->toolBarLayout->setContentsMargins(5,0,5,0);
+    d->toolBarLayout->setSpacing(5);
+    d->toolBarLayout->addWidget(d->poolIndicator, 1, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->maximizedParameter->getPushButton(), 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->vSplitButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->hSplitButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
+
+    d->mainLayout = new QGridLayout(this);
+    d->mainLayout->setContentsMargins(0, 0, 0, 0);
+    d->mainLayout->setSpacing(0);
+    d->mainLayout->addWidget(toolBar, 0, 0, Qt::AlignTop);
+    d->mainLayout->addWidget(d->defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+
+    this->setAcceptDrops(true);
+    this->setUserSplittable(true);
+    this->setUserClosable(true);
+    this->setMultiLayered(true);
+    this->setFocusPolicy(Qt::ClickFocus);
+    this->setMouseTracking(true);
+
     d->selected = false;
-    d->multiLayer = true;
+    this->setSelected(false);
 
-    d->pool = new medViewPool ( this );
-
-    medViewContainer *container = qobject_cast<medViewContainer *>(parent);
-    if ( container != NULL ) {
-        connect(this,      SIGNAL(imageSet(const medDataIndex&)),
-                container, SIGNAL(imageSet(const medDataIndex&)));
-        connect(this,      SIGNAL(focused(dtkAbstractView*)),
-                container, SIGNAL(focused(dtkAbstractView*)));
-    }
-
-    this->setAcceptDrops ( true );
-    this->setFocusPolicy ( Qt::ClickFocus );
-    this->setMouseTracking ( true );
-    this->setSizePolicy ( QSizePolicy::Expanding,QSizePolicy::Expanding );
-
+    d->defaultStyleSheet = this->styleSheet();
 }
 
 medViewContainer::~medViewContainer()
 {
-    if ( d->view )
-    {
-        d->view->close();
-    }
+    removeInternView();
 
+
+
+    // Trick to 'inform' a parented splitter
+    // "you're not my dad anymore!"
+    // There is no  'takeItem()' or 'removeWidget()' or wathever methode to remove a widget from a QSplitter.
+    // this is used to remove the ownership of the container, If the parent splitter end up with no child it will be deleted.
+    // see medViewContainerSplitter::~medViewContainerSplitter() and medViewContainerSplitter::checkIfStillDeserveToLive()
+    this->setParent(NULL);
+
+    medViewContainerManager::instance()->unregisterContainer(this);
     delete d;
-
-    d = NULL;
 }
 
-
-const medViewContainer *medViewContainer::current() const
+QUuid medViewContainer::uuid() const
 {
-    const medViewContainer * root = this->root();
-    if ( root != this )
-        return root->current();
-
-    return d->current;
+    return d->uuid;
 }
 
-medViewContainer *medViewContainer::current()
+medAbstractView* medViewContainer::view() const
 {
-    medViewContainer * root = this->root();
-    if ( root != this )
-        return root->current();
+    return d->view;
+}
 
-    return d->current;
+QWidget* medViewContainer::defaultWidget() const
+{
+    return d->defaultWidget;
+}
+
+void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
+{
+    if(!d->view)
+    {
+        d->mainLayout->removeWidget(d->defaultWidget);
+        delete d->defaultWidget;
+        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
+    }
+    d->defaultWidget = defaultWidget;
+}
+
+bool medViewContainer::isUserSplittable() const
+{
+    return d->userSplittable;
+}
+
+void medViewContainer::setUserSplittable(bool splittable)
+{
+    d->userSplittable = splittable;
+    if(d->userSplittable)
+    {
+          d->hSplitButton->show();
+          d->vSplitButton->show();
+    }
+    else
+    {
+        d->hSplitButton->hide();
+        d->vSplitButton->hide();
+    }
+}
+
+bool medViewContainer::isUserClosable() const
+{
+    return d->userClosable;
+}
+
+void medViewContainer::setUserClosable(bool closable)
+{
+    d->userClosable = closable;
+    if(d->userClosable)
+          d->closeContainerButton->show();
+    else
+        d->closeContainerButton->hide();
+}
+
+bool medViewContainer::isMultiLayered() const
+{
+    return d->multiLayer;
+}
+
+void medViewContainer::setMultiLayered(bool multilayer)
+{
+    d->multiLayer = multilayer;
+}
+
+void medViewContainer::setContainerParent(medViewContainerSplitter *splitter)
+{
+    d->parent = splitter;
+}
+
+void medViewContainer::setView(medAbstractView *view)
+{
+    if(d->view)
+    {
+        d->view->viewWidget()->hide();
+        this->removeInternView();
+    }
+    if(view)
+    {
+        d->view = view;
+        connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()));
+        connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
+        d->poolIndicator->setLinkParameter(view->linkParameter());
+
+        if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
+        {
+            connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
+            connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()));
+            connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()));
+            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
+        }
+
+        d->maximizedParameter->show();
+        d->defaultWidget->hide();
+        d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
+        d->view->viewWidget()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
+        d->view->viewWidget()->show();
+
+        emit viewChanged();
+    }
 }
 
 bool medViewContainer::isSelected() const
@@ -92,177 +298,118 @@ bool medViewContainer::isSelected() const
     return d->selected;
 }
 
-bool medViewContainer::isCurrent() const
+void medViewContainer::setSelected(bool selec)
 {
-    return const_cast< medViewContainer * > ( this )->current() == this;
-}
-
-bool medViewContainer::isRoot() const
-{
-    return this->parentContainer() == NULL;
-}
-
-bool medViewContainer::isLeaf() const
-{
-    return false;
-}
-
-bool medViewContainer::isEmpty() const
-{
-    return ( this->view() == NULL &&
-             this->childContainers().isEmpty());
-}
-
-medViewContainer * medViewContainer::parentContainer() const
-{
-    return qobject_cast< medViewContainer * >( this->parentWidget() );
-}
-
-const medViewContainer * medViewContainer::root() const
-{
-    const medViewContainer * parent = this->parentContainer();
-    return ( parent != NULL ? parent->root() : this );
-}
-
-medViewContainer * medViewContainer::root()
-{
-    medViewContainer * parent = this->parentContainer();
-    return ( parent != NULL ? parent->root() : this );
-}
-
-QList< medViewContainer * > medViewContainer::childContainers() const
-{
-    QList< medViewContainer * > containers;
-    foreach ( QObject * child, this->children() ) {
-        medViewContainer * c = qobject_cast<medViewContainer *>( child );
-        if ( c != NULL ) {
-            containers << c;
-            containers << c->childContainers();
-        }
-    }
-
-    return containers;
-}
-
-QList< medViewContainer * > medViewContainer::leaves ( bool excludeEmpty )
-{
-    QList< medViewContainer * > leaves;
-    if ( this->isLeaf() )
+    if(selec == d->selected)
     {
-        if ( ! ( excludeEmpty && this->isEmpty() ) )
-            leaves << this;
-    }
-    else                   // a leaf doesn't contain another container
-        foreach ( medViewContainer * child, this->childContainers() )
-        leaves << child->leaves ( excludeEmpty );
-
-    return leaves;
-}
-
-void medViewContainer::split ( int rows, int cols )
-{
-    Q_UNUSED ( rows );
-    Q_UNUSED ( cols );
-}
-
-dtkAbstractView *medViewContainer::view() const
-{
-    return d->view;
-}
-
-QList<dtkAbstractView *> medViewContainer::views() const
-{
-    QList<dtkAbstractView *> views;
-    if ( d->view )
-        views << d->view;
-
-    return views;
-}
-
-medViewPool *medViewContainer::pool()
-{
-    return d->pool;
-}
-
-void medViewContainer::setView ( dtkAbstractView *view )
-{
-    if (!isLeaf())
-    {
-        //go down to the actual currently selected container to set the view.
-        current()->setView(view);
-        return;
-    }
-    if (view==d->view)
-        return;
-
-    // clear connection of previous view
-    if ( d->view )
-    {
-        // disconnect all conenctions from this class to the view
-        disconnect ( view, 0, this, 0 );
-        d->view->close();
-        d->view = 0;
-    }
-
-    d->view = view;
-
-    if ( d->view )
-    {
-        // pass properties to the view
-        QHash<QString,QString>::iterator it = d->viewProperties.begin();
-        while ( it!=d->viewProperties.end() )
+        if(QApplication::keyboardModifiers() == Qt::ControlModifier)
         {
-            view->setProperty ( it.key(), it.value() );
-            ++it;
+            this->setSelected(!selec);
         }
-        medAbstractView * medView = qobject_cast<medAbstractView*>(view);
-        if (medView) {
-            connect(medView, SIGNAL(selected()), this, SLOT(select()));
-        }
-        this->recomputeStyleSheet();
-    }
-    setFocus(Qt::MouseFocusReason);
-}
-
-void medViewContainer::select()
-{
-    d->selected = true;
-
-    this->setCurrent ( this );
-
-    if (!current() || !current()->view())
-    {
-        //focusing on an empty container, reset the toolboxes.
-        emit focused(NULL);
+        //clear focus in order to select/unselect successively twice the same container
+        this->clearFocus();
         return;
     }
 
-    if (dtkAbstractView *view = current()->view())
+    d->selected = selec;
+    if(d->selected)
     {
-        emit focused(view);
+        emit containerSelected(d->uuid);
+    }
+    else
+    {
+        emit containerUnSelected(d->uuid);
+        this->unHighlight();
+    }
+    //clear focus in order to select/unselect successively twice the same container
+    this->clearFocus();
+}
+
+void medViewContainer::highlight(QString color)
+{
+    // TODO: recomputeStyleSheet deosn't seem to work here
+    // temporary setStyleSheet to update the border color
+    QString styleSheet = "medViewContainer {border:1px solid " + color + ";}";
+    this->setStyleSheet(styleSheet);
+    if(d->view)
+    {
+        d->view->viewWidget()->updateGeometry();
+        d->view->viewWidget()->update();
     }
 
-    this->update();
-
-    this->recomputeStyleSheet();
-    emit selected();
+    d->highlightColor = color;
 }
 
-void medViewContainer::unselect()
+void medViewContainer::unHighlight()
 {
-    d->selected = false;
-    this->recomputeStyleSheet();
+    this->setStyleSheet("medViewContainer {border:1px solid #909090;}");
+    if(d->view)
+    {
+        d->view->viewWidget()->updateGeometry();
+        d->view->viewWidget()->update();
+    }
 }
 
-void medViewContainer::setCurrent ( medViewContainer *container )
+void medViewContainer::setUnSelected(bool unSelected)
 {
-    medViewContainer * parent =
-        qobject_cast<medViewContainer *>( this->parentWidget() );
-    if ( parent != NULL )
-        parent->setCurrent ( container );
-    else
-        d->current = container;
+    this->setSelected(!unSelected);
+}
 
+void medViewContainer::setMaximized(bool maxi)
+{
+    if(d->maximized == maxi)
+        return;
+
+    d->maximized = maxi;
+
+    if(maxi)
+    {
+        d->vSplitButton->hide();
+        d->hSplitButton->hide();
+    }
+    else if(d->userSplittable)
+    {
+        d->vSplitButton->show();
+        d->hSplitButton->show();
+    }
+    emit maximized(maxi);
+    emit maximized(d->uuid, maxi);
+}
+
+bool medViewContainer::isMaximized() const
+{
+    return d->maximized;
+}
+
+void medViewContainer::removeView()
+{
+    if(!d->view)
+        return;
+
+    delete d->view;
+    // removeInternView should be called, so no need to set d->view to NULL
+    // or whatever else
+}
+
+void medViewContainer::removeInternView()
+{
+    d->view = NULL;
+    d->maximizedParameter->hide();
+    d->defaultWidget->show();
+    this->updateToolBar();
+
+    emit viewRemoved();
+}
+
+
+
+void medViewContainer::focusInEvent(QFocusEvent *event)
+{
+    if(event->reason() == Qt::ActiveWindowFocusReason)
+        return;
+
+    this->setSelected(true);
+    QWidget::focusInEvent(event);
 }
 
 void medViewContainer::recomputeStyleSheet()
@@ -271,202 +418,247 @@ void medViewContainer::recomputeStyleSheet()
     this->style()->polish(this);
 }
 
-void medViewContainer::dragEnterEvent ( QDragEnterEvent *event )
+void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
     event->acceptProposedAction();
 }
 
-void medViewContainer::dragMoveEvent ( QDragMoveEvent *event )
+void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 {
+    if(d->userSplittable)
+    {
+        DropArea area = computeDropArea(event->pos().x(), event->pos().y());
+        switch(area) {
+            case AREA_TOP:
+                this->setStyleSheet("medViewContainer {border-top: 1px solid #0080FF}");
+                break;
+            case AREA_RIGHT:
+                this->setStyleSheet("medViewContainer {border-right: 1px solid #0080FF}");
+                break;
+            case AREA_BOTTOM:
+                this->setStyleSheet("medViewContainer {border-bottom: 1px solid #0080FF}");
+                break;
+            case AREA_LEFT:
+                this->setStyleSheet("medViewContainer {border-left: 1px solid #0080FF}");
+                break;
+            case AREA_CENTER:
+                this->setStyleSheet("medViewContainer {border: 1px solid #0080FF}");
+                break;
+            default:
+                qDebug("Unsupported DropArea value");
+        }
+    }
+
     event->acceptProposedAction();
 }
 
-void medViewContainer::dragLeaveEvent ( QDragLeaveEvent *event )
+void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 {
+    this->setStyleSheet(d->defaultStyleSheet);
+    if(d->selected)
+        this->highlight(d->highlightColor);
+
     event->accept();
 }
 
-void medViewContainer::dropEvent ( QDropEvent *event )
+void medViewContainer::dropEvent(QDropEvent *event)
 {
     const QMimeData *mimeData = event->mimeData();
-
-    medDataIndex index = medDataIndex::readMimeData ( mimeData );
-    if ( index.isValid() )
-    {
-        open ( index );
-    }
-
-    event->acceptProposedAction();
-      
-}
-
-void medViewContainer::focusInEvent ( QFocusEvent *event )
-{
-    Q_UNUSED ( event );
-
-    this->select();
-}
-
-void medViewContainer::focusOutEvent ( QFocusEvent *event )
-{
-    Q_UNUSED(event);
-}
-
-void medViewContainer::paintEvent ( QPaintEvent *event )
-{
-    if ( this->layout()->count() > 1 )
+    medDataIndex index = medDataIndex::readMimeData(mimeData);
+    if(!index.isValidForSeries())
         return;
 
-    QPainter painter;
-    painter.begin ( this );
-
-    if ( !this->view() && ( d->viewProperties.count() ||
-                            !d->viewInfo.isEmpty() ) )
+    if(d->userSplittable)
     {
-        painter.setPen ( Qt::white );
-        QFont font = painter.font();
-        font.setPointSize ( 18 );
-        painter.setFont ( font );
-        QString text;
+        DropArea area = computeDropArea(event->pos().x(), event->pos().y());
 
-        //Add View Info:
-        if ( !d->viewInfo.isEmpty() )
-            //    Debug()<< "viewInfo" << d->viewInfo;
-            text += d->viewInfo + "\n";
-
-        QList<QString> keys = d->viewProperties.keys();
-        foreach ( QString key, keys )
-        text += d->viewProperties[key] + "\n";
-        painter.drawText ( event->rect(), Qt::AlignCenter, text );
+        if(area == AREA_TOP)
+            emit splitRequest(index, Qt::AlignTop);
+        else if(area == AREA_RIGHT)
+            emit splitRequest(index, Qt::AlignRight);
+        else if(area == AREA_BOTTOM)
+            emit splitRequest(index, Qt::AlignBottom);
+        else if(area == AREA_LEFT)
+            emit splitRequest(index, Qt::AlignLeft);
+        else if(area == AREA_CENTER)
+            this->addData(medDataManager::instance()->data(index));
     }
+    else
+        this->addData(index);
 
-    painter.end();
+    this->setStyleSheet(d->defaultStyleSheet);
+    if(d->selected)
+        this->highlight(d->highlightColor);
+
+    event->acceptProposedAction();
 }
 
-void medViewContainer::setViewProperty ( const QString &key, const QString &value )
+
+void medViewContainer::addData(medAbstractData *data)
 {
-    d->viewProperties[key] = value;
-}
+    if(!data)
+        return;
 
-QString medViewContainer::viewProperty ( const QString &key ) const
-{
-    if ( d->viewProperties.contains ( key ) )
-        return d->viewProperties[key];
+    if(!d->multiLayer)
+        this->removeView();
 
-    return QString();
-}
-
-void medViewContainer::onViewFullScreen ( bool value )
-{
-    Q_UNUSED ( value );
-}
-
-void medViewContainer::setInfo ( const QString& info )
-{
-    d->viewInfo = info;
-}
-
-QString medViewContainer::info()
-{
-    return d->viewInfo;
-}
-
-void medViewContainer::setMultiLayer(bool enable)
-{
-    d->multiLayer = enable;
-}
-
-bool medViewContainer::multiLayer( void )
-{
-    return d->multiLayer;
-}
-
-bool medViewContainer::open(const medDataIndex& index)
-{
-    bool res = false;
-
-    if(!index.isValid())
-        return res;
-
-    if( this != this->current() )
+    if(!d->view)
     {
-        // opening should be done by current container
-        res = this->current()->open(index);
-        return res;
-    }
+        //TODO find from data(factory?) which view have to be created - RDE
+        medAbstractLayeredView* view;
+        view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView", this);
 
-    if(!this->acceptDrops())
-        return res;
-
-    if( index.isValidForSeries() )
-    {
-        dtkSmartPointer<dtkAbstractData> data;
-
-        data = medDataManager::instance()->data(index);
-
-        res = this->open(data);
-
-        if(res)
+        if(!view)
         {
-            // add the view to the viewManager
-            dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
-            medViewManager::instance()->insert(index, view);
+            qWarning() << "medViewContainer: Unable to create a medVtkView";
+            return;
+        }
+        this->setView(view);
+    }
+    //TODO bring a way to kow how to add the data to the view.
+    //     assuming by now that we always have at least layered views.
+    //     this can be did by having a method that return the base abstract class(categorie)
+    //     of the view. - RDE
+    medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
+    view->addLayer(data);
+
+    setSelected(true);
+}
+
+void medViewContainer::addData(medDataIndex index)
+{
+    medDataManager::instance()->disconnect(this);
+    this->addData(medDataManager::instance()->data(index));
+}
+
+
+medViewContainer * medViewContainer::splitHorizontally()
+{
+    if(!d->parent)
+        return NULL;
+
+    return d->parent->splitHorizontally(this);
+}
+
+medViewContainer * medViewContainer::splitVertically()
+{
+    if(!d->parent)
+        return NULL;
+
+    return d->parent->splitVertically(this);
+}
+
+medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
+{
+    if(!d->parent)
+        return NULL;
+
+    return d->parent->split(this, alignement);
+}
+
+void medViewContainer::closeEvent(QCloseEvent * event)
+{
+    this->~medViewContainer();
+}
+
+void medViewContainer::openFromSystem()
+{
+    //  get last directory opened in settings.
+    QString path = medSettingsManager::instance()->value("path", "medViewContainer", QDir::homePath()).toString();
+    path = QFileDialog::getOpenFileName(0, tr("Open"), path);
+
+    if (path.isEmpty())
+        return;
+
+    //TODO wait for deataManager refactoring and open the file in the container - RDE
+    connect(medDataManager::instance(), SIGNAL(dataAdded(medDataIndex)), this, SLOT(addData(medDataIndex)));
+    medDataManager::instance()->importNonPersistent(path);
+
+
+    //  save last directory opened in settings.
+    medSettingsManager::instance()->setValue("path", "medViewContainer", path);
+}
+
+void medViewContainer::updateToolBar()
+{
+    if(d->viewToolbar)
+    {
+        delete d->viewToolbar;
+        d->viewToolbar = NULL;
+    }
+
+    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(d->view);
+    if(layeredView)
+    {
+        foreach(medAbstractInteractor *interactor, layeredView->interactors(layeredView->currentLayer()))
+        {
+            if(!interactor)
+                continue;
+            qDebug() << layeredView->layerData(layeredView->currentLayer())->identifier();
+
+            QWidget* widget = interactor->toolBarWidget();
+            if(widget)
+            {
+                if(!d->viewToolbar)
+                {
+                    d->viewToolbar = new QWidget;
+                    QHBoxLayout *tbLayout = new QHBoxLayout(d->viewToolbar);
+                    tbLayout->setContentsMargins(0, 0, 0, 0);
+                    tbLayout->setSpacing(0);
+                }
+                d->viewToolbar->layout()->addWidget(widget);
+            }
         }
 
-        emit imageSet(index);
-
+        if(d->viewToolbar)
+        {
+            d->toolBarLayout->setStretch(0,0);
+            d->viewToolbar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+            d->toolBarLayout->insertWidget(0, d->viewToolbar);
+        }
     }
-    return res;
-
+    else
+    {
+        d->toolBarLayout->setStretch(0,1);
+    }
 }
 
-bool medViewContainer::open(dtkAbstractData * data)
+medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
 {
-    if ( data == NULL )
-        return false;
+    int w = this->width(), h = this->height();
+    if (x >= w || x < 0 || y >= h || y < 0)
+        return AREA_OUT;
 
-    dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
-    bool newView = view.isNull() || !this->multiLayer();
+    /*
+     *                        top trigger zone
+     *              +--------------------------------------+
+     *              |\                                    /|
+     *              | \ ________________________________ / |
+     * Left trigger |  |                                |  | Right trigger
+     *    zone      |  |________________________________|  |     zone
+     *              | /scccccccccccccccccccccccccccccccce\ |
+     *              |/ssccccccccccccccccccccccccccccccccee\|
+     *              +--------------------------------------+
+     *                       bottom trigger zone
+     *
+     * Each 'if' condition below is structured in the same way :
+     * first we test if we are inside the concerned zone (ex. bottom trigger zone)
+     * if yes, then we test whether we are inside one of the three parts of that
+     * zone: the center part ("ccc"), or the correct side of either triangular
+     * ends ("sss" or "eee").
+     */
 
-    if( newView)
-    {
-        //container empty, or multi with no extendable view
-        view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
-        connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
-    }
+    int ltw = qMin(150,w/4), tth = qMin(150,h/4); // left trigger width, top trigger height
+    int rtw = w - ltw, bth = h - tth;           // right trigger width, bottom trigger height
 
-    if( view.isNull() )
-    {
-        qWarning() << "medViewContainer: Unable to create a v3dView";
-        return false;
-    }
-
-    // set the data to the view
-    if (!this->multiLayer())
-    {
-        view->removeOverlay(0);
-        view->setSharedDataPointer(data,0);
-        newView = true;
-    }
-    else
-    {
-        view->setSharedDataPointer(data);
-    }
-
-    //only call reset if the view is a new one or with only one layer.
-    if (newView)
-    {
-        this->setView(view);
-        qDebug() << "medViewContainer: Reset view";
-        view->reset();
-    }
-    else
-    {
-        // in order to update the toolboxes, when a new data type has been added for example
-        setFocus(Qt::MouseFocusReason);
-    }
-
-    view->update();
-
-    return true;
+    if(x < ltw && ((y >= tth && y < bth) || (y < tth && y > x) || (y >= bth && (h-y) > x)))
+        return AREA_LEFT;
+    else if(x >= rtw && ((y >= tth && y < bth) || (y < tth && y > (w-x)) || (y >= bth && (h-y) > (w-x))))
+        return AREA_RIGHT;
+    else if(y < tth && ((x >= ltw && x < rtw) || (x < ltw && x > y) || (x >= rtw && (w-x) > y)))
+        return AREA_TOP;
+    else if(y >= bth && ((x >= ltw && x < rtw) || (x < ltw && x > (h-y)) || (x >= rtw && (w-x) > (h-y))))
+        return AREA_BOTTOM;
+    return AREA_CENTER;
 }
+

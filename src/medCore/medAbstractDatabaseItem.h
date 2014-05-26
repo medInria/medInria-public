@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QVariant>
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medDataIndex;
 

@@ -15,7 +15,7 @@
 
 class medToolBoxPacsSelectorPrivate;
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 #include <QWidget>
 
 class MEDGUI_EXPORT medPacsSelector : public QWidget

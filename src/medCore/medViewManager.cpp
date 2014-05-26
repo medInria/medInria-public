@@ -11,17 +11,19 @@
 
 =========================================================================*/
 
-#include "medViewManager.h"
+#include <medViewManager.h>
 
-#include "medAbstractView.h"
+#include <medAbstractView.h>
 
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
+
 
 class medViewManagerPrivate
 {
 public:
     QHash<medDataIndex, QList<dtkSmartPointer<medAbstractView> > > views;
+    QList<medAbstractView*> selectedViews;
 };
 
 medViewManager *medViewManager::instance(void)
@@ -30,6 +32,17 @@ medViewManager *medViewManager::instance(void)
         s_instance = new medViewManager;
 
     return s_instance;
+}
+
+medViewManager::medViewManager(void) : d(new medViewManagerPrivate)
+{
+}
+
+medViewManager::~medViewManager(void)
+{
+    delete d;
+
+    d = NULL;
 }
 
 void medViewManager::insert(const medDataIndex& index, medAbstractView *view)
@@ -120,18 +133,6 @@ QList<medDataIndex> medViewManager::indices(medAbstractView *view) const
                 indices << index;
 
     return indices;
-}
-
-medViewManager::medViewManager(void) : d(new medViewManagerPrivate)
-{
-
-}
-
-medViewManager::~medViewManager(void)
-{
-    delete d;
-
-    d = NULL;
 }
 
 medViewManager *medViewManager::s_instance = NULL;

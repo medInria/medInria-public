@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include "medGuiExport.h"
-#include "medToolBox.h"
-#include <medCore/medDataIndex.h>
+#include <medGuiExport.h>
+#include <medToolBox.h>
+#include <medDataIndex.h>
 
 class medFilteringSelectorToolBoxPrivate;
-class dtkAbstractData;
+class medAbstractData;
 class medFilteringAbstractToolBox;
 
 /**
@@ -36,18 +36,12 @@ public:
     /**
      * @brief returns input data
      */
-    dtkAbstractData* data();
+    medAbstractData* data();
 
     /**
      * @brief returns current selected toolbox
      */
     medFilteringAbstractToolBox* currentToolBox();
-
-    /**
-     * @brief set data index
-     * @param index
-     */
-    void setDataIndex(medDataIndex index);
 
 signals:
     /**
@@ -60,7 +54,7 @@ public slots:
     /**
      * @brief instantiates the right process toolbox according to its description
      */
-    void onToolBoxChosen(int index);
+    void changeCurrentToolBox(int index);
     /**
      * @brief clear input data and the current process toolbox
      */
@@ -70,7 +64,7 @@ public slots:
      * @brief retrieve data from the selected input image index
      * @param index
      */
-    void onInputSelected(const medDataIndex& index);
+    void onInputSelected(medAbstractData *data);
 
 
 protected:

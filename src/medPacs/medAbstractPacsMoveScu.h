@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "medAbstractPacsBaseScu.h"
-#include "medPacsExport.h"
+#include <medAbstractPacsBaseScu.h>
+#include <medPacsExport.h>
 
 class medAbstractPacsMoveScu;
 

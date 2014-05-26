@@ -11,19 +11,19 @@
 
 =========================================================================*/
 
-#include "medDatabaseRemover.h"
+#include <medDatabaseRemover.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
 #include <medDatabaseController.h>
 #include <medStorage.h>
 #include <medDataIndex.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace

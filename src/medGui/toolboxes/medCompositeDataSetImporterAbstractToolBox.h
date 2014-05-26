@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "medToolBox.h"
-#include "medGuiExport.h"
+#include <medToolBox.h>
+#include <medGuiExport.h>
 
 class medCompositeDataSetImporterSelectorToolBox;
 class medCompositeDataSetImporterAbstractToolBoxPrivate;
 class dtkAbstractProcess;
-class dtkAbstractData;
+class medAbstractData;
 
 class MEDGUI_EXPORT medCompositeDataSetImporterAbstractToolBox : public medToolBox
 {
@@ -31,7 +31,7 @@ public:
 
     virtual QString description() const = 0;
 
-    virtual dtkAbstractData *output() const;
+    virtual medAbstractData *output() const;
 
 public slots:
     virtual bool import() = 0;

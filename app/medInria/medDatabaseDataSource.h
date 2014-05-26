@@ -1,13 +1,12 @@
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013. All rights reserved.
+See LICENSE.txt for details.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
 
@@ -19,27 +18,28 @@
 class medDatabaseDataSourcePrivate;
 
 /**
- * Not a classical data source per se, as it does not import data
- * Still it fits to the design of data sources
- */
+* Not a classical data source per se, as it does not import data
+* Still it fits to the design of data sources
+*/
 class medDatabaseDataSource : public medAbstractDataSource
 {
     Q_OBJECT
 
 public:
-    medDatabaseDataSource(QWidget* parent = 0);
+    medDatabaseDataSource(QWidget *parent = 0);
     ~medDatabaseDataSource();
 
     QWidget* mainViewWidget();
+    QWidget* compactViewWidget();
 
     QWidget* sourceSelectorWidget();
 
     QString tabName();
 
     QList<medToolBox*> getToolBoxes();
-	
-	QString description() const;
-	
+
+QString description() const;
+
 public slots:
     void update(const medDataIndex &);
     void onOpeningFailed(const medDataIndex& index);
@@ -55,5 +55,4 @@ private:
     medDatabaseDataSourcePrivate* d;
 
 };
-
 

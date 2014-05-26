@@ -20,7 +20,7 @@
 
 #include <dtkCore/dtkAbstractObject.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 //Forward declarations
 class medAbstractView;
@@ -86,4 +86,6 @@ private:
     FilterObjToViewType m_filterObjToView;
 };
 
+//Q_DECLARE_METATYPE(dtkAbstractObject);
+//Q_DECLARE_METATYPE(dtkAbstractObject*);
 

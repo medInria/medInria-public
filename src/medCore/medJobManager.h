@@ -15,8 +15,8 @@
 
 #include <QtCore/QObject>
 
-#include "medCoreExport.h"
-#include "medDataIndex.h"
+#include <medCoreExport.h>
+#include <medDataIndex.h>
 
 class medJobManagerPrivate;
 class medJobItem;

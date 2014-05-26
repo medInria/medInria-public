@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medBrowserPacsNodesToolBox.h"
+#include <medBrowserPacsNodesToolBox.h>
 
 #include <QSettings>
 

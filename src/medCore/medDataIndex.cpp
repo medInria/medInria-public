@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDataIndex.h"
+#include <medDataIndex.h>
 
 
 medDataIndex::medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId, int imageId)

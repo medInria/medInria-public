@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 #include <QGroupBox>
 #include <QChildEvent>

@@ -1,14 +1,3 @@
-
-# PROJECT_NAME:
-# Documentation/project name. Used in some of the resulting file names and
-# xrefs to uniquify two or more projects linked together through their 
-# Doxygen's tag files. Mandatory for each documentation set.
-# Note: might be the same as the doxyfile's PROJECT_NAME
-# Example: 
-#   PROJECT_NAME=medInria
-#
-set(PROJECT_NAME medInria)
-
 # OUTPUT_DIRECTORY:
 # Path to the Doxygen output directory (where the resulting doc is stored).
 # Note: should be the same as your doxyfile's OUTPUT_DIRECTORY
@@ -17,25 +6,39 @@ set(PROJECT_NAME medInria)
 #
 set(OUTPUT_DIRECTORY "@CMAKE_CURRENT_BINARY_DIR@")
 
+
 # DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY:
-# Path to the Doxygen output directory (where the resulting archive(s) should be stored).
+# Path to the Doxygen output directory (where the resulting archive(s) 
+# should be stored).
+# 
 # Example:
 #   DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY @CMAKE_CURRENT_BINARY_DIR@
 #
-set(DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "@DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY@")
+set(DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "@DOC_ARCHIVES_OUTPUT_DIR@")
+
+
 
 # CREATE_HTML_TARZ_ARCHIVE RESULTING_HTML_TARZ_ARCHIVE_FILE:
 # Create a compressed (gzip) tar archive of the html directory (located
-# under the DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY), and name of the resulting archive file.
+# under the DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY), and name of the 
+# resulting archive file.
 # Note: your doxyfile should be configured to enable HTML creation 
 #       (using GENERATE_HTML   YES)
+# 
 # Example: 
 #   CREATE_HTML_TARZ_ARCHIVE ON
 #   RESULTING_HTML_TARZ_ARCHIVE_FILE ${OUTPUT_DIRECTORY}/${PROJECT_NAME}-html.tar.gz
 #
-set(CREATE_HTML_TARZ_ARCHIVE @DOCUMENTATION_HTML_TARZ@)
-set(RESULTING_HTML_TARZ_ARCHIVE_FILE "${DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY}/${PROJECT_NAME}-html.tar.gz")
+set(CREATE_HTML_TARZ_ARCHIVE 
+  @DOC_COMPRESSED_IN_TARGZ@
+  )
+set(HTML_TARZ_ARCHIVE_FILE 
+  @DOC_ARCHIVES_OUTPUT_DIR@/@PROJECT_NAME@-html.tar.gz
+  )
 
+
+set(DOC_DIR_TO_PARSE @DOC_DIR_TO_PARSE@)
+message("DOC_DIR_TO_PARSE: @DOC_DIR_TO_PARSE@")
 
 # ----------------------------------------------------------------------------
 # Generate documentation
@@ -43,10 +46,10 @@ set(RESULTING_HTML_TARZ_ARCHIVE_FILE "${DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY}
 execute_process(
   COMMAND "@DOXYGEN_EXECUTABLE@" "${OUTPUT_DIRECTORY}/Doxyfile.txt"
   WORKING_DIRECTORY ${OUTPUT_DIRECTORY}
-  RESULT_VARIABLE rv
+  RESULT_VARIABLE errors
   )
 
-if(rv)
+if(errors)
   message(FATAL_ERROR "error: Failed to generate documentation")
 endif()
 
@@ -55,16 +58,16 @@ endif()
 
 #step(1 "build *.tar.gz file")
 if(CREATE_HTML_TARZ_ARCHIVE)
-  if(NOT RESULTING_HTML_TARZ_ARCHIVE_FILE STREQUAL "")
-    file(REMOVE "RESULTING_HTML_TARZ_ARCHIVE_FILE")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar cfz ${RESULTING_HTML_TARZ_ARCHIVE_FILE} html
+  if(NOT HTML_TARZ_ARCHIVE_FILE STREQUAL "")
+    file(REMOVE "HTML_TARZ_ARCHIVE_FILE")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar cfz ${HTML_TARZ_ARCHIVE_FILE} html
       WORKING_DIRECTORY ${OUTPUT_DIRECTORY}
-      RESULT_VARIABLE rv
+      RESULT_VARIABLE errors
       )
-    if(EXISTS "${RESULTING_HTML_TARZ_ARCHIVE_FILE}")
-      message(STATUS "info: created '${RESULTING_HTML_TARZ_ARCHIVE_FILE}'")
+    if(EXISTS ${HTML_TARZ_ARCHIVE_FILE})
+      message(STATUS "info: created '${HTML_TARZ_ARCHIVE_FILE}'")
     else()
-      message(STATUS "warning: could not create '${RESULTING_HTML_TARZ_ARCHIVE_FILE}'")
+      message(STATUS "warning: could not create '${HTML_TARZ_ARCHIVE_FILE}'")
     endif()
   endif()
 endif()

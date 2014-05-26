@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medPacsWidget.h"
+#include <medPacsWidget.h>
 
 #include <medAbstractPacsFactory.h>
 #include <medAbstractPacsFindScu.h>

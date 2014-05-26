@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractData.h>
-#include "itkFiltersProcessBase.h"
+#include <medAbstractData.h>
+#include <itkFiltersProcessBase.h>
 
-#include "itkFiltersPluginExport.h"
+#include <itkFiltersPluginExport.h>
 
-class dtkAbstractData;
+class medAbstractData;
 class itkFiltersSubtractProcessPrivate;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersSubtractProcess : public itkFiltersProcessBase

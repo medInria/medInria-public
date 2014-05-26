@@ -1,106 +1,115 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
-
-cmake_minimum_required(VERSION 2.8.1)
+################################################################################
 
 project(medSegmentationPlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
-## #################################################################
+## #############################################################################
 ## Resolve dependencies
-## #################################################################
+## #############################################################################
 
 find_package(dtk REQUIRED)
-
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-## #################################################################
-## Input
-## #################################################################
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
-file(GLOB ${PROJECT_NAME}_HEADERS *.h   )
-file(GLOB ${PROJECT_NAME}_SOURCES *.cpp )
 
-#Determine files to MOC as those containing Q_OBJECT.
-foreach(fileIt ${${PROJECT_NAME}_HEADERS})
-    file(STRINGS ${fileIt} foundString REGEX "^[ \\t]*Q_OBJECT([^0-9A-Za-z_]|$)")
-    string(LENGTH "${foundString}" foundLength)
-    if ( ${foundLength} GREATER 0 )
-        set(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS_MOC} ${fileIt})
-    endif()
-endforeach()
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_RESOURCES medSegmentation.qrc)
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  annotations
+  )
 
-## #################################################################
-## Build rules
-## #################################################################
+set(${PROJECT_NAME}_QRC medSegmentation.qrc)
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
-if (MEDINRIA-PLUGINS__USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
     ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_SOURCES_MOC})
+    )
 endif()
 
+
+## #############################################################################
+## add library
+## #############################################################################
+
+qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_SOURCES_QRC}
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_HEADERS})
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_QRC}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore dtkLog
+  dtkCore
+  dtkLog
+  ITKCommon
   medCore
   medGui
-  ITKCommon
+  medVtkInria
+  vtkCommon
+  vtkRendering
+  vtkVolumeRendering
+  QVTK
   )
 
-dtk_build_doc(msegPlugin)
 
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
-
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
+## #############################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+set_plugin_install_rules(${PROJECT_NAME})

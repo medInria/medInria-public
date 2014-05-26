@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medProgressionStack.h"
+#include <medProgressionStack.h>
 
 #include <QtCore>
 #include <QtGui>

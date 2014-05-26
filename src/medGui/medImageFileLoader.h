@@ -15,7 +15,7 @@
 
 #include <QtCore>
 #include <QtGui>
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medImageFileLoaderPrivate;
 

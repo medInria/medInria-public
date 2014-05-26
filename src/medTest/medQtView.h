@@ -13,21 +13,21 @@
 
 #pragma once
 
-#include "medTestExport.h"
+#include <medTestExport.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "medAbstractView.h"
+#include <medAbstractLayeredView.h>
 
-class dtkAbstractData;
+class medAbstractData;
 class medQtViewPrivate;
 
-class MEDTEST_EXPORT medQtView : public medAbstractView
+class MEDTEST_EXPORT medQtView : public medAbstractLayeredView
 {
     Q_OBJECT
 
 public:
-             medQtView();
+             medQtView(QObject* parent = 0);
     virtual ~medQtView();
 
     virtual QString description() const;
@@ -35,15 +35,33 @@ public:
     static QString s_description();
     static bool registered();
 
-    QWidget *widget();
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor *> extraInteractors(medAbstractData* data);
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
+    virtual QList<medAbstractInteractor *> extraInteractors(unsigned int layer);
 
-    void setData (dtkAbstractData *data);
-    void setData (dtkAbstractData *data, int layer);
+    virtual medAbstractLayeredViewNavigator * primaryNavigator();
+    virtual QList<medAbstractNavigator *> extraNavigators();
 
-    void *data();
-    void *data(int layer);
-    virtual medAbstractViewCoordinates * coordinates() {return NULL;}
-protected:
+    virtual QWidget *viewWidget();
+    virtual QWidget* navigatorWidget();
+    virtual QWidget* mouseInteractionWidget();
+
+    virtual bool initialiseInteractors(medAbstractData* data);
+    virtual bool initialiseNavigators();
+
+    virtual medViewBackend * backend() const;
+
+    virtual void removeInteractors(medAbstractData *data);
+
+    virtual QList<medAbstractParameter*> navigatorsParameters();
+
+public slots:
+    virtual void reset();
+
+private:
+    virtual QImage buildThumbnail(const QSize &size);
+
 private:
     medQtViewPrivate *d;
 };

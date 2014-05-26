@@ -7,7 +7,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "undoRedoRegistrationPluginExport.h"
+#include <undoRedoRegistrationPluginExport.h>
 
 class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationPluginPrivate;
 

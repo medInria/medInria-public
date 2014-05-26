@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <medCore/medAbstractData.h>
-#include "medCoreExport.h"
+#include <medAbstractData.h>
+#include <medCoreExport.h>
 
 class medAttachedDataPrivate;
 

@@ -11,20 +11,20 @@
 
 =========================================================================*/
 
-#include "itkFiltersGaussianProcess.h"
+#include <itkFiltersGaussianProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
+#include <itkImage.h>
+#include <itkCommand.h>
+#include <itkSmoothingRecursiveGaussianImageFilter.h>
 
 #include <itkExceptionObject.h>
-#include "itkFiltersGaussianProcess_p.h"
+#include <itkFiltersGaussianProcess_p.h>
 
 itkFiltersGaussianProcess::itkFiltersGaussianProcess(itkFiltersGaussianProcess *parent) 
     : itkFiltersProcessBase(*new itkFiltersGaussianProcessPrivate(this), parent)

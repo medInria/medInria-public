@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "qtdcmDataSourceServersSettingsToolBox.h"
+#include <qtdcmDataSourceServersSettingsToolBox.h>
 
 #include <QtDcmServersDicomSettingsWidget.h>
 

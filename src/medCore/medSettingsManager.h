@@ -15,7 +15,7 @@
 
 #include <QtCore>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medSettingsManagerPrivate;
 

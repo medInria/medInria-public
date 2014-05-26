@@ -20,7 +20,7 @@
 #include <QtSql>
 
 #include <medMetaDataKeys.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 class medImportJobWatcher;
@@ -99,13 +99,13 @@ signals:
 public slots:
 
     /**
-    * Returns pointer to dtkAbstractData read from db (physical or virtual) or NULL
+    * Returns pointer to medAbstractData read from db (physical or virtual) or NULL
     * @Note There is no read(QString file) method, as you can achieve this using import(QString) and read(index)
     * using the index returned from the import
     * @params const medDataIndex & index Index for data
-    * @return dtkAbstractData * the data
+    * @return medAbstractData * the data
     */
-    virtual dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const = 0;
+    virtual dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const = 0;
 
     /**
     * @brief Imports a file into the db.
@@ -125,7 +125,7 @@ public slots:
     * @param data a pointer to some data to import.
     * @param importUuid the caller's identifier.
     */
-    virtual void import(dtkAbstractData *data, QString importUuid=QString()) = 0;
+    virtual void import(medAbstractData *data, QString importUuid=QString()) = 0;
 
     /**
      * This method allows importing data from other databases
@@ -144,10 +144,10 @@ public slots:
 
     /**
     * Export data to file
-    * @param dtkAbstractData *data Pointer to some data to export
+    * @param medAbstractData *data Pointer to some data to export
     * @param const QString & filename The location in which the data will be stored in the file system
     */
-    virtual void exportDataToFile(dtkAbstractData *data, const QString &filename, const QString & writer);
+    virtual void exportDataToFile(medAbstractData *data, const QString &filename, const QString & writer);
 
     /**
      * This method allows removing one data from the database

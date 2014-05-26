@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseSettingsWidget.h"
+#include <medDatabaseSettingsWidget.h>
 #include <QWidget>
 #include <QtGui>
 #include <QtCore>

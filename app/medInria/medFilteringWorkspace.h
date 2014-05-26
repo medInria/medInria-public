@@ -14,17 +14,17 @@
 #pragma once
 
 #include <QtCore>
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 
 class medFilteringWorkspacePrivate;
 class medViewContainerStack;
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medFilteringWorkspace : public medWorkspace
+class medFilteringWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
 
@@ -45,6 +45,8 @@ public:
      */
     void setupViewContainerStack ();
 
+    virtual void open(const medDataIndex &index);
+
 signals:
 
     /**
@@ -53,35 +55,26 @@ signals:
      * This is a connection between the medFilteringSelectorToolBox and the medFilteringViewContainer which displays input/output images
      *
      */
-    void outputDataChanged ( dtkAbstractData * );
+    void outputDataChanged ( medAbstractData * );
 
-public slots:
+protected slots:
 
-    /**
-     * @brief removes filtering toolboxes when patient changes
-     *
-     * @param patientId
-     */
-    void patientChanged ( int patientId );
+    void changeToolBoxInput();
 
     /**
-     * @brief adds metadata to the output and emits a signal outputDataChanged(dtkAbstractData *)
+     * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
      */
     void onProcessSuccess();
 
-    /**
-     * @brief Imports output data in non persistent database
-     *
-     * @param dataIndex The index that was imported.
-     * @param uuid The identifier of the caller.
-     */
-    void onOutputImported ( const medDataIndex & dataIndex, const QString& uuid );
 
-    /**
-     * @brief Clear the filtering toolboxes when the input view is closed
-     *
-     */
-    void onInputViewRemoved();
+//    /**
+//     * @brief Clear the filtering toolboxes when the input view is closed
+//     *
+//     */
+//    void onInputViewRemoved();
+
+private slots:
+    void removeInternSelectorToolBox();
 
 private:
     medFilteringWorkspacePrivate *d;

@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include "medViewEventFilter.h"
+#include <medViewEventFilter.h>
 
 #include <medAbstractView.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkLog/dtkLog.h>
 
@@ -90,10 +90,7 @@ bool medViewEventFilter::mouseMoveEvent( medAbstractView * vscene, QGraphicsScen
 bool medViewEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
     return false;
-
 }
-
-
 
 bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 {
@@ -190,7 +187,7 @@ void medViewEventFilter::removeFromAllViews()
 
 QObject * medViewEventFilter::objectToFilter( medAbstractView * view )
 {
-    return view->receiverWidget();
+    return view->viewWidget();
 }
 
 void medViewEventFilter::onViewDestroyed( QObject* obj)

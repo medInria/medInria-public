@@ -1,8 +1,10 @@
 *~
 *.swp
-build
 *.user
 *.orig
-.directory
+*.directory
+*.DS_Store
+*.aps
+*.autosave
 CMakeLists.txt.user.*
-.DS_Store
+build

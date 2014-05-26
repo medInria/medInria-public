@@ -1,15 +1,16 @@
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013. All rights reserved.
+See LICENSE.txt for details.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
+
+//TODO use real shared d pointer instead ? - RDE
 
 #pragma once
 
@@ -19,11 +20,17 @@
 class medToolBoxContainer;
 class medDatabaseNavigator;
 class medTabbedViewContainers;
-class medWorkspace;
+class medAbstractWorkspace;
 class medClutEditor;
 class QStackedWidget;
 class QSplitter;
-class medPatientSelectorToolBox;
+class medToolBoxBody;
+class medToolBoxTab;
+class medDatabaseDataSource;
+class medFileSystemDataSource;
+class medAbstractDataSource;
+class QTabWidget;
+class medToolBox;
 
 
 class medWorkspaceAreaPrivate
@@ -31,27 +38,23 @@ class medWorkspaceAreaPrivate
 public:
 
     medToolBoxContainer *toolBoxContainer;
-    QFrame *navigatorContainer;
-    QWidget *viewContainer;  
-    medPatientSelectorToolBox *patientToolBox;   
-    medDatabaseNavigator *navigator;
-    QPointer<medClutEditor>  transFun;
-    QStackedWidget *stack; 
-    QSplitter * splitter;
-    QGridLayout *navigatorContainerLayout;
-    QMutex mutex;
-    QHash<QString,medWorkspace*> workspaces;
-    QPropertyAnimation *navigatorAnimation;
+    QWidget *navigatorContainer;
+    QWidget *viewContainer;
 
-    void restoreSplitterSize(Qt::Orientation orientation);
-    void saveSplitterSize(medWorkspace::LayoutType layout);
+    medDatabaseDataSource *dbSource;
+    medFileSystemDataSource *fsSource;
+    QList <medAbstractDataSource*> dataSources;
+
+    QPointer<medClutEditor> transFun;
+    QStackedWidget *stack;
+    QSplitter * splitter;
+    QMutex mutex;
+    QHash<QString, medAbstractWorkspace*> workspaces;
+    medToolBox *selectionToolBox;
 
 public:
-    medDataIndex currentPatient;
-    QHash<int, int> currentPatientContainer;
     QString currentWorkspaceName;
-    medWorkspace *currentWorkspace;
-    medWorkspace::LayoutType currentLayout;
+    medAbstractWorkspace *currentWorkspace;
 };
 
 

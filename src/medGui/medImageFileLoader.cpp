@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medImageFileLoader.h"
+#include <medImageFileLoader.h>
 
 #include <dtkLog/dtkLog.h>
 

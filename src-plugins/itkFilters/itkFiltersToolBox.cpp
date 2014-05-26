@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include "itkFiltersToolBox.h"
+#include <itkFiltersToolBox.h>
 
 #include <limits>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
@@ -36,7 +36,7 @@
 #include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
 #include <QtGui>
 
@@ -71,10 +71,9 @@ public:
     QDoubleSpinBox * intensityOutputMaximumValue;
 
     QComboBox * filters;
-//    dtkSmartPointer <dtkAbstractProcess> process;
     dtkSmartPointer <itkFiltersProcessBase> process;
     
-    medProgressionStack * progression_stack;
+    medProgressionStack * progressionStack;
 };
 
 itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
@@ -247,7 +246,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     // Principal layout:
     QWidget *widget = new QWidget ( this );
 
-    d->progression_stack = new medProgressionStack ( widget );
+    d->progressionStack = new medProgressionStack ( widget );
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
@@ -263,7 +262,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     layout->addWidget ( d->shrinkFilterWidget );
     layout->addWidget ( d->intensityFilterWidget );
     layout->addWidget ( runButton );
-    layout->addWidget ( d->progression_stack );
+    layout->addWidget ( d->progressionStack );
     layout->addStretch ( 1 );
 
     this->onFiltersActivated ( 0 );
@@ -303,7 +302,7 @@ bool itkFiltersToolBox::registered()
 }
 
 
-dtkAbstractData* itkFiltersToolBox::processOutput()
+medAbstractData* itkFiltersToolBox::processOutput()
 {
     if ( !d->process )
         return NULL;
@@ -336,20 +335,13 @@ void itkFiltersToolBox::clear()
     d->intensityOutputMaximumValue->setValue ( 255 );
 }
 
-void itkFiltersToolBox::update ( dtkAbstractView* view )
+void itkFiltersToolBox::update (medAbstractData *data )
 {
-    if ( !view )
-    {
+    if (!data)
         clear();
-    }
     else
     {
-        if ( !this->parentToolBox()->data() )
-        {
-            return;
-        }
-
-        QString identifier = this->parentToolBox()->data()->identifier();
+        QString identifier = data->identifier();
 
         if ( identifier == "itkDataImageChar3" )
         {
@@ -751,7 +743,7 @@ void itkFiltersToolBox::run ( void )
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess ( d->process );
 
-    d->progression_stack->addJobItem ( runProcess, tr ( "Progress:" ) );
+    d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
 
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );

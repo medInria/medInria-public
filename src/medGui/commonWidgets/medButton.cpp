@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medButton.h"
+#include <medButton.h>
 
 #include <QtGui>
 

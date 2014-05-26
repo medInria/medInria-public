@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -31,11 +31,11 @@ namespace medMetaDataKeys {
 
         Key(const char* name, const char* label="",
             QVariant::Type type=QVariant::String, bool isEditable = true): KEY(name), LABEL(label), TYPE(type), ISEDITABLE(isEditable)
-        { 
+        {
             if(QString(label)=="") LABEL=QString(name);
-            registery.push_back(this); 
+            registery.push_back(this);
         }
-        
+
         ~Key() { }
 
         const QString& key() const { return KEY; }
@@ -43,23 +43,24 @@ namespace medMetaDataKeys {
         const QVariant::Type& type() const { return TYPE; }
         const bool isEditable() const { return ISEDITABLE; }
 
-        bool is_set_in(const dtkAbstractData *d) const { return d->hasMetaData(KEY) ; }
+        bool is_set_in(const medAbstractData *data) const { return data->hasMetaData(KEY) ; }
 
-        const QStringList getValues(const dtkAbstractData *d) const { return d->metaDataValues(KEY); }
+        const QStringList getValues(const medAbstractData *data) const { return data->metaDataValues(KEY); }
 
-        const QString getFirstValue(const dtkAbstractData *d,const QString defaultValue=QString()) const {
-            return  d->hasMetaData(KEY) ? d->metaDataValues(KEY)[0] : defaultValue;
+        const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString()) const
+        {
+            return  data->hasMetaData(KEY) ? data->metaDataValues(KEY)[0] : defaultValue;
         }
 
-        void add(dtkAbstractData* d,const QStringList& values) const { d->addMetaData(KEY,values); }
-        void add(dtkAbstractData* d,const QString& value)      const { d->addMetaData(KEY,value);  }
-        void set(dtkAbstractData* d,const QStringList& values) const { d->setMetaData(KEY,values); }
-        void set(dtkAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
+        void add(medAbstractData* d,const QStringList& values) const { d->addMetaData(KEY,values); }
+        void add(medAbstractData* d,const QString& value)      const { d->addMetaData(KEY,value);  }
+        void set(medAbstractData* d,const QStringList& values) const { d->setMetaData(KEY,values); }
+        void set(medAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
 
         static const Registery& all() { return registery; }
-        
+
         bool operator==(const Key& other){ return ( this->key() == other.key() ); }
-        
+
         static const Key* fromKeyName(const char* name)
         {
             std::vector<const Key*>::iterator it;
@@ -68,9 +69,9 @@ namespace medMetaDataKeys {
                 if( (*it)->key() == name )
                     return *it;
             }
-            return NULL;    
+            return NULL;
         }
-        
+
 
     private:
 
@@ -144,7 +145,7 @@ namespace medMetaDataKeys {
     extern MEDCORE_EXPORT const Key NumberOfComponents;
     extern MEDCORE_EXPORT const Key ComponentType;
     extern MEDCORE_EXPORT const Key PixelType;
-    extern MEDCORE_EXPORT const Key DtkDataType;
+    extern MEDCORE_EXPORT const Key medDataType;
     extern MEDCORE_EXPORT const Key PreferredDataReader;
     extern MEDCORE_EXPORT const Key ImageID;
     extern MEDCORE_EXPORT const Key ThumbnailPath;

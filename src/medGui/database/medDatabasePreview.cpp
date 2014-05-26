@@ -1,506 +1,419 @@
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
-
-=========================================================================*/
-
 #include "medDatabasePreview.h"
-#include "medDatabasePreviewController.h"
-#include "medDatabasePreviewItem.h"
-#include "medDatabasePreviewItemGroup.h"
-#include "medDatabasePreviewScene.h"
-#include "medDatabasePreviewSelector.h"
-#include "medDatabasePreviewTooltip.h"
-#include "medDatabasePreviewView.h"
 
+#include <medDataIndex.h>
 #include <medAbstractDbController.h>
 #include <medDataManager.h>
-#include <medMetaDataKeys.h>
-#include <medStorage.h>
+#include <medImageFileLoader.h>
 
-#include <QtCore>
-#include <QtGui>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QPixmap>
 
-#include <dtkCore/dtkGlobal.h>
+#include <medDatabaseThumbnailHelper.h>
 
-class medDatabasePreviewPrivate
+
+static QPixmap getOrCreateThumbnail(const medDataIndex & index)
 {
-public:
-    int level;
+    if(!index.isValidForSeries())
+        return QPixmap(":/medGui/pixmaps/default_thumbnail.png");
 
-    medDataIndex currentIndex;
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
 
-    medDatabasePreviewScene *scene;
-    medDatabasePreviewView *view;
-    medDatabasePreviewSelector *selector;
+    QImage thumbnailImg;
 
-    medDatabasePreviewItemGroup *seriesGroup;
-    medDatabasePreviewItemGroup *imageGroup;
+    if (!thumbpath.isEmpty())
+        thumbnailImg = QImage(thumbpath);
+    else
+        thumbnailImg = dbc->thumbnail(index);
 
-    QPropertyAnimation *seriesAnimation;
-    QPropertyAnimation *imageAnimation;
-    QParallelAnimationGroup *animation;
-
-    QPropertyAnimation *selectorPositionAnimation;
-    QPropertyAnimation *selectorRectAnimation;
-    QParallelAnimationGroup *selectorAnimation;
-
-    medDatabasePreviewItem *target;
-    int animationDuration;
-
-    QPointF seriesGroupStartPos;
-    QPointF imageGroupStartPos;
-
-};
-
-medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new medDatabasePreviewPrivate)
-{
-    d->animationDuration = 500;
-
-    d->level = 0;
-
-    d->scene = new medDatabasePreviewScene(this);
-
-    d->view = new medDatabasePreviewView(this);
-    d->view->setScene(d->scene);
-
-    d->selector = new medDatabasePreviewSelector;
-    d->selector->setRect(QRectF(5, 5, 138, 138));
-
-    d->scene->addItem(d->selector);
-
-    d->seriesGroup = new medDatabasePreviewItemGroup;
-    d->imageGroup = new medDatabasePreviewItemGroup;
-
-    d->scene->addGroup(d->imageGroup);
-    d->scene->addGroup(d->seriesGroup);
-
-    d->seriesAnimation = NULL;
-    d->imageAnimation = NULL;
-    d->animation = NULL;
-
-    d->imageGroupStartPos = d->imageGroup->pos();
-    d->seriesGroupStartPos = d->seriesGroup->pos();
-
-    d->selectorPositionAnimation = NULL;
-    d->selectorRectAnimation = NULL;
-    d->selectorAnimation = NULL;
-
-    connect(d->view, SIGNAL(moveUp()), this, SLOT(onMoveUp()));
-    connect(d->view, SIGNAL(moveDw()), this, SLOT(onMoveDw()));
-    connect(d->view, SIGNAL(moveLt()), this, SLOT(onMoveLt()));
-    connect(d->view, SIGNAL(moveRt()), this, SLOT(onMoveRt()));
-    connect(d->view, SIGNAL(hovered(medDatabasePreviewItem*)), this, SLOT(onHovered(medDatabasePreviewItem*)));
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(d->view);
-
-    medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
-    ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
-    : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
-
-    this->init();
+    if(!thumbnailImg.isNull())
+        return QPixmap::fromImage(thumbnailImg);
+    else
+        return QPixmap(":/medGui/pixmaps/default_thumbnail.png");
 }
 
-medDatabasePreview::~medDatabasePreview(void)
+
+class medDatabasePreviewStaticScenePrivate
+{
+public:
+    int baseWidth;
+    int baseHeight;
+    QPen pen;
+    bool isMulti;
+    medDataIndex currentDataIndex;
+};
+
+
+medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
+    d(new medDatabasePreviewStaticScenePrivate)
+{
+    d->baseWidth = medDatabaseThumbnailHelper::width;
+    d->baseHeight = medDatabaseThumbnailHelper::height;
+
+    d->pen = QPen(QColor(70,70,70));
+    d->pen.setWidth(4);
+
+    d->isMulti = false;
+}
+
+medDatabasePreviewStaticScene::~medDatabasePreviewStaticScene()
 {
     delete d;
-
     d = NULL;
 }
 
-void medDatabasePreview::reset(void)
+void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
 {
-    d->scene->reset();
+    this->clear();
+    d->currentDataIndex = index;
 
-    d->seriesGroup->clear();
-    d->seriesGroup->setPos(d->seriesGroupStartPos);
+    QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    pixmap->setPixmap(getOrCreateThumbnail(index));
+    this->addItem(pixmap);
 
-    d->imageGroup->clear();
-    d->imageGroup->setPos(d->imageGroupStartPos);
-
-    d->level = 0;
-
-    if (d->animation) {
-        delete d->animation;
-        d->animation = NULL;
-    }
-
-    if (d->seriesAnimation)
-        d->seriesAnimation = NULL;
-
-    if (d->imageAnimation)
-        d->imageAnimation = NULL;
-}
-
-void medDatabasePreview::init(void)
-{
-    d->selector->hide();
-}
-
-void medDatabasePreview::onPatientClicked(const medDataIndex& id)
-{
-    d->seriesGroup->clear();
-    d->imageGroup->clear();
-
-    int firstSeId = -1;
-    medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
-    if ( db ) {
-
-        QList<medDataIndex> studies = db->studies(id);
-        for (QList<medDataIndex>::const_iterator studyIt( studies.begin() ); studyIt != studies.end(); ++studyIt ) {
-
-            QList<medDataIndex> series = db->series(*studyIt);
-            for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
-
-                if ( firstSeId < 0)
-                    firstSeId = (*seriesIt).seriesId();
-
-                d->seriesGroup->addItem(new medDatabasePreviewItem(
-                                            medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
-            }
-
+    if( ! this->views().isEmpty()) {
+        foreach(QGraphicsView * v, this->views()) {
+            v->fitInView(pixmap, Qt::KeepAspectRatio);
         }
     }
 
-    d->scene->setSceneRect(d->seriesGroup->boundingRect());
-
-    if(d->level &&  !d->seriesGroup->childItems().isEmpty())
-        this->onSlideDw();
-    else
-        moveToItem( d->seriesGroup->item(firstSeId) );
 }
 
-void medDatabasePreview::onStudyClicked(const medDataIndex& id)
+// medDatabasePreviewStudyScene
+void medDatabasePreviewStaticScene::addImage(const medDataIndex &index)
 {
-    d->seriesGroup->clear();
-    d->imageGroup->clear();
+    d->isMulti = true;
 
-    int firstSeId = -1;
-    medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
-    if ( db ) {
-
-        QList<medDataIndex> series = db->series(id);
-        for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
-
-            if ( firstSeId < 0)
-                firstSeId = (*seriesIt).seriesId();
-
-            d->seriesGroup->addItem(new medDatabasePreviewItem(
-                                        medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
-
-
-        }
-    }
-
-    d->scene->setSceneRect(d->seriesGroup->boundingRect());
-
-    if(d->level &&  !d->seriesGroup->childItems().isEmpty())
-        this->onSlideDw();
-    else
-        moveToItem( d->seriesGroup->item(firstSeId) );
-}
-
-void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
-{
-    medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
-
-    d->seriesGroup->clear();
-
-    if ( db ) {
-        QList<medDataIndex> series = db->series(id);
-        for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
-
-            d->seriesGroup->addItem(new medDatabasePreviewItem(
-                                        medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
-        }
-    }
-
-    // Image level
-    int firstImageId(-1);
-
-    d->imageGroup->clear();
-
-    if ( db ) {
-        QList<medDataIndex> images = db->images(id);
-        for (QList<medDataIndex>::const_iterator imageIt( images.begin() ); imageIt != images.end(); ++imageIt ) {
-
-            if (firstImageId < 0)
-                firstImageId = (*imageIt).imageId();
-
-            d->imageGroup->addItem(new medDatabasePreviewItem( medDataIndex(*imageIt ) ) );
-        }
-
-    }
-
-    d->scene->setSceneRect(d->imageGroup->boundingRect());
-
-    if(!d->level)
-        onSlideUp();
-    else
-        moveToItem( d->imageGroup->item(firstImageId) );
-}
-
-void medDatabasePreview::onSlideUp(void)
-{
-    if(d->level)
+    int nbItem = this->items().size();
+    if(nbItem > 5)
         return;
 
+    QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    pixmap->setPixmap(getOrCreateThumbnail(index));
+    pixmap->scale(d->baseWidth / pixmap->boundingRect().width(),
+                  d->baseHeight / pixmap->boundingRect().height());
+    this->addItem(pixmap);
 
-    d->level++;
-
-    qreal group_height  = medDatabasePreviewController::instance()->groupHeight();
-    qreal group_spacing = medDatabasePreviewController::instance()->groupSpacing();
-
-    if(!d->seriesAnimation)
-        d->seriesAnimation = new QPropertyAnimation(d->seriesGroup, "pos");
-
-    const QPointF slideOffset(0, group_height + group_spacing);
-
-    d->seriesAnimation->setDuration(d->animationDuration);
-    d->seriesAnimation->setStartValue(d->seriesGroup->pos());
-    d->seriesAnimation->setEndValue(d->seriesGroupStartPos - slideOffset);
-    d->seriesAnimation->setEasingCurve(QEasingCurve::OutBounce);
-
-    if(!d->imageAnimation)
-        d->imageAnimation = new QPropertyAnimation(d->imageGroup, "pos");
-
-
-    d->imageAnimation->setDuration(d->animationDuration);
-    d->imageAnimation->setStartValue(d->imageGroup->pos());
-    d->imageAnimation->setEndValue(d->imageGroupStartPos - slideOffset);
-    d->imageAnimation->setEasingCurve(QEasingCurve::OutBounce);
-
-    if(!d->animation) {
-        d->animation = new QParallelAnimationGroup(this);
-        d->animation->addAnimation(d->seriesAnimation);
-        d->animation->addAnimation(d->imageAnimation);
-    }
-
-    connect(d->animation, SIGNAL(finished()), this, SLOT(onMoveBg()));
-
-    d->animation->start();
-}
-
-void medDatabasePreview::onSlideDw(void)
-{
-    if(!d->level)
-        return;
-
-
-    d->level--;
-
-    qreal group_height  = medDatabasePreviewController::instance()->groupHeight();
-    qreal group_spacing = medDatabasePreviewController::instance()->groupSpacing();
-
-    if(!d->seriesAnimation)
-        d->seriesAnimation = new QPropertyAnimation(d->seriesGroup, "pos");
-
-    const QPointF slideOffset(0, group_height + group_spacing);
-
-    d->seriesAnimation->setDuration(d->animationDuration);
-    d->seriesAnimation->setStartValue(d->seriesGroup->pos());
-    d->seriesAnimation->setEndValue(d->seriesGroupStartPos);
-    d->seriesAnimation->setEasingCurve(QEasingCurve::OutBounce);
-
-    if(!d->imageAnimation)
-        d->imageAnimation = new QPropertyAnimation(d->imageGroup, "pos");
-
-    d->imageAnimation->setDuration(d->animationDuration);
-    d->imageAnimation->setStartValue(d->imageGroup->pos());
-    d->imageAnimation->setEndValue(d->imageGroupStartPos);
-    d->imageAnimation->setEasingCurve(QEasingCurve::OutBounce);
-
-    if(!d->animation) {
-        d->animation = new QParallelAnimationGroup(this);
-        d->animation->addAnimation(d->seriesAnimation);
-        d->animation->addAnimation(d->imageAnimation);
-    }
-
-    connect(d->animation, SIGNAL(finished()), this, SLOT(onMoveBg()));
-
-    d->animation->start();
-}
-
-void medDatabasePreview::onMoveRt(void)
-{
-    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
-
-    QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
-                           (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
-
-    medDatabasePreviewItem *target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(d->selector->pos() + QPointF(item_width + item_spacing + query_offset, query_offset)));
-
-    if(!target)
-        return;
-
-    moveToItem( target );
-}
-
-void medDatabasePreview::onMoveLt(void)
-{
-    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
-
-    QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
-                           (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
-
-    medDatabasePreviewItem *target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(d->selector->pos() + QPointF(-item_width - item_spacing + query_offset, query_offset)));
-
-    moveToItem( target );
-}
-
-void medDatabasePreview::onMoveUp(void)
-{
-    if(d->level)
-        this->onPatientClicked(d->currentIndex);
-}
-
-void medDatabasePreview::onMoveDw(void)
-{
-    if(!d->level)
-        this->onSeriesClicked(d->currentIndex);
-}
-
-void medDatabasePreview::onMoveBg(void) // move to beginning of the current line
-{
-    if(!d->selector->isVisible())
-        d->selector->show();
-
-    medDatabasePreviewItem *target = NULL;
-
-    target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(40,40));
-
-    if(!target) {
-        d->selector->setPos(5, 5);
-        return;
-    }
-
-    moveToItem( target );
-}
-
-void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to beginning of the current line
-{
-
-    if(!d->selector->isVisible())
-        d->selector->show();
-
-    if (!target)
+    switch(nbItem)
     {
-        d->selector->hide();
-        return;
+        case 1:
+        {
+            this->addLine(d->baseWidth + d->pen.width()/2,
+                          0,
+                          d->baseWidth + d->pen.width()/2,
+                          (d->baseHeight + d->pen.width()/2) * 2,
+                          d->pen
+                          );
+            this->addLine(0,
+                          d->baseHeight + d->pen.width()/2,
+                          (d->baseWidth + d->pen.width()/2) * 2,
+                          d->baseHeight + d->pen.width()/2,
+                          d->pen
+                          );
+
+            pixmap->moveBy(d->baseWidth + d->pen.width() + 1,
+                           0
+                           );
+            break;
+        }
+        case 4:
+        {
+            pixmap->moveBy(0,
+                           d->baseHeight + d->pen.width() +1
+                           );
+            break;
+        }
+        case 5:
+        {
+            pixmap->moveBy(d->baseWidth + d->pen.width() +1,
+                           d->baseHeight + d->pen.width() + 1
+                           );
+            break;
+        }
+        default:
+            break;
     }
-
-    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
-    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal item_margins = selector_width - item_width;
-
-    QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
-                           (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
-
-    d->currentIndex = target->dataIndex();
-
-    target->ensureVisible(QRectF(0,0,item_width,item_height), medDatabasePreviewController::instance()->selectorWidth() + medDatabasePreviewController::instance()->itemSpacing(), 0);
-
-    if ( d->currentIndex.isValidForImage() ) {
-        d->selector->setText(QString(tr("Image id %1")).arg(d->currentIndex.imageId()));
-    } else if (d->currentIndex.isValidForSeries() ) {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->currentIndex.dataSourceId());
-        QString seriesName = dbc->metaData(d->currentIndex,medMetaDataKeys::SeriesDescription);
-        if ( seriesName.isEmpty() )
-            seriesName = QString(tr("Series id %1")).arg(d->currentIndex.seriesId());
-        d->selector->setText(seriesName);
-    } else {
-        d->selector->setText(d->currentIndex.asString());
-    }
-
-    if(!d->selectorPositionAnimation)
-        d->selectorPositionAnimation = new QPropertyAnimation(d->selector, "pos");
-
-    d->selectorPositionAnimation->setDuration(100);
-    d->selectorPositionAnimation->setStartValue(d->selector->pos());
-    d->selectorPositionAnimation->setEndValue(target->scenePos() + selector_offset);
-    d->selectorPositionAnimation->setEasingCurve(QEasingCurve::OutQuad);
-
-    if(!d->selectorRectAnimation)
-        d->selectorRectAnimation = new QPropertyAnimation(d->selector, "rect");
-
-    d->selectorRectAnimation->setDuration(100);
-    d->selectorRectAnimation->setStartValue(d->selector->rect());
-    d->selectorRectAnimation->setEndValue(QRectF(0, 0, item_width + item_margins, item_height + item_margins + item_spacing));
-    d->selectorRectAnimation->setEasingCurve(QEasingCurve::Linear);
-
-    if(!d->selectorAnimation) {
-        d->selectorAnimation = new QParallelAnimationGroup(this);
-        d->selectorAnimation->addAnimation(d->selectorPositionAnimation);
-        d->selectorAnimation->addAnimation(d->selectorRectAnimation);
-    }
-
-    d->selectorAnimation->start();
 }
 
-void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
+medDataIndex& medDatabasePreviewStaticScene::currentDataIndex() const
 {
+    return d->currentDataIndex;
+}
 
-    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
-    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal item_margins = selector_width - item_width;
 
-    d->currentIndex = item->dataIndex();
+void medDatabasePreviewStaticScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!d->isMulti)
+        emit openRequest(d->currentDataIndex);
 
-    QPoint selector_offset(-4, -4);
+    QGraphicsScene::mouseDoubleClickEvent(event);
+}
 
-    if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
-        return;
+void medDatabasePreviewStaticScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!d->isMulti && event->buttons() == Qt::LeftButton)
+    {
+        QPixmap pixmap = getOrCreateThumbnail(d->currentDataIndex);
 
-    if ( d->currentIndex.isValidForImage() ) {
-        d->selector->setText(QString(tr("Image id %1")).arg(d->currentIndex.imageId()));
-    } else if (d->currentIndex.isValidForSeries() ) {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->currentIndex.dataSourceId());
-        QString seriesName = dbc->metaData(d->currentIndex,medMetaDataKeys::SeriesDescription);
-        d->selector->setText(seriesName);
-        if ( seriesName.isEmpty() )
-            seriesName = QString(tr("Series id %1")).arg(d->currentIndex.seriesId());
-    } else {
-        d->selector->setText(d->currentIndex.asString());
+        QMimeData *data = d->currentDataIndex.createMimeData();
+        data->setImageData(pixmap);
+
+        QDrag *drag = new QDrag(this->views().first());
+        drag->setMimeData(data);
+        drag->setPixmap(pixmap);
+
+        drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
+        drag->start();
+    }
+    QGraphicsScene::mouseMoveEvent(event);
+}
+
+// medDatabasePreviewStudyScene
+class medDatabasePreviewDynamicScenePrivate
+{
+public:
+    QList<QPair<medDataIndex,QString> > seriesDescriptionDataIndexPairList;
+};
+
+bool stringMedDataIndexPairLessThan(const QPair<medDataIndex,QString> & a,
+                                    const QPair<medDataIndex,QString> & b) {
+    return (a.second < b.second);
+}
+
+medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(const QList<QPair<medDataIndex,QString> > & seriesDescriptionDataIndexList,
+                                                               QObject * parent):
+    d(new medDatabasePreviewDynamicScenePrivate)
+{
+    d->seriesDescriptionDataIndexPairList = seriesDescriptionDataIndexList;
+    qSort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
+}
+
+medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()
+{
+    delete d;
+    d = NULL;
+}
+
+
+void medDatabasePreviewDynamicScene::previewMouseMoveEvent(QMouseEvent *event, int width)
+{
+    int seriesIndex = event->x() / (width / (double)d->seriesDescriptionDataIndexPairList.size());
+    seriesIndex = qBound(0, seriesIndex, d->seriesDescriptionDataIndexPairList.size()-1);
+    this->setImage(d->seriesDescriptionDataIndexPairList.at(seriesIndex).first);
+    emit updateLabel(d->seriesDescriptionDataIndexPairList.at(seriesIndex).second);
+}
+
+
+// medDatabasePreview
+class medDatabasePreviewPrivate
+{
+public:
+    medDatabasePreview::medDataType currentDataType;
+    medDatabasePreviewStaticScene *staticScene;
+    medDatabasePreviewDynamicScene *dynamicScene;
+
+    QLabel *label;
+    QString defaultText;
+};
+
+
+medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePreviewPrivate)
+{
+    this->setMouseTracking(true);
+
+    QGraphicsScene *scene = new QGraphicsScene;
+    this->setScene(scene);
+
+    d->dynamicScene = NULL;
+    d->staticScene = NULL;
+
+    QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail.png"));
+    this->fitInView(pixmap, Qt::KeepAspectRatio);
+    scene->addItem(pixmap);
+
+    d->label = new QLabel(this);
+    d->label->setAlignment(Qt::AlignCenter);
+    d->label->setObjectName("previewLabel");
+    d->label->setText("Nothing selected");
+
+    this->setMinimumSize(184, 184);
+
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+}
+
+
+medDatabasePreview::~medDatabasePreview()
+{
+    delete d;
+    d = NULL;
+}
+
+
+void medDatabasePreview::resizeEvent(QResizeEvent *event)
+{
+    this->resize(this->width(), this->width());
+    this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+    QGraphicsView::resizeEvent(event);
+}
+
+void medDatabasePreview::showSeriesPreview(const medDataIndex &index)
+{
+    d->currentDataType = medDatabasePreview::SERIES;
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+
+    if (d->staticScene)
+        delete d->staticScene;
+    d->staticScene = new medDatabasePreviewStaticScene;
+    connect(d->staticScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+
+    d->staticScene->setImage(index);
+
+    QString itemDescription = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
+    d->label->setText(itemDescription);
+
+    this->setScene(d->staticScene);
+    this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+}
+
+
+void medDatabasePreview::showStudyPreview(const medDataIndex &index)
+{
+    d->currentDataType = medDatabasePreview::STUDY;
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+
+    if (d->staticScene)
+        delete d->staticScene;
+    if (d->dynamicScene)
+        delete d->dynamicScene;
+
+    d->staticScene = new medDatabasePreviewStaticScene;
+    connect(d->staticScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+
+    this->setScene(d->staticScene);
+
+    QList<medDataIndex> seriesIndex = dbc->series(index);
+    QList<QPair<medDataIndex,QString> > seriesDescriptionDataIndexPairList;
+
+    foreach (medDataIndex serieIndex, seriesIndex)
+    {
+        d->staticScene->addImage(serieIndex);
+        QString seriesDescription = dbc->metaData(serieIndex, medMetaDataKeys::SeriesDescription);
+        seriesDescriptionDataIndexPairList.append(qMakePair(serieIndex, seriesDescription));
     }
 
-    if(!d->selectorPositionAnimation)
-        d->selectorPositionAnimation = new QPropertyAnimation(d->selector, "pos");
+    d->dynamicScene = new medDatabasePreviewDynamicScene(seriesDescriptionDataIndexPairList);
+    connect(d->dynamicScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+    connect(d->dynamicScene, SIGNAL(updateLabel(QString)), this, SLOT(setLabel(QString)));
 
-    d->selectorPositionAnimation->setDuration(100);
-    d->selectorPositionAnimation->setStartValue(d->selector->pos());
-    d->selectorPositionAnimation->setEndValue(item->scenePos() + selector_offset);
-    d->selectorPositionAnimation->setEasingCurve(QEasingCurve::Linear);
 
-    if(!d->selectorRectAnimation)
-        d->selectorRectAnimation = new QPropertyAnimation(d->selector, "rect");
+    QString itemDescription = dbc->metaData(index, medMetaDataKeys::StudyDescription);
+    d->label->setText(itemDescription);
+    d->defaultText = itemDescription;
+    this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+}
 
-    d->selectorRectAnimation->setDuration(100);
-    d->selectorRectAnimation->setStartValue(d->selector->rect());
-    d->selectorRectAnimation->setEndValue(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
-    d->selectorRectAnimation->setEasingCurve(QEasingCurve::Linear);
 
-    if(!d->selectorAnimation) {
-        d->selectorAnimation = new QParallelAnimationGroup(this);
-        d->selectorAnimation->addAnimation(d->selectorPositionAnimation);
-        d->selectorAnimation->addAnimation(d->selectorRectAnimation);
+
+void medDatabasePreview::showPatientPreview(const medDataIndex &index)
+{
+    d->currentDataType = medDatabasePreview::PATIENT;
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+
+    if (d->staticScene)
+        delete d->staticScene;
+    d->staticScene = new medDatabasePreviewStaticScene;
+    connect(d->staticScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+
+    this->setScene(d->staticScene);
+
+    d->staticScene->setImage(index);
+
+    QString itemDescription = dbc->metaData(index, medMetaDataKeys::PatientName);
+    d->label->setText(itemDescription);
+    this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+}
+
+void medDatabasePreview::setLabel(const QString &text)
+{
+    d->label->setText(text);
+}
+
+
+QLabel* medDatabasePreview::label() const
+{
+    return d->label;
+}
+
+void medDatabasePreview::enterEvent(QEvent *event)
+{
+    switch(d->currentDataType)
+    {
+        case medDatabasePreview::SERIES:
+        {
+            break;
+        }
+        case medDatabasePreview::STUDY:
+        {
+            this->setScene(d->dynamicScene);
+            this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+            break;
+        }
+        case medDatabasePreview::PATIENT:
+        {
+            break;
+        }
     }
+    QGraphicsView::enterEvent(event);
 
-    d->selectorAnimation->start();
+}
+
+
+void medDatabasePreview::leaveEvent(QEvent *event)
+{
+    switch(d->currentDataType)
+    {
+        case medDatabasePreview::SERIES:
+        {
+            break;
+        }
+        case medDatabasePreview::STUDY:
+        {
+            this->setScene(d->staticScene);
+            this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+            this->setLabel(d->defaultText);
+            break;
+        }
+        case medDatabasePreview::PATIENT:
+        {
+            break;
+        }
+    }
+    QGraphicsView::leaveEvent(event);
+}
+
+void medDatabasePreview::mouseMoveEvent(QMouseEvent *event)
+{
+    switch(d->currentDataType)
+    {
+        case medDatabasePreview::SERIES:
+        {
+            break;
+        }
+        case medDatabasePreview::STUDY:
+        {
+            if (event->buttons() == Qt::LeftButton)
+                break;
+            d->dynamicScene->previewMouseMoveEvent(event, this->width());
+            this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+            break;
+        }
+        case medDatabasePreview::PATIENT:
+        {
+            break;
+        }
+    }
+    QGraphicsView::mouseMoveEvent(event);
 }

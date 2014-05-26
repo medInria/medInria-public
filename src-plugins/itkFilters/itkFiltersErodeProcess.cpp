@@ -11,15 +11,15 @@
 
 =========================================================================*/
 
-#include "itkFiltersErodeProcess.h"
+#include <itkFiltersErodeProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
 
-#include "itkFiltersErodeProcess_p.h"
+#include <itkFiltersErodeProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 

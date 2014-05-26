@@ -4,21 +4,21 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
-#include <medCore/medAbstractView.h>
+#include <medAbstractView.h>
 
-#include "medToolBox.h"
-#include "medToolBoxHeader.h"
-#include "medToolBoxBody.h"
-#include "medToolBoxTab.h"
+#include <medToolBox.h>
+#include <medToolBoxHeader.h>
+#include <medToolBoxBody.h>
+#include <medToolBoxTab.h>
 #include <medButton.h>
 
 #include <dtkCore/dtkGlobal.h>
@@ -60,7 +60,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->isMinimized = false;
     connect(d->header,SIGNAL(triggered()),this,SLOT(switchMinimize()));
 
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
 
 medToolBox::~medToolBox(void)
@@ -100,22 +100,10 @@ medToolBoxBody *medToolBox::body(void) const
     return d->body;
 }
 
-void medToolBox::update(dtkAbstractView *view)
-{
-    medAbstractView* medView = dynamic_cast<medAbstractView*>(view);
-    if (medView)
-        setContextVisibility(medView->dataTypes());
-    else
-    {
-        setContextVisibility(QHash<QString, unsigned int> ());
-    }
-    //DTK_DEFAULT_IMPLEMENTATION;
-    //DTK_UNUSED(view);
-}
 
 void medToolBox::clear(void)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    d->body->clear();
 }
 
 void medToolBox::setOrientation(Qt::Orientation orientation)
@@ -191,22 +179,17 @@ void medToolBox::addValidDataType(const QString & dataType)
 void medToolBox::setContextVisibility(
         const QHash<QString, unsigned int> & viewDataTypes )
 {
-    //JGG qDebug()<< "setContextVisibility";
     if (d->validDataTypes.isEmpty())
     {
-        //JGG qDebug()<< "no datatypes";
         d->isContextVisible = true;
     }
     else
     {
-        //JGG qDebug()<<"View datatypes"<<viewDataTypes.keys()<< "values" << viewDataTypes.values();
         d->isContextVisible = false;
         foreach(QString validDataType, d->validDataTypes)
         {
-            //JGG qDebug()<<"datatype"<< validDataType ;
             if(viewDataTypes.contains(validDataType))
             {
-                //JGG qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
                 if(viewDataTypes.value(validDataType)!=0)
                 {
                     d->isContextVisible = true;
@@ -215,7 +198,6 @@ void medToolBox::setContextVisibility(
             }
         }
     }
-    //JGG qDebug()<<"visibility" << d->isContextVisible ;
     this->setVisible(d->isContextVisible);
 }
 

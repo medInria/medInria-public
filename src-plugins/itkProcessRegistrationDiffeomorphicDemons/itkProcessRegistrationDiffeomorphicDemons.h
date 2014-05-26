@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <itkProcessRegistration/itkProcessRegistration.h>
-#include "itkProcessRegistrationDiffeomorphicDemonsPluginExport.h"
+#include <itkProcessRegistration.h>
+#include <itkProcessRegistrationDiffeomorphicDemonsPluginExport.h>
 
 class itkProcessRegistrationDiffeomorphicDemonsPrivate;
 

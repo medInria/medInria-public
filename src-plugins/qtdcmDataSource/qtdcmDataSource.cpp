@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include "qtdcmDataSource.h"
+#include <qtdcmDataSource.h>
 
-#include <medSql/medDatabaseImporter.h>
-#include <medSql/medDatabaseController.h>
-#include <medCore/medJobManager.h>
-#include <medCore/medAbstractDataSourceFactory.h>
+#include <medDatabaseImporter.h>
+#include <medDatabaseController.h>
+#include <medJobManager.h>
+#include <medAbstractDataSourceFactory.h>
 #include <medToolBox.h>
 
 #include <QtDcm.h>
@@ -26,8 +26,8 @@
 #include <QtDcmPreferences.h>
 
 #include <dtkCore/dtkAbstractDataReader.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 
 #include <qtdcmDataSourceSerieToolBox.h>
 #include <qtdcmDataSourceServersSettingsToolBox.h>

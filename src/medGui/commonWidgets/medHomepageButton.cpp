@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medHomepageButton.h"
+#include <medHomepageButton.h>
 
 //medHomepagePushButton in the quick access menu
 medQuickAccessPushButton::medQuickAccessPushButton ( QWidget * parent )

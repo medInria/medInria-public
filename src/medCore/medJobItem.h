@@ -15,7 +15,7 @@
 
 #include <QtCore>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 /**
  * @class medJobItem
@@ -31,7 +31,7 @@
  *   medRunnableProcess *runProcess = new medRunnableProcess;
  *   runProcess->setProcess (process);
  *
- *   d->progression_stack->addJobItem(runProcess, "Progress:");
+ *   d->progressionStack->addJobItem(runProcess, "Progress:");
  *
  *   connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
  *   connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));

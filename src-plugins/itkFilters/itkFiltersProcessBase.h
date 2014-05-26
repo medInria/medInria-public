@@ -14,9 +14,9 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
-#include "itkFiltersPluginExport.h"
+#include <itkFiltersPluginExport.h>
 
 class itkFiltersProcessBasePrivate;
 
@@ -33,13 +33,17 @@ public:
 
     QString description ( void );
     
-    void setInput ( dtkAbstractData *data );
-    dtkAbstractData *output ( void );
+    void setInput ( medAbstractData *data );
+
+    medAbstractData *output ( void );
     
     void emitProgress(int progress);
     
 private:
     DTK_DECLARE_PRIVATE(itkFiltersProcessBase)
+    
+    using dtkAbstractProcess::description;
+    using dtkAbstractProcess::setInput;
 };
 
 //ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersProcessBase& process);

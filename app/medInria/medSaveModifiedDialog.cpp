@@ -17,7 +17,7 @@
 
 #include <QtGui>
 
-#include "medSaveModifiedDialog.h"
+#include <medSaveModifiedDialog.h>
 
 class medSaveModifiedDialogPrivate
 {

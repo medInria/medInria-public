@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 #include <dtkCore/dtkAbstractFactory.h>
 
 #include <QtCore>
 
-class medWorkspace;
+class medAbstractWorkspace;
 class medWorkspaceFactoryPrivate;
 struct medWorkspaceDetails;
 
@@ -28,7 +28,7 @@ class MEDGUI_EXPORT medWorkspaceFactory : public dtkAbstractFactory
     Q_OBJECT
 
 public:
-    typedef medWorkspace *(*medWorkspaceCreator)(QWidget* parent);
+    typedef medAbstractWorkspace *(*medWorkspaceCreator)(QWidget* parent);
     typedef bool (*medWorkspaceIsUsable)();
 
 public:
@@ -37,7 +37,7 @@ public:
     QList<QString> workspaces();
 
     /**
-     * @brief Registers a medWorkspace type with the factory.
+     * @brief Registers a medAbstractWorkspace type with the factory.
      *
      *
      * This method is templated with the workspaceType.
@@ -61,7 +61,7 @@ public:
     }
 
     /**
-     * @brief Registers a medWorkspace type with the factory.
+     * @brief Registers a medAbstractWorkspace type with the factory.
      *
      * This method requires the developer to provide his own function pointer
      * to allocate the workspace memory.
@@ -94,11 +94,11 @@ public:
 
 public slots:
     /**
-     * @brief allocates the memory for a medWorkspace.
+     * @brief allocates the memory for a medAbstractWorkspace.
      * @param type identifier for the Workspace type.
      * @param parent the parentWidget for all the Widget created in the workspace, even if the workspace is not a widget, its children can be destroyed by the qobject hierarchy.
      */
-    medWorkspace *createWorkspace(QString type,QWidget* parent=0);
+    medAbstractWorkspace *createWorkspace(QString type,QWidget* parent=0);
 
 protected:
      medWorkspaceFactory();
@@ -112,7 +112,7 @@ private:
      * @warning keep it static if you don't want to freeze your brain (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    static medWorkspace* create ( QWidget* parent ) {
+    static medAbstractWorkspace* create ( QWidget* parent ) {
     return ( new T(parent) );
     }
 

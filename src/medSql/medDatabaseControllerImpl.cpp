@@ -17,10 +17,10 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
@@ -76,7 +76,7 @@ const QString medDatabaseControllerImplPrivate::T_patient = "patient";
 
 void medDatabaseControllerImplPrivate::buildMetaDataLookup()
 {
-// The table defines the mapping between metadata in the dtkAbstractData and the database tables.
+// The table defines the mapping between metadata in the medAbstractData and the database tables.
     metaDataLookup.insert(medMetaDataKeys::ThumbnailPath.key(),
         TableEntryList() << TableEntry(T_image, "thumbnail", true)
         << TableEntry(T_series, "thumbnail", true)
@@ -416,7 +416,7 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUuid)
+void medDatabaseControllerImpl::import( medAbstractData *data, QString importUuid)
 {    
     medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
     medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
@@ -439,7 +439,7 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
 }
 
 
-void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QString & filename, const QString & writer)
+void medDatabaseControllerImpl::exportDataToFile(medAbstractData *data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
     QFileInfo info(filename);
@@ -453,7 +453,7 @@ void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QS
     QThreadPool::globalInstance()->start(exporter);    
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
+dtkSmartPointer<medAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));   
     medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
@@ -464,7 +464,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
 
     connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
 
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<medAbstractData> data;
     data = reader->run();
     return data;
 }

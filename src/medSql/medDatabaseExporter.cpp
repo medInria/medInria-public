@@ -11,22 +11,22 @@
 
 =========================================================================*/
 
-#include "medDatabaseExporter.h"
+#include <medDatabaseExporter.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 class medDatabaseExporterPrivate
 {
 public:
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<medAbstractData> data;
     QString          filename;
     QString          writer;
 };
 
-medDatabaseExporter::medDatabaseExporter(dtkAbstractData * data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
+medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
 {
     d->data     = data;
     d->filename = filename;
@@ -52,7 +52,7 @@ void medDatabaseExporter::run(void)
         return;
     }
 
-    dtkAbstractDataWriter * dataWriter = dtkAbstractDataFactory::instance()->writer(d->writer);
+    dtkAbstractDataWriter * dataWriter = medAbstractDataFactory::instance()->writer(d->writer);
     dataWriter->setData(d->data);
 
 

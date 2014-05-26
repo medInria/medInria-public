@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "medToolBox.h"
-#include "medGuiExport.h"
+#include <medToolBox.h>
+#include <medGuiExport.h>
 #include <medJobItem.h>
 
-class dtkAbstractView;
-class dtkAbstractProcess;
-class medAbstractDataImage;
+class medAbstractRegistrationProcess;
+class medAbstractImageView;
+class medAbstractImageData;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
 
@@ -31,51 +31,35 @@ public:
      medRegistrationSelectorToolBox(QWidget *parent = 0);
     ~medRegistrationSelectorToolBox();
 
-    dtkAbstractView *fixedView();
-    dtkAbstractView *movingView();
+    medAbstractData *fixedData();
+    medAbstractData *movingData();
 
-    medAbstractDataImage *fixedData();
-    medAbstractDataImage *movingData();
+    medAbstractRegistrationProcess * process();
+    void setProcess(medAbstractRegistrationProcess *process);
 
-    void setFuseView(dtkAbstractView *view);
-    dtkAbstractView *fuseView();
-
-    dtkAbstractProcess * process();
-    void setProcess(dtkAbstractProcess* process);
-
-    dtkAbstractProcess * undoRedoProcess();
-    void setUndoRedoProcess(dtkAbstractProcess *proc);
+    medAbstractRegistrationProcess * undoRedoProcess();
+    void setUndoRedoProcess(medAbstractRegistrationProcess *proc);
 
     QString getNameOfCurrentAlgorithm();
+
+    void setFixedData(medAbstractData* data);
+    void setMovingData(medAbstractData* data);
 
     enum typeOfOperation { algorithm, undo, redo, reset };
 
 signals:
-    void setupLayoutCompare();
-    void setupLayoutFuse();
     void showError (const QString&,unsigned int timeout);
     void showInfo(const QString&,unsigned int timeout);
-    void newFuseView(dtkAbstractView *fuseView);
-    void viewRemoved();
+    void movingDataRegistered(medAbstractData *output);
 
 public slots:
-    void onMovingImageDropped(const medDataIndex& index);
-    void onFixedImageDropped(const medDataIndex& index);
 
-    void onViewRemoved(dtkAbstractView*);
-    void closeCompareView(int);
-
-    void onToolBoxChosen(int index);
+    void changeCurrentToolBox(int index);
     void clear();
     void onSaveTrans();
     void handleOutput(typeOfOperation type=algorithm,QString algoName="");
     void enableSelectorToolBox(bool enable = true);
     void onJobAdded(medJobItem* item, QString jobName);
-    
-    void synchroniseWindowLevel(QObject * sender = NULL);
-    void synchronisePosition(const QVector3D &position);
-
-    
 
 private:
     medRegistrationSelectorToolBoxPrivate *d;

@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include "medAbstractDbController.h"
-#include "medDataIndex.h"
+#include <medAbstractDbController.h>
+#include <medDataIndex.h>
 
 
 void medAbstractDbController::import( const medDataIndex& index, const medAbstractDbController& controller )
 {
     qDebug() << "DEBUG : entering medAbstractDbController::import(const medDataIndex& index, const medAbstractDbController& controller )";
-    dtkSmartPointer<dtkAbstractData> data( controller.read(index) );
+    dtkSmartPointer<medAbstractData> data( controller.read(index) );
     import(data);
 }
 
@@ -27,9 +27,9 @@ void medAbstractDbController::import(const QString& file,bool indexWithoutCopyin
     //qDebug() << "DEBUG : entering medAbstractDbController::import(const QString& file,bool indexWithoutCopying)";
 }
 
-void medAbstractDbController::exportDataToFile(dtkAbstractData *data, const QString &filename, const QString &writer)
+void medAbstractDbController::exportDataToFile(medAbstractData *data, const QString &filename, const QString &writer)
 {
-    //qDebug() << "DEBUG : entering medAbstractDbController::exportDataToFile(dtkAbstractData *data, const QString &filename)";
+    //qDebug() << "DEBUG : entering medAbstractDbController::exportDataToFile(medAbstractData *data, const QString &filename)";
 }
 
 void medAbstractDbController::clear()

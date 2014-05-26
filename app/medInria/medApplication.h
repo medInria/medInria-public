@@ -115,6 +115,12 @@ public slots:
      */
     void redirectErrorMessageToLog(const QString & message);
 
+protected:
+    /**
+     * all initial registering should be done here
+     */
+    void registerToFactories();
+
 private:
     medApplicationPrivate *d;
 };

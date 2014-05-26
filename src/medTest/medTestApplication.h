@@ -15,7 +15,7 @@
 
 #include <QCoreApplication>
 
-#include "medTestExport.h"
+#include <medTestExport.h>
 
 /** A basic application which does not require a GUI.
  *  This is so that tests that do not require a GUI can be run on batch servers

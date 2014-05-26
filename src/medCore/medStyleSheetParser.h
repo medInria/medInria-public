@@ -2,7 +2,7 @@
 
 #include <QRegExp>
 #include <QVariant>
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class MEDCORE_EXPORT medStyleSheetParser
 {

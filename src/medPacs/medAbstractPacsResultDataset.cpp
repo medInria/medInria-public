@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medAbstractPacsResultDataset.h"
+#include <medAbstractPacsResultDataset.h>
 
 #include <dtkCore/dtkGlobal.h>
 

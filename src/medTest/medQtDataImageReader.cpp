@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include "medQtDataImageReader.h"
+#include <medQtDataImageReader.h>
 
-#include "medQtDataImage.h"
+#include <medQtDataImage.h>
 
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractData.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <QImage>
@@ -43,7 +43,7 @@ medQtDataImageReader::~medQtDataImageReader()
 
 bool medQtDataImageReader::registered(void)
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(
+    return medAbstractDataFactory::instance()->registerDataReaderType(
         medQtDataImageReader::s_description(),
         medQtDataImageReader::s_handled(),
         createMedQtDataImageReader);
@@ -96,13 +96,13 @@ void medQtDataImageReader::reset()
 
 void medQtDataImageReader::setMetaDataFromImageReader()
 {
-    dtkAbstractData * dtkdata = this->data();
-    if ( !dtkdata || m_reader.isNull() )
+    medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
+    if ( !medData || m_reader.isNull() )
         return;
 
     const QStringList keys = m_reader->textKeys();
     foreach( const QString key, keys) {
-        dtkdata->setMetaData( key, m_reader->text(key) );
+        medData->setMetaData( key, m_reader->text(key) );
     }
 }
 
@@ -154,7 +154,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
 
 
-    this->setData( dtkAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::s_identifier()) );
+    this->setData( medAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::s_identifier()) );
 
     this->setMetaDataFromImageReader();
 
@@ -164,7 +164,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
     }
 
-    dtkAbstractData * dtkData = this->data();
+    medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
 
     int numRead(0);
     if ( m_reader->supportsAnimation() ) {
@@ -172,11 +172,11 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         for( int i(0); i<imageCount; ++i ) {
             m_reader->jumpToImage(i);
             nextImage = m_reader->read();
-            dtkData->setData(&(nextImage), i + iStart);
+            medData->setData(&(nextImage), i + iStart);
         }
         numRead = imageCount;
     } else {
-        dtkData->setData(&(nextImage), iStart);
+        medData->setData(&(nextImage), iStart);
         numRead = 1;
     }
     return numRead;

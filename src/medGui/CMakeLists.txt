@@ -1,4 +1,4 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
@@ -9,274 +9,95 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
+################################################################################
 
 project(medGui)
 
-## #################################################################
-## Sources
-## #################################################################
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
-  commonWidgets/medProgressionStack.h
-  factories/medToolBoxFactory.h
-  toolboxes/medFilteringAbstractToolBox.h
-  toolboxes/medFilteringSelectorToolBox.h
-  toolboxes/medRegistrationAbstractToolBox.h
-  toolboxes/medRegistrationSelectorToolBox.h
-  toolboxes/medSegmentationAbstractToolBox.h
-  toolboxes/medSegmentationSelectorToolBox.h
-  toolboxes/medToolBox.h
-  commonWidgets/medSliderSpinboxPair.h
-)
-
-set(${PROJECT_NAME}_DEVEL_HEADERS
-  medGuiExport.h
-)
-
-set(${PROJECT_NAME}_HEADERS_MOC
-  ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
-  medLayoutChooser.h
-  medPacsSelector.h
-  medToolBoxContainer.h
-
-  # viewer stuff
-  medPacsSelector.h
-  medViewPool.h
-  medTabbedViewContainers.h
-  medWorkspace.h
-  medImageFileLoader.h
-
-  # db related items
-  database/medDatabaseSearchPanel.h
-  database/medDatabaseView.h
-  database/medDatabaseNavigator.h
-  database/medDatabaseNavigatorItem.h
-  database/medDatabaseNavigatorItemOverlay.h
-  database/medDatabaseNavigatorItemGroup.h
-  database/medDatabaseNavigatorView.h
-  database/medDatabasePreview.h
-  database/medDatabasePreviewArrow.h
-  database/medDatabasePreviewItem.h
-  database/medDatabasePreviewItemGroup.h
-  database/medDatabasePreviewSelector.h
-  database/medDatabasePreviewTooltip.h
-  database/medDatabasePreviewView.h
-  database/medDatabaseEditItemDialog.h
-
-  # commonWidgets:
-  commonWidgets/medDropSite.h
-  commonWidgets/medButton.h
-  commonWidgets/medStatusBar.h
-  commonWidgets/medQuickAccessMenu.h
-  commonWidgets/medGroupBox.h
-  commonWidgets/medMultipleImageSelectionWidget.h
-  commonWidgets/medThumbnailContainer.h
-  commonWidgets/medHomepageButton.h
-
-  # factories
-  factories/medSettingsWidgetFactory.h
-  factories/medWorkspaceFactory.h
-
-  # LUT
-  LUT/medClutEditor.h
-  LUT/medLoadLUTDialog.h
-  LUT/medSaveLUTDialog.h
-
-  # settings classes
-  settingsWidgets/medSettingsWidget.h
-  settingsWidgets/medDatabaseSettingsWidget.h
-  settingsWidgets/medSettingsEditor.h
-  settingsWidgets/medSystemSettingsWidget.h
-  settingsWidgets/medStartupSettingsWidget.h
-  settingsWidgets/medInteractionSettingsWidget.h
-
-  # general toolbox classes
-  toolboxes/medToolBoxBody.h
-  toolboxes/medToolBoxHeader.h
-  toolboxes/medToolBoxTab.h
-
-  # specific toolbox classes
-  toolboxes/medDiffusionSelectorToolBox.h
-  toolboxes/medDiffusionAbstractToolBox.h
-  toolboxes/medBrowserJobsToolBox.h
-  toolboxes/medVisualizationLayoutToolBox.h
-  toolboxes/medBrowserPacsHostToolBox.h
-  toolboxes/medBrowserPacsNodesToolBox.h
-  toolboxes/medBrowserPacsSearchToolBox.h
-  toolboxes/medPatientSelectorToolBox.h
-  toolboxes/medCompositeDataSetImporterSelectorToolBox.h
-  toolboxes/medCompositeDataSetImporterAbstractToolBox.h
-  toolboxes/medActionsToolBox.h
-
-
-  # viewContainers:
-  viewContainers/medCompareViewContainer.h
-  viewContainers/medMultiViewContainer.h
-  viewContainers/medCustomViewContainer.h
-  viewContainers/medSingleViewContainer.h
-  viewContainers/medFilteringViewContainer.h
-  viewContainers/medViewContainer.h
-)
-
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_DEVEL_HEADERS}
-  #LUT
-  LUT/medLUTToXMLWriter.h
-  LUT/medXMLToLUTReader.h
-
-  database/medDatabaseNavigatorController.h
-  database/medDatabasePreviewController.h
-  ${${PROJECT_NAME}_HEADERS_MOC}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  viewContainers
+  toolboxes
+  settingsWidgets
+  lookUpTables
+  factories
+  database
+  commonWidgets
   )
 
-set(${PROJECT_NAME}_SOURCES
-  medLayoutChooser.cpp
-  medPacsSelector.cpp
-  medToolBoxContainer.cpp
-  medTabbedViewContainers.cpp
-  medWorkspace.cpp
-
-  medPacsSelector.cpp
-  medViewPool.cpp
-  medImageFileLoader.cpp
-
-  # commonWidgets:
-  commonWidgets/medDropSite.cpp
-  commonWidgets/medButton.cpp
-  commonWidgets/medProgressionStack.cpp
-  commonWidgets/medStatusBar.cpp
-  commonWidgets/medQuickAccessMenu.cpp
-  commonWidgets/medGroupBox.cpp
-  commonWidgets/medMultipleImageSelectionWidget.cpp
-  commonWidgets/medThumbnailContainer.cpp
-  commonWidgets/medHomepageButton.cpp
-
-  # db related items
-  database/medDatabaseSearchPanel.cpp
-  database/medDatabaseView.cpp
-  database/medDatabaseNavigator.cpp
-  database/medDatabaseNavigatorController.cpp
-  database/medDatabaseNavigatorItem.cpp
-  database/medDatabaseNavigatorItemOverlay.cpp
-  database/medDatabaseNavigatorItemGroup.cpp
-  database/medDatabaseNavigatorScene.cpp
-  database/medDatabaseNavigatorView.cpp
-  database/medDatabasePreview.cpp
-  database/medDatabasePreviewArrow.cpp
-  database/medDatabasePreviewController.cpp
-  database/medDatabasePreviewItem.cpp
-  database/medDatabasePreviewItemGroup.cpp
-  database/medDatabasePreviewScene.cpp
-  database/medDatabasePreviewSelector.cpp
-  database/medDatabasePreviewTooltip.cpp
-  database/medDatabasePreviewView.cpp
-  database/medDatabaseEditItemDialog.cpp
-
-  # factories
-  factories/medSettingsWidgetFactory.cpp
-  factories/medToolBoxFactory.cpp
-  factories/medWorkspaceFactory.cpp
-
-  # LUT
-  LUT/medClutEditor.cpp
-  LUT/medLoadLUTDialog.cpp
-  LUT/medSaveLUTDialog.cpp
-  LUT/medLUTToXMLWriter.cpp
-  LUT/medXMLToLUTReader.cpp
-
-  # settings classes
-  settingsWidgets/medSettingsWidget.cpp
-  settingsWidgets/medDatabaseSettingsWidget.cpp
-  settingsWidgets/medSettingsEditor.cpp
-  settingsWidgets/medSystemSettingsWidget.cpp
-  settingsWidgets/medStartupSettingsWidget.cpp
-  settingsWidgets/medInteractionSettingsWidget.cpp
-
-  # general toolbox classes
-  toolboxes/medToolBox.cpp
-  toolboxes/medToolBoxBody.cpp
-  toolboxes/medToolBoxHeader.cpp
-  toolboxes/medToolBoxTab.cpp
-
-  # specific toolbox classes
-  toolboxes/medDiffusionSelectorToolBox.cpp
-  toolboxes/medDiffusionAbstractToolBox.cpp
-  toolboxes/medRegistrationSelectorToolBox.cpp
-  toolboxes/medRegistrationAbstractToolBox.cpp
-  toolboxes/medSegmentationSelectorToolBox.cpp
-  toolboxes/medSegmentationAbstractToolBox.cpp
-  toolboxes/medFilteringSelectorToolBox.cpp
-  toolboxes/medFilteringAbstractToolBox.cpp
-  toolboxes/medBrowserJobsToolBox.cpp
-  toolboxes/medVisualizationLayoutToolBox.cpp
-  toolboxes/medBrowserPacsHostToolBox.cpp
-  toolboxes/medBrowserPacsNodesToolBox.cpp
-  toolboxes/medBrowserPacsSearchToolBox.cpp
-  toolboxes/medPatientSelectorToolBox.cpp
-  toolboxes/medCompositeDataSetImporterSelectorToolBox.cpp
-  toolboxes/medCompositeDataSetImporterAbstractToolBox.cpp
-  toolboxes/medActionsToolBox.cpp
+set(${PROJECT_NAME}_QRC medGui.qrc)
 
 
-  # viewContainers:
-  viewContainers/medCompareViewContainer.cpp
-  viewContainers/medMultiViewContainer.cpp
-  viewContainers/medCustomViewContainer.cpp
-  viewContainers/medSingleViewContainer.cpp
-  viewContainers/medFilteringViewContainer.cpp
-  viewContainers/medViewContainer.cpp
-)
+## #############################################################################
+## include directories.
+## #############################################################################
 
-set(${PROJECT_NAME}_RESOURCES medGui.qrc)
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+  
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${medCore_INCLUDE_DIRS}
+  )
+  
 
-## #################################################################
-## Build rules
-## #################################################################
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
+## #############################################################################
+## Precompile headers
+## #############################################################################
 
 if (MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPch.h" "../medPch/medPch.cpp"
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPCH_H}
+    ${MEDPCH_CPP}
     ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_SOURCES_MOC}
-    ${${PROJECT_NAME}_SOURCES_WRAP})
+    )
 endif()
 
+
+## #############################################################################
+## add library
+## #############################################################################
+
+qt4_add_resources(${PROJECT_NAME}_QRC 
+  ${${PROJECT_NAME}_QRC}
+  )
+
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_QRC}
-  ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES_WRAP})
+  ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_QRC}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  dtkCore
   dtkGui
   dtkLog
   medCore
-)
+  )
 
-# Include header files for Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
-if (MEDINRIA_BUILD_TESTING)
-  add_subdirectory (Testing)
+## #############################################################################
+## install
+## #############################################################################
+
+set_lib_install_rules(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+
+
+## #############################################################################
+## Build tests
+## #############################################################################
+
+if(MEDINRIA_BUILD_TESTS)
+  add_subdirectory(tests)
 endif()
-
-## #################################################################
-## Installation
-## #################################################################
-
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)

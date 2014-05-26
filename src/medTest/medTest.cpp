@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medTest.h"
+#include <medTest.h>
 
 #include <medPluginManager.h>
 #include <medDataManager.h>
@@ -50,7 +50,7 @@ namespace medTest
         QResource::registerResource(value.toLatin1().constData());
     }
 
-    dtkSmartPointer<dtkAbstractData> readData (const QString &file)
+    dtkSmartPointer<medAbstractData> readData (const QString &file)
     {
         /*
         medSynchronousDbImporter importer (file);

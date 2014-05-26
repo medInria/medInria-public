@@ -11,13 +11,13 @@
 
 =========================================================================*/
 
-#include "medStorage.h"
+#include <medStorage.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 
 #include <QtGui/QDesktopServices>
-#include "medSettingsManager.h"
+#include <medSettingsManager.h>
 
 QString medStorage::m_dataLocation = NULL;
 

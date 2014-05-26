@@ -14,7 +14,7 @@
 #pragma once
 
 
-#include "medSqlExport.h"
+#include <medSqlExport.h>
 
 #include <QSortFilterProxyModel>
 #include <QVector>

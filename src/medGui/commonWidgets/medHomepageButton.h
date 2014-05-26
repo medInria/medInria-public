@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QtGui>
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class MEDGUI_EXPORT medHomepagePushButton : public QPushButton
 {

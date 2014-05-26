@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
-#include "itkDataDiffusionGradientListPluginExport.h"
+#include <itkDataDiffusionGradientListPluginExport.h>
 
 class itkDataDiffusionGradientListPrivate;
 
-class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientList : public dtkAbstractData
+class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientList : public medAbstractData
 {
     Q_OBJECT
 
@@ -43,6 +43,6 @@ private:
     itkDataDiffusionGradientListPrivate *d;
 };
 
-dtkAbstractData *createItkDataDiffusionGradientList();
+medAbstractData *createItkDataDiffusionGradientList();
 
 

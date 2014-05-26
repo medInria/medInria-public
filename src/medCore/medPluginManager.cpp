@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medPluginManager.h"
+#include <medPluginManager.h>
 
 #include <QtCore>
 

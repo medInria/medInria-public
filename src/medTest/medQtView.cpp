@@ -11,29 +11,30 @@
 
 =========================================================================*/
 
-#include "medQtView.h"
+#include <medQtView.h>
 
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractData.h>
-
+#include <medViewFactory.h>
 #include <medAbstractData.h>
+
+#include <medAbstractNavigator.h>
+#include <medAbstractViewNavigator.h>
+
+#include <medAbstractLayeredViewNavigator.h>
+#include <medAbstractLayeredViewInteractor.h>
+
 
 class medQtViewPrivate
 {
 public:
     QLabel *label;
-    dtkSmartPointer<dtkAbstractData> data;
 };
 
-static dtkAbstractView* createMedQtView()
-{
-    return new medQtView;
-}
 
-medQtView::medQtView(): medAbstractView(), d(new medQtViewPrivate)
+medQtView::medQtView(QObject *parent): d(new medQtViewPrivate)
 {
-    d->label = new QLabel;
+    d->label = new QLabel("prout");
     d->label->setScaledContents(true);
+    d->label->setVisible(true);
 }
 
 medQtView::~medQtView()
@@ -41,39 +42,79 @@ medQtView::~medQtView()
     delete d;
 }
 
-QWidget *medQtView::widget(void)
+medAbstractLayeredViewInteractor * medQtView::primaryInteractor(medAbstractData* data)
+{
+    qDebug()<< "primaryInteractor(medAbstractData* data)";
+    return 0;
+}
+ QList<medAbstractInteractor *> medQtView::extraInteractors(medAbstractData* data)
+{
+    qDebug()<< "extraInteractor(medAbstractData* data)";
+    return QList<medAbstractInteractor *>();
+}
+ medAbstractLayeredViewInteractor * medQtView::primaryInteractor(unsigned int layer)
+{
+    qDebug()<< "primaryInteractor(unsigned int layer)";
+    return 0;
+}
+
+ QList<medAbstractInteractor *> medQtView::extraInteractors(unsigned int layer)
+{
+    qDebug()<< "extraInteractor(unsigned int layer)";
+    return QList<medAbstractInteractor *>();
+}
+
+ medAbstractLayeredViewNavigator * medQtView::primaryNavigator()
+{
+    qDebug()<< "primaryNavigator()";
+    return 0;
+}
+
+ QList<medAbstractNavigator *> medQtView::extraNavigators()
+{
+    qDebug()<< "extraNavigator()";
+    return QList<medAbstractNavigator *>();
+}
+
+QWidget* medQtView::viewWidget()
 {
     return d->label;
 }
 
-void medQtView::setData (dtkAbstractData *data, int layer)
+QWidget* medQtView::navigatorWidget()
 {
-    this->setData (data);
+    return 0;
 }
 
-void medQtView::setData (dtkAbstractData *data)
+QWidget* medQtView::mouseInteractionWidget()
 {
-    d->data = data;
-    if (data->description()=="medQtDataImage") {
-         QImage image = *( reinterpret_cast< QImage *>( data->data() ) );
-         if (!image.isNull())
-             d->label->setPixmap ( QPixmap::fromImage(image) );
-    }
+    return 0;
 }
 
-void *medQtView::data(void)
+bool medQtView::initialiseInteractors(medAbstractData* data)
 {
-    return d->data;
+    return true;
 }
 
-void *medQtView::data(int layer)
+bool medQtView::initialiseNavigators()
 {
-    return this->data();
+    return true;
+}
+
+void medQtView::removeInteractors(medAbstractData *data)
+{
+
+}
+
+
+medViewBackend* medQtView::backend() const
+{
+    return 0;
 }
 
 bool medQtView::registered()
 {
-    return dtkAbstractViewFactory::instance()->registerViewType(s_description(), createMedQtView);
+    return medViewFactory::instance()->registerView<medQtView>("medQtView", QStringList() << "prout");
 }
 
 QString medQtView::s_description()
@@ -85,4 +126,22 @@ QString medQtView::s_description()
 QString medQtView::description( void ) const
 {
     return s_description();
+}
+
+void medQtView::reset()
+{
+    qDebug() << "reset()";
+}
+
+QList<medAbstractParameter*> medQtView::navigatorsParameters()
+{
+    return QList<medAbstractParameter*>();
+}
+
+QImage medQtView::buildThumbnail(const QSize &size)
+{
+    QImage img = QImage(size, QImage::Format_ARGB32);
+    img.fill(Qt::black);
+
+    return img;
 }

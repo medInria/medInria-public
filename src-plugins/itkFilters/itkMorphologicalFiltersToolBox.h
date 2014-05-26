@@ -27,7 +27,7 @@ public:
 
 public:
     static bool registered();
-    dtkAbstractData* processOutput();
+    medAbstractData* processOutput();
     dtkPlugin* plugin();
 
 signals:
@@ -37,7 +37,7 @@ signals:
 public slots:
 
     void clear();
-    void update(dtkAbstractView *view);
+    void update(medAbstractData *data);
 
     void run();
 

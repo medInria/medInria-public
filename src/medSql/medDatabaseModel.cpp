@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -51,14 +51,14 @@ public:
     QList<QVariant> ptDefaultData;
     QList<QVariant> stDefaultData;
     QList<QVariant> seDefaultData;
-    
+
     QList<bool> editFlags;
 
     QList<QVariant> data;
     QList<QString> columnNames;
 
     medDataIndex draggedDataIndex;
-    
+
     QHash<medDataIndex, QModelIndex> medIndexMap;
 
     enum { DataCount = 12 };
@@ -84,7 +84,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
 {
     d->justBringStudies = justBringStudies;
     d->draggedDataIndex = medDataIndex();
-    
+
     QString NulString;
     const int dataCount = d->DataCount;
 
@@ -93,7 +93,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->seAttributes = QList<QVariant>();
     d->editFlags = QList<bool>();
     d->data = QList<QVariant>();
-    
+
 #if QT_VERSION > 0x0406FF
     d->ptAttributes.reserve(dataCount);
     d->stAttributes.reserve(dataCount);
@@ -115,24 +115,24 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->ptAttributes[i] = medMetaDataKeys::PatientName.key();
     d->stAttributes[i] = medMetaDataKeys::StudyDescription.key();
     d->seAttributes[i++] = medMetaDataKeys::SeriesDescription.key();
-    
+
     d->ptAttributes[i++] = medMetaDataKeys::BirthDate.key();
     d->ptAttributes[i++] = medMetaDataKeys::Gender.key();
-    
+
     // the number of slice is not supposed to be edited
     d->editFlags[i] = false;
     d->seAttributes[i++] = medMetaDataKeys::Size.key();
     d->seAttributes[i++] = medMetaDataKeys::Age.key();
- 
+
     d->seAttributes[i++] = medMetaDataKeys::Modality.key();
     d->seAttributes[i++] = medMetaDataKeys::AcquisitionDate.key();
     d->seAttributes[i++] = medMetaDataKeys::ImportationDate.key();
     d->seAttributes[i++] = medMetaDataKeys::Referee.key();
     d->seAttributes[i++] = medMetaDataKeys::Performer.key();
     d->seAttributes[i++] = medMetaDataKeys::Institution.key();
-    d->seAttributes[i++] = medMetaDataKeys::Report.key();      
-    
-    
+    d->seAttributes[i++] = medMetaDataKeys::Report.key();
+
+
     d->ptDefaultData =  d->data;
     d->ptDefaultData[0] = tr("[No Patient Name]");
 
@@ -202,10 +202,10 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
 
     if( role==Qt::TextAlignmentRole && index.column() > 0)
         return Qt::AlignHCenter;
-    
+
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
-    
+
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     return item->data(index.column());
@@ -232,18 +232,18 @@ QModelIndex medDatabaseModel::index(int row, int column, const QModelIndex& pare
     }
     else
         parentItem = static_cast<medAbstractDatabaseItem *>(parent.internalPointer());
-            
+
     medAbstractDatabaseItem *childItem = parentItem->child(row);
     if (childItem)
     {
         QModelIndex newIndex = createIndex(row, column, childItem);
-        
+
         // we only need index with column 0 in index map
         if(column==0)
         {
             d->medIndexMap[childItem->dataIndex()] = newIndex;
         }
-        
+
         return newIndex;
     }
     else
@@ -287,7 +287,7 @@ Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
     if( dataIndex.isValidForSeries() )
     {
         flags = flags | Qt::ItemIsDragEnabled;
-        
+
         if(!d->seAttributes[index.column()].toString().isEmpty() && d->editFlags[index.column()] == true)
         {
             flags = flags | Qt::ItemIsEditable;
@@ -296,7 +296,7 @@ Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
     else if( dataIndex.isValidForStudy() )
     {
         flags = flags | Qt::ItemIsDragEnabled;
-        
+
         if(!d->stAttributes[index.column()].toString().isEmpty() && d->editFlags[index.column()] == true)
         {
             flags = flags | Qt::ItemIsEditable;
@@ -337,20 +337,20 @@ Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
 bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     bool result = false;
-    
+
     if (role != Qt::EditRole)
         return false;
-    
+
     if (d->editFlags[index.column()] == false)
         return false;
- 
+
     medAbstractDatabaseItem *item = d->item(index);
-    medDataIndex dataIndex = item->dataIndex(); 
+    medDataIndex dataIndex = item->dataIndex();
     QString attribute = item->attribute(index.column()).toString();
-    
+
     //first, we try to set metadata
     result = medDataManager::instance()->setMetaData( dataIndex, attribute, value.toString() );
-    
+
     if ( !result )
     {
         dtkDebug() << "Could not set data for index " << dataIndex.asString();
@@ -359,7 +359,7 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
     {
         //and if we succeed, we try to update item
         result = item->setData(index.column(), value);
-        
+
         if(result)
             emit dataChanged(index, index);
     }
@@ -448,14 +448,14 @@ Qt::DropActions medDatabaseModel::supportedDropActions(void) const
 QMimeData *medDatabaseModel::mimeData(const QModelIndexList &indexes) const
 {
     medAbstractDatabaseItem *item = d->item(indexes[0]);
-    
+
     if(item)
     {
         medDataIndex dataIndex = item->dataIndex();
         d->draggedDataIndex = dataIndex;
         return dataIndex.createMimeData();
     }
-    else 
+    else
     {
         d->draggedDataIndex = medDataIndex();
         return NULL;
@@ -576,9 +576,9 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
 {
     typedef QList<int> IntList;
     typedef QList<medDataIndex> IndexList;
-    
+
     medDataManager * dataManager = medDataManager::instance();
-    
+
     IntList dataSources = dataManager->dataSourceIds();
     {
         // Initial Rearrangement, so that non-Persistent data sources are at the end.
@@ -685,7 +685,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
 
 
 void medDatabaseModel::update(const medDataIndex& dataIndex)
-{   
+{
     if(dataIndex.isValidForSeries())
     {
         updateSerie(dataIndex);
@@ -697,11 +697,11 @@ void medDatabaseModel::update(const medDataIndex& dataIndex)
     else if(dataIndex.isValidForPatient())
     {
         updatePatient(dataIndex);
-    }   
+    }
 }
 
 void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
-{    
+{
     // different cases:
     //    - the serie is not present in the db, we have to remove it from the model
     //    - the serie is present but there is no item: we need to create one
@@ -733,7 +733,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
                 parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
                 d->medIndexMap.remove(dataIndex);
 
-                emit layoutChanged();                
+                emit layoutChanged();
                 emit dataChanged(parentIndex, parentIndex);
             }
         }
@@ -768,7 +768,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             QModelIndex stIndex = d->medIndexMap.value(stDataIndex);
 
             medAbstractDatabaseItem *stItem = static_cast<medAbstractDatabaseItem *>(stIndex.internalPointer());
-            
+
             //in some cases (when importing for example), a serie is being created while there is no study item)
             if(!stItem)
             {
@@ -780,7 +780,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
                     qWarning() << "A problem occured while updating the serie " << dataIndex.asString();
                 }
             }
-            
+
             //we must create a new item for the serie
             medAbstractDatabaseItem *seItem = new medDatabaseItem(dataIndex, d->seAttributes, seData, stItem);
 
@@ -788,10 +788,10 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             emit layoutAboutToBeChanged();
             stItem->append(seItem);
             emit layoutChanged();
-            
+
             //calling index() to update medIndexMap
             QModelIndex newIndex = this->index(stItem->childCount()-1,0,stIndex);
-            
+
              emit dataChanged(newIndex.parent().parent(), newIndex.parent().parent());
              emit dataChanged(newIndex.parent(), newIndex.parent());
              emit dataChanged(newIndex, newIndex);
@@ -807,22 +807,22 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
     //    - the study is not present in the db, we have to remove it from the model
     //    - the study is present but there is no item: we need to create one
     //    - the study is present and there is an item: we need to update the data and its series (in case of a move)
-    //    
+    //
     QModelIndex index = d->medIndexMap.value(dataIndex);
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
 
     if(!dbc->contains(dataIndex))
-    { 
+    {
         if(item)
-        {           
+        {
             QModelIndex parentIndex = index.parent();
             QList<medDataIndex> series = dbc->series(dataIndex);
             foreach(medDataIndex serie, series)
                 updateSerie(serie);
-        
+
             emit layoutAboutToBeChanged();
-            
+
             changePersistenIndexAndSubIndex(index);
 
             medDataIndex ptDataIndex(dataIndex);
@@ -840,15 +840,15 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
                 parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
                 d->medIndexMap.remove(dataIndex);
             }
-            
+
             emit layoutChanged();
-            
+
             emit dataChanged(parentIndex, parentIndex);
         }
 
-        return;    
-    } 
-    
+        return;
+    }
+
     if(dataIndex.isValidForStudy())
     {
         QList<QVariant> stData = d->stDefaultData;
@@ -867,19 +867,19 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
                 }
             }
         }
-        
+
         if(!item)
         {
             // we must create a new item
             // and append it to the parent patientId
-            
+
             medDataIndex ptDataIndex(dataIndex);
             ptDataIndex.setStudyId(-1);
-            
+
             QModelIndex ptIndex = d->medIndexMap.value(ptDataIndex);
 
             medAbstractDatabaseItem *ptItem = static_cast<medAbstractDatabaseItem *>(ptIndex.internalPointer());
-            
+
             //in some cases (when importing for example), a serie is being created while there is no study or patient item)
             if(!ptItem)
             {
@@ -899,12 +899,12 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
                 //calling index() to update medIndexMap
                 QModelIndex newIndex = this->index(ptItem->childCount()-1,0,ptIndex);
-                
+
                 emit layoutChanged();
-                
+
                 emit dataChanged(newIndex.parent(), newIndex.parent());
                 emit dataChanged(newIndex, newIndex);
-            }    
+            }
         }
 
         if(updateChildren)
@@ -912,9 +912,9 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
             QList<medDataIndex> series = dbc->series(dataIndex);
             foreach(medDataIndex serie, series)
                 updateSerie(serie);
-        }  
+        }
     }
-    
+
      return;
 }
 
@@ -923,9 +923,9 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
     QModelIndex index = d->medIndexMap.value(dataIndex);
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
-    
+
     if(!dbc->contains(dataIndex))
-    {       
+    {
         if(item)
         {
             medAbstractDatabaseItem *parent = item->parent();
@@ -936,11 +936,11 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             else
             {
                 // we can't do that, studies are already deleted at this stage
-                // QList<medDataIndex> studies = dbc->studies(dataIndex);              
+                // QList<medDataIndex> studies = dbc->studies(dataIndex);
                 emit layoutAboutToBeChanged();
-                
+
                 changePersistenIndexAndSubIndex(index);
-                
+
                 foreach(medDataIndex tempIndex, d->medIndexMap.keys())
                 {
                     if(medDataIndex::isMatch(dataIndex, tempIndex))
@@ -953,13 +953,13 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
 
                 item->parent()->removeChildren(index.row(), 1);
                 d->medIndexMap.remove(dataIndex);
-                
+
                 emit layoutChanged();
             }
         }
 
-        return;     
-    } 
+        return;
+    }
 
     if(dataIndex.isValidForPatient())
     {
@@ -979,20 +979,20 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
                 }
             }
         }
-        
+
         if(!item)
         {
             // we must create a new item
-            // and append it to the parent patientId 
+            // and append it to the parent patientId
             medAbstractDatabaseItem *ptItem = new medDatabaseItem(dataIndex, d->ptAttributes, ptData,  d->root);
-                   
+
             emit layoutAboutToBeChanged();
             d->root->append(ptItem);
             QModelIndex newIndex = this->index(d->root->childCount()-1,0,QModelIndex());
-            emit layoutChanged(); 
+            emit layoutChanged();
             emit dataChanged(newIndex,newIndex);
         }
-        
+
     }
 }
 
@@ -1021,7 +1021,7 @@ QStringList medDatabaseModel::columnNames() const
         ret[i++] = tr("Performer");
         ret[i++] = tr("Institution");
         ret[i++] = tr("Report");
-        d->columnNames = ret; 
+        d->columnNames = ret;
     }
     return d->columnNames;
 }
@@ -1032,7 +1032,7 @@ QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString val
     const medMetaDataKeys::Key *key = medMetaDataKeys::Key::fromKeyName(keyName.toStdString().c_str());
     QVariant res;
     QDate date;
-    
+
     switch(key->type())
     {
         case QVariant::Int:
@@ -1047,12 +1047,14 @@ QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString val
             res = date;
             break;
         case QVariant::Char:
-            res = value.at(0);
+            if(value.isEmpty())
+                res = QVariant(QChar());
+            else
+                res = value.at(0);
             break;
         default:
-            res = value;      
+            res = value;
     }
-    
     return res;
 }
 
@@ -1061,15 +1063,15 @@ void medDatabaseModel::changePersistenIndexAndSubIndex(QModelIndex index)
     for(int i=0; i<columnCount(); i++)
     {
         QModelIndex tempIndex = index.sibling(index.row(),i);
-        
+
         if(i==0)
         {
             int j=0;
             while(tempIndex.child(j,0).isValid())
             {
-                changePersistenIndexAndSubIndex(tempIndex.child(j,0));   
+                changePersistenIndexAndSubIndex(tempIndex.child(j,0));
                 j++;
-            }          
+            }
         }
         changePersistentIndex(tempIndex, QModelIndex());
     }

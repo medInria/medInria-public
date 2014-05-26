@@ -1,4 +1,4 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
@@ -9,103 +9,85 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
+################################################################################
 
 project(medPacs)
 
-## #################################################################
-## Sources
-## #################################################################
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_HEADERS
-  medAbstractPacsBaseScu.h
-  medAbstractPacsFactory.h
-  medAbstractPacsEchoScu.h
-  medAbstractPacsFindScu.h
-  medAbstractPacsMoveScu.h	
-  medAbstractPacsStoreScu.h
-  medAbstractPacsStoreScp.h
-  medAbstractPacsNode.h
-  medAbstractPacsResultDataset.h
-  medAbstractPacsKey.h
-  medPacsMover.h
-  medPacsExport.h
-  medPacsWidget.h
-  medPacsNode.h
-  medMoveCommandItem.h)
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  medAbstractPacsBaseScu.h
-  medAbstractPacsFactory.h
-  medAbstractPacsEchoScu.h
-  medAbstractPacsFindScu.h
-  medAbstractPacsMoveScu.h
-  medAbstractPacsStoreScu.h
-  medAbstractPacsStoreScp.h
-  medAbstractPacsNode.h
-  medAbstractPacsResultDataset.h
-  medAbstractPacsKey.h	
-  medPacsMover.h
-  medPacsWidget.h)
 
-set(${PROJECT_NAME}_SOURCES
-  medAbstractPacsBaseScu.cpp	
-  medAbstractPacsFactory.cpp
-  medAbstractPacsEchoScu.cpp
-  medAbstractPacsFindScu.cpp
-  medAbstractPacsMoveScu.cpp
-  medAbstractPacsStoreScu.cpp
-  medAbstractPacsStoreScp.cpp
-  medAbstractPacsNode.cpp
-  medAbstractPacsResultDataset.cpp
-  medAbstractPacsKey.cpp
-  medPacsMover.cpp
-  medPacsWidget.cpp)
+## #############################################################################
+## include directorie.
+## #############################################################################
 
-## #################################################################
-## Build rules
-## #################################################################
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
 
-if (NOT MSVC)
-add_definitions(-Wno-write-strings)
-add_definitions(-Wformat=0)
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+    ${medCore_INCLUDE_DIRS}
+    )
+    
+    
+## #############################################################################
+## Add definition
+## #############################################################################
+
+if (NOT MSVC) #TODO : what is it for ? 
+  add_definitions(-Wno-write-strings)
+  add_definitions(-Wformat=0)
 endif()
 
-add_definitions(-DQT_SHARED)
 add_definitions(${QT_DEFINITIONS})
+add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
 
 if (MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "medPch.h" "../medPch/medPch.cpp" 
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPCH_H}
+    ${MEDPCH_CPP}
     ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_SOURCES_MOC}
-    ${${PROJECT_NAME}_SOURCES_WRAP})
+    )
 endif()
 
+
+## #############################################################################
+## add library
+## #############################################################################
+
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_WRAP})
+  ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_PCH}
+  )
 
-target_link_libraries(${PROJECT_NAME} 
-  ${QT_LIBRARIES}
-  dtkCore
-  medCore)
 
-# Include header files for Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+## #############################################################################
+## Link
+## #############################################################################
 
-## #################################################################
-## Installation
-## #################################################################
+target_link_libraries(${PROJECT_NAME}
+    ${QT_LIBRARIES}
+    dtkCore
+    dtkLog
+    medCore
+    )
 
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+
+## #############################################################################
+## install
+## #############################################################################
+
+set_lib_install_rules(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )

@@ -13,13 +13,11 @@
 
 #pragma once
 
-#include "medSegmentationAbstractToolBox.h"
+#include <medSegmentationAbstractToolBox.h>
 
-#include "msegPluginExport.h"
+#include <msegPluginExport.h>
 
-#include "medProcessPaintSegm.h"
-
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medDataIndex.h>
@@ -31,15 +29,15 @@
 
 #include <vector>
 
+#include <itkImage.h>
+
 class medAbstractData;
-class medAbstractView;
+class medAbstractImageView;
 class medAnnotationData;
 
 class dtkAbstractProcessFactory;
 class medSeedPointAnnotationData;
-
-namespace mseg {
-    class ClickAndMoveEventFilter;
+class ClickAndMoveEventFilter;
 
 struct PaintState {
     enum E{ None, Wand, Stroke, DeleteStroke };
@@ -48,7 +46,7 @@ struct PaintState {
 //! Segmentation toolbox to allow manual painting of pixels
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegmentationAbstractToolBox
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
 
 
@@ -73,33 +71,39 @@ public:
     inline void setPaintState( PaintState::E value){m_paintState = value;}
     inline PaintState::E paintState(){return m_paintState;}
 
+    dtkPlugin* plugin();
+
+    medAbstractData* processOutput();
+
 public slots:
-    void onStrokePressed();
-    void onMagicWandPressed();
+    void activateStroke();
+    void activateMagicWand();
 
-    void onApplyButtonPressed();
-    void onClearMaskPressed();
+    void import();
+    void clearMask();
 
-    void onLabelChanged(int newVal);
-    void onSelectLabelColor();
+    void setLabel(int newVal);
+    void setLabelColor();
 
     void setWandSliderValue(double val);
     void setWandSpinBoxValue(int val);
 
-    void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
-    void updateWandRegion(medAbstractView * view, QVector3D &vec);
+    void updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view);
+    void updateWandRegion(medAbstractImageView * view, QVector3D &vec);
     void updateMouseInteraction();
 
 protected:
     friend class ClickAndMoveEventFilter;
 
-    void addStroke( medAbstractView *view, const QVector3D &vec );
-    void setData( dtkAbstractData *data );
+    void addStroke( medAbstractImageView *view, const QVector3D &vec );
+    void setData( medAbstractData *data );
 
     // update with seed point data.
     void updateTableRow(int row);
 
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
+
+    void setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData);
 
     void updateFromGuiItems();
 
@@ -108,6 +112,9 @@ protected:
     void generateLabelColorMap(unsigned int numLabels);
 
     void updateButtons();
+
+signals:
+    void installEventFilterRequest(medViewEventFilter *filter);
 
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
@@ -161,6 +168,5 @@ private:
     PaintState::E m_paintState;
 };
 
-} // namespace mseg
 
 

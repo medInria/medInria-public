@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medDbControllerFactory.h"
+#include <medDbControllerFactory.h>
 
-#include "medAbstractDbController.h"
+#include <medAbstractDbController.h>
 
 class medDbControllerFactoryPrivate
 {

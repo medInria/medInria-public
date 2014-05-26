@@ -20,7 +20,7 @@ class medToolBoxContainerPrivate
 {
 public:
     QFrame *container;
-    QGridLayout *layout;
+    QVBoxLayout *layout;
     QList<medToolBox *> toolboxes;
 
     Qt::Orientation layoutOrientation;
@@ -30,9 +30,7 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
 {
     d->container = new QFrame(this);
     d->container->setObjectName("medToolBoxContainer");
-    // by default create a vertical layout
-    d->layoutOrientation = Qt::Vertical;
-    d->layout = new QGridLayout(d->container);
+    d->layout = new QVBoxLayout(d->container);
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(0);
     d->layout->setSizeConstraint(QLayout::SetMinimumSize);
@@ -51,31 +49,24 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
 medToolBoxContainer::~medToolBoxContainer(void)
 {
     delete d;
-
     d = NULL;
+}
+
+void medToolBoxContainer::insertToolBox(int index, medToolBox* toolBox)
+{
+    if (!toolBox)
+        return;
+
+    d->toolboxes.insert(index, toolBox);
+    toolBox->setParent(d->container);
+    d->layout->setStretch(d->layout->count()-1, 0);
+    d->layout->insertWidget(index, toolBox, 0, Qt::AlignTop);
+    d->layout->addStretch(1);
 }
 
 void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
-    if (!toolBox)
-        return;
-    toolBox->setOrientation(d->layoutOrientation);
-
-    if (!d->toolboxes.contains(toolBox)) {
-        d->toolboxes.append(toolBox);
-        toolBox->setParent (d->container);
-
-        if (d->layoutOrientation==Qt::Vertical) {
-            d->layout->setRowStretch (d->layout->count(), 0);
-            d->layout->addWidget(toolBox, d->layout->count(), 0, Qt::AlignTop);
-            d->layout->setRowStretch (d->layout->count(), 1);
-        }
-        else {
-            d->layout->setColumnStretch (d->layout->count(), 0);
-            d->layout->addWidget(toolBox, 0, d->layout->count(), Qt::AlignTop);
-            d->layout->setColumnStretch (d->layout->count(), 1);
-        }
-    }
+    this->insertToolBox(d->layout->count(), toolBox);
 }
 
 void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
@@ -87,41 +78,19 @@ void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
 
 void medToolBoxContainer::clear()
 {
-    for (int i=0; i<=d->layout->count(); i++) {
-      if (d->layoutOrientation==Qt::Vertical)
-	d->layout->setRowStretch (i, 0);
-      else
-	d->layout->setColumnStretch (i, 0);
-    }
-    foreach(medToolBox *tb, d->toolboxes) {
+    for (int i=0; i<=d->layout->count(); i++)
+        d->layout->setStretch (i, 0);
+
+    foreach(medToolBox *tb, d->toolboxes)
+    {
         tb->hide();
         d->layout->removeWidget(tb);
     }
+
     d->toolboxes.clear();
 }
 
 QList<medToolBox*> medToolBoxContainer::toolBoxes(void) const
 {
     return d->toolboxes;
-}
-
-void medToolBoxContainer::setOrientation(Qt::Orientation orient)
-{
-    if (d->layoutOrientation==orient)
-        return;
-
-    d->layoutOrientation = orient;
-
-    this->clear();
-}
-
-Qt::Orientation medToolBoxContainer::orientation() const
-{
-    return d->layoutOrientation;
-}
-
-void medToolBoxContainer::setLayoutSpacing( int spacing )
-{
-    d->layout->setContentsMargins( spacing, spacing, spacing, spacing );
-    d->layout->setSpacing( spacing );
 }

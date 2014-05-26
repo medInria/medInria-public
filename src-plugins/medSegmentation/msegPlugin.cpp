@@ -11,14 +11,12 @@
 
 =========================================================================*/
 
-#include "msegPlugin.h"
+#include <msegPlugin.h>
 
-#include "msegAlgorithmInitializer.h"
-#include "msegAlgorithmConnectedThreshold.h"
-#include "medProcessPaintSegm.h"
+#include <msegAlgorithmInitializer.h>
+#include <msegAnnotationInteractor.h>
 
 #include <dtkLog/dtkLog.h>
-namespace mseg {
 
 // /////////////////////////////////////////////////////////////////
 // PluginPrivate
@@ -30,7 +28,7 @@ public:
     // Class variables go here.
     static const char *s_Name;
 };
-const char * PluginPrivate::s_Name = "mseg::Plugin";
+const char * PluginPrivate::s_Name = "segmentationPlugin";
 
 // /////////////////////////////////////////////////////////////////
 // Plugin
@@ -49,6 +47,8 @@ Plugin::~Plugin()
 
 bool Plugin::initialize()
 {
+    if(!msegAnnotationInteractor::registered())
+        qDebug() << "Unable to register v3dViewAnnotationInteractor";
     return AlgorithmInitializer::initialize();
 }
 
@@ -108,9 +108,7 @@ QStringList Plugin::tags() const
 
 QStringList Plugin::types() const
 {
-    return QStringList() << medProcessPaintSegm::s_identifier();
+    return QStringList();
 }
 
 Q_EXPORT_PLUGIN2(Plugin, Plugin)
-
-} // namespace mseg

@@ -44,7 +44,7 @@ medCompositeDataSetImporterSelectorToolBox *medCompositeDataSetImporterAbstractT
     return d->parent;
 }
 
-dtkAbstractData *medCompositeDataSetImporterAbstractToolBox::output() const
+medAbstractData *medCompositeDataSetImporterAbstractToolBox::output() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return NULL;

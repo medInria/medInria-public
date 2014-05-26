@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "medDataManager.h"
+#include <medDataManager.h>
 
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractData.h>
+#include <medAbstractDataFactory.h>
 
 #include <medDbControllerFactory.h>
 #include <medAbstractDbController.h>
@@ -50,7 +50,7 @@ public:
     }
 
     // this is the data cache for persistent and non-persistent data
-    typedef QHash<medDataIndex, dtkSmartPointer<dtkAbstractData> > DataCacheContainerType;
+    typedef QHash<medDataIndex, dtkSmartPointer<medAbstractData> > DataCacheContainerType;
     DataCacheContainerType dataCache;
     DataCacheContainerType volatileDataCache;
 
@@ -108,9 +108,9 @@ medDataManager *medDataManager::instance(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
+dtkSmartPointer<medAbstractData> medDataManager::data(const medDataIndex& index)
 {
-    dtkSmartPointer<dtkAbstractData>  dtkdata;
+    dtkSmartPointer<medAbstractData>  medData;
 
     // try to get it from cache first
     if ( d->dataCache.contains(index) || d->volatileDataCache.contains(index) )
@@ -118,9 +118,9 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
         qDebug() << "Reading from cache";
 
         if (d->dataCache.contains(index))
-            dtkdata = d->dataCache.value(index);
+            medData = d->dataCache.value(index);
         else
-            dtkdata = d->volatileDataCache.value(index);
+            medData = d->volatileDataCache.value(index);
     }
     else
     {
@@ -138,21 +138,21 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
             if (!manageMemoryUsage(index, db))
             {
                 qDebug() << "could not free enough memory, aborting data reading";
-                return dtkdata;
+                return medData;
             }
 
-            dtkdata = db->read(index);
-            if (dtkdata.refCount() != 1)
-                qWarning() << "RefCount should be 1: " << dtkdata.refCount();
-            if (!dtkdata.isNull())
+            medData = db->read(index);
+            if (medData.refCount() != 1)
+                qWarning() << "RefCount should be 1: " << medData.refCount();
+            if (!medData.isNull())
             {
                 qDebug() << "adding data to data cachemap";
-                d->dataCache[index] = dtkdata;
+                d->dataCache[index] = medData;
             }
         }
 
         //if the data is still invalid we continue in the non-pers db
-        if (!dtkdata)
+        if (!medData)
         {
             medAbstractDbController* npDb = d->getNonPersDbController();
             if(npDb && npDb->contains(index))
@@ -161,39 +161,37 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
                 if (!manageMemoryUsage(index, npDb))
                 {
                     qDebug() << "could not free enough memory, aborting data reading";
-                    return dtkdata;
+                    return medData;
                 }
 
-                dtkdata = npDb->read(index);
+                medData = npDb->read(index);
 
-                if (dtkdata)
+                if (medData)
                 {
                     qDebug() << "adding data to data non-pers.cachemap";
-                    d->volatileDataCache[index] = dtkdata;
+                    d->volatileDataCache[index] = medData;
                 }
             }
         }
 
     }
 
-    if (!dtkdata)
+    if (!medData)
     {
         qWarning() << "unable to open images with index:" << index.asString();
 
         // sometimes signals are blocked before calling this functions, like in medWorkspaceArea...
         //medWorkspaceArea doesn't block these signals any more... until we find why
         //it was needed, we won't be doing any black magic signal blocking where not needed.
-//        bool prevState = this->signalsBlocked();
-//        this->blockSignals(false);
+        //        bool prevState = this->signalsBlocked();
+        //        this->blockSignals(false);
         emit failedToOpen(index);
-//        this->blockSignals(prevState);
+        //        this->blockSignals(prevState);
     } else {
-        medAbstractData * medData = dynamic_cast<medAbstractData*>(dtkdata.data());
-        if (medData)
-            medData->setDataIndex(index);
+        medData->setDataIndex(index);
     }
 
-    return dtkdata;
+    return medData;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -462,7 +460,7 @@ quint64 medDataManager::getUpperMemoryThreshold()
 
 void medDataManager::setWriterPriorities()
 { 
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = medAbstractDataFactory::instance()->writers();
     QMap<int, QString> writerPriorites;
     
     int startIndex = 0;
@@ -479,12 +477,12 @@ void medDataManager::setWriterPriorities()
         writerPriorites.insert(startIndex+i, writers[i]);   
     }
     
-    dtkAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
+    medAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( dtkAbstractData *data )
+void medDataManager::importNonPersistent( medAbstractData *data )
 {
     QString uuid = QUuid::createUuid().toString();
     this->importNonPersistent (data, uuid);
@@ -492,21 +490,21 @@ void medDataManager::importNonPersistent( dtkAbstractData *data )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
+void medDataManager::importNonPersistent(medAbstractData *data, QString uuid)
 {
     if (!data)
         return;
 
     
-    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->dataCache) {
-        if (data == dtkdata.data()) {
+    foreach (dtkSmartPointer<medAbstractData> medData, d->dataCache) {
+        if (data == medData.data()) {
             qWarning() << "data already in manager, skipping";
             return;
         }
     }
 
-    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
-        if (data == dtkdata.data()) {
+    foreach (dtkSmartPointer<medAbstractData> medData, d->volatileDataCache) {
+        if (data == medData.data()) {
             qWarning() << "data already in manager, skipping";
             return;
         }
@@ -531,7 +529,7 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QStr
     }
 
     medAbstractDbController* npDb = d->getNonPersDbController();
-    dtkSmartPointer<dtkAbstractData> data = npDb->read(index);
+    dtkSmartPointer<medAbstractData> data = npDb->read(index);
 
     if (!data.isNull())
     {
@@ -566,15 +564,15 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::exportDataToFile(dtkAbstractData * data)
+void medDataManager::exportDataToFile(medAbstractData * data)
 {
     if ( ! data) return;
 
-    QList<QString> allWriters = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
     QHash<QString, dtkAbstractDataWriter*> possibleWriters;
 
     foreach(QString writerType, allWriters) {
-        dtkAbstractDataWriter * writer = dtkAbstractDataFactory::instance()->writer(writerType);
+        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
         if (writer->handled().contains(data->identifier()))
             possibleWriters[writerType] = writer;
         else
@@ -620,14 +618,12 @@ void medDataManager::exportDataToFile(dtkAbstractData * data)
     exportDialog->setLayout(gridbox);
 
     // Set a default filename based on the series's description
-    medAbstractData * medData = dynamic_cast<medAbstractData*>(data);
-    if (medData) {
-        medAbstractDbController * dbController = controllerForDataSource(medData->dataIndex().dataSourceId());
-        if (dbController) {
-            QString defaultName = dbController->metaData(medData->dataIndex(), medMetaDataKeys::SeriesDescription);
-            defaultName += typesHandled->itemData(typesHandled->currentIndex(), Qt::UserRole+1).toString();
-            exportDialog->selectFile(defaultName);
-        }
+
+    medAbstractDbController * dbController = controllerForDataSource(data->dataIndex().dataSourceId());
+    if (dbController) {
+        QString defaultName = dbController->metaData(data->dataIndex(), medMetaDataKeys::SeriesDescription);
+        defaultName += typesHandled->itemData(typesHandled->currentIndex(), Qt::UserRole+1).toString();
+        exportDialog->selectFile(defaultName);
     }
 
     if ( exportDialog->exec() ) {
@@ -695,14 +691,14 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
     if (d->volatileDataCache.count(index) > 0)
     {
         qDebug() << "storing non persistent single data to database";
-        dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
+        dtkSmartPointer<medAbstractData> medData = d->volatileDataCache[index];
         QUuid tmpUid = QUuid::createUuid().toString();
         d->npDataIndexBeingSaved[tmpUid] = index;
 
         medAbstractDbController* db = d->getDbController();
 
         if(db)
-            db->import(dtkdata.data(),tmpUid);
+            db->import(medData.data(),tmpUid);
     }
 }
 
@@ -781,7 +777,7 @@ size_t medDataManager::getOptimalMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
+void medDataManager::import( dtkSmartPointer<medAbstractData> &data )
 {
     if (!data.data())
         return;

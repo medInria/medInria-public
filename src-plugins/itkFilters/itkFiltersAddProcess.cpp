@@ -11,15 +11,15 @@
 
 =========================================================================*/
 
-#include "itkFiltersAddProcess.h"
+#include <itkFiltersAddProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
 
-#include "itkFiltersAddProcess_p.h"
+#include <itkFiltersAddProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 

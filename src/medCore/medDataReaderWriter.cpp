@@ -12,11 +12,11 @@
 =========================================================================*/
 
 #include <medDataReaderWriter.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <QFileInfo>
 
 medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
-    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
     if (readers.size()==0) {
 #if 0
@@ -37,7 +37,7 @@ medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
         return dreader;
 
     for (int i=0;i<readers.size();++i) {
-        dreader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
+        dreader = medAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         if (dreader->canRead(filename)) {
             dreader->enableDeferredDeletion(false);
             return dreader;
@@ -46,12 +46,12 @@ medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
     return dreader = Reader();
 }
 
-medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,const dtkAbstractData* data) {
+medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,const medAbstractData* data) {
 
     if (!data)
         return Writer();
 
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = medAbstractDataFactory::instance()->writers();
 
     static Writer dwriter;
 
@@ -59,7 +59,7 @@ medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,cons
         return dwriter;
 
     for (int i=0;i<writers.size();++i) {
-        dwriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
+        dwriter = medAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         if (dwriter->handled().contains(data->identifier()) && dwriter->canWrite(path)) {
             dwriter->enableDeferredDeletion(false);
             return dwriter;
@@ -72,12 +72,12 @@ medDataReaderWriter::Data medDataReaderWriter::read(const QString& path) {
     Reader dreader = reader(path);
     if (!dreader.isNull()) {
         dreader->read(path);
-        return dreader->data();
+        return dynamic_cast<medAbstractData*>(dreader->data());
     }
     return NULL;
 }
 
-bool medDataReaderWriter::write(const QString& path,dtkAbstractData* data) {
+bool medDataReaderWriter::write(const QString& path,medAbstractData* data) {
     Writer dwriter = writer(path,data);
     if (!dwriter.isNull()) {
         dwriter->setData(data);

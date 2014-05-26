@@ -15,7 +15,7 @@
 
 #include <QtCore/QObject>
 #include <QString>
-#include "medPacsExport.h"
+#include <medPacsExport.h>
 
 class MEDPACS_EXPORT medAbstractPacsKey : public QObject
 {

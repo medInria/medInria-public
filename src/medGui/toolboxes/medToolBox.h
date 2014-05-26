@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 #include <QtGui>
 
 class dtkAbstractView;
-class dtkAbstractData;
+class medAbstractData;
 
 class medToolBoxTab;
 class medToolBoxPrivate;
@@ -85,7 +85,7 @@ public:
     /**
      * @brief Sets the orientation of the toolbox.
      * Given the orientation, lays the widgets vertically or horizontally.
-     * Usually used by the medWorkspace.
+     * Usually used by the medAbstractWorkspace.
      *
      * @param orientation
     */
@@ -199,13 +199,6 @@ public slots:
      * @param void
     */
     virtual void clear();
-
-    /**
-     * @brief Updates the content of the toolbox when a new view is selected.
-     *
-     * @param view The view to extract information from.
-    */
-    virtual void update(dtkAbstractView *view);
 
     /**
      * @brief Switches from a minimized state to an extended one and vice versa.

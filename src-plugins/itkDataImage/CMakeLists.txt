@@ -1,36 +1,31 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
-
-cmake_minimum_required(VERSION 2.8.1)
+################################################################################
 
 project(itkDataImagePlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
-## #################################################################
+## #############################################################################
 ## Resolve dependencies
-## #################################################################
+## #############################################################################
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
@@ -39,100 +34,146 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-## #################################################################
-## Input
-## #################################################################
+if (ITK_USE_SYSTEM_GDCM)
+  add_definitions(-DITK_USE_SYSTEM_GDCM)
+endif()
 
-set(${PROJECT_NAME}_HEADERS_MOC itkDataImagePlugin.h)
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC}
-  itkDataImage.h
-  itkDataImageChar3.h
-  itkDataImageChar4.h
-  itkDataImageUChar4.h
-  itkDataImageUChar3.h
-  itkDataImageShort3.h
-  itkDataImageUShort3.h
-  itkDataImageUShort4.h
-  itkDataImageInt3.h
-  itkDataImageInt4.h
-  itkDataImageLong4.h
-  itkDataImageUInt3.h
-  itkDataImageUInt4.h
-  itkDataImageULong4.h
-  itkDataImageLong3.h
-  itkDataImageULong3.h
-  itkDataImageFloat3.h
-  itkDataImageFloat4.h
-  itkDataImageDouble4.h
-  itkDataImageDouble3.h
-  itkDataImageVectorUChar3.h
-  itkDataImageVectorFloat3.h
-  itkDataImageRGB3.h
-  itkDataImageRGBA3.h
-  itkDataImageShort4.h
+find_package(DCMTK REQUIRED)
+if (APPLE)
+  include(FixDCMTKMacInstall)
+  FixDCMTKMacInstall()
+endif()
+
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
+
+## #############################################################################
+## List Sources
+## #############################################################################
+
+list_source_files(${PROJECT_NAME}
+  . # current dir
+  datas
+  interactors
+  navigators
+  readers
+  writers
   )
 
-set(${PROJECT_NAME}_SOURCES itkDataImagePlugin.cpp)
 
-## #################################################################
-## Build rules
-## #################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+## #############################################################################
+## include directorie.
+## #############################################################################
 
-if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
-    ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_SOURCES_MOC})
-endif()
-
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_PCH}
+list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES})
+  )
 
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore dtkLog
-  medCore
-  dtkItkLogForwarder
-  ITKStatistics
-)
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
 
-if (BUILD_TESTING)
-  add_subdirectory(Testing)
-endif()
+## #############################################################################
+## Precompile headers
+## #############################################################################
 
-# Include header files for Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
-
-# Due to the large number of template functions, windows needs an extra compile flag.
-if (MSVC)
-    set(bigobjFile itkDataImagePlugin.cpp)
-    get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
-    if (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
-        set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "/bigobj")
-    else()
-        set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "${bigobjFile_COMPILE_FLAGS} /bigobj")
-    endif()
-endif()
-
-#Prevent compiler warnings about valid std::copy.
-if (MSVC)
-    add_definitions(
-        -D_SCL_SECURE_NO_WARNINGS
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
-## #################################################################
-## Install rules
-## #################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+## #############################################################################
+## add library
+## #############################################################################
+
+# Due to the large number of template functions, windows needs an extra compile flag.
+# Currently this only affects x64/debug builds, but enabling this flag for others does no harm.
+if (MSVC)
+    set(bigobjFile itkDataImage.cpp)
+    get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
+    if(${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+        set_source_files_properties(${bigobjFile}
+          PROPERTIES COMPILE_FLAGS
+          "/bigobj"
+          )
+    else()
+        set_source_files_properties(${bigobjFile}
+          PROPERTIES COMPILE_FLAGS
+         "${bigobjFile_COMPILE_FLAGS} /bigobj"
+         )
+    endif()
+
+  #Prevent compiler warnings about valid std::copy.
+  if(MSVC)
+      add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+  endif()
+
+endif()
+
+add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_CFILES}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
+
+target_link_libraries(${PROJECT_NAME}
+  ${QT_LIBRARIES}
+  dtkCore
+  dtkLog
+  ITKIOBioRad
+  ITKIOBMP
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOHDF5
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPhilipsREC
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+  ITKStatistics
+  ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
+  medCore
+  medGui
+  medImageIO
+  medLog
+  medVtkInria
+  QVTK
+  vtkCommon
+  vtkRendering
+  vtkVolumeRendering
+  )
+
+# needed because of link  with medImageIO
+if(APPLE)
+  FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})  
+endif(APPLE)
+
+## #############################################################################
+## Install rules
+## #############################################################################
+
+set_plugin_install_rules(${PROJECT_NAME})
+
+
+## #############################################################################
+## Build tests
+## #############################################################################
+
+if(MEDINRIA_BUILD_TESTS)
+  add_subdirectory(tests)
+endif()
+

@@ -3,24 +3,24 @@
 // /////////////////////////////////////////////////////////////////
 
 
-#include "undoRedoRegistration.h"
-#include "undoRedoRegistrationToolBox.h"
+#include <undoRedoRegistration.h>
+#include <undoRedoRegistrationToolBox.h>
 
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medAbstractView.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
-#include <registrationFactory/registrationFactory.h>
+#include <registrationFactory.h>
 
 
 class undoRedoRegistrationToolBoxPrivate
@@ -30,7 +30,7 @@ public:
     QPushButton * redoButton;
     QPushButton * resetButton;
     QListWidget * transformationStack;
-    QIcon arrowCurrentStep; 
+    QIcon arrowCurrentStep;
     int currentStep;
     dtkSmartPointer<undoRedoRegistration> m_UndoRedo;
 };
@@ -86,9 +86,9 @@ undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)
 bool undoRedoRegistrationToolBox::registered(void)
 {
     return medToolBoxFactory::instance()-> registerToolBox<undoRedoRegistrationToolBox>
-        ("undoRedoRegistrationToolBox", 
-        tr("undoRedoRegistration"), 
-        tr("short tooltip description"), 
+        ("undoRedoRegistrationToolBox",
+        tr("undoRedoRegistration"),
+        tr("short tooltip description"),
         QStringList() << "UndoRedoRegistration");
 }
 
@@ -133,13 +133,13 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
     d->currentStep=-1;
     while (d->transformationStack->count()!=0)
     {
-        QListWidgetItem * tmp = d->transformationStack->takeItem(0);    
+        QListWidgetItem * tmp = d->transformationStack->takeItem(0);
         delete tmp;
     }
     d->undoButton->setEnabled(false);
     d->redoButton->setEnabled(false);
     d->resetButton->setEnabled(false);
-    
+
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
     d->m_UndoRedo->generateOutput();
     this->parentToolBox()->handleOutput(medRegistrationSelectorToolBox::reset);
@@ -153,10 +153,10 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QString metho
         {
             QListWidgetItem * tmp = d->transformationStack->takeItem(k);
             delete tmp;
-        }  
+        }
         d->currentStep = 0;
 
-        d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + this->parentToolBox()->getNameOfCurrentAlgorithm().remove(" ")); 
+        d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + this->parentToolBox()->getNameOfCurrentAlgorithm().remove(" "));
         d->transformationStack->item(d->currentStep)->setToolTip(methodParameters);
         d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
         d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
@@ -188,8 +188,6 @@ void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelector
     medRegistrationAbstractToolBox::setRegistrationToolBox(toolbox);
     toolbox->setUndoRedoProcess(d->m_UndoRedo);
     connect(this->parentToolBox(),SIGNAL(success()),this,SLOT(onRegistrationSuccess()));
-    // Reset the Undo Redo if fixed or moving view removed.
-    connect(this->parentToolBox(), SIGNAL(viewRemoved()), registrationFactory::instance(), SLOT(reset()));
 }
 
 void undoRedoRegistrationToolBox::onRegistrationSuccess(){

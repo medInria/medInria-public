@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 #include <QtGui/QScrollArea>
 
@@ -29,11 +29,10 @@ public:
 
     void addToolBox(medToolBox *toolBox);
     void removeToolBox(medToolBox *toolBox);
+    void insertToolBox(int index, medToolBox* toolBox);
     void clear();
     
     QList<medToolBox*> toolBoxes() const;
-
-    Qt::Orientation orientation() const;
 
     /**
      * @brief Set margin and spacing of the layout
@@ -42,8 +41,6 @@ public:
     */
     void setLayoutSpacing(int spacing);
     
-public slots:
-    void setOrientation(Qt::Orientation orientation);
 
 private:
     medToolBoxContainerPrivate *d;

@@ -1,62 +1,88 @@
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
-
-=========================================================================*/
-
 #pragma once
 
-#include "medGuiExport.h"
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QImage>
+#include <medGuiExport.h>
 
-#include <QtCore>
-#include <QtGui>
-
-class medDatabasePreviewItem;
-class medDatabasePreviewPrivate;
 class medDataIndex;
+class QLabel;
 
-class MEDGUI_EXPORT medDatabasePreview : public QFrame
+
+class medDatabasePreviewStaticScenePrivate;
+class MEDGUI_EXPORT medDatabasePreviewStaticScene: public QGraphicsScene
 {
     Q_OBJECT
-
 public:
-     medDatabasePreview(QWidget *parent = 0);
-    ~medDatabasePreview();
+    medDatabasePreviewStaticScene(QObject *parent = NULL);
+    virtual ~medDatabasePreviewStaticScene();
 
-    void init();
-    void reset();
+    void addImage(const medDataIndex &index);
+    void setImage(const medDataIndex &index);
+    medDataIndex& currentDataIndex() const;
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+signals:
+    void openRequest(const medDataIndex& index);
+
+private :
+    medDatabasePreviewStaticScenePrivate *d;
+};
+
+
+class medDatabasePreviewDynamicScenePrivate;
+class MEDGUI_EXPORT medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
+{
+    Q_OBJECT
+public:
+    medDatabasePreviewDynamicScene(const QList<QPair<medDataIndex, QString> > & seriesDescriptionDataIndexList,
+                                   QObject * parent = NULL);
+    virtual ~medDatabasePreviewDynamicScene();
+    void previewMouseMoveEvent(QMouseEvent *event, int width);
 
 signals:
-    void seriesClicked(const medDataIndex& id);
-    void  imageClicked(const medDataIndex& id);
+    void updateLabel(const QString & description);
+
+private:
+    medDatabasePreviewDynamicScenePrivate *d;
+
+};
+
+
+class medDatabasePreviewPrivate;
+class MEDGUI_EXPORT medDatabasePreview: public QGraphicsView
+{
+    Q_OBJECT
+public :
+    medDatabasePreview(QWidget *parent = NULL);
+    virtual ~medDatabasePreview();
+
+    enum medDataType
+    {
+        PATIENT,
+        STUDY,
+        SERIES
+    };
+
+    QLabel* label() const;
 
 public slots:
-    void onPatientClicked(const medDataIndex& id);
-    void onStudyClicked(const medDataIndex& id);
-    void onSeriesClicked(const medDataIndex& id);
+    void showSeriesPreview(const medDataIndex &index);
+    void showStudyPreview(const medDataIndex &index);
+    void showPatientPreview(const medDataIndex &index);
 
-protected slots:
-    void onSlideUp();
-    void onSlideDw();
-    void onMoveRt();
-    void onMoveLt();
-    void onMoveUp();
-    void onMoveDw();
-    void onMoveBg();
-    void onHovered(medDatabasePreviewItem *item);
-    
+    void setLabel(const QString & text);
+
 protected:
-    void moveToItem(medDatabasePreviewItem *target);
+    void resizeEvent(QResizeEvent *event);
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
+signals:
+    void openRequest(const medDataIndex& index);
 
 private:
     medDatabasePreviewPrivate *d;
 };
-
-

@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataDiffusionGradientListPluginExport.h"
+#include <itkDataDiffusionGradientListPluginExport.h>
 
 class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPluginPrivate;
 

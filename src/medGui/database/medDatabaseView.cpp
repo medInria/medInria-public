@@ -11,13 +11,13 @@
 
 =========================================================================*/
 
-#include "medDatabaseView.h"
+#include <medDatabaseView.h>
 #include <medDataManager.h>
 #include <medAbstractDatabaseItem.h>
 #include <medAbstractDbController.h>
 #include <medDatabaseEditItemDialog.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
@@ -96,7 +96,6 @@ public:
 
 medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new medDatabaseViewPrivate)
 {
-    //test GPR
     this->setDragEnabled(true);
     this->setDropIndicatorShown(true);
 
@@ -257,7 +256,8 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)
-        emit (open(item->dataIndex()));
+       if(item->dataIndex().isValidForSeries())
+            emit (open(item->dataIndex()));
 }
 
 void medDatabaseView::onViewSelectedItemRequested(void)
@@ -437,20 +437,20 @@ void medDatabaseView::onCreatePatientRequested(void)
         birthdate = editDialog.value(medMetaDataKeys::BirthDate.label()).toString();
         gender = editDialog.value(medMetaDataKeys::Gender.label()).toString();
 
-        dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
+        dtkSmartPointer<medAbstractData> medData = new medAbstractData();
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
-        dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-        dtkData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
-        dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
-        dtkData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
+        medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+        medData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
+        medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
+        medData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
 
         if(editDialog.isPersistent())
         {
-            medDataManager::instance()->import(dtkData);
+            medDataManager::instance()->import(medData);
         }
-        else medDataManager::instance()->importNonPersistent(dtkData);
+        else medDataManager::instance()->importNonPersistent(medData);
     }
 }
 
@@ -494,20 +494,20 @@ void medDatabaseView::onCreateStudyRequested(void)
         {
             QString studyName = editDialog.value(medMetaDataKeys::StudyDescription.label()).toString();
 
-            dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
+            dtkSmartPointer<medAbstractData> medData = new medAbstractData();
 
-            dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-            dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
-            dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+            medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+            medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
+            medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
             
-            dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-            dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+            medData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
+            medData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
 
             if(editDialog.isPersistent())
             {
-                medDataManager::instance()->import(dtkData);
+                medDataManager::instance()->import(medData);
             }
-            else medDataManager::instance()->importNonPersistent(dtkData);
+            else medDataManager::instance()->importNonPersistent(medData);
         }
     }
 }

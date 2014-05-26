@@ -15,9 +15,8 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "msegPluginExport.h"
+#include <msegPluginExport.h>
 
-namespace mseg {
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT PluginPrivate;
 
 /**
@@ -52,6 +51,5 @@ public:
 private:
      PluginPrivate *d;
 };
-} // namespace mseg
 
 

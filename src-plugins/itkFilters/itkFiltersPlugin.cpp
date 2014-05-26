@@ -11,25 +11,24 @@
 
 =========================================================================*/
 
-#include "itkFiltersPlugin.h"
+#include <itkFiltersPlugin.h>
 
-#include "itkFiltersAddProcess.h"
-#include "itkFiltersSubtractProcess.h"
-#include "itkFiltersMultiplyProcess.h"
-#include "itkFiltersDivideProcess.h"
-#include "itkFiltersGaussianProcess.h"
-#include "itkFiltersMedianProcess.h"
-#include "itkFiltersNormalizeProcess.h"
-#include "itkFiltersInvertProcess.h"
-#include "itkFiltersShrinkProcess.h"
-#include "itkFiltersWindowingProcess.h"
-#include "itkFiltersDilateProcess.h"
-#include "itkFiltersErodeProcess.h"
-#include "itkFiltersCloseProcess.h"
-#include "itkFiltersOpenProcess.h"
-#include "itkFiltersToolBox.h"
-#include "itkMorphologicalFiltersToolBox.h"
-#include "itkFiltersDefinitions.h"
+#include <itkFiltersAddProcess.h>
+#include <itkFiltersSubtractProcess.h>
+#include <itkFiltersMultiplyProcess.h>
+#include <itkFiltersDivideProcess.h>
+#include <itkFiltersGaussianProcess.h>
+#include <itkFiltersMedianProcess.h>
+#include <itkFiltersNormalizeProcess.h>
+#include <itkFiltersInvertProcess.h>
+#include <itkFiltersShrinkProcess.h>
+#include <itkFiltersWindowingProcess.h>
+#include <itkFiltersDilateProcess.h>
+#include <itkFiltersErodeProcess.h>
+#include <itkFiltersCloseProcess.h>
+#include <itkFiltersOpenProcess.h>
+#include <itkFiltersToolBox.h>
+#include <itkMorphologicalFiltersToolBox.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -100,7 +99,7 @@ QString itkFiltersPlugin::contact() const
 
 QString itkFiltersPlugin::version() const
 {
-    return PLUGIN_VERSION;
+    return ITKFILTERSPLUGIN_VERSION;
 }
 
 QStringList itkFiltersPlugin::authors() const

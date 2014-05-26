@@ -13,17 +13,17 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "itkFiltersProcessBase_p.h"
+#include <itkFiltersProcessBase_p.h>
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
+#include <itkImage.h>
+#include <itkCommand.h>
 #include <itkGrayscaleMorphologicalOpeningImageFilter.h>
-#include "itkBinaryBallStructuringElement.h"
+#include <itkBinaryBallStructuringElement.h>
 
 class itkFiltersOpenProcess;
 
