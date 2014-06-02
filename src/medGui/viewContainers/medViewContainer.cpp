@@ -320,7 +320,7 @@ void medViewContainer::setSelected(bool selec)
             this->setSelected(!selec);
         }
         //clear focus in order to select/unselect successively twice the same container
-        this->clearFocus();
+        //this->clearFocus();
         return;
     }
 
@@ -335,7 +335,7 @@ void medViewContainer::setSelected(bool selec)
         this->unHighlight();
     }
     //clear focus in order to select/unselect successively twice the same container
-    this->clearFocus();
+    //this->clearFocus();
 }
 
 void medViewContainer::highlight(QString color)
@@ -609,6 +609,25 @@ void medViewContainer::updateToolBar()
                 continue;
 
             QWidget* widget = interactor->toolBarWidget();
+            if(widget)
+            {
+                if(!d->viewToolbar)
+                {
+                    d->viewToolbar = new QWidget;
+                    QHBoxLayout *tbLayout = new QHBoxLayout(d->viewToolbar);
+                    tbLayout->setContentsMargins(0, 0, 0, 0);
+                    tbLayout->setSpacing(0);
+                }
+                d->viewToolbar->layout()->addWidget(widget);
+            }
+        }
+
+        foreach(medAbstractNavigator *navigator, layeredView->navigators())
+        {
+            if(!navigator)
+                continue;
+            
+            QWidget* widget = navigator->toolBarWidget();
             if(widget)
             {
                 if(!d->viewToolbar)

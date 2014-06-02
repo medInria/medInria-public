@@ -21,6 +21,9 @@
 
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
+#include <medViewContainer.h>
+#include <medViewContainerSplitter.h>
+#include <medParameterPoolManager.h>
 #include <medAbstractImageView.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
@@ -69,6 +72,8 @@ class medVtkViewNavigatorPrivate
     medBoolParameter *showRulerParameter;
     medBoolParameter *showAnnotationParameter;
     medBoolParameter *showScalarBarParameter;
+    
+    QPushButton *fourImageSplitterButton;
 
     QWidget *showOptionsWidget;
 
@@ -158,7 +163,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showRulerParameter->setValue(true);
     d->showAnnotationParameter->setValue(true);
     d->showScalarBarParameter->setValue(false);
-
+    
     d->enableZooming = new medBoolParameter("Zooming", this);
     d->enableZooming->setIcon(QIcon (":/icons/magnify.png"));
     d->enableZooming->setToolTip(tr("Zooming"));
@@ -409,8 +414,84 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
 
 QWidget* medVtkViewNavigator::buildToolBarWidget()
 {
-    QWidget *toolBarWidget = new QWidget;
-    return toolBarWidget;
+    d->fourImageSplitterButton = new QPushButton("4");
+    connect(d->fourImageSplitterButton,SIGNAL(clicked()),this,SLOT(splitViewInFour()));
+    
+    return d->fourImageSplitterButton;
+}
+
+void medVtkViewNavigator::splitViewInFour()
+{
+    if (!d->parent)
+        return;
+    
+    medViewContainer *topLeftContainer = dynamic_cast <medViewContainer *> (d->parent->parent());
+    medViewContainerSplitter *topLeftContainerSplitter = dynamic_cast <medViewContainerSplitter *> (topLeftContainer->parent());
+    
+    medViewContainer *bottomLeftContainer = topLeftContainer->splitVertically();
+    medViewContainer *topRightContainer = topLeftContainer->splitHorizontally();
+    medViewContainer *bottomRightContainer = bottomLeftContainer->splitHorizontally();
+    
+    topLeftContainerSplitter->adjustContainersSize();
+    
+    foreach(medAbstractData *data, d->parent->dataList())
+    {
+        topRightContainer->addData(data);
+        bottomLeftContainer->addData(data);
+        bottomRightContainer->addData(data);
+    }
+    
+    d->parent->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+    medAbstractImageView *bottomLeftContainerView = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
+    medAbstractImageView *topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+    medAbstractImageView *bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
+    
+    bottomLeftContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+    topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+    bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+    
+    QString linkGroupBaseName = "MPR ";
+    unsigned int linkGroupNumber = 1;
+    
+    QString linkGroupName = linkGroupBaseName + " " + QString::number(linkGroupNumber);
+    while (medParameterPoolManager::instance()->pool(linkGroupName))
+    {
+        linkGroupNumber++;
+        linkGroupName = linkGroupBaseName + " " + QString::number(linkGroupNumber);
+    }
+    
+    QColor linkGroupColor;
+    double hueValue = 2.0 * linkGroupNumber / (1.0 + sqrt(5.0));
+    hueValue -= floor(hueValue);
+    linkGroupColor.setHsvF(hueValue,1.0,1.0);
+    
+    QPixmap linkGroupPixmap(32,32);
+    linkGroupPixmap.fill(linkGroupColor);
+    QIcon linkGroupIcon(linkGroupPixmap);
+    
+    d->parent->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    d->parent->linkParameter()->setValue(linkGroupName);
+    topRightContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    topRightContainerView->linkParameter()->setValue(linkGroupName);
+    bottomLeftContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    bottomLeftContainerView->linkParameter()->setValue(linkGroupName);
+    bottomRightContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    bottomRightContainerView->linkParameter()->setValue(linkGroupName);
+    
+    for (unsigned int i = 0;i < d->parent->layersCount();++i)
+    {
+        d->parent->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
+        d->parent->layerLinkParameter(i)->setValue(linkGroupName);
+        
+        topRightContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
+        topRightContainerView->layerLinkParameter(i)->setValue(linkGroupName);
+        bottomLeftContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
+        bottomLeftContainerView->layerLinkParameter(i)->setValue(linkGroupName);
+        bottomRightContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
+        bottomRightContainerView->layerLinkParameter(i)->setValue(linkGroupName);
+    }
+    
+    d->showAxesParameter->setValue(true);
 }
 
 void medVtkViewNavigator::cameraUp (double *coordinates) const

@@ -71,6 +71,7 @@ public:
     virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
     virtual medAbstractViewNavigator* primaryNavigator();
     virtual QList<medAbstractNavigator*> extraNavigators();
+    virtual QList<medAbstractNavigator*> navigators();
 
 public slots:
     virtual void reset() = 0;
