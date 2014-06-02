@@ -152,6 +152,14 @@ QList<medAbstractNavigator*> medAbstractView::extraNavigators()
     return d->extraNavigators;
 }
 
+QList<medAbstractNavigator*> medAbstractView::navigators()
+{
+    QList<medAbstractNavigator*> navigatorsList;
+    navigatorsList << this->primaryNavigator() << d->extraNavigators;
+    
+    return navigatorsList;
+}
+
 medDoubleParameter* medAbstractView::zoomParameter()
 {
     medAbstractViewNavigator* pNavigator = this->primaryNavigator();

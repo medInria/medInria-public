@@ -59,6 +59,7 @@ public:
     medStringListParameter *layerLinkParameter(unsigned int layer);
 
     QList <medAbstractInteractor*> interactors(unsigned int layer);
+    QList<medAbstractNavigator*> navigators();
 
     virtual QWidget* navigatorWidget();
     virtual QWidget* mouseInteractionWidget();

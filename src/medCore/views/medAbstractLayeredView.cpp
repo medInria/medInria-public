@@ -374,6 +374,13 @@ QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int
     return interactors;
 }
 
+QList<medAbstractNavigator*> medAbstractLayeredView::navigators()
+{
+    QList<medAbstractNavigator*> navigatorsList;
+    navigatorsList << this->primaryNavigator() << this->extraNavigators();
+    
+    return navigatorsList;
+}
 
 QWidget* medAbstractLayeredView::navigatorWidget()
 {
