@@ -498,6 +498,11 @@ void medVtkViewNavigator::switchToFourViews()
     linkPool->removeAll("sagittal");
     linkPool->removeAll("3d");
     
+    linkPool->append(d->parent->dataListParameter());
+    linkPool->append(topRightContainerView->dataListParameter());
+    linkPool->append(bottomLeftContainerView->dataListParameter());
+    linkPool->append(bottomRightContainerView->dataListParameter());
+    
     d->showAxesParameter->setValue(true);
 }
 
