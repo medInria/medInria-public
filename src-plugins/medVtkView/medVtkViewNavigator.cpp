@@ -27,6 +27,7 @@
 #include <medAbstractImageView.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
+#include <medTriggerParameter.h>
 #include <medDoubleParameter.h>
 #include <medVector2DParameter.h>
 #include <medVector3DParameter.h>
@@ -414,13 +415,12 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
 
 QWidget* medVtkViewNavigator::buildToolBarWidget()
 {
-    d->fourImageSplitterButton = new QPushButton("4");
-    connect(d->fourImageSplitterButton,SIGNAL(clicked()),this,SLOT(splitViewInFour()));
+    QWidget *toolBarWidget = this->fourViewsParameter()->getPushButton();
     
-    return d->fourImageSplitterButton;
+    return toolBarWidget;
 }
 
-void medVtkViewNavigator::splitViewInFour()
+void medVtkViewNavigator::switchToFourViews()
 {
     if (!d->parent)
         return;
@@ -490,6 +490,11 @@ void medVtkViewNavigator::splitViewInFour()
         bottomRightContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
         bottomRightContainerView->layerLinkParameter(i)->setValue(linkGroupName);
     }
+    
+    d->parent->fourViewsParameter()->hide();
+    topRightContainerView->fourViewsParameter()->hide();
+    bottomLeftContainerView->fourViewsParameter()->hide();
+    bottomRightContainerView->fourViewsParameter()->hide();
     
     d->showAxesParameter->setValue(true);
 }
