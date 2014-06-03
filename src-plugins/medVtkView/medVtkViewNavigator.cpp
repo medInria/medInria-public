@@ -24,22 +24,16 @@
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
 #include <medParameterPoolManager.h>
-#include <medParameterPool.h>
 #include <medAbstractImageView.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
-#include <medTriggerParameter.h>
 #include <medDoubleParameter.h>
 #include <medVector2DParameter.h>
 #include <medVector3DParameter.h>
 #include <medDoubleParameter.h>
-#include <medDataListParameter.h>
 #include <medCompositeParameter.h>
 #include <medStringListParameter.h>
 #include <medTimeLineParameter.h>
-
-#include <medDataIndex.h>
-#include <medDataManager.h>
 
 /*=========================================================================
 
