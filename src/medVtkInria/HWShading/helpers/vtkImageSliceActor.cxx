@@ -290,6 +290,7 @@ void vtkImageSliceActor::UpdateDisplayExtent()
   if (!vtkMath::AreBoundsInitialized(bounds))
     {
     int* dims = input->GetDimensions();
+    (void)dims;
     vtkDebugMacro(<<"Bounds are not initialized!"
 	<<" Dimensions are "<<dims[0]<<", "<<dims[1]<<", "<<dims[2]<<".");
     // Input is not up-to-date. Pipeline must be updated first, so return.
