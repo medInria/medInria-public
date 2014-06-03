@@ -24,6 +24,7 @@
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
 #include <medParameterPoolManager.h>
+#include <medParameterPool.h>
 #include <medAbstractImageView.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
@@ -490,11 +491,12 @@ void medVtkViewNavigator::switchToFourViews()
         bottomRightContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
         bottomRightContainerView->layerLinkParameter(i)->setValue(linkGroupName);
     }
-    
-    d->parent->fourViewsParameter()->hide();
-    topRightContainerView->fourViewsParameter()->hide();
-    bottomLeftContainerView->fourViewsParameter()->hide();
-    bottomRightContainerView->fourViewsParameter()->hide();
+
+    medParameterPool *linkPool = medParameterPoolManager::instance()->pool(linkGroupName);
+    linkPool->removeAll("axial");
+    linkPool->removeAll("coronal");
+    linkPool->removeAll("sagittal");
+    linkPool->removeAll("3d");
     
     d->showAxesParameter->setValue(true);
 }
