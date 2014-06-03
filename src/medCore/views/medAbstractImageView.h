@@ -35,6 +35,7 @@ class medAbstractNavigator;
 
 class medDoubleParameter;
 class medCompositeParameter;
+class medTriggerParameter;
 class medAbstractVector3DParameter;
 
 class medAbstractImageViewPrivate;
@@ -64,6 +65,8 @@ public:
     medCompositeParameter *windowLevelParameter(unsigned int layer);
 
     medDoubleParameter *opacityParameter(unsigned int layer);
+    
+    medTriggerParameter *fourViewsParameter();
 
     /**
      * Convert from world coordinates to scene coordinates.
