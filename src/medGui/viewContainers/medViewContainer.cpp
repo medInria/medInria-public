@@ -21,6 +21,7 @@
 
 #include <medViewContainerManager.h>
 #include <medAbstractView.h>
+#include <medAbstractImageView.h>
 #include <medBoolParameter.h>
 #include <medDataIndex.h>
 #include <medAbstractData.h>
@@ -31,6 +32,7 @@
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medStringListParameter.h>
+#include <medTriggerParameter.h>
 #include <medParameterPoolManager.h>
 #include <medParameterPool.h>
 #include <medViewContainerSplitter.h>
@@ -219,15 +221,24 @@ bool medViewContainer::isUserSplittable() const
 void medViewContainer::setUserSplittable(bool splittable)
 {
     d->userSplittable = splittable;
+    
+    medAbstractImageView *view = dynamic_cast <medAbstractImageView *> (d->view);
+    
     if(d->userSplittable)
     {
           d->hSplitButton->show();
           d->vSplitButton->show();
+        
+        if (view)
+            view->fourViewsParameter()->show();
     }
     else
     {
         d->hSplitButton->hide();
         d->vSplitButton->hide();
+        
+        if (view)
+            view->fourViewsParameter()->hide();
     }
 }
 
@@ -296,6 +307,12 @@ void medViewContainer::setView(medAbstractView *view)
             connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
         }
 
+        if (medAbstractImageView* imageView = dynamic_cast <medAbstractImageView*> (view))
+        {
+            if (!d->userSplittable)
+                imageView->fourViewsParameter()->hide();
+        }
+        
         d->maximizedParameter->show();
         d->defaultWidget->hide();
         d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);

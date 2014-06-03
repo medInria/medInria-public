@@ -20,6 +20,7 @@
 
 class medAbstractImageView;
 class medCompositeParameter;
+class medTriggerParameter;
 class medAbstractVector3DParameter;
 
 class medAbstractImageViewNavigatorPrivate;
@@ -38,6 +39,8 @@ public:
     virtual medCompositeParameter* cameraParameter();
 
     virtual medAbstractVector3DParameter* positionBeingViewedParameter();
+    
+    virtual medTriggerParameter *fourViewsParameter();
 
 public slots:
 
@@ -46,6 +49,8 @@ public slots:
     virtual void setCamera(QList<QVariant>) = 0;
 
     virtual void moveToPosition (const QVector3D &position) = 0;
+    
+    virtual void switchToFourViews() = 0;
 
 private:
     medAbstractImageViewNavigatorPrivate *d;

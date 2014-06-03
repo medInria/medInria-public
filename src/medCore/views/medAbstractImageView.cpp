@@ -201,6 +201,17 @@ medDoubleParameter *medAbstractImageView::opacityParameter(unsigned int layer)
     return pInteractor->opacityParameter();
 }
 
+medTriggerParameter *medAbstractImageView::fourViewsParameter()
+{
+    medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
+    if(!pNavigator)
+    {
+        return NULL;
+    }
+    
+    return pNavigator->fourViewsParameter();
+}
+
 medCompositeParameter *medAbstractImageView::windowLevelParameter(unsigned int layer)
 {
     medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);
