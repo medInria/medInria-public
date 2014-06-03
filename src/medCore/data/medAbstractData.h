@@ -140,4 +140,5 @@ private:
 
 };
 
-
+Q_DECLARE_METATYPE(medAbstractData)
+Q_DECLARE_METATYPE(medAbstractData *)

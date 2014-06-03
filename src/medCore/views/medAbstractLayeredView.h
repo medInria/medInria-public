@@ -27,6 +27,7 @@
 class medAbstractData;
 class medAbstractBoolParameter;
 class medStringListParameter;
+class medCompositeParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -57,6 +58,8 @@ public:
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
 
     medStringListParameter *layerLinkParameter(unsigned int layer);
+    
+    medCompositeParameter *dataListParameter() const;
 
     QList <medAbstractInteractor*> interactors(unsigned int layer);
     QList<medAbstractNavigator*> navigators();
@@ -65,6 +68,7 @@ public:
     virtual QWidget* mouseInteractionWidget();
 
 public slots:
+    void setDataList(QList<QVariant> dataList);
     void removeLayer();
 
 signals:
@@ -95,6 +99,7 @@ protected slots:
 private slots:
     void removeInternNavigatorWidget();
     void removeInternMouseInteractionWidget();
+    void updateDataListParameter(unsigned int layer);
 
  private:
     medStringListParameter* createLinkParameter();
