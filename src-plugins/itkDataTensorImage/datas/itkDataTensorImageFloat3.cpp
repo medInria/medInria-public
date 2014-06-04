@@ -55,17 +55,7 @@ itkDataTensorImageFloat3::~itkDataTensorImageFloat3()
 
 bool itkDataTensorImageFloat3::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType("itkDataTensorImageFloat3", createItkDataTensorImageFloat3);
-}
-
-QString itkDataTensorImageFloat3::description() const
-{
-    return tr("itk tensor 3d image data (float)");
-}
-
-QString itkDataTensorImageFloat3::identifier() const
-{
-    return "itkDataTensorImageFloat3";
+    return medAbstractDataFactory::instance()->registerDataType<itkDataTensorImageFloat3>();
 }
 
 void *itkDataTensorImageFloat3::data()

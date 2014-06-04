@@ -52,16 +52,7 @@ itkDataSHImageFloat3::~itkDataSHImageFloat3()
 
 bool itkDataSHImageFloat3::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType("itkDataSHImageFloat3", createItkDataSHImageFloat3);
-}
-
-QString itkDataSHImageFloat3::description() const
-{
-    return tr("itk spherical harmonic 3d image data (float)");
-}
-QString itkDataSHImageFloat3::identifier() const
-{
-    return "itkDataSHImageFloat3";
+    return medAbstractDataFactory::instance()->registerDataType<itkDataSHImageFloat3>();
 }
 
 void *itkDataSHImageFloat3::data()
@@ -104,13 +95,4 @@ int itkDataSHImageFloat3::zDimension()
     if (!d->shs.IsNull())
         return d->shs->GetLargestPossibleRegion().GetSize()[2];
     return -1;
-}
-
-// /////////////////////////////////////////////////////////////////
-// Type instantiation
-// /////////////////////////////////////////////////////////////////
-
-medAbstractData *createItkDataSHImageFloat3()
-{
-    return new itkDataSHImageFloat3;
 }

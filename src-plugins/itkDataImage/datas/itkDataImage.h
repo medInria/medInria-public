@@ -201,13 +201,15 @@ public:
     QList<QImage> thumbnails;
 };
 
-template <unsigned DIM,typename T,const char* ID> medAbstractData* createItkDataImage();
-
 template <unsigned DIM,typename T,const char* ID>
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractTypedImageData<DIM,T> {
 
     typedef itkDataImagePrivate<DIM,T,ImageTypeIndex<T>::Index> PrivateMember;
 
+    // Special macro because this class is templated, so moc can't run on it
+    // so we don;t have a staticMetaObject attribute, hence we need to define our
+    // own staticIdentifier() method, as done below.
+    MED_DATA_INTERFACE_NO_MOC("Itk Data Image", "Itk Data Image")
 public:
 
     itkDataImage(): medAbstractTypedImageData<DIM,T>(),d(new PrivateMember) { }
@@ -217,10 +219,9 @@ public:
         d = 0;
     }
 
-    virtual QString description() const { return "itk image data" ; }
-    virtual QString identifier() const { return ID; }
+    static QString staticIdentifier() { return ID; }
     static bool registered() {
-        return medAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
+        return medAbstractDataFactory::instance()->registerDataType<itkDataImage<DIM,T,ID> >();
     }
 
     // Inherited slots (through virtual member functions).
@@ -313,8 +314,3 @@ private:
 
     PrivateMember* d;
 };
-
-template <unsigned DIM,typename T,const char* ID>
-medAbstractData* createItkDataImage() {
-    return new itkDataImage<DIM,T,ID>;
-}

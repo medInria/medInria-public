@@ -144,4 +144,15 @@ private:
 
 };
 
+#define MED_DATA_INTERFACE_NO_MOC(_name,_desc) \
+public:\
+    static QString staticName() {return QString::fromUtf8(_name);}\
+    static QString staticDescription() {return QString::fromUtf8(_desc);}\
+    virtual QString identifier() const {return staticIdentifier();}\
+    virtual QString name() const {return staticName();}\
+    virtual QString description() const {return staticDescription();}
 
+#define MED_DATA_INTERFACE(_name,_desc) \
+public:\
+    static QString staticIdentifier() {return QString(staticMetaObject.className());}\
+    MED_DATA_INTERFACE_NO_MOC(_name,_desc)

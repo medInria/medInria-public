@@ -51,12 +51,7 @@ itkDataDiffusionGradientList::~itkDataDiffusionGradientList()
 
 bool itkDataDiffusionGradientList::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType("itkDataDiffusionGradientList", createItkDataDiffusionGradientList);
-}
-
-QString itkDataDiffusionGradientList::description() const
-{
-    return "itkDataDiffusionGradientList";
+    return medAbstractDataFactory::instance()->registerDataType<itkDataDiffusionGradientList>();
 }
 
 void *itkDataDiffusionGradientList::data()
@@ -111,13 +106,4 @@ bool itkDataDiffusionGradientList::write (const QString& file)
 {
     qDebug() << "itkDataDiffusionGradientList::write() not implemented yet.";
     return false;
-}
-
-// /////////////////////////////////////////////////////////////////
-// Type instantiation
-// /////////////////////////////////////////////////////////////////
-
-medAbstractData *createItkDataDiffusionGradientList()
-{
-    return new itkDataDiffusionGradientList;
 }

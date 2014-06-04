@@ -154,7 +154,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
 
 
-    this->setData( medAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::s_identifier()) );
+    this->setData( medAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::staticIdentifier()) );
 
     this->setMetaDataFromImageReader();
 
@@ -195,7 +195,7 @@ QString medQtDataImageReader::s_description()
 
 QStringList medQtDataImageReader::s_handled()
 {
-    const QStringList handled = QStringList() << medQtDataImage::s_identifier();
+    const QStringList handled = QStringList() << medQtDataImage::staticIdentifier();
     return handled;
 }
 

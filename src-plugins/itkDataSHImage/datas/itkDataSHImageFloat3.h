@@ -22,13 +22,11 @@ class itkDataSHImageFloat3Private;
 class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageFloat3 : public medAbstractTypedDiffusionModelImageData<3,float>
 {
     Q_OBJECT
-
+    MED_DATA_INTERFACE("ITK Spherical Harmonics Image (float3)",
+                       "ITK Spherical Harmonics Image (float3)")
 public:
              itkDataSHImageFloat3();
     virtual ~itkDataSHImageFloat3();
-
-    virtual QString description() const;
-    virtual QString identifier() const;
 
     static bool registered();
 
@@ -47,5 +45,3 @@ public:
 private:
     itkDataSHImageFloat3Private *d;
 };
-
-medAbstractData *createItkDataSHImageFloat3();

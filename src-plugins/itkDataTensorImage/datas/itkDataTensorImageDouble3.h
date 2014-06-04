@@ -22,16 +22,14 @@ class itkDataTensorImageDouble3Private;
 class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageDouble3 : public medAbstractTypedDiffusionModelImageData<3,double>
 {
     Q_OBJECT
+    MED_DATA_INTERFACE("ITK Tensor Image (double3)",
+                       "ITK Tensor Image (double3)")
 
 public:
              itkDataTensorImageDouble3();
     virtual ~itkDataTensorImageDouble3();
 
-    virtual QString description() const;
-    virtual QString identifier() const;
-
     static bool registered();
-
 
 public slots:
     // derived from dtkAbstractData

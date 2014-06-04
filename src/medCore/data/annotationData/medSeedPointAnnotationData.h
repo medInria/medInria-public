@@ -24,18 +24,11 @@
  * A singleViewContainer size and color is set, the selected point has a different color.
  */
 class MEDCORE_EXPORT medSeedPointAnnotationData : public medAnnotationData {
-    Q_OBJECT;
+    Q_OBJECT
+    MED_DATA_INTERFACE("medSeedPointAnnotationData", "medSeedPointAnnotationData")
 public:
     medSeedPointAnnotationData();
     virtual ~medSeedPointAnnotationData();
-
-    //! Implement dtkAbstractObject
-    QString description() const;
-    QString identifier() const;
-
-    //! static methods returning description and id
-    static QString s_description();
-    static QString s_identifier();
 
     //! Get / Set the radius of the seed points in pixels in the scene.
     qreal radiusScene() const { return m_radiusScene; }

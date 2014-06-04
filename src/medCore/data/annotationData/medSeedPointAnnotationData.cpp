@@ -59,28 +59,6 @@ void medSeedPointAnnotationData::setRadiusScene( qreal val )
     emit dataModified(this);
 }
 
-QString medSeedPointAnnotationData::s_description()
-{
-    static const QString desc = "mseg::medSeedPointAnnotationData";
-    return desc;
-}
-
-QString medSeedPointAnnotationData::description( void ) const 
-{
-    return medSeedPointAnnotationData::s_description();
-}
-
-QString medSeedPointAnnotationData::s_identifier()
-{
-    static const QString id = "mseg::medSeedPointAnnotationData";
-    return id;
-}
-
-QString medSeedPointAnnotationData::identifier( void ) const 
-{
-    return medSeedPointAnnotationData::s_identifier();
-}
-
 void medSeedPointAnnotationData::setSelectedSeed( int num )
 {
     if ( m_selectedSeed != num ) {

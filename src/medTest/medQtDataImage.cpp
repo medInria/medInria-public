@@ -29,11 +29,6 @@ public:
     QImage::Format imageFormat;
 };
 
-static medAbstractData* createMedQtDataImage()
-{
-    return new medQtDataImage;
-}
-
 medQtDataImage::medQtDataImage() :
     d(new medQtDataImagePrivate)
 {
@@ -151,7 +146,7 @@ void medQtDataImage::generateThumbnails()
 
 bool medQtDataImage::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
+    return medAbstractDataFactory::instance()->registerDataType<medQtDataImage>();
 }
 
 void * medQtDataImage::output( void )
@@ -295,48 +290,3 @@ int medQtDataImage::scalarValueMaxCount( void )
 {
     return 0;
 }
-
-QString medQtDataImage::s_description( void )
-{
-    static const QString description = "medQtDataImage";
-    return description;
-}
-
-QString medQtDataImage::description( void ) const
-{
-    return s_description();
-}
-
-
-QString medQtDataImage::s_identifier( void )
-{
-    static const QString identifier = "medQtDataImage";
-    return identifier;
-}
-
-QString medQtDataImage::identifier( void ) const
-{
-    return s_identifier();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

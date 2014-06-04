@@ -20,37 +20,15 @@
 
 class vtkDataMesh4DPrivate;
 
-
-/**
-
-    \class vtkDataMesh4D
-    \brief This class describes the data type that handles
-    a sequence of meshes in the vtk format.
-
-    It integrates the vtk pipeline in order to create a single
-    thumbnail from the first iteration of the sequence
-
-    The class keeps a smart pointer over the vtkMetaDataSetSequence
-    instance (in vtkINRIA3D repository) that handles a list of either
-    surface or volumetric meshes.
-
-    \todo There is a problem in the thumbnail creation as it uses
-    a vtkRenderer, therefore opens up a vtkWindow to create thumbnail,
-    which should not happen.
-
-    \see vtkDataMesh vtkDataMeshReader vtkMetaDataSetSequence
-    \author Nicolas Toussaint
-*/
-
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
 {
-  Q_OBJECT
-
+    Q_OBJECT
+    MED_DATA_INTERFACE("VTK Mesh Data 4D",
+                       "Mesh time sequence.")
  public:
     vtkDataMesh4D();
     ~vtkDataMesh4D();
-    virtual QString description() const;
-    virtual QString identifier() const;
+
     static bool registered();
 
  public slots:
@@ -69,12 +47,6 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
 
 
 private:
-
-    static const char ID[];
     vtkDataMesh4DPrivate* d;
 
 };
-
-medAbstractData* createVtkDataMesh4D();
-
-

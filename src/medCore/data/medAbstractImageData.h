@@ -51,5 +51,3 @@ public:
 
     static const char* PixelMeaningMetaData;
 };
-
-

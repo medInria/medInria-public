@@ -251,6 +251,7 @@ void medApplication::registerToFactories()
 
     //Register annotations
     //TODO there is obviously something that have to be done here. - RDE
-    dtkAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
-    datafactory->registerDataType(medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
+    //TODO I dit something... was it enough ? - Flo
+    medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
+    datafactory->registerDataType<medSeedPointAnnotationData>();
 }
