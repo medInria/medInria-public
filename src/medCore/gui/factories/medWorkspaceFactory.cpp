@@ -67,10 +67,6 @@ medAbstractWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget*
     return workspace;
 }
 
-/**
- * @brief Gives the details of all workspaces.
- *
- */
 QHash<QString, medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetails() const
 {
     return d->creators;
@@ -101,10 +97,7 @@ medWorkspaceFactory::~medWorkspaceFactory(void)
     d = NULL;
 }
 
-/**
- * @brief Gives the details of one workspace.
- *
- */
+
 medWorkspaceFactory::Details * medWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
 {
     return d->creators.value(identifier);

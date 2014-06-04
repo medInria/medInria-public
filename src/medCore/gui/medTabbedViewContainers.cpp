@@ -351,6 +351,23 @@ QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
     return views;
 }
 
+void medTabbedViewContainers::open(medAbstractData *data, bool newTab)
+{
+    if (newTab) {
+        medViewContainer * container = addContainerInTab();
+        container->addData(data);
+    } else {
+        int currentTabIndex = this->currentIndex();
+        QList<medAbstractView*> views = this->viewsInTab(currentTabIndex);
+        if ( ! views.isEmpty()) {
+            views.first()->open(data);
+        } else {
+            medViewContainer * container = this->insertContainerInTab(currentTabIndex,this->tabText(currentTabIndex));//TODO fix this....
+            container->addData(data);
+        }
+    }
+}
+
 QList<medViewContainer*> medTabbedViewContainers::containersInTab(int index)
 {
     medViewContainerSplitter *splitter = dynamic_cast<medViewContainerSplitter*>(this->widget(index));
