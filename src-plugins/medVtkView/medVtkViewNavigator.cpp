@@ -33,6 +33,7 @@
 #include <medVector2DParameter.h>
 #include <medVector3DParameter.h>
 #include <medDoubleParameter.h>
+#include <medDataListParameter.h>
 #include <medCompositeParameter.h>
 #include <medStringListParameter.h>
 #include <medTimeLineParameter.h>
@@ -454,11 +455,11 @@ void medVtkViewNavigator::switchToFourViews()
     QString linkGroupBaseName = "MPR ";
     unsigned int linkGroupNumber = 1;
     
-    QString linkGroupName = linkGroupBaseName + " " + QString::number(linkGroupNumber);
+    QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
     while (medParameterPoolManager::instance()->pool(linkGroupName))
     {
         linkGroupNumber++;
-        linkGroupName = linkGroupBaseName + " " + QString::number(linkGroupNumber);
+        linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
     }
     
     QColor linkGroupColor;
@@ -481,15 +482,24 @@ void medVtkViewNavigator::switchToFourViews()
     
     for (unsigned int i = 0;i < d->parent->layersCount();++i)
     {
-        d->parent->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
-        d->parent->layerLinkParameter(i)->setValue(linkGroupName);
+        QString linkLayerName = linkGroupBaseName + QString::number(linkGroupNumber) + " Layer " + QString::number(i+1);
+        QColor linkLayerColor;
+        hueValue = 2.0 * i / (1.0 + sqrt(5.0));
+        hueValue -= floor(hueValue);
+        linkLayerColor.setHsvF(hueValue,1.0,1.0);
         
-        topRightContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
-        topRightContainerView->layerLinkParameter(i)->setValue(linkGroupName);
-        bottomLeftContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
-        bottomLeftContainerView->layerLinkParameter(i)->setValue(linkGroupName);
-        bottomRightContainerView->layerLinkParameter(i)->addItem(linkGroupName, linkGroupIcon);
-        bottomRightContainerView->layerLinkParameter(i)->setValue(linkGroupName);
+        QPixmap linkLayerPixmap(32,32);
+        linkLayerPixmap.fill(linkLayerColor);
+        QIcon linkLayerIcon(linkLayerPixmap);
+
+        d->parent->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        d->parent->layerLinkParameter(i)->setValue(linkLayerName);
+        topRightContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        topRightContainerView->layerLinkParameter(i)->setValue(linkLayerName);
+        bottomLeftContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        bottomLeftContainerView->layerLinkParameter(i)->setValue(linkLayerName);
+        bottomRightContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        bottomRightContainerView->layerLinkParameter(i)->setValue(linkLayerName);
     }
 
     medParameterPool *linkPool = medParameterPoolManager::instance()->pool(linkGroupName);

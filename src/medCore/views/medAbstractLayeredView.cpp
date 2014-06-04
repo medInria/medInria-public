@@ -21,7 +21,7 @@
 #include <medStringListParameter.h>
 #include <medParameterPoolManager.h>
 #include <medBoolGroupParameter.h>
-#include <medCompositeParameter.h>
+#include <medDataListParameter.h>
 
 class medAbstractLayeredViewPrivate
 {
@@ -33,7 +33,7 @@ public:
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
-    medCompositeParameter *dataListParameter;
+    medDataListParameter *dataListParameter;
     
     QList<medStringListParameter*> linkparameters;
     unsigned int currentLayer;
@@ -52,8 +52,8 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
     d->mouseInteractionWidget = NULL;
     connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
     
-    d->dataListParameter = new medCompositeParameter("DataList",this);
-    connect(d->dataListParameter,SIGNAL(valuesChanged(QList<QVariant>)),this,SLOT(setDataList(QList<QVariant>)));
+    d->dataListParameter = new medDataListParameter("DataList",this);
+    connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medAbstractData*>)),this,SLOT(setDataList(QList<medAbstractData*>)));
     connect(this,SIGNAL(layerAdded(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
     connect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
 }
@@ -185,9 +185,14 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     this->insertLayer(d->layersDataList.count(), data);
 }
 
-QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::dataList() const
+QList<medAbstractData *> medAbstractLayeredView::dataList() const
 {
-    return d->layersDataList;
+    QList <medAbstractData *> outputList;
+    
+    foreach(medAbstractData *data, d->layersDataList)
+        outputList << data;
+    
+    return outputList;
 }
 
 unsigned int medAbstractLayeredView::layer(medAbstractData * data)
@@ -221,26 +226,38 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
         this->~medAbstractLayeredView();
 }
 
-void medAbstractLayeredView::setDataList(QList <QVariant> dataList)
+void medAbstractLayeredView::setDataList(QList <medAbstractData*> dataList)
 {
-    QList <medAbstractData *> newDataList;
-    
     d->dataListParameter->blockSignals(true);
-    foreach(QVariant variant, dataList)
+    
+    foreach(medAbstractData* data, dataList)
     {
-        medAbstractData *data = variant.value<medAbstractData *>();
-        
         if (!data)
             continue;
         
-        newDataList << data;
-        
         this->addLayer(data);
+        
+        if (this->layerLinkParameter(0)->value() != "")
+        {
+            unsigned int layerNumber = this->layer(data);
+            QString groupName = this->linkParameter()->value() + " Layer " + QString::number(layerNumber+1);
+            QColor layerColor;
+            double hueValue = 2.0 * layerNumber / (1.0 + sqrt(5.0));
+            hueValue -= floor(hueValue);
+            layerColor.setHsvF(hueValue,1.0,1.0);
+            
+            QPixmap layerPixmap(32,32);
+            layerPixmap.fill(layerColor);
+            QIcon layerIcon(layerPixmap);
+            
+            this->layerLinkParameter(layerNumber)->addItem(groupName,layerIcon);
+            this->layerLinkParameter(layerNumber)->setValue(groupName);
+        }
     }
     
     foreach(medAbstractData *data, this->dataList())
     {
-        if (!newDataList.contains(data))
+        if (!dataList.contains(data))
             this->removeLayer(this->layer(data));
     }
     
@@ -249,16 +266,7 @@ void medAbstractLayeredView::setDataList(QList <QVariant> dataList)
 
 void medAbstractLayeredView::updateDataListParameter(unsigned int layer)
 {
-    QList <QVariant> newDataList;
-    
-    foreach(medAbstractData *data, this->dataList())
-    {
-        QVariant var;
-        var.setValue(data);
-        newDataList << var;
-    }
-    
-    d->dataListParameter->setValues(newDataList);
+    d->dataListParameter->setValues(this->dataList());
 }
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
@@ -341,7 +349,7 @@ unsigned int medAbstractLayeredView::layersCount() const
     return d->layersDataList.count();
 }
 
-medCompositeParameter *medAbstractLayeredView::dataListParameter() const
+medDataListParameter *medAbstractLayeredView::dataListParameter() const
 {
     return d->dataListParameter;
 }
