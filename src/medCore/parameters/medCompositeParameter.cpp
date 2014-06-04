@@ -73,7 +73,7 @@ void medCompositeParameter::setValues(const QList<QVariant> value)
     if(value.size() != d->variants.values().size())
     {
         qDebug() << "medCompositeParameter::setValue: Wrong number of arguments.";
-        //return;
+        return;
     }
 
     QHash<QString, QVariant>::iterator i = d->variants.begin();
