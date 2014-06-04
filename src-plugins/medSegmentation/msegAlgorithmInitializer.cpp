@@ -43,11 +43,7 @@ bool AlgorithmInitializer::initializeWidgets()
     bool ret (true);
     medToolBoxFactory * factory = medToolBoxFactory::instance();
 
-    ret &= factory->registerToolBox<AlgorithmPaintToolbox>(
-        AlgorithmPaintToolbox::s_identifier(),
-        AlgorithmPaintToolbox::s_name(),
-        AlgorithmPaintToolbox::s_description(),
-        QStringList()<<"segmentation");
+    ret &= factory->registerToolBox<AlgorithmPaintToolbox>();
 
     return ret;
 }

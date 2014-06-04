@@ -13,7 +13,9 @@ class undoRedoRegistrationToolBoxPrivate;
 class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationToolBox : public medRegistrationAbstractToolBox
 {
     Q_OBJECT
-    
+    MED_TOOLBOX_INTERFACE("undoRedoRegistration",
+                          "short tooltip description",
+                          << "UndoRedoRegistration")
 public:
     undoRedoRegistrationToolBox(QWidget *parent = 0);
     ~undoRedoRegistrationToolBox(void);

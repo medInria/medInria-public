@@ -293,12 +293,7 @@ itkFiltersToolBox::~itkFiltersToolBox()
 bool itkFiltersToolBox::registered()
 {
     medToolBoxFactory* factory = medToolBoxFactory::instance();
-    return factory->registerToolBox<itkFiltersToolBox> (
-                "itkBasicFilters",
-                "ITK Basic Filters",
-                "ITK filters, processing examples",
-                QStringList()<<"filtering"/*,
-                createitkFiltersToolBox */);
+    return factory->registerToolBox<itkFiltersToolBox> ();
 }
 
 

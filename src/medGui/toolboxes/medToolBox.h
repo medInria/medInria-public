@@ -26,7 +26,6 @@ class medToolBoxBody;
 class medToolBoxHeader;
 class dtkPlugin;
 
-
 /**
  * @brief Toolbox that includes a title bar and a widget container.
  *
@@ -83,23 +82,6 @@ public:
     void setTitleOffset(const QPoint & titleOffset);
 
     /**
-     * @brief Sets the orientation of the toolbox.
-     * Given the orientation, lays the widgets vertically or horizontally.
-     * Usually used by the medAbstractWorkspace.
-     *
-     * @param orientation
-    */
-    void setOrientation(Qt::Orientation orientation);
-
-    /**
-     * @brief Gets the toolbox's current orientation.
-     *
-     * @param void
-     * @return Qt::Orientation
-    */
-    Qt::Orientation orientation() const;
-
-    /**
      * @brief Gets the Toolbox's header.
      *
      * @param void
@@ -114,18 +96,6 @@ public:
      * @return medToolBoxBody *
     */
     medToolBoxBody   *body()   const;
-
-    /**
-     * @brief Uncheck all buttons in this toolbox belonging to buttonGroup
-     *
-     * This function is called by the workspace when it receives
-     * the buttonChecked signal from another toolbox.  Override it
-     * when your toolbox shares a buttonGroup with other toolboxes.
-     *
-     * @param buttonGroup
-    */
-    virtual void uncheckButtons( const QString & buttonGroup ) {}
-
 
     /**
      * @brief Enables or disable the aboutPlugin button.
@@ -146,6 +116,11 @@ public:
      * @param plugin The dtkPlugin this button will give info about.
      */
     void setAboutPluginButton(dtkPlugin * plugin);
+
+    virtual QString identifier() const {return QString();}
+    virtual QString name() const {return QString();}
+    virtual QString description() const {return QString();}
+    virtual QStringList categories() const {return QStringList();}
 
 signals:
     /**
@@ -179,16 +154,6 @@ signals:
     */
     void failure();
 
-    /**
-     * @brief Use this if buttons in different toolboxes are mutually exclusive
-     *
-     * Emit this signal to uncheck buttons of the same buttonGroup in
-     * other toolboxes.
-     *
-     * @param buttonGroup
-    */
-    void buttonChecked( const QString & buttonGroup );
-
 public slots:
     /**
      * @brief Clears the toolbox.
@@ -205,11 +170,6 @@ public slots:
      *
     */
     void switchMinimize();
-
-    /*
-     * Remove not context meaningful toolboxes.
-     *
-    */
 
     /**
      * @brief Set toolbox's valid data types.
@@ -238,25 +198,6 @@ public slots:
     */
     void addValidDataType(const QString & dataType);
 
-
-     /**
-      * @brief Set the toolbox visibility.
-      *
-      * If at least one datatype in the viewDataTypes is contained within the
-      * toolBox's ValidTypes, or if the validDataTypes are empty, the toolbox
-      * will be visible.
-      *
-      * @param viewDataTypes
-     */
-    void setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes);
-
-    /**
-     * @brief Access method to the toolBox context visibility flag.
-     *
-     * @param void
-    */
-    bool ContextVisible();
-
     /**
      * @brief Show the toolbox, "overloads" the QWidget show
      *
@@ -276,4 +217,14 @@ private:
     medToolBoxPrivate *d;
 };
 
+#define MED_TOOLBOX_INTERFACE(_name,_desc,_categories) \
+public:\
+    static QString staticIdentifier() {return QString(staticMetaObject.className());}\
+    static QString staticName() {return QString::fromUtf8(_name);}\
+    static QString staticDescription() {return QString::fromUtf8(_desc);}\
+    static QStringList staticCategories() {return QStringList() _categories;}\
+    virtual QString identifier() const {return staticIdentifier();}\
+    virtual QString name() const {return staticName();}\
+    virtual QString description() const {return staticDescription();}\
+    virtual QStringList categories() const {return staticCategories();}
 

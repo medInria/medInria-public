@@ -69,33 +69,16 @@ public:
      * @param categories List of categories classifying the Toolbox.
      */
     template <typename toolboxType>
-    bool registerToolBox(QString identifier,
-                         QString name,
-                         QString description,
-                         QStringList categories){
+    bool registerToolBox() {
         //we must keep the templated part in the .h file for library users
         medToolBoxCreator creator = create<toolboxType>;
-        return registerToolBox(identifier,name,description,categories,creator);
+        return registerToolBox(toolboxType::staticIdentifier(),
+                               toolboxType::staticName(),
+                               toolboxType::staticDescription(),
+                               toolboxType::staticCategories(),
+                               creator);
     }
 
-    /**
-     * @brief Registers a medToolBox type with the factory.
-     *
-     * This method requires the developer to provide his own function pointer
-     * to allocate the toolbox memory.
-     *
-     * @param identifier Identifier of the type.
-     * @param name Human readable name(Potentially localised).
-     * @param description short description, mainly used for tooltips
-     * in comboboxes listing the toolboxes (Potentially localised).
-     * @param categories List of categories classifying the Toolbox.
-     * @param creator function pointer allocating memory for the toolbox.
-     */
-    bool registerToolBox(QString identifier,
-                         QString name,
-                         QString description,
-                         QStringList categories,
-                         medToolBoxCreator creator);
     /**
      * Get a list of the available toolboxes from a specific category.
      *
@@ -127,6 +110,25 @@ public slots:
 
 
 protected:
+    /**
+     * @brief Registers a medToolBox type with the factory.
+     *
+     * This method requires the developer to provide his own function pointer
+     * to allocate the toolbox memory.
+     *
+     * @param identifier Identifier of the type.
+     * @param name Human readable name(Potentially localised).
+     * @param description short description, mainly used for tooltips
+     * in comboboxes listing the toolboxes (Potentially localised).
+     * @param categories List of categories classifying the Toolbox.
+     * @param creator function pointer allocating memory for the toolbox.
+     */
+    bool registerToolBox(QString identifier,
+                         QString name,
+                         QString description,
+                         QStringList categories,
+                         medToolBoxCreator creator);
+
      medToolBoxFactory();
     ~medToolBoxFactory();
 

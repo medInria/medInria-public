@@ -134,12 +134,7 @@ itkMorphologicalFiltersToolBox::~itkMorphologicalFiltersToolBox()
 bool itkMorphologicalFiltersToolBox::registered()
 {
     medToolBoxFactory* factory = medToolBoxFactory::instance();
-    return factory->registerToolBox<itkMorphologicalFiltersToolBox> (
-                "itkMorphologicalFilters",
-                "ITK Morphological Filters",
-                "ITK morphological filters, processing examples",
-                QStringList()<<"filtering"/*,
-                createitkMorphologicalFiltersToolBox */);
+    return factory->registerToolBox<itkMorphologicalFiltersToolBox> ();
 }
 
 
