@@ -15,18 +15,14 @@ cmake_minimum_required(VERSION 2.8.1)
 
 project(cliSupportWorkspacePlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
-
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 ## #################################################################
 ## Resolve dependencies
@@ -46,41 +42,42 @@ add_definitions(-DCTK_QTDESIGNERPLUGINS_DIR="${CTK_QTDESIGNERPLUGINS_DIR}")
 set(QT_USE_QTUITOOLS 1)
 include(${QT_USE_FILE})
 
-## #################################################################
-## Input
-## #################################################################
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  cliSupportWorkspacePlugin.h
-  cliSupportWorkspace.h
-  cliSupportToolBox.h
-  cliSupportUiLoader.h)
+list_source_files(${PROJECT_NAME}
+  . # current dir
+  )
 
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC})
+## #############################################################################
+## include directories
+## #############################################################################
 
-set(${PROJECT_NAME}_SOURCES
-  cliSupportWorkspacePlugin.cpp
-  cliSupportWorkspace.cpp
-  cliSupportToolBox.cpp
-  cliSupportUiLoader.cpp)
-
-## #################################################################
-## Build rules
-## #################################################################
-
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_HEADERS})
-
-# Finds the listed libraries in target_libraries.cmake
-ctkFunctionGetTargetLibraries(CTK_target_libraries)
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
 
 ctkFunctionGetIncludeDirs(CTK_includes ${PROJECT_NAME})
-include_directories(${CTK_includes})
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  ${CTK_includes}
+  )
+
+## #############################################################################
+## add library
+## #############################################################################
+
+add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_CFILES}
+  )
+
+## #############################################################################
+## Link
+## #############################################################################
+# Finds the listed libraries in target_libraries.cmake
+ctkFunctionGetTargetLibraries(CTK_target_libraries)
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
@@ -90,18 +87,9 @@ target_link_libraries(${PROJECT_NAME}
   ${CTK_target_libraries}
   )
 
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
-
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
+## #############################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+set_plugin_install_rules(${PROJECT_NAME})
+

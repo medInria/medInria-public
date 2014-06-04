@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include "cliSupportToolBox.h"
 
 #include <dtkCore/dtkAbstractView.h>
@@ -13,8 +26,10 @@
 
 #include <cliSupportUiLoader.h>
 
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
+#include <medAbstractView.h>
 #include <medTabbedViewContainers.h>
+#include <medSettingsManager.h>
 
 QStringList pathSplitter(const QString & path)
 {
@@ -71,8 +86,8 @@ public:
         delete moduleRun;
     }
 
-    dtkAbstractView * view;
-    medWorkspace * workspace;
+    medAbstractView * view;
+    medAbstractWorkspace * workspace;
 
     QString path;
     ctkCmdLineModuleManager * manager;
@@ -89,12 +104,12 @@ public:
 };
 
 
-cliSupportToolBox::cliSupportToolBox(QWidget * parent, medWorkspace * workspace)
+cliSupportToolBox::cliSupportToolBox(QWidget * parent, medAbstractWorkspace *workspace)
     : medToolBox(parent)
     , d(new cliSupportToolBoxPrivate)
 {
     d->workspace = workspace;
-    this->setTitle("CLI Manager");
+    this->setTitle("CLI Modules");
     this->init();
 }
 
@@ -105,25 +120,6 @@ cliSupportToolBox::~cliSupportToolBox()
     d = NULL;
 }
 
-
-QString cliSupportToolBox::name()
-{
-    return "CTK CLI Support";
-}
-
-
-QString cliSupportToolBox::identifier()
-{
-    return "cliSupportToolBox";
-}
-
-
-QString cliSupportToolBox::description()
-{
-    return "CommandLine plugin support using CTK implementation";
-}
-
-
 void cliSupportToolBox::init()
 {
     QString cacheLocation = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
@@ -133,35 +129,25 @@ void cliSupportToolBox::init()
 
     qApp->addLibraryPath(CTK_QTDESIGNERPLUGINS_DIR); // set in CMakeLists.txt
 
-    QDir module_dir;
+    QDir modules_dir;
     QString defaultPath;
 #ifdef Q_WS_MAC
     module_dir = qApp->applicationDirPath() + "/../Modules";
 #else
-    module_dir = qApp->applicationDirPath() + "/../modules";
+    modules_dir = qApp->applicationDirPath() + "/../modules";
 #endif
-    defaultPath = module_dir.absolutePath();
+    defaultPath = modules_dir.absolutePath();
 
-    const char MODULE_PATH_VAR_NAME[] = "MEDINRIA_MODULE_PATH";
-    QByteArray moduleVarArray = qgetenv(MODULE_PATH_VAR_NAME);
+    const char MODULES_PATH_VAR_NAME[] = "MEDINRIA_MODULES_PATH";
+    QByteArray modulesVarArray = qgetenv(MODULES_PATH_VAR_NAME);
 
-    if ( ! moduleVarArray.isEmpty() )
+    if ( ! modulesVarArray.isEmpty() )
     {
-        d->path = QString::fromUtf8(moduleVarArray.constData());
+        d->path = QString::fromUtf8(modulesVarArray.constData());
     }
     else
     {
-        QSettings settings;
-        settings.beginGroup("modules");
-        if (!settings.contains("path"))
-        {
-            qDebug()<<"Filling in empty path in settings with default path:"
-                   << module_dir.absolutePath();
-            settings.setValue("path", module_dir.absolutePath());
-        }
-        qDebug()<< "path:" << settings.value("path", defaultPath).toString();
-        d->path = settings.value("path", defaultPath).toString();
-        settings.endGroup();
+        d->path = medSettingsManager::instance()->value("cli_modules","modules_path", defaultPath).toString();
     }
 
     if(d->path.isEmpty()) {
@@ -226,6 +212,7 @@ void cliSupportToolBox::init()
         QFileInfo fInfo(key);
         d->moduleList->addItem(fInfo.fileName(), key); //TODO: handle identical names
     }
+
     connect(d->moduleList, SIGNAL(currentIndexChanged(int)), this, SLOT(moduleSelected(int)));
     d->gridLayout->addLayout(comboLayout, 0, 0);
 
@@ -238,17 +225,18 @@ void cliSupportToolBox::init()
     d->gridLayout->addWidget(d->moduleProgress, 2, 0);
 
     // Another row for run button
-    d->moduleRun = new QPushButton("Run CLI", modulePage);
+    d->moduleRun = new QPushButton("Run", modulePage);
     connect(d->moduleRun, SIGNAL(clicked()), this, SLOT(runCurrentModule()));
     d->gridLayout->addWidget(d->moduleRun, 3, 0, Qt::AlignCenter);
 
     this->addWidget(modulePage);
 
 
-    if (d->moduleList->count() == 0)
+    if (d->modules.isEmpty())
     {
-        d->moduleList->setEnabled(false);
-        d->moduleRun->setEnabled(false);
+        d->moduleList->addItem("No modules found...");
+        d->moduleList->setDisabled(true);
+        d->moduleRun->setDisabled(true);
     }
     else
     {
@@ -258,25 +246,19 @@ void cliSupportToolBox::init()
 }
 
 
-void cliSupportToolBox::setData(dtkAbstractData *data)
-{
-    qDebug() << "CLI setData called";
-}
-
-
 void cliSupportToolBox::clear(void)
 {
     d->view = 0;
 }
 
 
-void cliSupportToolBox::update(dtkAbstractView * view)
+void cliSupportToolBox::update(medAbstractView *view)
 {
     if (d->view == view)
         return;
 
     if (d->view)
-        QObject::disconnect(d->view, SIGNAL(propertySet(QString, QString)), this, 0);
+        QObject::disconnect(d->view, SIGNAL(propertySet(QString, QString)), this, NULL);
 
     qDebug() << "CLI update called";
     d->view = view;

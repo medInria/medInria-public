@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <cliSupportUiLoader.h>
 #include <ctkCmdLineModuleXslTransform.h>
 #include <ctkCmdLineModuleReference.h>
@@ -8,10 +21,10 @@
 
 #include <medAbstractDataReader.h>
 #include <medDataManager.h>
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 #include <medTabbedViewContainers.h>
 #include <medAbstractData.h>
-
+#include<medAbstractView.h>
 
 #include <QDebug>
 #include <QScopedPointer>
@@ -85,7 +98,7 @@ QWidget * cliSupportUiLoader::createWidget(const QString &className, QWidget *pa
 
 // ---------------------------- Frontend -------------------------------------
 
-cliSupportFrontendQtGui::cliSupportFrontendQtGui(const ctkCmdLineModuleReference & moduleRef, medWorkspace *workspace)
+cliSupportFrontendQtGui::cliSupportFrontendQtGui(const ctkCmdLineModuleReference & moduleRef, medAbstractWorkspace *workspace)
     : ctkCmdLineModuleFrontendQtGui(moduleRef)
     , _workspace(workspace)
 {
@@ -147,7 +160,7 @@ void cliSupportFrontendQtGui::postRun()
     foreach(cliDataOutputWidget * w, _outputList) {
         cliFileHandler importer;
         medAbstractData * data = qobject_cast<medAbstractData*>(importer.importFromFile(w->filePath()));
-        _workspace->stackedViewContainers()->current()->open(data);
+        _workspace->stackedViewContainers()->open(data);
     }
 
     removeDir(_runDir.absolutePath());
@@ -322,5 +335,7 @@ QString cliFileHandler::exportToFile(dtkAbstractData * data, QString filePath, Q
 void cliFileHandler::dataImported(medDataIndex index)
 {
     _data = medDataManager::instance()->data(index);
+    qDebug() << "Looooooooooooopyyyy";
     _loopyLoop.quit();
+    qDebug() << "Looooooooooooopyyyy looooooooop";
 }

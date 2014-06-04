@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #pragma once
 
 #include <ctkCmdLineModuleQtUiLoader.h>
@@ -26,12 +39,12 @@ private:
 
 class cliDataInputWidget;
 class cliDataOutputWidget;
-class medWorkspace;
+class medAbstractWorkspace;
 class cliSupportFrontendQtGui : public ctkCmdLineModuleFrontendQtGui
 {
     Q_OBJECT
 public :
-    cliSupportFrontendQtGui(const ctkCmdLineModuleReference& moduleRef, medWorkspace * workspace);
+    cliSupportFrontendQtGui(const ctkCmdLineModuleReference& moduleRef, medAbstractWorkspace * workspace);
     virtual ~cliSupportFrontendQtGui();
 
     void preRun();
@@ -48,7 +61,7 @@ private:
     QList<cliDataInputWidget*> _inputList;
     QList<cliDataOutputWidget*> _outputList;
     QDir _runDir;
-    medWorkspace * _workspace;
+    medAbstractWorkspace * _workspace;
 };
 
 
