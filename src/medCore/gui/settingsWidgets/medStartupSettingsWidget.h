@@ -23,7 +23,6 @@ class MEDCORE_EXPORT medStartupSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
     MED_SETTINGS_INTERFACE("Start Up","Startup settings")
-
 public:
     medStartupSettingsWidget(QWidget *parent = 0);
 
