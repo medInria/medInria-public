@@ -27,7 +27,7 @@
 class medAbstractData;
 class medAbstractBoolParameter;
 class medStringListParameter;
-class medCompositeParameter;
+class medDataListParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -44,7 +44,7 @@ public:
     void insertLayer(unsigned int layer, medAbstractData *data);
 
     medAbstractData * layerData(unsigned int layer) const;
-    QList<dtkSmartPointer<medAbstractData> > dataList() const;
+    QList<medAbstractData *> dataList() const;
 
     bool contains(medAbstractData * data) const;
     bool contains(QString identifier) const;
@@ -59,7 +59,7 @@ public:
 
     medStringListParameter *layerLinkParameter(unsigned int layer);
     
-    medCompositeParameter *dataListParameter() const;
+    medDataListParameter *dataListParameter() const;
 
     QList <medAbstractInteractor*> interactors(unsigned int layer);
     QList<medAbstractNavigator*> navigators();
@@ -68,7 +68,7 @@ public:
     virtual QWidget* mouseInteractionWidget();
 
 public slots:
-    void setDataList(QList<QVariant> dataList);
+    void setDataList(QList<medAbstractData*> dataList);
     void removeLayer();
 
 signals:
