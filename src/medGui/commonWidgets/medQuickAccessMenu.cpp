@@ -295,7 +295,6 @@ void medQuickAccessMenu::mouseSelectWidget(unsigned int identifier)
 void medQuickAccessMenu::createVerticalQuickAccessMenu()
 {
     buttonsList.clear();
-    QHash<QString,medWorkspaceDetails*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetails();
 
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setMargin(0);
@@ -341,10 +340,10 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     buttonsList.push_back(browserButton);
     
     //Dynamically setup workspaces access button
-    foreach ( QString id, workspaceDetails.keys() )
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
+    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
-        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setCursor(Qt::PointingHandCursor);
@@ -353,7 +352,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
         button->setMaximumWidth ( 250 );
         button->setMinimumWidth ( 250 );
         button->setToolTip( detail->description);
-        button->setIdentifier(id);
+        button->setIdentifier(detail->identifier );
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
         buttonsList.push_back(button);
@@ -369,7 +368,6 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
 void medQuickAccessMenu::createHorizontalQuickAccessMenu()
 {
     buttonsList.clear();
-    QHash<QString,medWorkspaceDetails*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetails();
 
     backgroundFrame = new QFrame(this);
     backgroundFrame->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
@@ -405,17 +403,17 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ),this, SIGNAL ( browserSelected()) );
     buttonsList.push_back(smallBrowserButton);
 
-    foreach ( QString id, workspaceDetails.keys() )
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
+    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
-        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setCursor(Qt::PointingHandCursor);
         button->setFixedHeight ( 100 );
         button->setFixedWidth ( 160 );
         button->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:icons/workspace_" + detail->name + ".png) no-repeat;");
-        button->setIdentifier(id);
+        button->setIdentifier(detail->identifier);
         shortcutAccessLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
         buttonsList.push_back(button);

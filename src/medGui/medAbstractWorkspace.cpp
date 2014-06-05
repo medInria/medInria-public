@@ -100,7 +100,7 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->selectionToolBox->header()->hide();
     d->selectionToolBox->hide();
 
-    d->viewContainerStack = new medTabbedViewContainers(parent);
+    d->viewContainerStack = new medTabbedViewContainers(this, parent);
 
     connect(d->viewContainerStack, SIGNAL(containersSelectedChanged()), this, SLOT(updateNavigatorsToolBox()));
 
@@ -206,17 +206,8 @@ void medAbstractWorkspace::clearWorkspaceToolBoxes()
 
 void medAbstractWorkspace::addNewTab()
 {
-    d->viewContainerStack->addContainerInTab(this->identifier());
-}
-
-void medAbstractWorkspace::setName(QString &name)
-{
-    d->name = name;
-}
-
-QString& medAbstractWorkspace::name() const
-{
-    return d->name;
+    QString tabName = QString("%1 %2").arg(this->name()).arg(d->viewContainerStack->count());
+    d->viewContainerStack->addContainerInTab(tabName);
 }
 
 void medAbstractWorkspace::updateNavigatorsToolBox()

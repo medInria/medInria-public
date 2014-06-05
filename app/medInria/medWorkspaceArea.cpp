@@ -156,8 +156,8 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     if (d->currentWorkspace == workspace)
         return;
 
-    if (!d->workspaces.contains(workspace->name()))
-        this->setupWorkspace(workspace->name());
+    if (!d->workspaces.contains(workspace->identifier()))
+        this->setupWorkspace(workspace->identifier());
 
     this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
 
@@ -185,12 +185,12 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
 
 }
 
-void medWorkspaceArea::setCurrentWorkspace(const QString &name)
+void medWorkspaceArea::setCurrentWorkspace(const QString &id)
 {
-    if (!d->workspaces.contains(name))
-        this->setupWorkspace(name);
+    if (!d->workspaces.contains(id))
+        this->setupWorkspace(id);
 
-    this->setCurrentWorkspace(d->workspaces.value(name));
+    this->setCurrentWorkspace(d->workspaces.value(id));
 }
 
 medAbstractWorkspace* medWorkspaceArea::currentWorkspace()
@@ -198,19 +198,19 @@ medAbstractWorkspace* medWorkspaceArea::currentWorkspace()
     return d->currentWorkspace;
 }
 
-void medWorkspaceArea::setupWorkspace(const QString &name)
+void medWorkspaceArea::setupWorkspace(const QString &id)
 {
-    if (d->workspaces.contains(name))
+    if (d->workspaces.contains(id))
         return;
 
     medAbstractWorkspace *workspace = NULL;
 
-    workspace = medWorkspaceFactory::instance()->createWorkspace(name, this);
+    workspace = medWorkspaceFactory::instance()->createWorkspace(id, this);
     if (workspace)
-        d->workspaces.insert(name, workspace);
+        d->workspaces.insert(id, workspace);
     else
     {
-        qWarning()<< "Workspace " << name << " couldn't be created";
+        qWarning()<< "Workspace " << id << " couldn't be created";
         return;
     }
     workspace->setupViewContainerStack();

@@ -21,7 +21,6 @@
 
 class medAbstractWorkspace;
 class medWorkspaceFactoryPrivate;
-struct medWorkspaceDetails;
 
 class MEDGUI_EXPORT medWorkspaceFactory : public dtkAbstractFactory
 {
@@ -31,8 +30,28 @@ public:
     typedef medAbstractWorkspace *(*medWorkspaceCreator)(QWidget* parent);
     typedef bool (*medWorkspaceIsUsable)();
 
+    struct Details
+    {
+        QString identifier;
+        QString name;
+        QString description;
+        medWorkspaceCreator creator;
+        medWorkspaceIsUsable isUsable;
+        Details(QString id_,
+                QString name_,
+                QString description_,
+                medWorkspaceCreator creator_,
+                medWorkspaceIsUsable isUsable_ = NULL)
+            : identifier(id_)
+            , name(name_)
+            , description(description_)
+            , creator(creator_)
+            , isUsable(isUsable_)
+        {}
+    };
+
 public:
-    static medWorkspaceFactory *instance();
+    static medWorkspaceFactory* instance();
 
     QList<QString> workspaces();
 
@@ -52,13 +71,41 @@ public:
      * @param description short description (Potentially localised).
      */
     template <typename workspaceType>
-    bool registerWorkspace(QString identifier,
-                         QString name,
-                         QString description){
+    bool registerWorkspace(){
         //we must keep the templated part in the .h file for library users
         medWorkspaceCreator creator = create<workspaceType>;
-        return registerWorkspace(identifier,name,description,creator,workspaceType::isUsable);
+        return registerWorkspace(workspaceType::staticIdentifier(),
+                                 workspaceType::staticName(),
+                                 workspaceType::staticDescription(),
+                                 creator,
+                                 workspaceType::isUsable);
     }
+
+    /**
+     * @brief Gives the details of all workspaces.
+     *
+     */
+    QHash<QString, medWorkspaceFactory::Details *> workspaceDetails() const;
+
+    QList<medWorkspaceFactory::Details *> workspaceDetailsSortedByName() const;
+
+    /**
+     * @brief Gives the details of one workspace.
+     *
+     */
+    medWorkspaceFactory::Details * workspaceDetailsFromId(QString identifier) const;
+
+    bool isUsable(QString identifier) const;
+
+public slots:
+    /**
+     * @brief allocates the memory for a medAbstractWorkspace.
+     * @param type identifier for the Workspace type.
+     * @param parent the parentWidget for all the Widget created in the workspace, even if the workspace is not a widget, its children can be destroyed by the qobject hierarchy.
+     */
+    medAbstractWorkspace* createWorkspace(QString type,QWidget* parent=0);
+
+protected:
 
     /**
      * @brief Registers a medAbstractWorkspace type with the factory.
@@ -73,36 +120,13 @@ public:
      * @param creator function pointer allocating memory for the toolbox.
      */
     bool registerWorkspace(QString identifier,
-                         QString name,
-                         QString description,
-                         medWorkspaceCreator creator,
-                         medWorkspaceIsUsable isUsable=NULL);
+                           QString name,
+                           QString description,
+                           medWorkspaceCreator creator,
+                           medWorkspaceIsUsable isUsable=NULL);
 
-    /**
-     * @brief Gives the details of all workspaces.
-     *
-     */
-    QHash<QString, medWorkspaceDetails *> workspaceDetails() const;
-
-    /**
-     * @brief Gives the details of one workspace.
-     *
-     */
-    medWorkspaceDetails * workspaceDetailsFromId(QString identifier) const;
-
-    bool isUsable(QString identifier) const;
-
-public slots:
-    /**
-     * @brief allocates the memory for a medAbstractWorkspace.
-     * @param type identifier for the Workspace type.
-     * @param parent the parentWidget for all the Widget created in the workspace, even if the workspace is not a widget, its children can be destroyed by the qobject hierarchy.
-     */
-    medAbstractWorkspace *createWorkspace(QString type,QWidget* parent=0);
-
-protected:
      medWorkspaceFactory();
-    ~medWorkspaceFactory();
+    virtual ~medWorkspaceFactory();
 
 private:
     static medWorkspaceFactory *s_instance;
@@ -119,19 +143,3 @@ private:
 private:
     medWorkspaceFactoryPrivate *d;
 };
-
-/**
- * @brief stores the details for a particular workspace,
- * and a function to allocate memory.
- *
- */
-struct MEDGUI_EXPORT medWorkspaceDetails{
-    QString name; /** Readable name*/
-    QString description; /** (tooltip) short description of the workspace */
-    medWorkspaceFactory::medWorkspaceCreator creator; /** function pointer allocating memory for the workspace*/
-    medWorkspaceFactory::medWorkspaceIsUsable isUsable;
-    medWorkspaceDetails(QString name,QString description,medWorkspaceFactory::medWorkspaceCreator creator, medWorkspaceFactory::medWorkspaceIsUsable isUsable = NULL):
-        name(name),description(description),creator(creator),isUsable(isUsable){}
-};
-
-

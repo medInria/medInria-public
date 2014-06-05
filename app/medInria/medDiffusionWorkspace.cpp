@@ -108,20 +108,12 @@ medDiffusionWorkspace::~medDiffusionWorkspace()
     d = NULL;
 }
 
-QString medDiffusionWorkspace::identifier() const {
-    return "Diffusion";
-}
-
-QString medDiffusionWorkspace::description() const {
-    return "Diffusion";
-}
-
 void medDiffusionWorkspace::setupViewContainerStack()
 {
     //the stack has been instantiated in constructor
     if ( ! this->stackedViewContainers()->count())
     {
-        d->diffusionContainer = this->stackedViewContainers()->addContainerInTab(identifier());
+        d->diffusionContainer = this->stackedViewContainers()->addContainerInTab(this->name());
 
         d->diffusionContainer->setUserClosable(true);
         d->diffusionContainer->setUserSplittable(false);

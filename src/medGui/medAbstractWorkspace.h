@@ -48,6 +48,7 @@ public:
     ~medAbstractWorkspace();
 
     virtual QString identifier() const = 0;
+    virtual QString name() const = 0;
     virtual QString description() const = 0;
 
     QList <medToolBox*> toolBoxes() const;
@@ -65,10 +66,6 @@ public:
     bool isUserLayerPoolable() const;
     bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
-
-
-    void setName(QString &name);
-    QString& name() const;
 
 public slots:
     virtual void clear();
@@ -94,4 +91,11 @@ private:
     medAbstractWorkspacePrivate *d;
 };
 
-
+#define MED_WORKSPACE_INTERFACE(_name,_desc) \
+public:\
+    static QString staticIdentifier() {return QString(staticMetaObject.className());}\
+    static QString staticName() {return QString::fromUtf8(_name);}\
+    static QString staticDescription() {return QString::fromUtf8(_desc);}\
+    virtual QString identifier() const {return staticIdentifier();}\
+    virtual QString name() const {return staticName();}\
+    virtual QString description() const {return staticDescription();}

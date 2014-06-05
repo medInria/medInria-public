@@ -23,15 +23,14 @@ class medVisualizationWorkspacePrivate;
 class medVisualizationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
-
+    MED_WORKSPACE_INTERFACE("Visualization",
+                            "Visualize images, Mesh and other data types.")
 public:
      medVisualizationWorkspace(QWidget *parent = 0);
     ~medVisualizationWorkspace();
 
     virtual void setupViewContainerStack();
 
-    virtual QString identifier()  const;
-    virtual QString description() const;
     static bool isUsable();
 
 private:

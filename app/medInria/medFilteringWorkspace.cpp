@@ -59,7 +59,7 @@ void medFilteringWorkspace::setupViewContainerStack()
 {
     if ( !this->stackedViewContainers()->count() )
     {
-        d->inputContainer = this->stackedViewContainers()->addContainerInTab("Filtering");
+        d->inputContainer = this->stackedViewContainers()->addContainerInTab(this->name());
         QLabel *inputLabel = new QLabel("INPUT");
         inputLabel->setAlignment(Qt::AlignCenter);
         d->inputContainer->setDefaultWidget(inputLabel);
@@ -141,17 +141,6 @@ void medFilteringWorkspace::onProcessSuccess()
     medDataManager::instance()->importNonPersistent(d->filterOutput, d->importUuid);
 
     d->outputContainer->addData(d->filterOutput);
-}
-
-
-QString medFilteringWorkspace::identifier() const {
-    return "Filtering";
-}
-
-
-QString medFilteringWorkspace::description(void) const
-{
-    return "Filtering";
 }
 
 bool medFilteringWorkspace::isUsable()

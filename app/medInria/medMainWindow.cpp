@@ -503,8 +503,7 @@ void medMainWindow::showWorkspace(QString workspace)
     d->quickAccessButton->setMinimumWidth(170);
 
     this->switchToWorkspaceArea();
-    medWorkspaceDetails* details =
-            medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
+    medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
     d->quickAccessButton->setText(tr("Workspace: ") + details->name);
     d->shortcutAccessWidget->updateSelected(workspace);

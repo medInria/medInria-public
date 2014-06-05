@@ -228,12 +228,6 @@ void medApplication::redirectMessageToSplash(const QString &message)
     emit showMessage(message,d->msgAlignment,d->msgColor);
 }
 
-namespace
-{
-    template< class T >
-    dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
-}
-
 void medApplication::registerToFactories()
 {
     //Register dbController
@@ -242,39 +236,19 @@ void medApplication::registerToFactories()
 
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
-    viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>("Visualization",
-                                                                     tr("Visualization"),
-                                                                     tr("Visualize images, Mesh and other data types"));
-
-    viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>("Registration",
-                                                                     tr("Registration"),
-                                                                     tr("Register a moving image to a fixed image"));
-
-    viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>("Diffusion",
-                                                                  tr("Diffusion"),
-                                                                  tr("Diffusion Tensor Images"));
-
-    viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>("Filtering",
-                                                                  tr("Filtering"),
-                                                                  tr("Filter workspace"));
-
-    viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>("Segmentation",
-                                                                     tr("Segmentation"),
-                                                                     tr("Segment Images"));
+    viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
 
     //Register settingsWidgets
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
-    settingsWidgetFactory->registerSettingsWidget<medSystemSettingsWidget>("System",
-                                                                           tr("System"),
-                                                                           tr("System Settings"));
+    settingsWidgetFactory->registerSettingsWidget<medSystemSettingsWidget>();
+    settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
+    settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
+    settingsWidgetFactory->registerSettingsWidget<medInteractionSettingsWidget>();
 
-    settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>("Startup",
-                                                                            tr("Start Up"),
-                                                                            tr("Start up time settings"));
-
-    settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>("Database",
-                                                                             tr("Database"),
-                                                                             tr("Database related settings"));
     //Register annotations
     //TODO there is obviously something that have to be done here. - RDE
     dtkAbstractDataFactory * datafactory = medAbstractDataFactory::instance();

@@ -46,8 +46,6 @@ public:
     medSegmentationSelectorToolBox *segmentationToolBox;
 };
 
-static QString msegWorkspaceSegmentationDescription = "Segmentation";
-
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
 medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
@@ -68,10 +66,8 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
 void medSegmentationWorkspace::setupViewContainerStack()
 {
-    if (!stackedViewContainers()->count())
-    {
-        const QString description = this->description();
-        this->stackedViewContainers()->addContainerInTab(description);
+    if (!stackedViewContainers()->count()) {
+        this->stackedViewContainers()->addContainerInTab(this->name());
     }
     this->stackedViewContainers()->unlockTabs();
 }
@@ -82,28 +78,11 @@ medSegmentationWorkspace::~medSegmentationWorkspace(void)
     d = NULL;
 }
 
-//static
-QString medSegmentationWorkspace::description( void ) const
-{
-    return msegWorkspaceSegmentationDescription;
-}
-
-
 medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 {
     return d->segmentationToolBox;
 }
 
-
-QString medSegmentationWorkspace::s_identifier()
-{
-    return "Segmentation";
-}
-
-QString medSegmentationWorkspace::identifier( void ) const
-{
-    return s_identifier();
-}
 
 bool medSegmentationWorkspace::isUsable()
 {

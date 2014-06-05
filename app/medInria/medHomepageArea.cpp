@@ -352,8 +352,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 void medHomepageArea::initPage()
 {
     //Initialization of the navigation widget with available workspaces
-    QHash<QString,medWorkspaceDetails*> workspaceDetails =
-            medWorkspaceFactory::instance()->workspaceDetails();
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setSpacing ( 10 );
     QLabel * workspaceLabel = new QLabel ( "<b>Available workspaces</b>" );
@@ -372,10 +371,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayout->addWidget ( browserButton );
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
-    foreach ( QString id, workspaceDetails.keys())
+    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails)
     {
         medHomepageButton * button = new medHomepageButton ( this );
-        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
@@ -383,10 +381,10 @@ void medHomepageArea::initPage()
         button->setMaximumWidth ( 250 );
         button->setMinimumWidth ( 250 );
         button->setToolTip(detail->description);
-        button->setIdentifier(id);
+        button->setIdentifier(detail->identifier);
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
-        if (!(medWorkspaceFactory::instance()->isUsable(id)))
+        if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
         {
             button->setDisabled(true);
             button->setToolTip("No useful plugin has been found for this workspace.");

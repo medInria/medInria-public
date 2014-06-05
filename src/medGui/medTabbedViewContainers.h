@@ -18,10 +18,12 @@
 
 #include <medGuiExport.h>
 
+class medAbstractData;
 class medAbstractView;
 class medDataIndex;
 class medViewContainer;
 class medViewContainerSplitter;
+class medAbstractWorkspace;
 class medTabbedViewContainersPrivate;
 
 /**
@@ -34,7 +36,7 @@ class MEDGUI_EXPORT medTabbedViewContainers : public QTabWidget
     Q_OBJECT
 
 public:
-     medTabbedViewContainers(QWidget *parent = 0);
+     medTabbedViewContainers(medAbstractWorkspace* owningWorkspace, QWidget *parent = 0);
     ~medTabbedViewContainers();
 
     void lockTabs();
@@ -45,6 +47,7 @@ public:
     QList<medAbstractView*> viewsInTab(int index = 0);
     QList<medViewContainer*> containersInTab(int index = 0);
 
+    medAbstractWorkspace * owningWorkspace() const;
 
 public slots:
     medViewContainer* addContainerInTab();

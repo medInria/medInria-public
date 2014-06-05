@@ -24,13 +24,13 @@ class medDiffusionWorkspacePrivate;
 class medDiffusionWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
+    MED_WORKSPACE_INTERFACE("Diffusion",
+                            "Diffusion Tensor Images.")
 
 public:
      medDiffusionWorkspace(QWidget *parent = 0);
     ~medDiffusionWorkspace();
 
-    virtual QString identifier() const;
-    virtual QString description() const;
     static bool isUsable();
     void setupViewContainerStack();
     

@@ -20,11 +20,11 @@
 class medWorkspaceFactoryPrivate
 {
 public:
-    typedef QHash<QString, medWorkspaceDetails*> medWorkspaceCreatorHash;
+    typedef QHash<QString, medWorkspaceFactory::Details*> medWorkspaceCreatorHash;
     medWorkspaceCreatorHash creators;
 };
 
-medWorkspaceFactory *medWorkspaceFactory::instance(void)
+medWorkspaceFactory* medWorkspaceFactory::instance(void)
 {
     if(!s_instance)
         s_instance = new medWorkspaceFactory;
@@ -33,21 +33,15 @@ medWorkspaceFactory *medWorkspaceFactory::instance(void)
 }
 
 bool medWorkspaceFactory::registerWorkspace(QString identifier,
-                                                          QString name,
-                                                          QString description,
-                                                          medWorkspaceCreator creator,
-                                                          medWorkspaceIsUsable isUsable)
+                                            QString name,
+                                            QString description,
+                                            medWorkspaceCreator creator,
+                                            medWorkspaceIsUsable isUsable)
 {
     if(!d->creators.contains(identifier))
     {
-        medWorkspaceDetails* holder = new medWorkspaceDetails
-                (name,
-                 description,
-                 creator,
-                 isUsable);
-
-        d->creators.insert( identifier,
-                            holder);
+        medWorkspaceFactory::Details* holder = new medWorkspaceFactory::Details(identifier, name, description, creator, isUsable);
+        d->creators.insert(identifier, holder);
         return true;
     }
     return false;
@@ -64,14 +58,26 @@ medAbstractWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget*
         return NULL;
 
     medAbstractWorkspace * workspace = d->creators[type]->creator(parent);
-    workspace->setName(type);
 
     return workspace;
 }
 
-QHash<QString, medWorkspaceDetails *> medWorkspaceFactory::workspaceDetails() const
+QHash<QString, medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetails() const
 {
     return d->creators;
+}
+
+
+bool wsDetailsSortByName(const medWorkspaceFactory::Details* a, const medWorkspaceFactory::Details* b) {
+    return a->name < b->name;
+}
+
+QList<medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetailsSortedByName() const
+{
+    QHash<QString,medWorkspaceFactory::Details*> details = this->workspaceDetails();
+    QList<medWorkspaceFactory::Details*> detailsList = details.values();
+    qSort(detailsList.begin(),detailsList.end(), wsDetailsSortByName);
+    return detailsList;
 }
 
 medWorkspaceFactory::medWorkspaceFactory(void) : dtkAbstractFactory(), d(new medWorkspaceFactoryPrivate)
@@ -81,19 +87,13 @@ medWorkspaceFactory::medWorkspaceFactory(void) : dtkAbstractFactory(), d(new med
 
 medWorkspaceFactory::~medWorkspaceFactory(void)
 {
-    foreach (medWorkspaceDetails * detail, d->creators.values())
-    {
-        delete detail;
-        detail = NULL;
-    }
-
+    qDeleteAll(d->creators);
     delete d;
-
     d = NULL;
 }
 
 
-medWorkspaceDetails * medWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
+medWorkspaceFactory::Details * medWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
 {
     return d->creators.value(identifier);
 }
