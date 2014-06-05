@@ -115,15 +115,7 @@ signals:
 
 public slots:
 
-
-    /**
-    * Read the data from db
-    * @params const medDataIndex & index Index pointing to data
-    * @return medAbstractData * the data stored
-    */
-    dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const;
-
-    QSharedPointer<medAbstractData> retrieve(const medDataIndex &index) const;
+    medAbstractData *retrieve(const medDataIndex &index) const;
     /**
     * Import data into the db read from file
     * @params const QString & file The file containing the data
@@ -143,11 +135,6 @@ public slots:
     * @params medAbstractData * data dataObject
     */
     void import(medAbstractData *data, QString importUuid=QString());
-
-    /**
-    * Export data to file
-    */
-    void exportDataToFile(medAbstractData *data, const QString &filename, const QString &writer);
 
 
     /** override base class */
@@ -173,6 +160,8 @@ public slots:
     virtual int dataSourceId() const;
 
      bool contains(const medDataIndex &index) const;
+
+     virtual void removeAll();
 
 protected slots:
     void forwardMessage(QString);

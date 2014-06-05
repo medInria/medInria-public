@@ -105,9 +105,7 @@ public slots:
     * @params const medDataIndex & index Index for data
     * @return medAbstractData * the data
     */
-    virtual dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const = 0;
-
-    virtual QSharedPointer<medAbstractData> retrieve(const medDataIndex& index) const = 0;
+    virtual medAbstractData* retrieve(const medDataIndex& index) const = 0;
 
     /**
     * @brief Imports a file into the db.
@@ -142,14 +140,7 @@ public slots:
     * @param bool indexWithoutCopying true if the file must only be indexed by its current path,
     * false if the file will be imported (copied or converted to the internal storage format)
     */
-    virtual void import(const QString& file,bool indexWithoutCopying);
-
-    /**
-    * Export data to file
-    * @param medAbstractData *data Pointer to some data to export
-    * @param const QString & filename The location in which the data will be stored in the file system
-    */
-    virtual void exportDataToFile(medAbstractData *data, const QString &filename, const QString & writer);
+    virtual void import(const QString& file,bool indexWithoutCopying) = 0;
 
     /**
      * This method allows removing one data from the database
@@ -174,7 +165,7 @@ public slots:
     /**
     * This method clears data already loaded in the database.
     */
-    virtual void clear();
+    virtual void removeAll() = 0;
 
     /**
      * @brief Checks if a medDataIndex is in the db.

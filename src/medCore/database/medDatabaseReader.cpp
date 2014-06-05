@@ -42,7 +42,7 @@ medDatabaseReader::~medDatabaseReader()
     d = NULL;
 }
 
-dtkSmartPointer<medAbstractData> medDatabaseReader::run()
+medAbstractData* medDatabaseReader::run()
 {
     QVariant patientDbId = d->index.patientId();
     QVariant   studyDbId = d->index.studyId();
@@ -152,26 +152,26 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::run()
     // might have introduced duplicates
     filenames.removeDuplicates();
 
-    dtkSmartPointer <medAbstractData> medData =  this->readFile ( filenames );
+    medAbstractData *medData =  this->readFile(filenames);
 
 
-    if ( ( !medData.isNull() ) && medData.data() )
+    if (medData)
     {
 
-        QSqlQuery seriesQuery ( * ( medDatabaseController::instance()->database() ) );
+        QSqlQuery seriesQuery (*(medDatabaseController::instance()->database()));
         QVariant seriesThumbnail;
 
         seriesQuery.prepare ( "SELECT thumbnail FROM series WHERE id = :id" );
         seriesQuery.bindValue ( ":id", seriesDbId );
-        if ( !seriesQuery.exec() )
+        if (!seriesQuery.exec())
             qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
 
-        if ( seriesQuery.first() )
+        if(seriesQuery.first())
         {
             seriesThumbnail = seriesQuery.value ( 0 );
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            medMetaDataKeys::SeriesThumbnail.add ( medData, thumbPath );
+            medMetaDataKeys::SeriesThumbnail.add (medData, thumbPath);
         }
         else
         {
@@ -211,10 +211,8 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::run()
     {
         emit failure ( this );
     }
-    if ( medData.refCount() != 1 )
-        qWarning() << "(Run:Exit) RefCount should be 1 here: " << medData.refCount();
-    return medData;
 
+    return medData;
 }
 
 qint64 medDatabaseReader::getDataSize()

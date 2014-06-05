@@ -37,12 +37,6 @@ class MEDCORE_EXPORT medOldDataManager : public QObject
 
 public:
 
-    /**
-    * Ask the data-manager to provide the data belonging to this index using its registered controllers.
-    * @params const medDataIndex & index medDataIndex for data
-    * @return medAbstractData * the data
-    */
-    dtkSmartPointer<medAbstractData> data(const medDataIndex& index);
     
     bool setMetaData( const medDataIndex& index, const QString& key, const QString& value );
 
@@ -52,7 +46,7 @@ public:
     * The data-manager will take over this task
     * @params dtkSmartPointer<medAbstractData> & data
     */
-    void import(dtkSmartPointer<medAbstractData> &data);
+    void import(medAbstractData *data);
 
     /**
     * Import data into the db read from file
@@ -91,13 +85,6 @@ public:
     * @params QString & uuid Universally unique identifier associated with the data
     */
     void importNonPersistent(QString file, const QString &uuid);
-
-    /**
-    * Use this function to save data to a file.
-    * @params medAbstractData *data Pointer to some data to save
-    * @params const QString & filename The location in which the data will be stored in the file system
-    */
-    void exportDataToFile(medAbstractData *data);
 
     /**
     * Use this function to save all non-persistent data to the sql database.

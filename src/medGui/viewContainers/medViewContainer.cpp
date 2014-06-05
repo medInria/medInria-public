@@ -481,7 +481,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
         else if(area == AREA_LEFT)
             emit splitRequest(index, Qt::AlignLeft);
         else if(area == AREA_CENTER)
-            this->addData(medDataManager::instance()->data(index));
+            this->addData(medDataManager::instance()->retrieveData(index));
     }
     else
         this->addData(index);
@@ -528,7 +528,7 @@ void medViewContainer::addData(medAbstractData *data)
 void medViewContainer::addData(medDataIndex index)
 {
     medDataManager::instance()->disconnect(this);
-    this->addData(medDataManager::instance()->data(index));
+    this->addData(medDataManager::instance()->retrieveData(index));
 }
 
 

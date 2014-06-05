@@ -447,37 +447,6 @@ void medDatabaseController::import( medAbstractData *data, QString importUuid)
     QThreadPool::globalInstance()->start(importer);
 }
 
-
-void medDatabaseController::exportDataToFile(medAbstractData *data, const QString & filename, const QString & writer)
-{
-    medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
-    QFileInfo info(filename);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
-
-    connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
-    connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(exporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-
-    medJobManager::instance()->registerJobItem(exporter);
-    QThreadPool::globalInstance()->start(exporter);    
-}
-
-dtkSmartPointer<medAbstractData> medDatabaseController::read(const medDataIndex& index) const
-{
-    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));   
-    medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
-
-    connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
-    connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(reader.data(), SIGNAL(failure(QObject *)), message, SLOT(failure()));
-
-    connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
-
-    dtkSmartPointer<medAbstractData> data;
-    data = reader->run();
-    return data;
-}
-
 void medDatabaseController::showOpeningError(QObject *sender)
 {
     medMessageController::instance()->showError("Opening item failed.", 3000);
@@ -1012,3 +981,25 @@ bool medDatabaseController::contains(const medDataIndex &index) const
 }
 
 
+
+medAbstractData* medDatabaseController::retrieve(const medDataIndex &index) const
+{
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
+
+    connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(reader.data(), SIGNAL(failure(QObject *)), message, SLOT(failure()));
+
+    connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
+
+    medAbstractData* data;
+    data = reader->run();
+    return data;
+}
+
+
+void medDatabaseController::removeAll()
+{
+    qWarning()<< "Attempt to remove all item from PERSISTENT dataBase";
+}

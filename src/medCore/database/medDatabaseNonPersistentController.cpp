@@ -120,20 +120,6 @@ void medDatabaseNonPersistentController::import(const QString& file,QString impo
     QThreadPool::globalInstance()->start(reader);
 }
 
-dtkSmartPointer<medAbstractData> medDatabaseNonPersistentController::read( const medDataIndex& index ) const
-{
-    // Lookup item in hash table.
-    medDatabaseNonPersistentControllerPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
-
-    // Is item in our table ? if not, return null.
-    if ( it == d->items.end() || it.value() == NULL )
-        return dtkSmartPointer<medAbstractData> ();
-
-    dtkSmartPointer<medAbstractData> ret(it.value()->data());
-
-    return ret;
-}
-
 int medDatabaseNonPersistentController::nonPersistentDataStartingIndex(void) const
 {
     return 100000000;
@@ -178,7 +164,7 @@ void medDatabaseNonPersistentController::import(medAbstractData *data,
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medDatabaseNonPersistentController::clear(void)
+void medDatabaseNonPersistentController::removeAll()
 {
     // objects are reference counted.
     // We could check if the item is still in use... but we just remove our reference here.
@@ -466,7 +452,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     newIndexList << newIndex;
 
     //retrieve destination patient information
-    medAbstractData *dataPatient = read(toPatient);
+    medAbstractData *dataPatient = retrieve(toPatient);
 
     if(dataPatient==NULL)
     {
@@ -478,7 +464,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
 
             if(!seriesIndexList.isEmpty())
             {
-                dataPatient = read(seriesIndexList[0]);
+                dataPatient = retrieve(seriesIndexList[0]);
                 break;
             }
         }
@@ -486,7 +472,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
             return newIndexList;
     }
 
-    medAbstractData *dataStudy = read(indexStudy);
+    medAbstractData *dataStudy = retrieve(indexStudy);
 
     if(dataStudy!=NULL)
     {
@@ -512,7 +498,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
 
     foreach(medDataIndex serie, seriesIndexList)
     {
-        dataStudy = read(serie);
+        dataStudy = retrieve(serie);
 
         if(dataStudy!=NULL)
         {
@@ -549,10 +535,10 @@ medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& i
     }
 
     // we need to update metadatas (patient, study) of the serie to move
-    medAbstractData *dataSerie = read(indexSerie);
+    medAbstractData *dataSerie = retrieve(indexSerie);
 
     //retrieve destination study information
-    medAbstractData *dataStudy = read(toStudy);
+    medAbstractData *dataStudy = retrieve(toStudy);
 
     medDatabaseNonPersistentItem * serieItem = NULL;
     serieItem = d->items.find(indexSerie).value();
@@ -562,7 +548,7 @@ medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& i
         // let's try to get study information from its series
         QList<medDataIndex> seriesIndexList = series(toStudy);
         if(!seriesIndexList.isEmpty())
-            dataStudy = read(seriesIndexList[0]);
+            dataStudy = retrieve(seriesIndexList[0]);
         else return newIndex;
     }
 
@@ -600,10 +586,24 @@ medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& i
     return newIndex;
 }
 
-QSharedPointer<medAbstractData> medDatabaseNonPersistentController::retrieve(const medDataIndex& index) const
+medAbstractData* medDatabaseNonPersistentController::retrieve(const medDataIndex& index) const
 {
-    qDebug() << "YOLO";
-    return QSharedPointer<medAbstractData>(new medAbstractData);
+    // Lookup item in hash table.
+    medDatabaseNonPersistentControllerPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
+
+    // Is item in our table ? if not, return null.
+    if ( it == d->items.end() || it.value() == NULL )
+        return NULL;
+
+    medAbstractData* retreivedData(it.value()->data());
+
+    return retreivedData;
 }
 
+
+void medDatabaseNonPersistentController::import(const QString& file,bool indexWithoutCopying)
+{
+    qWarning() << "no sense to indexWithoutCopying in NonPersisten database";
+    //TODO - medAbstractDbController::importconst QString& file,bool indexWithoutCopying) shouldn't exist - RDE
+}
 

@@ -28,7 +28,7 @@ public:
     medDatabaseReader(const medDataIndex& index);
     ~medDatabaseReader();
 
-    dtkSmartPointer<medAbstractData> run();
+    medAbstractData *run();
 
     QString getFilePath();
 

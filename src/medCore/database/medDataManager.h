@@ -29,7 +29,9 @@ public:
     static void initialize();
     static medDataManager * instance();
 
-    QSharedPointer<medAbstractData> retrieveData(const medDataIndex& index);
+    medAbstractData* retrieveData(const medDataIndex& index);
+    void exportData(medAbstractData* data);
+    void exportDataToFile(medAbstractData* data, const QString& path, const QString& format = "");
 
 signals:
     void retrievingFailed(const medDataIndex& index);
@@ -55,8 +57,7 @@ private:
     medDataIndex importFileNonPersistent(const QString& dataPath);
     bool transferDataToPersistentDatabase(medAbstractData* data);
 
-    void exportData(medAbstractData* data);
-    void exportDataToFile(medAbstractData* data, const QString& path, const QString& format = "");
+
     bool updateData(const medDataIndex& index, medAbstractData* data);
     bool updateMetadata(const medDataIndex& index, const medMetaDataKeys::Key& md, const QString& value);
     medDataIndex removeData(const medDataIndex& index);

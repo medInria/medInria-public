@@ -96,91 +96,6 @@ private:
 
 //-------------------------------------------------------------------------------------------------------
 
-dtkSmartPointer<medAbstractData> medOldDataManager::data(const medDataIndex& index)
-{
-    dtkSmartPointer<medAbstractData>  medData;
-
-    // try to get it from cache first
-    if ( d->dataCache.contains(index) || d->volatileDataCache.contains(index) )
-    {
-        qDebug() << "Reading from cache";
-
-        if (d->dataCache.contains(index))
-            medData = d->dataCache.value(index);
-        else
-            medData = d->volatileDataCache.value(index);
-    }
-    else
-    {
-
-        qDebug() << "Reading from db";
-
-        // try to load the data from db
-        medAbstractDbController* db = d->getDbController();
-
-        //checks the index is in the db before trying to read anything.
-        //otherwise we get error messages when trying to open non persistent items.
-        if (db  && db->contains(index))
-        {
-            // check available free memory and clean up if necessary
-            if (!manageMemoryUsage(index, db))
-            {
-                qDebug() << "could not free enough memory, aborting data reading";
-                return medData;
-            }
-
-            medData = db->read(index);
-            if (medData.refCount() != 1)
-                qWarning() << "RefCount should be 1: " << medData.refCount();
-            if (!medData.isNull())
-            {
-                qDebug() << "adding data to data cachemap";
-                d->dataCache[index] = medData;
-            }
-        }
-
-        //if the data is still invalid we continue in the non-pers db
-        if (!medData)
-        {
-            medAbstractDbController* npDb = d->getNonPersDbController();
-            if(npDb && npDb->contains(index))
-            {
-                // check available free memory and clean up if necessary
-                if (!manageMemoryUsage(index, npDb))
-                {
-                    qDebug() << "could not free enough memory, aborting data reading";
-                    return medData;
-                }
-
-                medData = npDb->read(index);
-
-                if (medData)
-                {
-                    qDebug() << "adding data to data non-pers.cachemap";
-                    d->volatileDataCache[index] = medData;
-                }
-            }
-        }
-
-    }
-
-    if (!medData)
-    {
-        qWarning() << "unable to open images with index:" << index.asString();
-
-        // sometimes signals are blocked before calling this functions, like in medWorkspaceArea...
-        //medWorkspaceArea doesn't block these signals any more... until we find why
-        //it was needed, we won't be doing any black magic signal blocking where not needed.
-        //        bool prevState = this->signalsBlocked();
-        //        this->blockSignals(false);
-        emit failedToOpen(index);
-        //        this->blockSignals(prevState);
-    } else {
-        medData->setDataIndex(index);
-    }
-
-    return medData;
-}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -507,15 +422,14 @@ void medOldDataManager::onNonPersistentDataImported(const medDataIndex &index, Q
     }
 
     medAbstractDbController* npDb = d->getNonPersDbController();
-    dtkSmartPointer<medAbstractData> data = npDb->read(index);
+    medAbstractData *data = npDb->retrieve(index);
 
-    if (!data.isNull())
+    if(data)
     {
         // d->volatileDataCache[index] = data is only done in data(), but we need it at this stage as well to be able to save data
         // in the persistent database, so i try to comment out the following line
         //if (d->volatileDataCache.contains (index))
-            d->volatileDataCache[index] = data;
-
+        d->volatileDataCache[index] = data;
         emit dataAdded (index);
     }
 }
@@ -542,79 +456,7 @@ void medOldDataManager::importNonPersistent( QString file, const QString &uuid )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medOldDataManager::exportDataToFile(medAbstractData * data)
-{
-    if ( ! data) return;
 
-    QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
-    QHash<QString, dtkAbstractDataWriter*> possibleWriters;
-
-    foreach(QString writerType, allWriters) {
-        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
-        if (writer->handled().contains(data->identifier()))
-            possibleWriters[writerType] = writer;
-        else
-            delete writer;
-    }
-
-    if (possibleWriters.isEmpty()) {
-        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
-        return;
-    }
-
-    QFileDialog * exportDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
-    exportDialog->setOption(QFileDialog::DontUseNativeDialog);
-    exportDialog->setAcceptMode(QFileDialog::AcceptSave);
-
-    QComboBox* typesHandled = new QComboBox(exportDialog);
-    // we use allWriters as the list of keys to make sure we traverse possibleWriters
-    // in the order specified by the writers priorities.
-    foreach(QString type, allWriters) {
-        if ( ! possibleWriters.contains(type)) continue;
-        QStringList extensionList = possibleWriters[type]->supportedFileExtensions();
-        QString label = possibleWriters[type]->description() + " (" + extensionList.join(", ") + ")";
-        QString extension = (extensionList.isEmpty()) ? QString() : extensionList.first();
-        typesHandled->addItem(label, type);
-        typesHandled->setItemData(typesHandled->count()-1, extension, Qt::UserRole+1);
-        typesHandled->setItemData(typesHandled->count()-1, QVariant::fromValue<QObject*>(exportDialog), Qt::UserRole+2);
-    }
-    connect(typesHandled, SIGNAL(currentIndexChanged(int)), this, SLOT(exportDialog_updateSuffix(int)));
-
-    QLayout* layout = exportDialog->layout();
-    QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
-
-    // nasty hack to hide the filter list
-    QWidget * filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
-    QWidget * filtersList = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
-    filtersLabel->hide(); filtersList->hide();
-
-    if (gridbox) {
-        gridbox->addWidget(new QLabel("Export format:", exportDialog), gridbox->rowCount()-1, 0);
-        gridbox->addWidget(typesHandled, gridbox->rowCount()-1, 1);
-    }
-
-    exportDialog->setLayout(gridbox);
-
-    // Set a default filename based on the series's description
-
-    medAbstractDbController * dbController = controllerForDataSource(data->dataIndex().dataSourceId());
-    if (dbController) {
-        QString defaultName = dbController->metaData(data->dataIndex(), medMetaDataKeys::SeriesDescription);
-        defaultName += typesHandled->itemData(typesHandled->currentIndex(), Qt::UserRole+1).toString();
-        exportDialog->selectFile(defaultName);
-    }
-
-    if ( exportDialog->exec() ) {
-        medAbstractDbController* db = d->getDbController();
-        if(db) {
-            QString chosenFormat = typesHandled->itemData(typesHandled->currentIndex()).toString();
-            db->exportDataToFile(data, exportDialog->selectedFiles().first(), chosenFormat);
-        }
-    }
-
-    qDeleteAll(possibleWriters);
-    delete exportDialog;
-}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -711,7 +553,7 @@ int medOldDataManager::nonPersistentDataCount( void ) const
 void medOldDataManager::clearNonPersistentData( void )
 {
     if (medAbstractDbController* npDb = d->getNonPersDbController())
-        npDb->clear();
+        npDb->removeAll();
 
     d->volatileDataCache.clear();
 }
@@ -755,15 +597,15 @@ size_t medOldDataManager::getOptimalMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-void medOldDataManager::import( dtkSmartPointer<medAbstractData> &data )
+void medOldDataManager::import(medAbstractData *data )
 {
-    if (!data.data())
+    if (!data)
         return;
 
     medAbstractDbController* db = d->getDbController();
 
     if(db)
-        db->import(data.data());
+        db->import(data);
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -855,7 +697,7 @@ QList<medDataIndex> medOldDataManager::moveStudy(const medDataIndex& indexStudy,
         if(!dbcSource->isPersistent())
         {
             foreach(medDataIndex newIndex, newIndexList)
-                d->volatileDataCache[newIndex] = dbcSource->read(newIndex);
+                d->volatileDataCache[newIndex] = dbcSource->retrieve(newIndex);
         }
     }
     
@@ -895,7 +737,7 @@ medDataIndex medOldDataManager::moveSerie(const medDataIndex& indexSerie, const 
       newIndex =  dbcSource->moveSerie(indexSerie,toStudy);
       
       if(!dbcSource->isPersistent())
-        d->volatileDataCache[newIndex] = dbcSource->read(newIndex);
+        d->volatileDataCache[newIndex] = dbcSource->retrieve(newIndex);
     }
     
     return newIndex;

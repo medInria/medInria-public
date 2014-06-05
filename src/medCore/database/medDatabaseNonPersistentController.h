@@ -99,13 +99,6 @@ public:
 public slots:
 
     /**
-    * Reads data from nonPersistent storage using the index
-    * @params const medDataIndex & index Index to look for
-    * @return medAbstractData* data
-    */
-    dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const;
-
-    /**
     * Stores data temporarily referenced by temp index
     * @param data data to be stored
     * @param callerUuid
@@ -139,15 +132,20 @@ public slots:
      */
     medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 
-    /**
-    * Removes any reference to non-persistent data. Do not actually free memory.
-    */
-    void clear();
-
     /** true if the given data index matches one in our db*/
     bool contains( const medDataIndex& index) const;
 
-    virtual QSharedPointer<medAbstractData> retrieve(const medDataIndex& index) const;
+    virtual medAbstractData* retrieve(const medDataIndex& index) const;
+
+    virtual void removeAll();
+
+    /**
+    * Import data into the db read from file
+    * @param const QString & file The file containing the data
+    * @param bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * false if the file will be imported (copied or converted to the internal storage format)
+    */
+    virtual void import(const QString& file,bool indexWithoutCopying);
 
 
 

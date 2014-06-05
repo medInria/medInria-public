@@ -29,7 +29,7 @@
 #include <gdcmDirectionCosines.h>
 #include <gdcmStringFilter.h>
 
-#include <medCore/medMetaDataKeys.h>
+#include <medMetaDataKeys.h>
 
 #include <map>
 

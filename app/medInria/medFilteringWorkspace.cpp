@@ -165,7 +165,7 @@ void medFilteringWorkspace::open(const medDataIndex &index)
     if(!index.isValidForSeries() || !d->inputContainer->isSelected())
         return;
 
-    d->inputContainer->addData(medDataManager::instance()->data(index));
+    d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
 }
 
 
