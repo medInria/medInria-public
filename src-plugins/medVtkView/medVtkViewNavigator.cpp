@@ -60,6 +60,7 @@ class medVtkViewNavigatorPrivate
     medBoolParameter *o3dParameter;
 
     medBoolParameter *enableZooming;
+    medBoolParameter *enablePanning;
     medBoolParameter *enableSlicing;
     medBoolParameter *enableMeasuring;
 
@@ -161,6 +162,11 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->enableZooming->setIcon(QIcon (":/icons/magnify.png"));
     d->enableZooming->setToolTip(tr("Zooming"));
     connect(d->enableZooming, SIGNAL(valueChanged(bool)), this, SLOT(enableZooming(bool)));
+    
+    d->enablePanning = new medBoolParameter("Pan",this);
+    d->enablePanning->setIcon(QIcon (":/icons/pan.png"));
+    d->enablePanning->setToolTip(tr("Pan"));
+    connect(d->enablePanning, SIGNAL(valueChanged(bool)), this, SLOT(enablePanning(bool)));
 
     d->enableSlicing = new medBoolParameter("Slicing", this);
     d->enableSlicing->setIcon(QIcon (":/icons/stack.png"));
@@ -231,6 +237,7 @@ QList<medBoolParameter*> medVtkViewNavigator::mouseInteractionParameters()
     QList<medBoolParameter*> params;
     params.append(d->enableZooming);
     params.append(d->enableSlicing);
+    params.append(d->enablePanning);
     params.append(d->enableMeasuring);
     return params;
 }
@@ -636,7 +643,6 @@ void medVtkViewNavigator::updateWidgets()
     }
 }
 
-
 void medVtkViewNavigator::enableZooming(bool enable)
 {
     if(enable)
@@ -648,6 +654,12 @@ void medVtkViewNavigator::enableSlicing(bool enable)
 {
     if(enable)
         d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeSlice );
+}
+
+void medVtkViewNavigator::enablePanning(bool enable)
+{
+    if(enable)
+        d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypePan );
 }
 
 void medVtkViewNavigator::enableMeasuring(bool enable)

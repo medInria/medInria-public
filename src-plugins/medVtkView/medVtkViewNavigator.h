@@ -90,8 +90,8 @@ protected slots:
 
     void enableZooming(bool);
     void enableSlicing(bool);
+    void enablePanning(bool);
     void enableMeasuring(bool);
-
 
 private slots:
     void changeOrientation(medImageView::Orientation orientation);
