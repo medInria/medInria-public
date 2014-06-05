@@ -520,6 +520,12 @@ void medMainWindow::showWorkspace(QString workspace)
  */
 void medMainWindow::showQuickAccess()
 {
+    if (d->quickAccessWidget->isVisible())
+    {
+        this->hideQuickAccess();
+        return;
+    }
+    
     d->quickAccessWidget->reset(false);
     d->quickAccessWidget->setFocus();
     d->quickAccessWidget->setMouseTracking(true);
