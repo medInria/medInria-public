@@ -256,7 +256,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //  Connect the messageController with the status for notification messages management
     connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
     connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT (close()));
+
     d->shortcutShortcut = new QShortcut(QKeySequence(tr(CONTROL_KEY "+Space")),
                                                      this,
                                                      SLOT(showShortcutAccess()),
