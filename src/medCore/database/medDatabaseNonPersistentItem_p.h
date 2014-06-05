@@ -16,7 +16,6 @@
 #include <medDataIndex.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <QtCore/QString>
 #include <QtGui/QImage>
@@ -46,7 +45,7 @@ public:
 
     medDataIndex index;
 
-    dtkSmartPointer<medAbstractData> data;
+    medAbstractData* data;
 };
 
 

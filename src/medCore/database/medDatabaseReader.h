@@ -35,8 +35,8 @@ public:
     qint64 getDataSize();
 
 protected:
-    dtkSmartPointer<medAbstractData> readFile(QString filename);
-    dtkSmartPointer<medAbstractData> readFile(const QStringList filenames );
+    medAbstractData* readFile(QString filename);
+    medAbstractData* readFile(const QStringList filenames );
 
 signals:
     void success(QObject *);

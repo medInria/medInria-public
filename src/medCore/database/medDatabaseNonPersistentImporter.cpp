@@ -129,7 +129,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         patientItem = new medDatabaseNonPersistentItem;
         index = medDataIndex ( npdc->dataSourceId(), patientDbId, -1, -1, -1 );
 
-        dtkSmartPointer<medAbstractData> medData = new medAbstractData();
+        medAbstractData *medData = new medAbstractData();
         medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  patientName );
         medData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
 
@@ -183,7 +183,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
             studyItem = new medDatabaseNonPersistentItem;
             index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, -1, -1 );
 
-            dtkSmartPointer<medAbstractData> medData = new medAbstractData();
+            medAbstractData *medData = new medAbstractData();
 
             medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
             medData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );

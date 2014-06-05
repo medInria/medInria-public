@@ -21,7 +21,6 @@
 
 #include <medMetaDataKeys.h>
 #include <medAbstractData.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 class medImportJobWatcher;
 class medDataIndex;

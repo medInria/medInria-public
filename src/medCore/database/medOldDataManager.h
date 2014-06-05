@@ -15,7 +15,6 @@
 
 #include <QtCore/QObject>
 
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <medCoreExport.h>
 #include <medDataIndex.h>
@@ -44,7 +43,7 @@ public:
     * Use this function to insert data into the database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params dtkSmartPointer<medAbstractData> & data
+    * @params medAbstractData  *data
     */
     void import(medAbstractData *data);
 

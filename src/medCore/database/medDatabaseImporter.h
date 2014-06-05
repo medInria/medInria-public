@@ -18,8 +18,6 @@
 #include <QtCore>
 #include <QtSql>
 
-#include <dtkCore/dtkSmartPointer.h>
-
 #include <medAbstractDatabaseImporter.h>
 #include <medDataIndex.h>
 

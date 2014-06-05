@@ -17,7 +17,6 @@
 
 #include <medViewFactory.h>
 #include <medAbstractView.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <medRegistrationSelectorToolBox.h>
 #include <medViewContainer.h>

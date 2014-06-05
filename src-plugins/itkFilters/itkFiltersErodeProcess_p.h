@@ -15,7 +15,6 @@
 #define ITKFILTERSERODEPROCESS_P_H
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkFiltersProcessBase_p.h>
 

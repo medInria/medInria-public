@@ -88,12 +88,21 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     if(dataObjRef)
     {
         // we found an existing instance of that object
+        qDebug()<<"medDataManager we found an existing instance of that object" <<dataObjRef->count();
         return dataObjRef;
     }
 
-    foreach (medAbstractData* data, d->loadedDataObjectTracker.values())
+    QHashIterator <medDataIndex, dtkSmartPointer<medAbstractData> > it(d->loadedDataObjectTracker);
+    while(it.hasNext())
+    {
+        medAbstractData *data = it.next().value();
+        qDebug()<<"medDataManager deleting ?" <<data->count();
         if(data->count() <= 1)
+        {
+            qDebug()<<"medDataManager deleting !" <<data->dataIndex();
             d->loadedDataObjectTracker.remove(data->dataIndex());
+        }
+    }
 
     // No existing ref, we need to load from the file DB, then the non-persistent DB
     if (d->dbController->contains(index))
@@ -108,7 +117,10 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     if (dataObjRef)
     {
         dataObjRef->setDataIndex(index);
+
         d->loadedDataObjectTracker.insert(index, dataObjRef);
+        dataObjRef->release();
+        qDebug()<<"medDataManager"<<dataObjRef->count();
         return dataObjRef;
     }
     // unlock mutex before emitting, as this could trigger code in others threads

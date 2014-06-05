@@ -259,7 +259,7 @@ QString medDatabaseReader::getFilePath()
     return filename;
 }
 
-dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( QString filename )
+medAbstractData *medDatabaseReader::readFile( QString filename )
 {
     QStringList filenames;
     filenames << filename;
@@ -267,9 +267,9 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( QString filename 
 }
 
 
-dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( const QStringList filenames )
+medAbstractData *medDatabaseReader::readFile( const QStringList filenames )
 {
-    dtkSmartPointer<medAbstractData> medData;
+    medAbstractData *medData;
 
     QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
@@ -285,8 +285,9 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( const QStringList
             dataReader->read ( filenames );
             dataReader->enableDeferredDeletion ( false );
             medData = dynamic_cast<medAbstractData*>(dataReader->data());
-            if ( medData.refCount() != 2 )
-                qWarning() << "(ReaderLoop) RefCount should be 2 here: " << medData.refCount();
+
+            //TODO tmp hack to check feasibility of the medDataManager.
+            medData->retain();
             break;
         }
 

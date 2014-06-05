@@ -16,12 +16,11 @@
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 class medDatabaseExporterPrivate
 {
 public:
-    dtkSmartPointer<medAbstractData> data;
+    medAbstractData *data;
     QString          filename;
     QString          writer;
 };
@@ -42,7 +41,8 @@ medDatabaseExporter::~medDatabaseExporter(void)
 
 void medDatabaseExporter::run(void)
 {
-    if (d->data.isNull()) {
+    if (!d->data)
+    {
         emit showError("Cannot export data", 3000);
         return;
     }

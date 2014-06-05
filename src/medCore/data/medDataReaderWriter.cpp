@@ -68,7 +68,7 @@ medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,cons
     return dwriter = Writer();
 }
 
-medDataReaderWriter::Data medDataReaderWriter::read(const QString& path) {
+medAbstractData *medDataReaderWriter::read(const QString& path) {
     Reader dreader = reader(path);
     if (!dreader.isNull()) {
         dreader->read(path);

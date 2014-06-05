@@ -16,7 +16,6 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
 

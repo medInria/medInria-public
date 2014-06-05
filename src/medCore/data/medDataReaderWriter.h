@@ -24,12 +24,11 @@ struct MEDCORE_EXPORT medDataReaderWriter {
 
     typedef dtkSmartPointer<dtkAbstractDataReader> Reader;
     typedef dtkSmartPointer<dtkAbstractDataWriter> Writer;
-    typedef dtkSmartPointer<medAbstractData>       Data;
 
     static Reader reader(const QString& path);
     static Writer writer(const QString& path,const medAbstractData* data);
 
-    static Data read(const QString& path);
+    static medAbstractData *read(const QString& path);
     static bool write(const QString& path,medAbstractData* data);
     };
 

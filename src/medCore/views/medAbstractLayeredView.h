@@ -43,7 +43,7 @@ public:
     void insertLayer(unsigned int layer, medAbstractData *data);
 
     medAbstractData * layerData(unsigned int layer) const;
-    QList<dtkSmartPointer<medAbstractData> > dataList() const;
+    QList<medAbstractData *> dataList() const;
 
     bool contains(medAbstractData * data) const;
     bool contains(QString identifier) const;

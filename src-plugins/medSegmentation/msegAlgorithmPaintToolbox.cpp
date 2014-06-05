@@ -21,14 +21,12 @@
 #include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medSegmentationSelectorToolBox.h>
-#include <medViewManager.h>
 #include <medPluginManager.h>
 #include <medDataManager.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
-#include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include <vnl/vnl_cross.h>
@@ -296,9 +294,6 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     connect (m_applyButton,     SIGNAL(pressed()),
              this, SLOT(import()));
 
-    connect (medViewManager::instance(), SIGNAL(viewOpened()),
-             this, SLOT(updateMouseInteraction()));
-
     showButtons(false);
 }
 
@@ -432,7 +427,7 @@ void AlgorithmPaintToolbox::setData( medAbstractData *medData )
     m_lastVup = QVector3D();
     m_lastVpn = QVector3D();
 
-    m_imageData = dtkSmartPointer<medAbstractData>(medData);
+    m_imageData = medData;
 
     // Update values of slider
 
