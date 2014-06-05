@@ -37,13 +37,14 @@ public:
     explicit medSettingsWidget(QWidget *parent = 0);
 
 
+    virtual QString identifier() const = 0;
+    virtual QString name() const = 0;
     /**
     * description - mandatory method to describe the plug-in
     * Should be used as the section name (QSettings) when using the setttingsmanager
     * @return   QString
     */
     virtual QString description() const = 0;
-
 
     /**
      * @brief Gets the name as it should appear in the settingsEditor.
@@ -89,4 +90,11 @@ private:
     medSettingsWidgetPrivate *d; /**< TODO */
 };
 
-
+#define MED_SETTINGS_INTERFACE(_name,_desc) \
+public:\
+    static QString staticIdentifier() {return QString(staticMetaObject.className());}\
+    static QString staticName() {return QString::fromUtf8(_name);}\
+    static QString staticDescription() {return QString::fromUtf8(_desc);}\
+    virtual QString identifier() const {return staticIdentifier();}\
+    virtual QString name() const {return staticName();}\
+    virtual QString description() const {return staticDescription();}

@@ -69,11 +69,6 @@ void medDatabaseSettingsWidget::selectDbDirectory()
      }
 }
 
-
-medSettingsWidget* createDatabaseSettingsWidget(QWidget *parent){
-    return new medDatabaseSettingsWidget(parent);
-}
-
 bool medDatabaseSettingsWidget::validate()
 {
     return true;
@@ -90,12 +85,4 @@ bool medDatabaseSettingsWidget::write()
     medSettingsManager * mnger = medSettingsManager::instance();
     mnger->setValue(this->identifier(),"new_database_location", d->dbPath->text());
     return true;
-}
-
-QString medDatabaseSettingsWidget::identifier() const {
-    return "medDatabaseSettingsWidget";
-}
-
-QString medDatabaseSettingsWidget::description() const {
-    return "medDatabaseSettingsWidget";
 }

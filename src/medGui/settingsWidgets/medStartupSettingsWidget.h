@@ -22,11 +22,9 @@ class medStartupSettingsWidgetPrivate;
 class MEDGUI_EXPORT medStartupSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
+    MED_SETTINGS_INTERFACE("Start Up","Startup settings")
 public:
     medStartupSettingsWidget(QWidget *parent = 0);
-
-    QString identifier()  const;
-    QString description() const;
 
 signals:
 
@@ -47,6 +45,3 @@ private:
     medStartupSettingsWidgetPrivate *d;
 
 };
-
-MEDGUI_EXPORT medSettingsWidget* createStartupSettingsWidget(QWidget *parent);
-

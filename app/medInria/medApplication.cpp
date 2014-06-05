@@ -247,7 +247,6 @@ void medApplication::registerToFactories()
     settingsWidgetFactory->registerSettingsWidget<medSystemSettingsWidget>();
     settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
     settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
-    settingsWidgetFactory->registerSettingsWidget<medInteractionSettingsWidget>();
 
     //Register annotations
     //TODO there is obviously something that have to be done here. - RDE

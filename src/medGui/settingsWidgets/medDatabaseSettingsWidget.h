@@ -22,11 +22,9 @@ class medDatabaseSettingsWidgetPrivate;
 class MEDGUI_EXPORT medDatabaseSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
+    MED_SETTINGS_INTERFACE("Database","Database Settings")
 public:
     medDatabaseSettingsWidget(QWidget *parent = 0);
-
-    QString identifier()  const;
-    QString description() const;
 
 signals:
 
@@ -50,6 +48,3 @@ private:
     medDatabaseSettingsWidgetPrivate *d;
 
 };
-
-MEDGUI_EXPORT medSettingsWidget* createDatabaseSettingsWidget(QWidget *parent);
-

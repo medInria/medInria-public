@@ -65,11 +65,6 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     this->setLayout(layout);
 }
 
-
-medSettingsWidget* createStartupSettingsWidget(QWidget *parent){
-    return new medStartupSettingsWidget(parent);
-}
-
 bool medStartupSettingsWidget::validate()
 {
     return true;
@@ -112,12 +107,4 @@ bool medStartupSettingsWidget::write()
     mnger->setValue("startup","default_container_layout",
                     layout);
     return true;
-}
-
-QString medStartupSettingsWidget::identifier() const {
-    return "startup";
-}
-
-QString medStartupSettingsWidget::description() const {
-    return tr("startup");
 }
