@@ -188,6 +188,7 @@ medStringListParameter* medAbstractView::linkParameter()
     if(!d->linkParameter)
     {
         d->linkParameter = new medStringListParameter("Link view", this);
+        d->linkParameter->setExclusive(false);
         d->linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
         d->linkParameter->addItem("View group 1", medStringListParameter::createIconFromColor("darkred"));
         d->linkParameter->addItem("View group 2", medStringListParameter::createIconFromColor("darkgreen"));

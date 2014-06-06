@@ -14,6 +14,7 @@
 #include <medAbstractWorkspace.h>
 
 #include <QUuid>
+#include <QWidgetAction>
 
 #include <medDataIndex.h>
 #include <medSettingsManager.h>
@@ -34,6 +35,14 @@
 #include <medDataManager.h>
 #include <medPoolIndicator.h>
 
+
+
+//class medTextEditAction : public QWidgetAction
+//{
+//    public:
+
+
+//};
 
 /**
   * QListWidget doesn't seem to be able to resize itself to its content
@@ -246,14 +255,38 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         QWidget *linkWidget = new QWidget;
         QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
 
-        view->linkParameter()->getLabel()->setText(tr("Link view properties: "));
-        linkLayout->addWidget(view->linkParameter()->getLabel());
-        linkLayout->addWidget(view->linkParameter()->getComboBox());
+//        view->linkParameter()->getLabel()->setText(tr("Link view properties: "));
+//        linkLayout->addWidget(view->linkParameter()->getLabel());
+//        linkLayout->addWidget(view->linkParameter()->getComboBox());
+
+//        d->navigatorToolBox->addWidget(linkWidget);
+
+//        view->linkParameter()->getLabel()->show();
+//        view->linkParameter()->getComboBox()->show();
+
+        QMenuBar *linkViewMenuBar = new QMenuBar;
+        QMenu *menu = new QMenu("Link");
+
+//        QAction *newGroupAct = new QAction("New Group", this);
+//        newGroupAct->setCheckable(true);
+
+        QWidgetAction *newGroupAct = new QWidgetAction(this);
+        QLineEdit *newGroupEdit = new QLineEdit;
+        newGroupEdit->setText("New group...");
+        newGroupAct->setDefaultWidget(newGroupEdit);
+
+        //        newGroupAct->setCheckable(true);
+
+        QAction *linkMenuAction = linkViewMenuBar->addMenu(menu);
+        menu->addAction(newGroupAct);
+
+        connect(newGroupAct, SIGNAL(triggered()), this, SLOT(buildLinkViewMenu()));
+
+        linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
+        linkLayout->addWidget(linkViewMenuBar);
 
         d->navigatorToolBox->addWidget(linkWidget);
 
-        view->linkParameter()->getLabel()->show();
-        view->linkParameter()->getComboBox()->show();
     }
 
     // update the mouse interaction and layer toolboxes according to the selected containers
@@ -615,4 +648,18 @@ bool medAbstractWorkspace::isUserViewPoolable() const
 bool medAbstractWorkspace::isUserLayerClosable() const
 {
     return d->userLayerClosable;
+}
+
+void medAbstractWorkspace::buildLinkViewMenu()
+{
+    medAbstractView* view = NULL;
+    QStringList viewType;
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        view = container->view();
+    }
+
+    QAction *action = dynamic_cast<QAction *>(this->sender());
+    action->menu()->addAction("New Group");
 }

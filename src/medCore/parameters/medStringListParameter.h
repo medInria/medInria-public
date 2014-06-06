@@ -23,16 +23,19 @@ class QWidget;
 class QStringList;
 
 class medStringListParameterPrivate;
-class MEDCORE_EXPORT medStringListParameter: public medAbstractStringParameter
+class MEDCORE_EXPORT medStringListParameter: public medAbstractParameter
 {
     Q_OBJECT
 
 public:
-    static QIcon createIconFromColor(const QString &colorName);
 
+    static QIcon createIconFromColor(const QString &colorName);
 
     medStringListParameter(QString name = "Unkow string list parameter", QObject* parent = 0);
     virtual ~medStringListParameter();
+
+    virtual QString value() const;
+    virtual QStringList values() const;
 
     void addItem(QString item, QIcon icon = QIcon());
     void addItems(QStringList items);
@@ -43,6 +46,16 @@ public:
     QComboBox* getComboBox();
 
     virtual QWidget* getWidget();
+
+    void setExclusive(bool exclusive);
+
+public slots:
+    virtual void setValue(QString value);
+    virtual void setValues(QStringList value);
+
+signals:
+    void valueChanged(QString);
+    void valueChanged(QStringList);
 
 protected:
     virtual void updateInternWigets();
