@@ -437,6 +437,7 @@ QImage medVtkView::buildThumbnail(const QSize &size)
 
     QImage thumbnail = QPixmap::grabWidget(d->viewWidget).toImage();
 
+    renWin->SetOffScreenRendering(0);
     renWin->Delete();
 
     this->blockSignals(false);
