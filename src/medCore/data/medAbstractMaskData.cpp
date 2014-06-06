@@ -16,12 +16,10 @@
 
 medAbstractMaskData::medAbstractMaskData(void) : medAbstractData()
 {
-    this->setDataCategory(medData::MASK);
 }
 
 medAbstractMaskData::medAbstractMaskData(const  medAbstractMaskData& other): medAbstractData(other)
 {
-    this->setDataCategory(medData::MASK);
 }
 
 medAbstractMaskData::~medAbstractMaskData(void)

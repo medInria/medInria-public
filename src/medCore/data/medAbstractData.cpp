@@ -27,7 +27,6 @@ class medAbstractDataPrivate
 public:
     medDataIndex index;
     QList< dtkSmartPointer<medAttachedData> > attachedData;
-    medData::Category type;
 
     QImage thumbnail;
 };
@@ -48,15 +47,6 @@ medAbstractData::~medAbstractData( void )
     d = NULL;
 }
 
-void medAbstractData::setDataCategory(medData::Category type)
-{
-    d->type = type;
-}
-
-medData::Category medAbstractData::dataCategory() const
-{
-    return d->type;
-}
 
 void medAbstractData::setDataIndex( const medDataIndex& index )
 {

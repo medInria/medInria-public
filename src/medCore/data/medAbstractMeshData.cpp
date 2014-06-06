@@ -29,12 +29,10 @@ public:
 
 medAbstractMeshData::medAbstractMeshData(void) : medAbstractData(), d(new medAbstractMeshDataPrivate)
 {
-    this->setDataCategory(medData::MESH);
 }
 
 medAbstractMeshData::medAbstractMeshData(const  medAbstractMeshData& other): medAbstractData(other), d(new medAbstractMeshDataPrivate)
 {
-    this->setDataCategory(medData::MESH);
 }
 
 medAbstractMeshData::~medAbstractMeshData(void)

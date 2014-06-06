@@ -16,7 +16,6 @@ PURPOSE.
 #include <dtkCore/dtkAbstractViewNavigator.h>
 
 #include <medCoreExport.h>
-#include <medDataEnum.h>
 #include <medImageViewEnum.h>
 
 class medAbstractView;

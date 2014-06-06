@@ -22,7 +22,6 @@ PURPOSE.
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 #include <medImageViewEnum.h>
-#include <medDataEnum.h>
 
 class medAbstractParameter;
 class medBoolParameter;
