@@ -1744,6 +1744,23 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[]
 
 }
 
+void vtkImageView2D::RemoveLayerActor(vtkActor *actor, int layer)
+{
+    vtkRenderer *renderer = this->GetRendererForLayer(layer);
+    
+    if (!renderer)
+        return;
+    
+    renderer->RemoveActor(actor);
+    
+    this->SetCurrentLayer(layer);
+    this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
+    this->UpdateDisplayExtent();
+    // this->UpdateCenter();
+    this->UpdateSlicePlane();
+    this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
+}
+
 int vtkImageView2D::AddInput (vtkImageData *image, vtkMatrix4x4 *matrix)
 {
   int layer = GetNumberOfLayers();

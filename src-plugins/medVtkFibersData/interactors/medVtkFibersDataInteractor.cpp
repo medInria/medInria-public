@@ -13,8 +13,6 @@
 
 #include <medVtkFibersDataInteractor.h>
 
-#include <QVTKWidget.h>
-
 #include <vtkActor.h>
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
@@ -109,7 +107,7 @@ public:
     medTriggerParameter *resetParameter;
     medBoolParameter *addParameter;
     medTriggerParameter *tagParameter;
-    medBoolGroupParameter *bundleOperationtGroupParameter;
+    medBoolGroupParameter *bundleOperationGroupParameter;
     medDoubleParameter* opacityParam;
 
     medBoolParameter *showAllBundleParameter;
@@ -212,10 +210,10 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->nullParameter->setText("NULL");
     d->nullParameter->getLabel()->hide();
 
-    d->bundleOperationtGroupParameter = new medBoolGroupParameter("bundleOperationtGroupParameter", this);
-    d->bundleOperationtGroupParameter->addParameter(d->andParameter);
-    d->bundleOperationtGroupParameter->addParameter(d->notParameter);
-    d->bundleOperationtGroupParameter->addParameter(d->nullParameter);
+    d->bundleOperationGroupParameter = new medBoolGroupParameter("bundleOperationGroupParameter", this);
+    d->bundleOperationGroupParameter->addParameter(d->andParameter);
+    d->bundleOperationGroupParameter->addParameter(d->notParameter);
+    d->bundleOperationGroupParameter->addParameter(d->nullParameter);
 
     d->tagParameter = new medTriggerParameter("tagFiberParameter", this);
     d->tagParameter->setToolTip(tr("Tag the currently shown bundle to let medInria memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
@@ -233,11 +231,11 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->validateParameter = new medTriggerParameter("validateFiberParameter", this);
     d->validateParameter->setToolTip(tr("Save the current shown bundle and show useful information about it."));
     d->validateParameter->setButtonText("Validate");
-
+    
     d->saveParameter = new medTriggerParameter("saveFiberParameter", this);
     d->saveParameter->setToolTip(tr("Save all bundles to database"));
     d->saveParameter->setButtonText("Save");
-
+    
     d->showAllBundleParameter = new medBoolParameter("showAllBundleFiberParameter", this);
     d->showAllBundleParameter->setValue(true);
     d->showAllBundleParameter->setToolTip(tr("Uncheck if you do not want the previously validated bundles to be displayed."));
@@ -395,10 +393,10 @@ void medVtkFibersDataInteractor::changeBundlingItem(QStandardItem *item)
 
 void medVtkFibersDataInteractor::changeBundleName(QString oldName, QString newName)
 {
-    if (!d->dataset)
+    if ((!d->dataset)||(!d->manager))
         return;
 
-    d->dataset->ChangeBundleName(oldName.toStdString(), newName.toStdString());
+    d->manager->ChangeBundleName(oldName.toStdString(), newName.toStdString());
 }
 
 void medVtkFibersDataInteractor::setVisibility(bool visible)
@@ -565,7 +563,8 @@ void medVtkFibersDataInteractor::validateSelection(const QString &name, const QC
     d->manager->Validate (name.toAscii().constData(), color_d);
 
     d->view2d->SetInput(d->manager->GetBundleActor(name.toAscii().constData()), d->view->layer(d->data));
-
+    d->view3d->GetRenderer()->AddActor(d->manager->GetBundleActor(name.toAscii().constData()));
+    
     d->data->addMetaData("BundleList", name);
     d->data->addMetaData("BundleColorList", color.name());
 
@@ -920,8 +919,16 @@ void medVtkFibersDataInteractor::setAllBundlesVisibility(bool visibility)
 
 void medVtkFibersDataInteractor::validateBundling()
 {
-    QString text = tr("Fiber bundle #") + QString::number(d->bundlingModel->rowCount()+1);
+    unsigned int bundleNumber = 1;
+    QString text = tr("Fiber bundle #") + QString::number(bundleNumber);
 
+    // Handle potential deleted/renamed bundles
+    while (!d->bundlingModel->findItems(text).empty())
+    {
+        bundleNumber++;
+        text = tr("Fiber bundle #") + QString::number(bundleNumber);
+    }
+    
     QColor color = QColor::fromHsv(qrand()%360, 255, 210);
     this->validateSelection(text, color);
     this->addBundle(text, color);
@@ -1163,14 +1170,15 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);
 
     connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
-    connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(onDropSiteClicked()));
+    //TO DO: re-add load ROI from file system when data manager will be refactored
+    //connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(onDropSiteClicked()));
     connect (clearRoiButton,   SIGNAL(clicked()), this, SLOT(clearRoi()));
     connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(selectRoi(int)));
 
     QHBoxLayout *roiLayout = new QHBoxLayout(d->bundleToolboxWidget);
     roiLayout->addWidget(d->roiComboBox);
-    d->bundleOperationtGroupParameter->setRadioButtonDirection(QBoxLayout::LeftToRight);
-    roiLayout->addWidget(d->bundleOperationtGroupParameter->getRadioButtonGroup());
+    d->bundleOperationGroupParameter->setRadioButtonDirection(QBoxLayout::LeftToRight);
+    roiLayout->addWidget(d->bundleOperationGroupParameter->getRadioButtonGroup());
 
     bundleToolboxLayout->addLayout(roiLayout);
     bundleToolboxLayout->addWidget(d->showBundleBox->getCheckBox());
@@ -1189,6 +1197,9 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     d->bundlingList->setMinimumHeight(150);
     d->bundlingList->setModel(d->bundlingModel);
     d->bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
+    
+    d->bundlingList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(d->bundlingList,SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(bundlingListCustomContextMenu(const QPoint &)));
 
     bundleToolboxLayout->addWidget(d->bundlingList);
     bundleToolboxLayout->addWidget(d->showAllBundleParameter->getPushButton());
@@ -1196,6 +1207,95 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     this->updateWidgets();
 
     return d->toolboxWidget;
+}
+
+void medVtkFibersDataInteractor::bundlingListCustomContextMenu(const QPoint &point)
+{
+    QMenu *menu = new QMenu;
+    
+    QAction *saveAction = new QAction(tr("Save"), this);
+    saveAction->setIcon(QIcon(":icons/save.png"));
+    connect(saveAction, SIGNAL(triggered()), this, SLOT(saveCurrentBundle()));
+    menu->addAction(saveAction);
+    
+    QAction *removeAction = new QAction(tr("Remove"), this);
+    removeAction->setIcon(QIcon(":icons/cross.svg"));
+    connect(removeAction, SIGNAL(triggered()), this, SLOT(removeCurrentBundle()));
+    menu->addAction(removeAction);
+
+    menu->exec(QCursor::pos());
+}
+
+void medVtkFibersDataInteractor::saveCurrentBundle()
+{
+    QModelIndex index = d->bundlingList->currentIndex();
+    unsigned int dataIndex = index.row();
+    
+    if (!d->dataset)
+        return;
+    
+    vtkFiberDataSet::vtkFiberBundleListType bundles = d->dataset->GetBundleList();
+    vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
+    
+    unsigned int i = 0;
+    while (i < dataIndex)
+    {
+        i++;
+        it++;
+    }
+
+    dtkSmartPointer <medAbstractData> savedBundle = medAbstractDataFactory::instance()->createSmartPointer("medVtkFibersData");
+    if (!savedBundle)
+        return;
+    
+    vtkSmartPointer <vtkFiberDataSet> bundle = vtkFiberDataSet::New();
+    bundle->SetFibers((*it).second.Bundle);
+    
+    savedBundle->setData(bundle);
+    
+    QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " ";
+    newSeriesDescription += (*it).first.c_str();
+    savedBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        
+    foreach ( QString metaData, d->data->metaDataList() )
+    {
+        if ((metaData == "BundleList")||(metaData == "BundleColorList"))
+            continue;
+        
+        if (!savedBundle->hasMetaData(metaData))
+            savedBundle->addMetaData (metaData, d->data->metaDataValues (metaData));
+    }
+    
+    foreach ( QString property, d->data->propertyList() )
+        savedBundle->addProperty ( property,d->data->propertyValues ( property ) );
+    
+    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+    savedBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+    
+    QString uuid = QUuid::createUuid().toString();
+    medDataManager::instance()->importNonPersistent (savedBundle, uuid);
+}
+
+void medVtkFibersDataInteractor::removeCurrentBundle()
+{
+    QModelIndex index = d->bundlingList->currentIndex();
+    QString bundleName = d->bundlingModel->item(index.row())->data(Qt::UserRole+1).toString();
+    
+    d->view2d->RemoveLayerActor(d->manager->GetBundleActor(bundleName.toAscii().constData()),d->view->layer(d->data));
+    d->view3d->GetRenderer()->RemoveActor(d->manager->GetBundleActor(bundleName.toAscii().constData()));
+    
+    d->manager->RemoveBundle(bundleName.toAscii().constData());
+    
+    // TO DO : better handle bundle list: how to remove metadata from object ?
+    //d->data->addMetaData("BundleList", name);
+    //d->data->addMetaData("BundleColorList", color.name());
+    
+    // reset to initial navigation state
+    d->manager->Reset();
+    d->render->Render();
+
+    d->bundlingModel->removeRow(index.row());
 }
 
 QWidget* medVtkFibersDataInteractor::buildLayerWidget()
