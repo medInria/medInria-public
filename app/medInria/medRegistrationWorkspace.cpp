@@ -80,14 +80,12 @@ void medRegistrationWorkspace::setupViewContainerStack()
         fixedLabel->setAlignment(Qt::AlignCenter);
         d->fixedContainer->setDefaultWidget(fixedLabel);
         d->fixedContainer->setMultiLayered(false);
-        d->fixedContainer->setUserClosable(false);
         d->fixedContainer->setUserSplittable(false);
 
         d->movingContainer = d->fixedContainer->splitVertically();
         QLabel *movingLabel = new QLabel(tr("MOVING"));
         movingLabel->setAlignment(Qt::AlignCenter);
         d->movingContainer->setDefaultWidget(movingLabel);
-        d->movingContainer->setUserClosable(false);
         d->movingContainer->setUserSplittable(false);
         d->movingContainer->setMultiLayered(false);
 
