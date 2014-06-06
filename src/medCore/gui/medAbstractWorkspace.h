@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QtCore>
+#include <QtGui>
 
 #include <medCoreExport.h>
 
@@ -26,6 +27,25 @@ class medToolBox;
 class medTabbedViewContainers;
 class medDataIndex;
 class medViewContainer;
+
+
+class medLinkMenuPrivate;
+
+class medLinkMenu : public QPushButton
+{
+    Q_OBJECT
+
+public:
+    medLinkMenu(QWidget * parent = 0);
+
+public slots:
+    void showPopup ();
+    void hidePopup ();
+
+private:
+    medLinkMenuPrivate *d;
+};
+
 
 /**
  * @brief A Workspace holds medToolBoxes, medViewContainers and their relations.
