@@ -164,7 +164,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     connect(d->enableZooming, SIGNAL(valueChanged(bool)), this, SLOT(enableZooming(bool)));
     
     d->enablePanning = new medBoolParameter("Pan",this);
-    d->enablePanning->setIcon(QIcon (":/icons/pan.png"));
+    d->enablePanning->setIcon(QIcon (":/icons/pan.svg"));
     d->enablePanning->setToolTip(tr("Pan"));
     connect(d->enablePanning, SIGNAL(valueChanged(bool)), this, SLOT(enablePanning(bool)));
 
