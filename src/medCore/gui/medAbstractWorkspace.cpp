@@ -36,13 +36,67 @@
 #include <medPoolIndicator.h>
 
 
+class medLinkMenuPrivate
+{
+public :
+    QWidget *popupWidget;
+    QMenu *menu;
+    QLineEdit *newGroupEdit;
+};
 
-//class medTextEditAction : public QWidgetAction
-//{
-//    public:
+medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
+{
+    this->setIcon(QIcon(":icons/link.svg"));
+    //this->setCheckable(true);
+
+    d->menu = new QMenu("Test", this);
+    d->menu->addAction("Group1");
+
+    d->popupWidget = new QWidget(this);
+    d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+
+    d->newGroupEdit = new QLineEdit("New Group...", d->popupWidget);
+
+    QVBoxLayout *popUpLayout = new QVBoxLayout(d->popupWidget);
+    popUpLayout->setContentsMargins(0,0,0,0);
+    popUpLayout->addWidget(d->newGroupEdit);
+
+    this->setMenu(d->menu);
+
+    //showPopup(false);
+
+    connect(d->menu, SIGNAL(aboutToShow()), this, SLOT(showPopup()));
+    connect(d->menu, SIGNAL(aboutToHide()), this, SLOT(hidePopup()));
+}
 
 
-//};
+void medLinkMenu::showPopup ()
+{
+    qDebug() << "showPopup";
+    qDebug() << d->menu->height();
+    qDebug() << d->menu->sizeHint().height();
+
+    QPoint globalPos = mapToGlobal(d->menu->pos());
+    d->menu->blockSignals(true);
+    d->popupWidget->move( globalPos.x(),globalPos.y() + d->menu->sizeHint().height() );
+    //d->popupWidget->move( 1 , 1 );
+    d->popupWidget->show();
+    d->menu->blockSignals(false);
+
+    //d->menu->show();
+    //d->popupWidget->show();
+}
+
+void medLinkMenu::hidePopup ()
+{
+    qDebug() << "hidePopup";
+    if(d->newGroupEdit->hasFocus())
+       d->menu->show();
+    else
+    d->popupWidget->hide();
+}
+
+
 
 /**
   * QListWidget doesn't seem to be able to resize itself to its content
@@ -282,8 +336,11 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
 
         connect(newGroupAct, SIGNAL(triggered()), this, SLOT(buildLinkViewMenu()));
 
+
+        medLinkMenu *test = new medLinkMenu(linkWidget);
+
         linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
-        linkLayout->addWidget(linkViewMenuBar);
+        linkLayout->addWidget(test);
 
         d->navigatorToolBox->addWidget(linkWidget);
 
