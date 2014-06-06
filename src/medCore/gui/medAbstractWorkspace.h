@@ -19,6 +19,7 @@
 
 struct QUuid;
 class QListWidgetItem;
+class QAction;
 
 class medToolBox;
 
@@ -86,6 +87,8 @@ protected slots:
 
 private slots:
     void buildTemporaryPool();
+
+    void buildLinkViewMenu();
 
 private:
     medAbstractWorkspacePrivate *d;
