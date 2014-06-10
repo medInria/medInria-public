@@ -16,7 +16,6 @@ medAbstractDataFactory *medAbstractDataFactory::instance(void)
 medAbstractData *medAbstractDataFactory::create(const QString& type)
 {
     dtkAbstractData* data = dtkAbstractDataFactory::create(type);
-    data->enableDeferredDeletion(false);
     return dynamic_cast<medAbstractData *>(data);
 }
 

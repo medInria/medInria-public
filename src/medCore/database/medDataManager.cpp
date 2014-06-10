@@ -119,7 +119,7 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
         dataObjRef->setDataIndex(index);
 
         d->loadedDataObjectTracker.insert(index, dataObjRef);
-        dataObjRef->release();
+//        dataObjRef->release();
         qDebug()<<"medDataManager"<<dataObjRef->count();
         return dataObjRef;
     }

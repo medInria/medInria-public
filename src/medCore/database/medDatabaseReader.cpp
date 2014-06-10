@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -85,7 +85,7 @@ medAbstractData* medDatabaseReader::run()
                      description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
                      institution, report, modality, seriesId \
                      FROM series WHERE id = :id" );
-    
+
     query.bindValue ( ":id", seriesDbId );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -286,8 +286,6 @@ medAbstractData *medDatabaseReader::readFile( const QStringList filenames )
             dataReader->enableDeferredDeletion ( false );
             medData = dynamic_cast<medAbstractData*>(dataReader->data());
 
-            //TODO tmp hack to check feasibility of the medDataManager.
-            medData->retain();
             break;
         }
 
