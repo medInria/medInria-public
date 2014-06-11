@@ -119,8 +119,6 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
         dataObjRef->setDataIndex(index);
 
         d->loadedDataObjectTracker.insert(index, dataObjRef);
-//        dataObjRef->release();
-        qDebug()<<"medDataManager"<<dataObjRef->count();
         return dataObjRef;
     }
     // unlock mutex before emitting, as this could trigger code in others threads
@@ -224,11 +222,69 @@ void medDataManager::exportDataToFile(medAbstractData *data, const QString & fil
     QThreadPool::globalInstance()->start(exporter);
 }
 
-medDataManager::medDataManager()
-    : d_ptr(new medDataManagerPrivate(this)) {
+
+medDataIndex medDataManager::importInDatabase(medAbstractData* data)
+{
 
 }
 
-medDataManager::~medDataManager() {
+medDataIndex medDataManager::importInDatabase(const QString& dataPath, bool indexWithoutCopying)
+{
+
+}
+
+QUuid medDataManager::importInNonPersistentDatabase(medAbstractData* data)
+{
+    if (!data)
+        return;
+    QMutexLocker locker(&(d->mutex));
+
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb->contains(data->dataIndex()))
+    {
+        qDebug() << data << "is already in Non persistent DB, skipping...";
+        return;
+    }
+
+
+    QUuid uuid = QUuid::createUuid();
+    npDb->import(data, uuid);
+
+    locker.unlock();
+}
+
+medDataIndex medDataManager::importInNonPersistentDatabase(const QString& dataPath)
+{
+
+}
+
+bool medDataManager::transferDataToPersistentDatabase(medAbstractData* data)
+{
+
+}
+
+bool medDataManager::updateData(const medDataIndex& index, medAbstractData* data)
+{
+
+}
+
+bool medDataManager::updateMetadata(const medDataIndex& index, const medMetaDataKeys::Key& md, const QString& value)
+{
+
+}
+
+void medDataManager::removeData(const medDataIndex& index)
+{
+
+}
+
+
+medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
+{
+
+}
+
+medDataManager::~medDataManager()
+{
 
 }

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -25,7 +25,6 @@ medDatabaseNonPersistentItem::medDatabaseNonPersistentItem(void) : QObject(), d(
 medDatabaseNonPersistentItem::~medDatabaseNonPersistentItem(void)
 {
     delete d;
-
     d = NULL;
 }
 
@@ -168,7 +167,7 @@ bool medDatabaseNonPersistentItem::Match(medAbstractData *medData)
     QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(medData);
     QString rows = medMetaDataKeys::Rows.getFirstValue(medData);
     QString columns = medMetaDataKeys::Columns.getFirstValue(medData);
-    
+
     return (
         patientName == d->name &&
         studyName == d->studyName &&

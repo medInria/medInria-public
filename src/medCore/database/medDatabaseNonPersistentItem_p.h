@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,6 +16,7 @@
 #include <medDataIndex.h>
 
 #include <medAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <QtCore/QString>
 #include <QtGui/QImage>
@@ -45,7 +46,7 @@ public:
 
     medDataIndex index;
 
-    medAbstractData* data;
+    dtkSmartPointer<medAbstractData> data;
 };
 
 
