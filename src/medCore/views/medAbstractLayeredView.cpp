@@ -14,6 +14,7 @@
 #include <medAbstractLayeredView.h>
 
 #include <dtkCore/dtkSmartPointer.h>
+#include <medDataManager.h>
 
 #include <medAbstractData.h>
 #include <medAbstractLayeredViewInteractor.h>
@@ -53,7 +54,7 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
     connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
     
     d->dataListParameter = new medDataListParameter("DataList",this);
-    connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medAbstractData*>)),this,SLOT(setDataList(QList<medAbstractData*>)));
+    connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medDataIndex>)),this,SLOT(setDataList(QList<medDataIndex>)));
     connect(this,SIGNAL(layerAdded(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
     connect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
 }
@@ -185,12 +186,12 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     this->insertLayer(d->layersDataList.count(), data);
 }
 
-QList<medAbstractData *> medAbstractLayeredView::dataList() const
+QList<medDataIndex> medAbstractLayeredView::dataList() const
 {
-    QList <medAbstractData *> outputList;
+    QList <medDataIndex> outputList;
     
     foreach(medAbstractData *data, d->layersDataList)
-        outputList << data;
+        outputList << data->dataIndex();
     
     return outputList;
 }
@@ -226,18 +227,19 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
         this->~medAbstractLayeredView();
 }
 
-void medAbstractLayeredView::setDataList(QList <medAbstractData*> dataList)
+void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 {
     d->dataListParameter->blockSignals(true);
     
-    foreach(medAbstractData* data, dataList)
+    foreach(medDataIndex index, dataList)
     {
+        medAbstractData *data = medDataManager::instance()->data(index);
         if (!data)
             continue;
         
         this->addLayer(data);
         
-        if (this->layerLinkParameter(0)->value() != "")
+        if ((this->layerLinkParameter(0)->value() != "")&&(this->layerLinkParameter(0)->value() != "None"))
         {
             unsigned int layerNumber = this->layer(data);
             QString groupName = this->linkParameter()->value() + " Layer " + QString::number(layerNumber+1);
@@ -250,14 +252,20 @@ void medAbstractLayeredView::setDataList(QList <medAbstractData*> dataList)
             layerPixmap.fill(layerColor);
             QIcon layerIcon(layerPixmap);
             
-            this->layerLinkParameter(layerNumber)->addItem(groupName,layerIcon);
+            if (!this->layerLinkParameter(layerNumber)->items().contains(groupName))
+                this->layerLinkParameter(layerNumber)->addItem(groupName,layerIcon);
+
             this->layerLinkParameter(layerNumber)->setValue(groupName);
         }
     }
     
-    foreach(medAbstractData *data, this->dataList())
+    foreach(medDataIndex index, this->dataList())
     {
-        if (!dataList.contains(data))
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+
+        if (!dataList.contains(data->dataIndex()))
             this->removeLayer(this->layer(data));
     }
     
