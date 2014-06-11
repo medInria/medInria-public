@@ -12,14 +12,13 @@
 =========================================================================*/
 
 #include <medDataListParameter.h>
-#include <medAbstractData.h>
-
-#include <QDebug>
+#include <medDataIndex.h>
+#include <QLabel>
 
 class medDataListParameterPrivate
 {
 public:
-    QList <medAbstractData *> values;
+    QList <medDataIndex> values;
 };
 
 medDataListParameter::medDataListParameter(QString name, QObject* parent):
@@ -34,7 +33,7 @@ medDataListParameter::~medDataListParameter()
     delete d;
 }
 
-void medDataListParameter::setValues(QList <medAbstractData *> values)
+void medDataListParameter::setValues(QList<medDataIndex> values)
 {
     d->values = values;
     emit valuesChanged(d->values);
@@ -46,7 +45,7 @@ void medDataListParameter::clear()
     emit valuesChanged(d->values);
 }
 
-QList <medAbstractData *> medDataListParameter::values() const
+QList<medDataIndex> &medDataListParameter::values() const
 {
     return d->values;
 }

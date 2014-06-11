@@ -44,7 +44,7 @@ public:
     void insertLayer(unsigned int layer, medAbstractData *data);
 
     medAbstractData * layerData(unsigned int layer) const;
-    QList<medAbstractData *> dataList() const;
+    QList<medDataIndex> dataList() const;
 
     bool contains(medAbstractData * data) const;
     bool contains(QString identifier) const;
@@ -68,7 +68,7 @@ public:
     virtual QWidget* mouseInteractionWidget();
 
 public slots:
-    void setDataList(QList<medAbstractData*> dataList);
+    void setDataList(QList<medDataIndex> dataList);
     void removeLayer();
 
 signals:

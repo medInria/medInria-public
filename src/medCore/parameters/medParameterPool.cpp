@@ -22,6 +22,8 @@
 #include <medDataListParameter.h>
 #include <medStringListParameter.h>
 
+#include <medDataIndex.h>
+
 class medParameterPoolPrivate
 {
 public:
@@ -326,7 +328,7 @@ void medParameterPool::changeParamsValue(const QList<QVariant>& values)
 
 }
 
-void medParameterPool::changeParamsValue(const QList<medAbstractData *>& values)
+void medParameterPool::changeParamsValue(const QList<medDataIndex>& values)
 {
     medDataListParameter *sender = dynamic_cast<medDataListParameter*>(QObject::sender());
     
@@ -340,7 +342,7 @@ void medParameterPool::changeParamsValue(const QList<medAbstractData *>& values)
         {
             dataListParam->disconnect(this);
             dataListParam->setValues(values);
-            connect(dataListParam, SIGNAL(valuesChanged(QList<medAbstractData *>)), this, SLOT(changeParamsValue(QList<medAbstractData *>)), Qt::UniqueConnection);
+            connect(dataListParam, SIGNAL(valuesChanged(QList<medDataIndex>)), this, SLOT(changeParamsValue(QList<medDataIndex>)), Qt::UniqueConnection);
             connect(dataListParam, SIGNAL(aboutToBeDestroyed()), this, SLOT(removeInternParam()), Qt::UniqueConnection);
         }
     }
@@ -381,7 +383,7 @@ void medParameterPool::connectParam(medAbstractParameter *parameter)
     else if(medCompositeParameter* param = dynamic_cast<medCompositeParameter*>(parameter))
         connect(param, SIGNAL(valuesChanged(QList<QVariant>)), this, SLOT(changeParamsValue(QList<QVariant>)), Qt::UniqueConnection);
     else if(medDataListParameter* param = dynamic_cast<medDataListParameter*>(parameter))
-        connect(param, SIGNAL(valuesChanged(QList<medAbstractData*>)), this, SLOT(changeParamsValue(QList<medAbstractData*>)), Qt::UniqueConnection);
+        connect(param, SIGNAL(valuesChanged(QList<medDataIndex>)), this, SLOT(changeParamsValue(QList<medDataIndex>)), Qt::UniqueConnection);
 }
 
 void medParameterPool::disconnectParam(medAbstractParameter *parameter)

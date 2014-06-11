@@ -37,6 +37,9 @@
 #include <medCompositeParameter.h>
 #include <medStringListParameter.h>
 
+#include <medDataIndex.h>
+#include <medDataManager.h>
+
 /*=========================================================================
 
     D pointer
@@ -432,8 +435,12 @@ void medVtkViewNavigator::switchToFourViews()
     
     topLeftContainerSplitter->adjustContainersSize();
     
-    foreach(medAbstractData *data, d->parent->dataList())
+    foreach(medDataIndex index, d->parent->dataList())
     {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+
         topRightContainer->addData(data);
         bottomLeftContainer->addData(data);
         bottomRightContainer->addData(data);

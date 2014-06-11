@@ -22,7 +22,7 @@ class QComboBox;
 class QWidget;
 class QStringList;
 
-class medAbstractData;
+class medDataIndex;
 
 class medDataListParameterPrivate;
 class MEDCORE_EXPORT medDataListParameter: public medAbstractParameter
@@ -33,15 +33,15 @@ public:
     medDataListParameter(QString name = "Unknown data list parameter", QObject* parent = 0);
     virtual ~medDataListParameter();
 
-    void setValues(QList <medAbstractData *> values);
+    void setValues(QList<medDataIndex> values);
     void clear();
 
-    QList <medAbstractData *> values() const;
+    QList <medDataIndex> &values() const;
 
     virtual QWidget* getWidget();
 
 signals:
-    void valuesChanged (QList <medAbstractData *>);
+    void valuesChanged (QList <medDataIndex>);
     
 private:
     medDataListParameterPrivate* d;
