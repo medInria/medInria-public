@@ -13,8 +13,6 @@
 
 #include <medFilteringWorkspace.h>
 
-#include <dtkCore/dtkSmartPointer.h>
-
 
 #include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
@@ -37,7 +35,7 @@ public:
     medViewContainer *outputContainer;
 
 
-    dtkSmartPointer<medAbstractData> filterOutput;
+    medAbstractData *filterOutput;
     QString importUuid;
 };
 
@@ -117,7 +115,7 @@ void medFilteringWorkspace::onProcessSuccess()
 
     qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
 
-    dtkSmartPointer<medAbstractData> inputData(d->filteringToolBox->data());
+    medAbstractData *inputData(d->filteringToolBox->data());
 
     if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
       {
@@ -165,7 +163,7 @@ void medFilteringWorkspace::open(const medDataIndex &index)
     if(!index.isValidForSeries() || !d->inputContainer->isSelected())
         return;
 
-    d->inputContainer->addData(medDataManager::instance()->data(index));
+    d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
 }
 
 

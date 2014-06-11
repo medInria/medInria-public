@@ -24,7 +24,6 @@
 
 #include <medPluginManager.h>
 #include <medStyleSheetParser.h>
-#include <medDbControllerFactory.h>
 #include <medWorkspaceFactory.h>
 #include <medAbstractWorkspace.h>
 #include <medFilteringWorkspace.h>
@@ -41,6 +40,7 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medAbstractDataFactory.h>
 #include <medSettingsWidget.h>
+#include <medDataManager.h>
 
 
 class medApplicationPrivate
@@ -236,10 +236,7 @@ namespace
 
 void medApplication::registerToFactories()
 {
-    //Register dbController
-    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
-    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
-
+    medDataManager::initialize();
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>("Visualization",

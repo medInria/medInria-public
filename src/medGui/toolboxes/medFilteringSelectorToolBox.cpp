@@ -19,7 +19,6 @@
 #include <medToolBoxHeader.h>
 
 #include <medDataManager.h>
-#include <medViewManager.h>
 #include <medAbstractView.h>
 
 #include <medAbstractData.h>

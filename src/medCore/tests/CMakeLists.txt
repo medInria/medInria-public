@@ -11,39 +11,40 @@
 #
 ################################################################################
 
-project(medQssParserTests)
+project(medCoreTests)
+
+## #############################################################################
+## QSS Parser Test
+## #############################################################################
+
+include_directories(${medCore_INCLUDE_DIRS}
+                   )
+add_executable(medQssParserTest
+               medQSSParserTest.cpp
+               medQSSParserTest.h
+              )
+target_link_libraries(medQssParserTest
+                      ${QT_LIBRARIES}
+                      dtkCore
+                      medCore
+                     )
+add_test(medQssParserTest ${CMAKE_BINARY_DIR}/bin/medQssParserTest)
 
 
 ## #############################################################################
-## Sources
+## Data Manager Test
 ## #############################################################################
-
-list_source_files(${PROJECT_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-
-## #############################################################################
-## Add Exe
-## #############################################################################
-
-add_executable(${PROJECT_NAME}
-  ${${PROJECT_NAME}_CFILES}
-  )
-
-
-## #############################################################################
-## Links.
-## #############################################################################
-
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
-  medCore
-  )
-
-
-## #############################################################################
-## Add test
-## #############################################################################
-
-add_test(${PROJECT_NAME} ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME})
+#include_directories(${medCore_INCLUDE_DIRS}
+#                    ${medTest_INCLUDE_DIRS}
+#                   )
+#add_executable(medDataManagerTest
+#               medDataManagerTest.cpp
+#               medDataManagerTest.h
+#              )
+#target_link_libraries(medDataManagerTest
+#                      ${QT_LIBRARIES}
+#                      dtkCore
+#                      medCore
+#                      medTest
+#                     )
+#add_test(medDataManagerTest ${CMAKE_BINARY_DIR}/bin/medDataManagerTest)

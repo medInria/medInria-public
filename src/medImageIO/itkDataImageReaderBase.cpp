@@ -85,163 +85,141 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
     if (this->io.IsNull())
         return false;
 
-    this->io->SetFileName ( path.toAscii().constData() );
-    try {
+    this->io->SetFileName(path.toAscii().constData());
+    try
+    {
         this->io->ReadImageInformation();
     }
-    catch (itk::ExceptionObject &e) {
+    catch (itk::ExceptionObject &e)
+    {
         qDebug() << e.GetDescription();
         return false;
     }
 
-    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
+    //TODO why all of this is in a methode named readInformation ? - RDE
+    medAbstractData *medData = NULL;
+    if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR )
+    {
 
-    if (!medData) {
-
-        if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR ) {
-
-            const int  dim  = this->io->GetNumberOfDimensions();
-            if (!(dim>0 && dim<=4)) {
-                qDebug() << "Unrecognized component type";
-                return false;
-            }
-
-            const char cdim = '0'+((dim<=3) ? 3 : 4);
-
-            switch (this->io->GetComponentType()) {
-
-                case itk::ImageIOBase::UCHAR:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUChar").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::CHAR:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageChar").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::USHORT:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUShort").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::SHORT:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageShort").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::UINT:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUInt").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::INT:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageInt").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::ULONG:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageULong").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::LONG:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageLong").append(cdim));
-                    break;
-
-                case itk::ImageIOBase::FLOAT:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug ???
-                    break;
-
-                case itk::ImageIOBase::DOUBLE:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug (added 4 which was not existing) ??
-                    break;
-
-                default:
-                    qDebug() << "Unrecognized component type";
-                    return false;
-            }
+        const int  dim  = this->io->GetNumberOfDimensions();
+        if (!(dim>0 && dim<=4))
+        {
+            qDebug() << "Unrecognized component type";
+            return false;
         }
-        else if (this->io->GetPixelType()==itk::ImageIOBase::RGB) {
+        const char cdim = '0'+((dim<=3) ? 3 : 4);
 
-            switch (this->io->GetComponentType()) {
-
-                case itk::ImageIOBase::UCHAR:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGB3");
-                    break;
-
-                default:
-                    qDebug() << "Unrecognized component type";
-                    return false;
-            }
-        }
-        else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR) { //   Added by Theo.
-            switch (this->io->GetComponentType()) {
-
-                case itk::ImageIOBase::UCHAR:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorUChar3");
-                    break;
-                case itk::ImageIOBase::FLOAT:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorFloat3");
-                    break;
-                case itk::ImageIOBase::DOUBLE:
-                    medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorDouble3");
-                    break;
-                default:
-                    qDebug() << "Unrecognized component type";
-                    return false;
-            }
-        }
-        else if ( this->io->GetPixelType()==itk::ImageIOBase::RGBA ) {
-
-            switch (this->io->GetComponentType()) {
+        switch (this->io->GetComponentType())
+        {
 
             case itk::ImageIOBase::UCHAR:
-                medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGBA3");
+                medData = medAbstractDataFactory::instance()->create(QString("itkDataImageUChar").append(cdim));
+                break;
+
+            case itk::ImageIOBase::CHAR:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageChar").append(cdim));
+                break;
+
+            case itk::ImageIOBase::USHORT:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageUShort").append(cdim));
+                break;
+
+            case itk::ImageIOBase::SHORT:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageShort").append(cdim));
+                break;
+
+            case itk::ImageIOBase::UINT:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageUInt").append(cdim));
+                break;
+
+            case itk::ImageIOBase::INT:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageInt").append(cdim));
+                break;
+
+            case itk::ImageIOBase::ULONG:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageULong").append(cdim));
+                break;
+
+            case itk::ImageIOBase::LONG:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageLong").append(cdim));
+                break;
+
+            case itk::ImageIOBase::FLOAT:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageDouble").append(cdim));  // Bug ???
+                break;
+
+            case itk::ImageIOBase::DOUBLE:
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageDouble").append(cdim));  // Bug (added 4 which was not existing) ??
                 break;
 
             default:
                 qDebug() << "Unrecognized component type";
                 return false;
-            }
         }
-        else {
-            qDebug() << "Unsupported pixel type";
+    }
+    else if (this->io->GetPixelType()==itk::ImageIOBase::RGB)
+    {
+
+        switch (this->io->GetComponentType())
+        {
+
+            case itk::ImageIOBase::UCHAR:
+                medData = medAbstractDataFactory::instance()->create ("itkDataImageRGB3");
+                break;
+
+            default:
+                qDebug() << "Unrecognized component type";
+                return false;
+        }
+    }
+    else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR)
+    { //   Added by Theo.
+        switch (this->io->GetComponentType())
+        {
+
+            case itk::ImageIOBase::UCHAR:
+                medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorUChar3");
+                break;
+            case itk::ImageIOBase::FLOAT:
+                medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorFloat3");
+                break;
+            case itk::ImageIOBase::DOUBLE:
+                medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorDouble3");
+                break;
+            default:
+                qDebug() << "Unrecognized component type";
+                return false;
+        }
+    }
+    else if ( this->io->GetPixelType()==itk::ImageIOBase::RGBA )
+    {
+
+        switch (this->io->GetComponentType())
+        {
+
+        case itk::ImageIOBase::UCHAR:
+            medData = medAbstractDataFactory::instance()->create ("itkDataImageRGBA3");
+            break;
+
+        default:
+            qDebug() << "Unrecognized component type";
             return false;
         }
-
-        if (medData)
-            this->setData(medData);
+    }
+    else
+    {
+        qDebug() << "Unsupported pixel type";
+        return false;
     }
 
-
-    if (medData) {
-        /*
-      QStringList patientName;
-      QStringList studyName;
-      QStringList seriesName;
-      QStringList filePaths;
-
-      patientName << this->io->GetPatientName().c_str();
-      studyName << this->io->GetStudyDescription().c_str();
-      seriesName << this->io->GetSeriesDescription().c_str();
-
-      for (unsigned int i=0; i<this->io->GetOrderedFileNames().size(); i++ )
-      filePaths << this->io->GetOrderedFileNames()[i].c_str();
-
-      if (!medData->hasMetaData ( medMetaDataKeys::PatientName.key()) ))
-      medData->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
-      else
-      medData->setMetaData ( medMetaDataKeys::PatientName.key(), patientName );
-
-      if (!medData->hasMetaData (medMetaDataKeys::StudyDescription.key()))
-      medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
-      else
-      medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
-
-      if (!medData->hasMetaData (medMetaDataKeys::SeriesDescription.key() ))
-      medData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
-      else
-      medData->setMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
-    */
+    if (medData)
+    {
+        this->setData(medData);
         medData->addMetaData ("FilePath", QStringList() << path);
-
+        return true;
     }
-
-    return true;
+    else
+        return false;
 }
 
 
@@ -253,7 +231,8 @@ bool itkDataImageReaderBase::readInformation (const QStringList& paths)
 }
 
 template <unsigned DIM,typename T>
-bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
+bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
+{
     medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
     if (medData && medData->identifier()!=type)
         return false;
@@ -296,7 +275,8 @@ bool itkDataImageReaderBase::read(const QString& path)
     this->io->AddObserver ( itk::ProgressEvent(), command);
     */
 
-    try {
+    try
+    {
         if (!(read_image<3,unsigned char>(path,"itkDataImageUChar3")   ||
               read_image<3,char>(path,"itkDataImageChar3")             ||
               read_image<3,unsigned short>(path,"itkDataImageUShort3") ||
@@ -326,24 +306,23 @@ bool itkDataImageReaderBase::read(const QString& path)
             qWarning() << "Unrecognized pixel type";
             return false;
         }
-    } catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+    }
+    catch (itk::ExceptionObject &e)
+    {
+        qWarning() << e.GetDescription();
         return false;
     }
 
     this->setProgress (100);
 
-    //this->io->RemoveAllObservers ();
-
     return true;
-
 }
 
 bool itkDataImageReaderBase::read (const QStringList& paths)
 {
-    if (!paths.count())
+    if (paths.count() < 1)
         return false;
-    return this->read ( paths[0].toAscii().constData() );
+    return this->read(paths[0].toAscii().constData());
 }
 
 void itkDataImageReaderBase::setProgress (int value)

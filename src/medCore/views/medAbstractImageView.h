@@ -15,8 +15,6 @@
 
 #include <medAbstractLayeredView.h>
 
-#include <dtkCore/dtkSmartPointer.h>
-
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
 #include <medImageViewEnum.h>

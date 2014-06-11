@@ -135,7 +135,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
 void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag alignement)
 {
     medViewContainer *newContainer = this->split(alignement);
-    newContainer->addData(medDataManager::instance()->data(index));
+    newContainer->addData(medDataManager::instance()->retrieveData(index));
 }
 
 void medViewContainerSplitter::checkIfStillDeserveToLive()

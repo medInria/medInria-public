@@ -14,8 +14,8 @@ class medAbstractLayeredViewPrivate
 {
 public:
     QList <dtkSmartPointer<medAbstractData> > layersDataList;
-    QHash<dtkSmartPointer<medAbstractData>,  medAbstractLayeredViewInteractor*> primaryInteractorsHash;
-    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraInteractorsHash;
+    QHash<medAbstractData*,  medAbstractLayeredViewInteractor*> primaryInteractorsHash;
+    QHash<medAbstractData*,  QList<medAbstractInteractor*> > extraInteractorsHash;
 
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
@@ -165,9 +165,12 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     this->insertLayer(d->layersDataList.count(), data);
 }
 
-QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::dataList() const
+QList<medAbstractData*> medAbstractLayeredView::dataList() const
 {
-    return d->layersDataList;
+    QList <medAbstractData*> list;
+    foreach (medAbstractData* data, d->layersDataList)
+            list << data;
+    return list;
 }
 
 unsigned int medAbstractLayeredView::layer(medAbstractData * data)

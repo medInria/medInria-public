@@ -18,7 +18,6 @@
 
 class medViewEventFilter;
 class medSegmentationAbstractToolBox;
-class medAbstractProcess;
 
 class medSegmentationSelectorToolBoxPrivate;
 class MEDGUI_EXPORT medSegmentationSelectorToolBox : public medToolBox

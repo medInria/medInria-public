@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -21,6 +21,7 @@ project(medCore)
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   data
+  database
   data/annotationData
   process
   views
@@ -73,7 +74,7 @@ target_link_libraries(${PROJECT_NAME}
     dtkLog
     )
 
-if (WIN32) #TODO is that for the memory management thing ? 
+if (WIN32) #TODO is that for the memory management thing ?
   target_link_libraries(${PROJECT_NAME} psapi.lib)
 endif()
 
@@ -86,7 +87,7 @@ set_lib_install_rules(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
   )
 
-  
+
 ## #############################################################################
 ## Build tests
 ## #############################################################################

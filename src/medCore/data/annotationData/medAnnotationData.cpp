@@ -15,8 +15,6 @@
 
 #include <medAbstractData.h>
 
-#include <dtkCore/dtkSmartPointer.h>
-
 class medAnnotationData::medAnnotationDataPrivate
 {
 public:

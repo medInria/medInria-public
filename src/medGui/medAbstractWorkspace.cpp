@@ -587,7 +587,7 @@ void medAbstractWorkspace::open(const medDataIndex &index)
 
     medViewContainer *container = medViewContainerManager::instance()->container(containersSelected.first());
     if(index.isValidForSeries())
-        container->addData(medDataManager::instance()->data(index));
+        container->addData(medDataManager::instance()->retrieveData(index));
 }
 
 void medAbstractWorkspace::setUserLayerPoolable(bool poolable)

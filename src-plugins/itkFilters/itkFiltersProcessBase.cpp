@@ -69,7 +69,7 @@ void itkFiltersProcessBase::setInput(medAbstractData *data)
     
     QString identifier = data->identifier();
     
-    d->output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
+    d->output = medAbstractDataFactory::instance()->create(identifier);
     d->input = data;
 }
 

@@ -10,7 +10,7 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "medDataSourceManager.h"
+#include <medDataSourceManager.h>
 #include <dtkCore>
 
 #include <QList>
@@ -127,14 +127,14 @@ void medDataSourceManager::importData(medAbstractData *data)
         return;
     }
 
-    dtkSmartPointer<medAbstractData> data_smart(data);
-    medDataManager::instance()->import(data_smart);
+    medDataManager::instance()->import(data);
 }
 
 void medDataSourceManager::exportData(const medDataIndex &index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(index);
-        medDataManager::instance()->exportDataToFile(data);
+    //TODO did it all from the medDataManager ? - RDE
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
+        medDataManager::instance()->exportData(data);
 }
 
 void medDataSourceManager::importFile(QString path)

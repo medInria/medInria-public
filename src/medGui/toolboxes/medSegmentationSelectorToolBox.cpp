@@ -18,7 +18,6 @@
 #include <medSegmentationAbstractToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medViewEventFilter.h>
-#include <medAbstractProcess.h>
 
 #include <QtGui>
 

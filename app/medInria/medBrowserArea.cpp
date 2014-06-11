@@ -101,7 +101,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
 
-    medDatabaseControllerImpl* dbcont = medDatabaseController::instance().data();
+    medDatabaseController* dbcont = medDatabaseController::instance();
     connect(dbcont, SIGNAL(partialImportAttempted ( const QString& )), this, SLOT(onPartialImportAttempted ( const QString& )));
 
     //Check if there are already item in the database, otherwise, switch to File system datasource

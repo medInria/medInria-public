@@ -135,7 +135,7 @@ int main(int argc,char* argv[]) {
 
     if (show_splash) {
 
-        QObject::connect(medDatabaseController::instance().data(),
+        QObject::connect(medDatabaseController::instance(),
                          SIGNAL(copyMessage(QString,int,QColor)),
                          &splash,SLOT(showMessage(QString,int, QColor)));
 

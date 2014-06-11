@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -102,42 +102,17 @@ signals:
 
 
     /*=========================================================================
-                setting non-used dtkAbstractData methods private
+                 NOT IMPLEMENTED ON PURPOSE
     *=========================================================================*/
 private:
 
-    virtual void draw(void) {}
-
-    virtual void update(void);
-
-    virtual void *output(void);
-    virtual void *output(int channel);
-
-    virtual double parameter(int channel);
-
-    virtual void setParameter(int parameter);
-    virtual void setParameter(int parameter, int channel);
-
-    virtual void setParameter(qlonglong parameter);
-    virtual void setParameter(qlonglong parameter, int channel);
-
-    virtual void setParameter(float parameter);
-    virtual void setParameter(float parameter, int channel);
-
-    virtual void setParameter(double parameter);
-    virtual void setParameter(double parameter, int channel);
-
-    virtual void setParameter(const QString& parameter);
-    virtual void setParameter(const QString& parameter, int channel);
-
-    virtual void setParameter(dtkAbstractData *parameter);
-    virtual void setParameter(dtkAbstractData *parameter, int channel);
-
-    virtual void setParameter(dtkVectorReal parameter);
-    virtual void setParameter(dtkVectorReal parameter, int channel);
-
-    virtual QVariant toVariant(dtkAbstractData *data);
-    virtual dtkAbstractData *fromVariant(const QVariant& v);
+    using dtkAbstractData::draw;
+    using dtkAbstractData::update;
+    using dtkAbstractData::output;
+    using dtkAbstractData::parameter;
+    using dtkAbstractData::setParameter;
+    using dtkAbstractData::toVariant;
+    using dtkAbstractData::fromVariant;
 
 private:
     medAbstractDataPrivate* d;
