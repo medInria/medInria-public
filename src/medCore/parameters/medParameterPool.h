@@ -21,7 +21,7 @@
 #include <medCoreExport.h>
 
 class medAbstractParameter;
-class medAbstractData;
+class medDataIndex;
 class medStringListParameter;
 
 class medParameterPoolPrivate;
@@ -60,7 +60,7 @@ private slots:
     void changeParamsValue(const QVector3D& value);
     void changeParamsValue(const QVector4D& value);
     void changeParamsValue(const QHash<QString, QVariant> &values);
-    void changeParamsValue(const QList<medAbstractData *>& values);
+    void changeParamsValue(const QList<medDataIndex> &values);
 
     void removeInternParam();
 
