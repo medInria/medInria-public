@@ -402,6 +402,7 @@ void medVtkFibersDataInteractor::changeBundleName(QString oldName, QString newNa
 void medVtkFibersDataInteractor::setVisibility(bool visible)
 {
     d->manager->SetVisibility(visible);
+    d->render->Render();
 }
 
 void medVtkFibersDataInteractor::setBoxVisibility(bool visible)
