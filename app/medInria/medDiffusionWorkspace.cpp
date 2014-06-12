@@ -36,7 +36,7 @@ class medDiffusionWorkspacePrivate
 public:
 
     medToolBox *fiberBundlingToolBox;
-    medViewContainer * diffusionContainer;
+    QPointer<medViewContainer> diffusionContainer;
 
     medDiffusionSelectorToolBox *diffusionEstimationToolBox;
     medDiffusionSelectorToolBox *diffusionScalarMapsToolBox;
@@ -206,12 +206,12 @@ void medDiffusionWorkspace::changeCurrentContainer()
     // This cannot happen while a process is running, container stack is disabled at that point
 
     // For security, disconnect current connections
-    if (d->diffusionContainer)
+    if (!d->diffusionContainer.isNull())
         disconnect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
 
     // Now connect new container
     d->diffusionContainer = medViewContainerManager::instance()->container(containersSelectedList.first());
-    if (d->diffusionContainer)
+    if (!d->diffusionContainer.isNull())
     {
         d->diffusionContainer->setUserClosable(true);
         d->diffusionContainer->setUserSplittable(false);
