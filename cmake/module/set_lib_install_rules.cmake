@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -15,12 +15,20 @@ macro(set_lib_install_rules
   project_name
   headers_list
   )
-  
+
+################################################################################
+#
+# Usage: set_lib_install_rules(target, header1, header2, header3 ...)
+# set rules for the library designed by the target, and add all the additional
+# header to {CMAKE_PREFIX_INSTALL}/include during install step.
+#
+################################################################################
+
 set(MEDINRIA_BINARY_DIR
   ${${project_name}_BINARY_DIR}/lib
   ${MEDINRIA_BINARY_DIR}
   )
-  
+
 install(TARGETS ${project_name}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib

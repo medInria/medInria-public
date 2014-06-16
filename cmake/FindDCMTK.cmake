@@ -4,13 +4,53 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
 ################################################################################
 
+
+message(STATUS "Trying to find DCMTK relying on FindDCMTK.cmake")
+
+
+# adapted version of FindDCMTK, better suited for super-builds
+
+# - find DCMTK libraries and applications
+#
+
+# DCMTK_INCLUDE_DIRS - Directories to include to use DCMTK
+# DCMTK_LIBRARIES - Files to link against to use DCMTK
+# DCMTK_FOUND - If false, don't try to use DCMTK
+# DCMTK_DIR - (optional) Source directory for DCMTK
+#
+# DCMTK_DIR can be used to make it simpler to find the various include
+# directories and compiled libraries if you've just compiled it in the
+# source tree. Just set it to the root of the tree where you extracted
+# the source (default to /usr/include/dcmtk/)
+
+#=============================================================================
+# Copyright 2004-2009 Kitware, Inc.
+# Copyright 2009-2010 Mathieu Malaterre <mathieu.malaterre@gmail.com>
+# Copyright 2010 Thomas Sondergaard <ts@medical-insight.com>
+#
+# Distributed under the OSI-approved BSD License (the "License");
+# see accompanying file Copyright.txt for details.
+#
+# This software is distributed WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the License for more information.
+#=============================================================================
+# (To distributed this file outside of CMake, substitute the full
+# License text for the above reference.)
+
+#
+# Written for VXL by Amitha Perera.
+# Upgraded for GDCM by Mathieu Malaterre.
+# Modified for EasyViz by Thomas Sondergaard.
+# Modified for medInria by René-paul Debroize.
+#
 if(MSVC_IDE)
   # remove configuration suffix
   get_filename_component(DCMTK_DIR_LAST ${DCMTK_DIR} NAME)
@@ -21,22 +61,15 @@ endif()
 
 set(_SAVED_DCMTK_DIR ${DCMTK_DIR})
 
-message(STATUS "DCMTK_DIR is set to : ${DCMTK_DIR}")
-
 #
 # First, try to use NO_MODULE
-message(STATUS "Trying to find DCMTK expecting DCMTKConfig.cmake")
 find_package(DCMTK QUIET NO_MODULE)
 if(DCMTK_FOUND
     AND NOT "x" STREQUAL "x${DCMTK_LIBRARIES}"
     AND NOT "x" STREQUAL "x${DCMTK_INCLUDE_DIRS}")
-  message(STATUS "Trying to find DCMTK expecting DCMTKConfig.cmake - ok")
   return()
 else()
-  message(STATUS "Trying to find DCMTK expecting DCMTKConfig.cmake - failed")
 endif()
-
-message(STATUS "Trying to find DCMTK relying on FindDCMTK.cmake")
 
 # Restore the value reset by the previous call to 'find_package(DCMTK QUIET NO_MODULE)'
 set(DCMTK_DIR ${_SAVED_DCMTK_DIR} CACHE PATH "The directory containing a CMake configuration file for DCMTK." FORCE)
@@ -90,15 +123,15 @@ foreach(lib
     ${DCMTK_DIR}/dcmjpeg/lib${lib}/Debug
     NO_DEFAULT_PATH
     )
-    
+
   mark_as_advanced(DCMTK_${lib}_LIBRARY_RELEASE)
   mark_as_advanced(DCMTK_${lib}_LIBRARY_DEBUG)
-  
+
   # Add libraries to variable according to build type
   if(DCMTK_${lib}_LIBRARY_RELEASE)
     list(APPEND DCMTK_LIBRARIES optimized ${DCMTK_${lib}_LIBRARY_RELEASE})
   endif()
-  
+
   if(DCMTK_${lib}_LIBRARY_DEBUG)
     list(APPEND DCMTK_LIBRARIES debug ${DCMTK_${lib}_LIBRARY_DEBUG})
   endif()
@@ -176,8 +209,8 @@ foreach(dir
     ${DCMTK_DIR}/include/dcmtk/${dir}
     ${DCMTK_DIR}/${dir}/include/dcmtk/${dir}
     ${DCMTK_DIR}/include/${dir}
-	  ${DCMTK_DIR}/Release/include/dcmtk/${dir}
-	  ${DCMTK_DIR}/Debug/include/dcmtk/${dir}
+      ${DCMTK_DIR}/Release/include/dcmtk/${dir}
+      ${DCMTK_DIR}/Debug/include/dcmtk/${dir}
     ${SOURCE_DIR_PATH}
     )
   mark_as_advanced(DCMTK_${dir}_INCLUDE_DIR)

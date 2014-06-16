@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -15,7 +15,17 @@ macro(list_source_files
   project_name
   directories
   )
-  
+
+################################################################################
+#
+# Usage: list_source_files(project_name, directory1, directory2, directory3 ...)
+# parse all given directories to list header, source and template path-files
+# and them add it to ${project_name}_HEADERS/SOURCES/TEMPLATES.
+# a 4th varible is create, ${project_name}_CFILES to embed all the previous ones.
+#
+################################################################################
+
+
 foreach(dir ${ARGV})
 ## #############################################################################
 ## List all headers and add them to {${project_name}_H
@@ -23,8 +33,8 @@ foreach(dir ${ARGV})
 
   file(GLOB HEADERS
     ${dir}/*.h
-	${dir}/*.hpp
-	${dir}/*.hxx
+    ${dir}/*.hpp
+    ${dir}/*.hxx
     )
   set(${project_name}_HEADERS
     ${HEADERS}
@@ -44,8 +54,8 @@ foreach(dir ${ARGV})
     ${SOURCES}
     ${${project_name}_SOURCES}
     )
-	
-	
+
+
 ## #############################################################################
 ## List all templated files and add them to {${project_name}_TEMPLATE
 ## #############################################################################
@@ -58,18 +68,18 @@ foreach(dir ${ARGV})
     ${${project_name}_TEMPLATES}
     )
 
-	
+
 ## #############################################################################
 ## List all c++ files
 ## #############################################################################
 
   set(${project_name}_CFILES
     ${${project_name}_HEADERS}
-	${${project_name}_SOURCES}
+    ${${project_name}_SOURCES}
     ${${project_name}_TEMPLATES}
     ${${project_name}_CFILES}
     )
-    
+
 endforeach()
 
 endmacro()
