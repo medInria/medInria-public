@@ -16,7 +16,6 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medCoreExport.h>
-#include <medDataEnum.h>
 
 class medAbstractDataPrivate;
 
@@ -52,9 +51,6 @@ public:
      * @return QList< medAttachedData * >
      */
     QList< medAttachedData * > attachedData() const;
-
-    void setDataCategory(medData::Category type);
-    medData::Category dataCategory() const;
 
     virtual QImage& thumbnail();
 

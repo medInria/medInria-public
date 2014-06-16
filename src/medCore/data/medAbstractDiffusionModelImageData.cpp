@@ -16,7 +16,6 @@
 
 medAbstractDiffusionModelImageData::medAbstractDiffusionModelImageData() : medAbstractImageData()
 {
-    this->setDataCategory(medData::DIFFUSION_MODEL);
 }
 
 const QString medAbstractDiffusionModelImageData::PixelMeaning() const

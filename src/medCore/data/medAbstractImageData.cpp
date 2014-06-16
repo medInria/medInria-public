@@ -30,12 +30,10 @@ const char* medAbstractImageData::PixelMeaningMetaData = "PixelMeaning";
 medAbstractImageData::medAbstractImageData(void) : medAbstractData()
 {
     qDebug() << "constructing medAbstractImageData";
-    this->setDataCategory(medData::IMAGE);
 }
 
 medAbstractImageData::medAbstractImageData(const medAbstractImageData& other): medAbstractData(other)
 {
-    this->setDataCategory(medData::IMAGE);
 }
 
 medAbstractImageData::~medAbstractImageData(void)

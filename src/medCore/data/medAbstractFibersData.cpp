@@ -29,12 +29,10 @@ public:
 
 medAbstractFibersData::medAbstractFibersData(void) : medAbstractData(), d(new medAbstractFibersDataPrivate)
 {
-    this->setDataCategory(medData::FIBERS);
 }
 
 medAbstractFibersData::medAbstractFibersData(const  medAbstractFibersData& other): medAbstractData(other), d(new medAbstractFibersDataPrivate)
 {
-    this->setDataCategory(medData::FIBERS);
 }
 
 medAbstractFibersData::~medAbstractFibersData(void)
