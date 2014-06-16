@@ -2,20 +2,12 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
-#
-################################################################################
-
-################################################################################
-#
-# Usage: list_header_directories_to_include(project_name, header_path1, header_path2 ...)
-# list all the different path finded in  all given header_path, and add them to
-# ${project_name}_INCLUDE_DIRS 
 #
 ################################################################################
 

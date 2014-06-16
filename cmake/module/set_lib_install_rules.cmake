@@ -2,20 +2,12 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
-#
-################################################################################
-
-################################################################################
-#
-# Usage: set_lib_install_rules(target, header1, header2, header3 ...)
-# set rules for the library designed by the target, and add all the additional 
-# header to {CMAKE_PREFIX_INSTALL}/include during install step.
 #
 ################################################################################
 

@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,11 +10,6 @@
 #  PURPOSE.
 #
 ################################################################################
-
-
-## #############################################################################
-## List Sources
-## #############################################################################
 
 file(GLOB HEADERS
   *.h

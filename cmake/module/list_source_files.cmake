@@ -2,22 +2,12 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
-#
-################################################################################
-
-
-################################################################################
-#
-# Usage: list_source_files(project_name, directory1, directory2, directory3 ...)
-# parse all given directories to list header, source and template path-files
-# and them add it to ${project_name}_HEADERS/SOURCES/TEMPLATES.
-# a 4th varible is create, ${project_name}_CFILES to embed all the previous ones.
 #
 ################################################################################
 

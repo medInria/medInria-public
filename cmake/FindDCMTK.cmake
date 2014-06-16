@@ -1,39 +1,15 @@
-# adapted version of FindDCMTK, better suited for super-builds
-
-# - find DCMTK libraries and applications
+################################################################################
 #
-
-# DCMTK_INCLUDE_DIRS - Directories to include to use DCMTK
-# DCMTK_LIBRARIES - Files to link against to use DCMTK
-# DCMTK_FOUND - If false, don't try to use DCMTK
-# DCMTK_DIR - (optional) Source directory for DCMTK
+# medInria
 #
-# DCMTK_DIR can be used to make it simpler to find the various include
-# directories and compiled libraries if you've just compiled it in the
-# source tree. Just set it to the root of the tree where you extracted
-# the source (default to /usr/include/dcmtk/)
-
-#=============================================================================
-# Copyright 2004-2009 Kitware, Inc.
-# Copyright 2009-2010 Mathieu Malaterre <mathieu.malaterre@gmail.com>
-# Copyright 2010 Thomas Sondergaard <ts@medical-insight.com>
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
 #
-# Distributed under the OSI-approved BSD License (the "License");
-# see accompanying file Copyright.txt for details.
-#
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the License for more information.
-#=============================================================================
-# (To distributed this file outside of CMake, substitute the full
-# License text for the above reference.)
-
-#
-# Written for VXL by Amitha Perera.
-# Upgraded for GDCM by Mathieu Malaterre.
-# Modified for EasyViz by Thomas Sondergaard.
-# Modified for medInria by René-paul Debroize.
-#
+################################################################################
 
 if(MSVC_IDE)
   # remove configuration suffix
