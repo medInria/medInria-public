@@ -520,12 +520,13 @@ void medMainWindow::showWorkspace(QString workspace)
  */
 void medMainWindow::showQuickAccess()
 {
+    // Ensure one can toggle menu appearance/disapperance when it is clicked twice
     if (d->quickAccessWidget->isVisible())
     {
         this->hideQuickAccess();
         return;
     }
-    
+
     d->quickAccessWidget->reset(false);
     d->quickAccessWidget->setFocus();
     d->quickAccessWidget->setMouseTracking(true);
