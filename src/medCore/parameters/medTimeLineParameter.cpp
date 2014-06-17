@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -235,16 +235,13 @@ void medTimeLineParameter::setDuration(const double& timeDuration)
 
 void medTimeLineParameter::setFrame(int frame)
 {
-    unsigned int fr = (unsigned int)frame;
-    if(fr > d->numberOfFrame)
-        d->currentFrame = d->numberOfFrame;
-    else d->currentFrame = fr;
-
-    double time = this->mapFrameToTime(fr);
-
+    double time = this->mapFrameToTime(frame);
     d->timeParameter->setValue(time);
+}
 
-    emit frameChanged(time);
+void medTimeLineParameter::setTime(const double &time)
+{
+    d->timeParameter->setValue(time);
 }
 
 void medTimeLineParameter::updateTime(double time)

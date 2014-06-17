@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -24,6 +24,7 @@
 #include <medViewFactory.h>
 #include <medTimeLineParameter.h>
 #include <medAbstractImageData.h>
+#include <medDoubleParameter.h>
 
 
 class medVtkViewItkDataImage4DInteractorPrivate
@@ -125,7 +126,8 @@ bool medVtkViewItkDataImage4DInteractor::registered()
 void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 {
     double range[2]={0,0};
-    double maxtime;
+    double mintimestep, mintime, maxtime;
+    unsigned int numberofsteps;
 
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
     if(!d->imageData)
@@ -150,16 +152,15 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 
             d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
 
-            this->timeRange(range);
-
+            this->timeRange (range);
+            mintimestep = frameRate();
+            mintime = range[0];
             maxtime = range[1];
 
             d->timeLineParameter->setNumberOfFrame(d->sequence->GetNumberOfMetaDataSets());
-            d->timeLineParameter->setDuration((maxtime));
-
-            qDebug() << d->sequence->GetTimeResolution();
-
-            connect(d->timeLineParameter, SIGNAL(frameChanged(double)), this, SLOT(setCurrentTime(double)));
+            d->timeLineParameter->setDuration(maxtime);
+            connect(d->timeLineParameter, SIGNAL(frameChanged(double)), d->view->timeParameter(), SLOT(setValue(double)));
+            connect(d->view, SIGNAL(currentTimeChanged(double)), this, SLOT(setCurrentTime(double)));
 
             if(d->view->layer(d->imageData) == 0)
             {
@@ -209,36 +210,18 @@ QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::linkableParamet
 {
     QList<medAbstractParameter*> parameters;
     parameters << medVtkViewItkDataImageInteractor::linkableParameters();
-    parameters << d->timeLineParameter;
     return parameters;
 }
 
 void medVtkViewItkDataImage4DInteractor::setCurrentTime (double time)
 {
-    if (!d->view)
-        return;
+    d->timeLineParameter->blockSignals(true);
+    d->timeLineParameter->setTime(time);
+    d->timeLineParameter->blockSignals(false);
 
-    double range[2] = {0,0};
-    this->timeRange(range);
-
-    time = std::min (range[1], time);
-    time = std::max (range[0], time);
-
-    d->currentTime = time;
-
-    d->sequence->UpdateToTime (time);
-
-    d->view2d->Modified();
-    d->view2d->Render();
-
-    d->view3d->Modified();
-    d->view3d->Render();
+    d->sequence->UpdateToTime(d->timeLineParameter->time());
 }
 
-double medVtkViewItkDataImage4DInteractor::getCurrentTime()
-{
-    return d->currentTime;
-}
 
 void medVtkViewItkDataImage4DInteractor::timeRange (double* range)
 {

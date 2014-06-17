@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -17,6 +17,7 @@
 
 #include <medCompositeParameter.h>
 #include <medVector3DParameter.h>
+#include <medDoubleParameter.h>
 
 
 class medAbstractImageViewNavigatorPrivate
@@ -25,15 +26,26 @@ public:
     medAbstractImageView *view;
     medCompositeParameter *cameraParameter;
     medVector3DParameter *positionBeingViewedParameter;
+    medDoubleParameter *timeParameter;
 
 };
 
 medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *parent):
     medAbstractLayeredViewNavigator(parent), d(new medAbstractImageViewNavigatorPrivate)
 {
-    d->view = dynamic_cast<medAbstractImageView *>(parent);
     d->positionBeingViewedParameter = NULL;
     d->cameraParameter = NULL;
+    d->timeParameter = NULL;
+
+    d->view = dynamic_cast<medAbstractImageView *>(parent);
+    if(!d->view)
+    {
+        qWarning() << "Derived type of medAbstractImageViewNavigator should always be parented \
+                      with derived type of medAbstractImageView.";
+        return;
+    }
+
+    connect(this, SIGNAL(currentTimeChanged(double)), d->view, SIGNAL(currentTimeChanged(double)));
 }
 
 medAbstractImageViewNavigator::~medAbstractImageViewNavigator()
@@ -63,4 +75,14 @@ medAbstractVector3DParameter* medAbstractImageViewNavigator::positionBeingViewed
         connect(d->positionBeingViewedParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToPosition(QVector3D)));
     }
     return d->positionBeingViewedParameter;
+}
+
+medDoubleParameter* medAbstractImageViewNavigator::timeParameter()
+{
+    if(!d->timeParameter)
+    {
+        d->timeParameter = new medDoubleParameter("Time", this);
+        connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(setCurrentTime(double)));
+    }
+    return d->timeParameter;
 }

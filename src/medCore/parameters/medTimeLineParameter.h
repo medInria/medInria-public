@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -51,6 +51,7 @@ public slots:
     void setDuration(const double& timeDuration);
     void setStepFrame(int stepFrame);
     void setFrame(int frame);
+    void setTime(const double &time);
     void setLoop(bool loop);
 
     void previousFrame();

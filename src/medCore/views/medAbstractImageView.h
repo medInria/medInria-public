@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,8 +14,6 @@
 #pragma once
 
 #include <medAbstractLayeredView.h>
-
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
@@ -65,6 +63,8 @@ public:
 
     medDoubleParameter *opacityParameter(unsigned int layer);
 
+    medDoubleParameter *timeParameter();
+
     /**
      * Convert from world coordinates to scene coordinates.
      */
@@ -111,6 +111,7 @@ public slots:
 
 signals:
     void orientationChanged();
+    void currentTimeChanged(const double &time);
 
 
 protected:

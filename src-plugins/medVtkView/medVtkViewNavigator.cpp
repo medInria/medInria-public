@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -186,7 +186,9 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showRulerParameter
                     << d->showAnnotationParameter
                     << d->showScalarBarParameter
-                    << this->positionBeingViewedParameter();
+                    << this->positionBeingViewedParameter()
+                    << this->timeParameter();
+
 
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),
@@ -374,6 +376,22 @@ void medVtkViewNavigator::moveToPosition(const QVector3D &position)
 
         d->view2d->SetCurrentPoint(pos);
         d->view2d->UpdateCursorPosition(pos);
+        d->view2d->Render();
+    }
+}
+
+void medVtkViewNavigator::setCurrentTime(const double &time)
+{
+    emit currentTimeChanged(time);
+
+    if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
+    {
+        d->view3d->Modified();
+        d->view3d->Render();
+    }
+    else
+    {
+        d->view2d->Modified();
         d->view2d->Render();
     }
 }

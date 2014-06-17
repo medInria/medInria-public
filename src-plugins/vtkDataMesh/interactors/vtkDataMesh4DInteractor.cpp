@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,13 +13,15 @@
 
 #include "vtkDataMesh4DInteractor.h"
 
-#include <medAbstractImageView.h>
-#include <medVtkViewBackend.h>
-#include <medViewFactory.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkActor.h>
 #include <vtkProperty.h>
+
+#include <medAbstractImageView.h>
+#include <medVtkViewBackend.h>
+#include <medViewFactory.h>
 #include <medTimeLineParameter.h>
+#include <medDoubleParameter.h>
 
 
 class vtkDataMesh4DInteractorPrivate
@@ -37,9 +39,6 @@ public:
     vtkMetaDataSetSequence *sequence;
 
     medTimeLineParameter *timeLineParameter;
-
-    double currentTime;
-
 };
 
 
@@ -53,8 +52,6 @@ vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): medAb
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
-
-    d->currentTime = 0.0;
 }
 
 vtkDataMesh4DInteractor::~vtkDataMesh4DInteractor()
@@ -115,15 +112,15 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
 
             d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
 
-            timeRange (range);
+            this->timeRange(range);
             mintimestep = frameRate();
             mintime = range[0];
             maxtime = range[1];
 
-            numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
-            d->timeLineParameter->setNumberOfFrame(numberofsteps);
-            d->timeLineParameter->setDuration((maxtime+mintimestep));
-            connect(d->timeLineParameter, SIGNAL(frameChanged(double)), this, SLOT(setCurrentTime(double)));
+            d->timeLineParameter->setNumberOfFrame(d->sequence->GetNumberOfMetaDataSets());
+            d->timeLineParameter->setDuration(maxtime);
+            connect(d->timeLineParameter, SIGNAL(frameChanged(double)), d->view->timeParameter(), SLOT(setValue(double)));
+            connect(d->view, SIGNAL(currentTimeChanged(double)), this, SLOT(setCurrentTime(double)));
             break;
         default:
             break;
@@ -154,7 +151,6 @@ QWidget* vtkDataMesh4DInteractor::buildLayerWidget()
 QList<medAbstractParameter*> vtkDataMesh4DInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> parameters;
-    parameters << d->timeLineParameter;
     return parameters;
 }
 
@@ -166,29 +162,11 @@ QList<medBoolParameter*> vtkDataMesh4DInteractor::mouseInteractionParameters()
 
 void vtkDataMesh4DInteractor::setCurrentTime (double time)
 {
-    if (!d->view)
-        return;
+    d->timeLineParameter->blockSignals(true);
+    d->timeLineParameter->setTime(time);
+    d->timeLineParameter->blockSignals(false);
 
-    double range[2] = {0,0};
-    this->timeRange(range);
-
-    time = std::min (range[1], time);
-    time = std::max (range[0], time);
-
-    d->currentTime = time;
-
-    d->sequence->UpdateToTime (time);
-
-    d->view2d->Modified();
-    d->view2d->Render();
-
-    d->view3d->Modified();
-    d->view3d->Render();
-}
-
-double vtkDataMesh4DInteractor::getCurrentTime()
-{
-    return d->currentTime;
+    d->sequence->UpdateToTime(d->timeLineParameter->time());
 }
 
 void vtkDataMesh4DInteractor::timeRange (double* range)
@@ -224,7 +202,6 @@ double vtkDataMesh4DInteractor::frameRate()
     double number = d->sequence->GetNumberOfMetaDataSets();
 
     step = std::min ( step, (maxtime - mintime)/(number - 1.0) );
-
 
     return step;
 }

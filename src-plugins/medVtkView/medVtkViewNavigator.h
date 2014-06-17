@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -53,6 +53,8 @@ public slots:
                            const QVector3D &viewup,
                            const QVector3D &focal,
                            double parallelScale);
+
+    virtual void setCurrentTime(const double &time);
 
 signals:
     void orientationChanged();
