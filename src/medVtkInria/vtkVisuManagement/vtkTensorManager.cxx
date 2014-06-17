@@ -31,6 +31,8 @@ vtkTensorManager::vtkTensorManager()
   this->TensorVisuManagerSagittal = vtkTensorVisuManager::New();
   this->TensorVisuManagerCoronal  = vtkTensorVisuManager::New();
 
+    this->SetSampleRate(2,2,2);
+
   this->DirectionMatrix = 0;
 
   this->PhysicalToVoxelCoordinatesTransformMatrix = vtkMatrix4x4::New();

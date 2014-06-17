@@ -13,5 +13,6 @@
         <file>icons/stack.png</file>
         <file>icons/wlww.png</file>
         <file>icons/eye.png</file>
+        <file>icons/pan.svg</file>
     </qresource>
 </RCC>

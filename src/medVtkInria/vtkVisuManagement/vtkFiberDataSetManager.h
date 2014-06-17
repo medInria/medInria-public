@@ -64,6 +64,8 @@ class MEDVTKINRIA_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   // specific
   //BTX
   void Validate (const std::string &name, double color[3]);
+    void ChangeBundleName(const std::string &oldName, const std::string &newName);
+    void RemoveBundle(const std::string &name);
   //ETX
   
  protected:

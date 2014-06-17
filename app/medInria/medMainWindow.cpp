@@ -135,7 +135,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText(tr("Workspaces access menu"));
-    connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(showQuickAccess()));
+    connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(toggleQuickAccessVisibility()));
 
     d->quickAccessWidget = new medQuickAccessMenu(true, this);
     d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
@@ -256,7 +256,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //  Connect the messageController with the status for notification messages management
     connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
     connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT (close()));
+
     d->shortcutShortcut = new QShortcut(QKeySequence(tr(CONTROL_KEY "+Space")),
                                                      this,
                                                      SLOT(showShortcutAccess()),
@@ -518,8 +518,15 @@ void medMainWindow::showWorkspace(QString workspace)
 /**
  * Slot to show bottom left menu
  */
-void medMainWindow::showQuickAccess()
+void medMainWindow::toggleQuickAccessVisibility()
 {
+    // Ensure one can toggle menu appearance/disapperance when it is clicked twice
+    if (d->quickAccessWidget->isVisible())
+    {
+        this->hideQuickAccess();
+        return;
+    }
+
     d->quickAccessWidget->reset(false);
     d->quickAccessWidget->setFocus();
     d->quickAccessWidget->setMouseTracking(true);

@@ -120,6 +120,8 @@ public:
                                    vtkMatrix4x4 *matrix = 0,
                                    int layer=0);
 
+    void RemoveLayerActor(vtkActor *actor, int layer = 0);
+    
   int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
 
   vtkImageData *GetImageInput(int layer) const;

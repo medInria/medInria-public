@@ -378,6 +378,26 @@ void vtkFiberDataSetManager::Validate (const std::string &name, double color[3])
   }
 }
 
+void vtkFiberDataSetManager::RemoveBundle(const std::string &name)
+{
+    if (this->GetRenderer())
+        this->GetRenderer()->RemoveViewProp ( d->FiberBundlePipelineList[name]->Actor );
+    
+    if (this->FiberDataSet)
+        this->FiberDataSet->RemoveBundle(name);
+    
+    d->FiberBundlePipelineList.erase(name);
+}
+
+void vtkFiberDataSetManager::ChangeBundleName(const std::string &oldName, const std::string &newName)
+{
+    if (this->FiberDataSet)
+        this->FiberDataSet->ChangeBundleName(oldName,newName);
+    
+    d->FiberBundlePipelineList[newName] = d->FiberBundlePipelineList[oldName];
+    d->FiberBundlePipelineList.erase(oldName);
+}
+
 void vtkFiberDataSetManager::SetBundleVisibility(const std::string &name, int visibility)
 {
     vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.find (name);

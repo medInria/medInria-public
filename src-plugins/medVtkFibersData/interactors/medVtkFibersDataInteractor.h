@@ -169,10 +169,12 @@ public slots:
     void importROI(const medDataIndex &index);
     void selectRoi(int value);
 
+    void bundlingListCustomContextMenu(const QPoint &point);
+    void saveCurrentBundle();
+    void removeCurrentBundle();
 
     void setAllBundlesVisibility(bool visibility);
     void setBundleVisibility(const QString &name, bool visibility);
-
 
     void tagSelection();
     void resetSelection();

@@ -124,10 +124,10 @@ void medDiffusionWorkspace::setupViewContainerStack()
     {
         d->diffusionContainer = this->stackedViewContainers()->addContainerInTab(identifier());
 
-        d->diffusionContainer->setUserClosable(true);
+        d->diffusionContainer->setClosingMode(medViewContainer::CLOSE_CONTAINER);
         d->diffusionContainer->setUserSplittable(false);
         d->diffusionContainer->setMultiLayered(true);
-        
+
         connect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
         connect(this->stackedViewContainers(),SIGNAL(containersSelectedChanged()),this,SLOT(changeCurrentContainer()));
     }
@@ -147,7 +147,7 @@ void medDiffusionWorkspace::runProcess(QString processName, QString category)
 
     d->currentProcess = dynamic_cast <medAbstractDiffusionProcess *> (dtkAbstractProcessFactory::instance()->create(processName));
     originToolbox->setProcessParameters(d->currentProcess);
-    
+
     runProcess->setProcess(d->currentProcess);
 
     d->processRunning = true;
@@ -214,7 +214,7 @@ void medDiffusionWorkspace::changeCurrentContainer()
     d->diffusionContainer = medViewContainerManager::instance()->container(containersSelectedList.first());
     if (!d->diffusionContainer.isNull())
     {
-        d->diffusionContainer->setUserClosable(true);
+        d->diffusionContainer->setClosingMode(medViewContainer::CLOSE_CONTAINER);
         d->diffusionContainer->setUserSplittable(false);
         d->diffusionContainer->setMultiLayered(true);
 
@@ -230,7 +230,7 @@ void medDiffusionWorkspace::updateToolBoxesInputs()
 
     if (!medView)
         return;
-    
+
     unsigned int layersCount = medView->layersCount();
     for (unsigned int i = 0;i < layersCount;++i)
         this->addToolBoxInput(medView->layerData(i));
@@ -257,7 +257,7 @@ void medDiffusionWorkspace::resetToolBoxesInputs()
     d->diffusionEstimationToolBox->clearInputs();
     d->diffusionScalarMapsToolBox->clearInputs();
     d->diffusionTractographyToolBox->clearInputs();
-    
+
     this->updateToolBoxesInputs();
 }
 
