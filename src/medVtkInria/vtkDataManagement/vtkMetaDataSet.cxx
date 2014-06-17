@@ -775,31 +775,3 @@ void vtkMetaDataSet::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "DataSet \t: " << (*this->DataSet) << endl;  
 }
 
-
-
-// //----------------------------------------------------------------------------
-// template <class type>
-// inline void vtkMetaDataSet::SetMetaData (std::string key, type value)
-// {
-//   if (this->MetaDataDictionary.HasKey (key))
-//     itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
-//   else
-//     itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
-// }
-
-// //----------------------------------------------------------------------------
-// template <class type>
-// inline bool vtkMetaDataSet::GetMetaData (std::string key, type &ret)
-// {
-
-//   type toret;
-//   bool valid = itk::ExposeMetaData<type>(this->MetaDataDictionary, key, toret);
-//   if(!valid)
-//     return false;
-//   ret = toret;
-//   return true;
-// }
-
-
-//template <unsigned int> bool vtkMetaDataSet::GetMetaData (std::string key, unsigned int &ret);
-

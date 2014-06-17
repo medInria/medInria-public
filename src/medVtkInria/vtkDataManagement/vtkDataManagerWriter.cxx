@@ -195,17 +195,21 @@ int  vtkDataManagerWriter::WriteMetaDataSet (vtkMetaDataSet* metadataset, unsign
     writer->SetInput (metadataset->GetDataSet());
     
     // Write the data.
-    writer->AddObserver(vtkCommand::ProgressEvent, this->ProgressObserver);      
-    writer->Write();
+    writer->AddObserver(vtkCommand::ProgressEvent, this->ProgressObserver);
+    if( ! writer->Write()) {
+        vtkErrorMacro (<<"Writing file failed! "<<writer->GetErrorCode()<<endl);
+        writer->Delete();
+        return 0;
+    }
     writer->RemoveObserver(this->ProgressObserver);
 
     if (writer->GetErrorCode() == vtkErrorCode::OutOfDiskSpaceError)
     {
       vtkErrorMacro (<<"Out Of Memory Error !"<<endl);
-      this->SetErrorCode(vtkErrorCode::OutOfDiskSpaceError);      
+      this->SetErrorCode(vtkErrorCode::OutOfDiskSpaceError);
       writer->Delete();
       return 0;
-    }    
+    }
     writer->Delete();
   }
 

@@ -53,7 +53,7 @@ protected:
   // Create a default executive.
   virtual vtkExecutive* CreateDefaultExecutive();
 
-  vtkXMLReader* GetReaderOfType(const char* type);
+  vtkDataSet *FileToDataSet(const char* type, const std::string& filename);
 
 /*   virtual void HandleDataSet( */
 /*     vtkXMLDataElement* ds, int group, int dsId,  */
