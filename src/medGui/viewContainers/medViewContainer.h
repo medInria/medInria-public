@@ -30,7 +30,25 @@ class medViewContainerPrivate;
 class MEDGUI_EXPORT medViewContainer: public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY(bool selected READ isSelected)
+
+public:
+    enum ClosingMode
+    {
+        CLOSE_CONTAINER,
+        CLOSE_VIEW,
+        CLOSE_BUTTON_HIDDEN
+    };
+
+private:
+    enum DropArea
+    {
+        AREA_OUT = 0,
+        AREA_TOP,
+        AREA_BOTTOM,
+        AREA_LEFT,
+        AREA_RIGHT,
+        AREA_CENTER
+    };
 
 public:
     medViewContainer(medViewContainerSplitter* parent = 0);
@@ -43,7 +61,7 @@ public:
     bool isSelected() const;
     bool isMaximized() const;
     bool isUserSplittable() const;
-    bool isUserClosable() const;
+    ClosingMode closingMode() const;
     bool isMultiLayered() const;
 
     medViewContainer* splitVertically();
@@ -62,7 +80,7 @@ public slots:
     void setUnSelected(bool unSelected);
     void setMaximized(bool maximised);
     void setUserSplittable(bool splittable);
-    void setUserClosable(bool closable);
+    void setClosingMode(enum ClosingMode mode);
     void setMultiLayered(bool multiLayer);
 
     void highlight(QString color = "#FFAA88");
@@ -99,11 +117,9 @@ protected slots:
 
 private slots:
     void removeInternView();
-
-private:
-    enum DropArea {AREA_OUT = 0, AREA_TOP,AREA_BOTTOM,AREA_LEFT,AREA_RIGHT,AREA_CENTER};
     DropArea computeDropArea(int x, int y);
 
+private:
     medViewContainerPrivate *d;
 
 };

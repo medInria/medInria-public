@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -64,7 +64,7 @@ void medFilteringWorkspace::setupViewContainerStack()
         inputLabel->setAlignment(Qt::AlignCenter);
         d->inputContainer->setDefaultWidget(inputLabel);
 
-        d->inputContainer->setUserClosable(false);
+        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
         d->inputContainer->setUserSplittable(false);
         d->inputContainer->setMultiLayered(false);
 
@@ -72,7 +72,7 @@ void medFilteringWorkspace::setupViewContainerStack()
         QLabel *outputLabel = new QLabel("OUTPUT");
         outputLabel->setAlignment(Qt::AlignCenter);
         d->outputContainer->setDefaultWidget(outputLabel);
-        d->outputContainer->setUserClosable(false);
+        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
         d->outputContainer->setUserSplittable(false);
         d->outputContainer->setMultiLayered(false);
         d->outputContainer->setAcceptDrops(false);
@@ -157,7 +157,7 @@ QString medFilteringWorkspace::description(void) const
 bool medFilteringWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("filtering").size()!=0); 
+    return (tbFactory->toolBoxesFromCategory("filtering").size()!=0);
 }
 
 void medFilteringWorkspace::open(const medDataIndex &index)

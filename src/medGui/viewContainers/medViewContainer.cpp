@@ -54,7 +54,7 @@ public:
     bool selected;
     bool maximized;
     bool userSplittable;
-    bool userClosable;
+    medViewContainer::ClosingMode closingMode;
     bool multiLayer;
     bool userPoolable;
 
@@ -103,7 +103,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
-    connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(close()));
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
 
@@ -158,7 +157,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     this->setAcceptDrops(true);
     this->setUserSplittable(true);
-    this->setUserClosable(true);
+    this->setClosingMode(medViewContainer::CLOSE_CONTAINER);
     this->setMultiLayered(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
@@ -232,18 +231,32 @@ void medViewContainer::setUserSplittable(bool splittable)
     }
 }
 
-bool medViewContainer::isUserClosable() const
+medViewContainer::ClosingMode medViewContainer::closingMode() const
 {
-    return d->userClosable;
+    return d->closingMode;
 }
 
-void medViewContainer::setUserClosable(bool closable)
+void medViewContainer::setClosingMode(medViewContainer::ClosingMode mode)
 {
-    d->userClosable = closable;
-    if(d->userClosable)
-          d->closeContainerButton->show();
-    else
+    d->closingMode = mode;
+    switch(d->closingMode)
+    {
+    case medViewContainer::CLOSE_CONTAINER:
+        d->closeContainerButton->show();
+        d->closeContainerButton->disconnect(this, SLOT(removeView()));
+        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(close()));
+        break;
+    case medViewContainer::CLOSE_VIEW:
+        d->closeContainerButton->show();
+        d->closeContainerButton->disconnect(this, SLOT(close()));
+        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));
+        break;
+    case medViewContainer::CLOSE_BUTTON_HIDDEN:
         d->closeContainerButton->hide();
+        d->closeContainerButton->disconnect(this, SLOT(close()));
+        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));
+        break;
+    }
 }
 
 bool medViewContainer::isMultiLayered() const

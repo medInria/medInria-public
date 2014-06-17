@@ -81,6 +81,9 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fixedContainer->setDefaultWidget(fixedLabel);
         d->fixedContainer->setMultiLayered(false);
         d->fixedContainer->setUserSplittable(false);
+        d->fixedContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+
+
 
         d->movingContainer = d->fixedContainer->splitVertically();
         QLabel *movingLabel = new QLabel(tr("MOVING"));
@@ -88,12 +91,14 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->movingContainer->setDefaultWidget(movingLabel);
         d->movingContainer->setUserSplittable(false);
         d->movingContainer->setMultiLayered(false);
+        d->movingContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+
 
         d->fuseContainer = this->stackedViewContainers()->addContainerInTab(tr("Fuse"));
         QLabel *fuseLabel = new QLabel(tr("FUSE"));
         fuseLabel->setAlignment(Qt::AlignCenter);
         d->fuseContainer->setDefaultWidget(fuseLabel);
-        d->fuseContainer->setUserClosable(false);
+        d->fuseContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
         d->fuseContainer->setUserSplittable(false);
         d->fuseContainer->setAcceptDrops(false);
 
