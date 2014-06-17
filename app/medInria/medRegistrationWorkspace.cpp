@@ -114,6 +114,8 @@ void medRegistrationWorkspace::setupViewContainerStack()
 
         this->stackedViewContainers()->lockTabs();
         this->stackedViewContainers()->setCurrentIndex(0);
+        d->fixedContainer->setSelected(true);
+        d->movingContainer->setSelected(false);
     }
 }
 

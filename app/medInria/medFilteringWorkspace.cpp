@@ -82,6 +82,8 @@ void medFilteringWorkspace::setupViewContainerStack()
 
         this->stackedViewContainers()->lockTabs();
         this->stackedViewContainers()->hideTabBar();
+        d->inputContainer->setSelected(true);
+        d->outputContainer->setSelected(false);
     }
 }
 
