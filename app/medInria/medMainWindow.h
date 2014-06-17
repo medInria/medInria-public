@@ -68,7 +68,7 @@ private slots:
     void switchToHomepageArea();
 
     void showWorkspace(QString workspace);
-    void showQuickAccess();
+    void toggleQuickAccessVisibility();
     void hideQuickAccess();
     void showShortcutAccess();
     void hideShortcutAccess();

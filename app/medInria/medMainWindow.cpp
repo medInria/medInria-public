@@ -135,7 +135,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText(tr("Workspaces access menu"));
-    connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(showQuickAccess()));
+    connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(toggleQuickAccessVisibility()));
 
     d->quickAccessWidget = new medQuickAccessMenu(true, this);
     d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
@@ -518,7 +518,7 @@ void medMainWindow::showWorkspace(QString workspace)
 /**
  * Slot to show bottom left menu
  */
-void medMainWindow::showQuickAccess()
+void medMainWindow::toggleQuickAccessVisibility()
 {
     // Ensure one can toggle menu appearance/disapperance when it is clicked twice
     if (d->quickAccessWidget->isVisible())
