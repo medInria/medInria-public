@@ -23,17 +23,18 @@ static QString s_identifier() {
 }
 
 static QStringList s_handled() {
-    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
-                          << "itkDataImageUChar3" << "itkDataImageUChar4"
-                          << "itkDataImageShort3" << "itkDataImageShort4"
-                          << "itkDataImageUShort3" << "itkDataImageUShort4"
-                          << "itkDataImageInt3" << "itkDataImageInt4"
-                          << "itkDataImageUInt3" << "itkDataImageUInt4"
-                          << "itkDataImageLong3" << "itkDataImageLong4"
-                          << "itkDataImageULong3" << "itkDataImageULong4"
-                          << "itkDataImageFloat3" << "itkDataImageFloat4"
-                          << "itkDataImageDouble3" << "itkDataImageDouble4"
-                          << "itkDataImageRGB3" << "itkDataImageRGBA3";
+    return QStringList()  << "itkDataImageChar3"
+                          << "itkDataImageUChar3"
+                          << "itkDataImageShort3"
+                          << "itkDataImageUShort3"
+                          << "itkDataImageInt3"
+                          << "itkDataImageUInt3"
+                          << "itkDataImageLong3"
+                          << "itkDataImageULong3"
+                          << "itkDataImageFloat3"
+                          << "itkDataImageDouble3"
+                          << "itkDataImageRGB3"
+                          << "itkDataImageRGBA3";
 }
 
 
