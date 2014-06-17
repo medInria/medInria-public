@@ -1,22 +1,15 @@
-# - Find an QtM3d installation or build tree.
-
-# When QtM3d is found, the QtM3dConfig.cmake file is sourced to setup the
-# location and configuration of QtM3d.  Please read this file, or
-# VistalConfig.cmake.in from the QtM3d source tree for the full list of
-# definitions.  Of particular interest is QtM3d_USE_FILE, a CMake source file
-# that can be included to set the include directories, library directories,
-# and preprocessor macros.  In addition to the variables read from
-# QtM3dConfig.cmake, this find module also defines
-#  QTDCM_DIR  - The directory containing VistalConfig.cmake.  
-#             This is either the root of the build tree
+################################################################################
 #
-#  QtM3d_FOUND - Whether Vistal was found.  If this is true, 
-#              QtM3d_DIR is okay.
+# medInria
 #
-#  USE_QTDCM_FILE - The full path to the UseVistal.cmake file.  
-#                 This is provided for backward 
-#                 compatability.  Use QtM3d_USE_FILE
-#                 instead.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+################################################################################
 
 FIND_PATH(QTDCM_DIR UseQtDCM.cmake 
   /usr/lib/qtdcm-0.1 

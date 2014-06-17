@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,9 +11,6 @@
 #
 ################################################################################
 
-## #############################################################################
-## Embed medPch
-## #############################################################################
 if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
   file(GLOB MEDPCH_H
     medPch/*.h

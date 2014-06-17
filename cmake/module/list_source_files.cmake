@@ -2,15 +2,19 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
 ################################################################################
 
+macro(list_source_files
+  project_name
+  directories
+  )
 
 ################################################################################
 #
@@ -21,11 +25,7 @@
 #
 ################################################################################
 
-macro(list_source_files
-  project_name
-  directories
-  )
-  
+
 foreach(dir ${ARGV})
 ## #############################################################################
 ## List all headers and add them to {${project_name}_H
@@ -33,8 +33,8 @@ foreach(dir ${ARGV})
 
   file(GLOB HEADERS
     ${dir}/*.h
-	${dir}/*.hpp
-	${dir}/*.hxx
+    ${dir}/*.hpp
+    ${dir}/*.hxx
     )
   set(${project_name}_HEADERS
     ${HEADERS}
@@ -54,8 +54,8 @@ foreach(dir ${ARGV})
     ${SOURCES}
     ${${project_name}_SOURCES}
     )
-	
-	
+
+
 ## #############################################################################
 ## List all templated files and add them to {${project_name}_TEMPLATE
 ## #############################################################################
@@ -68,18 +68,18 @@ foreach(dir ${ARGV})
     ${${project_name}_TEMPLATES}
     )
 
-	
+
 ## #############################################################################
 ## List all c++ files
 ## #############################################################################
 
   set(${project_name}_CFILES
     ${${project_name}_HEADERS}
-	${${project_name}_SOURCES}
+    ${${project_name}_SOURCES}
     ${${project_name}_TEMPLATES}
     ${${project_name}_CFILES}
     )
-    
+
 endforeach()
 
 endmacro()

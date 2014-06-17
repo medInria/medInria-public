@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
 #
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -136,7 +136,7 @@ add_definitions(${QT_DEFINITIONS}) #TODO :wath was it for ? (it is empty)
 add_definitions(-DQT_SHARED)
 
 if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-  message("Add -DQT_NO_DEBUG")
+  message(STATUS "Add -DQT_NO_DEBUG")
   add_definitions(-DQT_NO_DEBUG)
 endif()
 
