@@ -19,7 +19,6 @@
 #include <medTriggerParameter.h>
 #include <medVector3DParameter.h>
 
-
 class medAbstractImageViewNavigatorPrivate
 {
 public:
@@ -72,8 +71,9 @@ medTriggerParameter *medAbstractImageViewNavigator::fourViewsParameter()
     if (!d->fourViewsParameter)
     {
         d->fourViewsParameter = new medTriggerParameter("Four views", this);
-        d->fourViewsParameter->setButtonText("4");
-        
+        QIcon fourViewsIcon (":/icons/fourViews.png");
+        d->fourViewsParameter->setButtonIcon(fourViewsIcon);
+
         connect(d->fourViewsParameter,SIGNAL(triggered()),this,SLOT(switchToFourViews()));
     }
     

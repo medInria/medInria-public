@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/fourViews.png</file>
+    </qresource>
+</RCC>
