@@ -70,9 +70,9 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->mode3DParameter->addItem("VR");
     d->mode3DParameter->addItem("MIP - Maximum");
     d->mode3DParameter->addItem("MIP - Minimum");
-    d->mode3DParameter->addItem("MPR");
+    d->mode3DParameter->addItem("MSR");
     d->mode3DParameter->addItem("Off");
-    d->mode3DParameter->setValue("MPR");
+    d->mode3DParameter->setValue("MSR");
     connect(d->mode3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setMode3D(QString)));
 
     d->renderer3DParameter = new medStringListParameter("Renderer", this);
@@ -86,7 +86,7 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->croppingParameter = new medBoolParameter("Cropping", this);
     connect(d->croppingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableCropping(bool)));
 
-    this->setMode3D("MPR");
+    this->setMode3D("MSR");
 
     d->parameters.append(d->mode3DParameter);
     d->parameters.append(d->renderer3DParameter);
@@ -180,7 +180,7 @@ void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
         d->croppingParameter->show();
         this->enableCropping(d->croppingParameter->value());
     }
-    else if ( mode == "MPR" )
+    else if ( mode == "MSR" )
     {
         d->view3d->SetRenderingModeToPlanar();
         d->view3d->ShowActorXOn();
