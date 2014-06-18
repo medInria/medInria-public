@@ -32,24 +32,16 @@ public:
 
     medAbstractData *data;
     medAbstractImageView *view;
-    vtkImageView2D *view2d;
-    vtkImageView3D *view3d;
-    vtkRenderWindow *render;
 
     vtkMetaDataSetSequence *sequence;
 };
 
 
-vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): medAbstractInteractor(parent), d(new vtkDataMesh4DInteractorPrivate)
+vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): vtkDataMeshInteractor(parent),
+    d(new vtkDataMesh4DInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
-
-    d->data = 0;
-
-    medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
-    d->view2d = backend->view2D;
-    d->view3d = backend->view3D;
-    d->render = backend->renWin;
+    d->data = NULL;
 }
 
 vtkDataMesh4DInteractor::~vtkDataMesh4DInteractor()
@@ -88,6 +80,8 @@ bool vtkDataMesh4DInteractor::registered()
 
 void vtkDataMesh4DInteractor::setData(medAbstractData *data)
 {
+    vtkDataMeshInteractor::setData(data);
+
     if (data->identifier() == "vtkDataMesh4D" )
     {
         d->data = data;
@@ -110,38 +104,6 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
             break;
         }
     }
-}
-
-medAbstractData *vtkDataMesh4DInteractor::data() const
-{
-    return d->data;
-}
-
-QWidget* vtkDataMesh4DInteractor::buildToolBoxWidget()
-{
-    return new QWidget;
-}
-
-QWidget* vtkDataMesh4DInteractor::buildToolBarWidget()
-{
-    return new QWidget;
-}
-
-QWidget* vtkDataMesh4DInteractor::buildLayerWidget()
-{
-    return new QWidget;
-}
-
-QList<medAbstractParameter*> vtkDataMesh4DInteractor::linkableParameters()
-{
-    QList<medAbstractParameter*> parameters;
-    return parameters;
-}
-
-QList<medBoolParameter*> vtkDataMesh4DInteractor::mouseInteractionParameters()
-{
-    // no parameters related to mouse interactions
-    return QList<medBoolParameter*>();
 }
 
 void vtkDataMesh4DInteractor::setCurrentTime (const double &time)

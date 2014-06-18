@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medAbstractInteractor.h>
+#include <vtkDataMeshInteractor.h>
 
 class vtkDataMesh4DInteractorPrivate;
 
-class vtkDataMesh4DInteractor : public medAbstractInteractor
+class vtkDataMesh4DInteractor : public vtkDataMeshInteractor
 {
     Q_OBJECT
 
@@ -36,12 +36,6 @@ public:
     virtual void setData(medAbstractData *data);
     virtual medAbstractData *data() const;
 
-    virtual QWidget* buildLayerWidget();
-    virtual QWidget* buildToolBarWidget();
-    virtual QWidget* buildToolBoxWidget();
-
-    virtual QList<medAbstractParameter*> linkableParameters();
-    virtual QList<medBoolParameter*> mouseInteractionParameters();
 
 public slots:
     virtual void setCurrentTime (const double &time);
@@ -52,4 +46,3 @@ private:
 private:
     vtkDataMesh4DInteractorPrivate *d;
 };
-
