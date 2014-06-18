@@ -62,7 +62,7 @@ public slots:
 
 signals:
     void playing(bool isPlaying);
-    void frameChanged(double time);
+    void timeChanged(double time);
 
 private slots:
     void updateTime(double time);

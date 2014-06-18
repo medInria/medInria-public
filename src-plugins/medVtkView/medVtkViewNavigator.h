@@ -54,8 +54,6 @@ public slots:
                            const QVector3D &focal,
                            double parallelScale);
 
-    virtual void setCurrentTime(const double &time);
-
 signals:
     void orientationChanged();
 

@@ -37,8 +37,6 @@ public:
     vtkRenderWindow *render;
 
     vtkMetaDataSetSequence *sequence;
-
-    medTimeLineParameter *timeLineParameter;
 };
 
 
@@ -90,11 +88,6 @@ bool vtkDataMesh4DInteractor::registered()
 
 void vtkDataMesh4DInteractor::setData(medAbstractData *data)
 {
-    double range[2]={0,0};
-    double mintimestep, mintime, maxtime;
-    unsigned int numberofsteps;
-
-
     if (data->identifier() == "vtkDataMesh4D" )
     {
         d->data = data;
@@ -109,18 +102,9 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
         case vtkMetaDataSet::VTK_META_SURFACE_MESH:
         case vtkMetaDataSet::VTK_META_VOLUME_MESH:
             d->sequence = sequence;
-
-            d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
-
-            this->timeRange(range);
-            mintimestep = frameRate();
-            mintime = range[0];
-            maxtime = range[1];
-
-            d->timeLineParameter->setNumberOfFrame(d->sequence->GetNumberOfMetaDataSets());
-            d->timeLineParameter->setDuration(maxtime);
-            connect(d->timeLineParameter, SIGNAL(frameChanged(double)), d->view->timeParameter(), SLOT(setValue(double)));
-            connect(d->view, SIGNAL(currentTimeChanged(double)), this, SLOT(setCurrentTime(double)));
+            d->data->addMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
+            d->data->addMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
+                                                                           (double)d->sequence->GetMaxTime()));
             break;
         default:
             break;
@@ -135,7 +119,7 @@ medAbstractData *vtkDataMesh4DInteractor::data() const
 
 QWidget* vtkDataMesh4DInteractor::buildToolBoxWidget()
 {
-    return d->timeLineParameter->getWidget();
+    return new QWidget;
 }
 
 QWidget* vtkDataMesh4DInteractor::buildToolBarWidget()
@@ -160,49 +144,8 @@ QList<medBoolParameter*> vtkDataMesh4DInteractor::mouseInteractionParameters()
     return QList<medBoolParameter*>();
 }
 
-void vtkDataMesh4DInteractor::setCurrentTime (double time)
+void vtkDataMesh4DInteractor::setCurrentTime (const double &time)
 {
-    d->timeLineParameter->blockSignals(true);
-    d->timeLineParameter->setTime(time);
-    d->timeLineParameter->blockSignals(false);
-
-    d->sequence->UpdateToTime(d->timeLineParameter->time());
-}
-
-void vtkDataMesh4DInteractor::timeRange (double* range)
-{
-    if (!d->sequence)
-    {
-        range[0] = 0;
-        range[1] = 1.0;
-        return;
-    }
-
-    double mintime = 3000;
-    double maxtime = -3000;
-
-    mintime = std::min (mintime, d->sequence->GetMinTime());
-    maxtime = std::max (maxtime, d->sequence->GetMaxTime());
-
-    range[0] = mintime;
-    range[1] = maxtime;
-}
-
-double vtkDataMesh4DInteractor::frameRate()
-{
-    if (!d->sequence)
-    {
-        return 0.01;
-    }
-
-    double step = 3000;
-
-    double mintime = d->sequence->GetMinTime();
-    double maxtime = d->sequence->GetMaxTime();
-    double number = d->sequence->GetNumberOfMetaDataSets();
-
-    step = std::min ( step, (maxtime - mintime)/(number - 1.0) );
-
-    return step;
+    d->sequence->UpdateToTime(time);
 }
 

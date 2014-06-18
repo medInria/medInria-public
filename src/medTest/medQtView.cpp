@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -131,6 +131,11 @@ QString medQtView::description( void ) const
 void medQtView::reset()
 {
     qDebug() << "reset()";
+}
+
+void medQtView::update()
+{
+    qDebug() << "update(()";
 }
 
 QList<medAbstractParameter*> medQtView::navigatorsParameters()

@@ -212,7 +212,7 @@ medCompositeParameter *medAbstractImageView::windowLevelParameter(unsigned int l
     return pInteractor->windowLevelParameter();
 }
 
-medDoubleParameter *medAbstractImageView::timeParameter()
+medTimeLineParameter *medAbstractImageView::timeLineParameter()
 {
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
@@ -220,7 +220,7 @@ medDoubleParameter *medAbstractImageView::timeParameter()
         return NULL;
     }
 
-    return pNavigator->timeParameter();
+    return pNavigator->timeLineParameter();
 }
 
 medImageView::Orientation medAbstractImageView::orientation()

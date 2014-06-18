@@ -42,16 +42,9 @@ public:
 
     virtual QList<medAbstractParameter*> linkableParameters();
 
-    /** Assigns ranfe array the minimum and maximum time of the sequence */
-    void timeRange (double* range);
-    /** Returns minimum time step for the sequence */
-    double frameRate();
-
-
 public slots:
-    void setCurrentTime (double time);
-
-     virtual void updateWidgets();
+    virtual void setCurrentTime (const double &time);
+    virtual void updateWidgets();
 
 private:
     static QStringList dataHandled();

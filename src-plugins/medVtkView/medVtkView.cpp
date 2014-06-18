@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -211,6 +211,12 @@ void medVtkView::reset()
 {
     d->view2d->Reset();
     d->view3d->Reset();
+    this->update();
+
+}
+
+void medVtkView::update()
+{
     if(this->is2D())
         d->view2d->Render();
     else

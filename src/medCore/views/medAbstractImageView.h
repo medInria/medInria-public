@@ -63,7 +63,7 @@ public:
 
     medDoubleParameter *opacityParameter(unsigned int layer);
 
-    medDoubleParameter *timeParameter();
+    medTimeLineParameter *timeLineParameter();
 
     /**
      * Convert from world coordinates to scene coordinates.
@@ -126,7 +126,6 @@ protected:
     virtual bool initialiseInteractors(medAbstractData* data);
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
-
 
 private:
     medAbstractImageViewPrivate *d;

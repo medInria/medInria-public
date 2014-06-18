@@ -21,6 +21,7 @@
 class medAbstractImageView;
 class medCompositeParameter;
 class medAbstractVector3DParameter;
+class medTimeLineParameter;
 
 class medAbstractImageViewNavigatorPrivate;
 class MEDCORE_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredViewNavigator
@@ -39,7 +40,7 @@ public:
 
     virtual medAbstractVector3DParameter* positionBeingViewedParameter();
 
-    virtual medDoubleParameter* timeParameter();
+    virtual medTimeLineParameter* timeLineParameter();
 
 public slots:
 
@@ -49,7 +50,10 @@ public slots:
 
     virtual void moveToPosition (const QVector3D &position) = 0;
 
-    virtual void setCurrentTime (const double &time) = 0;
+    virtual void setCurrentTime (const double &time);
+
+private slots:
+    virtual void updateTimeLineParameter();
 
 signals:
     void currentTimeChanged(const double &time);

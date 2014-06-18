@@ -30,6 +30,7 @@
 #include <medDoubleParameter.h>
 #include <medCompositeParameter.h>
 #include <medStringListParameter.h>
+#include <medTimeLineParameter.h>
 
 /*=========================================================================
 
@@ -187,7 +188,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showAnnotationParameter
                     << d->showScalarBarParameter
                     << this->positionBeingViewedParameter()
-                    << this->timeParameter();
+                    << this->timeLineParameter();
 
 
     //TODO GPR-RDE: better solution?
@@ -380,22 +381,6 @@ void medVtkViewNavigator::moveToPosition(const QVector3D &position)
     }
 }
 
-void medVtkViewNavigator::setCurrentTime(const double &time)
-{
-    emit currentTimeChanged(time);
-
-    if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
-    {
-        d->view3d->Modified();
-        d->view3d->Render();
-    }
-    else
-    {
-        d->view2d->Modified();
-        d->view2d->Render();
-    }
-}
-
 /*=========================================================================
 
     protected
@@ -417,6 +402,7 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
     layout->addWidget(d->orientationParameter->getLabel());
     layout->addWidget(d->orientationParameter->getPushButtonGroup());
     layout->addWidget(d->showOptionsWidget);
+    layout->addWidget(this->timeLineParameter()->getWidget());
 
     return toolBoxWidget;
 }
@@ -653,11 +639,19 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
 
 void medVtkViewNavigator::updateWidgets()
 {
-    if(this->toolBoxWidget())
+    if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
     {
-        if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
-            d->showOptionsWidget->hide();
-        else d->showOptionsWidget->show();
+        d->showAxesParameter->hide();
+        d->showRulerParameter->hide();
+        d->showAnnotationParameter->hide();
+        d->showScalarBarParameter->hide();
+    }
+    else
+    {
+        d->showAxesParameter->show();
+        d->showRulerParameter->show();
+        d->showAnnotationParameter->show();
+        d->showScalarBarParameter->show();
     }
 }
 

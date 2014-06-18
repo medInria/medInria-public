@@ -17,7 +17,7 @@
 
 #include <medCompositeParameter.h>
 #include <medVector3DParameter.h>
-#include <medDoubleParameter.h>
+#include <medTimeLineParameter.h>
 
 
 class medAbstractImageViewNavigatorPrivate
@@ -26,7 +26,7 @@ public:
     medAbstractImageView *view;
     medCompositeParameter *cameraParameter;
     medVector3DParameter *positionBeingViewedParameter;
-    medDoubleParameter *timeParameter;
+    medTimeLineParameter *timeLineParameter;
 
 };
 
@@ -35,7 +35,7 @@ medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *pa
 {
     d->positionBeingViewedParameter = NULL;
     d->cameraParameter = NULL;
-    d->timeParameter = NULL;
+    d->timeLineParameter = NULL;
 
     d->view = dynamic_cast<medAbstractImageView *>(parent);
     if(!d->view)
@@ -46,6 +46,8 @@ medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *pa
     }
 
     connect(this, SIGNAL(currentTimeChanged(double)), d->view, SIGNAL(currentTimeChanged(double)));
+    connect(d->view, SIGNAL(layerAdded(uint)), this, SLOT(updateTimeLineParameter()));
+    connect(d->view, SIGNAL(layerRemoved(uint)), this, SLOT(updateTimeLineParameter()));
 }
 
 medAbstractImageViewNavigator::~medAbstractImageViewNavigator()
@@ -77,12 +79,48 @@ medAbstractVector3DParameter* medAbstractImageViewNavigator::positionBeingViewed
     return d->positionBeingViewedParameter;
 }
 
-medDoubleParameter* medAbstractImageViewNavigator::timeParameter()
+medTimeLineParameter* medAbstractImageViewNavigator::timeLineParameter()
 {
-    if(!d->timeParameter)
+    if(!d->timeLineParameter)
     {
-        d->timeParameter = new medDoubleParameter("Time", this);
-        connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(setCurrentTime(double)));
+        d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
+        connect(d->timeLineParameter, SIGNAL(timeChanged(double)), this, SLOT(setCurrentTime(double)));
     }
-    return d->timeParameter;
+    return d->timeLineParameter;
+}
+
+void medAbstractImageViewNavigator::setCurrentTime (const double &time)
+{
+    emit currentTimeChanged(time);
+    d->view->update();
+}
+
+void medAbstractImageViewNavigator::updateTimeLineParameter()
+{
+//    d->timeLineParameter->stop(true);
+    bool viewHasTemporalData = false;
+
+    double sequenceDuration = 0;
+    double sequenceFrameRate = 0;
+    foreach (medAbstractData* data, d->view->dataList())
+    {
+        if(data->hasMetaData("SequenceDuration") && data->hasMetaData("SequenceFrameRate"))
+        {
+            double sd = data->metadata("SequenceDuration").toDouble();
+            sequenceDuration = (sequenceDuration < sd) ? sd : sequenceDuration;
+
+            double sf = data->metadata("SequenceFrameRate").toDouble();
+            sequenceFrameRate = (sequenceFrameRate < sf) ? sf : sequenceFrameRate;
+
+            viewHasTemporalData = true;
+        }
+    }
+    if(viewHasTemporalData)
+    {
+        d->timeLineParameter->setNumberOfFrame(sequenceDuration * sequenceFrameRate);
+        d->timeLineParameter->setDuration(sequenceDuration);
+        d->timeLineParameter->show();
+    }
+    else
+        d->timeLineParameter->hide();
 }

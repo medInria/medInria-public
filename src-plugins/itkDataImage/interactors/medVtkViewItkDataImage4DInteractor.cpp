@@ -22,7 +22,6 @@
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
-#include <medTimeLineParameter.h>
 #include <medAbstractImageData.h>
 #include <medDoubleParameter.h>
 
@@ -41,7 +40,6 @@ public:
     vtkMetaDataSetSequence *sequence;
     medAbstractImageData *imageData;
 
-    medTimeLineParameter *timeLineParameter;
     double currentTime;
 
 };
@@ -125,10 +123,6 @@ bool medVtkViewItkDataImage4DInteractor::registered()
 
 void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 {
-    double range[2]={0,0};
-    double mintimestep, mintime, maxtime;
-    unsigned int numberofsteps;
-
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
     if(!d->imageData)
         return;
@@ -146,21 +140,15 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
               AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
               AppendImageSequence<double>(data,d->view,d->sequence, layer))
         {
+            d->imageData->addMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
+            d->imageData->addMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
+                                                                           (double)d->sequence->GetMaxTime()));
+
+            qDebug() << "SequenceDuration" << d->sequence->GetMaxTime();
+            qDebug() << "SequenceFrameRate" <<(double)d->sequence->GetNumberOfMetaDataSets() / (double)d->sequence->GetMaxTime();
 
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
-
-            d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
-
-            this->timeRange (range);
-            mintimestep = frameRate();
-            mintime = range[0];
-            maxtime = range[1];
-
-            d->timeLineParameter->setNumberOfFrame(d->sequence->GetNumberOfMetaDataSets());
-            d->timeLineParameter->setDuration(maxtime);
-            connect(d->timeLineParameter, SIGNAL(frameChanged(double)), d->view->timeParameter(), SLOT(setValue(double)));
-            connect(d->view, SIGNAL(currentTimeChanged(double)), this, SLOT(setCurrentTime(double)));
 
             if(d->view->layer(d->imageData) == 0)
             {
@@ -191,7 +179,6 @@ QWidget* medVtkViewItkDataImage4DInteractor::buildToolBoxWidget()
     QWidget *toolBoxWidget = new QWidget;
     QVBoxLayout *tbLayout = new QVBoxLayout(toolBoxWidget);
     tbLayout->addWidget(medVtkViewItkDataImageInteractor::buildToolBoxWidget());
-    tbLayout->addWidget(d->timeLineParameter->getWidget());
 
     return toolBoxWidget;
 }
@@ -213,51 +200,9 @@ QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::linkableParamet
     return parameters;
 }
 
-void medVtkViewItkDataImage4DInteractor::setCurrentTime (double time)
+void medVtkViewItkDataImage4DInteractor::setCurrentTime(const double &time)
 {
-    d->timeLineParameter->blockSignals(true);
-    d->timeLineParameter->setTime(time);
-    d->timeLineParameter->blockSignals(false);
-
-    d->sequence->UpdateToTime(d->timeLineParameter->time());
-}
-
-
-void medVtkViewItkDataImage4DInteractor::timeRange (double* range)
-{
-    if (!d->sequence)
-    {
-        range[0] = 0;
-        range[1] = 1.0;
-        return;
-    }
-
-    double mintime = 3000;
-    double maxtime = -3000;
-
-    mintime = std::min (mintime, d->sequence->GetMinTime());
-    maxtime = std::max (maxtime, d->sequence->GetMaxTime());
-
-    range[0] = mintime;
-    range[1] = maxtime;
-}
-
-double medVtkViewItkDataImage4DInteractor::frameRate()
-{
-    if (!d->sequence)
-    {
-        return 0.01;
-    }
-
-    double step = 3000;
-
-    double mintime = d->sequence->GetMinTime();
-    double maxtime = d->sequence->GetMaxTime();
-    double number = d->sequence->GetNumberOfMetaDataSets();
-
-    step = std::min ( step, (maxtime - mintime)/(number - 1.0) );
-
-    return step;
+    d->sequence->UpdateToTime(time);
 }
 
 void medVtkViewItkDataImage4DInteractor::updateWidgets()
