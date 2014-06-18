@@ -73,7 +73,7 @@ QStringList vtkDataMesh4DInteractor::dataHandled()
 bool vtkDataMesh4DInteractor::registered()
 {
     medViewFactory *factory = medViewFactory::instance();
-    return factory->registerAdditionalInteractor<vtkDataMesh4DInteractor>("vtkDataMesh4DInteractor",
+    return factory->registerInteractor<vtkDataMesh4DInteractor>("vtkDataMesh4DInteractor",
                                                                           QStringList () << "medVtkView" <<
                                                                           vtkDataMesh4DInteractor::dataHandled());
 }

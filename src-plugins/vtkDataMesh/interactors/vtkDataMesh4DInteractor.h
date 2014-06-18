@@ -34,8 +34,6 @@ public:
     static bool registered();
 
     virtual void setData(medAbstractData *data);
-    virtual medAbstractData *data() const;
-
 
 public slots:
     virtual void setCurrentTime (const double &time);
