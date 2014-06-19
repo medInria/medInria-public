@@ -36,92 +36,260 @@
 #include <medPoolIndicator.h>
 
 
+
 class medLinkMenuPrivate
 {
 public :
     QWidget *popupWidget;
-    QMenu *menu;
+    QWidget *subPopupWidget;
+
+    medListWidget *groupList;
+    QListWidgetItem * newGroupitem;
     QLineEdit *newGroupEdit;
+    QStringList availableParams;
+
+    medListWidget *paramList;
 };
 
 medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
 {
     this->setIcon(QIcon(":icons/link.svg"));
-    //this->setCheckable(true);
-
-    d->menu = new QMenu("Test", this);
-    d->menu->addAction("Group1");
 
     d->popupWidget = new QWidget(this);
-    d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
 
-    d->newGroupEdit = new QLineEdit("New Group...", d->popupWidget);
+    d->subPopupWidget = new QWidget(this);
+    d->subPopupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
+
+    d->groupList = new medListWidget;
+    d->groupList->setMouseTracking(true);
+
+    d->paramList = new medListWidget;
+
+    d->newGroupitem = new QListWidgetItem("New Group...");
+    d->groupList->addItem(d->newGroupitem);
+    d->newGroupEdit = new QLineEdit("New Group...");
+    d->groupList->setItemWidget(d->newGroupitem, d->newGroupEdit);
 
     QVBoxLayout *popUpLayout = new QVBoxLayout(d->popupWidget);
     popUpLayout->setContentsMargins(0,0,0,0);
-    popUpLayout->addWidget(d->newGroupEdit);
+    popUpLayout->addWidget(d->groupList);
 
-    this->setMenu(d->menu);
+    connect(this, SIGNAL(clicked()), this, SLOT(showPopup()));
+    connect(d->newGroupEdit, SIGNAL(returnPressed()), this, SLOT(createNewGroup()));
+    connect(d->newGroupEdit, SIGNAL(cursorPositionChanged(int,int)), this, SLOT(test()));
+    connect(d->groupList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectItem(QListWidgetItem*)));
+    connect(d->groupList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(showSubMenu(QListWidgetItem*)));
 
-    //showPopup(false);
 
-    connect(d->menu, SIGNAL(aboutToShow()), this, SLOT(showPopup()));
-    connect(d->menu, SIGNAL(aboutToHide()), this, SLOT(hidePopup()));
+    QVBoxLayout *subPopUpLayout = new QVBoxLayout(d->subPopupWidget);
+    subPopUpLayout->setContentsMargins(0,0,0,0);
+    subPopUpLayout->addWidget(d->paramList);
+
+    d->groupList->installEventFilter(this);
+    d->paramList->installEventFilter(this);
 }
 
+void medLinkMenu::createNewGroup()
+{
+    QListWidgetItem * item = new QListWidgetItem(/*d->newGroupEdit->text()*/);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
+    item->setCheckState(Qt::Unchecked);
+    d->groupList->insertItem(0,item);
+
+    medGroupWidget *groupWidget = new medGroupWidget(d->newGroupEdit->text());
+    groupWidget->setFocus();
+    d->groupList->setItemWidget(item, groupWidget);
+
+    d->newGroupEdit->blockSignals(true);
+    d->newGroupEdit->setText("New Group...");
+    d->newGroupEdit->blockSignals(false);
+
+    connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
+  //  connect(groupWidget, SIGNAL(leaveEvent()), this, SLOT(hideSubMenu()));
+
+}
+
+void medLinkMenu::test()
+{
+    if(d->newGroupEdit->text() == "New Group...")
+        d->newGroupEdit->setText("");
+
+}
+
+void medLinkMenu::selectItem(QListWidgetItem *item)
+{
+    if(item == d->newGroupitem)
+        return;
+
+    if(item->checkState() == Qt::Checked)
+        item->setCheckState(Qt::Unchecked);
+    else item->setCheckState(Qt::Checked);
+}
 
 void medLinkMenu::showPopup ()
 {
-    qDebug() << "showPopup";
-    qDebug() << d->menu->height();
-    qDebug() << d->menu->sizeHint().height();
+    d->groupList->setFocus();
 
-    QPoint globalPos = mapToGlobal(d->menu->pos());
-    d->menu->blockSignals(true);
-    d->popupWidget->move( globalPos.x(),globalPos.y() + d->menu->sizeHint().height() );
-    //d->popupWidget->move( 1 , 1 );
-    d->popupWidget->show();
-    d->menu->blockSignals(false);
-
-    //d->menu->show();
-    //d->popupWidget->show();
-}
-
-void medLinkMenu::hidePopup ()
-{
-    qDebug() << "hidePopup";
-    if(d->newGroupEdit->hasFocus())
-       d->menu->show();
-    else
-    d->popupWidget->hide();
-}
-
-
-
-/**
-  * QListWidget doesn't seem to be able to resize itself to its content
-  * medLayerListWidget should do so.
-  */
-class medLayerListWidget : public QListWidget
-{
-public:
-    virtual QSize sizeHint() const
+    if(!d->popupWidget->isVisible())
     {
-        int height = 0;
-        for(int i=0; i< this->count(); i++)
-        {
-           QListWidgetItem* item = this->item(i);
-           if(this->itemWidget(item))
-             height += this->itemWidget(item)->height();
-           else height += 10;
-        }
-        height += 10;
+        qDebug() << "showPopup show ";
+        QPoint globalPos = mapToGlobal(QPoint(0,0));
 
-        if(this->count() == 0)
-            return QListWidget::sizeHint();
-        else return QSize(QListWidget::sizeHint().width()-10, height);
+        d->popupWidget->move( globalPos.x(), globalPos.y() + this->height());
+
+        d->popupWidget->show();
+        d->groupList->show();
     }
-};
+}
+
+bool medLinkMenu::eventFilter(QObject *object, QEvent *event)
+{
+    if(event->type() == QEvent::FocusOut)
+    {
+        QPoint cursor = QCursor::pos();
+
+        QPoint p1 = d->popupWidget->mapToGlobal(QPoint(0,0));
+        QRect rect1( p1, d->popupWidget->size() );
+
+        QPoint p2 = d->subPopupWidget->mapToGlobal(QPoint(0,0));
+        QRect rect2( p2, d->subPopupWidget->size() );
+
+        QPoint p3 = this->mapToGlobal(QPoint(0,0));
+        QRect rect3( p3, this->size() );
+
+        if( !rect1.contains(cursor) && !rect2.contains(cursor) && !rect3.contains(cursor) )
+        {
+            qDebug()  << "eventFilter hide";
+            d->popupWidget->hide();
+            d->subPopupWidget->hide();
+        }
+    }
+}
+
+void medLinkMenu::setAvailableParameters(QStringList parameters)
+{
+    d->availableParams = parameters;
+
+    foreach(QString param, parameters)
+    {
+        QListWidgetItem * item = new QListWidgetItem(param);
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
+        item->setCheckState(Qt::Unchecked);
+        d->paramList->insertItem(0,item);
+    }
+}
+
+void medLinkMenu::showSubMenu(QListWidgetItem *item)
+{
+    d->subPopupWidget->show();
+    d->paramList->show();
+
+    QWidget *w = dynamic_cast<QWidget*>(d->groupList->itemWidget(item));    
+    QPoint globalPosItem = w->mapToGlobal(QPoint(0,0));
+    QPoint globalPosButton = mapToGlobal(QPoint(0,0));
+
+    d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width(), globalPosItem.y());
+}
+
+void medLinkMenu::showSubMenu()
+{
+    QWidget *w = dynamic_cast<QWidget*>(this->sender());
+
+    for(int i=0; i<d->groupList->count(); i++)
+    {
+        QListWidgetItem *item = d->groupList->item(i);
+        if( w == d->groupList->itemWidget(item) )
+        {
+            showSubMenu(item);
+        }
+    }
+}
+
+void medLinkMenu::hideSubMenu()
+{
+    qDebug() <<  "hideSubMenu";
+    d->subPopupWidget->hide();
+    d->paramList->hide();
+}
+
+
+void medLinkMenu::moveEvent(QMoveEvent *)
+{
+    qDebug() << "moveEvent";
+
+}
+
+void medLinkMenu::resizeEvent(QResizeEvent *)
+{
+    qDebug() << "resizeEvent";
+}
+
+void medLinkMenu::paintEvent(QPaintEvent *ev)
+{
+    QPushButton::paintEvent(ev);
+
+    QPoint globalPos = mapToGlobal(QPoint(0,0));
+    d->popupWidget->move( globalPos.x(), globalPos.y() + this->height());
+
+    QPoint currentPos = d->subPopupWidget->mapToGlobal(QPoint(0,0));
+
+    d->subPopupWidget->move( globalPos.x() - d->subPopupWidget->width(), currentPos.y());
+}
+
+/******
+  * medGroupWidget
+*******/
+
+medGroupWidget::medGroupWidget(QString groupName, QWidget * parent): QWidget(parent)
+{
+    QHBoxLayout *groupLayout = new QHBoxLayout(this);
+    groupLayout->setContentsMargins(0,0,0,0);
+    this->setLayout(groupLayout);
+
+    QLabel *label = new QLabel(groupName);
+
+    QPushButton *removeButton = new QPushButton;
+    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+    removeButton->setIconSize(QSize(12,12));
+    removeButton->setFixedSize(12,12);
+
+    medLeftArrow *arrow = new medLeftArrow(this);
+
+    groupLayout->addWidget(arrow);
+    groupLayout->addWidget(label);
+    groupLayout->addStretch();
+    groupLayout->addWidget(removeButton);
+
+}
+
+void medGroupWidget::enterEvent(QEvent *)
+{
+    emit enterEvent();
+}
+
+void medGroupWidget::leaveEvent(QEvent *)
+{
+    emit leaveEvent();
+}
+
+
+/******
+  * medLeftArrow
+*******/
+
+void medLeftArrow::paintEvent(QPaintEvent *pe)
+{
+    QPainter p(this);
+
+    QStyleOptionFrame opt;
+    opt.init(this);
+
+    style()->drawPrimitive( QStyle::PE_IndicatorArrowLeft, &opt, &p, this);
+}
+
+
+
 
 
 
@@ -147,7 +315,7 @@ public:
     medToolBox *interactorToolBox;
     medToolBox *navigatorToolBox;
     medToolBox *mouseInteractionToolBox;
-    medLayerListWidget* layerListWidget;
+    medListWidget* layerListWidget;
 
     QList<QListWidgetItem*> selectedLayers;
 
@@ -309,38 +477,11 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         QWidget *linkWidget = new QWidget;
         QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
 
-//        view->linkParameter()->getLabel()->setText(tr("Link view properties: "));
-//        linkLayout->addWidget(view->linkParameter()->getLabel());
-//        linkLayout->addWidget(view->linkParameter()->getComboBox());
-
-//        d->navigatorToolBox->addWidget(linkWidget);
-
-//        view->linkParameter()->getLabel()->show();
-//        view->linkParameter()->getComboBox()->show();
-
-        QMenuBar *linkViewMenuBar = new QMenuBar;
-        QMenu *menu = new QMenu("Link");
-
-//        QAction *newGroupAct = new QAction("New Group", this);
-//        newGroupAct->setCheckable(true);
-
-        QWidgetAction *newGroupAct = new QWidgetAction(this);
-        QLineEdit *newGroupEdit = new QLineEdit;
-        newGroupEdit->setText("New group...");
-        newGroupAct->setDefaultWidget(newGroupEdit);
-
-        //        newGroupAct->setCheckable(true);
-
-        QAction *linkMenuAction = linkViewMenuBar->addMenu(menu);
-        menu->addAction(newGroupAct);
-
-        connect(newGroupAct, SIGNAL(triggered()), this, SLOT(buildLinkViewMenu()));
-
-
-        medLinkMenu *test = new medLinkMenu(linkWidget);
+        medLinkMenu *menu = new medLinkMenu(linkWidget);
+        menu->setAvailableParameters(QStringList() << "Foo" << "Bar" << "Yeah");
 
         linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
-        linkLayout->addWidget(test);
+        linkLayout->addWidget(menu);
 
         d->navigatorToolBox->addWidget(linkWidget);
 
@@ -388,7 +529,7 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->selectedLayers.clear();
 
     delete d->layerListWidget;
-    d->layerListWidget = new medLayerListWidget;
+    d->layerListWidget = new medListWidget;
     d->layerListWidget->setAlternatingRowColors(true);
 
     d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -475,6 +616,8 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                 QListWidgetItem * item = new QListWidgetItem;
                 item->setData(Qt::UserRole, layer);
+                item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable | Qt::ItemIsEnabled); // set checkable flag
+                item->setCheckState(Qt::Checked);
                 d->containerForLayerWidgetsItem.insert(item, uuid);
                 item->setSizeHint(QSize(layerWidget->width(), 25));
                 d->layerListWidget->addItem(item);
@@ -705,18 +848,4 @@ bool medAbstractWorkspace::isUserViewPoolable() const
 bool medAbstractWorkspace::isUserLayerClosable() const
 {
     return d->userLayerClosable;
-}
-
-void medAbstractWorkspace::buildLinkViewMenu()
-{
-    medAbstractView* view = NULL;
-    QStringList viewType;
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
-    {
-        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        view = container->view();
-    }
-
-    QAction *action = dynamic_cast<QAction *>(this->sender());
-    action->menu()->addAction("New Group");
 }
