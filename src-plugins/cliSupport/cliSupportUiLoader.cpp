@@ -133,11 +133,14 @@ void cliSupportFrontendQtGui::preRun()
         count++;
     _runDir.cd(QString("medInria_cli_run_%1").arg(count));
 
+    // no clear standard yet on whether extensions are formatted as :
+    // "*.ext", ".ext" or "ext", so we handle all 3 possiblities.
+    QRegExp extensionRegex("\\s*(?:\\*?\\.)?([^,]+)\\s*");
     foreach(cliDataInputWidget * w, _inputList) {
         dtkAbstractData * data = medDataManager::instance()->data(w->index());
         if ( ! data) continue;
 
-        QStringList possibleExtensions = w->parameter().fileExtensions().replaceInStrings("*", "");
+        QStringList possibleExtensions = w->parameter().fileExtensions().replaceInStrings(extensionRegex, ".\\1");
         QString finalPath = _runDir.absoluteFilePath(w->parameter().name());
 
         cliFileHandler exporter;
@@ -147,7 +150,7 @@ void cliSupportFrontendQtGui::preRun()
     }
 
     foreach(cliDataOutputWidget * w, _outputList) {
-        QStringList possibleExtensions = w->parameter().fileExtensions().replaceInStrings("*", "");
+        QStringList possibleExtensions = w->parameter().fileExtensions().replaceInStrings(extensionRegex, ".\\1");
         QString ext = cliFileHandler::compatibleImportExtension(possibleExtensions);
         // TODO error handling on ext being empty
         QString outputPath = _runDir.absoluteFilePath(w->parameter().name()) + ext;
