@@ -40,8 +40,6 @@ public:
     virtual medImageView::Orientation orientation() const ;
 
 public slots:
-    void switchToFourViews();
-    
     void updateWidgets();
 
     virtual void setOrientation(medImageView::Orientation orientation);

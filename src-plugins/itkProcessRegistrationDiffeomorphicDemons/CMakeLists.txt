@@ -95,7 +95,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkLog
   ITKCommon  
   medCore
-  medGui
   medRegistration
   )
 

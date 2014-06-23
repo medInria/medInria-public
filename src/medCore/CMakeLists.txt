@@ -22,6 +22,14 @@ list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   data
   data/annotationData
+  gui
+  gui/commonWidgets
+  gui/database
+  gui/factories
+  gui/lookUpTables
+  gui/settingsWidgets
+  gui/toolboxes
+  gui/viewContainers
   process
   views
   views/interactors
@@ -77,6 +85,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCore
+    dtkGui
     dtkLog
     )
 
@@ -100,6 +109,7 @@ set_lib_install_rules(${PROJECT_NAME}
 
 if(MEDINRIA_BUILD_TESTS)
   add_subdirectory(tests)
+  add_subdirectory(gui/tests)
   add_subdirectory(parameters/tests)
   #add_subdirectory(view/tests)
   #add_subdirectory(data/tests)

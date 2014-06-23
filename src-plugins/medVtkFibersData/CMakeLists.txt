@@ -107,7 +107,6 @@ target_link_libraries(${PROJECT_NAME}
   vtkFiltering
   vtkRendering
   medCore
-  medGui
   medLog
   medVtkInria
   ttkAlgorithms

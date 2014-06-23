@@ -104,7 +104,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   RegistrationAddOn
   medCore
-  medGui
   medRegistration
   )
 

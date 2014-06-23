@@ -39,6 +39,8 @@ public:
     QList<medStringListParameter*> linkparameters;
     unsigned int currentLayer;
 
+    QWidget* toolBarWidget;
+
     // toolboxes
     QWidget* navigatorWidget;
     QWidget* mouseInteractionWidget;
@@ -49,6 +51,7 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
 {
     d->primaryNavigator = NULL;
     d->currentLayer = 0;
+    d->toolBarWidget = 0;
     d->navigatorWidget = NULL;
     d->mouseInteractionWidget = NULL;
     connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
@@ -465,6 +468,17 @@ QWidget* medAbstractLayeredView::navigatorWidget()
     return d->navigatorWidget;
 }
 
+QWidget* medAbstractLayeredView::toolBarWidget()
+{
+    if(!d->toolBarWidget)
+    {
+        d->toolBarWidget = this->buildToolBarWidget();
+        connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
+    }
+
+    return d->toolBarWidget;
+}
+
 QWidget* medAbstractLayeredView::mouseInteractionWidget()
 {
     if(!d->mouseInteractionWidget)
@@ -530,6 +544,11 @@ void medAbstractLayeredView::unlinkLayer(unsigned int layer)
 {
     foreach(medAbstractParameter *param, this->interactorsParameters(layer))
         medParameterPoolManager::instance()->unlinkParameter(param);
+}
+
+void medAbstractLayeredView::removeInternToolBarWidget()
+{
+    d->toolBarWidget = NULL;
 }
 
 void medAbstractLayeredView::removeInternNavigatorWidget()

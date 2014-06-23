@@ -66,6 +66,7 @@ public:
 
     virtual QWidget* navigatorWidget();
     virtual QWidget* mouseInteractionWidget();
+    QWidget* toolBarWidget();
 
 public slots:
     void setDataList(QList<medDataIndex> dataList);
@@ -91,12 +92,15 @@ protected:
 
     virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);
 
+    virtual QWidget* buildToolBarWidget() = 0;
+
 protected slots:
     virtual void setUpViewForThumbnail();
     virtual void linkLayer(QString);
     virtual void unlinkLayer(unsigned int layer = -1);
 
 private slots:
+    void removeInternToolBarWidget();
     void removeInternNavigatorWidget();
     void removeInternMouseInteractionWidget();
     void updateDataListParameter(unsigned int layer);
