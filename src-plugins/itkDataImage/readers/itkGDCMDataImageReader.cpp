@@ -168,7 +168,7 @@ itkGDCMDataImageReader::~itkGDCMDataImageReader()
 
 bool itkGDCMDataImageReader::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(
+    return medAbstractDataFactory::instance()->registerDataReaderType(
                 "itkGDCMDataImageReader",
                 QStringList() << "itkDataImageDouble3"
                 << "itkDataImageFloat3"
