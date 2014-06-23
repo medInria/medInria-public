@@ -132,7 +132,7 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameter
     QList<medAbstractParameter*> params;
     params.append(d->lutParam);
     params.append(d->presetParam);
-    params.append(this->visibiltyParameter());
+    params.append(this->visibilityParameter());
     params.append(this->windowLevelParameter());
     params.append(this->opacityParameter());
 
@@ -147,9 +147,9 @@ QList<medBoolParameter*> medVtkViewItkDataImageInteractor::mouseInteractionParam
     return params;
 }
 
-void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
+void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
 {
-    medAbstractInteractor::setData(data);
+    medAbstractInteractor::setInputData(data);
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
     if(!d->imageData)
         return;

@@ -133,9 +133,9 @@ medAbstractImageView * msegAnnotationInteractor::getView()
     return d->medVtkView;
 }
 
-void msegAnnotationInteractor::setData(medAbstractData *data)
+void msegAnnotationInteractor::setInputData(medAbstractData *data)
 {
-    this->medAbstractInteractor::setData(data);
+    this->medAbstractInteractor::setInputData(data);
 
     if ( d->imageData ) {
         disconnect(d->imageData, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
@@ -375,7 +375,7 @@ QList<medAbstractParameter*> msegAnnotationInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> params;
     params.append(this->opacityParameter());
-    params.append(this->visibiltyParameter());
+    params.append(this->visibilityParameter());
     return params;
 }
 

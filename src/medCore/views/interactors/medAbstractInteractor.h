@@ -38,9 +38,9 @@ public:
 public:
     virtual QString description() const = 0;
 
-    virtual void setData(medAbstractData *data);
-    virtual medAbstractData *data() const;
-
+    virtual void setInputData(medAbstractData *data);
+    virtual medAbstractData *inputData() const;
+    
     virtual QWidget* toolBoxWidget();
     virtual QWidget* toolBarWidget();
     virtual QWidget* layerWidget();
@@ -94,7 +94,7 @@ private:
     using dtkAbstractViewInteractor::setView;
     using dtkAbstractViewInteractor::view;
     using dtkAbstractViewInteractor::setData;
-//    using dtkAbstractViewInteractor::data;
+    using dtkAbstractViewInteractor::data;
 
     using dtkAbstractViewInteractor::output;
     using dtkAbstractViewInteractor::predraw;

@@ -39,7 +39,7 @@ medAbstractLayeredViewInteractor::~medAbstractLayeredViewInteractor()
     delete d;
 }
 
-medAbstractBoolParameter* medAbstractLayeredViewInteractor::visibiltyParameter()
+medAbstractBoolParameter* medAbstractLayeredViewInteractor::visibilityParameter()
 {
     if(!d->visibilityParameter)
     {
@@ -48,9 +48,9 @@ medAbstractBoolParameter* medAbstractLayeredViewInteractor::visibiltyParameter()
     }
     if(d->visibilityParameter->getPushButton()->icon().isNull())
     {
-        if(this->data())
+        if(this->inputData())
         {
-            QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(this->data(),":icons/layer.png");
+            QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(this->inputData(),":icons/layer.png");
             QPushButton* thumbnailButton = d->visibilityParameter->getPushButton();
             QIcon thumbnailIcon;
             // Set the off icon to the greyed out version of the regular icon
