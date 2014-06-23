@@ -17,6 +17,16 @@
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
 #include <medViewFactory.h>
+#include <medViewContainer.h>
+#include <medViewContainerSplitter.h>
+
+#include <medTriggerParameter.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
+#include <medParameterPool.h>
+#include <medParameterPoolManager.h>
+#include <medDataListParameter.h>
+#include <medStringListParameter.h>
 
 class medAbstractImageViewPrivate
 {
@@ -26,12 +36,15 @@ public:
 
     medAbstractImageViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
+
+    medTriggerParameter *fourViewsParameter;
 };
 
 medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayeredView(parent),
     d(new medAbstractImageViewPrivate)
 {
     d->primaryNavigator = NULL;
+    d->fourViewsParameter = NULL;
 }
 
 medAbstractImageView::~medAbstractImageView()
@@ -156,6 +169,105 @@ bool medAbstractImageView::initialiseNavigators()
     return true;
 }
 
+QWidget* medAbstractImageView::buildToolBarWidget()
+{
+    QWidget *toolBarWidget = this->fourViewsParameter()->getPushButton();
+
+    return toolBarWidget;
+}
+
+void medAbstractImageView::switchToFourViews()
+{
+    medViewContainer *topLeftContainer = dynamic_cast <medViewContainer *> (this->parent());
+    medViewContainerSplitter *topLeftContainerSplitter = dynamic_cast <medViewContainerSplitter *> (topLeftContainer->parent());
+
+    medViewContainer *bottomLeftContainer = topLeftContainer->splitVertically();
+    medViewContainer *topRightContainer = topLeftContainer->splitHorizontally();
+    medViewContainer *bottomRightContainer = bottomLeftContainer->splitHorizontally();
+
+    topLeftContainerSplitter->adjustContainersSize();
+
+    foreach(medDataIndex index, this->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+
+        topRightContainer->addData(data);
+        bottomLeftContainer->addData(data);
+        bottomRightContainer->addData(data);
+    }
+
+    this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+    medAbstractImageView *bottomLeftContainerView = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
+    medAbstractImageView *topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+    medAbstractImageView *bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
+
+    bottomLeftContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+    topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+    bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+
+    QString linkGroupBaseName = "MPR ";
+    unsigned int linkGroupNumber = 1;
+
+    QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    while (medParameterPoolManager::instance()->pool(linkGroupName))
+    {
+        linkGroupNumber++;
+        linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    }
+
+    QColor linkGroupColor;
+    double hueValue = 2.0 * linkGroupNumber / (1.0 + sqrt(5.0));
+    hueValue -= floor(hueValue);
+    linkGroupColor.setHsvF(hueValue,1.0,1.0);
+
+    QPixmap linkGroupPixmap(32,32);
+    linkGroupPixmap.fill(linkGroupColor);
+    QIcon linkGroupIcon(linkGroupPixmap);
+
+    this->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    this->linkParameter()->setValue(linkGroupName);
+    topRightContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    topRightContainerView->linkParameter()->setValue(linkGroupName);
+    bottomLeftContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    bottomLeftContainerView->linkParameter()->setValue(linkGroupName);
+    bottomRightContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
+    bottomRightContainerView->linkParameter()->setValue(linkGroupName);
+
+    for (unsigned int i = 0;i < this->layersCount();++i)
+    {
+        QString linkLayerName = linkGroupBaseName + QString::number(linkGroupNumber) + " Layer " + QString::number(i+1);
+        QColor linkLayerColor;
+        hueValue = 2.0 * i / (1.0 + sqrt(5.0));
+        hueValue -= floor(hueValue);
+        linkLayerColor.setHsvF(hueValue,1.0,1.0);
+
+        QPixmap linkLayerPixmap(32,32);
+        linkLayerPixmap.fill(linkLayerColor);
+        QIcon linkLayerIcon(linkLayerPixmap);
+
+        this->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        this->layerLinkParameter(i)->setValue(linkLayerName);
+        topRightContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        topRightContainerView->layerLinkParameter(i)->setValue(linkLayerName);
+        bottomLeftContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        bottomLeftContainerView->layerLinkParameter(i)->setValue(linkLayerName);
+        bottomRightContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
+        bottomRightContainerView->layerLinkParameter(i)->setValue(linkLayerName);
+    }
+
+    medParameterPool *linkPool = medParameterPoolManager::instance()->pool(linkGroupName);
+    linkPool->removeAll("axial");
+    linkPool->removeAll("coronal");
+    linkPool->removeAll("sagittal");
+    linkPool->removeAll("3d");
+
+    linkPool->append(this->dataListParameter());
+    linkPool->append(topRightContainerView->dataListParameter());
+    linkPool->append(bottomLeftContainerView->dataListParameter());
+    linkPool->append(bottomRightContainerView->dataListParameter());
+}
 
 void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
 {
@@ -203,13 +315,16 @@ medDoubleParameter *medAbstractImageView::opacityParameter(unsigned int layer)
 
 medTriggerParameter *medAbstractImageView::fourViewsParameter()
 {
-    medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
-    if(!pNavigator)
+    if (!d->fourViewsParameter)
     {
-        return NULL;
+        d->fourViewsParameter = new medTriggerParameter("Four views", this);
+        QIcon fourViewsIcon (":/icons/fourViews.png");
+        d->fourViewsParameter->setButtonIcon(fourViewsIcon);
+
+        connect(d->fourViewsParameter,SIGNAL(triggered()),this,SLOT(switchToFourViews()));
     }
-    
-    return pNavigator->fourViewsParameter();
+
+    return d->fourViewsParameter;
 }
 
 medCompositeParameter *medAbstractImageView::windowLevelParameter(unsigned int layer)

@@ -108,7 +108,12 @@ public:
      */
     virtual qreal scale() = 0;
 
+protected:
+    virtual QWidget* buildToolBarWidget();
+
 public slots:
+    void switchToFourViews();
+
     void setOrientation(medImageView::Orientation orientation);
 
 

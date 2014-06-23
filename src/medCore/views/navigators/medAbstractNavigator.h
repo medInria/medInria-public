@@ -49,7 +49,7 @@ protected:
      */
     virtual QWidget* buildToolBoxWidget() = 0;
     /**
-     * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+     * @brief buildToolBarWidget reimplement it to construct and return the widget displayed in the
      * toolbar of the container where the parent view is dsiplayed.
      * @return
      */
