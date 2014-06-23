@@ -52,7 +52,7 @@ public:
 
     static bool registered();
 
-    virtual void setData(medAbstractData *data);
+    virtual void setInputData(medAbstractData *data);
 
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBarWidget();

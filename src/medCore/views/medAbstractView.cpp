@@ -77,7 +77,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     else
     {
         medAbstractViewInteractor* interactor = factory->createInteractor<medAbstractViewInteractor>(primaryInt.first(), this);
-        interactor->setData(data);
+        interactor->setInputData(data);
         d->primaryInteractor = interactor;
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
@@ -90,7 +90,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
         foreach (QString i, extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
-            interactor->setData(data);
+            interactor->setInputData(data);
             extraIntList << interactor;
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         }
