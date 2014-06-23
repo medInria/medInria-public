@@ -115,7 +115,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
         medAbstractImageViewInteractor* interactor = factory->createInteractor<medAbstractImageViewInteractor>(primaryInt.first(), this);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
-        interactor->setData(data);
+        interactor->setInputData(data);
         d->primaryInteractorsHash.insert(data, interactor);
     }
 
@@ -129,7 +129,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
             connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
-            interactor->setData(data);
+            interactor->setInputData(data);
             extraIntList << interactor;
         }
         d->extraInteractorsHash.insert(data, extraIntList);

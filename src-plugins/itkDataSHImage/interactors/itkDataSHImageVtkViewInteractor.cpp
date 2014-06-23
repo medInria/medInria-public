@@ -167,9 +167,9 @@ bool itkDataSHImageVtkViewInteractor::registered()
     return true;
 }
 
-void itkDataSHImageVtkViewInteractor::setData(medAbstractData *data)
+void itkDataSHImageVtkViewInteractor::setInputData(medAbstractData *data)
 {
-    medAbstractInteractor::setData(data);
+    medAbstractInteractor::setInputData(data);
 
     if (!data || !data->data())
         return;
@@ -265,7 +265,7 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     d->parameters.append(glyphResolutionParam);
     d->parameters.append(minorScalingParam);
     d->parameters.append(majorScalingParam);
-    d->parameters.append(visibiltyParameter());
+    d->parameters.append(visibilityParameter());
 
 
     connect(tesselationTypeParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationType(QString)));

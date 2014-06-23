@@ -40,12 +40,12 @@ medAbstractInteractor::~medAbstractInteractor()
     delete d;
 }
 
-void medAbstractInteractor::setData(medAbstractData* data)
+void medAbstractInteractor::setInputData(medAbstractData* data)
 {
     d->data = data;
 }
 
-medAbstractData* medAbstractInteractor::data() const
+medAbstractData* medAbstractInteractor::inputData() const
 {
     return d->data;
 }

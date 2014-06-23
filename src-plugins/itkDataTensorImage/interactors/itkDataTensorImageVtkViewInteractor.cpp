@@ -163,9 +163,9 @@ bool itkDataTensorImageVtkViewInteractor::registered()
     return true;
 }
 
-void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
+void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
 {
-    medAbstractInteractor::setData(data);
+    medAbstractInteractor::setInputData(data);
 
     if (!data)
         return;
@@ -305,7 +305,7 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
     multiplierParam->setValue(0);
     d->parameters << multiplierParam;
 
-    d->parameters << visibiltyParameter();
+    d->parameters << visibilityParameter();
 
     connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));

@@ -95,7 +95,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     else
     {
         medAbstractLayeredViewInteractor* interactor = factory->createInteractor<medAbstractLayeredViewInteractor>(primaryInt.first(), this);
-        interactor->setData(data);
+        interactor->setInputData(data);
         d->primaryInteractorsHash.insert(data, interactor);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
@@ -108,7 +108,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
         foreach (QString i, extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
-            interactor->setData(data);
+            interactor->setInputData(data);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
             extraIntList << interactor;
         }
@@ -373,7 +373,7 @@ medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned i
         return NULL;
     }
 
-    return pInteractor->visibiltyParameter();
+    return pInteractor->visibilityParameter();
 }
 
 medStringListParameter* medAbstractLayeredView::layerLinkParameter(unsigned int layer)

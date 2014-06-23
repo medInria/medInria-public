@@ -342,9 +342,9 @@ bool medVtkFibersDataInteractor::registered()
     return true;
 }
 
-void medVtkFibersDataInteractor::setData(medAbstractData *data)
+void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
 {
-    medAbstractInteractor::setData(data);
+    medAbstractInteractor::setInputData(data);
 
     if (!data)
         return;
@@ -375,7 +375,7 @@ void medVtkFibersDataInteractor::setData(medAbstractData *data)
         this->updateWidgets();
     }
 
-    d->parameters << visibiltyParameter();
+    d->parameters << visibilityParameter();
 }
 
 void medVtkFibersDataInteractor::changeBundlingItem(QStandardItem *item)
