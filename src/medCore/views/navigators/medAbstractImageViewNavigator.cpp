@@ -25,7 +25,6 @@ public:
     medAbstractImageView *view;
     medCompositeParameter *cameraParameter;
     medVector3DParameter *positionBeingViewedParameter;
-    medTriggerParameter *fourViewsParameter;
 };
 
 medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *parent):
@@ -34,7 +33,6 @@ medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *pa
     d->view = dynamic_cast<medAbstractImageView *>(parent);
     d->positionBeingViewedParameter = NULL;
     d->cameraParameter = NULL;
-    d->fourViewsParameter = NULL;
 }
 
 medAbstractImageViewNavigator::~medAbstractImageViewNavigator()
@@ -64,18 +62,4 @@ medAbstractVector3DParameter* medAbstractImageViewNavigator::positionBeingViewed
         connect(d->positionBeingViewedParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToPosition(QVector3D)));
     }
     return d->positionBeingViewedParameter;
-}
-
-medTriggerParameter *medAbstractImageViewNavigator::fourViewsParameter()
-{
-    if (!d->fourViewsParameter)
-    {
-        d->fourViewsParameter = new medTriggerParameter("Four views", this);
-        QIcon fourViewsIcon (":/icons/fourViews.png");
-        d->fourViewsParameter->setButtonIcon(fourViewsIcon);
-
-        connect(d->fourViewsParameter,SIGNAL(triggered()),this,SLOT(switchToFourViews()));
-    }
-    
-    return d->fourViewsParameter;
 }

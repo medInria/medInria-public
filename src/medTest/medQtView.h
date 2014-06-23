@@ -56,6 +56,8 @@ public:
 
     virtual QList<medAbstractParameter*> navigatorsParameters();
 
+    virtual QWidget* buildToolBarWidget();
+
 public slots:
     virtual void reset();
 
