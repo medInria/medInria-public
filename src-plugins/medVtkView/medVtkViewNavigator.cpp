@@ -21,15 +21,24 @@
 
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
+#include <medViewContainer.h>
+#include <medViewContainerSplitter.h>
+#include <medParameterPoolManager.h>
+#include <medParameterPool.h>
 #include <medAbstractImageView.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
+#include <medTriggerParameter.h>
 #include <medDoubleParameter.h>
 #include <medVector2DParameter.h>
 #include <medVector3DParameter.h>
 #include <medDoubleParameter.h>
+#include <medDataListParameter.h>
 #include <medCompositeParameter.h>
 #include <medStringListParameter.h>
+
+#include <medDataIndex.h>
+#include <medDataManager.h>
 
 /*=========================================================================
 
@@ -68,6 +77,8 @@ class medVtkViewNavigatorPrivate
     medBoolParameter *showRulerParameter;
     medBoolParameter *showAnnotationParameter;
     medBoolParameter *showScalarBarParameter;
+    
+    QPushButton *fourImageSplitterButton;
 
     QWidget *showOptionsWidget;
 
@@ -157,7 +168,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showRulerParameter->setValue(true);
     d->showAnnotationParameter->setValue(true);
     d->showScalarBarParameter->setValue(false);
-
+    
     d->enableZooming = new medBoolParameter("Zooming", this);
     d->enableZooming->setIcon(QIcon (":/icons/magnify.png"));
     d->enableZooming->setToolTip(tr("Zooming"));
@@ -406,6 +417,7 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
 QWidget* medVtkViewNavigator::buildToolBarWidget()
 {
     QWidget *toolBarWidget = new QWidget;
+    
     return toolBarWidget;
 }
 

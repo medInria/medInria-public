@@ -30,7 +30,7 @@ public:
     virtual ~medAbstractLayeredViewInteractor();
 
 public:
-    virtual medAbstractBoolParameter *visibiltyParameter();
+    virtual medAbstractBoolParameter *visibilityParameter();
 
 private slots:
     virtual void setVisibility(bool) = 0;

@@ -38,7 +38,7 @@ public:
     virtual QWidget* buildLayerWidget();
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
-    virtual void setData(medAbstractData * data);
+    virtual void setInputData(medAbstractData * data);
     virtual QString lut() const;
     virtual QString preset() const;
     virtual QStringList handled() const;

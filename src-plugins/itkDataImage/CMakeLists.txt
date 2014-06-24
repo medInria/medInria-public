@@ -147,7 +147,6 @@ target_link_libraries(${PROJECT_NAME}
   ITKStatistics
   ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
   medCore
-  medGui
   medImageIO
   medLog
   medVtkInria

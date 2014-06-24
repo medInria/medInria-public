@@ -46,7 +46,7 @@ public slots:
     virtual void setCamera(QList<QVariant>) = 0;
 
     virtual void moveToPosition (const QVector3D &position) = 0;
-
+    
 private:
     medAbstractImageViewNavigatorPrivate *d;
 };

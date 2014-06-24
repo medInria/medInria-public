@@ -61,7 +61,7 @@ public:
     virtual QWidget* buildToolBoxWidget();
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
-    virtual void setData(medAbstractData * data);
+    virtual void setInputData(medAbstractData * data);
 
     virtual void setUpViewForThumbnail();
 

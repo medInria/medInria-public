@@ -22,7 +22,7 @@ class %1Private;
  * @brief Registration process.
  *
  * This plugin uses the registration programming interface (RPI).
- * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medInria/src/medGui.
+ * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medInria/src/medCore/gui.
  *
  */
 class %2PLUGIN_EXPORT %1 : public itk%3Registration

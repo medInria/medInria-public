@@ -207,7 +207,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->adjustSizeButton = new QToolButton(this);
     d->adjustSizeButton->setIcon(adjustIcon);
     d->adjustSizeButton->setObjectName("adjustSizeButton");
-    d->adjustSizeButton->setShortcut(Qt::AltModifier + Qt::Key_S);
+    d->adjustSizeButton->setShortcut(Qt::AltModifier + Qt::Key_A);
     d->adjustSizeButton->setToolTip(tr("Adjust containers size"));
     QObject::connect(d->adjustSizeButton, SIGNAL(clicked()), this, SLOT(adjustContainersSize()));
 

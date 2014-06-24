@@ -14,6 +14,7 @@
 #include <medAbstractLayeredView.h>
 
 #include <dtkCore/dtkSmartPointer.h>
+#include <medDataManager.h>
 
 #include <medAbstractData.h>
 #include <medAbstractLayeredViewInteractor.h>
@@ -21,7 +22,7 @@
 #include <medStringListParameter.h>
 #include <medParameterPoolManager.h>
 #include <medBoolGroupParameter.h>
-
+#include <medDataListParameter.h>
 
 class medAbstractLayeredViewPrivate
 {
@@ -33,8 +34,12 @@ public:
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
+    medDataListParameter *dataListParameter;
+    
     QList<medStringListParameter*> linkparameters;
     unsigned int currentLayer;
+
+    QWidget* toolBarWidget;
 
     // toolboxes
     QWidget* navigatorWidget;
@@ -46,9 +51,15 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
 {
     d->primaryNavigator = NULL;
     d->currentLayer = 0;
+    d->toolBarWidget = 0;
     d->navigatorWidget = NULL;
     d->mouseInteractionWidget = NULL;
     connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
+    
+    d->dataListParameter = new medDataListParameter("DataList",this);
+    connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medDataIndex>)),this,SLOT(setDataList(QList<medDataIndex>)));
+    connect(this,SIGNAL(layerAdded(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
+    connect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
 }
 
 medAbstractLayeredView::~medAbstractLayeredView()
@@ -84,7 +95,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     else
     {
         medAbstractLayeredViewInteractor* interactor = factory->createInteractor<medAbstractLayeredViewInteractor>(primaryInt.first(), this);
-        interactor->setData(data);
+        interactor->setInputData(data);
         d->primaryInteractorsHash.insert(data, interactor);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
@@ -97,7 +108,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
         foreach (QString i, extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
-            interactor->setData(data);
+            interactor->setInputData(data);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
             extraIntList << interactor;
         }
@@ -178,9 +189,14 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     this->insertLayer(d->layersDataList.count(), data);
 }
 
-QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::dataList() const
+QList<medDataIndex> medAbstractLayeredView::dataList() const
 {
-    return d->layersDataList;
+    QList <medDataIndex> outputList;
+    
+    foreach(medAbstractData *data, d->layersDataList)
+        outputList << data->dataIndex();
+    
+    return outputList;
 }
 
 unsigned int medAbstractLayeredView::layer(medAbstractData * data)
@@ -212,6 +228,56 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     }
     else
         this->~medAbstractLayeredView();
+}
+
+void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
+{
+    d->dataListParameter->blockSignals(true);
+    
+    foreach(medDataIndex index, dataList)
+    {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+        
+        this->addLayer(data);
+        
+        if ((this->layerLinkParameter(0)->value() != "")&&(this->layerLinkParameter(0)->value() != "None"))
+        {
+            unsigned int layerNumber = this->layer(data);
+            QString groupName = this->linkParameter()->value() + " Layer " + QString::number(layerNumber+1);
+            QColor layerColor;
+            double hueValue = 2.0 * layerNumber / (1.0 + sqrt(5.0));
+            hueValue -= floor(hueValue);
+            layerColor.setHsvF(hueValue,1.0,1.0);
+            
+            QPixmap layerPixmap(32,32);
+            layerPixmap.fill(layerColor);
+            QIcon layerIcon(layerPixmap);
+            
+            if (!this->layerLinkParameter(layerNumber)->items().contains(groupName))
+                this->layerLinkParameter(layerNumber)->addItem(groupName,layerIcon);
+
+            this->layerLinkParameter(layerNumber)->setValue(groupName);
+        }
+    }
+    
+    foreach(medDataIndex index, this->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+
+        if (!dataList.contains(data->dataIndex()))
+            this->removeLayer(this->layer(data));
+    }
+    
+    d->dataListParameter->blockSignals(false);
+}
+
+void medAbstractLayeredView::updateDataListParameter(unsigned int layer)
+{
+    d->dataListParameter->setValues(this->dataList());
 }
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
@@ -294,6 +360,10 @@ unsigned int medAbstractLayeredView::layersCount() const
     return d->layersDataList.count();
 }
 
+medDataListParameter *medAbstractLayeredView::dataListParameter() const
+{
+    return d->dataListParameter;
+}
 
 medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned int layer)
 {
@@ -303,7 +373,7 @@ medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned i
         return NULL;
     }
 
-    return pInteractor->visibiltyParameter();
+    return pInteractor->visibilityParameter();
 }
 
 medStringListParameter* medAbstractLayeredView::layerLinkParameter(unsigned int layer)
@@ -374,6 +444,13 @@ QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int
     return interactors;
 }
 
+QList<medAbstractNavigator*> medAbstractLayeredView::navigators()
+{
+    QList<medAbstractNavigator*> navigatorsList;
+    navigatorsList << this->primaryNavigator() << this->extraNavigators();
+    
+    return navigatorsList;
+}
 
 QWidget* medAbstractLayeredView::navigatorWidget()
 {
@@ -389,6 +466,17 @@ QWidget* medAbstractLayeredView::navigatorWidget()
     }
 
     return d->navigatorWidget;
+}
+
+QWidget* medAbstractLayeredView::toolBarWidget()
+{
+    if(!d->toolBarWidget)
+    {
+        d->toolBarWidget = this->buildToolBarWidget();
+        connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
+    }
+
+    return d->toolBarWidget;
 }
 
 QWidget* medAbstractLayeredView::mouseInteractionWidget()
@@ -456,6 +544,11 @@ void medAbstractLayeredView::unlinkLayer(unsigned int layer)
 {
     foreach(medAbstractParameter *param, this->interactorsParameters(layer))
         medParameterPoolManager::instance()->unlinkParameter(param);
+}
+
+void medAbstractLayeredView::removeInternToolBarWidget()
+{
+    d->toolBarWidget = NULL;
 }
 
 void medAbstractLayeredView::removeInternNavigatorWidget()
