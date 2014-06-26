@@ -35,7 +35,7 @@ public:
            QListWidgetItem* item = this->item(i);
            if(this->itemWidget(item))
              height += this->itemWidget(item)->height();
-           else height += item->sizeHint().height();
+           else height += QListWidget::sizeHintForRow(i);
         }
         height += QListWidget::sizeHintForRow(0);
 
