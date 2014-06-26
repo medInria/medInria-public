@@ -19,24 +19,38 @@
 
 class medLinkMenuPrivate;
 
+
 class MEDGUI_EXPORT medLinkMenu : public QPushButton
 {
     Q_OBJECT
 
 public:
     medLinkMenu(QWidget * parent = 0);
+    virtual ~medLinkMenu();
+    //void setAvailableGroups(QStringList groups);
     void setAvailableParameters(QStringList parameters);
+    void setGroups(QHash<QString, QStringList> groups);
+    void setSelectedGroups(QStringList groups);
+
+signals:
+    void parameterChecked(QString paramName, QString groupName, bool groupChecked);
+    void parameterUnchecked(QString paramName, QString groupName, bool groupChecked);
+
+    void groupChecked(QString groupName);
+    void groupUnchecked(QString groupName);
+
 
 private slots:
     void showPopup();
     void createNewGroup();
     void updateGroupEditOnFocusIn();
     void updateGroupEditOnFocusOut();
-    void selectItem(QListWidgetItem *);
+    void selectGroup(QListWidgetItem *);
+    void selectParam(QListWidgetItem *);
     void showSubMenu(QListWidgetItem *);
     void showSubMenu();
     void hideSubMenu();
-    void highLightParam(QListWidgetItem*);
+    void highlightParam(QListWidgetItem*);
     void deleteGroup();
 
 protected:
@@ -46,6 +60,8 @@ protected:
 private:
     void updateListsPosition();
     void hideMenus();
+    void checkAllParams(bool check);
+    void updateParamCheckState(QString group);
 
 private:
     medLinkMenuPrivate *d;

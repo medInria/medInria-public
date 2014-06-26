@@ -33,6 +33,7 @@ public:
 
     QList<medParameterPool*> pools();
     medParameterPool* pool(QString poolId);
+    QStringList pools(medAbstractParameter *param);
 
 
 public slots:
