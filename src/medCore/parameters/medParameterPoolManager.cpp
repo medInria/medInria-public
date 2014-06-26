@@ -80,6 +80,17 @@ QList<medParameterPool*> medParameterPoolManager::pools()
     return d->pools.values();
 }
 
+QStringList medParameterPoolManager::pools(medAbstractParameter *param)
+{
+    QStringList pools;
+    foreach(medParameterPool *pool, d->pools.values() )
+    {
+        if(pool->parameters().contains(param))
+            pools << pool->name();
+    }
+    return pools;
+}
+
 medParameterPool* medParameterPoolManager::pool(QString poolId)
 {
     return d->pools.value(poolId);

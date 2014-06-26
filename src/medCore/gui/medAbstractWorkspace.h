@@ -40,6 +40,9 @@ class medViewContainer;
  * medWorkspaceArea::setupWorkspace is called.
  *
 */
+
+class medParameterGroup;
+
 class medAbstractWorkspacePrivate;
 class MEDCORE_EXPORT medAbstractWorkspace : public QObject
 {
@@ -89,6 +92,14 @@ protected slots:
 
 private slots:
     void buildTemporaryPool();
+
+    void addViewstoGroup(QString);
+    void removeViewsFromGroup(QString);
+    void addParamToGroup(QString, QString, bool);
+    void removeParamFromGroup(QString, QString, bool);
+
+private:
+    medParameterGroup* parameterGroup(QString groupName);
 
 private:
     medAbstractWorkspacePrivate *d;

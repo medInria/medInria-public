@@ -36,6 +36,8 @@
 #include <medPoolIndicator.h>
 #include <medLinkMenu.h>
 #include <medListWidget.h>
+#include <medParameterGroup.h>
+
 
 
 class medAbstractWorkspacePrivate
@@ -65,6 +67,8 @@ public:
     QList<QListWidgetItem*> selectedLayers;
 
     medParameterPool *temporaryPoolForInteractors;
+
+    QHash <QString, medParameterGroup*> parametersGroups;
 };
 
 medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d(new medAbstractWorkspacePrivate)
@@ -193,6 +197,8 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
     medAbstractView* view = NULL;
     QList<QWidget*>  navigators;
     QStringList viewType;
+    QList<medAbstractView*> views;
+
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
@@ -206,6 +212,7 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         {
             viewType << view->identifier();
             navigators << view->navigatorWidget();
+            views << view;
         }
     }
     // add the navigators widgets
@@ -223,7 +230,49 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
 
         medLinkMenu *menu = new medLinkMenu(linkWidget);
-        menu->setAvailableParameters(QStringList() << "Foo" << "Bar" << "Yeah");
+        connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToGroup(QString,QString,bool)));
+        connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromGroup(QString,QString,bool)));
+        connect(menu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
+        connect(menu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeViewsFromGroup(QString)));
+
+        QList<medAbstractParameter*>  viewParams;
+        QStringList paramNames;
+
+        // get all view parameters
+        foreach(medAbstractView* view, views)
+        {
+            viewParams.append(view->primaryNavigator()->linkableParameters());
+            foreach(medAbstractNavigator* nav,  view->extraNavigators())
+            {
+                viewParams.append(nav->linkableParameters());
+            }
+        }
+
+        // build a stringList witth all the param names
+        foreach(medAbstractParameter* viewParam, viewParams)
+            paramNames << viewParam->name();
+
+
+        QHash<QString, QStringList> groups;
+        QStringList selectedGroups;
+        QHashIterator<QString, medParameterGroup*> iter(d->parametersGroups);
+        while(iter.hasNext())
+        {
+            iter.next();
+            groups.insert(iter.key(), iter.value()->parameters());
+            bool temp = true;
+            foreach(medAbstractView *view, views)
+            {
+                if(!iter.value()->impactedViews().contains(view))
+                    temp = false;
+            }
+            if(temp)
+                selectedGroups << iter.key();
+        }
+
+        menu->setAvailableParameters( paramNames );
+        menu->setGroups(groups);
+        menu->setSelectedGroups(selectedGroups);
 
         linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
         linkLayout->addWidget(menu);
@@ -544,6 +593,87 @@ void medAbstractWorkspace::buildTemporaryPool()
 
         d->temporaryPoolForInteractors->append(view->layerLinkParameter(layer));
     }
+}
+
+
+
+void medAbstractWorkspace::addViewstoGroup(QString group)
+{
+    medAbstractView* view = NULL;
+
+    medParameterGroup *paramGroup = parameterGroup(group);
+
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        view = container->view();
+
+        if(!view)
+            continue;
+
+        paramGroup->addImpactedView(view);
+    }
+
+    paramGroup->update();
+}
+
+void medAbstractWorkspace::removeViewsFromGroup(QString group)
+{
+    medAbstractView* view = NULL;
+
+    medParameterGroup *paramGroup = parameterGroup(group);
+
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        view = container->view();
+
+        if(!view)
+            continue;
+
+        paramGroup->removeImpactedView(view);
+    }
+
+    paramGroup->update();
+}
+
+void medAbstractWorkspace::addParamToGroup(QString param, QString group, bool groupChecked)
+{
+    medParameterGroup *paramGroup = parameterGroup(group);
+    paramGroup->addParameter(param);
+
+    if(groupChecked)
+    {
+        addViewstoGroup(group);
+        paramGroup->update();
+    }
+}
+
+void medAbstractWorkspace::removeParamFromGroup(QString param, QString group, bool groupChecked)
+{
+    medParameterGroup *paramGroup = parameterGroup(group);
+    paramGroup->removeParameter(param);
+
+    if( groupChecked )
+    {
+        addViewstoGroup(group);
+        paramGroup->update();
+    }
+}
+
+medParameterGroup * medAbstractWorkspace::parameterGroup(QString groupName)
+{
+    medParameterGroup *paramGroup;
+    if(d->parametersGroups.contains(groupName))
+    {
+        paramGroup = d->parametersGroups[groupName];
+    }
+    else
+    {
+        paramGroup = new medParameterGroup(groupName, this);
+        d->parametersGroups.insert(groupName, paramGroup);
+    }
+    return paramGroup;
 }
 
 void medAbstractWorkspace::open(const medDataIndex &index)
