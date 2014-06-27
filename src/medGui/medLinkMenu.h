@@ -27,7 +27,6 @@ class MEDGUI_EXPORT medLinkMenu : public QPushButton
 public:
     medLinkMenu(QWidget * parent = 0);
     virtual ~medLinkMenu();
-    //void setAvailableGroups(QStringList groups);
     void setAvailableParameters(QStringList parameters);
     void setGroups(QHash<QString, QStringList> groups);
     void setSelectedGroups(QStringList groups);
@@ -38,6 +37,8 @@ signals:
 
     void groupChecked(QString groupName);
     void groupUnchecked(QString groupName);
+
+    void groupDeleted(QString groupName);
 
 
 private slots:

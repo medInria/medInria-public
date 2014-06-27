@@ -41,6 +41,7 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->popupWidget = new QWidget(this);
     d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
 
+
     d->subPopupWidget = new QWidget(this);
     d->subPopupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
 
@@ -62,7 +63,7 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(this, SIGNAL(clicked()), this, SLOT(showPopup()));
     connect(d->newGroupEdit, SIGNAL(returnPressed()), this, SLOT(createNewGroup()));
     connect(d->groupList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectGroup(QListWidgetItem*)));
-    connect(d->paramList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectParam(QListWidgetItem*)));
+    connect(d->paramList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(selectParam(QListWidgetItem*)));
     connect(d->groupList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(showSubMenu(QListWidgetItem*)));
     connect(d->paramList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
 
@@ -80,41 +81,27 @@ medLinkMenu::~medLinkMenu()
 {
 }
 
-//void medLinkMenu::setAvailableGroups(QStringList groups)
-//{
-//    d->availableGroups = groups;
-
-//    d->groupList->blockSignals(true);
-
-//    foreach(QString group, groups)
-//    {
-//        QListWidgetItem * item = new QListWidgetItem();
-//        item->setData(Qt::UserRole, group);
-//        item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
-//        item->setCheckState(Qt::Unchecked);
-//        d->groupList->insertItem(0,item);
-
-//        medGroupWidget *groupWidget = new medGroupWidget(group);
-//        groupWidget->setFocus();
-//        d->groupList->setItemWidget(item, groupWidget);
-
-//        connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
-//        connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
-//    }
-
-//    d->groupList->blockSignals(false);
-//}
 
 void medLinkMenu::setAvailableParameters(QStringList parameters)
 {
     d->availableParams = parameters;
 
+    for(int i=0; i<d->paramList->count();i++)
+        d->paramList->model()->removeRow(i);
+
+    QListWidgetItem * item = new QListWidgetItem("All");
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    item->setCheckState(Qt::Unchecked);
+    d->paramList->insertItem(0,item);
+
+    int i = 1;
     foreach(QString param, parameters)
     {
         QListWidgetItem * item = new QListWidgetItem(param);
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
         item->setCheckState(Qt::Unchecked);
-        d->paramList->insertItem(0,item);
+        d->paramList->insertItem(i,item);
+        i++;
     }
 }
 
@@ -146,16 +133,19 @@ void medLinkMenu::setGroups(QHash<QString, QStringList> groups)
         connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
         connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
 
+        d->paramList->blockSignals(true);
         // update param items
         for(int i=0; i<d->paramList->count(); i++)
         {
             QListWidgetItem *item = d->paramList->item(i);
             if( params.contains( item->text()) )
             {
+
                 item->setCheckState(Qt::Checked);
                 break;
             }
         }
+        d->paramList->blockSignals(false);
     }
 }
 
@@ -190,6 +180,8 @@ void medLinkMenu::createNewGroup()
     d->newGroupEdit->blockSignals(true);
     d->newGroupEdit->setText("New Group...");
     d->newGroupEdit->blockSignals(false);
+
+    d->popupWidget->resize(d->groupList->sizeHint());
 
     connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
     connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
@@ -238,20 +230,28 @@ void medLinkMenu::selectParam(QListWidgetItem *item)
     bool groupChecked = d->groupList->currentItem()->checkState() == Qt::Checked;
     QString param = item->text();
 
+    if(param == "All")
+    {
+        if(item->checkState() == Qt::Checked)
+          checkAllParams(true);
+        else checkAllParams(false);
+        return;
+    }
+
     if(item->checkState() == Qt::Checked)
     {
-        item->setCheckState(Qt::Unchecked);
-        emit parameterUnchecked(param, group, groupChecked);
+        emit parameterChecked(param, group, groupChecked);
+
+        if(!d->currentGroups.contains(group, param))
+            d->currentGroups.insert(group, param);
     }
     else
     {
-        item->setCheckState(Qt::Checked);
-        emit parameterChecked(param, group, groupChecked);
-    }
+        emit parameterUnchecked(param, group, groupChecked);
 
-    if(d->currentGroups.contains(group, param))
-        d->currentGroups.remove(group, param);
-    else d->currentGroups.insert(group, param);
+        if(d->currentGroups.contains(group, param))
+            d->currentGroups.remove(group, param);
+    }
 }
 
 void medLinkMenu::showPopup ()
@@ -264,6 +264,7 @@ void medLinkMenu::showPopup ()
 
         d->popupWidget->move( globalPos.x(), globalPos.y() + this->height());
 
+        d->popupWidget->resize(d->groupList->sizeHint());
         d->popupWidget->show();
     }
 }
@@ -289,7 +290,9 @@ void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
 
     d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width(), globalPosItem.y());
 
+    d->paramList->blockSignals(true);
     checkAllParams(false);
+    d->paramList->blockSignals(false);
     updateParamCheckState( group );
 }
 
@@ -413,11 +416,16 @@ void medLinkMenu::deleteGroup()
 
     if(itemToRemove)
     {
-        d->groupList->model()->removeRow(d->groupList->row(itemToRemove));
+        QString group = itemToRemove->data(Qt::UserRole).toString();
+        bool res = d->groupList->model()->removeRow(d->groupList->row(itemToRemove));
+        if(res)
+            emit groupDeleted(group);
         hideSubMenu();
     }
 
     d->groupList->blockSignals(false);
+
+    d->popupWidget->resize(d->groupList->sizeHint());
 }
 
 void medLinkMenu::checkAllParams(bool check)
@@ -429,9 +437,8 @@ void medLinkMenu::checkAllParams(bool check)
         {
             item->setCheckState(Qt::Checked);
         }
-            else
+        else
         {
-            //qDebug() << "uncheck all params";
             item->setCheckState(Qt::Unchecked);
         }
     }
