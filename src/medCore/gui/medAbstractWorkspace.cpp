@@ -36,7 +36,8 @@
 #include <medPoolIndicator.h>
 #include <medLinkMenu.h>
 #include <medListWidget.h>
-#include <medParameterGroup.h>
+#include <medViewParameterGroup.h>
+#include <medLayerParameterGroup.h>
 
 
 
@@ -68,7 +69,8 @@ public:
 
     medParameterPool *temporaryPoolForInteractors;
 
-    QHash <QString, medParameterGroup*> parametersGroups;
+    QHash <QString, medViewParameterGroup*> viewParameterGroups;
+    QHash <QString, medLayerParameterGroup*> layerParameterGroups;
 };
 
 medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d(new medAbstractWorkspacePrivate)
@@ -198,12 +200,15 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
     QList<QWidget*>  navigators;
     QStringList viewType;
     QList<medAbstractView*> views;
+    QList<medAbstractParameter*>  viewsParams;
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
         view = container->view();
+        views << view;
+
         // add nothing if the view is empty
         if(!view)
             continue;
@@ -212,7 +217,10 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         {
             viewType << view->identifier();
             navigators << view->navigatorWidget();
-            views << view;
+
+            viewsParams.append(view->primaryNavigator()->linkableParameters());
+            foreach(medAbstractNavigator* nav,  view->extraNavigators())
+                viewsParams.append(nav->linkableParameters());
         }
     }
     // add the navigators widgets
@@ -230,32 +238,21 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
 
         medLinkMenu *menu = new medLinkMenu(linkWidget);
-        connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToGroup(QString,QString,bool)));
-        connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromGroup(QString,QString,bool)));
+        connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToViewGroup(QString,QString,bool)));
+        connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromViewGroup(QString,QString,bool)));
         connect(menu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
         connect(menu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeViewsFromGroup(QString)));
+        connect(menu, SIGNAL(groupDeleted(QString)), this, SLOT(removeViewGroup(QString)));
 
-        QList<medAbstractParameter*>  viewParams;
         QStringList paramNames;
 
-        // get all view parameters
-        foreach(medAbstractView* view, views)
-        {
-            viewParams.append(view->primaryNavigator()->linkableParameters());
-            foreach(medAbstractNavigator* nav,  view->extraNavigators())
-            {
-                viewParams.append(nav->linkableParameters());
-            }
-        }
-
         // build a stringList witth all the param names
-        foreach(medAbstractParameter* viewParam, viewParams)
+        foreach(medAbstractParameter* viewParam, viewsParams)
             paramNames << viewParam->name();
-
 
         QHash<QString, QStringList> groups;
         QStringList selectedGroups;
-        QHashIterator<QString, medParameterGroup*> iter(d->parametersGroups);
+        QHashIterator<QString, medViewParameterGroup*> iter(d->viewParameterGroups);
         while(iter.hasNext())
         {
             iter.next();
@@ -497,17 +494,8 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     // add link parameter
     if(view &&  d->userLayerPoolable)
     {
-        QWidget *linkWidget = new QWidget;
-        QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
-
-        view->layerLinkParameter(currentLayer)->getLabel()->setText(tr("Link layer properties: "));
-        linkLayout->addWidget(view->layerLinkParameter(currentLayer)->getLabel());
-        linkLayout->addWidget(view->layerLinkParameter(currentLayer)->getComboBox());
-
-        d->interactorToolBox->addWidget(linkWidget);
-
-        view->layerLinkParameter(currentLayer)->getLabel()->show();
-        view->layerLinkParameter(currentLayer)->getComboBox()->show();
+        QWidget *linkMenu = buildLayerLinkMenu(d->layerListWidget->selectedItems());
+        d->interactorToolBox->addWidget(linkMenu);
 
         d->interactorToolBox->show();
     }
@@ -601,7 +589,7 @@ void medAbstractWorkspace::addViewstoGroup(QString group)
 {
     medAbstractView* view = NULL;
 
-    medParameterGroup *paramGroup = parameterGroup(group);
+    medViewParameterGroup *paramGroup = viewParameterGroup(group);
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -621,7 +609,7 @@ void medAbstractWorkspace::removeViewsFromGroup(QString group)
 {
     medAbstractView* view = NULL;
 
-    medParameterGroup *paramGroup = parameterGroup(group);
+    medViewParameterGroup *paramGroup = viewParameterGroup(group);
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -637,9 +625,9 @@ void medAbstractWorkspace::removeViewsFromGroup(QString group)
     paramGroup->update();
 }
 
-void medAbstractWorkspace::addParamToGroup(QString param, QString group, bool groupChecked)
+void medAbstractWorkspace::addParamToViewGroup(QString param, QString group, bool groupChecked)
 {
-    medParameterGroup *paramGroup = parameterGroup(group);
+    medViewParameterGroup *paramGroup = viewParameterGroup(group);
     paramGroup->addParameter(param);
 
     if(groupChecked)
@@ -649,9 +637,9 @@ void medAbstractWorkspace::addParamToGroup(QString param, QString group, bool gr
     }
 }
 
-void medAbstractWorkspace::removeParamFromGroup(QString param, QString group, bool groupChecked)
+void medAbstractWorkspace::removeParamFromViewGroup(QString param, QString group, bool groupChecked)
 {
-    medParameterGroup *paramGroup = parameterGroup(group);
+    medViewParameterGroup *paramGroup = viewParameterGroup(group);
     paramGroup->removeParameter(param);
 
     if( groupChecked )
@@ -661,17 +649,94 @@ void medAbstractWorkspace::removeParamFromGroup(QString param, QString group, bo
     }
 }
 
-medParameterGroup * medAbstractWorkspace::parameterGroup(QString groupName)
+medViewParameterGroup * medAbstractWorkspace::viewParameterGroup(QString groupName)
 {
-    medParameterGroup *paramGroup;
-    if(d->parametersGroups.contains(groupName))
+    medViewParameterGroup *paramGroup;
+    if(d->viewParameterGroups.contains(groupName))
     {
-        paramGroup = d->parametersGroups[groupName];
+        paramGroup = d->viewParameterGroups[groupName];
     }
     else
     {
-        paramGroup = new medParameterGroup(groupName, this);
-        d->parametersGroups.insert(groupName, paramGroup);
+        paramGroup = new medViewParameterGroup(groupName, this);
+        d->viewParameterGroups.insert(groupName, paramGroup);
+    }
+    return paramGroup;
+}
+
+void medAbstractWorkspace::addLayerstoGroup(QString group)
+{
+    medLayerParameterGroup *paramGroup = layerParameterGroup(group);
+    medViewContainerManager *containerMng =  medViewContainerManager::instance();
+
+    foreach(QListWidgetItem *item, d->selectedLayers)
+    {
+        int currentLayer = item->data(Qt::UserRole).toInt();
+
+        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        medViewContainer *container = containerMng->container(containerUuid);
+        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
+
+        paramGroup->addImpactedlayer(view, currentLayer);
+    }
+
+    paramGroup->update();
+}
+
+void medAbstractWorkspace::removeLayersFromGroup(QString group)
+{
+    medLayerParameterGroup *paramGroup = layerParameterGroup(group);
+    medViewContainerManager *containerMng =  medViewContainerManager::instance();
+
+    foreach(QListWidgetItem *item, d->selectedLayers)
+    {
+        int currentLayer = item->data(Qt::UserRole).toInt();
+
+        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        medViewContainer *container = containerMng->container(containerUuid);
+        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
+
+        paramGroup->removeImpactedlayer(view, currentLayer);
+    }
+
+    paramGroup->update();
+}
+
+void medAbstractWorkspace::addParamToLayerGroup(QString param, QString group, bool groupChecked)
+{
+    medLayerParameterGroup *paramGroup = layerParameterGroup(group);
+    paramGroup->addParameter(param);
+
+    if(groupChecked)
+    {
+        addLayerstoGroup(group);
+        paramGroup->update();
+    }
+}
+
+void medAbstractWorkspace::removeParamFromLayerGroup(QString param, QString group, bool groupChecked)
+{
+    medLayerParameterGroup *paramGroup = layerParameterGroup(group);
+    paramGroup->removeParameter(param);
+
+    if( groupChecked )
+    {
+        addLayerstoGroup(group);
+        paramGroup->update();
+    }
+}
+
+medLayerParameterGroup * medAbstractWorkspace::layerParameterGroup(QString groupName)
+{
+    medLayerParameterGroup *paramGroup;
+    if(d->layerParameterGroups.contains(groupName))
+    {
+        paramGroup = d->layerParameterGroups[groupName];
+    }
+    else
+    {
+        paramGroup = new medLayerParameterGroup(groupName, this);
+        d->layerParameterGroups.insert(groupName, paramGroup);
     }
     return paramGroup;
 }
@@ -691,14 +756,12 @@ void medAbstractWorkspace::setUserLayerPoolable(bool poolable)
 {
     d->userLayerPoolable = poolable;
     this->updateLayersToolBox();
-
 }
 
 void medAbstractWorkspace::setUserViewPoolable(bool poolable)
 {
     d->userViewPoolable = poolable;
     this->updateNavigatorsToolBox();
-
 }
 
 void medAbstractWorkspace::setUserLayerClosable(bool Closable)
@@ -717,8 +780,92 @@ bool medAbstractWorkspace::isUserViewPoolable() const
     return d->userViewPoolable;
 }
 
-
 bool medAbstractWorkspace::isUserLayerClosable() const
 {
     return d->userLayerClosable;
+}
+
+QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> selectedlayers)
+{
+    QStringList paramNames;
+    QList<medAbstractParameter*> layersParams;
+    QMultiHash<medAbstractLayeredView*, unsigned int> layers;
+    medViewContainerManager *containerMng =  medViewContainerManager::instance();
+
+    foreach(QListWidgetItem *item, selectedlayers)
+    {
+        int currentLayer = item->data(Qt::UserRole).toInt();
+        QList<QString> interactorsIdentifier;
+
+        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        medViewContainer *container = containerMng->container(containerUuid);
+        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
+
+        foreach (medAbstractInteractor* interactor, view->interactors(currentLayer))
+        {
+            QString interactorIdentifier = interactor->identifier();
+            if(!interactorsIdentifier.contains(interactorIdentifier))
+            {
+                interactorsIdentifier << interactorIdentifier;
+                layersParams << interactor->linkableParameters();
+            }
+        }
+
+        layers.insert(view, currentLayer);
+    }
+
+    QWidget *linkWidget = new QWidget;
+    QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+
+    medLinkMenu *menu = new medLinkMenu(linkWidget);
+    connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToLayerGroup(QString,QString,bool)));
+    connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromLayerGroup(QString,QString,bool)));
+    connect(menu, SIGNAL(groupChecked(QString)), this, SLOT(addLayerstoGroup(QString)));
+    connect(menu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeLayersFromGroup(QString)));
+    connect(menu, SIGNAL(groupDeleted(QString)), this, SLOT(removeLayerGroup(QString)));
+
+
+    // build a stringList with all the param names
+    foreach(medAbstractParameter* layerParam, layersParams)
+        paramNames << layerParam->name();
+
+    QHash<QString, QStringList> groups;
+    QStringList selectedGroups;
+    QHashIterator<QString, medLayerParameterGroup*> iter(d->layerParameterGroups);
+    while(iter.hasNext())
+    {
+        iter.next();
+        groups.insert(iter.key(), iter.value()->parameters());
+        bool temp = true;
+
+        QHashIterator<medAbstractLayeredView*, unsigned int> iterLayer(layers);
+        while(iterLayer.hasNext())
+        {
+            iterLayer.next();
+            if(!iter.value()->impactedLayers().contains(iterLayer.key(), iterLayer.value()))
+                temp = false;
+        }
+        if(temp)
+            selectedGroups << iter.key();
+    }
+
+    menu->setAvailableParameters( paramNames.toSet().toList() );
+    menu->setGroups(groups);
+    menu->setSelectedGroups(selectedGroups);
+
+    linkLayout->addWidget(new QLabel(tr("Link layer properties: ")));
+    linkLayout->addWidget(menu);
+
+    return linkWidget;
+
+}
+
+void medAbstractWorkspace::removeViewGroup(QString group)
+{
+    delete d->viewParameterGroups.take(group);
+}
+
+void medAbstractWorkspace::removeLayerGroup(QString group)
+{
+    delete d->layerParameterGroups.take(group);
 }

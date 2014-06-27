@@ -41,7 +41,8 @@ class medViewContainer;
  *
 */
 
-class medParameterGroup;
+class medViewParameterGroup;
+class medLayerParameterGroup;
 
 class medAbstractWorkspacePrivate;
 class MEDCORE_EXPORT medAbstractWorkspace : public QObject
@@ -95,11 +96,21 @@ private slots:
 
     void addViewstoGroup(QString);
     void removeViewsFromGroup(QString);
-    void addParamToGroup(QString, QString, bool);
-    void removeParamFromGroup(QString, QString, bool);
+    void addParamToViewGroup(QString, QString, bool);
+    void removeParamFromViewGroup(QString, QString, bool);
+
+    void addLayerstoGroup(QString);
+    void removeLayersFromGroup(QString);
+    void addParamToLayerGroup(QString, QString, bool);
+    void removeParamFromLayerGroup(QString, QString, bool);
+
+    void removeViewGroup(QString);
+    void removeLayerGroup(QString);
 
 private:
-    medParameterGroup* parameterGroup(QString groupName);
+    QWidget* buildLayerLinkMenu(QList<QListWidgetItem*>);
+    medViewParameterGroup* viewParameterGroup(QString groupName);
+    medLayerParameterGroup* layerParameterGroup(QString groupName);
 
 private:
     medAbstractWorkspacePrivate *d;

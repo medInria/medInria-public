@@ -18,13 +18,13 @@
 class medAbstractView;
 class medAbstractLayeredView;
 class medParameterPool;
-class medParameterGroupPrivate;
+class medAbstractParameterGroupPrivate;
 
-class medParameterGroup : public QObject
+class medAbstractParameterGroup : public QObject
 {
 public:
-    medParameterGroup(QString name = "", QObject *parent = 0);
-    virtual ~medParameterGroup();
+    medAbstractParameterGroup(QString name = "", QObject *parent = 0);
+    virtual ~medAbstractParameterGroup();
 
     void setName(QString name);
     QString name() const;
@@ -35,19 +35,11 @@ public:
     void setParameters(QStringList parameters);
     QStringList parameters() const;
 
-    void addImpactedView(medAbstractView *view);
-    void removeImpactedView(medAbstractView *view);
-    QList<medAbstractView*> impactedViews();
-
-    void addImpactedlayer(medAbstractLayeredView *view, unsigned int layer);
-    void removeImpactedlayer(medAbstractLayeredView *view, unsigned int layer);
-    QMultiHash<medAbstractLayeredView*, unsigned int> impactedLayers();
-
     void saveAsPreset();
 
-    void update();
+    virtual void update() = 0;
 
 private:
-    medParameterGroupPrivate *d;
+    medAbstractParameterGroupPrivate *d;
 };
 
