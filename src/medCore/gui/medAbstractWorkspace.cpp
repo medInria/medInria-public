@@ -840,27 +840,34 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
 
     QHash<QString, QStringList> groups;
     QStringList selectedGroups;
+    QStringList partiallySelectedGroups;
     QHashIterator<QString, medLayerParameterGroup*> iter(d->layerParameterGroups);
     while(iter.hasNext())
     {
         iter.next();
         groups.insert(iter.key(), iter.value()->parameters());
-        bool temp = true;
+        bool selected = true;
+        bool partiallySelected = false;
 
         QHashIterator<medAbstractLayeredView*, unsigned int> iterLayer(layers);
         while(iterLayer.hasNext())
         {
             iterLayer.next();
             if(!iter.value()->impactedLayers().contains(iterLayer.key(), iterLayer.value()))
-                temp = false;
+                selected = false;
+            else
+                partiallySelected = true;
         }
-        if(temp)
+        if(selected)
             selectedGroups << iter.key();
+        else if(partiallySelected)
+            partiallySelectedGroups << iter.key();
     }
 
     menu->setAvailableParameters( paramNames.toSet().toList() );
     menu->setGroups(groups);
     menu->setSelectedGroups(selectedGroups);
+    menu->setPartiallySelectedGroups(partiallySelectedGroups);
 
     linkLayout->addWidget(new QLabel(tr("Link layer properties: ")));
     linkLayout->addWidget(menu);
