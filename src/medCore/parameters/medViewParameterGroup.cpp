@@ -47,7 +47,6 @@ void medViewParameterGroup::addImpactedView(medAbstractView *view)
 
 void medViewParameterGroup::removeImpactedView(medAbstractView *view)
 {
-    qDebug() << "removeImpactedView";
     d->impactedViews.remove(view);
 }
 
@@ -79,7 +78,6 @@ void medViewParameterGroup::update()
             if(this->parameters().contains(param->name()))
             {
                 d->pool->append(param);
-                //qDebug() << "medViewParameterGroup::update()" << d->pool->count();
             }
         }
     }

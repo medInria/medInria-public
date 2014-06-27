@@ -30,6 +30,7 @@ public:
     void setAvailableParameters(QStringList parameters);
     void setGroups(QHash<QString, QStringList> groups);
     void setSelectedGroups(QStringList groups);
+    void setPartiallySelectedGroups(QStringList groups);
 
 signals:
     void parameterChecked(QString paramName, QString groupName, bool groupChecked);

@@ -252,24 +252,33 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
 
         QHash<QString, QStringList> groups;
         QStringList selectedGroups;
+        QStringList partiallySelectedGroups;
+
         QHashIterator<QString, medViewParameterGroup*> iter(d->viewParameterGroups);
         while(iter.hasNext())
         {
             iter.next();
             groups.insert(iter.key(), iter.value()->parameters());
-            bool temp = true;
+            bool selected = true;
+            bool partiallySelected = false;
+
             foreach(medAbstractView *view, views)
             {
                 if(!iter.value()->impactedViews().contains(view))
-                    temp = false;
+                    selected = false;
+                else
+                    partiallySelected = true;
             }
-            if(temp)
+            if(selected)
                 selectedGroups << iter.key();
+            else if(partiallySelected)
+                partiallySelectedGroups << iter.key();
         }
 
         menu->setAvailableParameters( paramNames );
         menu->setGroups(groups);
         menu->setSelectedGroups(selectedGroups);
+        menu->setPartiallySelectedGroups(partiallySelectedGroups);
 
         linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
         linkLayout->addWidget(menu);

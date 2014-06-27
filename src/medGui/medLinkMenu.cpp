@@ -165,6 +165,22 @@ void medLinkMenu::setSelectedGroups(QStringList groups)
     }
 }
 
+void medLinkMenu::setPartiallySelectedGroups(QStringList groups)
+{
+    foreach(QString group, groups)
+    {
+        for(int i=0; i<d->groupList->count(); i++)
+        {
+            QListWidgetItem *item = d->groupList->item(i);
+            if( item->data(Qt::UserRole) == group )
+            {
+                item->setCheckState(Qt::PartiallyChecked);
+                break;
+            }
+        }
+    }
+}
+
 void medLinkMenu::createNewGroup()
 {
     QListWidgetItem * item = new QListWidgetItem();
@@ -266,6 +282,12 @@ void medLinkMenu::showPopup ()
 
         d->popupWidget->resize(d->groupList->sizeHint());
         d->popupWidget->show();
+    }
+    else
+    {
+        d->popupWidget->hide();
+        d->subPopupWidget->hide();
+
     }
 }
 

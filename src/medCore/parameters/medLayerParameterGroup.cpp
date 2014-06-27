@@ -47,7 +47,6 @@ void medLayerParameterGroup::addImpactedlayer(medAbstractLayeredView *view, unsi
 
 void medLayerParameterGroup::removeImpactedlayer(medAbstractLayeredView *view, unsigned int layer)
 {
-    qDebug() << "removeImpactedlayer";
     d->impactedLayers.remove(view, layer);
 }
 
