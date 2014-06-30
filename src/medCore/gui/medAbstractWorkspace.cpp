@@ -119,6 +119,15 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     this->setUserLayerClosable(true);
     this->setUserLayerPoolable(true);
     this->setUserViewPoolable(true);
+
+    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this);
+    viewGroup1->setLinkAllParameters(true);
+    d->viewParameterGroups.insert(viewGroup1->name(), viewGroup1);
+
+
+    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this);
+    layerGroup1->setLinkAllParameters(true);
+    d->layerParameterGroups.insert(layerGroup1->name(), layerGroup1);
 }
 
 medAbstractWorkspace::~medAbstractWorkspace(void)
@@ -199,15 +208,12 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
     medAbstractView* view = NULL;
     QList<QWidget*>  navigators;
     QStringList viewType;
-    QList<medAbstractView*> views;
-    QList<medAbstractParameter*>  viewsParams;
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
         view = container->view();
-        views << view;
 
         // add nothing if the view is empty
         if(!view)
@@ -217,10 +223,6 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
         {
             viewType << view->identifier();
             navigators << view->navigatorWidget();
-
-            viewsParams.append(view->primaryNavigator()->linkableParameters());
-            foreach(medAbstractNavigator* nav,  view->extraNavigators())
-                viewsParams.append(nav->linkableParameters());
         }
     }
     // add the navigators widgets
@@ -234,57 +236,8 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
     // add link parameter
     if(view && d->userViewPoolable)
     {
-        QWidget *linkWidget = new QWidget;
-        QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
-
-        medLinkMenu *menu = new medLinkMenu(linkWidget);
-        connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToViewGroup(QString,QString,bool)));
-        connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromViewGroup(QString,QString,bool)));
-        connect(menu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
-        connect(menu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeViewsFromGroup(QString)));
-        connect(menu, SIGNAL(groupDeleted(QString)), this, SLOT(removeViewGroup(QString)));
-
-        QStringList paramNames;
-
-        // build a stringList witth all the param names
-        foreach(medAbstractParameter* viewParam, viewsParams)
-            paramNames << viewParam->name();
-
-        QHash<QString, QStringList> groups;
-        QStringList selectedGroups;
-        QStringList partiallySelectedGroups;
-
-        QHashIterator<QString, medViewParameterGroup*> iter(d->viewParameterGroups);
-        while(iter.hasNext())
-        {
-            iter.next();
-            groups.insert(iter.key(), iter.value()->parameters());
-            bool selected = true;
-            bool partiallySelected = false;
-
-            foreach(medAbstractView *view, views)
-            {
-                if(!iter.value()->impactedViews().contains(view))
-                    selected = false;
-                else
-                    partiallySelected = true;
-            }
-            if(selected)
-                selectedGroups << iter.key();
-            else if(partiallySelected)
-                partiallySelectedGroups << iter.key();
-        }
-
-        menu->setAvailableParameters( paramNames );
-        menu->setGroups(groups);
-        menu->setSelectedGroups(selectedGroups);
-        menu->setPartiallySelectedGroups(partiallySelectedGroups);
-
-        linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
-        linkLayout->addWidget(menu);
-
+        QWidget *linkWidget = buildViewLinkMenu();
         d->navigatorToolBox->addWidget(linkWidget);
-
     }
 
     // update the mouse interaction and layer toolboxes according to the selected containers
@@ -593,7 +546,6 @@ void medAbstractWorkspace::buildTemporaryPool()
 }
 
 
-
 void medAbstractWorkspace::addViewstoGroup(QString group)
 {
     medAbstractView* view = NULL;
@@ -637,7 +589,7 @@ void medAbstractWorkspace::removeViewsFromGroup(QString group)
 void medAbstractWorkspace::addParamToViewGroup(QString param, QString group, bool groupChecked)
 {
     medViewParameterGroup *paramGroup = viewParameterGroup(group);
-    paramGroup->addParameter(param);
+    paramGroup->addParameterToLink(param);
 
     if(groupChecked)
     {
@@ -714,7 +666,7 @@ void medAbstractWorkspace::removeLayersFromGroup(QString group)
 void medAbstractWorkspace::addParamToLayerGroup(QString param, QString group, bool groupChecked)
 {
     medLayerParameterGroup *paramGroup = layerParameterGroup(group);
-    paramGroup->addParameter(param);
+    paramGroup->addParameterToLink(param);
 
     if(groupChecked)
     {
@@ -793,6 +745,89 @@ bool medAbstractWorkspace::isUserLayerClosable() const
 {
     return d->userLayerClosable;
 }
+
+
+QWidget* medAbstractWorkspace::buildViewLinkMenu()
+{
+    QWidget *linkWidget = new QWidget;
+    QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+
+    medLinkMenu *menu = new medLinkMenu(linkWidget);
+    connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToViewGroup(QString,QString,bool)));
+    connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromViewGroup(QString,QString,bool)));
+    connect(menu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
+    connect(menu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeViewsFromGroup(QString)));
+    connect(menu, SIGNAL(groupDeleted(QString)), this, SLOT(removeViewGroup(QString)));
+
+    medAbstractView* view = NULL;
+    QStringList viewType;
+    QList<medAbstractView*> views;
+    QList<medAbstractParameter*>  viewsParams;
+
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        view = container->view();
+
+        // add nothing if the view is empty
+        if(!view)
+            continue;
+
+        views << view;
+
+        // get only one navigator per view type
+        if(!viewType.contains(view->identifier()))
+        {
+            viewType << view->identifier();
+
+            viewsParams.append(view->primaryNavigator()->linkableParameters());
+            foreach(medAbstractNavigator* nav,  view->extraNavigators())
+                viewsParams.append(nav->linkableParameters());
+        }
+    }
+
+    QStringList paramNames;
+
+    // build a stringList witth all the param names
+    foreach(medAbstractParameter* viewParam, viewsParams)
+        paramNames << viewParam->name();
+
+    QHash<QString, QStringList> groups;
+    QStringList selectedGroups;
+    QStringList partiallySelectedGroups;
+
+    QHashIterator<QString, medViewParameterGroup*> iter(d->viewParameterGroups);
+    while(iter.hasNext())
+    {
+        iter.next();
+        groups.insert(iter.key(), iter.value()->parameters());
+        bool selected = true;
+        bool partiallySelected = false;
+
+        foreach(medAbstractView *view, views)
+        {
+            if(!iter.value()->impactedViews().contains(view))
+                selected = false;
+            else
+                partiallySelected = true;
+        }
+        if(selected)
+            selectedGroups << iter.key();
+        else if(partiallySelected)
+            partiallySelectedGroups << iter.key();
+    }
+
+    menu->setAvailableParameters( paramNames );
+    menu->setGroups(groups);
+    menu->setSelectedGroups(selectedGroups);
+    menu->setPartiallySelectedGroups(partiallySelectedGroups);
+
+    linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
+    linkLayout->addWidget(menu);
+
+    return linkWidget;
+}
+
 
 QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> selectedlayers)
 {

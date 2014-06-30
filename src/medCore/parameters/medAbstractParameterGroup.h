@@ -29,10 +29,10 @@ public:
     void setName(QString name);
     QString name() const;
 
-    void addParameter(QString parameter);
+    void addParameterToLink(QString parameter);
     void removeParameter(QString parameter);
 
-    void setParameters(QStringList parameters);
+    void setParametersToLink(QStringList parameters);
     QStringList parameters() const;
 
     void saveAsPreset();

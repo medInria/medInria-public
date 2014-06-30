@@ -25,12 +25,14 @@ class medViewParameterGroupPrivate
 {
 public:
      QSet<medAbstractView*> impactedViews;
+     bool linkAll;
      medParameterPool *pool;
 };
 
 medViewParameterGroup::medViewParameterGroup(QString name, QObject *parent) : medAbstractParameterGroup(name, parent),
     d(new medViewParameterGroupPrivate)
 {
+    d->linkAll = false;
     d->pool = new medParameterPool(this);
 }
 
@@ -43,6 +45,21 @@ void medViewParameterGroup::addImpactedView(medAbstractView *view)
 {
     d->impactedViews.insert(view);
     connect(view, SIGNAL(closed()), this, SLOT(removeImpactedView()));
+
+    if(linkAll())
+    {
+        QList<medAbstractParameter*>  params;
+
+        params.append(view->primaryNavigator()->linkableParameters());
+        foreach(medAbstractNavigator* nav,  view->extraNavigators())
+            params.append(nav->linkableParameters());
+
+        foreach(medAbstractParameter* param, params)
+        {
+            if(!this->parameters().contains(param->name()))
+                this->addParameterToLink(param->name());
+        }
+    }
 }
 
 void medViewParameterGroup::removeImpactedView(medAbstractView *view)
@@ -59,6 +76,32 @@ void medViewParameterGroup::removeImpactedView()
 QList<medAbstractView*> medViewParameterGroup::impactedViews()
 {
     return d->impactedViews.toList();
+}
+
+void medViewParameterGroup::setLinkAllParameters(bool linkAll)
+{
+    d->linkAll = linkAll;
+
+    foreach(medAbstractView *view, d->impactedViews)
+    {
+        QList<medAbstractParameter*>  params;
+
+        params.append(view->primaryNavigator()->linkableParameters());
+        foreach(medAbstractNavigator* nav,  view->extraNavigators())
+            params.append(nav->linkableParameters());
+
+        foreach(medAbstractParameter* param, params)
+        {
+            if(!this->parameters().contains(param->name()))
+                this->addParameterToLink(param->name());
+        }
+    }
+
+}
+
+bool medViewParameterGroup::linkAll() const
+{
+    return d->linkAll;
 }
 
 void medViewParameterGroup::update()

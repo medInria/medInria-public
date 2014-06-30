@@ -29,6 +29,9 @@ public:
     void removeImpactedlayer(medAbstractLayeredView *view, unsigned int layer);
     QMultiHash<medAbstractLayeredView*, unsigned int> impactedLayers();
 
+    void setLinkAllParameters(bool linkAll);
+    bool linkAll() const;
+
     virtual void update();
 
 private slots:
