@@ -26,6 +26,7 @@ class medAbstractParameterGroupPrivate
 public:
     QString name;
     QStringList parameters;
+    bool linkAll;
 };
 
 medAbstractParameterGroup::medAbstractParameterGroup(QString name, QObject *parent) : d(new medAbstractParameterGroupPrivate)
@@ -49,7 +50,7 @@ QString medAbstractParameterGroup::name() const
     return d->name;
 }
 
-void medAbstractParameterGroup::addParameter(QString parameter)
+void medAbstractParameterGroup::addParameterToLink(QString parameter)
 {
     d->parameters.append(parameter);
 }
@@ -59,10 +60,20 @@ void medAbstractParameterGroup::removeParameter(QString parameter)
     d->parameters.removeAll(parameter);
 }
 
-void medAbstractParameterGroup::setParameters(QStringList parameters)
+void medAbstractParameterGroup::setParametersToLink(QStringList parameters)
 {
     d->parameters = parameters;
 }
+
+//void medAbstractParameterGroup::setLinkAllParameters(bool linkAll)
+//{
+//    d->linkAll = linkAll;
+//}
+
+//bool medAbstractParameterGroup::linkAll() const
+//{
+//    return d->linkAll;
+//}
 
 QStringList medAbstractParameterGroup::parameters() const
 {

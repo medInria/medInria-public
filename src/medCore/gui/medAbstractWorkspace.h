@@ -108,6 +108,7 @@ private slots:
     void removeLayerGroup(QString);
 
 private:
+    QWidget* buildViewLinkMenu();
     QWidget* buildLayerLinkMenu(QList<QListWidgetItem*>);
     medViewParameterGroup* viewParameterGroup(QString groupName);
     medLayerParameterGroup* layerParameterGroup(QString groupName);

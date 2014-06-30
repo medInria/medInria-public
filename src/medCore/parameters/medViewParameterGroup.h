@@ -29,6 +29,9 @@ public:
     void removeImpactedView(medAbstractView *view);
     QList<medAbstractView*> impactedViews();
 
+    void setLinkAllParameters(bool linkAll);
+    bool linkAll() const;
+
     virtual void update();
 
 private slots:
