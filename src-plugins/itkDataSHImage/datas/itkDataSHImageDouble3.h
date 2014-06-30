@@ -21,13 +21,12 @@ class itkDataSHImageDouble3Private;
 class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageDouble3 : public medAbstractTypedDiffusionModelImageData<3,double>
 {
     Q_OBJECT
-
+    MED_DATA_INTERFACE("ITK Spherical Harmonics Image (double3)",
+                       "ITK Spherical Harmonics Image (double3)")
 public:
              itkDataSHImageDouble3();
     virtual ~itkDataSHImageDouble3();
 
-    virtual QString description() const;
-    virtual QString identifier() const;
     static bool registered();
 
 public slots:
@@ -45,5 +44,3 @@ public:
 private:
     itkDataSHImageDouble3Private *d;
 };
-
-medAbstractData *createItkDataSHImageDouble3();

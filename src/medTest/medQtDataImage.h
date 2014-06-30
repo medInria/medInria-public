@@ -22,15 +22,11 @@ class medQtDataImagePrivate;
 /** A concrete implementation of a dtkAbstractDataImage for use in testing. */
 class MEDTEST_EXPORT medQtDataImage : public medAbstractImageData
 {
-    Q_OBJECT;
+    Q_OBJECT
+    MED_DATA_INTERFACE("Qt Image Data", "Test Image Data bast on QImage")
 public:
     medQtDataImage();
     virtual ~medQtDataImage();
-    virtual QString description() const;
-    virtual QString identifier() const;
-
-    static QString s_description();
-    static QString s_identifier();
     static bool registered();
 
     // Implement dtkAbstractData

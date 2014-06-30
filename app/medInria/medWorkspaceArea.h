@@ -53,14 +53,14 @@ public:
 
     QPixmap grabScreenshot();
 
-    void setupWorkspace(const QString& name);
+    void setupWorkspace(const QString& id);
 
     void addToolBox(medToolBox *toolbox);
     void insertToolBox(int index, medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
 
     void setCurrentWorkspace(medAbstractWorkspace* workspace);
-    void setCurrentWorkspace(const QString& name);
+    void setCurrentWorkspace(const QString& id);
 
     medAbstractWorkspace* currentWorkspace();
 

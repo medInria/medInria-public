@@ -378,7 +378,7 @@ dtkSmartPointer<medAbstractData> medViewContainersTestObject::createTestData(voi
 {
     // Create a data.
     medAbstractDataFactory *dataFactory = medAbstractDataFactory::instance();
-    dtkSmartPointer<medAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::s_description());
+    dtkSmartPointer<medAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::staticDescription());
 
     QString sDatetime = QDateTime::currentDateTime().toString();
 

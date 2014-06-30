@@ -38,7 +38,7 @@ public:
     dtkPlugin* plugin;
 
 public:
-    QBoxLayout *layout;
+    QVBoxLayout *layout;
 };
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
@@ -52,7 +52,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->plugin= NULL;
 
 
-    d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    d->layout = new QVBoxLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(0);
     d->layout->addWidget(d->header);
@@ -106,44 +106,11 @@ void medToolBox::clear(void)
     d->body->clear();
 }
 
-void medToolBox::setOrientation(Qt::Orientation orientation)
-{
-    switch(orientation) {
-    case Qt::Vertical:
-        if (d->layout->direction() == QBoxLayout::TopToBottom) {
-            return;
-        } else {
-            d->body->setOrientation(Qt::Vertical);
-        }
-        break;
-    case Qt::Horizontal:
-        if (d->layout->direction() == QBoxLayout::LeftToRight) {
-            return;
-        } else {
-            d->body->setOrientation(Qt::Horizontal);
-        }
-        break;
-   }
-}
-
-Qt::Orientation medToolBox::orientation() const
-{
-    if(d->layout->direction() == QBoxLayout::LeftToRight)
-        return Qt::Horizontal;
-    else
-        return Qt::Vertical;
-}
-
 void medToolBox::switchMinimize()
 {
     //isMinimized before switch == wanted body visibility
     d->body->setVisible(d->isMinimized);
     d->isMinimized = !d->isMinimized;
-}
-
-bool medToolBox::ContextVisible()
-{
- return d->isContextVisible;
 }
 
 void medToolBox::show()
@@ -174,31 +141,6 @@ void medToolBox::addValidDataType(const QString & dataType)
     {
         d->validDataTypes.append(dataType);
     }
-}
-
-void medToolBox::setContextVisibility(
-        const QHash<QString, unsigned int> & viewDataTypes )
-{
-    if (d->validDataTypes.isEmpty())
-    {
-        d->isContextVisible = true;
-    }
-    else
-    {
-        d->isContextVisible = false;
-        foreach(QString validDataType, d->validDataTypes)
-        {
-            if(viewDataTypes.contains(validDataType))
-            {
-                if(viewDataTypes.value(validDataType)!=0)
-                {
-                    d->isContextVisible = true;
-                    break;
-                }
-            }
-        }
-    }
-    this->setVisible(d->isContextVisible);
 }
 
 void medToolBox::setAboutPluginVisibility(bool enable)

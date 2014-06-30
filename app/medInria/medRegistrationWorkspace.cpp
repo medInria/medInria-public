@@ -58,17 +58,6 @@ medRegistrationWorkspace::~medRegistrationWorkspace(void)
     d = NULL;
 }
 
-QString medRegistrationWorkspace::identifier() const
-{
-    return "Registration";
-}
-
-QString medRegistrationWorkspace::description() const
-{
-    return tr("Registration");
-}
-
-
 void medRegistrationWorkspace::setupViewContainerStack()
 {
 

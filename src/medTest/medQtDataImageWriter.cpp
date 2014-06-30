@@ -132,7 +132,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
     if ( !medData )
         return false;
 
-    if (medData->identifier() != medQtDataImage::s_identifier() ) {
+    if (medData->identifier() != medQtDataImage::staticIdentifier() ) {
         return false;
     }
 
@@ -194,7 +194,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
 
 QStringList medQtDataImageWriter::s_handled()
 {
-    static const QStringList handled = QStringList() << medQtDataImage::s_identifier();
+    static const QStringList handled = QStringList() << medQtDataImage::staticIdentifier();
     return handled;
 }
 

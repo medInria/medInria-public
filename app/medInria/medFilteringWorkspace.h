@@ -27,7 +27,8 @@ class dtkAbstractView;
 class medFilteringWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
-
+    MED_WORKSPACE_INTERFACE("Filtering",
+                            "Filtering workspace.")
 public:
     /**
      * @brief
@@ -37,8 +38,6 @@ public:
     medFilteringWorkspace(QWidget *parent = 0);
     ~medFilteringWorkspace();
 
-    virtual QString identifier()  const;
-    virtual QString description() const;
     static bool isUsable();
     /**
      * @brief sets up all the signal/slot connections when Viewer is switched to this workspace

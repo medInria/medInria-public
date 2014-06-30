@@ -55,18 +55,7 @@ itkDataTensorImageDouble3::~itkDataTensorImageDouble3()
 
 bool itkDataTensorImageDouble3::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType("itkDataTensorImageDouble3", createItkDataTensorImageDouble3);
-}
-
-QString itkDataTensorImageDouble3::description() const
-{
-    return tr("itk tensor 3d image data (double)");
-}
-
-
-QString itkDataTensorImageDouble3::identifier() const
-{
-    return "itkDataTensorImageDouble3";
+    return medAbstractDataFactory::instance()->registerDataType<itkDataTensorImageDouble3>();
 }
 
 void *itkDataTensorImageDouble3::data()
@@ -110,13 +99,3 @@ int itkDataTensorImageDouble3::zDimension()
         return d->tensors->GetLargestPossibleRegion().GetSize()[2];
     return -1;
 }
-
-// /////////////////////////////////////////////////////////////////
-// Type instantiation
-// /////////////////////////////////////////////////////////////////
-
-medAbstractData *createItkDataTensorImageDouble3()
-{
-    return new itkDataTensorImageDouble3;
-}
-

@@ -51,16 +51,7 @@ itkDataSHImageDouble3::~itkDataSHImageDouble3()
 
 bool itkDataSHImageDouble3::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType("itkDataSHImageDouble3", createItkDataSHImageDouble3);
-}
-
-QString itkDataSHImageDouble3::description() const
-{
-    return tr("itk spherical harmonic 3d image data (double)");
-}
-QString itkDataSHImageDouble3::identifier() const
-{
-    return "itkDataSHImageDouble3";
+    return medAbstractDataFactory::instance()->registerDataType<itkDataSHImageDouble3>();
 }
 
 void *itkDataSHImageDouble3::data()
@@ -103,14 +94,4 @@ int itkDataSHImageDouble3::zDimension()
     if (!d->shs.IsNull())
         return d->shs->GetLargestPossibleRegion().GetSize()[2];
     return -1;
-}
-
-
-// /////////////////////////////////////////////////////////////////
-// Type instantiation
-// /////////////////////////////////////////////////////////////////
-
-medAbstractData *createItkDataSHImageDouble3()
-{
-    return new itkDataSHImageDouble3;
 }

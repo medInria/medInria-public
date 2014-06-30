@@ -47,26 +47,13 @@ struct PaintState {
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegmentationAbstractToolBox
 {
     Q_OBJECT
+    MED_TOOLBOX_INTERFACE("Paint Segmentation", "Paint Tool",
+                          <<"segmentation")
 public:
 
 
     AlgorithmPaintToolbox( QWidget *parent );
     ~AlgorithmPaintToolbox();
-
-     //! Override dtkAbstractObject
-    QString description() const { return s_description(); }
-    QString identifier() const { return s_identifier(); }
-
-    static medSegmentationAbstractToolBox * createInstance( QWidget *parent );
-
-    static QString s_description();
-
-    /** Get name to use for this when registering with a factory.*/
-    static QString s_identifier();
-
-    //! Get a human readable name for this widget.
-    /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */
-    static QString s_name(const QObject * trObj =  NULL);
 
     inline void setPaintState( PaintState::E value){m_paintState = value;}
     inline PaintState::E paintState(){return m_paintState;}

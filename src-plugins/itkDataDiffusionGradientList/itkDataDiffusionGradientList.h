@@ -22,12 +22,11 @@ class itkDataDiffusionGradientListPrivate;
 class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientList : public medAbstractData
 {
     Q_OBJECT
-
+    MED_DATA_INTERFACE("Itk Data Diffusion Gradient List",
+                       "Data type to store diffusion gradients.")
 public:
              itkDataDiffusionGradientList();
     virtual ~itkDataDiffusionGradientList();
-
-    virtual QString description() const;
 
     static bool registered();
 
@@ -43,6 +42,5 @@ private:
     itkDataDiffusionGradientListPrivate *d;
 };
 
-medAbstractData *createItkDataDiffusionGradientList();
 
 

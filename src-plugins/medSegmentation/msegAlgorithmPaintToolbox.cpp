@@ -172,7 +172,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
 
-    this->setTitle(this->s_name(this));
+    this->setTitle(this->name());
 
     QVBoxLayout * layout = new QVBoxLayout(displayWidget);
 
@@ -511,34 +511,6 @@ void AlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
 
     m_labelColorMap = colorMap;
 }
-
-//static
-medSegmentationAbstractToolBox *
-AlgorithmPaintToolbox::createInstance(QWidget *parent )
-{
-    return new AlgorithmPaintToolbox( parent );
-}
-
-QString AlgorithmPaintToolbox::s_description()
-{
-    static const QString desc = "Paint Tool";
-    return desc;
-}
-
-QString AlgorithmPaintToolbox::s_identifier()
-{
-    static const QString id = "mseg::AlgorithmPaintToolbox";
-    return id;
-}
-
-QString AlgorithmPaintToolbox::s_name(const QObject * trObj)
-{
-    if (!trObj)
-        trObj = qApp;
-
-    return trObj->tr( "Paint Segmentation" );
-}
-
 
 void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
 {

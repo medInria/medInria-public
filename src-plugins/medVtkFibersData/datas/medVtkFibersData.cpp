@@ -56,17 +56,7 @@ medVtkFibersData::~medVtkFibersData()
 
 bool medVtkFibersData::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataType("medVtkFibersData", create_medVtkFibersData);
-}
-
-QString medVtkFibersData::description() const
-{
-    return tr("VTK fibers data") ;
-}
-
-QString medVtkFibersData::identifier() const
-{
-    return "medVtkFibersData";
+    return medAbstractDataFactory::instance()->registerDataType<medVtkFibersData>();
 }
 
 void medVtkFibersData::setData(void *data)
@@ -79,14 +69,3 @@ void *medVtkFibersData::data()
 {
     return d->data;
 }
-
-
-// /////////////////////////////////////////////////////////////////
-// Type instantiation
-// /////////////////////////////////////////////////////////////////
-
-medAbstractData *create_medVtkFibersData()
-{
-    return new medVtkFibersData;
-}
-

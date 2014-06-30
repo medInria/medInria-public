@@ -153,11 +153,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeom
 bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
 {
     return medToolBoxFactory::instance()->
-            registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>(
-                "itkProcessRegistrationDiffeomorphicDemonsToolBox",
-                tr("Diffeomorphic Demons"),
-                tr("Diffeomorphic demons registration using the ITK implementation"),
-                QStringList()<< "registration");
+            registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>();
 }
 
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()

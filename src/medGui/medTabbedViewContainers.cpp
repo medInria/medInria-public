@@ -19,6 +19,7 @@
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainerManager.h>
+#include <medAbstractWorkspace.h>
 #include <medAbstractView.h>
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
@@ -35,12 +36,16 @@ public:
     QPushButton *addTabButton;
     QHash <int, QList<QUuid> > containerSelectedForTabIndex;
     medParameterPool *pool;
+    medAbstractWorkspace * owningWorkspace;
 
     int currentIdx;
 };
 
-medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
+medTabbedViewContainers::medTabbedViewContainers(medAbstractWorkspace* owningWorkspace, QWidget *parent)
+    : QTabWidget(parent)
+    , d(new medTabbedViewContainersPrivate)
 {
+    d->owningWorkspace = owningWorkspace;
     this->setTabsClosable(true);
     this->setMovable(true);
 
@@ -124,7 +129,7 @@ void medTabbedViewContainers::resetTabState()
 
 medViewContainer* medTabbedViewContainers::addContainerInTab()
 {
-    return this->addContainerInTab("Tab" + QString::number(this->count()+1));
+    return this->addContainerInTab(QString("%0 %1").arg(d->owningWorkspace->name()).arg(count()));
 }
 
 medViewContainer* medTabbedViewContainers::addContainerInTab(const QString &name)

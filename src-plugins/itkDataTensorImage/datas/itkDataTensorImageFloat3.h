@@ -22,15 +22,13 @@ class itkDataTensorImageFloat3Private;
 class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstractTypedDiffusionModelImageData<3,float>
 {
     Q_OBJECT
-
+    MED_DATA_INTERFACE("ITK Tensor Image (float3)",
+                       "ITK Tensor Image (float3)")
 public:
              itkDataTensorImageFloat3();
     virtual ~itkDataTensorImageFloat3();
 
-    virtual QString description() const;
-    virtual QString identifier() const;
     static bool registered();
-
 
 public slots:
     // derived from dtkAbstractData
@@ -47,7 +45,5 @@ public:
 private:
     itkDataTensorImageFloat3Private *d;
 };
-
-medAbstractData *createItkDataTensorImageFloat3();
 
 

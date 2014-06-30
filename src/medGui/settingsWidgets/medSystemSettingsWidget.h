@@ -22,11 +22,9 @@ class medSystemSettingsWidgetPrivate;
 class MEDGUI_EXPORT medSystemSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
+    MED_SETTINGS_INTERFACE("System","System settings")
 public:
     medSystemSettingsWidget(QWidget *parent = 0);
-
-    QString identifier()  const;
-    QString description() const;
 
 signals:
 
@@ -60,6 +58,3 @@ private:
   */
   bool validatePaths(QString paths);
 };
-
-MEDGUI_EXPORT medSettingsWidget* createSystemSettingsWidget(QWidget *parent);
-

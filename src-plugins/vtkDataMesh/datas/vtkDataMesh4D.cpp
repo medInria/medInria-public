@@ -38,8 +38,6 @@ public:
   QList<QImage>                           thumbnails;
 };
 
-const char vtkDataMesh4D::ID[] = "vtkDataMesh4D";
-
 vtkDataMesh4D::vtkDataMesh4D(): medAbstractMeshData(), d (new vtkDataMesh4DPrivate)
 {
   this->moveToThread(QApplication::instance()->thread());
@@ -53,15 +51,7 @@ vtkDataMesh4D::~vtkDataMesh4D()
 
 bool vtkDataMesh4D::registered()				
 {
-  return medAbstractDataFactory::instance()->registerDataType(ID, createVtkDataMesh4D);
-}
-
-QString vtkDataMesh4D::identifier() const {
-    return ID;
-}
-
-QString vtkDataMesh4D::description() const {
-    return "vtkDataMesh4D";
+  return medAbstractDataFactory::instance()->registerDataType<vtkDataMesh4D>();
 }
 
 void vtkDataMesh4D::setData(void *data)			
@@ -97,12 +87,6 @@ void vtkDataMesh4D::update()
 {
 
 }
-
-medAbstractData *createVtkDataMesh4D()
-{
-  return new vtkDataMesh4D;
-}
-
 
 void vtkDataMesh4D::onMetaDataSet(const QString& key, const QString& value)
 {

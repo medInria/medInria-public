@@ -25,13 +25,12 @@ class medAbstractData;
 class medRegistrationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
-
+    MED_WORKSPACE_INTERFACE("Registration",
+                            "Register a moving image to a fixed image.")
 public:
      medRegistrationWorkspace(QWidget *parent = 0);
     ~medRegistrationWorkspace();
 
-    virtual QString identifier()  const;
-    virtual QString description() const;
     static bool isUsable();
     void setupViewContainerStack ();
 

@@ -22,13 +22,12 @@ class medVtkFibersDataPrivate;
 class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersData : public medAbstractFibersData
 {
     Q_OBJECT
-
+    MED_DATA_INTERFACE("VTK Fiber Data",
+                       "VTK Fiber Data")
 public:
              medVtkFibersData();
     virtual ~medVtkFibersData();
 
-    virtual QString description() const;
-    virtual QString identifier() const;
     static bool registered();
 
 public:
@@ -39,7 +38,5 @@ public:
 private:
     medVtkFibersDataPrivate *d;
 };
-
-medAbstractData *create_medVtkFibersData();
 
 

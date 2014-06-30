@@ -59,13 +59,14 @@ public:
    * @return bool true if type was not registered already, false if it exists.
   */
   template <typename settingType>
-  bool registerSettingsWidget (const QString& type,
-                               QString name,
-                               QString description)
+  bool registerSettingsWidget()
   {
       //we must keep the templated part in the .h file for library users
       medSettingsWidgetCreator creator = create<settingType>;
-      return registerSettingsWidget(type,name,description,creator);
+      return registerSettingsWidget(settingType::staticIdentifier(),
+                                    settingType::staticName(),
+                                    settingType::staticDescription(),
+                                    creator);
   }
 
 

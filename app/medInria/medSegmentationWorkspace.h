@@ -29,16 +29,12 @@ class medSegmentationSelectorToolBox;
 class medSegmentationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
-
+    MED_WORKSPACE_INTERFACE("Segmentation",
+                            "Segmentation workspace.")
 public:
     medSegmentationWorkspace(QWidget * parent = NULL);
 
     virtual ~medSegmentationWorkspace();
-
-    //! Overrides base class.
-    QString description() const;
-    //! Implement base class
-    QString identifier() const;
 
     static bool isUsable();
 
@@ -54,7 +50,6 @@ protected slots:
 
 
 private:
-    static QString s_identifier();
     medSegmentationWorkspacePrivate *d;
 };
 

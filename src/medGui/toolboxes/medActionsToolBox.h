@@ -22,7 +22,6 @@ class medActionsToolBoxPrivate;
 class MEDGUI_EXPORT medActionsToolBox : public medToolBox
 {
     Q_OBJECT
-
 public:
     medActionsToolBox(QWidget *parent = 0, bool ok = false); // second parameter used to differentiate if we
     ~medActionsToolBox();                                    // are looking into db or File System

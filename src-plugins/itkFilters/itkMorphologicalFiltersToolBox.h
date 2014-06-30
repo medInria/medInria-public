@@ -20,7 +20,9 @@ class itkMorphologicalFiltersToolBoxPrivate;
 class itkMorphologicalFiltersToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
-
+    MED_TOOLBOX_INTERFACE("ITK Morphological Filters",
+                          "ITK morphological filters, processing examples",
+                          <<"filtering")
 public:
     itkMorphologicalFiltersToolBox(QWidget *parentToolBox = 0);
     ~itkMorphologicalFiltersToolBox();

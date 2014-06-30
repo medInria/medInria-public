@@ -93,11 +93,7 @@ undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)
 
 bool undoRedoRegistrationToolBox::registered(void)
 {
-    return medToolBoxFactory::instance()-> registerToolBox<undoRedoRegistrationToolBox>
-        ("undoRedoRegistrationToolBox",
-        tr("undoRedoRegistration"),
-        tr("short tooltip description"),
-        QStringList() << "UndoRedoRegistration");
+    return medToolBoxFactory::instance()-> registerToolBox<undoRedoRegistrationToolBox>();
 }
 
 void undoRedoRegistrationToolBox::onUndo()

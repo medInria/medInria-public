@@ -30,10 +30,8 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstr
 
 void medVisualizationWorkspace::setupViewContainerStack()
 {
-    if (!stackedViewContainers()->count())
-    {
-        const QString description = this->description();
-        this->stackedViewContainers()->addContainerInTab(description);
+    if (!stackedViewContainers()->count()) {
+        this->stackedViewContainers()->addContainerInTab(this->name());
     }
     this->stackedViewContainers()->unlockTabs();
 }
@@ -42,14 +40,6 @@ medVisualizationWorkspace::~medVisualizationWorkspace(void)
 {
     delete d;
     d = NULL;
-}
-
-QString medVisualizationWorkspace::identifier() const {
-    return "Visualization";
-}
-
-QString medVisualizationWorkspace::description() const {
-    return tr("Visualization");
 }
 
 bool medVisualizationWorkspace::isUsable(){
