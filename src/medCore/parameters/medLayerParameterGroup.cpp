@@ -23,7 +23,6 @@ class medLayerParameterGroupPrivate
 {
 public:
     QMultiHash<medAbstractLayeredView*, unsigned int> impactedLayers;
-    bool linkAll;
     medParameterPool *pool;
 };
 
@@ -31,7 +30,6 @@ public:
 medLayerParameterGroup::medLayerParameterGroup(QString name, QObject *parent) : medAbstractParameterGroup(name, parent),
     d(new medLayerParameterGroupPrivate)
 {
-    d->linkAll = false;
     d->pool = new medParameterPool(this);
 }
 
@@ -46,7 +44,7 @@ void medLayerParameterGroup::addImpactedlayer(medAbstractLayeredView *view, unsi
 
     connect(view, SIGNAL(layerRemoved(uint)), this, SLOT(removeImpactedlayer(uint)));
 
-    if(d->linkAll)
+    if(linkAll())
     {
         QList<medAbstractParameter*>  params;
 
@@ -74,32 +72,29 @@ void medLayerParameterGroup::removeImpactedlayer(uint layer)
 
 void medLayerParameterGroup::setLinkAllParameters(bool linkAll)
 {
-    d->linkAll = linkAll;
+    medAbstractParameterGroup::setLinkAllParameters(linkAll);
 
-    QHashIterator<medAbstractLayeredView*, unsigned int> iter(d->impactedLayers);
-    while(iter.hasNext())
+    if( linkAll )
     {
-        iter.next();
-        QList<medAbstractParameter*>  params;
-
-        medAbstractLayeredView* view = iter.key();
-        unsigned int layer = iter.value();
-
-        foreach(medAbstractInteractor* interactor, view->interactors(layer))
-            params.append(interactor->linkableParameters());
-
-        foreach(medAbstractParameter* param, params)
+        QHashIterator<medAbstractLayeredView*, unsigned int> iter(d->impactedLayers);
+        while(iter.hasNext())
         {
-            if(!this->parameters().contains(param->name()))
-                this->addParameterToLink(param->name());
+            iter.next();
+            QList<medAbstractParameter*>  params;
+
+            medAbstractLayeredView* view = iter.key();
+            unsigned int layer = iter.value();
+
+            foreach(medAbstractInteractor* interactor, view->interactors(layer))
+                params.append(interactor->linkableParameters());
+
+            foreach(medAbstractParameter* param, params)
+            {
+                if(!this->parameters().contains(param->name()))
+                    this->addParameterToLink(param->name());
+            }
         }
     }
-
-}
-
-bool medLayerParameterGroup::linkAll() const
-{
-    return d->linkAll;
 }
 
 QMultiHash<medAbstractLayeredView*, unsigned int> medLayerParameterGroup::impactedLayers()

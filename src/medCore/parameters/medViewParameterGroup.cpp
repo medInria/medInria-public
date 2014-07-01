@@ -25,14 +25,12 @@ class medViewParameterGroupPrivate
 {
 public:
      QSet<medAbstractView*> impactedViews;
-     bool linkAll;
      medParameterPool *pool;
 };
 
 medViewParameterGroup::medViewParameterGroup(QString name, QObject *parent) : medAbstractParameterGroup(name, parent),
     d(new medViewParameterGroupPrivate)
 {
-    d->linkAll = false;
     d->pool = new medParameterPool(this);
 }
 
@@ -80,28 +78,25 @@ QList<medAbstractView*> medViewParameterGroup::impactedViews()
 
 void medViewParameterGroup::setLinkAllParameters(bool linkAll)
 {
-    d->linkAll = linkAll;
+    medAbstractParameterGroup::setLinkAllParameters(linkAll);
 
-    foreach(medAbstractView *view, d->impactedViews)
+    if(linkAll)
     {
-        QList<medAbstractParameter*>  params;
-
-        params.append(view->primaryNavigator()->linkableParameters());
-        foreach(medAbstractNavigator* nav,  view->extraNavigators())
-            params.append(nav->linkableParameters());
-
-        foreach(medAbstractParameter* param, params)
+        foreach(medAbstractView *view, d->impactedViews)
         {
-            if(!this->parameters().contains(param->name()))
-                this->addParameterToLink(param->name());
+            QList<medAbstractParameter*>  params;
+
+            params.append(view->primaryNavigator()->linkableParameters());
+            foreach(medAbstractNavigator* nav,  view->extraNavigators())
+                params.append(nav->linkableParameters());
+
+            foreach(medAbstractParameter* param, params)
+            {
+                if(!this->parameters().contains(param->name()))
+                    this->addParameterToLink(param->name());
+            }
         }
     }
-
-}
-
-bool medViewParameterGroup::linkAll() const
-{
-    return d->linkAll;
 }
 
 void medViewParameterGroup::update()

@@ -16,6 +16,8 @@
 #include <medGuiExport.h>
 #include <QtGui>
 
+#include <medAbstractParameterGroup.h>
+
 
 class medLinkMenuPrivate;
 
@@ -28,7 +30,7 @@ public:
     medLinkMenu(QWidget * parent = 0);
     virtual ~medLinkMenu();
     void setAvailableParameters(QStringList parameters);
-    void setGroups(QHash<QString, QStringList> groups);
+    void setGroups(QList<medAbstractParameterGroup *> groups);
     void setSelectedGroups(QStringList groups);
     void setPartiallySelectedGroups(QStringList groups);
 
@@ -39,6 +41,7 @@ signals:
     void groupChecked(QString groupName);
     void groupUnchecked(QString groupName);
 
+    void groupCreated(QString groupName);
     void groupDeleted(QString groupName);
 
 

@@ -30,7 +30,6 @@ public:
     QMultiHash<medAbstractLayeredView*, unsigned int> impactedLayers();
 
     void setLinkAllParameters(bool linkAll);
-    bool linkAll() const;
 
     virtual void update();
 
