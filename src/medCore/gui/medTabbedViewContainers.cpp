@@ -273,8 +273,6 @@ void medTabbedViewContainers::buildTemporaryPool()
         {
             d->pool->append(param);
         }
-
-        d->pool->append(container->view()->linkParameter());
     }
 }
 

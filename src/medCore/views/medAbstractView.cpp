@@ -34,8 +34,6 @@ public:
 
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
-
-    medStringListParameter *linkParameter;
 };
 
 medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate)
@@ -45,8 +43,6 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
 
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
-
-    d->linkParameter = NULL;
 }
 
 medAbstractView::~medAbstractView( void )
@@ -180,48 +176,6 @@ medAbstractVector2DParameter* medAbstractView::panParameter()
     }
 
     return pNavigator->panParameter();
-}
-
-
-medStringListParameter* medAbstractView::linkParameter()
-{
-    if(!d->linkParameter)
-    {
-        d->linkParameter = new medStringListParameter("Link view", this);
-        d->linkParameter->setExclusive(false);
-        d->linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
-        d->linkParameter->addItem("View group 1", medStringListParameter::createIconFromColor("darkred"));
-        d->linkParameter->addItem("View group 2", medStringListParameter::createIconFromColor("darkgreen"));
-        d->linkParameter->addItem("View group 3", medStringListParameter::createIconFromColor("darkblue"));
-
-        QString tooltip = QString(tr("Link View properties ("));
-        foreach(medAbstractParameter *param, this->navigatorsParameters())
-            tooltip += param->name() + ", ";
-        tooltip += ")";
-        d->linkParameter->setToolTip(tooltip);
-
-        connect(d->linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(link(QString)));
-
-        d->linkParameter->setValue("None");
-    }
-    return d->linkParameter;
-}
-
-void medAbstractView::link(QString pool)
-{
-    unlink();
-
-    if(pool!="None")
-    {
-        foreach(medAbstractParameter *param, this->navigatorsParameters())
-            medParameterPoolManager::instance()->linkParameter(param, pool);
-    }
-}
-
-void medAbstractView::unlink()
-{
-    foreach(medAbstractParameter *param, this->navigatorsParameters())
-        medParameterPoolManager::instance()->unlinkParameter(param);
 }
 
 QList<medAbstractParameter*> medAbstractView::navigatorsParameters()

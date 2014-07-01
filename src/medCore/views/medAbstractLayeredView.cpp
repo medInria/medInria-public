@@ -36,7 +36,6 @@ public:
 
     medDataListParameter *dataListParameter;
     
-    QList<medStringListParameter*> linkparameters;
     unsigned int currentLayer;
 
     QWidget* toolBarWidget;
@@ -213,9 +212,6 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     int layer = this->layer(data);
     d->layersDataList.removeAll(data);
 
-    // remove the link parameter of this layer
-    d->linkparameters.removeAt(layer);
-
     if(d->layersDataList.count() != 0  && layer == d->layersDataList.count())
     {
         this->setCurrentLayer(layer -1);
@@ -313,15 +309,6 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
         return;
     }
 
-    // create a link parameter for this layer and add it to the list
-    medStringListParameter *linkParameter = this->createLinkParameter();
-    QString tooltip = QString(tr("Link layer properties ("));
-    foreach(medAbstractParameter *param, this->interactorsParameters(layer))
-        tooltip += param->name() + ", ";
-    tooltip += ")";
-    linkParameter->setToolTip(tooltip);
-    d->linkparameters.insert(layer, linkParameter);
-
     this->setCurrentLayer(layer);
     if(this->layersCount() == 1)
         this->reset();
@@ -374,41 +361,6 @@ medAbstractBoolParameter* medAbstractLayeredView::visibilityParameter(unsigned i
     }
 
     return pInteractor->visibilityParameter();
-}
-
-medStringListParameter* medAbstractLayeredView::layerLinkParameter(unsigned int layer)
-{
-    medStringListParameter *linkParameter = d->linkparameters.at(layer);
-
-    //this should not happened
-    if(!linkParameter)
-    {
-        // create a link parameter for this layer and add it to the list
-        medStringListParameter *linkParameter = this->createLinkParameter();
-        QString tooltip = QString(tr("Link layer properties ("));
-        foreach(medAbstractParameter *param, this->interactorsParameters(layer))
-            tooltip += param->name() + ", ";
-        tooltip += ")";
-        linkParameter->setToolTip(tooltip);
-        d->linkparameters.insert(layer, linkParameter);
-    }
-
-    return linkParameter;
-}
-
-medStringListParameter* medAbstractLayeredView::createLinkParameter()
-{
-    medStringListParameter *linkParameter =  new medStringListParameter("Link layer", this);
-
-    linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
-    linkParameter->addItem("Layer group 1", medStringListParameter::createIconFromColor("orange"));
-    linkParameter->addItem("Layer group 2", medStringListParameter::createIconFromColor("lightGreen"));
-    linkParameter->addItem("Layer group 3", medStringListParameter::createIconFromColor("#0080C0"));
-
-    connect(linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(linkLayer(QString)));
-    linkParameter->setValue("None");
-
-    return linkParameter;
 }
 
 unsigned int medAbstractLayeredView::currentLayer() const
@@ -521,36 +473,6 @@ QList<medAbstractParameter*> medAbstractLayeredView::interactorsParameters(unsig
     return params;
 }
 
-void medAbstractLayeredView::linkLayer(QString pool)
-{
-    medStringListParameter *linkParam = dynamic_cast<medStringListParameter *>(this->sender());
-    if(!linkParam)
-        return;
-
-    int layer = d->linkparameters.indexOf(linkParam);
-    if(layer == -1)
-        return;
-
-    unlinkLayer(layer);
-
-    if(pool!="None")
-    {
-        foreach(medAbstractParameter *param, this->interactorsParameters(layer))
-            medParameterPoolManager::instance()->linkParameter(param, pool);
-    }
-}
-
-void medAbstractLayeredView::unlinkLayer(unsigned int layer)
-{
-    foreach(medAbstractParameter *param, this->interactorsParameters(layer))
-        medParameterPoolManager::instance()->unlinkParameter(param);
-}
-
-void medAbstractLayeredView::removeInternToolBarWidget()
-{
-    d->toolBarWidget = NULL;
-}
-
 void medAbstractLayeredView::removeInternNavigatorWidget()
 {
     d->navigatorWidget = NULL;
@@ -559,4 +481,9 @@ void medAbstractLayeredView::removeInternNavigatorWidget()
 void medAbstractLayeredView::removeInternMouseInteractionWidget()
 {
     d->mouseInteractionWidget = NULL;
+}
+
+void medAbstractLayeredView::removeInternToolBarWidget()
+{
+    d->toolBarWidget = NULL;
 }
