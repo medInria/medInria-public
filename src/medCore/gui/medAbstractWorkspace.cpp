@@ -353,9 +353,9 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                 if(d->userLayerPoolable)
                 {
-                    medPoolIndicator *poolIndicator = new medPoolIndicator;
-                    poolIndicator->setLinkParameter(layeredView->layerLinkParameter(layer));
-                    layout->addWidget(poolIndicator);
+//                    medPoolIndicator *poolIndicator = new medPoolIndicator;
+//                    poolIndicator->setLinkParameter(layeredView->layerLinkParameter(layer));
+//                    layout->addWidget(poolIndicator);
                 }
 
                 if(d->userLayerClosable)
@@ -547,8 +547,6 @@ void medAbstractWorkspace::buildTemporaryPool()
         {
             d->temporaryPoolForInteractors->append(interactor->linkableParameters());
         }
-
-        d->temporaryPoolForInteractors->append(view->layerLinkParameter(layer));
     }
 }
 
@@ -934,7 +932,18 @@ void medAbstractWorkspace::removeLayerGroup(QString group)
 void medAbstractWorkspace::registerViewGroup(QString group)
 {
     medViewParameterGroup *newGroup = new medViewParameterGroup(group, this);
-    d->viewParameterGroups.insert(newGroup->name(), newGroup );
+    addViewGroup(newGroup);
+}
+
+void medAbstractWorkspace::registerLayerGroup(QString group)
+{
+    medLayerParameterGroup *newGroup = new medLayerParameterGroup(group, this);
+    addLayerGroup(newGroup);
+}
+
+void medAbstractWorkspace::addViewGroup(medViewParameterGroup * group)
+{
+    d->viewParameterGroups.insert(group->name(), group );
 
     QList<medAbstractParameterGroup*>  groups;
     QHashIterator<QString, medViewParameterGroup*> iter(d->viewParameterGroups);
@@ -943,13 +952,14 @@ void medAbstractWorkspace::registerViewGroup(QString group)
         iter.next();
         groups.append(iter.value());
     }
-    d->viewLinkMenu->setGroups(groups);
+
+    if(d->viewLinkMenu)
+      d->viewLinkMenu->setGroups(groups);
 }
 
-void medAbstractWorkspace::registerLayerGroup(QString group)
+void medAbstractWorkspace::addLayerGroup(medLayerParameterGroup * group)
 {
-    medLayerParameterGroup *newGroup = new medLayerParameterGroup(group, this);
-    d->layerParameterGroups.insert(newGroup->name(), newGroup);
+    d->layerParameterGroups.insert(group->name(), group);
 
     QList<medAbstractParameterGroup*>  groups;
     QHashIterator<QString, medLayerParameterGroup*> iter(d->layerParameterGroups);
@@ -958,5 +968,21 @@ void medAbstractWorkspace::registerLayerGroup(QString group)
         iter.next();
         groups.append(iter.value());
     }
-    d->viewLinkMenu->setGroups(groups);
+
+    if(d->layerLinkMenu)
+      d->layerLinkMenu->setGroups(groups);
+}
+
+void medAbstractWorkspace::setViewGroups(QList<medViewParameterGroup*> groups)
+{
+    d->viewParameterGroups.clear();
+    foreach(medViewParameterGroup* group, groups)
+        addViewGroup(group);
+}
+
+void medAbstractWorkspace::setLayerGroups(QList<medLayerParameterGroup*> groups)
+{
+    d->layerParameterGroups.clear();
+    foreach(medLayerParameterGroup* group, groups)
+        addLayerGroup(group);
 }

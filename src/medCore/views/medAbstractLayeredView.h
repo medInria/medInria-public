@@ -57,7 +57,6 @@ public:
 
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
 
-    medStringListParameter *layerLinkParameter(unsigned int layer);
     
     medDataListParameter *dataListParameter() const;
 
@@ -96,17 +95,12 @@ protected:
 
 protected slots:
     virtual void setUpViewForThumbnail();
-    virtual void linkLayer(QString);
-    virtual void unlinkLayer(unsigned int layer = -1);
 
 private slots:
     void removeInternToolBarWidget();
     void removeInternNavigatorWidget();
     void removeInternMouseInteractionWidget();
     void updateDataListParameter(unsigned int layer);
-
- private:
-    medStringListParameter* createLinkParameter();
 
 private:
     medAbstractLayeredViewPrivate *d;

@@ -94,6 +94,10 @@ protected slots:
 
     void registerViewGroup(QString);
     void registerLayerGroup(QString);
+    void addViewGroup(medViewParameterGroup*);
+    void addLayerGroup(medLayerParameterGroup*);
+    void setViewGroups(QList<medViewParameterGroup*>);
+    void setLayerGroups(QList<medLayerParameterGroup*>);
 
 private slots:
     void buildTemporaryPool();
