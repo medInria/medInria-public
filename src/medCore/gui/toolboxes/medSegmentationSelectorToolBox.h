@@ -30,6 +30,8 @@ public:
 
      medSegmentationAbstractToolBox* currentToolBox();
 
+     void setWorkspace(medAbstractWorkspace*);
+
 signals:
      void installEventFilterRequest(medViewEventFilter *filter);
      void inputChanged();

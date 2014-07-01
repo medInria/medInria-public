@@ -73,16 +73,16 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //User widget content with settings, about and help buttons
     QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
     medHomepageButton * helpButton = new medHomepageButton ( this );
-    helpButton->setText ( "Help" );
-    helpButton->setToolTip(tr("Open Online Documentation"));
+    helpButton->setText ( "WebSite" );
+    helpButton->setToolTip(tr("Go to VP2HF's website"));
     helpButton->setMinimumHeight ( 30 );
     helpButton->setMaximumWidth ( 150 );
     helpButton->setMinimumWidth ( 150 );
     helpButton->setFocusPolicy ( Qt::NoFocus );
-    helpButton->setIcon ( QIcon ( ":icons/help.svg" ) );
+    //helpButton->setIcon ( QIcon ( ":icons/help.svg" ) );
     helpButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( helpButton,SIGNAL ( clicked() ),this, SLOT ( onShowHelp() ) );
-
+    
     medHomepageButton * aboutButton = new medHomepageButton ( this );
     aboutButton->setText ( "About" );
     aboutButton->setMinimumHeight ( 30 );
@@ -93,6 +93,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
+    aboutButton->hide();
 
     medHomepageButton * pluginButton = new medHomepageButton ( this );
     pluginButton->setText ( "Plugins" );
@@ -118,27 +119,25 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, pluginButton );
-    userButtonsLayout->insertWidget ( 2, aboutButton );
-    userButtonsLayout->insertWidget ( 3, helpButton );
+    //userButtonsLayout->insertWidget ( 2, aboutButton );
+    userButtonsLayout->insertWidget ( 2, helpButton );
     //no need to set the layout the userWidget is the parent of the layout already.
 //    d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medInriaLabel = new QLabel ( this );
-    QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );
+    QPixmap medLogo( ":VP2HF.png" );
     medInriaLabel->setPixmap ( medLogo );
 //     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
-                           "processing and visualisation software, "
-                           "and it is <b>free</b>. Through an intuitive user "
-                           "interface, <b>medInria</b> offers from standard "
-                           "to cutting-edge processing functionalities for "
-                           "your medical images such as 2D/3D/4D image "
-                           "visualisation, image registration, or diffusion "
-                           "MR processing and tractography." ));
+    textEdit->setHtml ( tr("<b>The primary aim of VP2HF</b> is to bring together image"
+                           " and data processing tools with statistical"
+                           " and integrated biophysical models mainly developed"
+                           " in previous VPH projects, into a single clinical workflow"
+                           " to improve therapy selection and treatment optimisation in HF."));
+
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight ( 200 );
@@ -488,7 +487,7 @@ void medHomepageArea::onShowInfo()
 
 void medHomepageArea::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+    QDesktopServices::openUrl(QUrl("http://www.kcl.ac.uk/medicine/research/divisions/imaging/centres/vp2hf/index.aspx"));
 }
 
 void medHomepageArea::onShowSettings()

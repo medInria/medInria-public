@@ -29,15 +29,15 @@ public:
     medSegmentationAbstractToolBox * currentSegmentationToolBox;
     QHash<QString, medSegmentationAbstractToolBox*> segmentationToolBoxes;
     QVBoxLayout *mainLayout;
+    medAbstractWorkspace * workspace;
 };
 
-medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent) :
+medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent):
     medToolBox(parent),
     d(new medSegmentationSelectorToolBoxPrivate)
 {
+    d->workspace = NULL;
     d->currentSegmentationToolBox = NULL;
-
-
     d->chooseSegmentationComboBox = new QComboBox;
     //TODO algorithm is not the best IMO - RDE
     d->chooseSegmentationComboBox->addItem("Choose algorithm");
@@ -78,6 +78,10 @@ medSegmentationAbstractToolBox* medSegmentationSelectorToolBox::currentToolBox()
     return d->currentSegmentationToolBox;
 }
 
+void medSegmentationSelectorToolBox::setWorkspace(medAbstractWorkspace* workspace)
+{
+    d->workspace = workspace;
+}
 
 void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
 {
@@ -92,6 +96,8 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
         toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
         if (toolbox)
         {
+            if (d->workspace)
+                toolbox->setWorkspace(d->workspace);
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             d->segmentationToolBoxes[identifier] = toolbox;
             connect(toolbox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
