@@ -128,11 +128,13 @@ void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
         d->groupList->insertItem(0,item);
 
         medGroupWidget *groupWidget = new medGroupWidget(groupName);
+        groupWidget->setColor(group->color());
         groupWidget->setFocus();
         d->groupList->setItemWidget(item, groupWidget);
 
         connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
         connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
+        connect(groupWidget, SIGNAL(colorChanged(QColor)), this, SLOT(emitGroupColorChangeRequest(QColor)));
 
         d->paramList->blockSignals(true);
         // update param items
@@ -182,27 +184,11 @@ void medLinkMenu::setPartiallySelectedGroups(QStringList groups)
 
 void medLinkMenu::createNewGroup()
 {
-//    QListWidgetItem * item = new QListWidgetItem();
-//    item->setData(Qt::UserRole, d->newGroupEdit->text());
-//    item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
-//    item->setCheckState(Qt::Checked);
-//    d->groupList->insertItem(0,item);
-
-//    medGroupWidget *groupWidget = new medGroupWidget(d->newGroupEdit->text());
-//    groupWidget->setFocus();
-//    d->groupList->setItemWidget(item, groupWidget);
-
      emit groupCreated(d->newGroupEdit->text());
 
     d->newGroupEdit->blockSignals(true);
     d->newGroupEdit->setText("New Group...");
     d->newGroupEdit->blockSignals(false);
-
-//    d->popupWidget->resize(d->groupList->sizeHint());
-
-//    connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
-//    connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
-
 }
 
 void medLinkMenu::updateGroupEditOnFocusIn()
@@ -471,6 +457,22 @@ void medLinkMenu::deleteGroup()
     d->popupWidget->resize(d->groupList->sizeHint());
 }
 
+void medLinkMenu::emitGroupColorChangeRequest(QColor color)
+{
+    medGroupWidget *w = dynamic_cast<medGroupWidget*>(this->sender());
+
+    for(int i=0; i<d->groupList->count(); i++)
+    {
+        QListWidgetItem *item = d->groupList->item(i);
+        if( w == d->groupList->itemWidget(item) )
+        {
+            QString group = item->data(Qt::UserRole).toString();
+            emit groupColorChangeRequest(group, color);
+            break;
+        }
+    }
+}
+
 void medLinkMenu::checkAllParams(bool check)
 {
     for(int i=0; i<d->paramList->count(); i++)
@@ -495,22 +497,40 @@ medGroupWidget::medGroupWidget(QString groupName, QWidget * parent): QWidget(par
 {
     QHBoxLayout *groupLayout = new QHBoxLayout(this);
     groupLayout->setContentsMargins(0,0,0,0);
+    groupLayout->setSpacing(0);
     this->setLayout(groupLayout);
 
-    QLabel *label = new QLabel(groupName);
+    QLabel *groupLabel = new QLabel(groupName);
 
     QPushButton *removeButton = new QPushButton;
     removeButton->setIcon(QIcon(":/icons/cross.svg"));
     removeButton->setIconSize(QSize(12,12));
+    removeButton->setStyleSheet("margin:0px;border:0;border-radius: 0px;padding: 0px;");
     removeButton->setFixedSize(12,12);
+    removeButton->setFlat(true);
 
     medLeftArrow *arrow = new medLeftArrow(this);
 
+    m_color = QColor::fromHsv(qrand()%360, 255, 210);
+
+    m_labelColorWidget = new QPushButton();
+    m_labelColorWidget->setToolTip(tr("Current group color"));
+    m_labelColorWidget->setFlat(true);
+    m_labelColorWidget->setStyleSheet("margin:0px;border:0;border-radius: 0px;padding: 0px;");
+    m_labelColorWidget->setCheckable(false);
+    m_labelColorWidget->setText("");
+    QPixmap pix(10,10);
+    pix.fill(QColor(m_color));
+    m_labelColorWidget->setIcon(QIcon(pix));
+    m_labelColorWidget->resize(10,10);
+
     groupLayout->addWidget(arrow);
-    groupLayout->addWidget(label);
+    groupLayout->addWidget(groupLabel);
     groupLayout->addStretch();
+    groupLayout->addWidget(m_labelColorWidget);
     groupLayout->addWidget(removeButton);
 
+    connect(m_labelColorWidget, SIGNAL(clicked()), this, SLOT(setGroupColor()));
     connect(removeButton, SIGNAL(clicked()), this, SIGNAL(deletionRequested()));
 }
 
@@ -524,6 +544,23 @@ void medGroupWidget::leaveEvent(QEvent *)
     emit leaveEvent();
 }
 
+void medGroupWidget::setColor(QColor color)
+{
+    QPixmap pix(10,10);
+    pix.fill(QColor(color));
+    m_labelColorWidget->setIcon(QIcon(pix));
+    m_color = color;
+
+    emit colorChanged(m_color);
+}
+
+void medGroupWidget::setGroupColor()
+{
+    QColor newColor = QColorDialog::getColor(m_color);
+
+    if (newColor.isValid() && newColor!=m_color)
+        setColor(newColor);
+}
 
 
 /*=========================================================================

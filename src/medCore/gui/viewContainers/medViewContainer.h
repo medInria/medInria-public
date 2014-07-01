@@ -71,6 +71,9 @@ public:
     void setDefaultWidget(QWidget *defaultWidget);
     QWidget* defaultWidget() const;
 
+    void addColorIndicator(QColor color, QString description="");
+    void removeColorIndicator(QColor color);
+
 public slots:
     void setView(medAbstractView* view);
     void removeView();

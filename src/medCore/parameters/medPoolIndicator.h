@@ -18,20 +18,15 @@
 class medStringListParameter;
 
 class medPoolIndiactorPrivate;
-class MEDCORE_EXPORT medPoolIndicator: public QLabel
+class MEDCORE_EXPORT medPoolIndicator: public QWidget
 {
     Q_OBJECT
 public:
     medPoolIndicator(QWidget* parent = NULL);
     ~medPoolIndicator();
 
-    void setLinkParameter(medStringListParameter *linkParameter);
-
-public slots:
-    void update();
-
-private slots:
-    void removeInternLinkParamater();
+    void addColorIndicator(QColor, QString);
+    void removeColorIndicator(QColor);
 
 private:
     medPoolIndiactorPrivate *d;

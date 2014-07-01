@@ -35,6 +35,9 @@ public:
     void setParametersToLink(QStringList parameters);
     QStringList parameters() const;
 
+    void setColor(QColor color);
+    QColor color() const;
+
     virtual void setLinkAllParameters(bool linkAll);
     bool linkAll() const;
 

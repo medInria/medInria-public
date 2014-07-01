@@ -723,3 +723,13 @@ medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
     return AREA_CENTER;
 }
 
+void medViewContainer::addColorIndicator(QColor color, QString description)
+{
+
+}
+
+void medViewContainer::removeColorIndicator(QColor color)
+{
+
+}
+

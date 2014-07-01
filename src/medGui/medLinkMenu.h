@@ -44,6 +44,8 @@ signals:
     void groupCreated(QString groupName);
     void groupDeleted(QString groupName);
 
+    void groupColorChangeRequest(QString groupName, QColor color);
+
 
 private slots:
     void showPopup();
@@ -57,6 +59,7 @@ private slots:
     void hideSubMenu();
     void highlightParam(QListWidgetItem*);
     void deleteGroup();
+    void emitGroupColorChangeRequest(QColor);
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
@@ -82,10 +85,20 @@ public:
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
 
+    void setColor(QColor color);
+
 signals:
     void enterEvent();
     void leaveEvent();
     void deletionRequested();
+    void colorChanged(QColor);
+
+private slots:
+    void setGroupColor();
+
+private:
+    QPushButton *m_labelColorWidget;
+    QColor m_color;
 
 };
 
