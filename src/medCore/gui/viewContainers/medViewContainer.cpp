@@ -725,11 +725,11 @@ medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
 
 void medViewContainer::addColorIndicator(QColor color, QString description)
 {
-
+    d->poolIndicator->addColorIndicator(color, description);
 }
 
 void medViewContainer::removeColorIndicator(QColor color)
 {
-
+    d->poolIndicator->removeColorIndicator(color);
 }
 

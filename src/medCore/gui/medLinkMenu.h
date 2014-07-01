@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 #include <QtGui>
 
 #include <medAbstractParameterGroup.h>
@@ -22,7 +22,7 @@
 class medLinkMenuPrivate;
 
 
-class MEDGUI_EXPORT medLinkMenu : public QPushButton
+class MEDCORE_EXPORT medLinkMenu : public QPushButton
 {
     Q_OBJECT
 
