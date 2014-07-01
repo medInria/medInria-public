@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medGuiExport.h>
+#include <medCoreExport.h>
 #include <QtGui>
 #include <QDebug>
 
@@ -21,7 +21,7 @@
   * QListWidget doesn't seem to be able to resize itself to its content
   * medListWidget should do so.
   */
-class MEDGUI_EXPORT medListWidget : public QListWidget
+class MEDCORE_EXPORT medListWidget : public QListWidget
 {
 public:
     medListWidget(QWidget *parent = 0):QListWidget(parent)

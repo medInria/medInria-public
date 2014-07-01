@@ -20,7 +20,7 @@
 #include <medAbstractLayeredView.h>
 #include <medAbstractParameter.h>
 
-//#include <medViewContainer.h>
+#include <medViewContainer.h>
 
 
 class medViewParameterGroupPrivate
@@ -61,18 +61,18 @@ void medViewParameterGroup::addImpactedView(medAbstractView *view)
         }
     }
 
-//    medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
-//    if(container)
-//        container->addColorIndicator(this->color());
+    medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
+    if(container)
+        container->addColorIndicator(this->color());
 }
 
 void medViewParameterGroup::removeImpactedView(medAbstractView *view)
 {
     d->impactedViews.remove(view);
 
-//    medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
-//    if(container)
-//        container->removeColorIndicator(this->color());
+    medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
+    if(container)
+        container->removeColorIndicator(this->color());
 }
 
 void medViewParameterGroup::removeImpactedView()

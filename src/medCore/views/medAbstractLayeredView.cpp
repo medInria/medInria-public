@@ -238,24 +238,24 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
         
         this->addLayer(data);
         
-        if ((this->layerLinkParameter(0)->value() != "")&&(this->layerLinkParameter(0)->value() != "None"))
-        {
-            unsigned int layerNumber = this->layer(data);
-            QString groupName = this->linkParameter()->value() + " Layer " + QString::number(layerNumber+1);
-            QColor layerColor;
-            double hueValue = 2.0 * layerNumber / (1.0 + sqrt(5.0));
-            hueValue -= floor(hueValue);
-            layerColor.setHsvF(hueValue,1.0,1.0);
+//        if ((this->layerLinkParameter(0)->value() != "")&&(this->layerLinkParameter(0)->value() != "None"))
+//        {
+//            unsigned int layerNumber = this->layer(data);
+//            QString groupName = this->linkParameter()->value() + " Layer " + QString::number(layerNumber+1);
+//            QColor layerColor;
+//            double hueValue = 2.0 * layerNumber / (1.0 + sqrt(5.0));
+//            hueValue -= floor(hueValue);
+//            layerColor.setHsvF(hueValue,1.0,1.0);
             
-            QPixmap layerPixmap(32,32);
-            layerPixmap.fill(layerColor);
-            QIcon layerIcon(layerPixmap);
+//            QPixmap layerPixmap(32,32);
+//            layerPixmap.fill(layerColor);
+//            QIcon layerIcon(layerPixmap);
             
-            if (!this->layerLinkParameter(layerNumber)->items().contains(groupName))
-                this->layerLinkParameter(layerNumber)->addItem(groupName,layerIcon);
+//            if (!this->layerLinkParameter(layerNumber)->items().contains(groupName))
+//                this->layerLinkParameter(layerNumber)->addItem(groupName,layerIcon);
 
-            this->layerLinkParameter(layerNumber)->setValue(groupName);
-        }
+//            this->layerLinkParameter(layerNumber)->setValue(groupName);
+//        }
     }
     
     foreach(medDataIndex index, this->dataList())
