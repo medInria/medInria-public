@@ -41,6 +41,7 @@ class medViewContainer;
  *
 */
 
+class medAbstractParameterGroup;
 class medViewParameterGroup;
 class medLayerParameterGroup;
 
@@ -91,18 +92,21 @@ protected slots:
     void changeCurrentLayer(int row);
     void removeLayer();
 
+    void registerViewGroup(QString);
+    void registerLayerGroup(QString);
+
 private slots:
     void buildTemporaryPool();
 
     void addViewstoGroup(QString);
     void removeViewsFromGroup(QString);
-    void addParamToViewGroup(QString, QString, bool);
-    void removeParamFromViewGroup(QString, QString, bool);
+//    void addParamToViewGroup(QString, QString, bool);
+//    void removeParamFromViewGroup(QString, QString, bool);
 
     void addLayerstoGroup(QString);
     void removeLayersFromGroup(QString);
-    void addParamToLayerGroup(QString, QString, bool);
-    void removeParamFromLayerGroup(QString, QString, bool);
+//    void addParamToLayerGroup(QString, QString, bool);
+//    void removeParamFromLayerGroup(QString, QString, bool);
 
     void removeViewGroup(QString);
     void removeLayerGroup(QString);

@@ -30,7 +30,6 @@ public:
     QList<medAbstractView*> impactedViews();
 
     void setLinkAllParameters(bool linkAll);
-    bool linkAll() const;
 
     virtual void update();
 

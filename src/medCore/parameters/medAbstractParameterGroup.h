@@ -35,6 +35,9 @@ public:
     void setParametersToLink(QStringList parameters);
     QStringList parameters() const;
 
+    virtual void setLinkAllParameters(bool linkAll);
+    bool linkAll() const;
+
     void saveAsPreset();
 
     virtual void update() = 0;
