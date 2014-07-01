@@ -27,6 +27,7 @@ public:
     QString name;
     QStringList parameters;
     bool linkAll;
+    QColor color;
 };
 
 medAbstractParameterGroup::medAbstractParameterGroup(QString name, QObject *parent) : d(new medAbstractParameterGroupPrivate)
@@ -34,6 +35,7 @@ medAbstractParameterGroup::medAbstractParameterGroup(QString name, QObject *pare
     setParent(parent);
     d->name = name;
     d->linkAll = false;
+    d->color = QColor::fromHsv(qrand()%360, 255, 210);
 }
 
 medAbstractParameterGroup::~medAbstractParameterGroup()
@@ -81,6 +83,16 @@ bool medAbstractParameterGroup::linkAll() const
 QStringList medAbstractParameterGroup::parameters() const
 {
     return d->parameters;
+}
+
+void medAbstractParameterGroup::setColor(QColor color)
+{
+    d->color = color;
+}
+
+QColor medAbstractParameterGroup::color() const
+{
+    return d->color;
 }
 
 void medAbstractParameterGroup::saveAsPreset()

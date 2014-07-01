@@ -115,6 +115,9 @@ private slots:
     void removeViewGroup(QString);
     void removeLayerGroup(QString);
 
+    void changeViewGroupColor(QString group, QColor color);
+    void changeLayerGroupColor(QString group, QColor color);
+
 private:
     QWidget* buildViewLinkMenu();
     QWidget* buildLayerLinkMenu(QList<QListWidgetItem*>);

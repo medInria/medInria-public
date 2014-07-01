@@ -764,6 +764,7 @@ QWidget* medAbstractWorkspace::buildViewLinkMenu()
     connect(d->viewLinkMenu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeViewsFromGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupCreated(QString)), this, SLOT(registerViewGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupDeleted(QString)), this, SLOT(removeViewGroup(QString)));
+    connect(d->viewLinkMenu, SIGNAL(groupColorChangeRequest(QString,QColor)), this, SLOT(changeViewGroupColor(QString, QColor)));
 
     medAbstractView* view = NULL;
     QStringList viewType;
@@ -985,4 +986,16 @@ void medAbstractWorkspace::setLayerGroups(QList<medLayerParameterGroup*> groups)
     d->layerParameterGroups.clear();
     foreach(medLayerParameterGroup* group, groups)
         addLayerGroup(group);
+}
+
+void medAbstractWorkspace::changeViewGroupColor(QString group, QColor color)
+{
+    medViewParameterGroup *paramGroup = viewParameterGroup(group);
+    paramGroup->setColor(color);
+}
+
+void medAbstractWorkspace::changeLayerGroupColor(QString group, QColor color)
+{
+    medLayerParameterGroup *paramGroup = layerParameterGroup(group);
+    paramGroup->setColor(color);
 }

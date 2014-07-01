@@ -13,54 +13,43 @@
 
 #include <medPoolIndicator.h>
 
-#include <QComboBox>
-
-#include <medStringListParameter.h>
+#include <QtGui>
 
 class medPoolIndiactorPrivate
 {
 public:
-    medStringListParameter *linkParameter;
+    QHBoxLayout *layout;
+    QHash<QString,QLabel*> colorIndicators;
 };
 
 medPoolIndicator::medPoolIndicator(QWidget *parent):
-    QLabel(parent), d(new medPoolIndiactorPrivate)
+    QWidget(parent), d(new medPoolIndiactorPrivate)
 {
-    d->linkParameter = NULL;
+    d->layout = new QHBoxLayout;
+    d->layout->setContentsMargins(0,0,0,0);
+    this->setLayout(d->layout);
+
 }
 
 medPoolIndicator::~medPoolIndicator()
 {
 }
 
-void medPoolIndicator::setLinkParameter(medStringListParameter *linkParameter)
-{
-    d->linkParameter = linkParameter;
-    this->update();
 
-    if(d->linkParameter)
-    {
-        connect(d->linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(update()));
-        connect(d->linkParameter, SIGNAL(destroyed()), this, SLOT(removeInternLinkParamater()));
-    }
+void medPoolIndicator::addColorIndicator(QColor color, QString description)
+{
+    QLabel *colorIndicator = new QLabel;
+    QPixmap pix(10,10);
+    pix.fill(color);
+    colorIndicator->setPixmap(pix);
+    colorIndicator->setToolTip(description);
+
+    d->layout->addWidget(colorIndicator);
+    d->colorIndicators.insert(color.name(), colorIndicator);
 }
 
-void medPoolIndicator::update()
+void medPoolIndicator::removeColorIndicator(QColor color)
 {
-    if(!d->linkParameter)
-    {
-        this->clear();
-    }
-    else
-    {
-        QComboBox *cb = d->linkParameter->getComboBox();
-        QPixmap pixmap = cb->itemIcon(cb->currentIndex()).pixmap(15,15);
-        this->setPixmap(pixmap);
-    }
+    delete d->colorIndicators.take(color.name());
 }
 
-void medPoolIndicator::removeInternLinkParamater()
-{
-    d->linkParameter = NULL;
-    this->update();
-}
