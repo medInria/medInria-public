@@ -57,14 +57,6 @@ DCMTKImageIO::DCMTKImageIO()
     this->SetPixelType(SCALAR);
     this->SetComponentType(CHAR);
 
-    if (ByteSwapper<int>::SystemIsBigEndian()) {
-        m_ByteOrder = BigEndian;
-    } else {
-        m_ByteOrder = LittleEndian;
-    }
-
-    m_Directory = "";
-
     DcmRLEDecoderRegistration::registerCodecs();
     DJDecoderRegistration::registerCodecs();
 }
@@ -123,12 +115,13 @@ bool DCMTKImageIO::CanReadFile(const char* filename)
 void DCMTKImageIO::ReadImageInformation()
 {
     // Using a set, we remove any duplicate filename - should we do this?
-    NameSetType fileNames;
-    for( unsigned int i=0; i<this->GetFileNames().size(); i++ ) {
-        fileNames.insert ( this->GetFileNames()[i] );
+    NameSetType fileNamesSet;
+    FileNameVectorType fileNamesVector = this->GetFileNames();
+    for( unsigned int i=0; i<fileNamesVector.size(); i++ ) {
+        fileNamesSet.insert(fileNamesVector[i]);
     }
 
-    int fileCount = (int)( fileNames.size() );
+    int fileCount = (int)( fileNamesSet.size() );
     if( fileCount == 0 ) {
         itkExceptionMacro (<<"Cannot find any dicom in directory or dicom is not valid");
     }
@@ -142,13 +135,9 @@ void DCMTKImageIO::ReadImageInformation()
 
     /** The purpose of the next loop is to parse the DICOM header of each file and to store all
      fields in the Dictionary. */
-    for (NameSetType::const_iterator it = fileNames.begin(); it!=fileNames.end(); it++)
+    for (NameSetType::const_iterator it = fileNamesSet.begin(); it!=fileNamesSet.end(); it++)
     {
-        std::string filename;
-        if( m_Directory != "" )
-            filename = m_Directory + ITK_FORWARD_PATH_SLASH + *it;
-        else
-            filename = *it;
+        std::string filename = *it;
 
         try
         {
@@ -173,7 +162,7 @@ void DCMTKImageIO::ReadImageInformation()
     fileIndex =0;
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
 
-    for (NameSetType::const_iterator it = fileNames.begin(); it!= fileNames.end(); it++)
+    for (NameSetType::const_iterator it = fileNamesSet.begin(); it!= fileNamesSet.end(); it++)
     {
         try
         {
@@ -498,24 +487,6 @@ void DCMTKImageIO::DetermineSpacing()
     else // rely on the SpacingBetweenSlices tag
     {
         // never use sliceThickness as it has nothing to do with the z spacing
-        /*
-    double sliceThickness = 1.0;
-    const StringVectorType &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
-    if( sliceThicknessVec.size() )
-    {
-    std::string sliceThicknessStr = sliceThicknessVec[0];
-    std::istringstream is_stream( sliceThicknessStr.c_str() );
-    if (!(is_stream>>sliceThickness))
-    {
-    itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() << std::endl );
-    }
-    else
-    {
-    m_Spacing[2] = sliceThickness;
-    }
-    }
-      */
-
         double spacingBetweenSlices = 1.0;
         const StringVectorType &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
         if( spacingBetweenSlicesVec.size() )
@@ -653,7 +624,6 @@ void DCMTKImageIO::DetermineOrientation()
         m_Direction[3][1] = 0.0;
         m_Direction[3][2] = 0.0;
     }
-
 }
 
 
@@ -726,10 +696,7 @@ void DCMTKImageIO::ThreadedRead (void* buffer, RegionType region, int threadId)
 void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCount)
 {
     std::string filename;
-    if( m_Directory=="" )
-        filename = m_OrderedFileNames[slice];
-    else
-        filename = m_Directory + ITK_FORWARD_PATH_SLASH + m_OrderedFileNames[slice];
+    filename = m_OrderedFileNames[slice];
 
     DcmFileFormat dicomFile;
 

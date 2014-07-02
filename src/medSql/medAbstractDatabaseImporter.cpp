@@ -955,9 +955,15 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     // This information will then be passed to the database.
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData);
     QString studyDicomId = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
-    QString seriesDicomId = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
-    QString orientation = medMetaDataKeys::Orientation.getFirstValue(medData); // orientation sometimes differ by a few digits, thus this is not reliable
-    QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
+
+    // We don't use the seriesDicomID, too unreliable : you can have images part
+    // of the same series with different UIDs, and different volumes within the
+    // same study with the same UIDs... instead, use Series Description
+    QString seriesDescription = medMetaDataKeys::SeriesDescription.getFirstValue(medData);
+
+    // orientation sometimes differ by a few digits, thus this is not reliable
+    QString orientation = medMetaDataKeys::Orientation.getFirstValue(medData);
+
     QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(medData);
     QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(medData);
     QString rows = medMetaDataKeys::Rows.getFirstValue(medData);
@@ -979,7 +985,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     // define a unique key string to identify which volume an image belongs to.
     // we use: patientName, studyId, seriesId, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns.
     // All images of the same volume should share similar values of these parameters
-    QString key = patientName+studyDicomId+seriesDicomId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
+    QString key = patientName+studyDicomId+seriesDescription+orientation+sequenceName+sliceThickness+rows+columns;
 
     return key;
 }
