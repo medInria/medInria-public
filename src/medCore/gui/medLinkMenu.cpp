@@ -105,6 +105,30 @@ void medLinkMenu::setAvailableParameters(QStringList parameters)
     }
 }
 
+void medLinkMenu::addGroup(medAbstractParameterGroup * group)
+{
+    QString groupName = group->name();
+
+    d->currentGroups.insert(groupName, group);
+
+    QListWidgetItem * item = new QListWidgetItem();
+    item->setData(Qt::UserRole, groupName);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
+    item->setCheckState(Qt::Unchecked);
+    d->groupList->insertItem(0,item);
+
+    medGroupWidget *groupWidget = new medGroupWidget(groupName);
+    groupWidget->setColor(group->color());
+    groupWidget->setFocus();
+    d->groupList->setItemWidget(item, groupWidget);
+
+    connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
+    connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
+    connect(groupWidget, SIGNAL(colorChanged(QColor)), this, SLOT(emitGroupColorChangeRequest(QColor)));
+
+    d->popupWidget->resize(d->groupList->sizeHint());
+}
+
 void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
 {
     d->currentGroups.clear();
@@ -116,25 +140,9 @@ void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
 
     foreach(medAbstractParameterGroup *group, groups)
     {
-        QString groupName = group->name();
+        addGroup(group);
+
         QStringList params = group->parameters();
-
-        d->currentGroups.insert(groupName, group);
-
-        QListWidgetItem * item = new QListWidgetItem();
-        item->setData(Qt::UserRole, groupName);
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
-        item->setCheckState(Qt::Unchecked);
-        d->groupList->insertItem(0,item);
-
-        medGroupWidget *groupWidget = new medGroupWidget(groupName);
-        groupWidget->setColor(group->color());
-        groupWidget->setFocus();
-        d->groupList->setItemWidget(item, groupWidget);
-
-        connect(groupWidget, SIGNAL(enterEvent()), this, SLOT(showSubMenu()));
-        connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
-        connect(groupWidget, SIGNAL(colorChanged(QColor)), this, SLOT(emitGroupColorChangeRequest(QColor)));
 
         d->paramList->blockSignals(true);
         // update param items
