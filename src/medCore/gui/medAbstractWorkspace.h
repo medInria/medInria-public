@@ -104,13 +104,9 @@ private slots:
 
     void addViewstoGroup(QString);
     void removeViewsFromGroup(QString);
-//    void addParamToViewGroup(QString, QString, bool);
-//    void removeParamFromViewGroup(QString, QString, bool);
 
     void addLayerstoGroup(QString);
     void removeLayersFromGroup(QString);
-//    void addParamToLayerGroup(QString, QString, bool);
-//    void removeParamFromLayerGroup(QString, QString, bool);
 
     void removeViewGroup(QString);
     void removeLayerGroup(QString);

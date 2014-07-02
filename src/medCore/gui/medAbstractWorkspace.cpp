@@ -668,30 +668,6 @@ void medAbstractWorkspace::removeLayersFromGroup(QString group)
     paramGroup->update();
 }
 
-//void medAbstractWorkspace::addParamToLayerGroup(QString param, QString group, bool groupChecked)
-//{
-//    medLayerParameterGroup *paramGroup = layerParameterGroup(group);
-//    paramGroup->addParameterToLink(param);
-
-//    if(groupChecked)
-//    {
-//        addLayerstoGroup(group);
-//        paramGroup->update();
-//    }
-//}
-
-//void medAbstractWorkspace::removeParamFromLayerGroup(QString param, QString group, bool groupChecked)
-//{
-//    medLayerParameterGroup *paramGroup = layerParameterGroup(group);
-//    paramGroup->removeParameter(param);
-
-//    if( groupChecked )
-//    {
-//        addLayerstoGroup(group);
-//        paramGroup->update();
-//    }
-//}
-
 medLayerParameterGroup * medAbstractWorkspace::layerParameterGroup(QString groupName)
 {
     medLayerParameterGroup *paramGroup;
@@ -758,8 +734,6 @@ QWidget* medAbstractWorkspace::buildViewLinkMenu()
     QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
 
     d->viewLinkMenu = new medLinkMenu(linkWidget);
-    //connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToViewGroup(QString,QString,bool)));
-    //connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromViewGroup(QString,QString,bool)));
     connect(d->viewLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeViewsFromGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupCreated(QString)), this, SLOT(registerViewGroup(QString)));
@@ -869,8 +843,6 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
     QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
 
     d->layerLinkMenu = new medLinkMenu(linkWidget);
-//    connect(menu, SIGNAL(parameterChecked(QString,QString,bool)), this, SLOT(addParamToLayerGroup(QString,QString,bool)));
-//    connect(menu, SIGNAL(parameterUnchecked(QString,QString,bool)), this, SLOT(removeParamFromLayerGroup(QString,QString,bool)));
     connect(d->layerLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addLayerstoGroup(QString)));
     connect(d->layerLinkMenu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeLayersFromGroup(QString)));
 
@@ -955,7 +927,7 @@ void medAbstractWorkspace::addViewGroup(medViewParameterGroup * group)
     }
 
     if(d->viewLinkMenu)
-      d->viewLinkMenu->setGroups(groups);
+      d->viewLinkMenu->addGroup(group);
 }
 
 void medAbstractWorkspace::addLayerGroup(medLayerParameterGroup * group)
@@ -971,7 +943,7 @@ void medAbstractWorkspace::addLayerGroup(medLayerParameterGroup * group)
     }
 
     if(d->layerLinkMenu)
-      d->layerLinkMenu->setGroups(groups);
+      d->viewLinkMenu->addGroup(group);
 }
 
 void medAbstractWorkspace::setViewGroups(QList<medViewParameterGroup*> groups)
