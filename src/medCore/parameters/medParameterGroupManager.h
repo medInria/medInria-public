@@ -41,8 +41,8 @@ public:
     QList<medViewParameterGroup*> viewGroups(QString workspace);
     QList<medLayerParameterGroup*> layerGroups(QString workspace);
 
-    medViewParameterGroup* viewGroup(QString workspace, QString groupName);
-    medLayerParameterGroup* layerGroup(QString workspace, QString groupName);
+    medViewParameterGroup* viewGroup(QString groupName, QString workspace = "");
+    medLayerParameterGroup* layerGroup(QString groupName, QString workspace = "");
 
     void setCurrentWorkspace(QString workspace);
 

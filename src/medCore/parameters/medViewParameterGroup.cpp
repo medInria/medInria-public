@@ -49,6 +49,9 @@ medViewParameterGroup::~medViewParameterGroup()
 
 void medViewParameterGroup::addImpactedView(medAbstractView *view)
 {
+    if(d->impactedViews.contains(view))
+        return;
+
     d->impactedViews.insert(view);
     connect(view, SIGNAL(closed()), this, SLOT(removeImpactedView()));
 

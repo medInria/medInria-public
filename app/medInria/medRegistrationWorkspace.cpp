@@ -57,12 +57,9 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
 
     d->viewGroup->setLinkAllParameters(true);
+
     d->fixedLayerGroup->setLinkAllParameters(true);
     d->movingLayerGroup->setLinkAllParameters(true);
-
-//    QList<medViewParameterGroup*> viewGroups;
-//    viewGroups.append(d->viewGroup);
-//    this->setViewGroups(QList<medViewParameterGroup*>(viewGroups));
 
     QList<medLayerParameterGroup*> layerGroups;
     layerGroups.append(d->fixedLayerGroup);
@@ -176,14 +173,17 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     d->fuseContainer->addData(movingData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    d->viewGroup->addImpactedView(movingView);
-    d->viewGroup->addImpactedView(fuseView);
-    d->viewGroup->update();
+    if(movingData)
+    {
+        d->viewGroup->addImpactedView(movingView);
+        d->viewGroup->addImpactedView(fuseView);
+        d->viewGroup->removeParameter("DataList");
+        d->viewGroup->update();
 
-    d->movingLayerGroup->addImpactedlayer(movingView, 0);
-    d->movingLayerGroup->addImpactedlayer(fuseView, fuseView->layer(movingData));
-    d->movingLayerGroup->update();
-
+        d->movingLayerGroup->addImpactedlayer(movingView, 0);
+        d->movingLayerGroup->addImpactedlayer(fuseView, fuseView->layer(movingData));
+        d->movingLayerGroup->update();
+    }
     d->registrationToolBox->setMovingData(movingData);
 }
 
@@ -226,13 +226,17 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     d->fuseContainer->addData(fixedData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    d->viewGroup->addImpactedView(fixedView);
-    d->viewGroup->addImpactedView(fuseView);
-    d->viewGroup->update();
+    if(fixedData)
+    {
+        d->viewGroup->addImpactedView(fixedView);
+        d->viewGroup->addImpactedView(fuseView);
+        d->viewGroup->removeParameter("DataList");
+        d->viewGroup->update();
 
-    d->fixedLayerGroup->addImpactedlayer(fixedView, 0);
-    d->fixedLayerGroup->addImpactedlayer(fuseView, fuseView->layer(fixedData));
-    d->fixedLayerGroup->update();
+        d->fixedLayerGroup->addImpactedlayer(fixedView, 0);
+        d->fixedLayerGroup->addImpactedlayer(fuseView, fuseView->layer(fixedData));
+        d->fixedLayerGroup->update();
+    }
 
     d->registrationToolBox->setFixedData(fixedData);
 }
@@ -281,6 +285,7 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
 
     d->viewGroup->addImpactedView(movingView);
     d->viewGroup->addImpactedView(fuseView);
+    d->viewGroup->removeParameter("DataList");
     d->viewGroup->update();
 
     d->movingLayerGroup->addImpactedlayer(movingView, 0);

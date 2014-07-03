@@ -65,6 +65,8 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
 
 medAbstractLayeredView::~medAbstractLayeredView()
 {
+    for(unsigned int i=0; i<layersCount(); i++)
+        removeLayer(i);
     delete d;
 }
 
@@ -212,20 +214,22 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
 
     this->removeInteractors(data);
     int layer = this->layer(data);
-    d->layersDataList.removeAll(data);
+    int res = d->layersDataList.removeAll(data);
+    if( res > 0 )
+        emit layerRemoved(layer);
 
     if(d->layersDataList.count() != 0  && layer == d->layersDataList.count())
     {
         this->setCurrentLayer(layer -1);
-        emit layerRemoved(layer);
+        //emit layerRemoved(layer);
     }
     else if(d->layersDataList.count() != 0)
     {
         this->setCurrentLayer(layer);
-        emit layerRemoved(layer);
+        //emit layerRemoved(layer);
     }
-    else
-        this->~medAbstractLayeredView();
+//    else
+//        this->~medAbstractLayeredView();
 }
 
 void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
@@ -258,11 +262,17 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
 //            this->layerLinkParameter(layerNumber)->setValue(groupName);
 //        }
-        QList<medLayerParameterGroup*> groups = medParameterGroupManager::instance()->groups(this, 0);
-        if(!groups.isEmpty())
+
+        unsigned int layerNumber = this->layer(data);
+
+        QList<medLayerParameterGroup*> groupsLayer0 = medParameterGroupManager::instance()->groups(this, 0);
+        if(!groupsLayer0.isEmpty() && layerNumber > 0)
         {
-            unsigned int layerNumber = this->layer(data);
-            medLayerParameterGroup* layerGroup = new medLayerParameterGroup("MPR Layer" + QString::number(layerNumber+1), this);
+
+            QString newGroup = groupsLayer0[0]->name() + " Layer " + QString::number(layerNumber+1);
+            medLayerParameterGroup* layerGroup = medParameterGroupManager::instance()->layerGroup(newGroup);
+            if(!layerGroup)
+              layerGroup = new medLayerParameterGroup(newGroup, this);
             layerGroup->setLinkAllParameters(true);
             layerGroup->addImpactedlayer(this, layerNumber);
             layerGroup->update();
