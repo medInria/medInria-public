@@ -65,7 +65,7 @@ public:
     bool isDatabaseVisible() const;
     void setToolBoxesVisibility(bool);
     bool areToolBoxesVisible() const;
-    virtual void setupViewContainerStack()=0;
+    virtual void setupViewContainerStack() = 0;
     medTabbedViewContainers * stackedViewContainers() const;
 
     void setUserLayerPoolable(bool poolable);
@@ -117,8 +117,6 @@ private slots:
 private:
     QWidget* buildViewLinkMenu();
     QWidget* buildLayerLinkMenu(QList<QListWidgetItem*>);
-    medViewParameterGroup* viewParameterGroup(QString groupName);
-    medLayerParameterGroup* layerParameterGroup(QString groupName);
 
 private:
     medAbstractWorkspacePrivate *d;

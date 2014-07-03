@@ -52,17 +52,17 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
     this->addToolBox(d->registrationToolBox);
 
-    d->viewGroup = new medViewParameterGroup("View Group 1", this);
-    d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this);
-    d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this);
+    d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
+    d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this, this->identifier());
+    d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
 
     d->viewGroup->setLinkAllParameters(true);
     d->fixedLayerGroup->setLinkAllParameters(true);
     d->movingLayerGroup->setLinkAllParameters(true);
 
-    QList<medViewParameterGroup*> viewGroups;
-    viewGroups.append(d->viewGroup);
-    this->setViewGroups(QList<medViewParameterGroup*>(viewGroups));
+//    QList<medViewParameterGroup*> viewGroups;
+//    viewGroups.append(d->viewGroup);
+//    this->setViewGroups(QList<medViewParameterGroup*>(viewGroups));
 
     QList<medLayerParameterGroup*> layerGroups;
     layerGroups.append(d->fixedLayerGroup);

@@ -209,3 +209,9 @@ QImage medAbstractView::generateThumbnail(const QSize &size)
     emit aboutToBuildThumbnail();
     return this->buildThumbnail(size);
 }
+
+QList<medAbstractParameter*> medAbstractView::linkableParameters()
+{
+    //TODO:
+    return navigatorsParameters();
+}

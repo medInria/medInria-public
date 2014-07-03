@@ -71,6 +71,8 @@ public:
     virtual QList<medAbstractNavigator*> extraNavigators();
     virtual QList<medAbstractNavigator*> navigators();
 
+    virtual QList<medAbstractParameter*> linkableParameters();
+
 public slots:
     virtual void reset() = 0;
 

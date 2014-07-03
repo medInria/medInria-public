@@ -18,6 +18,7 @@
 #include <medAbstractLayeredView.h>
 #include <medAbstractParameter.h>
 
+#include <medParameterGroupManager.h>
 
 class medLayerParameterGroupPrivate
 {
@@ -27,10 +28,12 @@ public:
 };
 
 
-medLayerParameterGroup::medLayerParameterGroup(QString name, QObject *parent) : medAbstractParameterGroup(name, parent),
-    d(new medLayerParameterGroupPrivate)
+medLayerParameterGroup::medLayerParameterGroup(QString name, QObject *parent, QString workspace)
+    : medAbstractParameterGroup(name, parent, workspace), d(new medLayerParameterGroupPrivate)
 {
     d->pool = new medParameterPool(this);
+
+    medParameterGroupManager::instance()->registerNewGroup(this);
 }
 
 medLayerParameterGroup::~medLayerParameterGroup()

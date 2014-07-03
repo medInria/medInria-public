@@ -12,7 +12,7 @@
 =========================================================================*/
 
 
-#include "medViewParameterGroup.h"
+#include <medViewParameterGroup.h>
 
 
 #include <medParameterPool.h>
@@ -22,6 +22,8 @@
 
 #include <medViewContainer.h>
 
+#include <medParameterGroupManager.h>
+
 
 class medViewParameterGroupPrivate
 {
@@ -30,10 +32,12 @@ public:
      medParameterPool *pool;
 };
 
-medViewParameterGroup::medViewParameterGroup(QString name, QObject *parent) : medAbstractParameterGroup(name, parent),
-    d(new medViewParameterGroupPrivate)
+medViewParameterGroup::medViewParameterGroup(QString name, QObject *parent, QString workspace)
+    : medAbstractParameterGroup(name, parent, workspace), d(new medViewParameterGroupPrivate)
 {
     d->pool = new medParameterPool(this);
+
+    medParameterGroupManager::instance()->registerNewGroup(this);
 }
 
 medViewParameterGroup::~medViewParameterGroup()
@@ -48,12 +52,7 @@ void medViewParameterGroup::addImpactedView(medAbstractView *view)
 
     if(linkAll())
     {
-        QList<medAbstractParameter*>  params;
-
-        params.append(view->primaryNavigator()->linkableParameters());
-        foreach(medAbstractNavigator* nav,  view->extraNavigators())
-            params.append(nav->linkableParameters());
-
+        QList<medAbstractParameter*>  params = view->linkableParameters();
         foreach(medAbstractParameter* param, params)
         {
             if(!this->parameters().contains(param->name()))
@@ -94,12 +93,7 @@ void medViewParameterGroup::setLinkAllParameters(bool linkAll)
     {
         foreach(medAbstractView *view, d->impactedViews)
         {
-            QList<medAbstractParameter*>  params;
-
-            params.append(view->primaryNavigator()->linkableParameters());
-            foreach(medAbstractNavigator* nav,  view->extraNavigators())
-                params.append(nav->linkableParameters());
-
+            QList<medAbstractParameter*>  params = view->linkableParameters();
             foreach(medAbstractParameter* param, params)
             {
                 if(!this->parameters().contains(param->name()))
@@ -115,12 +109,7 @@ void medViewParameterGroup::update()
 
     foreach(medAbstractView *view, d->impactedViews)
     {
-        QList<medAbstractParameter*>  params;
-
-        params.append(view->primaryNavigator()->linkableParameters());
-        foreach(medAbstractNavigator* nav,  view->extraNavigators())
-            params.append(nav->linkableParameters());
-
+        QList<medAbstractParameter*>  params = view->linkableParameters();
         foreach(medAbstractParameter* param, params)
         {
             if(this->parameters().contains(param->name()))

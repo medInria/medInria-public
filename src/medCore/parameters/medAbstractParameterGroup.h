@@ -23,7 +23,7 @@ class medAbstractParameterGroupPrivate;
 class medAbstractParameterGroup : public QObject
 {
 public:
-    medAbstractParameterGroup(QString name = "", QObject *parent = 0);
+    medAbstractParameterGroup(QString name = "", QObject *parent = 0, QString workspace = "");
     virtual ~medAbstractParameterGroup();
 
     void setName(QString name);
@@ -40,6 +40,9 @@ public:
 
     virtual void setLinkAllParameters(bool linkAll);
     bool linkAll() const;
+
+    void setWorkspace(QString workspace);
+    QString workspace() const;
 
     void saveAsPreset();
 
