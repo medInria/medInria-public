@@ -22,6 +22,8 @@ class medAbstractParameterGroupPrivate;
 
 class medAbstractParameterGroup : public QObject
 {
+    Q_OBJECT
+
 public:
     medAbstractParameterGroup(QString name = "", QObject *parent = 0, QString workspace = "");
     virtual ~medAbstractParameterGroup();
@@ -47,6 +49,9 @@ public:
     void saveAsPreset();
 
     virtual void update() = 0;
+
+signals:
+    void groupColorChanged(QColor oldColor, QColor newColor);
 
 private:
     medAbstractParameterGroupPrivate *d;

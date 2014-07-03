@@ -35,6 +35,7 @@ public:
 
 private slots:
     void removeImpactedView();
+    void updateGroupIndicators(QColor, QColor);
 
 private:
     medViewParameterGroupPrivate *d;

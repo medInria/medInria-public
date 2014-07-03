@@ -90,12 +90,14 @@ QStringList medAbstractParameterGroup::parameters() const
 
 void medAbstractParameterGroup::setColor(QColor color)
 {
+    QColor oldColor = d->color;
     d->color = color;
+    emit groupColorChanged(oldColor, color);
 }
 
 QColor medAbstractParameterGroup::color() const
 {
-    return d->color;
+    return d->color;   
 }
 
 void medAbstractParameterGroup::setWorkspace(QString workspace)
