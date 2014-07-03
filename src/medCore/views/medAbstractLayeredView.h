@@ -57,7 +57,6 @@ public:
 
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
 
-    
     medDataListParameter *dataListParameter() const;
 
     QList <medAbstractInteractor*> interactors(unsigned int layer);
@@ -66,6 +65,9 @@ public:
     virtual QWidget* navigatorWidget();
     virtual QWidget* mouseInteractionWidget();
     QWidget* toolBarWidget();
+
+    virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medAbstractParameter*> linkableParameters(unsigned int layer);
 
 public slots:
     void setDataList(QList<medDataIndex> dataList);

@@ -20,6 +20,7 @@
 #include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
 #include <medAbstractParameter.h>
+#include <medParameterGroupManager.h>
 
 class medAbstractParameterGroupPrivate
 {
@@ -28,19 +29,21 @@ public:
     QStringList parameters;
     bool linkAll;
     QColor color;
+    QString workspace;
 };
 
-medAbstractParameterGroup::medAbstractParameterGroup(QString name, QObject *parent) : d(new medAbstractParameterGroupPrivate)
+medAbstractParameterGroup::medAbstractParameterGroup(QString name, QObject *parent, QString workspace) : d(new medAbstractParameterGroupPrivate)
 {
     setParent(parent);
     d->name = name;
     d->linkAll = false;
     d->color = QColor::fromHsv(qrand()%360, 255, 210);
+    d->workspace = workspace;
 }
 
 medAbstractParameterGroup::~medAbstractParameterGroup()
 {
-
+    medParameterGroupManager::instance()->unregisterGroup(this);
 }
 
 void medAbstractParameterGroup::setName(QString name)
@@ -93,6 +96,16 @@ void medAbstractParameterGroup::setColor(QColor color)
 QColor medAbstractParameterGroup::color() const
 {
     return d->color;
+}
+
+void medAbstractParameterGroup::setWorkspace(QString workspace)
+{
+    d->workspace = workspace;
+}
+
+QString medAbstractParameterGroup::workspace() const
+{
+    return d->workspace;
 }
 
 void medAbstractParameterGroup::saveAsPreset()

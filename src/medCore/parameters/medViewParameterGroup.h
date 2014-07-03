@@ -22,7 +22,7 @@ class medViewParameterGroup : public medAbstractParameterGroup
     Q_OBJECT
 
 public:
-    medViewParameterGroup(QString name = "", QObject *parent = 0);
+    medViewParameterGroup(QString name = "", QObject *parent = 0, QString workspace = "");
     virtual ~medViewParameterGroup();
 
     void addImpactedView(medAbstractView *view);

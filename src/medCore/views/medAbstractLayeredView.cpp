@@ -23,6 +23,8 @@
 #include <medParameterPoolManager.h>
 #include <medBoolGroupParameter.h>
 #include <medDataListParameter.h>
+#include <medLayerParameterGroup.h>
+#include <medParameterGroupManager.h>
 
 class medAbstractLayeredViewPrivate
 {
@@ -256,6 +258,15 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
 //            this->layerLinkParameter(layerNumber)->setValue(groupName);
 //        }
+        QList<medLayerParameterGroup*> groups = medParameterGroupManager::instance()->groups(this, 0);
+        if(!groups.isEmpty())
+        {
+            unsigned int layerNumber = this->layer(data);
+            medLayerParameterGroup* layerGroup = new medLayerParameterGroup("MPR Layer" + QString::number(layerNumber+1), this);
+            layerGroup->setLinkAllParameters(true);
+            layerGroup->addImpactedlayer(this, layerNumber);
+            layerGroup->update();
+        }
     }
     
     foreach(medDataIndex index, this->dataList())
@@ -486,4 +497,17 @@ void medAbstractLayeredView::removeInternMouseInteractionWidget()
 void medAbstractLayeredView::removeInternToolBarWidget()
 {
     d->toolBarWidget = NULL;
+}
+
+QList<medAbstractParameter*> medAbstractLayeredView::linkableParameters()
+{
+    QList<medAbstractParameter*> params = medAbstractView::linkableParameters();
+    params << dataListParameter();
+
+    return params;
+}
+
+QList<medAbstractParameter*> medAbstractLayeredView::linkableParameters(unsigned int layer)
+{
+    return interactorsParameters(layer);
 }

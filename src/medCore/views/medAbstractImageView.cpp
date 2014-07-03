@@ -28,6 +28,9 @@
 #include <medDataListParameter.h>
 #include <medStringListParameter.h>
 
+#include <medViewParameterGroup.h>
+#include <medLayerParameterGroup.h>
+
 class medAbstractImageViewPrivate
 {
 public:
@@ -178,34 +181,54 @@ QWidget* medAbstractImageView::buildToolBarWidget()
 
 void medAbstractImageView::switchToFourViews()
 {
-//    medViewContainer *topLeftContainer = dynamic_cast <medViewContainer *> (this->parent());
-//    medViewContainerSplitter *topLeftContainerSplitter = dynamic_cast <medViewContainerSplitter *> (topLeftContainer->parent());
+    medViewContainer *topLeftContainer = dynamic_cast <medViewContainer *> (this->parent());
+    medViewContainerSplitter *topLeftContainerSplitter = dynamic_cast <medViewContainerSplitter *> (topLeftContainer->parent());
 
-//    medViewContainer *bottomLeftContainer = topLeftContainer->splitVertically();
-//    medViewContainer *topRightContainer = topLeftContainer->splitHorizontally();
-//    medViewContainer *bottomRightContainer = bottomLeftContainer->splitHorizontally();
+    medViewContainer *bottomLeftContainer = topLeftContainer->splitVertically();
+    medViewContainer *topRightContainer = topLeftContainer->splitHorizontally();
+    medViewContainer *bottomRightContainer = bottomLeftContainer->splitHorizontally();
 
-//    topLeftContainerSplitter->adjustContainersSize();
+    topLeftContainerSplitter->adjustContainersSize();
 
-//    foreach(medDataIndex index, this->dataList())
-//    {
-//        medAbstractData *data = medDataManager::instance()->data(index);
-//        if (!data)
-//            continue;
+    foreach(medDataIndex index, this->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
 
-//        topRightContainer->addData(data);
-//        bottomLeftContainer->addData(data);
-//        bottomRightContainer->addData(data);
-//    }
+        topRightContainer->addData(data);
+        bottomLeftContainer->addData(data);
+        bottomRightContainer->addData(data);
+    }
 
-//    this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
-//    medAbstractImageView *bottomLeftContainerView = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
-//    medAbstractImageView *topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
-//    medAbstractImageView *bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
+    this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+    medAbstractImageView *bottomLeftContainerView = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
+    medAbstractImageView *topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+    medAbstractImageView *bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
 
-//    bottomLeftContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
-//    topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
-//    bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+    bottomLeftContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+    topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+    bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+
+    medViewParameterGroup* viewGroup = new medViewParameterGroup("MPR", this);
+    viewGroup->addImpactedView(this);
+    viewGroup->addImpactedView(topRightContainerView);
+    viewGroup->addImpactedView(bottomLeftContainerView);
+    viewGroup->addImpactedView(bottomRightContainerView);
+    viewGroup->setLinkAllParameters(true);
+    viewGroup->removeParameter("Orientation");
+    viewGroup->update();
+
+    for (unsigned int i = 0;i < this->layersCount();++i)
+    {
+        medLayerParameterGroup* layerGroup = new medLayerParameterGroup("MPR Layer" + QString::number(i+1), this);
+        layerGroup->setLinkAllParameters(true);
+        layerGroup->addImpactedlayer(this, i);
+        layerGroup->addImpactedlayer(topRightContainerView, i);
+        layerGroup->addImpactedlayer(bottomLeftContainerView, i);
+        layerGroup->addImpactedlayer(bottomRightContainerView, i);
+        layerGroup->update();
+    }
 
 //    QString linkGroupBaseName = "MPR ";
 //    unsigned int linkGroupNumber = 1;

@@ -22,7 +22,7 @@ class medLayerParameterGroup : public medAbstractParameterGroup
     Q_OBJECT
 
 public:
-    medLayerParameterGroup(QString name = "", QObject *parent = 0);
+    medLayerParameterGroup(QString name = "", QObject *parent = 0, QString workspace = "");
     virtual ~medLayerParameterGroup();
 
     void addImpactedlayer(medAbstractLayeredView *view, unsigned int layer);
