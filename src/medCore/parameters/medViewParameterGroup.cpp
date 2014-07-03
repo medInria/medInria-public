@@ -38,6 +38,8 @@ medViewParameterGroup::medViewParameterGroup(QString name, QObject *parent, QStr
     d->pool = new medParameterPool(this);
 
     medParameterGroupManager::instance()->registerNewGroup(this);
+
+    connect(this, SIGNAL(groupColorChanged(QColor,QColor)), this, SLOT(updateGroupIndicators(QColor,QColor)));
 }
 
 medViewParameterGroup::~medViewParameterGroup()
@@ -116,6 +118,19 @@ void medViewParameterGroup::update()
             {
                 d->pool->append(param);
             }
+        }
+    }
+}
+
+void medViewParameterGroup::updateGroupIndicators(QColor oldColor, QColor newColor)
+{
+    foreach(medAbstractView *view, d->impactedViews)
+    {
+        medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
+        if(container)
+        {
+            container->removeColorIndicator(oldColor);
+            container->addColorIndicator(newColor);
         }
     }
 }

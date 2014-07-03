@@ -41,7 +41,6 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->popupWidget = new QWidget(this);
     d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
 
-
     d->subPopupWidget = new QWidget(this);
     d->subPopupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
 
