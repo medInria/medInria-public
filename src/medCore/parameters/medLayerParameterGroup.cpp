@@ -60,11 +60,14 @@ void medLayerParameterGroup::addImpactedlayer(medAbstractLayeredView *view, unsi
                 this->addParameterToLink(param->name());
         }
     }
+
+    qDebug() << "addImpactedlayer" << this->name() << (void*)view << layer;
 }
 
 void medLayerParameterGroup::removeImpactedlayer(medAbstractLayeredView *view, unsigned int layer)
 {
     d->impactedLayers.remove(view, layer);
+    qDebug() << "removeImpactedlayer" << this->name() << (void*)view << layer;
 }
 
 void medLayerParameterGroup::removeImpactedlayer(uint layer)

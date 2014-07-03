@@ -300,16 +300,21 @@ void medLinkMenu::hideMenus()
 
 void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
 { 
+    bool test = false;
     QString group = groupItem->data(Qt::UserRole).toString();
 
     d->groupList->setCurrentItem(groupItem);
-    groupItem->setSelected(true);
-
-    d->subPopupWidget->show();
+    groupItem->setSelected(true);  
 
     QWidget *w = dynamic_cast<QWidget*>(d->groupList->itemWidget(groupItem));
     QPoint globalPosItem = w->mapToGlobal(QPoint(0,0));
     QPoint globalPosButton = mapToGlobal(QPoint(0,0));
+
+//    d->paramList->layout()->invalidate();
+//    d->paramList->layout()->activate();
+    d->subPopupWidget->layout()->invalidate();
+    d->subPopupWidget->update();
+    d->subPopupWidget->layout()->activate();
 
     d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width(), globalPosItem.y());
 
@@ -317,6 +322,9 @@ void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
     checkAllParams(false);
     d->paramList->blockSignals(false);
     updateParamCheckState( group );
+
+    d->subPopupWidget->show();
+
 }
 
 void medLinkMenu::showSubMenu()
@@ -507,7 +515,12 @@ medGroupWidget::medGroupWidget(QString groupName, QWidget * parent): QWidget(par
     groupLayout->setSpacing(0);
     this->setLayout(groupLayout);
 
-    QLabel *groupLabel = new QLabel(groupName);
+    QFont myFont;
+    QFontMetrics fm(myFont);
+    QString text = fm.elidedText(groupName, Qt::ElideRight, 100);
+    //QLabel *groupLabel = new QLabel("<font color='Black'>"+text+"</font>", this);
+    QLabel *groupLabel = new QLabel(text, this);
+    groupLabel->setToolTip(groupName);
 
     QPushButton *removeButton = new QPushButton;
     removeButton->setIcon(QIcon(":/icons/cross.svg"));

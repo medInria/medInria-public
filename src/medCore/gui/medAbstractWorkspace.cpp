@@ -67,6 +67,7 @@ public:
     medListWidget* layerListWidget;
 
     QList<QListWidgetItem*> selectedLayers;
+    QHash<int,medPoolIndicator*> poolIndicators;
 
     medParameterPool *temporaryPoolForInteractors;
 
@@ -275,6 +276,7 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layerListToolBox->clear();
     d->containerForLayerWidgetsItem.clear();
     d->selectedLayers.clear();
+    d->poolIndicators.clear();
 
     delete d->layerListWidget;
     d->layerListWidget = new medListWidget;
@@ -341,9 +343,9 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                 if(d->userLayerPoolable)
                 {
-//                    medPoolIndicator *poolIndicator = new medPoolIndicator;
-//                    poolIndicator->setLinkParameter(layeredView->layerLinkParameter(layer));
-//                    layout->addWidget(poolIndicator);
+                    medPoolIndicator *poolIndicator = new medPoolIndicator;
+                    layout->addWidget(poolIndicator);
+                    d->poolIndicators.insert(d->layerListWidget->count(), poolIndicator);
                 }
 
                 if(d->userLayerClosable)
@@ -514,6 +516,8 @@ void medAbstractWorkspace::removeLayer()
         return;
 
     layerView->removeLayer(layer);
+    if(layerView->layersCount() == 0)
+        delete layerView;
     this->updateLayersToolBox();
 }
 
@@ -543,7 +547,7 @@ void medAbstractWorkspace::addViewstoGroup(QString group)
 {
     medAbstractView* view = NULL;
 
-    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(this->identifier(), group);
+    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -563,7 +567,7 @@ void medAbstractWorkspace::removeViewsFromGroup(QString group)
 {
     medAbstractView* view = NULL;
 
-    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(this->identifier(), group);
+    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -581,7 +585,7 @@ void medAbstractWorkspace::removeViewsFromGroup(QString group)
 
 void medAbstractWorkspace::addLayerstoGroup(QString group)
 {
-    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(this->identifier(), group);
+    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
 
     foreach(QListWidgetItem *item, d->selectedLayers)
@@ -593,6 +597,11 @@ void medAbstractWorkspace::addLayerstoGroup(QString group)
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
         paramGroup->addImpactedlayer(view, currentLayer);
+
+        int row = d->layerListWidget->row(item);
+        medPoolIndicator *indicator = d->poolIndicators[row];
+        if(indicator)
+            indicator->addColorIndicator(paramGroup->color(), paramGroup->name());
     }
 
     paramGroup->update();
@@ -600,7 +609,7 @@ void medAbstractWorkspace::addLayerstoGroup(QString group)
 
 void medAbstractWorkspace::removeLayersFromGroup(QString group)
 {
-    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(this->identifier(), group);
+    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
 
     foreach(QListWidgetItem *item, d->selectedLayers)
@@ -612,6 +621,11 @@ void medAbstractWorkspace::removeLayersFromGroup(QString group)
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
         paramGroup->removeImpactedlayer(view, currentLayer);
+
+        int row = d->layerListWidget->row(item);
+        medPoolIndicator *indicator = d->poolIndicators[row];
+        if(indicator)
+            indicator->removeColorIndicator(paramGroup->color());
     }
 
     paramGroup->update();
@@ -823,12 +837,12 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
 
 void medAbstractWorkspace::removeViewGroup(QString group)
 {
-    delete medParameterGroupManager::instance()->viewGroup(this->identifier(), group);
+    delete medParameterGroupManager::instance()->viewGroup(group, this->identifier());
 }
 
 void medAbstractWorkspace::removeLayerGroup(QString group)
 {
-    delete medParameterGroupManager::instance()->layerGroup(this->identifier(), group);
+    delete medParameterGroupManager::instance()->layerGroup(group, this->identifier());
 }
 
 void medAbstractWorkspace::registerViewGroup(QString group)
@@ -869,12 +883,12 @@ void medAbstractWorkspace::setLayerGroups(QList<medLayerParameterGroup*> groups)
 
 void medAbstractWorkspace::changeViewGroupColor(QString group, QColor color)
 {
-    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(this->identifier(), group);
+    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
     paramGroup->setColor(color);
 }
 
 void medAbstractWorkspace::changeLayerGroupColor(QString group, QColor color)
 {
-    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(this->identifier(), group);
+    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     paramGroup->setColor(color);
 }

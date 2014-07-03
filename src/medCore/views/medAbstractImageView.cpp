@@ -52,6 +52,8 @@ medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayered
 
 medAbstractImageView::~medAbstractImageView()
 {
+    for(unsigned int i=0; i<layersCount(); i++)
+        removeLayer(i);
     delete d;
 }
 
@@ -221,7 +223,7 @@ void medAbstractImageView::switchToFourViews()
 
     for (unsigned int i = 0;i < this->layersCount();++i)
     {
-        medLayerParameterGroup* layerGroup = new medLayerParameterGroup("MPR Layer" + QString::number(i+1), this);
+        medLayerParameterGroup* layerGroup = new medLayerParameterGroup("MPR " + QString::number(i+1), this);
         layerGroup->setLinkAllParameters(true);
         layerGroup->addImpactedlayer(this, i);
         layerGroup->addImpactedlayer(topRightContainerView, i);
