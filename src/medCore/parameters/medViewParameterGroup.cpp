@@ -23,6 +23,7 @@
 #include <medViewContainer.h>
 
 #include <medParameterGroupManager.h>
+#include <medSettingsManager.h>
 
 
 class medViewParameterGroupPrivate

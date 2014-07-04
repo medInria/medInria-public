@@ -61,6 +61,9 @@ private slots:
     void highlightParam(QListWidgetItem*);
     void deleteGroup();
     void emitGroupColorChangeRequest(QColor);
+    void saveAsPreset();
+    void loadPreset();
+    void applyPreset(QListWidgetItem*);
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);

@@ -14,7 +14,7 @@
 #include <medLinkMenu.h>
 
 #include <medListWidget.h>
-
+#include <medSettingsManager.h>
 
 class medLinkMenuPrivate
 {
@@ -31,7 +31,13 @@ public :
 
     medListWidget *paramList;
 
+    QListWidgetItem * saveAsPresetItem;
+    QPushButton *saveAsPresetButton;
+
+    medListWidget *presetList;
+
     QHash<QString, medAbstractParameterGroup*> currentGroups;
+    QHash<QString, QStringList> presets;
 };
 
 medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
@@ -57,6 +63,14 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->newGroupEdit = new QLineEdit("New Group...");
     d->groupList->setItemWidget(d->newGroupitem, d->newGroupEdit);
 
+    d->saveAsPresetItem = new QListWidgetItem("Save as preset");
+    d->saveAsPresetButton = new QPushButton("Save as preset");
+
+    d->presetList = new medListWidget;
+    d->presetList->setMouseTracking(true);
+    d->presetList->setAlternatingRowColors(true);
+    d->presetList->hide();
+
     QVBoxLayout *popUpLayout = new QVBoxLayout(d->popupWidget);
     popUpLayout->setContentsMargins(0,0,0,0);
     popUpLayout->addWidget(d->groupList);
@@ -67,10 +81,13 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->paramList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(selectParam(QListWidgetItem*)));
     connect(d->groupList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(showSubMenu(QListWidgetItem*)));
     connect(d->paramList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
+    connect(d->saveAsPresetButton, SIGNAL(clicked()), this, SLOT(saveAsPreset()));
+    connect(d->presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
 
     QVBoxLayout *subPopUpLayout = new QVBoxLayout(d->subPopupWidget);
     subPopUpLayout->setContentsMargins(0,0,0,0);
     subPopUpLayout->addWidget(d->paramList);
+    subPopUpLayout->addWidget(d->presetList);
 
     d->groupList->installEventFilter(this);
     d->paramList->installEventFilter(this);
@@ -104,6 +121,11 @@ void medLinkMenu::setAvailableParameters(QStringList parameters)
         d->paramList->insertItem(i,item);
         i++;
     }
+
+    d->paramList->addItem(d->saveAsPresetItem);
+    d->paramList->setItemWidget(d->saveAsPresetItem, d->saveAsPresetButton);
+
+    loadPreset();
 }
 
 void medLinkMenu::addGroup(medAbstractParameterGroup * group)
@@ -351,7 +373,7 @@ void medLinkMenu::updateParamCheckState(QString group)
     //TODO GPR: not sure this is the good way
     if(d->currentGroups.value(group)->linkAll())
     {
-        for(int i=1; i<d->paramList->count(); i++)
+        for(int i=1; i<d->paramList->count()-1; i++)
         {
             QListWidgetItem *item = d->paramList->item(i);
                 item->setCheckState(Qt::Checked);
@@ -362,7 +384,7 @@ void medLinkMenu::updateParamCheckState(QString group)
         QList<QString> params = d->currentGroups.value(group)->parameters();
         foreach(QString param, params)
         {
-            for(int i=1; i<d->paramList->count(); i++)
+            for(int i=1; i<d->paramList->count()-1; i++)
             {
                 QListWidgetItem *item = d->paramList->item(i);
                 if(item->text() == param)
@@ -502,6 +524,85 @@ void medLinkMenu::checkAllParams(bool check)
         else
         {
             item->setCheckState(Qt::Unchecked);
+        }
+    }
+}
+
+void medLinkMenu::saveAsPreset()
+{
+    QString group = d->groupList->currentItem()->data(Qt::UserRole).toString();
+
+    QStringList params;
+    for(int i=0; i<d->paramList->count(); i++)
+    {
+        QListWidgetItem *item = d->paramList->item(i);
+        if( item->checkState() == Qt::Checked )
+            params.append(item->text());
+    }
+
+    medSettingsManager::instance()->setValue("GroupPresets", group, params);
+    d->presets.insert(group, params);
+    //d->currentGroups[group]->saveAsPreset();
+
+    QListWidgetItem * item = new QListWidgetItem(group);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    item->setCheckState(Qt::Unchecked);
+    d->presetList->insertItem(0,item);
+
+    //TODO: shouldn't have to do that...
+    d->subPopupWidget->resize(d->subPopupWidget->width(), d->presetList->sizeHint().height() +
+                              d->paramList->sizeHint().height()+30);
+
+    d->presetList->resize(d->subPopupWidget->width(), d->presetList->sizeHint().height());
+    d->presetList->show();
+}
+
+void medLinkMenu::loadPreset()
+{
+    QStringList presets = medSettingsManager::instance()->keys("GroupPresets");
+    foreach(QString preset, presets)
+    {
+        QStringList params = medSettingsManager::instance()->value("GroupPresets", preset).toStringList();
+        bool ok = true;
+        foreach(QString param, params)
+        {
+            if(!d->availableParams.contains(param))
+            {
+                ok = false;
+                break;
+            }
+        }
+
+        if(ok )
+        {
+            QListWidgetItem * item = new QListWidgetItem(preset);
+            item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+            item->setCheckState(Qt::Unchecked);
+            d->presetList->insertItem(0,item);
+
+            d->presetList->show();
+
+            d->presets.insert(preset, params);
+        }
+    }
+}
+
+void medLinkMenu::applyPreset(QListWidgetItem* item)
+{
+    QString preset  = item->text();
+    QStringList presetParams = d->presets[preset];
+
+    foreach(QString presetParam, presetParams)
+    {
+        for(int i=1; i<d->paramList->count()-1; i++)
+        {
+            QListWidgetItem *paramItem = d->paramList->item(i);
+            if(paramItem->text() == presetParam)
+            {
+                if(item->checkState() == Qt::Checked)
+                  paramItem->setCheckState(Qt::Checked);
+                else paramItem->setCheckState(Qt::Unchecked);
+            }
         }
     }
 }
