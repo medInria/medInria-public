@@ -236,20 +236,30 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput(d->view->layer(data))->GetScalarRange();
+
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
-    this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(range[0]), QVariant(range[1] + 2 * level));
-    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(range[0]), QVariant(range[1] + 2 * level));
+    double windowMin = 0;
+    double windowMax = 2.0 * window;
+    double halfWidth = 0.5 * window;
+    double levelMin = range[0] - halfWidth;
+    double levelMax = range[1] + halfWidth;
+
+    qDebug() << range[0] << range[1] << window << level;
+    qDebug() << windowMin << windowMax << levelMin << levelMax;
+
+    this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(windowMin), QVariant(windowMax));
+    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(levelMin), QVariant(levelMax));
 
     d->windowParameter = new medDoubleParameter("Window", this);
     connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
-    d->windowParameter->setRange(range[0], range[1] + 2 * level);
+    d->windowParameter->setRange(windowMin, windowMax);
     d->windowParameter->setValue(window);
 
     d->levelParameter = new medDoubleParameter("Level", this);
     connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
-    d->levelParameter->setRange(range[0], range[1] + 2 * level);
+    d->levelParameter->setRange(levelMin, levelMax);
     d->levelParameter->setValue(level);
 
     d->slicingParameter = new medIntParameter("Slicing", this);
@@ -414,7 +424,7 @@ void medVtkViewItkDataImageInteractor::setLevel(double level)
     this->update();
 }
 
-void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
+void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> values)
 {
     if(values.size() != 2 )
     {
@@ -423,16 +433,16 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
     }
 
     bool needUpdate = false;
-    if (d->view2d->GetColorWindow(d->view->layer(d->imageData)) != values.at(0))
+    if (d->view2d->GetColorWindow(d->view->layer(d->imageData)) != values["Window"])
     {
-        double w = values.at(0).toDouble();
+        double w = values["Window"].toDouble();
         d->view2d->SetColorWindow(w, d->view->layer(d->imageData));
         d->view3d->SetColorWindow(w, d->view->layer(d->imageData));
         needUpdate = true;
     }
-    if (d->view2d->GetColorLevel(d->view->layer(d->imageData)) != values.at(1))
+    if (d->view2d->GetColorLevel(d->view->layer(d->imageData)) != values["Level"])
     {
-        double l = values.at(1).toDouble();
+        double l = values["Level"].toDouble();
         d->view2d->SetColorLevel(l, d->view->layer(d->imageData));
         d->view3d->SetColorLevel(l, d->view->layer(d->imageData));
         needUpdate = true;
@@ -441,8 +451,8 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QList<QVariant> values)
     if(needUpdate)
         this->update();
 
-    d->levelParameter->setValue(values.at(1).toDouble());
-    d->windowParameter->setValue(values.at(0).toDouble());
+    d->levelParameter->setValue(values["Level"].toDouble());
+    d->windowParameter->setValue(values["Window"].toDouble());
 }
 
 void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
