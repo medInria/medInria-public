@@ -46,8 +46,6 @@ public:
     void setWorkspace(QString workspace);
     QString workspace() const;
 
-    void saveAsPreset();
-
     virtual void update() = 0;
 
 signals:

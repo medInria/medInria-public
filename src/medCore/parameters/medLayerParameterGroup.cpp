@@ -19,6 +19,7 @@
 #include <medAbstractParameter.h>
 
 #include <medParameterGroupManager.h>
+#include <medSettingsManager.h>
 
 class medLayerParameterGroupPrivate
 {

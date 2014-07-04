@@ -54,7 +54,9 @@ void medParameterGroupManager::registerNewGroup(medAbstractParameterGroup* group
     QString workspace;
     if(group->workspace() != "")
         workspace = group->workspace();
-    else workspace =d->currentWorkspace;
+    else if(d->currentWorkspace!= "")
+        workspace = d->currentWorkspace;
+    else workspace = "All";
 
     medViewParameterGroup* viewGroup = dynamic_cast<medViewParameterGroup*>(group);
     medLayerParameterGroup* layerGroup = dynamic_cast<medLayerParameterGroup*>(group);
@@ -81,7 +83,9 @@ void medParameterGroupManager::unregisterGroup(medAbstractParameterGroup *group)
 
 QList<medViewParameterGroup*> medParameterGroupManager::viewGroups(QString workspace)
 {
-    return d->viewGroups.values(workspace);
+    QList<medViewParameterGroup*> res = d->viewGroups.values(workspace);
+    res.append(d->viewGroups.values("All"));
+    return res;
 }
 
 QList<medLayerParameterGroup*> medParameterGroupManager::layerGroups(QString workspace)

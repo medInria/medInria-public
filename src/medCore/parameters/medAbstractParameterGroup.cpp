@@ -110,9 +110,4 @@ QString medAbstractParameterGroup::workspace() const
     return d->workspace;
 }
 
-void medAbstractParameterGroup::saveAsPreset()
-{
-
-}
-
 
