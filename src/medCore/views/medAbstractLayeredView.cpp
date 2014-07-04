@@ -221,21 +221,27 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     if(d->layersDataList.count() != 0  && layer == d->layersDataList.count())
     {
         this->setCurrentLayer(layer -1);
-        //emit layerRemoved(layer);
     }
     else if(d->layersDataList.count() != 0)
     {
         this->setCurrentLayer(layer);
-        //emit layerRemoved(layer);
     }
-//    else
-//        this->~medAbstractLayeredView();
 }
 
 void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 {
     d->dataListParameter->blockSignals(true);
     
+    foreach(medDataIndex index, this->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+
+        if (!dataList.contains(data->dataIndex()))
+            this->removeLayer(this->layer(data));
+    }
+
     foreach(medDataIndex index, dataList)
     {
         medAbstractData *data = medDataManager::instance()->data(index);
@@ -244,25 +250,6 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
         
         this->addLayer(data);
         
-//        if ((this->layerLinkParameter(0)->value() != "")&&(this->layerLinkParameter(0)->value() != "None"))
-//        {
-//            unsigned int layerNumber = this->layer(data);
-//            QString groupName = this->linkParameter()->value() + " Layer " + QString::number(layerNumber+1);
-//            QColor layerColor;
-//            double hueValue = 2.0 * layerNumber / (1.0 + sqrt(5.0));
-//            hueValue -= floor(hueValue);
-//            layerColor.setHsvF(hueValue,1.0,1.0);
-            
-//            QPixmap layerPixmap(32,32);
-//            layerPixmap.fill(layerColor);
-//            QIcon layerIcon(layerPixmap);
-            
-//            if (!this->layerLinkParameter(layerNumber)->items().contains(groupName))
-//                this->layerLinkParameter(layerNumber)->addItem(groupName,layerIcon);
-
-//            this->layerLinkParameter(layerNumber)->setValue(groupName);
-//        }
-
         unsigned int layerNumber = this->layer(data);
 
         QList<medLayerParameterGroup*> groupsLayer0 = medParameterGroupManager::instance()->layerGroups(this, 0);
@@ -277,17 +264,7 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
             layerGroup->update();
         }
     }
-    
-    foreach(medDataIndex index, this->dataList())
-    {
-        medAbstractData *data = medDataManager::instance()->data(index);
-        if (!data)
-            continue;
 
-        if (!dataList.contains(data->dataIndex()))
-            this->removeLayer(this->layer(data));
-    }
-    
     d->dataListParameter->blockSignals(false);
 }
 

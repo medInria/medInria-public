@@ -46,6 +46,10 @@ medViewParameterGroup::medViewParameterGroup(QString name, QObject *parent, QStr
 medViewParameterGroup::~medViewParameterGroup()
 {
     medParameterGroupManager::instance()->unregisterGroup(this);
+
+    foreach(medAbstractView *view, d->impactedViews)
+        removeImpactedView(view);
+
     d->pool->clear();
 }
 
