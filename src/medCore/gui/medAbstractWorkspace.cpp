@@ -346,6 +346,10 @@ void medAbstractWorkspace::updateLayersToolBox()
                     medPoolIndicator *poolIndicator = new medPoolIndicator;
                     layout->addWidget(poolIndicator);
                     d->poolIndicators.insert(d->layerListWidget->count(), poolIndicator);
+
+                    QList<medLayerParameterGroup*> layerGroups = medParameterGroupManager::instance()->layerGroups(layeredView, layer);
+                    foreach(medLayerParameterGroup *layerGroup, layerGroups)
+                        poolIndicator->addColorIndicator(layerGroup->color(), layerGroup->name());
                 }
 
                 if(d->userLayerClosable)
@@ -540,95 +544,6 @@ void medAbstractWorkspace::buildTemporaryPool()
             d->temporaryPoolForInteractors->append(interactor->linkableParameters());
         }
     }
-}
-
-
-void medAbstractWorkspace::addViewstoGroup(QString group)
-{
-    medAbstractView* view = NULL;
-
-    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
-
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
-    {
-        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        view = container->view();
-
-        if(!view)
-            continue;
-
-        paramGroup->addImpactedView(view);
-    }
-
-    paramGroup->update();
-}
-
-void medAbstractWorkspace::removeViewsFromGroup(QString group)
-{
-    medAbstractView* view = NULL;
-
-    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
-
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
-    {
-        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        view = container->view();
-
-        if(!view)
-            continue;
-
-        paramGroup->removeImpactedView(view);
-    }
-
-    paramGroup->update();
-}
-
-void medAbstractWorkspace::addLayerstoGroup(QString group)
-{
-    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
-    medViewContainerManager *containerMng =  medViewContainerManager::instance();
-
-    foreach(QListWidgetItem *item, d->selectedLayers)
-    {
-        int currentLayer = item->data(Qt::UserRole).toInt();
-
-        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
-        medViewContainer *container = containerMng->container(containerUuid);
-        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
-
-        paramGroup->addImpactedlayer(view, currentLayer);
-
-        int row = d->layerListWidget->row(item);
-        medPoolIndicator *indicator = d->poolIndicators[row];
-        if(indicator)
-            indicator->addColorIndicator(paramGroup->color(), paramGroup->name());
-    }
-
-    paramGroup->update();
-}
-
-void medAbstractWorkspace::removeLayersFromGroup(QString group)
-{
-    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
-    medViewContainerManager *containerMng =  medViewContainerManager::instance();
-
-    foreach(QListWidgetItem *item, d->selectedLayers)
-    {
-        int currentLayer = item->data(Qt::UserRole).toInt();
-
-        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
-        medViewContainer *container = containerMng->container(containerUuid);
-        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
-
-        paramGroup->removeImpactedlayer(view, currentLayer);
-
-        int row = d->layerListWidget->row(item);
-        medPoolIndicator *indicator = d->poolIndicators[row];
-        if(indicator)
-            indicator->removeColorIndicator(paramGroup->color());
-    }
-
-    paramGroup->update();
 }
 
 void medAbstractWorkspace::open(const medDataIndex &index)
@@ -833,6 +748,94 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
 
     return linkWidget;
 
+}
+
+void medAbstractWorkspace::addViewstoGroup(QString group)
+{
+    medAbstractView* view = NULL;
+
+    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
+
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        view = container->view();
+
+        if(!view)
+            continue;
+
+        paramGroup->addImpactedView(view);
+    }
+
+    paramGroup->update();
+}
+
+void medAbstractWorkspace::removeViewsFromGroup(QString group)
+{
+    medAbstractView* view = NULL;
+
+    medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
+
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        view = container->view();
+
+        if(!view)
+            continue;
+
+        paramGroup->removeImpactedView(view);
+    }
+
+    paramGroup->update();
+}
+
+void medAbstractWorkspace::addLayerstoGroup(QString group)
+{
+    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
+    medViewContainerManager *containerMng =  medViewContainerManager::instance();
+
+    foreach(QListWidgetItem *item, d->selectedLayers)
+    {
+        int currentLayer = item->data(Qt::UserRole).toInt();
+
+        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        medViewContainer *container = containerMng->container(containerUuid);
+        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
+
+        paramGroup->addImpactedlayer(view, currentLayer);
+
+        int row = d->layerListWidget->row(item);
+        medPoolIndicator *indicator = d->poolIndicators[row];
+        if(indicator)
+            indicator->addColorIndicator(paramGroup->color(), paramGroup->name());
+    }
+
+    paramGroup->update();
+}
+
+void medAbstractWorkspace::removeLayersFromGroup(QString group)
+{
+    medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
+    medViewContainerManager *containerMng =  medViewContainerManager::instance();
+
+    foreach(QListWidgetItem *item, d->selectedLayers)
+    {
+        int currentLayer = item->data(Qt::UserRole).toInt();
+
+        QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
+        medViewContainer *container = containerMng->container(containerUuid);
+        medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
+
+        paramGroup->removeImpactedlayer(view, currentLayer);
+
+        int row = d->layerListWidget->row(item);
+        medPoolIndicator *indicator = d->poolIndicators[row];
+        if(indicator)
+            indicator->removeColorIndicator(paramGroup->color());
+    }
+
+    paramGroup->update();
 }
 
 void medAbstractWorkspace::removeViewGroup(QString group)
