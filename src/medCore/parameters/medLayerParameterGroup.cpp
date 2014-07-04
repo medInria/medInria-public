@@ -40,6 +40,14 @@ medLayerParameterGroup::medLayerParameterGroup(QString name, QObject *parent, QS
 medLayerParameterGroup::~medLayerParameterGroup()
 {
     medParameterGroupManager::instance()->unregisterGroup(this);
+
+    QHashIterator<medAbstractLayeredView*, unsigned int> iter(d->impactedLayers);
+    while(iter.hasNext())
+    {
+        iter.next();
+        removeImpactedlayer(iter.key(), iter.value());
+    }
+
     d->pool->clear();
 }
 
