@@ -1107,7 +1107,7 @@ void medVtkFibersDataInteractor::setVisible(bool visible)
     d->render->Render();
 }
 
-void medVtkFibersDataInteractor::setWindowLevel (QList<QVariant>)
+void medVtkFibersDataInteractor::setWindowLevel (QHash<QString,QVariant>)
 {
 
 }

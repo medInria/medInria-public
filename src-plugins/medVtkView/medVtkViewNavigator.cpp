@@ -461,7 +461,7 @@ void medVtkViewNavigator::cameraParallelScale(double &parallelScale) const
 }
 
 
-void medVtkViewNavigator::setCamera(QList<QVariant> cameraOptions)
+void medVtkViewNavigator::setCamera(QHash<QString,QVariant> cameraOptions)
 {
     if(cameraOptions.count() != 4)
     {
@@ -469,10 +469,10 @@ void medVtkViewNavigator::setCamera(QList<QVariant> cameraOptions)
         return;
     }
 
-    QVector3D cameraPostion(cameraOptions.at(0).value<QVector3D>());
-    QVector3D cameraUp(cameraOptions.at(1).value<QVector3D>());
-    QVector3D cameraFocalPoint(cameraOptions.at(2).value<QVector3D>());
-    double parallelScale = cameraOptions.at(3).toReal();
+    QVector3D cameraPostion(cameraOptions["Camera Position"].value<QVector3D>());
+    QVector3D cameraUp(cameraOptions["Camera Up"].value<QVector3D>());
+    QVector3D cameraFocalPoint(cameraOptions["Camera Focal"].value<QVector3D>());
+    double parallelScale = cameraOptions["Parallel Scale"].toReal();
 
     this->setCamera(cameraPostion, cameraUp, cameraFocalPoint, parallelScale);
 }

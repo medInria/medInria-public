@@ -58,7 +58,7 @@ medCompositeParameter* medAbstractImageViewInteractor::windowLevelParameter()
     if(!d->windowLevelParameter)
     {
         d->windowLevelParameter = new medCompositeParameter("WindowLevel", this);
-        connect(d->windowLevelParameter, SIGNAL(valuesChanged(QList<QVariant>)), this, SLOT(setWindowLevel(QList<QVariant>)));
+        connect(d->windowLevelParameter, SIGNAL(valuesChanged(QHash<QString,QVariant>)), this, SLOT(setWindowLevel(QHash<QString,QVariant>)));
     }
     return d->windowLevelParameter;
 }

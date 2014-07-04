@@ -89,7 +89,7 @@ public slots:
 
     virtual void setVisibility (bool visibility);
 
-    virtual void setWindowLevel (QList<QVariant>);
+    virtual void setWindowLevel (QHash<QString, QVariant>);
 
     void moveToSlice(int slice);
 

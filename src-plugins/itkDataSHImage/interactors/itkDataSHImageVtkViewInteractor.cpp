@@ -301,7 +301,7 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 
 }
 
-void itkDataSHImageVtkViewInteractor::setWindowLevel(QList<QVariant>)
+void itkDataSHImageVtkViewInteractor::setWindowLevel(QHash<QString,QVariant>)
 {
     //TODO
 }

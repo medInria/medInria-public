@@ -74,7 +74,7 @@ public slots:
 public slots:
     void setOpacity(double opacity);
     void setVisibility(bool visibility);
-    void setWindowLevel(QList<QVariant>);
+    void setWindowLevel(QHash<QString, QVariant>);
 
     /** Change glyph shape */
     void setGlyphShape(QString glyphShape);
