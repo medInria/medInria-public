@@ -35,8 +35,8 @@ public:
     void registerNewGroup(medAbstractParameterGroup* group);
     void unregisterGroup(medAbstractParameterGroup* group);
 
-    QList<medViewParameterGroup*> groups(medAbstractView *);
-    QList<medLayerParameterGroup*> groups(medAbstractLayeredView *, unsigned int);
+    QList<medViewParameterGroup*> viewGroups(medAbstractView *);
+    QList<medLayerParameterGroup*> layerGroups(medAbstractLayeredView *, unsigned int);
 
     QList<medViewParameterGroup*> viewGroups(QString workspace);
     QList<medLayerParameterGroup*> layerGroups(QString workspace);

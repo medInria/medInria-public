@@ -265,10 +265,9 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
         unsigned int layerNumber = this->layer(data);
 
-        QList<medLayerParameterGroup*> groupsLayer0 = medParameterGroupManager::instance()->groups(this, 0);
+        QList<medLayerParameterGroup*> groupsLayer0 = medParameterGroupManager::instance()->layerGroups(this, 0);
         if(!groupsLayer0.isEmpty() && layerNumber > 0)
         {
-
             QString newGroup = groupsLayer0[0]->name() + " Layer " + QString::number(layerNumber+1);
             medLayerParameterGroup* layerGroup = medParameterGroupManager::instance()->layerGroup(newGroup);
             if(!layerGroup)

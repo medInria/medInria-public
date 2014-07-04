@@ -30,6 +30,7 @@
 
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
+#include <medParameterGroupManager.h>
 
 class medAbstractImageViewPrivate
 {
@@ -212,7 +213,17 @@ void medAbstractImageView::switchToFourViews()
     topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
     bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
 
-    medViewParameterGroup* viewGroup = new medViewParameterGroup("MPR", this);
+    QString linkGroupBaseName = "MPR ";
+    unsigned int linkGroupNumber = 1;
+
+    QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    while (medParameterGroupManager::instance()->viewGroup(linkGroupName))
+    {
+        linkGroupNumber++;
+        linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    }
+
+    medViewParameterGroup* viewGroup = new medViewParameterGroup(linkGroupName, this);
     viewGroup->addImpactedView(this);
     viewGroup->addImpactedView(topRightContainerView);
     viewGroup->addImpactedView(bottomLeftContainerView);
@@ -223,7 +234,8 @@ void medAbstractImageView::switchToFourViews()
 
     for (unsigned int i = 0;i < this->layersCount();++i)
     {
-        medLayerParameterGroup* layerGroup = new medLayerParameterGroup("MPR " + QString::number(i+1), this);
+        QString linkLayerName = linkGroupBaseName + QString::number(linkGroupNumber) + " Layer " + QString::number(i+1);
+        medLayerParameterGroup* layerGroup = new medLayerParameterGroup(linkLayerName, this);
         layerGroup->setLinkAllParameters(true);
         layerGroup->addImpactedlayer(this, i);
         layerGroup->addImpactedlayer(topRightContainerView, i);
@@ -231,67 +243,6 @@ void medAbstractImageView::switchToFourViews()
         layerGroup->addImpactedlayer(bottomRightContainerView, i);
         layerGroup->update();
     }
-
-//    QString linkGroupBaseName = "MPR ";
-//    unsigned int linkGroupNumber = 1;
-
-//    QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
-//    while (medParameterPoolManager::instance()->pool(linkGroupName))
-//    {
-//        linkGroupNumber++;
-//        linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
-//    }
-
-//    QColor linkGroupColor;
-//    double hueValue = 2.0 * linkGroupNumber / (1.0 + sqrt(5.0));
-//    hueValue -= floor(hueValue);
-//    linkGroupColor.setHsvF(hueValue,1.0,1.0);
-
-//    QPixmap linkGroupPixmap(32,32);
-//    linkGroupPixmap.fill(linkGroupColor);
-//    QIcon linkGroupIcon(linkGroupPixmap);
-
-//    this->linkParameter()->addItem(linkGroupName, linkGroupIcon);
-//    this->linkParameter()->setValue(linkGroupName);
-//    topRightContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
-//    topRightContainerView->linkParameter()->setValue(linkGroupName);
-//    bottomLeftContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
-//    bottomLeftContainerView->linkParameter()->setValue(linkGroupName);
-//    bottomRightContainerView->linkParameter()->addItem(linkGroupName, linkGroupIcon);
-//    bottomRightContainerView->linkParameter()->setValue(linkGroupName);
-
-//    for (unsigned int i = 0;i < this->layersCount();++i)
-//    {
-//        QString linkLayerName = linkGroupBaseName + QString::number(linkGroupNumber) + " Layer " + QString::number(i+1);
-//        QColor linkLayerColor;
-//        hueValue = 2.0 * i / (1.0 + sqrt(5.0));
-//        hueValue -= floor(hueValue);
-//        linkLayerColor.setHsvF(hueValue,1.0,1.0);
-
-//        QPixmap linkLayerPixmap(32,32);
-//        linkLayerPixmap.fill(linkLayerColor);
-//        QIcon linkLayerIcon(linkLayerPixmap);
-
-//        this->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
-//        this->layerLinkParameter(i)->setValue(linkLayerName);
-//        topRightContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
-//        topRightContainerView->layerLinkParameter(i)->setValue(linkLayerName);
-//        bottomLeftContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
-//        bottomLeftContainerView->layerLinkParameter(i)->setValue(linkLayerName);
-//        bottomRightContainerView->layerLinkParameter(i)->addItem(linkLayerName, linkLayerIcon);
-//        bottomRightContainerView->layerLinkParameter(i)->setValue(linkLayerName);
-//    }
-
-//    medParameterPool *linkPool = medParameterPoolManager::instance()->pool(linkGroupName);
-//    linkPool->removeAll("axial");
-//    linkPool->removeAll("coronal");
-//    linkPool->removeAll("sagittal");
-//    linkPool->removeAll("3d");
-
-//    linkPool->append(this->dataListParameter());
-//    linkPool->append(topRightContainerView->dataListParameter());
-//    linkPool->append(bottomLeftContainerView->dataListParameter());
-//    linkPool->append(bottomRightContainerView->dataListParameter());
 }
 
 void medAbstractImageView::setOrientation(medImageView::Orientation orientation)

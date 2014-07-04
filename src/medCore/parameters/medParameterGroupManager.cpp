@@ -66,12 +66,17 @@ void medParameterGroupManager::registerNewGroup(medAbstractParameterGroup* group
 
 void medParameterGroupManager::unregisterGroup(medAbstractParameterGroup *group)
 {
+    QString workspace;
+    if(group->workspace() != "")
+        workspace = group->workspace();
+    else workspace =d->currentWorkspace;
+
     medViewParameterGroup* viewGroup = dynamic_cast<medViewParameterGroup*>(group);
     medLayerParameterGroup* layerGroup = dynamic_cast<medLayerParameterGroup*>(group);
     if(viewGroup)
-        d->viewGroups.remove(d->currentWorkspace, viewGroup);
+        d->viewGroups.remove(workspace, viewGroup);
     else if(layerGroup)
-        d->layerGroups.remove(d->currentWorkspace, layerGroup);
+        d->layerGroups.remove(workspace, layerGroup);
 }
 
 QList<medViewParameterGroup*> medParameterGroupManager::viewGroups(QString workspace)
@@ -120,7 +125,7 @@ medLayerParameterGroup* medParameterGroupManager::layerGroup(QString groupName, 
     return result;
 }
 
-QList<medViewParameterGroup*> medParameterGroupManager::groups(medAbstractView *view)
+QList<medViewParameterGroup*> medParameterGroupManager::viewGroups(medAbstractView *view)
 {
     QHashIterator<QString, medViewParameterGroup*> iter(d->viewGroups);
     QList<medViewParameterGroup*> results;
@@ -136,7 +141,7 @@ QList<medViewParameterGroup*> medParameterGroupManager::groups(medAbstractView *
     return results;
 }
 
-QList<medLayerParameterGroup*> medParameterGroupManager::groups(medAbstractLayeredView *view, unsigned int layer)
+QList<medLayerParameterGroup*> medParameterGroupManager::layerGroups(medAbstractLayeredView *view, unsigned int layer)
 {
     QHashIterator<QString, medLayerParameterGroup*> iter(d->layerGroups);
     QList<medLayerParameterGroup*> results;

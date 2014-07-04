@@ -46,9 +46,11 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
 
     d->groupList = new medListWidget;
     d->groupList->setMouseTracking(true);
+    d->groupList->setAlternatingRowColors(true);
 
     d->paramList = new medListWidget;
     d->paramList->setMouseTracking(true);
+    d->paramList->setAlternatingRowColors(true);
 
     d->newGroupitem = new QListWidgetItem("New Group...");
     d->groupList->addItem(d->newGroupitem);
@@ -300,7 +302,6 @@ void medLinkMenu::hideMenus()
 
 void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
 { 
-    bool test = false;
     QString group = groupItem->data(Qt::UserRole).toString();
 
     d->groupList->setCurrentItem(groupItem);
@@ -310,8 +311,6 @@ void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
     QPoint globalPosItem = w->mapToGlobal(QPoint(0,0));
     QPoint globalPosButton = mapToGlobal(QPoint(0,0));
 
-//    d->paramList->layout()->invalidate();
-//    d->paramList->layout()->activate();
     d->subPopupWidget->layout()->invalidate();
     d->subPopupWidget->update();
     d->subPopupWidget->layout()->activate();
@@ -325,6 +324,9 @@ void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
 
     d->subPopupWidget->show();
 
+    // [Hack] Sometimes, the subPopupWidget doesn't appear at the right place
+    // a second move seems to correct the position...
+    d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width(), globalPosItem.y());
 }
 
 void medLinkMenu::showSubMenu()

@@ -44,6 +44,7 @@ medViewParameterGroup::medViewParameterGroup(QString name, QObject *parent, QStr
 
 medViewParameterGroup::~medViewParameterGroup()
 {
+    medParameterGroupManager::instance()->unregisterGroup(this);
     d->pool->clear();
 }
 
