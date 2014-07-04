@@ -246,9 +246,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     double levelMin = range[0] - halfWidth;
     double levelMax = range[1] + halfWidth;
 
-    qDebug() << range[0] << range[1] << window << level;
-    qDebug() << windowMin << windowMax << levelMin << levelMax;
-
     this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(windowMin), QVariant(windowMax));
     this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(levelMin), QVariant(levelMax));
 
