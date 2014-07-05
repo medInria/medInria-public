@@ -32,6 +32,7 @@
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
 #include <itkFiberBundleStatisticsCalculator.h>
+#include <itkCastImageFilter.h>
 
 #include <medMessageController.h>
 #include <medDataManager.h>
@@ -128,16 +129,21 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
     if (!data)
         return;
 
-    typedef itk::Image<T, 3> ROIType;
+    typedef itk::Image<T, 3> InputROIType;
+    typedef itk::Image<unsigned char, 3> ROIType;
 
-    typename ROIType::Pointer roiImage = dynamic_cast<ROIType*>(static_cast<itk::Object*>(data->data()));
+    typename InputROIType::Pointer tmpROIImage = dynamic_cast<InputROIType*>(static_cast<itk::Object*>(data->data()));
 
-    if (roiImage.IsNull())
-    {
-        qDebug() << "Empty data";
+    if (tmpROIImage.IsNull())
         return;
-    }
-    qDebug() << "Converting and setting";
+
+    typedef itk::CastImageFilter <InputROIType,ROIType> CastFilterType;
+    typename CastFilterType::Pointer castFilter = CastFilterType::New();
+    castFilter->SetInput(tmpROIImage);
+    castFilter->Update();
+
+    typename ROIType::Pointer roiImage = castFilter->GetOutput();
+    roiImage->DisconnectPipeline();
 
     typename itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
     converter->SetReferenceCount(2);
