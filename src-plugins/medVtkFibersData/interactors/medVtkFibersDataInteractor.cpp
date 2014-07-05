@@ -100,6 +100,7 @@ public:
 
     medDropSite *dropOrOpenRoi;
     QComboBox    *roiComboBox;
+    QMap <int,int> roiLabels;
 
     medBoolParameter *andParameter;
     medBoolParameter *notParameter;
@@ -145,6 +146,18 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
     typename ROIType::Pointer roiImage = castFilter->GetOutput();
     roiImage->DisconnectPipeline();
 
+    QList <int> labels;
+    typedef itk::ImageRegionConstIterator <ROIType> ROIITeratorType;
+    ROIITeratorType roiItr(roiImage,roiImage->GetLargestPossibleRegion());
+
+    while (!roiItr.IsAtEnd())
+    {
+        if ((roiItr.Get() != 0)&&(!labels.contains(roiItr.Get())))
+            labels.append(roiItr.Get());
+
+        ++roiItr;
+    }
+
     typename itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
     converter->SetReferenceCount(2);
     converter->SetInput(roiImage);
@@ -180,6 +193,25 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
 
     // manager->GetROILimiter()->Update();
     roiManager->GenerateData();
+
+    qSort(labels);
+    roiLabels.clear();
+
+    if (roiComboBox)
+    {
+        roiComboBox->blockSignals(true);
+        roiComboBox->clear();
+        unsigned int i = 0;
+        foreach (int label, labels)
+        {
+            roiLabels[i] = label;
+            roiComboBox->addItem("ROI " + QString::number(label));
+            ++i;
+        }
+
+        roiComboBox->blockSignals(false);
+        roiComboBox->setCurrentIndex(0);
+    }
 
     matrix->Delete();
     matrix2->Delete();
@@ -883,12 +915,12 @@ void medVtkFibersDataInteractor::setRadius (int value)
 void medVtkFibersDataInteractor::setRoiBoolean(int roi, int meaning)
 {
     d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
-
+    d->render->Render();
 }
 
 int medVtkFibersDataInteractor::roiBoolean(int roi)
 {
-    return d->manager->GetROILimiter()->GetBooleanOperationVector()[roi+1];
+    return d->manager->GetROILimiter()->GetBooleanOperationVector()[roi];
 }
 
 void medVtkFibersDataInteractor::setBundleVisibility(const QString &name, bool visibility)
@@ -997,23 +1029,32 @@ void medVtkFibersDataInteractor::addBundle (const QString &name, const QColor &c
 
 void medVtkFibersDataInteractor::setRoiAddOperation(bool value)
 {
-    int roi = d->roiComboBox->currentIndex();
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int roi = d->roiLabels[d->roiComboBox->currentIndex()];
     if (value)
-        this->setRoiBoolean(roi+1, 2);
+        this->setRoiBoolean(roi, 2);
 }
 
 void medVtkFibersDataInteractor::setRoiNotOperation(bool value)
 {
-    int roi = d->roiComboBox->currentIndex();
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int roi = d->roiLabels[d->roiComboBox->currentIndex()];
     if (value)
-        this->setRoiBoolean(roi+1, 1);
+        this->setRoiBoolean(roi, 1);
 }
 
 void medVtkFibersDataInteractor::setRoiNullOperation(bool value)
 {
-    int roi = d->roiComboBox->currentIndex();
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int roi = d->roiLabels[d->roiComboBox->currentIndex()];
     if (value)
-        this->setRoiBoolean(roi+1, 0);
+        this->setRoiBoolean(roi, 0);
 }
 
 
@@ -1082,12 +1123,20 @@ void medVtkFibersDataInteractor::clearRoi(void)
     d->dropOrOpenRoi->clear();
     d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
 
+    if (d->roiComboBox)
+        d->roiComboBox->clear();
+
+    d->roiLabels.clear();
+
     d->render->Render();
 }
 
 void medVtkFibersDataInteractor::selectRoi(int value)
 {
-    int boolean = this->roiBoolean (value);
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int boolean = this->roiBoolean (d->roiLabels[value]);
     switch (boolean)
     {
     case 2:
@@ -1163,7 +1212,6 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     d->radiusParameter->getSlider()->setOrientation(Qt::Horizontal);
     toolBoxLayout->addWidget(d->radiusParameter->getSlider());
 
-
     d->bundleToolboxWidget = new QWidget(d->toolboxWidget);
     connect(d->bundleToolboxWidget, SIGNAL(destroyed()), this, SLOT(removeInternBundleToolBoxWidget()));
     QVBoxLayout *bundleToolboxLayout = new QVBoxLayout(d->bundleToolboxWidget);
@@ -1179,9 +1227,19 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
 
     d->roiComboBox = new QComboBox(d->bundleToolboxWidget);
-    for (int i=0; i<255; i++)
-        d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
-    d->roiComboBox->setCurrentIndex(0);
+    if (!d->roiLabels.isEmpty())
+    {
+        QMap<int,int>::const_iterator i = d->roiLabels.constBegin();
+
+        while (i != d->roiLabels.constEnd())
+        {
+            d->roiComboBox->addItem("ROI " + QString::number(i.value()));
+            i++;
+        }
+
+        d->roiComboBox->setCurrentIndex(0);
+    }
+
     d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed."));
 
     bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
