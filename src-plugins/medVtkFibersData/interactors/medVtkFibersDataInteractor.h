@@ -61,17 +61,6 @@ public:
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
 
-
-
-    /**
-     * Set a Region Of Interest (ROI). A ROI is an unsigned char image containing
-     * 1s, 2s, etc., each value defining a region.
-     * @param a medAbstractData encapsulating a ROI. Subclass should cast the contained
-     * pointer to a compatible ROI type.
-     * @return void
-     */
-    void setROI (medAbstractData *data);
-
     /**
      * Set the boolean meaning for a region of a ROI:
      *  - 0: NULL (region has no effect)
@@ -168,6 +157,7 @@ public slots:
     void setRoiNullOperation (bool value);
     void importROI(const medDataIndex &index);
     void selectRoi(int value);
+    void setRoiThumbnail(const QImage &image);
 
     void bundlingListCustomContextMenu(const QPoint &point);
     void saveCurrentBundle();

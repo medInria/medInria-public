@@ -64,6 +64,8 @@
 class medVtkFibersDataInteractorPrivate
 {
 public:
+    template <class T> void setROI (medAbstractData *data);
+
     medAbstractData        *data;
     medAbstractImageView   *view;
     medAbstractData        *projectionData;
@@ -119,6 +121,65 @@ public:
 
     medIntParameter *slicingParameter;
 };
+
+template <class T>
+void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
+{
+    if (!data)
+        return;
+
+    typedef itk::Image<T, 3> ROIType;
+
+    typename ROIType::Pointer roiImage = dynamic_cast<ROIType*>(static_cast<itk::Object*>(data->data()));
+
+    if (roiImage.IsNull())
+    {
+        qDebug() << "Empty data";
+        return;
+    }
+    qDebug() << "Converting and setting";
+
+    typename itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
+    converter->SetReferenceCount(2);
+    converter->SetInput(roiImage);
+    converter->Update();
+
+    typename ROIType::DirectionType directions = roiImage->GetDirection();
+    vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
+    matrix->Identity();
+    for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
+            matrix->SetElement (i, j, directions (i,j));
+
+    manager->Reset();
+    manager->GetROILimiter()->SetMaskImage (converter->GetOutput());
+    manager->GetROILimiter()->SetDirectionMatrix (matrix);
+
+    typename ROIType::PointType origin = roiImage->GetOrigin();
+    vtkMatrix4x4 *matrix2 = vtkMatrix4x4::New();
+    matrix2->Identity();
+    for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
+            matrix2->SetElement (i, j, directions (i,j));
+    double v_origin[4], v_origin2[4];
+    for (int i=0; i<3; i++)
+        v_origin[i] = origin[i];
+    v_origin[3] = 1.0;
+    matrix->MultiplyPoint (v_origin, v_origin2);
+    for (int i=0; i<3; i++)
+        matrix2->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
+    roiManager->SetInput (converter->GetOutput());
+    roiManager->SetDirectionMatrix (matrix2);
+
+    // manager->GetROILimiter()->Update();
+    roiManager->GenerateData();
+
+    matrix->Delete();
+    matrix2->Delete();
+
+    render->Render();
+}
 
 medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
     d(new medVtkFibersDataInteractorPrivate)
@@ -813,70 +874,6 @@ void medVtkFibersDataInteractor::setRadius (int value)
     d->render->Render();
 }
 
-void medVtkFibersDataInteractor::setROI(medAbstractData *data)
-{
-    if (!data)
-        return;
-
-    if (data->identifier()!="itkDataImageUChar3")
-        return;
-
-    typedef itk::Image<unsigned char, 3> ROIType;
-
-    ROIType::Pointer roiImage = static_cast<ROIType*>(data->data());
-
-    if (!roiImage.IsNull())
-    {
-        itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
-        converter->SetReferenceCount(2);
-        converter->SetInput(roiImage);
-        converter->Update();
-
-        ROIType::DirectionType directions = roiImage->GetDirection();
-        vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
-        matrix->Identity();
-        for (int i=0; i<3; i++)
-            for (int j=0; j<3; j++)
-                matrix->SetElement (i, j, directions (i,j));
-
-        d->manager->Reset();
-        d->manager->GetROILimiter()->SetMaskImage (converter->GetOutput());
-        d->manager->GetROILimiter()->SetDirectionMatrix (matrix);
-
-        ROIType::PointType origin = roiImage->GetOrigin();
-        vtkMatrix4x4 *matrix2 = vtkMatrix4x4::New();
-        matrix2->Identity();
-        for (int i=0; i<3; i++)
-            for (int j=0; j<3; j++)
-                matrix2->SetElement (i, j, directions (i,j));
-        double v_origin[4], v_origin2[4];
-        for (int i=0; i<3; i++)
-            v_origin[i] = origin[i];
-        v_origin[3] = 1.0;
-        matrix->MultiplyPoint (v_origin, v_origin2);
-        for (int i=0; i<3; i++)
-            matrix2->SetElement (i, 3, v_origin[i]-v_origin2[i]);
-
-        d->roiManager->SetInput (converter->GetOutput());
-        d->roiManager->SetDirectionMatrix (matrix2);
-
-        // d->manager->GetROILimiter()->Update();
-        d->roiManager->GenerateData();
-
-        matrix->Delete();
-        matrix2->Delete();
-    }
-    else
-    {
-        d->manager->GetROILimiter()->SetMaskImage (0);
-        d->manager->GetROILimiter()->SetDirectionMatrix (0);
-
-        d->roiManager->ResetData();
-    }
-
-    d->render->Render();
-}
-
 void medVtkFibersDataInteractor::setRoiBoolean(int roi, int meaning)
 {
     d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
@@ -1020,7 +1017,13 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
 
     // we accept only ROIs (itkDataImageUChar3)
     // TODO try dynamic_cast of medAbstractMaskData would be better - RDE
-    if (!data || data->identifier() != "itkDataImageUChar3")
+    if (!data ||
+            (data->identifier() != "itkDataImageUChar3" &&
+             data->identifier() != "itkDataImageChar3" &&
+             data->identifier() != "itkDataImageUShort3" &&
+             data->identifier() != "itkDataImageShort3" &&
+             data->identifier() != "itkDataImageUInt3" &&
+             data->identifier() != "itkDataImageInt3"))
         return;
 
     // put the thumbnail in the medDropSite as well
@@ -1035,6 +1038,7 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
         QImage thumbImage = dbc->thumbnail(index);
         if (!thumbImage.isNull())
         {
+            thumbImage = thumbImage.scaled(QSize(128,128));
             d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
             shouldSkipLoading = true;
         }
@@ -1043,21 +1047,30 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
     if (!shouldSkipLoading)
     {
         medImageFileLoader *loader = new medImageFileLoader(thumbpath);
-        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
+        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setRoiThumbnail(const QImage&)));
         QThreadPool::globalInstance()->start(loader);
     }
 
-    this->setROI(data);
+    d->setROI<unsigned char>(data);
+    d->setROI<char>(data);
+    d->setROI<unsigned short>(data);
+    d->setROI<short>(data);
+    d->setROI<unsigned int>(data);
+    d->setROI<int>(data);
+}
+
+void medVtkFibersDataInteractor::setRoiThumbnail(const QImage &image)
+{
+    QImage thumbImage = image.scaled(QSize(128,128));
+    d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
 }
 
 void medVtkFibersDataInteractor::clearRoi(void)
 {
-    // create dummy mask image
-    medAbstractData *data = medAbstractDataFactory::instance()->create("itkDataImageUChar3");
+    d->manager->GetROILimiter()->SetMaskImage (0);
+    d->manager->GetROILimiter()->SetDirectionMatrix (0);
 
-    this->setROI(data);
-    //TODO sound like a ugly hack - RDE
-    data->deleteLater();
+    d->roiManager->ResetData();
 
     // clear medDropSite and put text again
     d->dropOrOpenRoi->clear();
@@ -1133,7 +1146,6 @@ void medVtkFibersDataInteractor::removeData()
 
 QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
 {
-
     d->toolboxWidget = new QWidget;
     QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolboxWidget);
 
@@ -1160,7 +1172,6 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     QPushButton *clearRoiButton = new QPushButton("Clear ROI", d->toolboxWidget);
     clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
 
-    //TODO : what the ... why 255 ? - RDE
     d->roiComboBox = new QComboBox(d->bundleToolboxWidget);
     for (int i=0; i<255; i++)
         d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
