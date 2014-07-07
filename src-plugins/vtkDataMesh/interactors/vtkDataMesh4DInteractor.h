@@ -33,7 +33,7 @@ public:
 
     static bool registered();
 
-    virtual void setData(medAbstractData *data);
+    virtual void setInputData(medAbstractData *data);
 
 public slots:
     virtual void setCurrentTime (double time);

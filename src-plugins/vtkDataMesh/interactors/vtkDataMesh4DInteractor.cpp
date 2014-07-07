@@ -78,9 +78,9 @@ bool vtkDataMesh4DInteractor::registered()
                                                                           vtkDataMesh4DInteractor::dataHandled());
 }
 
-void vtkDataMesh4DInteractor::setData(medAbstractData *data)
+void vtkDataMesh4DInteractor::setInputData(medAbstractData *data)
 {
-    vtkDataMeshInteractor::setData(data);
+    vtkDataMeshInteractor::setInputData(data);
 
     if (data->identifier() == "vtkDataMesh4D" )
     {

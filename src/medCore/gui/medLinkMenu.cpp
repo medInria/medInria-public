@@ -31,7 +31,6 @@ public :
 
     medListWidget *paramList;
 
-    QListWidgetItem * saveAsPresetItem;
     QPushButton *saveAsPresetButton;
 
     medListWidget *presetList;
@@ -63,7 +62,6 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->newGroupEdit = new QLineEdit("New Group...");
     d->groupList->setItemWidget(d->newGroupitem, d->newGroupEdit);
 
-    d->saveAsPresetItem = new QListWidgetItem("Save as preset");
     d->saveAsPresetButton = new QPushButton("Save as preset");
 
     d->presetList = new medListWidget;
@@ -82,16 +80,20 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->groupList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(showSubMenu(QListWidgetItem*)));
     connect(d->paramList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
     connect(d->saveAsPresetButton, SIGNAL(clicked()), this, SLOT(saveAsPreset()));
-    connect(d->presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
+    connect(d->presetList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
 
     QVBoxLayout *subPopUpLayout = new QVBoxLayout(d->subPopupWidget);
     subPopUpLayout->setContentsMargins(0,0,0,0);
+    subPopUpLayout->setSpacing(0);
     subPopUpLayout->addWidget(d->paramList);
+    subPopUpLayout->addWidget(d->saveAsPresetButton);
     subPopUpLayout->addWidget(d->presetList);
 
     d->groupList->installEventFilter(this);
     d->paramList->installEventFilter(this);
     d->newGroupEdit->installEventFilter(this);
+    d->saveAsPresetButton->installEventFilter(this);
+    d->presetList->installEventFilter(this);
     qApp->activeWindow()->installEventFilter(this);
 }
 
@@ -121,9 +123,6 @@ void medLinkMenu::setAvailableParameters(QStringList parameters)
         d->paramList->insertItem(i,item);
         i++;
     }
-
-    d->paramList->addItem(d->saveAsPresetItem);
-    d->paramList->setItemWidget(d->saveAsPresetItem, d->saveAsPresetButton);
 
     loadPreset();
 }

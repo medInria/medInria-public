@@ -297,7 +297,6 @@ void medViewContainer::setView(medAbstractView *view)
         d->view = view;
         connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
-        //d->poolIndicator->setLinkParameter(view->linkParameter());
 
         if(medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view))
         {
@@ -732,4 +731,3 @@ void medViewContainer::removeColorIndicator(QColor color)
 {
     d->poolIndicator->removeColorIndicator(color);
 }
-
