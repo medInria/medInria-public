@@ -403,24 +403,44 @@ QWidget* medVtkViewItkDataImageInteractor::buildLayerWidget()
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
-    if(d->view2d->GetColorWindow(d->view->layer(d->imageData)) == window)
-        return;
+    bool needsUpdate = false;
+    if(d->view2d->GetColorWindow(d->view->layer(d->imageData)) != window)
+    {
+        d->view2d->SetColorWindow(window, d->view->layer(d->imageData));
+        if (d->view->is2D())
+            needsUpdate = true;
+    }
 
-    d->view2d->SetColorWindow(window, d->view->layer(d->imageData));
-    d->view3d->SetColorWindow(window, d->view->layer(d->imageData));
+    if(d->view3d->GetColorWindow(d->view->layer(d->imageData)) != window)
+    {
+        d->view3d->SetColorWindow(window, d->view->layer(d->imageData));
+        if (!d->view->is2D())
+            needsUpdate = true;
+    }
 
-    this->update();
+    if (needsUpdate)
+        this->update();
 }
 
 void medVtkViewItkDataImageInteractor::setLevel(double level)
 {
-    if(d->view2d->GetColorLevel(d->view->layer(d->imageData)) == level)
-        return;
+    bool needsUpdate = false;
+    if(d->view2d->GetColorLevel(d->view->layer(d->imageData)) != level)
+    {
+        d->view2d->SetColorLevel(level, d->view->layer(d->imageData));
+        if (d->view->is2D())
+            needsUpdate = true;
+    }
 
-    d->view2d->SetColorLevel(level, d->view->layer(d->imageData));
-    d->view3d->SetColorLevel(level, d->view->layer(d->imageData));
+    if(d->view3d->GetColorLevel(d->view->layer(d->imageData)) != level)
+    {
+        d->view3d->SetColorLevel(level, d->view->layer(d->imageData));
+        if (!d->view->is2D())
+            needsUpdate = true;
+    }
 
-    this->update();
+    if (needsUpdate)
+        this->update();
 }
 
 void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> values)
@@ -436,15 +456,36 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> va
     {
         double w = values["Window"].toDouble();
         d->view2d->SetColorWindow(w, d->view->layer(d->imageData));
-        d->view3d->SetColorWindow(w, d->view->layer(d->imageData));
-        needUpdate = true;
+
+        if (d->view->is2D())
+            needUpdate = true;
     }
+
+    if (d->view3d->GetColorWindow(d->view->layer(d->imageData)) != values["Window"])
+    {
+        double w = values["Window"].toDouble();
+        d->view3d->SetColorWindow(w, d->view->layer(d->imageData));
+
+        if (!d->view->is2D())
+            needUpdate = true;
+    }
+
     if (d->view2d->GetColorLevel(d->view->layer(d->imageData)) != values["Level"])
     {
         double l = values["Level"].toDouble();
         d->view2d->SetColorLevel(l, d->view->layer(d->imageData));
+
+        if (d->view->is2D())
+            needUpdate = true;
+    }
+
+    if (d->view3d->GetColorLevel(d->view->layer(d->imageData)) != values["Level"])
+    {
+        double l = values["Level"].toDouble();
         d->view3d->SetColorLevel(l, d->view->layer(d->imageData));
-        needUpdate = true;
+
+        if (!d->view->is2D())
+            needUpdate = true;
     }
 
     if(needUpdate)
