@@ -16,6 +16,7 @@
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QLabel>
+#include <cmath>
 
 class medDoubleParameterPrivate
 {
@@ -116,6 +117,20 @@ QDoubleSpinBox* medDoubleParameter::getSpinBox()
         d->spinBox->setRange(d->min, d->max);
         d->spinBox->setValue(m_value);
         d->spinBox->setSingleStep(d->step);
+
+        unsigned int numDecimals = 0;
+        bool nullDecimal = true;
+        double multipliedStep = d->step;
+        while (nullDecimal)
+        {
+            numDecimals++;
+            multipliedStep *= 10;
+            int testNumber = floor(multipliedStep);
+            if (testNumber > 0)
+                nullDecimal = false;
+        }
+
+        d->spinBox->setDecimals(numDecimals);
 
         this->addToInternWidgets(d->spinBox);
         connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(removeInternSpinBox()));
