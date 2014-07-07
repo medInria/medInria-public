@@ -356,6 +356,8 @@ int medParameterPool::count() const
 void medParameterPool::removeInternParam()
 {
     medAbstractParameter *param = qobject_cast<medAbstractParameter*>(QObject::sender());
+    if(param->name()=="DataList")
+        qDebug() << "removeInternParam DATALIST";
     if(param)
         this->remove(param);
 }

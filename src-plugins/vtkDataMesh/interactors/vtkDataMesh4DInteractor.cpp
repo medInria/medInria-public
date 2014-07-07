@@ -55,6 +55,8 @@ vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): medAb
     d->render = backend->renWin;
 
     d->currentTime = 0.0;
+
+    d->timeLineParameter = NULL;
 }
 
 vtkDataMesh4DInteractor::~vtkDataMesh4DInteractor()
@@ -91,7 +93,7 @@ bool vtkDataMesh4DInteractor::registered()
                                                                           vtkDataMesh4DInteractor::dataHandled());
 }
 
-void vtkDataMesh4DInteractor::setData(medAbstractData *data)
+void vtkDataMesh4DInteractor::setInputData(medAbstractData *data)
 {
     double range[2]={0,0};
     double mintimestep, mintime, maxtime;
@@ -154,7 +156,8 @@ QWidget* vtkDataMesh4DInteractor::buildLayerWidget()
 QList<medAbstractParameter*> vtkDataMesh4DInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> parameters;
-    parameters << d->timeLineParameter;
+    if(d->timeLineParameter)
+      parameters << d->timeLineParameter;
     return parameters;
 }
 

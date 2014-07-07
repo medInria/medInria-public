@@ -2123,6 +2123,8 @@ void vtkImageView2D::RemoveLayer(int layer)
 
   if (renderer && this->GetRenderWindow())
   {
+    renderer->RemoveAllViewProps();
+    renderer->Render();
     this->GetRenderWindow()->RemoveRenderer(renderer);
     this->Modified();
   }
@@ -2132,9 +2134,7 @@ void vtkImageView2D::RemoveLayer(int layer)
 
   if(this->LayerInfoVec.size() == 0)
   {
-    this->LayerInfoVec.resize(1);
-    this->LayerInfoVec[0].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
-    this->LayerInfoVec[0].Renderer = vtkSmartPointer<vtkRenderer>::New();
+      AddLayer(0);
   }
 
   // Make contiguous
@@ -2144,7 +2144,6 @@ void vtkImageView2D::RemoveLayer(int layer)
         this->LayerInfoVec[i].Renderer->SetLayer(i);
       this->SetCurrentLayer(i);
   }
-
 }
 
 //----------------------------------------------------------------------------

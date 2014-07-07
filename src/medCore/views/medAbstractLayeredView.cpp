@@ -215,8 +215,6 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     this->removeInteractors(data);
     int layer = this->layer(data);
     int res = d->layersDataList.removeAll(data);
-    if( res > 0 )
-        emit layerRemoved(layer);
 
     if(d->layersDataList.count() != 0  && layer == d->layersDataList.count())
     {
@@ -226,6 +224,9 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
     {
         this->setCurrentLayer(layer);
     }
+
+    if( res > 0 )
+        emit layerRemoved(layer);
 }
 
 void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
