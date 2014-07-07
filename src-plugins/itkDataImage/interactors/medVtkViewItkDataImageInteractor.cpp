@@ -252,11 +252,13 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->windowParameter = new medDoubleParameter("Window", this);
     connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
     d->windowParameter->setRange(windowMin, windowMax);
+    d->windowParameter->setSingleStep(qMin(0.1,(windowMax-windowMin) / 1000));
     d->windowParameter->setValue(window);
 
     d->levelParameter = new medDoubleParameter("Level", this);
     connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
     d->levelParameter->setRange(levelMin, levelMax);
+    d->levelParameter->setSingleStep(qMin(0.1,(levelMax-levelMin) / 1000));
     d->levelParameter->setValue(level);
 
     d->slicingParameter = new medIntParameter("Slicing", this);
