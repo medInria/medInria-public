@@ -633,6 +633,12 @@ void vtkImageView3D::InternalUpdate()
                             (this->Input->GetNumberOfScalarComponents() == 3 ||
                              this->Input->GetNumberOfScalarComponents() == 4 ));
 
+  if(input == NULL)
+  {
+      this->Renderer->RemoveAllViewProps();
+      return;
+  }
+
   if (this->LayerInfoVec.size()>0 &&  !multichannelInput)
   {
     // append all scalar buffer into the same image
@@ -1105,7 +1111,7 @@ void vtkImageView3D::RemoveDataSet(vtkPointSet* arg)
 //----------------------------------------------------------------------------
 void vtkImageView3D::AddLayer (int layer)
 {
-  if (this->HasLayer(layer) || (layer <=0) )
+  if (this->HasLayer(layer) || (layer < 0) )
   {
     return;
   }
@@ -1148,10 +1154,15 @@ void vtkImageView3D::RemoveLayer (int layer)
     return;
   }
 
-  if (layer<=0) // do not remove layer 0
-    return;
+//  if (layer<=0) // do not remove layer 0
+//    return;
 
   this->LayerInfoVec.erase (this->LayerInfoVec.begin() + layer );
+
+  if(this->LayerInfoVec.size() == 0)
+  {
+      AddLayer(0);
+  }
 
   this->InternalUpdate();
 }
