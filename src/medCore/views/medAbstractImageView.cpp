@@ -230,7 +230,6 @@ void medAbstractImageView::switchToFourViews()
     viewGroup->addImpactedView(bottomRightContainerView);
     viewGroup->setLinkAllParameters(true);
     viewGroup->removeParameter("Orientation");
-    viewGroup->update();
 
     for (unsigned int i = 0;i < this->layersCount();++i)
     {
@@ -241,7 +240,6 @@ void medAbstractImageView::switchToFourViews()
         layerGroup->addImpactedlayer(topRightContainerView, i);
         layerGroup->addImpactedlayer(bottomLeftContainerView, i);
         layerGroup->addImpactedlayer(bottomRightContainerView, i);
-        layerGroup->update();
     }
 }
 

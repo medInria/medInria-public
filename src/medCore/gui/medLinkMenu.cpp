@@ -164,7 +164,7 @@ void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
     {
         addGroup(group);
 
-        QStringList params = group->parameters();
+        QStringList params = group->parametersToLink();
 
         d->paramList->blockSignals(true);
         // update param items
@@ -276,20 +276,18 @@ void medLinkMenu::selectParam(QListWidgetItem *item)
     {
         emit parameterChecked(param, group, groupChecked);
 
-        if(!d->currentGroups.value(group)->parameters().contains(param))
+        if(!d->currentGroups.value(group)->parametersToLink().contains(param))
         {
             d->currentGroups.value(group)->addParameterToLink(param);
-            d->currentGroups.value(group)->update();
         }
     }
     else
     {
         emit parameterUnchecked(param, group, groupChecked);
 
-        if(d->currentGroups.value(group)->parameters().contains(param))
+        if(d->currentGroups.value(group)->parametersToLink().contains(param))
         {
             d->currentGroups.value(group)->removeParameter(param);
-            d->currentGroups.value(group)->update();
         }
     }
 }
@@ -380,7 +378,7 @@ void medLinkMenu::updateParamCheckState(QString group)
     }
     else
     {
-        QList<QString> params = d->currentGroups.value(group)->parameters();
+        QList<QString> params = d->currentGroups.value(group)->parametersToLink();
         foreach(QString param, params)
         {
             for(int i=1; i<d->paramList->count(); i++)
@@ -594,7 +592,6 @@ void medLinkMenu::applyPreset(QListWidgetItem* item)
         {
             QListWidgetItem *presetItem = d->presetList->item(i);
             presetsInListWidget << presetItem->text();
-
         }
 
         //preset has been renamed, need to look for the renamed item

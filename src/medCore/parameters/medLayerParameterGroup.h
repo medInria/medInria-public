@@ -31,7 +31,9 @@ public:
 
     void setLinkAllParameters(bool linkAll);
 
-    virtual void update();
+protected:
+    virtual void updatePool();
+    void updateParameterToLinkList(medAbstractLayeredView *view, unsigned int layer);
 
 private slots:
     void removeImpactedlayer(uint);

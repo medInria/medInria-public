@@ -31,7 +31,9 @@ public:
 
     void setLinkAllParameters(bool linkAll);
 
-    virtual void update();
+protected:
+    virtual void updatePool();
+    void updateParameterToLinkList(medAbstractView *view);
 
 private slots:
     void removeImpactedView();

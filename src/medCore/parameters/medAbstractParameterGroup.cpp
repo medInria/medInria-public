@@ -26,7 +26,8 @@ class medAbstractParameterGroupPrivate
 {
 public:
     QString name;
-    QStringList parameters;
+    QStringList paramsLinked;
+    QStringList paramsNotLinked;
     bool linkAll;
     QColor color;
     QString workspace;
@@ -58,19 +59,27 @@ QString medAbstractParameterGroup::name() const
 
 void medAbstractParameterGroup::addParameterToLink(QString parameter)
 {
-    if(!d->parameters.contains(parameter))
-      d->parameters.append(parameter);
+    if(!d->paramsLinked.contains(parameter))
+      d->paramsLinked.append(parameter);
+
+    updatePool();
 }
 
 void medAbstractParameterGroup::removeParameter(QString parameter)
 {
-    d->parameters.removeAll(parameter);
+    d->paramsLinked.removeAll(parameter);
+
+    if(!d->paramsNotLinked.contains(parameter))
+      d->paramsNotLinked.append(parameter);
+
     setLinkAllParameters(false);
+
+    updatePool();
 }
 
 void medAbstractParameterGroup::setParametersToLink(QStringList parameters)
 {
-    d->parameters = parameters;
+    d->paramsLinked = parameters;
 }
 
 void medAbstractParameterGroup::setLinkAllParameters(bool linkAll)
@@ -83,9 +92,14 @@ bool medAbstractParameterGroup::linkAll() const
     return d->linkAll;
 }
 
-QStringList medAbstractParameterGroup::parameters() const
+QStringList medAbstractParameterGroup::parametersToLink() const
 {
-    return d->parameters;
+    return d->paramsLinked;
+}
+
+QStringList medAbstractParameterGroup::parametersNotToLink() const
+{
+    return d->paramsNotLinked;
 }
 
 void medAbstractParameterGroup::setColor(QColor color)

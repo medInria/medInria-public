@@ -35,7 +35,8 @@ public:
     void removeParameter(QString parameter);
 
     void setParametersToLink(QStringList parameters);
-    QStringList parameters() const;
+    QStringList parametersToLink() const;
+    QStringList parametersNotToLink() const;
 
     void setColor(QColor color);
     QColor color() const;
@@ -46,7 +47,8 @@ public:
     void setWorkspace(QString workspace);
     QString workspace() const;
 
-    virtual void update() = 0;
+protected:
+    virtual void updatePool() = 0;
 
 signals:
     void groupColorChanged(QColor oldColor, QColor newColor);

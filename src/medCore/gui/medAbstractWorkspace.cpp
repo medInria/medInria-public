@@ -766,8 +766,6 @@ void medAbstractWorkspace::addViewstoGroup(QString group)
 
         paramGroup->addImpactedView(view);
     }
-
-    paramGroup->update();
 }
 
 void medAbstractWorkspace::removeViewsFromGroup(QString group)
@@ -786,8 +784,6 @@ void medAbstractWorkspace::removeViewsFromGroup(QString group)
 
         paramGroup->removeImpactedView(view);
     }
-
-    paramGroup->update();
 }
 
 void medAbstractWorkspace::addLayerstoGroup(QString group)
@@ -810,8 +806,6 @@ void medAbstractWorkspace::addLayerstoGroup(QString group)
         if(indicator)
             indicator->addColorIndicator(paramGroup->color(), paramGroup->name());
     }
-
-    paramGroup->update();
 }
 
 void medAbstractWorkspace::removeLayersFromGroup(QString group)
@@ -834,8 +828,6 @@ void medAbstractWorkspace::removeLayersFromGroup(QString group)
         if(indicator)
             indicator->removeColorIndicator(paramGroup->color());
     }
-
-    paramGroup->update();
 }
 
 void medAbstractWorkspace::removeViewGroup(QString group)
@@ -852,12 +844,15 @@ void medAbstractWorkspace::removeLayerGroup(QString group)
 void medAbstractWorkspace::registerViewGroup(QString group)
 {
     medViewParameterGroup *newGroup = new medViewParameterGroup(group, this);
+    newGroup->setLinkAllParameters(true);
+    newGroup->removeParameter("DataList");
     addViewGroup(newGroup);
 }
 
 void medAbstractWorkspace::registerLayerGroup(QString group)
 {
     medLayerParameterGroup *newGroup = new medLayerParameterGroup(group, this);
+    newGroup->setLinkAllParameters(true);
     addLayerGroup(newGroup);
 }
 
