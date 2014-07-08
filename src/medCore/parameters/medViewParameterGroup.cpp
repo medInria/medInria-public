@@ -133,7 +133,7 @@ void medViewParameterGroup::updateGroupIndicators(QColor oldColor, QColor newCol
 
 void medViewParameterGroup::updateParameterToLinkList(medAbstractView *view)
 {
-    if(linkAll() || !this->parametersNotToLink().isEmpty())
+    if( linkAll() )
     {
         QList<medAbstractParameter*>  params = view->linkableParameters();
         foreach(medAbstractParameter* param, params)
@@ -142,20 +142,27 @@ void medViewParameterGroup::updateParameterToLinkList(medAbstractView *view)
                 this->addParameterToLink(param->name());
         }
     }
-    if(!linkAll() || !this->parametersNotToLink().isEmpty())
-    {
-        foreach(QString paramNotToLink, this->parametersNotToLink())
-        {
-            if(this->parametersToLink().contains(paramNotToLink))
-                this->removeParameter(paramNotToLink);
-        }
-    }
-    else if(!linkAll() || !this->parametersToLink().isEmpty())
+    if( !linkAll() && !this->parametersToLink().isEmpty() )
     {
         foreach(QString paramToLink, this->parametersToLink())
         {
             if(!this->parametersToLink().contains(paramToLink))
                 this->addParameterToLink(paramToLink);
+        }
+    }
+    else if( !linkAll() && !this->parametersNotToLink().isEmpty() )
+    {
+        QList<medAbstractParameter*>  params = view->linkableParameters();
+        foreach(medAbstractParameter* param, params)
+        {
+            if(!this->parametersToLink().contains(param->name()))
+                this->addParameterToLink(param->name());
+        }
+
+        foreach(QString paramNotToLink, this->parametersNotToLink())
+        {
+            if(this->parametersToLink().contains(paramNotToLink))
+                this->removeParameter(paramNotToLink);
         }
     }
 
