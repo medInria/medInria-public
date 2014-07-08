@@ -846,6 +846,7 @@ void medAbstractWorkspace::removeViewGroup(QString group)
 void medAbstractWorkspace::removeLayerGroup(QString group)
 {
     delete medParameterGroupManager::instance()->layerGroup(group, this->identifier());
+    updateLayersToolBox();
 }
 
 void medAbstractWorkspace::registerViewGroup(QString group)

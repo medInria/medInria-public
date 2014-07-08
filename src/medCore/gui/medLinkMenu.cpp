@@ -372,7 +372,7 @@ void medLinkMenu::updateParamCheckState(QString group)
     //TODO GPR: not sure this is the good way
     if(d->currentGroups.value(group)->linkAll())
     {
-        for(int i=1; i<d->paramList->count()-1; i++)
+        for(int i=1; i<d->paramList->count(); i++)
         {
             QListWidgetItem *item = d->paramList->item(i);
                 item->setCheckState(Qt::Checked);
@@ -383,7 +383,7 @@ void medLinkMenu::updateParamCheckState(QString group)
         QList<QString> params = d->currentGroups.value(group)->parameters();
         foreach(QString param, params)
         {
-            for(int i=1; i<d->paramList->count()-1; i++)
+            for(int i=1; i<d->paramList->count(); i++)
             {
                 QListWidgetItem *item = d->paramList->item(i);
                 if(item->text() == param)
@@ -593,7 +593,7 @@ void medLinkMenu::applyPreset(QListWidgetItem* item)
 
     foreach(QString presetParam, presetParams)
     {
-        for(int i=1; i<d->paramList->count()-1; i++)
+        for(int i=1; i<d->paramList->count(); i++)
         {
             QListWidgetItem *paramItem = d->paramList->item(i);
             if(paramItem->text() == presetParam)
