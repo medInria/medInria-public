@@ -61,6 +61,13 @@ public:
     */
     QStringList keys ( const QString & section);
 
+    /**
+    * remove
+    * @params: const QString & key
+    * @return   void
+    */
+    void remove (const QString & section, const QString & key);
+
 signals:
     void settingsChanged( const QString & );
 

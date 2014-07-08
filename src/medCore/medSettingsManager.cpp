@@ -88,5 +88,11 @@ void medSettingsManager::setValue( const QString & section, const QString & key,
     emit settingsChanged(section);
 }
 
+void medSettingsManager::remove (const QString & section, const QString & key)
+{
+    d->settings.beginGroup(section);
+    d->settings.remove(key);
+    d->settings.endGroup();
+}
 
 medSettingsManager *medSettingsManager::s_instance = NULL;
