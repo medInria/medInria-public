@@ -15,7 +15,6 @@
 
 #include <QComboBox>
 #include <QDebug>
-#include <QStandardItemModel>
 
 
 class medStringListParameterPrivate
@@ -25,69 +24,19 @@ public:
     QStringList items;
     QHash <QString, QIcon> iconForItem;
 
-    QStringList m_value;
-
-    bool isExclusive;
-
     ~medStringListParameterPrivate(){delete comboBox;}
 };
 
 medStringListParameter::medStringListParameter(QString name, QObject* parent):
-    medAbstractParameter(name, parent),
+    medAbstractStringParameter(name, parent),
     d(new medStringListParameterPrivate)
 {
     d->comboBox = NULL;
-    d->isExclusive = true;
 }
 
 medStringListParameter::~medStringListParameter()
 {
     delete d;
-}
-
-void medStringListParameter::setExclusive(bool exclusive)
-{
-    d->isExclusive = exclusive;
-}
-
-void medStringListParameter::setValues(QStringList value)
-{
-    if(d->m_value == value)
-        return;
-
-    d->m_value = value;
-
-    //  update intern widget
-    this->blockInternWidgetsSignals(true);
-    this->updateInternWigets();
-    this->blockInternWidgetsSignals(false);
-
-    emit valueChanged(value);
-}
-
-void medStringListParameter::setValue(QString value)
-{
-    if(d->m_value == QStringList(value))
-        return;
-
-    d->m_value = QStringList(value);
-
-    //  update intern widget
-    this->blockInternWidgetsSignals(true);
-    this->updateInternWigets();
-    this->blockInternWidgetsSignals(false);
-
-    emit valueChanged(value);
-}
-
-QStringList medStringListParameter::values() const
-{
-    return d->m_value;
-}
-
-QString medStringListParameter::value() const
-{
-    return d->m_value[0];
 }
 
 void medStringListParameter::addItem(QString item, QIcon icon)
@@ -139,21 +88,8 @@ QComboBox* medStringListParameter::getComboBox()
     if(!d->comboBox)
     {
         d->comboBox = new QComboBox;
-
-        QStandardItemModel *model = new QStandardItemModel(this);
-        foreach(QString s, d->items)
-        {
-            QStandardItem* item = new QStandardItem(s);
-
-            if(!d->isExclusive)
-            {
-              item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-              item->setData(Qt::Unchecked, Qt::CheckStateRole);
-            }
-
-            model->appendRow(item);
-        }
-        d->comboBox->setModel(model);
+        foreach(QString item, d->items)
+            d->comboBox->addItem(d->iconForItem.value(item), item);
 
         this->addToInternWidgets(d->comboBox);
 
@@ -167,29 +103,16 @@ QComboBox* medStringListParameter::getComboBox()
 
 void medStringListParameter::updateInternWigets()
 {
-    if(d->m_value.isEmpty())
+    if(m_value == "")
         return;
 
-    foreach(QString s, d->m_value)
-      if(!d->items.contains(s))
-          this->addItem(s);
+    if(!d->items.contains(m_value))
+        this->addItem(m_value);
 
     if (d->comboBox)
     {
-        if(d->isExclusive)
-        {
-            int index = d->items.indexOf(QRegExp(d->m_value[0]));
-            d->comboBox->setCurrentIndex(index);
-        }
-        else
-        {
-            foreach(QString s, d->m_value)
-            {
-                int index = d->items.indexOf(QRegExp(s));
-                QStandardItemModel *model = dynamic_cast<QStandardItemModel *>(d->comboBox->model());
-                model->item(index)->setCheckState(Qt::Checked);
-            }
-        }
+        int index = d->items.indexOf(QRegExp(m_value));
+        d->comboBox->setCurrentIndex(index);
     }
 }
 
