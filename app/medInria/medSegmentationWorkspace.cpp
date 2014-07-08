@@ -67,6 +67,7 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
     viewGroup1->setLinkAllParameters(true);
+    viewGroup1->removeParameter("DataList");
 
     medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
     layerGroup1->setLinkAllParameters(true);
