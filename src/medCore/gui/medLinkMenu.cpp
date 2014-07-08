@@ -534,6 +534,16 @@ void medLinkMenu::saveAsPreset()
             params.append(item->text());
     }
 
+    int i = 1;
+    QString newgroup = group;
+    //check if there is a preset with the same name
+    while(d->presets.keys().contains(newgroup))
+    {
+        newgroup = group + "_" + QString::number(i);
+        i++;
+    }
+    group = newgroup;
+
     medSettingsManager::instance()->setValue("GroupPresets", group, params);
     d->presets.insert(group, params);
 
