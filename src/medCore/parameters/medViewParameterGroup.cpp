@@ -61,15 +61,7 @@ void medViewParameterGroup::addImpactedView(medAbstractView *view)
     d->impactedViews.insert(view);
     connect(view, SIGNAL(closed()), this, SLOT(removeImpactedView()));
 
-    if(linkAll())
-    {
-        QList<medAbstractParameter*>  params = view->linkableParameters();
-        foreach(medAbstractParameter* param, params)
-        {
-            if(!this->parameters().contains(param->name()))
-                this->addParameterToLink(param->name());
-        }
-    }
+    updateParameterToLinkList(view);
 
     medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
     if(container)
@@ -104,17 +96,12 @@ void medViewParameterGroup::setLinkAllParameters(bool linkAll)
     {
         foreach(medAbstractView *view, d->impactedViews)
         {
-            QList<medAbstractParameter*>  params = view->linkableParameters();
-            foreach(medAbstractParameter* param, params)
-            {
-                if(!this->parameters().contains(param->name()))
-                    this->addParameterToLink(param->name());
-            }
+            updateParameterToLinkList(view);
         }
     }
 }
 
-void medViewParameterGroup::update()
+void medViewParameterGroup::updatePool()
 {
     d->pool->clear();
 
@@ -123,7 +110,7 @@ void medViewParameterGroup::update()
         QList<medAbstractParameter*>  params = view->linkableParameters();
         foreach(medAbstractParameter* param, params)
         {
-            if(this->parameters().contains(param->name()))
+            if(this->parametersToLink().contains(param->name()))
             {
                 d->pool->append(param);
             }
@@ -142,4 +129,35 @@ void medViewParameterGroup::updateGroupIndicators(QColor oldColor, QColor newCol
             container->addColorIndicator(newColor);
         }
     }
+}
+
+void medViewParameterGroup::updateParameterToLinkList(medAbstractView *view)
+{
+    if(linkAll() || !this->parametersNotToLink().isEmpty())
+    {
+        QList<medAbstractParameter*>  params = view->linkableParameters();
+        foreach(medAbstractParameter* param, params)
+        {
+            if(!this->parametersToLink().contains(param->name()))
+                this->addParameterToLink(param->name());
+        }
+    }
+    if(!linkAll() || !this->parametersNotToLink().isEmpty())
+    {
+        foreach(QString paramNotToLink, this->parametersNotToLink())
+        {
+            if(this->parametersToLink().contains(paramNotToLink))
+                this->removeParameter(paramNotToLink);
+        }
+    }
+    else if(!linkAll() || !this->parametersToLink().isEmpty())
+    {
+        foreach(QString paramToLink, this->parametersToLink())
+        {
+            if(!this->parametersToLink().contains(paramToLink))
+                this->addParameterToLink(paramToLink);
+        }
+    }
+
+    updatePool();
 }

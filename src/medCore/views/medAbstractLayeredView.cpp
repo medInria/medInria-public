@@ -262,12 +262,10 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
               layerGroup = new medLayerParameterGroup(newGroup, this);
             layerGroup->setLinkAllParameters(true);
             layerGroup->addImpactedlayer(this, layerNumber);
-            layerGroup->update();
         }
         else if(!groupsLayer0.isEmpty() && layerNumber == 0)
         {
             groupsLayer0[0]->addImpactedlayer(this, layerNumber);
-            groupsLayer0[0]->update();
         }
     }
 

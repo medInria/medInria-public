@@ -178,11 +178,9 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         d->viewGroup->addImpactedView(movingView);
         d->viewGroup->addImpactedView(fuseView);
         d->viewGroup->removeParameter("DataList");
-        d->viewGroup->update();
 
         d->movingLayerGroup->addImpactedlayer(movingView, 0);
         d->movingLayerGroup->addImpactedlayer(fuseView, fuseView->layer(movingData));
-        d->movingLayerGroup->update();
     }
     d->registrationToolBox->setMovingData(movingData);
 }
@@ -231,11 +229,9 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         d->viewGroup->addImpactedView(fixedView);
         d->viewGroup->addImpactedView(fuseView);
         d->viewGroup->removeParameter("DataList");
-        d->viewGroup->update();
 
         d->fixedLayerGroup->addImpactedlayer(fixedView, 0);
         d->fixedLayerGroup->addImpactedlayer(fuseView, fuseView->layer(fixedData));
-        d->fixedLayerGroup->update();
     }
 
     d->registrationToolBox->setFixedData(fixedData);
@@ -286,12 +282,9 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
     d->viewGroup->addImpactedView(movingView);
     d->viewGroup->addImpactedView(fuseView);
     d->viewGroup->removeParameter("DataList");
-    d->viewGroup->update();
 
     d->movingLayerGroup->addImpactedlayer(movingView, 0);
     d->movingLayerGroup->addImpactedlayer(fuseView, fuseView->layer(output));
-    d->movingLayerGroup->update();
-
 
     connect(d->movingContainer,SIGNAL(viewContentChanged()),
             this, SLOT(updateFromMovingContainer()));
