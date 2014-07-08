@@ -123,7 +123,7 @@ void medLayerParameterGroup::updatePool()
 
 void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *view, unsigned int layer)
 {
-    if(linkAll() || !this->parametersNotToLink().isEmpty())
+    if( linkAll() )
     {
         QList<medAbstractParameter*>  params;
 
@@ -136,15 +136,7 @@ void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *v
                 this->addParameterToLink(param->name());
         }
     }
-    if(!linkAll() || !this->parametersNotToLink().isEmpty())
-    {
-        foreach(QString paramNotToLink, this->parametersNotToLink())
-        {
-            if(this->parametersToLink().contains(paramNotToLink))
-                this->removeParameter(paramNotToLink);
-        }
-    }
-    else if(!linkAll() || !this->parametersToLink().isEmpty())
+    if( !linkAll() && !this->parametersToLink().isEmpty() )
     {
         foreach(QString paramToLink, this->parametersToLink())
         {
@@ -152,7 +144,25 @@ void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *v
                 this->addParameterToLink(paramToLink);
         }
     }
+    else if( !linkAll() && !this->parametersNotToLink().isEmpty() )
+    {
+        QList<medAbstractParameter*>  params;
+
+        foreach(medAbstractInteractor* interactor, view->interactors(layer))
+            params.append(interactor->linkableParameters());
+
+        foreach(medAbstractParameter* param, params)
+        {
+            if(!this->parametersToLink().contains(param->name()))
+                this->addParameterToLink(param->name());
+        }
+
+        foreach(QString paramNotToLink, this->parametersNotToLink())
+        {
+            if(this->parametersToLink().contains(paramNotToLink))
+                this->removeParameter(paramNotToLink);
+        }
+    }
 
     updatePool();
-
 }
