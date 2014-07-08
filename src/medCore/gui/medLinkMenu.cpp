@@ -464,9 +464,6 @@ void medLinkMenu::highlightParam(QListWidgetItem *item)
 
 void medLinkMenu::deleteGroup()
 {
-    // TODO: maybe consider the other way round,
-    // delete the pool and update the list according to the pools still available
-
     d->groupList->blockSignals(true);
 
     medGroupWidget *w = dynamic_cast<medGroupWidget*>(this->sender());
@@ -541,10 +538,9 @@ void medLinkMenu::saveAsPreset()
 
     medSettingsManager::instance()->setValue("GroupPresets", group, params);
     d->presets.insert(group, params);
-    //d->currentGroups[group]->saveAsPreset();
 
     QListWidgetItem * item = new QListWidgetItem(group);
-    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
     item->setCheckState(Qt::Unchecked);
     d->presetList->insertItem(0,item);
 
@@ -575,7 +571,7 @@ void medLinkMenu::loadPreset()
         if(ok )
         {
             QListWidgetItem * item = new QListWidgetItem(preset);
-            item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+            item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
             item->setCheckState(Qt::Unchecked);
             d->presetList->insertItem(0,item);
 
@@ -589,7 +585,32 @@ void medLinkMenu::loadPreset()
 void medLinkMenu::applyPreset(QListWidgetItem* item)
 {
     QString preset  = item->text();
-    QStringList presetParams = d->presets[preset];
+    QStringList presetParams;
+
+    if(!d->presets.contains(preset))
+    {
+        QStringList presetsInListWidget;
+        for(int i=0; i<d->presetList->count(); i++)
+        {
+            QListWidgetItem *presetItem = d->presetList->item(i);
+            presetsInListWidget << presetItem->text();
+
+        }
+
+        //preset has been renamed, need to look for the renamed item
+        foreach(QString key, d->presets.keys())
+        {
+            if(!presetsInListWidget.contains(key))
+            {
+                presetParams = d->presets[key];
+                d->presets.remove(key);
+                d->presets.insert(preset, presetParams);
+                medSettingsManager::instance()->remove("GroupPresets", key);
+                medSettingsManager::instance()->setValue("GroupPresets", preset, presetParams);
+            }
+        }
+    }
+    else  presetParams = d->presets[preset];
 
     foreach(QString presetParam, presetParams)
     {
