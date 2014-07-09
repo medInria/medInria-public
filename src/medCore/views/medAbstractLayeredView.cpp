@@ -65,7 +65,8 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
 
 medAbstractLayeredView::~medAbstractLayeredView()
 {
-    for(unsigned int i=0; i<layersCount(); i++)
+    int c = layersCount()-1;
+    for(unsigned int i=c; i<0; i--)
         removeLayer(i);
     delete d;
 }
