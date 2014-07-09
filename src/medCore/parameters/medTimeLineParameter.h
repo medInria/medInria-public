@@ -65,6 +65,9 @@ signals:
     void timeChanged(double time);
 
 private slots:
+    void unlockTimeLine();
+    void lockTimeLine();
+
     void updateTime(double time);
     void updateFrameLabel();
     void removeInternWidget();
