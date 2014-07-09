@@ -168,7 +168,8 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
 medVtkView::~medVtkView()
 {
-    for(unsigned int i=0; i<layersCount(); i++)
+    int c = layersCount()-1;
+    for(unsigned int i=c; i<0; i--)
         removeLayer(i);
 
     d->view2d->Delete();
