@@ -63,6 +63,8 @@ void medLayerParameterGroup::addImpactedlayer(medAbstractLayeredView *view, unsi
 void medLayerParameterGroup::removeImpactedlayer(medAbstractLayeredView *view, unsigned int layer)
 {
     d->impactedLayers.remove(view, layer);
+
+    updateParameterToLinkList(view, layer);
 }
 
 void medLayerParameterGroup::removeImpactedlayer(uint layer)

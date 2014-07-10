@@ -72,6 +72,8 @@ void medViewParameterGroup::removeImpactedView(medAbstractView *view)
 {
     d->impactedViews.remove(view);
 
+    updateParameterToLinkList(view);
+
     medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
     if(container)
         container->removeColorIndicator(this->color());
