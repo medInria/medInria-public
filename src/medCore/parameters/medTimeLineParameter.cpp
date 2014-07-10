@@ -317,7 +317,7 @@ QWidget* medTimeLineParameter::getWidget()
         d->widget = new QWidget;
         QVBoxLayout *widgetLayout = new QVBoxLayout(d->widget);
         QHBoxLayout *buttonsLayout = new QHBoxLayout;
-        QHBoxLayout *indiactorLayout = new QHBoxLayout;
+        QHBoxLayout *indicatorLayout = new QHBoxLayout;
 
         d->playParameter->setIcon(QIcon(":/icons/play.png"));
         d->stopParameter->setIcon(QIcon(":/icons/stop.png"));
@@ -347,16 +347,16 @@ QWidget* medTimeLineParameter::getWidget()
             d->numberOfFrameLabel = new QLabel;
             this->updateNumberOfFrameLabel();
         }
-        indiactorLayout->addWidget(d->timeParameter->getValueLabel(), 0, Qt::AlignLeft);
-        indiactorLayout->addWidget(new QLabel("/ " + QString::number(d->duration,'g',3) + " s"), 0, Qt::AlignLeft);
-        indiactorLayout->addStretch(1);
-        indiactorLayout->addWidget(d->frameLabel, 0, Qt::AlignRight);
-        indiactorLayout->addWidget(d->numberOfFrameLabel, 0, Qt::AlignRight);
+        indicatorLayout->addWidget(d->timeParameter->getValueLabel(), 0, Qt::AlignLeft);
+        indicatorLayout->addWidget(new QLabel("/ " + QString::number(d->duration,'g',3) + " s"), 0, Qt::AlignLeft);
+        indicatorLayout->addStretch(1);
+        indicatorLayout->addWidget(d->frameLabel, 0, Qt::AlignRight);
+        indicatorLayout->addWidget(d->numberOfFrameLabel, 0, Qt::AlignRight);
 
         widgetLayout->addLayout(buttonsLayout);
         widgetLayout->addWidget(d->timeParameter->getSlider());
-        widgetLayout->addLayout(indiactorLayout);
-        
+        widgetLayout->addLayout(indicatorLayout);
+
         this->addToInternWidgets(d->widget);
         connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
     }

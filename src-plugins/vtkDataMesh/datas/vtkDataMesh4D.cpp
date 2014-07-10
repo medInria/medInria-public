@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -35,26 +35,25 @@ class vtkDataMesh4DPrivate
 {
 public:
   vtkSmartPointer<vtkMetaDataSetSequence> meshsequence;
-  QList<QImage>                           thumbnails;
 };
 
 vtkDataMesh4D::vtkDataMesh4D(): medAbstractMeshData(), d (new vtkDataMesh4DPrivate)
 {
   this->moveToThread(QApplication::instance()->thread());
-  d->meshsequence = 0;
+  d->meshsequence = NULL;
 }
 vtkDataMesh4D::~vtkDataMesh4D()
 {
   delete d;
-  d = 0;
+  d = NULL;
 }
 
-bool vtkDataMesh4D::registered()				
+bool vtkDataMesh4D::registered()
 {
   return medAbstractDataFactory::instance()->registerDataType<vtkDataMesh4D>();
 }
 
-void vtkDataMesh4D::setData(void *data)			
+void vtkDataMesh4D::setData(void *data)
 {
   vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast( (vtkObject*) data );
   if (!sequence)

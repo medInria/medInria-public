@@ -50,7 +50,7 @@ public:
 
 public slots:
     /**
-     * @brief updateWidgets Reimmplement this methode to change the the widget that you expose when the
+     * @brief updateWidgets Reimplement this methode to change the widget that you expose when the
      * state of the view changes. (i.e. Orientation, new data added)
      */
     virtual void updateWidgets()

@@ -42,7 +42,7 @@ public slots:
     virtual void setWindowLevel(QHash<QString,QVariant>) = 0;
 
     /**
-    * @brief setCurrentTime Reimmplement this methode if the data has a temporal component,
+    * @brief setCurrentTime Reimplement this methode if the data has a temporal component,
     * to update what to display in the view according to the parameter time.
     * Do not update the view, it has to be done by the primary navigator.
     * @param time

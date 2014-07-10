@@ -202,6 +202,8 @@ QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::linkableParamet
 
 void medVtkViewItkDataImage4DInteractor::setCurrentTime(const double &time)
 {
+    if(d->sequence->GetTime() == time)
+        return;
     d->sequence->UpdateToTime(time);
 }
 

@@ -108,6 +108,9 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
 
 void vtkDataMesh4DInteractor::setCurrentTime (const double &time)
 {
+    if(d->sequence->GetTime() == time)
+        return;
+
     d->sequence->UpdateToTime(time);
 }
 
