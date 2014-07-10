@@ -65,6 +65,8 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
 
 medAbstractLayeredView::~medAbstractLayeredView()
 {
+    disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
+
     int c = layersCount()-1;
     for(int i=c; i>=0; i--)
         removeLayer(i);
