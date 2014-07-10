@@ -97,7 +97,6 @@ void medAbstractImageViewNavigator::setCurrentTime (const double &time)
 
 void medAbstractImageViewNavigator::updateTimeLineParameter()
 {
-//    d->timeLineParameter->stop(true);
     bool viewHasTemporalData = false;
 
     double sequenceDuration = 0;
