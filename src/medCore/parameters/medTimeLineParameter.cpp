@@ -345,7 +345,8 @@ QWidget* medTimeLineParameter::getWidget()
         widgetLayout->addLayout(buttonsLayout);
         widgetLayout->addWidget(d->timeParameter->getSlider());
         widgetLayout->addLayout(indiactorLayout);
-
+        
+        this->addToInternWidgets(d->widget);
         connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
     }
 
