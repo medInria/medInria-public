@@ -54,7 +54,7 @@ medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayered
 medAbstractImageView::~medAbstractImageView()
 {
     int c = layersCount()-1;
-    for(unsigned int i=c; i<0; i--)
+    for(int i=c; i>=0; i--)
         removeLayer(i);
     delete d;
 }
