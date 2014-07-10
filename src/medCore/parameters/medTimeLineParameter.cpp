@@ -25,6 +25,7 @@
 #include <medDoubleParameter.h>
 
 
+
 class medTimeLineParameterPrivate
 {
 public:
@@ -163,9 +164,9 @@ int medTimeLineParameter::stepFrame() const
     return d->stepFrame;
 }
 
-unsigned int medTimeLineParameter::mapTimeToFrame(const double& time)
+unsigned int medTimeLineParameter::mapTimeToFrame(const double &time)
 {
-    return floor(time / d->timeBetweenFrames);
+    return floor( (double)(time / d->timeBetweenFrames) + 0.5 );
 }
 
 double medTimeLineParameter::mapFrameToTime (int frame)
@@ -376,7 +377,7 @@ void medTimeLineParameter::updateNumberOfFrameLabel()
     if(d->numberOfFrameLabel.isNull())
         return;
 
-    d->numberOfFrameLabel->setText("/ " + QString::number(d->numberOfFrame) + " frames");
+    d->numberOfFrameLabel->setText("/ " + QString::number(d->numberOfFrame) + " frm");
 }
 
 void medTimeLineParameter::removeInternWidget()
