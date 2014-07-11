@@ -275,22 +275,10 @@ void vtkImageSliceActor::UpdateDisplayExtent()
 	<<", "<<bounds[3]<<", "<<bounds[4]<<", "<<bounds[5]);
   vtkDebugMacro(<<"Input spacing is "<<spacing[0]<<", "<<spacing[1]<<", "<<spacing[2]);
 
-
-  //int* dims = input->GetDimensions();
-//	cout<<" Dimensions are "<<dims[0]<<", "<<dims[1]<<", "<<dims[2]<<"."<<endl;
-//   cout<<"Input bounds are "<<bounds[0]<<", "<<bounds[1]<<", "<<bounds[2]
-//       <<", "<<bounds[3]<<", "<<bounds[4]<<", "<<bounds[5]<<endl;
-//  cout<<"Input spacing is "<<spacing[0]<<", "<<spacing[1]<<", "<<spacing[2]<<endl;
-//   cout<<"w_ext are "<<w_ext[0]<<", "<<w_ext[1]<<", "<<w_ext[2]
-//       <<", "<<w_ext[3]<<", "<<w_ext[4]<<", "<<w_ext[5]<<endl;
-
-  //cout<<"bounds should be"<<bounds[0]<<", "<<bounds[1]+spacing[0]<<", "<<bounds[2]
-  //<<", "<<bounds[3]+spacing[1]<<", "<<bounds[4]<<", "<<bounds[5]+spacing[2]<<endl;
-  
   if (!vtkMath::AreBoundsInitialized(bounds))
     {
     int* dims = input->GetDimensions();
-    (void)dims;
+    (void)dims; // to avoid unused warning when not in debug
     vtkDebugMacro(<<"Bounds are not initialized!"
 	<<" Dimensions are "<<dims[0]<<", "<<dims[1]<<", "<<dims[2]<<".");
     // Input is not up-to-date. Pipeline must be updated first, so return.
