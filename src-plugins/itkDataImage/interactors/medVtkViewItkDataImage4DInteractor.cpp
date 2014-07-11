@@ -125,8 +125,7 @@ bool medVtkViewItkDataImage4DInteractor::registered()
 void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 {
     double range[2]={0,0};
-    double mintimestep, mintime, maxtime;
-    unsigned int numberofsteps;
+    double maxtime;
 
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
     if(!d->imageData)
@@ -152,9 +151,7 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
             d->timeLineParameter = new medTimeLineParameter("TimeLine", this);
 
             this->timeRange(range);
-            mintimestep = this->frameRate();
 
-            mintime = range[0];
             maxtime = range[1];
 
             d->timeLineParameter->setNumberOfFrame(d->sequence->GetNumberOfMetaDataSets());
