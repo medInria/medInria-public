@@ -130,6 +130,7 @@ void medLinkMenu::setAvailableParameters(QStringList parameters)
         d->paramList->model()->removeRow(i);
 
     QListWidgetItem * item = new QListWidgetItem("All");
+    item->setSizeHint(QSize(item->sizeHint().width(), 20));
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Unchecked);
     d->paramList->insertItem(0,item);
@@ -138,6 +139,7 @@ void medLinkMenu::setAvailableParameters(QStringList parameters)
     foreach(QString param, parameters)
     {
         QListWidgetItem * item = new QListWidgetItem(param);
+        item->setSizeHint(QSize(item->sizeHint().width(), 20));
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
         item->setCheckState(Qt::Unchecked);
         d->paramList->insertItem(i,item);
@@ -154,6 +156,7 @@ void medLinkMenu::addGroup(medAbstractParameterGroup * group)
     d->currentGroups.insert(groupName, group);
 
     QListWidgetItem * item = new QListWidgetItem();
+    item->setSizeHint(QSize(item->sizeHint().width(), 20));
     item->setData(Qt::UserRole, groupName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
     item->setCheckState(Qt::Unchecked);
@@ -571,6 +574,7 @@ void medLinkMenu::saveAsPreset()
     d->presets.insert(group, params);
 
     QListWidgetItem * item = new QListWidgetItem(group);
+    item->setSizeHint(QSize(item->sizeHint().width(), 20));
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
     item->setCheckState(Qt::Unchecked);
     d->presetList->insertItem(0,item);
@@ -602,6 +606,7 @@ void medLinkMenu::loadPreset()
         if(ok )
         {
             QListWidgetItem * item = new QListWidgetItem(preset);
+            item->setSizeHint(QSize(item->sizeHint().width(), 20));
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
             item->setCheckState(Qt::Unchecked);
             d->presetList->insertItem(0,item);
