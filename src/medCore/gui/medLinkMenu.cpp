@@ -44,10 +44,30 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     this->setIcon(QIcon(":icons/link.svg"));
 
     d->popupWidget = new QWidget(this);
-    d->popupWidget->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint );
+    d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
+    d->popupWidget->setContentsMargins(0,0,4,4);
 
     d->subPopupWidget = new QWidget(this);
-    d->subPopupWidget->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint );
+    d->subPopupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
+    d->subPopupWidget->setContentsMargins(0,0,4,4);
+
+    d->popupWidget->setAttribute(Qt::WA_TranslucentBackground);
+    d->subPopupWidget->setAttribute(Qt::WA_TranslucentBackground);
+
+#ifdef Q_OS_LINUX
+    QGraphicsDropShadowEffect *shadowEffect1 = new QGraphicsDropShadowEffect(this);
+    shadowEffect1->setOffset(2);
+    shadowEffect1->setBlurRadius(8);
+    shadowEffect1->setColor(QColor(33, 33, 33, 200));
+
+    QGraphicsDropShadowEffect *shadowEffect2 = new QGraphicsDropShadowEffect(this);
+    shadowEffect2->setOffset(2);
+    shadowEffect2->setBlurRadius(8);
+    shadowEffect2->setColor(QColor(33, 33, 33, 200));
+
+    d->popupWidget->setGraphicsEffect(shadowEffect1);
+    d->subPopupWidget->setGraphicsEffect(shadowEffect2);
+#endif
 
     d->groupList = new medListWidget;
     d->groupList->setMouseTracking(true);
@@ -148,7 +168,7 @@ void medLinkMenu::addGroup(medAbstractParameterGroup * group)
     connect(groupWidget, SIGNAL(deletionRequested()), this, SLOT(deleteGroup()));
     connect(groupWidget, SIGNAL(colorChanged(QColor)), this, SLOT(emitGroupColorChangeRequest(QColor)));
 
-    d->popupWidget->resize(d->groupList->sizeHint());
+    d->popupWidget->resize(d->popupWidget->width(), d->groupList->sizeHint().height());
 }
 
 void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
@@ -177,7 +197,7 @@ void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
         d->paramList->blockSignals(false);
     }
 
-    d->popupWidget->resize(d->groupList->sizeHint());
+    d->popupWidget->resize(d->popupWidget->width(), d->groupList->sizeHint().height());
 }
 
 void medLinkMenu::setSelectedGroups(QStringList groups)
@@ -302,8 +322,9 @@ void medLinkMenu::showPopup ()
 
         d->popupWidget->move( globalPos.x(), globalPos.y() + this->height());
 
-        d->popupWidget->resize(d->groupList->sizeHint());
+        d->popupWidget->resize(d->popupWidget->width(), d->groupList->sizeHint().height());
         d->popupWidget->show();
+        d->newGroupEdit->setFocus();
     }
     else
     {
@@ -334,7 +355,7 @@ void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
     d->subPopupWidget->update();
     d->subPopupWidget->layout()->activate();
 
-    d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width(), globalPosItem.y());
+    d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width() + d->subPopupWidget->contentsMargins().right(), globalPosItem.y());
 
     d->paramList->blockSignals(true);
     checkAllParams(false);
@@ -345,7 +366,9 @@ void medLinkMenu::showSubMenu(QListWidgetItem *groupItem)
 
     // [Hack] Sometimes, the subPopupWidget doesn't appear at the right place
     // a second move seems to correct the position...
-    d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width(), globalPosItem.y());
+    d->subPopupWidget->move( globalPosButton.x() - d->subPopupWidget->width() + d->subPopupWidget->contentsMargins().right(), globalPosItem.y());
+
+    d->popupWidget->raise();
 }
 
 void medLinkMenu::showSubMenu()
@@ -401,7 +424,7 @@ void medLinkMenu::paintEvent(QPaintEvent *ev)
     QPushButton::paintEvent(ev);
 
     d->groupList->setFixedWidth(this->width());
-    d->popupWidget->setFixedWidth(this->width());
+    //d->popupWidget->setFixedWidth(this->width());
 
     updateListsPosition();
 }
@@ -452,7 +475,7 @@ void medLinkMenu::updateListsPosition()
 
     QPoint currentPos = d->subPopupWidget->mapToGlobal(QPoint(0,0));
 
-    d->subPopupWidget->move( globalPos.x() - d->subPopupWidget->width(), currentPos.y());
+    d->subPopupWidget->move( globalPos.x() - d->subPopupWidget->width() + d->subPopupWidget->contentsMargins().right(), currentPos.y());
 }
 
 void medLinkMenu::highlightParam(QListWidgetItem *item)
@@ -487,7 +510,7 @@ void medLinkMenu::deleteGroup()
 
     d->groupList->blockSignals(false);
 
-    d->popupWidget->resize(d->groupList->sizeHint());
+    d->popupWidget->resize(d->popupWidget->width(), d->groupList->sizeHint().height());
 }
 
 void medLinkMenu::emitGroupColorChangeRequest(QColor color)
@@ -556,7 +579,7 @@ void medLinkMenu::saveAsPreset()
     d->subPopupWidget->resize(d->subPopupWidget->width(), d->presetList->sizeHint().height() +
                               d->paramList->sizeHint().height()+30);
 
-    d->presetList->resize(d->subPopupWidget->width(), d->presetList->sizeHint().height());
+    d->presetList->resize(d->presetList->width(), d->presetList->sizeHint().height());
     d->presetList->show();
 }
 
