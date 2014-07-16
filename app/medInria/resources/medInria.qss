@@ -1286,3 +1286,20 @@ medLinkMenu QListWidget
 {
     border: 1px solid $GREY07;
 }
+
+medLinkMenu QListWidget
+{
+    background-color: $MENU_ITEM_BACKGROUND;
+}
+
+medLinkMenu QListWidget::item
+{
+    border: none;
+}
+
+medLinkMenu QListWidget::item:selected
+{
+    border: none;
+    background: $MENU_ITEM_HOVER_BACKGROUND;
+    color: $MENU_ITEM_SELECTED_COLOR;
+}
