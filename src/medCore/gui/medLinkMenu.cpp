@@ -46,10 +46,12 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->popupWidget = new QWidget(this);
     d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
     d->popupWidget->setContentsMargins(0,0,4,4);
+    d->popupWidget->setObjectName("popupWidget");
 
     d->subPopupWidget = new QWidget(this);
     d->subPopupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
     d->subPopupWidget->setContentsMargins(0,0,4,4);
+    d->subPopupWidget->setObjectName("subPopupWidget");
 
     d->popupWidget->setAttribute(Qt::WA_TranslucentBackground);
     d->subPopupWidget->setAttribute(Qt::WA_TranslucentBackground);
@@ -102,9 +104,16 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->saveAsPresetButton, SIGNAL(clicked()), this, SLOT(saveAsPreset()));
     connect(d->presetList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
 
-    QVBoxLayout *subPopUpLayout = new QVBoxLayout(d->subPopupWidget);
-    subPopUpLayout->setContentsMargins(0,0,0,0);
-    subPopUpLayout->setSpacing(0);
+    QWidget *internalSubPopWidget = new QWidget;
+    internalSubPopWidget->setObjectName("internalSubPopWidget");
+    QVBoxLayout *layout = new QVBoxLayout(d->subPopupWidget);
+    layout->setContentsMargins(0,0,0,0);
+    layout->setSpacing(0);
+    layout->addWidget(internalSubPopWidget);
+
+    QVBoxLayout *subPopUpLayout = new QVBoxLayout(internalSubPopWidget);
+    subPopUpLayout->setContentsMargins(3,3,3,3);
+    subPopUpLayout->setSpacing(3);
     subPopUpLayout->addWidget(d->paramList);
     subPopUpLayout->addWidget(d->saveAsPresetButton);
     subPopUpLayout->addWidget(d->presetList);

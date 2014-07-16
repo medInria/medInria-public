@@ -1282,7 +1282,7 @@ QWidget#toolbarWidget
      medLinkMenu
  *******************************************************************************/
 
-medLinkMenu QListWidget
+QWidget#internalSubPopWidget
 {
     border: 1px solid $GREY07;
 }
