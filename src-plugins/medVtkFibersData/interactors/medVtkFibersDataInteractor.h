@@ -125,12 +125,6 @@ public:
         Tubes
     };
 
-    enum ColorMode {
-        Local,
-        Global,
-        FA
-    };
-
     enum BooleanOperation {
         Plus,
         Minus
@@ -202,7 +196,6 @@ protected:
 
     void addBundle (const QString &name, const QColor &color);
     void setBoxBooleanOperation (BooleanOperation op);
-    void setColorMode (ColorMode mode);
     void setRenderingMode (RenderingMode mode);
 
     void removeData();

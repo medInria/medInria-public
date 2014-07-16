@@ -250,7 +250,6 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->colorFiberParameter->getLabel()->setText(tr("Color fibers by:"));
     d->colorFiberParameter->addItem("Local orientation");
     d->colorFiberParameter->addItem("Global orientation");
-    d->colorFiberParameter->addItem("Fractional anisotropy");
     d->parameters << d->colorFiberParameter;
 
     d->gpuParameter = new medBoolParameter("gpuFiberParameter", this);
@@ -456,6 +455,24 @@ void medVtkFibersDataInteractor::setData(medAbstractData *data)
     {
         d->dataset = dataset;
         d->manager->SetInput(d->dataset);
+
+        // Update color fiber parameter
+        d->colorFiberParameter->blockSignals(true);
+        d->colorFiberParameter->clear();
+        d->colorFiberParameter->addItem("Local orientation");
+        d->colorFiberParameter->addItem("Global orientation");
+        vtkPolyData *fibersData = d->dataset->GetFibers();
+        unsigned int numArrays = fibersData->GetPointData()->GetNumberOfArrays();
+        for (unsigned int i = 0;i < numArrays;++i)
+        {
+            vtkDataArray *tmpArray = fibersData->GetPointData()->GetArray(i);
+            if (tmpArray->GetNumberOfComponents() > 1)
+                continue;
+
+            d->colorFiberParameter->addItem(fibersData->GetPointData()->GetArrayName(i));
+        }
+        d->colorFiberParameter->blockSignals(false);
+
         if (!data->hasMetaData("BundleList"))
             data->addMetaData("BundleList", QStringList());
         if (!data->hasMetaData("BundleColorList"))
@@ -572,45 +589,28 @@ void medVtkFibersDataInteractor::activateGPU(bool activate)
 void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
 {
     if (mode == "Local orientation")
-        this->setColorMode(medVtkFibersDataInteractor::Local);
+        d->manager->SetColorModeToLocalFiberOrientation();
     else if (mode == "Global orientation")
-        this->setColorMode(medVtkFibersDataInteractor::Global);
-    else if (mode == "Fractional anisotropy")
-        this->setColorMode(medVtkFibersDataInteractor::FA);
- }
-
-void medVtkFibersDataInteractor::setColorMode(ColorMode mode)
-{
-    switch(mode)
+        d->manager->SetColorModelToGlobalFiberOrientation();
+    else
     {
-        case medVtkFibersDataInteractor::Local:
-            d->manager->SetColorModeToLocalFiberOrientation();
-            break;
-
-        case medVtkFibersDataInteractor::Global:
-            d->manager->SetColorModelToGlobalFiberOrientation();
-            break;
-
-        case medVtkFibersDataInteractor::FA:
-            d->manager->SetColorModeToLocalFiberOrientation();
-            for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
+        d->manager->SetColorModeToLocalFiberOrientation();
+        for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
+        {
+            if (d->manager->GetPointArrayName (i))
             {
-                if (d->manager->GetPointArrayName (i))
+                QString pointArrayName = d->manager->GetPointArrayName (i);
+                if (pointArrayName == mode)
                 {
-                    if (strcmp ( d->manager->GetPointArrayName (i), "FA") == 0)
-                    {
-                        d->manager->SetColorModeToPointArray (i);
-                        break;
-                    }
+                    d->manager->SetColorModeToPointArray (i);
+                    break;
                 }
             }
-            break;
-
-        default:
-            qDebug() << "medVtkFibersDataInteractor: unknown color mode";
+        }
     }
+
     d->render->Render();
-}
+ }
 
 void medVtkFibersDataInteractor::setBoxBooleanOperation(bool value)
 {
@@ -1070,8 +1070,13 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
              data->identifier() != "itkDataImageUShort3" &&
              data->identifier() != "itkDataImageShort3" &&
              data->identifier() != "itkDataImageUInt3" &&
-             data->identifier() != "itkDataImageInt3"))
+             data->identifier() != "itkDataImageInt3" &&
+             data->identifier() != "itkDataImageFloat3" &&
+             data->identifier() != "itkDataImageDouble3"))
+    {
+        medMessageController::instance()->showError(tr("Unable to load ROI, format not supported yet"), 3000);
         return;
+    }
 
     // put the thumbnail in the medDropSite as well
     // (code copied from @medDatabasePreviewItem)
@@ -1104,6 +1109,8 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
     d->setROI<short>(data);
     d->setROI<unsigned int>(data);
     d->setROI<int>(data);
+    d->setROI<float>(data);
+    d->setROI<double>(data);
 }
 
 void medVtkFibersDataInteractor::setRoiThumbnail(const QImage &image)
