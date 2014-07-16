@@ -396,15 +396,26 @@ void medAbstractLayeredView::setUpViewForThumbnail()
 QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int layer)
 {
     QList <medAbstractInteractor*> interactors;
-    interactors << this->primaryInteractor(layer) << this->extraInteractors(layer);
+
+    if(this->primaryInteractor(layer))
+        interactors << this->primaryInteractor(layer);
+
+    if(!this->extraInteractors(layer).isEmpty())
+        interactors << this->extraInteractors(layer);
+
     return interactors;
 }
 
 QList<medAbstractNavigator*> medAbstractLayeredView::navigators()
 {
     QList<medAbstractNavigator*> navigatorsList;
-    navigatorsList << this->primaryNavigator() << this->extraNavigators();
-    
+
+    if(this->primaryNavigator())
+        navigatorsList << this->primaryNavigator();
+
+    if(!this->extraNavigators().isEmpty())
+        navigatorsList << this->extraNavigators();
+
     return navigatorsList;
 }
 
