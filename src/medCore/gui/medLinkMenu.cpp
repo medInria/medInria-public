@@ -322,6 +322,11 @@ void medLinkMenu::selectParam(QListWidgetItem *item)
         {
             d->currentGroups.value(group)->removeParameter(param);
         }
+
+        // a param has been unchecked, uncheck 'All' item
+        d->paramList->blockSignals(true);
+        d->paramList->item(0)->setCheckState(Qt::Unchecked);
+        d->paramList->blockSignals(false);
     }
 
     uncheckAllPresets();
