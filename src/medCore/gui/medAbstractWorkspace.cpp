@@ -349,7 +349,10 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                     QList<medLayerParameterGroup*> layerGroups = medParameterGroupManager::instance()->layerGroups(layeredView, layer);
                     foreach(medLayerParameterGroup *layerGroup, layerGroups)
+                    {
                         poolIndicator->addColorIndicator(layerGroup->color(), layerGroup->name());
+                        connect(layerGroup, SIGNAL(groupColorChanged(QColor,QColor)), poolIndicator, SLOT(replaceColorIndicator(QColor,QColor)));
+                    }
                 }
 
                 if(d->userLayerClosable)
@@ -706,7 +709,7 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
 
     connect(d->layerLinkMenu, SIGNAL(groupCreated(QString)), this, SLOT(registerLayerGroup(QString)));
     connect(d->layerLinkMenu, SIGNAL(groupDeleted(QString)), this, SLOT(removeLayerGroup(QString)));
-
+    connect(d->layerLinkMenu, SIGNAL(groupColorChangeRequest(QString,QColor)), this, SLOT(changeLayerGroupColor(QString, QColor)));
 
     // build a stringList with all the param names
     foreach(medAbstractParameter* layerParam, layersParams)
@@ -803,7 +806,10 @@ void medAbstractWorkspace::addLayerstoGroup(QString group)
         int row = d->layerListWidget->row(item);
         medPoolIndicator *indicator = d->poolIndicators[row];
         if(indicator)
+        {
             indicator->addColorIndicator(paramGroup->color(), paramGroup->name());
+            connect(paramGroup, SIGNAL(groupColorChanged(QColor,QColor)), indicator, SLOT(replaceColorIndicator(QColor,QColor)));
+        }
     }
 }
 
