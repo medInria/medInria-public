@@ -124,7 +124,8 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->newGroupEdit->installEventFilter(this);
     d->saveAsPresetButton->installEventFilter(this);
     d->presetList->installEventFilter(this);
-    qApp->activeWindow()->installEventFilter(this);
+    if(qApp->activeWindow())
+      qApp->activeWindow()->installEventFilter(this);
 }
 
 medLinkMenu::~medLinkMenu()
