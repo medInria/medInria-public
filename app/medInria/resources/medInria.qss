@@ -1284,7 +1284,8 @@ QWidget#toolbarWidget
 
 QWidget#internalSubPopWidget
 {
-    border: 1px solid $GREY07;
+   background: $GREY06;
+   border-radius: 3px;
 }
 
 medLinkMenu QListWidget
