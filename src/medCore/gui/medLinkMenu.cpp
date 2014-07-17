@@ -130,6 +130,7 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
 
 medLinkMenu::~medLinkMenu()
 {
+    delete d;
 }
 
 
@@ -351,7 +352,6 @@ void medLinkMenu::showPopup ()
     {
         d->popupWidget->hide();
         d->subPopupWidget->hide();
-
     }
 }
 
@@ -483,6 +483,14 @@ bool medLinkMenu::eventFilter(QObject *object, QEvent *event)
     else if(object == qApp->activeWindow() && event->type() == QEvent::Move)
     {
         hideMenus();
+    }
+    else if(object == d->presetList && event->type() == QEvent::Leave)
+    {
+        d->presetList->clearSelection();
+    }
+    else if(object == d->paramList && event->type() == QEvent::Leave)
+    {
+        d->paramList->clearSelection();
     }
 
     return false;
