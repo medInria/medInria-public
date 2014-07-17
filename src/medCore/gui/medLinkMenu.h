@@ -64,6 +64,7 @@ private slots:
     void saveAsPreset();
     void loadPreset();
     void applyPreset(QListWidgetItem*);
+    void uncheckAllPresets();
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);

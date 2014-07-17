@@ -79,9 +79,9 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->paramList->setMouseTracking(true);
     d->paramList->setAlternatingRowColors(true);
 
-    d->newGroupitem = new QListWidgetItem("New Group...");
+    d->newGroupitem = new QListWidgetItem("Add new Group...");
     d->groupList->addItem(d->newGroupitem);
-    d->newGroupEdit = new QLineEdit("New Group...");
+    d->newGroupEdit = new QLineEdit("Add new Group...");
     d->groupList->setItemWidget(d->newGroupitem, d->newGroupEdit);
 
     d->saveAsPresetButton = new QPushButton("Save as preset");
@@ -103,6 +103,7 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->paramList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
     connect(d->saveAsPresetButton, SIGNAL(clicked()), this, SLOT(saveAsPreset()));
     connect(d->presetList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
+    connect(d->presetList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
 
     QWidget *internalSubPopWidget = new QWidget;
     internalSubPopWidget->setObjectName("internalSubPopWidget");
@@ -203,7 +204,7 @@ void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
         for(int i=0; i<d->paramList->count(); i++)
         {
             QListWidgetItem *item = d->paramList->item(i);
-            if( params.contains( item->text()) || group->linkAll() ) //TODO GPR: à reprendre group->linkAll
+            if( params.contains( item->text()) || group->linkAll() )
                 item->setCheckState(Qt::Checked);
         }
         d->paramList->blockSignals(false);
@@ -249,14 +250,14 @@ void medLinkMenu::createNewGroup()
      emit groupCreated(d->newGroupEdit->text());
 
     d->newGroupEdit->blockSignals(true);
-    d->newGroupEdit->setText("New Group...");
+    d->newGroupEdit->setText("Add new Group...");
     d->newGroupEdit->blockSignals(false);
 }
 
 void medLinkMenu::updateGroupEditOnFocusIn()
 {
     d->newGroupEdit->blockSignals(true);
-    if(d->newGroupEdit->text() == "New Group...")
+    if(d->newGroupEdit->text() == "Add new Group...")
         d->newGroupEdit->setText("");
     d->newGroupEdit->blockSignals(false);
 }
@@ -265,7 +266,7 @@ void medLinkMenu::updateGroupEditOnFocusOut()
 {
     d->newGroupEdit->blockSignals(true);
     if(d->newGroupEdit->text() == "")
-        d->newGroupEdit->setText("New Group...");
+        d->newGroupEdit->setText("Add new Group...");
     d->newGroupEdit->blockSignals(false);
 }
 
@@ -322,6 +323,8 @@ void medLinkMenu::selectParam(QListWidgetItem *item)
             d->currentGroups.value(group)->removeParameter(param);
         }
     }
+
+    uncheckAllPresets();
 }
 
 void medLinkMenu::showPopup ()
@@ -629,9 +632,27 @@ void medLinkMenu::loadPreset()
 
 void medLinkMenu::applyPreset(QListWidgetItem* item)
 {
+    bool checked = (item->checkState() == Qt::Checked);
+
+    // Uncheck all params
+    checkAllParams(false);
+
+    // Uncheck all presets except the one modified
+    for(int i=0; i<d->presetList->count(); i++)
+    {
+        QListWidgetItem *presetItem = d->presetList->item(i);
+        if(presetItem != item)
+        {
+            d->presetList->blockSignals(true);
+            presetItem->setCheckState(Qt::Unchecked);
+            d->presetList->blockSignals(false);
+        }
+    }
+
     QString preset  = item->text();
     QStringList presetParams;
 
+    // check if the preset is actually in the preset list (it can have been modified)
     if(!d->presets.contains(preset))
     {
         QStringList presetsInListWidget;
@@ -641,7 +662,7 @@ void medLinkMenu::applyPreset(QListWidgetItem* item)
             presetsInListWidget << presetItem->text();
         }
 
-        //preset has been renamed, need to look for the renamed item
+        // preset has been renamed, need to look for the renamed item
         foreach(QString key, d->presets.keys())
         {
             if(!presetsInListWidget.contains(key))
@@ -663,11 +684,30 @@ void medLinkMenu::applyPreset(QListWidgetItem* item)
             QListWidgetItem *paramItem = d->paramList->item(i);
             if(paramItem->text() == presetParam)
             {
-                if(item->checkState() == Qt::Checked)
+                if( checked )
                   paramItem->setCheckState(Qt::Checked);
                 else paramItem->setCheckState(Qt::Unchecked);
             }
         }
+    }
+
+    // Modifying the params check state has unckecked all the presets
+    // so we need to restore the correct check state
+    d->presetList->blockSignals(true);
+    if( checked )
+        item->setCheckState(Qt::Checked);
+    else item->setCheckState(Qt::Unchecked);
+    d->presetList->blockSignals(false);
+}
+
+void medLinkMenu::uncheckAllPresets()
+{
+    for(int i=0; i<d->presetList->count(); i++)
+    {
+        QListWidgetItem *presetItem = d->presetList->item(i);
+        d->presetList->blockSignals(true);
+        presetItem->setCheckState(Qt::Unchecked);
+        d->presetList->blockSignals(false);
     }
 }
 
