@@ -53,3 +53,14 @@ void medPoolIndicator::removeColorIndicator(QColor color)
     delete d->colorIndicators.take(color.name());
 }
 
+void medPoolIndicator::replaceColorIndicator(QColor oldColor, QColor newColor)
+{
+    QLabel *colorIndicator =  d->colorIndicators[oldColor.name()];
+    if(colorIndicator)
+    {
+        QPixmap pix(10,10);
+        pix.fill(newColor);
+        colorIndicator->setPixmap(pix);
+    }
+}
+

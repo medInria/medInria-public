@@ -28,6 +28,9 @@ public:
     void addColorIndicator(QColor, QString);
     void removeColorIndicator(QColor);
 
+public slots:
+    void replaceColorIndicator(QColor, QColor);
+
 private:
     medPoolIndiactorPrivate *d;
 };
