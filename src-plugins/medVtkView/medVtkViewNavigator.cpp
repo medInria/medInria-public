@@ -469,12 +469,12 @@ void medVtkViewNavigator::setCamera(QHash<QString,QVariant> cameraOptions)
         return;
     }
 
-    QVector3D cameraPostion(cameraOptions["Camera Position"].value<QVector3D>());
+    QVector3D cameraPosition(cameraOptions["Camera Position"].value<QVector3D>());
     QVector3D cameraUp(cameraOptions["Camera Up"].value<QVector3D>());
     QVector3D cameraFocalPoint(cameraOptions["Camera Focal"].value<QVector3D>());
     double parallelScale = cameraOptions["Parallel Scale"].toReal();
 
-    this->setCamera(cameraPostion, cameraUp, cameraFocalPoint, parallelScale);
+    this->setCamera(cameraPosition, cameraUp, cameraFocalPoint, parallelScale);
 }
 
 
