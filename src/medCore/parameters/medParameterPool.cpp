@@ -36,6 +36,7 @@ public:
 
 medParameterPool::medParameterPool(QObject* parent): d(new medParameterPoolPrivate)
 {
+    this->setParent(parent);
     d->color = QColor("black");
 }
 

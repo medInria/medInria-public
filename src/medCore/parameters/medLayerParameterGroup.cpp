@@ -49,6 +49,8 @@ medLayerParameterGroup::~medLayerParameterGroup()
     }
 
     d->pool->clear();
+
+    delete d;
 }
 
 void medLayerParameterGroup::addImpactedlayer(medAbstractLayeredView *view, unsigned int layer)
