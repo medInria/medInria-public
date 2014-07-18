@@ -141,7 +141,7 @@ void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag align
 void medViewContainerSplitter::checkIfStillDeserveToLive()
 {
     if(this->count() == 0)
-        this->~medViewContainerSplitter();
+        delete this;
 }
 
 void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *container)
