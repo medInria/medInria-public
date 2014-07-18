@@ -51,6 +51,8 @@ medViewParameterGroup::~medViewParameterGroup()
         removeImpactedView(view);
 
     d->pool->clear();
+
+    delete d;
 }
 
 void medViewParameterGroup::addImpactedView(medAbstractView *view)

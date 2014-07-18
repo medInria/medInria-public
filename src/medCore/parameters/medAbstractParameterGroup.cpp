@@ -45,6 +45,8 @@ medAbstractParameterGroup::medAbstractParameterGroup(QString name, QObject *pare
 medAbstractParameterGroup::~medAbstractParameterGroup()
 {
     medParameterGroupManager::instance()->unregisterGroup(this);
+
+    delete d;
 }
 
 void medAbstractParameterGroup::setName(QString name)

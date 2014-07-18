@@ -33,6 +33,7 @@ medPoolIndicator::medPoolIndicator(QWidget *parent):
 
 medPoolIndicator::~medPoolIndicator()
 {
+    delete d;
 }
 
 
