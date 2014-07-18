@@ -65,47 +65,41 @@ QWidget* medCompositeParameter::getWidget()
     return mainWidget;
 }
 
-void medCompositeParameter::setValues(const QList<QVariant> value)
+void medCompositeParameter::setValues(const QHash<QString, QVariant> value)
 {
-    if(d->variants.values() == value)
-        return;
+    QHash<QString, QVariant>::const_iterator valuesIterator = value.constBegin();
 
-    if(value.size() != d->variants.values().size())
+    while (valuesIterator != value.constEnd())
     {
-        qDebug() << "medCompositeParameter::setValue: Wrong number of arguments.";
-        return;
-    }
-
-    QHash<QString, QVariant>::iterator i = d->variants.begin();
-    int index = 0;
-    while (i != d->variants.end())
-    {
-        i.value() = value[index];
-        QString name = i.key();
-        if(d->ranges.contains(name))
+        QString key = valuesIterator.key();
+        if (!d->variants.contains(key))
         {
-            // Check if we're not going over ranges.
-            if(i.value().type() == QVariant::Double)
-            {
-                if(value[index].toDouble() < d->ranges.value(name).first.toDouble())
-                    i.value() = d->ranges.value(name).first;
-                else if(value[index].toDouble() > d->ranges.value(name).second.toDouble())
-                    i.value() = d->ranges.value(name).second;
-                else
-                    i.value() = value[index];
-            }
-            else if(i.value().type() == QVariant::Int)
-            {
-                if(value[index].toInt() < d->ranges.value(name).first.toInt())
-                    i.value() = d->ranges.value(name).first;
-                else if(value[index].toInt() > d->ranges.value(name).second.toInt())
-                    i.value() = d->ranges.value(name).second;
-                else
-                    i.value() = value[index];
-            }
+            valuesIterator++;
+            continue;
         }
-        index++;
-        i++;
+
+        if(d->variants[key].type() == QVariant::Double)
+        {
+            if(valuesIterator.value().toDouble() < d->ranges.value(key).first.toDouble())
+                d->variants[key] = d->ranges.value(key).first;
+            else if(valuesIterator.value().toDouble() > d->ranges.value(key).second.toDouble())
+                d->variants[key] = d->ranges.value(key).second;
+            else
+                d->variants[key] = valuesIterator.value();
+        }
+        else if(d->variants[key].type() == QVariant::Int)
+        {
+            if(valuesIterator.value().toInt() < d->ranges.value(key).first.toInt())
+                d->variants[key] = d->ranges.value(key).first;
+            else if(valuesIterator.value().toInt() > d->ranges.value(key).second.toInt())
+                d->variants[key] = d->ranges.value(key).second;
+            else
+                d->variants[key] = valuesIterator.value();
+        }
+        else
+            d->variants[key] = valuesIterator.value();
+
+        valuesIterator++;
     }
 
     //  update intern widget
@@ -113,7 +107,7 @@ void medCompositeParameter::setValues(const QList<QVariant> value)
     this->updateInternWigets();
     this->blockInternWidgetsSignals(false);
 
-    emit valuesChanged(d->variants.values());
+    emit valuesChanged(d->variants);
 }
 
 QList<QVariant> medCompositeParameter::values() const
@@ -205,7 +199,7 @@ void medCompositeParameter::updateValue(bool value)
     {
         QString name = d->widgets.key(checkbox);
         d->variants[name] = QVariant(value);
-        emit valuesChanged(d->variants.values());
+        emit valuesChanged(d->variants);
     }
 
 }
@@ -217,7 +211,7 @@ void medCompositeParameter::updateValue(double value)
     {
         QString name = d->widgets.key(spinbox);
         d->variants[name] = QVariant(value);
-        emit valuesChanged(d->variants.values());
+        emit valuesChanged(d->variants);
     }
 }
 
@@ -228,7 +222,7 @@ void medCompositeParameter::updateValue(int value)
     {
         QString name = d->widgets.key(spinbox);
         d->variants[name] = QVariant(value);
-        emit valuesChanged(d->variants.values());
+        emit valuesChanged(d->variants);
     }
 }
 

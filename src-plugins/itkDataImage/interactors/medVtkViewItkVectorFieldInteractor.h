@@ -60,7 +60,7 @@ public slots:
 
     void setOpacity(double opacity);
     void setVisibility(bool visibility);
-    void setWindowLevel(QList<QVariant>);
+    void setWindowLevel(QHash<QString, QVariant>);
 
     virtual void setUpViewForThumbnail();
 

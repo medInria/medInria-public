@@ -304,7 +304,7 @@ void medParameterPool::changeParamsValue(const QVector4D& value)
     }
 }
 
-void medParameterPool::changeParamsValue(const QList<QVariant>& values)
+void medParameterPool::changeParamsValue(const QHash<QString, QVariant>& values)
 {
     medCompositeParameter *sender = dynamic_cast<medCompositeParameter*>(QObject::sender());
 
@@ -318,7 +318,7 @@ void medParameterPool::changeParamsValue(const QList<QVariant>& values)
         {
             compositeParam->disconnect(this);
             compositeParam->setValues(values);
-            connect(compositeParam, SIGNAL(valuesChanged(QList<QVariant>)), this, SLOT(changeParamsValue(QList<QVariant>)), Qt::UniqueConnection);
+            connect(compositeParam, SIGNAL(valuesChanged(QHash<QString,QVariant>)), this, SLOT(changeParamsValue(QHash<QString,QVariant>)), Qt::UniqueConnection);
             connect(compositeParam, SIGNAL(aboutToBeDestroyed()), this, SLOT(removeInternParam()), Qt::UniqueConnection);
         }
     }
@@ -358,7 +358,7 @@ void medParameterPool::connectParam(medAbstractParameter *parameter)
     else if(medAbstractVector4DParameter* param = dynamic_cast<medAbstractVector4DParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(QVector4D)), this, SLOT(changeParamsValue(QVector4D)), Qt::UniqueConnection);
     else if(medCompositeParameter* param = dynamic_cast<medCompositeParameter*>(parameter))
-        connect(param, SIGNAL(valuesChanged(QList<QVariant>)), this, SLOT(changeParamsValue(QList<QVariant>)), Qt::UniqueConnection);
+        connect(param, SIGNAL(valuesChanged(QHash<QString,QVariant>)), this, SLOT(changeParamsValue(QHash<QString,QVariant>)), Qt::UniqueConnection);
 }
 
 void medParameterPool::disconnectParam(medAbstractParameter *parameter)

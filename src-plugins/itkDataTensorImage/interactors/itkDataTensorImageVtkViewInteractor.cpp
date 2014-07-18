@@ -340,7 +340,7 @@ void itkDataTensorImageVtkViewInteractor::setData(medAbstractData *data)
 }
 
 
-void itkDataTensorImageVtkViewInteractor::setWindowLevel(QList<QVariant>)
+void itkDataTensorImageVtkViewInteractor::setWindowLevel(QHash<QString,QVariant>)
 {
     //TODO
 }

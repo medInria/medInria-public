@@ -351,7 +351,7 @@ void msegAnnotationInteractor::moveToSlice(int slice)
      }
 }
 
-void msegAnnotationInteractor::setWindowLevel (QList<QVariant>)
+void msegAnnotationInteractor::setWindowLevel (QHash<QString,QVariant>)
 {
 
 }

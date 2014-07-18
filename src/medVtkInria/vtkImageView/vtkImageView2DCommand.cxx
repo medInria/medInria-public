@@ -139,11 +139,9 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     //   newLevel = 0.01*(newLevel < 0 ? -1 : 1);
 
 
-    // Keep window values above 0.1
-    if (newWindow < 0.1)
-      newWindow = 0.1;
-
-
+    // Keep window values above 0
+    if (newWindow < 0)
+      newWindow = 0;
 
     this->Viewer->SetColorWindow(newWindow);
     this->Viewer->SetColorLevel(newLevel);

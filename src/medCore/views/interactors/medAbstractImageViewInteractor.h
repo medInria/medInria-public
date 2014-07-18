@@ -39,7 +39,7 @@ public slots:
 
     virtual void setOpacity (double opacity) = 0;
 
-    virtual void setWindowLevel(QList<QVariant>) = 0;
+    virtual void setWindowLevel(QHash<QString,QVariant>) = 0;
 
 private:
     medAbstractImageViewInteractorPrivate *d;

@@ -38,13 +38,13 @@ public:
     QList<QVariant> steps() const;
 
 public slots:
-    virtual void setValues(const QList<QVariant> );
+    virtual void setValues(const QHash<QString, QVariant> );
 
 protected:
     virtual void updateInternWigets();
 
 signals:
-    void valuesChanged(const QList<QVariant>& );
+    void valuesChanged(const QHash<QString,QVariant>& );
 
 private slots:
     void updateValue(bool value);

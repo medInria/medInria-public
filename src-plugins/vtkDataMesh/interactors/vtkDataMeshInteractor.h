@@ -56,7 +56,7 @@ public:
 
 public slots:
     void setOpacity(double value);
-    void setWindowLevel (QList<QVariant>);
+    void setWindowLevel (QHash<QString,QVariant>);
     void setColor(const QString &color);
     void setColor(QColor color);
     void setVisibility(bool visible);

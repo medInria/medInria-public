@@ -58,7 +58,7 @@ private slots:
     void changeParamsValue(const QVector2D& value);
     void changeParamsValue(const QVector3D& value);
     void changeParamsValue(const QVector4D& value);
-    void changeParamsValue(const QList<QVariant>& values);
+    void changeParamsValue(const QHash<QString, QVariant> &values);
 
     void removeInternParam();
 

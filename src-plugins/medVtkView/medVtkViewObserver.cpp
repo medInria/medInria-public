@@ -108,9 +108,11 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     {
         double level = this->view2d->GetColorLevel(layer);
         double window = this->view2d->GetColorWindow(layer);
-        QList<QVariant> wl;
-        wl.append(QVariant(window));
-        wl.append(QVariant(level));
+
+        QHash <QString, QVariant> wl;
+        wl["Window"] = QVariant(window);
+        wl["Level"] = QVariant(level);
+
         if(m_view->windowLevelParameter(layer))
             m_view->windowLevelParameter(layer)->setValues(wl);
         break;
@@ -124,11 +126,13 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
         QVector3D position(doubleToQtVector3D(pos));
         QVector3D viewup(doubleToQtVector3D(vup));
         QVector3D focal(doubleToQtVector3D(foc));
-        QList<QVariant> cam;
-        cam.append(QVariant(position));
-        cam.append(QVariant(viewup));
-        cam.append(QVariant(focal));
-        cam.append(QVariant(ps));
+
+        QHash <QString,QVariant> cam;
+        cam["Camera Position"] = QVariant(position);
+        cam["Camera Up"] = QVariant(viewup);
+        cam["Camera Focal"] = QVariant(focal);
+        cam["Parallel Scale"] = QVariant(ps);
+
         if(m_view->cameraParameter())
              m_view->cameraParameter()->setValues(cam);
         break;

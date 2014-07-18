@@ -71,7 +71,7 @@ protected:
     void cameraParallelScale(double &parallelScale) const;
 
 protected slots:
-    void setCamera(QList<QVariant>);
+    void setCamera(QHash<QString, QVariant>);
 
     void setCameraUp(const QVector3D& viewup);
     void setCameraPosition(const QVector3D& position);

@@ -505,7 +505,7 @@ void vtkDataMeshInteractor::moveToSlice  (int slice)
     }
 }
 
-void vtkDataMeshInteractor::setWindowLevel (QList<QVariant>)
+void vtkDataMeshInteractor::setWindowLevel (QHash<QString,QVariant>)
 {
     // TODO
 }

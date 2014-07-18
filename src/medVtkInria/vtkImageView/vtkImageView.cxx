@@ -1005,23 +1005,7 @@ void vtkImageView::SetColorLevel(double s,int layer)
   if (s == this->GetColorLevel(layer))
     return;
 
-  double correct_s = s;
-  //check validity of the color level, only apply within range.
-  vtkImageData * input = this->GetInput(layer);
-  if (input)
-  {
-    double min_level = input->GetScalarTypeMin();
-    double max_level = input->GetScalarTypeMax();
-    if ( s > max_level )
-      correct_s = max_level;
-    if (s < min_level)
-      correct_s = min_level;
-  }
-  //test again if changed after correction
-  if (correct_s == this->GetColorLevel(layer))
-    return;
-
-  this->StoreColorLevel (correct_s, layer);
+  this->StoreColorLevel (s, layer);
 
   this->SetTransferFunctionRangeFromWindowSettings(layer);
 

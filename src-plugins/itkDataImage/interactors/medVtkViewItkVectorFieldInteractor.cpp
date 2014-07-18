@@ -280,7 +280,7 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
 }
 
 
-void medVtkViewItkVectorFieldInteractor::setWindowLevel(QList<QVariant>)
+void medVtkViewItkVectorFieldInteractor::setWindowLevel(QHash<QString,QVariant>)
 {
     //TODO
 }
