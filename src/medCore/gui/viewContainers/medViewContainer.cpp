@@ -587,7 +587,7 @@ medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
 
 void medViewContainer::closeEvent(QCloseEvent * event)
 {
-    this->~medViewContainer();
+    delete this;
 }
 
 void medViewContainer::openFromSystem()
