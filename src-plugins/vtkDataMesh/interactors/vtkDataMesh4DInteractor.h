@@ -34,7 +34,7 @@ public:
     static bool registered();
 
     virtual void setInputData(medAbstractData *data);
-    virtual medAbstractData *data() const;
+    virtual medAbstractData *inputData() const;
 
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBarWidget();

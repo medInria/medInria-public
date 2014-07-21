@@ -133,7 +133,7 @@ void vtkDataMesh4DInteractor::setInputData(medAbstractData *data)
     }
 }
 
-medAbstractData *vtkDataMesh4DInteractor::data() const
+medAbstractData *vtkDataMesh4DInteractor::inputData() const
 {
     return d->data;
 }
