@@ -724,10 +724,10 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
 }
 
 void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleName,
-                                                    QMap <QString, double> &mean,
-                                                    QMap <QString, double> &min,
-                                                    QMap <QString, double> &max,
-                                                    QMap <QString, double> &var)
+                                                        QMap <QString, double> &mean,
+                                                        QMap <QString, double> &min,
+                                                        QMap <QString, double> &max,
+                                                        QMap <QString, double> &var)
 {
     vtkPolyData *bundleData = d->dataset->GetBundle(bundleName.toAscii().constData()).Bundle;
 
@@ -768,6 +768,7 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
     unsigned int numberOfArrays = bundlePointData->GetNumberOfArrays();
     vtkPoints* points = bundleData->GetPoints();
     vtkCellArray* lines = bundleData->GetLines();
+    lines->InitTraversal();
 
     for (unsigned int i = 0;i < numberOfArrays;++i)
     {
@@ -775,8 +776,9 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
         // Put them inside maps
         QString arrayName = bundlePointData->GetArrayName(i);
         vtkDataArray *imageCoefficients = bundlePointData->GetArray(i);
-        unsigned int tupleSize = imageCoefficients->GetElementComponentSize();
-        if (tupleSize != 1)
+        unsigned int numComponents = imageCoefficients->GetNumberOfComponents();
+
+        if (numComponents != 1)
             continue;
 
         vtkIdType  npts  = 0;
@@ -837,34 +839,87 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
             mean[arrayName] = sumData / numberOfLines;
             min[arrayName] = minValue;
             max[arrayName] = maxValue;
-            var[arrayName] = (squareSumData - sumData * sumData / numberOfLines) / (numberOfLines - 1.0);
+            var[arrayName] = 0;
+            if (numberOfLines > 1)
+                var[arrayName] = (squareSumData - sumData * sumData / numberOfLines) / (numberOfLines - 1.0);
         }
     }
 }
 
 void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &name,
-                                                            double &mean,
-                                                            double &min,
-                                                            double &max,
-                                                            double &var)
+                                                                double &mean,
+                                                                double &min,
+                                                                double &max,
+                                                                double &var)
 {
-    itk::FiberBundleStatisticsCalculator::Pointer statCalculator = itk::FiberBundleStatisticsCalculator::New();
-    statCalculator->SetInput (d->dataset->GetBundle (name.toAscii().constData()).Bundle);
-    try
-    {
-        statCalculator->Compute();
-    }
-    catch(itk::ExceptionObject &e)
-    {
-        qDebug() << e.GetDescription();
-        mean = 0.0;
-        min  = 0.0;
-        max  = 0.0;
-        var  = 0.0;
+    vtkPolyData *bundleData = d->dataset->GetBundle(name.toAscii().constData()).Bundle;
+
+    if (!bundleData)
         return;
+
+    vtkPointData *bundlePointData = bundleData->GetPointData();
+    vtkPoints* points = bundleData->GetPoints();
+    vtkCellArray* lines = bundleData->GetLines();
+
+    lines->InitTraversal();
+    vtkIdType  npts  = 0;
+    vtkIdType* ptids = 0;
+    vtkIdType test = lines->GetNextCell (npts, ptids);
+
+    double sumData = 0;
+    double squareSumData = 0;
+    double minValue = HUGE_VAL;
+    double maxValue = - HUGE_VAL;
+    unsigned int numberOfLines = 0;
+
+    // go over lines, each cell is a line
+    while (test)
+    {
+        double lengthFiber = 0;
+
+        for (int k=1; k<npts; k++)
+        {
+            double pt1[3];
+            double pt2[3];
+            points->GetPoint (ptids[k-1], pt1);
+            points->GetPoint (ptids[k], pt2);
+
+            double normDiff = 0;
+            for (unsigned int l = 0;l < 3;++l)
+                normDiff += (pt2[l] - pt1[l])*(pt2[l] - pt1[l]);
+
+            lengthFiber += sqrt(normDiff);
+        }
+
+        if (minValue > lengthFiber)
+            minValue = lengthFiber;
+
+        if (maxValue < lengthFiber)
+            maxValue = lengthFiber;
+
+        sumData += lengthFiber;
+        squareSumData += lengthFiber * lengthFiber;
+        ++numberOfLines;
+
+        test = lines->GetNextCell (npts, ptids);
     }
 
-    statCalculator->GetLengthStatistics(mean, min, max, var);
+    if (isFinite (sumData / numberOfLines))
+    {
+        mean = sumData / numberOfLines;
+        min = minValue;
+        max = maxValue;
+        var = 0;
+        if (numberOfLines > 1)
+            var = (squareSumData - sumData * sumData / numberOfLines) / (numberOfLines - 1.0);
+    }
+    else
+    {
+        mean = 0;
+        min = 0;
+        max = 0;
+        var = 0;
+    }
 }
 
 void medVtkFibersDataInteractor::bundleLengthStatistics(const QString &name,
