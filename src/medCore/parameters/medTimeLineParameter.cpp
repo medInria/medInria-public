@@ -333,8 +333,6 @@ QWidget* medTimeLineParameter::getWidget()
         buttonsLayout->addWidget(d->speedFactorParameter->getLabel());
         buttonsLayout->addWidget(d->speedFactorParameter->getSpinBox());
         buttonsLayout->addWidget(d->loopParameter->getCheckBox());
-        buttonsLayout->addWidget(d->frameLabel);
-
 
         if(d->frameLabel.isNull())
         {
@@ -342,6 +340,7 @@ QWidget* medTimeLineParameter::getWidget()
             this->updateFrameLabel();
             connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(updateFrameLabel()));
         }
+
         if(d->numberOfFrameLabel.isNull())
         {
             d->numberOfFrameLabel = new QLabel;
