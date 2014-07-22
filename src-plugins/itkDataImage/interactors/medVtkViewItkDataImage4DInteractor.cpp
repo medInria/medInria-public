@@ -137,6 +137,10 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
               AppendImageSequence<unsigned char>(data,d->view,d->sequence, layer)  ||
               AppendImageSequence<short>(data,d->view,d->sequence, layer)          ||
               AppendImageSequence<unsigned short>(data,d->view,d->sequence, layer) ||
+              AppendImageSequence<int>(data,d->view,d->sequence, layer)            ||
+              AppendImageSequence<unsigned int>(data,d->view,d->sequence, layer)   ||
+              AppendImageSequence<long>(data,d->view,d->sequence, layer)           ||
+              AppendImageSequence<unsigned long>(data,d->view,d->sequence, layer)  ||
               AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
               AppendImageSequence<double>(data,d->view,d->sequence, layer))
         {
