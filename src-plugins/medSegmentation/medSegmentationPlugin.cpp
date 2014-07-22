@@ -68,7 +68,16 @@ QString medSegmentationPlugin::description() const
               "Manual painting of regions: inside, and outside."
               "<br/> Exports masks with three values: inside (1), outside (2)"
               "and other (0). You may leave out the outside colour "
-              "for simple binary masks.");
+              "for simple binary masks.\n<br/>"
+              "Ctrl+z Undo segmentation\n<br/>"
+              "Ctrl+y Redo segmentation\n<br/>"
+              "Ctrl+c Copy segmentation\n<br/>"
+              "Ctrl+v Paste segmentation\n<br/>"
+              "Ctrl+Return Accept growth\n<br/>"
+              "Ctrl+BackSpace Remove seed\n<br/>"
+              "Ctrl+Up Add brush size\n<br/>"
+              "Ctrl+Down Reduce brush size");
+    
 }
 
 QString medSegmentationPlugin::version() const
