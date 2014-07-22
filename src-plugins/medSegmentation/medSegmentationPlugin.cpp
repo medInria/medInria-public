@@ -73,7 +73,6 @@ QString medSegmentationPlugin::description() const
               "Ctrl+y Redo segmentation\n<br/>"
               "Ctrl+c Copy segmentation\n<br/>"
               "Ctrl+v Paste segmentation\n<br/>"
-              "Ctrl+Return Accept growth\n<br/>"
               "Ctrl+BackSpace Remove seed\n<br/>"
               "Ctrl+Up Add brush size\n<br/>"
               "Ctrl+Down Reduce brush size");
