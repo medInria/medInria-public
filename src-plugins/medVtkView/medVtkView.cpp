@@ -170,6 +170,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 medVtkView::~medVtkView()
 {
     disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
+    disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(render()));
 
     int c = layersCount()-1;
     for(int i=c; i>=0; i--)
@@ -234,6 +235,14 @@ void medVtkView::update()
         d->view3d->Modified();
         d->view3d->Render();
     }
+}
+
+void medVtkView::render()
+{
+    if(this->is2D())
+        d->view2d->Render();
+    else
+        d->view3d->Render();
 }
 
 QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)

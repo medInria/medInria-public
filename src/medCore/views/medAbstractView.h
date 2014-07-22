@@ -75,7 +75,7 @@ public:
 
 public slots:
     virtual void reset() = 0;
-    virtual void update() = 0;
+    virtual void render() = 0;
 
 signals:
     void selectedRequest(bool selected);

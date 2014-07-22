@@ -138,9 +138,9 @@ void medQtView::reset()
     qDebug() << "reset()";
 }
 
-void medQtView::update()
+void medQtView::render()
 {
-    qDebug() << "update(()";
+    qDebug() << "render";
 }
 
 QList<medAbstractParameter*> medQtView::navigatorsParameters()
