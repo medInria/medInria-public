@@ -36,7 +36,7 @@ public:
     virtual void setData(medAbstractData *data);
 
 public slots:
-    virtual void setCurrentTime (const double &time);
+    virtual void setCurrentTime (double time);
 
 private:
     static QStringList dataHandled();

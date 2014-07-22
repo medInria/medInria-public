@@ -37,7 +37,7 @@ public:
 
 public slots:
 
-    virtual void setOpacity (double opacity) = 0;
+    virtual void setOpacity(double opacity) = 0;
 
     virtual void setWindowLevel(QHash<QString,QVariant>) = 0;
 
@@ -47,7 +47,7 @@ public slots:
     * Do not update the view, it has to be done by the primary navigator.
     * @param time
     */
-    virtual void setCurrentTime(const double &time)
+    virtual void setCurrentTime(double time)
     {
         qDebug()<<"No implementation of setCurrentTime(const double &time) for" << this->identifier();
     }

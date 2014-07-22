@@ -43,7 +43,7 @@ public:
     virtual QList<medAbstractParameter*> linkableParameters();
 
 public slots:
-    virtual void setCurrentTime (const double &time);
+    virtual void setCurrentTime (double time);
     virtual void updateWidgets();
 
 private:
