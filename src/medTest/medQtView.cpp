@@ -138,6 +138,11 @@ void medQtView::reset()
     qDebug() << "reset()";
 }
 
+void medQtView::render()
+{
+    qDebug() << "render";
+}
+
 QList<medAbstractParameter*> medQtView::navigatorsParameters()
 {
     return QList<medAbstractParameter*>();

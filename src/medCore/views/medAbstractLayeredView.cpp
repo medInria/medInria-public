@@ -61,6 +61,7 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
     connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medDataIndex>)),this,SLOT(setDataList(QList<medDataIndex>)));
     connect(this,SIGNAL(layerAdded(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
     connect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
+    connect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(render()));
 }
 
 medAbstractLayeredView::~medAbstractLayeredView()

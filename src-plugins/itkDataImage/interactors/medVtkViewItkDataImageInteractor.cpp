@@ -179,10 +179,6 @@ void medVtkViewItkDataImageInteractor::removeData()
 {
     d->view2d->RemoveLayer(d->view->layer(d->imageData));
     d->view3d->RemoveLayer(d->view->layer(d->imageData));
-    if(d->view->is2D())
-        d->view2d->Render();
-    else
-        d->view3d->Render();
 }
 
 
