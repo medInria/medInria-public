@@ -21,7 +21,7 @@ class medAbstractData;
 class medSegmentationSelectorToolBox;
 class medSegmentationAbstractToolBoxPrivate;
 
-//! Base class for custom segmentation algoithms
+//! Base class for custom segmentation algorithms
 class MEDCORE_EXPORT medSegmentationAbstractToolBox : public medToolBox
 {
     Q_OBJECT
