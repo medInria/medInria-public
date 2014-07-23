@@ -101,10 +101,11 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->paramList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(selectParam(QListWidgetItem*)));
     connect(d->groupList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(showSubMenu(QListWidgetItem*)));
     connect(d->paramList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
+    connect(d->paramList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(selectItem(QListWidgetItem*)));
     connect(d->saveAsPresetButton, SIGNAL(clicked()), this, SLOT(saveAsPreset()));
     connect(d->presetList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
     connect(d->presetList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
-    connect(d->presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectPreset(QListWidgetItem*)));
+    connect(d->presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectItem(QListWidgetItem*)));
 
     QWidget *internalSubPopWidget = new QWidget;
     internalSubPopWidget->setObjectName("internalSubPopWidget");
@@ -734,7 +735,7 @@ void medLinkMenu::highlightPreset()
     }
 }
 
-void medLinkMenu::selectPreset(QListWidgetItem *item)
+void medLinkMenu::selectItem(QListWidgetItem *item)
 {
     if(item->checkState() == Qt::Checked)
     {
