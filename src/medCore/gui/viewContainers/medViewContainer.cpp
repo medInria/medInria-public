@@ -50,6 +50,7 @@ public:
     medAbstractView* view;
     medViewContainerSplitter* parent;
 
+    bool userOpenable;
     bool selected;
     bool maximized;
     bool userSplittable;
@@ -112,17 +113,20 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/pixmaps/closebutton.png"));
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->closeContainerButton->setToolTip(tr("Close"));
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
 
     d->vSplitButton = new QPushButton(this);
     d->vSplitButton->setIcon(QIcon(":/pixmaps/splitbutton_vertical.png"));
     d->vSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->vSplitButton->setFocusPolicy(Qt::NoFocus);
+    d->vSplitButton->setToolTip(tr("Split vertically"));
     connect(d->vSplitButton, SIGNAL(clicked()), this, SIGNAL(vSplitRequest()));
     d->hSplitButton = new QPushButton(this);
     d->hSplitButton->setIcon(QIcon(":/pixmaps/splitbutton_horizontal.png"));
     d->hSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->hSplitButton->setFocusPolicy(Qt::NoFocus);
+    d->hSplitButton->setToolTip(tr("Split horizontally"));
     connect(d->hSplitButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
 
     // make it a parameter to get synch between state of the container and the maximized button.
@@ -170,6 +174,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     this->setMultiLayered(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
+    this->setUserOpenable(true);
 
     d->selected = false;
     this->setSelected(false);
@@ -213,9 +218,29 @@ void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
     {
         d->mainLayout->removeWidget(d->defaultWidget);
         delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
+        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
     }
     d->defaultWidget = defaultWidget;
+}
+
+bool medViewContainer::isUserOpenable() const
+{
+    return d->userOpenable;
+}
+
+void medViewContainer::setUserOpenable(bool openable)
+{
+    d->userOpenable = openable;
+    if(d->userOpenable)
+    {
+        this->setAcceptDrops(true);
+        d->openButton->show();
+    }
+    else
+    {
+        this->setAcceptDrops(false);
+        d->openButton->hide();
+    }
 }
 
 bool medViewContainer::isUserSplittable() const

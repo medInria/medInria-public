@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -63,6 +63,7 @@ public:
     bool isUserSplittable() const;
     ClosingMode closingMode() const;
     bool isMultiLayered() const;
+    bool isUserOpenable() const;
 
     medViewContainer* splitVertically();
     medViewContainer* splitHorizontally();
@@ -86,6 +87,7 @@ public slots:
     void setUserSplittable(bool splittable);
     void setClosingMode(enum ClosingMode mode);
     void setMultiLayered(bool multiLayer);
+    void setUserOpenable(bool openable);
 
     void highlight(QString color = "#FFAA88");
     void unHighlight();
