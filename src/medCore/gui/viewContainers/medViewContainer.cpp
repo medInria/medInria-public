@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -61,6 +61,7 @@ public:
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
 
+    QPushButton *openButton;
     QPushButton* vSplitButton;
     QPushButton* hSplitButton;
     QPushButton* closeContainerButton;
@@ -100,6 +101,13 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     defaultLayout->addWidget(openButton);
     connect(openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()));
 
+
+    d->openButton = new QPushButton(this);
+    d->openButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->openButton->setIcon(QIcon(":/medGui/pixmaps/open.png"));
+    d->openButton->setFocusPolicy(Qt::NoFocus);
+    d->openButton->setToolTip(tr("Open a file from your system"));
+    connect(d->openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()));
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/pixmaps/closebutton.png"));
@@ -144,6 +152,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarLayout->setContentsMargins(5,0,5,0);
     d->toolBarLayout->setSpacing(5);
     d->toolBarLayout->addWidget(d->poolIndicator, 1, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->openButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->maximizedParameter->getPushButton(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->vSplitButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplitButton, 0, Qt::AlignRight);

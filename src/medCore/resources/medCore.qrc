@@ -6,5 +6,7 @@
         <file>pixmaps/splitbutton_horizontal.png</file>
         <file>pixmaps/splitbutton_vertical.png</file>
         <file>pixmaps/default_thumbnail.png</file>
+        <file>pixmaps/open.svg</file>
+        <file>pixmaps/open.png</file>
     </qresource>
 </RCC>
