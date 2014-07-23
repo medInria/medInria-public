@@ -65,6 +65,9 @@ private slots:
     void loadPreset();
     void applyPreset(QListWidgetItem*);
     void uncheckAllPresets();
+    void highlightPreset();
+    void selectPreset(QListWidgetItem*);
+    void deletePreset();
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
@@ -75,26 +78,39 @@ private:
     void hideMenus();
     void checkAllParams(bool check);
     void updateParamCheckState(QString group);
+    void addPresetItem(QString preset);
 
 private:
     medLinkMenuPrivate *d;
 };
 
 
-class medGroupWidget : public QWidget
+class medListItemWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    medListItemWidget(QWidget *parent = 0);
+
+public:
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
+
+signals:
+    void enterEvent();
+    void leaveEvent();
+};
+
+
+class medGroupWidget : public medListItemWidget
 {
     Q_OBJECT
 
 public:
     medGroupWidget(QString groupName, QWidget *parent = 0);
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
-
     void setColor(QColor color);
 
 signals:
-    void enterEvent();
-    void leaveEvent();
     void deletionRequested();
     void colorChanged(QColor);
 
@@ -117,4 +133,7 @@ public:
 
     void paintEvent(QPaintEvent*);
 };
+
+
+
 

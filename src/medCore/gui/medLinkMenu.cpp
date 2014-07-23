@@ -104,6 +104,7 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->saveAsPresetButton, SIGNAL(clicked()), this, SLOT(saveAsPreset()));
     connect(d->presetList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
     connect(d->presetList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
+    connect(d->presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectPreset(QListWidgetItem*)));
 
     QWidget *internalSubPopWidget = new QWidget;
     internalSubPopWidget->setObjectName("internalSubPopWidget");
@@ -599,11 +600,7 @@ void medLinkMenu::saveAsPreset()
     medSettingsManager::instance()->setValue("GroupPresets", group, params);
     d->presets.insert(group, params);
 
-    QListWidgetItem * item = new QListWidgetItem(group);
-    item->setSizeHint(QSize(item->sizeHint().width(), 20));
-    item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-    item->setCheckState(Qt::Unchecked);
-    d->presetList->insertItem(0,item);
+    addPresetItem(group);
 
     //TODO: shouldn't have to do that...
     d->subPopupWidget->resize(d->subPopupWidget->width(), d->presetList->sizeHint().height() +
@@ -629,37 +626,10 @@ void medLinkMenu::loadPreset()
             }
         }
 
-        if(ok )
+        if( ok )
         {
-            QListWidgetItem * item = new QListWidgetItem(preset);
-            item->setSizeHint(QSize(item->sizeHint().width(), 20));
-            item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-            item->setCheckState(Qt::Unchecked);
-            d->presetList->insertItem(0,item);
-
-            // TEST
-            QWidget *itemWidget = new QWidget;
-            itemWidget->setFocusPolicy(Qt::NoFocus);
-            itemWidget->lower();
-            itemWidget->setAttribute(Qt::WA_TranslucentBackground);
-            QHBoxLayout *itemLayout = new QHBoxLayout(itemWidget);
-            itemLayout->setContentsMargins(0,0,0,0);
-            itemLayout->setSpacing(0);
-
-            QPushButton *removeButton = new QPushButton;
-            removeButton->setIcon(QIcon(":/icons/cross.svg"));
-            removeButton->setIconSize(QSize(12,12));
-            removeButton->setStyleSheet("margin:0px;border:0;border-radius: 0px;padding: 0px;");
-            removeButton->setFixedSize(12,12);
-            removeButton->setFlat(true);
-
-            itemLayout->addStretch();
-            itemLayout->addWidget(removeButton);
-            d->presetList->setItemWidget(item, itemWidget);
-            // END TEST
-
+            addPresetItem(preset);
             d->presetList->show();
-
             d->presets.insert(preset, params);
         }
     }
@@ -746,11 +716,100 @@ void medLinkMenu::uncheckAllPresets()
     }
 }
 
+void medLinkMenu::highlightPreset()
+{
+    QWidget *w = dynamic_cast<QWidget*>(this->sender());
+
+    for(int i=0; i<d->presetList->count(); i++)
+    {
+        QListWidgetItem *item = d->presetList->item(i);
+        if( w == d->presetList->itemWidget(item) )
+        {
+            item->setSelected(true);
+        }
+    }
+}
+
+void medLinkMenu::selectPreset(QListWidgetItem *item)
+{
+    if(item->checkState() == Qt::Checked)
+    {
+        item->setCheckState(Qt::Unchecked);
+    }
+    else
+    {
+        item->setCheckState(Qt::Checked);
+    }
+}
+
+void medLinkMenu::deletePreset()
+{
+    d->presetList->blockSignals(true);
+
+    QWidget *deleteButton = dynamic_cast<QWidget*>(this->sender());
+    QWidget *itemWidget = deleteButton->parentWidget();
+
+    QListWidgetItem *itemToRemove = NULL;
+
+    for(int i=0; i<d->presetList->count(); i++)
+    {
+        QListWidgetItem *item = d->presetList->item(i);
+        if( itemWidget == d->presetList->itemWidget(item) )
+        {
+            itemToRemove = item;
+        }
+    }
+
+    if(itemToRemove)
+    {
+        QString preset = itemToRemove->text();
+        d->presetList->model()->removeRow(d->presetList->row(itemToRemove));
+
+        d->presets.remove(preset);
+        medSettingsManager::instance()->remove("GroupPresets", preset);
+    }
+
+    d->presetList->blockSignals(false);
+
+    d->presetList->resize(d->presetList->width(), d->presetList->sizeHint().height());
+
+}
+
+void medLinkMenu::addPresetItem(QString preset)
+{
+    QListWidgetItem * item = new QListWidgetItem(preset);
+    item->setSizeHint(QSize(item->sizeHint().width(), 20));
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+    item->setCheckState(Qt::Unchecked);
+    d->presetList->insertItem(0,item);
+
+    medListItemWidget *itemWidget = new medListItemWidget;
+    itemWidget->setFocusPolicy(Qt::NoFocus);
+    itemWidget->setAttribute(Qt::WA_TranslucentBackground);
+    QHBoxLayout *itemLayout = new QHBoxLayout(itemWidget);
+    itemLayout->setContentsMargins(0,0,0,0);
+    itemLayout->setSpacing(0);
+
+    QPushButton *removeButton = new QPushButton;
+    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+    removeButton->setIconSize(QSize(12,12));
+    removeButton->setStyleSheet("margin:0px;border:0;border-radius: 0px;padding: 0px;");
+    removeButton->setFixedSize(12,12);
+    removeButton->setFlat(true);
+
+    itemLayout->addStretch();
+    itemLayout->addWidget(removeButton);
+    d->presetList->setItemWidget(item, itemWidget);
+
+    connect(itemWidget, SIGNAL(enterEvent()), this, SLOT(highlightPreset()));
+    connect(removeButton, SIGNAL(clicked()), this, SLOT(deletePreset()));
+}
+
 /*=========================================================================
     medGroupWidget
 =========================================================================*/
 
-medGroupWidget::medGroupWidget(QString groupName, QWidget * parent): QWidget(parent)
+medGroupWidget::medGroupWidget(QString groupName, QWidget * parent): medListItemWidget(parent)
 {
     QHBoxLayout *groupLayout = new QHBoxLayout(this);
     groupLayout->setContentsMargins(0,0,0,0);
@@ -796,15 +855,6 @@ medGroupWidget::medGroupWidget(QString groupName, QWidget * parent): QWidget(par
     connect(removeButton, SIGNAL(clicked()), this, SIGNAL(deletionRequested()));
 }
 
-void medGroupWidget::enterEvent(QEvent *)
-{
-    emit enterEvent();
-}
-
-void medGroupWidget::leaveEvent(QEvent *)
-{
-    emit leaveEvent();
-}
 
 void medGroupWidget::setColor(QColor color)
 {
@@ -839,3 +889,22 @@ void medLeftArrow::paintEvent(QPaintEvent *pe)
     style()->drawPrimitive( QStyle::PE_IndicatorArrowLeft, &opt, &p, this);
 }
 
+
+/*=========================================================================
+    medListWidgetItem
+=========================================================================*/
+
+medListItemWidget::medListItemWidget(QWidget *parent):QWidget(parent)
+{
+
+}
+
+void medListItemWidget::enterEvent(QEvent *)
+{
+    emit enterEvent();
+}
+
+void medListItemWidget::leaveEvent(QEvent *)
+{
+    emit leaveEvent();
+}
