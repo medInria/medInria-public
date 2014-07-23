@@ -66,7 +66,7 @@ private slots:
     void applyPreset(QListWidgetItem*);
     void uncheckAllPresets();
     void highlightPreset();
-    void selectPreset(QListWidgetItem*);
+    void selectItem(QListWidgetItem*);
     void deletePreset();
 
 protected:
