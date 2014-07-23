@@ -30,7 +30,7 @@ public:
     medLinkMenu(QWidget * parent = 0);
     virtual ~medLinkMenu();
     void setAvailableParameters(QStringList parameters);
-    void addGroup(medAbstractParameterGroup * group);
+    void addGroup(medAbstractParameterGroup * group, bool selected = false);
     void setGroups(QList<medAbstractParameterGroup *> groups);
     void setSelectedGroups(QStringList groups);
     void setPartiallySelectedGroups(QStringList groups);

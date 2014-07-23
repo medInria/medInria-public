@@ -162,7 +162,7 @@ void medLinkMenu::setAvailableParameters(QStringList parameters)
     loadPreset();
 }
 
-void medLinkMenu::addGroup(medAbstractParameterGroup * group)
+void medLinkMenu::addGroup(medAbstractParameterGroup * group, bool selected)
 {
     QString groupName = group->name();
 
@@ -172,7 +172,7 @@ void medLinkMenu::addGroup(medAbstractParameterGroup * group)
     item->setSizeHint(QSize(item->sizeHint().width(), 20));
     item->setData(Qt::UserRole, groupName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
-    item->setCheckState(Qt::Unchecked);
+
     d->groupList->insertItem(0,item);
 
     medGroupWidget *groupWidget = new medGroupWidget(groupName);
@@ -185,6 +185,10 @@ void medLinkMenu::addGroup(medAbstractParameterGroup * group)
     connect(groupWidget, SIGNAL(colorChanged(QColor)), this, SLOT(emitGroupColorChangeRequest(QColor)));
 
     d->popupWidget->resize(d->popupWidget->width(), d->groupList->sizeHint().height());
+
+    if(selected)
+      selectGroup(item);
+    else item->setCheckState(Qt::Unchecked);
 }
 
 void medLinkMenu::setGroups(QList<medAbstractParameterGroup*> groups)
