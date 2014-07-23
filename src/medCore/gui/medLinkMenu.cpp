@@ -637,6 +637,27 @@ void medLinkMenu::loadPreset()
             item->setCheckState(Qt::Unchecked);
             d->presetList->insertItem(0,item);
 
+            // TEST
+            QWidget *itemWidget = new QWidget;
+            itemWidget->setFocusPolicy(Qt::NoFocus);
+            itemWidget->lower();
+            itemWidget->setAttribute(Qt::WA_TranslucentBackground);
+            QHBoxLayout *itemLayout = new QHBoxLayout(itemWidget);
+            itemLayout->setContentsMargins(0,0,0,0);
+            itemLayout->setSpacing(0);
+
+            QPushButton *removeButton = new QPushButton;
+            removeButton->setIcon(QIcon(":/icons/cross.svg"));
+            removeButton->setIconSize(QSize(12,12));
+            removeButton->setStyleSheet("margin:0px;border:0;border-radius: 0px;padding: 0px;");
+            removeButton->setFixedSize(12,12);
+            removeButton->setFlat(true);
+
+            itemLayout->addStretch();
+            itemLayout->addWidget(removeButton);
+            d->presetList->setItemWidget(item, itemWidget);
+            // END TEST
+
             d->presetList->show();
 
             d->presets.insert(preset, params);
