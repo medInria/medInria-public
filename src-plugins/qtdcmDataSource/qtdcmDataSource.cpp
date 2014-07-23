@@ -147,7 +147,7 @@ QWidget *qtdcmDataSource::sourceSelectorWidget()
 
 QString qtdcmDataSource::tabName()
 {
-    return QString ( "Dicom" );
+    return QString ( "PACS/CD" );
 }
 
 QList<medToolBox*> qtdcmDataSource::getToolBoxes()
