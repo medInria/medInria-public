@@ -601,7 +601,7 @@ QWidget* medAbstractWorkspace::buildViewLinkMenu()
     d->viewLinkMenu = new medLinkMenu(linkWidget);
     connect(d->viewLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeViewsFromGroup(QString)));
-    connect(d->viewLinkMenu, SIGNAL(groupCreated(QString)), this, SLOT(registerViewGroup(QString)));
+    connect(d->viewLinkMenu, SIGNAL(groupCreated(QString)), this, SLOT(addViewGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupDeleted(QString)), this, SLOT(removeViewGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupColorChangeRequest(QString,QColor)), this, SLOT(changeViewGroupColor(QString, QColor)));
 
@@ -707,7 +707,7 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
     connect(d->layerLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addLayerstoGroup(QString)));
     connect(d->layerLinkMenu, SIGNAL(groupUnchecked(QString)), this, SLOT(removeLayersFromGroup(QString)));
 
-    connect(d->layerLinkMenu, SIGNAL(groupCreated(QString)), this, SLOT(registerLayerGroup(QString)));
+    connect(d->layerLinkMenu, SIGNAL(groupCreated(QString)), this, SLOT(addLayerGroup(QString)));
     connect(d->layerLinkMenu, SIGNAL(groupDeleted(QString)), this, SLOT(removeLayerGroup(QString)));
     connect(d->layerLinkMenu, SIGNAL(groupColorChangeRequest(QString,QColor)), this, SLOT(changeLayerGroupColor(QString, QColor)));
 
@@ -846,7 +846,7 @@ void medAbstractWorkspace::removeLayerGroup(QString group)
     updateLayersToolBox();
 }
 
-void medAbstractWorkspace::registerViewGroup(QString group)
+void medAbstractWorkspace::addViewGroup(QString group)
 {
     medViewParameterGroup *newGroup = new medViewParameterGroup(group, this);
     newGroup->setLinkAllParameters(true);
@@ -854,23 +854,23 @@ void medAbstractWorkspace::registerViewGroup(QString group)
     addViewGroup(newGroup);
 }
 
-void medAbstractWorkspace::registerLayerGroup(QString group)
+void medAbstractWorkspace::addViewGroup(medViewParameterGroup * group)
+{
+    if(d->viewLinkMenu)
+      d->viewLinkMenu->addGroup(group, true);
+}
+
+void medAbstractWorkspace::addLayerGroup(QString group)
 {
     medLayerParameterGroup *newGroup = new medLayerParameterGroup(group, this);
     newGroup->setLinkAllParameters(true);
     addLayerGroup(newGroup);
 }
 
-void medAbstractWorkspace::addViewGroup(medViewParameterGroup * group)
-{
-    if(d->viewLinkMenu)
-      d->viewLinkMenu->addGroup(group);
-}
-
 void medAbstractWorkspace::addLayerGroup(medLayerParameterGroup * group)
 {
     if(d->layerLinkMenu)
-      d->layerLinkMenu->addGroup(group);
+      d->layerLinkMenu->addGroup(group, true);
 }
 
 void medAbstractWorkspace::setViewGroups(QList<medViewParameterGroup*> groups)

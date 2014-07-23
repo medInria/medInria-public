@@ -92,8 +92,8 @@ protected slots:
     void changeCurrentLayer(int row);
     void removeLayer();
 
-    void registerViewGroup(QString);
-    void registerLayerGroup(QString);
+    void addViewGroup(QString);
+    void addLayerGroup(QString);
     void addViewGroup(medViewParameterGroup*);
     void addLayerGroup(medLayerParameterGroup*);
     void setViewGroups(QList<medViewParameterGroup*>);
