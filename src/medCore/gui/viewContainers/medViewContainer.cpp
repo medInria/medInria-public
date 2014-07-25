@@ -64,12 +64,12 @@ public:
     QMenu *toolBarMenu;
     QPushButton *menuButton;
 
-    QAction *openButton;
-    QAction* vSplitButton;
-    QAction* hSplitButton;
+    QAction *openAction;
+    QAction* vSplitAction;
+    QAction* hSplitAction;
     QPushButton* closeContainerButton;
 
-    medBoolParameter* maximizedParameter;
+    QPushButton* maximizedButton;
 
     QString defaultStyleSheet;
     QString highlightColor;
@@ -98,7 +98,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
     QLabel *defaultLabel = new QLabel(tr("Drag'n drop series here from the left panel or"));
-    QPushButton *openButton = new QPushButton(tr("open a file from your system"));
+    QPushButton *openButton= new QPushButton(tr("open a file from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
     defaultLayout->addWidget(defaultLabel);
     defaultLayout->addWidget(openButton);
@@ -108,16 +108,16 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->menuButton->setIcon(QIcon(":/medGui/pixmaps/tools.png"));
     d->menuButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->menuButton->setToolTip(tr("Tools"));
-    d->menuButton->setFocusPolicy(Qt::NoFocus);
 
     d->toolBarMenu = new QMenu(this);
     connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()));
 
 
-    d->openButton = new QAction(tr("Open"), d->toolBarMenu);
-    d->openButton->setIcon(QIcon(":/medGui/pixmaps/open.png"));
-    d->openButton->setToolTip(tr("Open a file from your system"));
-    connect(d->openButton, SIGNAL(triggered()), this, SLOT(openFromSystem()));
+    d->openAction = new QAction(tr("Open"), d->toolBarMenu);
+    d->openAction->setIcon(QIcon(":/medGui/pixmaps/open.png"));
+    d->openAction->setToolTip(tr("Open a file from your system"));
+    d->openAction->setIconVisibleInMenu(true);
+    connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()));
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/pixmaps/closebutton.png"));
@@ -125,39 +125,39 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->closeContainerButton->setToolTip(tr("Close"));
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
 
-    d->vSplitButton = new QAction(tr("V split"), d->toolBarMenu);
-    d->vSplitButton->setIcon(QIcon(":/pixmaps/splitbutton_vertical.png"));
-    d->vSplitButton->setToolTip(tr("Split vertically"));
-    connect(d->vSplitButton, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()));
+    d->vSplitAction = new QAction(tr("V split"), d->toolBarMenu);
+    d->vSplitAction->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
+    d->vSplitAction->setToolTip(tr("Split vertically"));
+    d->vSplitAction->setIconVisibleInMenu(true);
+    connect(d->vSplitAction, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()));
 
-    d->hSplitButton = new QAction(tr("H split"), d->toolBarMenu);
-    d->hSplitButton->setIcon(QIcon(":/pixmaps/splitbutton_horizontal.png"));
-    d->hSplitButton->setToolTip(tr("Split horizontally"));
-    connect(d->hSplitButton, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()));
+    d->hSplitAction = new QAction(tr("H split"), d->toolBarMenu);
+    d->hSplitAction->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
+    d->hSplitAction->setToolTip(tr("Split horizontally"));
+    d->hSplitAction->setIconVisibleInMenu(true);
+    connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()));
 
     d->toolBarMenu = new QMenu(this);
-    QList<QAction*> actions =  QList<QAction*>() << d->openButton
-                                                 << d->hSplitButton
-                                                 << d->vSplitButton;
+    QList<QAction*> actions =  QList<QAction*>() << d->openAction
+                                                 << d->hSplitAction
+                                                 << d->vSplitAction;
     d->toolBarMenu->addActions(actions);
 
     // make it a parameter to get synch between state of the container and the maximized button.
-    d->maximizedParameter = new medBoolParameter("maximied view", this);
-    d->maximizedParameter->getPushButton()->setMaximumHeight(18);
-    d->maximizedParameter->getPushButton()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->maximizedParameter->getPushButton()->setFocusPolicy(Qt::NoFocus);
+    d->maximizedButton = new QPushButton(this);
+    d->maximizedButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->maximizedButton->setFocusPolicy(Qt::NoFocus);
+    d->maximizedButton->setCheckable(true);
     QIcon maximizedIcon(":/icons/maximize.svg");
     maximizedIcon.addFile(":/icons/un_maximize.svg",
                         QSize(16,16),
                         QIcon::Normal,
                         QIcon::On);
 
-    d->maximizedParameter->setIcon(maximizedIcon);
+    d->maximizedButton->setIcon(maximizedIcon);
     d->maximized = false;
-    connect(d->maximizedParameter, SIGNAL(valueChanged(bool)), this, SLOT(setMaximized(bool)));
-    connect(this, SIGNAL(maximized(bool)), d->maximizedParameter, SLOT(setValue(bool)));
-    d->maximizedParameter->setValue(false);
-    d->maximizedParameter->hide();
+    connect(d->maximizedButton, SIGNAL(clicked()), this, SLOT(toggleMaximised()));
+    d->maximizedButton->setEnabled(false);
 
     d->poolIndicator = new medPoolIndicator;
 
@@ -169,10 +169,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarLayout->setSpacing(5);
     d->toolBarLayout->addWidget(d->poolIndicator, 1, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->menuButton, 0, Qt::AlignRight);
-//    d->toolBarLayout->addWidget(d->openButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->maximizedParameter->getPushButton(), 0, Qt::AlignRight);
-//    d->toolBarLayout->addWidget(d->vSplitButton, 0, Qt::AlignRight);
-//    d->toolBarLayout->addWidget(d->hSplitButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->maximizedButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
@@ -212,10 +209,10 @@ medViewContainer::~medViewContainer()
 
 void medViewContainer::popupMenu()
 {
-
-    QPoint globalPos = mapToGlobal(d->menuButton->pos());
-    globalPos.setY(globalPos.y() + d->menuButton->height());
-    d->toolBarMenu->popup(globalPos);
+    QPoint pos = d->menuButton->mapToGlobal(QPoint(0, 0));
+    pos.setY(pos.y() + d->menuButton->height());
+    pos.setX(pos.x() + 2);
+    d->toolBarMenu->popup(pos);
 }
 
 QUuid medViewContainer::uuid() const
@@ -255,12 +252,12 @@ void medViewContainer::setUserOpenable(bool openable)
     if(d->userOpenable)
     {
         this->setAcceptDrops(true);
-        d->openButton->setEnabled(true);
+        d->openAction->setEnabled(true);
     }
     else
     {
         this->setAcceptDrops(false);
-        d->openButton->setEnabled(false);
+        d->openAction->setEnabled(false);
     }
 }
 
@@ -277,16 +274,16 @@ void medViewContainer::setUserSplittable(bool splittable)
     
     if(d->userSplittable)
     {
-          d->hSplitButton->setEnabled(true);
-          d->vSplitButton->setEnabled(true);
+          d->hSplitAction->setEnabled(true);
+          d->vSplitAction->setEnabled(true);
         
         if (view)
             view->fourViewsParameter()->show();
     }
     else
     {
-        d->hSplitButton->setEnabled(false);
-        d->vSplitButton->setEnabled(false);
+        d->hSplitAction->setEnabled(false);
+        d->vSplitAction->setEnabled(false);
         
         if (view)
             view->fourViewsParameter()->hide();
@@ -363,7 +360,7 @@ void medViewContainer::setView(medAbstractView *view)
                 imageView->fourViewsParameter()->hide();
         }
         
-        d->maximizedParameter->show();
+        d->maximizedButton->setEnabled(true);
         d->defaultWidget->hide();
         d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
         d->view->viewWidget()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
@@ -437,23 +434,23 @@ void medViewContainer::setUnSelected(bool unSelected)
 
 void medViewContainer::setMaximized(bool maxi)
 {
-    if(d->maximized == maxi)
-        return;
+    d->maximized = !d->maximized;
 
-    d->maximized = maxi;
-
-    if(maxi)
+    if(d->maximized)
     {
-        d->vSplitButton->setEnabled(false);
-        d->hSplitButton->setEnabled(false);
+        d->vSplitAction->setEnabled(false);
+        d->hSplitAction->setEnabled(false);
+        d->closeContainerButton->setEnabled(false);
     }
     else if(d->userSplittable)
     {
-        d->vSplitButton->setEnabled(true);
-        d->hSplitButton->setEnabled(true);
+        d->vSplitAction->setEnabled(true);
+        d->hSplitAction->setEnabled(true);
+        d->closeContainerButton->setEnabled(true);
     }
-    emit maximized(maxi);
-    emit maximized(d->uuid, maxi);
+    d->maximizedButton->setChecked(d->maximized);
+    emit maximized(d->maximized);
+    emit maximized(d->uuid, d->maximized);
 }
 
 bool medViewContainer::isMaximized() const
@@ -474,14 +471,12 @@ void medViewContainer::removeView()
 void medViewContainer::removeInternView()
 {
     d->view = NULL;
-    d->maximizedParameter->hide();
+    d->maximizedButton->setEnabled(false);
     d->defaultWidget->show();
     this->updateToolBar();
 
     emit viewRemoved();
 }
-
-
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {

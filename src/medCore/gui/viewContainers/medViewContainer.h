@@ -83,7 +83,7 @@ public slots:
 
     void setSelected(bool selected);
     void setUnSelected(bool unSelected);
-    void setMaximized(bool maximised);
+    void toggleMaximised();
     void setUserSplittable(bool splittable);
     void setClosingMode(enum ClosingMode mode);
     void setMultiLayered(bool multiLayer);
