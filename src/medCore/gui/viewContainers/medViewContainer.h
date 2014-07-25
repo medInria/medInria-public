@@ -124,6 +124,7 @@ protected slots:
 private slots:
     void removeInternView();
     DropArea computeDropArea(int x, int y);
+    void popupMenu();
 
 private:
     medViewContainerPrivate *d;

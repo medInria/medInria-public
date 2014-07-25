@@ -8,5 +8,6 @@
         <file>pixmaps/default_thumbnail.png</file>
         <file>pixmaps/open.svg</file>
         <file>pixmaps/open.png</file>
+        <file>pixmaps/tools.png</file>
     </qresource>
 </RCC>
