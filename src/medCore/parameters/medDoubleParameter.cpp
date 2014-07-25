@@ -100,6 +100,12 @@ void medDoubleParameter::setRange(double min, double max)
 
 void medDoubleParameter::setSingleStep(double step)
 {
+    if(step <= 0)
+    {
+        qWarning() << "Attempt to set a step <= 0 to medDoubleParameter";
+        return;
+    }
+ 
     d->step = step;
 
     if(d->spinBox)
