@@ -16,6 +16,8 @@
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QLabel>
+#include <QDebug>
+
 #include <cmath>
 
 class medDoubleParameterPrivate
