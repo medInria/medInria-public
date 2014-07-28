@@ -92,6 +92,7 @@ QStringList medVtkViewItkDataImageInteractor::dataHandled()
                                   << "itkDataImageShort3"
                                   << "itkDataImageUShort3"
                                   << "itkDataImageInt3"
+                                  << "itkDataImageUInt3"
                                   << "itkDataImageLong3"
                                   << "itkDataImageULong3"
                                   << "itkDataImageFloat3"

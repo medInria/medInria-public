@@ -106,6 +106,7 @@ QStringList medVtkViewItkDataImage4DInteractor::dataHandled()
                                   << "itkDataImageShort4"
                                   << "itkDataImageUShort4"
                                   << "itkDataImageInt4"
+                                  << "itkDataImageUInt4"
                                   << "itkDataImageLong4"
                                   << "itkDataImageULong4"
                                   << "itkDataImageFloat4"
