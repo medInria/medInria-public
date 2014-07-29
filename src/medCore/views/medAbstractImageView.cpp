@@ -32,6 +32,49 @@
 #include <medLayerParameterGroup.h>
 #include <medParameterGroupManager.h>
 
+
+
+/**
+ * @fn QPointF medAbstractImageView::mapWorldToDisplayCoordinates( const QVector3D & worldVec )
+ * @brief Convert from world coordinates to scene coordinates.
+ */
+
+/**
+ * @fn QVector3D medAbstractImageView::mapDisplayToWorldCoordinates( const QPointF & scenePoint )
+ * @brief Convert from scene coordinates to world coordinates.
+ */
+
+/**
+ * @fn QVector3D medAbstractImageView::viewCenter()
+ * @brief Get the view center vector in world space, the center of the slice for 2d views.
+ */
+
+/**
+ * @fn QVector3D medAbstractImageView::viewPlaneNormal()
+ * @brief Get the view plane normal vector in world space.
+ */
+
+/**
+ * @fn QVector3D medAbstractImageView::viewUp()
+ * @brief Get the view plane up vector in world space.
+ */
+
+/**
+ * @fn bool medAbstractImageView::is2D()
+ * @brief Is the scene 2D (true) or 3D (false)
+ */
+
+/**
+ * @fn qreal medAbstractImageView::sliceThickness()
+ * @brief What is the thickness of the current slice (2D)
+ */
+
+/**
+ * @fn qreal medAbstractImageView::scale()
+ * @brief The scale (number of pixels on screen per mm)
+ */
+
+
 class medAbstractImageViewPrivate
 {
 public:
@@ -256,7 +299,10 @@ void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
     emit orientationChanged();
 }
 
-
+/**
+ * Return a composite parameter made of:
+ * QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale
+ */
 medCompositeParameter *medAbstractImageView::cameraParameter()
 {
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
@@ -304,6 +350,10 @@ medTriggerParameter *medAbstractImageView::fourViewsParameter()
     return d->fourViewsParameter;
 }
 
+/**
+ * Return a composite parameter made of:
+ * double &window, double level
+ */
 medCompositeParameter *medAbstractImageView::windowLevelParameter(unsigned int layer)
 {
     medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);

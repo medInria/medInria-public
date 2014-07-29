@@ -87,7 +87,8 @@ void medAbstractView::addData(medAbstractData *data)
 
 void medAbstractView::clear()
 {
-
+    this->removeInteractors(d->data);
+    d->data = NULL;
 }
 
 void medAbstractView::removeInteractors(medAbstractData *data)
@@ -174,6 +175,15 @@ QList<medAbstractInteractor*> medAbstractView::extraInteractors(medAbstractData*
     return d->extraInteractors;
 }
 
+medAbstractViewInteractor* medAbstractView::primaryInteractor()
+{
+    return d->primaryInteractor;
+}
+
+QList<medAbstractInteractor*> medAbstractView::extraInteractors()
+{
+    return d->extraInteractors;
+}
 
 medAbstractViewNavigator* medAbstractView::primaryNavigator()
 {
@@ -188,9 +198,27 @@ QList<medAbstractNavigator*> medAbstractView::extraNavigators()
 QList<medAbstractNavigator*> medAbstractView::navigators()
 {
     QList<medAbstractNavigator*> navigatorsList;
-    navigatorsList << this->primaryNavigator() << d->extraNavigators;
+
+    if(this->primaryNavigator())
+        navigatorsList << this->primaryNavigator();
+
+    if(!d->extraNavigators.isEmpty())
+        navigatorsList << d->extraNavigators;
 
     return navigatorsList;
+}
+
+QList<medAbstractInteractor*> medAbstractView::interactors()
+{
+    QList<medAbstractInteractor*> interactorsList;
+
+    if(this->primaryInteractor(d->data))
+        interactorsList << this->primaryInteractor(d->data);
+
+    if(!this->extraInteractors(d->data).isEmpty())
+        interactorsList << this->extraInteractors(d->data);
+
+    return interactorsList;
 }
 
 medDoubleParameter* medAbstractView::zoomParameter()
@@ -232,8 +260,21 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
 
 QImage medAbstractView::generateThumbnail(const QSize &size)
 {
-    emit aboutToBuildThumbnail();
+    setUpViewForThumbnail();
     return this->buildThumbnail(size);
+}
+
+void medAbstractView::setUpViewForThumbnail()
+{
+    medAbstractViewInteractor *primaryInteractor = this->primaryInteractor();
+    if(!primaryInteractor)
+    {
+        QString msg = "Unable to find any current primary interactor for view "  + this->identifier();
+        qWarning() << msg;
+    }
+
+    else
+        this->primaryInteractor()->setUpViewForThumbnail();
 }
 
 QList<medAbstractParameter*> medAbstractView::linkableParameters()

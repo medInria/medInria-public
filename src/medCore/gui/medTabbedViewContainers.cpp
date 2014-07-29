@@ -262,14 +262,7 @@ void medTabbedViewContainers::buildTemporaryPool()
         if(!container->view())
             continue;
 
-        QList<medAbstractParameter*>  params;
-        params.append(container->view()->primaryNavigator()->linkableParameters());
-        foreach(medAbstractNavigator* nav,  container->view()->extraNavigators())
-        {
-            params.append(nav->linkableParameters());
-        }
-
-        foreach(medAbstractParameter *param, params)
+        foreach(medAbstractParameter *param, container->view()->linkableParameters())
         {
             d->pool->append(param);
         }

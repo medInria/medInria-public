@@ -55,16 +55,15 @@ public:
     void setCurrentLayer(unsigned int layer);
     unsigned int currentLayer() const;
 
-    medAbstractBoolParameter* visibilityParameter(unsigned int layer);
-
-    medDataListParameter *dataListParameter() const;
-
     QList <medAbstractInteractor*> interactors(unsigned int layer);
     QList<medAbstractNavigator*> navigators();
 
     virtual QWidget* navigatorWidget();
     virtual QWidget* mouseInteractionWidget();
     QWidget* toolBarWidget();
+
+    medAbstractBoolParameter* visibilityParameter(unsigned int layer);
+    medDataListParameter *dataListParameter() const;
 
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medAbstractParameter*> linkableParameters(unsigned int layer);
@@ -83,6 +82,8 @@ protected:
     virtual QList<medAbstractInteractor *> extraInteractors(medAbstractData* data);
     virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
     virtual QList<medAbstractInteractor *> extraInteractors(unsigned int layer);
+    virtual medAbstractLayeredViewInteractor * primaryInteractor();
+    virtual QList<medAbstractInteractor *> extraInteractors();
 
     virtual medAbstractLayeredViewNavigator * primaryNavigator();
     virtual QList<medAbstractNavigator *> extraNavigators();
@@ -93,10 +94,7 @@ protected:
 
     virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);
 
-    virtual QWidget* buildToolBarWidget() = 0;
-
-protected slots:
-    virtual void setUpViewForThumbnail();
+    virtual QWidget* buildToolBarWidget() = 0;    
 
 private slots:
     void removeInternToolBarWidget();

@@ -31,7 +31,6 @@ class medDoubleParameter;
 class medAbstractVector2DParameter;
 class medStringListParameter;
 
-//
 
 /**
  * @brief The medViewBackend class
@@ -57,15 +56,15 @@ public:
     virtual void addData(medAbstractData* data);
     virtual void clear();
 
-    medDoubleParameter* zoomParameter();
-    medAbstractVector2DParameter* panParameter();
-
     virtual QWidget* navigatorWidget() = 0;
     virtual QWidget *viewWidget() = 0;
     virtual QWidget *mouseInteractionWidget() = 0;
 
     virtual QList<medAbstractNavigator*> navigators();
     virtual QList<medAbstractInteractor*> interactors();
+
+    medDoubleParameter* zoomParameter();
+    medAbstractVector2DParameter* panParameter();
 
     virtual QList<medAbstractParameter*> linkableParameters();
 
@@ -85,16 +84,13 @@ signals:
      * @param selected
      */
     void selectedRequest(bool selected);
-    /**
-     * @brief aboutToBuildThumbnail
-     * Emitted right before to generate a thumbnail.
-     * Used to setup the view for a thumbnail, by default connected to medAbstrctView::setupViewForThumbnail().
-     */
-    void aboutToBuildThumbnail();
+
 
 protected:
     virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
     virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
+    virtual medAbstractViewInteractor* primaryInteractor();
+    virtual QList<medAbstractInteractor*> extraInteractors();
     virtual medAbstractViewNavigator* primaryNavigator();
     virtual QList<medAbstractNavigator*> extraNavigators();
 
@@ -105,6 +101,7 @@ protected:
 
 private:
     virtual QImage buildThumbnail(const QSize &size) = 0;
+    virtual void setUpViewForThumbnail();
 
 private:
     medAbstractViewPrivate *d;

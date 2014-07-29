@@ -183,6 +183,16 @@ QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractors(unsigned 
     return d->extraInteractorsHash.value(this->layerData(layer));
 }
 
+medAbstractLayeredViewInteractor * medAbstractLayeredView::primaryInteractor()
+{
+    return this->primaryInteractor(d->currentLayer);
+}
+
+QList<medAbstractInteractor *> medAbstractLayeredView::extraInteractors()
+{
+    return this->extraInteractors(d->currentLayer);
+}
+
 medAbstractLayeredViewNavigator* medAbstractLayeredView::primaryNavigator()
 {
     return d->primaryNavigator;
@@ -379,21 +389,6 @@ void medAbstractLayeredView::setCurrentLayer(unsigned int layer)
 {
     d->currentLayer = layer;
     emit currentLayerChanged();
-}
-
-void medAbstractLayeredView::setUpViewForThumbnail()
-{
-    medAbstractLayeredViewInteractor *primaryInteractor = this->primaryInteractor(this->layerData(d->currentLayer));
-    if(!primaryInteractor)
-    {
-        QString msg = "Unable to find any primary interactor for view "  + this->identifier();
-        if(this->layerData(d->currentLayer))
-            msg += "and data" + this->layerData(d->currentLayer)->identifier();
-        qWarning() << msg;
-    }
-
-    else
-        this->primaryInteractor(this->layerData(d->currentLayer))->setUpViewForThumbnail();
 }
 
 QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int layer)

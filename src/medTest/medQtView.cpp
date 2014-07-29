@@ -143,11 +143,6 @@ void medQtView::render()
     qDebug() << "render";
 }
 
-QList<medAbstractParameter*> medQtView::navigatorsParameters()
-{
-    return QList<medAbstractParameter*>();
-}
-
 QImage medQtView::buildThumbnail(const QSize &size)
 {
     QImage img = QImage(size, QImage::Format_ARGB32);
