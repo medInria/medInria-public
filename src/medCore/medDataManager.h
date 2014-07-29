@@ -41,7 +41,7 @@ public:
 
     /**
     * Ask the data-manager to provide the data belonging to this index using its registered controllers.
-    * @params const medDataIndex & index medDataIndex for data
+    * @param const medDataIndex & index medDataIndex for data
     * @return medAbstractData * the data
     */
     dtkSmartPointer<medAbstractData> data(const medDataIndex& index);
@@ -52,14 +52,14 @@ public:
     * Use this function to insert data into the database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params dtkSmartPointer<medAbstractData> & data
+    * @param dtkSmartPointer<medAbstractData> & data
     */
     void import(dtkSmartPointer<medAbstractData> &data);
 
     /**
     * Import data into the db read from file
-    * @params const QString & file The file containing the data
-    * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * @param const QString & file The file containing the data
+    * @param bool indexWithoutCopying true if the file must only be indexed by its current path,
     * false if the file will be imported (copied or converted to the internal storage format)
     */
     void import(const QString& file,bool indexWithoutCopying);
@@ -68,7 +68,7 @@ public:
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params const medAbstractData & data
+    * @param const medAbstractData & data
     */
     void importNonPersistent(medAbstractData *data);
 
@@ -76,28 +76,28 @@ public:
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params const medAbstractData & data
-    * @params QString uuid Universally unique identifier associated with the data
+    * @param const medAbstractData & data
+    * @param QString uuid Universally unique identifier associated with the data
     */
     void importNonPersistent(medAbstractData *data, QString uuid);
 
     /**
     * Overload to insert data directly from a file into the no-persistent database
-    * @params QString file
+    * @param QString file
     */
     void importNonPersistent(QString file);
 
     /**
     * Overload to insert data directly from a file into the no-persistent database
-    * @params QString file
-    * @params QString & uuid Universally unique identifier associated with the data
+    * @param QString file
+    * @param QString & uuid Universally unique identifier associated with the data
     */
     void importNonPersistent(QString file, const QString &uuid);
 
     /**
     * Use this function to save data to a file.
-    * @params medAbstractData *data Pointer to some data to save
-    * @params const QString & filename The location in which the data will be stored in the file system
+    * @param medAbstractData *data Pointer to some data to save
+    * @param const QString & filename The location in which the data will be stored in the file system
     */
     void exportDataToFile(medAbstractData *data);
 
@@ -139,16 +139,16 @@ public:
     /**
      * Moves study and its series from one patient to another and returns the list of new indexes.
      * Moves across different datasources are not supported.
-     * @params const medDataIndex & indexStudy The data index of the study to be moved
-     * @params const medDataIndex & toPatient The data index to move the study to.
+     * @param const medDataIndex & indexStudy The data index of the study to be moved
+     * @param const medDataIndex & toPatient The data index to move the study to.
      */
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
 
     /**
      * Moves serie from one study to another and returns the new index of the serie.
      * Moves across different datasources are not supported.
-     * @params const medDataIndex & indexSerie The data index of the serie to be moved
-     * @params const medDataIndex & toStudy The data index to move the serie to.
+     * @param const medDataIndex & indexSerie The data index of the serie to be moved
+     * @param const medDataIndex & toStudy The data index to move the serie to.
      */    
     medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 

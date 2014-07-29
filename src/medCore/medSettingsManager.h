@@ -39,31 +39,31 @@ public:
 
     /**
     * setValue
-    * @params: const QString & key
-    * @params: const QVariant & value
+    * @param: const QString & key
+    * @param: const QVariant & value
     * @return   void
     */
     void setValue( const QString & section, const QString & key, const QVariant & value );
 
     /**
     * value
-    * @params: const QString & section
-    * @params: const QString & key
-    * @params: const QVariant & defaultValue
+    * @param: const QString & section
+    * @param: const QString & key
+    * @param: const QVariant & defaultValue
     * @return   QT_NAMESPACE::QVariant
     */
     QVariant value ( const QString & section, const QString & key, const QVariant & defaultValue = QVariant() );
 
     /**
     * keys
-    * @params: const QString & section
+    * @param: const QString & section
     * @return   QStringList
     */
     QStringList keys ( const QString & section);
 
     /**
     * remove
-    * @params: const QString & key
+    * @param: const QString & key
     * @return   void
     */
     void remove (const QString & section, const QString & key);

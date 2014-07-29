@@ -48,15 +48,11 @@ public:
 
     /**
      * @brief Destroys the button
-     *
-     * @param void
     */
     ~medButton();
 
     /**
      * @brief Returns the pixmap's size.
-     *
-     * @param void
      * @return QSize
     */
     QSize sizeHint() const;
@@ -71,8 +67,6 @@ public:
 signals:
     /**
      * @brief Emitted when the button is clicked.
-     *
-     * @param void
     */
     void triggered();
 

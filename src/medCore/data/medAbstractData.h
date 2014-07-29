@@ -35,7 +35,7 @@ public:
 
     /**
     * Attach a meddataindex to the data to carry it arround
-    * @params const medDataIndex & index
+    * @param const medDataIndex & index
     */
     void setDataIndex(const medDataIndex& index);
 

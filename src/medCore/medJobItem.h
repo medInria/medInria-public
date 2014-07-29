@@ -60,7 +60,7 @@ signals:
 
     /**
     * This signal is emitted when the process cannot be cancelled anymore.
-    * @params QObject *sender
+    * @param QObject *sender
     * @return void
     */
     void disableCancel(QObject* sender);
@@ -70,7 +70,7 @@ public slots:
     /**
     * onCancel - Re-implement this, if your job is able to cancel itself (recommended).
     * It should then emit cancelled(sender) to give a status to the ProgressionStack
-    * @params: QObject *sender
+    * @param: QObject *sender
     * @return   void
     */
     virtual void onCancel(QObject*);

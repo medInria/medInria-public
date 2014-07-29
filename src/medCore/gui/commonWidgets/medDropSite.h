@@ -32,7 +32,7 @@ public:
     QSize sizeHint() const;
 
     /**
-     * Whenever an object is dropped on the @medDropSite it
+     * Whenever an object is dropped on the medDropSite it
      * automatically updates itself to use the correspondent
      * thumbnail. If you prefer to manually modify it from
      * outside set this to false.
@@ -49,11 +49,11 @@ signals:
 
     /**
      * This signal is emitted when an object containing
-     * a valid @medDataIndex is dropped.
+     * a valid medDataIndex is dropped.
      */
     void objectDropped (const medDataIndex& index);
 
-    /** Signal emitted when the user clicks on the @medDropSite. */
+    /** Signal emitted when the user clicks on the medDropSite. */
     void clicked();
     
 protected:

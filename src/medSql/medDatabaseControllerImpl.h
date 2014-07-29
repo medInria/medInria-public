@@ -61,7 +61,7 @@ public:
 
     /**
     * Change the storage location of the database by copy, verify, delete
-    * @params QString newLocation path of new storage location, must be empty
+    * @param QString newLocation path of new storage location, must be empty
     * @return bool true on success
     */
     bool moveDatabase(QString newLocation);
@@ -119,15 +119,15 @@ public slots:
 
     /**
     * Read the data from db
-    * @params const medDataIndex & index Index pointing to data
+    * @param const medDataIndex & index Index pointing to data
     * @return medAbstractData * the data stored
     */
     dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Import data into the db read from file
-    * @params const QString & file The file containing the data
-    * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * @param const QString & file The file containing the data
+    * @param bool indexWithoutCopying true if the file must only be indexed by its current path,
     * false if the file will be imported (copied or converted to the internal storage format)
     */
     void import(const QString& file, bool indexWithoutCopying);
@@ -140,7 +140,7 @@ public slots:
 
     /**
     * Import data into the db read from memory
-    * @params medAbstractData * data dataObject
+    * @param medAbstractData * data dataObject
     */
     void import(medAbstractData *data, QString importUuid=QString());
 
@@ -155,15 +155,15 @@ public slots:
 
     /**
      * Moves study and its series from one patient to another and returns the list of new indexes
-     * @params const medDataIndex & indexStudy The data index of the study to be moved
-     * @params const medDataIndex & toPatient The data index to move the study to.
+     * @param const medDataIndex & indexStudy The data index of the study to be moved
+     * @param const medDataIndex & toPatient The data index to move the study to.
      */
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
 
     /**
      * Moves serie from one study to another and returns the new index of the serie
-     * @params const medDataIndex & indexSerie The data index of the serie to be moved
-     * @params const medDataIndex & toStudy The data index to move the serie to.
+     * @param const medDataIndex & indexSerie The data index of the serie to be moved
+     * @param const medDataIndex & toStudy The data index to move the serie to.
      */
     medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 

@@ -45,8 +45,8 @@ public slots:
 
     /**
     * AddJobItem - Add a new subclass of medJobItem to the Stack to create the connection between them
-    * @params: medJobItem * job - instance of medJobItem
-    * @params: QString label - the label shown on the jobToolBox
+    * @param: medJobItem * job - instance of medJobItem
+    * @param: QString label - the label shown on the jobToolBox
     * if no label was given the job will not be added
     */
     void addJobItem(medJobItem* job, QString label);
@@ -73,7 +73,7 @@ public slots:
     /**
     * Modifies the GUI so as there is no way of (attempting) to cancel
     * the job anymore, as now it is not cancellable.
-    * @params QObject* sender
+    * @param QObject* sender
     */
     void disableCancel(QObject* sender);
 

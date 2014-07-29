@@ -62,11 +62,6 @@ public:
      * is used to create a function pointer to allocate memory.
      * The toolbox source code doesn't need to contain any such function itself.
      *
-     * @param identifier Identifier of the type.
-     * @param name Human readable name(Potentially localised).
-     * @param description short description, mainly used for tooltips
-     * in comboboxes listing the toolboxes (Potentially localised).
-     * @param categories List of categories classifying the Toolbox.
      */
     template <typename toolboxType>
     bool registerToolBox() {

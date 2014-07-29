@@ -84,7 +84,6 @@ public:
     /**
      * @brief Gets the Toolbox's header.
      *
-     * @param void
      * @return medToolBoxHeader *
     */
     medToolBoxHeader *header() const;
@@ -92,7 +91,6 @@ public:
     /**
      * @brief Gets the toolbox's body.
      *
-     * @param void
      * @return medToolBoxBody *
     */
     medToolBoxBody   *body()   const;
@@ -142,7 +140,6 @@ signals:
      * @brief Emitted when an action from the toolbox succeeded.
      * Typically used when a dtkProcess returned.
      *
-     * @param void
     */
     void success();
 
@@ -150,7 +147,6 @@ signals:
      * @brief Emitted when an action from the toolbox failed.
      *
      * Typically used when a dtkProcess returned.
-     * @param void
     */
     void failure();
 
@@ -161,7 +157,6 @@ public slots:
      * Resets the parameters within the tolbox,
      * for instance when the current patient changed or the view.
      *
-     * @param void
     */
     virtual void clear();
 
@@ -187,7 +182,6 @@ public slots:
      * @brief Get toolbox's valid data types.
      *
      * @see setValidDataTypes
-     * @param void
     */
     const QStringList ValidDataTypes();
 
@@ -201,7 +195,6 @@ public slots:
     /**
      * @brief Show the toolbox, "overloads" the QWidget show
      *
-     * @param void
     */
     void show();
 

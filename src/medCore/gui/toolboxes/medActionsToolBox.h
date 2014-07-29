@@ -66,14 +66,14 @@ public slots:
     /**
     * Slot to call when an item representing a patient has been selected.
     * The appropriate buttons will appear in the toolbox.
-    * @param index – the @medDataIndex of the db item
+    * @param index – the medDataIndex of the db item
     **/
     void patientSelected(const medDataIndex& index);
 
     /**
     * Slot to call when an item representing a series has been selected.
     * The appropriate buttons will appear in the toolbox.
-    * @param index – the @medDataIndex of the db item
+    * @param index – the medDataIndex of the db item
     **/
     void seriesSelected(const medDataIndex& index);
 
@@ -86,7 +86,7 @@ public slots:
     /**
     * Slot to call when items representing files and/or folders have been selected.
     * The appropriate buttons will appear in the toolbox.
-    * @param paths – a @QStringList with all the selected paths
+    * @param paths – a QStringList with all the selected paths
     **/
     void selectedPathsChanged(const QStringList& paths);
 
