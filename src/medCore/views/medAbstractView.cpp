@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,8 +15,8 @@
 
 #include <QPair>
 
-#include <dtkCore/dtkAbstractData.h>
 #include <medAbstractData.h>
+#include <dtkCore/dtkSmartPointer>
 
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
@@ -34,13 +34,19 @@ public:
 
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
+
+    // Smart pointed.
+    // dtkSmartPointer should only be used in views, process and dataManager.
+    dtkSmartPointer<medAbstractData> data;
 };
+
 
 medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate)
 {
     this->setParent(parent);
     d->closable = true;
 
+    d->data = NULL;
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
 }
@@ -50,6 +56,38 @@ medAbstractView::~medAbstractView( void )
     emit closed();
     delete d;
     d = NULL;
+}
+
+
+void medAbstractView::addData(medAbstractData *data)
+{
+    if(!data)
+    {
+        qWarning() << "Attempt to add a NULL data to the view: " << this;
+        return;
+    }
+
+    if(data == d->data)
+    {
+        qDebug() << "Attempt to set twice the same data to the view: " << this;
+        return;
+    }
+
+    d->data = data;
+
+    bool initSuccess = this->initialiseInteractors(data);
+    if(!initSuccess)
+    {
+        d->data = NULL;
+        return;
+    }
+
+    this->reset();
+}
+
+void medAbstractView::clear()
+{
+
 }
 
 void medAbstractView::removeInteractors(medAbstractData *data)
@@ -62,7 +100,6 @@ void medAbstractView::removeInteractors(medAbstractData *data)
 bool medAbstractView::initialiseInteractors(medAbstractData *data)
 {
     // primary
-
     medViewFactory* factory = medViewFactory::instance();
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
@@ -152,7 +189,7 @@ QList<medAbstractNavigator*> medAbstractView::navigators()
 {
     QList<medAbstractNavigator*> navigatorsList;
     navigatorsList << this->primaryNavigator() << d->extraNavigators;
-    
+
     return navigatorsList;
 }
 
@@ -178,17 +215,6 @@ medAbstractVector2DParameter* medAbstractView::panParameter()
     return pNavigator->panParameter();
 }
 
-QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
-{
-    QList<medAbstractParameter*>  params;
-    params.append(this->primaryNavigator()->linkableParameters());
-
-    foreach(medAbstractNavigator* nav,  this->extraNavigators())
-        params.append(nav->linkableParameters());
-
-    return params;
-}
-
 bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
 {
     if(obj == this->viewWidget())
@@ -212,6 +238,11 @@ QImage medAbstractView::generateThumbnail(const QSize &size)
 
 QList<medAbstractParameter*> medAbstractView::linkableParameters()
 {
-    //TODO:
-    return navigatorsParameters();
+    QList<medAbstractParameter*>  params;
+    params.append(this->primaryNavigator()->linkableParameters());
+
+    foreach(medAbstractNavigator* nav,  this->extraNavigators())
+        params.append(nav->linkableParameters());
+
+    return params;
 }

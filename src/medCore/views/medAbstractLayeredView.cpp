@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -29,15 +29,18 @@
 class medAbstractLayeredViewPrivate
 {
 public:
+
+    // Smart pointed.
+    // dtkSmartPointer should only be used in views, process and dataManager.
     QList <dtkSmartPointer<medAbstractData> > layersDataList;
-    QHash<dtkSmartPointer<medAbstractData>,  medAbstractLayeredViewInteractor*> primaryInteractorsHash;
-    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraInteractorsHash;
+    QHash<medAbstractData *,  medAbstractLayeredViewInteractor*> primaryInteractorsHash;
+    QHash<medAbstractData *,  QList<medAbstractInteractor*> > extraInteractorsHash;
 
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
     medDataListParameter *dataListParameter;
-    
+
     unsigned int currentLayer;
 
     QWidget* toolBarWidget;
@@ -55,8 +58,7 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
     d->toolBarWidget = 0;
     d->navigatorWidget = NULL;
     d->mouseInteractionWidget = NULL;
-    connect(this, SIGNAL(aboutToBuildThumbnail()), this, SLOT(setUpViewForThumbnail()));
-    
+
     d->dataListParameter = new medDataListParameter("DataList",this);
     connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medDataIndex>)),this,SLOT(setDataList(QList<medDataIndex>)));
     connect(this,SIGNAL(layerAdded(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
@@ -199,10 +201,10 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
 QList<medDataIndex> medAbstractLayeredView::dataList() const
 {
     QList <medDataIndex> outputList;
-    
+
     foreach(medAbstractData *data, d->layersDataList)
         outputList << data->dataIndex();
-    
+
     return outputList;
 }
 
@@ -236,7 +238,7 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
 void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 {
     d->dataListParameter->blockSignals(true);
-    
+
     foreach(medDataIndex index, this->dataList())
     {
         medAbstractData *data = medDataManager::instance()->data(index);
@@ -252,9 +254,9 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
         medAbstractData *data = medDataManager::instance()->data(index);
         if (!data)
             continue;
-        
+
         this->addLayer(data);
-        
+
         unsigned int layerNumber = this->layer(data);
 
         QList<medLayerParameterGroup*> groupsLayer0 = medParameterGroupManager::instance()->layerGroups(this, 0);
