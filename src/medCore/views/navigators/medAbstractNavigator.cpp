@@ -16,6 +16,21 @@
 #include <medAbstractView.h>
 
 
+/**
+ * @fn QWidget* medAbstractNavigator::buildToolBoxWidget()
+ * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+ * view settings toolBox when the container of the parent view is single selected.
+ * @return
+ */
+
+/**
+ * @fn QWidget* medAbstractNavigator::buildToolBarWidget()
+ * @brief buildToolBarWidget reimplement it to construct and return the widget displayed in the
+ * toolbar of the container where the parent view is dsiplayed.
+ */
+
+
+
 class medAbstractNavigatorPrivate
 {
 public:
@@ -54,4 +69,13 @@ QWidget* medAbstractNavigator::toolBarWidget()
     }
 
     return d->toolBarWidget;
+}
+
+/**
+ * @brief updateWidgets reimplemts it to reupdate your
+ * widgets when data in view or orientation change.
+ */
+void medAbstractNavigator::updateWidgets()
+{
+
 }

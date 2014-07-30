@@ -16,6 +16,25 @@
 #include <medAbstractView.h>
 
 
+/**
+* @fn QWidget* medAbstractInteractor::buildToolBoxWidget()
+* @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+* view settings toolBox when the container of the parent view is single selected.
+*/
+
+/**
+* @fn QWidget* medAbstractInteractor::buildToolBarWidget()
+* @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+* toolbar of the container where the parent view is displayed.
+*/
+
+/**
+* @fn QWidget* medAbstractInteractor::buildLayerWidget()
+* @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+* layer toolbox when the container of the parent view is selected.
+*/
+
+
 class medAbstractInteractorPrivate
 {
 public:

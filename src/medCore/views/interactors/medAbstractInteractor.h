@@ -59,23 +59,8 @@ public slots:
 
 
 protected:
-    /**
-    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
-    * view settings toolBox when the container of the parent view is single selected.
-    * @return
-    */
     virtual QWidget* buildToolBoxWidget() = 0;
-    /**
-    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
-    * toolbar of the container where the parent view is dsiplayed.
-    * @return
-    */
     virtual QWidget* buildToolBarWidget() = 0;
-    /**
-    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
-    * layer toolbox when the container of the parent view is selected.
-    * @return
-    */
     virtual QWidget* buildLayerWidget() = 0;
 
 private slots:

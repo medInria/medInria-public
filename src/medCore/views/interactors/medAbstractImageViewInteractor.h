@@ -32,11 +32,9 @@ public:
     virtual ~medAbstractImageViewInteractor();
 
     virtual medDoubleParameter* opacityParameter();
-
     virtual medCompositeParameter* windowLevelParameter();
 
 public slots:
-
     virtual void setOpacity(double opacity) = 0;
 
     virtual void setWindowLevel(QHash<QString,QVariant>) = 0;

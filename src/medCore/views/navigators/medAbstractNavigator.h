@@ -42,17 +42,7 @@ public:
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
 
 protected:
-    /**
-     * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
-     * view settings toolBox when the container of the parent view is single selected.
-     * @return
-     */
     virtual QWidget* buildToolBoxWidget() = 0;
-    /**
-     * @brief buildToolBarWidget reimplement it to construct and return the widget displayed in the
-     * toolbar of the container where the parent view is dsiplayed.
-     * @return
-     */
     virtual QWidget* buildToolBarWidget() = 0;
 
 private slots:
@@ -65,11 +55,7 @@ private:
                         NOT IMPLEMENTED HERE ON PURPOSE
 *=========================================================================*/
 public slots:
-    /**
-     * @brief updateWidgets reimplemts it to reupdate your
-     * widgets when data in view or orientation change.
-     */
-    virtual void updateWidgets(){}
+    virtual void updateWidgets();
 
 private:
     using dtkAbstractViewNavigator::setView;
