@@ -68,9 +68,6 @@ protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);
     void switchToStackedViewContainers(medTabbedViewContainers* stack);
 
-private slots:
-    void removeInternSelectionToolBox();
-
 signals:
     void open(const medDataIndex&);
 

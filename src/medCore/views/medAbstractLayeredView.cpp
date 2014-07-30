@@ -43,11 +43,11 @@ public:
 
     unsigned int currentLayer;
 
-    QWidget* toolBarWidget;
+    QPointer<QWidget> toolBarWidget;
 
     // toolboxes
-    QWidget* navigatorWidget;
-    QWidget* mouseInteractionWidget;
+    QPointer<QWidget> navigatorWidget;
+    QPointer<QWidget> mouseInteractionWidget;
 
 };
 
@@ -419,10 +419,9 @@ QList<medAbstractNavigator*> medAbstractLayeredView::navigators()
 
 QWidget* medAbstractLayeredView::navigatorWidget()
 {
-    if(!d->navigatorWidget)
+    if(d->navigatorWidget.isNull())
     {
         d->navigatorWidget = new QWidget;
-        connect(d->navigatorWidget, SIGNAL(destroyed()), this, SLOT(removeInternNavigatorWidget()));
         QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
 
         navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
@@ -435,10 +434,9 @@ QWidget* medAbstractLayeredView::navigatorWidget()
 
 QWidget* medAbstractLayeredView::toolBarWidget()
 {
-    if(!d->toolBarWidget)
+    if(d->toolBarWidget.isNull())
     {
         d->toolBarWidget = this->buildToolBarWidget();
-        connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
     }
 
     return d->toolBarWidget;
@@ -446,10 +444,9 @@ QWidget* medAbstractLayeredView::toolBarWidget()
 
 QWidget* medAbstractLayeredView::mouseInteractionWidget()
 {
-    if(!d->mouseInteractionWidget)
+    if(d->mouseInteractionWidget.isNull())
     {
         d->mouseInteractionWidget = new QWidget;
-        connect(d->mouseInteractionWidget, SIGNAL(destroyed()), this, SLOT(removeInternMouseInteractionWidget()));
 
         QList<medBoolParameter*> params;
 
@@ -484,21 +481,6 @@ QList<medAbstractParameter*> medAbstractLayeredView::interactorsParameters(unsig
     }
 
     return params;
-}
-
-void medAbstractLayeredView::removeInternNavigatorWidget()
-{
-    d->navigatorWidget = NULL;
-}
-
-void medAbstractLayeredView::removeInternMouseInteractionWidget()
-{
-    d->mouseInteractionWidget = NULL;
-}
-
-void medAbstractLayeredView::removeInternToolBarWidget()
-{
-    d->toolBarWidget = NULL;
 }
 
 QList<medAbstractParameter*> medAbstractLayeredView::linkableParameters()

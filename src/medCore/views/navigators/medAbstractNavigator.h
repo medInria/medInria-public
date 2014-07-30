@@ -56,8 +56,7 @@ protected:
     virtual QWidget* buildToolBarWidget() = 0;
 
 private slots:
-    void removeInternToolBoxWidget();
-    void removeInternToolBarWidget();
+
 
 private:
     medAbstractNavigatorPrivate *d;

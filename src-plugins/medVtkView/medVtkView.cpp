@@ -62,7 +62,7 @@ public:
     vtkImageView3D *view3d;
 
     // widgets
-    QVTKWidget *viewWidget;
+    QPointer<QVTKWidget> viewWidget;
 
     medVtkViewObserver *observer;
 
@@ -126,7 +126,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     interactorStyle->Delete();
 
     d->viewWidget = new QVTKWidget;
-    connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
@@ -398,11 +397,6 @@ qreal medVtkView::scale()
     if (scale < 0)
         scale *= -1;
     return scale;
-}
-
-void medVtkView::removeInternViewWidget()
-{
-    d->viewWidget = NULL;
 }
 
 void medVtkView::changeCurrentLayer()

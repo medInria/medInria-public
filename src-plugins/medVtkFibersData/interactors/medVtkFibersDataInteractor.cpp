@@ -81,7 +81,7 @@ public:
     vtkSmartPointer <vtkProperty> opacityProperty;
 
     QWidget *toolboxWidget;
-    QWidget *bundleToolboxWidget;
+    QPointer<QWidget> bundleToolboxWidget;
 
     QMap<QString, double> meanLengthList;
     QMap<QString, double> minLengthList;
@@ -1275,7 +1275,6 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     toolBoxLayout->addWidget(d->radiusParameter->getSlider());
 
     d->bundleToolboxWidget = new QWidget(d->toolboxWidget);
-    connect(d->bundleToolboxWidget, SIGNAL(destroyed()), this, SLOT(removeInternBundleToolBoxWidget()));
     QVBoxLayout *bundleToolboxLayout = new QVBoxLayout(d->bundleToolboxWidget);
 
     toolBoxLayout->addWidget(d->bundleToolboxWidget);
@@ -1473,13 +1472,13 @@ void medVtkFibersDataInteractor::updateWidgets()
 {
     if(!d->view->is2D())
     {
-        if(d->bundleToolboxWidget)
+        if(!d->bundleToolboxWidget.isNull())
             d->bundleToolboxWidget->show();
         d->slicingParameter->getSlider()->setEnabled(false);
     }
     else
     {
-        if(d->bundleToolboxWidget)
+        if(!d->bundleToolboxWidget.isNull())
             d->bundleToolboxWidget->hide();
         d->slicingParameter->getSlider()->setEnabled(true);
         this->updateSlicingParam();
@@ -1497,9 +1496,4 @@ void medVtkFibersDataInteractor::updateSlicingParam()
     d->slicingParameter->blockSignals(false);
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
-}
-
-void medVtkFibersDataInteractor::removeInternBundleToolBoxWidget()
-{
-    d->bundleToolboxWidget = NULL;
 }

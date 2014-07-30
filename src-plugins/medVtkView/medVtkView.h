@@ -55,7 +55,6 @@ public slots:
 private slots:
     void displayDataInfo(uint layer);
     void changeCurrentLayer();
-    void removeInternViewWidget();
 
     void buildMouseInteractionParamPool(uint layer);
     void saveMouseInteractionSettings(bool parameterEnabled);

@@ -210,7 +210,6 @@ private:
     static QStringList dataHandled();
 
 private slots:
-    void removeInternBundleToolBoxWidget();
     void updateSlicingParam();
 
 private:

@@ -238,11 +238,6 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
             Qt::UniqueConnection);
 }
 
-void medWorkspaceArea::removeInternSelectionToolBox()
-{
-    d->selectionToolBox = NULL;
-}
-
 void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
 {
     if(!stack )

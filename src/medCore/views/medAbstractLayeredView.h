@@ -97,9 +97,6 @@ protected:
     virtual QWidget* buildToolBarWidget() = 0;    
 
 private slots:
-    void removeInternToolBarWidget();
-    void removeInternNavigatorWidget();
-    void removeInternMouseInteractionWidget();
     void updateDataListParameter(unsigned int layer);
 
 private:

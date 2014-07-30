@@ -79,10 +79,6 @@ protected:
     virtual QWidget* buildLayerWidget() = 0;
 
 private slots:
-    void removeInternToolBoxWidget();
-    void removeInternToolBarWidget();
-    void removeInternLayerWidget();
-
 
 private:
     medAbstractInteractorPrivate *d;

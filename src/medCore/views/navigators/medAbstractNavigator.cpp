@@ -19,8 +19,8 @@
 class medAbstractNavigatorPrivate
 {
 public:
-    QWidget *toolBoxWidget;
-    QWidget *toolBarWidget;
+    QPointer<QWidget> toolBoxWidget;
+    QPointer<QWidget> toolBarWidget;
 };
 
 medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
@@ -38,10 +38,9 @@ medAbstractNavigator::~medAbstractNavigator()
 
 QWidget* medAbstractNavigator::toolBoxWidget()
 {
-    if(!d->toolBoxWidget)
+    if(d->toolBoxWidget.isNull())
     {
         d->toolBoxWidget = this->buildToolBoxWidget();
-        connect(d->toolBoxWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBoxWidget()));
     }
 
     return d->toolBoxWidget;
@@ -49,21 +48,10 @@ QWidget* medAbstractNavigator::toolBoxWidget()
 
 QWidget* medAbstractNavigator::toolBarWidget()
 {
-    if(!d->toolBarWidget)
+    if(d->toolBarWidget.isNull())
     {
         d->toolBarWidget = this->buildToolBarWidget();
-        connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
     }
 
     return d->toolBarWidget;
-}
-
-void medAbstractNavigator::removeInternToolBoxWidget()
-{
-    d->toolBoxWidget = NULL;
-}
-
-void medAbstractNavigator::removeInternToolBarWidget()
-{
-    d->toolBarWidget = NULL;
 }
