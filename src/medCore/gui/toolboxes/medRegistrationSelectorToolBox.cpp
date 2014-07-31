@@ -22,7 +22,6 @@
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medDataManager.h>
-#include <medViewManager.h>
 #include <medJobManager.h>
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>

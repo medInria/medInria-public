@@ -16,7 +16,6 @@
 #include <medAbstractView.h>
 #include <medAbstractParameter.h>
 #include <medParameterPool.h>
-#include <medViewManager.h>
 
 
 class medParameterPoolManagerPrivate

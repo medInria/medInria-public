@@ -26,7 +26,6 @@
 #include <medSettingsManager.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medViewManager.h>
 #include <medAbstractView.h>
 #include <medMetaDataKeys.h>
 #include <medViewFactory.h>

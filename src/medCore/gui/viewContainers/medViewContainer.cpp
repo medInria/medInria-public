@@ -28,7 +28,6 @@
 #include <medDataManager.h>
 #include <medViewFactory.h>
 #include <medAbstractLayeredView.h>
-#include <medViewManager.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medStringListParameter.h>
