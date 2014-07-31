@@ -71,6 +71,9 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
     layerGroup1->setLinkAllParameters(true);
+
+    connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
+            d->segmentationToolBox, SIGNAL(inputChanged()));
 }
 
 void medSegmentationWorkspace::setupViewContainerStack()

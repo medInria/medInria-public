@@ -127,5 +127,3 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
 
     connect ( d->currentSegmentationToolBox, SIGNAL(success()), this, SIGNAL(success()));
 }
-
-

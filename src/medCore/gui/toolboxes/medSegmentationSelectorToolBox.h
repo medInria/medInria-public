@@ -36,6 +36,7 @@ public:
 
 signals:
      void installEventFilterRequest(medViewEventFilter *filter);
+     void inputChanged();
 
 public slots:
     void changeCurrentToolBox(int index);
