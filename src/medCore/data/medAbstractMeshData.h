@@ -35,11 +35,7 @@ public:
     virtual int countVertices()
     { return 0; }
     virtual int countEdges()
-    { return 0; }
-
-    //    virtual QList<medAbstractDataVertex *> vertices();
-    //    virtual QList<medAbstractDataEdge *> edges();
-    
+    { return 0; }    
 
 private:
     medAbstractMeshDataPrivate *d;
