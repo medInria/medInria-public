@@ -46,7 +46,6 @@ public:
 
     QString asString() const;
 
-    /** Inlined setters / getters for speed. */
     void setDataSourceId (int id) { m_dataSourceId = id; }
     void setPatientId (int id) { m_patientId = id; }
     void setStudyId   (int id) { m_studyId = id; }
@@ -61,24 +60,16 @@ public:
 
     medDataIndex& operator=(const medDataIndex& index);
 
-    /** Returns true if two indexes match, where either input may be a patient, study, series or image.
-     *  Here, NOT_VALID on either side is treated as equality where operator== requires values that are equal.
-     * */
     static bool isMatch( const medDataIndex& index1, const medDataIndex& index2);
 
     friend MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
     friend MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
 
-    /** The less than operator can be used with STL maps.
-     *  Ordering is by patientId, then studyId, then seriesId, then imageId.
-     */
     friend MEDCORE_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
     friend MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
     friend MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
 
-    /** Create mime representation. Caller takes ownership of the pointer.*/
     QMimeData * createMimeData();
-    /** Read medDataIndex from mime data. Returns an invalid index in case of error.*/
     static medDataIndex readMimeData(const QMimeData * mimeData);
 
     static medDataIndex makePatientIndex(int sourceId, int patientId);

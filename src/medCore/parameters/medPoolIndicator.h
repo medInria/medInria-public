@@ -21,6 +21,7 @@ class medPoolIndiactorPrivate;
 class MEDCORE_EXPORT medPoolIndicator: public QWidget
 {
     Q_OBJECT
+
 public:
     medPoolIndicator(QWidget* parent = NULL);
     ~medPoolIndicator();

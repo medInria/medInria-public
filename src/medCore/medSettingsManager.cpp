@@ -21,6 +21,10 @@ public:
     QSettings settings;
 };
 
+/**
+* instance - singleton access method, returns a singleViewContainer static instance of the manager
+* @return   medSettingsManager * - the manager
+*/
 medSettingsManager * medSettingsManager::instance( void )
 {
     if(!s_instance)
@@ -39,6 +43,9 @@ medSettingsManager::~medSettingsManager( void )
     d = NULL;
 }
 
+/**
+* destroy - should be called on closing the application, to destroy the singleton
+*/
 void medSettingsManager::destroy( void )
 {
     if (s_instance) {
@@ -47,6 +54,13 @@ void medSettingsManager::destroy( void )
     }
 }
 
+/**
+* value
+* @param: const QString & section
+* @param: const QString & key
+* @param: const QVariant & defaultValue
+* @return   QT_NAMESPACE::QVariant
+*/
 QVariant medSettingsManager::value( const QString & section, const QString & key, const QVariant & defaultValue /*= QVariant() */ )
 {
     bool valuePresent;
@@ -71,6 +85,11 @@ QVariant medSettingsManager::value( const QString & section, const QString & key
     return result;
 }
 
+/**
+* keys
+* @param: const QString & section
+* @return   QStringList
+*/
 QStringList medSettingsManager::keys ( const QString & section)
 {
     d->settings.beginGroup(section);
@@ -80,6 +99,12 @@ QStringList medSettingsManager::keys ( const QString & section)
     return keys;
 }
 
+/**
+* setValue
+* @param: const QString & key
+* @param: const QVariant & value
+* @return   void
+*/
 void medSettingsManager::setValue( const QString & section, const QString & key, const QVariant & value )
 {
     QString sectionKey;
@@ -88,6 +113,11 @@ void medSettingsManager::setValue( const QString & section, const QString & key,
     emit settingsChanged(section);
 }
 
+/**
+* remove
+* @param: const QString & key
+* @return   void
+*/
 void medSettingsManager::remove (const QString & section, const QString & key)
 {
     d->settings.beginGroup(section);

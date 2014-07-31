@@ -27,6 +27,13 @@ public:
     QStringList loadErrors;
 };
 
+/**
+ * @brief Gets an instance of the Plugin Manager.
+ *
+ *
+ * @param void
+ * @return medPluginManager * a pointer to an instance of the singleton.
+*/
 medPluginManager *medPluginManager::instance(void)
 {
     if(!s_instance)
@@ -34,11 +41,26 @@ medPluginManager *medPluginManager::instance(void)
     return s_instance;
 }
 
+/**
+ * @brief Uninitialize the manager.
+ * @warning does nothing here, writing the path brought problems with the use of the
+ * dtkSettingsEditor, that does not set the path in the manager.
+ *
+ * @param void
+*/
 void medPluginManager::uninitialize()
 {
     //do nothing, setting the path only brings about problems when the dtkSettingsEditor is used.
 }
 
+/**
+ * @brief Gets the path to the plugins, from the settings.
+ * Overrides the method in the parent to use the application name defined
+ * in the main function, and do not use dtk as an application name, allowing different
+ * applications to use different settings.
+ *
+ * @param void
+*/
 void medPluginManager::readSettings(void)
 {
     QDir plugins_dir;
@@ -73,8 +95,12 @@ void medPluginManager::readSettings(void)
     }
 }
 
-
-
+/**
+ * @brief Gets a list of plugins belonging to 'category'
+ *
+ * @param category The category to use as a filter
+ * @return QStringList list of plugin names
+*/
 QStringList medPluginManager::handlers(const QString& category)
 {
     if (d->handlers.contains(category))
@@ -83,6 +109,11 @@ QStringList medPluginManager::handlers(const QString& category)
     return QStringList();
 }
 
+/**
+ * @brief Adds the plugin to the handlers.
+ *
+ * @param name Name of the loaded plugin
+*/
 void medPluginManager::onPluginLoaded(const QString& name)
 {
     qDebug() << " Loading plugin : " << name;
@@ -98,12 +129,23 @@ void medPluginManager::onPluginLoaded(const QString& name)
         d->handlers[category] << plug->types();
 }
 
+/**
+ * @brief Hidden constructor because of the singleton.
+ *
+ * Use instance() instead.
+ * @param void
+*/
 medPluginManager::medPluginManager(void) : dtkPluginManager(), d(new medPluginManagerPrivate)
 {
     connect(this, SIGNAL(loaded(const QString&)), this, SLOT(onPluginLoaded(const QString&)));
     connect(this, SIGNAL(loadError(QString)), this, SLOT(onLoadError(QString)));
 }
 
+/**
+ * @brief Hidden destructor because of the singleton.
+ *
+ * @param void
+*/
 medPluginManager::~medPluginManager(void)
 {
     delete d;

@@ -21,7 +21,6 @@
 class medAbstractProcessPrivate;
 
 
-
 /**
  * Extending dtkAbstractProcess class to hold more specific information
  */

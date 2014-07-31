@@ -52,21 +52,29 @@ medViewEventFilter::~medViewEventFilter(void)
     removeFromAllViews();
 }
 
+//! Implement dtkAbstractObject.
 QString medViewEventFilter::description(void) const
 {
     return s_description();
 }
 
+//! Implement dtkAbstractObject.
 QString medViewEventFilter::identifier(void) const
 {
     return s_description();
 }
 
+/** Event handlers, derived classes should override those they need.
+ *  \return     true if the event was processed and should not be passed to the next handler.
+ *  The default implementations do nothing, returning false. */
 bool medViewEventFilter::mousePressEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
     return false;
 }
 
+/** Event handlers, derived classes should override those they need.
+ *  \return     true if the event was processed and should not be passed to the next handler.
+ *  The default implementations do nothing, returning false. */
 bool medViewEventFilter::mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
     return false;
@@ -92,6 +100,7 @@ bool medViewEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mou
     return false;
 }
 
+//! Override QObject
 bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 {
     FilterObjToViewType::const_iterator it( m_filterObjToView.find( obj ) );
@@ -144,6 +153,7 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
     }
 }
 
+//! Installs the eventFilter(this) in the given view
 void medViewEventFilter::installOnView( medAbstractView * view )
 {
     if ( !view ) {
@@ -166,6 +176,7 @@ void medViewEventFilter::installOnView( medAbstractView * view )
     connect(view, SIGNAL(destroyed(QObject*)), this, SLOT(onViewDestroyed(QObject*)));
 }
 
+//! Remove the eventFilter(this) in the given view
 void medViewEventFilter::removeFromView(medAbstractView * view)
 {
     if ( m_views.contains(view)) {
@@ -176,6 +187,7 @@ void medViewEventFilter::removeFromView(medAbstractView * view)
     }
 }
 
+//! Remove this from all views it has been installed on.
 void medViewEventFilter::removeFromAllViews()
 {
     while( !m_views.isEmpty() ) {
@@ -183,8 +195,7 @@ void medViewEventFilter::removeFromAllViews()
     }
 }
 
-
-
+//! Which object to actually filter given the input view.
 QObject * medViewEventFilter::objectToFilter( medAbstractView * view )
 {
     return view->viewWidget();

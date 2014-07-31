@@ -94,7 +94,10 @@ QString medDataIndex::asString() const
     return returnString;
 }
 
-// static
+/**
+ * Returns true if two indexes match, where either input may be a patient, study, series or image.
+ * Here, NOT_VALID on either side is treated as equality where operator== requires values that are equal.
+ */
 bool medDataIndex::isMatch( const medDataIndex& index1, const medDataIndex& index2)
 {
     if ( index1.dataSourceId() != index2.dataSourceId() ) 
@@ -127,6 +130,7 @@ bool medDataIndex::isMatch( const medDataIndex& index1, const medDataIndex& inde
     return true; // patient, study, series and image match and are not -1;
 }
 
+/** Create mime representation. Caller takes ownership of the pointer.*/
 QMimeData * medDataIndex::createMimeData()
 {
     QString indexString = QString("%1:%2:%3:%4:%5").arg(this->dataSourceId())
@@ -138,7 +142,7 @@ QMimeData * medDataIndex::createMimeData()
     return data;
 }
 
-//static
+/** Read medDataIndex from mime data. Returns an invalid index in case of error.*/
 medDataIndex medDataIndex::readMimeData( const QMimeData * mimeData )
 {
     if (mimeData->hasFormat("med/index")) {
@@ -217,6 +221,10 @@ QDebug operator<<(QDebug debug, medDataIndex *index)
     return debug.space();
 }
 
+/**
+ * The less than operator can be used with STL maps.
+ *  Ordering is by patientId, then studyId, then seriesId, then imageId.
+ */
 bool operator<(const medDataIndex& index1, const medDataIndex& index2)
 {
     if (index1.dataSourceId() < index2.dataSourceId()) 

@@ -41,37 +41,26 @@ public:
              medViewEventFilter(dtkAbstractObject * parent = NULL);
     virtual ~medViewEventFilter();
 
-    //! Implement dtkAbstractObject.
     virtual QString description() const;
     virtual QString identifier() const;
 
-    //! Installs the eventFilter(this) in the given view
     void installOnView(medAbstractView * view);
-    //! Remove the eventFilter(this) in the given view
+
     void removeFromView(medAbstractView * view);
-    //! Remove this from all views it has been installed on.
+
     void removeFromAllViews();
 
 protected:
-    //! Override QObject
     virtual bool eventFilter(QObject *obj, QEvent *event);
 
-    /** Event handlers, derived classes should override those they need.
-     *  \return     true if the event was processed and should not be passed to the next handler.
-     *  The default implementations do nothing, returning false. */
     virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent );
     virtual bool mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent );
     virtual bool mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent );
 
-    /** Event handlers, derived classes should override those they need.
-     *  \return     true if the event was processed and should not be passed to the next handler.
-     *  The default implementations do nothing, returning false. */
     virtual bool mousePressEvent( medAbstractView *view, QGraphicsSceneMouseEvent *mouseEvent );
     virtual bool mouseReleaseEvent( medAbstractView *view, QGraphicsSceneMouseEvent *mouseEvent );
     virtual bool mouseMoveEvent( medAbstractView *view, QGraphicsSceneMouseEvent *mouseEvent );
 
-
-    // Which object to actually filter given the input view.
     static QObject * objectToFilter( medAbstractView * view );
 
 protected slots:
@@ -86,6 +75,5 @@ private:
     FilterObjToViewType m_filterObjToView;
 };
 
-//Q_DECLARE_METATYPE(dtkAbstractObject);
-//Q_DECLARE_METATYPE(dtkAbstractObject*);
+
 
