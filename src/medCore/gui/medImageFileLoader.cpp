@@ -22,6 +22,7 @@ public:
     QString path;
 };
 
+//! Constructor : Supply the image path as \a path.
 medImageFileLoader::medImageFileLoader(const QString& path) : d(new medImageFileLoaderPrivate)
 {
     d->path = path;
@@ -34,6 +35,7 @@ medImageFileLoader::~medImageFileLoader(void)
     d = NULL;
 }
 
+//! Implement QRunnable
 void medImageFileLoader::run(void)
 {
     if(!d->path.isEmpty()) {

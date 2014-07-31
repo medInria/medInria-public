@@ -45,7 +45,11 @@ public:
   QTabWidget::TabPosition tabPosition;
 };
 
-
+/**
+ * @brief Instantiate the widget.
+ *
+ * @param parent
+*/
 medSettingsEditor::medSettingsEditor(QWidget *parent, bool useAdvancedWidget) :
     QWidget(parent),d(new medSettingsEditorPrivate())
 {
@@ -68,6 +72,14 @@ void medSettingsEditorPrivate::read()
     }
 }
 
+/**
+ * @brief Performs validation tests on each section and tires to save.
+ *
+ * If any section fails, an error message is emitted for it, and the other sections are still saved.
+ *
+ * The widget closes if the save action is successful.
+ *
+*/
 void medSettingsEditor::onSaveClicked()
 {
     if (this->save())
@@ -77,17 +89,29 @@ void medSettingsEditor::onSaveClicked()
     }
 }
 
+/**
+ * @brief Cancel any non saved change and closes the widget.
+ *
+*/
 void medSettingsEditor::onCancelClicked()
 {
 //   this->close();
     emit finished();
 }
 
+/**
+ * @brief reset the display to the last saved values.
+ *
+*/
 void medSettingsEditor::onResetClicked()
 {
     d->read();
 }
 
+/**
+ * @brief Switches from the advanced to the default mode, and vice versa.
+ *
+*/
 void medSettingsEditor::onAdvancedClicked()
 {
     if (d->stack->currentIndex()){
@@ -111,6 +135,9 @@ void medSettingsEditor::onAdvancedClicked()
 
 }
 
+/**
+ * @brief initialize layout
+ */
 void medSettingsEditor::initialize()
 {
     if (d->isInitialized)
@@ -190,6 +217,9 @@ void medSettingsEditor::initialize()
     d->isInitialized = true;
 }
 
+/**
+ * @brief add settings widgets from factory
+ */
 void medSettingsEditor::queryWidgets()
 {
     medSettingsWidgetFactory * settingsFactory =
@@ -223,6 +253,9 @@ void medSettingsEditor::queryWidgets()
     }
 }
 
+/**
+ * Call save on all child widgets and return the status
+ */
 bool medSettingsEditor::save()
 {
     bool success = true;
@@ -257,11 +290,20 @@ bool medSettingsEditor::save()
     return success;
 }
 
+/**
+ * @brief Sets the tabs position around the tab widget.
+ *
+ * @param position
+ */
 void medSettingsEditor::setTabPosition(QTabWidget::TabPosition position)
 {
     d->tabPosition = position;
 }
 
+/**
+ * @brief Gets the position of the tabs around the tab widget.
+ *
+ */
 QTabWidget::TabPosition medSettingsEditor::tabPosition()
 {
     return d->tabPosition;

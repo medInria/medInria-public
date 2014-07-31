@@ -169,6 +169,7 @@ void medProgressionStack::removeItem(){
 
 }
 
+/** show a final status and remove the Widget after a defined time **/
 void medProgressionStack::completeNotification(QObject* sender, QString label )
 {
     // check if the sender is in the list of stored senders
@@ -190,12 +191,19 @@ void medProgressionStack::completeNotification(QObject* sender, QString label )
     }
 }
 
+/** send a cancel request to the job that the cancelbutton is connected to **/
 void medProgressionStack::sendCancelRequest()
 {
     QObject* sender = this->sender();
     emit cancelRequest(d->buttonsSender.value(sender));
 }
 
+/**
+* AddJobItem - Add a new subclass of medJobItem to the Stack to create the connection between them
+* @param: medJobItem * job - instance of medJobItem
+* @param: QString label - the label shown on the jobToolBox
+* if no label was given the job will not be added
+*/
 void medProgressionStack::addJobItem(medJobItem* job, QString label)
 {
     if (label.isEmpty())
@@ -216,6 +224,16 @@ void medProgressionStack::addJobItem(medJobItem* job, QString label)
     this->setLabel(job, label);
 }
 
+/**
+ * @brief Sets the progress bar to move without knowing percentage.
+ *
+ * The developper can use the slot at any time to switch from a continuous
+ * unknown progression phase to a step by step progression.
+ *
+ * @param sender the object which called the function, to identify the bar in the table.
+ * @param active if true, the bar will move on its own to show activity.
+ * If false, the progression will be set to a fraction of 100.
+ */
 void medProgressionStack::setActive(QObject *sender, bool active)
 {
     if (d->bars.contains(sender) ) {
@@ -223,6 +241,11 @@ void medProgressionStack::setActive(QObject *sender, bool active)
     }
 }
 
+/**
+* Modifies the GUI so as there is no way of (attempting) to cancel
+* the job anymore, as now it is not cancellable.
+* @param QObject* sender
+*/
 void medProgressionStack::disableCancel(QObject* sender)
 {
     if (d->bars.contains(sender) )

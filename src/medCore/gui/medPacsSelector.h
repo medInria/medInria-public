@@ -29,16 +29,12 @@ public:
 signals:
     void selectionChanged(QVector<int> list);
 
- public slots:
-
+public slots:
     void updateList();
-
     void emitSelectionChanged();
 
 private:
-
     void readSettings();
-
     void fillWidget( QList<QVariant> nodes );
 
     medToolBoxPacsSelectorPrivate *d;

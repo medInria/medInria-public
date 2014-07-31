@@ -23,19 +23,13 @@ class medSettingsWidgetPrivate;
  *
  * All the pages in the medSettingsEditor must inherit from this class.
  *
- *
 */
 class MEDCORE_EXPORT medSettingsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    /**
-     * @brief Should not be used directly, the factory will instanciate all the settingsWidgets.
-     *
-     * @param parent Parent widget. Should be the medSettingsEditor
-    */
-    explicit medSettingsWidget(QWidget *parent = 0);
 
+    explicit medSettingsWidget(QWidget *parent = 0);
 
     virtual QString identifier() const = 0;
     virtual QString name() const = 0;
@@ -46,10 +40,7 @@ public:
     */
     virtual QString description() const = 0;
 
-    /**
-     * @brief Gets the name as it should appear in the settingsEditor.
-     * @return QString
-    */
+
     QString tabName() const;
 
     /**
@@ -59,31 +50,18 @@ public:
      * @param void
      * @return bool true if saving worked, false otherwise.
     */
-    virtual bool write()=0;
+    virtual bool write() = 0;
 
 public slots:
     /**
      * @brief Reads its data from the QSettings.
      *
     */
-    virtual void read()=0;
+    virtual void read() = 0;
 
-    /**
-     * @brief Validates the form before saving the data.
-     *
-     * @param void
-     * @return bool true is succeeded, false otherwise.
-    */
     virtual bool validate();
 
 protected:
-
-    /**
-     * @brief Sets the name of the tab appearing in the settingsEditor.
-     * MUST be used by inherited classes.
-     *
-     * @param section
-    */
     void setTabName(QString section);
 
 private:

@@ -188,6 +188,11 @@ medActionsToolBox::~medActionsToolBox()
     d = NULL;
 }
 
+/**
+* Slot to call when an item representing a patient has been selected.
+* The appropriate buttons will appear in the toolbox.
+* @param index – the medDataIndex of the db item
+**/
 void medActionsToolBox::patientSelected(const medDataIndex& index)
 {
     if( !(medDataManager::instance()->controllerForDataSource(index.dataSourceId())->isPersistent()) )
@@ -196,6 +201,11 @@ void medActionsToolBox::patientSelected(const medDataIndex& index)
         updateButtons("Patient");
 }
 
+/**
+* Slot to call when an item representing a series has been selected.
+* The appropriate buttons will appear in the toolbox.
+* @param index – the medDataIndex of the db item
+**/
 void medActionsToolBox::seriesSelected(const medDataIndex& index)
 {
     if( !(medDataManager::instance()->controllerForDataSource(index.dataSourceId())->isPersistent()) )
@@ -204,11 +214,20 @@ void medActionsToolBox::seriesSelected(const medDataIndex& index)
         updateButtons("Series");
 }
 
+/**
+* Slot to call when the items selected in the db browser change
+* and no item is selected. Hence no buttons are displayed.
+**/
 void medActionsToolBox::noPatientOrSeriesSelected()
 {
     updateButtons("None");
 }
 
+/**
+* Slot to call when items representing files and/or folders have been selected.
+* The appropriate buttons will appear in the toolbox.
+* @param paths – a QStringList with all the selected paths
+**/
 void medActionsToolBox::selectedPathsChanged(const QStringList& paths)
 {
     bool containsFolders = false;

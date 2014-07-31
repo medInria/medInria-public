@@ -31,12 +31,6 @@ public:
 
     QSize sizeHint() const;
 
-    /**
-     * Whenever an object is dropped on the medDropSite it
-     * automatically updates itself to use the correspondent
-     * thumbnail. If you prefer to manually modify it from
-     * outside set this to false.
-     */
     void setCanAutomaticallyChangeAppereance(bool can);
 
 public:

@@ -81,16 +81,25 @@ medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
     d = NULL;
 }
 
+/**
+ * @brief returns current selected toolbox
+ */
 medFilteringAbstractToolBox* medFilteringSelectorToolBox::currentToolBox()
 {
     return d->currentToolBox;
 }
 
+/**
+ * @brief returns input data
+ */
 medAbstractData*  medFilteringSelectorToolBox::data()
 {
     return d->inputData;
 }
 
+/**
+ * @brief instantiates the right process toolbox according to its description
+ */
 void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
 {    
     medFilteringAbstractToolBox *toolbox = NULL;
@@ -146,7 +155,10 @@ void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
     connect ( d->currentToolBox, SIGNAL(success()), this, SIGNAL(processFinished()));
 }
 
-
+/**
+ * @brief retrieve data from the selected input image index
+ * @param index
+ */
 void medFilteringSelectorToolBox::onInputSelected(medAbstractData *data)
 {   
     d->inputData = data;
@@ -158,6 +170,9 @@ void medFilteringSelectorToolBox::onInputSelected(medAbstractData *data)
         d->currentToolBox->update(d->inputData);
 }
 
+/**
+ * @brief clear input data and the current process toolbox
+ */
 void medFilteringSelectorToolBox::clear()
 {
     d->inputData = NULL;

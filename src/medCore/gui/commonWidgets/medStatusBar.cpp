@@ -34,16 +34,32 @@ medStatusBar::~medStatusBar()
     d= NULL;
 }
 
+/**
+ *  Set the status bar layout containing the widgets
+ * (messages, quick access menu, quit button)
+ *
+ * @param : QBoxLayout * layout
+ */
 void medStatusBar::setStatusBarLayout ( QBoxLayout* layout )
 {
     d->statusBarLayout = layout;
 }
 
+/**
+ *  Get the status bar layout
+ *
+ * @return : QBoxLayout *
+ */
 QBoxLayout* medStatusBar::statusBarLayout()
 {
     return d->statusBarLayout;
 }
 
+/**
+ *  Set the available space on the statusBar
+ *
+ * @param : int space
+ */
 void medStatusBar::setAvailableSpace ( int space )
 {
     this->statusBarWidth = this->size().width();

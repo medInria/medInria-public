@@ -81,28 +81,15 @@ public:
                                  workspaceType::isUsable);
     }
 
-    /**
-     * @brief Gives the details of all workspaces.
-     *
-     */
+
     QHash<QString, medWorkspaceFactory::Details *> workspaceDetails() const;
-
     QList<medWorkspaceFactory::Details *> workspaceDetailsSortedByName() const;
-
-    /**
-     * @brief Gives the details of one workspace.
-     *
-     */
     medWorkspaceFactory::Details * workspaceDetailsFromId(QString identifier) const;
 
     bool isUsable(QString identifier) const;
 
 public slots:
-    /**
-     * @brief allocates the memory for a medAbstractWorkspace.
-     * @param type identifier for the Workspace type.
-     * @param parent the parentWidget for all the Widget created in the workspace, even if the workspace is not a widget, its children can be destroyed by the qobject hierarchy.
-     */
+
     medAbstractWorkspace* createWorkspace(QString type,QWidget* parent=0);
 
 protected:

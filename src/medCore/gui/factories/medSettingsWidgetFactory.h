@@ -23,32 +23,21 @@ struct medSettingDetails;
 
 /**
  * @brief This factory creates Widgets that are pages in the medSettingsEditor widget.
- *
 */
 class MEDCORE_EXPORT medSettingsWidgetFactory : public dtkAbstractFactory
 {
   Q_OBJECT
 
 public:
-  /**
-   * @brief This function pointer designates functions allocating memory
-   *
-  */
+
+  //! This function pointer designates functions allocating memory
   typedef medSettingsWidget*(*medSettingsWidgetCreator)(QWidget *);
 
-  /**
-   * @brief Type designating the internal has table containing the creator functions.
-   *
-  */
+  //! Type designating the internal has table containing the creator functions.
   typedef QHash<QString, medSettingDetails*> medSettingsWidgetCreatorHash;
 
 public:
-  /**
-   * @brief Gets an instance of the factory.
-   *
-   * @param void
-   * @return medSettingsWidgetFactory * Factory instance
-  */
+
   static medSettingsWidgetFactory * instance();
   /**
    * @brief Registers a new widget type, and its creator function.
@@ -69,56 +58,17 @@ public:
                                     creator);
   }
 
-
-
-  /**
-   * @brief Gets a list of registered type names.
-   *
-   * @return QList<QString>
-  */
   QList<QString> settingsWidgets();
 
-  /**
-   * @brief Gets the name, description and creators
-   * for the given settings.
-   */
-  medSettingDetails* settingDetailsFromId (
-          const QString& id )const;
-
-  /**
-   * @brief Gets the name, description, and creators of all the settings
-   *
-   */
-  QHash<QString, medSettingDetails*> toolBoxDetailsFromCategory (
-          const QString& id )const;
+  medSettingDetails* settingDetailsFromId (const QString& id ) const;
 
 public slots:
-  /**
-   * @brief Creates a new widget.
-   *
-   * @param type the type to instanciate
-   * @return medSettingsWidget * the newly allocated widget.
-  */
-  medSettingsWidget * createSettingsWidget(QString type,
-                                           QWidget * parent);
+
+  medSettingsWidget * createSettingsWidget(QString type, QWidget * parent);
 
 protected:
-  /**
-   * @brief Constructor, not to be used by users.
-   *
-   * Use the instance() method instead to get a singleton.
-   *
-   * @param void
-  */
-  medSettingsWidgetFactory();
 
-  /**
-   * @brief Destructor, not to be used by users.
-   *
-   * The singleton will be deleted at appplication closing time.
-   *
-   * @param void
-  */
+  medSettingsWidgetFactory();
   ~medSettingsWidgetFactory();
 
 private:

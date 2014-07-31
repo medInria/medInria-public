@@ -65,6 +65,12 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     this->setLayout(layout);
 }
 
+/**
+ * @brief Performs the validation of each control inside the widget.
+ *
+ * @param void
+ * @return true is the validation is successful, false otherwise.
+*/
 bool medStartupSettingsWidget::validate()
 {
     return true;

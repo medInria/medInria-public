@@ -48,6 +48,12 @@ QSize medDropSite::sizeHint(void) const
     return QSize(128, 128);
 }
 
+/**
+ * Whenever an object is dropped on the medDropSite it
+ * automatically updates itself to use the correspondent
+ * thumbnail. If you prefer to manually modify it from
+ * outside set this to false.
+ */
 void medDropSite::setCanAutomaticallyChangeAppereance(bool can)
 {
     d->canAutomaticallyChangeAppereance = can;

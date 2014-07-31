@@ -35,12 +35,6 @@ private slots:
     void selectDbDirectory();
 
 protected:
-    /**
-     * @brief Performs the validation of each control inside the widget.
-     *
-     * @param void
-     * @return true is the validation is successful, false otherwise.
-    */
     bool validate();
 
     bool write();

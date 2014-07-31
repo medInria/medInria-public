@@ -29,77 +29,25 @@ class medButton;
 class MEDCORE_EXPORT medToolBoxHeader : public QFrame
 {
     Q_OBJECT
-public:
-     /**
-      * @brief Instantiates a header.
-      *
-      * @param parent
-     */
-     medToolBoxHeader(QWidget *parent = 0);
 
-    /**
-     * @brief
-     *
-     * @param void
-    */
+public:
+
+     medToolBoxHeader(QWidget *parent = 0);
     ~medToolBoxHeader();
 
-    /**
-     * @brief Sets the header's title.
-     *
-     * @param title
-    */
     void setTitle(const QString& title);
-
-    /**
-     * @brief Returns the title of the header.
-     *
-     * @return const QString
-     */
     QString title() const;
 
-    /**
-     * @brief Sets the offset of the header's title from upper left corner.
-     *
-     * @param titleOffset
-    */
     void setTitleOffset(const QPoint & titleOffset);
-
-    /**
-     * @brief
-     *
-     * @param visible
-     */
     void setAboutButtonVisibility(bool visible);
-
-
-    /**
-     * @brief Returns a pointer to the aboutButton.
-     *
-     */
     medButton* aboutButton();
 
-
 protected:
-    /**
-     * @brief Paints the header.
-     *
-     * @param event
-    */
     void paintEvent(QPaintEvent *event);
-
-    /**
-     * @brief Emits the triggered() signal.
-     *
-     * @param event
-    */
     void mousePressEvent(QMouseEvent *event);
 
 signals:
-    /**
-     * @brief Emitted when a mouse press event is caught.
-     *
-    */
+    //!  Emitted when a mouse press event is caught.
     void triggered();
 
 private:

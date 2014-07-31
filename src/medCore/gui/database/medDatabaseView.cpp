@@ -260,6 +260,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
             emit (open(item->dataIndex()));
 }
 
+/** Opens the currently selected item. */
 void medDatabaseView::onViewSelectedItemRequested(void)
 {
     if(!this->selectedIndexes().count())
@@ -281,6 +282,7 @@ void medDatabaseView::onViewSelectedItemRequested(void)
     }
 }
 
+/** Exports the currently selected item. */
 void medDatabaseView::onExportSelectedItemRequested(void)
 {
     if(!this->selectedIndexes().count())
@@ -340,6 +342,7 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
     }
 }
 
+/** Removes the currently selected item. */
 void medDatabaseView::onRemoveSelectedItemRequested( void )
 {
     int reply = QMessageBox::question(this, tr("Remove item"),
@@ -368,6 +371,7 @@ void medDatabaseView::onRemoveSelectedItemRequested( void )
     }
 }
 
+/** Saves the currently selected item. */
 void medDatabaseView::onSaveSelectedItemRequested(void)
 {
     QModelIndexList indexes = this->selectedIndexes();
@@ -391,6 +395,7 @@ void medDatabaseView::onSaveSelectedItemRequested(void)
     }
 }
 
+/** Creates a new patient */
 void medDatabaseView::onCreatePatientRequested(void)
 {
     QModelIndexList indexes = this->selectedIndexes();
@@ -454,6 +459,7 @@ void medDatabaseView::onCreatePatientRequested(void)
     }
 }
 
+/** Creates a new study */
 void medDatabaseView::onCreateStudyRequested(void)
 {
     QModelIndexList indexes = this->selectedIndexes();
@@ -512,6 +518,7 @@ void medDatabaseView::onCreateStudyRequested(void)
     }
 }
 
+/** Edits selected item */
 void medDatabaseView::onEditRequested(void)
 {
     QModelIndexList indexes = this->selectedIndexes();
@@ -559,6 +566,7 @@ void medDatabaseView::onEditRequested(void)
 
 }
 
+/** Called after having failed to open a file. Will add a visual indicator of the failed file. */
 void medDatabaseView::onOpeningFailed(const medDataIndex& index)
 {
     if (NoFocusDelegate* delegate =

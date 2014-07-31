@@ -52,6 +52,11 @@ QList<QString> medWorkspaceFactory::workspaces(void)
     return d->creators.keys();
 }
 
+/**
+ * @brief allocates the memory for a medAbstractWorkspace.
+ * @param type identifier for the Workspace type.
+ * @param parent the parentWidget for all the Widget created in the workspace, even if the workspace is not a widget, its children can be destroyed by the qobject hierarchy.
+ */
 medAbstractWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
 {
     if(!d->creators.contains(type))
@@ -62,6 +67,10 @@ medAbstractWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget*
     return workspace;
 }
 
+/**
+ * @brief Gives the details of all workspaces.
+ *
+ */
 QHash<QString, medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetails() const
 {
     return d->creators;
@@ -92,7 +101,10 @@ medWorkspaceFactory::~medWorkspaceFactory(void)
     d = NULL;
 }
 
-
+/**
+ * @brief Gives the details of one workspace.
+ *
+ */
 medWorkspaceFactory::Details * medWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
 {
     return d->creators.value(identifier);

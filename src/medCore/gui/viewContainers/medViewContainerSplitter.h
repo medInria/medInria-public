@@ -57,10 +57,6 @@ private slots:
     medViewContainer* splitVertically();
     medViewContainer* splitHorizontally();
 
-    /**
-     * @brief checkIfStillDeserveToLive
-     * Check the number of child widget and call the destuctor if there is no one.
-     */
     void checkIfStillDeserveToLive();
 
 private:

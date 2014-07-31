@@ -26,7 +26,6 @@ class MEDCORE_EXPORT medSegmentationAbstractToolBox : public medToolBox
     Q_OBJECT
 
 public:
-    //! Parent should be a medSegmentationSelectorToolBox
              medSegmentationAbstractToolBox(QWidget *parent = 0);
     virtual ~medSegmentationAbstractToolBox();
 
@@ -35,7 +34,6 @@ public:
     virtual medAbstractData *processOutput() = 0;
 
 protected:
-    //! Get the segmentationToolbox (usually one instance)
     medSegmentationSelectorToolBox *segmentationToolBox();
 
 private:

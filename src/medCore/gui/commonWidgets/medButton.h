@@ -22,60 +22,26 @@ class medButtonPrivate;
 /**
  * @brief General custom button that loads shows an icon.
  */
-
 class MEDCORE_EXPORT medButton : public QWidget
 {
     Q_OBJECT
 
 public:
-    /**
-     * @brief Instantiates the button from a resource path.
-     *
-     * @param parent
-     * @param resourceLocation
-     * @param toolTip
-    */
-    medButton(QWidget *parent, QString resourceLocation, QString toolTip);
 
-    /**
-     * @brief Instantiates the button from an existing pixmap.
-     *
-     * @param parent
-     * @param pixmap
-     * @param toolTip
-    */
+    medButton(QWidget *parent, QString resourceLocation, QString toolTip);
     medButton(QWidget *parent, QPixmap pixmap, QString toolTip);
 
-    /**
-     * @brief Destroys the button
-    */
     ~medButton();
 
-    /**
-     * @brief Returns the pixmap's size.
-     * @return QSize
-    */
     QSize sizeHint() const;
 
-    /**
-     * @brief Sets a new existing pixmap as an icon.
-     *
-     * @param icon
-    */
     void setIcon(QPixmap icon);
 
 signals:
-    /**
-     * @brief Emitted when the button is clicked.
-    */
+    //!  Emitted when the button is clicked.
     void triggered();
 
 protected:
-    /**
-     * @brief Reimplemented mouse pressed event.
-     *
-     * @param event
-    */
     void mousePressEvent(QMouseEvent *event);
 
 private:

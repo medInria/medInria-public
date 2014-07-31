@@ -138,6 +138,10 @@ void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag align
     newContainer->addData(medDataManager::instance()->data(index));
 }
 
+/**
+ * @brief checkIfStillDeserveToLive
+ * Check the number of child widget and call the destuctor if there is no one.
+ */
 void medViewContainerSplitter::checkIfStillDeserveToLive()
 {
     if(this->count() == 0)

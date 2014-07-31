@@ -47,6 +47,10 @@ void medHomepageButton::onClick()
     emit clicked ( this->identifier() );
 }
 
+/**
+ * @brief Returns the identifier string stored in the button.
+ * @see setIdentifier
+ */
 QString medHomepagePushButton::identifier()
 {
     if (this->id.isEmpty())
@@ -72,6 +76,10 @@ void medHomepagePushButton::setSelected(bool value)
     this->style()->polish(this);
 }
 
+/**
+ * @brief Returns the identifier string stored in the button.
+ * @see setIdentifier
+ */
 QString medHomepageButton::identifier()
 {
     if (this->id.isEmpty())
@@ -80,11 +88,23 @@ QString medHomepageButton::identifier()
         return this->id;
 }
 
+/**
+ * @brief Sets an identifier string for the translated valu displayed in text.
+ *
+ * This String is used to store the identifier corresponding to a workspace in the button.
+ * @see identifier
+ */
 void medHomepagePushButton::setIdentifier(const QString & identifier)
 {
     this->id = identifier;
 }
 
+/**
+ * @brief Sets an identifier string for the translated valu displayed in text.
+ *
+ * This String is used to store the identifier corresponding to a workspace in the button.
+ * @see identifier
+ */
 void medHomepageButton::setIdentifier(const QString & identifier)
 {
     this->id = identifier;

@@ -18,25 +18,13 @@
 
 class MEDCORE_EXPORT medHomepagePushButton : public QPushButton
 {
-    Q_OBJECT
-    
-    Q_PROPERTY(bool selected READ isSelected WRITE setSelected);
+    Q_OBJECT   
+    Q_PROPERTY(bool selected READ isSelected WRITE setSelected)
     
 public:
     medHomepagePushButton ( QWidget * parent = 0 );
 
-    /**
-     * @brief Sets an identifier string for the translated valu displayed in text.
-     *
-     * This String is used to store the identifier corresponding to a workspace in the button.
-     * @see identifier
-     */
     void setIdentifier(const QString & id);
-
-    /**
-     * @brief Returns the identifier string stored in the button.
-     * @see setIdentifier
-     */
     QString identifier ();
 
     bool selected() const;
@@ -72,24 +60,15 @@ signals:
     void clicked ( QString text );
 };
 
+
+
 class MEDCORE_EXPORT medHomepageButton : public QToolButton
 {
     Q_OBJECT
 public:
     medHomepageButton ( QWidget * parent = 0 );
 
-    /**
-     * @brief Sets an identifier string for the translated valu displayed in text.
-     *
-     * This String is used to store the identifier corresponding to a workspace in the button.
-     * @see identifier
-     */
     void setIdentifier(const QString & id);
-
-    /**
-     * @brief Returns the identifier string stored in the button.
-     * @see setIdentifier
-     */
     QString identifier ();
 public slots:
     void onClick();

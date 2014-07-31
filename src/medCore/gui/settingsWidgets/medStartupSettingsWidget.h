@@ -23,6 +23,7 @@ class MEDCORE_EXPORT medStartupSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
     MED_SETTINGS_INTERFACE("Start Up","Startup settings")
+
 public:
     medStartupSettingsWidget(QWidget *parent = 0);
 
@@ -32,15 +33,9 @@ public slots:
     void read();
 
 protected:
-    /**
-     * @brief Performs the validation of each control inside the widget.
-     *
-     * @param void
-     * @return true is the validation is successful, false otherwise.
-    */
     bool validate();
-
     bool write();
+
 private:
     medStartupSettingsWidgetPrivate *d;
 

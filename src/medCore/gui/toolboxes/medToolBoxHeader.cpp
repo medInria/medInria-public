@@ -54,22 +54,42 @@ medToolBoxHeader::~medToolBoxHeader(void)
     d = NULL;
 }
 
+/**
+ * @brief Sets the header's title.
+ *
+ * @param title
+*/
 void medToolBoxHeader::setTitle(const QString& title)
 {
     d->title = title;
 }
 
+
+/**
+ * @brief Returns the title of the header.
+ *
+ * @return const QString
+ */
 QString medToolBoxHeader::title() const
 {
     return d->title;
 }
 
-
+/**
+ * @brief Sets the offset of the header's title from upper left corner.
+ *
+ * @param titleOffset
+*/
 void medToolBoxHeader::setTitleOffset(const QPoint & titleOffset)
 {
     d->titleOffset = titleOffset;
 }
 
+/**
+ * @brief Paints the header.
+ *
+ * @param event
+*/
 void medToolBoxHeader::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
@@ -83,16 +103,30 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
+/**
+ * @brief
+ *
+ * @param visible
+ */
 void medToolBoxHeader::setAboutButtonVisibility(bool visible)
 {
     d->about->setVisible(visible);
 }
 
+/**
+ * @brief Emits the triggered() signal.
+ *
+ * @param event
+*/
 void medToolBoxHeader::mousePressEvent( QMouseEvent *event )
 {
     emit triggered();
 }
 
+/**
+ * @brief Returns a pointer to the aboutButton.
+ *
+ */
 medButton * medToolBoxHeader::aboutButton()
 {
     return d->about;

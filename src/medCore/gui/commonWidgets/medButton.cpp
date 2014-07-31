@@ -21,7 +21,13 @@ public:
     QLabel * icon;
 };
 
-
+/**
+ * @brief Instantiates the button from a resource path.
+ *
+ * @param parent
+ * @param resourceLocation
+ * @param toolTip
+*/
 medButton::medButton( QWidget *parent, QString resourceLocation, QString toolTip ):
     QWidget(parent), d(new medButtonPrivate)
 {
@@ -34,6 +40,13 @@ medButton::medButton( QWidget *parent, QString resourceLocation, QString toolTip
     setToolTip(toolTip);
 }
 
+/**
+ * @brief Instantiates the button from an existing pixmap.
+ *
+ * @param parent
+ * @param pixmap
+ * @param toolTip
+*/
 medButton::medButton( QWidget *parent, QPixmap pixmap, QString toolTip ):
     QWidget(parent),d(new medButtonPrivate)
 {
@@ -51,11 +64,20 @@ medButton::~medButton( void )
     delete d;
 }
 
+/**
+ * @brief Returns the pixmap's size.
+ * @return QSize
+*/
 QSize medButton::sizeHint( void ) const
 {
     return d->icon->sizeHint();
 }
 
+/**
+ * @brief Sets a new existing pixmap as an icon.
+ *
+ * @param icon
+*/
 void medButton::setIcon(QPixmap icon)
 {
     d->icon->setPixmap(icon);

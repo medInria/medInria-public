@@ -34,7 +34,19 @@ medToolBoxFactory *medToolBoxFactory::instance(void)
     return s_instance;
 }
 
-
+/**
+ * @brief Registers a medToolBox type with the factory.
+ *
+ * This method requires the developer to provide his own function pointer
+ * to allocate the toolbox memory.
+ *
+ * @param identifier Identifier of the type.
+ * @param name Human readable name(Potentially localised).
+ * @param description short description, mainly used for tooltips
+ * in comboboxes listing the toolboxes (Potentially localised).
+ * @param categories List of categories classifying the Toolbox.
+ * @param creator function pointer allocating memory for the toolbox.
+ */
 bool medToolBoxFactory::registerToolBox(QString identifier,
                                         QString name,
                                         QString description,
@@ -54,6 +66,10 @@ bool medToolBoxFactory::registerToolBox(QString identifier,
     return false;
 }
 
+/**
+ * Get a list of the available toolboxes from a specific category.
+ *
+ */
 QList<QString> medToolBoxFactory::toolBoxesFromCategory(
         const QString& category)const
 {
@@ -83,6 +99,10 @@ medToolBox *medToolBoxFactory::createToolBox(QString identifier,
     return toolbox;
 }
 
+/**
+ * @brief Gets the name, description, categories and creators
+ * for the given toolbox.
+ */
 medToolBoxDetails * medToolBoxFactory::toolBoxDetailsFromId(
         const QString &id) const
 {
@@ -90,6 +110,13 @@ medToolBoxDetails * medToolBoxFactory::toolBoxDetailsFromId(
 }
 
 
+/**
+ * @brief Gets the name, description, categories and creators
+ *  of all toolboxes for a given category.
+ *
+ * Probably slower than using toolBoxesFromCategory() + toolBoxDetailsFromId()
+ * but only just, given the probable size of the list.
+ */
 QHash<QString, medToolBoxDetails *> medToolBoxFactory::toolBoxDetailsFromCategory(const QString &cat) const
 {
     QHash<QString, medToolBoxDetails *> tbsDetails;

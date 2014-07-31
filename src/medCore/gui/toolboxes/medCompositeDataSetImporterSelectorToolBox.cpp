@@ -54,6 +54,14 @@ medCompositeDataSetImporterSelectorToolBox::~medCompositeDataSetImporterSelector
 
 void medCompositeDataSetImporterSelectorToolBoxPrivate::read(QString filename) { }
 
+/**
+ * @brief Performs validation tests on each section and tires to save.
+ *
+ * If any section fails, an error message is emitted for it, and the other sections are still saved.
+ *
+ * The widget closes if the save action is successful.
+ *
+*/
 void medCompositeDataSetImporterSelectorToolBox::onImportClicked() {
     if (!d->currentToolBox) {
         this->showError(tr("Select a type first"),3000);
@@ -62,18 +70,29 @@ void medCompositeDataSetImporterSelectorToolBox::onImportClicked() {
     d->currentToolBox->import();
 }
 
+/**
+ * @brief Load in non-persistent database.
+ *
+*/
 void medCompositeDataSetImporterSelectorToolBox::onLoadClicked() {
     if (!d->currentToolBox)
         return;
     d->currentToolBox->load();
 }
 
+/**
+ * @brief reset the display to the last saved values.
+ *
+*/
 void medCompositeDataSetImporterSelectorToolBox::onResetClicked() {
     if (!d->currentToolBox)
         return;
     d->currentToolBox->reset();
 }
 
+/**
+ * @brief initialize layout
+ */
 void medCompositeDataSetImporterSelectorToolBox::initialize()
 {
     if (d->isInitialized)
@@ -153,7 +172,9 @@ void medCompositeDataSetImporterSelectorToolBox::initialize()
     d->isInitialized = true;
 }
 
-
+/**
+ * Call save on all child widgets and return the status
+ */
 bool medCompositeDataSetImporterSelectorToolBox::import()
 {
     return true;

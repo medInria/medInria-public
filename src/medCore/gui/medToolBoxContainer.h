@@ -23,6 +23,7 @@ class medToolBoxContainerPrivate;
 class MEDCORE_EXPORT medToolBoxContainer : public QScrollArea
 {
     Q_OBJECT
+
 public:
      medToolBoxContainer(QWidget *parent = 0);
     ~medToolBoxContainer();
@@ -33,17 +34,7 @@ public:
     void clear();
     
     QList<medToolBox*> toolBoxes() const;
-
-    /**
-     * @brief Set margin and spacing of the layout
-     *
-     * @param spacing
-    */
-    void setLayoutSpacing(int spacing);
     
-
 private:
     medToolBoxContainerPrivate *d;
 };
-
-

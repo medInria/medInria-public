@@ -28,19 +28,14 @@ class MEDCORE_EXPORT medGroupBox : public QGroupBox
     Q_OBJECT
 
     Q_PROPERTY(bool collapsible READ isCollapsible WRITE setCollapsible)
+
 public:
-    /**
-     * @brief
-     *
-     * @param parent
-     */
     explicit medGroupBox(QWidget *parent = 0);
     ~medGroupBox();
     bool isCollapsible();
     void setCollapsible(bool collapsible);
     bool isCollapsed();
     bool isExpanded();
-
 
 signals:
 

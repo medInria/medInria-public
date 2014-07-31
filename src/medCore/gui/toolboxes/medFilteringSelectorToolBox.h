@@ -33,39 +33,18 @@ public:
     medFilteringSelectorToolBox(QWidget *parent);
     ~medFilteringSelectorToolBox();
 
-    /**
-     * @brief returns input data
-     */
     medAbstractData* data();
 
-    /**
-     * @brief returns current selected toolbox
-     */
     medFilteringAbstractToolBox* currentToolBox();
 
 signals:
-    /**
-     * @brief signals emitted whenever a filtering process is successful
-     */
+    //! signal emitted whenever a filtering process is successful
     void processFinished();
 
 public slots:
-
-    /**
-     * @brief instantiates the right process toolbox according to its description
-     */
     void changeCurrentToolBox(int index);
-    /**
-     * @brief clear input data and the current process toolbox
-     */
     void clear();
-
-    /**
-     * @brief retrieve data from the selected input image index
-     * @param index
-     */
     void onInputSelected(medAbstractData *data);
-
 
 protected:
     medFilteringSelectorToolBoxPrivate *d;

@@ -29,11 +29,8 @@ public:
      medDatabaseView(QWidget *parent = 0);
     ~medDatabaseView();
 
-    //virtual int sizeHintForColumn(int column) const;
-
     void setModel(QAbstractItemModel *model);
     int sizeHintForColumn(int column) const;
-
 
 signals:
 
@@ -61,28 +58,13 @@ signals:
 
 public slots:
 
-    /** Opens the currently selected item. */
     virtual void onViewSelectedItemRequested();
-
-    /** Exports the currently selected item. */
     virtual void onExportSelectedItemRequested();
-
-    /** Removes the currently selected item. */
     virtual void onRemoveSelectedItemRequested();
-
-    /** Saves the currently selected item. */
     virtual void onSaveSelectedItemRequested();
-
-    /** Called after having failed to open a file. Will add a visual indicator of the failed file. */
     void onOpeningFailed(const medDataIndex& index);
-
-    /** Creates a new patient */
     void onCreatePatientRequested();
-    
-    /** Creates a new study */
     void onCreateStudyRequested();
-
-    /** Edits selected item */
     void onEditRequested();
 
 protected slots:

@@ -24,9 +24,7 @@ class MEDCORE_EXPORT medCompositeDataSetImporterSelectorToolBox : public medTool
 public:
      medCompositeDataSetImporterSelectorToolBox(QWidget *parent = 0);
     ~medCompositeDataSetImporterSelectorToolBox();
-    /**
-     * @brief initialize layout
-     */
+
     virtual void initialize();
 
 signals:
@@ -53,40 +51,12 @@ signals:
 
 
 public slots:
-    /**
-     * @brief Performs validation tests on each section and tires to save.
-     *
-     * If any section fails, an error message is emitted for it, and the other sections are still saved.
-     *
-     * The widget closes if the save action is successful.
-     *
-    */
     virtual void onImportClicked();
-
-    /**
-     * @brief Load in non-persistent database.
-     *
-    */
     virtual void onLoadClicked();
-
-    /**
-     * @brief reset the display to the last saved values.
-     *
-    */
     virtual void onResetClicked();
-    /**
-     *
-    */
     void onCurrentTypeChanged(const int type);
 
-    // @brief Succesful import/load
-
-    //void onSucess();
-
  protected:
-    /**
-     * Call save on all child widgets and return the status
-     */
     virtual bool import();
 
 

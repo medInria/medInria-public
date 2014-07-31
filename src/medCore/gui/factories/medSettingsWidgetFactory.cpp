@@ -21,6 +21,12 @@ public:
     medSettingsWidgetFactory::medSettingsWidgetCreatorHash creators;
 };
 
+/**
+ * @brief Gets an instance of the factory.
+ *
+ * @param void
+ * @return medSettingsWidgetFactory * Factory instance
+*/
 medSettingsWidgetFactory *medSettingsWidgetFactory::instance(void)
 {
     if(!s_instance)
@@ -46,11 +52,22 @@ bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type,
     return false;
 }
 
+/**
+ * @brief Gets a list of registered type names.
+ *
+ * @return QList<QString>
+*/
 QList<QString> medSettingsWidgetFactory::settingsWidgets(void)
 {
     return d->creators.keys();
 }
 
+/**
+ * @brief Creates a new widget.
+ *
+ * @param type the type to instanciate
+ * @return medSettingsWidget * the newly allocated widget.
+*/
 medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type,QWidget * parent)
 {
     if(!d->creators.contains(type))
@@ -61,18 +78,35 @@ medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type,Q
     return conf;
 }
 
+/**
+ * @brief Gets the name, description and creators
+ * for the given settings.
+ */
 medSettingDetails * medSettingsWidgetFactory::settingDetailsFromId(
         const QString &id) const
 {
     return d->creators.value(id);
 }
 
-
+/**
+ * @brief Constructor, not to be used by users.
+ *
+ * Use the instance() method instead to get a singleton.
+ *
+ * @param void
+*/
 medSettingsWidgetFactory::medSettingsWidgetFactory(void) : dtkAbstractFactory(), d(new medSettingsWidgetFactoryPrivate)
 {
 
 }
 
+/**
+ * @brief Destructor, not to be used by users.
+ *
+ * The singleton will be deleted at appplication closing time.
+ *
+ * @param void
+*/
 medSettingsWidgetFactory::~medSettingsWidgetFactory(void)
 {
     qDeleteAll(d->creators);

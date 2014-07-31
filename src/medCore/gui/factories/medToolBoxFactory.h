@@ -43,7 +43,6 @@ struct medToolBoxDetails;
  * The details for each toolbox are stored in a struct of type medToolBoxDetails.
  */
 
-
 class MEDCORE_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
     Q_OBJECT
@@ -74,50 +73,19 @@ public:
                                creator);
     }
 
-    /**
-     * Get a list of the available toolboxes from a specific category.
-     *
-     */
+
     QList<QString> toolBoxesFromCategory(const QString& category) const;
+    medToolBoxDetails* toolBoxDetailsFromId ( const QString& id ) const;
 
-
-    /**
-     * @brief Gets the name, description, categories and creators
-     * for the given toolbox.
-     */
-    medToolBoxDetails* toolBoxDetailsFromId (
-            const QString& id )const;
-
-    /**
-     * @brief Gets the name, description, categories and creators
-     *  of all toolboxes for a given category.
-     *
-     * Probably slower than using toolBoxesFromCategory() + toolBoxDetailsFromId()
-     * but only just, given the probable size of the list.
-     */
     QHash<QString, medToolBoxDetails*> toolBoxDetailsFromCategory (
             const QString& id )const;
-
-
 
 public slots:
     medToolBox *createToolBox(QString identifier, QWidget *parent=0);
 
 
 protected:
-    /**
-     * @brief Registers a medToolBox type with the factory.
-     *
-     * This method requires the developer to provide his own function pointer
-     * to allocate the toolbox memory.
-     *
-     * @param identifier Identifier of the type.
-     * @param name Human readable name(Potentially localised).
-     * @param description short description, mainly used for tooltips
-     * in comboboxes listing the toolboxes (Potentially localised).
-     * @param categories List of categories classifying the Toolbox.
-     * @param creator function pointer allocating memory for the toolbox.
-     */
+
     bool registerToolBox(QString identifier,
                          QString name,
                          QString description,
@@ -128,7 +96,7 @@ protected:
     ~medToolBoxFactory();
 
 private:
-    static medToolBoxFactory *s_instance; /** Singleton holder.*/
+    static medToolBoxFactory *s_instance;
     /**
      * @brief Templated method returning a pointer to an allocated toolbox.
      * @see template<class toolboxType> registerToolBox
