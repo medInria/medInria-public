@@ -63,7 +63,7 @@ void vtkLimitFibersToMesh::SetMesh (vtkDataSet* mesh)
 
   if (this->Mesh)
   {
-    this->Mesher->SetInput (this->Mesh);
+    this->Mesher->SetInputData (this->Mesh);
     this->Mesh->GetBounds (this->Bounds);
     this->Modified();
   }

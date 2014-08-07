@@ -49,7 +49,7 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager() {
 
     VOI->ReleaseDataFlagOn();
 
-    SHGlyph->SetInput(VOI->GetOutput());
+    SHGlyph->SetInputData(VOI->GetOutput());
 
     vtkLookupTable *lut = vtkLookupTable::New();
     //lut->SetHueRange(0.667, 0.0);
@@ -57,7 +57,7 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager() {
     lut->SetRange(0.0, 1.0);
     lut->Build();
 
-    Mapper->SetInput(SHGlyph->GetOutput());
+    Mapper->SetInputData(SHGlyph->GetOutput());
     Mapper->ScalarVisibilityOn();
     Mapper->SetColorModeToMapScalars();
     Mapper->SetScalarModeToUsePointData();
@@ -105,7 +105,7 @@ void vtkSphericalHarmonicVisuManager::SetInput (vtkImageData* vtkSH) {
 
     SHSource->SetNumberOfSphericalHarmonics(number);
 
-    VOI->SetInput (vtkSH);
+    VOI->SetInputData (vtkSH);
 }
 
 

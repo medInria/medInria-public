@@ -150,10 +150,7 @@ target_link_libraries(${PROJECT_NAME}
   medImageIO
   medLog
   medVtkInria
-  QVTK
-  vtkCommon
-  vtkRendering
-  vtkVolumeRendering
+  ${VTK_LIBRARIES}
   )
 
 # needed because of link  with medImageIO

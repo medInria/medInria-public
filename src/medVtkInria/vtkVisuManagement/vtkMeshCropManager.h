@@ -153,7 +153,7 @@ class MEDVTKINRIA_EXPORT vtkMeshCropManager : public vtkObject
   void SetRenderingModeToPolyLines()
   {
     this->RenderingMode = RENDER_IS_POLYLINES;
-    this->Mapper->SetInput (this->Callback->GetOutput());
+    this->Mapper->SetInputData(this->Callback->GetOutput());
   }
 
 /*   /\** Set the rendering mode to tubes *\/ */

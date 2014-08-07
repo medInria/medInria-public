@@ -263,11 +263,12 @@ int vtkSphericalHarmonicSource::RequestInformation(vtkInformation*,vtkInformatio
     // Get the info object
     vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-    outInfo->Set(vtkStreamingDemandDrivenPipeline::MAXIMUM_NUMBER_OF_PIECES(),-1);
-    outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_BOUNDING_BOX(),
-               Center[0]-Radius,Center[0]+Radius,
-               Center[1]-Radius,Center[1]+Radius,
-               Center[2]-Radius,Center[2]+Radius);
+    //TODO GPR
+    //outInfo->Set(vtkStreamingDemandDrivenPipeline::MAXIMUM_NUMBER_OF_PIECES(),-1);
+//    outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_BOUNDING_BOX(),
+//               Center[0]-Radius,Center[0]+Radius,
+//               Center[1]-Radius,Center[1]+Radius,
+//               Center[2]-Radius,Center[2]+Radius);
 
     return 1;
 }
