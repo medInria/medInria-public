@@ -102,7 +102,7 @@ void vtkVectorVisuManager::SetInput(vtkImageData* data, vtkMatrix4x4 *matrix)
         this->Actor->SetUserMatrix(matrix);
     }
 
-    this->VOI->SetInput ( this->Input );
+    this->VOI->SetInputData ( this->Input );
     this->Orienter->SetOrientationMatrix(matrix);
     this->NormalsOrienter->SetOrientationMatrix(matrix);
 

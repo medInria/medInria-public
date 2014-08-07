@@ -222,7 +222,7 @@ int vtkImageFromBoundsSource::RequestData(
         outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(),extent);
 
         data->SetExtent(extent);
-        data->AllocateScalars();
+        data->AllocateScalars(outInfo);
 
         void *ptr;
         ptr = data->GetScalarPointerForExtent(extent);
@@ -241,7 +241,7 @@ int vtkImageFromBoundsSource::RequestData(
         // just allocate data !
         data->SetExtent(
                     outInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()));
-        data->AllocateScalars();
+        data->AllocateScalars(outInfo);
     }
 
     return 1;

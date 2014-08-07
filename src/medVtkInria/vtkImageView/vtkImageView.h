@@ -48,6 +48,7 @@ class vtkDataSetCollection;
 class vtkProp3DCollection;
 class vtkProp3D;
 class vtkScalarsToColors;
+class vtkAlgorithm;
 
 
 /**
@@ -696,6 +697,9 @@ class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
 
   vtkGetMacro(IsInteractorInstalled, int);
 
+  virtual vtkAlgorithm* GetInputAlgorithm () const;
+  virtual vtkAlgorithm* GetInputAlgorithm (int layer) const;
+
  protected:
    vtkImageView();
   ~vtkImageView();
@@ -800,6 +804,14 @@ protected:
   vtkTextProperty* TextProperty;
 
   /**
+   * The lookup table is an alternative way to define a transfer
+   * function.  Internally this is transformed into a
+   * vtkColorTransferFunction (color) and a vtkPiecewiseFunction
+   * (opacity/alpha).  Default is a linear black to white table.
+   */
+  vtkLookupTable* LookupTable;
+
+  /**
      Get the scalar bar actor. This instance follows the color window/level
      of the viewer.
   */
@@ -840,6 +852,7 @@ protected:
   vtkRenderWindow*                RenderWindow;
   vtkRenderWindowInteractor*      Interactor;
   vtkInteractorStyle*             InteractorStyle;
+  vtkImageMapToColors*            WindowLevel;
 
   vtkImageData*                   Input;
 

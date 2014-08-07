@@ -495,7 +495,8 @@ void vtkSmartVolumeMapper::ConnectMapperInput(vtkVolumeMapper *m)
     // make sure we not create a shallow copy each time to avoid
     // performance penalty.
     input2=vtkImageData::New();
-    m->SetInputConnection(input2->GetProducerPort());
+    //TODO GPR: to check, we might need to use setInputConnection here
+    m->SetInputData(input2);
     input2->Delete();
     needShallowCopy=true;
     }
@@ -521,7 +522,8 @@ void vtkSmartVolumeMapper::ConnectFilterInput(vtkImageResample *f)
     // make sure we not create a shallow copy each time to avoid
     // performance penalty.
     input2=vtkImageData::New();
-    f->SetInputConnection(input2->GetProducerPort());
+    //TODO GPR: to check, we might need to use setInputConnection here
+    f->SetInputData(input2);
     input2->Delete();
     needShallowCopy=true;
     }

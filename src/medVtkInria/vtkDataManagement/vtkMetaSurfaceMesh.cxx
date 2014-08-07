@@ -135,14 +135,14 @@ void vtkMetaSurfaceMesh::ReadOBJFile (const char* filename)
   {
     reader->Update();
     vtkCleanPolyData* cleanFilter = vtkCleanPolyData::New();
-    cleanFilter->SetInput(reader->GetOutput());
+    cleanFilter->SetInputData(reader->GetOutput());
     cleanFilter->ConvertLinesToPointsOn();
     cleanFilter->ConvertPolysToLinesOn();
     cleanFilter->ConvertStripsToPolysOn();
     cleanFilter->PointMergingOn();
     cleanFilter->Update();
     vtkDataSetSurfaceFilter* surfaceFilter = vtkDataSetSurfaceFilter::New();
-    surfaceFilter->SetInput(cleanFilter->GetOutput());
+    surfaceFilter->SetInputData(cleanFilter->GetOutput());
     surfaceFilter->Update();
     this->SetDataSet (surfaceFilter->GetOutput());
     cleanFilter->Delete();
@@ -218,7 +218,7 @@ void vtkMetaSurfaceMesh::WriteVtkFile (const char* filename)
   
   try
   {
-    writer->SetInput (c_mesh);
+    writer->SetInputData (c_mesh);
     writer->Write();
     writer->Delete();
   }
@@ -252,7 +252,7 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
     
     try
     {
-        writer->SetInput (c_mesh);
+        writer->SetInputData (c_mesh);
         writer->Write();
         writer->Delete();
     }
@@ -584,7 +584,7 @@ void vtkMetaSurfaceMesh::CreateWirePolyData()
     return;
 
   vtkExtractEdges* extractor = vtkExtractEdges::New();
-  extractor->SetInput (this->GetPolyData());
+  extractor->SetInputData (this->GetPolyData());
   extractor->Update();
 
   this->SetWirePolyData (extractor->GetOutput());
