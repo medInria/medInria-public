@@ -154,9 +154,9 @@ void vtkMeshCropManager::SetInput(vtkDataSet* input)
   if(!this->GetInput())
     return;  
   
-  this->Callback->GetMeshLimiter()->SetInput ( this->GetInput() );
+  this->Callback->GetMeshLimiter()->SetInputData ( this->GetInput() );
   
-  this->BoxWidget->SetInput ( this->GetInput() );
+  this->BoxWidget->SetInputData ( this->GetInput() );
   this->BoxWidget->PlaceWidget();
 
   this->Callback->Execute (this->BoxWidget, 0, NULL);  
@@ -172,8 +172,8 @@ void vtkMeshCropManager::Reset()
 {
   if( !this->GetInput() ) return;
 
-  this->BoxWidget->SetInput ( this->GetInput() );
-  this->Callback->GetMeshLimiter()->SetInput ( this->Callback->GetMeshLimiter()->GetOutput() );
+  this->BoxWidget->SetInputData ( this->GetInput() );
+  this->Callback->GetMeshLimiter()->SetInputData ( this->Callback->GetMeshLimiter()->GetOutput() );
   this->Callback->Execute (this->BoxWidget, 0, NULL);
 }
 

@@ -59,7 +59,7 @@ vtkAxes2DWidget::vtkAxes2DWidget()
 
 
   this->Source->SetPoints (this->Points);
-  this->Mapper->SetInputConnection (this->Source->GetProducerPort());
+  this->Mapper->SetInputData (this->Source);
   this->Actor->SetMapper (this->Mapper);
   this->Renderer->AddViewProp (this->Actor);
 

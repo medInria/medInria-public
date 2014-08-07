@@ -38,12 +38,6 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if (NOT VTK_USE_QT)
-  message(WARNING
-  "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project.
-  Please consider setting correctly your VTK."
-  )
-endif()
 
 ## #############################################################################
 ## List Sources
@@ -89,10 +83,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  vtkCommon
-  vtkRendering
-  vtkVolumeRendering
-  QVTK
+  ${VTK_LIBRARIES}
   medCore
   medVtkInria
   )

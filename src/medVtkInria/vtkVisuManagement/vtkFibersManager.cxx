@@ -180,7 +180,7 @@ class MEDVTKINRIA_EXPORT vtkFiberPickerCallback: public vtkCommand
     this->PickedMapper = vtkPolyDataMapper::New();
     this->PickedActor  = vtkActor::New();
 
-    this->PickedMapper->SetInput ( this->PickedFiber );
+    this->PickedMapper->SetInputData ( this->PickedFiber );
     this->PickedActor->SetMapper ( this->PickedMapper );
     this->PickedActor->GetProperty()->SetColor ( 1.0, 0.0, 0.0 );
     this->PickedActor->GetProperty()->SetLineWidth ( 5.0 );
@@ -256,7 +256,7 @@ void vtkFiberPickerCallback::Execute ( vtkObject *caller, unsigned long event, v
       
       array->Delete();
       
-      this->PickedMapper->SetInput ( this->PickedFiber );
+      this->PickedMapper->SetInputData ( this->PickedFiber );
       this->PickedActor->SetVisibility (1);
     }
   } 
@@ -541,7 +541,7 @@ vtkFibersManager::vtkFibersManager()
   }
 
 
-  this->Mapper->SetInput ( this->Callback->GetOutput() );
+  this->Mapper->SetInputData ( this->Callback->GetOutput() );
   this->Mapper->SetScalarModeToUsePointData();
   // this->Actor->SetMapper (this->Mapper); // only when input is set
 
@@ -746,14 +746,14 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   this->Initialize();
   this->Input = input;
   
-  this->Callback->GetROIFiberLimiter()->SetInput ( this->GetInput() );
+  this->Callback->GetROIFiberLimiter()->SetInputData ( this->GetInput() );
   this->Actor->SetMapper (this->Mapper);
   
   if( this->Renderer )
   {
     this->BoxWidget->SetDefaultRenderer(this->Renderer);
   }
-  this->BoxWidget->SetInput ( this->GetInput() );
+  this->BoxWidget->SetInputData ( this->GetInput() );
   this->BoxWidget->PlaceWidget();
   
   this->PickerCallback->SetFiberImage ( this->GetInput() );
@@ -782,8 +782,8 @@ void vtkFibersManager::SwapInputOutput()
   auxLines->DeepCopy( this->Callback->GetOutput()->GetLines() );
   auxPoly->SetLines( auxLines);
 
-  this->BoxWidget->SetInput ( auxPoly );
-  this->Callback->GetFiberLimiter()->SetInput ( auxPoly );
+  this->BoxWidget->SetInputData ( auxPoly );
+  this->Callback->GetFiberLimiter()->SetInputData ( auxPoly );
 
   this->PickerCallback->SetFiberImage ( auxPoly );
   
@@ -796,8 +796,8 @@ void vtkFibersManager::Reset()
   if( !this->GetInput() )
     return;
   
-  this->BoxWidget->SetInput ( this->GetInput() );
-  this->Callback->GetROIFiberLimiter()->SetInput ( this->GetInput() );
+  this->BoxWidget->SetInputData ( this->GetInput() );
+  this->Callback->GetROIFiberLimiter()->SetInputData ( this->GetInput() );
   this->PickerCallback->SetFiberImage ( this->GetInput() );
   
   this->Callback->GetFiberLimiter()->SetInputConnection ( this->Callback->GetROIFiberLimiter()->GetOutputPort() );
@@ -842,7 +842,7 @@ void vtkFibersManager::SetRenderingModeToTubes()
   else // the rendering is not supported
        // and the mapper is a regular polydatamapper
   {
-    this->Mapper->SetInput (this->TubeFilter->GetOutput());
+    this->Mapper->SetInputData (this->TubeFilter->GetOutput());
   }
 
 }
@@ -859,7 +859,7 @@ void vtkFibersManager::SetRenderingModeToRibbons()
   }
   else
   {
-    this->Mapper->SetInput (this->RibbonFilter->GetOutput());
+    this->Mapper->SetInputData (this->RibbonFilter->GetOutput());
   }
 
 }
@@ -877,7 +877,7 @@ void vtkFibersManager::SetRenderingModeToPolyLines()
   else
   {
     this->PickerCallback->SetInput (this->Callback->GetOutput());
-    this->Mapper->SetInput (this->Callback->GetOutput());
+    this->Mapper->SetInputData (this->Callback->GetOutput());
   }
 }
 
@@ -927,7 +927,7 @@ void vtkFibersManager::ChangeMapperToUseHardwareShaders()
   mapper->LightingOff();
   mapper->ShadowingOff();
 
-  mapper->SetInput( this->Callback->GetOutput() );
+  mapper->SetInputData( this->Callback->GetOutput() );
   this->Actor->SetMapper( mapper );
 
   if( this->Mapper )
@@ -952,7 +952,7 @@ void vtkFibersManager::ChangeMapperToDefault()
   
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
   mapper->ImmediateModeRenderingOn();  
-  mapper->SetInput( this->Callback->GetOutput() );
+  mapper->SetInputData( this->Callback->GetOutput() );
   this->Actor->SetMapper( mapper );
   
   if( this->Mapper )
