@@ -1266,7 +1266,6 @@ void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
      IMPORTANT NOTE
 
      Adding a 2D actor in the 3D scene should be as simple as the next line
-
      instead of the code above...
 
      Unfortunately it does not seem to work properly. But this is something
