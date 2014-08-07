@@ -159,7 +159,7 @@ void vtkMetaVolumeMesh::WriteVtkFile (const char* filename)
   
   try
   {
-    writer->SetInput (c_mesh);
+    writer->SetInputData (c_mesh);
     writer->Write();
     writer->Delete();
   }

@@ -40,11 +40,11 @@ vtkCompareImageManager::vtkCompareImageManager()
   
   //m_MapToWindowLevelImageFilter1->SetInput (Input1);
   //m_MapToWindowLevelImageFilter2->SetInput (Input2);
-  m_CheckerImageFilter->SetInput1 (m_MapToWindowLevelImageFilter1->GetOutput());
-  m_CheckerImageFilter->SetInput2 (m_MapToWindowLevelImageFilter2->GetOutput());
+  m_CheckerImageFilter->SetInput1Data(m_MapToWindowLevelImageFilter1->GetOutput());
+  m_CheckerImageFilter->SetInput2Data (m_MapToWindowLevelImageFilter2->GetOutput());
 
-  m_FuseImageFilter->SetInput (0, m_MapToWindowLevelImageFilter1->GetOutput());
-  m_FuseImageFilter->SetInput (1, m_MapToWindowLevelImageFilter2->GetOutput());
+  m_FuseImageFilter->SetInputData (0, m_MapToWindowLevelImageFilter1->GetOutput());
+  m_FuseImageFilter->SetInputData (1, m_MapToWindowLevelImageFilter2->GetOutput());
   
 
   m_ComparisonMode = vtkCompareImageManager::COMPARE_FUSE;
@@ -215,11 +215,11 @@ vtkImageData* vtkCompareImageManager::GetOutput()
 void vtkCompareImageManager::SetInput1 (vtkImageData* im)
 {
   Input1 = im;
-  m_MapToWindowLevelImageFilter1->SetInput (im);
+  m_MapToWindowLevelImageFilter1->SetInputData (im);
 }
 
 void vtkCompareImageManager::SetInput2 (vtkImageData* im)
 {
   Input2 = im;
-  m_MapToWindowLevelImageFilter2->SetInput (im);
+  m_MapToWindowLevelImageFilter2->SetInputData (im);
 }

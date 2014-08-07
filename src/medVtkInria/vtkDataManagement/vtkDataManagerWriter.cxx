@@ -192,7 +192,7 @@ int  vtkDataManagerWriter::WriteMetaDataSet (vtkMetaDataSet* metadataset, unsign
       return 0;
     }
     writer->SetFileName(filename.c_str());
-    writer->SetInput (metadataset->GetDataSet());
+    writer->SetInputData (metadataset->GetDataSet());
     
     // Write the data.
     writer->AddObserver(vtkCommand::ProgressEvent, this->ProgressObserver);
@@ -648,7 +648,7 @@ void vtkDataManagerWriter::SetInput (vtkDataManager* manager)
 {
   this->Input = manager;
   if (manager->GetMetaDataSet((unsigned int)0) && manager->GetMetaDataSet((unsigned int)0)->GetDataSet())
-    this->SetInputConnection(0, manager->GetMetaDataSet((unsigned int)0)->GetDataSet()->GetProducerPort());
+    this->SetInputData(manager->GetMetaDataSet((unsigned int)0)->GetDataSet());
 }
 
 //----------------------------------------------------------------------------

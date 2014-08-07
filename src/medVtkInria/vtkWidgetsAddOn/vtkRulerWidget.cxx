@@ -97,7 +97,7 @@ vtkRulerWidget::vtkRulerWidget()
   tcoord->SetCoordinateSystemToDisplay();
   
   vtkPolyDataMapper2D *xmapper = vtkPolyDataMapper2D::New();
-  xmapper->SetInput( this->OutlineX );
+  xmapper->SetInputData( this->OutlineX );
   xmapper->SetTransformCoordinate( tcoord );
   this->OutlineXActor = vtkActor2D::New();
   this->OutlineXActor->SetMapper( xmapper );
@@ -107,7 +107,7 @@ vtkRulerWidget::vtkRulerWidget()
   this->OutlineXActor->PickableOff();
 
   vtkPolyDataMapper2D *ymapper = vtkPolyDataMapper2D::New();
-  ymapper->SetInput( this->OutlineY );
+  ymapper->SetInputData( this->OutlineY );
   ymapper->SetTransformCoordinate( tcoord );
   this->OutlineYActor = vtkActor2D::New();
   this->OutlineYActor->SetMapper( ymapper );

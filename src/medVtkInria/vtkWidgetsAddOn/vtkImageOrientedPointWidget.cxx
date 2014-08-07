@@ -96,12 +96,12 @@ vtkImageOrientedPointWidget::vtkImageOrientedPointWidget()
   // Transform filters for glyph1
   this->TransformFilter1 = vtkTransformPolyDataFilter::New();
   this->TransformFilter1->SetTransform(this->Transform);
-  this->TransformFilter1->SetInput(this->HandleGenerator1->GetOutput());
+  this->TransformFilter1->SetInputData(this->HandleGenerator1->GetOutput());
   this->TransformFilter1->Update();
   // Transform filters for glyph2
   this->TransformFilter2 = vtkTransformPolyDataFilter::New();
   this->TransformFilter2->SetTransform(this->Transform);
-  this->TransformFilter2->SetInput(this->HandleGenerator2->GetOutput());
+  this->TransformFilter2->SetInputData(this->HandleGenerator2->GetOutput());
   this->TransformFilter2->Update();
 
   this->TemporaryHandlePoints = vtkFloatArray::New();
@@ -115,7 +115,7 @@ vtkImageOrientedPointWidget::vtkImageOrientedPointWidget()
   vtkPolyDataMapper* lineMapper = vtkPolyDataMapper::New();
   this->LineData = vtkPolyData::New();
 
-  lineMapper->SetInput(this->LineData);
+  lineMapper->SetInputData(this->LineData);
   lineMapper->SetResolveCoincidentTopologyToPolygonOffset();
   lineMapper->ScalarVisibilityOff();
   this->LineActor->SetMapper(lineMapper);
@@ -1092,7 +1092,7 @@ void vtkImageOrientedPointWidget::AllocateHandles(const int& nhandles)
     {
     this->HandleGeometry[i] = vtkPolyData::New();
     vtkPolyDataMapper* handleMapper = vtkPolyDataMapper::New();
-    handleMapper->SetInput(this->HandleGeometry[i]);
+    handleMapper->SetInputData(this->HandleGeometry[i]);
     this->Handle[i] = vtkActor::New();
     this->Handle[i]->SetMapper(handleMapper);
     handleMapper->Delete();
@@ -1313,9 +1313,9 @@ void vtkImageOrientedPointWidget::GetPath(vtkPolyData *pd)
 
 void vtkImageOrientedPointWidget::SetSnapToImage(int snap)
 {
-  if ( this->Input )
+  if ( this->GetInput() )
     {
-    if ( this->Input->GetDataObjectType() != VTK_IMAGE_DATA )
+    if ( this->GetInput()->GetDataObjectType() != VTK_IMAGE_DATA )
       {
       vtkErrorMacro(<<"Input data must be of type vtkImageData");
       return;
