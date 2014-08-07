@@ -689,6 +689,9 @@ void vtkImageView3D::InternalUpdate()
     this->PlanarWindowLevel->SetInputData(this->Input);
     this->PlanarWindowLevel->SetOutputFormatToRGB();
 
+    this->PlanarWindowLevel->UpdateInformation();
+    this->PlanarWindowLevel->Update();
+
 
     vtkScalarsToColors* lut = this->VolumeProperty->GetRGBTransferFunction(0);
     if (lut)
