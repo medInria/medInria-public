@@ -21,11 +21,7 @@ project(medVtkInria)
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
-if (NOT VTK_USE_GLSL_SHADERS )
-    message(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON 
-to use the HWShading library. This option is only available with VTK>=5.1."
-    )
-endif()
+
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -170,37 +166,8 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}  
   ${OPENGL_LIBRARIES}
-  vtkCommon
-  vtkFiltering 
-  vtkRendering
-  vtkWidgets
-  vtkCommon
-  vtkFiltering 
-  vtkRendering
-  vtkWidgets
-  vtkHybrid
-  vtkImaging
-  vtkVolumeRendering
-  vtkGraphics
-  vtkIO
-  ITKVTK
-  ITKCommon
-  ITKIOPhilipsREC # ITK4 IO libs
-  ITKIOBMP
-  ITKIOBioRad
-  ITKIOHDF5
-  ITKIOGDCM
-  ITKIOGIPL
-  ITKIOGE
-  ITKIOJPEG
-  ITKIOLSM
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIONRRD
-  ITKIOPNG
-  ITKIOStimulate
-  ITKIOVTK
-  ITKIOMRC
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   )
 
 

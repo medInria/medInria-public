@@ -71,6 +71,8 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkImageReslice.h>
+#include <vtkInformation.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
 
 #include <vtkTextActor3D.h>
 
@@ -156,18 +158,15 @@ void vtkImage2DDisplay::SetInput(vtkImageData * image)
 {
   this->Input = image;
 
-  if (image)
-    image->UpdateInformation();
-
   if (image && image->GetScalarType()==VTK_UNSIGNED_CHAR &&
       ( image->GetNumberOfScalarComponents()==3 || image->GetNumberOfScalarComponents()==4) )
   {
-    this->ImageActor->SetInput( image );
+    this->ImageActor->SetInputData( image );
   }
   else
   {
-    this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
-    this->WindowLevel->SetInput(image);
+    this->WindowLevel->SetInputData(image);
+    this->ImageActor->SetInputData( this->WindowLevel->GetOutput() );   
   }
 }
 
@@ -365,10 +364,6 @@ unsigned long vtkImageView2D::GetMTime()
 
         const int numLayer = this->GetNumberOfLayers();
         for ( int i(0); i<numLayer; ++i ) {
-            if (this->GetImage2DDisplayForLayer(i)->GetInput())
-            {
-              this->GetImage2DDisplayForLayer(i)->GetInput()->UpdateInformation();
-            }
             vtkObject * object = this->GetImage2DDisplayForLayer(i)->GetImageActor();
             if (object) {
                 const MTimeType testMtime = object->GetMTime();
@@ -386,10 +381,10 @@ void vtkImageView2D::GetSliceRange(int &min, int &max) const
   vtkImageData *input = this->GetInput();
   if (input)
   {
-    input->UpdateInformation();
-    int *w_ext = input->GetWholeExtent();
-    min = w_ext[this->SliceOrientation * 2];
-    max = w_ext[this->SliceOrientation * 2 + 1];
+      this->GetInputAlgorithm()->UpdateInformation();
+      int* w_ext = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+      min = w_ext[this->SliceOrientation * 2];
+      max = w_ext[this->SliceOrientation * 2 + 1];
   }
 }
 
@@ -399,8 +394,9 @@ int* vtkImageView2D::GetSliceRange() const
   vtkImageData *input = this->GetInput();
   if (input)
   {
-    input->UpdateInformation();
-    return input->GetWholeExtent() + this->SliceOrientation * 2;
+      this->GetInputAlgorithm()->UpdateInformation();
+      int* w_ext = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+      return w_ext + this->SliceOrientation * 2;
   }
   return NULL;
 }
@@ -545,9 +541,8 @@ void vtkImageView2D::UpdateDisplayExtent()
     return;
   }
 
-  input->UpdateInformation();
-
-  int *w_ext = input->GetWholeExtent();
+  this->GetInputAlgorithm()->UpdateInformation();
+  int* w_ext = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
 
   int slice = this->Slice;
   int *range = this->GetSliceRange();
@@ -587,15 +582,6 @@ void vtkImageView2D::UpdateDisplayExtent()
         break;
     }
 
-    if ( ! this->Compare ( imageInput->GetUpdateExtent (), imageDisplay->GetImageActor()->GetDisplayExtent (), 6 ) ) {
-
-      imageInput->SetUpdateExtent(imageDisplay->GetImageActor()->GetDisplayExtent ());
-
-      // SetUpdateExtent does not call modified. There is a comment relating to this in
-      // vtkDataObject::SetUpdateExtent
-      imageInput->Modified ();
-      imageInput->PropagateUpdateExtent();
-    }
   }
 
   // Figure out the correct clipping range
@@ -1601,7 +1587,7 @@ void vtkImageView2D::SetFirstLayer (vtkImageData *image, vtkMatrix4x4 *matrix, i
 
         this->GetImage2DDisplayForLayer(layer)->SetInput(image);
         this->Superclass::SetInput (image, matrix, 0);
-        this->GetWindowLevel(layer)->SetInput(image);
+        this->GetWindowLevel(layer)->SetInputData(image);
         double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
         this->SetColorRange(range,layer);
         this->Reset();
@@ -1637,9 +1623,6 @@ int vtkImageView2D::GetFirstLayer() const
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
 {
-  if (image)
-    image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
-
   vtkRenderer *renderer = 0;
 
   if ( layer == 0 || IsFirstLayer(layer))
@@ -1665,17 +1648,16 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 
       // determine the scalar range. Copy the update extent to match the input's one
       double range[2];
-      reslicedImage->SetUpdateExtent (this->GetInput()->GetUpdateExtent());
-      reslicedImage->PropagateUpdateExtent();
-      reslicedImage->Update();
+      //TODO GPR: to check
+//      reslicedImage->SetUpdateExtent (this->GetInput()->GetUpdateExtent());
+//      reslicedImage->PropagateUpdateExtent();
+//      reslicedImage->Update();
       reslicedImage->GetScalarRange(range);
 
       vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
       imageDisplay->SetInput(reslicedImage);
       imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
       this->SetColorRange(range,layer);
-
-      this->GetImage2DDisplayForLayer(layer)->GetInput()->UpdateInformation();
 
       reslicedImage->Delete();
   }
@@ -2025,6 +2007,9 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], const int imageSize[3
         imagegenerator->SetOutputImageSize(imSize);
         imagegenerator->SetOutputImageBounds(imageBounds);
 
+        imagegenerator->UpdateInformation();
+        imagegenerator->Update();
+
         vtkImageData * image = imagegenerator->GetOutput();
 
         SetInput(image, 0, layer);
@@ -2198,6 +2183,11 @@ vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ ) const
     if (imageDisplay)
         return imageDisplay->GetWindowLevel();
     else return NULL;
+}
+
+vtkAlgorithm* vtkImageView2D::GetInputAlgorithm (int layer) const
+{
+    return this->GetWindowLevel(layer);
 }
 
 ////----------------------------------------------------------------------------

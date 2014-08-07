@@ -49,7 +49,8 @@ vtkDisplacementFieldToGridFilter::~vtkDisplacementFieldToGridFilter()
 void vtkDisplacementFieldToGridFilter::SetInput(int idx, vtkDataObject *input)
 {
   // Ask the superclass to connect the input.
-  this->SetNthInputConnection(0, idx, (input ? input->GetProducerPort() : 0));
+  //TODO
+  //this->SetNthInputConnection(0, idx, (input ? input->GetProducerPort() : 0));
 }
 
 //----------------------------------------------------------------------------
