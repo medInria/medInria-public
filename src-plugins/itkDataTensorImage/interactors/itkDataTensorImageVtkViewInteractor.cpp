@@ -182,6 +182,7 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
             d->filterFloat = itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::New();
 
             d->filterFloat->SetInput(dataset);
+            d->filterFloat->UpdateOutputInformation();
 
             // this line generates the vtkTensors, otherwise is not generated, even if the next filter
             // in the pipeline is connected and Update() is called
