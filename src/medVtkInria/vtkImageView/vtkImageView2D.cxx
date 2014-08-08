@@ -1702,13 +1702,6 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[]
 
     renderer->AddActor(actor);
 
-    this->SetCurrentLayer(layer);
-    this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
-    this->UpdateDisplayExtent();
-    // this->UpdateCenter();
-    this->UpdateSlicePlane();
-    this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
-
     double bounds[6];
     actor->GetBounds(bounds);
 
@@ -1723,6 +1716,13 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[]
     bounds[5] = floor(bounds[5]+0.5)+1;
 
     UpdateBounds(bounds, imageSize, layer);
+
+    this->SetCurrentLayer(layer);
+    this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
+    this->UpdateDisplayExtent();
+    // this->UpdateCenter();
+    this->UpdateSlicePlane();
+    this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 
 }
 

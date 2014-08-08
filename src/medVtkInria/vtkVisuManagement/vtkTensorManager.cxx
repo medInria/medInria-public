@@ -167,8 +167,9 @@ void vtkTensorManager::Update()
   
 
   // finally set the data
-  this->TensorVisuManagerAxial->SetInput    (this->Input, this->DirectionMatrix);
   this->TensorVisuManagerSagittal->SetInput (this->Input, this->DirectionMatrix);
+  this->TensorVisuManagerAxial->SetInput    (this->Input, this->DirectionMatrix);
+
   this->TensorVisuManagerCoronal->SetInput  (this->Input, this->DirectionMatrix);
   
   if ( this->Renderer )
