@@ -122,7 +122,7 @@ bool medVtkViewItkDataImage4DInteractor::registered()
                                                                           medVtkViewItkDataImage4DInteractor::dataHandled());
 }
 
-void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
+void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
 {
     double range[2]={0,0};
     double maxtime;
@@ -180,7 +180,7 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
     }
 }
 
-medAbstractData *medVtkViewItkDataImage4DInteractor::data() const
+medAbstractData *medVtkViewItkDataImage4DInteractor::inputData() const
 {
     return d->imageData;
 }

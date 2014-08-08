@@ -71,6 +71,15 @@ QVariant medSettingsManager::value( const QString & section, const QString & key
     return result;
 }
 
+QStringList medSettingsManager::keys ( const QString & section)
+{
+    d->settings.beginGroup(section);
+    QStringList keys = d->settings.childKeys();
+    d->settings.endGroup();
+
+    return keys;
+}
+
 void medSettingsManager::setValue( const QString & section, const QString & key, const QVariant & value )
 {
     QString sectionKey;
@@ -79,5 +88,11 @@ void medSettingsManager::setValue( const QString & section, const QString & key,
     emit settingsChanged(section);
 }
 
+void medSettingsManager::remove (const QString & section, const QString & key)
+{
+    d->settings.beginGroup(section);
+    d->settings.remove(key);
+    d->settings.endGroup();
+}
 
 medSettingsManager *medSettingsManager::s_instance = NULL;

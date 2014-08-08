@@ -20,9 +20,6 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 
-#include <QVTKWidget2.h>
-#include <QVTKGraphicsItem.h>
-
 class MEDVTKINRIA_EXPORT medVtkViewBackend : public medViewBackend
 {
 public:

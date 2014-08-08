@@ -27,6 +27,7 @@
 class medAbstractData;
 class medAbstractBoolParameter;
 class medStringListParameter;
+class medDataListParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -43,7 +44,7 @@ public:
     void insertLayer(unsigned int layer, medAbstractData *data);
 
     medAbstractData * layerData(unsigned int layer) const;
-    QList<dtkSmartPointer<medAbstractData> > dataList() const;
+    QList<medDataIndex> dataList() const;
 
     bool contains(medAbstractData * data) const;
     bool contains(QString identifier) const;
@@ -56,14 +57,20 @@ public:
 
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
 
-    medStringListParameter *layerLinkParameter(unsigned int layer);
+    medDataListParameter *dataListParameter() const;
 
     QList <medAbstractInteractor*> interactors(unsigned int layer);
+    QList<medAbstractNavigator*> navigators();
 
     virtual QWidget* navigatorWidget();
     virtual QWidget* mouseInteractionWidget();
+    QWidget* toolBarWidget();
+
+    virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medAbstractParameter*> linkableParameters(unsigned int layer);
 
 public slots:
+    void setDataList(QList<medDataIndex> dataList);
     void removeLayer();
 
 signals:
@@ -86,17 +93,16 @@ protected:
 
     virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);
 
+    virtual QWidget* buildToolBarWidget() = 0;
+
 protected slots:
     virtual void setUpViewForThumbnail();
-    virtual void linkLayer(QString);
-    virtual void unlinkLayer(unsigned int layer = -1);
 
 private slots:
+    void removeInternToolBarWidget();
     void removeInternNavigatorWidget();
     void removeInternMouseInteractionWidget();
-
- private:
-    medStringListParameter* createLinkParameter();
+    void updateDataListParameter(unsigned int layer);
 
 private:
     medAbstractLayeredViewPrivate *d;

@@ -140,6 +140,9 @@ private:
 
 };
 
+Q_DECLARE_METATYPE(medAbstractData)
+Q_DECLARE_METATYPE(medAbstractData *)
+
 #define MED_DATA_INTERFACE_NO_MOC(_name,_desc) \
 public:\
     static QString staticName() {return QString::fromUtf8(_name);}\

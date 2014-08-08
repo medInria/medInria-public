@@ -17,6 +17,20 @@
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
 #include <medViewFactory.h>
+#include <medViewContainer.h>
+#include <medViewContainerSplitter.h>
+
+#include <medTriggerParameter.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
+#include <medParameterPool.h>
+#include <medParameterPoolManager.h>
+#include <medDataListParameter.h>
+#include <medStringListParameter.h>
+
+#include <medViewParameterGroup.h>
+#include <medLayerParameterGroup.h>
+#include <medParameterGroupManager.h>
 
 class medAbstractImageViewPrivate
 {
@@ -26,16 +40,24 @@ public:
 
     medAbstractImageViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
+
+    medTriggerParameter *fourViewsParameter;
 };
 
 medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayeredView(parent),
     d(new medAbstractImageViewPrivate)
 {
     d->primaryNavigator = NULL;
+    d->fourViewsParameter = NULL;
 }
 
 medAbstractImageView::~medAbstractImageView()
 {
+    disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
+
+    int c = layersCount()-1;
+    for(int i=c; i>=0; i--)
+        removeLayer(i);
     delete d;
 }
 
@@ -102,7 +124,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
         medAbstractImageViewInteractor* interactor = factory->createInteractor<medAbstractImageViewInteractor>(primaryInt.first(), this);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
-        interactor->setData(data);
+        interactor->setInputData(data);
         d->primaryInteractorsHash.insert(data, interactor);
     }
 
@@ -116,7 +138,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
             connect(this, SIGNAL(currentLayerChanged()), interactor, SLOT(updateWidgets()));
-            interactor->setData(data);
+            interactor->setInputData(data);
             extraIntList << interactor;
         }
         d->extraInteractorsHash.insert(data, extraIntList);
@@ -156,6 +178,73 @@ bool medAbstractImageView::initialiseNavigators()
     return true;
 }
 
+QWidget* medAbstractImageView::buildToolBarWidget()
+{
+    QWidget *toolBarWidget = this->fourViewsParameter()->getPushButton();
+
+    return toolBarWidget;
+}
+
+void medAbstractImageView::switchToFourViews()
+{
+    medViewContainer *topLeftContainer = dynamic_cast <medViewContainer *> (this->parent());
+    medViewContainerSplitter *topLeftContainerSplitter = dynamic_cast <medViewContainerSplitter *> (topLeftContainer->parent());
+
+    medViewContainer *bottomLeftContainer = topLeftContainer->splitVertically();
+    medViewContainer *topRightContainer = topLeftContainer->splitHorizontally();
+    medViewContainer *bottomRightContainer = bottomLeftContainer->splitHorizontally();
+
+    topLeftContainerSplitter->adjustContainersSize();
+
+    foreach(medDataIndex index, this->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+
+        topRightContainer->addData(data);
+        bottomLeftContainer->addData(data);
+        bottomRightContainer->addData(data);
+    }
+
+    this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+    medAbstractImageView *bottomLeftContainerView = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
+    medAbstractImageView *topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+    medAbstractImageView *bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
+
+    bottomLeftContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+    topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+    bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+
+    QString linkGroupBaseName = "MPR ";
+    unsigned int linkGroupNumber = 1;
+
+    QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    while (medParameterGroupManager::instance()->viewGroup(linkGroupName))
+    {
+        linkGroupNumber++;
+        linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    }
+
+    medViewParameterGroup* viewGroup = new medViewParameterGroup(linkGroupName, this);
+    viewGroup->addImpactedView(this);
+    viewGroup->addImpactedView(topRightContainerView);
+    viewGroup->addImpactedView(bottomLeftContainerView);
+    viewGroup->addImpactedView(bottomRightContainerView);
+    viewGroup->setLinkAllParameters(true);
+    viewGroup->removeParameter("Orientation");
+
+    for (unsigned int i = 0;i < this->layersCount();++i)
+    {
+        QString linkLayerName = linkGroupBaseName + QString::number(linkGroupNumber) + " Layer " + QString::number(i+1);
+        medLayerParameterGroup* layerGroup = new medLayerParameterGroup(linkLayerName, this);
+        layerGroup->setLinkAllParameters(true);
+        layerGroup->addImpactedlayer(this, i);
+        layerGroup->addImpactedlayer(topRightContainerView, i);
+        layerGroup->addImpactedlayer(bottomLeftContainerView, i);
+        layerGroup->addImpactedlayer(bottomRightContainerView, i);
+    }
+}
 
 void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
 {
@@ -199,6 +288,20 @@ medDoubleParameter *medAbstractImageView::opacityParameter(unsigned int layer)
     }
 
     return pInteractor->opacityParameter();
+}
+
+medTriggerParameter *medAbstractImageView::fourViewsParameter()
+{
+    if (!d->fourViewsParameter)
+    {
+        d->fourViewsParameter = new medTriggerParameter("Four views", this);
+        QIcon fourViewsIcon (":/icons/fourViews.png");
+        d->fourViewsParameter->setButtonIcon(fourViewsIcon);
+
+        connect(d->fourViewsParameter,SIGNAL(triggered()),this,SLOT(switchToFourViews()));
+    }
+
+    return d->fourViewsParameter;
 }
 
 medCompositeParameter *medAbstractImageView::windowLevelParameter(unsigned int layer)

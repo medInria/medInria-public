@@ -91,6 +91,11 @@ QWidget* medQtView::mouseInteractionWidget()
     return 0;
 }
 
+QWidget* medQtView::buildToolBarWidget()
+{
+    return 0;
+}
+
 bool medQtView::initialiseInteractors(medAbstractData* data)
 {
     return true;
@@ -131,6 +136,11 @@ QString medQtView::description( void ) const
 void medQtView::reset()
 {
     qDebug() << "reset()";
+}
+
+void medQtView::render()
+{
+    qDebug() << "render";
 }
 
 QList<medAbstractParameter*> medQtView::navigatorsParameters()

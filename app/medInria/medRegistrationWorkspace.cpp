@@ -29,6 +29,9 @@
 
 #include <medToolBoxFactory.h>
 
+#include <medViewParameterGroup.h>
+#include <medLayerParameterGroup.h>
+
 class medRegistrationWorkspacePrivate
 {
 public:
@@ -36,6 +39,10 @@ public:
     medViewContainer *fixedContainer;
     medViewContainer *movingContainer;
     medViewContainer *fuseContainer;
+
+    medViewParameterGroup *viewGroup;
+    medLayerParameterGroup *fixedLayerGroup;
+    medLayerParameterGroup *movingLayerGroup;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medRegistrationWorkspacePrivate)
@@ -44,6 +51,20 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
 
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
     this->addToolBox(d->registrationToolBox);
+
+    d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
+    d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this, this->identifier());
+    d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
+
+    d->viewGroup->setLinkAllParameters(true);
+
+    d->fixedLayerGroup->setLinkAllParameters(true);
+    d->movingLayerGroup->setLinkAllParameters(true);
+
+    QList<medLayerParameterGroup*> layerGroups;
+    layerGroups.append(d->fixedLayerGroup);
+    layerGroups.append(d->movingLayerGroup);
+    this->setLayerGroups(layerGroups);
 
 //    this->setUserLayerPoolable(false);
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
@@ -71,8 +92,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fixedContainer->setMultiLayered(false);
         d->fixedContainer->setUserSplittable(false);
         d->fixedContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-
-
 
         d->movingContainer = d->fixedContainer->splitVertically();
         QLabel *movingLabel = new QLabel(tr("MOVING"));
@@ -154,17 +173,15 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     d->fuseContainer->addData(movingData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    movingView->linkParameter()->setValue("View group 1");
-    fuseView->linkParameter()->setValue("View group 1");
+    if(movingData)
+    {
+        d->viewGroup->addImpactedView(movingView);
+        d->viewGroup->addImpactedView(fuseView);
+        d->viewGroup->removeParameter("DataList");
 
-    medStringListParameter *movingPoolParameter = movingView->layerLinkParameter(0);
-    movingPoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
-    movingPoolParameter->setValue("Moving group");
-
-    medStringListParameter *fusePoolParameter = fuseView->layerLinkParameter(fuseView->layer(movingData));
-    fusePoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
-    fusePoolParameter->setValue("Moving group");
-
+        d->movingLayerGroup->addImpactedlayer(movingView, 0);
+        d->movingLayerGroup->addImpactedlayer(fuseView, fuseView->layer(movingData));
+    }
     d->registrationToolBox->setMovingData(movingData);
 }
 
@@ -207,16 +224,15 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     d->fuseContainer->addData(fixedData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    fixedView->linkParameter()->setValue("View group 1");
-    fuseView->linkParameter()->setValue("View group 1");
+    if(fixedData)
+    {
+        d->viewGroup->addImpactedView(fixedView);
+        d->viewGroup->addImpactedView(fuseView);
+        d->viewGroup->removeParameter("DataList");
 
-    medStringListParameter *fixedPoolParameter = fixedView->layerLinkParameter(0);
-    fixedPoolParameter->addItem("Fixed group", medStringListParameter::createIconFromColor("yellow"));
-    fixedPoolParameter->setValue("Fixed group");
-
-    medStringListParameter *fusePoolParameter = fuseView->layerLinkParameter(fuseView->layer(fixedData));
-    fusePoolParameter->addItem("Fixed group", medStringListParameter::createIconFromColor("yellow"));
-    fusePoolParameter->setValue("Fixed group");
+        d->fixedLayerGroup->addImpactedlayer(fixedView, 0);
+        d->fixedLayerGroup->addImpactedlayer(fuseView, fuseView->layer(fixedData));
+    }
 
     d->registrationToolBox->setFixedData(fixedData);
 }
@@ -263,16 +279,12 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         return;
     }
 
-    medStringListParameter *movingPoolParameter = movingView->layerLinkParameter(0);
-    movingPoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
-    movingPoolParameter->setValue("Moving group");
+    d->viewGroup->addImpactedView(movingView);
+    d->viewGroup->addImpactedView(fuseView);
+    d->viewGroup->removeParameter("DataList");
 
-    medStringListParameter *fusePoolParameter = fuseView->layerLinkParameter(fuseView->layer(output));
-    fusePoolParameter->addItem("Moving group", medStringListParameter::createIconFromColor("purple"));
-    fusePoolParameter->setValue("Moving group");
-
-    movingView->linkParameter()->setValue("View group 1");
-    fuseView->linkParameter()->setValue("View group 1");
+    d->movingLayerGroup->addImpactedlayer(movingView, 0);
+    d->movingLayerGroup->addImpactedlayer(fuseView, fuseView->layer(output));
 
     connect(d->movingContainer,SIGNAL(viewContentChanged()),
             this, SLOT(updateFromMovingContainer()));

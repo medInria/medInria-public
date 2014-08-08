@@ -16,8 +16,8 @@
 #include <medAbstractImageView.h>
 
 #include <medCompositeParameter.h>
+#include <medTriggerParameter.h>
 #include <medVector3DParameter.h>
-
 
 class medAbstractImageViewNavigatorPrivate
 {
@@ -25,7 +25,6 @@ public:
     medAbstractImageView *view;
     medCompositeParameter *cameraParameter;
     medVector3DParameter *positionBeingViewedParameter;
-
 };
 
 medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *parent):

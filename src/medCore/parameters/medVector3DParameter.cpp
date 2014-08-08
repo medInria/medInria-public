@@ -27,7 +27,7 @@ medVector3DParameter::medVector3DParameter(QString name, QObject *parent)
 
 medVector3DParameter::~medVector3DParameter()
 {
-
+    delete d;
 }
 
 QWidget* medVector3DParameter::getWidget()

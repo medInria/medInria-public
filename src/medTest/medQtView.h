@@ -56,8 +56,11 @@ public:
 
     virtual QList<medAbstractParameter*> navigatorsParameters();
 
+    virtual QWidget* buildToolBarWidget();
+
 public slots:
     virtual void reset();
+    virtual void render();
 
 private:
     virtual QImage buildThumbnail(const QSize &size);

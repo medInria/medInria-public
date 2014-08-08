@@ -40,6 +40,7 @@
 #include <medVtkViewObserver.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
+#include <medDataListParameter.h>
 #include <medToolBox.h>
 #include <medMetaDataKeys.h>
 #include <medParameterPool.h>
@@ -168,6 +169,13 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
 medVtkView::~medVtkView()
 {
+    disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
+    disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(render()));
+
+    int c = layersCount()-1;
+    for(int i=c; i>=0; i--)
+        removeLayer(i);
+
     d->view2d->Delete();
     d->view3d->Delete();
     d->observer->Delete();
@@ -211,6 +219,14 @@ void medVtkView::reset()
 {
     d->view2d->Reset();
     d->view3d->Reset();
+    if(this->is2D())
+        d->view2d->Render();
+    else
+        d->view3d->Render();
+}
+
+void medVtkView::render()
+{
     if(this->is2D())
         d->view2d->Render();
     else

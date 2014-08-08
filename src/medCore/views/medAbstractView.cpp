@@ -34,8 +34,6 @@ public:
 
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
-
-    medStringListParameter *linkParameter;
 };
 
 medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate)
@@ -45,8 +43,6 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
 
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
-
-    d->linkParameter = NULL;
 }
 
 medAbstractView::~medAbstractView( void )
@@ -77,7 +73,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     else
     {
         medAbstractViewInteractor* interactor = factory->createInteractor<medAbstractViewInteractor>(primaryInt.first(), this);
-        interactor->setData(data);
+        interactor->setInputData(data);
         d->primaryInteractor = interactor;
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
@@ -90,7 +86,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
         foreach (QString i, extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
-            interactor->setData(data);
+            interactor->setInputData(data);
             extraIntList << interactor;
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         }
@@ -152,6 +148,14 @@ QList<medAbstractNavigator*> medAbstractView::extraNavigators()
     return d->extraNavigators;
 }
 
+QList<medAbstractNavigator*> medAbstractView::navigators()
+{
+    QList<medAbstractNavigator*> navigatorsList;
+    navigatorsList << this->primaryNavigator() << d->extraNavigators;
+    
+    return navigatorsList;
+}
+
 medDoubleParameter* medAbstractView::zoomParameter()
 {
     medAbstractViewNavigator* pNavigator = this->primaryNavigator();
@@ -172,47 +176,6 @@ medAbstractVector2DParameter* medAbstractView::panParameter()
     }
 
     return pNavigator->panParameter();
-}
-
-
-medStringListParameter* medAbstractView::linkParameter()
-{
-    if(!d->linkParameter)
-    {
-        d->linkParameter = new medStringListParameter("Link view", this);
-        d->linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
-        d->linkParameter->addItem("View group 1", medStringListParameter::createIconFromColor("darkred"));
-        d->linkParameter->addItem("View group 2", medStringListParameter::createIconFromColor("darkgreen"));
-        d->linkParameter->addItem("View group 3", medStringListParameter::createIconFromColor("darkblue"));
-
-        QString tooltip = QString(tr("Link View properties ("));
-        foreach(medAbstractParameter *param, this->navigatorsParameters())
-            tooltip += param->name() + ", ";
-        tooltip += ")";
-        d->linkParameter->setToolTip(tooltip);
-
-        connect(d->linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(link(QString)));
-
-        d->linkParameter->setValue("None");
-    }
-    return d->linkParameter;
-}
-
-void medAbstractView::link(QString pool)
-{
-    unlink();
-
-    if(pool!="None")
-    {
-        foreach(medAbstractParameter *param, this->navigatorsParameters())
-            medParameterPoolManager::instance()->linkParameter(param, pool);
-    }
-}
-
-void medAbstractView::unlink()
-{
-    foreach(medAbstractParameter *param, this->navigatorsParameters())
-        medParameterPoolManager::instance()->unlinkParameter(param);
 }
 
 QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
@@ -245,4 +208,10 @@ QImage medAbstractView::generateThumbnail(const QSize &size)
 {
     emit aboutToBuildThumbnail();
     return this->buildThumbnail(size);
+}
+
+QList<medAbstractParameter*> medAbstractView::linkableParameters()
+{
+    //TODO:
+    return navigatorsParameters();
 }

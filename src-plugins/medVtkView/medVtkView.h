@@ -50,6 +50,7 @@ public:
 
 public slots:
     virtual void reset();
+    virtual void render();
 
 private slots:
     void displayDataInfo(uint layer);

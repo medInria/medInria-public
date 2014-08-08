@@ -57,8 +57,6 @@ public:
 
     medAbstractVector2DParameter* panParameter();
 
-    virtual medStringListParameter *linkParameter();
-
     virtual medViewBackend * backend() const = 0;
 
     virtual QWidget* navigatorWidget() = 0;
@@ -71,9 +69,13 @@ public:
     virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
     virtual medAbstractViewNavigator* primaryNavigator();
     virtual QList<medAbstractNavigator*> extraNavigators();
+    virtual QList<medAbstractNavigator*> navigators();
+
+    virtual QList<medAbstractParameter*> linkableParameters();
 
 public slots:
     virtual void reset() = 0;
+    virtual void render() = 0;
 
 signals:
     void selectedRequest(bool selected);
@@ -86,10 +88,6 @@ protected:
     virtual bool eventFilter(QObject *, QEvent *);
 
     virtual QList<medAbstractParameter*> navigatorsParameters();
-
-protected slots:
-    virtual void link(QString);
-    virtual void unlink();
 
 private:
     virtual QImage buildThumbnail(const QSize &size) = 0;

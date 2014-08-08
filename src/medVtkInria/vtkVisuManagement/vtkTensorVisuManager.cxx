@@ -1020,7 +1020,7 @@ void vtkTensorVisuManager::SetLookupTable (vtkLookupTable* lut)
 
   this->LUT=lut;
 
-  if( !this->ColorMode == COLOR_BY_EIGENVECTOR )
+  if(this->ColorMode != COLOR_BY_EIGENVECTOR)
   {
     this->Mapper->SetLookupTable (lut);
   }
@@ -1032,7 +1032,7 @@ void vtkTensorVisuManager::SetScalarRange(const float& min, const float &max)
   this->Min = min;
   this->Max = max;
 
-  if( !this->ColorMode == COLOR_BY_EIGENVECTOR )
+  if(this->ColorMode != COLOR_BY_EIGENVECTOR)
   {
     this->Mapper->SetScalarRange(min, max);
   }
