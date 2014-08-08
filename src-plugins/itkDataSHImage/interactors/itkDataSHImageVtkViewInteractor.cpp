@@ -77,6 +77,7 @@ public:
         filter = itk::SphericalHarmonicITKToVTKFilter<SH_IMAGE>::New();
 
         filter->SetInput(dataset);
+        filter->UpdateOutputInformation();
 
         //  This line generates the vtkSHs, otherwise is not generated, even if the next filter
         //  in the pipeline is connected and Update() is called
