@@ -643,8 +643,19 @@ void medViewContainer::closeEvent(QCloseEvent * /*event*/)
 void medViewContainer::openFromSystem()
 {
     //  get last directory opened in settings.
-    QString path = medSettingsManager::instance()->value("path", "medViewContainer", QDir::homePath()).toString();
-    path = QFileDialog::getOpenFileName(NULL, tr("Open"), path);
+    QString path;
+    QFileDialog dialog(this);
+
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
+    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
+    if(dialog.exec())
+        path = dialog.selectedFiles().first();
+
+    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
+    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
+
 
     if (path.isEmpty())
         return;
