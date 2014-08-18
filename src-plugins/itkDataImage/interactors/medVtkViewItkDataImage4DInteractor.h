@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -42,17 +42,9 @@ public:
 
     virtual QList<medAbstractParameter*> linkableParameters();
 
-    double getCurrentTime();
-    /** Assigns ranfe array the minimum and maximum time of the sequence */
-    void timeRange (double* range);
-    /** Returns minimum time step for the sequence */
-    double frameRate();
-
-
 public slots:
-    void setCurrentTime (double time);
-
-     virtual void updateWidgets();
+    virtual void setCurrentTime (double time);
+    virtual void updateWidgets();
 
 private:
     static QStringList dataHandled();

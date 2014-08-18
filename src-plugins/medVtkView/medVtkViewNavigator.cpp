@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -30,6 +30,7 @@
 #include <medDoubleParameter.h>
 #include <medCompositeParameter.h>
 #include <medStringListParameter.h>
+#include <medTimeLineParameter.h>
 
 /*=========================================================================
 
@@ -186,7 +187,9 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showRulerParameter
                     << d->showAnnotationParameter
                     << d->showScalarBarParameter
-                    << this->positionBeingViewedParameter();
+                    << this->positionBeingViewedParameter()
+                    << this->timeLineParameter();
+
 
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),
@@ -399,6 +402,7 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
     layout->addWidget(d->orientationParameter->getLabel());
     layout->addWidget(d->orientationParameter->getPushButtonGroup());
     layout->addWidget(d->showOptionsWidget);
+    layout->addWidget(this->timeLineParameter()->getWidget());
 
     return toolBoxWidget;
 }
@@ -635,11 +639,19 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
 
 void medVtkViewNavigator::updateWidgets()
 {
-    if(this->toolBoxWidget())
+    if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
     {
-        if(d->orientation == medImageView::VIEW_ORIENTATION_3D)
-            d->showOptionsWidget->hide();
-        else d->showOptionsWidget->show();
+        d->showAxesParameter->hide();
+        d->showRulerParameter->hide();
+        d->showAnnotationParameter->hide();
+        d->showScalarBarParameter->hide();
+    }
+    else
+    {
+        d->showAxesParameter->show();
+        d->showRulerParameter->show();
+        d->showAnnotationParameter->show();
+        d->showScalarBarParameter->show();
     }
 }
 

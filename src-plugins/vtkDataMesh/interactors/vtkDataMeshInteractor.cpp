@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -139,7 +139,7 @@ QStringList vtkDataMeshInteractor::handled() const
 
 QStringList vtkDataMeshInteractor::dataHandled()
 {
-    QStringList d = QStringList() << "vtkDataMesh" << "vtkDataMesh4D";
+    QStringList d = QStringList() << "vtkDataMesh";
     return  d;
 }
 
@@ -156,19 +156,14 @@ void vtkDataMeshInteractor::setData(medAbstractData *data)
 {
     medAbstractInteractor::setData(data);
 
-    if(data->identifier() == "vtkDataMesh4D" || data->identifier() == "vtkDataMesh")
-    {
-        vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+    vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
 
-        d->metaDataSet = mesh;
-        d->lut = LutPair(NULL, "Default");
+    d->metaDataSet = mesh;
+    d->lut = LutPair(NULL, "Default");
 
-        updatePipeline();
+    updatePipeline();
 
-        setupParameters();
-    }
-
-    qDebug() << d->metaDataSet->GetType();
+    setupParameters();
 }
 
 void vtkDataMeshInteractor::setupParameters()

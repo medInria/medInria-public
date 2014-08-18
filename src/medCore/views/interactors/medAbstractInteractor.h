@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -40,7 +40,7 @@ public:
 
     virtual void setData(medAbstractData *data);
     virtual medAbstractData *data() const;
-    
+
     virtual QWidget* toolBoxWidget();
     virtual QWidget* toolBarWidget();
     virtual QWidget* layerWidget();
@@ -49,7 +49,14 @@ public:
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
 
 public slots:
-    virtual void updateWidgets(){}
+    /**
+     * @brief updateWidgets Reimplement this methode to change the widget that you expose when the
+     * state of the view changes. (i.e. Orientation, new data added)
+     */
+    virtual void updateWidgets()
+    {
+    }
+
 
 protected:
     /**

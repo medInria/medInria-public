@@ -607,7 +607,6 @@ void medViewContainer::updateToolBar()
         {
             if(!interactor)
                 continue;
-            qDebug() << layeredView->layerData(layeredView->currentLayer())->identifier();
 
             QWidget* widget = interactor->toolBarWidget();
             if(widget)
