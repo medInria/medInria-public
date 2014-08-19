@@ -14,6 +14,7 @@
 #pragma once
 
 #include <vtkDataObject.h>
+#include <medVtkInriaExport.h>
 #include <string>
 #include <vector>
 
@@ -42,7 +43,7 @@ class vtkScalarsToColors;
 class vtkPolyData;
 
 
-class vtkMetaDataSet: public vtkDataObject
+class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
 {
  public:
 
