@@ -32,6 +32,7 @@
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
 #include <itkFiberBundleStatisticsCalculator.h>
+#include <itkCastImageFilter.h>
 
 #include <medMessageController.h>
 #include <medDataManager.h>
@@ -64,6 +65,8 @@
 class medVtkFibersDataInteractorPrivate
 {
 public:
+    template <class T> void setROI (medAbstractData *data);
+
     medAbstractData        *data;
     medAbstractImageView   *view;
     medAbstractData        *projectionData;
@@ -97,6 +100,7 @@ public:
 
     medDropSite *dropOrOpenRoi;
     QComboBox    *roiComboBox;
+    QMap <int,int> roiLabels;
 
     medBoolParameter *andParameter;
     medBoolParameter *notParameter;
@@ -119,6 +123,101 @@ public:
 
     medIntParameter *slicingParameter;
 };
+
+template <class T>
+void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
+{
+    if (!data)
+        return;
+
+    typedef itk::Image<T, 3> InputROIType;
+    typedef itk::Image<unsigned char, 3> ROIType;
+
+    typename InputROIType::Pointer tmpROIImage = dynamic_cast<InputROIType*>(static_cast<itk::Object*>(data->data()));
+
+    if (tmpROIImage.IsNull())
+        return;
+
+    typedef itk::CastImageFilter <InputROIType,ROIType> CastFilterType;
+    typename CastFilterType::Pointer castFilter = CastFilterType::New();
+    castFilter->SetInput(tmpROIImage);
+    castFilter->Update();
+
+    typename ROIType::Pointer roiImage = castFilter->GetOutput();
+    roiImage->DisconnectPipeline();
+
+    QList <int> labels;
+    typedef itk::ImageRegionConstIterator <ROIType> ROIITeratorType;
+    ROIITeratorType roiItr(roiImage,roiImage->GetLargestPossibleRegion());
+
+    while (!roiItr.IsAtEnd())
+    {
+        if ((roiItr.Get() != 0)&&(!labels.contains(roiItr.Get())))
+            labels.append(roiItr.Get());
+
+        ++roiItr;
+    }
+
+    typename itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
+    converter->SetReferenceCount(2);
+    converter->SetInput(roiImage);
+    converter->Update();
+
+    typename ROIType::DirectionType directions = roiImage->GetDirection();
+    vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
+    matrix->Identity();
+    for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
+            matrix->SetElement (i, j, directions (i,j));
+
+    manager->Reset();
+    manager->GetROILimiter()->SetMaskImage (converter->GetOutput());
+    manager->GetROILimiter()->SetDirectionMatrix (matrix);
+
+    typename ROIType::PointType origin = roiImage->GetOrigin();
+    vtkMatrix4x4 *matrix2 = vtkMatrix4x4::New();
+    matrix2->Identity();
+    for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
+            matrix2->SetElement (i, j, directions (i,j));
+    double v_origin[4], v_origin2[4];
+    for (int i=0; i<3; i++)
+        v_origin[i] = origin[i];
+    v_origin[3] = 1.0;
+    matrix->MultiplyPoint (v_origin, v_origin2);
+    for (int i=0; i<3; i++)
+        matrix2->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
+    roiManager->SetInput (converter->GetOutput());
+    roiManager->SetDirectionMatrix (matrix2);
+
+    // manager->GetROILimiter()->Update();
+    roiManager->GenerateData();
+
+    qSort(labels);
+    roiLabels.clear();
+
+    if (roiComboBox)
+    {
+        roiComboBox->blockSignals(true);
+        roiComboBox->clear();
+        unsigned int i = 0;
+        foreach (int label, labels)
+        {
+            roiLabels[i] = label;
+            roiComboBox->addItem("ROI " + QString::number(label));
+            ++i;
+        }
+
+        roiComboBox->blockSignals(false);
+        roiComboBox->setCurrentIndex(0);
+    }
+
+    matrix->Delete();
+    matrix2->Delete();
+
+    render->Render();
+}
 
 medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
     d(new medVtkFibersDataInteractorPrivate)
@@ -151,7 +250,6 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->colorFiberParameter->getLabel()->setText(tr("Color fibers by:"));
     d->colorFiberParameter->addItem("Local orientation");
     d->colorFiberParameter->addItem("Global orientation");
-    d->colorFiberParameter->addItem("Fractional anisotropy");
     d->parameters << d->colorFiberParameter;
 
     d->gpuParameter = new medBoolParameter("gpuFiberParameter", this);
@@ -357,6 +455,24 @@ void medVtkFibersDataInteractor::setData(medAbstractData *data)
     {
         d->dataset = dataset;
         d->manager->SetInput(d->dataset);
+
+        // Update color fiber parameter
+        d->colorFiberParameter->blockSignals(true);
+        d->colorFiberParameter->clear();
+        d->colorFiberParameter->addItem("Local orientation");
+        d->colorFiberParameter->addItem("Global orientation");
+        vtkPolyData *fibersData = d->dataset->GetFibers();
+        unsigned int numArrays = fibersData->GetPointData()->GetNumberOfArrays();
+        for (unsigned int i = 0;i < numArrays;++i)
+        {
+            vtkDataArray *tmpArray = fibersData->GetPointData()->GetArray(i);
+            if (tmpArray->GetNumberOfComponents() > 1)
+                continue;
+
+            d->colorFiberParameter->addItem(fibersData->GetPointData()->GetArrayName(i));
+        }
+        d->colorFiberParameter->blockSignals(false);
+
         if (!data->hasMetaData("BundleList"))
             data->addMetaData("BundleList", QStringList());
         if (!data->hasMetaData("BundleColorList"))
@@ -473,45 +589,28 @@ void medVtkFibersDataInteractor::activateGPU(bool activate)
 void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
 {
     if (mode == "Local orientation")
-        this->setColorMode(medVtkFibersDataInteractor::Local);
+        d->manager->SetColorModeToLocalFiberOrientation();
     else if (mode == "Global orientation")
-        this->setColorMode(medVtkFibersDataInteractor::Global);
-    else if (mode == "Fractional anisotropy")
-        this->setColorMode(medVtkFibersDataInteractor::FA);
- }
-
-void medVtkFibersDataInteractor::setColorMode(ColorMode mode)
-{
-    switch(mode)
+        d->manager->SetColorModelToGlobalFiberOrientation();
+    else
     {
-        case medVtkFibersDataInteractor::Local:
-            d->manager->SetColorModeToLocalFiberOrientation();
-            break;
-
-        case medVtkFibersDataInteractor::Global:
-            d->manager->SetColorModelToGlobalFiberOrientation();
-            break;
-
-        case medVtkFibersDataInteractor::FA:
-            d->manager->SetColorModeToLocalFiberOrientation();
-            for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
+        d->manager->SetColorModeToLocalFiberOrientation();
+        for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
+        {
+            if (d->manager->GetPointArrayName (i))
             {
-                if (d->manager->GetPointArrayName (i))
+                QString pointArrayName = d->manager->GetPointArrayName (i);
+                if (pointArrayName == mode)
                 {
-                    if (strcmp ( d->manager->GetPointArrayName (i), "FA") == 0)
-                    {
-                        d->manager->SetColorModeToPointArray (i);
-                        break;
-                    }
+                    d->manager->SetColorModeToPointArray (i);
+                    break;
                 }
             }
-            break;
-
-        default:
-            qDebug() << "medVtkFibersDataInteractor: unknown color mode";
+        }
     }
+
     d->render->Render();
-}
+ }
 
 void medVtkFibersDataInteractor::setBoxBooleanOperation(bool value)
 {
@@ -625,10 +724,10 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
 }
 
 void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleName,
-                                                    QMap <QString, double> &mean,
-                                                    QMap <QString, double> &min,
-                                                    QMap <QString, double> &max,
-                                                    QMap <QString, double> &var)
+                                                        QMap <QString, double> &mean,
+                                                        QMap <QString, double> &min,
+                                                        QMap <QString, double> &max,
+                                                        QMap <QString, double> &var)
 {
     vtkPolyData *bundleData = d->dataset->GetBundle(bundleName.toAscii().constData()).Bundle;
 
@@ -669,6 +768,7 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
     unsigned int numberOfArrays = bundlePointData->GetNumberOfArrays();
     vtkPoints* points = bundleData->GetPoints();
     vtkCellArray* lines = bundleData->GetLines();
+    lines->InitTraversal();
 
     for (unsigned int i = 0;i < numberOfArrays;++i)
     {
@@ -676,8 +776,9 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
         // Put them inside maps
         QString arrayName = bundlePointData->GetArrayName(i);
         vtkDataArray *imageCoefficients = bundlePointData->GetArray(i);
-        unsigned int tupleSize = imageCoefficients->GetElementComponentSize();
-        if (tupleSize != 1)
+        unsigned int numComponents = imageCoefficients->GetNumberOfComponents();
+
+        if (numComponents != 1)
             continue;
 
         vtkIdType  npts  = 0;
@@ -738,34 +839,87 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
             mean[arrayName] = sumData / numberOfLines;
             min[arrayName] = minValue;
             max[arrayName] = maxValue;
-            var[arrayName] = (squareSumData - sumData * sumData / numberOfLines) / (numberOfLines - 1.0);
+            var[arrayName] = 0;
+            if (numberOfLines > 1)
+                var[arrayName] = (squareSumData - sumData * sumData / numberOfLines) / (numberOfLines - 1.0);
         }
     }
 }
 
 void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &name,
-                                                            double &mean,
-                                                            double &min,
-                                                            double &max,
-                                                            double &var)
+                                                                double &mean,
+                                                                double &min,
+                                                                double &max,
+                                                                double &var)
 {
-    itk::FiberBundleStatisticsCalculator::Pointer statCalculator = itk::FiberBundleStatisticsCalculator::New();
-    statCalculator->SetInput (d->dataset->GetBundle (name.toAscii().constData()).Bundle);
-    try
-    {
-        statCalculator->Compute();
-    }
-    catch(itk::ExceptionObject &e)
-    {
-        qDebug() << e.GetDescription();
-        mean = 0.0;
-        min  = 0.0;
-        max  = 0.0;
-        var  = 0.0;
+    vtkPolyData *bundleData = d->dataset->GetBundle(name.toAscii().constData()).Bundle;
+
+    if (!bundleData)
         return;
+
+    vtkPointData *bundlePointData = bundleData->GetPointData();
+    vtkPoints* points = bundleData->GetPoints();
+    vtkCellArray* lines = bundleData->GetLines();
+
+    lines->InitTraversal();
+    vtkIdType  npts  = 0;
+    vtkIdType* ptids = 0;
+    vtkIdType test = lines->GetNextCell (npts, ptids);
+
+    double sumData = 0;
+    double squareSumData = 0;
+    double minValue = HUGE_VAL;
+    double maxValue = - HUGE_VAL;
+    unsigned int numberOfLines = 0;
+
+    // go over lines, each cell is a line
+    while (test)
+    {
+        double lengthFiber = 0;
+
+        for (int k=1; k<npts; k++)
+        {
+            double pt1[3];
+            double pt2[3];
+            points->GetPoint (ptids[k-1], pt1);
+            points->GetPoint (ptids[k], pt2);
+
+            double normDiff = 0;
+            for (unsigned int l = 0;l < 3;++l)
+                normDiff += (pt2[l] - pt1[l])*(pt2[l] - pt1[l]);
+
+            lengthFiber += sqrt(normDiff);
+        }
+
+        if (minValue > lengthFiber)
+            minValue = lengthFiber;
+
+        if (maxValue < lengthFiber)
+            maxValue = lengthFiber;
+
+        sumData += lengthFiber;
+        squareSumData += lengthFiber * lengthFiber;
+        ++numberOfLines;
+
+        test = lines->GetNextCell (npts, ptids);
     }
 
-    statCalculator->GetLengthStatistics(mean, min, max, var);
+    if (isFinite (sumData / numberOfLines))
+    {
+        mean = sumData / numberOfLines;
+        min = minValue;
+        max = maxValue;
+        var = 0;
+        if (numberOfLines > 1)
+            var = (squareSumData - sumData * sumData / numberOfLines) / (numberOfLines - 1.0);
+    }
+    else
+    {
+        mean = 0;
+        min = 0;
+        max = 0;
+        var = 0;
+    }
 }
 
 void medVtkFibersDataInteractor::bundleLengthStatistics(const QString &name,
@@ -813,79 +967,15 @@ void medVtkFibersDataInteractor::setRadius (int value)
     d->render->Render();
 }
 
-void medVtkFibersDataInteractor::setROI(medAbstractData *data)
-{
-    if (!data)
-        return;
-
-    if (data->identifier()!="itkDataImageUChar3")
-        return;
-
-    typedef itk::Image<unsigned char, 3> ROIType;
-
-    ROIType::Pointer roiImage = static_cast<ROIType*>(data->data());
-
-    if (!roiImage.IsNull())
-    {
-        itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
-        converter->SetReferenceCount(2);
-        converter->SetInput(roiImage);
-        converter->Update();
-
-        ROIType::DirectionType directions = roiImage->GetDirection();
-        vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
-        matrix->Identity();
-        for (int i=0; i<3; i++)
-            for (int j=0; j<3; j++)
-                matrix->SetElement (i, j, directions (i,j));
-
-        d->manager->Reset();
-        d->manager->GetROILimiter()->SetMaskImage (converter->GetOutput());
-        d->manager->GetROILimiter()->SetDirectionMatrix (matrix);
-
-        ROIType::PointType origin = roiImage->GetOrigin();
-        vtkMatrix4x4 *matrix2 = vtkMatrix4x4::New();
-        matrix2->Identity();
-        for (int i=0; i<3; i++)
-            for (int j=0; j<3; j++)
-                matrix2->SetElement (i, j, directions (i,j));
-        double v_origin[4], v_origin2[4];
-        for (int i=0; i<3; i++)
-            v_origin[i] = origin[i];
-        v_origin[3] = 1.0;
-        matrix->MultiplyPoint (v_origin, v_origin2);
-        for (int i=0; i<3; i++)
-            matrix2->SetElement (i, 3, v_origin[i]-v_origin2[i]);
-
-        d->roiManager->SetInput (converter->GetOutput());
-        d->roiManager->SetDirectionMatrix (matrix2);
-
-        // d->manager->GetROILimiter()->Update();
-        d->roiManager->GenerateData();
-
-        matrix->Delete();
-        matrix2->Delete();
-    }
-    else
-    {
-        d->manager->GetROILimiter()->SetMaskImage (0);
-        d->manager->GetROILimiter()->SetDirectionMatrix (0);
-
-        d->roiManager->ResetData();
-    }
-
-    d->render->Render();
-}
-
 void medVtkFibersDataInteractor::setRoiBoolean(int roi, int meaning)
 {
     d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
-
+    d->render->Render();
 }
 
 int medVtkFibersDataInteractor::roiBoolean(int roi)
 {
-    return d->manager->GetROILimiter()->GetBooleanOperationVector()[roi+1];
+    return d->manager->GetROILimiter()->GetBooleanOperationVector()[roi];
 }
 
 void medVtkFibersDataInteractor::setBundleVisibility(const QString &name, bool visibility)
@@ -994,23 +1084,32 @@ void medVtkFibersDataInteractor::addBundle (const QString &name, const QColor &c
 
 void medVtkFibersDataInteractor::setRoiAddOperation(bool value)
 {
-    int roi = d->roiComboBox->currentIndex();
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int roi = d->roiLabels[d->roiComboBox->currentIndex()];
     if (value)
-        this->setRoiBoolean(roi+1, 2);
+        this->setRoiBoolean(roi, 2);
 }
 
 void medVtkFibersDataInteractor::setRoiNotOperation(bool value)
 {
-    int roi = d->roiComboBox->currentIndex();
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int roi = d->roiLabels[d->roiComboBox->currentIndex()];
     if (value)
-        this->setRoiBoolean(roi+1, 1);
+        this->setRoiBoolean(roi, 1);
 }
 
 void medVtkFibersDataInteractor::setRoiNullOperation(bool value)
 {
-    int roi = d->roiComboBox->currentIndex();
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int roi = d->roiLabels[d->roiComboBox->currentIndex()];
     if (value)
-        this->setRoiBoolean(roi+1, 0);
+        this->setRoiBoolean(roi, 0);
 }
 
 
@@ -1020,8 +1119,19 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
 
     // we accept only ROIs (itkDataImageUChar3)
     // TODO try dynamic_cast of medAbstractMaskData would be better - RDE
-    if (!data || data->identifier() != "itkDataImageUChar3")
+    if (!data ||
+            (data->identifier() != "itkDataImageUChar3" &&
+             data->identifier() != "itkDataImageChar3" &&
+             data->identifier() != "itkDataImageUShort3" &&
+             data->identifier() != "itkDataImageShort3" &&
+             data->identifier() != "itkDataImageUInt3" &&
+             data->identifier() != "itkDataImageInt3" &&
+             data->identifier() != "itkDataImageFloat3" &&
+             data->identifier() != "itkDataImageDouble3"))
+    {
+        medMessageController::instance()->showError(tr("Unable to load ROI, format not supported yet"), 3000);
         return;
+    }
 
     // put the thumbnail in the medDropSite as well
     // (code copied from @medDatabasePreviewItem)
@@ -1035,6 +1145,7 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
         QImage thumbImage = dbc->thumbnail(index);
         if (!thumbImage.isNull())
         {
+            thumbImage = thumbImage.scaled(QSize(128,128));
             d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
             shouldSkipLoading = true;
         }
@@ -1043,32 +1154,51 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
     if (!shouldSkipLoading)
     {
         medImageFileLoader *loader = new medImageFileLoader(thumbpath);
-        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
+        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setRoiThumbnail(const QImage&)));
         QThreadPool::globalInstance()->start(loader);
     }
 
-    this->setROI(data);
+    d->setROI<unsigned char>(data);
+    d->setROI<char>(data);
+    d->setROI<unsigned short>(data);
+    d->setROI<short>(data);
+    d->setROI<unsigned int>(data);
+    d->setROI<int>(data);
+    d->setROI<float>(data);
+    d->setROI<double>(data);
+}
+
+void medVtkFibersDataInteractor::setRoiThumbnail(const QImage &image)
+{
+    QImage thumbImage = image.scaled(QSize(128,128));
+    d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
 }
 
 void medVtkFibersDataInteractor::clearRoi(void)
 {
-    // create dummy mask image
-    medAbstractData *data = medAbstractDataFactory::instance()->create("itkDataImageUChar3");
+    d->manager->GetROILimiter()->SetMaskImage (0);
+    d->manager->GetROILimiter()->SetDirectionMatrix (0);
 
-    this->setROI(data);
-    //TODO sound like a ugly hack - RDE
-    data->deleteLater();
+    d->roiManager->ResetData();
 
     // clear medDropSite and put text again
     d->dropOrOpenRoi->clear();
     d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
+
+    if (d->roiComboBox)
+        d->roiComboBox->clear();
+
+    d->roiLabels.clear();
 
     d->render->Render();
 }
 
 void medVtkFibersDataInteractor::selectRoi(int value)
 {
-    int boolean = this->roiBoolean (value);
+    if (d->roiLabels.isEmpty())
+        return;
+
+    int boolean = this->roiBoolean (d->roiLabels[value]);
     switch (boolean)
     {
     case 2:
@@ -1133,7 +1263,6 @@ void medVtkFibersDataInteractor::removeData()
 
 QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
 {
-
     d->toolboxWidget = new QWidget;
     QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolboxWidget);
 
@@ -1144,7 +1273,6 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     toolBoxLayout->addWidget(d->radiusParameter->getLabel());
     d->radiusParameter->getSlider()->setOrientation(Qt::Horizontal);
     toolBoxLayout->addWidget(d->radiusParameter->getSlider());
-
 
     d->bundleToolboxWidget = new QWidget(d->toolboxWidget);
     connect(d->bundleToolboxWidget, SIGNAL(destroyed()), this, SLOT(removeInternBundleToolBoxWidget()));
@@ -1160,11 +1288,20 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     QPushButton *clearRoiButton = new QPushButton("Clear ROI", d->toolboxWidget);
     clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
 
-    //TODO : what the ... why 255 ? - RDE
     d->roiComboBox = new QComboBox(d->bundleToolboxWidget);
-    for (int i=0; i<255; i++)
-        d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
-    d->roiComboBox->setCurrentIndex(0);
+    if (!d->roiLabels.isEmpty())
+    {
+        QMap<int,int>::const_iterator i = d->roiLabels.constBegin();
+
+        while (i != d->roiLabels.constEnd())
+        {
+            d->roiComboBox->addItem("ROI " + QString::number(i.value()));
+            i++;
+        }
+
+        d->roiComboBox->setCurrentIndex(0);
+    }
+
     d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed."));
 
     bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
