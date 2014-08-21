@@ -36,6 +36,7 @@ public:
     bool isContextVisible;
     bool aboutPluginVisibility;
     dtkPlugin* plugin;
+    medAbstractWorkspace* workspace;
 
 public:
     QVBoxLayout *layout;
@@ -286,4 +287,16 @@ void medToolBox::onAboutButtonClicked()
     {
         qWarning() << "No plugin set for toolbox" << d->header->title();
     }
+}
+
+medAbstractWorkspace* medToolBox::getWorkspace()
+{
+    qDebug()<<"GET WORKSPACE ";
+    return d->workspace;
+}
+
+void medToolBox::setWorkspace(medAbstractWorkspace* workspace)
+{
+    qDebug()<<"SET WORKSPACE ";
+    d->workspace = workspace;
 }
