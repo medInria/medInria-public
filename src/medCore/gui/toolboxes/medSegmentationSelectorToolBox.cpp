@@ -25,6 +25,7 @@
 class medSegmentationSelectorToolBoxPrivate
 {
 public:
+    medAbstractWorkspace *workspace;
     QComboBox *chooseSegmentationComboBox;
     medSegmentationAbstractToolBox * currentSegmentationToolBox;
     QHash<QString, medSegmentationAbstractToolBox*> segmentationToolBoxes;

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <medCoreExport.h>
+#include <medAbstractWorkspace.h>
 
 #include <QtGui>
 
@@ -48,6 +49,9 @@ public:
 
     medToolBoxHeader *header() const;
     medToolBoxBody   *body()   const;
+
+    virtual void setWorkspace(medAbstractWorkspace* workspace);
+    medAbstractWorkspace* getWorkspace();
 
     void setAboutPluginVisibility(bool enable);
     bool aboutPluginVisibility();
