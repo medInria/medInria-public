@@ -13,14 +13,14 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractProcess.h>
 #include <medAbstractData.h>
 
 #include <itkFiltersPluginExport.h>
 
 class itkFiltersProcessBasePrivate;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBase : public dtkAbstractProcess
+class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBase : public medAbstractProcess
 {
     Q_OBJECT
 public:
@@ -33,7 +33,7 @@ public:
 
     QString description ( void );
     
-    void setInput ( medAbstractData *data );
+    void setInput ( medAbstractData *data, int channel = 0 );
 
     medAbstractData *output ( void );
     

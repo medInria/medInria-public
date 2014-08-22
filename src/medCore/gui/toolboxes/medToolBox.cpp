@@ -291,12 +291,10 @@ void medToolBox::onAboutButtonClicked()
 
 medAbstractWorkspace* medToolBox::getWorkspace()
 {
-    qDebug()<<"GET WORKSPACE ";
     return d->workspace;
 }
 
 void medToolBox::setWorkspace(medAbstractWorkspace* workspace)
 {
-    qDebug()<<"SET WORKSPACE ";
     d->workspace = workspace;
 }

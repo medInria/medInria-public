@@ -19,7 +19,7 @@
 #include <itkFiltersProcessBase_p.h>
 
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
-    : dtkAbstractProcess(*new itkFiltersProcessBasePrivate(this), parent)
+    : medAbstractProcess(*new itkFiltersProcessBasePrivate(this), parent)
 {
     DTK_D(itkFiltersProcessBase);
     
@@ -31,7 +31,7 @@ itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent)
 
 
 itkFiltersProcessBase::itkFiltersProcessBase(const itkFiltersProcessBase& other) 
-    : dtkAbstractProcess(*new itkFiltersProcessBasePrivate(*other.d_func()), other)
+    : medAbstractProcess(*new itkFiltersProcessBasePrivate(*other.d_func()), other)
 {
     
 }
@@ -60,7 +60,7 @@ QString itkFiltersProcessBase::description()
 }
 
 
-void itkFiltersProcessBase::setInput(medAbstractData *data)
+void itkFiltersProcessBase::setInput(medAbstractData *data, int channel)
 {
     if (!data)
         return;

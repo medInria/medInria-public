@@ -25,7 +25,6 @@
 class medSegmentationSelectorToolBoxPrivate
 {
 public:
-    medAbstractWorkspace *workspace;
     QComboBox *chooseSegmentationComboBox;
     medSegmentationAbstractToolBox * currentSegmentationToolBox;
     QHash<QString, medSegmentationAbstractToolBox*> segmentationToolBoxes;
@@ -93,6 +92,9 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
         toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
         if (toolbox)
         {
+            medAbstractWorkspace* workspace = getWorkspace();
+            if(workspace)
+                toolbox->setWorkspace(workspace);
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             d->segmentationToolBoxes[identifier] = toolbox;
             connect(toolbox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
