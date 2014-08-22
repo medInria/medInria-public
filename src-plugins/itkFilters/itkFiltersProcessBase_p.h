@@ -13,8 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractProcess_p.h>
+#include <medAbstractProcess.h>
 #include <medAbstractImageData.h>
 #include <dtkLog/dtkLog.h>
 
@@ -25,11 +24,11 @@
 
 class itkFiltersProcessBase;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBasePrivate : public dtkAbstractProcessPrivate
+class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBasePrivate : public medAbstractProcessPrivate
 {
 public:
-    itkFiltersProcessBasePrivate(itkFiltersProcessBase *q = 0) : dtkAbstractProcessPrivate(q) {}
-    itkFiltersProcessBasePrivate(const itkFiltersProcessBasePrivate& other) : dtkAbstractProcessPrivate(other) {}
+    itkFiltersProcessBasePrivate(itkFiltersProcessBase *q = 0) : medAbstractProcessPrivate(q) {}
+    itkFiltersProcessBasePrivate(const itkFiltersProcessBasePrivate& other) : medAbstractProcessPrivate(other) {}
 
     virtual ~itkFiltersProcessBasePrivate(void) {}
     
@@ -56,6 +55,6 @@ public:
     }
 };
 
-DTK_IMPLEMENT_PRIVATE(itkFiltersProcessBase, dtkAbstractProcess)
+DTK_IMPLEMENT_PRIVATE(itkFiltersProcessBase, medAbstractProcess);
 
 
