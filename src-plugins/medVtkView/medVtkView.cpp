@@ -218,11 +218,11 @@ void medVtkView::reset()
 {
     d->view2d->Reset();
     d->view3d->Reset();
-    this->update();
+    this->render();
 
 }
 
-void medVtkView::update()
+void medVtkView::render()
 {
     if(this->is2D())
     {
@@ -234,14 +234,6 @@ void medVtkView::update()
         d->view3d->Modified();
         d->view3d->Render();
     }
-}
-
-void medVtkView::render()
-{
-    if(this->is2D())
-        d->view2d->Render();
-    else
-        d->view3d->Render();
 }
 
 QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)
