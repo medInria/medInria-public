@@ -156,7 +156,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->maximizedButton->setIcon(maximizedIcon);
     d->maximized = false;
-    connect(d->maximizedButton, SIGNAL(clicked()), this, SLOT(toggleMaximised()));
+    connect(d->maximizedButton, SIGNAL(clicked()), this, SLOT(toggleMaximized()));
     d->maximizedButton->setEnabled(false);
 
     d->poolIndicator = new medPoolIndicator;
@@ -165,8 +165,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     toolBar->setObjectName("containerToolBar");
     toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     d->toolBarLayout = new QHBoxLayout(toolBar);
-    d->toolBarLayout->setContentsMargins(5,0,5,0);
-    d->toolBarLayout->setSpacing(5);
+    d->toolBarLayout->setContentsMargins(2, 0, 2, 0);
+    d->toolBarLayout->setSpacing(2);
     d->toolBarLayout->addWidget(d->poolIndicator, 1, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->menuButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->maximizedButton, 0, Qt::AlignRight);
@@ -432,7 +432,7 @@ void medViewContainer::setUnSelected(bool unSelected)
     this->setSelected(!unSelected);
 }
 
-void medViewContainer::setMaximized(bool maxi)
+void medViewContainer::toggleMaximized()
 {
     d->maximized = !d->maximized;
 
