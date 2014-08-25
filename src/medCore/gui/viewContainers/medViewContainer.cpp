@@ -69,7 +69,7 @@ public:
     QAction* hSplitAction;
     QPushButton* closeContainerButton;
 
-    QPushButton* maximizedButton;
+    QAction* maximizedAction;
 
     QString defaultStyleSheet;
     QString highlightColor;
@@ -137,27 +137,28 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->hSplitAction->setIconVisibleInMenu(true);
     connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()));
 
-    d->toolBarMenu = new QMenu(this);
-    QList<QAction*> actions =  QList<QAction*>() << d->openAction
-                                                 << d->hSplitAction
-                                                 << d->vSplitAction;
-    d->toolBarMenu->addActions(actions);
-
     // make it a parameter to get synch between state of the container and the maximized button.
-    d->maximizedButton = new QPushButton(this);
-    d->maximizedButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->maximizedButton->setFocusPolicy(Qt::NoFocus);
-    d->maximizedButton->setCheckable(true);
+    d->maximizedAction = new QAction(tr("Maximized"), d->toolBarMenu);
+    d->maximizedAction->setToolTip("Toggle maximized / unmaximized");
+    d->maximizedAction->setCheckable(true);
     QIcon maximizedIcon(":/icons/maximize.svg");
     maximizedIcon.addFile(":/icons/un_maximize.svg",
                         QSize(16,16),
                         QIcon::Normal,
                         QIcon::On);
 
-    d->maximizedButton->setIcon(maximizedIcon);
+    d->maximizedAction->setIcon(maximizedIcon);
+    d->maximizedAction->setIconVisibleInMenu(true);
     d->maximized = false;
-    connect(d->maximizedButton, SIGNAL(clicked()), this, SLOT(toggleMaximized()));
-    d->maximizedButton->setEnabled(false);
+    connect(d->maximizedAction, SIGNAL(triggered()), this, SLOT(toggleMaximized()));
+    d->maximizedAction->setEnabled(false);
+
+    d->toolBarMenu = new QMenu(this);
+    d->toolBarMenu->addActions(QList<QAction*>() << d->openAction);
+    d->toolBarMenu->addSeparator();
+    d->toolBarMenu->addActions(QList<QAction*>() << d->vSplitAction << d->hSplitAction);
+    d->toolBarMenu->addSeparator();
+    d->toolBarMenu->addActions(QList<QAction*>() << d->maximizedAction);
 
     d->poolIndicator = new medPoolIndicator;
 
@@ -169,7 +170,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarLayout->setSpacing(2);
     d->toolBarLayout->addWidget(d->poolIndicator, 1, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->menuButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->maximizedButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
@@ -360,7 +360,7 @@ void medViewContainer::setView(medAbstractView *view)
                 imageView->fourViewsParameter()->hide();
         }
         
-        d->maximizedButton->setEnabled(true);
+        d->maximizedAction->setEnabled(true);
         d->defaultWidget->hide();
         d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
         d->view->viewWidget()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
@@ -448,7 +448,7 @@ void medViewContainer::toggleMaximized()
         d->hSplitAction->setEnabled(true);
         d->closeContainerButton->setEnabled(true);
     }
-    d->maximizedButton->setChecked(d->maximized);
+    d->maximizedAction->setChecked(d->maximized);
     emit maximized(d->maximized);
     emit maximized(d->uuid, d->maximized);
 }
@@ -471,7 +471,7 @@ void medViewContainer::removeView()
 void medViewContainer::removeInternView()
 {
     d->view = NULL;
-    d->maximizedButton->setEnabled(false);
+    d->maximizedAction->setEnabled(false);
     d->defaultWidget->show();
     this->updateToolBar();
 
