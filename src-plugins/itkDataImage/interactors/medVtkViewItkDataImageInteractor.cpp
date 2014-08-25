@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -174,6 +174,10 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
 
     d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
     initParameters(d->imageData);
+
+    d->view2d->GetInput()->Update();
+    double* range = d->view2d->GetInput(d->view->layer(d->imageData))->GetScalarRange();
+    this->initWindowLevelParameters(range);
 }
 
 void medVtkViewItkDataImageInteractor::removeData()
@@ -231,33 +235,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     else
        this->opacityParameter()->setValue(1);
 
-    d->view2d->GetInput()->Update();
-    double* range = d->view2d->GetInput(d->view->layer(data))->GetScalarRange();
-
-    double window = range[1]-range[0];
-    double level = 0.5*(range[1]+range[0]);
-
-    double windowMin = 0;
-    double windowMax = 2.0 * window;
-    double halfWidth = 0.5 * window;
-    double levelMin = range[0] - halfWidth;
-    double levelMax = range[1] + halfWidth;
-
-    this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(windowMin), QVariant(windowMax));
-    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(levelMin), QVariant(levelMax));
-
-    d->windowParameter = new medDoubleParameter("Window", this);
-    connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
-    d->windowParameter->setRange(windowMin, windowMax);
-    d->windowParameter->setSingleStep(qMin(0.1,(windowMax-windowMin) / 1000));
-    d->windowParameter->setValue(window);
-
-    d->levelParameter = new medDoubleParameter("Level", this);
-    connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
-    d->levelParameter->setRange(levelMin, levelMax);
-    d->levelParameter->setSingleStep(qMin(0.1,(levelMax-levelMin) / 1000));
-    d->levelParameter->setValue(level);
-
     d->slicingParameter = new medIntParameter("Slicing", this);
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
     int orientationId = d->view2d->GetSliceOrientation();
@@ -294,6 +271,35 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
             break;
         }
     }
+}
+
+void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
+{
+    double window = range[1]-range[0];
+    double level = 0.5*(range[1]+range[0]);
+
+    double windowMin = 0;
+    double windowMax = 2.0 * window;
+    double halfWidth = 0.5 * window;
+    double levelMin = range[0] - halfWidth;
+    double levelMax = range[1] + halfWidth;
+
+    this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(windowMin), QVariant(windowMax));
+    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(levelMin), QVariant(levelMax));
+
+    d->windowParameter = new medDoubleParameter("Window", this);
+    connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
+    d->windowParameter->setRange(windowMin, windowMax);
+    d->windowParameter->setSingleStep(qMin(0.1,(windowMax-windowMin) / 1000));
+    d->windowParameter->setValue(window);
+
+    d->levelParameter = new medDoubleParameter("Level", this);
+    connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
+    d->levelParameter->setRange(levelMin, levelMax);
+    d->levelParameter->setSingleStep(qMin(0.1,(levelMax-levelMin) / 1000));
+    d->levelParameter->setValue(level);
+
+    d->view->render();
 }
 
 void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
@@ -401,6 +407,7 @@ QWidget* medVtkViewItkDataImageInteractor::buildLayerWidget()
 void medVtkViewItkDataImageInteractor::setWindow(double window)
 {
     bool needsUpdate = false;
+
     if(d->view2d->GetColorWindow(d->view->layer(d->imageData)) != window)
     {
         d->view2d->SetColorWindow(window, d->view->layer(d->imageData));
