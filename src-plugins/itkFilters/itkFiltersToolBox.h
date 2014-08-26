@@ -57,6 +57,7 @@ private:
     void setupItkShrinkProcess();
     void setupItkWindowingProcess();
     void setupItkThresholdingProcess();
+    void setupItkComponentSizeThresholdProcess();
     
     itkFiltersToolBoxPrivate *d;
 };

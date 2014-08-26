@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,81 +11,65 @@
 
 =========================================================================*/
 
-#include <itkFiltersDilateProcess.h>
+#include "itkFiltersComponentSizeThresholdProcess.h"
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
 
-#include <itkFiltersDilateProcess_p.h>
+#include "itkFiltersComponentSizeThresholdProcess_p.h"
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersDilateProcessPrivate(this), parent)
+itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersComponentSizeThresholdProcessPrivate(this), parent)
 {
-    DTK_D(itkFiltersDilateProcess);
+    DTK_D(itkFiltersComponentSizeThresholdProcess);
     
-     d->filter = this;
+    d->filter = this;
     d->output = NULL;
-    d->radius[0] = 0;
-    d->radius[1] = 0;
-    d->radius[2] = 0;
-
-    d->radiusMm[0] = 0;
-    d->radiusMm[1] = 0;
-    d->radiusMm[2] = 0;
-
-    d->isRadiusInPixels = false;
-    d->radiusInPixels = 0;
-    d->description = tr("ITK Dilate filter");
+    
+    d->description = tr("Size Threshold filter");
 }
 
 
-itkFiltersDilateProcess::itkFiltersDilateProcess(const itkFiltersDilateProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersDilateProcessPrivate(*other.d_func()), other)
+itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersComponentSizeThresholdProcessPrivate(*other.d_func()), other)
 {
 }
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersDilateProcess::~itkFiltersDilateProcess( void )
+itkFiltersComponentSizeThresholdProcess::~itkFiltersComponentSizeThresholdProcess( void )
 {
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool itkFiltersDilateProcess::registered( void )
+bool itkFiltersComponentSizeThresholdProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkDilateProcess", createitkFiltersDilateProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("itkComponentSizeThresholdProcess", createitkFiltersComponentSizeThresholdProcess);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersDilateProcess::setParameter(double data, int channel)
+void itkFiltersComponentSizeThresholdProcess::setParameter(int data, int channel)
 {
-    if (channel > 1)
+    if (channel != 0)
         return;
-    DTK_D(itkFiltersDilateProcess);
-    d->radiusInPixels = data;
-
-    d->radius[0] = data;
-    d->radius[1] = data;
-    d->radius[2] = data;
-
-    if (channel == 1) // data is in pixels
-        d->isRadiusInPixels = true;
-
-    if (channel == 0) //data is in mm
-        d->isRadiusInPixels = false;
+    
+    DTK_D(itkFiltersComponentSizeThresholdProcess);
+    
+    d->minimumSize = data;
 }
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersDilateProcess::update ( void )
+int itkFiltersComponentSizeThresholdProcess::update ( void )
 {
-    DTK_D(itkFiltersDilateProcess);
+    DTK_D(itkFiltersComponentSizeThresholdProcess);
     
     if ( !d->input )
         return -1;
@@ -126,14 +110,6 @@ int itkFiltersDilateProcess::update ( void )
     {
         d->update<unsigned long>();
     }
-    else if ( id == "itkDataImageFloat3" )
-    {
-        d->update<float>();
-    }
-    else if ( id == "itkDataImageDouble3" )
-    {
-        d->update<double>();
-    }
     else
     {
         qDebug() << "Error : pixel type not yet implemented ("
@@ -150,7 +126,7 @@ int itkFiltersDilateProcess::update ( void )
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess * createitkFiltersDilateProcess ( void )
+dtkAbstractProcess * createitkFiltersComponentSizeThresholdProcess ( void )
 {
-    return new itkFiltersDilateProcess;
+    return new itkFiltersComponentSizeThresholdProcess;
 }
