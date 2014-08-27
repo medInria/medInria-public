@@ -27,6 +27,13 @@ class medAbstractParameter;
 class medBoolParameter;
 
 class medAbstractInteractorPrivate;
+
+/**
+ * @class medAbstractInteractor
+ * @brief Base class for interactor types in medInria
+ * A medAbstractInteractor belongs to a medAbstractView and is responsible for managing
+ * all the interactions for a type of medAbstractData in the medAbstractView.
+ **/
 class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
 {
     Q_OBJECT
@@ -49,14 +56,7 @@ public:
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
 
 public slots:
-    /**
-     * @brief updateWidgets Reimplement this methode to change the widget that you expose when the
-     * state of the view changes. (i.e. Orientation, new data added)
-     */
-    virtual void updateWidgets()
-    {
-    }
-
+    virtual void updateWidgets();
 
 protected:
     virtual QWidget* buildToolBoxWidget() = 0;

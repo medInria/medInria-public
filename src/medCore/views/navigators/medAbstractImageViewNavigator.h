@@ -32,22 +32,17 @@ public:
              medAbstractImageViewNavigator(medAbstractView* parent);
     virtual ~medAbstractImageViewNavigator();
 
-
 public:
     virtual medImageView::Orientation orientation() const = 0;
 
     virtual medCompositeParameter* cameraParameter();
-
     virtual medAbstractVector3DParameter* positionBeingViewedParameter();
-
     virtual medTimeLineParameter* timeLineParameter();
 
 public slots:
 
     virtual void setOrientation(medImageView::Orientation orientation) = 0;
-
     virtual void setCamera(QHash<QString,QVariant>) = 0;
-
     virtual void moveToPosition (const QVector3D &position) = 0;
     
     virtual void setCurrentTime (const double &time);

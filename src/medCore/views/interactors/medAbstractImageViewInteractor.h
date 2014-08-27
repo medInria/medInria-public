@@ -36,19 +36,8 @@ public:
 
 public slots:
     virtual void setOpacity(double opacity) = 0;
-
     virtual void setWindowLevel(QHash<QString,QVariant>) = 0;
-
-    /**
-    * @brief setCurrentTime Reimplement this methode if the data has a temporal component,
-    * to update what to display in the view according to the parameter time.
-    * Do not update the view, it has to be done by the primary navigator.
-    * @param time
-    */
-    virtual void setCurrentTime(double time)
-    {
-        qDebug()<<"No implementation of setCurrentTime(const double &time) for" << this->identifier();
-    }
+    virtual void setCurrentTime(double time);
 
 private:
     medAbstractImageViewInteractorPrivate *d;

@@ -98,3 +98,11 @@ QWidget* medAbstractInteractor::layerWidget()
 
     return d->layerWidget;
 }
+
+/**
+ * @brief updateWidgets Reimplement this methode to change the widget that you expose when the
+ * state of the view changes. (i.e. Orientation, new data added)
+ */
+void medAbstractInteractor::updateWidgets()
+{
+}
