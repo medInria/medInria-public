@@ -618,7 +618,7 @@ void medViewContainer::updateToolBar()
     medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(d->view);
     if(layeredView)
     {
-        foreach(medAbstractInteractor *interactor, layeredView->interactors(layeredView->currentLayer()))
+        foreach(medAbstractInteractor *interactor, layeredView->layerInteractors(layeredView->currentLayer()))
         {
             if(!interactor)
                 continue;

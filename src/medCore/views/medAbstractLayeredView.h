@@ -55,7 +55,7 @@ public:
     void setCurrentLayer(unsigned int layer);
     unsigned int currentLayer() const;
 
-    QList <medAbstractInteractor*> interactors(unsigned int layer);
+    QList <medAbstractInteractor*> layerInteractors(unsigned int layer);
     QList<medAbstractNavigator*> navigators();
 
     virtual QWidget* navigatorWidget();
@@ -101,5 +101,4 @@ private slots:
 
 private:
     medAbstractLayeredViewPrivate *d;
-
 };

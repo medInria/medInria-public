@@ -391,7 +391,7 @@ void medAbstractLayeredView::setCurrentLayer(unsigned int layer)
     emit currentLayerChanged();
 }
 
-QList <medAbstractInteractor*>  medAbstractLayeredView::interactors(unsigned int layer)
+QList <medAbstractInteractor*>  medAbstractLayeredView::layerInteractors(unsigned int layer)
 {
     QList <medAbstractInteractor*> interactors;
 
@@ -472,7 +472,7 @@ QWidget* medAbstractLayeredView::mouseInteractionWidget()
 QList<medAbstractParameter*> medAbstractLayeredView::interactorsParameters(unsigned int layer)
 {
     QList<medAbstractParameter*>  params;
-    foreach (medAbstractInteractor* interactor, this->interactors(layer))
+    foreach (medAbstractInteractor* interactor, this->layerInteractors(layer))
     {
         foreach(medAbstractParameter *param, interactor->linkableParameters())
         {

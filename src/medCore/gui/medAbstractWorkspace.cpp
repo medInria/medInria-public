@@ -335,7 +335,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
                 layout->addStretch();
-                foreach (medAbstractInteractor *interactor, layeredView->interactors(layer))
+                foreach (medAbstractInteractor *interactor, layeredView->layerInteractors(layer))
                 {
                     if(interactor->layerWidget())
                         layout->addWidget(interactor->layerWidget());
@@ -481,7 +481,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
         return;
     }
 
-    foreach (medAbstractInteractor* interactor, view->interactors(currentLayer))
+    foreach (medAbstractInteractor* interactor, view->layerInteractors(currentLayer))
     {
         QString interactorIdentifier = interactor->identifier();
         if(!interactorsIdentifier.contains(interactorIdentifier))
@@ -541,7 +541,7 @@ void medAbstractWorkspace::buildTemporaryPool()
 
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        foreach (medAbstractInteractor* interactor, view->interactors(layer))
+        foreach (medAbstractInteractor* interactor, view->layerInteractors(layer))
         {
             d->temporaryPoolForInteractors->append(interactor->linkableParameters());
         }
@@ -687,7 +687,7 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
         medViewContainer *container = containerMng->container(containerUuid);
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        foreach (medAbstractInteractor* interactor, view->interactors(currentLayer))
+        foreach (medAbstractInteractor* interactor, view->layerInteractors(currentLayer))
         {
             QString interactorIdentifier = interactor->identifier();
             if(!interactorsIdentifier.contains(interactorIdentifier))

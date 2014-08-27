@@ -113,7 +113,7 @@ void medLayerParameterGroup::updatePool()
         medAbstractLayeredView* view = iter.key();
         unsigned int layer = iter.value();
 
-        foreach(medAbstractInteractor* interactor, view->interactors(layer))
+        foreach(medAbstractInteractor* interactor, view->layerInteractors(layer))
             params.append(interactor->linkableParameters());
 
         foreach(medAbstractParameter* param, params)
@@ -131,7 +131,7 @@ void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *v
     {
         QList<medAbstractParameter*>  params;
 
-        foreach(medAbstractInteractor* interactor, view->interactors(layer))
+        foreach(medAbstractInteractor* interactor, view->layerInteractors(layer))
             params.append(interactor->linkableParameters());
 
         foreach(medAbstractParameter* param, params)
@@ -152,7 +152,7 @@ void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *v
     {
         QList<medAbstractParameter*>  params;
 
-        foreach(medAbstractInteractor* interactor, view->interactors(layer))
+        foreach(medAbstractInteractor* interactor, view->layerInteractors(layer))
             params.append(interactor->linkableParameters());
 
         foreach(medAbstractParameter* param, params)
