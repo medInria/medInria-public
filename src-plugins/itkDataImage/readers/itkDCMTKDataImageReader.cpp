@@ -274,7 +274,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 
     std::vector< std::string > filenames;
     for (int i=0; i<paths.size(); i++)
-        filenames.push_back(paths[i].toAscii().constData());
+        filenames.push_back(paths[i].toLocal8Bit().constData());
 
     d->io->SetFileNames(filenames);
     try {
@@ -485,13 +485,6 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
         return false;
 
     this->readInformation(paths);
-
-    /*
-      if (d->io->GetNumberOfDimensions() != 3) {
-      qWarning() << "Only 3D images are supported for now (required: " << d->io->GetNumberOfDimensions() << ")";
-      return false;
-      }
-    */
 
     itk::DCMTKDataImageReaderCommand::Pointer command = itk::DCMTKDataImageReaderCommand::New();
     command->SetDataImageReader(this);
