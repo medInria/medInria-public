@@ -857,7 +857,6 @@ void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &n
     if (!bundleData)
         return;
 
-    vtkPointData *bundlePointData = bundleData->GetPointData();
     vtkPoints* points = bundleData->GetPoints();
     vtkCellArray* lines = bundleData->GetLines();
 
