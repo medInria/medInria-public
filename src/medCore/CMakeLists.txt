@@ -109,8 +109,9 @@ set_lib_install_rules(${PROJECT_NAME}
 
 if(MEDINRIA_BUILD_TESTS)
   add_subdirectory(tests)
-  add_subdirectory(gui/tests)
-  add_subdirectory(parameters/tests)
+  #TODO: we will need to change the tests organization because of dependance to medTest...
+  #add_subdirectory(gui/tests)
+  #add_subdirectory(parameters/tests)
   #add_subdirectory(view/tests)
   #add_subdirectory(data/tests)
   #add_subdirectory(process/tests)

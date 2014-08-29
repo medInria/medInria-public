@@ -34,6 +34,10 @@
 * layer toolbox when the container of the parent view is selected.
 */
 
+/**
+* @fn QList<medAbstractParameter*> linkableParameters()
+* @brief linkableParameters reimplement it to return the parameters that you want to be linkable
+*/
 
 class medAbstractInteractorPrivate
 {

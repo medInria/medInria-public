@@ -66,36 +66,6 @@ private:
 };
 
 
-
-//--------------------------------------------------------------------------
-//  medTestParameter
-
-class medTestParameterPrivate;
-/**
- * @brief The medTestParameter class is just a dummy implementaion of
- * medAbstractParameter to test its interface.
- */
-class MEDCORE_EXPORT medTestParameter : public medAbstractParameter
-{
-    Q_OBJECT
-
-public:
-    medTestParameter(QString name = "unknown parameter");
-    virtual~medTestParameter();
-
-    /**
-     * @brief getWidget Return a default widget.
-     * @return QWidget*
-     */
-    virtual QWidget* getWidget();
-
-private slots:
-    void removeInternWidget();
-
-private:
-  medTestParameterPrivate *d;
-};
-
 //--------------------------------------------------------------------------
 //  medAbstractTriggerParameter
 class MEDCORE_EXPORT medAbstractTriggerParameter : public medAbstractParameter

@@ -66,7 +66,6 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_QTTEST_LIBRARY}
   ${QT_LIBRARIES}
   dtkCore
-  medGui
   medCore
   medTest
   )

@@ -49,11 +49,10 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
     ${medCore_INCLUDE_DIRS}
-    ${medGui_INCLUDE_DIRS}
     ${medTest_INCLUDE_DIRS}
     )
-    
-    
+
+
 ## #############################################################################
 ## Add Exe
 ## #############################################################################
@@ -72,7 +71,6 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_QTTEST_LIBRARY}
   ${QT_LIBRARIES}
   dtkCore
-  medGui
   medCore
   medSql
   medTest
