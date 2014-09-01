@@ -287,6 +287,8 @@ void medAbstractImageView::switchToFourViews()
         layerGroup->addImpactedlayer(bottomLeftContainerView, i);
         layerGroup->addImpactedlayer(bottomRightContainerView, i);
     }
+
+    topLeftContainer->setSelected(true);
 }
 
 void medAbstractImageView::setOrientation(medImageView::Orientation orientation)

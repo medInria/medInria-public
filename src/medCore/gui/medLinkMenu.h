@@ -58,7 +58,7 @@ private slots:
     void showSubMenu(QListWidgetItem *);
     void showSubMenu();
     void hideSubMenu();
-    void highlightParam(QListWidgetItem*);
+    void highlightItem(QListWidgetItem*);
     void deleteGroup();
     void emitGroupColorChangeRequest(QColor);
     void saveAsPreset();
@@ -68,6 +68,7 @@ private slots:
     void highlightPreset();
     void selectItem(QListWidgetItem*);
     void deletePreset();
+    void editPreset(QListWidgetItem*);
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
@@ -79,6 +80,7 @@ private:
     void checkAllParams(bool check);
     void updateParamCheckState(QString group);
     void addPresetItem(QString preset);
+    void addRemovePresetButton(QListWidgetItem* item);
 
 private:
     medLinkMenuPrivate *d;

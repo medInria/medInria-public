@@ -100,12 +100,14 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->groupList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectGroup(QListWidgetItem*)));
     connect(d->paramList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(selectParam(QListWidgetItem*)));
     connect(d->groupList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(showSubMenu(QListWidgetItem*)));
-    connect(d->paramList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
+    connect(d->paramList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightItem(QListWidgetItem*)));
     connect(d->paramList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(selectItem(QListWidgetItem*)));
     connect(d->saveAsPresetButton, SIGNAL(clicked()), this, SLOT(saveAsPreset()));
     connect(d->presetList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(applyPreset(QListWidgetItem*)));
-    connect(d->presetList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightParam(QListWidgetItem*)));
+    connect(d->presetList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightItem(QListWidgetItem*)));
+    connect(d->presetList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(editPreset(QListWidgetItem*)));
     connect(d->presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectItem(QListWidgetItem*)));
+
 
     QWidget *internalSubPopWidget = new QWidget;
     internalSubPopWidget->setObjectName("internalSubPopWidget");
@@ -172,6 +174,7 @@ void medLinkMenu::addGroup(medAbstractParameterGroup * group, bool selected)
     QListWidgetItem * item = new QListWidgetItem();
     item->setSizeHint(QSize(item->sizeHint().width(), 20));
     item->setData(Qt::UserRole, groupName);
+    item->setToolTip(groupName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
 
     d->groupList->insertItem(0,item);
@@ -513,7 +516,7 @@ void medLinkMenu::updateListsPosition()
     d->subPopupWidget->move( globalPos.x() - d->subPopupWidget->width() + d->subPopupWidget->contentsMargins().right(), currentPos.y());
 }
 
-void medLinkMenu::highlightParam(QListWidgetItem *item)
+void medLinkMenu::highlightItem(QListWidgetItem *item)
 {
     item->setSelected(true);
 }
@@ -708,6 +711,11 @@ void medLinkMenu::applyPreset(QListWidgetItem* item)
         item->setCheckState(Qt::Checked);
     else item->setCheckState(Qt::Unchecked);
     d->presetList->blockSignals(false);
+
+    //see editPreset(QListWidgetItem* item) for explanation
+    QWidget *w = d->presetList->itemWidget(item);
+    if(!dynamic_cast<medListItemWidget*>(w))
+        addRemovePresetButton(item);
 }
 
 void medLinkMenu::uncheckAllPresets()
@@ -788,6 +796,20 @@ void medLinkMenu::addPresetItem(QString preset)
     item->setCheckState(Qt::Unchecked);
     d->presetList->insertItem(0,item);
 
+    addRemovePresetButton(item);
+}
+
+void medLinkMenu::editPreset(QListWidgetItem* item)
+{
+    // It seems that you cannot edit an item if there is a widget asociated
+    // removing the widget enables to edit the item
+    // the widget will be re-added in applyPreset
+    d->presetList->removeItemWidget(item);
+    d->presetList->editItem(item);
+}
+
+void medLinkMenu::addRemovePresetButton(QListWidgetItem* item)
+{
     medListItemWidget *itemWidget = new medListItemWidget;
     itemWidget->setFocusPolicy(Qt::NoFocus);
     itemWidget->setAttribute(Qt::WA_TranslucentBackground);
