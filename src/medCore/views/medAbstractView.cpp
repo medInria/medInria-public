@@ -446,3 +446,9 @@ QUndoStack* medAbstractView::undoStack() const
 {
     return d->undoStack;
 }
+
+void medAbstractView::setTransferFunctions( QList<double> scalars,
+                                            QList<QColor> colors )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}

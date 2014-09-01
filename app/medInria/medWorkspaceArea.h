@@ -68,6 +68,10 @@ protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);
     void switchToStackedViewContainers(medTabbedViewContainers* stack);
 
+protected slots:
+    void bringUpTransferFunction(bool checked);
+    void updateTransferFunction();
+
 signals:
     void open(const medDataIndex&);
 

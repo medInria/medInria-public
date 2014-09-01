@@ -265,6 +265,7 @@ public:
     void setData(medAbstractData *data);
     void setView(medAbstractImageView *view, bool force = false);
     void applyTable();
+    void setColorLookupTable ( QList<double> scalars, QList<QColor> colors );
 
 protected:
     void initializeTable();

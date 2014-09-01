@@ -1441,7 +1441,7 @@ public:
     medClutEditorHistogram *histogram;
 
     medAbstractData *dtk_data;
-    medAbstractImageView *med_view;
+    medAbstractView *med_view;
     QList <medClutEditorTable *> * tables;
 };
 
@@ -1500,7 +1500,6 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
         reader.read(&file);
         file.close();
     }
-
 }
 
 medClutEditor::~medClutEditor(void)
@@ -1632,7 +1631,7 @@ void medClutEditor::applyTable(void)
         QList<QColor> colors;
         medClutEditorTable * table = d->scene->table();
         table->getTransferFunction(scalars, colors);
-        // d->med_view->setColorLookupTable(scalars, colors);
+        //(d->med_view)->setColorLookupTable(scalars, colors);
 
         //TODO GPR: make this works
         //d->med_view->setTransferFunctions(scalars, colors);
