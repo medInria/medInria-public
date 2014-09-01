@@ -343,20 +343,63 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
     {
-        medHomepagePushButton * button = new medHomepagePushButton ( this );
-        button->setText ( detail->name );
-        button->setFocusPolicy ( Qt::NoFocus );
-        button->setCursor(Qt::PointingHandCursor);
-        button->setStyleSheet("border: 0px;");
-        button->setFixedHeight ( 40 );
-        button->setMaximumWidth ( 250 );
-        button->setMinimumWidth ( 250 );
-        button->setToolTip( detail->description);
-        button->setIdentifier(detail->identifier );
-        workspaceButtonsLayout->addWidget ( button );
-        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
-        buttonsList.push_back(button);
+        if ((detail->name.compare("Fibrosis") != 0) &&
+                (detail->name.compare("AF - Cardio Insight") != 0) &&
+                (detail->name.compare("ARVD") != 0))    // If not pipelines //Mathilde Merle //TODO : automatic detection of workspace
+        {
+            medHomepagePushButton * button = new medHomepagePushButton ( this );
+            button->setText ( detail->name );
+            button->setFocusPolicy ( Qt::NoFocus );
+            button->setCursor(Qt::PointingHandCursor);
+            button->setStyleSheet("border: 0px;");
+            button->setFixedHeight ( 40 );
+            button->setMaximumWidth ( 250 );
+            button->setMinimumWidth ( 250 );
+            button->setToolTip( detail->description);
+            button->setIdentifier(detail->identifier );
+            workspaceButtonsLayout->addWidget ( button );
+            QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
+            buttonsList.push_back(button);
+        }
     }
+
+    // Pipeline Label //Mathilde Merle
+    QLabel * pipelineLabel = new QLabel ( tr("<b>Switch to pipelines</b>") );
+    pipelineLabel->setMaximumWidth(300);
+    pipelineLabel->setFixedHeight(25);
+    pipelineLabel->setAlignment(Qt::AlignHCenter);
+    pipelineLabel->setTextFormat(Qt::RichText);
+    pipelineLabel->setObjectName("quickAccessMenuHeader");
+    workspaceButtonsLayout->addWidget ( pipelineLabel );
+
+    int isPip = false;
+
+    //Dynamically setup pipelines access button //Mathilde Merle
+    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
+    {
+        if (!detail->name.compare("Fibrosis") ||
+            !detail->name.compare("AF - Cardio Insight") ||
+            !detail->name.compare("ARVD"))    // If pipelines   //TODO : automatic detection of pipeline
+        {
+            isPip = true;
+            medHomepagePushButton * button = new medHomepagePushButton ( this );
+            button->setText ( detail->name );
+            button->setFocusPolicy ( Qt::NoFocus );
+            button->setCursor(Qt::PointingHandCursor);
+            button->setStyleSheet("border: 0px;");
+            button->setFixedHeight ( 40 );
+            button->setMaximumWidth ( 250 );
+            button->setMinimumWidth ( 250 );
+            button->setToolTip( detail->description);
+            button->setIdentifier(detail->identifier);
+            workspaceButtonsLayout->addWidget ( button );
+            QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
+            buttonsList.push_back(button);
+        }
+    }
+
+    if (!isPip) pipelineLabel->hide(); // Hide Pipelines title if no pipelines
+
     workspaceButtonsLayout->addStretch();
     this->setMinimumHeight ( 20 + 40 * ( 2 + workspaceDetails.size() ) );
     this->setLayout(workspaceButtonsLayout);
