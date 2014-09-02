@@ -360,6 +360,11 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
             workspaceButtonsLayout->addWidget ( button );
             QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
             buttonsList.push_back(button);
+            if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
+            {
+                button->setDisabled(true);
+                button->setToolTip("No useful plugin has been found for this workspace.");
+            }
         }
     }
 
@@ -395,6 +400,11 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
             workspaceButtonsLayout->addWidget ( button );
             QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
             buttonsList.push_back(button);
+            if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
+            {
+                button->setDisabled(true);
+                button->setToolTip("No useful plugin has been found for this workspace.");
+            }
         }
     }
 

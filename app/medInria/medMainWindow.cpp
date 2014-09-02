@@ -112,9 +112,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->setMinimumHeight ( 600 );
     this->setMinimumWidth ( 800 );
 
-
     //  Setting up widgets
-
     d->settingsEditor = NULL;
     d->currentArea = NULL;
 
@@ -140,9 +138,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton = new medQuickAccessPushButton ( this );
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
     d->quickAccessButton->setMinimumHeight(31);
-    d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
+    d->quickAccessButton->setStyleSheet("border: 0px;");
+    d->quickAccessButton->setIcon(QIcon(":music_logo_small.png"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
-    d->quickAccessButton->setText(tr("Workspaces access menu"));
+    d->quickAccessButton->setText ( tr("Workspaces access menu") );
     connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(toggleQuickAccessVisibility()));
 
     d->quickAccessWidget = new medQuickAccessMenu(true, this);
@@ -159,6 +158,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->shortcutAccessWidget = new medQuickAccessMenu( false, this );
     d->shortcutAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->shortcutAccessWidget->setProperty("pos", QPoint(0, -500));
+    d->shortcutAccessWidget->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
 
     connect(d->shortcutAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideShortcutAccess()));
     connect(d->shortcutAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
@@ -175,7 +175,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quitButton->setIcon(quitIcon);
     d->quitButton->setObjectName("quitButton");
     connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
-    d->quitButton->setToolTip(tr("Close medInria"));
+    d->quitButton->setToolTip(tr("Close MUSIC"));
 
     //  Setup Fullscreen Button
     QIcon fullscreenIcon ;
@@ -260,9 +260,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->homepageArea, SIGNAL(showWorkspace(QString)), this, SLOT(showWorkspace(QString)));
 
     this->setCentralWidget ( d->stack );
-    this->setWindowTitle("medInria");
+    this->setWindowTitle ( qApp->applicationName() );
+
     //  Connect the messageController with the status for notification messages management
-    connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
+    connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)),    d->statusBar, SLOT(addMessage(medMessage*)));
     connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
 
     d->shortcutShortcut = new QShortcut(QKeySequence(tr(CONTROL_KEY "+Space")),
@@ -293,7 +294,7 @@ void medMainWindow::restoreSettings()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
 
-    this->restoreState(mnger->value("medMainWindow", "state").toByteArray());
+    this->restoreState(   mnger->value("medMainWindow", "state").toByteArray());
     this->restoreGeometry(mnger->value("medMainWindow", "geometry").toByteArray());
 }
 

@@ -15,25 +15,41 @@
 /*******************************************************************************
     COLOR
  *******************************************************************************/
-$GREY00     = #191919;
-$GREY01     = #303030;
-$GREY02     = #383838;
-$GREY03     = #424242;
-$GREY04     = #464646;
-$GREY05     = #505050;
-$GREY06     = #606060;
-$GREY07     = #707070;
-$GREY08     = #808080;
-$GREY09     = #909090;
-$GREY10     = #A0A0A0;
-$GREY11     = #C0C0C0;
+$HUE        = 228;
+$SATURATION = 255;
+
+/*$GREY00     = hsv($HUE,$SATURATION,25);
+$GREY01     = hsv($HUE,$SATURATION,48);
+$GREY02     = hsv($HUE,$SATURATION,56);
+$GREY03     = hsv($HUE,$SATURATION,60);
+$GREY04     = hsv($HUE,$SATURATION,64);
+$GREY05     = hsv($HUE,$SATURATION,80);
+$GREY06     = hsv($HUE,$SATURATION,96);
+$GREY07     = hsv($HUE,$SATURATION,112);
+$GREY08     = hsv($HUE,$SATURATION,128);
+$GREY09     = hsv($HUE,$SATURATION,144);
+$GREY10     = hsv($HUE,$SATURATION,160);*/
+
+$GREY10     = hsv($HUE,$SATURATION,0);
+$GREY09     = hsv($HUE,$SATURATION,10);
+$GREY08     = hsv($HUE,$SATURATION,20);
+$GREY07     = hsv($HUE,$SATURATION,30);
+$GREY06     = hsv($HUE,$SATURATION,40);
+$GREY05     = hsv($HUE,$SATURATION,50);
+$GREY04     = hsv($HUE,$SATURATION,60);
+$GREY03     = hsv($HUE,$SATURATION,70);
+$GREY02     = hsv($HUE,$SATURATION,80);
+$GREY01     = hsv($HUE,$SATURATION,90);
+$GREY00     = hsv($HUE,$SATURATION,120);
+
+$GREY11     = #C0C0C0;/*hsv($HUE,$SATURATION,192);*/
 
 $GREEN      = #64FF32;
 $RED        = #FF3333;
 $YELLOW     = #FFFF99;
+$DARKGRAY   = #6D6E6F;
 
 $HIGHLIGHT_COLOR = #FF8833;
-
 
 /*******************************************************************************
     BACKGROUND
@@ -81,9 +97,9 @@ $HOME_PAGE_BUTTON_BACKGROUND            = $GREY03;
 $HOME_PAGE_BUTTON_HOVER_BACKGROUND      = $GREY00;
 
 $TOOLBOX_CONTAINER_BACKGROUND           = $GREY01;
-$TOOLBOX_HEADER_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY00);
+$TOOLBOX_HEADER_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY05, stop: 0.3 $GREY00, stop: 1 $GREY05);
 $TOOLBOX_BODY_BACKGROUND                = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
-$TOOLBOX_BACKGROUND                     = $GREY04;
+$TOOLBOX_BACKGROUND                     = $GREY05;
 
 $VIEW_PROPERTY_BACKGROUND               = $GREY03;
 $VIEW_PROPERTY_HEADER_BACKGROUND        = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 $GREY01, stop: 1 $GREY00);
@@ -94,7 +110,7 @@ $FINDER_PATH_BAR_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 1, y
 $CONTAINER_BACKGROUND                   = $GREY04;
 $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND  = $GREY10;
 
-$MENU_ITEM_HOVER_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY00, stop: 1 $GREY01);
+$MENU_ITEM_HOVER_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY01, stop: 1 $GREY00);
 $MENU_ITEM_BACKGROUND                   = $GREY05;
 $MENU_ITEM_SELECTED_BACKGROUND          = $GREY00;
 
@@ -120,7 +136,7 @@ $WIDGET_COLOR                       = $GREY11;
 
 $TOOLTIP_COLOR                      = $GREY04;
 
-$DISABLE_COLOR                      = $GREY07;
+$DISABLE_COLOR                      = $DARKGRAY; /*Text of disabled widgets*/
 
 $GRIDLINE_COLOR                     = $GREY09;
 
@@ -162,21 +178,21 @@ $HOME_PAGE_BUTTON_COLOR            = $HIGHLIGHT_COLOR;
 /*******************************************************************************
     BORDER
  *******************************************************************************/
-$WIDGET_BORDER                      = 0px;
+$WIDGET_BORDER                  = 0px;
 
-$GROUP_BOX_BORDER                   = 1px solid $GREY10;
+$GROUP_BOX_BORDER               = 1px solid $GREY10;
 
-$CONTAINER_BORDER                   = 1px solid $GREY09;
+$CONTAINER_BORDER               = 2px solid $GREY09;
 
-$CONTAINER_SELECTED_BORDER          = 1px solid $HIGHLIGHT_COLOR;
+$CONTAINER_SELECTED_BORDER      = 2px solid $HIGHLIGHT_COLOR;
 
-$MENU_SEPARATOR_BORDER              = 2px solid $GREY10;
+$MENU_SEPARATOR_BORDER          = 2px solid $GREY10;
 
-$PROGRESS_BAR_BORDER                = 1px solid $GREY01;
+$PROGRESS_BAR_BORDER            = 1px solid $GREY01;
 
-$BROWSER_CONTAINER_BORDER           = 2px solid $GREY06;
+$BROWSER_CONTAINER_BORDER       = 2px solid $GREY06;
 
-$DROP_SITE_BORDER                   = 1px solid $GREY06;
+$DROP_SITE_BORDER               = 1px solid $GREY06;
 
 $DATABASE_PREVIEW_BORDER            = $CONTAINER_BORDER;
 
@@ -199,7 +215,7 @@ $PUSH_BUTTON_SIZE               = 20px;
 
 $COMBO_BOX_SIZE                 = 20px;
 
-$SCROLL_BAR_WIDTH               = 9px;
+$SCROLL_BAR_WIDTH               = 12px;
 $SCROLL_BAR_MIN_SIZE            = 28px;
 
 $TAB_HEIGHT                     = 28px;
@@ -236,7 +252,7 @@ $PUSH_BUTTON_RADIUS             = 3px;
 
 $GROUP_BOX_RADIUS               = 3px;
 
-$SCROLL_BAR_RADIUS              = 4px;
+$SCROLL_BAR_RADIUS              = 5px;
 
 $COMBO_BOX_RADIUS               = 3px;
 $VIEW_PROPERTY_COMBO_BOX_RADIUS = 2px;
@@ -298,7 +314,6 @@ QWidget
     outline: 0px;
 }
 
-
 /*******************************************************************************
     QToolTip
  *******************************************************************************/
@@ -355,7 +370,6 @@ QDateEdit::down-arrow
 {
     image: url(:/pixmaps/arrow-bot.png);
 }
-
 
 /*******************************************************************************
      QSpinBox QDoubleSpinBox
@@ -447,7 +461,6 @@ QComboBox QAbstractItemView
     selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
     outline: 0px;
 }
-
 
 /*******************************************************************************
      QCheckBox
@@ -692,7 +705,6 @@ QRadioButton::indicator:disabled:checked
     image: url(:/pixmaps/radio-checked-disabled.png);
 }
 
-
 /*******************************************************************************
      QSlider
  *******************************************************************************/
@@ -876,7 +888,6 @@ QGroupBox::indicator::unchecked
 {
     image: url(:/pixmaps/checkbox.png);
 }
-
 
 /*******************************************************************************
      QTabBar
@@ -1078,6 +1089,7 @@ medQuickAccessMenu
     border-radius: $QUICK_ACCESS_MENU_RADIUS;
 }
 
+
 /*******************************************************************************
       medToolBox
  *******************************************************************************/
@@ -1121,11 +1133,10 @@ dtkFinderPathBar
 /*******************************************************************************
      medTabbedViewContainers
  *******************************************************************************/
-
 medTabbedViewContainers QPushButton
 {
     margin: $VIEW_CONTAINER_BUTTON_MARGIN;
-    //padding: $VIEW_CONTAINER_BUTTON_PADDING;
+    padding: $VIEW_CONTAINER_BUTTON_PADDING;
     border-radius: $VIEW_CONTAINER_BUTTON_RADIUS;
 }
 
