@@ -27,7 +27,7 @@
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
@@ -74,11 +74,7 @@ public:
 
 bool %1ToolBox::registered()
 {
-    return medToolBoxFactory::instance()->
-    registerToolBox<%1ToolBox>("%1ToolBox",
-                               tr("Friendly name"),
-                               tr("short tooltip description"),
-                               QStringList() << "registration");
+    return medToolBoxFactory::instance()->registerToolBox<%1ToolBox>();
 }
 
 void %1ToolBox::run()
@@ -87,7 +83,7 @@ void %1ToolBox::run()
     if(!this->parentToolBox())
         return;
     medRegistrationSelectorToolBox * parentTB = this->parentToolBox();
-    dtkSmartPointer <dtkAbstractProcess> process;
+    dtkSmartPointer <medAbstractRegistrationProcess> process;
     
     if (this->parentToolBox()->process() &&
         (parentTB->process()->identifier() == "%1"))
@@ -100,8 +96,8 @@ void %1ToolBox::run()
         process = dtkAbstractProcessFactory::instance()->createSmartPointer("%1");
         parentTB->setProcess(process);
     }
-    dtkAbstractData *fixedData = parentTB->fixedData();
-    dtkAbstractData *movingData = parentTB->movingData();
+    dtkSmartPointer<medAbstractData> fixedData = parentTB->fixedData();
+    dtkSmartPointer<medAbstractData> movingData = parentTB->movingData();
     
     
     if (!fixedData || !movingData)
@@ -117,8 +113,8 @@ void %1ToolBox::run()
     // process_Registration->setMyWonderfullParameter(fronTheGui);
     // process_Registration->setMyWonderfullParameter(fronTheGui);
     
-    process->setInput(fixedData,  0);
-    process->setInput(movingData, 1);
+    process->setFixedInput(fixedData);
+    process->setMovingInput(movingData);
     
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (process);

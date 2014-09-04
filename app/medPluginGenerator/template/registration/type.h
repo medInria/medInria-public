@@ -25,7 +25,7 @@ class %1Private;
  * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medInria/src/medCore/gui.
  *
  */
-class %2PLUGIN_EXPORT %1 : public itk%3Registration
+class %2PLUGIN_EXPORT %1 : public itkProcessRegistration
 {
     Q_OBJECT
     
@@ -93,6 +93,6 @@ private:
  *
  * @param void
  */
-dtkAbstract%3 *create%4();
+dtkAbstractProcess *create%3();
 
 

@@ -13,13 +13,14 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstract%3.h>
+#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractData.h>
 
 #include <%1PluginExport.h>
 
 class %1Private;
 
-class %2PLUGIN_EXPORT %1 : public dtkAbstract%3
+class %2PLUGIN_EXPORT %1 : public dtkAbstractProcess
 {
     Q_OBJECT
     
@@ -34,7 +35,7 @@ public:
 public slots:
     
     //! Input data to the plugin is set through here
-    void setInput(dtkAbstractData *data);
+    void setInput(medAbstractData *data);
     
     //! Parameters are set through here, channel allows to handle multiple parameters
     void setParameter(double  data, int channel);
@@ -43,13 +44,13 @@ public slots:
     int update();
     
     //! The output will be available through here
-    dtkAbstractData *output();
+    medAbstractData *output();
     
     
 private:
     %1Private *d;
 };
 
-dtkAbstract%3 *create%4();
+dtkAbstractProcess *create();
 
 

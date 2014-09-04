@@ -27,7 +27,7 @@
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <medToolBoxFactory.h>
 #include <medFilteringSelectorToolBox.h>
@@ -38,7 +38,7 @@ class %1ToolBoxPrivate
 {
 public:
     
-    dtkSmartPointer <dtkAbstractProcess> process;
+    dtkSmartPointer <%1> process;
     medProgressionStack * progression_stack;
 };
 
@@ -70,11 +70,7 @@ public:
 
 bool %1ToolBox::registered()
 {
-    return medToolBoxFactory::instance()->
-    registerToolBox<%1ToolBox>("%1ToolBox",
-                               tr("Friendly name"),
-                               tr("short tooltip description"),
-                               QStringList()<< "filtering");
+    return medToolBoxFactory::instance()->registerToolBox<%1ToolBox>();
 }
 
 dtkPlugin* %1ToolBox::plugin()
@@ -84,12 +80,18 @@ dtkPlugin* %1ToolBox::plugin()
     return plugin;
 }
 
-dtkAbstractData* %1ToolBox::processOutput()
+medAbstractData* %1ToolBox::processOutput()
 {
     if(!d->process)
         return NULL;
     
     return d->process->output();
+}
+
+void %1ToolBox::update(medAbstractData *data)
+{
+    // TODO:
+
 }
 
 void %1ToolBox::run()

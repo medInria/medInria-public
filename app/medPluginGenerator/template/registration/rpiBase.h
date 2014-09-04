@@ -90,7 +90,7 @@ namespace rpi
 
 
 /** Add the source code file (template) */
-#include <rpi%1.hxx>
+#include <rpi%3.hxx>
 
 
 

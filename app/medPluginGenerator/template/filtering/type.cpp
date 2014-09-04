@@ -13,12 +13,13 @@
 
 #include <%1.h>
 
-#include <dtkCore/dtkAbstract%2Factory.h>
+#include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstract%2.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
+
 
 // /////////////////////////////////////////////////////////////////
 // %1Private
@@ -27,15 +28,15 @@
 class %1Private
 {
 public:
-    dtkSmartPointer <dtkAbstractData> input;
-    dtkSmartPointer <dtkAbstractData> output;
+    dtkSmartPointer <medAbstractData> input;
+    dtkSmartPointer <medAbstractData> output;
 };
 
 // /////////////////////////////////////////////////////////////////
 // %1
 // /////////////////////////////////////////////////////////////////
 
-%1::%1() : dtkAbstract%2(), d(new %1Private)
+%1::%1() : dtkAbstractProcess(), d(new %1Private)
 {
     
 }
@@ -47,7 +48,7 @@ public:
 
 bool %1::registered()
 {
-    return dtkAbstract%2Factory::instance()->register%2Type("%1", create%3);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("%1", create);
 }
 
 QString %1::description() const
@@ -55,14 +56,14 @@ QString %1::description() const
     return "%1";
 }
 
-void %1::setInput ( dtkAbstractData *data )
+void %1::setInput ( medAbstractData *data )
 {
     if ( !data )
         return;
     
     QString identifier = data->identifier();
     
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer ( identifier );
+    d->output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
     
     d->input = data;
 }    
@@ -82,7 +83,7 @@ int %1::update()
     return EXIT_SUCCESS;
 }        
 
-dtkAbstractData * %1::output()
+medAbstractData * %1::output()
 {
     return ( d->output );
 }
@@ -91,7 +92,7 @@ dtkAbstractData * %1::output()
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstract%2 *create%3()
+dtkAbstractProcess *create()
 {
     return new %1;
 }
