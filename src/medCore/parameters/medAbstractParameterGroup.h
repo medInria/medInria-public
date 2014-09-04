@@ -17,7 +17,6 @@
 
 class medAbstractView;
 class medAbstractLayeredView;
-class medParameterPool;
 class medAbstractParameterGroupPrivate;
 
 class medAbstractParameterGroup : public QObject

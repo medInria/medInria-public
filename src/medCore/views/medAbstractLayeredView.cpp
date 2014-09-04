@@ -20,7 +20,6 @@
 #include <medAbstractLayeredViewInteractor.h>
 #include <medViewFactory.h>
 #include <medStringListParameter.h>
-#include <medParameterPoolManager.h>
 #include <medBoolGroupParameter.h>
 #include <medDataListParameter.h>
 #include <medLayerParameterGroup.h>

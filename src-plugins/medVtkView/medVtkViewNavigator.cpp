@@ -23,7 +23,6 @@
 #include <medViewFactory.h>
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
-#include <medParameterPoolManager.h>
 #include <medAbstractImageView.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>

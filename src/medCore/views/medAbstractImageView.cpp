@@ -23,8 +23,6 @@
 #include <medTriggerParameter.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medParameterPool.h>
-#include <medParameterPoolManager.h>
 #include <medDataListParameter.h>
 #include <medStringListParameter.h>
 

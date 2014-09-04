@@ -32,8 +32,6 @@
 #include <medToolBoxHeader.h>
 #include <medStringListParameter.h>
 #include <medTriggerParameter.h>
-#include <medParameterPoolManager.h>
-#include <medParameterPool.h>
 #include <medViewContainerSplitter.h>
 #include <medDataManager.h>
 #include <medSettingsManager.h>

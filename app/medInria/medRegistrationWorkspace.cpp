@@ -24,7 +24,6 @@
 #include <medTabbedViewContainers.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medAbstractLayeredView.h>
-#include <medParameterPoolManager.h>
 #include <medStringListParameter.h>
 
 #include <medToolBoxFactory.h>

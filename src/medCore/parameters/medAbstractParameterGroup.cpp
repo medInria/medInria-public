@@ -16,7 +16,6 @@
 
 #include <QtCore>
 
-#include <medParameterPool.h>
 #include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
 #include <medAbstractParameter.h>

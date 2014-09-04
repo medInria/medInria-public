@@ -27,7 +27,6 @@
 #include <medDatabaseController.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
-#include <medParameterPoolManager.h>
 
 void forceShow(medMainWindow& mainwindow )
 {
