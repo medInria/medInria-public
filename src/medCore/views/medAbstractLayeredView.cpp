@@ -42,22 +42,12 @@ public:
     medDataListParameter *dataListParameter;
 
     unsigned int currentLayer;
-
-    QPointer<QWidget> toolBarWidget;
-
-    // toolboxes
-    QPointer<QWidget> navigatorWidget;
-    QPointer<QWidget> mouseInteractionWidget;
-
 };
 
 medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
 {
     d->primaryNavigator = NULL;
     d->currentLayer = 0;
-    d->toolBarWidget = 0;
-    d->navigatorWidget = NULL;
-    d->mouseInteractionWidget = NULL;
 
     d->dataListParameter = new medDataListParameter("DataList",this);
     connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medDataIndex>)),this,SLOT(setDataList(QList<medDataIndex>)));
@@ -404,6 +394,11 @@ QList <medAbstractInteractor*>  medAbstractLayeredView::layerInteractors(unsigne
     return interactors;
 }
 
+QList <medAbstractInteractor*> medAbstractLayeredView::interactors()
+{
+    return layerInteractors(this->currentLayer());
+}
+
 QList<medAbstractNavigator*> medAbstractLayeredView::navigators()
 {
     QList<medAbstractNavigator*> navigatorsList;
@@ -415,58 +410,6 @@ QList<medAbstractNavigator*> medAbstractLayeredView::navigators()
         navigatorsList << this->extraNavigators();
 
     return navigatorsList;
-}
-
-QWidget* medAbstractLayeredView::navigatorWidget()
-{
-    if(d->navigatorWidget.isNull())
-    {
-        d->navigatorWidget = new QWidget;
-        QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
-
-        navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
-        foreach (medAbstractNavigator* navigator, this->extraNavigators())
-            navigatorLayout->addWidget(navigator->toolBoxWidget());
-    }
-
-    return d->navigatorWidget;
-}
-
-QWidget* medAbstractLayeredView::toolBarWidget()
-{
-    if(d->toolBarWidget.isNull())
-    {
-        d->toolBarWidget = this->buildToolBarWidget();
-    }
-
-    return d->toolBarWidget;
-}
-
-QWidget* medAbstractLayeredView::mouseInteractionWidget()
-{
-    if(d->mouseInteractionWidget.isNull())
-    {
-        d->mouseInteractionWidget = new QWidget;
-
-        QList<medBoolParameter*> params;
-
-        params.append(primaryInteractor(this->currentLayer())->mouseInteractionParameters());
-        foreach (medAbstractInteractor* interactor, this->extraInteractors(this->currentLayer()))
-            params.append(interactor->mouseInteractionParameters());
-
-        params.append(primaryNavigator()->mouseInteractionParameters());
-        foreach (medAbstractNavigator* navigator, this->extraNavigators())
-            params.append(navigator->mouseInteractionParameters());
-
-        medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
-        groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
-        foreach (medBoolParameter* param, params)
-            groupParam->addParameter(param);
-
-        d->mouseInteractionWidget = groupParam->getPushButtonGroup();
-    }
-
-    return d->mouseInteractionWidget;
 }
 
 QList<medAbstractParameter*> medAbstractLayeredView::interactorsParameters(unsigned int layer)

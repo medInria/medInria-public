@@ -23,6 +23,24 @@
 #include <medViewFactory.h>
 #include <medStringListParameter.h>
 #include <medParameterPoolManager.h>
+#include <medBoolGroupParameter.h>
+
+
+/**
+ * @fn QWidget* medAbstractView::viewWidget()
+ * @brief Return the widget containing the actual view object.
+ */
+
+/**
+ * @fn medViewBackend * medAbstractView::backend() const
+ * @brief Return the backend of the view
+ */
+
+/**
+ * @fn QImage medAbstractView::buildThumbnail(const QSize &size)
+ * @brief Build and return a thumbnail of the view of the specified size
+ */
+
 
 class medAbstractViewPrivate
 {
@@ -34,6 +52,11 @@ public:
 
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
+
+    // toolboxes
+    QPointer<QWidget> toolBarWidget;
+    QPointer<QWidget> navigatorWidget;
+    QPointer<QWidget> mouseInteractionWidget;
 
     // Smart pointed.
     // dtkSmartPointer should only be used in views, process and dataManager.
@@ -49,6 +72,10 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     d->data = NULL;
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
+
+    d->toolBarWidget = NULL;
+    d->navigatorWidget = NULL;
+    d->mouseInteractionWidget = NULL;
 }
 
 medAbstractView::~medAbstractView( void )
@@ -58,7 +85,9 @@ medAbstractView::~medAbstractView( void )
     d = NULL;
 }
 
-
+/**
+ * Add data to the view. Will replace the existing one if there is one.
+ */
 void medAbstractView::addData(medAbstractData *data)
 {
     if(!data)
@@ -85,6 +114,9 @@ void medAbstractView::addData(medAbstractData *data)
     this->reset();
 }
 
+/**
+ * Remove the current data from the view
+ */
 void medAbstractView::clear()
 {
     this->removeInteractors(d->data);
@@ -195,6 +227,9 @@ QList<medAbstractNavigator*> medAbstractView::extraNavigators()
     return d->extraNavigators;
 }
 
+/**
+ * Return all navigators (primary + extra)
+ */
 QList<medAbstractNavigator*> medAbstractView::navigators()
 {
     QList<medAbstractNavigator*> navigatorsList;
@@ -208,6 +243,9 @@ QList<medAbstractNavigator*> medAbstractView::navigators()
     return navigatorsList;
 }
 
+/**
+ * Return all interactors (primary + extra)
+ */
 QList<medAbstractInteractor*> medAbstractView::interactors()
 {
     QList<medAbstractInteractor*> interactorsList;
@@ -277,6 +315,9 @@ void medAbstractView::setUpViewForThumbnail()
         this->primaryInteractor()->setUpViewForThumbnail();
 }
 
+/**
+ * Return the list of parameters that can be linked
+ */
 QList<medAbstractParameter*> medAbstractView::linkableParameters()
 {
     QList<medAbstractParameter*>  params;
@@ -286,4 +327,96 @@ QList<medAbstractParameter*> medAbstractView::linkableParameters()
         params.append(nav->linkableParameters());
 
     return params;
+}
+
+QWidget* medAbstractView::toolBarWidget()
+{
+    if(d->toolBarWidget.isNull())
+    {
+        foreach(medAbstractInteractor *interactor, this->interactors())
+        {
+            if(!interactor)
+                continue;
+
+            QWidget* widget = interactor->toolBarWidget();
+            if(widget)
+            {
+                if(!d->toolBarWidget)
+                {
+                    d->toolBarWidget = new QWidget;
+                    QHBoxLayout *tbLayout = new QHBoxLayout(d->toolBarWidget);
+                    tbLayout->setContentsMargins(0, 0, 0, 0);
+                    tbLayout->setSpacing(0);
+                }
+                d->toolBarWidget->layout()->addWidget(widget);
+            }
+        }
+
+        foreach(medAbstractNavigator *navigator, this->navigators())
+        {
+            if(!navigator)
+                continue;
+
+            QWidget* widget = navigator->toolBarWidget();
+            if(widget)
+            {
+                if(!d->toolBarWidget)
+                {
+                    d->toolBarWidget = new QWidget;
+                    QHBoxLayout *tbLayout = new QHBoxLayout(d->toolBarWidget);
+                    tbLayout->setContentsMargins(0, 0, 0, 0);
+                    tbLayout->setSpacing(0);
+                }
+                d->toolBarWidget->layout()->addWidget(widget);
+            }
+        }
+    }
+
+    return d->toolBarWidget;
+}
+
+/**
+ * Build and return the widget made of all the widgets used to navigate through the view
+ */
+QWidget* medAbstractView::navigatorWidget()
+{
+    if(d->navigatorWidget.isNull())
+    {
+        d->navigatorWidget = new QWidget;
+        QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
+
+        navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
+        foreach (medAbstractNavigator* navigator, this->extraNavigators())
+            navigatorLayout->addWidget(navigator->toolBoxWidget());
+    }
+
+    return d->navigatorWidget;
+}
+
+/**
+ * Build and return the widget made of all the widgets used to control mouse interactions
+ */
+QWidget* medAbstractView::mouseInteractionWidget()
+{
+    if(d->mouseInteractionWidget.isNull())
+    {
+        d->mouseInteractionWidget = new QWidget;
+
+        QList<medBoolParameter*> params;
+
+        foreach (medAbstractInteractor* interactor, this->interactors())
+            params.append(interactor->mouseInteractionParameters());
+
+        foreach (medAbstractNavigator* navigator, this->navigators())
+            params.append(navigator->mouseInteractionParameters());
+
+        medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
+        groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
+        foreach (medBoolParameter* param, params)
+            groupParam->addParameter(param);
+
+        d->mouseInteractionWidget = groupParam->getPushButtonGroup();
+    }
+
+    return d->mouseInteractionWidget;
 }

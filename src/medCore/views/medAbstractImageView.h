@@ -62,15 +62,14 @@ public:
     virtual qreal sliceThickness() = 0;
     virtual qreal scale() = 0;
 
+    virtual QWidget* toolBarWidget();
+
     medCompositeParameter *cameraParameter();
     medAbstractVector3DParameter *positionBeingViewedParameter();
     medCompositeParameter *windowLevelParameter(unsigned int layer);
     medDoubleParameter *opacityParameter(unsigned int layer);
     medTriggerParameter *fourViewsParameter();
     medTimeLineParameter *timeLineParameter();
-
-protected:
-    virtual QWidget* buildToolBarWidget();
 
 public slots:
     void switchToFourViews();

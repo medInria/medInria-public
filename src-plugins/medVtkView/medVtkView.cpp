@@ -68,10 +68,6 @@ public:
 
     medBoolParameter *rubberBandZoomParameter;
 
-    // toolboxes
-    QWidget* navigatorWidget;
-    QWidget* mouseInteractionWidget;
-
     QScopedPointer<medVtkViewBackend> backend;
 };
 
@@ -147,9 +143,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
-
-    d->navigatorWidget = NULL;
-    d->mouseInteractionWidget = NULL;
 
     d->rubberBandZoomParameter = new medBoolParameter("RubberBandZoom", this);
     connect(d->rubberBandZoomParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableRubberBandZoom(bool)));

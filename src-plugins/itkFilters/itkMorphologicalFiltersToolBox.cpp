@@ -307,9 +307,3 @@ dtkPlugin* itkMorphologicalFiltersToolBox::plugin()
     dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
     return plugin;
 }
-
-
-medToolBox *createitkMorphologicalFiltersToolBox ( QWidget *parent )
-{
-    return new itkMorphologicalFiltersToolBox ( parent );
-}

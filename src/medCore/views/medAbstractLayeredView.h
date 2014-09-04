@@ -55,12 +55,9 @@ public:
     void setCurrentLayer(unsigned int layer);
     unsigned int currentLayer() const;
 
+    QList <medAbstractInteractor*> interactors();
     QList <medAbstractInteractor*> layerInteractors(unsigned int layer);
     QList<medAbstractNavigator*> navigators();
-
-    virtual QWidget* navigatorWidget();
-    virtual QWidget* mouseInteractionWidget();
-    QWidget* toolBarWidget();
 
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
     medDataListParameter *dataListParameter() const;
@@ -92,9 +89,7 @@ protected:
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
-    virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);
-
-    virtual QWidget* buildToolBarWidget() = 0;    
+    virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);  
 
 private slots:
     void updateDataListParameter(unsigned int layer);

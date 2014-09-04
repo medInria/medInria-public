@@ -57,9 +57,10 @@ public:
     virtual void addData(medAbstractData* data);
     virtual void clear();
 
-    virtual QWidget* navigatorWidget() = 0;
+    virtual QWidget* navigatorWidget();
     virtual QWidget *viewWidget() = 0;
-    virtual QWidget *mouseInteractionWidget() = 0;
+    virtual QWidget *mouseInteractionWidget();
+    virtual QWidget* toolBarWidget();
 
     virtual QList<medAbstractNavigator*> navigators();
     virtual QList<medAbstractInteractor*> interactors();

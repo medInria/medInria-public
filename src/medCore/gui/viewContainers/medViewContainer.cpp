@@ -615,59 +615,9 @@ void medViewContainer::updateToolBar()
         d->viewToolbar = NULL;
     }
 
-    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(d->view);
-    if(layeredView)
+    if(d->view)
     {
-        foreach(medAbstractInteractor *interactor, layeredView->layerInteractors(layeredView->currentLayer()))
-        {
-            if(!interactor)
-                continue;
-
-            QWidget* widget = interactor->toolBarWidget();
-            if(widget)
-            {
-                if(!d->viewToolbar)
-                {
-                    d->viewToolbar = new QWidget;
-                    QHBoxLayout *tbLayout = new QHBoxLayout(d->viewToolbar);
-                    tbLayout->setContentsMargins(0, 0, 0, 0);
-                    tbLayout->setSpacing(0);
-                }
-                d->viewToolbar->layout()->addWidget(widget);
-            }
-        }
-
-        foreach(medAbstractNavigator *navigator, layeredView->navigators())
-        {
-            if(!navigator)
-                continue;
-            
-            QWidget* widget = navigator->toolBarWidget();
-            if(widget)
-            {
-                if(!d->viewToolbar)
-                {
-                    d->viewToolbar = new QWidget;
-                    QHBoxLayout *tbLayout = new QHBoxLayout(d->viewToolbar);
-                    tbLayout->setContentsMargins(0, 0, 0, 0);
-                    tbLayout->setSpacing(0);
-                }
-                d->viewToolbar->layout()->addWidget(widget);
-            }
-        }
-
-        QWidget *widget = layeredView->toolBarWidget();
-        if (widget)
-        {
-            if(!d->viewToolbar)
-            {
-                d->viewToolbar = new QWidget;
-                QHBoxLayout *tbLayout = new QHBoxLayout(d->viewToolbar);
-                tbLayout->setContentsMargins(0, 0, 0, 0);
-                tbLayout->setSpacing(0);
-            }
-            d->viewToolbar->layout()->addWidget(widget);
-        }
+        d->viewToolbar = d->view->toolBarWidget();
 
         if(d->viewToolbar)
         {

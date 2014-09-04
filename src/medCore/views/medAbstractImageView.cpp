@@ -221,11 +221,14 @@ bool medAbstractImageView::initialiseNavigators()
     return true;
 }
 
-QWidget* medAbstractImageView::buildToolBarWidget()
+QWidget* medAbstractImageView::toolBarWidget()
 {
-    QWidget *toolBarWidget = this->fourViewsParameter()->getPushButton();
+    QWidget* toolbar = medAbstractView::toolBarWidget();
 
-    return toolBarWidget;
+    if(toolbar->layout())
+        toolbar->layout()->addWidget(this->fourViewsParameter()->getPushButton());
+
+    return toolbar;
 }
 
 void medAbstractImageView::switchToFourViews()
