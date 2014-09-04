@@ -24,7 +24,6 @@
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
 #include <medAbstractParameter.h>
-#include <medParameterPoolManager.h>
 #include <medParameterPool.h>
 #include <medStringListParameter.h>
 

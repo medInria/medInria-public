@@ -30,7 +30,6 @@
 #include <medBoolParameter.h>
 #include <medStringListParameter.h>
 #include <medParameterPool.h>
-#include <medParameterPoolManager.h>
 #include <medAbstractParameter.h>
 #include <medDataManager.h>
 #include <medPoolIndicator.h>
