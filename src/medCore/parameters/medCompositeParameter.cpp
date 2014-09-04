@@ -68,6 +68,7 @@ QWidget* medCompositeParameter::getWidget()
 void medCompositeParameter::setValues(const QHash<QString, QVariant> value)
 {
     QHash<QString, QVariant>::const_iterator valuesIterator = value.constBegin();
+    bool valueUpdated = false;
 
     while (valuesIterator != value.constEnd())
     {
@@ -80,27 +81,40 @@ void medCompositeParameter::setValues(const QHash<QString, QVariant> value)
 
         if(d->variants[key].type() == QVariant::Double)
         {
+            double previousValue = d->variants[key].toDouble();
+
             if(valuesIterator.value().toDouble() < d->ranges.value(key).first.toDouble())
                 d->variants[key] = d->ranges.value(key).first;
             else if(valuesIterator.value().toDouble() > d->ranges.value(key).second.toDouble())
                 d->variants[key] = d->ranges.value(key).second;
             else
                 d->variants[key] = valuesIterator.value();
+
+            if( previousValue != d->variants[key] )
+                valueUpdated = true;
         }
         else if(d->variants[key].type() == QVariant::Int)
         {
+            int previousValue = d->variants[key].toInt();
+
             if(valuesIterator.value().toInt() < d->ranges.value(key).first.toInt())
                 d->variants[key] = d->ranges.value(key).first;
             else if(valuesIterator.value().toInt() > d->ranges.value(key).second.toInt())
                 d->variants[key] = d->ranges.value(key).second;
             else
                 d->variants[key] = valuesIterator.value();
+
+            if( previousValue != d->variants[key] )
+                valueUpdated = true;
         }
         else
             d->variants[key] = valuesIterator.value();
 
         valuesIterator++;
     }
+
+    if(!valueUpdated)
+        return;
 
     //  update intern widget
     this->blockInternWidgetsSignals(true);
