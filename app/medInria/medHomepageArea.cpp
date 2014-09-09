@@ -69,7 +69,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     d->aboutWidget->hide();
 
-#if 0
+//#if 0
     //User widget content with settings, about and help buttons
     QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
     medHomepageButton * helpButton = new medHomepageButton ( this );
@@ -120,7 +120,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
     userButtonsLayout->insertWidget ( 3, helpButton );
-#endif
+//#endif
     //no need to set the layout the userWidget is the parent of the layout already.
 //    d->userWidget->setLayout ( userButtonsLayout );
 
