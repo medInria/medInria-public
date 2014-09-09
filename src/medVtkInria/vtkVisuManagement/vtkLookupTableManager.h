@@ -31,6 +31,7 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
     LUT_BW = 0,
     LUT_BWINV,
     LUT_SPECTTUM,
+    LUT_CARDIAC_ACTIVATION,
     LUT_HOTMETAL,
     LUT_HOTGREEN,
     LUT_HOTIRON,
@@ -61,6 +62,8 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
   static vtkLookupTable* GetBWInverseLookupTable();
 
   static vtkLookupTable* GetSpectrumLookupTable();
+
+  static vtkLookupTable* GetCardiacActivationLookupTable();
 
   static vtkLookupTable* GetHotMetalLookupTable();
 
