@@ -108,7 +108,10 @@ void medCompositeParameter::setValues(const QHash<QString, QVariant> value)
                 valueUpdated = true;
         }
         else
+        {
             d->variants[key] = valuesIterator.value();
+            valueUpdated = true;
+        }
 
         valuesIterator++;
     }
