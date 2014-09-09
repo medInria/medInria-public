@@ -33,6 +33,9 @@ medRunnableProcess::~medRunnableProcess()
     d = NULL;
 }
 
+/**
+* Specify which dtk process to run.
+*/
 void medRunnableProcess::setProcess (dtkAbstractProcess *proc)
 {
     d->process = proc;
@@ -77,6 +80,12 @@ void medRunnableProcess::run()
     deleteLater();
 }
 
+/**
+* dtkAbstractProcess signals success(), failure() and progressed(int)
+* need to be translated into corresponding medJobItem signals taking
+* in argument the pointer of the object. This is the role of those
+* slots.
+*/
 void medRunnableProcess::onSuccess()
 {
     emit success (this);
@@ -93,6 +102,13 @@ void medRunnableProcess::onProgressed (int value)
     emit progress (this, value);
 }
 
+/**
+* Contrarily to success() and failure(), the cancel() method is called
+* from outside this object (success and failure and emitted by the process
+* itself. This slot implements the expected behaviour when a cancel request
+* was made by calling the approrite onCanceled() slot of the running
+* dtkAbstractProcess
+*/
 void medRunnableProcess::onCancel (QObject *sender)
 {
     if (d->process) {

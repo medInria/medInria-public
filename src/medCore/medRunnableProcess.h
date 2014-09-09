@@ -40,30 +40,14 @@ public:
 
     void run();
 
-    /**
-    * Specify which dtk process to run.
-    */
     void setProcess (dtkAbstractProcess *proc);
     dtkAbstractProcess * getProcess();
 
 public slots:
-    /**
-    * dtkAbstractProcess signals success(), failure() and progressed(int)
-    * need to be translated into corresponding medJobItem signals taking
-    * in argument the pointer of the object. This is the role of those
-    * slots.
-    */
     virtual void onSuccess();
     virtual void onFailure();
     virtual void onProgressed (int);
 
-    /**
-    * Contrarily to success() and failure(), the cancel() method is called
-    * from outside this object (success and failure and emitted by the process
-    * itself. This slot implements the expected behaviour when a cancel request
-    * was made by calling the approrite onCanceled() slot of the running
-    * dtkAbstractProcess
-    */
     virtual void onCancel (QObject*);
     
 private:

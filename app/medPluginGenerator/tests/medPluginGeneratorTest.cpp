@@ -68,24 +68,38 @@ void medPluginGeneratorTest::cleanupTestCase()
 
 void medPluginGeneratorTest::testCompile_data()
 {
-    QTest::addColumn<QString>("family");
     QTest::addColumn<QString>("type");
     QTest::addColumn<QString>("name");
 
-    QTest::newRow("data") << "generic"<<  "Data" << "TestGenericData";
-    QTest::newRow("process") << "generic" << "Process" << "TestGenericProcess";
-    QTest::newRow("view") << "generic" << "View" << "TestGenericView";
-    QTest::newRow("registration") << "registration" << "Process" << "TestRegistration";
-    QTest::newRow("filtering") << "filtering" << "Process" << "TestFiltering";
-    QTest::newRow("workspace") << "workspace" << "Process" << "TestWorkspace";
-    QTest::newRow("datareader") << "datareader" << "Process" << "TestReader";
-    QTest::newRow("datawriter") << "datawriter" << "Process" << "TestWriter";
+    QTest::newRow("data") << "1" << "TestGenericData";
+
+    QTest::newRow("view") << "3" << "TestGenericView";
+    QTest::newRow("layeredView") << "4" << "TestGenericLayeredView";
+    QTest::newRow("imageView") << "5" << "TestGenericImageView";
+
+    QTest::newRow("viewInteractor") << "7" << "TestGenericViewInteractor";
+    QTest::newRow("layeredViewInteractor") << "8" << "TestGenericLayeredViewInteractor";
+    QTest::newRow("imageViewInteractor") << "9" << "TestGenericImageViewInteractor";
+    QTest::newRow("extraInteractor") << "10" << "TestExtraInteractor";
+
+    QTest::newRow("viewNavigator") << "12" << "TestGenericViewNavigator";
+    QTest::newRow("layeredViewNavigator") << "13" << "TestGenericLayeredViewNavigator";
+    QTest::newRow("imageViewNavigator") << "14" << "TestGenericImageViewNavigator";
+    QTest::newRow("extraNavigator") << "15" << "TestExtraNavigator";
+
+    QTest::newRow("filtering") << "17" << "TestFiltering";
+    QTest::newRow("registration") << "18" << "TestRegistration";
+    //QTest::newRow("diffusion") << "19" << "TestFiltering";
+
+    QTest::newRow("datareader") << "21" << "TestReader";
+    QTest::newRow("datawriter") << "22" << "TestWriter";
+
+    QTest::newRow("workspace") << "24" << "TestWorkspace";
 }
 
 
 void medPluginGeneratorTest::testCompile()
 {
-    QFETCH(QString, family);
     QFETCH(QString, type);
     QFETCH(QString, name);
 
@@ -102,7 +116,7 @@ void medPluginGeneratorTest::testCompile()
     // Generation step
     QStringList args;
     args << "--console" << "--output" << _tmpPath.absolutePath()
-         << "--name" << name << "--family" << family << "--type" << type;
+         << "--name" << name << "--type" << type;
     qDebug() << args;
 
     QProcess pGen;

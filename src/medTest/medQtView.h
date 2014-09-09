@@ -54,11 +54,11 @@ public:
 
     virtual void removeInteractors(medAbstractData *data);
 
-    virtual QList<medAbstractParameter*> navigatorsParameters();
+    virtual QWidget* buildToolBarWidget();
 
 public slots:
     virtual void reset();
-    virtual void update();
+    virtual void render();
 
 private:
     virtual QImage buildThumbnail(const QSize &size);

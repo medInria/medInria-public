@@ -31,18 +31,21 @@ class medDoubleParameter;
 class medAbstractVector2DParameter;
 class medStringListParameter;
 
-// derive and implement if you need to provide access to your backend
+
+/**
+ * @brief The medViewBackend class
+ * derive and implement if you need to provide access to your backend
+ */
 class medViewBackend {
 };
-
 
 
 /**
  * @class medAbstractView
  * @brief Base class for view types in medInria
  * medAbstractView specializes a dtkAbstractView in the context of medInria.
+ * A medAbstractView contains medAbstractInteractor and medAbstractNavigator.
  **/
-
 class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 {
     Q_OBJECT
@@ -51,49 +54,56 @@ public:
     medAbstractView(QObject* parent = 0);
     virtual ~medAbstractView();
 
-    virtual QString description() const = 0;
+    virtual void addData(medAbstractData* data);
+    virtual void clear();
+
+    virtual QWidget* navigatorWidget();
+    virtual QWidget *viewWidget() = 0;
+    virtual QWidget *mouseInteractionWidget();
+    virtual QWidget* toolBarWidget();
+
+    virtual QList<medAbstractNavigator*> navigators();
+    virtual QList<medAbstractInteractor*> interactors();
 
     medDoubleParameter* zoomParameter();
-
     medAbstractVector2DParameter* panParameter();
 
-    virtual medStringListParameter *linkParameter();
+    virtual QList<medAbstractParameter*> linkableParameters();
 
     virtual medViewBackend * backend() const = 0;
-
-    virtual QWidget* navigatorWidget() = 0;
-    virtual QWidget *viewWidget() = 0;
-    virtual QWidget *mouseInteractionWidget() = 0;
-
+    virtual QString description() const = 0;
     QImage generateThumbnail(const QSize &size);
-
-    virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
-    virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
-    virtual medAbstractViewNavigator* primaryNavigator();
-    virtual QList<medAbstractNavigator*> extraNavigators();
 
 public slots:
     virtual void reset() = 0;
-    virtual void update() = 0;
+    virtual void render() = 0;
 
 signals:
+    /**
+     * @brief selectedRequest
+     * Emitted on a left click event.
+     *
+     * @param selected
+     */
     void selectedRequest(bool selected);
-    void aboutToBuildThumbnail();
+
 
 protected:
+    virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
+    virtual medAbstractViewInteractor* primaryInteractor();
+    virtual QList<medAbstractInteractor*> extraInteractors();
+    virtual medAbstractViewNavigator* primaryNavigator();
+    virtual QList<medAbstractNavigator*> extraNavigators();
+
     virtual bool initialiseInteractors(medAbstractData* data);
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
     virtual bool eventFilter(QObject *, QEvent *);
 
-    virtual QList<medAbstractParameter*> navigatorsParameters();
-
-protected slots:
-    virtual void link(QString);
-    virtual void unlink();
-
 private:
     virtual QImage buildThumbnail(const QSize &size) = 0;
+    virtual void setUpViewForThumbnail();
 
 private:
     medAbstractViewPrivate *d;

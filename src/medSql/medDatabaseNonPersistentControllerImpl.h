@@ -38,7 +38,7 @@ public:
 
     /**
     * Get the table indices
-    * @params bool increment if true auto-increment the counter
+    * @param bool increment if true auto-increment the counter
     * @return int return the id (before incrementation)
     */
     int patientId(bool increment=false);
@@ -48,7 +48,7 @@ public:
 
     /**
     * Return offset needed to separate data indices between databases
-    * @params void
+    * @param void
     * @return int
     */
     int nonPersistentDataStartingIndex() const;
@@ -102,7 +102,7 @@ public slots:
 
     /**
     * Reads data from nonPersistent storage using the index
-    * @params const medDataIndex & index Index to look for
+    * @param const medDataIndex & index Index to look for
     * @return medAbstractData* data
     */
     dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const;
@@ -123,21 +123,21 @@ public slots:
 
     /**
      * Remove data referenced by index from temporary database
-     * @params const medDataIndex & index : data index
+     * @param const medDataIndex & index : data index
      */
     void remove(const medDataIndex& index);
 
     /**
      * Moves study and its series from one patient to another and returns the list of new indexes
-     * @params const medDataIndex & indexStudy The data index of the study to be moved
-     * @params const medDataIndex & toPatient The data index to move the study to.
+     * @param const medDataIndex & indexStudy The data index of the study to be moved
+     * @param const medDataIndex & toPatient The data index to move the study to.
      */
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
    
     /**
      * Moves serie from one study to another and returns the new index of the serie
-     * @params const medDataIndex & indexSerie The data index of the serie to be moved
-     * @params const medDataIndex & toStudy The data index to move the serie to.
+     * @param const medDataIndex & indexSerie The data index of the serie to be moved
+     * @param const medDataIndex & toStudy The data index to move the serie to.
      */
     medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 

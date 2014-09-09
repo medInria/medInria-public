@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,14 +15,31 @@
 
 #include <QPair>
 
-#include <dtkCore/dtkAbstractData.h>
 #include <medAbstractData.h>
+#include <dtkCore/dtkSmartPointer>
 
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
 #include <medViewFactory.h>
 #include <medStringListParameter.h>
-#include <medParameterPoolManager.h>
+#include <medBoolGroupParameter.h>
+
+
+/**
+ * @fn QWidget* medAbstractView::viewWidget()
+ * @brief Return the widget containing the actual view object.
+ */
+
+/**
+ * @fn medViewBackend * medAbstractView::backend() const
+ * @brief Return the backend of the view
+ */
+
+/**
+ * @fn QImage medAbstractView::buildThumbnail(const QSize &size)
+ * @brief Build and return a thumbnail of the view of the specified size
+ */
+
 
 class medAbstractViewPrivate
 {
@@ -35,18 +52,29 @@ public:
     medAbstractViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
-    medStringListParameter *linkParameter;
+    // toolboxes
+    QPointer<QWidget> toolBarWidget;
+    QPointer<QWidget> navigatorWidget;
+    QPointer<QWidget> mouseInteractionWidget;
+
+    // Smart pointed.
+    // dtkSmartPointer should only be used in views, process and dataManager.
+    dtkSmartPointer<medAbstractData> data;
 };
+
 
 medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate)
 {
     this->setParent(parent);
     d->closable = true;
 
+    d->data = NULL;
     d->primaryInteractor = NULL;
     d->primaryNavigator = NULL;
 
-    d->linkParameter = NULL;
+    d->toolBarWidget = NULL;
+    d->navigatorWidget = NULL;
+    d->mouseInteractionWidget = NULL;
 }
 
 medAbstractView::~medAbstractView( void )
@@ -54,6 +82,44 @@ medAbstractView::~medAbstractView( void )
     emit closed();
     delete d;
     d = NULL;
+}
+
+/**
+ * Add data to the view. Will replace the existing one if there is one.
+ */
+void medAbstractView::addData(medAbstractData *data)
+{
+    if(!data)
+    {
+        qWarning() << "Attempt to add a NULL data to the view: " << this;
+        return;
+    }
+
+    if(data == d->data)
+    {
+        qDebug() << "Attempt to set twice the same data to the view: " << this;
+        return;
+    }
+
+    d->data = data;
+
+    bool initSuccess = this->initialiseInteractors(data);
+    if(!initSuccess)
+    {
+        d->data = NULL;
+        return;
+    }
+
+    this->reset();
+}
+
+/**
+ * Remove the current data from the view
+ */
+void medAbstractView::clear()
+{
+    this->removeInteractors(d->data);
+    d->data = NULL;
 }
 
 void medAbstractView::removeInteractors(medAbstractData *data)
@@ -66,7 +132,6 @@ void medAbstractView::removeInteractors(medAbstractData *data)
 bool medAbstractView::initialiseInteractors(medAbstractData *data)
 {
     // primary
-
     medViewFactory* factory = medViewFactory::instance();
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
@@ -77,7 +142,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     else
     {
         medAbstractViewInteractor* interactor = factory->createInteractor<medAbstractViewInteractor>(primaryInt.first(), this);
-        interactor->setData(data);
+        interactor->setInputData(data);
         d->primaryInteractor = interactor;
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
@@ -90,7 +155,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
         foreach (QString i, extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
-            interactor->setData(data);
+            interactor->setInputData(data);
             extraIntList << interactor;
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         }
@@ -141,6 +206,15 @@ QList<medAbstractInteractor*> medAbstractView::extraInteractors(medAbstractData*
     return d->extraInteractors;
 }
 
+medAbstractViewInteractor* medAbstractView::primaryInteractor()
+{
+    return d->primaryInteractor;
+}
+
+QList<medAbstractInteractor*> medAbstractView::extraInteractors()
+{
+    return d->extraInteractors;
+}
 
 medAbstractViewNavigator* medAbstractView::primaryNavigator()
 {
@@ -150,6 +224,38 @@ medAbstractViewNavigator* medAbstractView::primaryNavigator()
 QList<medAbstractNavigator*> medAbstractView::extraNavigators()
 {
     return d->extraNavigators;
+}
+
+/**
+ * Return all navigators (primary + extra)
+ */
+QList<medAbstractNavigator*> medAbstractView::navigators()
+{
+    QList<medAbstractNavigator*> navigatorsList;
+
+    if(this->primaryNavigator())
+        navigatorsList << this->primaryNavigator();
+
+    if(!d->extraNavigators.isEmpty())
+        navigatorsList << d->extraNavigators;
+
+    return navigatorsList;
+}
+
+/**
+ * Return all interactors (primary + extra)
+ */
+QList<medAbstractInteractor*> medAbstractView::interactors()
+{
+    QList<medAbstractInteractor*> interactorsList;
+
+    if(this->primaryInteractor(d->data))
+        interactorsList << this->primaryInteractor(d->data);
+
+    if(!this->extraInteractors(d->data).isEmpty())
+        interactorsList << this->extraInteractors(d->data);
+
+    return interactorsList;
 }
 
 medDoubleParameter* medAbstractView::zoomParameter()
@@ -174,58 +280,6 @@ medAbstractVector2DParameter* medAbstractView::panParameter()
     return pNavigator->panParameter();
 }
 
-
-medStringListParameter* medAbstractView::linkParameter()
-{
-    if(!d->linkParameter)
-    {
-        d->linkParameter = new medStringListParameter("Link view", this);
-        d->linkParameter->addItem("None", medStringListParameter::createIconFromColor("transparent"));
-        d->linkParameter->addItem("View group 1", medStringListParameter::createIconFromColor("darkred"));
-        d->linkParameter->addItem("View group 2", medStringListParameter::createIconFromColor("darkgreen"));
-        d->linkParameter->addItem("View group 3", medStringListParameter::createIconFromColor("darkblue"));
-
-        QString tooltip = QString(tr("Link View properties ("));
-        foreach(medAbstractParameter *param, this->navigatorsParameters())
-            tooltip += param->name() + ", ";
-        tooltip += ")";
-        d->linkParameter->setToolTip(tooltip);
-
-        connect(d->linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(link(QString)));
-
-        d->linkParameter->setValue("None");
-    }
-    return d->linkParameter;
-}
-
-void medAbstractView::link(QString pool)
-{
-    unlink();
-
-    if(pool!="None")
-    {
-        foreach(medAbstractParameter *param, this->navigatorsParameters())
-            medParameterPoolManager::instance()->linkParameter(param, pool);
-    }
-}
-
-void medAbstractView::unlink()
-{
-    foreach(medAbstractParameter *param, this->navigatorsParameters())
-        medParameterPoolManager::instance()->unlinkParameter(param);
-}
-
-QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
-{
-    QList<medAbstractParameter*>  params;
-    params.append(this->primaryNavigator()->linkableParameters());
-
-    foreach(medAbstractNavigator* nav,  this->extraNavigators())
-        params.append(nav->linkableParameters());
-
-    return params;
-}
-
 bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
 {
     if(obj == this->viewWidget())
@@ -243,6 +297,125 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
 
 QImage medAbstractView::generateThumbnail(const QSize &size)
 {
-    emit aboutToBuildThumbnail();
+    setUpViewForThumbnail();
     return this->buildThumbnail(size);
+}
+
+void medAbstractView::setUpViewForThumbnail()
+{
+    medAbstractViewInteractor *primaryInteractor = this->primaryInteractor();
+    if(!primaryInteractor)
+    {
+        QString msg = "Unable to find any current primary interactor for view "  + this->identifier();
+        qWarning() << msg;
+    }
+
+    else
+        this->primaryInteractor()->setUpViewForThumbnail();
+}
+
+/**
+ * Return the list of parameters that can be linked
+ */
+QList<medAbstractParameter*> medAbstractView::linkableParameters()
+{
+    QList<medAbstractParameter*>  params;
+    params.append(this->primaryNavigator()->linkableParameters());
+
+    foreach(medAbstractNavigator* nav,  this->extraNavigators())
+        params.append(nav->linkableParameters());
+
+    return params;
+}
+
+QWidget* medAbstractView::toolBarWidget()
+{
+    if(d->toolBarWidget.isNull())
+    {
+        foreach(medAbstractInteractor *interactor, this->interactors())
+        {
+            if(!interactor)
+                continue;
+
+            QWidget* widget = interactor->toolBarWidget();
+            if(widget)
+            {
+                if(!d->toolBarWidget)
+                {
+                    d->toolBarWidget = new QWidget;
+                    QHBoxLayout *tbLayout = new QHBoxLayout(d->toolBarWidget);
+                    tbLayout->setContentsMargins(0, 0, 0, 0);
+                    tbLayout->setSpacing(0);
+                }
+                d->toolBarWidget->layout()->addWidget(widget);
+            }
+        }
+
+        foreach(medAbstractNavigator *navigator, this->navigators())
+        {
+            if(!navigator)
+                continue;
+
+            QWidget* widget = navigator->toolBarWidget();
+            if(widget)
+            {
+                if(!d->toolBarWidget)
+                {
+                    d->toolBarWidget = new QWidget;
+                    QHBoxLayout *tbLayout = new QHBoxLayout(d->toolBarWidget);
+                    tbLayout->setContentsMargins(0, 0, 0, 0);
+                    tbLayout->setSpacing(0);
+                }
+                d->toolBarWidget->layout()->addWidget(widget);
+            }
+        }
+    }
+
+    return d->toolBarWidget;
+}
+
+/**
+ * Build and return the widget made of all the widgets used to navigate through the view
+ */
+QWidget* medAbstractView::navigatorWidget()
+{
+    if(d->navigatorWidget.isNull())
+    {
+        d->navigatorWidget = new QWidget;
+        QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
+
+        navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
+        foreach (medAbstractNavigator* navigator, this->extraNavigators())
+            navigatorLayout->addWidget(navigator->toolBoxWidget());
+    }
+
+    return d->navigatorWidget;
+}
+
+/**
+ * Build and return the widget made of all the widgets used to control mouse interactions
+ */
+QWidget* medAbstractView::mouseInteractionWidget()
+{
+    if(d->mouseInteractionWidget.isNull())
+    {
+        d->mouseInteractionWidget = new QWidget;
+
+        QList<medBoolParameter*> params;
+
+        foreach (medAbstractInteractor* interactor, this->interactors())
+            params.append(interactor->mouseInteractionParameters());
+
+        foreach (medAbstractNavigator* navigator, this->navigators())
+            params.append(navigator->mouseInteractionParameters());
+
+        medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
+        groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
+        foreach (medBoolParameter* param, params)
+            groupParam->addParameter(param);
+
+        d->mouseInteractionWidget = groupParam->getPushButtonGroup();
+    }
+
+    return d->mouseInteractionWidget;
 }

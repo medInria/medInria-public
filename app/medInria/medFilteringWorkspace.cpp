@@ -28,11 +28,13 @@
 #include <medDataManager.h>
 #include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
+#include <medViewParameterGroup.h>
+#include <medLayerParameterGroup.h>
 
 class medFilteringWorkspacePrivate
 {
 public:
-    medFilteringSelectorToolBox *filteringToolBox;
+    QPointer<medFilteringSelectorToolBox> filteringToolBox;
     medViewContainer *inputContainer;
     medViewContainer *outputContainer;
 
@@ -45,8 +47,14 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
 {
     d->filteringToolBox = new medFilteringSelectorToolBox(parent);
     connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
-    connect(d->filteringToolBox, SIGNAL(destroyed()), this, SLOT(removeInternSelectorToolBox()));
     this->addToolBox(d->filteringToolBox);
+
+    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
+    viewGroup1->setLinkAllParameters(true);
+    viewGroup1->removeParameter("DataList");
+
+    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this,  this->identifier());
+    layerGroup1->setLinkAllParameters(true);
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -89,7 +97,7 @@ void medFilteringWorkspace::setupViewContainerStack()
 
 void medFilteringWorkspace::changeToolBoxInput()
 {
-    if(!d->filteringToolBox)
+    if(d->filteringToolBox.isNull())
         return;
 
     if(!d->inputContainer->view())
@@ -110,7 +118,7 @@ void medFilteringWorkspace::changeToolBoxInput()
 
 void medFilteringWorkspace::onProcessSuccess()
 {
-    if(!d->filteringToolBox)
+    if(d->filteringToolBox.isNull())
         return;
 
     d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
@@ -157,10 +165,4 @@ void medFilteringWorkspace::open(const medDataIndex &index)
         return;
 
     d->inputContainer->addData(medDataManager::instance()->data(index));
-}
-
-
-void medFilteringWorkspace::removeInternSelectorToolBox()
-{
-    d->filteringToolBox = NULL;
 }

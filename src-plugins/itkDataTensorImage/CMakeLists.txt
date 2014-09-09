@@ -119,7 +119,6 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOVTK
   ITKTensor
   medCore
-  medGui
   medLog
   medVtkInria
   QVTK

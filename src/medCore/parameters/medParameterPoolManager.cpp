@@ -16,7 +16,6 @@
 #include <medAbstractView.h>
 #include <medAbstractParameter.h>
 #include <medParameterPool.h>
-#include <medViewManager.h>
 
 
 class medParameterPoolManagerPrivate
@@ -78,6 +77,17 @@ void medParameterPoolManager::unlinkParameter(medAbstractParameter* param)
 QList<medParameterPool*> medParameterPoolManager::pools()
 {
     return d->pools.values();
+}
+
+QStringList medParameterPoolManager::pools(medAbstractParameter *param)
+{
+    QStringList pools;
+    foreach(medParameterPool *pool, d->pools.values() )
+    {
+        if(pool->parameters().contains(param))
+            pools << pool->name();
+    }
+    return pools;
 }
 
 medParameterPool* medParameterPoolManager::pool(QString poolId)

@@ -129,9 +129,9 @@ bool medVtkViewItkVectorFieldInteractor::registered()
     return true;
 }
 
-void medVtkViewItkVectorFieldInteractor::setData(medAbstractData *data)
+void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
 {
-    medAbstractInteractor::setData(data);
+    medAbstractInteractor::setInputData(data);
 
     if (!data)
         return;
@@ -247,7 +247,6 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     d->parameters.append(sampleRateControl);
     d->parameters.append(colorMode);
     d->parameters.append(projection);
-    d->parameters.append(this->visibiltyParameter());
 
     connect(scaleFactor, SIGNAL(valueChanged(double)), this, SLOT(setScale(double)));
     connect(sampleRateControl,SIGNAL(valueChanged(int)),this,SLOT(setSampleRate(int)));
@@ -414,7 +413,9 @@ QWidget* medVtkViewItkVectorFieldInteractor::buildToolBarWidget()
 
 QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::linkableParameters()
 {
-    return d->parameters;
+    QList <medAbstractParameter*> linkableParams = d->parameters;
+    linkableParams << this->visibilityParameter();
+    return linkableParams;
 }
 
 QList<medBoolParameter*> medVtkViewItkVectorFieldInteractor::mouseInteractionParameters()

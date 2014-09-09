@@ -47,7 +47,8 @@ public:
 template <typename TYPE>
 bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMetaDataSetSequence* sequence, int& layer) {
 
-    if (itk::Image<TYPE,4>* image = dynamic_cast<itk::Image<TYPE,4>*>(static_cast<itk::Object*>(data->data()))) {
+    if (itk::Image<TYPE,4>* image = dynamic_cast<itk::Image<TYPE,4>*>(static_cast<itk::Object*>(data->data())))
+    {
 
         medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
 
@@ -58,7 +59,6 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
 
         backend->view2D->SetInput(vtkimage,metaimage->GetOrientationMatrix(), layer);
         backend->view3D->SetInput(vtkimage,metaimage->GetOrientationMatrix(), layer);
-
         layer = backend->view2D->GetNumberOfLayers()-1;
 
         return true;
@@ -122,7 +122,7 @@ bool medVtkViewItkDataImage4DInteractor::registered()
                                                                           medVtkViewItkDataImage4DInteractor::dataHandled());
 }
 
-void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
+void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
 {
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
     if(!d->imageData)
@@ -155,6 +155,10 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
 
+            double* range = d->sequence->GetCurrentScalarRange();
+            d->view2d->SetColorRange(range);
+            this->initWindowLevelParameters(range);
+
             if(d->view->layer(d->imageData) == 0)
             {
                 switch(d->view2d->GetViewOrientation())
@@ -174,7 +178,7 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
     }
 }
 
-medAbstractData *medVtkViewItkDataImage4DInteractor::data() const
+medAbstractData *medVtkViewItkDataImage4DInteractor::inputData() const
 {
     return d->imageData;
 }

@@ -47,7 +47,10 @@ medAbstractData::~medAbstractData( void )
     d = NULL;
 }
 
-
+/**
+* Attach a meddataindex to the data to carry it arround
+* @param const medDataIndex & index
+*/
 void medAbstractData::setDataIndex( const medDataIndex& index )
 {
     // copy ids
@@ -58,11 +61,20 @@ void medAbstractData::setDataIndex( const medDataIndex& index )
     d->index.setImageId(index.imageId());
 }
 
+/**
+* Get the dataindex attached to the data or an invalid one
+* @return medDataIndex
+*/
 medDataIndex medAbstractData::dataIndex() const
 {
     return d->index;
 }
 
+/**
+ * @brief Get attached data (like histogram, annotations etc.)
+ *
+ * @return QList< medAttachedData * >
+ */
 QList< medAttachedData * > medAbstractData::attachedData() const
 {
     QList< medAttachedData * > ret;
@@ -75,6 +87,11 @@ QList< medAttachedData * > medAbstractData::attachedData() const
     return ret;
 }
 
+/**
+ * @brief Clear the list of attached data
+ *
+ * @return void
+ */
 void medAbstractData::clearAttachedData()
 {
     foreach ( medAttachedData * data, d->attachedData )
@@ -82,6 +99,11 @@ void medAbstractData::clearAttachedData()
     d->attachedData.clear();
 }
 
+/**
+ * @brief add attached data
+ *
+ * @return void
+ */
 void medAbstractData::addAttachedData( medAttachedData * data )
 {
     if ( !d->attachedData.contains( data ) ) {
@@ -91,6 +113,11 @@ void medAbstractData::addAttachedData( medAttachedData * data )
     }
 }
 
+/**
+ * @brief remove attached data
+ *
+ * @return void
+ */
 void medAbstractData::removeAttachedData( medAttachedData * data )
 {
     int n = d->attachedData.count();
@@ -101,6 +128,9 @@ void medAbstractData::removeAttachedData( medAttachedData * data )
     }
 }
 
+/** Invoke emit datamodified(this);
+ * \sa dataModfied(medAbstractData *);
+*/
 void medAbstractData::invokeModified()
 {
     emit dataModified(this);

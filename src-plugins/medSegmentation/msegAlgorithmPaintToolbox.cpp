@@ -21,7 +21,6 @@
 #include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medSegmentationSelectorToolBox.h>
-#include <medViewManager.h>
 #include <medPluginManager.h>
 #include <medDataManager.h>
 
@@ -86,8 +85,12 @@ public:
 
         // let's take the first non medImageMaskAnnotationData as the reference data
         // TODO: to improve...
-        foreach(medAbstractData * data, imageView->dataList())
+        foreach(medDataIndex index, imageView->dataList())
         {
+            medAbstractData *data = medDataManager::instance()->data(index);
+            if (!data)
+                continue;
+
             medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
             if(!existingMaskAnnData)
             {
@@ -284,20 +287,11 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     dataButtonsLayout->addWidget(m_clearMaskButton);
     layout->addLayout(dataButtonsLayout);
 
-    connect (m_strokeButton,     SIGNAL(pressed()),
-             this, SLOT(activateStroke ()));
-
-    connect (m_magicWandButton, SIGNAL(pressed()),
-             this,SLOT(activateMagicWand()));
-
-    connect (m_clearMaskButton,     SIGNAL(pressed()),
-             this, SLOT(clearMask()));
-
-    connect (m_applyButton,     SIGNAL(pressed()),
-             this, SLOT(import()));
-
-    connect (medViewManager::instance(), SIGNAL(viewOpened()),
-             this, SLOT(updateMouseInteraction()));
+    connect (m_strokeButton, SIGNAL(pressed()), this, SLOT(activateStroke ()));
+    connect (m_magicWandButton, SIGNAL(pressed()),this,SLOT(activateMagicWand()));
+    connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clearMask()));
+    connect (m_applyButton, SIGNAL(pressed()),this, SLOT(import()));
+    connect(this->segmentationToolBox(), SIGNAL(inputChanged()), this, SLOT(updateMouseInteraction()));
 
     showButtons(false);
 }

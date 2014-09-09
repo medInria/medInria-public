@@ -22,6 +22,14 @@ list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   data
   data/annotationData
+  gui
+  gui/commonWidgets
+  gui/database
+  gui/factories
+  gui/lookUpTables
+  gui/settingsWidgets
+  gui/toolboxes
+  gui/viewContainers
   process
   views
   views/interactors
@@ -29,8 +37,10 @@ list_source_files(${PROJECT_NAME}
   parameters
   )
 
+set(${PROJECT_NAME}_QRC resources/medCore.qrc)
+
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
@@ -57,9 +67,14 @@ endif()
 ## add library
 ## #############################################################################
 
+qt4_add_resources(${PROJECT_NAME}_QRC
+  ${${PROJECT_NAME}_QRC}
+  )
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_QRC}
   )
 
 
@@ -70,6 +85,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCore
+    dtkGui
     dtkLog
     )
 
@@ -93,7 +109,9 @@ set_lib_install_rules(${PROJECT_NAME}
 
 if(MEDINRIA_BUILD_TESTS)
   add_subdirectory(tests)
-  add_subdirectory(parameters/tests)
+  #TODO: we will need to change the tests organization because of dependance to medTest...
+  #add_subdirectory(gui/tests)
+  #add_subdirectory(parameters/tests)
   #add_subdirectory(view/tests)
   #add_subdirectory(data/tests)
   #add_subdirectory(process/tests)

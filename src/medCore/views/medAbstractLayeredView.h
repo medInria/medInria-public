@@ -27,6 +27,7 @@
 class medAbstractData;
 class medAbstractBoolParameter;
 class medStringListParameter;
+class medDataListParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -43,7 +44,7 @@ public:
     void insertLayer(unsigned int layer, medAbstractData *data);
 
     medAbstractData * layerData(unsigned int layer) const;
-    QList<dtkSmartPointer<medAbstractData> > dataList() const;
+    QList<medDataIndex> dataList() const;
 
     bool contains(medAbstractData * data) const;
     bool contains(QString identifier) const;
@@ -54,16 +55,18 @@ public:
     void setCurrentLayer(unsigned int layer);
     unsigned int currentLayer() const;
 
+    QList <medAbstractInteractor*> interactors();
+    QList <medAbstractInteractor*> layerInteractors(unsigned int layer);
+    QList<medAbstractNavigator*> navigators();
+
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
+    medDataListParameter *dataListParameter() const;
 
-    medStringListParameter *layerLinkParameter(unsigned int layer);
-
-    QList <medAbstractInteractor*> interactors(unsigned int layer);
-
-    virtual QWidget* navigatorWidget();
-    virtual QWidget* mouseInteractionWidget();
+    virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medAbstractParameter*> linkableParameters(unsigned int layer);
 
 public slots:
+    void setDataList(QList<medDataIndex> dataList);
     void removeLayer();
 
 signals:
@@ -76,6 +79,8 @@ protected:
     virtual QList<medAbstractInteractor *> extraInteractors(medAbstractData* data);
     virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
     virtual QList<medAbstractInteractor *> extraInteractors(unsigned int layer);
+    virtual medAbstractLayeredViewInteractor * primaryInteractor();
+    virtual QList<medAbstractInteractor *> extraInteractors();
 
     virtual medAbstractLayeredViewNavigator * primaryNavigator();
     virtual QList<medAbstractNavigator *> extraNavigators();
@@ -84,21 +89,11 @@ protected:
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
-    virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);
-
-protected slots:
-    virtual void setUpViewForThumbnail();
-    virtual void linkLayer(QString);
-    virtual void unlinkLayer(unsigned int layer = -1);
+    virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);  
 
 private slots:
-    void removeInternNavigatorWidget();
-    void removeInternMouseInteractionWidget();
-
- private:
-    medStringListParameter* createLinkParameter();
+    void updateDataListParameter(unsigned int layer);
 
 private:
     medAbstractLayeredViewPrivate *d;
-
 };

@@ -282,6 +282,7 @@ $TOOLBOX_HEADER_PADDING         = 0px 8px;
 $FILE_SYSTEM_INFO_TEXT_PADDING  = 2px 5px;
 
 
+
 /*******************************************************************************
     QWidget
  *******************************************************************************/
@@ -1277,3 +1278,29 @@ QWidget#toolbarWidget
     background: $FINDER_PATH_BAR_BACKGROUND;
 }
 
+/*******************************************************************************
+     medLinkMenu
+ *******************************************************************************/
+
+QWidget#internalSubPopWidget
+{
+   background: $GREY06;
+   border-radius: 3px;
+}
+
+medLinkMenu QListWidget
+{
+    background-color: $MENU_ITEM_BACKGROUND;
+}
+
+medLinkMenu QListWidget::item
+{
+    border: none;
+}
+
+medLinkMenu QListWidget::item:selected
+{
+    border: none;
+    background: $MENU_ITEM_HOVER_BACKGROUND;
+    color: $MENU_ITEM_SELECTED_COLOR;
+}

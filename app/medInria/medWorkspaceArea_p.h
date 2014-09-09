@@ -49,7 +49,7 @@ public:
     QSplitter * splitter;
     QMutex mutex;
     QHash<QString, medAbstractWorkspace*> workspaces;
-    medToolBox *selectionToolBox;
+    QPointer<medToolBox> selectionToolBox;
 
 public:
     QString currentWorkspaceName;

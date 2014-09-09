@@ -31,7 +31,7 @@
 #include <time.h>
 
 // Include specific RPI implementation of the registration method
-#include <rpi%4.h>
+#include <rpi%3.h>
 #include <rpiCommonTools.hxx>
 
 // /////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ public:
     typedef itk::Image< float, 3 >  RegImageType;
     
     if (d->registrationMethod)
-        delete static_cast<rpi::%4< RegImageType, RegImageType,float > *>(d->registrationMethod);
+        delete static_cast<rpi::%1< RegImageType, RegImageType,float > *>(d->registrationMethod);
 
     d->registrationMethod = NULL;
     
@@ -78,7 +78,7 @@ public:
 
 bool %1::registered()
 {
-    return dtkAbstractProcessFactory::instance()->register%2Type("%1",
+    return dtkAbstractProcessFactory::instance()->registerProcessType("%1",
                                                                  create%3);
 }
 
@@ -101,8 +101,8 @@ int %1Private::update()
     typedef itk::Image< PixelType, 3 >  MovingImageType;
     
     
-    typename rpi::%4<FixedImageType,MovingImageType> * registration =
-    new rpi::%4<FixedImageType,MovingImageType> ();
+    typename rpi::%1<FixedImageType,MovingImageType> * registration =
+    new rpi::%1<FixedImageType,MovingImageType> ();
     
     registrationMethod = registration;
     
@@ -167,8 +167,8 @@ bool %1Private::writeTransform(const QString& file)
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
     
-    if (rpi::%4<RegImageType,RegImageType,TransformScalarType> * registration =
-        static_cast<rpi::%4<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod))
+    if (rpi::%1<RegImageType,RegImageType,TransformScalarType> * registration =
+        static_cast<rpi::%1<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod))
     {
         try{
             rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(registration->GetTransformation(),
@@ -209,7 +209,7 @@ QString %1::getTitleAndParameters()
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstract%2 *create%3()
+dtkAbstractProcess *create%3()
 {
     return new %1;
 }

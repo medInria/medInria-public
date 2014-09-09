@@ -32,12 +32,12 @@ public slots:
     void about();
     void onOutputPathClicked();
     void onOutputPathChanged();
-    void onPluginTypeChanged();
+    void onPluginTypeChanged(int);
     void onNameChanged();
     void onDescriptionChanged();
     void onPluginLicenseChanged();
+    void onGenerateOptionsChanged(bool);
     void update();
-    void onFamilyChanged(int);
     void onSetDefaultPath();
 private:
     medPluginGeneratorMainWindowPrivate *d;

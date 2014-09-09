@@ -110,7 +110,6 @@ target_link_libraries(${PROJECT_NAME}
   vtkVolumeRendering
   QVTK
   medCore
-  medGui
   medVtkInria
   )
 

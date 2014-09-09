@@ -31,13 +31,10 @@ public:
     virtual ~medAbstractViewNavigator();
 
     medDoubleParameter* zoomParameter();
-
     medAbstractVector2DParameter* panParameter();
 
 public slots:
-
     virtual void setZoom (double zoom) = 0;
-
     virtual void setPan (const QVector2D &pan) = 0;
 
 private:

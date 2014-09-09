@@ -27,6 +27,13 @@ class medAbstractParameter;
 class medBoolParameter;
 
 class medAbstractInteractorPrivate;
+
+/**
+ * @class medAbstractInteractor
+ * @brief Base class for interactor types in medInria
+ * A medAbstractInteractor belongs to a medAbstractView and is responsible for managing
+ * all the interactions for a type of medAbstractData in the medAbstractView.
+ **/
 class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
 {
     Q_OBJECT
@@ -38,9 +45,9 @@ public:
 public:
     virtual QString description() const = 0;
 
-    virtual void setData(medAbstractData *data);
-    virtual medAbstractData *data() const;
-
+    virtual void setInputData(medAbstractData *data);
+    virtual medAbstractData *inputData() const;
+    
     virtual QWidget* toolBoxWidget();
     virtual QWidget* toolBarWidget();
     virtual QWidget* layerWidget();
@@ -49,40 +56,14 @@ public:
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
 
 public slots:
-    /**
-     * @brief updateWidgets Reimplement this methode to change the widget that you expose when the
-     * state of the view changes. (i.e. Orientation, new data added)
-     */
-    virtual void updateWidgets()
-    {
-    }
-
+    virtual void updateWidgets();
 
 protected:
-    /**
-    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
-    * view settings toolBox when the container of the parent view is single selected.
-    * @return
-    */
     virtual QWidget* buildToolBoxWidget() = 0;
-    /**
-    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
-    * toolbar of the container where the parent view is dsiplayed.
-    * @return
-    */
     virtual QWidget* buildToolBarWidget() = 0;
-    /**
-    * @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
-    * layer toolbox when the container of the parent view is selected.
-    * @return
-    */
     virtual QWidget* buildLayerWidget() = 0;
 
 private slots:
-    void removeInternToolBoxWidget();
-    void removeInternToolBarWidget();
-    void removeInternLayerWidget();
-
 
 private:
     medAbstractInteractorPrivate *d;
@@ -94,7 +75,7 @@ private:
     using dtkAbstractViewInteractor::setView;
     using dtkAbstractViewInteractor::view;
     using dtkAbstractViewInteractor::setData;
-//    using dtkAbstractViewInteractor::data;
+    using dtkAbstractViewInteractor::data;
 
     using dtkAbstractViewInteractor::output;
     using dtkAbstractViewInteractor::predraw;

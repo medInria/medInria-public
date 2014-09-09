@@ -64,3 +64,14 @@ medCompositeParameter* medAbstractImageViewInteractor::windowLevelParameter()
     }
     return d->windowLevelParameter;
 }
+
+/**
+* @brief setCurrentTime Reimplement this methode if the data has a temporal component,
+* to update what to display in the view according to the parameter time.
+* Do not update the view, it has to be done by the primary navigator.
+* @param time
+*/
+void medAbstractImageViewInteractor::setCurrentTime(double time)
+{
+    qDebug() << "No implementation of setCurrentTime(const double &time) for" << this->identifier();
+}

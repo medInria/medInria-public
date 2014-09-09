@@ -33,10 +33,16 @@ class medAbstractNavigator;
 
 class medDoubleParameter;
 class medCompositeParameter;
+class medTriggerParameter;
 class medAbstractVector3DParameter;
 
 class medAbstractImageViewPrivate;
 
+/**
+ * @class medAbstractImageView
+ * @brief Base class for image view types in medInria
+ * medAbstractImageView specializes a medAbstractLayeredView.
+ **/
 class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
 {
     Q_OBJECT
@@ -47,65 +53,26 @@ public:
 
     medImageView::Orientation orientation();
 
-    /**
-     * Return a composite parameter made of:
-     * QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale
-     */
-    medCompositeParameter *cameraParameter();
-
-    medAbstractVector3DParameter *positionBeingViewedParameter();
-
-    /**
-     * Return a composite parameter made of:
-     * double &window, double level
-     */
-    medCompositeParameter *windowLevelParameter(unsigned int layer);
-
-    medDoubleParameter *opacityParameter(unsigned int layer);
-
-    medTimeLineParameter *timeLineParameter();
-
-    /**
-     * Convert from world coordinates to scene coordinates.
-     */
     virtual QPointF mapWorldToDisplayCoordinates( const QVector3D & worldVec ) = 0;
-
-    /**
-     * Convert from scene coordinates to world coordinates.
-     */
     virtual QVector3D mapDisplayToWorldCoordinates( const QPointF & scenePoint ) = 0;
-
-    /**
-     * Get the view center vector in world space, the center of the slice for 2d views.
-     */
     virtual QVector3D viewCenter() = 0;
-
-    /**
-     * Get the view plane normal vector in world space.
-     */
     virtual QVector3D viewPlaneNormal() = 0;
-
-    /**
-     * Get the view plane up vector in world space.
-     */
     virtual QVector3D viewUp() = 0;
-
-    /**
-     * Is the scene 2D (true) or 3D (false)
-     */
     virtual bool is2D() = 0;
-
-    /**
-     * What is the thickness of the current slice (2D)
-     */
     virtual qreal sliceThickness() = 0;
-
-    /**
-     * The scale (number of pixels on screen per mm)
-     */
     virtual qreal scale() = 0;
 
+    virtual QWidget* toolBarWidget();
+
+    medCompositeParameter *cameraParameter();
+    medAbstractVector3DParameter *positionBeingViewedParameter();
+    medCompositeParameter *windowLevelParameter(unsigned int layer);
+    medDoubleParameter *opacityParameter(unsigned int layer);
+    medTriggerParameter *fourViewsParameter();
+    medTimeLineParameter *timeLineParameter();
+
 public slots:
+    void switchToFourViews();
     void setOrientation(medImageView::Orientation orientation);
 
 

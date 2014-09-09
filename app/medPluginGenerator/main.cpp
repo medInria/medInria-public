@@ -25,7 +25,6 @@ void printUsage() {
     "--console               Run the console version.\n"
     "--output [path]         Output directory for the plugin skeleton.\n"
     "--name [name]           Name to use for the plugin.\n"
-    "--family [familyName]   Family type to use for the plugin.\n"
     "--type [typeName]       Type to use for the plugin.\n"
     "--quiet                 Process quietly (non gui generation only).\n";
 }
@@ -54,12 +53,10 @@ int main(int argc, char** argv)
 
     if(app.arguments().contains("--console")) {
         QString output = getArgValue("--output");
-        QString family = getArgValue("--family");
         QString type = getArgValue("--type");
         QString name = getArgValue("--name");
 
-        bool paramsMissing = output.isEmpty() || family.isEmpty()
-                             || type.isEmpty() || name.isEmpty();
+        bool paramsMissing = output.isEmpty() || type.isEmpty() || name.isEmpty();
 
         if( paramsMissing ) {
             printUsage();
@@ -70,14 +67,12 @@ int main(int argc, char** argv)
             qDebug() << "output = " << output;
             qDebug() << "name = " << name;
             qDebug() << "type = " << type;
-            qDebug() << "family = " << family;
         }
 
         medPluginGenerator generator;
         generator.setOutputDirectory(output);
         generator.setName(name);
-        generator.setType(type);
-        generator.setPluginFamily(family);
+        generator.setType((pluginType)type.toInt());
 
         bool resultGenerator = generator.run();
 

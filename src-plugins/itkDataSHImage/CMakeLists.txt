@@ -117,7 +117,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   dtkLog
   medCore
-  medGui
   medLog
   medVtkInria
   )

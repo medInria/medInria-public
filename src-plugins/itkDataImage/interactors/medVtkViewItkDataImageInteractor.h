@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -38,7 +38,7 @@ public:
     virtual QWidget* buildLayerWidget();
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
-    virtual void setData(medAbstractData * data);
+    virtual void setInputData(medAbstractData * data);
     virtual QString lut() const;
     virtual QString preset() const;
     virtual QStringList handled() const;
@@ -63,6 +63,7 @@ public slots:
 
 protected:
     void initParameters(medAbstractImageData* data);
+    void initWindowLevelParameters(double* range);
 
 private:
     static QStringList dataHandled();

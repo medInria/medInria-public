@@ -98,7 +98,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkLog
   itksys
   medCore
-  medGui
   medLog
   medVtkInria
   vtkCommon

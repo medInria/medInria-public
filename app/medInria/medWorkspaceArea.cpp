@@ -26,7 +26,6 @@
 #include <medSettingsManager.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medViewManager.h>
 #include <medAbstractView.h>
 #include <medMetaDataKeys.h>
 #include <medViewFactory.h>
@@ -46,6 +45,7 @@
 
 #include "medDatabaseDataSource.h"
 #include "medDataSourceManager.h"
+#include <medParameterGroupManager.h>
 
 #include <QtGui>
 #include <QGLWidget>
@@ -184,6 +184,8 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     }
     d->toolBoxContainer->setVisible(workspace->areToolBoxesVisible());
 
+    medParameterGroupManager::instance()->setCurrentWorkspace(workspace->identifier());
+
 }
 
 void medWorkspaceArea::setCurrentWorkspace(const QString &id)
@@ -233,11 +235,6 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
             this, SIGNAL(open(const medDataIndex&)),
             Qt::UniqueConnection);
-}
-
-void medWorkspaceArea::removeInternSelectionToolBox()
-{
-    d->selectionToolBox = NULL;
 }
 
 void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)

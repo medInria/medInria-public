@@ -59,6 +59,7 @@ void medImageMaskAnnotationData::setData( void* data )
     this->setMaskData( qobject_cast<medAbstractImageData *>(obj) );
 }
 
+//! Return the actual mask data.
 medAbstractImageData * medImageMaskAnnotationData::maskData()
 {
     return m_maskData;
@@ -81,7 +82,7 @@ bool operator<( const QColor & lhs, const QColor & rhs ){
     return lhs.rgba() < rhs.rgba();
 }
 
-
+//! Set the color map to be used.
 void medImageMaskAnnotationData::setColorMap( const ColorMapType & colorMap )
 {
     m_colorMap = colorMap;

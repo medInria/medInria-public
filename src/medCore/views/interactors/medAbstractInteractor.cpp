@@ -16,14 +16,37 @@
 #include <medAbstractView.h>
 
 
+/**
+* @fn QWidget* medAbstractInteractor::buildToolBoxWidget()
+* @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+* view settings toolBox when the container of the parent view is single selected.
+*/
+
+/**
+* @fn QWidget* medAbstractInteractor::buildToolBarWidget()
+* @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+* toolbar of the container where the parent view is displayed.
+*/
+
+/**
+* @fn QWidget* medAbstractInteractor::buildLayerWidget()
+* @brief buildToolBoxWidget reimplement it to construct and return the widget displayed in the
+* layer toolbox when the container of the parent view is selected.
+*/
+
+/**
+* @fn QList<medAbstractParameter*> linkableParameters()
+* @brief linkableParameters reimplement it to return the parameters that you want to be linkable
+*/
+
 class medAbstractInteractorPrivate
 {
 public:
     medAbstractData* data;
 
-    QWidget *toolBoxWidget;
-    QWidget *toolBarWidget;
-    QWidget *layerWidget;
+    QPointer<QWidget> toolBoxWidget;
+    QPointer<QWidget> toolBarWidget;
+    QPointer<QWidget> layerWidget;
 };
 
 medAbstractInteractor::medAbstractInteractor(medAbstractView *parent):
@@ -40,23 +63,21 @@ medAbstractInteractor::~medAbstractInteractor()
     delete d;
 }
 
-void medAbstractInteractor::setData(medAbstractData* data)
+void medAbstractInteractor::setInputData(medAbstractData* data)
 {
     d->data = data;
 }
 
-medAbstractData* medAbstractInteractor::data() const
+medAbstractData* medAbstractInteractor::inputData() const
 {
     return d->data;
 }
 
 QWidget* medAbstractInteractor::toolBoxWidget()
 {
-    if(!d->toolBoxWidget)
+    if(d->toolBoxWidget.isNull())
     {
         d->toolBoxWidget = this->buildToolBoxWidget();
-        if(d->toolBoxWidget)
-            connect(d->toolBoxWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBoxWidget()));
     }
 
     return d->toolBoxWidget;
@@ -64,11 +85,9 @@ QWidget* medAbstractInteractor::toolBoxWidget()
 
 QWidget* medAbstractInteractor::toolBarWidget()
 {
-    if(!d->toolBarWidget)
+    if(d->toolBarWidget.isNull())
     {
         d->toolBarWidget = this->buildToolBarWidget();
-        if(d->toolBarWidget)
-            connect(d->toolBarWidget, SIGNAL(destroyed()), this, SLOT(removeInternToolBarWidget()));
     }
 
     return d->toolBarWidget;
@@ -76,27 +95,18 @@ QWidget* medAbstractInteractor::toolBarWidget()
 
 QWidget* medAbstractInteractor::layerWidget()
 {
-    if(!d->layerWidget)
+    if(d->layerWidget.isNull())
     {
         d->layerWidget = this->buildLayerWidget();
-        if(d->layerWidget)
-            connect(d->layerWidget, SIGNAL(destroyed()), this, SLOT(removeInternLayerWidget()));
     }
 
     return d->layerWidget;
 }
 
-void medAbstractInteractor::removeInternToolBoxWidget()
+/**
+ * @brief updateWidgets Reimplement this methode to change the widget that you expose when the
+ * state of the view changes. (i.e. Orientation, new data added)
+ */
+void medAbstractInteractor::updateWidgets()
 {
-    d->toolBoxWidget = NULL;
-}
-
-void medAbstractInteractor::removeInternToolBarWidget()
-{
-    d->toolBarWidget = NULL;
-}
-
-void medAbstractInteractor::removeInternLayerWidget()
-{
-    d->layerWidget = NULL;
 }

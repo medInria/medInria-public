@@ -13,54 +13,55 @@
 
 #include <medPoolIndicator.h>
 
-#include <QComboBox>
-
-#include <medStringListParameter.h>
+#include <QtGui>
 
 class medPoolIndiactorPrivate
 {
 public:
-    medStringListParameter *linkParameter;
+    QHBoxLayout *layout;
+    QHash<QString,QLabel*> colorIndicators;
 };
 
 medPoolIndicator::medPoolIndicator(QWidget *parent):
-    QLabel(parent), d(new medPoolIndiactorPrivate)
+    QWidget(parent), d(new medPoolIndiactorPrivate)
 {
-    d->linkParameter = NULL;
+    d->layout = new QHBoxLayout;
+    d->layout->setContentsMargins(0,0,0,0);
+    this->setLayout(d->layout);
+
 }
 
 medPoolIndicator::~medPoolIndicator()
 {
+    delete d;
 }
 
-void medPoolIndicator::setLinkParameter(medStringListParameter *linkParameter)
-{
-    d->linkParameter = linkParameter;
-    this->update();
 
-    if(d->linkParameter)
+void medPoolIndicator::addColorIndicator(QColor color, QString description)
+{
+    QLabel *colorIndicator = new QLabel;
+    QPixmap pix(10,10);
+    pix.fill(color);
+    colorIndicator->setPixmap(pix);
+    colorIndicator->setToolTip(description);
+
+    d->layout->addWidget(colorIndicator);
+    d->colorIndicators.insert(color.name(), colorIndicator);
+}
+
+void medPoolIndicator::removeColorIndicator(QColor color)
+{
+    delete d->colorIndicators.take(color.name());
+}
+
+void medPoolIndicator::replaceColorIndicator(QColor oldColor, QColor newColor)
+{
+    QLabel *colorIndicator =  d->colorIndicators[oldColor.name()];
+    if(colorIndicator)
     {
-        connect(d->linkParameter, SIGNAL(valueChanged(QString)), this, SLOT(update()));
-        connect(d->linkParameter, SIGNAL(destroyed()), this, SLOT(removeInternLinkParamater()));
+        QPixmap pix(10,10);
+        pix.fill(newColor);
+        colorIndicator->setPixmap(pix);
     }
 }
 
-void medPoolIndicator::update()
-{
-    if(!d->linkParameter)
-    {
-        this->clear();
-    }
-    else
-    {
-        QComboBox *cb = d->linkParameter->getComboBox();
-        QPixmap pixmap = cb->itemIcon(cb->currentIndex()).pixmap(15,15);
-        this->setPixmap(pixmap);
-    }
-}
-
-void medPoolIndicator::removeInternLinkParamater()
-{
-    d->linkParameter = NULL;
-    this->update();
-}

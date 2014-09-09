@@ -22,6 +22,7 @@
 
 
 #include <medAbstractParameter.h>
+#include <medTestParameter.h>
 
 
 

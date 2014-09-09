@@ -22,10 +22,10 @@ class medAbstractData;
 /** 
  * Base class for annotations : a specialization of medAttachedData.
  * 
- ***/
+ */
 class MEDCORE_EXPORT medAnnotationData : public medAttachedData
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     medAnnotationData( );
@@ -35,7 +35,6 @@ public:
 signals:
 
 public slots:
-
 
 protected:
 

@@ -30,7 +30,6 @@ class MEDCORE_EXPORT medDbControllerFactory : public dtkAbstractFactory
 public:
   /**
    * @brief This function pointer designates functions allocating memory
-   *
   */
   typedef medAbstractDbController*(*medDbControllerCreator)();
 

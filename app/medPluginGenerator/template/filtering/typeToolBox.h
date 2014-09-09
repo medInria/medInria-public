@@ -21,21 +21,26 @@ class %1ToolBoxPrivate;
 class %2PLUGIN_EXPORT %1ToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
+    MED_TOOLBOX_INTERFACE("%1",
+                          "TODO Description",
+                          << "filtering")
     
 public:
     %1ToolBox(QWidget *parent = 0);
     ~%1ToolBox();
     
-    dtkAbstractData *processOutput();
+    medAbstractData *processOutput();
     
     static bool registered();
     dtkPlugin * plugin();
+
+    void update(medAbstractData *data);
     
 signals:
     void success();
     void failure();
     
-    public slots:
+public slots:
     void run();
     
 private:

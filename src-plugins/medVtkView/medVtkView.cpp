@@ -40,6 +40,7 @@
 #include <medVtkViewObserver.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
+#include <medDataListParameter.h>
 #include <medToolBox.h>
 #include <medMetaDataKeys.h>
 #include <medParameterPool.h>
@@ -61,15 +62,11 @@ public:
     vtkImageView3D *view3d;
 
     // widgets
-    QVTKWidget *viewWidget;
+    QPointer<QVTKWidget> viewWidget;
 
     medVtkViewObserver *observer;
 
     medBoolParameter *rubberBandZoomParameter;
-
-    // toolboxes
-    QWidget* navigatorWidget;
-    QWidget* mouseInteractionWidget;
 
     QScopedPointer<medVtkViewBackend> backend;
 };
@@ -125,7 +122,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     interactorStyle->Delete();
 
     d->viewWidget = new QVTKWidget;
-    connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
@@ -148,9 +144,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
 
-    d->navigatorWidget = NULL;
-    d->mouseInteractionWidget = NULL;
-
     d->rubberBandZoomParameter = new medBoolParameter("RubberBandZoom", this);
     connect(d->rubberBandZoomParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableRubberBandZoom(bool)));
 
@@ -168,6 +161,13 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
 medVtkView::~medVtkView()
 {
+    disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
+    disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(render()));
+
+    int c = layersCount()-1;
+    for(int i=c; i>=0; i--)
+        removeLayer(i);
+
     d->view2d->Delete();
     d->view3d->Delete();
     d->observer->Delete();
@@ -211,11 +211,11 @@ void medVtkView::reset()
 {
     d->view2d->Reset();
     d->view3d->Reset();
-    this->update();
+    this->render();
 
 }
 
-void medVtkView::update()
+void medVtkView::render()
 {
     if(this->is2D())
     {
@@ -382,11 +382,6 @@ qreal medVtkView::scale()
     if (scale < 0)
         scale *= -1;
     return scale;
-}
-
-void medVtkView::removeInternViewWidget()
-{
-    d->viewWidget = NULL;
 }
 
 void medVtkView::changeCurrentLayer()

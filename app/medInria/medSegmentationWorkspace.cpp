@@ -29,6 +29,8 @@
 #include <medDataManager.h>
 #include <medJobManager.h>
 #include <medMetaDataKeys.h>
+#include <medViewParameterGroup.h>
+#include <medLayerParameterGroup.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -62,6 +64,16 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
         throw (std::runtime_error ("Must have a parent widget"));
 
     this->addToolBox(d->segmentationToolBox);
+
+    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
+    viewGroup1->setLinkAllParameters(true);
+    viewGroup1->removeParameter("DataList");
+
+    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
+    layerGroup1->setLinkAllParameters(true);
+
+    connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
+            d->segmentationToolBox, SIGNAL(inputChanged()));
 }
 
 void medSegmentationWorkspace::setupViewContainerStack()

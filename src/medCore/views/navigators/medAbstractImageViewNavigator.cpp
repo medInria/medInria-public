@@ -18,6 +18,8 @@
 #include <medCompositeParameter.h>
 #include <medVector3DParameter.h>
 #include <medTimeLineParameter.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
 
 
 class medAbstractImageViewNavigatorPrivate
@@ -33,6 +35,7 @@ public:
 medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *parent):
     medAbstractLayeredViewNavigator(parent), d(new medAbstractImageViewNavigatorPrivate)
 {
+    d->view = dynamic_cast<medAbstractImageView *>(parent);
     d->positionBeingViewedParameter = NULL;
     d->cameraParameter = NULL;
     d->timeLineParameter = NULL;
@@ -92,7 +95,7 @@ medTimeLineParameter* medAbstractImageViewNavigator::timeLineParameter()
 void medAbstractImageViewNavigator::setCurrentTime (const double &time)
 {
     emit currentTimeChanged(time);
-    d->view->update();
+    d->view->render();
 }
 
 void medAbstractImageViewNavigator::updateTimeLineParameter()
@@ -101,8 +104,12 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
 
     double sequenceDuration = 0;
     double sequenceFrameRate = 0;
-    foreach (medAbstractData* data, d->view->dataList())
+    foreach(medDataIndex index, d->view->dataList())
     {
+        medAbstractData *data = medDataManager::instance()->data(index);
+        if (!data)
+            continue;
+
         if(data->hasMetaData("SequenceDuration") && data->hasMetaData("SequenceFrameRate"))
         {
             double sd = data->metadata("SequenceDuration").toDouble();

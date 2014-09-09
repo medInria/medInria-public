@@ -52,6 +52,4 @@ private:
     itkMorphologicalFiltersToolBoxPrivate *d;
 };
 
-medToolBox *createitkMorphologicalFiltersToolBox(QWidget *parent);
-
 

@@ -21,6 +21,9 @@ class %1ToolBoxPrivate;
 class %2PLUGIN_EXPORT %1ToolBox : public medRegistrationAbstractToolBox
 {
     Q_OBJECT
+    MED_TOOLBOX_INTERFACE("%1",
+                          "Description",
+                          << "registration")
     
 public:
     %1ToolBox(QWidget *parent = 0);

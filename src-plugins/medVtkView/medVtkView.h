@@ -50,12 +50,11 @@ public:
 
 public slots:
     virtual void reset();
-    virtual void update();
+    virtual void render();
 
 private slots:
     void displayDataInfo(uint layer);
     void changeCurrentLayer();
-    void removeInternViewWidget();
 
     void buildMouseInteractionParamPool(uint layer);
     void saveMouseInteractionSettings(bool parameterEnabled);

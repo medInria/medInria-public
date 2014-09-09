@@ -56,14 +56,14 @@ public:
 
 public slots:
 
-    bool canRead (QString path);
-    bool canRead (QStringList paths);
+    bool canRead (const QString& path);
+    bool canRead (const QStringList& paths);
 
-    void readInformation (QString path);
-    void readInformation (QStringList paths);
+    bool readInformation (const QString &path);
+    bool readInformation (const QStringList &paths);
 
-    bool read (QString path);
-    bool read (QStringList paths);
+    bool read (const QString &path);
+    bool read (const QStringList &paths);
 
     void setProgress (int value);
 

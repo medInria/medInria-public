@@ -19,13 +19,15 @@
 
 #include <QVector3D>
 
-/*Defines a set of seed points that may be attached to a data
+/** Defines a set of seed points that may be attached to a data
  * One of the points may be in a selected state.
  * A singleViewContainer size and color is set, the selected point has a different color.
  */
-class MEDCORE_EXPORT medSeedPointAnnotationData : public medAnnotationData {
+class MEDCORE_EXPORT medSeedPointAnnotationData : public medAnnotationData
+{
     Q_OBJECT
     MED_DATA_INTERFACE("medSeedPointAnnotationData", "medSeedPointAnnotationData")
+
 public:
     medSeedPointAnnotationData();
     virtual ~medSeedPointAnnotationData();

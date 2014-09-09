@@ -72,8 +72,6 @@ protected slots:
 //     */
 //    void onInputViewRemoved();
 
-private slots:
-    void removeInternSelectorToolBox();
 
 private:
     medFilteringWorkspacePrivate *d;
