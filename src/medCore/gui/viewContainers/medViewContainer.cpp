@@ -105,7 +105,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()));
 
     d->menuButton = new QPushButton(this);
-    d->menuButton->setIcon(QIcon(":/medGui/pixmaps/tools.png"));
+    d->menuButton->setIcon(QIcon(":/pixmaps/tools.png"));
     d->menuButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->menuButton->setToolTip(tr("Tools"));
 
@@ -114,7 +114,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
 
     d->openAction = new QAction(tr("Open"), d->toolBarMenu);
-    d->openAction->setIcon(QIcon(":/medGui/pixmaps/open.png"));
+    d->openAction->setIcon(QIcon(":/pixmaps/open.png"));
     d->openAction->setToolTip(tr("Open a file from your system"));
     d->openAction->setIconVisibleInMenu(true);
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()));
@@ -126,13 +126,13 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
 
     d->vSplitAction = new QAction(tr("V split"), d->toolBarMenu);
-    d->vSplitAction->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
+    d->vSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_vertical.png"));
     d->vSplitAction->setToolTip(tr("Split vertically"));
     d->vSplitAction->setIconVisibleInMenu(true);
     connect(d->vSplitAction, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()));
 
     d->hSplitAction = new QAction(tr("H split"), d->toolBarMenu);
-    d->hSplitAction->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
+    d->hSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_horizontal.png"));
     d->hSplitAction->setToolTip(tr("Split horizontally"));
     d->hSplitAction->setIconVisibleInMenu(true);
     connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()));
