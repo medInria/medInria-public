@@ -32,6 +32,10 @@
 #include <vtkLookupTable.h>
 #include <vtkDataArrayCollection.h>
 #include <vtkCell.h>
+#include <vtkLookupTable.h>
+#include <vtkTable.h>
+#include <vtkDelimitedTextReader.h>
+#include <vtkMathConfigure.h>
 
 #include <vtkPolyData.h>
 
@@ -56,6 +60,7 @@ vtkMetaDataSet::vtkMetaDataSet()
   this->PickedCellId     = -1;
   this->Name             = "";
   this->FilePath         = "";
+  this->LookupTable      = NULL;
   this->Initialize();
   
 }
@@ -145,6 +150,13 @@ void vtkMetaDataSet::SetDataSet (vtkDataSet* dataset)
   this->Modified();
 }
 
+//----------------------------------------------------------------------------
+void vtkMetaDataSet::SetLookupTable (vtkLookupTable* array)
+{
+    vtkLookupTable* lut_array = array->NewInstance();
+    lut_array->DeepCopy (array);
+    this->LookupTable = lut_array;
+}
 
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::SetWirePolyData (vtkPolyData* dataset)
@@ -518,6 +530,86 @@ void vtkMetaDataSet::ReadDataInternal(const char* filename)
   array->Delete();
 }
 
+
+void vtkMetaDataSet::ReadCSVData(const char* filename)
+{
+    vtkDelimitedTextReader* csvReader=vtkDelimitedTextReader::New();
+
+    try
+    {
+        csvReader->SetFileName(filename);
+        csvReader->SetHaveHeaders(false);
+        csvReader->Update();
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        vtkErrorMacro(<<"Could not read csv file properly !"<<endl);
+        csvReader->Delete();
+        return;
+    }
+    int numberOfLines=csvReader->GetOutput()->GetNumberOfRows();
+
+    bool PointAttribute=false,CellAttribute=false;
+
+    if(numberOfLines==this->GetDataSet()->GetNumberOfPoints())
+        PointAttribute=true;
+    else if(numberOfLines==this->GetDataSet()->GetNumberOfCells())
+        CellAttribute=true;
+    else
+    {
+        vtkErrorMacro("number of lines dont match either point data or cell data");
+        throw vtkErrorCode::UserError;
+        return;
+    }
+
+    std::string Fieldnames="Field_";
+    std::stringstream ss;
+    if(PointAttribute)
+    {
+        for(int i=0;i<csvReader->GetOutput()->GetNumberOfColumns();i++)
+        {
+            vtkFloatArray* array = vtkFloatArray::New();
+            ss << i;
+            array->SetName ((Fieldnames+ss.str()).c_str());
+            array->Allocate(numberOfLines);
+            array->SetNumberOfComponents(1);
+
+            float* tuple = new float[1];
+            for (unsigned int t=0; t<numberOfLines; t++)
+            {
+                tuple[0]=(csvReader->GetOutput()->GetValue(t,i)).ToFloat();
+                array->InsertNextTupleValue (tuple);
+            }
+            delete tuple;
+            this->GetDataSet()->GetPointData()->AddArray (array);
+        }
+    }
+
+    if(CellAttribute)
+    {
+        for(int i=0;i<csvReader->GetOutput()->GetNumberOfColumns();i++)
+        {
+            vtkFloatArray* array = vtkFloatArray::New();
+            ss << i;
+            array->SetName ((Fieldnames+ss.str()).c_str());
+            array->Allocate(numberOfLines);
+            array->SetNumberOfComponents(1);
+
+            float* tuple = new float[1];
+            for (unsigned int t=0; t<numberOfLines; t++)
+            {
+                tuple[0]=(csvReader->GetOutput()->GetValue(t,i)).ToFloat();
+                array->InsertNextTupleValue (tuple);
+            }
+            delete tuple;
+            this->GetDataSet()->GetCellData()->AddArray (array);
+        }
+    }
+
+    csvReader->Delete();
+}
+
+
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::Read (const char* filename)
 {
@@ -562,6 +654,36 @@ void vtkMetaDataSet::CopyInformation (vtkMetaDataSet* metadataset)
   
 }
 
+//----------------------------------------------------------------------------
+double vtkMetaDataSet::GetScalarNullValue(const char * arrayName)
+{
+    if ( ! this->GetDataSet())
+    return NAN;
+
+    vtkDataArray * array = this->GetDataSet()->GetPointData()->GetArray(arrayName);
+    if ( ! array)
+        array = this->GetDataSet()->GetCellData()->GetArray(arrayName);
+    if ( ! array || ScalarNullValues.find(arrayName) == ScalarNullValues.end())
+        return NAN;
+
+    return ScalarNullValues[arrayName];
+}
+
+
+//----------------------------------------------------------------------------
+void vtkMetaDataSet::SetScalarNullValue(const char * arrayName, double nullValue)
+{
+ if ( ! this->GetDataSet())
+    return;
+
+ vtkDataArray * array = this->GetDataSet()->GetPointData()->GetArray(arrayName);
+ if ( ! array)
+    array = this->GetDataSet()->GetCellData()->GetArray(arrayName);
+ if ( ! array)
+    return;
+
+ ScalarNullValues[arrayName] = nullValue;
+}
 
 //----------------------------------------------------------------------------
 double* vtkMetaDataSet::GetCurrentScalarRange()
@@ -572,13 +694,34 @@ double* vtkMetaDataSet::GetCurrentScalarRange()
   
   if (this->GetCurrentScalarArray())
   {
-    double* range2 = this->GetCurrentScalarArray()->GetRange ();
-    val[0] = range2[0];
-    val[1] = range2[1];
+    double nullValue = this->GetScalarNullValue(this->GetCurrentScalarArray()->GetName());
+    if (isnan(nullValue))
+    {
+        double* range2 = this->GetCurrentScalarArray()->GetRange();
+        val[0] = range2[0];
+        val[1] = range2[1];
+    }
+    else
+    {
+        vtkDataArray * array = this->GetCurrentScalarArray();
+        unsigned int nbTuples = array->GetNumberOfTuples();
+        for(unsigned int i = 0; i < nbTuples; ++i)
+        {
+            double t = array->GetTuple1(i);
+            if(fabs(t - nullValue) <= 1e-10) // t == nullValue with a margin of error
+            continue;
+            if (t < val[0]) val[0] = t;
+            if (t > val[1]) val[1] = t;
+        }
+    }
   }
 
-  else if (this->GetDataSet() && ( val[0] == VTK_DOUBLE_MAX ) )
-    val = this->GetDataSet()->GetScalarRange();
+    // if all values are null values, or if we don't have a current scalar array
+    if ( val[0] == VTK_DOUBLE_MAX || val[1] == VTK_DOUBLE_MIN )
+    {
+        val[0] = 0;
+        val[1] = 1;
+    }
     
 
   return val;

@@ -182,6 +182,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkImaging
   vtkVolumeRendering
   vtkGraphics
+  vtkInfovis
   vtkIO
   ITKVTK
   ITKCommon

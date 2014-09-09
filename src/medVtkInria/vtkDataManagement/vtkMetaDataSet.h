@@ -18,6 +18,20 @@
 #include <string>
 #include <vector>
 
+#if defined __APPLE__
+#include <ext/hash_map>
+#else
+#include <hash_map>
+#endif
+
+#ifdef WIN32
+    #ifndef NAN
+        static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+        #define NAN (*(const float *) __nan)
+    #endif
+#endif
+
+
 #include <vtkDataSet.h>
 
 //#include <vtkActor.h>
@@ -41,6 +55,7 @@ class vtkActor;
 class vtkActorCollection;
 class vtkScalarsToColors;
 class vtkPolyData;
+class vtkLookupTable;
 
 
 class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
@@ -148,6 +163,17 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
   vtkSetObjectMacro(Property, vtkObject);
 
   /**
+ Access to the visualization property of the metadataset
+ downcast the object to the write type :
+ Lookuptable specified in the vtkfile for vtkMetaSurfaceMesh
+ */
+ void SetLookupTable (vtkLookupTable* array);
+ vtkLookupTable* GetLookupTable (void)
+ {
+    return this->LookupTable;
+ } 
+
+  /**
      Add an actor to the metadataset. Use this method
      to be able to handle several actors of the same metadataset at the same time :
      mymetadataset->SetVisibility(true);
@@ -231,6 +257,8 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
      nb dim (integers. nb is the number of Tuples of the field; dim is the Tuple size)\n\n
   */
   virtual void ReadData (const char* filename);
+  virtual void ReadCSVData(const char* filename); // specific for CSV files
+
   /**
      read and assign some scalars to the dataset (should be point set). 
      Either vtkMetaSurfaceMesh or vtkMetaVolumeMesh. The scalars are casted in float type
@@ -333,6 +361,9 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
     this->CurrentScalarArray = array;
   }
 
+  virtual double GetScalarNullValue(const char * arrayName);
+  virtual void SetScalarNullValue(const char * arrayName, double nullValue);
+
   virtual double* GetCurrentScalarRange();
   
   
@@ -386,6 +417,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
   double      Time;
   vtkObject*  Property;
   vtkDataArrayCollection* ArrayCollection;
+  vtkLookupTable* LookupTable;
 
   vtkDataArray* CurrentScalarArray;
   
@@ -407,7 +439,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
   //ETX
 
   vtkPolyData* WirePolyData;
-  
+  std::map<const char *, double> ScalarNullValues;
   
  
 };

@@ -152,9 +152,9 @@ void vtkMetaSurfaceMesh::ReadVtkFile (const char* filename)
             this->SetMetaData( "PatientID", patientID);
         }
     }
-    //if(reader->GetOutput()->GetPointData()->GetScalars())
-    //    if(reader->GetOutput()->GetPointData()->GetScalars()->GetLookupTable())
-    //        this->SetLookupTable(reader->GetOutput()->GetPointData()->GetScalars()->GetLookupTable());
+    if(reader->GetOutput()->GetPointData()->GetScalars())
+        if(reader->GetOutput()->GetPointData()->GetScalars()->GetLookupTable())
+            this->SetLookupTable(reader->GetOutput()->GetPointData()->GetScalars()->GetLookupTable());
 
   }
   catch (vtkErrorCode::ErrorIds error)
