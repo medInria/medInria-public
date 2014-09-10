@@ -14,6 +14,7 @@
 #pragma once
 
 #include <medCoreExport.h>
+#include <medToolBox.h>
 
 #include <QtGui>
 
@@ -28,7 +29,7 @@ class medAbstractImageView;
 class medClutEditorVertexPrivate;
 
 // TODO use QGraphicsObjactItem noobs.
-class medClutEditorVertex : public QObject, public QGraphicsItem
+class MEDCORE_EXPORT medClutEditorVertex : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -83,7 +84,7 @@ private :
 // /////////////////////////////////////////////////////////////////
 class medClutEditorTablePrivate;
 
-class medClutEditorTable : public QObject, public QGraphicsItem
+class MEDCORE_EXPORT medClutEditorTable : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -160,7 +161,7 @@ private:
 // /////////////////////////////////////////////////////////////////
 class medClutEditorHistogramPrivate;
 
-class medClutEditorHistogram : public QGraphicsItem
+class MEDCORE_EXPORT medClutEditorHistogram : public QGraphicsItem
 {
 public:
      medClutEditorHistogram(QGraphicsItem *parent = 0);
@@ -199,7 +200,7 @@ private:
 class medClutEditorView;
 class medClutEditorScenePrivate;
 
-class medClutEditorScene : public QGraphicsScene
+class MEDCORE_EXPORT medClutEditorScene : public QGraphicsScene
 {
 public:
      medClutEditorScene(QObject *parent = 0);
@@ -229,7 +230,7 @@ private:
 // medClutEditorView
 // /////////////////////////////////////////////////////////////////
 
-class medClutEditorView : public QGraphicsView
+class MEDCORE_EXPORT medClutEditorView : public QGraphicsView
 {
 public:
      medClutEditorView(QWidget *parent = 0);
@@ -245,46 +246,3 @@ protected:
     void mousePressEvent   ( QMouseEvent  * event );
     void mouseReleaseEvent ( QMouseEvent  * event );
 };
-
-
-
-// /////////////////////////////////////////////////////////////////
-// medClutEditor
-// /////////////////////////////////////////////////////////////////
-
-class medClutEditorPrivate;
-
-class MEDCORE_EXPORT medClutEditor : public QWidget
-{
-    Q_OBJECT
-
-public:
-     medClutEditor(QWidget *parent = 0);
-    ~medClutEditor();
-
-    void setData(medAbstractData *data);
-    void setView(medAbstractImageView *view, bool force = false);
-    void applyTable();
-    void setColorLookupTable ( QList<double> scalars, QList<QColor> colors );
-
-protected:
-    void initializeTable();
-    void deleteTable();
-
-    void mousePressEvent(QMouseEvent *event);
-
-protected slots:
-    void onNewTableAction();
-    void onLoadTableAction();
-    void onSaveTableAction();
-    // void onDeleteTableAction();
-    void onApplyTablesAction();
-    // void onColorAction();
-    // void onDeleteAction();
-    void onVertexMoved();
-    void onToggleDirectUpdateAction();
-private:
-    medClutEditorPrivate *d;
-};
-
-

@@ -33,7 +33,9 @@
 #include <medAbstractImageView.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
-#include <medClutEditor.h>
+//#include <medClutEditor.h>
+#include <medToolBoxFactory.h>
+#include <medCompositeParameter.h>
 
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseController.h>
@@ -285,21 +287,25 @@ void medWorkspaceArea::bringUpTransferFunction(bool checked)
     if ( current == NULL )
         return;
 
-    if ( medAbstractView *view = current->view() ) {
-        d->transFun = new medClutEditor(NULL);
+    if ( medAbstractImageView *view = qobject_cast<medAbstractImageView*>(current->view()) ) {
+        d->transFun = medToolBoxFactory::instance()->createToolBox("medClutEditorToolBox");
+        if(!d->transFun)
+            return;
+        d->transFun->setWorkspace(this->currentWorkspace());
         d->transFun->setWindowModality( Qt::WindowModal );
         d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
 
-        // d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
-        d->transFun->setView(dynamic_cast<medAbstractImageView*>(view));
-
+        //// d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
+        //d->transFun->setView(dynamic_cast<medAbstractImageView*>(view));
+        d->transFun->clear(); //update()
         d->transFun->show();
  /*       QList<medAbstractParameter*> params;
         medAbstractParameter *
         for(int i=0 ; i=view->primaryNavigator()->linkableParameters().size(); i++)
             if()*/
         //update tranfer function.
-        connect (view, SIGNAL(focused()),
+
+        connect (view->windowLevelParameter(0), SIGNAL(valuesChanged(const QHash<QString,QVariant>&)),
                  this, SLOT(updateTransferFunction()), Qt::UniqueConnection);
     }
 }
@@ -319,8 +325,8 @@ void medWorkspaceArea::updateTransferFunction()
 
     dtkAbstractView * view = current->view();
     if ( d->transFun != NULL && view != NULL ) {
-        d->transFun->setData( static_cast<medAbstractData *>( view->data() ) );
-        d->transFun->setView( dynamic_cast<medAbstractImageView *>( view ), true );
-        d->transFun->update();
+        //d->transFun->setData( static_cast<medAbstractData *>( view->data() ) );
+        //d->transFun->setView( dynamic_cast<medAbstractImageView *>( view ), true );
+        d->transFun->clear(); //update()
     }
 }

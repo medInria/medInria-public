@@ -44,7 +44,7 @@ public:
     medFileSystemDataSource *fsSource;
     QList <medAbstractDataSource*> dataSources;
 
-    QPointer<medClutEditor> transFun;
+    QPointer<medToolBox> transFun;
     QStackedWidget *stack;
     QSplitter * splitter;
     QMutex mutex;
