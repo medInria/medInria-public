@@ -141,7 +141,7 @@ int main(int argc,char* argv[]) {
         QObject::connect(&application,SIGNAL(showMessage(const QString&)),
                          &splash,SLOT(showMessage(const QString&)) );
         splash.show();
-        splash.showMessage("Loading plugins...",Qt::AlignLeft|Qt::AlignBottom,Qt::white);
+        splash.showMessage("Loading plugins...");
     }
 
     //  DATABASE INITIALISATION.

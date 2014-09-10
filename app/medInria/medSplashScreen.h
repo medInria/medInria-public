@@ -66,9 +66,7 @@ public slots:
      * @param theAlignment
      * @param theColor
      */
-    void showMessage(const QString& theMessage,
-                     int theAlignment = Qt::AlignLeft|Qt::AlignBottom,
-                     const QColor& theColor = Qt::white);
+    void showMessage(const QString& theMessage);
 
 private:
     /**

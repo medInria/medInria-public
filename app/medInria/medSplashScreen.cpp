@@ -30,6 +30,8 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
     , d(new medSplashScreenPrivate)
 {
     d->pixmap = thePixmap;
+    d->color = Qt::white; // TODO get from QSS
+    d->alignment = Qt::AlignBottom|Qt::AlignLeft;
     setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(d->pixmap.size());
     QRect r(0, 0, d->pixmap.size().width(), d->pixmap.size().height());
@@ -51,11 +53,9 @@ void medSplashScreen::clearMessage()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-void medSplashScreen::showMessage(const QString& id,
-                                  int theAlignment ,
-                                  const QColor& theColor)
+void medSplashScreen::showMessage(const QString& message)
 {
-    const dtkPlugin* plugin = medPluginManager::instance()->plugin(id);
+    const dtkPlugin* plugin = medPluginManager::instance()->plugin(message);
     if (plugin)
     {
         d->message = plugin->description();
@@ -64,10 +64,8 @@ void medSplashScreen::showMessage(const QString& id,
         d->message = d->message.section("<br/>",0,0);
     }
     else
-        d->message = id;
+        d->message = message;
 
-    d->alignment = theAlignment;
-    d->color  = theColor;
     repaint();
 }
 
