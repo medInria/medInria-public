@@ -328,7 +328,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QFontMetrics fm(myFont);
                 //TODO: could be nice to elide according to current width (update when resize)
                 QString text = fm.elidedText(name, Qt::ElideRight, 100);
-                QLabel *layerName = new QLabel("<font color='Black'>"+text+"</font>", layerWidget);
+                QLabel *layerName = new QLabel("<font color='White'>"+text+"</font>", layerWidget);
                 layerName->setToolTip(name);
 
                 layout->addWidget(thumbnailButton);

@@ -53,6 +53,11 @@
 #include <QtGui>
 #include <QGLWidget>
 
+#ifdef Q_OS_MAC
+# define CONTROL_KEY "Meta"
+#else
+# define CONTROL_KEY "Ctrl"
+#endif
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
@@ -118,7 +123,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     //action for transfer function
     QAction * transFunAction = new QAction("Toggle Tranfer Function Widget", this);
-    transFunAction->setShortcut(Qt::CTRL + Qt::Key_H);
+    transFunAction->setShortcut(QKeySequence(tr(CONTROL_KEY "+H")));
     transFunAction->setCheckable( true );
     transFunAction->setChecked( false );
     connect(transFunAction, SIGNAL(toggled(bool)),
