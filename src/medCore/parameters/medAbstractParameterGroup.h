@@ -14,12 +14,13 @@
 #pragma once
 
 #include <QtCore>
+#include <medCoreExport.h>
 
 class medAbstractView;
 class medAbstractLayeredView;
 class medAbstractParameterGroupPrivate;
 
-class medAbstractParameterGroup : public QObject
+class MEDCORE_EXPORT medAbstractParameterGroup : public QObject
 {
     Q_OBJECT
 
