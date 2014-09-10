@@ -151,7 +151,6 @@ public slots:
     void setRoiNullOperation (bool value);
     void importROI(const medDataIndex &index);
     void selectRoi(int value);
-    void setRoiThumbnail(const QImage &image);
 
     void bundlingListCustomContextMenu(const QPoint &point);
     void saveCurrentBundle();
