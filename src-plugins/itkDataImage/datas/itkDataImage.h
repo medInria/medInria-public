@@ -214,7 +214,8 @@ public:
 
     itkDataImage(): medAbstractTypedImageData<DIM,T>(),d(new PrivateMember) { }
 
-    ~itkDataImage() {
+    ~itkDataImage()
+    {
         delete d;
         d = 0;
     }

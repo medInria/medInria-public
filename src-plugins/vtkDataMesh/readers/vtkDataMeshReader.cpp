@@ -17,7 +17,6 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <vtkMetaVolumeMesh.h>
 #include <vtkMetaSurfaceMesh.h>
@@ -50,7 +49,7 @@ bool vtkDataMeshReader::canRead(const QStringList& paths){
 }
 
 bool vtkDataMeshReader::readInformation(const QString& path) {
-    dtkSmartPointer<medAbstractData> medData = medAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
+    medAbstractData *medData = medAbstractDataFactory::instance()->create("vtkDataMesh");
     this->setData(medData);
     medData->addMetaData("FilePath", QStringList() << path); // useful ?
     

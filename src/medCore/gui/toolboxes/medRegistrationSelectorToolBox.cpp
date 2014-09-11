@@ -399,7 +399,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
     if (type==algorithm)
-        medDataManager::instance()->importNonPersistent(output);
+        medDataManager::instance()->importData(output);
 
     d->movingData = output;
     emit movingDataRegistered(output);

@@ -35,7 +35,6 @@
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxContainer.h>
-#include <medBrowserJobsToolBox.h>
 #include <medPacsMover.h>
 #include <medPacsWidget.h>
 #include <medCompositeDataSetImporterSelectorToolBox.h>
@@ -47,11 +46,9 @@ class medBrowserAreaPrivate
 public:
 
     medToolBoxContainer *toolboxContainer;
-    medBrowserJobsToolBox *jobsToolBox;
     medBrowserSourceSelectorToolBox *sourceSelectorToolBox;
 
     QList <medAbstractDataSource *> dataSources;
-
 
     QStackedWidget *stack;
 };
@@ -69,28 +66,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->sourceSelectorToolBox = new medBrowserSourceSelectorToolBox(this);
     connect(d->sourceSelectorToolBox, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
 
-    // Jobs
-    d->jobsToolBox = new medBrowserJobsToolBox(this);
-    d->jobsToolBox->setVisible(false);
-    // connect the job-manager with the visual representation
-    connect(medJobManager::instance(), SIGNAL(jobRegistered(medJobItem*, QString)),
-    d->jobsToolBox->stack(),SLOT(addJobItem(medJobItem*, QString)));
-
     // Toolbox container
     d->toolboxContainer = new medToolBoxContainer(this);
     d->toolboxContainer->setObjectName("browserContainerToolbox");
     d->toolboxContainer->setFixedWidth(340);
     d->toolboxContainer->addToolBox(d->sourceSelectorToolBox);
-
-    //TODO: DatabaseController call ?
-    connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),
-            this, SLOT(displayJobItem(medJobItem *, QString)));
-
-    connect(medDatabaseNonPersistentController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),
-            this, SLOT(displayJobItem(medJobItem *, QString)));
-
-    // Jobs should be added as the last item so that they appear at the bottom
-    d->toolboxContainer->addToolBox(d->jobsToolBox);
 
     // Layout /////////////////////////////////////////////
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -101,9 +81,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
-
-    medDatabaseControllerImpl* dbcont = medDatabaseController::instance().data();
-    connect(dbcont, SIGNAL(partialImportAttempted ( const QString& )), this, SLOT(onPartialImportAttempted ( const QString& )));
 
     //Check if there are already item in the database, otherwise, switch to File system datasource
     QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
@@ -122,19 +99,6 @@ medBrowserArea::~medBrowserArea(void)
 {
     delete d;
     d = NULL;
-}
-
-void medBrowserArea::onPartialImportAttempted(const QString& message)
-{
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("Import warning");
-    msgBox.setText(message);
-    msgBox.exec();
-}
-
-void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
-{
-    d->jobsToolBox->stack()->addJobItem(importer, infoBaseName);
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)

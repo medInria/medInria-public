@@ -31,7 +31,6 @@ public:
 
 public slots:
     void onSourceIndexChanged(int index);
-    void displayJobItem(medJobItem *importer, QString infoBaseName);
 
     /**
 * @brief Adds a medToolBox to the medToolBoxContainer.
@@ -45,14 +44,6 @@ public slots:
 * @param toolbox
 */
     void removeToolBox(medToolBox *toolbox);
-
-private slots:
-
-    /** This function is called when the import/index
-* process detects a partial import attempt. That is when the user
-* tried to import, in 2 separate steps, images belonging
-* to the same volume. */
-    void onPartialImportAttempted(const QString& message);
 
 protected:
     void setToolBoxesVisible(int index, bool visible);

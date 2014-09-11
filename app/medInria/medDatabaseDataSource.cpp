@@ -149,18 +149,13 @@ QString medDatabaseDataSource::description(void) const
 return tr("Browse the medInria Database");
 }
 
-void medDatabaseDataSource::update(const medDataIndex &index)
-{
-    Q_UNUSED(index);
-}
-
 void medDatabaseDataSource::onFilter( const QString &text, int column )
 {
     // adding or overriding filter on column
     d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
 
-void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index)
+void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index, QUuid)
 {
     d->largeView->onOpeningFailed(index);
 }

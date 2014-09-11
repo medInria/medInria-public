@@ -24,6 +24,7 @@
 #include <medDataListParameter.h>
 #include <medLayerParameterGroup.h>
 #include <medParameterGroupManager.h>
+#include <medDataIndex.h>
 
 class medAbstractLayeredViewPrivate
 {
@@ -240,17 +241,16 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
     foreach(medDataIndex index, this->dataList())
     {
-        medAbstractData *data = medDataManager::instance()->data(index);
-        if (!data)
-            continue;
-
-        if (!dataList.contains(data->dataIndex()))
-            this->removeLayer(this->layer(data));
+        if (!dataList.contains(index)) {
+            medAbstractData *data = medDataManager::instance()->retrieveData(index);
+            if (data)
+                this->removeLayer(this->layer(data));
+        }
     }
 
     foreach(medDataIndex index, dataList)
     {
-        medAbstractData *data = medDataManager::instance()->data(index);
+        medAbstractData *data = medDataManager::instance()->retrieveData(index);
         if (!data)
             continue;
 

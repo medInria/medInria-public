@@ -23,8 +23,7 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medPluginManager.h>
-#include <medStyleSheetParser.h>
-#include <medDbControllerFactory.h>
+
 #include <medWorkspaceFactory.h>
 #include <medAbstractWorkspace.h>
 #include <medFilteringWorkspace.h>
@@ -32,82 +31,29 @@
 #include <medRegistrationWorkspace.h>
 #include <medVisualizationWorkspace.h>
 #include <medSegmentationWorkspace.h>
-#include <medSettingsWidgetFactory.h>
+
+#include <medAbstractDataFactory.h>
 #include <medSeedPointAnnotationData.h>
-#include <medDatabaseController.h>
-#include <medDatabaseNonPersistentController.h>
+
+#include <medSettingsWidgetFactory.h>
+#include <medSettingsWidget.h>
 #include <medSystemSettingsWidget.h>
 #include <medStartupSettingsWidget.h>
 #include <medDatabaseSettingsWidget.h>
-#include <medAbstractDataFactory.h>
-#include <medSettingsWidget.h>
 
+#include <medDataManager.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
+
+#include <medMainWindow.h>
+
+#include <medStyleSheetParser.h>
 
 class medApplicationPrivate
 {
 public:
-    QColor msgColor;
-    int msgAlignment;
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
-
-    /*
-      fix the settings filename in the move 2.0.0 -> 2.0.1
-    */
-    inline void fixSettingsPath(const QString & organization,
-                           const QString & applicationName)
-    {
-    #ifdef Q_OS_WIN
-        //maybe fix registry keys???
-    #else
-    #ifdef Q_OS_LINUX
-
-        //Takes code from qsettings.cpp to get the default place for settings
-        QString userPath;
-        QString homePath = QDir::homePath();
-        char *env = getenv("XDG_CONFIG_HOME");
-        if (env == 0)
-        {
-            userPath = homePath;
-            userPath += QLatin1Char('/');
-    #ifdef Q_WS_QWS
-            userPath += QLatin1String("Settings");
-    #else
-            userPath += QLatin1String(".config");
-    #endif
-        } else if (*env == '/')
-        {
-            userPath = QLatin1String(env);
-        } else {
-            userPath = homePath;
-            userPath += QLatin1Char('/');
-            userPath += QLatin1String(env);
-        }
-        userPath += QLatin1Char('/');
-
-        const QString& newUserPath = userPath+organization+"/medInria.conf";
-
-        if (!QFile::exists(newUserPath))
-        {
-            const QString& oldUserPath = userPath+organization+"/medinria.conf";
-
-            if (QFile::exists(oldUserPath) )
-            {
-                qWarning() << "Updating old medinria.conf file";
-                QFile oldSettings (oldUserPath);
-                const bool result = oldSettings.rename(userPath+organization+QLatin1Char('/')+
-                                    applicationName+".conf" );
-                if (!result)
-                {
-                    qWarning() << "Could not rename medinria.conf\n"
-                               << "Either you don't have write access\n"
-                               << "or medInria.conf already exists.";
-                }
-            }
-        }
-    #endif //Q_OS_LINUX
-    #endif //Q_OS_WIN
-    }
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -127,16 +73,8 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
-    d->fixSettingsPath(this->organizationName(),this->applicationName());
-
-    qDebug() <<  "default data location:" << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
     this->setStyleSheet(parser.result());
-
-    //  Set some splash screen properties:
-
-    setMsgColor(Qt::black);
-    setMsgAlignment(Qt::AlignLeft);
 
     //  Redirect msgs to the logs
 
@@ -148,11 +86,7 @@ medApplication::medApplication(int & argc, char**argv) :
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
                      this,SLOT(redirectMessageToLog(QString)));
 
-    this->registerToFactories();
-
-    //  Setting up database connection
-    if ( !medDatabaseController::instance()->createConnection())
-        qDebug() << "Unable to create a connection to the database";
+    this->initialize();
 }
 
 medApplication::~medApplication(void)
@@ -193,26 +127,6 @@ void medApplication::setMainWindow(medMainWindow *mw)
     d->systemOpenInstructions.clear();
 }
 
-void medApplication::setMsgColor(const QColor& color)
-{
-    d->msgColor = color;
-}
-
-const QColor& medApplication::msgColor()
-{
-    return d->msgColor;
-}
-
-int medApplication::msgAlignment()
-{
-    return d->msgAlignment;
-}
-
-void medApplication::setMsgAlignment(int alignment)
-{
-    d->msgAlignment = alignment;
-}
-
 void medApplication::redirectMessageToLog(const QString &message)
 {
     dtkTrace()<< message;
@@ -225,14 +139,28 @@ void medApplication::redirectErrorMessageToLog(const QString &message)
 
 void medApplication::redirectMessageToSplash(const QString &message)
 {
-    emit showMessage(message,d->msgAlignment,d->msgColor);
+    emit showMessage(message);
 }
 
-void medApplication::registerToFactories()
+void medApplication::open(const medDataIndex & index)
 {
-    //Register dbController
-    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
-    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
+    d->mainWindow->open(index);
+}
+
+void medApplication::open(QString path)
+{
+    d->mainWindow->open(path);
+}
+
+void medApplication::initialize()
+{
+    qRegisterMetaType<QUuid>("QUuid");
+
+    //  Setting up database connection
+    if ( ! medDatabaseController::instance()->createConnection())
+        qDebug() << "Unable to create a connection to the database";
+
+    medDataManager::initialize();
 
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
@@ -250,7 +178,7 @@ void medApplication::registerToFactories()
 
     //Register annotations
     //TODO there is obviously something that have to be done here. - RDE
-    //TODO I dit something... was it enough ? - Flo
+    //TODO I did something... was it enough ? - Flo
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType<medSeedPointAnnotationData>();
 }

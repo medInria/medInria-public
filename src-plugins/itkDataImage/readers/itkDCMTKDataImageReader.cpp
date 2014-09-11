@@ -15,8 +15,6 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
-
 #include <medMetaDataKeys.h>
 
 #include <itkDCMTKImageIO.h>
@@ -285,7 +283,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         return false;
     }
 
-    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
 
     if (!medData) {
 
@@ -333,7 +331,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
             }
 
             imagetypestring << d->io->GetNumberOfDimensions();
-            medData = medAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str());
+            medData = medAbstractDataFactory::instance()->create(imagetypestring.str().c_str());
             if (medData)
                 this->setData(medData);
         }
@@ -342,7 +340,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
             switch (d->io->GetComponentType()) {
 
             case itk::ImageIOBase::UCHAR:
-                medData = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageRGB3");
+                medData = medAbstractDataFactory::instance()->create("itkDataImageRGB3");
 
                 if (medData)
                     this->setData(medData);

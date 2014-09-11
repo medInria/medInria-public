@@ -13,8 +13,6 @@
 
 #include <medFilteringWorkspace.h>
 
-#include <dtkCore/dtkSmartPointer.h>
-
 
 #include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
@@ -39,8 +37,7 @@ public:
     medViewContainer *outputContainer;
 
 
-    dtkSmartPointer<medAbstractData> filterOutput;
-    QString importUuid;
+    medAbstractData *filterOutput;
 };
 
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medFilteringWorkspacePrivate)
@@ -127,7 +124,7 @@ void medFilteringWorkspace::onProcessSuccess()
 
     qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
 
-    dtkSmartPointer<medAbstractData> inputData(d->filteringToolBox->data());
+    medAbstractData *inputData(d->filteringToolBox->data());
 
     if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
       {
@@ -146,9 +143,7 @@ void medFilteringWorkspace::onProcessSuccess()
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    //Create a uniqueId for the request.
-    d->importUuid = QUuid::createUuid().toString();
-    medDataManager::instance()->importNonPersistent(d->filterOutput, d->importUuid);
+    medDataManager::instance()->importData(d->filterOutput, true);
 
     d->outputContainer->addData(d->filterOutput);
 }
@@ -164,5 +159,5 @@ void medFilteringWorkspace::open(const medDataIndex &index)
     if(!index.isValidForSeries() || !d->inputContainer->isSelected())
         return;
 
-    d->inputContainer->addData(medDataManager::instance()->data(index));
+    d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
 }

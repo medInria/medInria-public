@@ -169,7 +169,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 
     this->parentToolBox()->setProcess(process);
 
-
+    //TODO smartPointing have to be managed only in abstract processes -rde
     dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
     dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
 

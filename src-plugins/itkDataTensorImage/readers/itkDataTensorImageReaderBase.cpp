@@ -15,7 +15,6 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkTensor.h>
 #include <itkImageFileReader.h>
@@ -100,20 +99,20 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
 	return false;
     }
     
-    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 
     if (!medData) {
       
         switch (this->io->GetComponentType()) {
 
 	    case itk::ImageIOBase::FLOAT:
-	        medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageFloat3");
+            medData = medAbstractDataFactory::instance()->create ("itkDataTensorImageFloat3");
 		if (medData)
 		    this->setData ( medData );
 		break;
 		  
 	    case itk::ImageIOBase::DOUBLE:
-	        medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageDouble3");
+            medData = medAbstractDataFactory::instance()->create ("itkDataTensorImageDouble3");
 		if (medData)
 		    this->setData ( medData );
 		break;

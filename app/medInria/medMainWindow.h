@@ -59,15 +59,18 @@ public slots:
     void toggleFullScreen();
     void switchToArea(const AreaType areaIndex);
 
+    void open(const medDataIndex & index);
+    void open(const QString& path);
+
 private slots:
 
+    void showWorkspace(QString workspace);
     void captureScreenshot();
 
     void switchToBrowserArea();
     void switchToWorkspaceArea();
     void switchToHomepageArea();
 
-    void showWorkspace(QString workspace);
     void toggleQuickAccessVisibility();
     void hideQuickAccess();
     void showShortcutAccess();
@@ -97,6 +100,8 @@ private slots:
     void showMaximized();
 
     void adjustContainersSize();
+
+    void open_waitForImportedSignal(medDataIndex,QUuid);
 
 protected:
     void closeEvent(QCloseEvent *event);

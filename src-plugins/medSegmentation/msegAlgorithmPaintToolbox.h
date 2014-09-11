@@ -18,7 +18,6 @@
 #include <msegPluginExport.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <medDataIndex.h>
 #include <medViewEventFilter.h>
@@ -132,9 +131,10 @@ private:
     dtkSmartPointer< medViewEventFilter > m_viewFilter;
 
     dtkSmartPointer<medImageMaskAnnotationData> m_maskAnnotationData;
+    //TODO smartPointing have to be managed only in abstraction -rde
 
     dtkSmartPointer<medAbstractData> m_maskData;
-    dtkSmartPointer<medAbstractData> m_imageData;
+    medAbstractData* m_imageData;
 
     medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 

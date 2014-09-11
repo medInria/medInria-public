@@ -15,7 +15,6 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
 
 #include <vtkXMLFiberDataSetReader.h>
 #include <vtkFiberDataSet.h>
@@ -54,10 +53,10 @@ bool medVtkFibersDataReader::canRead (const QStringList& paths) {
 bool medVtkFibersDataReader::readInformation (const QString& path) {
     // d->reader->SetFileName (path.toAscii().constData());
 
-    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 
     if (!medData) {
-        medData = medAbstractDataFactory::instance()->createSmartPointer ("medVtkFibersData");
+        medData = medAbstractDataFactory::instance()->create("medVtkFibersData");
         if (medData)
             this->setData (medData);
     }
