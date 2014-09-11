@@ -80,7 +80,7 @@ void medFilteringWorkspace::setupViewContainerStack()
         d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
         d->outputContainer->setUserSplittable(false);
         d->outputContainer->setMultiLayered(false);
-        d->outputContainer->setAcceptDrops(false);
+        d->outputContainer->setUserOpenable(false);
 
         connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
         connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
