@@ -83,6 +83,8 @@ public:
     /** Enumerate all images for given patient*/
     virtual QList<medDataIndex> images(const medDataIndex& index ) const;
 
+    virtual QPixmap thumbnail(const medDataIndex& index) const;
+
     /** Get metadata for specific item. Return uninitialized string if not present. */
     virtual QString metaData(const medDataIndex& index,const QString& key) const;
 

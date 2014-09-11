@@ -101,6 +101,9 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
 
     d->duration = 1;
     d->currentFrame = 0;
+    d->timeBetweenFrames = 0;
+    d->numberOfFrame = 0;
+    d->timeLineLocked = false;
 
     this->clear();
 

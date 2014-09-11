@@ -48,7 +48,7 @@ public:
 
 medClutEditorVertex::medClutEditorVertex(QPointF value, QPointF coord,
                                          QColor color, QGraphicsItem * parent)
-: QGraphicsItem(parent)
+: QObject(), QGraphicsItem(parent)
 {
     d = new medClutEditorVertexPrivate;
     d->value = value;
@@ -71,7 +71,7 @@ medClutEditorVertex::medClutEditorVertex(QPointF value, QPointF coord,
 
 medClutEditorVertex::medClutEditorVertex( const medClutEditorVertex & other,
                                          QGraphicsItem * parent)
-: QGraphicsItem( parent )
+: QObject(), QGraphicsItem( parent )
 {
     if ( parent == NULL )
         this->setParentItem( other.parentItem() );
@@ -347,7 +347,7 @@ public:
 
 medClutEditorTable::medClutEditorTable(const QString & title,
                                        QGraphicsItem *parent)
-  : QGraphicsItem(parent)
+  :QObject(), QGraphicsItem(parent)
 {
     d = new medClutEditorTablePrivate;
     d->title = title;
@@ -359,7 +359,7 @@ medClutEditorTable::medClutEditorTable(const QString & title,
 }
 
 medClutEditorTable::medClutEditorTable(const medClutEditorTable & table)
-  : QGraphicsItem( static_cast< QGraphicsItem *>( table.parentItem() ) )
+  :QObject(),  QGraphicsItem( static_cast< QGraphicsItem *>( table.parentItem() ) )
 // : medClutEditorTable (table.title(),table.parent())
 {
     d = new medClutEditorTablePrivate;

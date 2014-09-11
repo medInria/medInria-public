@@ -484,7 +484,8 @@ void vtkDataMeshInteractor::removeData()
         {
             d->view2d->RemoveDataSet(pointSet);
             d->view3d->RemoveDataSet(pointSet);
-            d->render->Render();
+            if(d->render->GetOffScreenRendering() == 0)
+                d->render->Render();
         }
     }
 }

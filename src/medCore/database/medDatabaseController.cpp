@@ -874,6 +874,17 @@ QList<medDataIndex> medDatabaseController::images( const medDataIndex& index) co
     return ret;
 }
 
+QPixmap medDatabaseController::thumbnail(const medDataIndex &index) const
+{
+    QString thumbpath = this->metaData(index, medMetaDataKeys::ThumbnailPath.key());
+
+    QFileInfo fileInfo(thumbpath);
+    if ( fileInfo.exists() ) {
+        return QPixmap(thumbpath);
+    }
+    return QPixmap();
+}
+
 bool medDatabaseController::isPersistent(  ) const
 {
     return true;

@@ -357,14 +357,9 @@ QPixmap medDataManager::thumbnail(const medDataIndex & index)
 {
     Q_D(medDataManager);
     medAbstractDbController* dbc = d->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
+    QPixmap pix = dbc->thumbnail(index);
 
-    QFileInfo fileInfo(thumbpath);
-    if ( fileInfo.exists() ) {
-        return QPixmap(thumbpath);
-    }
-
-    return QPixmap(":/medGui/pixmaps/default_thumbnail.png");
+    return pix.isNull() ? QPixmap(":/medGui/pixmaps/default_thumbnail.png") : pix;
 }
 
 

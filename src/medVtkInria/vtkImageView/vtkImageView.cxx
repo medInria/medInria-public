@@ -1112,9 +1112,10 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3],
   if (!input)
     return 0.0;
 
-  int indices[3];
+  int indices[3] = {0,0,0};
   this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
   int* w_extent = input->GetWholeExtent();
+
   if ( (indices[0] < w_extent[0]) ||
       (indices[0] > w_extent[1]) ||
       (indices[1] < w_extent[2]) ||

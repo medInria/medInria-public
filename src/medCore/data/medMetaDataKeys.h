@@ -41,7 +41,7 @@ namespace medMetaDataKeys {
         const QString& key() const { return KEY; }
         const QString& label() const { return LABEL; }
         const QVariant::Type& type() const { return TYPE; }
-        const bool isEditable() const { return ISEDITABLE; }
+        bool isEditable() const { return ISEDITABLE; }
 
         bool is_set_in(const medAbstractData *data) const { return data->hasMetaData(KEY) ; }
 

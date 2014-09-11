@@ -334,6 +334,14 @@ QList<medDataIndex> medDatabaseNonPersistentController::images( const medDataInd
     return ret;
 }
 
+QPixmap medDatabaseNonPersistentController::thumbnail(const medDataIndex &index) const
+{
+    if (d->items.contains(index)) {
+        return QPixmap::fromImage(d->items.value(index)->thumb());
+    }
+    return QPixmap();
+}
+
 QString medDatabaseNonPersistentController::metaData( const medDataIndex& index, const QString& key ) const
 {
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType MapType;

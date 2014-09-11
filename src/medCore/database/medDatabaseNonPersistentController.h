@@ -57,6 +57,8 @@ public:
     virtual QList<medDataIndex> series(const medDataIndex& index ) const;
     virtual QList<medDataIndex> images(const medDataIndex& index ) const;
 
+    virtual QPixmap thumbnail(const medDataIndex &index) const;
+
     virtual bool isPersistent() const;
 
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);

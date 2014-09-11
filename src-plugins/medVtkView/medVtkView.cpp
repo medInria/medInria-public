@@ -90,7 +90,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->renWin->SetAlphaBitPlanes(1);
     d->renWin->SetMultiSamples(0);
 
-
     // construct views
         // view2d
     d->view2d = vtkImageView2D::New();
@@ -171,6 +170,8 @@ medVtkView::~medVtkView()
     d->view2d->Delete();
     d->view3d->Delete();
     d->observer->Delete();
+    if (d->renWin->GetOffScreenRendering() == 1)
+        d->renWin->SetOffScreenRendering(0);
     d->renWin->Delete();
     delete d->viewWidget;
 
@@ -421,31 +422,14 @@ QImage medVtkView::buildThumbnail(const QSize &size)
 {
     this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
     int w(size.width()), h(size.height());
-    vtkRenderWindow *renWin = vtkRenderWindow::New();
 
     // Works only if SetOffScreenRendering is call before SetRenderWindow (sic) - RDE
-    renWin->SetOffScreenRendering(1);
-
-    if(this->orientation() == medImageView::VIEW_ORIENTATION_3D)
-    {
-        renWin->AddRenderer(d->view3d->GetRenderer());
-        d->view3d->SetRenderWindow(renWin);
-    }
-    else
-    {
-        renWin->AddRenderer(d->view2d->GetRenderer());
-        d->view2d->SetRenderWindow(renWin);
-    }
-
-    d->viewWidget->SetRenderWindow(renWin);
+    d->renWin->SetOffScreenRendering(1);
     d->viewWidget->resize(w,h);
-    renWin->SetSize(w,h);
-    renWin->Render();
+    d->renWin->SetSize(w,h);
+    d->renWin->Render();
 
     QImage thumbnail = QPixmap::grabWidget(d->viewWidget).toImage();
-
-    renWin->SetOffScreenRendering(0);
-    renWin->Delete();
 
     this->blockSignals(false);
     return thumbnail;
@@ -520,7 +504,6 @@ medBoolParameter* medVtkView::rubberBandZoomParameter() const
 {
     return d->rubberBandZoomParameter;
 }
-
 
 void medVtkView::resetKeyboardInteractionModifier()
 {

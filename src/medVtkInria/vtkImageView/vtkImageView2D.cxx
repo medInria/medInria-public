@@ -609,10 +609,10 @@ void vtkImageView2D::UpdateDisplayExtent()
       vtkCamera *cam = this->GetRenderer()->GetActiveCamera();
       if (cam)
       {
-        double pos[3];
+        double pos[3] = {.0,.0,.0};
         this->GetWorldCoordinatesForSlice (this->GetSlice(), pos);
 
-        double vn[3], position[3];
+        double vn[3] = {.0,.0,.0}, position[3] = {.0,.0,.0};
         cam->GetViewPlaneNormal(vn);
         cam->GetPosition(position);
 

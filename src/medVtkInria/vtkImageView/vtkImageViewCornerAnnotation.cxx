@@ -54,9 +54,9 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
                            vtkImageMapToWindowLevelColors *wl)
 {
   int i;
-  char *text, *text2;
+  char *text = NULL, *text2 = NULL;
   int slice = 0, slice_max = 0;
-  char *rpos, *tmp;
+  char *rpos = NULL, *tmp = NULL;
   double window = 0, level = 0;
   long int windowi = 0, leveli = 0;
   vtkImageData *wl_input = NULL, *ia_input = NULL;
