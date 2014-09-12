@@ -175,7 +175,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         QFileInfo fileInfo ( file );
 
-        medAbstractData *medData;
+        dtkSmartPointer<medAbstractData> medData;
 
         // 2.1) Try reading file information, just the header not the whole file
 
