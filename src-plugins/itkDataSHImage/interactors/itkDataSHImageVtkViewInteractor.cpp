@@ -45,8 +45,6 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkRenderWindow *render;
-    vtkRenderer *renderer2d;
-    vtkRenderer *renderer3d;
 
     QList <medAbstractParameter*> parameters;
     vtkSphericalHarmonicManager* manager;
@@ -124,7 +122,7 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
 
-    d->manager->SetRenderWindowInteractor(d->render->GetInteractor(),d->renderer3d);
+    d->manager->SetRenderWindowInteractor(d->render->GetInteractor(), d->view3d->GetRenderer());
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)),
             this,    SLOT(setPosition(QVector3D)));
@@ -135,7 +133,6 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
 
 itkDataSHImageVtkViewInteractor::~itkDataSHImageVtkViewInteractor() {
 
-    d->manager->Delete();
     delete d;
     d = 0;
 }
@@ -199,6 +196,7 @@ void itkDataSHImageVtkViewInteractor::setInputData(medAbstractData *data)
 
 void itkDataSHImageVtkViewInteractor::removeData()
 {
+    d->view2d->RemoveLayer(d->view->layer(this->inputData()));
     d->manager->Delete();
 }
 

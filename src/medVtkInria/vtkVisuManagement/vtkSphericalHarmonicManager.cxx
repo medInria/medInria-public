@@ -34,6 +34,8 @@ vtkSphericalHarmonicManager::vtkSphericalHarmonicManager() {
 
 vtkSphericalHarmonicManager::~vtkSphericalHarmonicManager() {
 
+    this->Initialize();
+
     if (RenderWindowInteractor)
         RenderWindowInteractor->Delete();
 
