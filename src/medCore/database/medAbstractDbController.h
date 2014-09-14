@@ -45,8 +45,7 @@ public:
     virtual bool isPersistent() const = 0;
 
 signals:
-    void metadataModified(const medDataIndex& index, const QString& key, const QString& value);
-    void metadataModified(const medDataIndex& index);
+    void metadataModified(const medDataIndex& index, const QString& key = "", const QString& value = "");
     void dataImported(const medDataIndex& index, QUuid importId);
     void dataRemoved(const medDataIndex& index);
 
