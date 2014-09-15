@@ -35,7 +35,6 @@ public:
     medAbstractImageView *view;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    vtkRenderWindow *render;
 
     vtkMetaDataSetSequence *sequence;
     medAbstractImageData *imageData;
@@ -74,7 +73,6 @@ medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstra
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-    d->render = backend->renWin;
 
     d->currentTime = 0.0;
 }

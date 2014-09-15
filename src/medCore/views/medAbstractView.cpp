@@ -295,12 +295,6 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
     return dtkAbstractView::eventFilter(obj, event);
 }
 
-QImage medAbstractView::generateThumbnail(const QSize &size)
-{
-    setUpViewForThumbnail();
-    return this->buildThumbnail(size);
-}
-
 void medAbstractView::setUpViewForThumbnail()
 {
     medAbstractViewInteractor *primaryInteractor = this->primaryInteractor();
@@ -326,6 +320,17 @@ QList<medAbstractParameter*> medAbstractView::linkableParameters()
         params.append(nav->linkableParameters());
 
     return params;
+}
+
+QImage medAbstractView::generateThumbnail(const QSize &size)
+{
+    setUpViewForThumbnail();
+    return buildThumbnail(size);
+}
+
+void medAbstractView::setOffscreenRendering(bool /*isOffscreen*/)
+{
+    // nothing by default
 }
 
 QWidget* medAbstractView::toolBarWidget()

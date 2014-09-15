@@ -70,7 +70,9 @@ public:
 
     virtual medViewBackend * backend() const = 0;
     virtual QString description() const = 0;
+
     QImage generateThumbnail(const QSize &size);
+    virtual void setOffscreenRendering(bool isOffscreen);
 
 public slots:
     virtual void reset() = 0;
@@ -99,9 +101,9 @@ protected:
     virtual void removeInteractors(medAbstractData *data);
     virtual bool eventFilter(QObject *, QEvent *);
 
-private:
-    virtual QImage buildThumbnail(const QSize &size) = 0;
     virtual void setUpViewForThumbnail();
+    virtual QImage buildThumbnail(const QSize &size) = 0;
+private:
 
 private:
     medAbstractViewPrivate *d;

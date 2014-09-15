@@ -48,6 +48,7 @@ public:
 
     medBoolParameter* rubberBandZoomParameter() const;
 
+    virtual void setOffscreenRendering(bool isOffscreen);
 public slots:
     virtual void reset();
     virtual void render();
@@ -62,7 +63,7 @@ private slots:
 
     virtual void enableRubberBandZoom(bool);
 
-private:
+protected:
     virtual QImage buildThumbnail(const QSize &size);
 
 private:

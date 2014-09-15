@@ -86,9 +86,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
             // needed for imersive room
     if (qApp->arguments().contains("--stereo"))
         d->renWin->SetStereoRender(1);
-            // Necessary options for depth-peeling
-    d->renWin->SetAlphaBitPlanes(1);
-    d->renWin->SetMultiSamples(0);
 
     // construct views
         // view2d
@@ -102,7 +99,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view2d->ShowImageAxisOff();
     d->view2d->ShowScalarBarOff();
     d->view2d->ShowRulerWidgetOn();
-    d->view2d->SetRenderWindow (d->renWin); // set the interactor as well
     d->interactorStyle2D = d->view2d->GetInteractorStyle(); // save interactorStyle
         // view3d.
     d->view3d = vtkImageView3D::New();
@@ -140,9 +136,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view2d->AddObserver(vtkImageView2DCommand::CameraZoomEvent,d->observer,0);
     d->view3d->GetInteractorStyle()->AddObserver(vtkCommand::InteractionEvent, d->observer, 0);
 
-    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
-    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
-
     d->rubberBandZoomParameter = new medBoolParameter("RubberBandZoom", this);
     connect(d->rubberBandZoomParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableRubberBandZoom(bool)));
 
@@ -156,6 +149,12 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
     connect(this, SIGNAL(currentLayerChanged()), this, SLOT(changeCurrentLayer()));
     connect(this, SIGNAL(layerAdded(uint)), this, SLOT(buildMouseInteractionParamPool(uint)));
+
+    // do this last, that way all previous calls to render will fail (which they should)
+    d->view2d->SetRenderWindow (d->renWin);
+
+    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
+    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
 }
 
 medVtkView::~medVtkView()
@@ -423,11 +422,10 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
     int w(size.width()), h(size.height());
 
-    // Works only if SetOffScreenRendering is call before SetRenderWindow (sic) - RDE
-    d->renWin->SetOffScreenRendering(1);
+    // will cause crashes if any calls to renWin->Render() happened before this line
     d->viewWidget->resize(w,h);
     d->renWin->SetSize(w,h);
-    d->renWin->Render();
+    render();
 
     QImage thumbnail = QPixmap::grabWidget(d->viewWidget).toImage();
 
@@ -503,6 +501,11 @@ void medVtkView::enableRubberBandZoom(bool enable)
 medBoolParameter* medVtkView::rubberBandZoomParameter() const
 {
     return d->rubberBandZoomParameter;
+}
+
+void medVtkView::setOffscreenRendering(bool isOffscreen)
+{
+    d->renWin->SetOffScreenRendering(isOffscreen ? 1 : 0);
 }
 
 void medVtkView::resetKeyboardInteractionModifier()

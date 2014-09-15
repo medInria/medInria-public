@@ -45,14 +45,12 @@ class medVtkViewNavigatorPrivate
     public:
     medAbstractImageView *parent;
 
-    vtkRenderWindow *render;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkImageView *currentView;
 
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
-    vtkRenderWindow *renWin;
 
     medImageView::Orientation orientation;
 
@@ -95,15 +93,12 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(d->parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-    d->renWin = backend->renWin;
 
     d->currentView = NULL;
     d->showOptionsWidget = NULL;
 
     d->renderer2d = d->view2d->GetRenderer();
     d->renderer3d = d->view3d->GetRenderer();
-
-    d->render = backend->renWin;
 
     d->orientationParameter = new medBoolGroupParameter("Orientation", this);
     d->orientationParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
@@ -323,7 +318,7 @@ void medVtkViewNavigator::setCamera(const QVector3D &position,
     }
 
     if(needUpdate)
-        d->currentView->Render();
+        d->parent->render();
 }
 
 void medVtkViewNavigator::setZoom(double zoom)
@@ -332,7 +327,7 @@ void medVtkViewNavigator::setZoom(double zoom)
         return;
 
     d->currentView->SetZoom(zoom);
-    d->currentView->Render();
+    d->parent->render();
 
 }
 
@@ -583,13 +578,14 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
 
     double pos[3];
     int timeIndex = 0;
+    vtkRenderWindow * renWin = 0;
     if(d->currentView)
     {
         d->currentView->GetCurrentPoint(pos);
         timeIndex = d->currentView->GetTimeIndex();
         d->currentView->UnInstallInteractor();
+        renWin = d->currentView->GetRenderWindow();
         d->currentView->SetRenderWindow(NULL);
-        d->renWin->RemoveRenderer(d->currentView->GetRenderer());
     }
 
     switch(orientation)
@@ -613,7 +609,7 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
         break;
     }
 
-    d->currentView->SetRenderWindow(d->renWin);
+    d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->SetTimeIndex(timeIndex);
     d->currentView->Render();

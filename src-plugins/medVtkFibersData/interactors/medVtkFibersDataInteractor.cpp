@@ -215,7 +215,7 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
     matrix->Delete();
     matrix2->Delete();
 
-    render->Render();
+    view->render();
 }
 
 medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
@@ -517,7 +517,7 @@ void medVtkFibersDataInteractor::changeBundleName(QString oldName, QString newNa
 void medVtkFibersDataInteractor::setVisibility(bool visible)
 {
     d->manager->SetVisibility(visible);
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::setBoxVisibility(bool visible)
@@ -569,7 +569,7 @@ void medVtkFibersDataInteractor::setRenderingMode(RenderingMode mode)
         default:
             qDebug() << "medVtkFibersDataInteractor: unknown rendering mode";
     }
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::activateGPU(bool activate)
@@ -608,7 +608,7 @@ void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
         }
     }
 
-    d->render->Render();
+    d->view->render();
  }
 
 void medVtkFibersDataInteractor::setBoxBooleanOperation(bool value)
@@ -636,20 +636,20 @@ void medVtkFibersDataInteractor::setBoxBooleanOperation(BooleanOperation op)
     }
 
     d->manager->GetVOILimiter()->Modified();
-    d->render->Render();
+    d->view->render();
 
 }
 
 void medVtkFibersDataInteractor::tagSelection()
 {
     d->manager->SwapInputOutput();
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::resetSelection()
 {
     d->manager->Reset();
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::validateSelection(const QString &name, const QColor &color)
@@ -670,7 +670,7 @@ void medVtkFibersDataInteractor::validateSelection(const QString &name, const QC
     // reset to initial navigation state
     d->manager->Reset();
 
-    d->render->Render();
+    d->view->render();
 
 }
 
@@ -961,13 +961,13 @@ void medVtkFibersDataInteractor::setProjection(const QString& value)
 void medVtkFibersDataInteractor::setRadius (int value)
 {
     d->manager->SetRadius (value);
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::setRoiBoolean(int roi, int meaning)
 {
     d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
-    d->render->Render();
+    d->view->render();
 }
 
 int medVtkFibersDataInteractor::roiBoolean(int roi)
@@ -978,7 +978,7 @@ int medVtkFibersDataInteractor::roiBoolean(int roi)
 void medVtkFibersDataInteractor::setBundleVisibility(const QString &name, bool visibility)
 {
     d->manager->SetBundleVisibility(name.toAscii().constData(), (int)visibility);
-    d->render->Render();
+    d->view->render();
 
 }
 
@@ -1001,7 +1001,7 @@ void medVtkFibersDataInteractor::setAllBundlesVisibility(bool visibility)
         for(int i = 0; i < d->bundlingModel->rowCount(); ++i)
             d->bundlingModel->item(i)->setCheckState(Qt::Unchecked);
     }
-    d->render->Render();
+    d->view->render();
 }
 
 
@@ -1159,7 +1159,7 @@ void medVtkFibersDataInteractor::clearRoi(void)
 
     d->roiLabels.clear();
 
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::selectRoi(int value)
@@ -1195,7 +1195,7 @@ void medVtkFibersDataInteractor::setOpacity(double opacity)
 {
     d->opacityProperty->SetOpacity(opacity);
 
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::setVisible(bool visible)
@@ -1203,7 +1203,7 @@ void medVtkFibersDataInteractor::setVisible(bool visible)
     int v = (visible) ? 1 : 0;
     d->actor->SetVisibility(v);
 
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkFibersDataInteractor::setWindowLevel (QHash<QString,QVariant>)
@@ -1398,7 +1398,7 @@ void medVtkFibersDataInteractor::removeCurrentBundle()
     
     // reset to initial navigation state
     d->manager->Reset();
-    d->render->Render();
+    d->view->render();
 
     d->bundlingModel->removeRow(index.row());
 }

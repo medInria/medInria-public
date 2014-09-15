@@ -18,7 +18,6 @@
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
 
 class MEDVTKINRIA_EXPORT medVtkViewBackend : public medViewBackend
 {

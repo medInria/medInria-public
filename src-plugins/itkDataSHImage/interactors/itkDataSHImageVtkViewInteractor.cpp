@@ -508,7 +508,7 @@ QList<medBoolParameter*> itkDataSHImageVtkViewInteractor::mouseInteractionParame
 
 void itkDataSHImageVtkViewInteractor::update()
 {
-    d->render->Render();
+    d->view->render();
 }
 
 void itkDataSHImageVtkViewInteractor::updateWidgets()

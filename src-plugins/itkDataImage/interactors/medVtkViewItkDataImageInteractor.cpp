@@ -49,7 +49,6 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     medAbstractImageData *imageData;
-    vtkRenderWindow *render;
 
     medAbstractImageView *view;
 
@@ -70,7 +69,6 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-    d->render = backend->renWin;
     d->imageData = NULL;
 
     d->lutParam = NULL;

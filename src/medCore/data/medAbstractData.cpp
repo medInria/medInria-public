@@ -156,8 +156,8 @@ void medAbstractData::generateThumbnail()
     //TODO find which view is handled by this type of data - RDE
 
     dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
+    view->setOffscreenRendering(true);
     view->addLayer(this);
-
     d->thumbnail = view->generateThumbnail(QSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height));
 }
 

@@ -426,7 +426,7 @@ QList<medBoolParameter*> medVtkViewItkVectorFieldInteractor::mouseInteractionPar
 
 void medVtkViewItkVectorFieldInteractor::update()
 {
-    d->render->Render();
+    d->view->render();
 }
 
 void medVtkViewItkVectorFieldInteractor::updateWidgets()

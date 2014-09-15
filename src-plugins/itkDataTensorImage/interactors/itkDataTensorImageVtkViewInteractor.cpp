@@ -349,7 +349,7 @@ void itkDataTensorImageVtkViewInteractor::setOpacity(double opacity)
 {
     d->actorProperty->SetOpacity(opacity);
 
-    d->render->Render();
+    d->view->render();
 }
 
 
@@ -567,7 +567,7 @@ QList<medBoolParameter*> itkDataTensorImageVtkViewInteractor::mouseInteractionPa
 
 void itkDataTensorImageVtkViewInteractor::update()
 {
-    d->render->Render();
+    d->view->render();
 }
 
 void itkDataTensorImageVtkViewInteractor::updateWidgets()

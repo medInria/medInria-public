@@ -36,7 +36,6 @@ class medVtkViewItkDataImageNavigatorPrivate
 public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    vtkRenderWindow *render;
 
     medAbstractImageView *imageView;
 
@@ -64,7 +63,6 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-    d->render = backend->renWin;
 
     d->mode3DParameter = new medStringListParameter("3D Mode", this);
     d->mode3DParameter->addItem("VR");
@@ -217,7 +215,7 @@ void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
         this->enableCropping(false);
     }
 
-    d->render->Render();
+    d->imageView->render();
 }
 
 void medVtkViewItkDataImageNavigator::setRenderer(QString renderer)
@@ -234,7 +232,7 @@ void medVtkViewItkDataImageNavigator::setRenderer(QString renderer)
     else if ( renderer=="Default" )
         d->view3d->SetVolumeMapperToDefault();
 
-    d->render->Render();
+    d->imageView->render();
 }
 
 void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
@@ -256,7 +254,7 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
         }
     }
 
-    d->render->Render();
+    d->imageView->render();
     //TODO: Shouldn't we be able to save the cropping after?
 }
 

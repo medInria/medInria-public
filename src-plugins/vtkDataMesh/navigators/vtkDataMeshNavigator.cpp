@@ -15,6 +15,8 @@
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
 
 #include <medVtkViewBackend.h>
 
@@ -35,7 +37,6 @@ class vtkDataMeshNavigatorPrivate
 public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-    vtkRenderWindow *renderWindow;
 
     medAbstractImageView *imageView;
 
@@ -61,17 +62,11 @@ vtkDataMeshNavigator::vtkDataMeshNavigator(medAbstractView* parent):
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-    d->renderWindow = backend->renWin;
 
     d->depthPeelingParameter = new medBoolParameter("DepthPeeling", this);
     connect(d->depthPeelingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableDepthPeeling(bool)));
 
     d->parameters.append(d->depthPeelingParameter);
-
-
-    // Necessary options for depth-peeling
-    d->renderWindow->SetAlphaBitPlanes(1);
-    d->renderWindow->SetMultiSamples(0);
 }
 
 vtkDataMeshNavigator::~vtkDataMeshNavigator()
@@ -137,6 +132,12 @@ void vtkDataMeshNavigator::enableDepthPeeling(bool enabled)
 {
     if ( enabled )
     {
+        // Necessary options for depth-peeling
+        vtkRenderWindow * renWin = d->view3d->GetRenderWindow();
+        if (renWin) {
+            renWin->SetAlphaBitPlanes(1);
+            renWin->SetMultiSamples(0);
+        }
         // Activate depth-peeling to have a proper opacity rendering
         d->view3d->GetRenderer()->SetUseDepthPeeling(1);
         d->view3d->GetRenderer()->SetMaximumNumberOfPeels(100);
@@ -145,7 +146,7 @@ void vtkDataMeshNavigator::enableDepthPeeling(bool enabled)
     }
     else d->view3d->GetRenderer()->SetUseDepthPeeling(0);
 
-    d->renderWindow->Render();
+    d->imageView->render();
 }
 
 

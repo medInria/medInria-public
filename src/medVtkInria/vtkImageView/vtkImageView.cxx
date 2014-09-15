@@ -308,12 +308,6 @@ void vtkImageView::Render()
 {
   if (this->RenderWindow)
   {
-      /*
-    if ( this->GetColorWindow () == VTK_DOUBLE_MAX ) {
-
-      this->ResetWindowLevel();
-    }*/
-
     if (!this->RenderWindow->GetNeverRendered())
     {
       if( this->GetMTime() > this->InternalMTime )
