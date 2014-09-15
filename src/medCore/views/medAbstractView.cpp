@@ -397,25 +397,29 @@ QWidget* medAbstractView::navigatorWidget()
  */
 QWidget* medAbstractView::mouseInteractionWidget()
 {
-    if(d->mouseInteractionWidget.isNull())
+    // We need to reconstruct mouseInteractionWidget every time
+    // because a new inserted data can have brought new mouse interaction parameters
+    if(!d->mouseInteractionWidget.isNull())
     {
-        d->mouseInteractionWidget = new QWidget;
-
-        QList<medBoolParameter*> params;
-
-        foreach (medAbstractInteractor* interactor, this->interactors())
-            params.append(interactor->mouseInteractionParameters());
-
-        foreach (medAbstractNavigator* navigator, this->navigators())
-            params.append(navigator->mouseInteractionParameters());
-
-        medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
-        groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
-        foreach (medBoolParameter* param, params)
-            groupParam->addParameter(param);
-
-        d->mouseInteractionWidget = groupParam->getPushButtonGroup();
+        delete d->mouseInteractionWidget;
     }
+
+    d->mouseInteractionWidget = new QWidget;
+
+    QList<medBoolParameter*> params;
+
+    foreach (medAbstractInteractor* interactor, this->interactors())
+        params.append(interactor->mouseInteractionParameters());
+
+    foreach (medAbstractNavigator* navigator, this->navigators())
+        params.append(navigator->mouseInteractionParameters());
+
+    medBoolGroupParameter *groupParam = new medBoolGroupParameter("Mouse Interaction", this);
+    groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
+    foreach (medBoolParameter* param, params)
+        groupParam->addParameter(param);
+
+    d->mouseInteractionWidget = groupParam->getPushButtonGroup();
 
     return d->mouseInteractionWidget;
 }
