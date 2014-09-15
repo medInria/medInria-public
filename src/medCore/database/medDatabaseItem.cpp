@@ -194,6 +194,9 @@ QList<QVariant> medDatabaseItem::values()
     return d->itemData;  
 }
 
+/**
+ * Returns the data index for this item
+ */
 const medDataIndex & medDatabaseItem::dataIndex() const
 {
     return d->index;

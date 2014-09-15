@@ -51,9 +51,6 @@ public:
 
     bool setData(int column, const QVariant& value);
 
-   /**
-    * Returns the data index for this item
-    */
     const medDataIndex & dataIndex () const;
 
     void setDataIndex (const medDataIndex &);

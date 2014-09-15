@@ -43,38 +43,14 @@ public:
     medDatabaseNonPersistentImporter(medAbstractData* medData, const QUuid& uuid);
     ~medDatabaseNonPersistentImporter();
 
-
 public:
-     /**
-     * Retrieves patientID. Checks if patient is already in the database
-     * if so, reurns is Id, otherwise creates a new guid
-     */
+
     QString getPatientID(QString patientName, QString birthDate);
 
-     /**
-    * Populates database tables and generates thumbnails.
-    * @param medData - a @medAbstractData object created from the original image
-    * @param pathToStoreThumbnails - path where the thumbnails will be stored
-    * @return medDataIndex the new medDataIndex associated with this imported series.
-    **/
     medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
 
-     /**
-    * Finds if parameter @seriesName is already being used in the database
-    * if is not, it returns @seriesName unchanged
-    * otherwise, it returns an unused new series name (created by adding a suffix)
-    * @param seriesName - the series name
-    * @return newSeriesName - a new, unused, series name
-    **/
     QString ensureUniqueSeriesName ( const QString seriesName );
 
-    /**
-    * Checks if the image which was used to create the medData object
-    * passed as parameter already exists in the database
-    * @param medData - a @medAbstractData object created from the original image
-    * @param imageName - the name of the image we are looking for
-    * @return true if already exists, false otherwise
-    **/
     bool checkIfExists ( medAbstractData* medData, QString imageName );
 
 private:

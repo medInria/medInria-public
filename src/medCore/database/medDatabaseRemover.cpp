@@ -335,6 +335,7 @@ bool medDatabaseRemover::removeTableRow ( const QString &table, int id )
     return (query.numRowsAffected()==1);
 }
 
+//! Remove a single file
 void medDatabaseRemover::removeFile ( const QString & filename )
 {
     QFile file ( medStorage::dataLocation() + filename );
@@ -346,6 +347,7 @@ void medDatabaseRemover::onCancel ( QObject* )
     d->isCancelled = true;
 }
 
+//! Remove a data image file. Includes special cases for some file types.
 void medDatabaseRemover::removeDataFile ( const medDataIndex &index, const QString & filename )
 {
     QFileInfo fi ( filename );

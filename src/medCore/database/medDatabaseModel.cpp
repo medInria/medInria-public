@@ -933,7 +933,9 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
     }
 }
 
-
+/**
+ * return a list of strings that represents the currently shown columns
+ */
 QStringList medDatabaseModel::columnNames() const
 {
     if ( d->columnNames.isEmpty() )

@@ -210,11 +210,15 @@ bool medDatabaseController::closeConnection(void)
     return true;
 }
 
+/** create dataIndices out of partial ids */
 medDataIndex medDatabaseController::indexForPatient(int id)
 {
     return medDataIndex::makePatientIndex(this->dataSourceId(), id);
 }
 
+/**
+* Returns the index of a data given patient, study, series and image name
+*/
 medDataIndex medDatabaseController::indexForPatient (const QString &patientName)
 {
     QSqlQuery query(m_database);
@@ -392,6 +396,12 @@ medDataIndex medDatabaseController::indexForImage(const QString &patientName, co
     return medDataIndex();
 }
 
+/**
+* Import data into the db read from file
+* @param const QString & file The file containing the data
+* @param bool indexWithoutCopying true if the file must only be indexed by its current path,
+* false if the file will be imported (copied or converted to the internal storage format)
+*/
 void medDatabaseController::importPath(const QString& file, const QUuid &importUuid, bool indexWithoutCopying)
 {
     QFileInfo info(file);
@@ -410,6 +420,10 @@ void medDatabaseController::importPath(const QString& file, const QUuid &importU
     QThreadPool::globalInstance()->start(importer);
 }
 
+/**
+* Import data into the db read from memory
+* @param medAbstractData * data dataObject
+*/
 void medDatabaseController::importData( medAbstractData *data, const QUuid & importUuid)
 {    
     medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
@@ -519,6 +533,11 @@ void medDatabaseController::createImageTable(void)
             );
 }
 
+/**
+* Change the storage location of the database by copy, verify, delete
+* @param QString newLocation path of new storage location, must be empty
+* @return bool true on success
+*/
 bool medDatabaseController::moveDatabase( QString newLocation)
 {
     bool res = true;
@@ -584,6 +603,10 @@ bool medDatabaseController::moveDatabase( QString newLocation)
     return res;
 }
 
+/**
+* Status of connection
+* @return bool true on success
+*/
 bool medDatabaseController::isConnected() const
 {
     return d->isConnected;
@@ -600,6 +623,7 @@ medDatabaseController::~medDatabaseController()
     delete d;
 }
 
+/** override base class */
 void medDatabaseController::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
@@ -614,7 +638,11 @@ void medDatabaseController::remove( const medDataIndex& index )
     QThreadPool::globalInstance()->start(remover);
 }
 
-
+/**
+ * Moves study and its series from one patient to another and returns the list of new indexes
+ * @param const medDataIndex & indexStudy The data index of the study to be moved
+ * @param const medDataIndex & toPatient The data index to move the study to.
+ */
 QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
     QSqlQuery query(this->database());
@@ -657,6 +685,11 @@ QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexS
     return newIndexList;
 }
 
+/**
+ * Moves serie from one study to another and returns the new index of the serie
+ * @param const medDataIndex & indexSerie The data index of the serie to be moved
+ * @param const medDataIndex & toStudy The data index to move the serie to.
+ */
 medDataIndex medDatabaseController::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
 {
     QSqlQuery query(this->database());
@@ -687,6 +720,7 @@ medDataIndex medDatabaseController::moveSerie( const medDataIndex& indexSerie, c
     return newIndex;
 }
 
+/** Get metadata for specific item. Return uninitialized string if not present. */
 QString medDatabaseController::metaData(const medDataIndex& index,const QString& key) const
 {
     typedef medDatabaseControllerPrivate::MetaDataMap MetaDataMap;
@@ -740,6 +774,7 @@ QString medDatabaseController::metaData(const medDataIndex& index,const QString&
     return ret;
 }
 
+/** Set metadata for specific item. Return true on success, false otherwise. */
 bool medDatabaseController::setMetaData( const medDataIndex& index, const QString& key, const QString& value )
 {
     typedef medDatabaseControllerPrivate::MetaDataMap MetaDataMap;
@@ -784,11 +819,13 @@ bool medDatabaseController::setMetaData( const medDataIndex& index, const QStrin
     return success;
 }
 
+/** Implement base class */
 int medDatabaseController::dataSourceId() const
 {
     return 1;
 }
 
+/** Enumerate all patients stored in this DB*/
 QList<medDataIndex> medDatabaseController::patients() const
 {
     QList<medDataIndex> ret;
@@ -804,7 +841,7 @@ QList<medDataIndex> medDatabaseController::patients() const
     return ret;
 }
 
-
+/** Enumerate all studies for given patient*/
 QList<medDataIndex> medDatabaseController::studies( const medDataIndex& index ) const
 {
     QList<medDataIndex> ret;
@@ -828,6 +865,7 @@ QList<medDataIndex> medDatabaseController::studies( const medDataIndex& index ) 
     return ret;
 }
 
+/** Enumerate all series for given patient*/
 QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) const
 {
     QList<medDataIndex> ret;
@@ -851,6 +889,7 @@ QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) co
     return ret;
 }
 
+/** Enumerate all images for given patient*/
 QList<medDataIndex> medDatabaseController::images( const medDataIndex& index) const
 {
     QList<medDataIndex> ret;
@@ -885,11 +924,13 @@ QPixmap medDatabaseController::thumbnail(const medDataIndex &index) const
     return QPixmap();
 }
 
+/** Implement base class */
 bool medDatabaseController::isPersistent(  ) const
 {
     return true;
 }
 
+/** Remove / replace characters to transform into a pathname component. */
 QString medDatabaseController::stringForPath( const QString & name ) const
 {
     QString ret = name.simplified();

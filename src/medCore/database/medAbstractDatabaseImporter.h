@@ -48,10 +48,6 @@ public:
 
     ~medAbstractDatabaseImporter ( void );
 
-    /**
-    * Runs the import process based on the input file
-    * or directory given in the constructor
-    **/
     virtual void run ( void ) ;
 
 signals:
@@ -75,36 +71,32 @@ public slots:
 
 protected:
 
-    /**
-    * Returns file or directory used for import.
-    **/
-    QString file ( void );
-
-    /**
-    * Returns if pocess has been cancelled.
-    **/
-    bool isCancelled ( void );
-
-    /**
-    * Returns true if process is indexing without importing.
-    **/
-    bool indexWithoutImporting ( void );
-
-    /**
-    * Returns a QMap linking volume id to image file.
-    **/
-    QMap<int, QString> volumeIdToImageFile ( void );
-
-    /**
-    * Returns caller Uuid.
-    **/
+    QString file ( void );   
+    bool isCancelled ( void );   
+    bool indexWithoutImporting ( void );  
+    QMap<int, QString> volumeIdToImageFile ( void );    
     QString callerUuid ( void );
-
-    /**
-      Returns the index of the data which has been read. Index is not
-      valid if reading was not successful.
-    */
     medDataIndex index(void) const;
+
+    void populateMissingMetadata ( medAbstractData* medData, const QString seriesDescription );
+    void addAdditionalMetaData ( medAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths );
+
+    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader ( QStringList filename );
+    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter ( QString filename, medAbstractData* medData );
+
+    QStringList getAllFilesToBeProcessed ( QString fileOrDirectory );
+
+    medAbstractData *tryReadImages ( const QStringList& filesPath,const bool readOnlyImageInformation );
+    bool tryWriteImage ( QString filePath, medAbstractData* medData );
+
+    QString determineFutureImageFileName ( const medAbstractData* medData, int volumeNumber );
+    QString determineFutureImageExtensionByDataType ( const medAbstractData* medData );
+
+    QString generateUniqueVolumeId ( const medAbstractData* medData );
+    QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
+
+    void importData();
+    void importFile();
 
 
     /**
@@ -140,99 +132,7 @@ protected:
     virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails ) = 0;
 
 
-    /**
-    * Populates the missing metadata in the @medAbstractData object.
-    * If metadata is not present it's filled with default or empty values.
-    * @param medData - the object whose missing metadata will be filled
-    * @param seriesDescription - string used to fill SeriesDescription field if not present
-    **/
-    void populateMissingMetadata ( medAbstractData* medData, const QString seriesDescription );
 
-    /**
-    * Tries to find a @dtkAbstractDataReader able to read input file/s.
-    * @param filename - Input file/s we would like to find a reader for
-    * @return a proper reader if found, NULL otherwise
-    **/
-    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader ( QStringList filename );
-
-    /**
-    * Tries to find a @dtkAbstractDataWriter able to write input file/s.
-    * @param filename - name of the file we want to write
-    * @param medData - the @medAbstractData object we want to write
-    * @return a proper writer if found, NULL otherwise
-    **/
-    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter ( QString filename, medAbstractData* medData );
-
-    /**
-    * Walks through the whole directory tree and returns a list of every file found.
-    * @param fileOrDirectory - File or directory to search
-    * @return a list containing all files found
-    **/
-    QStringList getAllFilesToBeProcessed ( QString fileOrDirectory );
-
-    /**
-    * Tries to read the file/s indicated by filesPath.
-    * Only the header is read is specified by readOnlyImageInformation parameter.
-    * @param filesPath - path/s of the file/s we want to read
-    * @param readOnlyImageInformation - if true only image header is read, otherwise the full image
-    * @return a @medAbstractData containing the read data
-    **/
-    medAbstractData *tryReadImages ( const QStringList& filesPath,const bool readOnlyImageInformation );
-
-    /**
-    * Determines the filename where the medData object will be written (if importing).
-    * @param medData - the @medAbstractData that will be written
-    * @param volumeNumber - the volume number
-    * @return a string with the new filename
-    **/
-    QString determineFutureImageFileName ( const medAbstractData* medData, int volumeNumber );
-
-    /**
-    * Determines the extension (i.e. file format) which
-    * will be used for writing the medData object (if importing).
-    * @param medData - the @medAbstractData that will be written
-    * @return a string with the desired extension if found, and empty string otherwise
-    **/
-    QString determineFutureImageExtensionByDataType ( const medAbstractData* medData );
-
-    /**
-    * Tries writing the medData object in filePath.
-    * @param filePath - file path to use for writing
-    * @param medData - @medAbstractData object to be written
-    * @return true is writing was successful, false otherwise
-    **/
-    bool tryWriteImage ( QString filePath, medAbstractData* medData );
-
-    /**
-    * Adds some additional metadata (e.g. Size, FilePaths
-    * and FileName) to the medData object.
-    * @param medData - a @medAbstractData object to add metadata to
-    * @param fileName - file name where the object will be written to
-    * @param filePaths - if the file is aggregating more than one file, all of them will be listed here
-    **/
-    void addAdditionalMetaData ( medAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths );
-
-    /**
-    * Generates an Id intended to be unique for each volume
-    * @param medData - @medAbstractData object whose id will be generate
-    * @return the volume id of the medData object
-    **/
-    QString generateUniqueVolumeId ( const medAbstractData* medData );
-
-    /**
-    * Generates and saves the thumbnails for images in @dtkAbstractData.
-    * Also stores as metada with key RefThumbnailPath the path of the image that
-    * will be used as reference for patient, study and series.
-    * @param medData - @medAbstractData object whose thumbnails will be generated and saved
-    * @param pathToStoreThumbnails - path where the thumbnails will be stored
-    * @return a list of the thumbnails paths
-    **/
-    QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
-
-
-
-    void importData();
-    void importFile();
 
     medAbstractDatabaseImporterPrivate *d;
 

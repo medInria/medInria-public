@@ -39,15 +39,12 @@ public:
     bool createConnection();
     bool  closeConnection();
 
-    /* create dataIndices out of partial ids */
     medDataIndex indexForPatient(int id);
     medDataIndex indexForStudy  (int id);
     medDataIndex indexForSeries (int id);
     medDataIndex indexForImage  (int id);
 
-    /**
-    * Returns the index of a data given patient, study, series and image name
-    */
+
     medDataIndex indexForPatient (const QString &patientName);
     medDataIndex indexForStudy   (const QString &patientName, const QString &studyName);
     medDataIndex indexForSeries  (const QString &patientName, const QString &studyName,
@@ -55,81 +52,35 @@ public:
     medDataIndex indexForImage   (const QString &patientName, const QString &studyName,
                                   const QString &seriesName,  const QString &imageName);
 
-    /** Remove / replace characters to transform into a pathname component. */
     QString stringForPath(const QString & name) const;
 
-    /**
-    * Change the storage location of the database by copy, verify, delete
-    * @param QString newLocation path of new storage location, must be empty
-    * @return bool true on success
-    */
     bool moveDatabase(QString newLocation);
 
-    /**
-    * Status of connection
-    * @return bool true on success
-    */
     bool isConnected() const;
 
-    /** Enumerate all patients stored in this DB*/
     virtual QList<medDataIndex> patients() const;
-
-    /** Enumerate all studies for given patient*/
-    virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
-
-    /** Enumerate all series for given patient*/
+    virtual QList<medDataIndex> studies(const medDataIndex& index ) const; 
     virtual QList<medDataIndex> series(const medDataIndex& index) const;
-
-    /** Enumerate all images for given patient*/
     virtual QList<medDataIndex> images(const medDataIndex& index ) const;
-
     virtual QPixmap thumbnail(const medDataIndex& index) const;
 
-    /** Get metadata for specific item. Return uninitialized string if not present. */
     virtual QString metaData(const medDataIndex& index,const QString& key) const;
-
-    /** Set metadata for specific item. Return true on success, false otherwise. */
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
-    /** Implement base class */
     virtual bool isPersistent() const;
 
 public slots:
 
     medAbstractData *retrieve(const medDataIndex &index) const;
-    /**
-    * Import data into the db read from file
-    * @param const QString & file The file containing the data
-    * @param bool indexWithoutCopying true if the file must only be indexed by its current path,
-    * false if the file will be imported (copied or converted to the internal storage format)
-    */
-    void importPath(const QString& file, const QUuid& importUuid, bool indexWithoutCopying = false);
 
-    /**
-    * Import data into the db read from memory
-    * @param medAbstractData * data dataObject
-    */
+    void importPath(const QString& file, const QUuid& importUuid, bool indexWithoutCopying = false);
     void importData(medAbstractData *data, const QUuid & importUuid);
 
-
-    /** override base class */
     virtual void remove(const medDataIndex& index);
 
-    /**
-     * Moves study and its series from one patient to another and returns the list of new indexes
-     * @param const medDataIndex & indexStudy The data index of the study to be moved
-     * @param const medDataIndex & toPatient The data index to move the study to.
-     */
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
-
-    /**
-     * Moves serie from one study to another and returns the new index of the serie
-     * @param const medDataIndex & indexSerie The data index of the serie to be moved
-     * @param const medDataIndex & toStudy The data index to move the serie to.
-     */
     medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 
-    /**Implement base class */
     virtual int dataSourceId() const;
 
      bool contains(const medDataIndex &index) const;
@@ -140,10 +91,8 @@ protected slots:
     void showOpeningError(QObject *sender);
 
 private:
-    /* constructor */
     medDatabaseController();
 
-    // helper to create tables
     void createPatientTable();
     void   createStudyTable();
     void  createSeriesTable();
