@@ -102,6 +102,17 @@ medAbstractImageView::~medAbstractImageView()
     delete d;
 }
 
+void medAbstractImageView::removeData(medAbstractData *data)
+{
+    medAbstractLayeredView::removeData(data);
+
+    if( this->layersCount() == 0 && d->fourViewsParameter)
+    {
+        delete d->fourViewsParameter;
+        d->fourViewsParameter = 0;
+    }
+}
+
 medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(medAbstractData* data)
 {
     if(d->primaryInteractorsHash.isEmpty())

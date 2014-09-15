@@ -61,6 +61,7 @@ public:
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
+    QHBoxLayout* viewToolbarContainerLayout;
     QMenu *toolBarMenu;
     QPushButton *menuButton;
 
@@ -166,11 +167,26 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     toolBar->setObjectName("containerToolBar");
     toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     d->toolBarLayout = new QHBoxLayout(toolBar);
-    d->toolBarLayout->setContentsMargins(2, 0, 2, 0);
+    d->toolBarLayout->setContentsMargins(0, 0, 0, 0);
     d->toolBarLayout->setSpacing(2);
-    d->toolBarLayout->addWidget(d->poolIndicator, 1, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->menuButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
+
+    QWidget *viewToolbarContainer = new QWidget(this);
+    viewToolbarContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->viewToolbarContainerLayout = new QHBoxLayout(viewToolbarContainer);
+    d->viewToolbarContainerLayout->setContentsMargins(2, 0, 2, 0);
+    d->viewToolbarContainerLayout->setSpacing(2);
+
+    QWidget *containerToolbar = new QWidget(this);
+    containerToolbar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    QHBoxLayout *containerToolbarLayout  = new QHBoxLayout(containerToolbar);
+    containerToolbarLayout->setContentsMargins(2, 0, 2, 0);
+    containerToolbarLayout->setSpacing(2);
+    containerToolbarLayout->addWidget(d->poolIndicator);
+    containerToolbarLayout->addWidget(d->menuButton);
+    containerToolbarLayout->addWidget(d->closeContainerButton);
+
+    d->toolBarLayout->addWidget(viewToolbarContainer);
+    d->toolBarLayout->addWidget(containerToolbar,0,Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -681,9 +697,7 @@ void medViewContainer::updateToolBar()
 
         if(d->viewToolbar)
         {
-            d->toolBarLayout->setStretch(0,0);
-            d->viewToolbar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-            d->toolBarLayout->insertWidget(0, d->viewToolbar);
+            d->viewToolbarContainerLayout->addWidget(d->viewToolbar);
         }
     }
     else

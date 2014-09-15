@@ -51,6 +51,8 @@ public:
     medAbstractImageView(QObject * parent = 0);
     virtual ~medAbstractImageView();
 
+    virtual void removeData(medAbstractData *data);
+
     medImageView::Orientation orientation();
 
     virtual QPointF mapWorldToDisplayCoordinates( const QVector3D & worldVec ) = 0;
