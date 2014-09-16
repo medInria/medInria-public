@@ -66,6 +66,7 @@ public:
     medAbstractDbController * dbController;
     medAbstractDbController * nonPersDbController;
     QTimer timer;
+    QHash<QUuid, medDataIndex> makePersistentJobs;
 };
 
 // ------------------------- medDataManager -----------------------------------
@@ -326,7 +327,26 @@ QUuid medDataManager::makePersistent(medAbstractData* data)
     if (data->dataIndex().dataSourceId() == d->dbController->dataSourceId())
         return QUuid();
 
-    return this->importData(data, true);
+    QUuid jobUuid;
+
+    if(data->dataIndex().isValidForSeries())
+    {
+        jobUuid = this->importData(data, true);
+        d->makePersistentJobs.insert(jobUuid, data->dataIndex());
+    }
+    else if( data->dataIndex().isValidForStudy() )
+    {
+        foreach(medDataIndex index, d->nonPersDbController->series(data->dataIndex()))
+            jobUuid = makePersistent(this->retrieveData(index));
+
+    }
+    else if( data->dataIndex().isValidForPatient())
+    {
+        foreach(medDataIndex index, d->nonPersDbController->studies(data->dataIndex()))
+            jobUuid = makePersistent(this->retrieveData(index));
+    }
+
+    return jobUuid;
 }
 
 
@@ -353,6 +373,16 @@ void medDataManager::removeData(const medDataIndex& index)
     }
 }
 
+void medDataManager::removeFromNonPersistent(medDataIndex indexImported, QUuid uuid)
+{
+    Q_D(medDataManager);
+    if(!d->makePersistentJobs.contains(uuid))
+        return;
+
+    this->removeData(d->makePersistentJobs.value(uuid));
+    d->makePersistentJobs.remove(uuid);
+}
+
 QPixmap medDataManager::thumbnail(const medDataIndex & index)
 {
     Q_D(medDataManager);
@@ -375,6 +405,8 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     }
     connect(&(d->timer), SIGNAL(timeout()), this, SLOT(garbageCollect()));
     d->timer.start(5*1000); // every minute
+
+    connect(this, SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(removeFromNonPersistent(medDataIndex,QUuid)));
 }
 
 
