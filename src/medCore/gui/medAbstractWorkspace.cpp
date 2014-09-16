@@ -416,6 +416,9 @@ void medAbstractWorkspace::changeCurrentLayer(int row)
     d->selectedLayers = d->layerListWidget->selectedItems();
 
     this->updateInteractorsToolBox();
+
+    // update the mouse interaction  according to the selected layers
+    this->updateMouseInteractionToolBox();
 }
 
 void medAbstractWorkspace::updateInteractorsToolBox()
