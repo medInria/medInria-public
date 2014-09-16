@@ -126,7 +126,7 @@ QString medAbstractDatabaseImporter::callerUuid()
 * Runs the import process based on the input file
 * or directory given in the constructor
 **/
-void medAbstractDatabaseImporter::run ( void )
+void medAbstractDatabaseImporter::internalRun ( void )
 {
     if(!d->file.isEmpty())
         importFile();

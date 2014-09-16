@@ -29,7 +29,6 @@ public:
      medPacsMover(const QVector<medMoveCommandItem>& cmdList);
     ~medPacsMover();
 
-    void run();
 
     void doQueuedMove();
 
@@ -38,6 +37,9 @@ signals:
    
 public slots:
     void onCancel(QObject*);
+
+protected:
+    virtual void internalRun();
 
 private slots:
     void progressForward(int);

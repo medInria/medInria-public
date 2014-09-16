@@ -49,6 +49,8 @@ public:
              medJobItem();
     virtual ~medJobItem();
 
+    virtual void run();
+
 signals:
     void progress  (QObject* sender, int progress);
     void progressed(int progress); // backward compatible version (automatically called when progress is emitted)
@@ -74,6 +76,9 @@ public slots:
     * @return   void
     */
     virtual void onCancel(QObject*);
+
+protected:
+    virtual void internalRun() = 0;
 
 protected slots:
     void onProgress(QObject* sender, int prog);

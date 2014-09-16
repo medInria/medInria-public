@@ -45,7 +45,7 @@ medPacsMover::~medPacsMover( void )
     d = NULL;
 }
 
-void medPacsMover::run( void )
+void medPacsMover::internalRun( void )
 {
     doQueuedMove();
 }

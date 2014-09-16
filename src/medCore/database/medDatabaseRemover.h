@@ -34,7 +34,6 @@ public:
      medDatabaseRemover(const medDataIndex &index);
     ~medDatabaseRemover();
 
-    void run();
 
 signals:
 
@@ -48,6 +47,8 @@ public slots:
     void onCancel(QObject*);
 
 protected:
+    virtual void internalRun();
+
     void removeImage( int patientId, int studyId, int seriesId, int imageId);
 
 

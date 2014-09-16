@@ -130,6 +130,7 @@ void medMessageProgress::setProgress(int value)
 
 void medMessageProgress::success(void)
 {
+    progress->setValue(100);
     progress->setProperty("success",true);
     progress->style()->unpolish(progress);
     progress->style()->polish(progress);

@@ -73,7 +73,7 @@ medDatabaseRemover::~medDatabaseRemover()
     d = NULL;
 }
 
-void medDatabaseRemover::run()
+void medDatabaseRemover::internalRun()
 {
 
     QSqlDatabase db( d->db );

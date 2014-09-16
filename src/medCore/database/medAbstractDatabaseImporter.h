@@ -48,7 +48,6 @@ public:
 
     ~medAbstractDatabaseImporter ( void );
 
-    virtual void run ( void ) ;
 
 signals:
     /**
@@ -70,6 +69,7 @@ public slots:
 
 
 protected:
+    virtual void internalRun ( void ) ;
 
     QString file ( void );   
     bool isCancelled ( void );   

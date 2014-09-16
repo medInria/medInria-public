@@ -38,7 +38,6 @@ public:
      medRunnableProcess();
     ~medRunnableProcess();
 
-    void run();
 
     void setProcess (dtkAbstractProcess *proc);
     dtkAbstractProcess * getProcess();
@@ -49,6 +48,9 @@ public slots:
     virtual void onProgressed (int);
 
     virtual void onCancel (QObject*);
+
+protected:
+    virtual void internalRun();
     
 private:
     medRunnableProcessPrivate *d;

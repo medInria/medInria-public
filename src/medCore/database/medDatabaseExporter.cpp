@@ -45,7 +45,7 @@ medDatabaseExporter::~medDatabaseExporter(void)
  * @param void
  * @todo enrich the signals in the exporter (the writer progress signal is not forwarded to the explorer)
 */
-void medDatabaseExporter::run(void)
+void medDatabaseExporter::internalRun(void)
 {
     if (!d->data)
     {

@@ -29,7 +29,8 @@ public:
      medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer);
     ~medDatabaseExporter();
 
-    void run();
+protected:
+    void internalRun();
 
 private:
     medDatabaseExporterPrivate *d;
