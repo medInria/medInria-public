@@ -712,7 +712,7 @@ void medViewContainer::dataReady(medDataIndex index, QUuid uuid)
         return;
 
     d->expectedUuid = QUuid();
-    disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),0,0);
+    disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
     this->addData(index);
 }
 
