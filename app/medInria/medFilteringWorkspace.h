@@ -30,18 +30,11 @@ class medFilteringWorkspace : public medAbstractWorkspace
     MED_WORKSPACE_INTERFACE("Filtering",
                             "Filtering workspace.")
 public:
-    /**
-     * @brief
-     *
-     * @param parent
-     */
     medFilteringWorkspace(QWidget *parent = 0);
     ~medFilteringWorkspace();
 
     static bool isUsable();
-    /**
-     * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
-     */
+
     void setupViewContainerStack ();
 
     virtual void open(const medDataIndex &index);
@@ -59,19 +52,7 @@ signals:
 protected slots:
 
     void changeToolBoxInput();
-
-    /**
-     * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
-     */
     void onProcessSuccess();
-
-
-//    /**
-//     * @brief Clear the filtering toolboxes when the input view is closed
-//     *
-//     */
-//    void onInputViewRemoved();
-
 
 private:
     medFilteringWorkspacePrivate *d;
