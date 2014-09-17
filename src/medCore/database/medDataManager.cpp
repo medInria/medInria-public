@@ -387,7 +387,12 @@ QPixmap medDataManager::thumbnail(const medDataIndex & index)
 {
     Q_D(medDataManager);
     medAbstractDbController* dbc = d->controllerForDataSource(index.dataSourceId());
-    QPixmap pix = dbc->thumbnail(index);
+
+    QPixmap pix;
+    // dbc is NULL when called from the importer, as data is not imported yet
+    if (dbc) {
+        pix = dbc->thumbnail(index);
+    }
 
     return pix.isNull() ? QPixmap(":/medGui/pixmaps/default_thumbnail.png") : pix;
 }

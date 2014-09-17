@@ -42,7 +42,7 @@ public:
     /** Specify the Spherical Harmonic Source that the glyph needs to draw a deform
      *  spherical function at every point.*/
 
-    void SetSphericalHarmonicSource(vtkSphericalHarmonicSource* shs) { this->SphericalHarmonicSource = shs; }
+    void SetSphericalHarmonicSource(vtkSphericalHarmonicSource* shs) { this->SphericalHarmonicSource = shs; shs->Register(this);}
 
     //vtkSetObjectMacro (SphericalHarmonicSource,vtkSphericalHarmonicSource);
 

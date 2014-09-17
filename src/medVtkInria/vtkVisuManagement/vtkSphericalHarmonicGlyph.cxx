@@ -109,6 +109,9 @@ vtkSphericalHarmonicGlyph::vtkSphericalHarmonicGlyph() {
 vtkSphericalHarmonicGlyph::~vtkSphericalHarmonicGlyph() {
     if(TMatrix)
         TMatrix->Delete();
+
+    if (SphericalHarmonicSource)
+        SphericalHarmonicSource->UnRegister(this);
 }
 
 int

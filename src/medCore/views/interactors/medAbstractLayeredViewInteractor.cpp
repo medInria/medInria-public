@@ -18,7 +18,7 @@
 #include <medAbstractLayeredView.h>
 #include <medAbstractParameter.h>
 #include <medBoolParameter.h>
-#include <medMetaDataKeys.h>
+#include <medDataManager.h>
 
 class medAbstractLayeredViewInteractorPrivate
 {
@@ -50,14 +50,14 @@ medAbstractBoolParameter* medAbstractLayeredViewInteractor::visibilityParameter(
     {
         if(this->inputData())
         {
-            QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(this->inputData(),":icons/layer.png");
+            QPixmap thumbnail = medDataManager::instance()->thumbnail(this->inputData()->dataIndex());
             QPushButton* thumbnailButton = d->visibilityParameter->getPushButton();
             QIcon thumbnailIcon;
             // Set the off icon to the greyed out version of the regular icon
-            thumbnailIcon.addPixmap(QPixmap(thumbPath), QIcon::Normal, QIcon::On);
+            thumbnailIcon.addPixmap(thumbnail, QIcon::Normal, QIcon::On);
             QStyleOption opt(0);
             opt.palette = QApplication::palette();
-            QPixmap pix = QApplication::style()->generatedIconPixmap(QIcon::Disabled, QPixmap(thumbPath), &opt);
+            QPixmap pix = QApplication::style()->generatedIconPixmap(QIcon::Disabled, thumbnail, &opt);
             thumbnailIcon.addPixmap(pix, QIcon::Normal, QIcon::Off);
             thumbnailButton->setFocusPolicy(Qt::NoFocus);
             thumbnailButton->setIcon(thumbnailIcon);

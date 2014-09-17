@@ -13,16 +13,17 @@
 
 #pragma once
 
+
 #include <QObject>
 #include <QPixmap>
 #include <QUuid>
 
 #include <medCoreExport.h>
+#include <medDataIndex.h>
 
 class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
-class medDataIndex;
 
 class MEDCORE_EXPORT medDataManager : public QObject
 {
