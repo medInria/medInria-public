@@ -32,7 +32,8 @@ class MEDCORE_EXPORT medPluginManager : public dtkPluginManager
 public:
     static medPluginManager *instance();
 
-    void  readSettings();
+    void readSettings();
+    void initialize();
     void uninitialize();
     QStringList handlers(const QString& category);
 
@@ -47,6 +48,9 @@ protected:
 
 protected slots:
      void onLoadError(const QString& errorMessage);
+
+signals:
+     void allPluginsLoaded();
 
 private:
     static medPluginManager *s_instance; /**< TODO */

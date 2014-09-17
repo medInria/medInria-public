@@ -41,6 +41,13 @@ medPluginManager *medPluginManager::instance(void)
     return s_instance;
 }
 
+void medPluginManager::initialize()
+{
+    dtkPluginManager::initialize();
+
+    emit allPluginsLoaded();;
+}
+
 /**
  * @brief Uninitialize the manager.
  * @warning does nothing here, writing the path brought problems with the use of the

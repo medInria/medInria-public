@@ -70,6 +70,7 @@ private slots:
     void exportDialog_updateSuffix(int index);
     void garbageCollect();
     void removeFromNonPersistent(medDataIndex,QUuid);
+    void setWriterPriorities();
 
 protected:
     medDataManagerPrivate * const d_ptr;

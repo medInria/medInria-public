@@ -21,6 +21,7 @@
 #include <medDatabaseExporter.h>
 #include <medMessageController.h>
 #include <medJobManager.h>
+#include <medPluginManager.h>
 
 /* THESE CLASSES NEED TO BE THREAD-SAFE, don't forget to lock the mutex in the
  * methods below that access state.
@@ -397,6 +398,27 @@ QPixmap medDataManager::thumbnail(const medDataIndex & index)
     return pix.isNull() ? QPixmap(":/medGui/pixmaps/default_thumbnail.png") : pix;
 }
 
+void medDataManager::setWriterPriorities()
+{
+    QList<QString> writers = medAbstractDataFactory::instance()->writers();
+    QMap<int, QString> writerPriorites;
+
+    int startIndex = 0;
+
+    // set itkMetaDataImageWriter as the top priority writer
+    if(writers.contains("itkMetaDataImageWriter"))
+    {
+        writerPriorites.insert(0, "itkMetaDataImageWriter");
+        startIndex = writers.removeOne("itkMetaDataImageWriter") ? 1 : 0;
+    }
+
+    for ( int i=0; i<writers.size(); i++ )
+    {
+        writerPriorites.insert(startIndex+i, writers[i]);
+    }
+
+    medAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
+}
 
 medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
 {
@@ -411,6 +433,7 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     connect(&(d->timer), SIGNAL(timeout()), this, SLOT(garbageCollect()));
     d->timer.start(5*1000); // every minute
 
+    connect(medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this, SLOT(setWriterPriorities()));
     connect(this, SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(removeFromNonPersistent(medDataIndex,QUuid)));
 }
 
