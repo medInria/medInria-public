@@ -346,7 +346,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                     layout->addWidget(poolIndicator);
                     d->poolIndicators.insert(d->layerListWidget->count(), poolIndicator);
 
-                    QList<medLayerParameterGroup*> layerGroups = medParameterGroupManager::instance()->layerGroups(layeredView, layer);
+                    QList<medLayerParameterGroup*> layerGroups = medParameterGroupManager::instance()->layerGroups(layeredView, data);
                     foreach(medLayerParameterGroup *layerGroup, layerGroups)
                     {
                         poolIndicator->addColorIndicator(layerGroup->color(), layerGroup->name());
@@ -731,7 +731,7 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
         while(iterLayer.hasNext())
         {
             iterLayer.next();
-            if(!layerGroup->impactedLayers().contains(iterLayer.key(), iterLayer.value()))
+            if(!layerGroup->impactedLayers().contains(iterLayer.key(), iterLayer.key()->layerData(iterLayer.value())))
                 selected = false;
             else
                 partiallySelected = true;
@@ -803,7 +803,7 @@ void medAbstractWorkspace::addLayerstoGroup(QString group)
         medViewContainer *container = containerMng->container(containerUuid);
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        paramGroup->addImpactedlayer(view, currentLayer);
+        paramGroup->addImpactedlayer(view, view->layerData(currentLayer));
 
         int row = d->layerListWidget->row(item);
         medPoolIndicator *indicator = d->poolIndicators[row];
@@ -828,7 +828,7 @@ void medAbstractWorkspace::removeLayersFromGroup(QString group)
         medViewContainer *container = containerMng->container(containerUuid);
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        paramGroup->removeImpactedlayer(view, currentLayer);
+        paramGroup->removeImpactedlayer(view, view->layerData(currentLayer));
 
         int row = d->layerListWidget->row(item);
         medPoolIndicator *indicator = d->poolIndicators[row];

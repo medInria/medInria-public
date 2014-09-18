@@ -22,6 +22,7 @@ class medAbstractLayeredView;
 class medAbstractParameterGroup;
 class medViewParameterGroup;
 class medLayerParameterGroup;
+class medAbstractData;
 
 class medParameterGroupManagerPrivate;
 
@@ -36,7 +37,7 @@ public:
     void unregisterGroup(medAbstractParameterGroup* group);
 
     QList<medViewParameterGroup*> viewGroups(medAbstractView *);
-    QList<medLayerParameterGroup*> layerGroups(medAbstractLayeredView *, unsigned int);
+    QList<medLayerParameterGroup*> layerGroups(medAbstractLayeredView *, medAbstractData *);
 
     QList<medViewParameterGroup*> viewGroups(QString workspace);
     QList<medLayerParameterGroup*> layerGroups(QString workspace);

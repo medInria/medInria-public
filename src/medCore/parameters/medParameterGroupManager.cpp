@@ -145,7 +145,7 @@ QList<medViewParameterGroup*> medParameterGroupManager::viewGroups(medAbstractVi
     return results;
 }
 
-QList<medLayerParameterGroup*> medParameterGroupManager::layerGroups(medAbstractLayeredView *view, unsigned int layer)
+QList<medLayerParameterGroup*> medParameterGroupManager::layerGroups(medAbstractLayeredView *view, medAbstractData* layerData)
 {
     QHashIterator<QString, medLayerParameterGroup*> iter(d->layerGroups);
     QList<medLayerParameterGroup*> results;
@@ -154,7 +154,7 @@ QList<medLayerParameterGroup*> medParameterGroupManager::layerGroups(medAbstract
     {
         iter.next();
         medLayerParameterGroup *layerGroup = iter.value();
-        if(layerGroup && layerGroup->impactedLayers().contains(view, layer))
+        if(layerGroup && layerGroup->impactedLayers().contains(view, layerData))
             results.append(layerGroup);
     }
 

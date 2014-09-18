@@ -72,6 +72,7 @@ public slots:
 signals:
     void layerAdded(unsigned int layer);
     void layerRemoved(unsigned int layer);
+    void layerRemoved(medAbstractData*);
     void currentLayerChanged() const;
 
 protected:

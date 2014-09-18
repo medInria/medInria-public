@@ -24,7 +24,7 @@
 class medLayerParameterGroupPrivate
 {
 public:
-    QMultiHash<medAbstractLayeredView*, unsigned int> impactedLayers;
+    QMultiHash<medAbstractLayeredView*, medAbstractData*> impactedLayers;
     medParameterPool *pool;
 };
 
@@ -41,7 +41,7 @@ medLayerParameterGroup::~medLayerParameterGroup()
 {
     medParameterGroupManager::instance()->unregisterGroup(this);
 
-    QHashIterator<medAbstractLayeredView*, unsigned int> iter(d->impactedLayers);
+    QHashIterator<medAbstractLayeredView*, medAbstractData*> iter(d->impactedLayers);
     while(iter.hasNext())
     {
         iter.next();
@@ -53,26 +53,26 @@ medLayerParameterGroup::~medLayerParameterGroup()
     delete d;
 }
 
-void medLayerParameterGroup::addImpactedlayer(medAbstractLayeredView *view, unsigned int layer)
+void medLayerParameterGroup::addImpactedlayer(medAbstractLayeredView *view, medAbstractData* layerData)
 {    
-    d->impactedLayers.insert(view, layer);
+    d->impactedLayers.insert(view, layerData);
 
-    updateParameterToLinkList(view, layer);
+    updateParameterToLinkList(view, layerData);
 
-    connect(view, SIGNAL(layerRemoved(uint)), this, SLOT(removeImpactedlayer(uint)));
+    connect(view, SIGNAL(layerRemoved(medAbstractData*)), this, SLOT(removeImpactedlayer(medAbstractData*)));
 }
 
-void medLayerParameterGroup::removeImpactedlayer(medAbstractLayeredView *view, unsigned int layer)
+void medLayerParameterGroup::removeImpactedlayer(medAbstractLayeredView *view,  medAbstractData* layerData)
 {
-    d->impactedLayers.remove(view, layer);
+    d->impactedLayers.remove(view, layerData);
 
-    updateParameterToLinkList(view, layer);
+    updateParameterToLinkList(view, layerData);
 }
 
-void medLayerParameterGroup::removeImpactedlayer(uint layer)
+void medLayerParameterGroup::removeImpactedlayer(medAbstractData* layerData)
 {
     medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView *>(this->sender());
-    removeImpactedlayer(view, layer);
+    removeImpactedlayer(view, layerData);
 }
 
 void medLayerParameterGroup::setLinkAllParameters(bool linkAll)
@@ -81,21 +81,20 @@ void medLayerParameterGroup::setLinkAllParameters(bool linkAll)
 
     if( linkAll )
     {
-        QHashIterator<medAbstractLayeredView*, unsigned int> iter(d->impactedLayers);
+        QHashIterator<medAbstractLayeredView*, medAbstractData*> iter(d->impactedLayers);
         while(iter.hasNext())
         {
             iter.next();
-            QList<medAbstractParameter*>  params;
 
             medAbstractLayeredView* view = iter.key();
-            unsigned int layer = iter.value();
+            medAbstractData* layerData = iter.value();
 
-            updateParameterToLinkList(view, layer);
+            updateParameterToLinkList(view, layerData);
         }
     }
 }
 
-QMultiHash<medAbstractLayeredView*, unsigned int> medLayerParameterGroup::impactedLayers()
+QMultiHash<medAbstractLayeredView*, medAbstractData*> medLayerParameterGroup::impactedLayers()
 {
     return d->impactedLayers;
 }
@@ -104,16 +103,16 @@ void medLayerParameterGroup::updatePool()
 {
     d->pool->clear();
 
-    QHashIterator<medAbstractLayeredView*, unsigned int> iter(d->impactedLayers);
+    QHashIterator<medAbstractLayeredView*, medAbstractData*> iter(d->impactedLayers);
     while(iter.hasNext())
     {
         iter.next();
         QList<medAbstractParameter*>  params;
 
         medAbstractLayeredView* view = iter.key();
-        unsigned int layer = iter.value();
+        medAbstractData* layerData = iter.value();
 
-        foreach(medAbstractInteractor* interactor, view->layerInteractors(layer))
+        foreach(medAbstractInteractor* interactor, view->layerInteractors(view->layer(layerData)))
             params.append(interactor->linkableParameters());
 
         foreach(medAbstractParameter* param, params)
@@ -125,13 +124,13 @@ void medLayerParameterGroup::updatePool()
 }
 
 
-void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *view, unsigned int layer)
+void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *view, medAbstractData* layerData)
 {
     if( linkAll() )
     {
         QList<medAbstractParameter*>  params;
 
-        foreach(medAbstractInteractor* interactor, view->layerInteractors(layer))
+        foreach(medAbstractInteractor* interactor, view->layerInteractors(view->layer(layerData)))
             params.append(interactor->linkableParameters());
 
         foreach(medAbstractParameter* param, params)
@@ -152,7 +151,7 @@ void medLayerParameterGroup::updateParameterToLinkList(medAbstractLayeredView *v
     {
         QList<medAbstractParameter*>  params;
 
-        foreach(medAbstractInteractor* interactor, view->layerInteractors(layer))
+        foreach(medAbstractInteractor* interactor, view->layerInteractors(view->layer(layerData)))
             params.append(interactor->linkableParameters());
 
         foreach(medAbstractParameter* param, params)

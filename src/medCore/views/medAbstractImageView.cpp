@@ -295,10 +295,10 @@ void medAbstractImageView::switchToFourViews()
         QString linkLayerName = linkGroupBaseName + QString::number(linkGroupNumber) + " Layer " + QString::number(i+1);
         medLayerParameterGroup* layerGroup = new medLayerParameterGroup(linkLayerName, this);
         layerGroup->setLinkAllParameters(true);
-        layerGroup->addImpactedlayer(this, i);
-        layerGroup->addImpactedlayer(topRightContainerView, i);
-        layerGroup->addImpactedlayer(bottomLeftContainerView, i);
-        layerGroup->addImpactedlayer(bottomRightContainerView, i);
+        layerGroup->addImpactedlayer(this, this->layerData(i));
+        layerGroup->addImpactedlayer(topRightContainerView, topRightContainerView->layerData(i));
+        layerGroup->addImpactedlayer(bottomLeftContainerView, bottomLeftContainerView->layerData(i));
+        layerGroup->addImpactedlayer(bottomRightContainerView, bottomRightContainerView->layerData(i));
     }
 
     topLeftContainer->setSelected(true);
