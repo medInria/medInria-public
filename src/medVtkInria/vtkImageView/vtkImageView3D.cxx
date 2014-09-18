@@ -130,16 +130,12 @@ vtkImage3DDisplay::vtkImage3DDisplay()
 
 vtkImage3DDisplay::~vtkImage3DDisplay()
 {
-//  vtkSmartPointer
-//  if (this->Input)
-//  {
-//    this->Input->Delete();
-//  }
-//  vtkSmartPointer
-//  if (this->LookupTable)
-//  {
-//    this->LookupTable->Delete();
-//  }
+  if (this->Input) {
+    this->Input->Delete();
+  }
+  if (this->LookupTable) {
+    this->LookupTable->Delete();
+  }
 }
 
 
@@ -636,6 +632,13 @@ void vtkImageView3D::InternalUpdate()
   if(input == NULL)
   {
       this->Renderer->RemoveAllViewProps();
+
+      //TODO apparently RemoveAllViewProps() is not enough, though it should be
+      this->ActorX->SetInput ( (vtkImageData*)0 );
+      this->ActorY->SetInput ( (vtkImageData*)0 );
+      this->ActorZ->SetInput ( (vtkImageData*)0 );
+
+      this->Render();
       return;
   }
 
@@ -1154,17 +1157,15 @@ void vtkImageView3D::RemoveLayer (int layer)
     return;
   }
 
-//  if (layer<=0) // do not remove layer 0
-//    return;
-
   this->LayerInfoVec.erase (this->LayerInfoVec.begin() + layer );
+
+  this->InternalUpdate();
 
   if(this->LayerInfoVec.size() == 0)
   {
       AddLayer(0);
+      this->InternalUpdate();
   }
-
-  this->InternalUpdate();
 }
 
 //----------------------------------------------------------------------------
@@ -1276,6 +1277,7 @@ void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
      IMPORTANT NOTE
 
      Adding a 2D actor in the 3D scene should be as simple as the next line
+
      instead of the code above...
 
      Unfortunately it does not seem to work properly. But this is something
