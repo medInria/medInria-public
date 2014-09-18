@@ -13,7 +13,8 @@ medInria v2.2.0:
 - Diffusion workspace refactored
 - View and Data Management API updated
 - View properties toolbox improved and a new system to link properties set up
-- Corrections in time line management 
+- Corrections in time line management
+- 2 new registration plugins are added : LCC log-Demons and non linear block-matching registration
 - Many bug corrections
 
 medInria v2.1.2:
