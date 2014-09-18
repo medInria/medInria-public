@@ -1,3 +1,21 @@
+medInria v2.2.0:
+- Rubber band zoom
+- Add support for VTK vtp file format
+- New application design 
+- DICOM import robustness improved
+- Morphological filters (dilate, erode, open, close) added
+- ITK4.5 and VTK5.10 migration
+- Vector field visualization
+- HighDPI support on OSX
+- New navigator to explore patients/studies/series
+- New view container management system
+- MPR feature added to visualize an image in all orientations 
+- Diffusion workspace refactored
+- View and Data Management API updated
+- View properties toolbox improved and a new system to link properties set up
+- Corrections in time line management 
+- Many bug corrections
+
 medInria v2.1.2:
 - Bug fixes on view/layer synchronisation in the registration workspace
 - Made image annotations more legible on any background by adding text shadows
