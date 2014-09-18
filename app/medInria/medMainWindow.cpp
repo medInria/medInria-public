@@ -309,8 +309,7 @@ void medMainWindow::saveSettings() {
 void medMainWindow::setStartup(const AreaType areaIndex,const QStringList& filenames) {
     switchToArea(areaIndex);
     for (QStringList::const_iterator i= filenames.constBegin();i!=filenames.constEnd();++i)
-        qDebug() << "TODO have to be move where it belong (not in main window)";
-//        open(i->toLocal8Bit().constData());
+        open(i->toLocal8Bit().constData());
 }
 
 void medMainWindow::switchToArea(const AreaType areaIndex)

@@ -368,12 +368,12 @@ void medAbstractWorkspace::updateLayersToolBox()
                 }
 
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-                layerWidget->resize(d->selectionToolBox->width(), 25);
+                layerWidget->resize(d->selectionToolBox->sizeHint().width(), 25);
 
                 QListWidgetItem * item = new QListWidgetItem;
                 item->setData(Qt::UserRole, layer);
                 d->containerForLayerWidgetsItem.insert(item, uuid);
-                item->setSizeHint(QSize(layerWidget->width(), 25));
+                item->setSizeHint(QSize(layerWidget->sizeHint().width(), 25));
                 d->layerListWidget->addItem(item);
                 d->layerListWidget->setItemWidget(item, layerWidget);
                 layerWidget->setFocusPolicy(Qt::NoFocus);
