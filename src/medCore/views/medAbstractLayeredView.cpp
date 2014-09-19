@@ -330,7 +330,7 @@ medAbstractData * medAbstractLayeredView::layerData(unsigned int layer) const
 {
     if (layer >= (unsigned int)d->layersDataList.size())
     {
-        qWarning() << "Unable to retreive data at layer:" <<layer << "from: "<< this->description();
+        qWarning() << "Unable to retrieve data at layer:" <<layer << "from: "<< this->description();
         return NULL;
     }
     return d->layersDataList[layer];
