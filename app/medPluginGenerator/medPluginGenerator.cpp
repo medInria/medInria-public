@@ -32,6 +32,7 @@ public:
 medPluginGenerator::medPluginGenerator()
 {
     this->d = new medPluginGeneratorPrivate;
+    d->generateClassOnly = false;
 }
 
 medPluginGenerator::~medPluginGenerator()

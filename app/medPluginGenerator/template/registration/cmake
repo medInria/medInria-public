@@ -91,17 +91,17 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOPNG
   ITKIOVTK
   ITKIOGDCM
-  ITKNrrdIO
   ITKIONRRD
   ITKIOMeta
+  ITKIOMRC
   ITKIONIFTI
   ITKIOGIPL
   ITKIOHDF5
   ITKIOBioRad
+  ITKIOPhilipsREC
   ITKIOStimulate
   ${ITKReview_LIBRARIES}
   medCore
-  medGui
   medRegistration
   )
 
