@@ -741,7 +741,7 @@ medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
      * ends ("sss" or "eee").
      */
 
-    int ltw = qMin(150,w/4), tth = qMin(150,h/4); // left trigger width, top trigger height
+    int ltw = qMin(50,w/4), tth = qMin(50,h/4); // left trigger width, top trigger height
     int rtw = w - ltw, bth = h - tth;           // right trigger width, bottom trigger height
 
     if(x < ltw && ((y >= tth && y < bth) || (y < tth && y > x) || (y >= bth && (h-y) > x)))
