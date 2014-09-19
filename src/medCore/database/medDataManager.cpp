@@ -308,9 +308,8 @@ void medDataManager::garbageCollect()
     while(it.hasNext()) {
         it.next();
         medAbstractData *data = it.value();
-        qDebug()<<"medDataManager garbage collect ?" << data->dataIndex() << data->count();
         if(data->count() <= 1) {
-            qDebug()<<"medDataManager garbage collect !" << data->dataIndex();
+            qDebug()<<"medDataManager garbage collected " << data->dataIndex();
             it.remove();
         }
     }
@@ -430,8 +429,9 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
         connect(controller, SIGNAL(dataRemoved(medDataIndex)), this, SIGNAL(dataRemoved(medDataIndex)));
         connect(controller, SIGNAL(metadataModified(medDataIndex,QString,QString)), this, SIGNAL(metadataModified(medDataIndex,QString,QString)));
     }
+
     connect(&(d->timer), SIGNAL(timeout()), this, SLOT(garbageCollect()));
-    d->timer.start(5*1000); // every minute
+    d->timer.start(5*1000);
 
     connect(medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this, SLOT(setWriterPriorities()));
     connect(this, SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(removeFromNonPersistent(medDataIndex,QUuid)));
