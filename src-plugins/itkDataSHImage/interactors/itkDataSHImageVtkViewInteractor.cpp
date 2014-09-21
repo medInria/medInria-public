@@ -263,8 +263,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     d->parameters.append(glyphResolutionParam);
     d->parameters.append(minorScalingParam);
     d->parameters.append(majorScalingParam);
-    d->parameters.append(visibilityParameter());
-
 
     connect(tesselationTypeParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationType(QString)));
     connect(tesselationBasisParam, SIGNAL(valueChanged(QString)), this, SLOT(setTesselationBasis(QString)));
@@ -497,7 +495,9 @@ QWidget* itkDataSHImageVtkViewInteractor::buildToolBarWidget()
 
 QList<medAbstractParameter*> itkDataSHImageVtkViewInteractor::linkableParameters()
 {
-    return d->parameters;
+    QList <medAbstractParameter*> linkableParams = d->parameters;
+    linkableParams << this->visibilityParameter();
+    return linkableParams;
 }
 
 QList<medBoolParameter*> itkDataSHImageVtkViewInteractor::mouseInteractionParameters()
