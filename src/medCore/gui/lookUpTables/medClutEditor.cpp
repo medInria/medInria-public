@@ -824,6 +824,8 @@ void medClutEditorTable::paint(QPainter *painter,
     QRectF area = scene->plotArea();
 
     int n_points = d->vertices.size();
+    if(n_points == 0)
+        return;
     QPointF *points = new QPointF[n_points + 2];
     points[0]            = QPointF( d->vertices.first()->x(), area.bottom() );
     points[n_points + 1] = QPointF( d->vertices.last()->x(),  area.bottom() );

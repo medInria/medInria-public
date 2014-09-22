@@ -300,24 +300,18 @@ void medWorkspaceArea::bringUpTransferFunction(bool checked)
         d->transFun->setWindowModality( Qt::WindowModal );
         d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
 
-        //// d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
-        //d->transFun->setView(dynamic_cast<medAbstractImageView*>(view));
         d->transFun->clear(); //update()
         d->transFun->show();
- /*       QList<medAbstractParameter*> params;
-        medAbstractParameter *
-        for(int i=0 ; i=view->primaryNavigator()->linkableParameters().size(); i++)
-            if()*/
-        //update tranfer function.
 
-        connect (view->windowLevelParameter(0), SIGNAL(valuesChanged(const QHash<QString,QVariant>&)),
+        //update tranfer function when view changed.
+        connect (containers, SIGNAL(containersSelectedChanged()),
                  this, SLOT(updateTransferFunction()), Qt::UniqueConnection);
     }
 }
 
 void medWorkspaceArea::updateTransferFunction()
 {
-    medViewContainer *current;
+    medViewContainer *current = NULL;
     medTabbedViewContainers * containers = this->currentWorkspace()->stackedViewContainers();
     QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
 
@@ -330,8 +324,6 @@ void medWorkspaceArea::updateTransferFunction()
 
     dtkAbstractView * view = current->view();
     if ( d->transFun != NULL && view != NULL ) {
-        //d->transFun->setData( static_cast<medAbstractData *>( view->data() ) );
-        //d->transFun->setView( dynamic_cast<medAbstractImageView *>( view ), true );
         d->transFun->clear(); //update()
     }
 }
