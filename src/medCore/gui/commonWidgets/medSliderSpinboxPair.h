@@ -13,7 +13,6 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <QtGui>
 #include <medCoreExport.h>
 
@@ -88,15 +87,77 @@ private:
 };
 
 
+class QDoubleSlider : public QSlider{
+    Q_OBJECT
+public:
 
-class medDoubleSliderSpinboxPair: public QWidget {
+    explicit QDoubleSlider(Qt::Orientation orientation, QWidget *parent = 0):QSlider(orientation,parent)
+    {
+        connect(this,SIGNAL(valueChanged(int)),this,SLOT(onValueChanged(int)));
+        step=1;
+    };
+    explicit QDoubleSlider(QWidget *parent = 0):QSlider(parent)
+    {
+        connect(this,SIGNAL(valueChanged(int)),this,SLOT(onValueChanged(int)));
+        step=1;
+    };
+
+    public slots:
+
+        void onValueChanged(int i)
+        {
+            emit valueChanged(value());  
+        };
+
+signals:
+        void valueChanged(double);
+
+public:
+    void setMinimum(double min)
+    {
+        this->min = min;
+        QSlider::setMinimum(ceil(min/step));
+    };
+    void setMaximum(double max)
+    {
+        this->max = max;
+        QSlider::setMaximum(ceil(max/step));
+    };
+
+    double value()
+    {
+        int i = QSlider::value();
+        return i*step;
+    };
+
+    void setValue(double d)
+    {
+        int m = floor((d/step)+0.5);
+        QSlider::setValue(m);;    
+    };
+
+    void setStep(double s)
+    {
+      step = s;
+      QSlider::setMaximum(ceil(max/step));
+      QSlider::setMinimum(ceil(min/step));
+      QSlider::setSingleStep(1);
+      };
+
+private:
+    double min;              
+    double max;              
+    double step;         
+};
+
+class MEDCORE_EXPORT medDoubleSliderSpinboxPair: public QWidget {
 
     Q_OBJECT
 
 public:
 
     medDoubleSliderSpinboxPair(QWidget* parent=0): QWidget(parent) {
-        slider  = new QSlider(Qt::Horizontal,this);
+        slider  = new QDoubleSlider(Qt::Horizontal,this);
         spinbox = new QDoubleSpinBox(this);
 
         slider->setTracking(false);
@@ -106,7 +167,8 @@ public:
         layout->addWidget(slider);
         layout->addWidget(spinbox);
 
-        connect(slider, SIGNAL(valueChanged(int)),this,SLOT(onValueChanged()));
+        connect(slider, SIGNAL(valueChanged(double)),this,SLOT(onValueChanged()));
+        connect(slider, SIGNAL(sliderMoved(double)), this, SLOT(updateSpinbox(double)));
         connect(spinbox,SIGNAL(editingFinished()),this,SLOT(onValueChanged()));
     }
 
@@ -120,7 +182,13 @@ public:
         spinbox->setMaximum(max);
     }
 
+    void setStep(double s){
+        slider->setStep(s);
+    }
+
     double value() const { return slider->value(); }
+
+    void setSpinBoxSuffix(QString suffix) { spinbox->setSuffix(suffix); }
 
 signals:
 
@@ -138,10 +206,24 @@ public slots:
         emit(valueChanged(value));
     }
 
+    void setEnabled(bool boolean){
+        slider->setEnabled(boolean);
+        spinbox->setEnabled(boolean);
+    }
+
+    void updateSpinbox(double value)
+    {
+        spinbox->blockSignals(true);
+        spinbox->setValue(value);
+        spinbox->blockSignals(false);
+    }
+
 protected slots:
 
     void onValueChanged() {
-
+        //editingFinished is emitted when we press Enter AND when the spinBox loses focus
+        if (sender()==spinbox && !spinbox->hasFocus()) //we ignore the latter
+            return;
         slider->blockSignals(true);
         spinbox->blockSignals(true);
         if (sender()==slider)
@@ -155,7 +237,8 @@ protected slots:
 
 private:
 
-    QSlider*  slider;
+    QDoubleSlider*  slider;
     QDoubleSpinBox* spinbox;
 };
+
 
