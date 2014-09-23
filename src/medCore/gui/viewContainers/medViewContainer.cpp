@@ -653,7 +653,8 @@ medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
 
 void medViewContainer::closeEvent(QCloseEvent * /*event*/)
 {
-    delete this;
+    // never delete an object in code that is called synchronously from the object's event handler
+    this->deleteLater();
 }
 
 void medViewContainer::openFromSystem()

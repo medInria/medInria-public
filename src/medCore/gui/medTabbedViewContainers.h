@@ -57,8 +57,7 @@ public slots:
     void closeTab(int index);
 
 protected:
-    // Not sure of the name - RDE
-    void resetTabState();
+
 
 private slots:
     void disconnectTabFromSplitter(int index);
@@ -71,6 +70,8 @@ private slots:
     void minimizeOtherContainers(QUuid containerMaximized, bool maximized);
     void minimizeSplitterContainers(QUuid containerMaximized, bool maximized,
                                                              medViewContainerSplitter *splitter);
+    // Not sure of the name - RDE
+    void resetTabState();
 
 signals:
     void containersSelectedChanged();
