@@ -4,7 +4,7 @@ medInria v2.2.0:
 - New application design 
 - DICOM import robustness improved
 - Morphological filters (dilate, erode, open, close) added
-- ITK4.5 and VTK5.10 migration
+- ITK 4.6 and VTK5.10 migration
 - Vector field visualization
 - HighDPI support on OSX
 - New navigator to explore patients/studies/series
