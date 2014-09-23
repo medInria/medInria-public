@@ -143,7 +143,8 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     QMainWindow * mainWindowApp = dynamic_cast<QMainWindow *>
             (qApp->property( "MainWindow" ).value<QObject *>());
 
-    connect(mainWindowApp, SIGNAL(mainWindowDeactivated()), this, SLOT(resetKeyboardInteractionModifier()));
+    if(mainWindowApp)
+      connect(mainWindowApp, SIGNAL(mainWindowDeactivated()), this, SLOT(resetKeyboardInteractionModifier()));
 
     this->initialiseNavigators();
 
