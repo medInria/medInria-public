@@ -66,6 +66,9 @@ public:
                          const medClutEditorVertex *v2) {
         return (v1->x() < v2->x());
     }
+public slots:
+    void setValue (void);
+    void showColorSelection();
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -104,6 +107,9 @@ public:
     void setSize( const QSizeF & size );
     const QSizeF & size() const;
     // void setRange( qreal min, qreal max );
+    void setDiscreteMode(bool);
+    QHash<medClutEditorVertex *, medClutEditorVertex *> *calculateCoupledVertices(QList<medClutEditorVertex *>);
+    void updateVerticesToDisplay();
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
     QList<medClutEditorVertex *> & vertices();
