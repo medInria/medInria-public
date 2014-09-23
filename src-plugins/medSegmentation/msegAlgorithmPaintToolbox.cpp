@@ -145,9 +145,12 @@ public:
 
         if ( this->m_paintState == PaintState::None )
             return false;
-        m_paintState = PaintState::None; //Painting is done
-        m_cb->updateStroke(this, imageView);
-        this->m_points.clear();
+
+        if (imageView->is2D()) {
+            m_paintState = PaintState::None; //Painting is done
+            m_cb->updateStroke(this, imageView);
+            this->m_points.clear();
+        }
         return true;
     }
 
