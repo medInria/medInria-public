@@ -33,7 +33,6 @@
 #include <medAbstractImageView.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
-//#include <medClutEditor.h>
 #include <medToolBoxFactory.h>
 #include <medCompositeParameter.h>
 
@@ -52,12 +51,6 @@
 
 #include <QtGui>
 #include <QGLWidget>
-
-#ifdef Q_OS_MAC
-# define CONTROL_KEY "Meta"
-#else
-# define CONTROL_KEY "Ctrl"
-#endif
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
@@ -120,16 +113,6 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
         sizes.append(d->toolBoxContainer->minimumWidth());
         d->splitter->setSizes(sizes);
     }
-
-    //action for transfer function
-    QAction * transFunAction = new QAction("Toggle Tranfer Function Widget", this);
-    transFunAction->setShortcut(QKeySequence(tr(CONTROL_KEY "+H")));
-    transFunAction->setCheckable( true );
-    transFunAction->setChecked( false );
-    connect(transFunAction, SIGNAL(toggled(bool)),
-        this, SLOT(bringUpTransferFunction(bool)));
-
-    this->addAction(transFunAction);
 }
 
 medWorkspaceArea::~medWorkspaceArea(void)
@@ -270,60 +253,3 @@ void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* st
     d->stack->setCurrentWidget(stack);
 }
 
-void medWorkspaceArea::bringUpTransferFunction(bool checked)
-{
-    if (!checked)
-    {
-        if (d->transFun !=NULL )
-        {
-            delete d->transFun ;
-            d->transFun=NULL;
-        }
-        return;
-    }
-    medViewContainer *current;
-    medTabbedViewContainers * containers = this->currentWorkspace()->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
-
-    for(int i=0;i<containersInTabSelected.length();i++)
-        if (containersInTabSelected[i]->isSelected())
-            current = containersInTabSelected[i];
-
-    if ( current == NULL )
-        return;
-
-    if ( medAbstractImageView *view = qobject_cast<medAbstractImageView*>(current->view()) ) {
-        d->transFun = medToolBoxFactory::instance()->createToolBox("medClutEditorToolBox");
-        if(!d->transFun)
-            return;
-        d->transFun->setWorkspace(this->currentWorkspace());
-        d->transFun->setWindowModality( Qt::WindowModal );
-        d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
-
-        d->transFun->clear(); //update()
-        d->transFun->show();
-
-        //update tranfer function when view changed.
-        connect (containers, SIGNAL(containersSelectedChanged()),
-                 this, SLOT(updateTransferFunction()), Qt::UniqueConnection);
-    }
-}
-
-void medWorkspaceArea::updateTransferFunction()
-{
-    medViewContainer *current = NULL;
-    medTabbedViewContainers * containers = this->currentWorkspace()->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
-
-    for(int i=0;i<containersInTabSelected.length();i++)
-        if (containersInTabSelected[i]->isSelected())
-            current = containersInTabSelected[i];
-
-    if ( current == NULL )
-        return;
-
-    dtkAbstractView * view = current->view();
-    if ( d->transFun != NULL && view != NULL ) {
-        d->transFun->clear(); //update()
-    }
-}

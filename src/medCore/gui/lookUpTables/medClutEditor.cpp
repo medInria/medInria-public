@@ -816,7 +816,7 @@ void medClutEditorTable::setTransferFunction( QList<double> &scalars,
 
         this->addVertex(new medClutEditorVertex( value, coord, colors.at( i ), this ));
     }
-
+    
     qSort( d->principalVertices.begin(), d->principalVertices.end(),
         medClutEditorVertex::LessThan );
 
@@ -1418,6 +1418,9 @@ void medClutEditorView::wheelEvent( QWheelEvent * event )
                 scene->scaleRange( scale );
             else
                 scene->shiftRange( shift );
+
+            if(scene->table())
+                scene->table()->updateVerticesToDisplay();
         }
     }
     else {
@@ -1428,6 +1431,7 @@ void medClutEditorView::wheelEvent( QWheelEvent * event )
                 table->scaleWindowWidth( scale );
             else
                 table->shiftWindowCenter( shift );
+            table->updateVerticesToDisplay();
         }
     }
 

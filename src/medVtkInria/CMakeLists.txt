@@ -43,6 +43,7 @@ find_package(OpenGL REQUIRED)
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  medClutEditorToolBox
   vtkDataManagement
   vtkImageView
   vtkWidgetsAddOn
@@ -170,6 +171,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}  
   ${OPENGL_LIBRARIES}
+  medCore
   vtkCommon
   vtkFiltering 
   vtkRendering

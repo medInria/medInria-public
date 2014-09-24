@@ -20,7 +20,6 @@ class medToolBoxContainer;
 class medDatabaseNavigator;
 class medTabbedViewContainers;
 class medAbstractWorkspace;
-class medClutEditor;
 class QStackedWidget;
 class QSplitter;
 class medToolBoxBody;
@@ -44,7 +43,6 @@ public:
     medFileSystemDataSource *fsSource;
     QList <medAbstractDataSource*> dataSources;
 
-    QPointer<medToolBox> transFun;
     QStackedWidget *stack;
     QSplitter * splitter;
     QMutex mutex;

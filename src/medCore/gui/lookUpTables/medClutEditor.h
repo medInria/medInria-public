@@ -112,6 +112,7 @@ public:
     void updateVerticesToDisplay();
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
+    void deleteAllVertices();
     QList<medClutEditorVertex *> & vertices();
     const QList<medClutEditorVertex *> & vertices() const;
 
@@ -156,8 +157,6 @@ signals:
 //     void onDeleteVertex(medClutEditorVertex * v);
 
 private:
-    void deleteAllVertices();
-
     medClutEditorTablePrivate *d;
 };
 
