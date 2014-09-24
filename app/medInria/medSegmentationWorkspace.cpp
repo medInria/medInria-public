@@ -46,6 +46,7 @@ public:
     {}
 
     medSegmentationSelectorToolBox *segmentationToolBox;
+    medToolBox * roiManagementToolBox;
 };
 
 
@@ -63,8 +64,12 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
     // Always have a parent.
     if (!parent)
         throw (std::runtime_error ("Must have a parent widget"));
-
+    
     this->addToolBox(d->segmentationToolBox);
+    
+    d->roiManagementToolBox= medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox");
+    d->roiManagementToolBox->setWorkspace(this);
+    this->addToolBox(d->roiManagementToolBox);
 
     medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
     viewGroup1->setLinkAllParameters(true);
