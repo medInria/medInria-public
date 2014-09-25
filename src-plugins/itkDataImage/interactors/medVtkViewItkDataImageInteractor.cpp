@@ -175,7 +175,8 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
     d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
     initParameters(d->imageData);
 
-    d->view2d->GetInput()->Update();
+    //TODO GPR: to check: update not available anymore in VTK6
+    //d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput(d->view->layer(d->imageData))->GetScalarRange();
     this->initWindowLevelParameters(range);
 }
