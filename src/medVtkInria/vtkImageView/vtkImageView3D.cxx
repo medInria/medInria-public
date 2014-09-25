@@ -624,9 +624,9 @@ void vtkImageView3D::InternalUpdate()
       this->Renderer->RemoveAllViewProps();
 
       //TODO apparently RemoveAllViewProps() is not enough, though it should be
-      this->ActorX->SetInput ( (vtkImageData*)0 );
-      this->ActorY->SetInput ( (vtkImageData*)0 );
-      this->ActorZ->SetInput ( (vtkImageData*)0 );
+      this->ActorX->SetInputData ( (vtkImageData*)0 );
+      this->ActorY->SetInputData ( (vtkImageData*)0 );
+      this->ActorZ->SetInputData ( (vtkImageData*)0 );
 
       this->Render();
       return;
