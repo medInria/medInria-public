@@ -139,11 +139,10 @@ class vtkAlgorithm;
 class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
 {
 public:
-    //static vtkImageView* New(); // pure virtual class
     vtkTypeRevisionMacro(vtkImageView, vtkObject);
     void PrintSelf (ostream& os, vtkIndent indent);
 
-    // Override vtkObject - return the maximum mtime of this and any objects owned by this.
+
     unsigned long GetMTime();
 
     /**
@@ -166,51 +165,38 @@ public:
     };
     //ETX
 
-    // Description:
-    // Render the resulting image.
+
     virtual void Render();
 
-    // Description:
-    // Set/Get the input image to the viewer.
-    // LAYER
+
     virtual void SetInput (vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
     virtual void SetInputConnection (vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
-    //  vtkGetObjectMacro (Input, vtkImageData);
+
     virtual vtkImageData* GetInput (int layer = 0) const = 0;
 
-    // Description:
-    // Get the internal render window, renderer,
-    // image map and interactor instances.
+    // Get the internal render window, renderer, image map and interactor instances.
     vtkGetObjectMacro(RenderWindow,    vtkRenderWindow);
-    //vtkGetObjectMacro(Renderer,        vtkRenderer); // LAYER
     virtual vtkRenderer * GetRenderer() const{return Renderer;}
-
     vtkGetObjectMacro(OverlayRenderer, vtkRenderer);
-    //Is it useful for 2d and 3d?
-    //  virtual vtkImageMapToColors *GetWindowLevel(int layer=0);
     vtkGetObjectMacro(InteractorStyle, vtkInteractorStyle);
     vtkGetObjectMacro(Interactor,      vtkRenderWindowInteractor);
 
-    // Description:
-    // Set your own renderwindow and renderer
+
     virtual void SetRenderWindow (vtkRenderWindow *arg);
     virtual void SetRenderer     (vtkRenderer *arg); // LAYER
     virtual void SetOverlayRenderer (vtkRenderer *arg);
 
-    // Description:
-    // Attach an interactor for the internal render window.
+
     virtual void SetupInteractor           (vtkRenderWindowInteractor* arg);
     virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* arg)
     { this->SetupInteractor (arg); }
 
-    // Description:
     // Start/Stop the interactor relation with the view.
     // it basically plug or unplug the interactor.
     // IMPORTANT: pure abstract method to be implemented by subclasses.
     virtual void InstallInteractor()   = 0;
     virtual void UnInstallInteractor() = 0;
 
-    // Description:
     // Attach a specific interactor style to this view.
     vtkSetObjectMacro(InteractorStyle, vtkInteractorStyle);
 
@@ -219,13 +205,13 @@ public:
      In vtkImageView2D, it displays slice number, spacing, window-level, position, etc
      Access and change the values with GetCornerAnnotation()->SetText(n, const char*).
      n begins down-right and increases anti-clockwise.
-  */
+    */
     vtkGetObjectMacro (CornerAnnotation, vtkImageViewCornerAnnotation);
 
     /**
      Get the scalar bar actor. This instance follows the color window/level
      of the viewer.
-  */
+    */
     vtkGetObjectMacro (ScalarBar, vtkScalarBarActor);
 
     /**
@@ -244,15 +230,12 @@ public:
      The best behaviour is to force the origin of the vtkImageData input to zero and
      provide this origin information in the OrientationMatrix.
 
-  */
+    */
     vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4); // LAYER
     virtual void SetOrientationMatrix (vtkMatrix4x4* matrix); // LAYER
     vtkGetObjectMacro (InvertOrientationMatrix, vtkMatrix4x4); // LAYER
 
-    /**
-   * Transfer functions define the mapping of the intensity or color
-   * values in the image to colors and opacity displayed on the screen.
-   */
+
     virtual void SetTransferFunctions (vtkColorTransferFunction *color,
                                        vtkPiecewiseFunction     *opacity);
 
@@ -260,37 +243,27 @@ public:
                                        vtkPiecewiseFunction     *opacity,
                                        int layer);
 
-    /** Set the ColorTransferFunction */
     virtual vtkColorTransferFunction * GetColorTransferFunction() const;
     virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const= 0;
 
     virtual void SetColorTransferFunction (vtkColorTransferFunction *ctf);
     /** Sets the ColorTransferFunction, but just store the value in the layer,
-   *  doesn't apply anything.
-   *  @todo: call it storeColorTransferFunction perhaps?
-   */
+     doesn't apply anything.
+     @todo: call it storeColorTransferFunction perhaps?
+    */
     virtual void StoreColorTransferFunction (vtkColorTransferFunction *ctf, int layer) = 0;
 
 
-    /**
-   * Composite volume rendering takes into account the opacity (alpha)
-   * value to add transparency.
-   */
     virtual vtkPiecewiseFunction* GetOpacityTransferFunction () const;
     virtual vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const = 0;
     virtual void SetOpacityTransferFunction (vtkPiecewiseFunction *otf);
     /** Sets the OpacityTransferFunction, but just store the value in the layer,
-   *  doesn't apply anything.
-   *  @todo: call it storeOpacityTransferFunction perhaps?
-   */
+     doesn't apply anything.
+     @todo: call it storeOpacityTransferFunction perhaps?
+    */
     virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,int layer) = 0;
 
-    /**
-   * The lookup table is an alternative way to define a transfer
-   * function.  Internally this is transformed into a
-   * vtkColorTransferFunction (color) and a vtkPiecewiseFunction
-   * (opacity/alpha).  Default is a linear black to white table.
-   */
+
     virtual vtkLookupTable * GetLookupTable() const;
     virtual vtkLookupTable * GetLookupTable(int layer) const = 0;
     virtual void SetLookupTable (vtkLookupTable *lookuptable);
@@ -305,7 +278,7 @@ public:
     /**
      The TextProperty instance (GetTextProperty()) describes the font and
      other settings of the CornerAnnotation instance (GetCornerAnnotation())
-  */
+    */
     vtkGetObjectMacro (TextProperty, vtkTextProperty);
     virtual void SetTextProperty (vtkTextProperty* textproperty);
 
@@ -316,7 +289,7 @@ public:
      (in world coordinates) given by the arguments is contained by
      the slice plane. If the given position is outside the bounds
      of the image, then the slice will be as close as possible.
-  */
+    */
     virtual void SetCurrentPoint (double x, double y, double z)
     {
         double pos[3] = {x,y,z};
@@ -327,7 +300,7 @@ public:
     /**
      Get the current position in world coordinate of
      the lastly clicked point.
-  */
+    */
     vtkGetVector3Macro (CurrentPoint, double);
 
     /**
@@ -335,29 +308,20 @@ public:
      in world coordinate.
      This framework is only used in vtkViewImage2D to
      update corner annotations and cursor position.
-  */
+    */
     vtkGetVector3Macro (CursorPosition, double);
     virtual void UpdateCursorPosition (double pos[3]);
 
-    /**
-     Reset the 3D position to center of the image
-  */
+
     virtual void ResetCurrentPoint();
 
-    /**
-     Convert an indices coordinate point (image coordinates) into a world coordinate point
-  */
+
     virtual void GetWorldCoordinatesFromImageCoordinates (int indices[3], double* position);
 
-    /**
-     Convert a world coordinate point into an image indices coordinate point
-  */
+
     virtual void GetImageCoordinatesFromWorldCoordinates (double position[3], int* indices) const;
 
-    /**
-     Get the pixel value at a given world coordinate point in space, return
-     zero if out of bounds.
-  */
+
     virtual double GetValueAtPosition(double worldcoordinates[3], int component=0 );
     virtual double GetValueAtPosition(double worldcoordinates[3],
                                       int component,
@@ -365,7 +329,7 @@ public:
     /**
      Set the background color. Format is RGB, 0 <= R,G,B <=1
      Example: SetBackground(0.9,0.9,0.9) for grey-white.
-  */
+    */
     virtual void SetBackground(double rgb[3]);
     virtual void SetBackground(double r, double g, double b)
     {
@@ -374,126 +338,76 @@ public:
     }
     virtual double* GetBackground() const;
 
-    /**
-     Get/Set the camera settings, position
-  */
+
     void    SetCameraPosition (double* arg);
     double* GetCameraPosition() const;
 
-    /**
-     Get/Set the camera settings, focal point
-  */
     void    SetCameraFocalPoint (double* arg);
     double* GetCameraFocalPoint() const;
 
-    /**
-     Get/Set the camera settings, ViewUp
-  */
     void    SetCameraViewUp (double* arg);
     double* GetCameraViewUp() const;
 
-    /**
-     Get/Set the camera settings, parallel scale
-  */
     void   SetCameraParallelScale (double arg);
     double GetCameraParallelScale() const;
 
-    /**
-     Get/Set the zoom factor of the view
-  */
     virtual void   SetZoom(double arg);
     virtual double GetZoom();
 
-    /**
-     Reset the camera in a nice way for the 2D view
-  */
     virtual void ResetCamera();
 
-    // Description:
-    // Set window and level for mapping pixels to colors.
-    /**
-   * Sets the color window of the current layer.
-   */
     virtual void SetColorWindow(double s);
     virtual void SetColorWindow(double s,int layer);
     virtual void StoreColorWindow(double s,int layer) = 0;
-    /**
-   * Gets the color window of the current layer.
-   */
+
     virtual double GetColorWindow() const;
     virtual double GetColorWindow(int layer) const = 0;
-    /**
-   * Sets the color level of the current layer.
-   */
+
     virtual void SetColorLevel(double s);
     virtual void SetColorLevel(double s, int layer);
     virtual void StoreColorLevel(double s,int layer) = 0;
-    /**
-   * Gets the color level of the current layer.
-   */
+
     virtual double GetColorLevel() const;
     virtual double GetColorLevel(int layer) const = 0;
-    /**
-   * Sets the color range of the current layer.
-   */
+
     virtual void SetColorRange( double r[2] );
-    /**
-   * Gets the color range of the current layer.
-   */
+
     virtual void GetColorRange( double r[2] );
 
     virtual void SetColorRange( double r[2], int layer );
     virtual void GetColorRange( double r[2], int layer );
 
-
-    /**
-     Reset the window level
-  */
     virtual void ResetWindowLevel();
 
-    /**
-     Reset position - zoom - window/level to default
-  */
     virtual void Reset();
 
     /**
-     Show/Hide the annotations.
-  */
+    * Show/Hide the annotations.
+    */
     vtkGetMacro (ShowAnnotations, int);
 
     /**
-     Show/Hide the annotations.
-  */
+    * Show/Hide the annotations.
+    */
     virtual void SetShowAnnotations (int);
 
     /**
-     Show/Hide the annotations.
-  */
+    * Show/Hide the annotations.
+    */
     vtkBooleanMacro (ShowAnnotations, int);
 
     /**
-     Show/Hide the scalarbar.
-  */
+    * Show/Hide the scalarbar.
+    */
     vtkGetMacro (ShowScalarBar, int);
-
-    /**
-     Show/Hide the scalarbar.
-  */
     virtual void SetShowScalarBar (int);
-    /**
-     Show/Hide the scalarbar.
-  */
-
     vtkBooleanMacro (ShowScalarBar, int);
 
-    // Description:
-    // Set/Get the position in screen coordinates of the rendering window.
+
     virtual int* GetPosition() const;
     virtual void SetPosition(int a,int b);
     virtual void SetPosition(int a[2]) { this->SetPosition(a[0],a[1]); }
 
-    // Description:
-    // Set/Get the size of the window in screen coordinates in pixels.
     virtual int* GetSize() const;
     virtual void SetSize(int a, int b);
     virtual void SetSize(int a[2]) { this->SetSize(a[0],a[1]); }
@@ -502,72 +416,28 @@ public:
     vtkGetMacro(TimeIndex, vtkIdType);
     virtual void SetTimeIndex(vtkIdType index);
 
-    /**
-     Enable or Disable interaction on the view.
-  */
-    virtual void Enable();
 
-    /**
-     Enable or Disable interaction on the view.
-  */
+    virtual void Enable();
     virtual void Disable();
 
-    /**
-     Enable or Disable interaction on the view.
-  */
     virtual int GetEnabled() const;
 
-    /**
-     Start the interactor.
-  */
     virtual void Start();
 
-    /**
-      Get the bounding box of the input image
-  */
-    virtual void GetInputBounds ( double * bounds );
 
-    /**
-      Get the bounding box of the input image in world coordinates.
-  */
+    virtual void GetInputBounds ( double * bounds );
     virtual void GetInputBoundsInWorldCoordinates ( double * bounds );
 
-    /**
-   * Add a new layer. Returns the id of the layer created. Should be reimplemented in subclasses.
-   */
+
     virtual void AddLayer(int);
-
-    /**
-   * Remove a layer. Should be reimplemented in subclasses.
-   */
     virtual void RemoveLayer(int layer);
-
-    /**
-   * Remove all layers. Should be reimplemented in subclasses.
-   */
     virtual void RemoveAllLayers();
 
-    /**
-   * Check whether layer exists. Should be reimplemented in subclasses.
-   */
     virtual bool HasLayer(int layer) const;
 
-    /**
-   * Returns the number of layers. Should be reimplemented in subclasses.
-   */
     virtual int GetNumberOfLayers() const;
 
-
-    /**
-   * Sets the current active layer.
-   *
-   * @param layer If HasLayer(layer) returns false, does nothing.
-   */
     virtual void SetCurrentLayer (int layer);
-
-    /**
-   * Gets the current active layer.
-   */
     virtual int GetCurrentLayer() const;
 
     /**
@@ -585,7 +455,7 @@ public:
      converter is not referenced, the output buffer sees its ref count
      goes to 0, which result in a godamn seg fault. To overcome this,
      we reference the current converter in the pointer ImageConverter.
-  */
+   */
 
     typedef itk::RGBPixel<unsigned char>  RGBPixelType;
     typedef itk::RGBAPixel<unsigned char> RGBAPixelType;
@@ -628,7 +498,7 @@ public:
      \todo The 4th dimension might have to be moved to another class as it is
      a bit overloading the code of this class with a concept which can be placed
      in a dedicated class.
-  */
+    */
     virtual void SetITKInput4 (itk::Image<double, 4>::Pointer input, int layer=0);
     virtual void SetITKInput4 (itk::Image<float, 4>::Pointer input, int layer=0);
     virtual void SetITKInput4 (itk::Image<int, 4>::Pointer input, int layer=0);
@@ -683,7 +553,7 @@ public:
      this->DataSetActorCollection->AddItem(actor);
 
      ******************************
-  */
+   */
 
     virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL) = 0;
 
@@ -704,12 +574,6 @@ protected:
     vtkImageView();
     ~vtkImageView();
 
-    /**
-     This function is called right after setting both Renderer and RenderWindow.
-     It allows a class to add actors for instance without knowing when the Renderer
-     and RenderWindow are set. For example, vtkImageView will add the corner annotations
-     during the call to the Initialize function.
-  */
     virtual void InstallPipeline();
     virtual void UnInstallPipeline();
 
@@ -728,23 +592,15 @@ protected:
     virtual bool Compare(int *array1,    int *array2,    int size);
     virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);
 
-    /**
-     Reslice an image onto the input image. Internal use only.
-  */
+
     virtual vtkImageData *ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix);
-    /**
-     From any point in space \arg pos1, this method will return in \arg pos2
-     the closest position that lies within the image boundaries.
-   */
+
     virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
-    /**
-      Set the precision of the scalarBar values
-    */
+
     void SetScalarBarLabelFormat(double* range);
 
 private:
     //! Template function which implements SetInput for all types.
-    // Defined locally and not exposed.
     template < class T >
     void SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer=0);
 
@@ -752,7 +608,6 @@ private:
     void AddITKInput (typename itk::Image<T, 3>::Pointer itkImage);
 
     //! Template function which implements SetInput4 for all types.
-    // Defined locally and not exposed.
     template < class T >
     void SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer=0);
 
@@ -760,18 +615,16 @@ private:
     void AddITKInput4 (typename itk::Image<T, 4>::Pointer itkImage);
 
     //! Template function which sets the time step.
-    // Defined locally and not exposed.
     template < class T >
     void SetTimeIndex (vtkIdType timeIndex);
 
 protected:
     /**
-   * Takes a vtkScalarsToColors pointer
-   * (ideally from this->GetColorTransferFunction(layer))
-   * and applies it to the layer.
-   */
-    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
-                                            int layer) = 0;
+     Takes a vtkScalarsToColors pointer
+     (ideally from this->GetColorTransferFunction(layer))
+     and applies it to the layer.
+    */
+    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer) = 0;
 
     /**
      The OrientationMatrix instance (GetOrientationMatrix()) is a very important
@@ -789,7 +642,7 @@ protected:
      The best behaviour is to force the origin of the vtkImageData input to zero and
      provide this origin information in the OrientationMatrix.
 
-  */
+    */
     vtkMatrix4x4* OrientationMatrix;
     vtkMatrix4x4* InvertOrientationMatrix;
 
@@ -798,45 +651,39 @@ protected:
      In vtkViewImage2D, it displays slice number, spacing, window-level, position, etc
      Access and change the values with GetCornerAnnotation()->SetText(n, const char*).
      n begins down-right and increases anti-clockwise.
-  */
+    */
     vtkImageViewCornerAnnotation* CornerAnnotation;
 
     /**
      The TextProperty instance (GetTextProperty()) describes the font and
      other settings of the CornerAnnotation instance (GetCornerAnnotation())
-  */
+    */
     vtkTextProperty* TextProperty;
 
     /**
-   * The lookup table is an alternative way to define a transfer
-   * function.  Internally this is transformed into a
-   * vtkColorTransferFunction (color) and a vtkPiecewiseFunction
-   * (opacity/alpha).  Default is a linear black to white table.
-   */
+     The lookup table is an alternative way to define a transfer
+     function.  Internally this is transformed into a
+     vtkColorTransferFunction (color) and a vtkPiecewiseFunction
+     (opacity/alpha).  Default is a linear black to white table.
+    */
     vtkLookupTable* LookupTable;
 
     /**
      Get the scalar bar actor. This instance follows the color window/level
      of the viewer.
-  */
+    */
     vtkScalarBarActor* ScalarBar;
 
     /**
      This vtkTransform instance carries the OrientationMatrix (see GetOrientationMatrix())
      and is used to quickly transform the slice plane in vtkViewImage2D.
-  */
+    */
     vtkMatrixToLinearTransform* OrientationTransform;
 
-    /**
-   */
+
     vtkDataSetCollection* DataSetCollection;
-    /**
-   */
     vtkProp3DCollection* DataSetActorCollection;
 
-    /**
-     local instances.
-  */
     int ShowAnnotations;
     int ShowScalarBar;
 
@@ -844,7 +691,7 @@ protected:
      Get the current position in world coordinate.
      This framework is only used in vtkViewImage2D to
      update corner annotations and cursor position.
-  */
+    */
     double CurrentPoint[3];
     double CursorPosition[3];
 
@@ -876,7 +723,7 @@ private:
      current ITK->VTK converter, in order to prevent the image buffer
      to be deleted unexpectdely. See the SetITKImageInXXX for more
      information.
-  */
+    */
     class vtkImageViewImplementation;
     vtkImageViewImplementation * Impl;
 

@@ -60,10 +60,8 @@ public:
     static vtkImageView3D* New();
     vtkTypeRevisionMacro(vtkImageView3D, vtkImageView);
 
-    // Override vtkObject - return the maximum mtime of this and any objects owned by this.
     unsigned long GetMTime();
 
-    // Description:
     // Rendeing Modes available.
     // PLANAR_RENDERING will render every vtkImageActor instance added with Add2DPhantom()
     // whereas VOLUME_RENDERING will render the volume added with SetInput().
@@ -76,8 +74,6 @@ public:
     //ETX
 
     vtkGetObjectMacro (VolumeActor, vtkVolume);
-    // vtkGetObjectMacro (OpacityFunction, vtkPiecewiseFunction);
-    // vtkGetObjectMacro (ColorFunction, vtkColorTransferFunction);
     vtkGetObjectMacro (VolumeProperty, vtkVolumeProperty);
     vtkGetObjectMacro (PlaneWidget, vtkPlaneWidget);
     vtkGetObjectMacro (BoxWidget, vtkOrientedBoxWidget);
@@ -97,69 +93,40 @@ public:
     virtual void SetVolumeRayCastFunctionToComposite();
     virtual void SetVolumeRayCastFunctionToMaximumIntensityProjection();
     virtual void SetVolumeRayCastFunctionToMinimumIntensityProjection();
-    // virtual void SetVolumeRayCastFunctionToAdditive();
+
 
     virtual void SetInterpolationToNearestNeighbor();
     virtual void SetInterpolationToLinear();
 
-    /** Set the box widget visibility */
-    void SetShowBoxWidget (int a)
-    {
-        if (this->Interactor)
-            this->BoxWidget->SetEnabled (a);
-    }
-    bool GetShowBoxWidget()
-    {
-        return this->BoxWidget->GetEnabled();
-    }
+    void SetShowBoxWidget (int a);
+    bool GetShowBoxWidget();
     vtkBooleanMacro (ShowBoxWidget, int);
 
-    /** Set the plane widget on */
-    void SetShowPlaneWidget (int a)
-    {
-        if (this->Interactor)
-            this->PlaneWidget->SetEnabled (a);
-    }
-    bool GetShowPlaneWidget()
-    {
-        return this->PlaneWidget->GetEnabled();
-    }
+    void SetShowPlaneWidget (int a);
+    bool GetShowPlaneWidget();
     vtkBooleanMacro (ShowPlaneWidget, int);
 
-    /** Set the cube widget on */
-    void SetShowCube (int a)
-    {
-        if (this->Interactor)
-            this->Marker->SetEnabled (a);
-    }
-    bool GetShowCube()
-    {
-        return this->Marker->GetEnabled();
-    }
+    void SetShowCube (int a);
+    bool GetShowCube();
     vtkBooleanMacro (ShowCube, int);
 
-    void SetShade (int a)
-    {
-        this->VolumeProperty->SetShade (a);
-    }
-    bool GetShade()
-    {
-        return this->VolumeProperty->GetShade();
-    }
+    void SetShade (int a);
+    bool GetShade();
     vtkBooleanMacro (Shade, int);
 
     /** Set the rendering mode to volume rendering (VR). */
     virtual void SetRenderingModeToVR()
     {this->SetRenderingMode (VOLUME_RENDERING); }
+
     /** Set the rendering mode to planar views. */
     virtual void SetRenderingModeToPlanar()
     { this->SetRenderingMode (PLANAR_RENDERING); }
-    /** Set the rendering mode. */
+
+
     virtual void SetRenderingMode (int mode);
     /** Get the current rendering mode. */
     vtkGetMacro (RenderingMode, int);
 
-    // Description:
     // Cropping Modes available.
     // CROPPING_INSIDE will crop inside the image
     // whereas CROPPING_OUTSIDE will crop outside.
@@ -170,12 +137,10 @@ public:
         CROPPING_OUTSIDE = 2
     };
 
-    /** Set the cropping mode */
     virtual void SetCroppingModeToOff();
     virtual void SetCroppingModeToInside();
     virtual void SetCroppingModeToOutside();
     virtual void SetCroppingMode(unsigned int);
-    // vtkGetMacro (CroppingMode, int);
     virtual unsigned int GetCroppingMode ();
 
     virtual void SetInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0, int layer = 0);
@@ -184,14 +149,13 @@ public:
 
     using vtkImageView::SetColorWindow;
     virtual void SetColorWindow(double s,int layer);
+
     using vtkImageView::SetColorLevel;
     virtual void SetColorLevel(double s,int layer);
-    /** Set a user-defined lookup table */
+
+
     virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
-    /**
-   * Transfer functions define the mapping of the intensity or color
-   * values in the image to colors and opacity displayed on the screen.
-   */
+
     virtual void SetTransferFunctions(vtkColorTransferFunction * color,
                                       vtkPiecewiseFunction * opacity,
                                       int layer);
@@ -202,22 +166,6 @@ public:
     virtual void SetVisibility(int visibility, int layer);
     virtual int  GetVisibility(int layer) const;
 
-    // /** toggle use of VRQuality */
-    // void SetUseVRQuality (bool on);
-    // bool GetUseVRQuality ();
-    // vtkBooleanMacro (UseVRQuality, bool);
-
-    // /**
-    //    Presets for VR quality.
-    //  */
-    // virtual void SetVRQualityToLow()
-    // { this->SetVRQuality (0.0); };
-    // virtual void SetVRQualityToMed()
-    // { this->SetVRQuality (0.5); };
-    // virtual void SetVRQualityToHigh()
-    // { this->SetVRQuality (1.0); };
-    // virtual void SetVRQuality (float);
-    // virtual float GetVRQuality ();
 
     virtual void SetShowActorX (unsigned int);
     vtkGetMacro (ShowActorX, unsigned int);
@@ -232,35 +180,19 @@ public:
     void SetOrientationMarker(vtkActor *actor);
     void SetOrientationMarkerViewport(double, double, double, double);
 
-    /**
-     The wolrd is not always what we think it is ...
 
-     Use this method to move the viewer slice such that the position
-     (in world coordinates) given by the arguments is contained by
-     the slice plane. If the given position is outside the bounds
-     of the image, then the slice will be as close as possible.
-  */
     virtual void SetCurrentPoint (double pos[3]);
 
     virtual void UpdateDisplayExtent();
 
-
     virtual void InstallInteractor();
     virtual void UnInstallInteractor();
-
 
     virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
     virtual void RemoveDataSet (vtkPointSet* arg);
 
-    /**
-     Add an extra plane to the 3D view. the argument is an image actor
-     that supposingly follows a vtkImageView2D instance. The actor will
-     be displayed in the 3D scene and will be fully synchronized with
-     the actor it came from.
-  */
     virtual void AddExtraPlane (vtkImageActor* input);
     virtual void RemoveExtraPlane (vtkImageActor* input);
-
 
     virtual void AddLayer (int layer);
     virtual int GetNumberOfLayers() const;
@@ -290,20 +222,16 @@ protected:
     vtkImageView3D();
     ~vtkImageView3D();
 
-    // Description:
     virtual void InstallPipeline();
     virtual void UnInstallPipeline();
-
 
     virtual void SetupVolumeRendering();
     virtual void SetupWidgets();
     virtual void UpdateVolumeFunctions(int layer);
     virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
                                             int layer);
-
     virtual void InternalUpdate();
 
-    //! Get layer specific info
     vtkImage3DDisplay * GetImage3DDisplayForLayer(int layer) const;
 
     // plane actors
@@ -311,23 +239,16 @@ protected:
     vtkImageActor* ActorY;
     vtkImageActor* ActorZ;
 
-    // volume property
     vtkVolumeProperty* VolumeProperty;
-    // volume actor
     vtkVolume* VolumeActor;
 
-    // smart volume mapper
     vtkSmartVolumeMapper* VolumeMapper;
 
-    //  // blender
-    //  vtkImageBlend* Blender;
-    // image 3D cropping box callback
     vtkImageView3DCroppingBoxCallback* Callback;
-    // box widget
+
     vtkOrientedBoxWidget* BoxWidget;
-    // vtkPlane widget
     vtkPlaneWidget* PlaneWidget;
-    // annotated cube actor
+
     vtkAnnotatedCubeActor* Cube;
     vtkOrientationMarkerWidget* Marker;
 

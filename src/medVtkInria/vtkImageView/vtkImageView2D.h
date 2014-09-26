@@ -92,7 +92,6 @@ public:
     vtkTypeRevisionMacro (vtkImageView2D, vtkImageView);
     void PrintSelf(ostream& os, vtkIndent indent);
 
-    // Override vtkObject - return the maximum mtime of this and any objects owned by this.
     unsigned long GetMTime();
 
     //BTX
@@ -109,8 +108,7 @@ public:
     virtual void   SetOpacity(double opacity, int layer);
     virtual double GetOpacity(int layer) const;
 
-    // Description:
-    // Set/Get the input image to the viewer.
+
     virtual void SetInput (vtkImageData *image,
                            vtkMatrix4x4 *matrix = 0,
                            int layer=0);
@@ -124,25 +122,16 @@ public:
     
     int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
 
+    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+    virtual void RemoveDataSet (vtkPointSet *arg);
+
     vtkImageData *GetImageInput(int layer) const;
     vtkImageData *GetInput(int layer = 0) const;
 
-    // Description:
-    // Start/Stop the interactor relation with the view.
-    // it basically plug or unplug the interactor.
+
     virtual void InstallInteractor();
     virtual void UnInstallInteractor();
 
-    //  /**
-    //   * This function is equivalent to setTransferFunctions(color, opacity, 0)
-    //   */
-    //  virtual void SetTransferFunctions (vtkColorTransferFunction* color,
-    //                                     vtkPiecewiseFunction *opacity);
-
-    //  virtual void SetTransferFunctions (vtkColorTransferFunction* color,
-    //                                     vtkPiecewiseFunction *opacity,
-    //                                     int layer);
-    //  virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
     virtual void StoreLookupTable (vtkLookupTable *lookuptable, int layer);
 
     /**
@@ -174,9 +163,7 @@ public:
         VIEW_ORIENTATION_AXIAL = 2
     };
     //ETX
-    /**
-   Description:
-   **/
+
     //BTX
     enum
     {
@@ -202,15 +189,13 @@ public:
     };
     //ETX
 
-    /**
-   Return the vtkImageActor's instance.
-   */
+
     vtkImageActor *GetImageActor(int layer=0) const;
     /**
      Return the SlicePlane vtkPolyData instance. This polydata consists on 4 points linked
      as a square, placed at the corners of the ImageActor. It can be used to follow the position
      of the slice in space.
-  */
+    */
     vtkGetObjectMacro (SlicePlane, vtkPolyData);
 
     vtkGetMacro(SliceOrientation, int);
@@ -222,37 +207,15 @@ public:
     virtual void SetSliceOrientationToXZ()
     { this->SetSliceOrientation(vtkImageView2D::SLICE_ORIENTATION_XZ); };
 
-    // Description:
-    // Set/Get the current slice to display (depending on the orientation
-    // this can be in X, Y or Z).
+
     virtual int  GetSlice() const;
     virtual void SetSlice(int s);
-    /**
-   The wolrd is not always what we think it is ...
 
-   Use this method to move the viewer slice such that the position
-   (in world coordinates) given by the arguments is contained by
-   the slice plane. If the given position is outside the bounds
-   of the image, then the slice will be as close as possible.
-   */
     virtual void SetCurrentPoint (double pos[3]);
 
-    // Description:
-    // Update the display extent manually so that the proper slice for the
-    // given orientation is displayed. It will also try to set a
-    // reasonable camera clipping range.
-    // This method is called automatically when the Input is changed, but
-    // most of the time the input of this class is likely to remain the same,
-    // i.e. connected to the output of a filter, or an image reader. When the
-    // input of this filter or reader itself is changed, an error message might
-    // be displayed since the current display extent is probably outside
-    // the new whole extent. Calling this method will ensure that the display
-    // extent is reset properly.
     virtual void UpdateDisplayExtent();
 
-    // Description:
-    // Return the minimum and maximum slice values (depending on the orientation
-    // this can be in X, Y or Z).
+
     virtual int GetSliceMin() const;
     virtual int GetSliceMax() const;
     virtual void GetSliceRange(int range[2]) const
@@ -281,39 +244,21 @@ public:
     ///\todo Why not adding cardiologic conventions where we look at the patient in oblique angles ?
     vtkGetMacro (ViewConvention, int);
     virtual void SetViewConvention (int convention);
-    /**
-   Convert an indices coordinate point (image coordinates) into a world coordinate point
-   */
+
     virtual void GetWorldCoordinatesForSlice (int slice, double* position);
-    /**
-   Convert a world coordinate point into an image indices coordinate point
-   */
     virtual int GetSliceForWorldCoordinates(double pos[3]) const;
-    /**
-   Reset position - zoom - window/level to default
-   */
-    virtual void Reset();
-    /**
-   Get/Set the zoom factor of the view
-   */
-    //virtual void SetZoom(double arg); // already in vtkImageView
-    //virtual double GetZoom(); // already in vtkImageView
-    /**
-   Get/Set the pan factor of the view
-   */
+
+
     virtual void SetPan(double* arg);
     virtual double* GetPan();
     virtual void GetPan(double pan[2]);
-    /**
-   Reset the camera in a nice way for the 2D view
-   */
+
+    virtual void Reset();
     virtual void ResetCamera();
-    /**
-   Useful method that transform a display position into a world corrdinate point
-   */
+
     virtual void GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position);
 
-    //! Get the WindowLevel for given layer. Overrides Superclass.
+
     virtual vtkImageMapToColors *GetWindowLevel(int layer=0) const;
 
     using vtkImageView::GetInputAlgorithm;
@@ -327,17 +272,12 @@ public:
    */
     vtkGetObjectMacro (Command, vtkImageView2DCommand);
     //ETX
-    /**
-     Get/Set weither or not the interpolation between pixels should be activated.
-     It is On by default
-  */
+
     virtual void SetInterpolate (int val, int layer=0);
     virtual int  GetInterpolate (int layer = 0) const;
     vtkBooleanMacro (Interpolate, int);
 
-    /**
-     Show/Hide the annotations (CornerAnnotation AND OrientationAnnotation)
-  */
+
     virtual void SetShowAnnotations (int);
 
     /**
@@ -347,195 +287,52 @@ public:
    */
     vtkGetVector3Macro (ViewCenter, double);
 
-    /**
-   Change the interaction triggered by the mouse buttons.
-   Choices are listed in vtkInteractorStyleImageView2D class:
-   InteractionTypeSlice : changes the slice number.
-   InteractionTypeWindowLevel : changes the window-level values.
-   InteractionTypeZoom : changes the zoom level.
-   InteractionTypePan : translate the view in-plane.
-   */
-    void SetLeftButtonInteractionStyle (int arg)
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            t->SetLeftButtonInteraction (arg);
-    }
-    int GetLeftButtonInteractionStyle()
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            return t->GetLeftButtonInteraction ();
-        return -1;
-    }
 
-    /**
-   Change the interaction triggered by the keyboard.
-   Choices are listed in vtkInteractorStyleImageView2D class:
-   InteractionTypeSlice : changes the slice number.
-   InteractionTypeWindowLevel : changes the window-level values.
-   InteractionTypeZoom : changes the zoom level.
-   InteractionTypePan : translate the view in-plane.
-  */
-    void SetKeyboardInteractionStyle (int arg)
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            t->SetKeyboardInteraction (arg);
-    }
-    int GetKeyboardInteractionStyle()
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            return t->GetKeyboardInteraction ();
-        return -1;
-    }
+    void SetLeftButtonInteractionStyle (int arg);
+    int GetLeftButtonInteractionStyle();
 
-    /**
-   Change the interaction triggered by the mouse buttons.
-   Choices are listed in vtkInteractorStyleImageView2D class:
-   InteractionTypeSlice : changes the slice number.
-   InteractionTypeWindowLevel : changes the window-level values.
-   InteractionTypeZoom : changes the zoom level.
-   InteractionTypePan : translate the view in-plane.
-   */
-    void SetRightButtonInteractionStyle (int arg)
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            t->SetRightButtonInteraction (arg);
-    }
-    int GetRightButtonInteractionStyle()
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            return t->GetRightButtonInteraction ();
-        return -1;
-    }
-    /**
-   Change the interaction triggered by the mouse buttons.
-   Choices are listed in vtkInteractorStyleImageView2D class:
-   InteractionTypeSlice : changes the slice number.
-   InteractionTypeWindowLevel : changes the window-level values.
-   InteractionTypeZoom : changes the zoom level.
-   InteractionTypePan : translate the view in-plane.
-   */
-    void SetMiddleButtonInteractionStyle (int arg)
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            t->SetMiddleButtonInteraction (arg);
-    }
-    int GetMiddleButtonInteractionStyle()
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            return t->GetMiddleButtonInteraction ();
-        return -1;
-    }
-    /**
-   Change the interaction triggered by the mouse buttons.
-   Choices are listed in vtkInteractorStyleImageView2D class:
-   InteractionTypeSlice : changes the slice number.
-   InteractionTypeWindowLevel : changes the window-level values.
-   InteractionTypeZoom : changes the zoom level.
-   InteractionTypePan : translate the view in-plane.
-   */
-    void SetWheelInteractionStyle (int arg)
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            t->SetWheelButtonInteraction (arg);
-    }
-    int GetWheelInteractionStyle()
-    {
-        vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            return t->GetWheelButtonInteraction ();
-        return -1;
-    }
+    void SetKeyboardInteractionStyle (int arg);
+    int GetKeyboardInteractionStyle();
 
-    /**
-   Change the interaction triggered by the mouse buttons.
-   Choices are listed in vtkInteractorStyleImageView2D class:
-   InteractionTypeSlice : changes the slice number.
-   InteractionTypeWindowLevel : changes the window-level values.
-   InteractionTypeZoom : changes the zoom level.
-   InteractionTypePan : translate the view in-plane.
-   */
-    void SetInteractionStyle (int arg)
-    {
-        this->SetLeftButtonInteractionStyle (arg);
-        this->SetRightButtonInteractionStyle (arg);
-        this->SetMiddleButtonInteractionStyle (arg);
-        this->SetWheelInteractionStyle (arg);
-    }
-    /**
-   Change the interaction triggered by the mouse buttons.
-   Choices are listed in vtkInteractorStyleImageView2D class:
-   InteractionTypeSlice : changes the slice number.
-   InteractionTypeWindowLevel : changes the window-level values.
-   InteractionTypeZoom : changes the zoom level.
-   InteractionTypePan : translate the view in-plane.
-   */
-    int GetInteractionStyle()
-    { vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
-        if (t)
-            return t->GetLeftButtonInteraction();
-        else
-            return 0;
-    }
+    void SetRightButtonInteractionStyle (int arg);
+    int GetRightButtonInteractionStyle();
 
-    /**
-   Set/Get the ruler widget visibility.
-   */
+    void SetMiddleButtonInteractionStyle (int arg);
+    int GetMiddleButtonInteractionStyle();
+
+    void SetWheelInteractionStyle (int arg);
+    int GetWheelInteractionStyle();
+
+    void SetInteractionStyle (int arg);
+    int GetInteractionStyle();
+
     virtual void SetShowRulerWidget (int);
     vtkGetMacro (ShowRulerWidget, int);
     vtkBooleanMacro (ShowRulerWidget, int);
 
-    /**
-   Set/Get the axes2D widget visibility.
-   */
+
     virtual void SetShowImageAxis (int);
     vtkGetMacro (ShowImageAxis, int);
     vtkBooleanMacro (ShowImageAxis, int);
 
-    /**
-   Set/Get the ruler widget visibility.
-   */
+
     virtual void SetShowDistanceWidget (int);
     vtkGetMacro (ShowDistanceWidget, int);
     vtkBooleanMacro (ShowDistanceWidget, int);
 
-    /**
-   Set/Get the ruler widget visibility.
-   */
+
     virtual void SetShowAngleWidget (int);
     vtkGetMacro (ShowAngleWidget, int);
     vtkBooleanMacro (ShowAngleWidget, int);
 
-    /**
-   Set/Get whether the cursor should follow the mouse or not.
-   */
+
     virtual void SetCursorFollowMouse (int val);
     vtkBooleanMacro (CursorFollowMouse, int);
     vtkGetMacro (CursorFollowMouse, int);
-    /**
-     Switch between annotation style.
-     AnnotationStyle1 is there by default, it shows the X-Y position (in-plane),
-     and specify the orientation on lower-right corner
-     AnnotationStyle1 shows the global physical x-y-z position (scanner coordinates),
-     and leaves lower-right corner empty for user to fill.
-  */
+
     void SetAnnotationStyle (unsigned int arg);
     vtkGetMacro (AnnotationStyle, unsigned int);
-    /**
-     adding a PointSet to the view.
-     The method will "cut" the dataset, therefore reducing the dimension by 1.
-     e.g. volumes become surfaces, surfaces lines, and lines points.
-  */
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
-    virtual void RemoveDataSet (vtkPointSet *arg);
+
 
     virtual void AddLayer(int);
     virtual void RemoveLayer(int layer);
@@ -546,7 +343,6 @@ public:
     virtual double GetColorLevel(int layer) const;
     using vtkImageView::GetColorWindow;
     virtual double GetColorWindow(int layer)const;
-    //  virtual void SetTransferFunctionRangeFromWindowSettings();
     virtual void SetTransferFunctionRangeFromWindowSettings(int layer);
 
     //pure virtual methods from base class:
@@ -570,83 +366,23 @@ protected:
     vtkImageView2D();
     ~vtkImageView2D();
 
-    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
-                                            int layer);
+    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer);
 
-    /**
-   The SlicePlane instance (GetSlicePlane()) is the polygonal
-   square corresponding to the slice plane,
-   it is color-coded according to conventions.
-
-   UpdateSlicePlane() is thus called each time we change slice
-   or change orientation.
-   */
     virtual void UpdateSlicePlane();
-    /**
-   The ViewCenter instance follows the center of the view
-   in world coordinates. It is updated UpdateCenter() each
-   time the slice or the orientation changes.
-
-   CAUTION: for the moment it is de-activated to speed up the
-   visualization. (The ViewCenter is not used anywhere else).
-   */
     virtual void UpdateCenter();
-    /**
-   After the orientation has changed, it is crucial to adapt
-   a couple of things according to new orientation.
-   In UpdateOrientation() the SlicePlane, the Camera settings,
-   the CornerAnnotation are modified.
-   */
     virtual void UpdateOrientation();
-    /**
-   After the orientation has changed, it is crucial to adapt
-   a couple of things according to new orientation.
-   In UpdateOrientation() the SlicePlane, the Camera settings,
-   the CornerAnnotation are modified.
-   */
+
     virtual void SetSlicePlaneFromOrientation();
-    /**
-   Returns the estimated View-Orientation corresponding
-   to a given Slice-Orientation, and outputs the camera's parameters
-   This is crucial when choosing to impose the View-Orientation
-   instead of imposing the Slice-Orientation.
-   */
     virtual int GetViewOrientationFromSliceOrientation(int sliceorientation, double* cam_pos = 0, double* cam_focus = 0);
-    /**
-   After the orientation has changed, it is crucial to adapt
-   a couple of things according to new orientation.
-   In UpdateOrientation() the SlicePlane, the Camera settings,
-   the CornerAnnotation are modified.
-   */
+
     virtual int  SetCameraFromOrientation();
-    /**
-   After the orientation has changed, it is crucial to adapt
-   a couple of things according to new orientation.
-   In UpdateOrientation() the SlicePlane, the Camera settings,
-   the CornerAnnotation are modified.
-   */
     virtual void SetAnnotationsFromOrientation();
-    /**
-   This method is called each time the orientation changes (SetViewOrientation())
-   and sets the appropriate color to the slice plane.
 
-   Red: R-L direction --> sagittal orientation
-
-   Green: A-P direction --> coronal orientation
-
-   Blue: I-S direction --> axial orientation
-   */
     virtual void InitializeSlicePlane();
-    /**
-   Overwrite of the Superclass InstallPipeline() method in order to set up the
-   home made InteractorStyle, and make it observe all events we need
-   */
+
     virtual void InstallPipeline();
-    /**
-   Overwrite of the Superclass UnInstallPipeline() method in order to set up the
-   home made InteractorStyle, and make it observe all events we need
-   */
     virtual void UnInstallPipeline();
+
     /**
    The ViewConvention instance explains where to place the camera around
    the patient. Default behaviour is Radiological convention, meaning
@@ -696,9 +432,7 @@ protected:
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
-    /**
-   local instances
-   */
+
     int ViewOrientation;
     int ViewConvention;
     int    SliceOrientation;
