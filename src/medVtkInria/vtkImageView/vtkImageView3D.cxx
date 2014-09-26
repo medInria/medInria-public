@@ -219,6 +219,7 @@ vtkImageView3D::~vtkImageView3D()
 }
 
 //----------------------------------------------------------------------------
+/** Override vtkObject - return the maximum mtime of this and any objects owned by this. */
 unsigned long vtkImageView3D::GetMTime()
 {
   typedef unsigned long MTimeType;
@@ -331,6 +332,51 @@ void vtkImageView3D::SetInterpolationToNearestNeighbor()
 void vtkImageView3D::SetInterpolationToLinear()
 {
   this->VolumeProperty->SetInterpolationTypeToLinear();
+}
+
+/** Set the box widget visibility */
+void vtkImageView3D::SetShowBoxWidget (int a)
+{
+    if (this->Interactor)
+        this->BoxWidget->SetEnabled (a);
+}
+
+bool vtkImageView3D::GetShowBoxWidget()
+{
+    return this->BoxWidget->GetEnabled();
+}
+
+/** Set the plane widget on */
+void vtkImageView3D::SetShowPlaneWidget (int a)
+{
+    if (this->Interactor)
+        this->PlaneWidget->SetEnabled (a);
+}
+
+bool vtkImageView3D::GetShowPlaneWidget()
+{
+    return this->PlaneWidget->GetEnabled();
+}
+
+/** Set the cube widget on */
+void vtkImageView3D::SetShowCube (int a)
+{
+    if (this->Interactor)
+        this->Marker->SetEnabled (a);
+}
+
+bool vtkImageView3D::GetShowCube()
+{
+    return this->Marker->GetEnabled();
+}
+
+void vtkImageView3D::SetShade (int a)
+{
+    this->VolumeProperty->SetShade (a);
+}
+bool vtkImageView3D::GetShade()
+{
+    return this->VolumeProperty->GetShade();
 }
 
 //----------------------------------------------------------------------------
@@ -729,6 +775,7 @@ void vtkImageView3D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 }
 
 //----------------------------------------------------------------------------
+/** Set a user-defined lookup table */
 void vtkImageView3D::SetLookupTable (vtkLookupTable* lookuptable,int layer)
 {
   this->Superclass::SetLookupTable (lookuptable,layer);
@@ -736,6 +783,10 @@ void vtkImageView3D::SetLookupTable (vtkLookupTable* lookuptable,int layer)
 }
 
 //----------------------------------------------------------------------------
+/**
+* Transfer functions define the mapping of the intensity or color
+* values in the image to colors and opacity displayed on the screen.
+*/
 void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
                                            vtkPiecewiseFunction * opacity,
                                            int layer)
@@ -895,6 +946,7 @@ void vtkImageView3D::SetShowActorZ(unsigned int arg)
 }
 
 //----------------------------------------------------------------------------
+/** Set the rendering mode. */
 void vtkImageView3D::SetRenderingMode(int arg)
 {
   this->RenderingMode = arg;
@@ -996,6 +1048,14 @@ unsigned int vtkImageView3D::GetCroppingMode()
 }
 
 //----------------------------------------------------------------------------
+/**
+ The wolrd is not always what we think it is ...
+
+ Use this method to move the viewer slice such that the position
+ (in world coordinates) given by the arguments is contained by
+ the slice plane. If the given position is outside the bounds
+ of the image, then the slice will be as close as possible.
+*/
 void vtkImageView3D::SetCurrentPoint (double pos[3])
 {
   this->Superclass::SetCurrentPoint (pos);
@@ -1237,6 +1297,12 @@ protected:
 
 
 //----------------------------------------------------------------------------
+/**
+ Add an extra plane to the 3D view. the argument is an image actor
+ that supposingly follows a vtkImageView2D instance. The actor will
+ be displayed in the 3D scene and will be fully synchronized with
+ the actor it came from.
+*/
 void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
 {
 
@@ -1300,6 +1366,7 @@ void vtkImageView3D::RemoveExtraPlane (vtkImageActor* input)
   }
 }
 
+//! Get layer specific info
 vtkImage3DDisplay * vtkImageView3D::GetImage3DDisplayForLayer( int layer ) const
 {
   if ( layer > -1 && (unsigned int)layer < this->LayerInfoVec.size())
