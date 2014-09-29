@@ -69,8 +69,8 @@ void itkFiltersProcessBase::setInput(medAbstractData *data)
     
     QString identifier = data->identifier();
     
-    d->output = medAbstractDataFactory::instance()->create(identifier);
-    d->input = data;
+    d->output = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
+    d->input = dynamic_cast<medAbstractImageData*> (data);
 }
 
 medAbstractData * itkFiltersProcessBase::output ( void )
