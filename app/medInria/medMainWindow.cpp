@@ -306,6 +306,15 @@ void medMainWindow::saveSettings() {
     }
 }
 
+void medMainWindow::processNewInstanceMessage(const QString& message)
+{
+    if (message.toLower().startsWith("/open "))
+    {
+        const QString filename = message.mid(6);
+        this->setStartup(medMainWindow::WorkSpace, QStringList() << filename);
+    }
+}
+
 void medMainWindow::setStartup(const AreaType areaIndex,const QStringList& filenames) {
     switchToArea(areaIndex);
     for (QStringList::const_iterator i= filenames.constBegin();i!=filenames.constEnd();++i)
