@@ -235,7 +235,7 @@ void medDiffusionWorkspace::addToolBoxInput(medAbstractData *data)
     if (medData->Dimension() == 4)
         d->diffusionEstimationToolBox->addInputImage(medData);
 
-    if (dynamic_cast<medAbstractDiffusionModelImageData*>(static_cast<medAbstractData *>(medData->data())) != 0)
+    if (dynamic_cast<medAbstractDiffusionModelImageData*>(medData) != 0)
     {
         d->diffusionScalarMapsToolBox->addInputImage(medData);
         d->diffusionTractographyToolBox->addInputImage(medData);
