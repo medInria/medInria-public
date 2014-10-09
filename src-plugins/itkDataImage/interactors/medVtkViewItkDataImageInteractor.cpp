@@ -59,6 +59,8 @@ public:
 
     medDoubleParameter *windowParameter;
     medDoubleParameter *levelParameter;
+
+    QMap <QString,QString> presetToLut;
 };
 
 
@@ -221,10 +223,22 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->presetParam = new medStringListParameter("Preset", this);
     QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
-                                        << "Standard" << "Soft" << "Soft on White"
-                                        << "Soft on Blue" << "Red on White" << "Glossy" ;
+                                        << "Standard" << "Soft" << "Glossy" ;
     foreach(QString preset, presets)
         d->presetParam->addItem(preset);
+
+    if(d->presetToLut.isEmpty())
+    {
+        d->presetToLut.insert("None", "Black & White");
+        d->presetToLut.insert("VR Muscles&Bones", "Muscles & Bones");
+        d->presetToLut.insert("Vascular I", "Stern");
+        d->presetToLut.insert("Vascular II", "Red Vessels");
+        d->presetToLut.insert("Vascular III", "Red Vessels");
+        d->presetToLut.insert("Vascular IV", "Red Vessels");
+        d->presetToLut.insert("Standard", "Muscles & Bones");
+        d->presetToLut.insert("Soft", "Bones");
+        d->presetToLut.insert("Glossy", "Bones");
+    }
 
     connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
 
@@ -358,8 +372,56 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 
 void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 {
-    //TODO to complete wat for theo stuff ?) - RDE
-    DTK_UNUSED(preset);
+    d->lutParam->setValue(d->presetToLut[preset]);
+
+    if ( preset == "None" )
+    {
+        double *range = d->view2d->GetInput(d->view->layer(d->imageData))->GetScalarRange();
+        d->windowParameter->setValue(range[1]-range[0]);
+        d->levelParameter->setValue(0.5*(range[1]+range[0]));
+    }
+    else if ( preset == "VR Muscles&Bones" )
+    {
+        d->windowParameter->setValue(337.0);
+        d->levelParameter->setValue(1237.0);
+    }
+    else if ( preset == "Vascular I" )
+    {
+        d->windowParameter->setValue(388.8);
+        d->levelParameter->setValue(362.9);
+    }
+    else if ( preset == "Vascular II" )
+    {
+        d->windowParameter->setValue(189.6);
+        d->levelParameter->setValue(262.3);
+    }
+    else if ( preset == "Vascular III" )
+    {
+        d->windowParameter->setValue(284.4);
+        d->levelParameter->setValue(341.7);
+    }
+    else if ( preset == "Vascular IV" )
+    {
+        d->windowParameter->setValue(272.5);
+        d->levelParameter->setValue(310.9);
+    }
+    else if ( preset == "Standard" )
+    {
+        d->windowParameter->setValue(243.7);
+        d->levelParameter->setValue(199.6);
+    }
+    else if ( preset == "Soft" )
+    {
+        d->windowParameter->setValue(133.5);
+        d->levelParameter->setValue(163.4);
+    }
+    else if ( preset == "Glossy" )
+    {
+        d->windowParameter->setValue(133.5);
+        d->levelParameter->setValue(163.4);
+    }
+
+    update();
 }
 
 QString medVtkViewItkDataImageInteractor::preset() const
