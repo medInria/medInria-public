@@ -34,7 +34,6 @@ public:
     medDoubleParameter* timeParameter;
     medIntParameter* speedFactorParameter;
     medBoolParameter* playParameter;
-    medBoolParameter* stopParameter;
     medTriggerParameter* nextFrameParameter;
     medTriggerParameter* previousFrameParameter;
     medBoolParameter *loopParameter;
@@ -82,9 +81,6 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->playParameter = new medBoolParameter("Play", this);
     d->parametersCandidateToPool << d->playParameter;
 
-    d->stopParameter = new medBoolParameter("Stop", this);
-    d->parametersCandidateToPool << d->stopParameter;
-
     d->timeParameter = new medDoubleParameter("Time", this);
     d->timeParameter->setValue(0);
     d->parametersCandidateToPool << d->timeParameter;
@@ -108,9 +104,9 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     this->clear();
 
     connect(d->timeLine, SIGNAL(frameChanged(int)), this, SLOT(setFrame(int)));
+    connect(d->timeLine, SIGNAL(finished()), this, SLOT(reset()));
 
     connect(d->playParameter, SIGNAL(valueChanged(bool)), this, SLOT(play(bool)));
-    connect(d->stopParameter, SIGNAL(valueChanged(bool)), this, SLOT(stop(bool)));
     connect(d->previousFrameParameter, SIGNAL(triggered()), this, SLOT(previousFrame()));
     connect(d->nextFrameParameter, SIGNAL(triggered()), this, SLOT(nextFrame()));
     connect(d->speedFactorParameter, SIGNAL(valueChanged(int)), this, SLOT(setSpeedFactor(int)));
@@ -195,7 +191,6 @@ void medTimeLineParameter::lockTimeLine()
 void medTimeLineParameter::play(bool play)
 {
     d->playParameter->setValue(play);
-    d->stopParameter->setValue(!play);
 
     if(d->timeLine->state() == QTimeLine::NotRunning && play)
     {
@@ -218,9 +213,10 @@ void medTimeLineParameter::play(bool play)
    this->lockTimeLine();
 }
 
-void medTimeLineParameter::stop(bool stop)
+void medTimeLineParameter::reset()
 {
-    play(!stop);
+    d->playParameter->setValue(false);
+    d->playParameter->setIcon (QPixmap(":/icons/play.png"));
 }
 
 void medTimeLineParameter::setNumberOfFrame(int numberOfFrame)
@@ -323,7 +319,6 @@ QWidget* medTimeLineParameter::getWidget()
         QHBoxLayout *indicatorLayout = new QHBoxLayout;
 
         d->playParameter->setIcon(QIcon(":/icons/play.png"));
-        d->stopParameter->setIcon(QIcon(":/icons/stop.png"));
         connect(d->playParameter->getPushButton(), SIGNAL(clicked()), this, SLOT(unlockTimeLine()));
         d->previousFrameParameter->getPushButton()->setIcon(QIcon(":/icons/backward.png"));
         d->nextFrameParameter->getPushButton()->setIcon(QIcon(":/icons/forward.png"));
