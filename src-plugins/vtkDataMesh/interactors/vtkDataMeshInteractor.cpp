@@ -402,7 +402,7 @@ void vtkDataMeshInteractor::setLut(const QString & lutName)
     vtkLookupTable * lut = NULL;
 
     if (lutName != "Default")
-        vtkLookupTableManager::GetLookupTable(lutName.toStdString());
+        lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
 
     if ( ! d->attribute)
      return;
