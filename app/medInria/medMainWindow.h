@@ -62,6 +62,8 @@ public slots:
     void open(const medDataIndex & index);
     void open(const QString& path);
 
+    void processNewInstanceMessage(const QString& message);
+
 private slots:
 
     void showWorkspace(QString workspace);

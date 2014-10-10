@@ -223,6 +223,10 @@ int main(int argc,char* argv[]) {
                              QObject::tr("Warning : no plugin loaded successfully."));
     }
 
+    // Handle file associations open requests that were not handled in the application
+    QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
+                     mainwindow,SLOT(processNewInstanceMessage(const QString&)));
+
     application.setActivationWindow(mainwindow);
     application.setMainWindow(mainwindow);
 
