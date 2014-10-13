@@ -58,6 +58,7 @@ std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
 			  "GE",
 			  "Flow",
 			  "Loni",
+              "Loni Inversed",
 			  "Loni 2",
 			  "Asymmetry",
 			  "P-Value",
@@ -75,7 +76,8 @@ std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
     
 
   std::vector<std::string> v_lutNames;
-  for( int i=0; i<24; i++)
+  int nbLUTs = sizeof(lutNames)/sizeof(std::string);
+  for( int i=0; i<nbLUTs; i++)
   {
     v_lutNames.push_back(lutNames[i]);
   }
@@ -116,6 +118,8 @@ vtkLookupTable* vtkLookupTableManager::GetLookupTable(const std::string & name)
     return vtkLookupTableManager::GetFlowLookupTable();
   else if ( name == "Loni" )
     return  vtkLookupTableManager::GetLONILookupTable();
+  else if ( name == "Loni Inversed" )
+    return  vtkLookupTableManager::GetLONIInversedLookupTable();
   else if ( name == "Loni 2" )
     return vtkLookupTableManager::GetLONI2LookupTable();
   else if ( name == "Asymmetry" )
@@ -247,6 +251,20 @@ vtkLookupTable* vtkLookupTableManager::GetLONILookupTable()
   for( int i=0; i<203; i++)
   {
     lut->SetTableValue(i, (double)LONI[i][0], (double)LONI[i][1], (double)LONI[i][2], (double)i/202.0);
+  }
+
+  return lut;
+}
+
+vtkLookupTable* vtkLookupTableManager::GetLONIInversedLookupTable()
+{
+  vtkLookupTable* lut = vtkLookupTable::New();
+  lut->SetNumberOfTableValues(203);
+  lut->Build();
+
+  for( int i=0; i<203; i++)
+  {
+    lut->SetTableValue(i, (double)LONI[203-i][0], (double)LONI[203-i][1], (double)LONI[203-i][2], (double)i/202.0);
   }
 
   return lut;

@@ -207,7 +207,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->lutParam = new medStringListParameter("Lut", this);
     QStringList luts = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
-                                     << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2"
+                                     << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni Inversed" << "Loni 2"
                                      << "Asymmetry" << "P-Value" << "Red Black Alpha"
                                      << "Green Black Alpha" << "Blue Black Alpha"
                                      << "Muscles & Bones" << "Bones" << "Red Vessels"
