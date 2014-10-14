@@ -345,7 +345,7 @@ QWidget* medTimeLineParameter::getWidget()
             this->updateNumberOfFrameLabel();
         }
         indicatorLayout->addWidget(d->timeParameter->getValueLabel(), 0, Qt::AlignLeft);
-        indicatorLayout->addWidget(new QLabel("/ " + QString::number(d->duration,'g',3) + " s"), 0, Qt::AlignLeft);
+        indicatorLayout->addWidget(new QLabel("/ " + QString::number(d->duration,'g',2) + " s"), 0, Qt::AlignLeft);
         indicatorLayout->addStretch(1);
         indicatorLayout->addWidget(d->frameLabel, 0, Qt::AlignRight);
         indicatorLayout->addWidget(d->numberOfFramesLabel, 0, Qt::AlignRight);
