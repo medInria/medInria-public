@@ -123,7 +123,8 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
     }
     if(viewHasTemporalData)
     {
-        d->timeLineParameter->setNumberOfFrame(sequenceDuration * sequenceFrameRate);
+        unsigned int numFrames = (unsigned int)floor(sequenceDuration * sequenceFrameRate + 0.5);
+        d->timeLineParameter->setNumberOfFrame(numFrames);
         d->timeLineParameter->setDuration(sequenceDuration);
         d->timeLineParameter->show();
     }

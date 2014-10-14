@@ -45,14 +45,14 @@ public:
 
 public slots:
     void setSpeedFactor(int speedFactor);
-    void play(bool play);
-    void stop(bool stop);
+    void play(bool play = true);
     void setNumberOfFrame(int numberOfFrame);
     void setDuration(const double& timeDuration);
     void setStepFrame(int stepFrame);
     void setFrame(int frame);
     void setTime(const double &time);
     void setLoop(bool loop);
+    void reset();
 
     void previousFrame();
     void nextFrame();
