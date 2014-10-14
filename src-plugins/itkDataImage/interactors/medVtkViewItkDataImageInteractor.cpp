@@ -223,7 +223,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->presetParam = new medStringListParameter("Preset", this);
     QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
-                                        << "Standard" << "Soft" << "Glossy" ;
+                                        << "Standard" << "Glossy" ;
     foreach(QString preset, presets)
         d->presetParam->addItem(preset);
 
@@ -236,7 +236,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
         d->presetToLut.insert("Vascular III", "Red Vessels");
         d->presetToLut.insert("Vascular IV", "Red Vessels");
         d->presetToLut.insert("Standard", "Muscles & Bones");
-        d->presetToLut.insert("Soft", "Bones");
         d->presetToLut.insert("Glossy", "Bones");
     }
 
@@ -409,11 +408,6 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
     {
         d->windowParameter->setValue(243.7);
         d->levelParameter->setValue(199.6);
-    }
-    else if ( preset == "Soft" )
-    {
-        d->windowParameter->setValue(133.5);
-        d->levelParameter->setValue(163.4);
     }
     else if ( preset == "Glossy" )
     {
