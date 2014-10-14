@@ -399,7 +399,10 @@ QString vtkDataMeshInteractor::attribute() const
 
 void vtkDataMeshInteractor::setLut(const QString & lutName)
 {
-    vtkLookupTable * lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
+    vtkLookupTable * lut = NULL;
+
+    if (lutName != "Default")
+        lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
 
     if ( ! d->attribute)
      return;
@@ -446,22 +449,22 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     {
         lut = d->attribute->GetLookupTable();
         d->lut = LutPair(lut, "Default");
-        // no ? then bail, nothing to do here.
-        if ( ! lut )
-            return;
     }
 
     // remove the alpha channel from the LUT, it messes up the mesh
-    double values[4];
-    for(int i = 0; i < lut->GetNumberOfTableValues(); i++)
+    if (lut)
     {
-      lut->GetTableValue(i, values);
-      values[3] = 1.0;
-      lut->SetTableValue(i, values);
-    }
+        double values[4];
+        for(int i = 0; i < lut->GetNumberOfTableValues(); i++)
+        {
+            lut->GetTableValue(i, values);
+            values[3] = 1.0;
+            lut->SetTableValue(i, values);
+        }
 
-    double * range = d->metaDataSet->GetCurrentScalarRange();
-    lut->SetRange(range);
+        double * range = d->metaDataSet->GetCurrentScalarRange();
+        lut->SetRange(range);
+    }
 
     vtkMapper * mapper2d = d->actor2d->GetMapper();
     vtkMapper * mapper3d = d->actor3d->GetMapper();
