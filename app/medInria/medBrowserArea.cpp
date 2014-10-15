@@ -115,7 +115,11 @@ void medBrowserArea::setToolBoxesVisible(int index, bool visible )
 
     QList<medToolBox*> toolBoxes = d->dataSources[index]->getToolBoxes();
     foreach(medToolBox* toolBox, toolBoxes)
-        toolBox->setVisible(visible);
+    {
+        if(toolBox->parentWidget())
+          toolBox->setVisible(visible);
+        else toolBox->setVisible(false);
+    }
 }
 
 void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
