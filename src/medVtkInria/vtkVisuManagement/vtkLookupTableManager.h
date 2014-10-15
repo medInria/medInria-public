@@ -69,6 +69,8 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
 
   static vtkLookupTable* GetLONILookupTable();
 
+  static vtkLookupTable *GetLONIInversedLookupTable();
+
   static vtkLookupTable* GetLONI2LookupTable();
 
   static vtkLookupTable* GetAsymmetryLookupTable();
@@ -111,8 +113,7 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
   //BTX
   static vtkLookupTable* GetLookupTable(const std::string &);
   //ETX
-  
- protected:
+protected:
   vtkLookupTableManager();
   ~vtkLookupTableManager();
 

@@ -46,6 +46,11 @@ protected:
 					    bool logAlpha,
 					    vtkColorTransferFunction * rgb,
 					    vtkPiecewiseFunction * alpha );
+  static void GetTransferFunctionFromInversedTable( unsigned int size,
+                        const float table[][3],
+                        bool logAlpha,
+                        vtkColorTransferFunction * rgb,
+                        vtkPiecewiseFunction * alpha );
 
   static void GetBWTransferFunction( vtkColorTransferFunction * rgb,
 				     vtkPiecewiseFunction * alpha );
@@ -65,6 +70,8 @@ protected:
 				       vtkPiecewiseFunction * alpha );
   static void GetLONITransferFunction( vtkColorTransferFunction * rgb,
 				       vtkPiecewiseFunction * alpha );
+  static void GetLONIInversedTransferFunction( vtkColorTransferFunction * rgb,
+                       vtkPiecewiseFunction * alpha );
   static void GetLONI2TransferFunction( vtkColorTransferFunction * rgb,
 					vtkPiecewiseFunction * alpha );
   static void GetAsymmetryTransferFunction( vtkColorTransferFunction * rgb,

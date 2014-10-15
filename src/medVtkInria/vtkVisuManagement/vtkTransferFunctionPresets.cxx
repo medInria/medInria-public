@@ -67,6 +67,7 @@ std::vector< std::string > vtkTransferFunctionPresets::GetAvailablePresets()
   * it = "GE";                     ++it;
   * it = "Flow";                   ++it;
   * it = "Loni";                   ++it;
+  * it = "Loni Inversed";          ++it;
   * it = "Loni 2";                 ++it;
   * it = "Asymmetry";              ++it;
   * it = "P-Value";                ++it;
@@ -126,6 +127,8 @@ void vtkTransferFunctionPresets::GetTransferFunction(
     Self::GetFlowTransferFunction( rgb, alpha );
   else if ( name == "Loni" )
     Self::GetLONITransferFunction( rgb, alpha );
+  else if ( name == "Loni Inversed" )
+    Self::GetLONIInversedTransferFunction( rgb, alpha );
   else if ( name == "Loni 2" )
     Self::GetLONI2TransferFunction( rgb, alpha );
   else if ( name == "Asymmetry" )
@@ -205,6 +208,35 @@ void vtkTransferFunctionPresets::GetTransferFunctionFromTable(
   {
     for ( unsigned int j = 0; j < 3; ++j )
       rgbTable[3 * i + j] = static_cast< double >( table[i][j] );
+
+    alphaTable[i] = static_cast< double >( i ) / normFactor;
+    if ( logAlpha )
+      alphaTable[i] = log( 1.0 + 9.0 * alphaTable[i] ) / log( 10.0 );
+  }
+
+  rgb->BuildFunctionFromTable( 0.0, 1.0, size, rgbTable );
+  delete [] rgbTable;
+
+  alpha->BuildFunctionFromTable( 0.0, 1.0, size, alphaTable );
+  delete [] alphaTable;
+}
+
+void vtkTransferFunctionPresets::GetTransferFunctionFromInversedTable(
+  unsigned int size,
+  const float table[][3],
+  bool logAlpha,
+  vtkColorTransferFunction * rgb,
+  vtkPiecewiseFunction * alpha )
+{
+  double * rgbTable   = new double[3 * size];
+  double * alphaTable = new double[size];
+
+  double normFactor   = static_cast< double >( size - 1 );
+
+  for ( unsigned int i = 0; i < size; ++i )
+  {
+    for ( unsigned int j = 0; j < 3; ++j )
+      rgbTable[3 * i + j] = static_cast< double >( table[size-i-1][j] );
 
     alphaTable[i] = static_cast< double >( i ) / normFactor;
     if ( logAlpha )
@@ -352,6 +384,12 @@ void vtkTransferFunctionPresets::GetLONITransferFunction(
   // delete [] alphaTable;
 }
 
+void vtkTransferFunctionPresets::GetLONIInversedTransferFunction(
+  vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
+{
+  vtkTransferFunctionPresets::GetTransferFunctionFromInversedTable(
+    203, LONI, false, rgb, alpha );
+}
 
 void vtkTransferFunctionPresets::GetLONI2TransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
