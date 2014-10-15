@@ -264,7 +264,7 @@ vtkLookupTable* vtkLookupTableManager::GetLONIInversedLookupTable()
 
   for( int i=0; i<203; i++)
   {
-    lut->SetTableValue(i, (double)LONI[203-i-1][0], (double)LONI[203-i-1][1], (double)LONI[203-i-1][2], (double)i/202.0);
+    lut->SetTableValue(i, (double)LONI[202-i][0], (double)LONI[202-i][1], (double)LONI[202-i][2], (double)i/202.0);
   }
 
   return lut;
