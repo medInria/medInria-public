@@ -1,3 +1,11 @@
+medInria v2.2.1:
+- Presets for images are back
+- Reversed Loni Lut added
+- Diffusion workspace bug correction
+- File association opens on Mac corrected
+- Crashing bug in ITK basic filters solved
+- Various bugs corrections
+
 medInria v2.2.0:
 - Rubber band zoom
 - Add support for VTK vtp file format
