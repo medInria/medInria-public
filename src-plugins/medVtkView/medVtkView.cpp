@@ -512,7 +512,7 @@ void medVtkView::enableRubberBandZoom(bool enable)
         interactorStyle->Delete();
     }
     else
-        d->view2d->GetInteractor()->SetInteractorStyle(d->interactorStyle2D);
+        d->view2d->SetupInteractor(d->view2d->GetInteractor()); // bring back the old interactor
 }
 
 medBoolParameter* medVtkView::rubberBandZoomParameter() const
