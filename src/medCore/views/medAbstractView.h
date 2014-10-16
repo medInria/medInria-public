@@ -76,6 +76,8 @@ public:
 
     QUndoStack* undoStack() const;
 
+
+
 public slots:
     virtual void reset() = 0;
     virtual void render() = 0;
@@ -95,8 +97,6 @@ protected:
     virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
     virtual medAbstractViewInteractor* primaryInteractor();
     virtual QList<medAbstractInteractor*> extraInteractors();
-    virtual medAbstractViewNavigator* primaryNavigator();
-    virtual QList<medAbstractNavigator*> extraNavigators();
 
     virtual bool initialiseInteractors(medAbstractData* data);
     virtual bool initialiseNavigators();
