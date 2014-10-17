@@ -165,7 +165,7 @@ void medApplication::initialize()
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>();
-    viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
+    //viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
 

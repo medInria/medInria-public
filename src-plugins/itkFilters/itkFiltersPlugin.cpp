@@ -23,8 +23,8 @@
 #include <itkFiltersInvertProcess.h>
 #include <itkFiltersShrinkProcess.h>
 #include <itkFiltersWindowingProcess.h>
-#include "itkFiltersThresholdingProcess.h"
-#include "itkFiltersComponentSizeThresholdProcess.h"
+#include <itkFiltersThresholdingProcess.h>
+#include <itkFiltersComponentSizeThresholdProcess.h>
 #include <itkFiltersDilateProcess.h>
 #include <itkFiltersErodeProcess.h>
 #include <itkFiltersCloseProcess.h>
