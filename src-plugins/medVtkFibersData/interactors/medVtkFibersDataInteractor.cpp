@@ -1122,7 +1122,7 @@ void medVtkFibersDataInteractor::loadRoiFromFile()
 
     d->roiImportUuid = medDataManager::instance()->importPath(roiFileName,false);
     connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
-            this, SLOT(importROI(medDataIndex,QUuid)));
+            this, SLOT(importROI(medDataIndex,QUuid)), Qt::UniqueConnection);
 }
 
 void medVtkFibersDataInteractor::importROI(const medDataIndex& index, QUuid uuid)
