@@ -42,7 +42,8 @@ class MEDVTKINRIA_EXPORT vtkVectorVisuManager : public vtkObject
     enum ColorMode
     {
         ColorByVectorMagnitude = 0,
-        ColorByVectorDirection
+        ColorByVectorDirection,
+        ColorByUserColor
     };
 
     enum ViewOrientation
@@ -84,6 +85,9 @@ class MEDVTKINRIA_EXPORT vtkVectorVisuManager : public vtkObject
   void SetColorMode(ColorMode mode);
   ColorMode GetColorMode(){return this->CurrentColorMode;}
 
+  void SetUserColor(double color[3]);
+  const double* GetUserColor() {return UserColor;}
+
   void SetProjection(bool enable);
   bool GetProjection(){return this->Orienter->GetProjection();}
 
@@ -94,6 +98,7 @@ class MEDVTKINRIA_EXPORT vtkVectorVisuManager : public vtkObject
 
   void SetUpLUTToMapVectorDirection();
   void SetColorByVectorMagnitude();
+  void SetColorByUserColor();
 
 
  private:
@@ -112,7 +117,7 @@ class MEDVTKINRIA_EXPORT vtkVectorVisuManager : public vtkObject
   vtkDoubleArray*           ValueArray;
 
   ColorMode                 CurrentColorMode;
-
+  double                    UserColor[3];
 };
 
 

@@ -31,7 +31,7 @@ public:
     static QIcon createIconFromColor(const QString &colorName);
 
 
-    medStringListParameter(QString name = "Unkow string list parameter", QObject* parent = 0);
+    medStringListParameter(QString name = "Unknown string list parameter", QObject* parent = 0);
     virtual ~medStringListParameter();
 
     void addItem(QString item, QIcon icon = QIcon());
