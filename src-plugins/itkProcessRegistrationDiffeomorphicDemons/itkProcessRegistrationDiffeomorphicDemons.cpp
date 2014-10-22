@@ -32,6 +32,9 @@
 #include <rpiCommonTools.hxx>
 #include <registrationFactory.h>
 
+#include <medStringListParameter.h>
+#include <medBoolParameter.h>
+#include <medDoubleParameter.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsDiffeomorphicDemonsPrivate
@@ -48,12 +51,16 @@ public:
     void * registrationMethod ;
 
     std::vector<unsigned int> iterations;
-    unsigned char updateRule;
-    unsigned char gradientType;
-    float maximumUpdateStepLength;
-    float updateFieldStandardDeviation;
-    float displacementFieldStandardDeviation;
-    bool useHistogramMatching;
+
+    QStringList updateRules;
+    QStringList gradientTypes;
+
+    medStringListParameter *updateRuleParam;
+    medStringListParameter *gradientTypeParam;
+    medDoubleParameter *maximumUpdateStepLengthParam;
+    medDoubleParameter *updateFieldStandardDeviationParam;
+    medDoubleParameter *displacementFieldStandardDeviationParam;
+    medBoolParameter *useHistogramMatchingParam;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -64,14 +71,57 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
 {
     d->proc = this;
     d->registrationMethod = NULL ;
-    d->updateRule = 0;
-    d->gradientType = 0;
-    d->maximumUpdateStepLength = 2.0;
-    d->updateFieldStandardDeviation = 0.0;
-    d->displacementFieldStandardDeviation = 1.5;
-    d->useHistogramMatching = false;
+
     //set transform type for the exportation of the transformation to a file
     this->setProperty("transformType","nonRigid");
+
+    d->updateRuleParam = new medStringListParameter("Update Rule", this);
+    d->updateRules << "Diffeomorphic" << "Additive" << "Compositive";
+    d->updateRuleParam->addItems( d->updateRules );
+    d->updateRuleParam->setValue("Diffeomorphic");
+    //TODO: find a way to add tooltip for each item
+//    d->updateRuleBox->setItemData(0,"s <- s o exp(u)",Qt::ToolTipRole);
+//    d->updateRuleBox->setItemData(1,"s <- s + u",Qt::ToolTipRole);
+//    d->updateRuleBox->setItemData(2,"s <- s o (Id+u)",Qt::ToolTipRole);
+
+    d->gradientTypeParam = new medStringListParameter("Gradient Type", this);
+    d->gradientTypes << tr("Symmetrized") << tr ("Fixed Image")
+                 << tr("Warped Moving Image")
+                 << tr("Mapped Moving Image");
+    d->gradientTypeParam->addItems( d->gradientTypes );
+    d->gradientTypeParam->setValue("Symmetrized");
+
+    d->maximumUpdateStepLengthParam = new medDoubleParameter("Max. Update Step Length", this);
+    d->maximumUpdateStepLengthParam->setRange(0,100);
+    d->maximumUpdateStepLengthParam->setSingleStep(0.01);
+    d->maximumUpdateStepLengthParam->setValue(2.0);
+    d->maximumUpdateStepLengthParam->setToolTip(tr(
+                "Maximum length of an update vector (voxel units)."
+                " Setting it to 0 implies no restrictions will be made"
+                " on the step length."));
+
+    d->updateFieldStandardDeviationParam = new medDoubleParameter("Update Field Std. Deviation", this);
+    d->updateFieldStandardDeviationParam->setRange(0,1000);
+    d->updateFieldStandardDeviationParam->setSingleStep(0.01);
+    d->updateFieldStandardDeviationParam->setValue(0.0);
+    d->updateFieldStandardDeviationParam->setToolTip(tr(
+                "Standard deviation of the Gaussian smoothing"
+                "of the update field (voxel units). Setting it below 0.1"
+                "means no smoothing will be performed (default 0.0)."));
+
+    d->displacementFieldStandardDeviationParam = new medDoubleParameter("Displ. Field Std. Deviation", this);
+    d->displacementFieldStandardDeviationParam->setRange(0,1000);
+    d->displacementFieldStandardDeviationParam->setSingleStep(0.01);
+    d->displacementFieldStandardDeviationParam->setValue(1.5);
+    d->displacementFieldStandardDeviationParam->setToolTip(tr(
+                "Standard deviation of the Gaussian smoothing of "
+                "the displacement field (voxel units). Setting it below 0.1 "
+                "means no smoothing will be performed (default 1.5)."));
+
+    d->useHistogramMatchingParam = new medBoolParameter("Histogram Matching", this);
+    d->useHistogramMatchingParam->setValue(false);
+    d->useHistogramMatchingParam->setToolTip(tr(
+                "Use histogram matching before processing?"));
 }
 
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
@@ -135,13 +185,13 @@ template <typename PixelType>
     registration->SetMovingImage((MovingImageType*)proc->movingImages()[0].GetPointer());
 
     registration->SetNumberOfIterations(iterations);
-    registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
-    registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviation);
-    registration->SetDisplacementFieldStandardDeviation(displacementFieldStandardDeviation);
-    registration->SetUseHistogramMatching(useHistogramMatching);
+    registration->SetMaximumUpdateStepLength(maximumUpdateStepLengthParam->value());
+    registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviationParam->value());
+    registration->SetDisplacementFieldStandardDeviation(displacementFieldStandardDeviationParam->value());
+    registration->SetUseHistogramMatching(useHistogramMatchingParam->value());
 
     // Set update rule
-    switch( updateRule )
+    switch( updateRules.indexOf(updateRuleParam->value()) )
     {
     case 0:
         registration->SetUpdateRule( RegistrationType::UPDATE_DIFFEOMORPHIC ); break;
@@ -154,7 +204,7 @@ template <typename PixelType>
     }
 
     // Set gradient type
-    switch( gradientType )
+    switch( gradientTypes.indexOf(gradientTypeParam->value()) )
     {
     case 0:
         registration->SetGradientType( RegistrationType::GRADIENT_SYMMETRIZED );
@@ -222,6 +272,13 @@ template <typename PixelType>
     return 0;
 }
 
+
+/**
+ * @brief Runs the process.
+ *
+ * @param ImageType the fixed image image type.
+ * @return int successful or not.
+*/
 int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
 {
     if(fixedImage().IsNull() || movingImages().isEmpty()
@@ -306,6 +363,13 @@ QString itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
     return titleAndParameters;
 }
 
+/**
+ * @brief Writes the transformation, in this case the displacement field,
+ * in a file.
+ *
+ * @param file The path to the file is assumed to be existing. However the file may not exist beforehand.
+ * @return bool successful or not.
+*/
 bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& file)
 {
     typedef float PixelType;
@@ -332,39 +396,14 @@ bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& fi
     }
 }
 
-// /////////////////////////////////////////////////////////////////
-// Process parameters
-// /////////////////////////////////////////////////////////////////
-void itkProcessRegistrationDiffeomorphicDemons::setUpdateRule(unsigned char updateRule)
-{
-    d->updateRule = updateRule;
-}
 
-void itkProcessRegistrationDiffeomorphicDemons::setGradientType(unsigned char gradientType)
-{
-    d->gradientType = gradientType;
-}
-
-void itkProcessRegistrationDiffeomorphicDemons::setMaximumUpdateLength(float maximumUpdateStepLength)
-{
-    d->maximumUpdateStepLength = maximumUpdateStepLength;
-}
-
-void itkProcessRegistrationDiffeomorphicDemons::setUpdateFieldStandardDeviation(float updateFieldStandardDeviation)
-{
-    d->updateFieldStandardDeviation = updateFieldStandardDeviation;
-}
-
-void itkProcessRegistrationDiffeomorphicDemons::setDisplacementFieldStandardDeviation(float displacementFieldStandardDeviation)
-{
-    d->displacementFieldStandardDeviation = displacementFieldStandardDeviation;
-}
-
-void itkProcessRegistrationDiffeomorphicDemons::setUseHistogramMatching(bool useHistogramMatching)
-{
-    d->useHistogramMatching = useHistogramMatching;
-}
-
+/**
+ * @brief
+ *
+ * @see rpiDiffeomorphicDemons
+ *
+ * @param iterations
+*/
 void itkProcessRegistrationDiffeomorphicDemons::setNumberOfIterations(std::vector<unsigned int> iterations)
 {
     d->iterations = iterations;
@@ -375,7 +414,12 @@ void itkProcessRegistrationDiffeomorphicDemons::setNumberOfIterations(std::vecto
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
-
+/**
+ * @brief Function to instantiate the process from the factory.
+ * @see registered()
+ *
+ * @param void
+*/
 dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons()
 {
     return new itkProcessRegistrationDiffeomorphicDemons;
