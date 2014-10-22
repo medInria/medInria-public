@@ -20,6 +20,29 @@
 
 class medAbstractProcessPrivate;
 
+class medAbstractParameter;
+class medToolBox;
+
+
+struct medProcessIOPort
+{
+    QString name;
+};
+
+template <typename T>
+struct medProcessInput : public medProcessIOPort
+{
+    bool isOptional;
+    T* input;
+};
+
+template <typename T>
+struct medProcessOutput : public medProcessIOPort
+{
+    T* output;
+};
+
+
 
 /**
  * Extending dtkAbstractProcess class to hold more specific information
@@ -32,9 +55,30 @@ public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
     virtual ~medAbstractProcess();
 
+public:
+    QList<medProcessIOPort*> inputs();
+    QList<medProcessIOPort*> outputs();
+
+protected:
+    void appendInput(medProcessIOPort*);
+    void appendOutput(medProcessIOPort*);
+
+public:
+    virtual QList<medAbstractParameter*> parameters() = 0;
+    medAbstractParameter* parameter(QString parameterName);
+
+public:
+    virtual medToolBox* toolbox();
+
+public:
+    virtual bool isInteractive() = 0;
+
 public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;
+
+public:
+//    virtual voir prepareViewArea(medViewArea *);
 
 private:
     using dtkAbstractProcess::onCanceled;
@@ -50,7 +94,4 @@ private:
 
 private:
     medAbstractProcessPrivate* d;
-
 };
-
-

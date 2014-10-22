@@ -33,4 +33,10 @@ public:
     virtual bool write(const QString &file) = 0;
     virtual bool write(const QStringList& files) = 0;
 
+public:
+    virtual bool isInteractive();
+
+public:
+    virtual QList<medAbstractParameter*> parameters();
+
 };
