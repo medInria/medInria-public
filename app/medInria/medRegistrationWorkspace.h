@@ -21,6 +21,7 @@
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
 class medAbstractData;
+class medJobItem;
 
 class medRegistrationWorkspace : public medAbstractWorkspace
 {
@@ -34,11 +35,22 @@ public:
     static bool isUsable();
     void setupViewContainerStack ();
 
+    enum typeOfOperation { algorithm, undo, redo, reset };
+
 protected slots:
     void updateFromFixedContainer();
     void updateFromMovingContainer();
     void updateUserLayerClosable(int tabIndex);
     void updateFromRegistrationSuccess(medAbstractData *output);
+    void setupProcess(QString);
+    void startProcess();
+    void handleOutput(typeOfOperation type, QString algoName);
+    void saveTrans();
+    //void onJobAdded(medJobItem* item, QString jobName);
+    void handleUndo();
+    void handleRedo();
+    void handleReset();
+
 
 private slots:
     void removeSlectorInternToolBox();

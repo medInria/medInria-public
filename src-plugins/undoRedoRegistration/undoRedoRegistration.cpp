@@ -18,19 +18,32 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <registrationFactory.h>
 #include <itkImage.h>
+#include <medUndoRedoToolBox.h>
+
+
+class undoRedoRegistrationPrivate
+{
+public:
+    itkProcessRegistration* currentProcess;
+
+};
 
 // /////////////////////////////////////////////////////////////////
 // undoRedoRegistration
 // /////////////////////////////////////////////////////////////////
 
-undoRedoRegistration::undoRedoRegistration(void) : itkProcessRegistration(){}
+undoRedoRegistration::undoRedoRegistration(void) : itkProcessRegistration(), medAbstractUndoRedoProcess(), d(new undoRedoRegistrationPrivate)
+{
+}
 
-undoRedoRegistration::~undoRedoRegistration(void){}
+undoRedoRegistration::~undoRedoRegistration(void)
+{
+}
 
 bool undoRedoRegistration::registered(void)
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("undoRedoRegistration",
-                                                                 createUndoRedoRegistration);
+                                                                      createUndoRedoRegistration, "itkUndoRedoProcessRegistration");
 }
 
 QString undoRedoRegistration::description(void) const
@@ -38,9 +51,36 @@ QString undoRedoRegistration::description(void) const
     return "undoRedoRegistration";
 }
 
-bool undoRedoRegistration::writeTransform(const QString& file){return false;}
-itk::Transform<double,3,3>::Pointer undoRedoRegistration::getTransform(){return NULL;}
-QString undoRedoRegistration::getTitleAndParameters(){return QString();}
+/**
+ * @brief
+ *
+ * @param file The path to the file is assumed to be existing. However the file may not exist beforehand.
+ * @return bool successful or not.
+ */
+bool undoRedoRegistration::writeTransform(const QString& file)
+{
+    return false;
+}
+
+itk::Transform<double,3,3>::Pointer undoRedoRegistration::getTransform()
+{
+    return NULL;
+}
+
+QString undoRedoRegistration::getTitleAndParameters()
+{
+    return QString();
+}
+
+void undoRedoRegistration::setCurrentProcess(itkProcessRegistration* process)
+{
+    d->currentProcess = process;
+}
+
+itkProcessRegistration* undoRedoRegistration::currentProcess()
+{
+    return  d->currentProcess;
+}
 
 void undoRedoRegistration::undo()
 {
@@ -56,14 +96,16 @@ void undoRedoRegistration::redo()
     generateOutput();
 }
 
-bool undoRedoRegistration::setInputData(medAbstractData *data, int channel)
+void undoRedoRegistration::reset()
 {
-    bool result = itkProcessRegistration::setInputData(data,channel);
-    if (result)
-    {
-        typedef itk::Image< float, 3 > RegImageType;
-        itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
+    //TODO
+}
 
+void undoRedoRegistration::setInputData(medAbstractData *data, int channel)
+{
+    itkProcessRegistration::setInputData(data,channel);
+    typedef itk::Image< float, 3 > RegImageType;
+    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
 
 
         if (channel==0)
@@ -77,7 +119,7 @@ bool undoRedoRegistration::setInputData(medAbstractData *data, int channel)
     return result;
 }
 
-void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * process)
+void undoRedoRegistration::generateOutput(bool algorithm,itkProcessRegistration * process)
 {
     typedef itk::Image< float, 3 > RegImageType;
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
@@ -96,10 +138,33 @@ void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * pr
     }
 }
 
+void undoRedoRegistration::onRegistrationSuccess()
+{
+    registrationFactory::instance()->addTransformation(d->currentProcess->getTransform(), d->currentProcess->getTitleAndParameters());
+    registrationFactory::instance()->getItkRegistrationFactory()->Modified();
+    this->generateOutput(true, d->currentProcess);
+    //this->parentToolBox()->handleOutput();
+}
+
+medToolBox* undoRedoRegistration::toolbox()
+{
+    return this->undoRedoToolBox();
+}
+
+QList<medAbstractParameter*> undoRedoRegistration::parameters()
+{
+    return QList<medAbstractParameter*>();
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
-
+/**
+ * @brief
+ *
+ * @param file The path to the file is assumed to be existing. However the file may not exist beforehand.
+ * @return bool successful or not.
+ */
 dtkAbstractProcess *createUndoRedoRegistration(void)
 {
     return new undoRedoRegistration;

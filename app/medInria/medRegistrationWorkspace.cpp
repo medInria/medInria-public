@@ -14,6 +14,7 @@
 #include <medRegistrationWorkspace.h>
 
 #include <dtkCore/dtkSignalBlocker.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <medViewFactory.h>
 #include <medAbstractView.h>
@@ -24,16 +25,25 @@
 #include <medRegistrationSelectorToolBox.h>
 #include <medAbstractLayeredView.h>
 #include <medStringListParameter.h>
+#include <medAbstractRegistrationProcess.h>
+#include <medRunnableProcess.h>
+#include <medJobManager.h>
+#include <medMetaDataKeys.h>
+#include <medDataManager.h>
 
 #include <medToolBoxFactory.h>
 
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
 
+#include <medAbstractUndoRedoProcess.h>
+
+
 class medRegistrationWorkspacePrivate
 {
 public:
     medRegistrationSelectorToolBox * registrationToolBox;
+
     medViewContainer *fixedContainer;
     medViewContainer *movingContainer;
     medViewContainer *fuseContainer;
@@ -41,6 +51,16 @@ public:
     medViewParameterGroup *viewGroup;
     medLayerParameterGroup *fixedLayerGroup;
     medLayerParameterGroup *movingLayerGroup;
+
+    dtkSmartPointer <medAbstractRegistrationProcess> process;
+    dtkSmartPointer <medAbstractRegistrationProcess> undoRedoRegistrationProcess;
+    medAbstractUndoRedoProcess* undoRedoProcess;
+
+    medAbstractData *fixedData;
+    medAbstractData *movingData;
+
+    QString savePath;
+    QString currentAlgorithmName;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medRegistrationWorkspacePrivate)
@@ -49,6 +69,9 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
 
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
     this->addToolBox(d->registrationToolBox);
+
+    QStringList implementations = dtkAbstractProcessFactory::instance()->implementations("medAbstractRegistrationProcess");
+    d->registrationToolBox->setAvailableProcesses(implementations);
 
     d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
     d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this, this->identifier());
@@ -64,10 +87,36 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     layerGroups.append(d->movingLayerGroup);
     this->setLayerGroups(layerGroups);
 
-//    this->setUserLayerPoolable(false);
+    d->fixedData  = NULL;
+    d->movingData = NULL;
+
+    d->savePath = QDir::homePath();
+
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
-    connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
+
+    connect(d->registrationToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupProcess(QString)));
+    connect(d->registrationToolBox, SIGNAL(startProcessRequested()), this, SLOT(startProcess()));
+    //connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
     connect(d->registrationToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));
+
+
+    // undo redo process
+    QStringList undoRedoImplementations = dtkAbstractProcessFactory::instance()->implementations("itkUndoRedoProcessRegistration");
+    if(!undoRedoImplementations.isEmpty())
+        d->undoRedoRegistrationProcess = dynamic_cast<medAbstractRegistrationProcess*>(dtkAbstractProcessFactory::instance()->create(undoRedoImplementations[0]));
+
+    if(d->undoRedoRegistrationProcess)
+    {
+        d->registrationToolBox->setUndoRedoToolbox(d->undoRedoRegistrationProcess->toolbox());
+
+        d->undoRedoProcess = dynamic_cast<medAbstractUndoRedoProcess*>(d->undoRedoRegistrationProcess.data());
+        if(d->undoRedoProcess)
+        {
+            connect(d->undoRedoProcess->wrapper(), SIGNAL(processUndone()), this, SLOT(handleUndo()));
+            connect(d->undoRedoProcess->wrapper(), SIGNAL(processRedone()), this, SLOT(handleRedo()));
+            connect(d->undoRedoProcess->wrapper(), SIGNAL(undoRedoStackReset()), this, SLOT(handleReset()));
+        }
+    }
 
 }
 
@@ -131,6 +180,17 @@ bool medRegistrationWorkspace::isUsable()
     return (tbFactory->toolBoxesFromCategory("registration").size()!=0);
 }
 
+void medRegistrationWorkspace::setupProcess(QString process)
+{
+    d->process = dynamic_cast<medAbstractRegistrationProcess*>(dtkAbstractProcessFactory::instance()->create(process));
+    if(d->process)
+    {
+        d->registrationToolBox->setProcessToolbox(d->process->toolbox());
+    }
+
+    d->currentAlgorithmName = process;
+}
+
 void medRegistrationWorkspace::updateFromMovingContainer()
 {
     if(!d->registrationToolBox)
@@ -141,17 +201,16 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
         if(fuseView)
         {
-            if(fuseView->layer(d->registrationToolBox->movingData()) == 0)
+            if(fuseView->layer(d->movingData) == 0)
             {
                 d->fuseContainer->removeView();
-                d->fuseContainer->addData(d->registrationToolBox->fixedData());
+                d->fuseContainer->addData(d->fixedData);
             }
             else
                 fuseView->removeLayer(1);
 
         }
 
-        d->registrationToolBox->setMovingData(NULL);
         return;
     }
 
@@ -162,32 +221,25 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         return;
     }
 
-    medAbstractData *movingData = movingView->layerData(movingView->currentLayer());
+    d->movingData = movingView->layerData(movingView->currentLayer());
 
     medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     if(fuseView)
-        fuseView->removeData(movingData);
+        fuseView->removeData(d->movingData);
 
-    d->fuseContainer->addData(movingData);
+    d->fuseContainer->addData(d->movingData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    if(movingData)
+    if(d->movingData)
     {
         d->viewGroup->addImpactedView(movingView);
         d->viewGroup->addImpactedView(fuseView);
         d->viewGroup->removeParameter("DataList");
 
-        d->movingLayerGroup->addImpactedlayer(movingView, movingData);
-        d->movingLayerGroup->addImpactedlayer(fuseView, movingData);
+        d->movingLayerGroup->addImpactedlayer(movingView, d->movingData);
+        d->movingLayerGroup->addImpactedlayer(fuseView, d->movingData);
     }
-    if (!d->registrationToolBox->setMovingData(movingData))
-    {
-        // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(movingView);
-        d->movingLayerGroup->removeImpactedlayer(movingView, movingData);
-        d->movingLayerGroup->removeImpactedlayer(fuseView, movingData);
-        movingView->deleteLater();
-    }
+
 }
 
 void medRegistrationWorkspace::updateFromFixedContainer()
@@ -200,17 +252,16 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
         if(fuseView)
         {
-            if(fuseView->layer(d->registrationToolBox->fixedData()) == 0)
+            if(fuseView->layer(d->fixedData) == 0)
             {
                 d->fuseContainer->removeView();
-                d->fuseContainer->addData(d->registrationToolBox->movingData());
+                d->fuseContainer->addData(d->movingData);
             }
             else
                 fuseView->removeLayer(1);
 
         }
 
-        d->registrationToolBox->setFixedData(NULL);
         return;
     }
 
@@ -221,32 +272,24 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         return;
     }
 
-    medAbstractData *fixedData = fixedView->layerData(fixedView->currentLayer());
+    d->fixedData = fixedView->layerData(fixedView->currentLayer());
     medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     if(fuseView)
-        fuseView->removeData(fixedData);
+        fuseView->removeData(d->fixedData);
 
-    d->fuseContainer->addData(fixedData);
+    d->fuseContainer->addData(d->fixedData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    if(fixedData)
+    if(d->fixedData)
     {
         d->viewGroup->addImpactedView(fixedView);
         d->viewGroup->addImpactedView(fuseView);
         d->viewGroup->removeParameter("DataList");
 
-        d->fixedLayerGroup->addImpactedlayer(fixedView, fixedData);
-        d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
+        d->fixedLayerGroup->addImpactedlayer(fixedView, d->fixedData);
+        d->fixedLayerGroup->addImpactedlayer(fuseView, d->fixedData);
     }
 
-    if (!d->registrationToolBox->setFixedData(fixedData))
-    {
-        // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(fixedView);
-        d->fixedLayerGroup->removeImpactedlayer(fixedView, fixedData);
-        d->fixedLayerGroup->removeImpactedlayer(fuseView, fixedData);
-        fixedView->deleteLater();
-    }
 }
 
 
@@ -271,7 +314,7 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
     d->movingContainer->addData(output);
 
     d->fuseContainer->removeView();
-    d->fuseContainer->addData(d->registrationToolBox->fixedData());
+    d->fuseContainer->addData(d->fixedData);
     d->fuseContainer->addData(output);
 
 
@@ -305,7 +348,224 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
             this, SLOT(updateFromMovingContainer()));
 }
 
+void medRegistrationWorkspace::handleUndo()
+{
+    //TODO refactor handleOutput, split it into 3 ( or4 ?) methods
+    handleOutput(undo, "");
+}
+
+void medRegistrationWorkspace::handleRedo()
+{
+   handleOutput(redo, "");
+}
+
+void medRegistrationWorkspace::handleReset()
+{
+   handleOutput(reset, "");
+}
+
+void medRegistrationWorkspace::handleOutput(typeOfOperation type, QString algoName)
+{
+    medAbstractData *output(NULL);
+    if (type == algorithm)
+        if (d->process)
+            output = dynamic_cast<medAbstractData*>(d->process->output());
+        else return;
+    else
+        if (d->undoRedoRegistrationProcess)
+            output = dynamic_cast<medAbstractData*>(d->undoRedoRegistrationProcess->output());
+        else return;
+
+    // We manage the new description of the image
+    QString newDescription = "";
+    if(d->movingData)
+        newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+
+    if (type==algorithm || type==redo)
+    {
+        if (type==algorithm)
+        {
+            algoName = d->currentAlgorithmName.remove(" "); // we remove the spaces to reduce the size of the QString as much as possible
+        }
+        if (newDescription.contains("registered"))
+            newDescription += "-" + algoName + "\n";
+        else
+            newDescription += " registered\n-" + algoName+ "\n";
+    }
+    else if (type == undo)
+    {
+        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1);
+        if (newDescription.count("-") == 0)
+            newDescription.remove(" registered\n");
+    }
+    else if (type == reset)
+    {
+        if (newDescription.lastIndexOf(" registered") != -1)
+            newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
+        if(!d->fixedData || !d->movingData)
+            return;
+    }
+
+    foreach(QString metaData, d->fixedData->metaDataList())
+        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
+
+    foreach(QString property, d->fixedData->propertyList())
+        output->addProperty(property,d->fixedData->propertyValues(property));
+
+    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
+
+    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+    output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+
+    if (type==algorithm)
+        medDataManager::instance()->importData(output);
+
+    d->movingData = output;
+
+    this->updateFromRegistrationSuccess(output);
+}
+
+//! Saves the transformation.
+void medRegistrationWorkspace::saveTrans()
+{
+    if (!d->movingData)
+    {
+        //TODO GPR
+        //emit showError(tr  ("Please Select a moving image before saving"),3000);
+        return;
+    }
+    if (!d->process )
+    {
+        //TODO GPR
+        //emit showError(tr  ("Please run the registration before saving"),3000);
+        return;
+    }
+
+    //get the transformation type: affine or deformation field.
+    QString fileTypeSuggestion;
+    QString filterSelected;
+    QHash<QString,QString> suffix;
+    if (d->process->hasProperty("transformType"))
+    {
+        if ( d->process->property("transformType") == "rigid")
+            suffix[ tr("Transformation (*.txt)") ] = ".txt";
+        else
+        {
+            suffix[ tr("MetaFile (*.mha)") ] = ".mha";
+            suffix[ tr("MetaFile (*.mhd)") ] = ".mhd";
+            suffix[ tr("Nifti (*.nii)") ] = ".nii";
+            suffix[ tr("Analyse (*.hdr)") ] = ".hdr";
+            suffix[ tr("Nrrd (*.nrrd)") ] = ".nrrd";
+            suffix[ tr("VTK (*.vtk)") ] = ".vtk";
+            suffix[ tr("All supported files "
+                "(*.mha *.mhd *.nii *.hdr *.nrrd *.vtk)") ] = ".mha";
+        }
+        QHashIterator<QString, QString> i(suffix);
+        while (i.hasNext())
+        {
+            i.next();
+            fileTypeSuggestion += i.key();
+            if (i.hasNext())
+                fileTypeSuggestion += ";;";
+        }
+    }
+    QFileInfo file;
+    QString fileName;
+
+    file = QFileDialog::getSaveFileName(d->registrationToolBox, tr("Save Transformation"),
+        d->savePath,
+        fileTypeSuggestion,&filterSelected,QFileDialog::DontUseNativeDialog);
+
+    if (!file.filePath().isEmpty())
+    {
+        if (!file.completeSuffix().isEmpty())
+        {
+            if(!suffix.values().contains("."+file.completeSuffix()))
+            {
+                QMessageBox::warning(d->registrationToolBox, tr("Save Transformation"),tr("The save did not occur, you have to choose a format within the types suggested."));
+                d->savePath = file.absolutePath();
+                saveTrans(); // call again the function.
+                return;
+            }
+            fileName = file.filePath();
+        }
+        else
+        {
+            fileName = file.filePath() + suffix[filterSelected];
+            file.setFile(fileName);
+            if (file.exists())
+            {
+                 int res = QMessageBox::warning(d->registrationToolBox, tr("Save Transformation"),
+                                tr("The file ") + file.fileName() + tr(" already exists.\nDo you want to replace it?"),
+                                QMessageBox::Yes | QMessageBox::No);
+
+                if (res==QMessageBox::No){
+                    d->savePath = file.absolutePath();
+                    saveTrans(); // call again the function.
+                    return;
+                }
+            }
+        }
+
+        QStringList transformFileName;
+        transformFileName << ""<< fileName;
+        if (d->process->write(transformFileName))
+        {
+            //TODO GPR
+            //emit(showInfo(tr  ("Transformation saved"),3000));
+        }
+        else
+        {
+            //TODO GPR
+            //emit(showError(tr  ("Transformation saving failed, no suitable writer found"),3000));
+        }
+
+    }
+    d->savePath = QDir::homePath();
+}
+
 void medRegistrationWorkspace::removeSlectorInternToolBox()
 {
     d->registrationToolBox = NULL;
 }
+
+void medRegistrationWorkspace::startProcess()
+{
+    d->process->setFixedInput(d->fixedData);
+    d->process->setMovingInput(d->movingData);
+
+    medRunnableProcess *runProcess = new medRunnableProcess;
+
+    runProcess->setProcess (d->process);
+
+//    d->progressionStack->addJobItem(runProcess, tr("Progress:"));
+//    d->progressionStack->setActive(runProcess,true);
+//    d->progressionStack->disableCancel(runProcess);
+
+    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
+    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
+    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
+
+    connect (runProcess, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (runProcess, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+
+    //First have the moving progress bar,
+    //and then display the remaining % when known
+//    connect (runProcess, SIGNAL(activate(QObject*,bool)),
+//             d->progressionStack, SLOT(setActive(QObject*,bool)));
+
+    medJobManager::instance()->registerJobItem(runProcess,d->process->identifier());
+    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+}
+
+
+//TODO GPR: doesn't seem to be used...to check
+//void medRegistrationWorkspace::onJobAdded(medJobItem* item, QString jobName)
+//{
+//    if (d->process)
+//        if (jobName == d->process->identifier()){
+//            dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
+//            if (proc==d->process)
+//                enableSelectorToolBox(false);
+//        }
+//}

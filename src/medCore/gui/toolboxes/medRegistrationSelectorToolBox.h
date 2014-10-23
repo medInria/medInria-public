@@ -31,35 +31,18 @@ public:
      medRegistrationSelectorToolBox(QWidget *parent = 0);
     ~medRegistrationSelectorToolBox();
 
-    medAbstractData *fixedData();
-    medAbstractData *movingData();
-
-    medAbstractRegistrationProcess * process();
-    void setProcess(medAbstractRegistrationProcess *process);
-
-    medAbstractRegistrationProcess * undoRedoProcess();
-    void setUndoRedoProcess(medAbstractRegistrationProcess *proc);
-
-    QString getNameOfCurrentAlgorithm();
-
-    bool setFixedData(medAbstractData* data);
-    bool setMovingData(medAbstractData* data);
-
-    enum typeOfOperation { algorithm, undo, redo, reset };
+    void setAvailableProcesses(QStringList);
+    void setProcessToolbox(medToolBox*);
+    void setUndoRedoToolbox(medToolBox*);
 
 signals:
-    void showError (const QString&,unsigned int timeout);
-    void showInfo(const QString&,unsigned int timeout);
-    void movingDataRegistered(medAbstractData *output);
+    void processSelected(const QString&);
+    void startProcessRequested();
+    void saveTransfoRequested();
 
 public slots:
-
-    void changeCurrentToolBox(int index);
     void clear();
-    void onSaveTrans();
-    void handleOutput(typeOfOperation type=algorithm,QString algoName="");
     void enableSelectorToolBox(bool enable = true);
-    void onJobAdded(medJobItem* item, QString jobName);
 
 private:
     medRegistrationSelectorToolBoxPrivate *d;

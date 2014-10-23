@@ -71,11 +71,11 @@ medToolBox* medAbstractProcess::toolbox()
     if(d->toolbox.isNull())
     {
         d->toolbox = new medToolBox;
-        QFormLayout *layout = new QFormLayout(d->toolbox);
+        QWidget *w = new QWidget(d->toolbox);
+        QFormLayout *layout = new QFormLayout(w);
         foreach(medAbstractParameter *param, this->parameters())
-        {
             layout->addRow(param->getLabel(), param->getWidget());
-        }
+        d->toolbox->addWidget(w);
     }
     return d->toolbox;
 }

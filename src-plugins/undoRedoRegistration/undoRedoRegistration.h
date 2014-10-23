@@ -14,6 +14,7 @@
 #pragma once
 
 #include <itkProcessRegistration.h>
+#include <medAbstractUndoRedoProcess.h>
 #include <undoRedoRegistrationPluginExport.h>
 #include <itkImage.h>
 
@@ -26,74 +27,56 @@ class undoRedoRegistrationPrivate;
  * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medInria/src/medCore/gui.
  *
  */
-class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistration : public itkProcessRegistration
+class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistration : public itkProcessRegistration, public medAbstractUndoRedoProcess
 {
     Q_OBJECT
     
 public:
 
     typedef itk::Image< float, 3 > RegImageType;
-    /**
-     * @brief Constructor.
-     *
-     * @param void
-     */
+
     undoRedoRegistration(void);
-    
-    /**
-     * @brief
-     *
-     * @param void
-     */
     virtual ~undoRedoRegistration(void);
     
-    /**
-     * @brief Description of the plugin.
-     *
-     * @param void
-     * @return QString
-     */
+public:
     virtual QString description(void) const;
-    
-    /**
-     * @brief tries to register the process with the factory.
-     *
-     * @param void
-     * @return bool true if it succeeded, false otherwise.
-     */
     static bool registered(void);
 
-    void undo();
-    
-    void redo();
+public:
+    medToolBox* toolbox();
+    QList<medAbstractParameter*> parameters();
 
-    void generateOutput(bool algorithm = false,dtkAbstractProcess * process=NULL);
+public:
+    void setCurrentProcess(itkProcessRegistration* process);
+    itkProcessRegistration* currentProcess();
 
+public:
     virtual itk::Transform<double,3,3>::Pointer getTransform();
     virtual QString getTitleAndParameters();
 
-protected :
-    /**
-     * @brief
-     *
-     * @param file The path to the file is assumed to be existing. However the file may not exist beforehand.
-     * @return bool successful or not.
-     */
-    virtual bool writeTransform(const QString& file);
+public slots:
+    void undo(); 
+    void redo();
+    void reset();
 
+    void generateOutput(bool algorithm = false,itkProcessRegistration *process=NULL);
+
+protected :
+    virtual bool writeTransform(const QString& file);
     virtual bool setInputData(medAbstractData *data, int channel);
+
+protected slots:
+    void onRegistrationSuccess();
+
+signals:
+    void registrationDone();
+    void stackReset();
 
 private:
     undoRedoRegistrationPrivate *d;
     
 };
 
-/**
- * @brief Function to instantiate the process from the factory.
- * @see registered()
- *
- * @param void
- */
 dtkAbstractProcess *createUndoRedoRegistration(void);
 
 

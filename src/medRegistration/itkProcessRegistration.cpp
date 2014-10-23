@@ -362,13 +362,26 @@ bool itkProcessRegistration::setMovingInput(medAbstractData *data)
     return this->setInputData(data, 1);
 }
 
+/**
+ * @brief Apply the update on a specified fixed image type.
+ *
+ * Called by update(). The image type is the fixed image type.
+ *
+ * @param ImageType: the fixed image type
+ * @return int
+*/
 int itkProcessRegistration::update(itkProcessRegistration::ImageType)
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return 1;
 }
 
-
+/**
+ * @brief Runs the process.
+ *
+ * @param void
+ * @return int 0 if it succeeded, any other value is an error. (could be used as error code)
+*/
 int itkProcessRegistration::update()
 {
     if (!d->mutex.tryLock())
@@ -384,6 +397,12 @@ int itkProcessRegistration::update()
     return retval;
 }
 
+/**
+ * @brief Gets the registered image.
+ *
+ * @param void
+ * @return medAbstractData *: itkDataImageXXY, same type as the moving input image.
+*/
 medAbstractData *itkProcessRegistration::output()
 {
     return d->output;
@@ -393,25 +412,67 @@ void itkProcessRegistration::setOutput(medAbstractData * output)
     d->output = output;
 }
 
+/**
+ * @brief Gets an itk smart pointer to the fixed image.
+ *
+ * It uses the itkImageBase class to avoid a templated method.
+ * Using the fixedImageType() method will give the type necessary for a down cast.
+ *
+ * @return itk::ImageBase<int> NULL if none is set yet.
+*/
 itk::ImageBase<3>::Pointer itkProcessRegistration::fixedImage()
 {
     return d->fixedImage;
 }
 
+/**
+ * @brief Gets an itk smart pointer to the moving image.
+ *
+ * it uses the itkImageBase class to avoid a templated method.
+ * Using the movingImageType() method will give the type necessary for a down cast.
+ *
+ * @return itk::ImageBase<int> NULL if none is set yet.
+*/
 QVector<itk::ImageBase<3>::Pointer> itkProcessRegistration::movingImages()
 {
     return d->movingImages;
 }
+
+/**
+ * @brief Gets the fixed image ImageType.
+ *
+ * @return itkProcessRegistration::ImageType
+*/
 itkProcessRegistration::ImageType itkProcessRegistration::fixedImageType()
 {
     return d->fixedImageType;
 }
 
+/**
+ * @brief Gets the moving image ImageType.
+ *
+ * @return itkProcessRegistration::ImageType
+*/
 itkProcessRegistration::ImageType itkProcessRegistration::movingImageType()
 {
     return d->movingImageType;
 }
 
+/**
+ * @brief Writes to a file an image or a transformation.
+ *
+ * This function is inherited from dtk.
+ * @warning This function writes the image in the first file,
+ * and the transformation in the second. Otheritems in the list are ignored.
+ * An empty string as a first element with a path as the second only writes the transformation.
+ * A single element in the list means only the image will be written.
+ *
+ * This function is usualy called from the generic registration toolbox.
+ *
+ * @param files: list of File path. Here files[0] is a path to the image,
+ * and files[1] a path to a transformation.
+ * @return bool: true on successful operation, false otherwise.
+*/
 bool itkProcessRegistration::write(const QStringList& files)
 {
     if (files.count()!=2)
@@ -432,6 +493,15 @@ bool itkProcessRegistration::write(const QStringList& files)
     return false;
 }
 
+/**
+ * @brief Writes a transformation to a file.
+ *
+ * Given the registration (rigid, non-rigid),
+ * this could be a simple matrix or a displacement field.
+ *
+ * @param file: path to the file.
+ * @return bool: true on successful operation, false otherwise.
+*/
 bool itkProcessRegistration::writeTransform(const QString& file)
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -439,7 +509,14 @@ bool itkProcessRegistration::writeTransform(const QString& file)
     return false;
 }
 
-
+/**
+ * @brief Writes the resulting image to a file.
+ *
+ * Uses a dtkAbstractDataWriter to export it the file.
+ * If no suitable writer is found by the factory, the method returns false.
+ * @param file: path to the file.
+ * @return bool: true on successful operation, false otherwise.
+*/
 bool itkProcessRegistration::write(const QString& file)
 {
     if (output() == NULL)
