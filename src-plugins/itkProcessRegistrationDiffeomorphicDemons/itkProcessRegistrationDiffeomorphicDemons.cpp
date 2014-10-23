@@ -32,6 +32,7 @@
 #include <rpiCommonTools.hxx>
 #include <registrationFactory.h>
 
+#include <medStringParameter.h>
 #include <medStringListParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
@@ -55,12 +56,14 @@ public:
     QStringList updateRules;
     QStringList gradientTypes;
 
+    medStringParameter *iterationParam;
     medStringListParameter *updateRuleParam;
     medStringListParameter *gradientTypeParam;
     medDoubleParameter *maximumUpdateStepLengthParam;
     medDoubleParameter *updateFieldStandardDeviationParam;
     medDoubleParameter *displacementFieldStandardDeviationParam;
     medBoolParameter *useHistogramMatchingParam;
+    QList<medAbstractParameter*> parameters;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -74,6 +77,10 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
 
     //set transform type for the exportation of the transformation to a file
     this->setProperty("transformType","nonRigid");
+
+    d->iterationParam = new medStringParameter("Iterations", this);
+    d->iterationParam->setValue("15x10x5");
+    d->iterationParam->setToolTip(tr("Each number of iteration per level must be separated by \"x\". From coarser to finest levels"));
 
     d->updateRuleParam = new medStringListParameter("Update Rule", this);
     d->updateRules << "Diffeomorphic" << "Additive" << "Compositive";
@@ -122,6 +129,14 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
     d->useHistogramMatchingParam->setValue(false);
     d->useHistogramMatchingParam->setToolTip(tr(
                 "Use histogram matching before processing?"));
+
+    d->parameters << d->iterationParam;
+    d->parameters << d->updateRuleParam;
+    d->parameters << d->gradientTypeParam;
+    d->parameters << d->maximumUpdateStepLengthParam;
+    d->parameters << d->updateFieldStandardDeviationParam;
+    d->parameters << d->displacementFieldStandardDeviationParam;
+    d->parameters << d->useHistogramMatchingParam;
 }
 
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
@@ -146,7 +161,7 @@ itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicD
 bool itkProcessRegistrationDiffeomorphicDemons::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkProcessRegistrationDiffeomorphicDemons",
-              createitkProcessRegistrationDiffeomorphicDemons);
+                                                                      createitkProcessRegistrationDiffeomorphicDemons, "medAbstractRegistrationProcess");
 }
 
 QString itkProcessRegistrationDiffeomorphicDemons::description() const
@@ -159,6 +174,10 @@ QString itkProcessRegistrationDiffeomorphicDemons::identifier() const
     return "itkProcessRegistrationDiffeomorphicDemons";
 }
 
+QList<medAbstractParameter*> itkProcessRegistrationDiffeomorphicDemons::parameters()
+{
+    return d->parameters;
+}
 
 // /////////////////////////////////////////////////////////////////
 // Templated Version of update
@@ -184,7 +203,8 @@ template <typename PixelType>
     registration->SetFixedImage((FixedImageType*)proc->fixedImage().GetPointer());
     registration->SetMovingImage((MovingImageType*)proc->movingImages()[0].GetPointer());
 
-    registration->SetNumberOfIterations(iterations);
+    registration->SetNumberOfIterations(rpi::StringToVector<unsigned int>(
+                                            iterationParam->value().toStdString()));
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLengthParam->value());
     registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviationParam->value());
     registration->SetDisplacementFieldStandardDeviation(displacementFieldStandardDeviationParam->value());
@@ -395,21 +415,6 @@ bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& fi
         return false;
     }
 }
-
-
-/**
- * @brief
- *
- * @see rpiDiffeomorphicDemons
- *
- * @param iterations
-*/
-void itkProcessRegistrationDiffeomorphicDemons::setNumberOfIterations(std::vector<unsigned int> iterations)
-{
-    d->iterations = iterations;
-}
-
-
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation

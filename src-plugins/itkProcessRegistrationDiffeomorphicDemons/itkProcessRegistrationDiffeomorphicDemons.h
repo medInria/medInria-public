@@ -42,10 +42,11 @@ public:
 public:
     virtual int update(ImageType);
 
-    void setNumberOfIterations(std::vector <unsigned int> iterations);
-
     virtual itk::Transform<double,3,3>::Pointer getTransform();
     virtual QString getTitleAndParameters();
+
+public:
+    QList<medAbstractParameter*> parameters();
 
 
 protected :
