@@ -43,7 +43,6 @@ private:
     DTK_DECLARE_PRIVATE(itkFiltersProcessBase)
     
     using dtkAbstractProcess::description;
-    using dtkAbstractProcess::setInput;
 };
 
 //ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersProcessBase& process);
