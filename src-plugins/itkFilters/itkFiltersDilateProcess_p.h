@@ -21,8 +21,9 @@
 
 #include <itkImage.h>
 #include <itkCommand.h>
-#include <itkGrayscaleDilateImageFilter.h>
+#include <itkBinaryDilateImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
 
 class itkFiltersDilateProcess;
@@ -53,13 +54,21 @@ public:
         elementRadius[1] = radius[1];
         elementRadius[2] = radius[2];
 
-        typedef itk::GrayscaleDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateType;
+        typedef itk::BinaryDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateType;
         typename DilateType::Pointer dilateFilter = DilateType::New();
 
         StructuringElementType ball = StructuringElementType::Ball(elementRadius);
 
         dilateFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         dilateFilter->SetKernel ( ball );
+
+        typedef itk::MinimumMaximumImageCalculator <ImageType> ImageCalculatorFilterType;
+        typename ImageCalculatorFilterType::Pointer imageCalculatorFilter
+                = ImageCalculatorFilterType::New ();
+        imageCalculatorFilter->SetImage(dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ));
+        imageCalculatorFilter->ComputeMaximum();
+
+        dilateFilter->SetDilateValue(imageCalculatorFilter->GetMaximum());
 
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
