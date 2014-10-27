@@ -153,5 +153,6 @@
         <file>icons/adjust_size.png</file>
         <file>VP2HFsmall.png</file>
         <file>VP2HF.png</file>
+        <file>SFP.png</file>
     </qresource>
 </RCC>

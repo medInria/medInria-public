@@ -126,28 +126,37 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
-    QLabel * medInriaLabel = new QLabel ( this );
-    QPixmap medLogo( ":VP2HF.png" );
-    medInriaLabel->setPixmap ( medLogo );
+    QLabel * VP2HFLabel = new QLabel ( this );
+    QLabel * SFPLabel = new QLabel ( this );
+    QPixmap VP2HFLogo( ":VP2HF.png" );
+    VP2HFLabel->setPixmap ( VP2HFLogo );
+    QPixmap SFPlogo( ":SFP.png" );
+    SFPLabel->setPixmap ( SFPlogo );
 //     QLabel * textLabel = new QLabel;
 
-    QTextEdit * textEdit = new QTextEdit(this);
+    QTextBrowser  * textEdit = new QTextBrowser (this);
     textEdit->setHtml ( tr("<b>The primary aim of VP2HF</b> is to bring together image"
                            " and data processing tools with statistical"
                            " and integrated biophysical models mainly developed"
                            " in previous VPH projects, into a single clinical workflow"
-                           " to improve therapy selection and treatment optimisation in HF."));
+                           " to improve therapy selection and treatment optimisation in HF."
+                           " The VP2HF project is funded under the EU Seventh Framework Programme."
+                           " This software is based on the <a href=\"http://med.inria.fr/\">medInria</a> platform."));
 
+    textEdit->setOpenExternalLinks(true);
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight ( 200 );
-    infoLayout->insertWidget ( 0,medInriaLabel );
+    QHBoxLayout * logolayout = new QHBoxLayout(d->infoWidget);
+    logolayout->addWidget(VP2HFLabel );
+    logolayout->addWidget(SFPLabel );
+    infoLayout->addLayout(logolayout);
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
 
     //no need to set the layout, the infoWidget is the parent of the layout already.
 //    d->infoWidget->setLayout ( infoLayout );
-    d->infoWidget->setMaximumHeight ( medInriaLabel->height() + textEdit->height() );
+    d->infoWidget->setMaximumHeight ( VP2HFLabel->height() + textEdit->height() );
 
     //About widget
     QVBoxLayout * aboutLayout = new QVBoxLayout(d->aboutWidget);
@@ -155,7 +164,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutTabWidget->setObjectName("aboutTabWidget");
 
     QLabel * medInriaLabel2 = new QLabel ( this );
-    medInriaLabel2->setPixmap ( medLogo );
+    medInriaLabel2->setPixmap ( VP2HFLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
     
@@ -229,7 +238,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginHideButtonLayout->addStretch();
 
     QLabel * medInriaLabel3 = new QLabel ( this );
-    medInriaLabel3->setPixmap ( medLogo );
+    medInriaLabel3->setPixmap ( VP2HFLogo );
 
     medPluginWidget * pWid = new medPluginWidget(d->pluginWidget);
 
@@ -254,7 +263,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsHideButtonLayout->addStretch();
 
     QLabel * medInriaLabel4 = new QLabel ( this );
-    medInriaLabel4->setPixmap ( medLogo );
+    medInriaLabel4->setPixmap ( VP2HFLogo );
 
     d->settingsEditor = new medSettingsEditor(d->settingsWidget,true);
     settingsLayout->addWidget(medInriaLabel4);
