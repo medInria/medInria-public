@@ -17,27 +17,61 @@
 #include <medAbstractDataFactory.h>
 
 #include <medMetaDataKeys.h>
+#include <medDoubleParameter.h>
 
+#include <itkSubtractImageFilter.h>
 
-#include <itkFiltersSubtractProcess_p.h>
+class itkFiltersSubtractProcessPrivate
+{
+public:
+    itkFiltersSubtractProcessPrivate(itkFiltersSubtractProcess *q) {parent=q;}
+    virtual ~itkFiltersSubtractProcessPrivate(void) {}
+
+    itkFiltersSubtractProcess* parent;
+    medDoubleParameter *subtractValueParam;
+    QList<medAbstractParameter*> parameters;
+
+    template <class PixelType> void update ( void )
+    {
+        typedef itk::Image< PixelType, 3 > ImageType;
+        typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  SubtractFilterType;
+        typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
+
+        subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        subtractFilter->SetConstant ( subtractValueParam->value() );
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) parent );
+        parent->setCallBack(callback);
+
+        subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+        subtractFilter->Update();
+        parent->output()->setData ( subtractFilter->GetOutput() );
+
+        //Set output description metadata
+        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " subtract filter (" + QString::number(subtractValueParam->value()) + ")";
+
+        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    }
+
+};
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersSubtractProcess::itkFiltersSubtractProcess(itkFiltersSubtractProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersSubtractProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersSubtractProcess);
+    : itkFiltersProcessBase(parent), d(new itkFiltersSubtractProcessPrivate(this))
+{    
+    this->setFilter(this);
     
-    d->filter = this;
-    d->output = NULL;
-    
-    d->description = tr("ITK subtract constant filter");
-}
+    this->setDescription(tr("ITK subtract constant filter"));
 
+    d->subtractValueParam = new medDoubleParameter("Subtract constant value", this);
+    d->subtractValueParam->setRange(0,1000000000);
+    d->subtractValueParam->setValue(100);
 
-itkFiltersSubtractProcess::itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersSubtractProcessPrivate(*other.d_func()), other)
-{
+    d->parameters << d->subtractValueParam;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -55,26 +89,80 @@ bool itkFiltersSubtractProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersSubtractProcess::setParameter(double data, int channel)
+void itkFiltersSubtractProcess::setInputImage ( medAbstractData *data )
 {
-    if (channel != 0)
+    itkFiltersProcessBase::setInputImage(data);
+
+    if (!data)
         return;
-    
-    DTK_D(itkFiltersSubtractProcess);
-    
-    d->subtractValue = data;
+    else
+    {
+        QString identifier = data->identifier();
+
+        if ( identifier == "itkDataImageChar3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<char>::max() );
+        }
+        else if ( identifier == "itkDataImageUChar3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned char>::max() );
+        }
+        else if ( identifier == "itkDataImageShort3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<short>::max() );
+        }
+        else if ( identifier == "itkDataImageUShort3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned short>::max() );
+        }
+        else if ( identifier == "itkDataImageInt3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<int>::max() );
+        }
+        else if ( identifier == "itkDataImageUInt3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned int>::max() );
+        }
+        else if ( identifier == "itkDataImageLong3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<long>::max() );
+        }
+        else if ( identifier== "itkDataImageULong3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned long>::max() );
+        }
+        else if ( identifier == "itkDataImageFloat3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<float>::max() );
+        }
+        else if ( identifier == "itkDataImageDouble3" )
+        {
+            d->subtractValueParam->setRange ( 0, std::numeric_limits<double>::max() );
+        }
+        else
+        {
+            qWarning() << "Error : pixel type not yet implemented ("
+            << identifier
+            << ")";
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+QList<medAbstractParameter*> itkFiltersSubtractProcess::parameters()
+{
+    return d->parameters;
 }
 
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersSubtractProcess::update ( void )
-{
-    DTK_D(itkFiltersSubtractProcess);
-    
-    if ( !d->input )
+{    
+    if ( !this->inputImage() )
         return -1;
 
-    QString id = d->input->identifier();
+    QString id = this->inputImage()->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

@@ -27,18 +27,21 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersWindowingProcess : public itkFiltersProc
     
 public:
     itkFiltersWindowingProcess(itkFiltersWindowingProcess * parent = 0);
-    itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other);
     virtual ~itkFiltersWindowingProcess(void);
 
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
+public:
+    virtual void setInputImage ( medAbstractData *data );
+
+public:
+    QList<medAbstractParameter*> parameters();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersWindowingProcess)
+    itkFiltersWindowingProcessPrivate *d;
 };
 
 

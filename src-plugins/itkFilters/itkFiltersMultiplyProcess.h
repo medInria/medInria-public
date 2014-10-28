@@ -27,18 +27,18 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMultiplyProcess : public itkFiltersProce
     
 public:
     itkFiltersMultiplyProcess(itkFiltersMultiplyProcess * parent = 0);
-    itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other);
     virtual ~itkFiltersMultiplyProcess(void);
 
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
+public:
+    QList<medAbstractParameter*> parameters();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersMultiplyProcess)
+    itkFiltersMultiplyProcessPrivate *d;
 };
 
 

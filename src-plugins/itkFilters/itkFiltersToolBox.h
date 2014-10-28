@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medFilteringAbstractToolBox.h>
+#include <medProcessSelectorToolBox.h>
 
 class itkFiltersToolBoxPrivate;
 
-class itkFiltersToolBox : public medFilteringAbstractToolBox
+class itkFiltersToolBox : public medProcessSelectorToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("ITK Basic Filters",
@@ -29,34 +29,12 @@ public:
 
 public:
     static bool registered();
-    medAbstractData* processOutput();
-    dtkPlugin* plugin();
-
-signals:
-    void success();
-    void failure();
 
 public slots:
-
-    void onFiltersActivated(int index);
-
     void clear();
     void update(medAbstractData *data);
 
-    void run();
-
 private:
-    void setupItkAddProcess();
-    void setupItkSubtractProcess();
-    void setupItkMultiplyProcess();
-    void setupItkDivideProcess();
-    void setupItkGaussianProcess();
-    void setupItkMedianProcess();
-    void setupItkInvertProcess();
-    void setupItkNormalizeProcess();
-    void setupItkShrinkProcess();
-    void setupItkWindowingProcess();
-    
     itkFiltersToolBoxPrivate *d;
 };
 

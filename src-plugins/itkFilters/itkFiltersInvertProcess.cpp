@@ -18,23 +18,48 @@
 
 #include <medMetaDataKeys.h>
 
-#include <itkFiltersInvertProcess_p.h>
+#include <itkInvertIntensityImageFilter.h>
+
+class itkFiltersInvertProcessPrivate
+{
+public:
+    itkFiltersInvertProcessPrivate(itkFiltersInvertProcess *q) {parent = q;}
+    virtual ~itkFiltersInvertProcessPrivate(void) {}
+
+    itkFiltersInvertProcess* parent;
+
+    template <class PixelType> void update ( void )
+    {
+        typedef itk::Image< PixelType, 3 > ImageType;
+        typedef itk::InvertIntensityImageFilter< ImageType, ImageType >  InvertFilterType;
+        typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
+
+        invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) parent );
+        parent->setCallBack(callback);
+
+        invertFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+        invertFilter->Update();
+        parent->output()->setData ( invertFilter->GetOutput() );
+
+        //Set output description metadata
+        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " invert filter";
+
+        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    }
+};
+
 
 itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersInvertProcess);
+    : itkFiltersProcessBase(parent), d(new itkFiltersInvertProcessPrivate(this))
+{    
+    this->setFilter(this);
     
-    d->filter = this;
-    d->output = NULL;
-    
-     d->description = tr("ITK invert intensity filter");
-}
-
-
-itkFiltersInvertProcess::itkFiltersInvertProcess(const itkFiltersInvertProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(*other.d_func()), other)
-{
+    this->setDescription( tr("ITK invert intensity filter"));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -53,13 +78,11 @@ bool itkFiltersInvertProcess::registered( void )
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersInvertProcess::update ( void )
-{
-    DTK_D(itkFiltersInvertProcess);
-    
-    if ( !d->input )
+{   
+    if ( !this->inputImage() )
         return -1;
 
-    QString id = d->input->identifier();
+    QString id = this->inputImage()->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

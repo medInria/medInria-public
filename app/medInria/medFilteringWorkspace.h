@@ -50,9 +50,11 @@ signals:
     void outputDataChanged ( medAbstractData * );
 
 protected slots:
+    void setupProcess(QString);
+    void startProcess();
+    void updateInput();
 
-    void changeToolBoxInput();
-    void onProcessSuccess();
+    void handleProcessOutput();
 
 private:
     medFilteringWorkspacePrivate *d;

@@ -26,17 +26,22 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersSubtractProcess : public itkFiltersProce
     Q_OBJECT
 public:
     itkFiltersSubtractProcess(itkFiltersSubtractProcess * parent = 0);
-    itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other);
     virtual ~itkFiltersSubtractProcess(void);
     
     static bool registered(void);
     
 public slots:
-    void setParameter(double data, int channel);
     int update(void);
+
+public:
+    virtual void setInputImage ( medAbstractData *data );
+
+
+public:
+    QList<medAbstractParameter*> parameters();
     
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersSubtractProcess)
+    itkFiltersSubtractProcessPrivate *d;
 };
 
 

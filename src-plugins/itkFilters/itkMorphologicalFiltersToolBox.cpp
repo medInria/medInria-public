@@ -15,20 +15,11 @@
 
 #include <limits>
 
-#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-
 #include <medAbstractImageData.h>
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medRunnableProcess.h>
-#include <medJobManager.h>
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
@@ -47,26 +38,10 @@ public:
 
     QWidget * filterWidget;
     QDoubleSpinBox * kernelSize;
-    
-    QComboBox * filters;
-    dtkSmartPointer <itkFiltersProcessBase> process;
-    
-    medProgressionStack * progressionStack;
 };
 
-itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
+itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medProcessSelectorToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
 {
-    qDebug() << "itkMorphologicalFiltersToolBox";
-    //Filters selection combobox
-    d->filters = new QComboBox;
-    QStringList filtersList;
-    filtersList << "Dilate "
-                << "Erode "
-                << "Close "
-                << "Open ";
-    
-    d->filters->addItems ( filtersList );
-
     QLabel * dataTypeLabel = new QLabel ( tr ( "Data type :" ) );
     d->dataTypeValue = new QLabel ( tr ( "Unknown" ) );
 
@@ -76,38 +51,13 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     // We use the same widget for all the morphological filters
     d->filterWidget = new QWidget(this);
-    d->kernelSize = new QDoubleSpinBox;
-    d->kernelSize->setMaximum ( 10 );
-    d->kernelSize->setValue ( 1 );
-    QLabel * morphoFilterLabel = new QLabel ( tr ( "Kernel radius:" ) );
-    QHBoxLayout * morphoFilterLayout = new QHBoxLayout;
-    QLabel * morphoFilterLabel2 = new QLabel ( tr ( " pixels" ) );
-    morphoFilterLayout->addWidget ( morphoFilterLabel );
-    morphoFilterLayout->addWidget ( d->kernelSize );
-    morphoFilterLayout->addWidget ( morphoFilterLabel2 );
-    morphoFilterLayout->addStretch ( 1 );
-    d->filterWidget->setLayout ( morphoFilterLayout );
-
-
-    // Run button:
-    QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
-    runButton->setFocusPolicy ( Qt::NoFocus );
-    runButton->setToolTip(tr("Launch the selected filter"));
 
     // Principal layout:
     QWidget *widget = new QWidget ( this );
-
-    d->progressionStack = new medProgressionStack ( widget );
-
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget ( d->filters );
+    QVBoxLayout *layout = new QVBoxLayout(widget);
     layout->addLayout ( dataTypeLayout );
     layout->addWidget ( d->filterWidget );
-    layout->addWidget ( runButton );
-    layout->addWidget ( d->progressionStack );
     layout->addStretch ( 1 );
-
-    widget->setLayout ( layout );
 
     // Main toolbox:
     this->setTitle ( tr ( "ITK Morphological Filters" ) );
@@ -119,14 +69,11 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     setAboutPluginButton ( plugin );
     setAboutPluginVisibility ( true );
 
-    connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
-
+    this->runButton()->hide();
 }
 
 itkMorphologicalFiltersToolBox::~itkMorphologicalFiltersToolBox()
-{
-    d->process.releasePointer();
-    
+{    
     delete d;
     d = NULL;
 }
@@ -137,21 +84,9 @@ bool itkMorphologicalFiltersToolBox::registered()
     return factory->registerToolBox<itkMorphologicalFiltersToolBox> ();
 }
 
-
-medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
-{
-    if ( !d->process )
-        return NULL;
-
-    return d->process->output();
-}
-
 void itkMorphologicalFiltersToolBox::clear()
 {
-    qDebug() << "Clear itk morphological filters toolbox";
-
     d->dataTypeValue->setText ( "Unknown" );
-    
 }
 
 void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
@@ -209,101 +144,4 @@ void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
             << ")";
         }
     }
-}
-
-void itkMorphologicalFiltersToolBox::setupItkDilateProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDilateProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->kernelSize->value(), 0 );
-}
-
-void itkMorphologicalFiltersToolBox::setupItkErodeProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkErodeProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->kernelSize->value(), 0 );
-}
-
-void itkMorphologicalFiltersToolBox::setupItkCloseProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkCloseProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->kernelSize->value(), 0 );
-}
-
-void itkMorphologicalFiltersToolBox::setupItkOpenProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->kernelSize->value(), 0 );
-}
-
-void itkMorphologicalFiltersToolBox::run ( void )
-{
-    if ( !this->parentToolBox() )
-        return;
-
-    if ( !this->parentToolBox()->data() )
-        return;
-
-//    if (d->process) {
-//        d->process->deleteLater();
-//    }
-    
-    //Set parameters :
-    //   channel 0 : filter type
-    //   channel 1,2,..,N : filter parameters
-    switch ( d->filters->currentIndex() )
-    {
-    case 0: // dilate filter
-        this->setupItkDilateProcess();
-        break;
-    case 1: // erode filter
-        this->setupItkErodeProcess();
-        break;
-    case 2: // close filter
-        this->setupItkCloseProcess();
-        break;
-    case 3: // open filter
-        this->setupItkOpenProcess();
-        break;
-    }
-
-    if (! d->process)
-        return;
-
-    medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess ( d->process );
-
-    d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
-
-    connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
-    connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
-
-    medJobManager::instance()->registerJobItem ( runProcess );
-    QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
-}
-
-dtkPlugin* itkMorphologicalFiltersToolBox::plugin()
-{
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
-    return plugin;
 }

@@ -19,7 +19,6 @@
 #include <itkFiltersPluginExport.h>
 
 class itkFiltersShrinkProcessPrivate;
-class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersShrinkProcess : public itkFiltersProcessBase
 {
@@ -27,20 +26,19 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersShrinkProcess : public itkFiltersProcess
     
 public:
     itkFiltersShrinkProcess(itkFiltersShrinkProcess * parent = 0);
-    itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other);
     virtual ~itkFiltersShrinkProcess(void);
 
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
+public:
+    QList<medAbstractParameter*> parameters();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersShrinkProcess)
+    itkFiltersShrinkProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersShrinkProcess(void);
-
 

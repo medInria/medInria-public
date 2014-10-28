@@ -18,25 +18,51 @@
 
 #include <medMetaDataKeys.h>
 
-#include <itkFiltersMedianProcess_p.h>
+#include <itkMedianImageFilter.h>
+
+
+class itkFiltersMedianProcessPrivate
+{
+public:
+    itkFiltersMedianProcessPrivate(itkFiltersMedianProcess *q) {parent = q;}
+    virtual ~itkFiltersMedianProcessPrivate(void) {}
+
+    itkFiltersMedianProcess* parent;
+
+    template <class PixelType> void update ( void )
+    {
+        typedef itk::Image< PixelType, 3 > ImageType;
+        typedef itk::MedianImageFilter< ImageType, ImageType >  MedianFilterType;
+        typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
+
+        medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) parent );
+        parent->setCallBack(callback);
+
+        medianFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+        medianFilter->Update();
+        parent->output()->setData ( medianFilter->GetOutput() );
+
+        //Set output description metadata
+        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " median filter";
+
+        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    }
+};
+
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersMedianProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersMedianProcess);
+    : itkFiltersProcessBase(parent), d(new itkFiltersMedianProcessPrivate(this))
+{    
+    this->setFilter(this);
     
-    d->filter = this;
-    d->output = NULL;
-    
-     d->description = tr("ITK median filter");
-}
-
-
-itkFiltersMedianProcess::itkFiltersMedianProcess(const itkFiltersMedianProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersMedianProcessPrivate(*other.d_func()), other)
-{
+    this->setDescription(tr("ITK median filter"));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -55,13 +81,11 @@ bool itkFiltersMedianProcess::registered( void )
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersMedianProcess::update ( void )
-{
-    DTK_D(itkFiltersMedianProcess);
-    
-    if ( !d->input )
+{    
+    if ( !this->inputImage() )
         return -1;
 
-    QString id = d->input->identifier();
+    QString id = this->inputImage()->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 
