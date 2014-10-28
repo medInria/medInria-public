@@ -27,18 +27,18 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGaussianProcess : public itkFiltersProce
     
 public:
     itkFiltersGaussianProcess(itkFiltersGaussianProcess * parent = 0);
-    itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other);
     virtual ~itkFiltersGaussianProcess(void);
 
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
+public:
+    QList<medAbstractParameter*> parameters();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersGaussianProcess)
+    itkFiltersGaussianProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersGaussianProcess(void);

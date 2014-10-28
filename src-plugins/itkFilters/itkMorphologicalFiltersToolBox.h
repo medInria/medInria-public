@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medFilteringAbstractToolBox.h>
+#include <medProcessSelectorToolBox.h>
 
 class itkMorphologicalFiltersToolBoxPrivate;
 
-class itkMorphologicalFiltersToolBox : public medFilteringAbstractToolBox
+class itkMorphologicalFiltersToolBox : public medProcessSelectorToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("ITK Morphological Filters",
@@ -29,26 +29,16 @@ public:
 
 public:
     static bool registered();
-    medAbstractData* processOutput();
-    dtkPlugin* plugin();
 
 signals:
     void success();
     void failure();
 
 public slots:
-
     void clear();
     void update(medAbstractData *data);
 
-    void run();
-
-private:
-    void setupItkDilateProcess();
-    void setupItkErodeProcess();
-    void setupItkCloseProcess();
-    void setupItkOpenProcess();
-    
+private: 
     itkMorphologicalFiltersToolBoxPrivate *d;
 };
 

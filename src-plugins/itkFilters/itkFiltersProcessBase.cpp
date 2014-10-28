@@ -14,15 +14,45 @@
 #include <itkFiltersProcessBase.h>
 
 #include <medAbstractDataFactory.h>
+#include <medAbstractImageData.h>
+
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <itkFiltersProcessBase_p.h>
+#include <itkProcessObject.h>
+#include <itkCommand.h>
+
+class itkFiltersProcessBasePrivate
+{
+public:
+    itkFiltersProcessBasePrivate(itkFiltersProcessBase *q = 0){}
+
+    virtual ~itkFiltersProcessBasePrivate(void) {}
+
+    QString description;
+    QString filterType;
+
+    itk::CStyleCommand::Pointer callback;
+    itkFiltersProcessBase *filter;
+
+    dtkSmartPointer <medAbstractImageData> input;
+    dtkSmartPointer <medAbstractImageData> output;
+
+    template <class PixelType> void setupFilter() {}
+    virtual void setFilterDescription() {}
+
+    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData) {
+        itkFiltersProcessBase * source = reinterpret_cast<itkFiltersProcessBase *> ( clientData );
+        itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
+
+        if ( !source ) { dtkWarn() << "Source is null"; }
+
+        source->emitProgress((int) (processObject->GetProgress() * 100));
+    }
+};
 
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
-    : dtkAbstractProcess(*new itkFiltersProcessBasePrivate(this), parent)
-{
-    DTK_D(itkFiltersProcessBase);
-    
+    : medAbstractFilteringProcess(parent), d(new itkFiltersProcessBasePrivate)
+{    
     d->input = NULL;
     d->output = NULL;
     
@@ -31,7 +61,7 @@ itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent)
 
 
 itkFiltersProcessBase::itkFiltersProcessBase(const itkFiltersProcessBase& other) 
-    : dtkAbstractProcess(*new itkFiltersProcessBasePrivate(*other.d_func()), other)
+    : medAbstractFilteringProcess(other)
 {
     
 }
@@ -52,31 +82,74 @@ void itkFiltersProcessBase::emitProgress(int progress)
     emit progressed(progress);
 }
 
-QString itkFiltersProcessBase::description()
-{
-    DTK_D(itkFiltersProcessBase);
-    
+QString itkFiltersProcessBase::description() const
+{    
     return d->description;
 }
 
+void itkFiltersProcessBase::setDescription(QString description)
+{
+    d->description = description;
+}
 
-void itkFiltersProcessBase::setInput(medAbstractData *data)
+QString itkFiltersProcessBase::filterType() const
+{
+    return d->filterType;
+}
+
+void itkFiltersProcessBase::setFilterType(QString filterType)
+{
+    d->filterType = filterType;
+}
+
+itk::CStyleCommand::Pointer itkFiltersProcessBase::callback() const
+{
+    return d->callback;
+}
+
+void itkFiltersProcessBase::setCallBack(itk::CStyleCommand::Pointer callback)
+{
+    d->callback = callback;
+    callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
+}
+
+itkFiltersProcessBase *itkFiltersProcessBase::filter() const
+{
+    return d->filter;
+}
+
+void itkFiltersProcessBase::setFilter(itkFiltersProcessBase *filter)
+{
+    d->filter = filter;
+}
+
+medAbstractData *itkFiltersProcessBase::inputImage() const
+{
+   return d->input;
+}
+
+void itkFiltersProcessBase::setInputImage(medAbstractData *data)
 {
     if (!data)
         return;
- 
-    DTK_D(itkFiltersProcessBase);
-    
+     
     QString identifier = data->identifier();
     
     d->output = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
     d->input = dynamic_cast<medAbstractImageData*> (data);
 }
 
-medAbstractData * itkFiltersProcessBase::output ( void )
-{
-    DTK_D(itkFiltersProcessBase);
-    
+medAbstractData * itkFiltersProcessBase::output (  )
+{    
     return ( d->output );
 }
 
+QList<medAbstractParameter*> itkFiltersProcessBase::parameters()
+{
+    return QList<medAbstractParameter*>();
+}
+
+bool itkFiltersProcessBase::isInteractive()
+{
+    return false;
+}

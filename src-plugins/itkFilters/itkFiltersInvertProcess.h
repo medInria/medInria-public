@@ -27,7 +27,6 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersInvertProcess : public itkFiltersProcess
     
 public:
     itkFiltersInvertProcess(itkFiltersInvertProcess * parent = 0);
-    itkFiltersInvertProcess(const itkFiltersInvertProcess& other);
     virtual ~itkFiltersInvertProcess(void);
 
     static bool registered ( void );
@@ -37,7 +36,7 @@ public slots:
     int update ( void );
 
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersInvertProcess)
+    itkFiltersInvertProcessPrivate *d;
 };
 
 

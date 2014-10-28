@@ -27,18 +27,18 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkFiltersProcessB
     
 public:
     itkFiltersErodeProcess(itkFiltersErodeProcess * parent = 0);
-    itkFiltersErodeProcess(const itkFiltersErodeProcess& other);
     virtual ~itkFiltersErodeProcess(void);
 
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
+public:
+    QList<medAbstractParameter*> parameters();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersErodeProcess)
+    itkFiltersErodeProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersErodeProcess(void);

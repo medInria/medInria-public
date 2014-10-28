@@ -17,29 +17,64 @@
 #include <medAbstractDataFactory.h>
 
 #include <medMetaDataKeys.h>
+#include <medDoubleParameter.h>
 
 #include <itkImage.h>
 #include <itkCommand.h>
 #include <itkSmoothingRecursiveGaussianImageFilter.h>
 
 #include <itkExceptionObject.h>
-#include <itkFiltersGaussianProcess_p.h>
+#include <itkSmoothingRecursiveGaussianImageFilter.h>
+
+
+class itkFiltersGaussianProcessPrivate
+{
+public:
+    itkFiltersGaussianProcessPrivate(itkFiltersGaussianProcess *q){parent = q;}
+    virtual ~itkFiltersGaussianProcessPrivate(void) {}
+
+    itkFiltersGaussianProcess *parent;
+    medDoubleParameter *sigmaParam;
+    QList<medAbstractParameter*> parameters;
+
+    template <class PixelType> void update ( void )
+    {
+        typedef itk::Image< PixelType, 3 > ImageType;
+        typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
+        typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
+
+        gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        gaussianFilter->SetSigma( sigmaParam->value() );
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) parent );
+        parent->setCallBack(callback);
+
+        gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+        gaussianFilter->Update();
+        parent->output()->setData ( gaussianFilter->GetOutput() );
+
+        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " gaussian filter (" + QString::number(sigmaParam->value()) + ")";
+
+        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    }
+};
+
 
 itkFiltersGaussianProcess::itkFiltersGaussianProcess(itkFiltersGaussianProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersGaussianProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersGaussianProcess);
+    : itkFiltersProcessBase(parent), d(new itkFiltersGaussianProcessPrivate(this))
+{    
+    this->setFilter(this);
     
-    d->filter = this;
-    d->output = NULL; 
-    
-     d->description = tr("ITK gaussian filter");
-}
+    this->setDescription(tr("ITK gaussian filter"));
 
+    d->sigmaParam = new medDoubleParameter("Sigma value", this);
+    d->sigmaParam->setRange(0,10);
+    d->sigmaParam->setValue(1.0);
 
-itkFiltersGaussianProcess::itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersGaussianProcessPrivate(*other.d_func()), other)
-{
+    d->parameters << d->sigmaParam;
 }
 
 itkFiltersGaussianProcess::~itkFiltersGaussianProcess( void )
@@ -55,26 +90,19 @@ bool itkFiltersGaussianProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersGaussianProcess::setParameter(double data, int channel)
+QList<medAbstractParameter*> itkFiltersGaussianProcess::parameters()
 {
-    if (channel != 0)
-        return;
-    
-    DTK_D(itkFiltersGaussianProcess);
-    
-    d->sigma = data;
+    return d->parameters;
 }
 
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersGaussianProcess::update ( void )
-{
-    DTK_D(itkFiltersGaussianProcess);
-    
-    if ( !d->input )
+{    
+    if ( !this->inputImage() )
         return -1;
 
-    QString id = d->input->identifier();
+    QString id = this->inputImage()->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

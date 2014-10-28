@@ -18,25 +18,51 @@
 
 #include <medMetaDataKeys.h>
 
-#include <itkFiltersNormalizeProcess_p.h>
+#include <itkNormalizeImageFilter.h>
+
+
+class itkFiltersNormalizeProcessPrivate
+{
+public:
+    itkFiltersNormalizeProcessPrivate(itkFiltersNormalizeProcess *q = 0) {parent = q;}
+    virtual ~itkFiltersNormalizeProcessPrivate(void) {}
+
+    itkFiltersNormalizeProcess *parent;
+
+    template <class PixelType> void update ( void )
+    {
+        typedef itk::Image< PixelType, 3 > ImageType;
+        typedef itk::NormalizeImageFilter< ImageType, ImageType >  NormalizeFilterType;
+        typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
+
+        normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) parent );
+        parent->setCallBack(callback);
+
+        normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+        normalizeFilter->Update();
+        parent->output()->setData ( normalizeFilter->GetOutput() );
+
+        //Set output description metadata
+        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " normalize filter";
+
+        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    }
+
+};
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(itkFiltersNormalizeProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersNormalizeProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersNormalizeProcess);
+    : itkFiltersProcessBase(parent), d(new itkFiltersNormalizeProcessPrivate(this))
+{    
+    this->setFilter(this);
     
-    d->filter = this;
-    d->output = NULL;
-    
-    d->description = tr("ITK normalize filter");
-}
-
-
-itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersNormalizeProcessPrivate(*other.d_func()), other)
-{
+    this->setDescription(tr("ITK normalize filter"));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -55,13 +81,11 @@ bool itkFiltersNormalizeProcess::registered( void )
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersNormalizeProcess::update ( void )
-{
-    DTK_D(itkFiltersNormalizeProcess);
-    
-    if ( !d->input )
+{   
+    if ( !this->inputImage() )
         return -1;
 
-    QString id = d->input->identifier();
+    QString id = this->inputImage()->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

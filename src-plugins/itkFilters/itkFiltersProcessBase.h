@@ -13,16 +13,19 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractFilteringProcess.h>
 #include <medAbstractData.h>
+
+#include <itkCommand.h>
 
 #include <itkFiltersPluginExport.h>
 
 class itkFiltersProcessBasePrivate;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBase : public dtkAbstractProcess
+class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBase : public medAbstractFilteringProcess
 {
     Q_OBJECT
+
 public:
     itkFiltersProcessBase(itkFiltersProcessBase * parent = 0);
     itkFiltersProcessBase(const itkFiltersProcessBase& other);
@@ -30,20 +33,34 @@ public:
     
 public:
     itkFiltersProcessBase& operator = (const itkFiltersProcessBase& other);
+        
+    QString description() const;
+    void setDescription(QString description);
 
-    QString description ( void );
-    
-    void setInput ( medAbstractData *data );
+    QString filterType() const;
+    void setFilterType(QString filterType);
 
-    medAbstractData *output ( void );
-    
+    itk::CStyleCommand::Pointer callback() const;
+    void setCallBack(itk::CStyleCommand::Pointer);
+
+    itkFiltersProcessBase *filter() const;
+    void setFilter(itkFiltersProcessBase *);
+
+    medAbstractData * inputImage() const;
+    virtual void setInputImage ( medAbstractData *data );
+
+    virtual medAbstractData *output ();
+
     void emitProgress(int progress);
-    
+
+public:
+    virtual QList<medAbstractParameter*> parameters();
+    bool isInteractive();
+
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersProcessBase)
-    
-    using dtkAbstractProcess::description;
-    using dtkAbstractProcess::setInput;
+    itkFiltersProcessBasePrivate *d;
+
 };
 
 

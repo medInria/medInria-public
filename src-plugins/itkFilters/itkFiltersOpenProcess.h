@@ -27,18 +27,18 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersOpenProcess : public itkFiltersProcessBa
     
 public:
     itkFiltersOpenProcess(itkFiltersOpenProcess * parent = 0);
-    itkFiltersOpenProcess(const itkFiltersOpenProcess& other);
     virtual ~itkFiltersOpenProcess(void);
 
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
+public:
+    QList<medAbstractParameter*> parameters();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersOpenProcess)
+    itkFiltersOpenProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersOpenProcess(void);

@@ -27,18 +27,18 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersDilateProcess : public itkFiltersProcess
     
 public:
     itkFiltersDilateProcess(itkFiltersDilateProcess * parent = 0);
-    itkFiltersDilateProcess(const itkFiltersDilateProcess& other);
     virtual ~itkFiltersDilateProcess(void);
 
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
+public:
+    QList<medAbstractParameter*> parameters();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersDilateProcess)
+    itkFiltersDilateProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersDilateProcess(void);

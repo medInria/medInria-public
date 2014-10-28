@@ -13,6 +13,8 @@
 
 #include <itkFiltersPlugin.h>
 
+#include <itkBasicFiltersProcess.h>
+#include <itkMorphologicalFilters.h>
 #include <itkFiltersAddProcess.h>
 #include <itkFiltersSubtractProcess.h>
 #include <itkFiltersMultiplyProcess.h>
@@ -52,6 +54,8 @@ itkFiltersPlugin::~itkFiltersPlugin()
 bool itkFiltersPlugin::initialize()
 {
 //    if ( !itkFilters::registered() )                 { dtkWarn() << "Unable to register itkFilters type";                         }
+    if ( !itkBasicFiltersProcess::registered() )       { dtkWarn() << "Unable to register itkBasicFiltersProcess type";             }
+    if ( !itkMorphologicalFilters::registered() )       { dtkWarn() << "Unable to register itkMorphologicalFilters type";             }
     if ( !itkFiltersAddProcess::registered() )       { dtkWarn() << "Unable to register itkFilters add process type";             }
     if ( !itkFiltersSubtractProcess::registered() )  { dtkWarn() << "Unable to register itkFilters subtract process type";        }
     if ( !itkFiltersMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }

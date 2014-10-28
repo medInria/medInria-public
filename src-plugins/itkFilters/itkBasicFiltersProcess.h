@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -18,29 +18,32 @@
 
 #include <itkFiltersPluginExport.h>
 
-class itkFiltersNormalizeProcessPrivate;
-class medAbstractData;
+class itkBasicFiltersProcessPrivate;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersNormalizeProcess : public itkFiltersProcessBase
+class ITKFILTERSPLUGIN_EXPORT itkBasicFiltersProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
-    
+
 public:
-    itkFiltersNormalizeProcess(itkFiltersNormalizeProcess * parent = 0);
-    itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other);
-    virtual ~itkFiltersNormalizeProcess(void);
+    itkBasicFiltersProcess(itkBasicFiltersProcess * parent = 0);
+    virtual ~itkBasicFiltersProcess(void);
 
     static bool registered ( void );
-    
-public slots:
 
+public:
+    virtual void setInputImage ( medAbstractData *data );
+    medAbstractData *output ( void );
+
+public slots:
     int update ( void );
+    void setupProcess(QString);
+
+public:
+    QList<medAbstractParameter*> parameters();
+    medToolBox* toolbox();
 
 private:
-    itkFiltersNormalizeProcessPrivate *d;
+    itkBasicFiltersProcessPrivate *d;
 };
 
-dtkAbstractProcess * createitkFiltersNormalizeProcess(void);
-
-
-
+dtkAbstractProcess * createitkBasicFiltersProcess();
