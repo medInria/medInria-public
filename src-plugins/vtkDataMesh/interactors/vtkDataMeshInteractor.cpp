@@ -471,6 +471,8 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
 
     vtkMapper * mapper2d = d->actor2d->GetMapper();
     vtkMapper * mapper3d = d->actor3d->GetMapper();
+    mapper2d->InterpolateScalarsBeforeMappingOn();
+    mapper3d->InterpolateScalarsBeforeMappingOn();
 
     mapper2d->SetLookupTable(lut);
     mapper2d->UseLookupTableScalarRangeOn();
