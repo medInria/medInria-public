@@ -16,12 +16,12 @@
 #include <medCoreExport.h>
 #include <QtCore>
 
-#include <medJobItem.h>
+#include <medAbstractJob.h>
 
 class medAbstractData;
 class medDatabaseExporterPrivate;
 
-class MEDCORE_EXPORT medDatabaseExporter : public medJobItem
+class MEDCORE_EXPORT medDatabaseExporter : public medAbstractJob
 {
     Q_OBJECT
 

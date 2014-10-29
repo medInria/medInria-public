@@ -19,7 +19,7 @@
 #include <medDataIndex.h>
 
 class medJobManagerPrivate;
-class medJobItem;
+class medAbstractJob;
 
 /**
  * @class medJobManager
@@ -30,7 +30,7 @@ class medJobItem;
  *
  * The JobItems need to make sure to have implemented the Cancel() method.
  *
- * @see medJobItem
+ * @see medAbstractJob
  */
 class MEDCORE_EXPORT medJobManager : public QObject
 {
@@ -39,33 +39,16 @@ class MEDCORE_EXPORT medJobManager : public QObject
 public:
     static medJobManager *instance();
 
-    /**
-    * registerJobItem - register a job item if you want that the manager sends cancel events to them (highly suggested!)
-    * The manager will reject items if not active (see dispatchGlobalCancelEvent)
-    * @param: const medJobItem & item
-    * @param: QString jobName short name that will be visible on the progression toolboxes
-    * @return   bool
-    */
-    bool registerJobItem(medJobItem* item, QString jobName= "");
+public:
+    bool registerJob(medAbstractJob* job, QString jobName= "");
+    bool unRegisterJob(medAbstractJob* job);
 
-    /**
-    * unRegisterJobItem - remove the job from the hash
-    * @param: const medJobItem & item
-    * @return   bool
-    */
-    bool unRegisterJobItem(medJobItem* item);
-
-    /**
-    * dispatchGlobalCancelEvent - emits a cancel request to all registered items
-    * @param bool ignoreNewJobItems - if set (default) the manager will not register any new items
-    * @return   void
-    */
+public:
     void dispatchGlobalCancelEvent(bool ignoreNewJobItems = true);
 
 signals:
     void cancel(QObject*);
-
-    void jobRegistered(medJobItem* item, QString jobName);
+    void jobRegistered(medAbstractJob* job, QString jobName);
 
 protected:
     medJobManager();

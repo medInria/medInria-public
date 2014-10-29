@@ -33,7 +33,7 @@ medTriggerParameter::medTriggerParameter(QString name, QObject *parent):
     d(new medTriggerParameterPrivate)
 {
      d->pushButton = NULL;
-     d->text = QString();
+     d->text = QString(name);
      d->icon = QIcon();
      d->iconSize = QSize(15,15);
 }

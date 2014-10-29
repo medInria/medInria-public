@@ -19,6 +19,9 @@
 
 #include <medToolBoxHeader.h>
 
+#include <medTriggerParameter.h>
+
+
 class itkMorphologicalFiltersPrivate
 {
 public:
@@ -119,12 +122,15 @@ void itkMorphologicalFilters::setupProcess(QString process)
     {
         d->process->setInputImage(this->inputImage());
         d->toolbox->setProcessToolbox(d->process->toolbox());
+
+        connect(d->process->runParameter(), SIGNAL(triggered()),
+                this->runParameter(), SIGNAL(triggered()));
     }
 }
 
 int itkMorphologicalFilters::update ( void )
 {
-    return d->process->update();
+    return d->process->start();
 }
 
 // /////////////////////////////////////////////////////////////////

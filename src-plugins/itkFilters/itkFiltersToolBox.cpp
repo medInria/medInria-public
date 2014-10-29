@@ -21,7 +21,6 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medRunnableProcess.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
 
@@ -65,8 +64,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medProcessSelectorToo
     dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
     setAboutPluginButton ( plugin );
     setAboutPluginVisibility ( true );
-
-    this->runButton()->hide();
 }
 
 itkFiltersToolBox::~itkFiltersToolBox()

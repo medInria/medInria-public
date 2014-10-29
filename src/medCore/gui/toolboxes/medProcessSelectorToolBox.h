@@ -15,7 +15,7 @@
 
 #include <medToolBox.h>
 #include <medCoreExport.h>
-#include <medJobItem.h>
+#include <medAbstractJob.h>
 
 class medProcessSelectorToolBoxPrivate;
 
@@ -30,12 +30,8 @@ public:
     void setAvailableProcesses(QStringList);
     void setProcessToolbox(medToolBox*);
 
-public:
-    QPushButton* runButton() const;
-
 signals:
     void processSelected(const QString&);
-    void startProcessRequested();
 
 public slots:
     void clear();
