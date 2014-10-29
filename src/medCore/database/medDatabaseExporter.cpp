@@ -25,7 +25,7 @@ public:
     QString          writer;
 };
 
-medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
+medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer) : medAbstractJob(), d(new medDatabaseExporterPrivate)
 {
     d->data     = data;
     d->filename = filename;
@@ -65,9 +65,9 @@ void medDatabaseExporter::internalRun(void)
     if ( ! dataWriter->canWrite(d->filename) || ! dataWriter->write(d->filename)) {
 
         emit showError(QString(tr("Writing to file \"%1\" with exporter \"%2\" failed.")).arg(d->filename).arg(dataWriter->description()), 3000);
-        emit failure(this);
+        emit failure();
     } else {
-        emit success(this);
+        emit success();
     }
     delete dataWriter;
 }

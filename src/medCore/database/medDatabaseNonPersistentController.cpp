@@ -102,18 +102,8 @@ void medDatabaseNonPersistentController::insert(medDataIndex index, medDatabaseN
 void medDatabaseNonPersistentController::importPath(const QString& file,const QUuid & importUuid, bool /*indexWithoutCopying*/)
 {
     medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(file,importUuid);
-    medMessageProgress * message = medMessageController::instance()->showProgress(tr("Opening file item"));
-
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer, SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
+    importer->start();
 }
 
 int medDatabaseNonPersistentController::nonPersistentDataStartingIndex(void) const
@@ -147,18 +137,8 @@ void medDatabaseNonPersistentController::importData(medAbstractData *data,
                                                     const QUuid & callerUuid)
 {
     medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(data,callerUuid);
-    medMessageProgress * message = medMessageController::instance()->showProgress("Importing data item");
-
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer, SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
+    importer->start();
 }
 
 void medDatabaseNonPersistentController::removeAll()

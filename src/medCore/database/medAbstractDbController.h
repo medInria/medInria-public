@@ -21,7 +21,7 @@
 
 class medImportJobWatcher;
 class medDataIndex;
-class medJobItem;
+class medAbstractJob;
 
 class MEDCORE_EXPORT medAbstractDbController : public QObject
 {

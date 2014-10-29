@@ -19,7 +19,7 @@
 class medBrowserAreaPrivate;
 class medAbstractDataSource;
 class medToolBox;
-class medJobItem;
+class medAbstractJob;
 
 class medBrowserArea : public QWidget
 {

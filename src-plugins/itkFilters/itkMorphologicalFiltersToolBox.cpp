@@ -68,8 +68,6 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
     setAboutPluginButton ( plugin );
     setAboutPluginVisibility ( true );
-
-    this->runButton()->hide();
 }
 
 itkMorphologicalFiltersToolBox::~itkMorphologicalFiltersToolBox()

@@ -15,7 +15,7 @@
 
 #include <medToolBox.h>
 #include <medCoreExport.h>
-#include <medJobItem.h>
+#include <medAbstractJob.h>
 
 class medAbstractRegistrationProcess;
 class medAbstractImageView;

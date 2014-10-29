@@ -233,7 +233,7 @@ void medDataManager::exportDataToPath(medAbstractData *data, const QString & fil
     connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(exporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
-    medJobManager::instance()->registerJobItem(exporter);
+    medJobManager::instance()->registerJob(exporter);
     QThreadPool::globalInstance()->start(exporter);
 }
 

@@ -24,7 +24,6 @@
 #include <medAbstractData.h>
 #include <medDataManager.h>
 
-#include <medRunnableProcess.h>
 #include <medJobManager.h>
 
 #include <medAbstractView.h>
@@ -34,6 +33,7 @@
 #include <medLayerParameterGroup.h>
 
 #include <medAbstractFilteringProcess.h>
+#include <medTriggerParameter.h>
 
 class medFilteringWorkspacePrivate
 {
@@ -69,7 +69,6 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
     layerGroup1->setLinkAllParameters(true);
 
     connect(d->filteringToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupProcess(QString)));
-    connect(d->filteringToolBox, SIGNAL(startProcessRequested()), this, SLOT(startProcess()));
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -121,6 +120,7 @@ void medFilteringWorkspace::setupProcess(QString process)
     {
         d->filteringToolBox->setProcessToolbox(d->process->toolbox());
         d->process->setInputImage(d->filterInput);
+        connect(d->process->runParameter(), SIGNAL(triggered()), this, SLOT(startProcess()));
     }
 }
 
@@ -138,7 +138,6 @@ void medFilteringWorkspace::updateInput()
         d->filterInput = NULL;
         return;
     }
-
     d->filterInput = inputView->layerData(inputView->currentLayer());
 
     if(d->process)
@@ -199,28 +198,10 @@ void medFilteringWorkspace::startProcess()
     if(!d->process)
         return;
 
-    medRunnableProcess *runProcess = new medRunnableProcess;
-
-    runProcess->setProcess (d->process);
-
-//    d->progressionStack->addJobItem(runProcess, tr("Progress:"));
-//    d->progressionStack->setActive(runProcess,true);
-//    d->progressionStack->disableCancel(runProcess);
-
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-
-    connect (runProcess, SIGNAL (success  (QObject*)),this,SLOT(enableSelectorToolBox()));
+    medRunnableProcess *runProcess = new medRunnableProcess(d->process, d->process->name());
+    connect (runProcess, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
     connect (runProcess, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+    connect (runProcess, SIGNAL (success()),this,SLOT(handleProcessOutput()));
 
-    connect (runProcess, SIGNAL (success  (QObject*)),this,SLOT(handleProcessOutput()));
-
-    //First have the moving progress bar,
-    //and then display the remaining % when known
-//    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-//             d->progressionStack, SLOT(setActive(QObject*,bool)));
-
-    medJobManager::instance()->registerJobItem(runProcess,d->process->identifier());
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+    runProcess->start();
 }

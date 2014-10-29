@@ -21,7 +21,7 @@
 
 class medAbstractData;
 class medDatabaseControllerPrivate;
-class medJobItem;
+class medAbstractJob;
 
 /**
  * Concrete dbController implementation adhering to abstract base class

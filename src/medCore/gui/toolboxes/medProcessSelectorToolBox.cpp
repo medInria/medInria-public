@@ -38,7 +38,6 @@ public:
     QComboBox *processesCombobox;
     QVBoxLayout *toolBoxLayout;
     medToolBox * currentToolBox;
-    QPushButton *runButton;
 };
 
 medProcessSelectorToolBox::medProcessSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medProcessSelectorToolBoxPrivate)
@@ -49,21 +48,16 @@ medProcessSelectorToolBox::medProcessSelectorToolBox(QWidget *parent) : medToolB
     d->processesCombobox->addItem(tr("Choose algorithm"));
     d->processesCombobox->setToolTip(tr( "Choose the algorithm amongst the loaded plugins" ));
 
-    d->runButton = new QPushButton(tr("Run"), this);
-    d->runButton->setToolTip(tr("Start Process"));
-
     QWidget *toolBoxWidget =  new QWidget;
     d->toolBoxLayout = new QVBoxLayout(toolBoxWidget);
 
     d->toolBoxLayout->addWidget(d->processesCombobox);
-    d->toolBoxLayout->addWidget(d->runButton);
 
     this->addWidget(toolBoxWidget);
 
     d->currentToolBox = NULL;
 
     connect(d->processesCombobox, SIGNAL(activated(QString)), this, SIGNAL(processSelected(QString)));
-    connect(d->runButton, SIGNAL(clicked()), this, SIGNAL(startProcessRequested()));
 }
 
 medProcessSelectorToolBox::~medProcessSelectorToolBox(void)
@@ -91,11 +85,6 @@ void medProcessSelectorToolBox::setProcessToolbox(medToolBox* tb)
     d->currentToolBox->show();
     d->currentToolBox->header()->hide();
     d->toolBoxLayout->addWidget(d->currentToolBox);
-}
-
-QPushButton* medProcessSelectorToolBox::runButton() const
-{
-    return d->runButton;
 }
 
 //! Clears the toolbox.

@@ -21,7 +21,7 @@
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
 class medAbstractData;
-class medJobItem;
+class medAbstractJob;
 
 class medRegistrationWorkspace : public medAbstractWorkspace
 {
@@ -46,7 +46,7 @@ protected slots:
     void startProcess();
     void handleOutput(typeOfOperation type, QString algoName);
     void saveTrans();
-    //void onJobAdded(medJobItem* item, QString jobName);
+    //void onJobAdded(medAbstractJob* item, QString jobName);
     void handleUndo();
     void handleRedo();
     void handleReset();

@@ -25,7 +25,6 @@
 #include <medToolBoxFactory.h>
 #include <medViewEventFilter.h>
 #include <medViewContainerManager.h>
-#include <medRunnableProcess.h>
 #include <medDataManager.h>
 #include <medJobManager.h>
 #include <medMetaDataKeys.h>
@@ -40,48 +39,48 @@
 class medSegmentationWorkspacePrivate
 {
 public:
-    // Give values to items without a constructor.
-    medSegmentationWorkspacePrivate() :
-       segmentationToolBox(NULL)
-    {}
+//    // Give values to items without a constructor.
+//    medSegmentationWorkspacePrivate() :
+//       segmentationToolBox(NULL)
+//    {}
 
-    medSegmentationSelectorToolBox *segmentationToolBox;
+//    medSegmentationSelectorToolBox *segmentationToolBox;
 };
 
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
 medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
-    d->segmentationToolBox = new medSegmentationSelectorToolBox(parent);
+//    d->segmentationToolBox = new medSegmentationSelectorToolBox(parent);
 
-    connect(d->segmentationToolBox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
-            this, SLOT(addViewEventFilter(medViewEventFilter*)));
+//    connect(d->segmentationToolBox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
+//            this, SLOT(addViewEventFilter(medViewEventFilter*)));
 
-    connect(d->segmentationToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
+//    connect(d->segmentationToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
 
-    // Always have a parent.
-    if (!parent)
-        throw (std::runtime_error ("Must have a parent widget"));
+//    // Always have a parent.
+//    if (!parent)
+//        throw (std::runtime_error ("Must have a parent widget"));
 
-    this->addToolBox(d->segmentationToolBox);
+//    this->addToolBox(d->segmentationToolBox);
 
-    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
-    viewGroup1->setLinkAllParameters(true);
-    viewGroup1->removeParameter("DataList");
+//    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
+//    viewGroup1->setLinkAllParameters(true);
+//    viewGroup1->removeParameter("DataList");
 
-    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
-    layerGroup1->setLinkAllParameters(true);
+//    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
+//    layerGroup1->setLinkAllParameters(true);
 
-    connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
-            d->segmentationToolBox, SIGNAL(inputChanged()));
+//    connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
+//            d->segmentationToolBox, SIGNAL(inputChanged()));
 }
 
 void medSegmentationWorkspace::setupViewContainerStack()
 {
-    if (!stackedViewContainers()->count()) {
-        this->stackedViewContainers()->addContainerInTab(this->name());
-    }
-    this->stackedViewContainers()->unlockTabs();
+//    if (!stackedViewContainers()->count()) {
+//        this->stackedViewContainers()->addContainerInTab(this->name());
+//    }
+//    this->stackedViewContainers()->unlockTabs();
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)
@@ -92,30 +91,30 @@ medSegmentationWorkspace::~medSegmentationWorkspace(void)
 
 medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 {
-    return d->segmentationToolBox;
+//    return d->segmentationToolBox;
 }
 
 
 bool medSegmentationWorkspace::isUsable()
 {
-    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
+//    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
+//    return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0);
 }
 
 void medSegmentationWorkspace::addViewEventFilter( medViewEventFilter * filter)
 {
-    foreach(QUuid uuid, this->stackedViewContainers()->containersSelected())
-    {
-        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        if(!container)
-            return;
-        filter->installOnView(container->view());
-    }
+//    foreach(QUuid uuid, this->stackedViewContainers()->containersSelected())
+//    {
+//        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+//        if(!container)
+//            return;
+//        filter->installOnView(container->view());
+//    }
 }
 
 //TODO: not tested yet
 void medSegmentationWorkspace::onSuccess()
 {
-    medAbstractData * output = d->segmentationToolBox->currentToolBox()->processOutput();
-    medDataManager::instance()->importData(output);
+//    medAbstractData * output = d->segmentationToolBox->currentToolBox()->processOutput();
+//    medDataManager::instance()->importData(output);
 }

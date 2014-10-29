@@ -16,7 +16,7 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <medJobItem.h>
+#include <medAbstractJob.h>
 #include <medMessageController.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -199,12 +199,12 @@ void medProgressionStack::sendCancelRequest()
 }
 
 /**
-* AddJobItem - Add a new subclass of medJobItem to the Stack to create the connection between them
-* @param: medJobItem * job - instance of medJobItem
+* AddJobItem - Add a new subclass of medAbstractJob to the Stack to create the connection between them
+* @param: medAbstractJob * job - instance of medAbstractJob
 * @param: QString label - the label shown on the jobToolBox
 * if no label was given the job will not be added
 */
-void medProgressionStack::addJobItem(medJobItem* job, QString label)
+void medProgressionStack::addJobItem(medAbstractJob* job, QString label)
 {
     if (label.isEmpty())
         return;

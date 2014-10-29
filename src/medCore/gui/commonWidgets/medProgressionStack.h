@@ -17,7 +17,7 @@
 
 #include <QtGui/QWidget>
 
-class medJobItem;
+class medAbstractJob;
 class medProgressionStackPrivate;
 
 /**
@@ -43,7 +43,7 @@ signals:
 
 public slots:
 
-    void addJobItem(medJobItem* job, QString label);
+    void addJobItem(medAbstractJob* job, QString label);
     void setLabel(QObject *sender, QString label);
     void setActive(QObject* sender, bool active);
     void setProgress(QObject *sender, int progress);

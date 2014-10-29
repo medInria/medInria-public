@@ -17,12 +17,13 @@
 #include <medAbstractData.h>
 
 #include <medCoreExport.h>
+#include <medAbstractJob.h>
 
 class medAbstractProcessPrivate;
 
 class medAbstractParameter;
 class medToolBox;
-
+class medTriggerParameter;
 
 struct medProcessIOPort
 {
@@ -41,7 +42,6 @@ struct medProcessOutput : public medProcessIOPort
 {
     T* output;
 };
-
 
 
 /**
@@ -68,17 +68,31 @@ public:
     medAbstractParameter* parameter(QString parameterName);
 
 public:
+    bool threaded() const;
+    void setThreaded(bool threaded = true);
+
+public slots:
+    int start();
+
+public:
     virtual medToolBox* toolbox();
+    virtual QWidget* parameterWidget();
+    virtual medTriggerParameter* runParameter() const;
 
 public:
     virtual bool isInteractive() = 0;
 
 public slots:
     virtual medAbstractData *output() = 0;
+
+private slots:
     virtual int update () = 0;
 
-public:
-//    virtual voir prepareViewArea(medViewArea *);
+private:
+
+signals:
+    void showError(QString message, unsigned int timeout = 5000);
+
 
 private:
     using dtkAbstractProcess::onCanceled;
@@ -94,4 +108,18 @@ private:
 
 private:
     medAbstractProcessPrivate* d;
+};
+
+class medRunnableProcess: public medAbstractJob
+{
+    Q_OBJECT
+
+private:
+    medAbstractProcess* m_process;
+
+public:
+    medRunnableProcess(medAbstractProcess* process, QString name);
+
+    virtual void internalRun();
+    virtual void cancel();
 };

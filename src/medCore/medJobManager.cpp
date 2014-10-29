@@ -12,14 +12,14 @@
 =========================================================================*/
 
 #include <medJobManager.h>
-#include <medJobItem.h>
+#include <medAbstractJob.h>
 
 medJobManager *medJobManager::s_instance = NULL;
 
 class medJobManagerPrivate
 {
 public:
-    QList<medJobItem*> itemList;
+    QList<medAbstractJob*> itemList;
     bool m_IsActive;
 };
 
@@ -43,34 +43,50 @@ medJobManager::~medJobManager( void )
     d = NULL;
 }
 
-bool medJobManager::registerJobItem( medJobItem* item, QString jobName)
+/**
+* registerJob - register a job item if you want that the manager sends cancel events to them (highly suggested!)
+* The manager will reject items if not active (see dispatchGlobalCancelEvent)
+* @param: const medAbstractJob & item
+* @param: QString jobName short name that will be visible on the progression toolboxes
+* @return   bool
+*/
+bool medJobManager::registerJob(medAbstractJob* job, QString jobName)
 {
     if(d->m_IsActive)
     {
-        d->itemList.append(item);
-        connect(this, SIGNAL(cancel(QObject*)), item, SLOT(onCancel(QObject*)) );
-        emit jobRegistered(item, jobName);
+        d->itemList.append(job);
+        connect(this, SIGNAL(cancel(QObject*)), job, SLOT(onCancel(QObject*)) );
+        emit jobRegistered(job, jobName);
         return true;
     }
     return false;
 }
-
-bool medJobManager::unRegisterJobItem( medJobItem* item )
+/**
+* unRegisterJob - remove the job from the hash
+* @param: const medAbstractJob & item
+* @return   bool
+*/
+bool medJobManager::unRegisterJob(medAbstractJob* job )
 {
-    int index = d->itemList.indexOf(item);
+    int index = d->itemList.indexOf(job);
     if (index != -1)
     {
-        disconnect(this, SIGNAL(cancel(QObject*)), item, SLOT(onCancel(QObject*)) );
+        disconnect(this, SIGNAL(cancel(QObject*)), job, SLOT(onCancel(QObject*)) );
         d->itemList.removeAt(index);
         return true;
     }
     return false;
 }
 
+/**
+* dispatchGlobalCancelEvent - emits a cancel request to all registered items
+* @param bool ignoreNewJobItems - if set (default) the manager will not register any new items
+* @return   void
+*/
 void medJobManager::dispatchGlobalCancelEvent(bool ignoreNewJobItems)
 {
     if (ignoreNewJobItems)
         d->m_IsActive = false;
-    foreach( medJobItem* item, d->itemList )
+    foreach( medAbstractJob* item, d->itemList )
         emit cancel( item );
 }
