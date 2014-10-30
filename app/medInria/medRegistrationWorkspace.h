@@ -33,7 +33,7 @@ public:
     ~medRegistrationWorkspace();
 
     static bool isUsable();
-    void setupViewContainerStack ();
+    void setupTabbedViewContainer ();
 
     enum typeOfOperation { algorithm, undo, redo, reset };
 

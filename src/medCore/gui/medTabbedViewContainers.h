@@ -27,8 +27,8 @@ class medAbstractWorkspace;
 class medTabbedViewContainersPrivate;
 
 /**
- * @brief A QStackedWidget that contains medViewContainers.
- * There is one such stack per medViewWorkspace.
+ * @brief A QTabWidget that contains medViewContainers.
+ * There is one such TabWidget per medViewWorkspace.
  *
 */
 class MEDCORE_EXPORT medTabbedViewContainers : public QTabWidget
@@ -53,6 +53,9 @@ public slots:
     medViewContainer* addContainerInTab();
     medViewContainer* addContainerInTab(const QString &name);
     medViewContainer* insertContainerInTab(int index, const QString &name);
+    // TODO mutualize all of this sh**
+    void setSplitter(int index, medViewContainerSplitter* splitter);
+
     void closeCurrentTab();
     void closeTab(int index);
 

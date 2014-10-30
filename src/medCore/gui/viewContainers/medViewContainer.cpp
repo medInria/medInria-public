@@ -367,7 +367,7 @@ void medViewContainer::setClosingMode(medViewContainer::ClosingMode mode)
         d->closeContainerButton->disconnect(this, SLOT(removeView()));
         connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(close()));
         break;
-    case medViewContainer::CLOSE_VIEW:
+    case medViewContainer::CLOSE_VIEW_ONLY:
         d->closeContainerButton->show();
         d->closeContainerButton->disconnect(this, SLOT(close()));
         connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));

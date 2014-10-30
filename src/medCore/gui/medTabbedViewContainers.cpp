@@ -156,6 +156,19 @@ medViewContainer *medTabbedViewContainers::insertContainerInTab(int index, const
     return container;
 }
 
+void medTabbedViewContainers::setSplitter(int index, medViewContainerSplitter *splitter)
+{
+    int idx = this->insertTab(index, splitter, QString("%0 %1").arg(d->owningWorkspace->name()).arg(count()));
+    this->setCurrentIndex(idx);
+    d->containerSelectedForTabIndex.insert(idx, QList<QUuid>());
+    connect(splitter, SIGNAL(aboutTobedestroyed()), this, SLOT(repopulateCurrentTab()));
+    connect(splitter, SIGNAL(newContainer(QUuid)), this, SLOT(connectContainer(QUuid)), Qt::UniqueConnection);
+    foreach(medViewContainer* container, splitter->containers())
+    {
+        this->connectContainer(container->uuid());
+    }
+}
+
 void medTabbedViewContainers::hideTabBar()
 {
     QTabBar *tabBar = this->tabBar();

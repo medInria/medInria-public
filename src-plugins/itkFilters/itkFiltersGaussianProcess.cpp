@@ -43,7 +43,7 @@ public:
         typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
         typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
 
-        gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( reinterpret_cast<medAbstractProcess::medInputDataPort*>(parent->inputs()[0])->input ) ) );
         gaussianFilter->SetSigma( sigmaParam->value() );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -158,9 +158,11 @@ int itkFiltersGaussianProcess::update ( void )
     }
     catch (itk::ExceptionObject &e)
     {
-        emit failure();
         return EXIT_FAILURE;
     }
+
+    medOutputDataPort* o = reinterpret_cast<medOutputDataPort*>(this->outputs()[0]);
+    o->output = this->output();
     
     return EXIT_SUCCESS;
 }

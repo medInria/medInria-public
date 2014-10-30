@@ -15,6 +15,7 @@
 
 #include <medAbstractProcess.h>
 
+
 class medAbstractFilteringProcess : public medAbstractProcess
 {
 public:

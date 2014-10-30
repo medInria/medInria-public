@@ -24,6 +24,8 @@ class medAbstractProcessPrivate;
 class medAbstractParameter;
 class medToolBox;
 class medTriggerParameter;
+class medViewContainerSplitter;
+
 
 struct medProcessIOPort
 {
@@ -34,13 +36,13 @@ template <typename T>
 struct medProcessInput : public medProcessIOPort
 {
     bool isOptional;
-    T* input;
+    T input;
 };
 
 template <typename T>
 struct medProcessOutput : public medProcessIOPort
 {
-    T* output;
+    T output;
 };
 
 
@@ -50,6 +52,10 @@ struct medProcessOutput : public medProcessIOPort
 class MEDCORE_EXPORT medAbstractProcess : public dtkAbstractProcess
 {
     Q_OBJECT
+
+public:
+    typedef medProcessOutput<medAbstractData*> medOutputDataPort;
+    typedef medProcessInput<medAbstractData*> medInputDataPort;
 
 public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
@@ -68,8 +74,15 @@ public:
     medAbstractParameter* parameter(QString parameterName);
 
 public:
-    bool threaded() const;
-    void setThreaded(bool threaded = true);
+    virtual void setInput(medAbstractData* data, unsigned int port);
+
+protected:
+    virtual void setOutput(medAbstractData* data, unsigned int port);
+
+protected slots:
+    virtual void handleInput();
+protected:
+    virtual void handleOutputs();
 
 public slots:
     int start();
@@ -78,14 +91,12 @@ public:
     virtual medToolBox* toolbox();
     virtual QWidget* parameterWidget();
     virtual medTriggerParameter* runParameter() const;
+    virtual medViewContainerSplitter* viewContainerSplitter();
 
 public:
     virtual bool isInteractive() = 0;
 
-public slots:
-    virtual medAbstractData *output() = 0;
-
-private slots:
+private:
     virtual int update () = 0;
 
 private:

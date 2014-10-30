@@ -66,7 +66,7 @@ public:
 
 protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);
-    void switchToStackedViewContainers(medTabbedViewContainers* stack);
+    void switchTotabbedViewContainers(medTabbedViewContainers* stack);
 
 signals:
     void open(const medDataIndex&);

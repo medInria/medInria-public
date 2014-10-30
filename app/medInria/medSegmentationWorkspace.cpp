@@ -71,16 +71,16 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 //    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
 //    layerGroup1->setLinkAllParameters(true);
 
-//    connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
+//    connect(this->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),
 //            d->segmentationToolBox, SIGNAL(inputChanged()));
 }
 
-void medSegmentationWorkspace::setupViewContainerStack()
+void medSegmentationWorkspace::setupTabbedViewContainer()
 {
-//    if (!stackedViewContainers()->count()) {
-//        this->stackedViewContainers()->addContainerInTab(this->name());
+//    if (!tabbedViewContainers()->count()) {
+//        this->tabbedViewContainers()->addContainerInTab(this->name());
 //    }
-//    this->stackedViewContainers()->unlockTabs();
+//    this->tabbedViewContainers()->unlockTabs();
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)
@@ -103,7 +103,7 @@ bool medSegmentationWorkspace::isUsable()
 
 void medSegmentationWorkspace::addViewEventFilter( medViewEventFilter * filter)
 {
-//    foreach(QUuid uuid, this->stackedViewContainers()->containersSelected())
+//    foreach(QUuid uuid, this->tabbedViewContainers()->containersSelected())
 //    {
 //        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
 //        if(!container)

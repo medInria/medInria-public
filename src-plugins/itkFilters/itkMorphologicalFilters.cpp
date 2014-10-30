@@ -79,8 +79,8 @@ void itkMorphologicalFilters::setInputImage ( medAbstractData *data )
 
 medAbstractData * itkMorphologicalFilters::output (  )
 {
-    if( d->process )
-      return ( d->process->output() );
+//    if( d->process )
+//      return ( d->process->output() );
 
     return NULL;
 }

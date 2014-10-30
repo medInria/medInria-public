@@ -91,7 +91,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
 
 //    d->savePath = QDir::homePath();
 
-//    connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
+//    connect(this->tabbedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
 
 //    connect(d->registrationToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupProcess(QString)));
 //    connect(d->registrationToolBox, SIGNAL(startProcessRequested()), this, SLOT(startProcess()));
@@ -125,19 +125,19 @@ medRegistrationWorkspace::~medRegistrationWorkspace(void)
     d = NULL;
 }
 
-void medRegistrationWorkspace::setupViewContainerStack()
+void medRegistrationWorkspace::setupTabbedViewContainer()
 {
 
 //    //the stack has been instantiated in constructor
-//    if (!this->stackedViewContainers()->count())
+//    if (!this->tabbedViewContainers()->count())
 //    {
-//        d->fixedContainer = this->stackedViewContainers()->addContainerInTab(tr("Compare"));
+//        d->fixedContainer = this->tabbedViewContainers()->addContainerInTab(tr("Compare"));
 //        QLabel *fixedLabel = new QLabel(tr("FIXED"));
 //        fixedLabel->setAlignment(Qt::AlignCenter);
 //        d->fixedContainer->setDefaultWidget(fixedLabel);
 //        d->fixedContainer->setMultiLayered(false);
 //        d->fixedContainer->setUserSplittable(false);
-//        d->fixedContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+//        d->fixedContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
 
 //        d->movingContainer = d->fixedContainer->splitVertically();
 //        QLabel *movingLabel = new QLabel(tr("MOVING"));
@@ -145,10 +145,10 @@ void medRegistrationWorkspace::setupViewContainerStack()
 //        d->movingContainer->setDefaultWidget(movingLabel);
 //        d->movingContainer->setUserSplittable(false);
 //        d->movingContainer->setMultiLayered(false);
-//        d->movingContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+//        d->movingContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
 
 
-//        d->fuseContainer = this->stackedViewContainers()->addContainerInTab(tr("Fuse"));
+//        d->fuseContainer = this->tabbedViewContainers()->addContainerInTab(tr("Fuse"));
 //        QLabel *fuseLabel = new QLabel(tr("FUSE"));
 //        fuseLabel->setAlignment(Qt::AlignCenter);
 //        d->fuseContainer->setDefaultWidget(fuseLabel);
@@ -166,8 +166,8 @@ void medRegistrationWorkspace::setupViewContainerStack()
 //        connect(d->movingContainer,SIGNAL(viewRemoved()),
 //                this, SLOT(updateFromMovingContainer()));
 
-//        this->stackedViewContainers()->lockTabs();
-//        this->stackedViewContainers()->setCurrentIndex(0);
+//        this->tabbedViewContainers()->lockTabs();
+//        this->tabbedViewContainers()->setCurrentIndex(0);
 //        d->fixedContainer->setSelected(true);
 //        d->movingContainer->setSelected(false);
 //    }

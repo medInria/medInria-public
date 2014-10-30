@@ -83,8 +83,8 @@ void itkBasicFiltersProcess::setInputImage ( medAbstractData *data )
 
 medAbstractData * itkBasicFiltersProcess::output (  )
 {
-    if( d->process )
-      return ( d->process->output() );
+//    if( d->process )
+//      return ( d->process->output() );
 
     return NULL;
 }
@@ -162,6 +162,26 @@ int itkBasicFiltersProcess::update ( void )
     return d->process->start();
 }
 
+void itkBasicFiltersProcess::handleInput()
+{
+    medAbstractFilteringProcess::handleInput();
+    for(unsigned int i = 0; i < this->inputs().size(); ++i )
+    {
+        medInputDataPort *port = reinterpret_cast<medInputDataPort *>(this->inputs()[i]);
+        if(port)
+            d->process->setInput(port->input, i);
+    }
+}
+
+void itkBasicFiltersProcess::handleOutputs()
+{
+    medOutputDataPort *port = reinterpret_cast<medOutputDataPort*>(this->outputs()[0]);
+    medOutputDataPort *dport = reinterpret_cast<medOutputDataPort*>(d->process->outputs()[0]);
+
+    port->output = dport->output;
+    this->handleOutputs();
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
@@ -170,3 +190,5 @@ dtkAbstractProcess * createitkBasicFiltersProcess ( void )
 {
     return new itkBasicFiltersProcess;
 }
+
+
