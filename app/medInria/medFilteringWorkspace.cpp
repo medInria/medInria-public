@@ -34,6 +34,7 @@
 
 #include <medAbstractFilteringProcess.h>
 #include <medTriggerParameter.h>
+#include <medViewContainerSplitter.h>
 
 class medFilteringWorkspacePrivate
 {
@@ -80,36 +81,36 @@ medFilteringWorkspace::~medFilteringWorkspace()
 /**
  * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
  */
-void medFilteringWorkspace::setupViewContainerStack()
+void medFilteringWorkspace::setupTabbedViewContainer()
 {
-    if ( !this->stackedViewContainers()->count() )
-    {
-        d->inputContainer = this->stackedViewContainers()->addContainerInTab(this->name());
-        QLabel *inputLabel = new QLabel("INPUT");
-        inputLabel->setAlignment(Qt::AlignCenter);
-        d->inputContainer->setDefaultWidget(inputLabel);
+//    if ( !this->tabbedViewContainers()->count() )
+//    {
+//        d->inputContainer = this->tabbedViewContainers()->addContainerInTab(this->name());
+//        QLabel *inputLabel = new QLabel("INPUT");
+//        inputLabel->setAlignment(Qt::AlignCenter);
+//        d->inputContainer->setDefaultWidget(inputLabel);
 
-        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->inputContainer->setUserSplittable(false);
-        d->inputContainer->setMultiLayered(false);
+//        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
+//        d->inputContainer->setUserSplittable(false);
+//        d->inputContainer->setMultiLayered(false);
 
-        d->outputContainer = d->inputContainer->splitVertically();
-        QLabel *outputLabel = new QLabel("OUTPUT");
-        outputLabel->setAlignment(Qt::AlignCenter);
-        d->outputContainer->setDefaultWidget(outputLabel);
-        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->outputContainer->setUserSplittable(false);
-        d->outputContainer->setMultiLayered(false);
-        d->outputContainer->setUserOpenable(false);
+//        d->outputContainer = d->inputContainer->splitVertically();
+//        QLabel *outputLabel = new QLabel("OUTPUT");
+//        outputLabel->setAlignment(Qt::AlignCenter);
+//        d->outputContainer->setDefaultWidget(outputLabel);
+//        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
+//        d->outputContainer->setUserSplittable(false);
+//        d->outputContainer->setMultiLayered(false);
+//        d->outputContainer->setUserOpenable(false);
 
-        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(updateInput()));
-        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(updateInput()));
+//        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(updateInput()));
+//        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(updateInput()));
 
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->hideTabBar();
-        d->inputContainer->setSelected(true);
-        d->outputContainer->setSelected(false);
-    }
+//        this->tabbedViewContainers()->lockTabs();
+//        this->tabbedViewContainers()->hideTabBar();
+//        d->inputContainer->setSelected(true);
+//        d->outputContainer->setSelected(false);
+//    }
 }
 
 
@@ -121,6 +122,7 @@ void medFilteringWorkspace::setupProcess(QString process)
         d->filteringToolBox->setProcessToolbox(d->process->toolbox());
         d->process->setInputImage(d->filterInput);
         connect(d->process->runParameter(), SIGNAL(triggered()), this, SLOT(startProcess()));
+        this->tabbedViewContainers()->setSplitter(0, d->process->viewContainerSplitter());
     }
 }
 
@@ -149,33 +151,33 @@ void medFilteringWorkspace::updateInput()
  */
 void medFilteringWorkspace::handleProcessOutput()
 {
-    if(d->filteringToolBox.isNull())
-        return;
+//    if(d->filteringToolBox.isNull())
+//        return;
 
-    d->filterOutput = d->process->output();
-    if ( !d->filterOutput )
-        return;
+//    d->filterOutput = d->process->output();
+//    if ( !d->filterOutput )
+//        return;
 
-    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-    {
-        QString newSeriesDescription = d->filterInput->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " filtered";
-        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-    }
+//    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+//    {
+//        QString newSeriesDescription = d->filterInput->metadata ( medMetaDataKeys::SeriesDescription.key() );
+//        newSeriesDescription += " filtered";
+//        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+//    }
 
-    foreach ( QString metaData, d->filterInput->metaDataList() )
-        if (!d->filterOutput->hasMetaData(metaData))
-            d->filterOutput->addMetaData ( metaData, d->filterInput->metaDataValues ( metaData ) );
+//    foreach ( QString metaData, d->filterInput->metaDataList() )
+//        if (!d->filterOutput->hasMetaData(metaData))
+//            d->filterOutput->addMetaData ( metaData, d->filterInput->metaDataValues ( metaData ) );
 
-    foreach ( QString property, d->filterInput->propertyList() )
-        d->filterOutput->addProperty ( property,d->filterInput->propertyValues ( property ) );
+//    foreach ( QString property, d->filterInput->propertyList() )
+//        d->filterOutput->addProperty ( property,d->filterInput->propertyValues ( property ) );
 
-    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+//    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+//    d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    medDataManager::instance()->importData(d->filterOutput);
+//    medDataManager::instance()->importData(d->filterOutput);
 
-    d->outputContainer->addData(d->filterOutput);
+//    d->outputContainer->addData(d->filterOutput);
 }
 
 bool medFilteringWorkspace::isUsable()
@@ -184,13 +186,6 @@ bool medFilteringWorkspace::isUsable()
     return (tbFactory->toolBoxesFromCategory("filtering").size()!=0);
 }
 
-void medFilteringWorkspace::open(const medDataIndex &index)
-{
-    if(!index.isValidForSeries() || !d->inputContainer->isSelected())
-        return;
-
-    d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
-}
 
 
 void medFilteringWorkspace::startProcess()

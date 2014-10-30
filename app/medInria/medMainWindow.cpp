@@ -719,5 +719,5 @@ bool medMainWindow::event(QEvent * e)
 
 void medMainWindow::adjustContainersSize()
 {
-    d->workspaceArea->currentWorkspace()->stackedViewContainers()->adjustContainersSize();
+    d->workspaceArea->currentWorkspace()->tabbedViewContainers()->adjustContainersSize();
 }

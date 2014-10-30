@@ -161,14 +161,14 @@ bool medAbstractWorkspace::isDatabaseVisible(void) const
     return d->databaseVisibility;
 }
 
-medTabbedViewContainers* medAbstractWorkspace::stackedViewContainers() const
+medTabbedViewContainers* medAbstractWorkspace::tabbedViewContainers() const
 {
     return d->viewContainerStack;
 }
 
 void medAbstractWorkspace::clear()
 {
-    this->setupViewContainerStack();
+    this->setupTabbedViewContainer();
     this->clearWorkspaceToolBoxes();
     return;
 }

@@ -123,7 +123,7 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    return QPixmap::grabWidget(this->currentWorkspace()->stackedViewContainers()->currentWidget());
+    return QPixmap::grabWidget(this->currentWorkspace()->tabbedViewContainers()->currentWidget());
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
@@ -169,7 +169,7 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     //clean toolboxes
     d->toolBoxContainer->hide();
     d->toolBoxContainer->clear();
-    this->switchToStackedViewContainers(workspace->stackedViewContainers());
+    this->switchTotabbedViewContainers(workspace->tabbedViewContainers());
 
     //setup database visibility
     d->navigatorContainer->setVisible(workspace->isDatabaseVisible());
@@ -217,7 +217,7 @@ void medWorkspaceArea::setupWorkspace(const QString &id)
         qWarning()<< "Workspace " << id << " couldn't be created";
         return;
     }
-    workspace->setupViewContainerStack();
+    workspace->setupTabbedViewContainer();
 }
 
 void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
@@ -238,7 +238,7 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
             Qt::UniqueConnection);
 }
 
-void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
+void medWorkspaceArea::switchTotabbedViewContainers(medTabbedViewContainers* stack)
 {
     if(!stack )
     {

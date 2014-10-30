@@ -11,21 +11,32 @@
 
 =========================================================================*/
 
-#include "medAbstractFilteringProcess.h"
+#include <medAbstractFilteringProcess.h>
 
 #include <medAbstractImageData.h>
+#include <medViewContainerSplitter.h>
+#include <medViewContainer.h>
+
 
 medAbstractFilteringProcess::medAbstractFilteringProcess(medAbstractProcess *parent)
 {
-    medProcessInput<medAbstractImageData*> *input = new medProcessInput<medAbstractImageData*>;
-    input->name = "Image";
+    medInputDataPort *input = new medInputDataPort;
+    input->name = "Input";
     input->isOptional = false;
-    this->appendInput( input );
+    input->input = NULL;
 
-    this->appendOutput( new medProcessInput<medAbstractImageData*>);
+    medOutputDataPort *output = new medOutputDataPort;
+    output->name = "Output";
+    output->output= NULL;
+
+
+    this->appendInput(input);
+    this->appendOutput(output);
 }
 
 bool medAbstractFilteringProcess::isInteractive()
 {
     return true;
 }
+
+

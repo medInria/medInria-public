@@ -42,6 +42,11 @@ public:
     QList<medAbstractParameter*> parameters();
     medToolBox* toolbox();
 
+protected slots:
+    void handleInput();
+protected:
+    void handleOutputs();
+
 private:
     itkBasicFiltersProcessPrivate *d;
 };

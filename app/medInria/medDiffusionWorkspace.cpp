@@ -108,19 +108,19 @@ medDiffusionWorkspace::~medDiffusionWorkspace()
     d = NULL;
 }
 
-void medDiffusionWorkspace::setupViewContainerStack()
+void medDiffusionWorkspace::setupTabbedViewContainer()
 {
 //    //the stack has been instantiated in constructor
-//    if ( ! this->stackedViewContainers()->count())
+//    if ( ! this->tabbedViewContainers()->count())
 //    {
-//        d->diffusionContainer = this->stackedViewContainers()->addContainerInTab(this->name());
+//        d->diffusionContainer = this->tabbedViewContainers()->addContainerInTab(this->name());
 
 //        d->diffusionContainer->setClosingMode(medViewContainer::CLOSE_CONTAINER);
 //        d->diffusionContainer->setUserSplittable(false);
 //        d->diffusionContainer->setMultiLayered(true);
 
 //        connect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
-//        connect(this->stackedViewContainers(),SIGNAL(containersSelectedChanged()),this,SLOT(changeCurrentContainer()));
+//        connect(this->tabbedViewContainers(),SIGNAL(containersSelectedChanged()),this,SLOT(changeCurrentContainer()));
 //    }
 }
 
@@ -140,7 +140,7 @@ void medDiffusionWorkspace::runProcess(QString processName, QString category)
 //    medRunnableProcess *runProcess = new medRunnableProcess(d->currentProcess, d->currentProcess->name());
 
 //    d->processRunning = true;
-//    this->stackedViewContainers()->setEnabled(false);
+//    this->tabbedViewContainers()->setEnabled(false);
 
 //    connect(runProcess, SIGNAL(success()), this, SLOT(getOutput()));
 //    connect(runProcess, SIGNAL(failure()), this, SLOT(resetRunningFlags()));
@@ -156,7 +156,7 @@ void medDiffusionWorkspace::cancelProcess()
 
 void medDiffusionWorkspace::getOutput()
 {
-//    this->stackedViewContainers()->setEnabled(true);
+//    this->tabbedViewContainers()->setEnabled(true);
 //    medAbstractData *outputData = dynamic_cast<medAbstractData*>(d->currentProcess->output());
 
 //    if (!outputData)
@@ -171,7 +171,7 @@ void medDiffusionWorkspace::getOutput()
 void medDiffusionWorkspace::resetRunningFlags()
 {
 //    d->processRunning = false;
-//    this->stackedViewContainers()->setEnabled(true);
+//    this->tabbedViewContainers()->setEnabled(true);
 
 //    d->diffusionEstimationToolBox->resetButtons();
 //    d->diffusionTractographyToolBox->resetButtons();
@@ -179,7 +179,7 @@ void medDiffusionWorkspace::resetRunningFlags()
 
 void medDiffusionWorkspace::changeCurrentContainer()
 {
-//    QList <QUuid> containersSelectedList = this->stackedViewContainers()->containersSelected();
+//    QList <QUuid> containersSelectedList = this->tabbedViewContainers()->containersSelected();
 //    if (!containersSelectedList.size())
 //        return;
 

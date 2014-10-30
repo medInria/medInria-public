@@ -34,9 +34,9 @@ class MEDCORE_EXPORT medViewContainer: public QFrame
 public:
     enum ClosingMode
     {
-        CLOSE_CONTAINER,
-        CLOSE_VIEW,
-        CLOSE_BUTTON_HIDDEN
+        CLOSE_CONTAINER, /** The close button close / delete the container itelf as well as the view if any. */
+        CLOSE_VIEW_ONLY, /** The close button close / delete the view if any. */
+        CLOSE_BUTTON_HIDDEN /** No close button */
     };
 
 private:
