@@ -865,10 +865,17 @@ void vtkImageView::SetScalarBarLabelFormat(double* intensityRange)
 {
     double diff = fabs(fabs(intensityRange[1])-fabs(intensityRange[0]));
 
-    if (diff>1 || diff == 0)
+    if (diff>1)
     {
         this->ScalarBar->SetLabelFormat ("%.f");
         return;
+    }
+
+    if (diff == 0)
+    {
+        if (intensityRange[1]==0)
+            return;
+        diff = fabs(intensityRange[1]);
     }
 
     int precision = -floor(log10(diff))+1; //+1 for the third value displayed (mean) not to be rounded
