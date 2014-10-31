@@ -557,7 +557,7 @@ void medAbstractWorkspace::open(const medDataIndex &index)
         return;
 
     medViewContainer *container = medViewContainerManager::instance()->container(containersSelected.first());
-    if(index.isValidForSeries())
+    if(index.isValidForSeries() && container->isUserOpenable())
         container->addData(medDataManager::instance()->retrieveData(index));
 }
 
