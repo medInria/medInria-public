@@ -305,6 +305,9 @@ protected:
 
   //! Get layer specific info
   vtkImage3DDisplay * GetImage3DDisplayForLayer(int layer) const;
+  
+  //! Cast layers to layer 0 's type if necessary
+  void castLayers();
 
   // plane actors
   vtkImageActor* ActorX;
@@ -366,6 +369,7 @@ protected:
 
   struct LayerInfo {
       vtkSmartPointer<vtkImage3DDisplay> ImageDisplay;
+      bool NeedCast;
   };
 
   vtkSmartPointer<vtkImageMapToColors>        PlanarWindowLevel;
@@ -373,7 +377,6 @@ protected:
   //(API change)
   typedef std::vector<LayerInfo > LayerInfoVecType;
   LayerInfoVecType LayerInfoVec;
-
 private:
   vtkImageView3D(const vtkImageView3D&);  // Not implemented.
   void operator=(const vtkImageView3D&);    // Not implemented.
