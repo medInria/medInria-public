@@ -47,7 +47,7 @@ public:
     void dispatchGlobalCancelEvent(bool ignoreNewJobItems = true);
 
 signals:
-    void cancel(QObject*);
+    void cancel();
     void jobRegistered(medAbstractJob* job, QString jobName);
 
 protected:

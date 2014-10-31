@@ -39,7 +39,7 @@ public:
         typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  DivideFilterType;
         typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
 
-        divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
         divideFilter->SetConstant ( divideFactorParam->value() );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -49,12 +49,12 @@ public:
         divideFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         divideFilter->Update();
-        parent->output()->setData ( divideFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( divideFilter->GetOutput() );
 
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " divide filter (" + QString::number(divideFactorParam->value()) + ")";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
@@ -99,10 +99,10 @@ QList<medAbstractParameter*> itkFiltersDivideProcess::parameters()
 
 int itkFiltersDivideProcess::update ( void )
 {    
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

@@ -35,7 +35,7 @@ public slots:
     int update ( void );
 
 public:
-    virtual void setInputImage ( medAbstractData *data );
+//    virtual void setInputImage ( medAbstractData *data );
 
 public:
     QList<medAbstractParameter*> parameters();

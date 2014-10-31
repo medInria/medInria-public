@@ -46,11 +46,6 @@ public:
     itkFiltersProcessBase *filter() const;
     void setFilter(itkFiltersProcessBase *);
 
-    medAbstractData * inputImage() const;
-    virtual void setInputImage ( medAbstractData *data );
-
-    virtual medAbstractData *output ();
-
     void emitProgress(int progress);
 
 public:

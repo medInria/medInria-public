@@ -42,7 +42,7 @@ public:
         typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  WindowingFilterType;
         typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
 
-        windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
         windowingFilter->SetWindowMinimum ( ( PixelType ) minimumIntensityParam->value() );
         windowingFilter->SetWindowMaximum ( ( PixelType ) maximumIntensityParam->value() );
         windowingFilter->SetOutputMinimum ( ( PixelType ) minimumOutputIntensityParam->value() );
@@ -55,13 +55,13 @@ public:
         windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         windowingFilter->Update();
-        parent->output()->setData ( windowingFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( windowingFilter->GetOutput() );
 
         //Set output description metadata
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " intensity filter";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 
 };
@@ -117,173 +117,173 @@ QList<medAbstractParameter*> itkFiltersWindowingProcess::parameters()
     return d->parameters;
 }
 
-void itkFiltersWindowingProcess::setInputImage ( medAbstractData *data )
-{
-    itkFiltersProcessBase::setInputImage(data);
+//void itkFiltersWindowingProcess::setInputImage ( medAbstractData *data )
+//{
+//    itkFiltersProcessBase::setInputImage(data);
 
-    if (!data)
-        return;
-    else
-    {
-        QString identifier = data->identifier();
+//    if (!data)
+//        return;
+//    else
+//    {
+//        QString identifier = data->identifier();
 
-        if ( identifier == "itkDataImageChar3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<char>::min() );
+//        if ( identifier == "itkDataImageChar3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<char>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<char>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<char>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<char>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<char>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<char>::max() );
-        }
-        else if ( identifier == "itkDataImageUChar3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned char>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<char>::min(), std::numeric_limits<char>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<char>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUChar3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned char>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned char>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned char>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned char>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned char>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned char>::max() );
-        }
-        else if ( identifier == "itkDataImageShort3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<short>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned char>::max() );
+//        }
+//        else if ( identifier == "itkDataImageShort3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<short>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<short>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<short>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<short>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<short>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<short>::max() );
-        }
-        else if ( identifier == "itkDataImageUShort3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned short>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<short>::min(), std::numeric_limits<short>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<short>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUShort3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned short>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned short>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned short>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned short>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned short>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned short>::max() );
-        }
-        else if ( identifier == "itkDataImageInt3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<int>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned short>::max() );
+//        }
+//        else if ( identifier == "itkDataImageInt3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<int>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<int>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<int>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<int>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<int>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<int>::max() );
-        }
-        else if ( identifier == "itkDataImageUInt3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned int>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<int>::min(), std::numeric_limits<int>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<int>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUInt3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned int>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned int>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned int>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned int>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned int>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned int>::max() );
-        }
-        else if ( identifier == "itkDataImageLong3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<long>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned int>::min(), std::numeric_limits<unsigned int>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned int>::max() );
+//        }
+//        else if ( identifier == "itkDataImageLong3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<long>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<long>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<long>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<long>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<long>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<long>::max() );
-        }
-        else if ( identifier== "itkDataImageULong3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned long>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<long>::min(), std::numeric_limits<long>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<long>::max() );
+//        }
+//        else if ( identifier== "itkDataImageULong3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<unsigned long>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned long>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<unsigned long>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned long>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<unsigned long>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned long>::max() );
-        }
-        else if ( identifier == "itkDataImageFloat3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<float>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<unsigned long>::min(), std::numeric_limits<unsigned long>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<unsigned long>::max() );
+//        }
+//        else if ( identifier == "itkDataImageFloat3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<float>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<float>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<float>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<float>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<float>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<float>::max() );
-        }
-        else if ( identifier == "itkDataImageDouble3" )
-        {
-            d->minimumIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
-            d->minimumIntensityParam->setValue ( std::numeric_limits<double>::min() );
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<float>::min(), std::numeric_limits<float>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<float>::max() );
+//        }
+//        else if ( identifier == "itkDataImageDouble3" )
+//        {
+//            d->minimumIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
+//            d->minimumIntensityParam->setValue ( std::numeric_limits<double>::min() );
 
-            d->maximumIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
-            d->maximumIntensityParam->setValue ( std::numeric_limits<double>::max() );
+//            d->maximumIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
+//            d->maximumIntensityParam->setValue ( std::numeric_limits<double>::max() );
 
-            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
-            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<double>::min() );
+//            d->minimumOutputIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
+//            d->minimumOutputIntensityParam->setValue ( std::numeric_limits<double>::min() );
 
-            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
-            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<double>::max() );
-        }
-        else
-        {
-            qWarning() << "Error : pixel type not yet implemented ("
-            << identifier
-            << ")";
-        }
-    }
-}
+//            d->maximumOutputIntensityParam->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
+//            d->maximumOutputIntensityParam->setValue ( std::numeric_limits<double>::max() );
+//        }
+//        else
+//        {
+//            qWarning() << "Error : pixel type not yet implemented ("
+//            << identifier
+//            << ")";
+//        }
+//    }
+//}
 
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersWindowingProcess::update ( void )
 {    
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

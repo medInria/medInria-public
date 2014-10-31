@@ -39,6 +39,7 @@ medAbstractJob::~medAbstractJob()
 void medAbstractJob::start()
 {
     QThreadPool::globalInstance()->start(this);
+
 }
 
 void medAbstractJob::run()

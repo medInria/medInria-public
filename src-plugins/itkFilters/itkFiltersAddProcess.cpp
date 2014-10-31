@@ -37,7 +37,7 @@ public:
         typedef itk::AddImageFilter<ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType> AddFilterType;
         typename AddFilterType::Pointer addFilter = AddFilterType::New();
 
-        addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
         addFilter->SetConstant ( addValueParam->value() );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -47,12 +47,12 @@ public:
         addFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         addFilter->Update();
-        parent->output()->setData ( addFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( addFilter->GetOutput() );
 
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " add filter (" + QString::number(addValueParam->value()) + ")";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
@@ -87,64 +87,62 @@ bool itkFiltersAddProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersAddProcess::setInputImage ( medAbstractData *data )
-{
-    itkFiltersProcessBase::setInputImage(data);
+//void itkFiltersAddProcess::setInputImage ( medAbstractData *data )
+//{
+//    if (!data)
+//        return;
+//    else
+//    {
+//        QString identifier = data->identifier();
 
-    if (!data)
-        return;
-    else
-    {       
-        QString identifier = data->identifier();
-
-        if ( identifier == "itkDataImageChar3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<char>::max() );
-        }
-        else if ( identifier == "itkDataImageUChar3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned char>::max() );
-        }
-        else if ( identifier == "itkDataImageShort3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<short>::max() );
-        }
-        else if ( identifier == "itkDataImageUShort3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned short>::max() );
-        }
-        else if ( identifier == "itkDataImageInt3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<int>::max() );
-        }
-        else if ( identifier == "itkDataImageUInt3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned int>::max() );
-        }
-        else if ( identifier == "itkDataImageLong3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<long>::max() );
-        }
-        else if ( identifier== "itkDataImageULong3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned long>::max() );
-        }
-        else if ( identifier == "itkDataImageFloat3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<float>::max() );
-        }
-        else if ( identifier == "itkDataImageDouble3" )
-        {
-            d->addValueParam->setRange ( 0, std::numeric_limits<double>::max() );
-        }
-        else
-        {
-            qWarning() << "Error : pixel type not yet implemented ("
-            << identifier
-            << ")";
-        }
-    }
-}
+//        if ( identifier == "itkDataImageChar3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<char>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUChar3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned char>::max() );
+//        }
+//        else if ( identifier == "itkDataImageShort3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<short>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUShort3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned short>::max() );
+//        }
+//        else if ( identifier == "itkDataImageInt3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<int>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUInt3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned int>::max() );
+//        }
+//        else if ( identifier == "itkDataImageLong3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<long>::max() );
+//        }
+//        else if ( identifier== "itkDataImageULong3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<unsigned long>::max() );
+//        }
+//        else if ( identifier == "itkDataImageFloat3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<float>::max() );
+//        }
+//        else if ( identifier == "itkDataImageDouble3" )
+//        {
+//            d->addValueParam->setRange ( 0, std::numeric_limits<double>::max() );
+//        }
+//        else
+//        {
+//            qWarning() << "Error : pixel type not yet implemented ("
+//            << identifier
+//            << ")";
+//        }
+//    }
+//}
 
 //-------------------------------------------------------------------------------------------
 
@@ -157,10 +155,10 @@ QList<medAbstractParameter*> itkFiltersAddProcess::parameters()
 
 int itkFiltersAddProcess::update ( void )
 {    
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

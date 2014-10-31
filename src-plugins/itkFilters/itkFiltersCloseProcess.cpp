@@ -15,6 +15,7 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 
 #include <medMetaDataKeys.h>
 
@@ -45,7 +46,7 @@ public:
         ball.SetRadius(kernelSizeParam->value());
         ball.CreateStructuringElement();
 
-        closeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        closeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
         closeFilter->SetKernel ( ball );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -55,12 +56,12 @@ public:
         closeFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         closeFilter->Update();
-        parent->output()->setData ( closeFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( closeFilter->GetOutput() );
 
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " Close filter (" + QString::number(kernelSizeParam->value()) + ")";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
@@ -105,10 +106,10 @@ QList<medAbstractParameter*> itkFiltersCloseProcess::parameters()
 
 int itkFiltersCloseProcess::update ( void )
 {    
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 
