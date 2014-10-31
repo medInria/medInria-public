@@ -300,18 +300,21 @@ void vtkImageView3D::SetVolumeMapperToDefault()
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeRayCastFunctionToComposite()
 {
+  this->castLayers();
   this->VolumeMapper->SetBlendModeToComposite();
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeRayCastFunctionToMaximumIntensityProjection()
 {
+  this->castLayers();
   this->VolumeMapper->SetBlendModeToMaximumIntensity();
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeRayCastFunctionToMinimumIntensityProjection()
 {
+  this->castLayers();
   this->VolumeMapper->SetBlendModeToMinimumIntensity();
 }
 
@@ -572,21 +575,11 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
       return;
     }
 
-    // cast it if needed
-    if (reslicedImage->GetScalarType()!=this->GetInput()->GetScalarType())
-    {
-      vtkImageCast *cast = vtkImageCast::New();
-      cast->SetInput  (reslicedImage);
-      cast->SetOutputScalarType (this->GetInput()->GetScalarType());
-      cast->Update();
-
-      reslicedImage->ShallowCopy (cast->GetOutput());
-
-      cast->Delete();
-    }
-
     this->AddLayer (layer);
 
+    if (reslicedImage->GetScalarType()!=this->GetInput()->GetScalarType())
+        LayerInfoVec[layer].NeedCast = true;
+        
     this->GetImage3DDisplayForLayer(layer)->SetInput (reslicedImage);
 
     // set default display properties
@@ -646,23 +639,31 @@ void vtkImageView3D::InternalUpdate()
   {
     // append all scalar buffer into the same image
     vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
+    
+    if (this->RenderingMode == VOLUME_RENDERING) // if we are in VR mode, we need the cast.
+      castLayers();
 
-    for( LayerInfoVecType::const_iterator it = this->LayerInfoVec.begin();
-         it!=this->LayerInfoVec.end(); ++it)
+    int cpt=0;
+    for(LayerInfoVecType::const_iterator it = this->LayerInfoVec.begin();
+      it!=this->LayerInfoVec.end(); ++it)
     {
       if (!it->ImageDisplay->GetInput())
         continue;
-
-      appender->AddInput(it->ImageDisplay->GetInput());
+      
+      if (it->ImageDisplay->GetVisibility())
+      {
+        cpt++;
+        appender->AddInput(it->ImageDisplay->GetInput());
+      }
     }
-
+    if (cpt==0)
+      this->VolumeActor->SetVisibility(0);
+    
     input = appender->GetOutput();
-
     appender->Delete();
-    if (this->LayerInfoVec.size()>1)
-    {
+    
+    if (cpt>1)
       multiLayers = true;
-    }
   }
 
   // hack: modify the input MTime such that it is higher
@@ -818,6 +819,7 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
     }
     this->GetImage3DDisplayForLayer(layer)->SetVisibility(visibility);
   }
+  this->InternalUpdate();
 }
 
 //----------------------------------------------------------------------------
@@ -1159,13 +1161,10 @@ void vtkImageView3D::RemoveLayer (int layer)
 
   this->LayerInfoVec.erase (this->LayerInfoVec.begin() + layer );
 
-  this->InternalUpdate();
-
   if(this->LayerInfoVec.size() == 0)
-  {
-      AddLayer(0);
-      this->InternalUpdate();
-  }
+    AddLayer(0);
+    
+  this->InternalUpdate();
 }
 
 //----------------------------------------------------------------------------
@@ -1176,9 +1175,6 @@ void vtkImageView3D::RemoveAllLayers()
     this->RemoveLayer (this->LayerInfoVec.size() -1);
   }
 }
-
-
-
 
 //----------------------------------------------------------------------------
 class ImageActorCallback : public vtkCommand
@@ -1433,4 +1429,32 @@ vtkImageData * vtkImageView3D::GetInput(int layer) const
   if (!imageDisplay)
     return NULL;
   return imageDisplay->GetInput();
+}
+
+void vtkImageView3D::castLayers()
+{
+  for(int i=0;i<LayerInfoVec.size();i++)
+  { 
+    if (LayerInfoVec[i].NeedCast)
+    {
+      vtkImage3DDisplay * imageDisplay = this->GetImage3DDisplayForLayer(i);
+      if (!imageDisplay)
+        continue;
+      vtkImageData * dataToCast = imageDisplay->GetInput();
+      if (imageDisplay->GetVisibility() && dataToCast && dataToCast->GetScalarType()!=this->GetInput()->GetScalarType())
+      {
+        vtkImageCast *cast = vtkImageCast::New();
+        vtkImageData * dataToCast = this->GetImage3DDisplayForLayer(i)->GetInput();
+        cast->SetInput(dataToCast);
+        cast->SetOutputScalarType (this->GetInput()->GetScalarType());
+        cast->Update();
+        dataToCast->ShallowCopy (cast->GetOutput());
+        this->GetImage3DDisplayForLayer(i)->SetInput (dataToCast);
+        cast->Delete();
+        vtkColorTransferFunction *rgb   = this->GetDefaultColorTransferFunction();
+        vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
+        this->SetTransferFunctions (rgb, alpha, i);
+      }
+    }
+  }
 }
