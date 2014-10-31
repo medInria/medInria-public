@@ -33,6 +33,7 @@ public:
     medSubtractImageFilter* parent;
     //medDoubleParameter *subtractValueParam;
     QList<medAbstractParameter*> parameters;
+    QString res;
 
     //TODO: template over image 1 and image 2 types ?
     template <class PixelType> int update ( void )
@@ -54,9 +55,9 @@ public:
         {
             subtractFilter->Update();
         }
-        catch (...)
+        catch (itk::ExceptionObject err)
         {
-            qWarning() << "Exception caught in medSubtractImageFilter";
+            res = err.GetDescription();
             return EXIT_FAILURE;
         }
 
@@ -71,6 +72,8 @@ public:
 
         return EXIT_SUCCESS;
     }
+
+
 
 };
 
@@ -162,11 +165,11 @@ int medSubtractImageFilter::update()
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
-        << id
-        << ")";
+        d->res = "Error : pixel type not yet implemented (" + id + ")";
         res = EXIT_FAILURE;
     }
+    if(!d->res.isEmpty())
+        emit showError(d->res);
 
     return res;
 
