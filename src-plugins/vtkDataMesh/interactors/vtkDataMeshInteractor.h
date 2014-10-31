@@ -71,8 +71,7 @@ public slots:
 
 
     virtual void updateWidgets();
-
-
+    
 protected:
     void updatePipeline ();
     void setLut(vtkLookupTable * lut);
@@ -84,6 +83,8 @@ private:
 
 private slots:
     void updateSlicingParam();
+    void updateRange();
+    void showRangeWidgets(bool);
 
 private:
     vtkDataMeshInteractorPrivate * d;
