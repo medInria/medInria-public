@@ -51,6 +51,7 @@
 #include <medAbstractImageView.h>
 #include <medIntParameter.h>
 #include <medVtkViewBackend.h>
+#include <vtkScalarBarActor.h>
 
 #include <vector>
 
@@ -82,7 +83,10 @@ public:
     medBoolParameter *edgeVisibleParam;
     medStringListParameter *colorParam;
     medStringListParameter *renderingParam;
+    medDoubleParameter *minRange,*maxRange;
 
+    QPushButton * range_button;
+    
     QList <medAbstractParameter*> parameters;
 
     medIntParameter *slicingParameter;
@@ -107,6 +111,12 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->colorParam = NULL;
     d->renderingParam = NULL;
     d->slicingParameter = NULL;
+    d->minRange = 0;
+    d->maxRange = 0;
+
+    d->range_button = new QPushButton("Modify Range");
+    d->range_button->setCheckable(true);
+    connect(d->range_button,SIGNAL(toggled(bool)),this,SLOT(showRangeWidgets(bool)));
 }
 
 
@@ -246,6 +256,12 @@ void vtkDataMeshInteractor::setupParameters()
 
     d->parameters << this->visibilityParameter();
 
+    d->minRange = new medDoubleParameter("Min",this);
+    d->maxRange = new medDoubleParameter("Max",this);
+
+    connect(d->minRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
+    connect(d->maxRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
+
     this->updateWidgets();
 }
 
@@ -349,7 +365,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
     if (attributes)
     {
-
+        
         if(d->colorParam)
             d->colorParam->hide();
         if(d->LUTParam)
@@ -364,6 +380,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
             d->attribute = attributes->GetArray(qPrintable(attributeName));
             attributes->SetActiveScalars(qPrintable(attributeName));
+            d->metaDataSet->SetCurrentActiveArray(attributes->GetArray(qPrintable(attributeName)));
 
             d->LUTParam->show();
         }
@@ -375,9 +392,24 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
         mapper2d->SetScalarVisibility(1);
         mapper3d->SetScalarVisibility(1);
+        d->range_button->show();
+        double * range = d->metaDataSet->GetCurrentScalarRange();
+        double step = (range[1]-range[0])/100.0;
+        d->minRange->setSingleStep(step);
+        d->maxRange->setSingleStep(step);
+        /*dtkSignalBlocker dtkBlocker1 (d->minRange);
+        dtkSignalBlocker dtkBlocker2 (d->maxRange);*/
+        /*dtkBlocker1.blockSignals(true);
+        dtkBlocker2.blockSignals(true);*/
+        d->minRange->setRange(range[0],range[1]);
+        d->maxRange->setRange(range[0],range[1]);
+        d->minRange->setValue(range[0]);
+        d->maxRange->setValue(range[1]);
     }
     else
     {
+        d->range_button->setChecked(false);
+        d->range_button->hide();
         if(d->LUTParam)
             d->LUTParam->hide();
         if(d->colorParam)
@@ -476,8 +508,13 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
 
     mapper2d->SetLookupTable(lut);
     mapper2d->UseLookupTableScalarRangeOn();
+    mapper2d->InterpolateScalarsBeforeMappingOn();
     mapper3d->SetLookupTable(lut);
     mapper3d->UseLookupTableScalarRangeOn();
+    mapper3d->InterpolateScalarsBeforeMappingOn();
+    d->view2d->GetScalarBar()->SetLabelFormat("%10.3f");  // todo : take into account the range?
+    d->view3d->GetScalarBar()->SetLabelFormat("%10.3f");
+    updateRange();
 }
 
 
@@ -528,7 +565,18 @@ QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
     layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
     layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
     layout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
-
+    layout->addRow(d->range_button);
+    d->minRange->getSlider()->setOrientation(Qt::Horizontal);
+    d->maxRange->getSlider()->setOrientation(Qt::Horizontal);
+    QHBoxLayout *minRangeLayout = new QHBoxLayout(toolbox);
+    QHBoxLayout *maxRangeLayout = new QHBoxLayout(toolbox);
+    minRangeLayout->addWidget(d->minRange->getSlider());
+    minRangeLayout->addWidget(d->minRange->getSpinBox());
+    maxRangeLayout->addWidget(d->maxRange->getSlider());
+    maxRangeLayout->addWidget(d->maxRange->getSpinBox());
+    layout->addRow(d->minRange->getLabel(),minRangeLayout);
+    layout->addRow(d->maxRange->getLabel(),maxRangeLayout);
+    showRangeWidgets(false);
     return toolbox;
 }
 
@@ -590,4 +638,40 @@ void vtkDataMeshInteractor::updateSlicingParam()
     d->slicingParameter->blockSignals(false);
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
+}
+
+void vtkDataMeshInteractor::updateRange()
+{
+    if (!d->metaDataSet)
+        return;
+    
+    vtkMapper * mapper2d = d->actor2d->GetMapper();
+    vtkMapper * mapper3d = d->actor3d->GetMapper();
+
+    vtkLookupTable * lut = vtkLookupTable::SafeDownCast(mapper3d->GetLookupTable());
+    
+    if (!lut)
+        return;
+    
+    lut->SetRange(d->minRange->value(),d->maxRange->value());
+    mapper2d->SetLookupTable(lut);
+    mapper3d->SetLookupTable(lut);
+    d->view3d->GetScalarBar()->SetLookupTable(lut);
+    d->view2d->GetScalarBar()->SetLookupTable(lut);
+
+    d->view->viewWidget()->update();
+}
+
+void vtkDataMeshInteractor::showRangeWidgets(bool checked)
+{
+    if (checked)
+    {
+        d->maxRange->show();
+        d->minRange->show();
+    }
+    else
+    {
+        d->maxRange->hide();
+        d->minRange->hide();
+    }
 }
