@@ -46,7 +46,7 @@ public:
         ball.SetRadius(kernelSizeParam->value());
         ball.CreateStructuringElement();
 
-        dilateFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        dilateFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
         dilateFilter->SetKernel ( ball );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -56,12 +56,12 @@ public:
         dilateFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         dilateFilter->Update();
-        parent->output()->setData ( dilateFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( dilateFilter->GetOutput() );
 
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " Dilate filter (" + QString::number(kernelSizeParam->value()) + ")";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
@@ -106,10 +106,10 @@ QList<medAbstractParameter*> itkFiltersDilateProcess::parameters()
 
 int itkFiltersDilateProcess::update ( void )
 {    
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

@@ -66,24 +66,16 @@ bool itkMorphologicalFilters::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-void itkMorphologicalFilters::setInputImage ( medAbstractData *data )
-{
-    itkFiltersProcessBase::setInputImage(data);
+//void itkMorphologicalFilters::setInputImage ( medAbstractData *data )
+//{
+//    itkFiltersProcessBase::setInputImage(data);
 
-    if( d->process )
-        d->process->setInputImage(data);
-
-    if(!d->toolbox.isNull())
-        d->toolbox->update(data);
-}
-
-medAbstractData * itkMorphologicalFilters::output (  )
-{
 //    if( d->process )
-//      return ( d->process->output() );
+//        d->process->setInputImage(data);
 
-    return NULL;
-}
+//    if(!d->toolbox.isNull())
+//        d->toolbox->update(data);
+//}
 
 //-------------------------------------------------------------------------------------------
 
@@ -120,7 +112,7 @@ void itkMorphologicalFilters::setupProcess(QString process)
 
     if(d->process)
     {
-        d->process->setInputImage(this->inputImage());
+        //d->process->setInputImage(this->inputImage());
         d->toolbox->setProcessToolbox(d->process->toolbox());
 
         connect(d->process->runParameter(), SIGNAL(triggered()),

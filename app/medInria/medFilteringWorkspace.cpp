@@ -120,64 +120,9 @@ void medFilteringWorkspace::setupProcess(QString process)
     if(d->process)
     {
         d->filteringToolBox->setProcessToolbox(d->process->toolbox());
-        d->process->setInputImage(d->filterInput);
         connect(d->process->runParameter(), SIGNAL(triggered()), this, SLOT(startProcess()));
         this->tabbedViewContainers()->setSplitter(0, d->process->viewContainerSplitter());
     }
-}
-
-void medFilteringWorkspace::updateInput()
-{
-    if(!d->inputContainer->view())
-    {
-        d->filterInput = NULL;
-        return;
-    }
-    medAbstractLayeredView *inputView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
-    if(!inputView)
-    {
-        qWarning() << "Non layered view are not supported in filtering workspace yet.";
-        d->filterInput = NULL;
-        return;
-    }
-    d->filterInput = inputView->layerData(inputView->currentLayer());
-
-    if(d->process)
-        d->process->setInputImage(d->filterInput);
-}
-
-/**
- * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
- */
-void medFilteringWorkspace::handleProcessOutput()
-{
-//    if(d->filteringToolBox.isNull())
-//        return;
-
-//    d->filterOutput = d->process->output();
-//    if ( !d->filterOutput )
-//        return;
-
-//    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-//    {
-//        QString newSeriesDescription = d->filterInput->metadata ( medMetaDataKeys::SeriesDescription.key() );
-//        newSeriesDescription += " filtered";
-//        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-//    }
-
-//    foreach ( QString metaData, d->filterInput->metaDataList() )
-//        if (!d->filterOutput->hasMetaData(metaData))
-//            d->filterOutput->addMetaData ( metaData, d->filterInput->metaDataValues ( metaData ) );
-
-//    foreach ( QString property, d->filterInput->propertyList() )
-//        d->filterOutput->addProperty ( property,d->filterInput->propertyValues ( property ) );
-
-//    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-//    d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
-
-//    medDataManager::instance()->importData(d->filterOutput);
-
-//    d->outputContainer->addData(d->filterOutput);
 }
 
 bool medFilteringWorkspace::isUsable()
@@ -186,17 +131,21 @@ bool medFilteringWorkspace::isUsable()
     return (tbFactory->toolBoxesFromCategory("filtering").size()!=0);
 }
 
-
-
 void medFilteringWorkspace::startProcess()
 {
     if(!d->process)
         return;
 
+    d->filteringToolBox->setEnabled(false);
+
     medRunnableProcess *runProcess = new medRunnableProcess(d->process, d->process->name());
     connect (runProcess, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
     connect (runProcess, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
-    connect (runProcess, SIGNAL (success()),this,SLOT(handleProcessOutput()));
 
     runProcess->start();
+}
+
+void medFilteringWorkspace::enableSelectorToolBox()
+{
+    d->filteringToolBox->setEnabled(true);
 }

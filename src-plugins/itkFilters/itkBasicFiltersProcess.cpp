@@ -17,6 +17,7 @@
 #include <dtkCore/dtkSmartPointer.h>
 #include <itkFiltersToolBox.h>
 
+#include <medAbstractDataFactory.h>
 #include <medToolBoxHeader.h>
 
 #include <medTriggerParameter.h>
@@ -66,27 +67,6 @@ itkBasicFiltersProcess::~itkBasicFiltersProcess( void )
 bool itkBasicFiltersProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkBasicFiltersProcess", createitkBasicFiltersProcess, "medAbstractFilteringProcess");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkBasicFiltersProcess::setInputImage ( medAbstractData *data )
-{
-    itkFiltersProcessBase::setInputImage(data);
-
-    if( d->process )
-        d->process->setInputImage(data);
-
-    if(!d->toolbox.isNull())
-        d->toolbox->update(data);
-}
-
-medAbstractData * itkBasicFiltersProcess::output (  )
-{
-//    if( d->process )
-//      return ( d->process->output() );
-
-    return NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -148,11 +128,19 @@ void itkBasicFiltersProcess::setupProcess(QString process)
 
     if(d->process)
     {
-        d->process->setInputImage(this->inputImage());
+        medAbstractData *input = this->input<medAbstractData *>(0);
+        medAbstractData *output = this->output<medAbstractData *>(0);
+
+        d->process->setInput<medAbstractData *>(input, 0);
+        d->process->setOutput<medAbstractData*>(output, 0);
+
         d->toolbox->setProcessToolbox(d->process->toolbox());
 
         connect(d->process->runParameter(), SIGNAL(triggered()),
                 this->runParameter(), SIGNAL(triggered()));
+
+        // handleOutputs will be managed by itkBasicFiltersProcess, no need to do it twice
+        disconnect(d->process, SIGNAL(success()), d->process, SLOT(handleOutputs()));
     }
 
 }
@@ -165,21 +153,24 @@ int itkBasicFiltersProcess::update ( void )
 void itkBasicFiltersProcess::handleInput()
 {
     medAbstractFilteringProcess::handleInput();
-    for(unsigned int i = 0; i < this->inputs().size(); ++i )
+
+    medAbstractData *input = this->input<medAbstractData *>(0);
+
+    if(!input)
+        return;
+
+    medAbstractData *output = medAbstractDataFactory::instance()->create(input->identifier());
+
+    this->setOutput<medAbstractData*>(output, 0);
+
+    if(d->process)
     {
-        medInputDataPort *port = reinterpret_cast<medInputDataPort *>(this->inputs()[i]);
-        if(port)
-            d->process->setInput(port->input, i);
+        d->process->setInput<medAbstractData *>(input, 0);
+        d->process->setOutput<medAbstractData*>(output, 0);
     }
-}
 
-void itkBasicFiltersProcess::handleOutputs()
-{
-    medOutputDataPort *port = reinterpret_cast<medOutputDataPort*>(this->outputs()[0]);
-    medOutputDataPort *dport = reinterpret_cast<medOutputDataPort*>(d->process->outputs()[0]);
-
-    port->output = dport->output;
-    this->handleOutputs();
+    if(!d->toolbox.isNull())
+        d->toolbox->update(input);
 }
 
 // /////////////////////////////////////////////////////////////////

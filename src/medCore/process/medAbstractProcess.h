@@ -73,15 +73,62 @@ public:
     virtual QList<medAbstractParameter*> parameters() = 0;
     medAbstractParameter* parameter(QString parameterName);
 
-public:
-    virtual void setInput(medAbstractData* data, unsigned int port);
 
-protected:
-    virtual void setOutput(medAbstractData* data, unsigned int port);
+
+template <class T>
+void setInput(T data, unsigned int port)
+{
+    if(port >= this->inputs().size())
+        return;
+
+    medProcessInput<T>* inputPort = reinterpret_cast< medProcessInput<T> *>(this->inputs().at(port));
+    if(inputPort)
+        inputPort->input = data;
+
+    medInputDataPort* inputDataPort = reinterpret_cast< medInputDataPort*>(this->inputs().at(port));
+    if(inputDataPort)
+    {
+      //TODO - RDE / GPE - Update the containers.
+    }
+}
+
+template <class T>
+T input(unsigned int port)
+{
+    if(port >= this->inputs().size())
+        return NULL;
+
+    medProcessInput<T>* inputPort = reinterpret_cast< medProcessInput<T> *>(this->inputs().at(port));
+    if(inputPort)
+        return inputPort->input;
+    else return NULL;
+}
+
+template <class T>
+void setOutput(T data, unsigned int port)
+{
+    if(port >= this->outputs().size())
+        return;
+
+    medProcessOutput<T>* outputPort = reinterpret_cast<medProcessOutput<T> *>(this->outputs().at(port));
+    if(outputPort)
+        outputPort->output = data;
+}
+
+template <class T>
+T output(unsigned int port)
+{
+    if(port >= this->outputs().size())
+        return NULL;
+
+    medProcessOutput<T>* outputPort = reinterpret_cast<medProcessOutput<T> *>(this->outputs().at(port));
+    if(outputPort)
+        return outputPort->output;
+    else return NULL;
+}
 
 protected slots:
     virtual void handleInput();
-protected:
     virtual void handleOutputs();
 
 public slots:

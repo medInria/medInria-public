@@ -37,7 +37,7 @@ public:
         typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  SubtractFilterType;
         typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
 
-        subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
         subtractFilter->SetConstant ( subtractValueParam->value() );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -47,13 +47,13 @@ public:
         subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         subtractFilter->Update();
-        parent->output()->setData ( subtractFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( subtractFilter->GetOutput() );
 
         //Set output description metadata
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " subtract filter (" + QString::number(subtractValueParam->value()) + ")";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 
 };
@@ -89,64 +89,64 @@ bool itkFiltersSubtractProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersSubtractProcess::setInputImage ( medAbstractData *data )
-{
-    itkFiltersProcessBase::setInputImage(data);
+//void itkFiltersSubtractProcess::setInputImage ( medAbstractData *data )
+//{
+//    itkFiltersProcessBase::setInputImage(data);
 
-    if (!data)
-        return;
-    else
-    {
-        QString identifier = data->identifier();
+//    if (!data)
+//        return;
+//    else
+//    {
+//        QString identifier = data->identifier();
 
-        if ( identifier == "itkDataImageChar3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<char>::max() );
-        }
-        else if ( identifier == "itkDataImageUChar3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned char>::max() );
-        }
-        else if ( identifier == "itkDataImageShort3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<short>::max() );
-        }
-        else if ( identifier == "itkDataImageUShort3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned short>::max() );
-        }
-        else if ( identifier == "itkDataImageInt3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<int>::max() );
-        }
-        else if ( identifier == "itkDataImageUInt3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned int>::max() );
-        }
-        else if ( identifier == "itkDataImageLong3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<long>::max() );
-        }
-        else if ( identifier== "itkDataImageULong3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned long>::max() );
-        }
-        else if ( identifier == "itkDataImageFloat3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<float>::max() );
-        }
-        else if ( identifier == "itkDataImageDouble3" )
-        {
-            d->subtractValueParam->setRange ( 0, std::numeric_limits<double>::max() );
-        }
-        else
-        {
-            qWarning() << "Error : pixel type not yet implemented ("
-            << identifier
-            << ")";
-        }
-    }
-}
+//        if ( identifier == "itkDataImageChar3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<char>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUChar3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned char>::max() );
+//        }
+//        else if ( identifier == "itkDataImageShort3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<short>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUShort3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned short>::max() );
+//        }
+//        else if ( identifier == "itkDataImageInt3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<int>::max() );
+//        }
+//        else if ( identifier == "itkDataImageUInt3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned int>::max() );
+//        }
+//        else if ( identifier == "itkDataImageLong3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<long>::max() );
+//        }
+//        else if ( identifier== "itkDataImageULong3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<unsigned long>::max() );
+//        }
+//        else if ( identifier == "itkDataImageFloat3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<float>::max() );
+//        }
+//        else if ( identifier == "itkDataImageDouble3" )
+//        {
+//            d->subtractValueParam->setRange ( 0, std::numeric_limits<double>::max() );
+//        }
+//        else
+//        {
+//            qWarning() << "Error : pixel type not yet implemented ("
+//            << identifier
+//            << ")";
+//        }
+//    }
+//}
 
 //-------------------------------------------------------------------------------------------
 
@@ -159,10 +159,10 @@ QList<medAbstractParameter*> itkFiltersSubtractProcess::parameters()
 
 int itkFiltersSubtractProcess::update ( void )
 {    
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

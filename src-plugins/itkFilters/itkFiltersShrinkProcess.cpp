@@ -43,7 +43,7 @@ public:
         shrinkFactors[1] = shrinkParam2->value();
         shrinkFactors[2] = shrinkParam3->value();
 
-        shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
         shrinkFilter->SetShrinkFactors(shrinkFactors);
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -53,13 +53,13 @@ public:
         shrinkFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         shrinkFilter->Update();
-        parent->output()->setData ( shrinkFilter->GetOutput() );
+         parent->output<medAbstractData*>(0)->setData ( shrinkFilter->GetOutput() );
 
         //Set output description metadata
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " shrink filter (" + QString::number(shrinkFactors[0]) + "," + QString::number(shrinkFactors[1]) + "," + QString::number(shrinkFactors[2]) + ")";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 
 };
@@ -112,10 +112,10 @@ QList<medAbstractParameter*> itkFiltersShrinkProcess::parameters()
 
 int itkFiltersShrinkProcess::update ( void )
 {    
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     if ( id == "itkDataImageChar3" )
     {

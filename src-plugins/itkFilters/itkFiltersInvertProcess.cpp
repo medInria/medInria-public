@@ -34,7 +34,7 @@ public:
         typedef itk::InvertIntensityImageFilter< ImageType, ImageType >  InvertFilterType;
         typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
 
-        invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) parent );
@@ -43,13 +43,13 @@ public:
         invertFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         invertFilter->Update();
-        parent->output()->setData ( invertFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( invertFilter->GetOutput() );
 
         //Set output description metadata
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " invert filter";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
@@ -79,10 +79,10 @@ bool itkFiltersInvertProcess::registered( void )
 
 int itkFiltersInvertProcess::update ( void )
 {   
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

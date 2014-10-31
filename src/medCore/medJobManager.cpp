@@ -55,7 +55,7 @@ bool medJobManager::registerJob(medAbstractJob* job, QString jobName)
     if(d->m_IsActive)
     {
         d->itemList.append(job);
-        connect(this, SIGNAL(cancel(QObject*)), job, SLOT(onCancel(QObject*)) );
+        connect(this, SIGNAL(cancel()), job, SLOT(cancel()) );
         emit jobRegistered(job, jobName);
         return true;
     }
@@ -71,7 +71,7 @@ bool medJobManager::unRegisterJob(medAbstractJob* job )
     int index = d->itemList.indexOf(job);
     if (index != -1)
     {
-        disconnect(this, SIGNAL(cancel(QObject*)), job, SLOT(onCancel(QObject*)) );
+        disconnect(this, SIGNAL(cancel()), job, SLOT(cancel()) );
         d->itemList.removeAt(index);
         return true;
     }
@@ -88,5 +88,8 @@ void medJobManager::dispatchGlobalCancelEvent(bool ignoreNewJobItems)
     if (ignoreNewJobItems)
         d->m_IsActive = false;
     foreach( medAbstractJob* item, d->itemList )
-        emit cancel( item );
+    {
+        Q_UNUSED(item);
+        emit cancel();
+    }
 }

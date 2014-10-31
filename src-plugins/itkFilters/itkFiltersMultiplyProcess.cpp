@@ -37,7 +37,7 @@ public:
         typedef itk::MultiplyImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  MultiplyFilterType;
         typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
 
-        multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->inputImage()->data() ) ) );
+        multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) (  parent->input<medAbstractData*>(0)->data() ) ) );
         multiplyFilter->SetConstant ( multiplyFactorParam->value() );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -47,13 +47,13 @@ public:
         multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         multiplyFilter->Update();
-        parent->output()->setData ( multiplyFilter->GetOutput() );
+        parent->output<medAbstractData*>(0)->setData ( multiplyFilter->GetOutput() );
 
         //Set output description metadata
-        QString newSeriesDescription = parent->inputImage()->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " multiply filter (" + QString::number(multiplyFactorParam->value()) + ")";
 
-        parent->output()->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 
 };
@@ -98,10 +98,10 @@ QList<medAbstractParameter*> itkFiltersMultiplyProcess::parameters()
 
 int itkFiltersMultiplyProcess::update ( void )
 {
-    if ( !this->inputImage() )
+    if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->inputImage()->identifier();
+    QString id = this->input<medAbstractData*>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 

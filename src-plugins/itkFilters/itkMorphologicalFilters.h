@@ -30,10 +30,6 @@ public:
 
     static bool registered ( void );
 
-public:
-    virtual void setInputImage ( medAbstractData *data );
-    medAbstractData *output ( void );
-
 public slots:
     int update ( void );
     void setupProcess(QString);

@@ -34,9 +34,6 @@ public:
     itk::CStyleCommand::Pointer callback;
     itkFiltersProcessBase *filter;
 
-    dtkSmartPointer <medAbstractImageData> input;
-    dtkSmartPointer <medAbstractImageData> output;
-
     template <class PixelType> void setupFilter() {}
     virtual void setFilterDescription() {}
 
@@ -53,9 +50,6 @@ public:
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
     : medAbstractFilteringProcess(parent), d(new itkFiltersProcessBasePrivate)
 {    
-    d->input = NULL;
-    d->output = NULL;
-    
     d->description = "";
 }
 
@@ -123,26 +117,21 @@ void itkFiltersProcessBase::setFilter(itkFiltersProcessBase *filter)
     d->filter = filter;
 }
 
-medAbstractData *itkFiltersProcessBase::inputImage() const
-{
-   return d->input;
-}
-
-void itkFiltersProcessBase::setInputImage(medAbstractData *data)
-{
-    if (!data)
-        return;
+//void itkFiltersProcessBase::setInputImage(medAbstractData *data)
+//{
+//    if (!data)
+//        return;
      
-    QString identifier = data->identifier();
+//    QString identifier = data->identifier();
     
-    d->output = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
-    d->input = dynamic_cast<medAbstractImageData*> (data);
-}
+//    d->output = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
+//    d->input = dynamic_cast<medAbstractImageData*> (data);
+//}
 
-medAbstractData * itkFiltersProcessBase::output (  )
-{    
-    return ( d->output );
-}
+//medAbstractData * itkFiltersProcessBase::output (  )
+//{
+//    return ( d->output );
+//}
 
 QList<medAbstractParameter*> itkFiltersProcessBase::parameters()
 {

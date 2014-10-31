@@ -23,6 +23,4 @@ public:
 
 public:
     virtual bool isInteractive();
-
-    virtual void setInputImage(medAbstractData *data) = 0;
 };

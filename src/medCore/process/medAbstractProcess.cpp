@@ -66,6 +66,8 @@ medAbstractProcess::medAbstractProcess(medAbstractProcess * parent):dtkAbstractP
     d->toolbox = NULL;
     d->parameterWidget = NULL;
     d->runParameter = new medTriggerParameter("Run", this);
+
+    connect(this, SIGNAL(success()), this, SLOT(handleOutputs()));
 }
 
 medAbstractProcess::~medAbstractProcess()
@@ -225,27 +227,7 @@ medViewContainerSplitter* medAbstractProcess::viewContainerSplitter()
     return d->viewContainerSplitter;
 }
 
-void medAbstractProcess::setInput(medAbstractData *data, unsigned int port)
-{
-    if(port <= d->inputs.size())
-        return;
 
-    medInputDataPort* inputPort = reinterpret_cast< medInputDataPort*>(d->inputs.at(port));
-    if(inputPort)
-        inputPort->input = data;
-
-    //TODO - RDE / GPE - Update the containers.
-}
-
-void medAbstractProcess::setOutput(medAbstractData *data, unsigned int port)
-{
-    if(port <= d->outputs.size())
-        return;
-
-    medOutputDataPort* outputPort = reinterpret_cast<medOutputDataPort*>(d->outputs.at(port));
-    if(outputPort)
-        outputPort->output = data;
-}
 
 int medAbstractProcess::start()
 {
@@ -253,11 +235,9 @@ int medAbstractProcess::start()
     if (ret == EXIT_SUCCESS)
     {
         emit success();
-        this->handleOutputs();
     }
     else if (ret == EXIT_FAILURE)
         emit failure();
-
 
     return ret;
 }
