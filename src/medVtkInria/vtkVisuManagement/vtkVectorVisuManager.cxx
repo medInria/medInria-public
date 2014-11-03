@@ -41,12 +41,12 @@ vtkVectorVisuManager::vtkVectorVisuManager()
                     vtkDataSetAttributes::VECTORS, vtkAssignAttribute::POINT_DATA);
 
     this->Orienter = vtkVectorOrienter::New();
-    this->Orienter->SetInput( this->Assign->GetOutput() );
+    this->Orienter->SetInputConnection( this->Assign->GetOutputPort() );
 
     vtkArrowSource *arrowSource = vtkArrowSource::New();
 
     this->Glyph = vtkGlyph3D::New();
-    this->Glyph->SetInput( this->Orienter->GetOutput() );
+    this->Glyph->SetInputConnection( this->Orienter->GetOutputPort() );
     this->Glyph->SetSourceConnection(arrowSource->GetOutputPort());
     this->Glyph->SetVectorModeToUseVector();
     this->Glyph->SetColorModeToColorByVector();
@@ -56,14 +56,14 @@ vtkVectorVisuManager::vtkVectorVisuManager()
     this->Glyph->SetScaleFactor(1.0);
 
     this->Normals = vtkPolyDataNormals::New();
-    this->Normals->SetInput( this->Glyph->GetOutput() );
+    this->Normals->SetInputConnection( this->Glyph->GetOutputPort() );
 
     this->NormalsOrienter = vtkPolyDataNormalsOrienter::New();
-    this->NormalsOrienter->SetInput(this->Normals->GetOutput());
+    this->NormalsOrienter->SetInputConnection(this->Normals->GetOutputPort());
 
     this->Mapper = vtkPolyDataMapper::New();
     this->Mapper->SetColorModeToMapScalars();
-    this->Mapper->SetInput( this->NormalsOrienter->GetOutput() );
+    this->Mapper->SetInputConnection( this->NormalsOrienter->GetOutputPort() );
 
     this->Actor = vtkActor::New();
     this->Actor->SetMapper( this->Mapper );
@@ -115,7 +115,11 @@ void vtkVectorVisuManager::SetVOI(const int& imin, const int& imax,
     this->VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
     this->Orienter->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
 
-    this->Orienter->Update();
+    this->VOI->Modified();
+    this->Orienter->Modified();
+
+    this->VOI->Update();
+    this->Mapper->Update();
 
     SetColorMode(CurrentColorMode);
 }
@@ -130,11 +134,20 @@ void vtkVectorVisuManager::SetGlyphScale(const float& f)
     }
 
     this->Glyph->SetScaleFactor(f);
+
+    this->Glyph->Modified();
 }
 
 void vtkVectorVisuManager::SetSampleRate(const int& a, const int& b, const int& c)
 {
     this->VOI->SetSampleRate(a,b,c);
+
+    this->VOI->Modified();
+
+    this->VOI->Update();
+    this->Mapper->Update();
+
+    SetColorMode(CurrentColorMode);
 }
 
 
@@ -146,9 +159,6 @@ double vtkVectorVisuManager::GetGlyphScale()
 
 void vtkVectorVisuManager::SetColorMode(ColorMode mode)
 {
-    this->Orienter->Modified();
-    this->Orienter->Update();
-
     switch( mode )
     {
         case ColorByVectorMagnitude:
@@ -179,6 +189,9 @@ void vtkVectorVisuManager::SetUserColor(double color[3])
 void vtkVectorVisuManager::SetProjection(bool enable)
 {
     this->Orienter->SetProjection(enable);
+
+    this->Orienter->Modified();
+    this->Orienter->Update();
 
     SetColorMode(CurrentColorMode);
 }
@@ -293,4 +306,7 @@ void vtkVectorVisuManager::SetColorByUserColor()
 
     this->Mapper->SetColorModeToDefault();
     this->Actor->GetProperty()->SetColor(UserColor);
+
+    this->Mapper->Modified();
+    this->Actor->Modified();
 }
