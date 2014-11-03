@@ -30,7 +30,6 @@ public:
     medSegmentationAbstractToolBox * currentSegmentationToolBox;
     QHash<QString, medSegmentationAbstractToolBox*> segmentationToolBoxes;
     QVBoxLayout *mainLayout;
-    medAbstractWorkspace * workspace;
 };
 
 medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent):
