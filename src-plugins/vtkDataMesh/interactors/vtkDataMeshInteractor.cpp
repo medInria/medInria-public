@@ -505,7 +505,7 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     mapper2d->SetLookupTable(lut);
     mapper2d->UseLookupTableScalarRangeOn();
     mapper2d->InterpolateScalarsBeforeMappingOn();
-
+    
     d->view3d->SetLookupTable(lut,d->view->layer(this->inputData()));
     mapper3d->SetLookupTable(lut);
     mapper3d->UseLookupTableScalarRangeOn();
@@ -642,6 +642,7 @@ void vtkDataMeshInteractor::updateRange()
     if (!d->metaDataSet)
         return;
     
+    vtkMapper * mapper2d = d->actor2d->GetMapper();
     vtkMapper * mapper3d = d->actor3d->GetMapper();
 
     vtkLookupTable * lut = vtkLookupTable::SafeDownCast(mapper3d->GetLookupTable());
@@ -650,6 +651,10 @@ void vtkDataMeshInteractor::updateRange()
         return;
     
     lut->SetRange(d->minRange->value(),d->maxRange->value());
+    mapper2d->SetLookupTable(lut);
+    mapper3d->SetLookupTable(lut);
+    d->view3d->GetScalarBar()->SetLookupTable(lut);
+    d->view2d->GetScalarBar()->SetLookupTable(lut);
 
     d->view->render();
 }
