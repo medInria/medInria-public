@@ -682,11 +682,11 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
     vtkFiberDataSet::vtkFiberBundleListType bundles = d->dataset->GetBundleList();
     vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
 
-    dtkSmartPointer <medAbstractData> tmpBundle;
+    medAbstractData *tmpBundle;
 
     while (it!=bundles.end())
     {
-        tmpBundle = medAbstractDataFactory::instance()->createSmartPointer("medVtkFibersData");
+        tmpBundle = medAbstractDataFactory::instance()->create("medVtkFibersData");
         if (!tmpBundle)
             return;
 
