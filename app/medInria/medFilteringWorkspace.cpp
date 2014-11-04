@@ -116,12 +116,18 @@ void medFilteringWorkspace::setupTabbedViewContainer()
 
 void medFilteringWorkspace::setupProcess(QString process)
 {
+    medAbstractProcess *temp = d->process;
     d->process = dynamic_cast<medAbstractFilteringProcess*>(dtkAbstractProcessFactory::instance()->create(process));
     if(d->process)
     {
         d->filteringToolBox->setProcessToolbox(d->process->toolbox());
         connect(d->process->runParameter(), SIGNAL(triggered()), this, SLOT(startProcess()));
         this->tabbedViewContainers()->setSplitter(0, d->process->viewContainerSplitter());
+    }
+
+    if(d->process && temp)
+    {
+        d->process->retrieveInputs(temp);
     }
 }
 

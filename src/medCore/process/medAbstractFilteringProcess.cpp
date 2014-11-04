@@ -20,15 +20,11 @@
 
 medAbstractFilteringProcess::medAbstractFilteringProcess(medAbstractProcess *parent)
 {
-    medInputDataPort *input = new medInputDataPort;
-    input->name = "Input";
-    input->isOptional = false;
-    input->input = NULL;
+    medInputDataPort *input = new medInputDataPort("Input", false);
+    input->setInput(NULL);
 
-    medOutputDataPort *output = new medOutputDataPort;
-    output->name = "Output";
-    output->output= NULL;
-
+    medOutputDataPort *output = new medOutputDataPort("Output");
+    //output->output= NULL;
 
     this->appendInput(input);
     this->appendOutput(output);

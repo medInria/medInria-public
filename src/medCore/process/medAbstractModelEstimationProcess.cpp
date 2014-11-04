@@ -19,12 +19,10 @@
 
 medAbstractModelEstimationProcess::medAbstractModelEstimationProcess(medAbstractProcess *parent): medAbstractProcess(parent)
 {
-    medProcessInput<medAbstractImageData*> *input = new medProcessInput<medAbstractImageData*>;
-    input->name = "Image";
-    input->isOptional = false;
+    medProcessInput<medAbstractImageData*> *input = new medProcessInput<medAbstractImageData*>("Image", false);
     this->appendInput( input );
 
-    this->appendOutput( new medProcessInput<medAbstractDiffusionModelImageData*>);
+    this->appendOutput( new medProcessOutput<medAbstractDiffusionModelImageData*>("Output"));
 }
 
 bool medAbstractModelEstimationProcess::isInteractive()

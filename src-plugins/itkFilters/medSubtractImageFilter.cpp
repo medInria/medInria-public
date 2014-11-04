@@ -81,10 +81,8 @@ public:
 medSubtractImageFilter::medSubtractImageFilter(itkFiltersProcessBase *parent):
     itkFiltersProcessBase(parent), d(new medSubtractImageFilterPrivate(this))
 {
-    medInputDataPort *input = new medInputDataPort;
-    input->name = "Image to subtract";
-    input->isOptional = false;
-    input->input = NULL;
+    medInputDataPort *input = new medInputDataPort("Image to subtract", false);
+    input->setInput(NULL);
 
     this->appendInput(input);
 }
