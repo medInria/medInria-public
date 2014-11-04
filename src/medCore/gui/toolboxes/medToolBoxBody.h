@@ -35,6 +35,11 @@ public:
 
     void setOrientation(Qt::Orientation);
 
+    void hideEvent ( QHideEvent * event );
+
+signals:
+    void minimized();
+
 private:
     medToolBoxBodyPrivate *d;
 };

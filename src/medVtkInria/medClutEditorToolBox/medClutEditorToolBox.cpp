@@ -72,6 +72,7 @@ medClutEditorToolBox::medClutEditorToolBox(QWidget *parent) : medToolBox(parent)
     d->view  = new medClutEditorView( this );
     d->view->setScene(d->scene);
     d->histogram = NULL;
+    d->med_view = NULL;
 
     d->newAction                = new QAction("New table",    this);
     d->loadTableAction          = new QAction("Load table",   this);

@@ -93,6 +93,7 @@ signals:
     */
     void failure();
 
+
 public slots:
     virtual void clear();
     void switchMinimize();
@@ -100,6 +101,8 @@ public slots:
     const QStringList ValidDataTypes();
     void addValidDataType(const QString & dataType);
     void show();
+    //Behaviour when you hide/minimize your toolbox
+    virtual void behaveWhenBodyHidden(){}
 
 protected slots:
     void onAboutButtonClicked();
