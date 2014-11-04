@@ -94,7 +94,7 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->mouseInteractionToolBox->setTitle("Mouse Interaction");
     d->mouseInteractionToolBox->hide();
     d->selectionToolBox->addWidget(d->mouseInteractionToolBox);
-
+    
     d->navigatorToolBox = new medToolBox;
     d->navigatorToolBox->setTitle("View settings");
     d->navigatorToolBox->hide();
@@ -154,6 +154,7 @@ medToolBox* medAbstractWorkspace::selectionToolBox() const
 void medAbstractWorkspace::setDatabaseVisibility(bool visibility)
 {
     d->databaseVisibility = visibility;
+    emit databaseVisibilitySetted(visibility);
 }
 
 bool medAbstractWorkspace::isDatabaseVisible(void) const
@@ -176,13 +177,13 @@ void medAbstractWorkspace::clear()
 void medAbstractWorkspace::setToolBoxesVisibility (bool value)
 {
     d->toolBoxesVisibility = value;
+    emit toolBoxesVisibilitySetted(value);
 }
 
 bool medAbstractWorkspace::areToolBoxesVisible() const
 {
     return d->toolBoxesVisibility;
 }
-
 
 void medAbstractWorkspace::clearWorkspaceToolBoxes()
 {
@@ -369,7 +370,7 @@ void medAbstractWorkspace::updateLayersToolBox()
 
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
                 layerWidget->resize(d->selectionToolBox->sizeHint().width(), 25);
-
+                
                 QListWidgetItem * item = new QListWidgetItem;
                 item->setData(Qt::UserRole, layer);
                 d->containerForLayerWidgetsItem.insert(item, uuid);

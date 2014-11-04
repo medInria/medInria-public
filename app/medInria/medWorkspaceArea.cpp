@@ -160,10 +160,12 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
 
     if (!d->workspaces.contains(workspace->identifier()))
         this->setupWorkspace(workspace->identifier());
-
+    
     this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
-
+    this->disconnect(d->currentWorkspace,SIGNAL(databaseVisibilitySetted(bool)),d->navigatorContainer,SLOT(setVisible(bool)));
+    this->disconnect(d->currentWorkspace,SIGNAL(toolBoxesVisibilitySetted(bool)),d->navigatorContainer,SLOT(setVisible(bool)));
     d->currentWorkspace = workspace;
+    
     connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
 
     //clean toolboxes
@@ -173,7 +175,8 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
 
     //setup database visibility
     d->navigatorContainer->setVisible(workspace->isDatabaseVisible());
-
+    connect(d->currentWorkspace,SIGNAL(databaseVisibilitySetted(bool)),d->navigatorContainer,SLOT(setVisible(bool)));
+    
     // add toolboxes
     d->toolBoxContainer->addToolBox(workspace->selectionToolBox());
     workspace->selectionToolBox()->show();
@@ -184,9 +187,9 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
         toolbox->show();
     }
     d->toolBoxContainer->setVisible(workspace->areToolBoxesVisible());
+    connect(d->currentWorkspace,SIGNAL(toolBoxesVisibilitySetted(bool)),d->toolBoxContainer,SLOT(setVisible(bool)));
 
     medParameterGroupManager::instance()->setCurrentWorkspace(workspace->identifier());
-
 }
 
 void medWorkspaceArea::setCurrentWorkspace(const QString &id)

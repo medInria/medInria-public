@@ -115,6 +115,10 @@ private slots:
     void changeViewGroupColor(QString group, QColor color);
     void changeLayerGroupColor(QString group, QColor color);
 
+signals:
+    void databaseVisibilitySetted(bool);
+    void toolBoxesVisibilitySetted(bool);
+
 private:
     QWidget* buildViewLinkMenu();
     QWidget* buildLayerLinkMenu(QList<QListWidgetItem*>);
