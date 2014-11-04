@@ -19,12 +19,10 @@
 
 medAbstractDiffScalarMapsProcess::medAbstractDiffScalarMapsProcess(medAbstractProcess* parent): medAbstractProcess(parent)
 {
-    medProcessInput<medAbstractDiffusionModelImageData*> *input = new medProcessInput<medAbstractDiffusionModelImageData*>;
-    input->name = "Diffusion Model";
-    input->isOptional = false;
+    medProcessInput<medAbstractDiffusionModelImageData*> *input = new medProcessInput<medAbstractDiffusionModelImageData*>("Diffusion Model", false);
     this->appendInput( input );
 
-    this->appendOutput( new medProcessInput<medAbstractImageData*>);
+    this->appendOutput( new medProcessOutput<medAbstractImageData*>("Output"));
 }
 
 bool medAbstractDiffScalarMapsProcess::isInteractive()

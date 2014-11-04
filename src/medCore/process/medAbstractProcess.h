@@ -27,22 +27,61 @@ class medTriggerParameter;
 class medViewContainerSplitter;
 
 
-struct medProcessIOPort
+class medProcessIOPort
 {
-    QString name;
+public:
+    medProcessIOPort(QString name) {m_name = name;}
+    virtual ~medProcessIOPort(){}
+
+public:
+    QString name() const {return m_name;}
+
+    virtual void retrieveData(medProcessIOPort *port) {}
+
+private:
+    QString m_name;
 };
 
 template <typename T>
-struct medProcessInput : public medProcessIOPort
+class medProcessInput : public medProcessIOPort
 {
-    bool isOptional;
-    T input;
+public:
+    medProcessInput(QString name, bool isOptional) : medProcessIOPort(name)
+    {m_isOptional = isOptional;}
+    virtual ~medProcessInput(){}
+
+public:
+    bool isOptional() const {return m_isOptional;}
+
+    T input() const {return m_input;}
+    void setInput(T input) {m_input = input;}
+
+    virtual void retrieveData(medProcessIOPort *otherport)
+    {
+        medProcessInput<T> *otherInputPort = dynamic_cast<medProcessInput<T> *>(otherport);
+        if(otherInputPort)
+            this->setInput(otherInputPort->input());
+    }
+
+private:
+    bool m_isOptional;
+    T m_input;
 };
 
 template <typename T>
-struct medProcessOutput : public medProcessIOPort
+class medProcessOutput : public medProcessIOPort
 {
-    T output;
+public:
+    medProcessOutput(QString name) : medProcessIOPort(name)
+    {}
+    virtual ~medProcessOutput(){}
+
+public:
+    T output() const {return m_output;}
+    void setOutput(T output) {m_output = output;}
+
+private:
+    T m_output;
 };
 
 
@@ -62,8 +101,12 @@ public:
     virtual ~medAbstractProcess();
 
 public:
-    QList<medProcessIOPort*> inputs();
-    QList<medProcessIOPort*> outputs();
+    QList<medProcessIOPort*> inputs() const;
+    QList<medProcessIOPort*> outputs() const;
+
+    medProcessIOPort* input(QString name) const;
+
+    void retrieveInputs(const medAbstractProcess *);
 
 protected:
     void appendInput(medProcessIOPort*);
@@ -78,52 +121,52 @@ public:
 template <class T>
 void setInput(T data, unsigned int port)
 {
-    if(port >= this->inputs().size())
+    if(port >= (unsigned int)this->inputs().size())
         return;
 
     medProcessInput<T>* inputPort = reinterpret_cast< medProcessInput<T> *>(this->inputs().at(port));
     if(inputPort)
-        inputPort->input = data;
+        inputPort->setInput(data);
 
     medInputDataPort* inputDataPort = reinterpret_cast< medInputDataPort*>(this->inputs().at(port));
     if(inputDataPort)
     {
-      //TODO - RDE / GPE - Update the containers.
+        updateContainer(inputDataPort);
     }
 }
 
 template <class T>
 T input(unsigned int port)
 {
-    if(port >= this->inputs().size())
+    if(port >= (unsigned int)this->inputs().size())
         return NULL;
 
     medProcessInput<T>* inputPort = reinterpret_cast< medProcessInput<T> *>(this->inputs().at(port));
     if(inputPort)
-        return inputPort->input;
+        return inputPort->input();
     else return NULL;
 }
 
 template <class T>
 void setOutput(T data, unsigned int port)
 {
-    if(port >= this->outputs().size())
+    if(port >= (unsigned int)this->outputs().size())
         return;
 
     medProcessOutput<T>* outputPort = reinterpret_cast<medProcessOutput<T> *>(this->outputs().at(port));
     if(outputPort)
-        outputPort->output = data;
+        outputPort->setOutput(data);
 }
 
 template <class T>
 T output(unsigned int port)
 {
-    if(port >= this->outputs().size())
+    if(port >= (unsigned int)this->outputs().size())
         return NULL;
 
     medProcessOutput<T>* outputPort = reinterpret_cast<medProcessOutput<T> *>(this->outputs().at(port));
     if(outputPort)
-        return outputPort->output;
+        return outputPort->output();
     else return NULL;
 }
 
@@ -147,6 +190,7 @@ private:
     virtual int update () = 0;
 
 private:
+    virtual void updateContainer(medInputDataPort *);
 
 signals:
     void showError(QString message, unsigned int timeout = 5000);
