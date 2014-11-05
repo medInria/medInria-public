@@ -26,6 +26,8 @@ medAbstractFilteringProcess::medAbstractFilteringProcess(medAbstractProcess *par
     medOutputDataPort *output = new medOutputDataPort("Output");
     //output->output= NULL;
 
+    //TODO: Should this be done here or by implementation
+    // (would allow to precise types)
     this->appendInput(input);
     this->appendOutput(output);
 }

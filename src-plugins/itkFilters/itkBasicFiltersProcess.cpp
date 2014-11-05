@@ -128,11 +128,11 @@ void itkBasicFiltersProcess::setupProcess(QString process)
 
     if(d->process)
     {
-        medAbstractData *input = this->input<medAbstractData *>(0);
-        medAbstractData *output = this->output<medAbstractData *>(0);
+        medAbstractData *input = this->input<medAbstractData>(0);
+        medAbstractData *output = this->output<medAbstractData>(0);
 
-        d->process->setInput<medAbstractData *>(input, 0);
-        d->process->setOutput<medAbstractData*>(output, 0);
+        d->process->setInput<medAbstractData>(input, 0);
+        d->process->setOutput<medAbstractData>(output, 0);
 
         d->toolbox->setProcessToolbox(d->process->toolbox());
 
@@ -154,19 +154,19 @@ void itkBasicFiltersProcess::handleInput()
 {
     medAbstractFilteringProcess::handleInput();
 
-    medAbstractData *input = this->input<medAbstractData *>(0);
+    medAbstractData *input = this->input<medAbstractData>(0);
 
     if(!input)
         return;
 
     medAbstractData *output = medAbstractDataFactory::instance()->create(input->identifier());
 
-    this->setOutput<medAbstractData*>(output, 0);
+    this->setOutput<medAbstractData>(output, 0);
 
     if(d->process)
     {
-        d->process->setInput<medAbstractData *>(input, 0);
-        d->process->setOutput<medAbstractData*>(output, 0);
+        d->process->setInput<medAbstractData>(input, 0);
+        d->process->setOutput<medAbstractData>(output, 0);
     }
 
     if(!d->toolbox.isNull())

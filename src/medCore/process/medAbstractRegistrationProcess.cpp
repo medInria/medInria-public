@@ -18,13 +18,13 @@
 medAbstractRegistrationProcess::medAbstractRegistrationProcess(medAbstractProcess *parent):
     medAbstractProcess(parent)
 {
-    medProcessInput<medAbstractImageData*> *fixed = new medProcessInput<medAbstractImageData*>("Fixed Image", false);
+    medProcessInput<medAbstractImageData> *fixed = new medProcessInput<medAbstractImageData>("Fixed Image", false);
     this->appendInput( fixed );
 
-    medProcessInput<medAbstractImageData*> *moving = new medProcessInput<medAbstractImageData*>("Moving Image", false);
+    medProcessInput<medAbstractImageData> *moving = new medProcessInput<medAbstractImageData>("Moving Image", false);
     this->appendInput( moving );
 
-    this->appendOutput( new medProcessOutput<medAbstractImageData*>("Output"));
+    this->appendOutput( new medProcessOutput<medAbstractImageData>("Output"));
 
 }
 

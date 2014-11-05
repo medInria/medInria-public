@@ -43,7 +43,7 @@ public:
         typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
         typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
 
-        gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
+        gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData>(0)->data() ) ) );
         gaussianFilter->SetSigma( sigmaParam->value() );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -53,12 +53,12 @@ public:
         gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
 
         gaussianFilter->Update();
-        parent->output<medAbstractData*>(0)->setData ( gaussianFilter->GetOutput() );
+        parent->output<medAbstractData>(0)->setData ( gaussianFilter->GetOutput() );
 
-        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " gaussian filter (" + QString::number(sigmaParam->value()) + ")";
 
-        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
@@ -102,7 +102,7 @@ int itkFiltersGaussianProcess::update ( void )
     if ( !this->input<medAbstractData *>(0) )
         return -1;
 
-    QString id = this->input<medAbstractData*>(0)->identifier();
+    QString id = this->input<medAbstractData>(0)->identifier();
 
     qDebug() << "itkFilters, update : " << id;
 
