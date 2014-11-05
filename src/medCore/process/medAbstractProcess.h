@@ -51,7 +51,8 @@ public:
 // or find another way to link process input/output and composer port ??
 //
 /////////////////////////////////////////////////////
-#ifdef DTK_BUILD_COMPOSER
+//#ifdef DTK_BUILD_COMPOSER
+#ifdef IN_PROGRESS
     virtual dtkComposerTransmitter* toTransmitter()
     {
         return NULL;
@@ -87,7 +88,8 @@ public:
             this->setInput(otherInputPort->input());
     }
 
-#ifdef DTK_BUILD_COMPOSER
+//#ifdef DTK_BUILD_COMPOSER
+#ifdef IN_PROGRESS
     virtual dtkComposerTransmitter* toTransmitter()
     {
         dtkComposerTransmitterReceiver<T> *transmitter = new dtkComposerTransmitterReceiver<T>();
