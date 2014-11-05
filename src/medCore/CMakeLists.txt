@@ -87,7 +87,6 @@ add_library(${PROJECT_NAME} SHARED
 ## #############################################################################
 ## Link
 ## #############################################################################
-
 set(LINK_LIBRARIES
     dtkCore
     dtkGui
@@ -100,10 +99,10 @@ if(DTK_BUILD_COMPOSER)
         ${LINK_LIBRARIES}
         )
 endif()
-
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
-    ${LINK_LIBRARIES}
+	${OPENGL_LIBRARIES}
+	${LINK_LIBRARIES}
     )
 
 if (WIN32) #TODO is that for the memory management thing ?
