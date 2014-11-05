@@ -42,8 +42,8 @@ public:
         typedef itk::SubtractImageFilter< ImageType, ImageType, ImageType >  SubtractFilterType;
         typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
 
-        subtractFilter->SetInput1 ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(0)->data() ) ) );
-        subtractFilter->SetInput2 ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData*>(1)->data() ) ) );
+        subtractFilter->SetInput1 ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData>(0)->data() ) ) );
+        subtractFilter->SetInput2 ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData>(1)->data() ) ) );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) parent );
@@ -61,14 +61,14 @@ public:
             return EXIT_FAILURE;
         }
 
-        parent->output<medAbstractData*>(0)->setData ( subtractFilter->GetOutput() );
+        parent->output<medAbstractData>(0)->setData ( subtractFilter->GetOutput() );
 
         //Set output description metadata
-        QString newSeriesDescription = parent->input<medAbstractData*>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        QString seriesDescription2 = parent->input<medAbstractData*>(1)->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = parent->input<medAbstractData>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString seriesDescription2 = parent->input<medAbstractData>(1)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " minus " + seriesDescription2;
 
-        parent->output<medAbstractData*>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        parent->output<medAbstractData>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
         return EXIT_SUCCESS;
     }
@@ -114,10 +114,10 @@ int medSubtractImageFilter::update()
     if ( !this->input<medAbstractData*>(0) )
         return -1;
 
-    QString id = this->input<medAbstractData*>(0)->identifier();
+    QString id = this->input<medAbstractData>(0)->identifier();
 
     medAbstractData *output = medAbstractDataFactory::instance()->create(id);
-    this->setOutput<medAbstractData*>(output, 0);
+    this->setOutput<medAbstractData>(output, 0);
 
     int res = EXIT_SUCCESS;
 
