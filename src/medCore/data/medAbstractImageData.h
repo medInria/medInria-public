@@ -51,3 +51,6 @@ public:
 
     static const char* PixelMeaningMetaData;
 };
+
+Q_DECLARE_METATYPE(medAbstractImageData)
+Q_DECLARE_METATYPE(medAbstractImageData *)
