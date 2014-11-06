@@ -42,6 +42,8 @@
 #include <algorithm>
 #include <set>
 
+#include <limits>
+
 
 class ClickAndMoveEventFilter : public medViewEventFilter
 {
@@ -688,9 +690,17 @@ AlgorithmPaintToolbox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
     typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
 
     double value = tmpPtr->GetPixel(index);
+    double valueMin =  value - m_wandRadius;
+    double valueMax = value + m_wandRadius;
 
-    ctiFilter->SetUpper( value + m_wandRadius );
-    ctiFilter->SetLower( value - m_wandRadius );
+    if(valueMin < std::numeric_limits<typename IMAGE::PixelType>::min() )
+        valueMin = std::numeric_limits<typename IMAGE::PixelType>::min();
+
+    if(valueMax > std::numeric_limits<typename IMAGE::PixelType>::max() )
+        valueMax = std::numeric_limits<typename IMAGE::PixelType>::max();
+
+    ctiFilter->SetUpper( valueMax );
+    ctiFilter->SetLower( valueMin );
 
     MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
     regionRequested.SetIndex(planeIndex, index[planeIndex]);
