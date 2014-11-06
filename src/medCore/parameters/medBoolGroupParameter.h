@@ -46,6 +46,7 @@ public:
     virtual QWidget* getWidget();
     virtual QList<medAbstractParameter*> parametersCandidateToPool() const;
 
+    virtual void trigger();
 
 private slots:
     void removeInternPushButtonGroup();

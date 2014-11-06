@@ -268,3 +268,8 @@ QList<QVariant> medCompositeParameter::steps() const
 {
     return d->steps.values();
 }
+
+void medCompositeParameter::trigger()
+{
+    emit valuesChanged(d->variants);
+}

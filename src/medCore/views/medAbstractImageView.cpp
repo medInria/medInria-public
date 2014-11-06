@@ -301,6 +301,13 @@ void medAbstractImageView::switchToFourViews()
         layerGroup->addImpactedlayer(bottomRightContainerView, bottomRightContainerView->layerData(i));
     }
 
+    foreach(medAbstractParameter* param, this->linkableParameters())
+        param->trigger();
+
+    for (unsigned int i = 0;i < this->layersCount();++i)
+        foreach(medAbstractParameter* param, this->linkableParameters(i))
+            param->trigger();
+
     topLeftContainer->setSelected(true);
 }
 

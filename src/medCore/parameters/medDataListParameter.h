@@ -40,6 +40,8 @@ public:
 
     virtual QWidget* getWidget();
 
+    virtual void trigger();
+
 signals:
     void valuesChanged (QList <medDataIndex>);
     

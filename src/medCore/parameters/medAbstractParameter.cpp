@@ -145,11 +145,16 @@ void medAbstractStringParameter::setValue(QString value)
 
     emit valueChanged(value);
 }
+
 QString medAbstractStringParameter::value() const
 {
     return m_value;
 }
 
+void medAbstractStringParameter::trigger()
+{
+    emit valueChanged(m_value);
+}
 
 //--------------------------------------------------------------------------
 //  medAbstractIntParameter
@@ -167,9 +172,15 @@ void medAbstractIntParameter::setValue(int value)
 
     emit valueChanged(value);
 }
+
 int medAbstractIntParameter::value() const
 {
     return m_value;
+}
+
+void medAbstractIntParameter::trigger()
+{
+    emit valueChanged(m_value);
 }
 
 //--------------------------------------------------------------------------
@@ -188,11 +199,16 @@ void medAbstractDoubleParameter::setValue(double value)
 
     emit valueChanged(value);
 }
+
 double medAbstractDoubleParameter::value() const
 {
     return m_value;
 }
 
+void medAbstractDoubleParameter::trigger()
+{
+    emit valueChanged(m_value);
+}
 
 //--------------------------------------------------------------------------
 //  medAbstractBoolParameter
@@ -210,11 +226,16 @@ void medAbstractBoolParameter::setValue(bool value)
 
     emit valueChanged(value);
 }
+
 bool medAbstractBoolParameter::value() const
 {
     return m_value;
 }
 
+void medAbstractBoolParameter::trigger()
+{
+    emit valueChanged(m_value);
+}
 
 //--------------------------------------------------------------------------
 //  medAbstractVector2DParameter
@@ -232,9 +253,15 @@ void medAbstractVector2DParameter::setValue(const QVector2D &value)
 
     emit valueChanged(value);
 }
+
 QVector2D medAbstractVector2DParameter::value() const
 {
     return m_value;
+}
+
+void medAbstractVector2DParameter::trigger()
+{
+    emit valueChanged(m_value);
 }
 
 //--------------------------------------------------------------------------
@@ -253,9 +280,15 @@ void medAbstractVector3DParameter::setValue(const QVector3D &value)
 
     emit valueChanged(value);
 }
+
 QVector3D medAbstractVector3DParameter::value() const
 {
     return m_value;
+}
+
+void medAbstractVector3DParameter::trigger()
+{
+    emit valueChanged(m_value);
 }
 
 //--------------------------------------------------------------------------
@@ -274,7 +307,13 @@ void medAbstractVector4DParameter::setValue(const QVector4D &value)
 
     emit valueChanged(value);
 }
+
 QVector4D medAbstractVector4DParameter::value() const
 {
     return m_value;
+}
+
+void medAbstractVector4DParameter::trigger()
+{
+    emit valueChanged(m_value);
 }

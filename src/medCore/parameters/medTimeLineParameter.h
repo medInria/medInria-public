@@ -43,6 +43,8 @@ public:
     unsigned int mapTimeToFrame(const double& time);
     double mapFrameToTime(int frame);
 
+    virtual void trigger();
+
 public slots:
     void setSpeedFactor(int speedFactor);
     void play(bool play = true);
