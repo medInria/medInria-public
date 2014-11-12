@@ -37,8 +37,11 @@ public:
 
     void hideEvent ( QHideEvent * event );
 
+    void showEvent ( QShowEvent * event );
+
 signals:
     void minimized();
+    void maximized();
 
 private:
     medToolBoxBodyPrivate *d;

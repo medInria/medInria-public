@@ -102,7 +102,7 @@ public slots:
     void addValidDataType(const QString & dataType);
     void show();
     //Behaviour when you hide/minimize your toolbox
-    virtual void behaveWhenBodyHidden(){}
+    virtual void behaveWithBodyVisibility(){}
 
 protected slots:
     void onAboutButtonClicked();

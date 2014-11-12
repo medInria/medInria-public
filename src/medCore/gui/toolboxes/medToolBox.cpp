@@ -60,7 +60,8 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->layout->addWidget(d->body);
     d->isMinimized = false;
     connect(d->header,SIGNAL(triggered()),this,SLOT(switchMinimize()));
-    connect(d->body, SIGNAL(minimized()), this, SLOT(behaveWhenBodyHidden()));
+    connect(d->body, SIGNAL(minimized()), this, SLOT(behaveWithBodyVisibility()));
+    connect(d->body, SIGNAL(maximized()), this, SLOT(behaveWithBodyVisibility()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
