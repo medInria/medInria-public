@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -29,8 +29,8 @@
 
 
 
-medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( const QString& file, const QUuid& uuid )
-: medAbstractDatabaseImporter(file, uuid)
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (const QString& file, const QUuid& uuid )
+: medAbstractDatabaseImporter(file, uuid, true)
 {
     qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
@@ -47,7 +47,7 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (medAbstractD
 
 medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter ()
 {
-    
+
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -59,12 +59,12 @@ QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QStr
 {
     QPointer<medDatabaseNonPersistentController> npdc =
             medDatabaseNonPersistentController::instance();
-            
+
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
-    
+
     bool patientExists = false;
     QString patientID;
-    
+
     foreach(medDatabaseNonPersistentItem* item, items)
     {
         if(item->name() == patientName && item->birthdate() == birthDate)
@@ -74,12 +74,12 @@ QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QStr
             break;
         }
     }
-    
+
     if(!patientExists)
     {
-        patientID = QUuid::createUuid().toString().replace("{","").replace("}",""); 
+        patientID = QUuid::createUuid().toString().replace("{","").replace("}","");
     }
-    
+
     return patientID;
 }
 
@@ -94,7 +94,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 {
     QPointer<medDatabaseNonPersistentController> npdc =
             medDatabaseNonPersistentController::instance();
-            
+
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
 
     int     patientDbId   = -1;
@@ -105,7 +105,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
     medDatabaseNonPersistentItem *patientItem = NULL;
-    
+
     if ( databaseIndex.isValid() )
     {
         qDebug() << "Patient exists in the database, I reuse his Id";
@@ -130,7 +130,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     }
 
     medDataIndex index;
-    
+
     if ( patientItem == NULL )
     {
         // create an item for patient
@@ -149,15 +149,15 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
         npdc->insert ( index, patientItem );
     }
-    
-    
+
+
     int     studyDbId   = -1;
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
     QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
-    
+
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
-    
+
 
     if( studyName!="EmptyStudy" || seriesName!="EmptySerie" )
     {
@@ -211,8 +211,8 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
             npdc->insert ( index, studyItem );
         }
     }
-        
-        
+
+
     if(seriesName != "EmptySerie")
     {
         index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ), -1 );
@@ -254,7 +254,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
         npdc->insert ( index, item );
     }
-    
+
     return index;
 }
 
@@ -273,16 +273,16 @@ bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* medData,
 
     QPointer<medDatabaseNonPersistentController> npdc =
             medDatabaseNonPersistentController::instance();
-            
+
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
-    
+
     foreach(medDatabaseNonPersistentItem* item, items)
     {
         imageExists = item->file() == imageName;
         if (imageExists)
             break;
     }
-    
+
     return imageExists;
 }
 

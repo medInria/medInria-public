@@ -99,7 +99,7 @@ void medDatabaseNonPersistentController::insert(medDataIndex index, medDatabaseN
     d->items.insert(index, item);
 }
 
-void medDatabaseNonPersistentController::importPath(const QString& file,const QUuid & importUuid, bool /*indexWithoutCopying*/)
+void medDatabaseNonPersistentController::importPath(const QString& file,const QUuid & importUuid, bool indexWithoutCopying)
 {
     medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(file,importUuid);
     medMessageProgress * message = medMessageController::instance()->showProgress(tr("Opening file item"));
