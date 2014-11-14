@@ -1644,10 +1644,10 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   typename ConverterType::Pointer myConverter = ConverterType::New();
   double newOrigin[3] = {0,0,0}; // need this for philips plugin !! :(
   typename itk::Image<T,3>::DirectionType newDirection = itkImage->GetDirection();
-  /*newDirection[0][0]=1;newDirection[0][1]=0;newDirection[0][2]=0;
-  newDirection[1][0]=0;newDirection[1][1]=1;newDirection[1][2]=0;
-  newDirection[2][0]=0;newDirection[2][1]=0;newDirection[2][2]=-1;*/
-  itkImage->SetDirection(newDirection);
+  //newDirection[0][0]=1;newDirection[0][1]=0;newDirection[0][2]=0;
+  //newDirection[1][0]=0;newDirection[1][1]=1;newDirection[1][2]=0;
+  //newDirection[2][0]=0;newDirection[2][1]=0;newDirection[2][2]=1;
+  //itkImage->SetDirection(newDirection);
   itkImage->SetOrigin(newOrigin); // maybe clone itkImage before doing that
   myConverter->SetInput ( itkImage );
   myConverter->UpdateOutputInformation();

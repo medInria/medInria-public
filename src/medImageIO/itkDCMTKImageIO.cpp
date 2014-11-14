@@ -176,7 +176,7 @@ void DCMTKImageIO::ReadImageInformation()
             //Forcing sliceLocation to be a multiple of spacing between slices
             //Prevents from some sorting issues (e.g due to extremely small differences in sliceLocations)
 
-            sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2];
+            sliceLocation = -floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2]; // "-" is a hack for the plugin philips
             m_LocationSet.insert( sliceLocation );
             m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *it ) );
             m_FilenameToIndexMap[ *it ] = fileIndex;
@@ -627,6 +627,11 @@ void DCMTKImageIO::DetermineOrientation()
     columnDirection[2] = orientation[5];
 
     vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, columnDirection);
+
+    // orthogonalize
+    sliceDirection.normalize();
+    rowDirection = vnl_cross_3d(columnDirection,sliceDirection).normalize();
+    columnDirection = vnl_cross_3d(sliceDirection,rowDirection);
 
     this->SetDirection (0, rowDirection);
     this->SetDirection (1, columnDirection);
