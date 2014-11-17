@@ -34,7 +34,7 @@ vtkVectorVisuManager::vtkVectorVisuManager()
     this->VOI->SetSampleRate(1,1,1);
 
     this->Assign = vtkAssignAttribute::New();
-    Assign->SetInput(this->VOI->GetOutput());
+    Assign->SetInputConnection(this->VOI->GetOutputPort());
 
     //tells vtkAssignAttribute to make the active scalars also the active vectors.
     Assign->Assign( vtkDataSetAttributes::SCALARS,
