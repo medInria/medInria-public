@@ -616,11 +616,8 @@ void vtkImageView3D::AddInput (vtkImageData* input, vtkMatrix4x4 *matrix)
 void vtkImageView3D::InternalUpdate()
 {
   vtkSmartPointer<vtkImageData> input = this->GetInput();
+  
   bool multiLayers = false;
-
-  bool multichannelInput = (this->Input->GetScalarType() == VTK_UNSIGNED_CHAR &&
-                            (this->Input->GetNumberOfScalarComponents() == 3 ||
-                             this->Input->GetNumberOfScalarComponents() == 4 ));
 
   if(input == NULL)
   {
@@ -634,6 +631,10 @@ void vtkImageView3D::InternalUpdate()
       this->Render();
       return;
   }
+
+  bool multichannelInput = (this->Input->GetScalarType() == VTK_UNSIGNED_CHAR &&
+                            (this->Input->GetNumberOfScalarComponents() == 3 ||
+                             this->Input->GetNumberOfScalarComponents() == 4 ));
 
   if (this->LayerInfoVec.size()>0 &&  !multichannelInput)
   {
