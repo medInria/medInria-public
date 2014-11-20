@@ -49,10 +49,13 @@ public:
 
     medAbstractWorkspace * owningWorkspace() const;
 
+
 public slots:
     medViewContainer* addContainerInTab();
     medViewContainer* addContainerInTab(const QString &name);
     medViewContainer* insertContainerInTab(int index, const QString &name);
+    medViewContainer* insertContainerInTab(const QString &name,medViewContainer *container);
+
     void closeCurrentTab();
     void closeTab(int index);
 

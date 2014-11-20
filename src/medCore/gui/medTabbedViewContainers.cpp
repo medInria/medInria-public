@@ -360,3 +360,18 @@ QList<medViewContainer*> medTabbedViewContainers::containersInTab(int index)
 
     return splitter->containers();
 }
+
+medViewContainer *medTabbedViewContainers::insertContainerInTab(const QString &name,medViewContainer *container)
+{
+    medViewContainerSplitter *splitter  = new medViewContainerSplitter;
+
+    int idx = this->insertTab(this->currentIndex(), splitter, name);
+    this->setCurrentIndex(idx);
+    d->containerSelectedForTabIndex.insert(idx, QList<QUuid>());
+    connect(splitter, SIGNAL(aboutTobedestroyed()), this,SLOT(repopulateCurrentTab()));
+
+connect(splitter, SIGNAL(newContainer(QUuid)), this, SLOT(connectContainer(QUuid)), Qt::UniqueConnection);
+    splitter->addViewContainer(container);
+
+    return container;
+}

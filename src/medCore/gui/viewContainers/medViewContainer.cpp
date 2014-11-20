@@ -689,6 +689,14 @@ medViewContainer * medViewContainer::splitVertically()
     return d->parent->splitVertically(this);
 }
 
+medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement,medViewContainer *container)
+{
+    if(!d->parent)
+        return NULL;
+
+    return d->parent->split(this, alignement,container);
+}
+
 medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
 {
     if(!d->parent)
@@ -811,3 +819,10 @@ void medViewContainer::removeColorIndicator(QColor color)
 {
     d->poolIndicator->removeColorIndicator(color);
 }
+
+QGridLayout* medViewContainer::mainLayout()
+{
+    return d->mainLayout;
+}
+
+

@@ -25,6 +25,7 @@ class medDataIndex;
 class medToolBox;
 class medViewContainerSplitter;
 class medAbstractParameter;
+class QGridLayout;
 
 class medViewContainerPrivate;
 class MEDCORE_EXPORT medViewContainer: public QFrame
@@ -68,12 +69,15 @@ public:
     medViewContainer* splitVertically();
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
+    medViewContainer* split(Qt::AlignmentFlag alignement,medViewContainer *container);
 
     void setDefaultWidget(QWidget *defaultWidget);
     QWidget* defaultWidget() const;
 
     void addColorIndicator(QColor color, QString description="");
     void removeColorIndicator(QColor color);
+
+    QGridLayout* mainLayout();
 
 public slots:
     void setView(medAbstractView* view);
@@ -113,7 +117,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
-    void dropEvent(QDropEvent *event);
+    virtual void dropEvent(QDropEvent *event);
     void closeEvent(QCloseEvent * event);
 
     void recomputeStyleSheet();

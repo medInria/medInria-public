@@ -39,6 +39,7 @@ public slots:
     medViewContainer* splitHorizontally(medViewContainer *sender);
     medViewContainer* split(medViewContainer *sender, Qt::AlignmentFlag alignement = Qt::AlignRight);
     void split(medDataIndex index, Qt::AlignmentFlag alignement = Qt::AlignRight);
+    medViewContainer* split(medViewContainer *sender, Qt::AlignmentFlag alignement,medViewContainer *newContainer);
 
 signals:
     void newContainer(QUuid);

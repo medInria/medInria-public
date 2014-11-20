@@ -282,3 +282,66 @@ void medViewContainerSplitter::adjustContainersSize()
         }
     }
 }
+
+medViewContainer *medViewContainerSplitter::split(medViewContainer *sender, Qt::AlignmentFlag alignement,medViewContainer *newContainer)
+{
+    if(!sender)
+        return NULL;
+
+    int index = this->indexOf(sender);
+    int newSize;
+    if(this->count() == 1)
+    {
+        if(this->orientation() == Qt::Vertical)
+            newSize = this->height() / 2;
+        else
+            newSize = this->width() / 2;
+    }
+    else
+        newSize = this->sizes()[index] / 2;
+
+    switch(alignement)
+    {
+    case Qt::AlignLeft:
+        if(this->orientation() == Qt::Horizontal)
+        {
+            this->insertViewContainer(index, newContainer);
+            this->recomputeSizes(index + 1, index, newSize);
+        }
+        else
+            this->insertNestedSplitter(index, sender, newContainer, true);
+        break;
+    case Qt::AlignBottom:
+        if(this->orientation() == Qt::Vertical)
+        {
+            this->insertViewContainer(index + 1, newContainer);
+            this->recomputeSizes(index, index + 1, newSize);
+        }
+        else
+            this->insertNestedSplitter(index, sender, newContainer);
+        break;
+    case Qt::AlignRight:
+        if(this->orientation() == Qt::Horizontal)
+        {
+            this->insertViewContainer(index + 1, newContainer);
+            this->recomputeSizes(index, index + 1, newSize);
+        }
+        else
+            this->insertNestedSplitter(index, sender, newContainer);
+        break;
+    case Qt::AlignTop:
+        if(this->orientation() == Qt::Vertical)
+        {
+            this->insertViewContainer(index, newContainer);
+            this->recomputeSizes(index + 1, index, newSize);
+        }
+        else
+            this->insertNestedSplitter(index, sender, newContainer, true);
+        break;
+    default:
+        break;
+    }
+
+    return newContainer;
+}
+
