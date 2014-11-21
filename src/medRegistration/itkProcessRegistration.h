@@ -25,7 +25,7 @@ class itkProcessRegistrationPrivate;
 /**
  * @brief Base class for all registration plugins.
  *
- * An example of an implementation can be found in itkProcessRegistrationDiffeomorphicDemons.
+ * An example of an implementation can be found in medDiffeomorphicDemonsRegistrationProcess.
  *
  * This class provides a dtkAbstractProcess that set inputs for a registration.
  * 2 input channels are used for the fixed and moving images.

@@ -235,7 +235,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
     *last_charac = '3';
     typedef itk::Image< float, 3 > RegImageType;
 
-    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData");
     foreach ( QString metaData, data->metaDataList() )
         if (!convertedData->hasMetaData(metaData))
             convertedData->addMetaData ( metaData, data->metaDataValues ( metaData ) );
@@ -244,8 +244,8 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         convertedData->addProperty ( property,data->propertyValues ( property ) );
 
     if (channel==0)
-        d->output = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
-    if (id =="itkDataImageChar3") {
+        d->output = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData");
+    if (id =="medItkChar3ImageData") {
         typedef itk::Image< char, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -256,7 +256,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageUChar3") {
+    else if (id =="medItkUChar3ImageData") {
         typedef itk::Image< unsigned char, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -267,7 +267,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageShort3") {
+    else if (id =="medItkShort3ImageData") {
         typedef itk::Image< short, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -278,7 +278,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageUShort3") {
+    else if (id =="medItkUShort3ImageData") {
         typedef itk::Image< unsigned short, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -290,7 +290,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         d->setInput<float>(convertedData,channel);
     }
 
-    else if (id =="itkDataImageInt3") {
+    else if (id =="medItkInt3ImageData") {
         typedef itk::Image< int, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -301,7 +301,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageUInt3") {
+    else if (id =="medItkUInt3ImageData") {
         typedef itk::Image< unsigned int, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -313,7 +313,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         d->setInput<float>(convertedData,channel);
     }
 
-    else if (id =="itkDataImageLong3") {
+    else if (id =="medItkLong3ImageData") {
         typedef itk::Image< long, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -324,7 +324,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id=="itkDataImageULong3") {
+    else if (id=="medItkULong3ImageData") {
         typedef itk::Image< unsigned long, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -335,10 +335,10 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageFloat3") {
+    else if (id =="medItkFloat3ImageData") {
         d->setInput<float>(data,channel);
     }
-    else if (id =="itkDataImageDouble3") {
+    else if (id =="medItkDouble3ImageData") {
         typedef itk::Image< double, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -357,7 +357,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
  *
  * Directly converts the inputs in <float, 3> images.
  * The output is allocated and is also a <float,3 image>
- * @param data: Pointer to an itkDataImageXXY.
+ * @param data: Pointer to an medItkImageDataXXY.
  * @param channel: 0 for the fixed image, 1 for the moving one.
 */
 void itkProcessRegistration::setFixedInput(medAbstractData *data)
@@ -409,7 +409,7 @@ int itkProcessRegistration::update()
  * @brief Gets the registered image.
  *
  * @param void
- * @return medAbstractData *: itkDataImageXXY, same type as the moving input image.
+ * @return medAbstractData *: medItkImageDataXXY, same type as the moving input image.
 */
 medAbstractData *itkProcessRegistration::output()
 {
