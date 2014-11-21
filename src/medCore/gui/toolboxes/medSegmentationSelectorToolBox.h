@@ -25,9 +25,6 @@ class MEDCORE_EXPORT medSegmentationSelectorToolBox : public medToolBox
     Q_OBJECT
 
 public:
-    //TODO what is it for ? - RDE
-    struct MaskPixelValues {enum E{ Unset = 0, Foreground = 1, Background = 2 };};
-
      medSegmentationSelectorToolBox(QWidget *parent = 0);
     ~medSegmentationSelectorToolBox();
 
