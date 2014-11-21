@@ -285,14 +285,14 @@ bool medViewContainer::isUserSplittable() const
 void medViewContainer::setUserSplittable(bool splittable)
 {
     d->userSplittable = splittable;
-    
+
     medAbstractImageView *view = dynamic_cast <medAbstractImageView *> (d->view);
-    
+
     if(d->userSplittable)
     {
           d->hSplitAction->setEnabled(true);
           d->vSplitAction->setEnabled(true);
-        
+
         if (view)
             view->fourViewsParameter()->show();
     }
@@ -300,7 +300,7 @@ void medViewContainer::setUserSplittable(bool splittable)
     {
         d->hSplitAction->setEnabled(false);
         d->vSplitAction->setEnabled(false);
-        
+
         if (view)
             view->fourViewsParameter()->hide();
     }
@@ -375,7 +375,7 @@ void medViewContainer::setView(medAbstractView *view)
             if (!d->userSplittable)
                 imageView->fourViewsParameter()->hide();
         }
-        
+
         d->maximizedAction->setEnabled(true);
         d->defaultWidget->hide();
         d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
@@ -678,7 +678,7 @@ void medViewContainer::openFromSystem()
         return;
 
     connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
-    d->expectedUuid = medDataManager::instance()->importPath(path, false);
+    d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
