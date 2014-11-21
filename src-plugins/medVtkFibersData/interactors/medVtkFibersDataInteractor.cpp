@@ -100,6 +100,7 @@ public:
     medDropSite *dropOrOpenRoi;
     QComboBox    *roiComboBox;
     QMap <int,int> roiLabels;
+    QUuid roiImportUuid;
 
     medBoolParameter *andParameter;
     medBoolParameter *notParameter;
@@ -1109,6 +1110,28 @@ void medVtkFibersDataInteractor::setRoiNullOperation(bool value)
         this->setRoiBoolean(roi, 0);
 }
 
+void medVtkFibersDataInteractor::loadRoiFromFile()
+{
+    if (!d->view)
+        return;
+
+    QString roiFileName = QFileDialog::getOpenFileName(0, tr("Open ROI"), "", tr("Image file (*.*)"));
+
+    if (roiFileName.isEmpty())
+        return;
+
+    d->roiImportUuid = medDataManager::instance()->importPath(roiFileName,false);
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
+            this, SLOT(importROI(medDataIndex,QUuid)), Qt::UniqueConnection);
+}
+
+void medVtkFibersDataInteractor::importROI(const medDataIndex& index, QUuid uuid)
+{
+    if (uuid != d->roiImportUuid)
+        return;
+
+    this->importROI(index);
+}
 
 void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
 {
@@ -1130,7 +1153,7 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
         return;
     }
 
-    d->dropOrOpenRoi->setPixmap(medDataManager::instance()->thumbnail(index));
+    d->dropOrOpenRoi->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi->sizeHint()));
 
     d->setROI<unsigned char>(data);
     d->setROI<char>(data);
@@ -1276,8 +1299,7 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);
 
     connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
-    //TO DO: re-add load ROI from file system when data manager will be refactored
-    //connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(onDropSiteClicked()));
+    connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(loadRoiFromFile()));
     connect (clearRoiButton,   SIGNAL(clicked()), this, SLOT(clearRoi()));
     connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(selectRoi(int)));
 

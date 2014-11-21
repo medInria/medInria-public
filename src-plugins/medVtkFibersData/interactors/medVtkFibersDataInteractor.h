@@ -149,6 +149,8 @@ public slots:
     void setRoiAddOperation (bool value);
     void setRoiNotOperation (bool value);
     void setRoiNullOperation (bool value);
+    void loadRoiFromFile();
+    void importROI(const medDataIndex& index, QUuid uuid);
     void importROI(const medDataIndex &index);
     void selectRoi(int value);
 
