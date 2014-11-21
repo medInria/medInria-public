@@ -866,9 +866,9 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
     {
         // Determine the appropriate extension to use according to the type of data.
         // TODO: The image and CompositeDatasets types are weakly recognized (contains("Image/CompositeData")). to be improved
-        if (identifier == "vtkDataMesh") {
+        if (identifier == "medVtkMeshData") {
             extension = ".vtk";
-        } else if (identifier == "vtkDataMesh4D") {
+        } else if (identifier == "medVtk4DMeshData") {
             extension = ".v4d";
         } else if (identifier == "medVtkFibersData") {
             extension = ".xml";

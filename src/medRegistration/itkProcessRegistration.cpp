@@ -280,7 +280,7 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
     *last_charac = '3';
 
-    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData");
     foreach ( QString metaData, data->metaDataList() )
         if (!convertedData->hasMetaData(metaData))
             convertedData->addMetaData ( metaData, data->metaDataValues ( metaData ) );
@@ -289,46 +289,46 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         convertedData->addProperty ( property,data->propertyValues ( property ) );
 
     if (channel==0)
-        d->output = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+        d->output = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData3");
 
     QScopedPointer<CastFilterAdapter> castFilterAdapterPtr;
-    if (id =="itkDataImageChar3")
+    if (id =="medItkChar3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<char>);
     }
-    else if (id =="itkDataImageUChar3")
+    else if (id =="medItkUChar3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned char>);
     }
-    else if (id == "itkDataImageShort3")
+    else if (id == "medItkShort3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<short>);
     }
-    else if (id == "itkDataImageUShort3")
+    else if (id == "medItkUShort3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned short>);
     }
-    else if(id == "itkDataImageInt3")
+    else if(id == "medItkInt3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<int>);
     }
-    else if(id == "itkDataImageUInt3")
+    else if(id == "medItkUInt3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned int>);
     }
-    else if(id == "itkDataImageLong3")
+    else if(id == "medItkLong3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<long>);
     }
-    else if(id == "itkDataImageULong3")
+    else if(id == "medItkULong3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned long>);
     }
-    else if(id == "itkDataImageFloat3")
+    else if(id == "medItkFloat3ImageData")
     {
         d->setInput<float>(data,channel);
     }
-    else if(id == "itkDataImageDouble3")
+    else if(id == "medItkDouble3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<double>);
     }
@@ -401,7 +401,7 @@ int itkProcessRegistration::update()
  * @brief Gets the registered image.
  *
  * @param void
- * @return medAbstractData *: itkDataImageXXY, same type as the moving input image.
+ * @return medAbstractData *: medItkImageDataXXY, same type as the moving input image.
 */
 medAbstractData *itkProcessRegistration::output()
 {

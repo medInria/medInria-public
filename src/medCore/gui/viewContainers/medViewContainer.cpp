@@ -633,7 +633,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
 void medViewContainer::addData(medAbstractData *data)
 {
-    if( ! d->expectedUuid.isNull())
+    if(!d->expectedUuid.isNull())
         return; // we're already waiting for a import to finish, don't accept other data
 
     if(!data)

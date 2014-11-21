@@ -157,6 +157,7 @@ medAbstractData* medDatabaseReader::run()
     medAbstractData *medData =  this->readFile(filenames);
 
 
+
     if (medData)
     {
 
@@ -211,6 +212,7 @@ medAbstractData* medDatabaseReader::run()
     }
     else
     {
+        qDebug() << "Unable to create Data from: " << filenames;
         emit failure ( this );
     }
 
@@ -277,12 +279,10 @@ medAbstractData *medDatabaseReader::readFile( const QStringList filenames )
 
     for ( int i = 0; i < readers.size(); i++ )
     {
-
         dtkSmartPointer<dtkAbstractDataReader> dataReader;
         dataReader = medAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
-
         connect ( dataReader, SIGNAL ( progressed ( int ) ), this, SIGNAL ( progressed ( int ) ) );
-        if ( dataReader->canRead ( filenames ) )
+        if (dataReader->canRead(filenames))
         {
             dataReader->read ( filenames );
             dataReader->enableDeferredDeletion ( false );

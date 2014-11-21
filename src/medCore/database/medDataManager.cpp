@@ -401,11 +401,11 @@ void medDataManager::setWriterPriorities()
 
     int startIndex = 0;
 
-    // set itkMetaDataImageWriter as the top priority writer
-    if(writers.contains("itkMetaDataImageWriter"))
+    // set medItkImageMetaDataWriter as the top priority writer
+    if(writers.contains("medItkImageMetaDataWriter"))
     {
-        writerPriorites.insert(0, "itkMetaDataImageWriter");
-        startIndex = writers.removeOne("itkMetaDataImageWriter") ? 1 : 0;
+        writerPriorites.insert(0, "medItkImageMetaDataWriter");
+        startIndex = writers.removeOne("medItkImageMetaDataWriter") ? 1 : 0;
     }
 
     for ( int i=0; i<writers.size(); i++ )
