@@ -1110,7 +1110,7 @@ void medVtkViewVtkFibersInteractor::setRoiNullOperation(bool value)
         this->setRoiBoolean(roi, 0);
 }
 
-void medVtkFibersDataInteractor::loadRoiFromFile()
+void medVtkViewVtkFibersInteractor::loadRoiFromFile()
 {
     if (!d->view)
         return;
@@ -1125,7 +1125,7 @@ void medVtkFibersDataInteractor::loadRoiFromFile()
             this, SLOT(importROI(medDataIndex,QUuid)), Qt::UniqueConnection);
 }
 
-void medVtkFibersDataInteractor::importROI(const medDataIndex& index, QUuid uuid)
+void medVtkViewVtkFibersInteractor::importROI(const medDataIndex& index, QUuid uuid)
 {
     if (uuid != d->roiImportUuid)
         return;
