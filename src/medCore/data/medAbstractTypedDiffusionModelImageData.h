@@ -25,7 +25,7 @@ public:
     
     virtual ~medAbstractTypedDiffusionModelImageData() {}
     
-    virtual int                                Dimension() const { return DIM;       }
+    virtual int                                dimension() const { return DIM;       }
     virtual const medAbstractImageData::PixId& PixelType() const { return typeid(T); }
 };
 
