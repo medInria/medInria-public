@@ -61,6 +61,7 @@ set(PLUGIN_LIST
   undoRedoRegistration                      ON
   medDiffeomorphicDemonsRegistration        ON
   medVtkView                                ON
+  medRpiApplyTransformation                 ON
   )
 
 

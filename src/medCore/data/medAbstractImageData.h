@@ -33,7 +33,7 @@ public:
 
     void *image();
 
-    virtual int   Dimension() const;
+    virtual int   dimension() const;
     virtual const PixId& PixelType() const;
     virtual MatrixType orientationMatrix();
 
