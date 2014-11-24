@@ -28,23 +28,25 @@ vtkStandardNewMacro(vtkVectorVisuManager)
 
 vtkVectorVisuManager::vtkVectorVisuManager()
 {
+    this->UserColor[0] = 1.; this->UserColor[1] = 1.; this->UserColor[2] = 1.;
+
     this->VOI = vtkExtractVOI::New();
     this->VOI->SetSampleRate(1,1,1);
 
     this->Assign = vtkAssignAttribute::New();
-    Assign->SetInput(this->VOI->GetOutput());
+    Assign->SetInputConnection(this->VOI->GetOutputPort());
 
     //tells vtkAssignAttribute to make the active scalars also the active vectors.
     Assign->Assign( vtkDataSetAttributes::SCALARS,
                     vtkDataSetAttributes::VECTORS, vtkAssignAttribute::POINT_DATA);
 
     this->Orienter = vtkVectorOrienter::New();
-    this->Orienter->SetInput( this->Assign->GetOutput() );
+    this->Orienter->SetInputConnection( this->Assign->GetOutputPort() );
 
     vtkArrowSource *arrowSource = vtkArrowSource::New();
 
     this->Glyph = vtkGlyph3D::New();
-    this->Glyph->SetInput( this->Orienter->GetOutput() );
+    this->Glyph->SetInputConnection( this->Orienter->GetOutputPort() );
     this->Glyph->SetSourceConnection(arrowSource->GetOutputPort());
     this->Glyph->SetVectorModeToUseVector();
     this->Glyph->SetColorModeToColorByVector();
@@ -54,14 +56,14 @@ vtkVectorVisuManager::vtkVectorVisuManager()
     this->Glyph->SetScaleFactor(1.0);
 
     this->Normals = vtkPolyDataNormals::New();
-    this->Normals->SetInput( this->Glyph->GetOutput() );
+    this->Normals->SetInputConnection( this->Glyph->GetOutputPort() );
 
     this->NormalsOrienter = vtkPolyDataNormalsOrienter::New();
-    this->NormalsOrienter->SetInput(this->Normals->GetOutput());
+    this->NormalsOrienter->SetInputConnection(this->Normals->GetOutputPort());
 
     this->Mapper = vtkPolyDataMapper::New();
     this->Mapper->SetColorModeToMapScalars();
-    this->Mapper->SetInput( this->NormalsOrienter->GetOutput() );
+    this->Mapper->SetInputConnection( this->NormalsOrienter->GetOutputPort() );
 
     this->Actor = vtkActor::New();
     this->Actor->SetMapper( this->Mapper );
@@ -113,7 +115,11 @@ void vtkVectorVisuManager::SetVOI(const int& imin, const int& imax,
     this->VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
     this->Orienter->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
 
-    this->Orienter->Update();
+    this->VOI->Modified();
+    this->Orienter->Modified();
+
+    this->VOI->Update();
+    this->Mapper->Update();
 
     SetColorMode(CurrentColorMode);
 }
@@ -128,11 +134,20 @@ void vtkVectorVisuManager::SetGlyphScale(const float& f)
     }
 
     this->Glyph->SetScaleFactor(f);
+
+    this->Glyph->Modified();
 }
 
 void vtkVectorVisuManager::SetSampleRate(const int& a, const int& b, const int& c)
 {
     this->VOI->SetSampleRate(a,b,c);
+
+    this->VOI->Modified();
+
+    this->VOI->Update();
+    this->Mapper->Update();
+
+    SetColorMode(CurrentColorMode);
 }
 
 
@@ -144,19 +159,19 @@ double vtkVectorVisuManager::GetGlyphScale()
 
 void vtkVectorVisuManager::SetColorMode(ColorMode mode)
 {
-    this->Orienter->Modified();
-    this->Orienter->Update();
-
     switch( mode )
     {
-    case ColorByVectorMagnitude:
-        SetColorByVectorMagnitude();
-        break;
-    case ColorByVectorDirection:
-        SetUpLUTToMapVectorDirection();
-        break;
-    default:
-        return;
+        case ColorByVectorMagnitude:
+            SetColorByVectorMagnitude();
+            break;
+        case ColorByVectorDirection:
+            SetUpLUTToMapVectorDirection();
+            break;
+        case ColorByUserColor:
+            SetColorByUserColor();
+            break;
+        default:
+            return;
     }
 
     this->CurrentColorMode =  mode;
@@ -164,9 +179,19 @@ void vtkVectorVisuManager::SetColorMode(ColorMode mode)
     this->Glyph->Modified();
 }
 
+void vtkVectorVisuManager::SetUserColor(double color[3])
+{
+    UserColor[0] = color[0];
+    UserColor[1] = color[1];
+    UserColor[2] = color[2];
+}
+
 void vtkVectorVisuManager::SetProjection(bool enable)
 {
     this->Orienter->SetProjection(enable);
+
+    this->Orienter->Modified();
+    this->Orienter->Update();
 
     SetColorMode(CurrentColorMode);
 }
@@ -269,4 +294,19 @@ void vtkVectorVisuManager::SetUpLUTToMapVectorDirection()
   this->Mapper->SetScalarRange(0,numPoints-1);
 
   lut->Delete();
+}
+
+void vtkVectorVisuManager::SetColorByUserColor()
+{
+    // free some memory!
+    vtkDataSet *data = Orienter->GetOutput();
+    data->GetPointData()->SetScalars(NULL);
+    this->ValueArray->Initialize();
+    this->Mapper->SetLookupTable(NULL);
+
+    this->Mapper->SetColorModeToDefault();
+    this->Actor->GetProperty()->SetColor(UserColor);
+
+    this->Mapper->Modified();
+    this->Actor->Modified();
 }

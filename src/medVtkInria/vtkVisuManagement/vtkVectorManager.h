@@ -99,8 +99,11 @@ class MEDVTKINRIA_EXPORT vtkVectorManager: public vtkObject
   void SetCoronalSliceVisibility (int);
   int GetCoronalSliceVisibility (){return this->VectorVisuManagerCoronal->GetActor()->GetVisibility();}
 
-  void SetColorMode(int mode);
-  int GetColorMode(){return this->VectorVisuManagerAxial->GetColorMode();}
+  void SetColorMode(vtkVectorVisuManager::ColorMode mode);
+  vtkVectorVisuManager::ColorMode GetColorMode(){return this->VectorVisuManagerAxial->GetColorMode();}
+
+  void SetUserColor(double color[3]);
+  const double* GetUserColor() {return this->VectorVisuManagerAxial->GetUserColor();}
 
   void SetProjection(bool enable);
   bool GetProjection(){return this->VectorVisuManagerAxial->GetProjection();}
@@ -127,7 +130,6 @@ class MEDVTKINRIA_EXPORT vtkVectorManager: public vtkObject
   vtkVectorVisuManager* VectorVisuManagerCoronal;
 
   int CurrentPosition[3];
-
 };
 
 

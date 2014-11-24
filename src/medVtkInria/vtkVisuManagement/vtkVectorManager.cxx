@@ -279,11 +279,18 @@ void vtkVectorManager::SetCoronalSliceVisibility (int i)
     this->VectorVisuManagerCoronal->GetActor ()->SetVisibility (i);
 }
 
-void vtkVectorManager::SetColorMode(int mode)
+void vtkVectorManager::SetColorMode(vtkVectorVisuManager::ColorMode mode)
 {
-    this->VectorVisuManagerAxial   ->SetColorMode ((vtkVectorVisuManager::ColorMode)mode);
-    this->VectorVisuManagerSagittal->SetColorMode ((vtkVectorVisuManager::ColorMode)mode);
-    this->VectorVisuManagerCoronal ->SetColorMode ((vtkVectorVisuManager::ColorMode)mode);
+    this->VectorVisuManagerAxial   ->SetColorMode (mode);
+    this->VectorVisuManagerSagittal->SetColorMode (mode);
+    this->VectorVisuManagerCoronal ->SetColorMode (mode);
+}
+
+void vtkVectorManager::SetUserColor(double color[3])
+{
+    this->VectorVisuManagerAxial->SetUserColor(color);
+    this->VectorVisuManagerSagittal->SetUserColor(color);
+    this->VectorVisuManagerCoronal->SetUserColor(color);
 }
 
 void vtkVectorManager::SetProjection(bool enable)

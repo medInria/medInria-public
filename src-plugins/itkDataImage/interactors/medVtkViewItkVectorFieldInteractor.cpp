@@ -239,6 +239,11 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     medStringListParameter *colorMode = new medStringListParameter("Color mode", this);
     colorMode->addItem("Vector Magnitude");
     colorMode->addItem("Vector Direction");
+    colorMode->addItem("Red", medStringListParameter::createIconFromColor("red"));
+    colorMode->addItem("Green", medStringListParameter::createIconFromColor("green"));
+    colorMode->addItem("Blue", medStringListParameter::createIconFromColor("blue"));
+    colorMode->addItem("Yellow", medStringListParameter::createIconFromColor("yellow"));
+    colorMode->addItem("White", medStringListParameter::createIconFromColor("white"));
     colorMode->setValue("Vector Magnitude");
 
     medBoolParameter *projection = new medBoolParameter("Projection", this);
@@ -315,10 +320,16 @@ void medVtkViewItkVectorFieldInteractor::setSampleRate(int sampleRate)
 
 void medVtkViewItkVectorFieldInteractor::setColorMode(QString mode)
 {
-    if(mode == "Vector Magnitude")
-        d->manager->SetColorMode(0);
-    else if(mode == "Vector Direction")
-        d->manager->SetColorMode(1);
+    if(mode == "Vector Magnitude") {
+        d->manager->SetColorMode(vtkVectorVisuManager::ColorByVectorMagnitude);
+    } else if(mode == "Vector Direction") {
+        d->manager->SetColorMode(vtkVectorVisuManager::ColorByVectorDirection);
+    } else {
+        QColor color(mode.toLower()); // not great...
+        double colorF[3]; color.getRgbF(&(colorF[0]), &(colorF[1]), &(colorF[2]));
+        d->manager->SetUserColor(colorF);
+        d->manager->SetColorMode(vtkVectorVisuManager::ColorByUserColor);
+    }
     this->update();
 }
 
