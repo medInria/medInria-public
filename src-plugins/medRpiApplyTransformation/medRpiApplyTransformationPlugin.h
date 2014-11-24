@@ -15,18 +15,18 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include <medDiffeomorphicDemonsRegistrationExport.h>
+#include <medRpiApplyTransformationExport.h>
 
-class MEDDIFFEROMORPHICDEMONSREGISTRATIONPLUGIN_EXPORT medDiffeomorphicDemonsRegistrationPluginPrivate;
+class medRpiApplyTransformationPluginPrivate;
 
-class MEDDIFFEROMORPHICDEMONSREGISTRATIONPLUGIN_EXPORT medDiffeomorphicDemonsRegistrationPlugin : public dtkPlugin
+class MEDRPIAPPLYTRANSFORMATIONPLUGIN_EXPORT medRpiApplyTransformationPlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-    medDiffeomorphicDemonsRegistrationPlugin(QObject *parent = 0);
-    ~medDiffeomorphicDemonsRegistrationPlugin();
+    medRpiApplyTransformationPlugin(QObject *parent = 0);
+    ~medRpiApplyTransformationPlugin();
 
     virtual bool initialize();
     virtual bool uninitialize();
@@ -44,7 +44,7 @@ public:
     virtual QStringList types() const;
 
 private:
-     medDiffeomorphicDemonsRegistrationPluginPrivate *d;
+     medRpiApplyTransformationPluginPrivate *d;
 };
 
 

@@ -38,7 +38,6 @@ medRpiApplyTransformationPlugin::medRpiApplyTransformationPlugin(QObject *parent
 medRpiApplyTransformationPlugin::~medRpiApplyTransformationPlugin()
 {
     delete d;
-
     d = NULL;
 }
 
