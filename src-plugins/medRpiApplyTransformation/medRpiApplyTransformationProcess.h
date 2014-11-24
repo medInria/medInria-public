@@ -13,51 +13,53 @@
 
 #pragma once
 
-#include <itkProcessRegistration.h>
-#include <medDiffeomorphicDemonsRegistrationExport.h>
+#include <medRpiApplyTransformationExport.h>
+#include <medAbstractProcess.h>
 
-class medDiffeomorphicDemonsRegistrationPrivate;
 
-/**
- * @brief Registration process using diffeomorphic demons from itk.
- *
- * This plugin uses the registration programming interface (RPI).
- * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medInria/src/medCore/gui.
- *
-*/
-class MEDDIFFEROMORPHICDEMONSREGISTRATIONPLUGIN_EXPORT medDiffeomorphicDemonsRegistrationProcess : public itkProcessRegistration
+class medAbstractTransformation;
+
+class medRpiApplyTransformationPrivate;
+class MEDRPIAPPLYTRANSFORMATIONPLUGIN_EXPORT medRpiApplyTransformationProcess : public medAbstractProcess
 {
     Q_OBJECT
 
 public:
 
-    medDiffeomorphicDemonsRegistrationProcess();
-    virtual ~medDiffeomorphicDemonsRegistrationProcess();
+    medRpiApplyTransformationProcess();
+    virtual ~medRpiApplyTransformationProcess();
 
+public:
     virtual QString description() const;
     virtual QString identifier() const;
-
     static bool registered();
 
 public:
-    virtual int update(ImageType);
+    virtual void update();
 
-    virtual itk::Transform<double,3,3>::Pointer getTransform();
-    virtual QString getTitleAndParameters();
+public:
+    void addTransformation(medAbstractTransformation *transfo);
+    void addTransformation(QList<medAbstractTransformation *> transfo);
+    QList<medAbstractTransformation *> transformationStack() const;
+
+public:
+    void resetTransformationStack();
+
+public:
+    setGeometry(medAbstractImageData *geometry);
+    medAbstractImageData*  geometry() const;
+    setInputImage(medAbstractImageData *imageData);
+    medAbstractImageData* inputImage() const;
+
 
 public:
     QList<medAbstractParameter*> parameters();
 
-
-protected :
-    virtual bool writeTransform(const QString& file);
-
 private:
-    medDiffeomorphicDemonsRegistrationPrivate *d;
-    friend class medDiffeomorphicDemonsRegistrationPrivate;
+    medRpiApplyTransformationPrivate *d;
 };
 
 
-dtkAbstractProcess *createmedDiffeomorphicDemonsRegistration();
+dtkAbstractProcess *createmedRpiApplyTransformation();
 
 
