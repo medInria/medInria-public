@@ -13,10 +13,9 @@
 
 #pragma once
 
-#include <QUndoCommand>
+#include <medAbstractPaintCommand.h>
 #include <QtCore>
 
-#include <itkImage.h>
 
 class medMagicWandCommandPrivate;
 
@@ -25,22 +24,19 @@ class medAbstractImageView;
 class medAbstractData;
 
 
-class medMagicWandCommand : public QUndoCommand
+class medMagicWandCommand : public medAbstractPaintCommand
 {
 public:
+    medMagicWandCommand( medPaintCommandOptions *options,  bool run3D, QUndoCommand *parent = 0);
 
-    typedef itk::Image<unsigned char, 3> MaskType;
-
-    medMagicWandCommand( medAbstractImageView * view, medAbstractData* imageData, QVector3D &vec, double radius,
-                         MaskType::Pointer itkMask, unsigned int maskValue, bool run3D, /*medPaintMode mode = PAINT,*/ QUndoCommand *parent = 0);
-
-    void undo();
-    void redo();
+protected:
+    void paint();
+    void unpaint();
 
 private:
-    void updateWandRegion(unsigned int maskValue);
-
     template <typename IMAGE> void RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex, unsigned int maskValue);
+
+    void updateWandRegion(unsigned int maskValue);
 
 private:
     medMagicWandCommandPrivate *d;

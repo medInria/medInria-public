@@ -22,6 +22,7 @@
 #include <medDataIndex.h>
 #include <medViewEventFilter.h>
 #include <medImageMaskAnnotationData.h>
+#include <medPaintCommandStack.h>
 
 #include <QVector3D>
 #include <QTextEdit>
@@ -140,7 +141,7 @@ private:
 
     PaintState::E m_paintState;
 
-    QUndoStack *m_undoStack;
+    medPaintCommandStack *m_undoStack;
     QUndoView *m_undoView;
 };
 

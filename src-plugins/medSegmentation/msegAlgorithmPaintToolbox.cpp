@@ -25,6 +25,8 @@
 #include <medDataManager.h>
 #include <medAbstractDataFactory.h>
 #include <medClickAndMoveEventFilter.h>
+#include <medAbstractPaintCommand.h>
+#include <medPaintCommandStack.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
@@ -170,7 +172,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     showButtons(false);
 
 
-    m_undoStack = new QUndoStack(this);
+    m_undoStack = new medPaintCommandStack(this);
 
     m_undoView = new QUndoView(m_undoStack);
     m_undoView->setWindowTitle(tr("Command List"));

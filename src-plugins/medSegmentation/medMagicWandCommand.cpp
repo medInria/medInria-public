@@ -23,30 +23,17 @@
 class medMagicWandCommandPrivate
 {
 public:
-    medAbstractImageView * view;
-    medAbstractData* imageData;
-    QVector3D vec;
-    double radius;
-    unsigned int maskValue;
     bool run3D;
 
-    typedef itk::Image<unsigned char, 3> MaskType;
-    MaskType::Pointer itkMask;
 };
 
 
-medMagicWandCommand::medMagicWandCommand(medAbstractImageView * view, medAbstractData* imageData, QVector3D &vec,
-                                         double radius, MaskType::Pointer itkMask, unsigned int maskValue,
-                                         bool run3D, /*medPaintMode mode = PAINT,*/ QUndoCommand *parent )
-    :QUndoCommand("Magic Wand", parent), d(new medMagicWandCommandPrivate)
+medMagicWandCommand::medMagicWandCommand(medPaintCommandOptions *options, bool run3D, QUndoCommand *parent )
+    :medAbstractPaintCommand(options, parent), d(new medMagicWandCommandPrivate)
 {
-    d->view = view;
-    d->imageData = imageData;
-    d->vec = vec;
-    d->radius = radius;
-    d->itkMask = itkMask;
-    d->maskValue = maskValue;
     d->run3D = run3D;
+
+    this->setText("Magic Wand");
 }
 
 
@@ -72,9 +59,9 @@ void medMagicWandCommand::updateWandRegion(unsigned int maskValue)
 //        return;
 //    }
 
-    const QVector3D vpn = d->view->viewPlaneNormal();
+    const QVector3D vpn = this->options()->view->viewPlaneNormal();
 
-    const MaskType::DirectionType & direction = d->itkMask->GetDirection();
+    const MaskType::DirectionType & direction = this->options()->itkMask->GetDirection();
 
     typedef  MaskType::DirectionType::InternalMatrixType::element_type ElemType;
     vnl_vector_fixed<ElemType, 3> vecVpn(vpn.x(), vpn.y(), vpn.z() );
@@ -97,11 +84,11 @@ void medMagicWandCommand::updateWandRegion(unsigned int maskValue)
     MaskType::PointType point;
     MaskType::IndexType index;
 
-    point[0] = d->vec.x();
-    point[1] = d->vec.y();
-    point[2] = d->vec.z();
+    point[0] = this->options()->points[0].x();
+    point[1] = this->options()->points[0].y();
+    point[2] = this->options()->points[0].z();
 
-    bool isInside = d->itkMask->TransformPhysicalPointToIndex (point, index);
+    bool isInside = this->options()->itkMask->TransformPhysicalPointToIndex (point, index);
 
     if (isInside)
     {
@@ -122,7 +109,7 @@ template <typename IMAGE>
 void
 medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex, unsigned int maskValue)
 {
-    IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(d->imageData->data()));
+    IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(this->options()->data->data()));
 
     MaskType::PixelType pxValue = maskValue;
 
@@ -134,8 +121,8 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
 
     double value = tmpPtr->GetPixel(index);
 
-    ctiFilter->SetUpper( value + d->radius );
-    ctiFilter->SetLower( value - d->radius );
+    ctiFilter->SetUpper( value + this->options()->radius );
+    ctiFilter->SetLower( value - this->options()->radius );
 
     MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
     regionRequested.SetIndex(planeIndex, index[planeIndex]);
@@ -171,7 +158,7 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
         ctiFilter->Update();
 
         itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
-        itk::ImageRegionIterator <MaskType> maskFilterItr (d->itkMask, regionRequested);
+        itk::ImageRegionIterator <MaskType> maskFilterItr (this->options()->itkMask, regionRequested);
         while (!maskFilterItr.IsAtEnd())
         {
             if (outFilterItr.Get() != 0)
@@ -189,7 +176,7 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
         ctiFilter->Update();
 
         itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), tmpPtr->GetLargestPossibleRegion());
-        itk::ImageRegionIterator <MaskType> maskFilterItr (d->itkMask, tmpPtr->GetLargestPossibleRegion());
+        itk::ImageRegionIterator <MaskType> maskFilterItr (this->options()->itkMask, tmpPtr->GetLargestPossibleRegion());
         while (!maskFilterItr.IsAtEnd())
         {
             if (outFilterItr.Get() != 0)
@@ -200,20 +187,20 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
         }
     }
 
-    d->itkMask->Modified();
-    d->itkMask->GetPixelContainer()->Modified();
-    d->itkMask->SetPipelineMTime(d->itkMask->GetMTime());
+    this->options()->itkMask->Modified();
+    this->options()->itkMask->GetPixelContainer()->Modified();
+    this->options()->itkMask->SetPipelineMTime(this->options()->itkMask->GetMTime());
 }
 
-void medMagicWandCommand::undo()
+
+void medMagicWandCommand::paint()
 {
-   this->updateWandRegion(0);
-   d->view->render();
+    updateWandRegion(this->options()->maskValue);
+
 }
 
-void medMagicWandCommand::redo()
+void medMagicWandCommand::unpaint()
 {
-    this->updateWandRegion(d->maskValue);
-    d->view->render();
+    updateWandRegion(0);
 }
 

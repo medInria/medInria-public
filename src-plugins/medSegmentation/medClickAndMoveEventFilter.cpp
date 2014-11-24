@@ -113,9 +113,18 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
         else
         {
             //m_toolbox->updateWandRegion(imageView, posImage);
-            medMagicWandCommand *magicWandCommand = new medMagicWandCommand(imageView, m_imageData, posImage, m_toolbox->wandRadius(),
-                                                                            m_itkMask, m_toolbox->strokeLabel(), m_toolbox->isWand3D());
+            medPaintCommandOptions *options = new medPaintCommandOptions;
+            QVector<QVector3D> vpoints;
+            vpoints.append(posImage);
 
+            options->points = vpoints;
+            options->view = imageView;
+            options->data = m_imageData;
+            options->radius = m_toolbox->wandRadius();
+            options->itkMask = m_itkMask;
+            options->maskValue = m_toolbox->strokeLabel();
+
+            medMagicWandCommand *magicWandCommand = new medMagicWandCommand(options, m_toolbox->isWand3D());
             m_toolbox->addCommand(magicWandCommand);
 
             m_paintState = PaintState::None; //Wand operation is over
@@ -143,7 +152,17 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
         this->m_points.push_back(posImage);
         //m_toolbox->updateStroke( this,imageView );
 
-        medPaintCommand *paintCommand = new medPaintCommand(m_points, imageView, m_toolbox->strokeRadius(), m_itkMask, m_toolbox->strokeLabel());
+//        medPaintCommand *paintCommand = new medPaintCommand(m_points, imageView, m_toolbox->strokeRadius(), m_itkMask, m_toolbox->strokeLabel());
+//        paintCommand->redo();
+        medPaintCommandOptions *options = new medPaintCommandOptions;
+        options->points = m_points;
+        options->view = imageView;
+        options->data = m_imageData;
+        options->radius = m_toolbox->strokeRadius();
+        options->itkMask = m_itkMask;
+        options->maskValue = m_toolbox->strokeLabel();
+
+        medPaintCommand *paintCommand = new medPaintCommand(options);
         paintCommand->redo();
 
         m_maskAnnotationData->invokeModified();
@@ -166,8 +185,19 @@ bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMous
         m_paintState = PaintState::None; //Painting is done
         //m_toolbox->updateStroke(this, imageView);
 
-        medPaintCommand *paintCommand = new medPaintCommand(m_points, imageView, m_toolbox->strokeRadius(), m_itkMask, m_toolbox->strokeLabel());
+//        medPaintCommand *paintCommand = new medPaintCommand(m_points, imageView, m_toolbox->strokeRadius(), m_itkMask, m_toolbox->strokeLabel());
+//        m_toolbox->addCommand(paintCommand);
+        medPaintCommandOptions *options = new medPaintCommandOptions;
+        options->points = m_points;
+        options->view = imageView;
+        options->data = m_imageData;
+        options->radius = m_toolbox->strokeRadius();
+        options->itkMask = m_itkMask;
+        options->maskValue = m_toolbox->strokeLabel();
+
+        medPaintCommand *paintCommand = new medPaintCommand(options);
         m_toolbox->addCommand(paintCommand);
+
         m_maskAnnotationData->invokeModified();
 
         this->m_points.clear();

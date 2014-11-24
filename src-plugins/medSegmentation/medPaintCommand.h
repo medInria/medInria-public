@@ -13,7 +13,8 @@
 
 #pragma once
 
-#include <QUndoCommand>
+#include <medAbstractPaintCommand.h>
+
 #include <QtCore>
 
 #include <itkImage.h>
@@ -24,24 +25,16 @@ class medClickAndMoveEventFilter;
 class medAbstractImageView;
 
 
-class medPaintCommand : public QUndoCommand
+class medPaintCommand : public medAbstractPaintCommand
 {
 public:
-    typedef itk::Image<unsigned char, 3> MaskType;
+    medPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent = 0);
 
-    enum medPaintMode {PAINT, ERASE};
+protected:
+    void paint();
+    void unpaint();
 
-    medPaintCommand(QVector<QVector3D> points, medAbstractImageView * view, double radius,
-                    MaskType::Pointer itkMask, unsigned int maskValue, medPaintMode mode = PAINT, QUndoCommand *parent = 0);
-
-    void undo();
-    void redo();
-
-    bool mergeWith(const QUndoCommand *command);
-    int id() const { return 1234; }
-
-private:
-    void paint(medPaintMode mode);
+    void paint(unsigned int maskValue);
 
 private:
     medPaintCommandPrivate *d;
