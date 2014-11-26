@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,12 +15,9 @@
 
 #include <QtGui>
 
+class medAbstractDataSource;
 
 class medBrowserAreaPrivate;
-class medAbstractDataSource;
-class medToolBox;
-class medJobItem;
-
 class medBrowserArea : public QWidget
 {
     Q_OBJECT
@@ -30,25 +27,32 @@ public:
     ~medBrowserArea();
 
 public slots:
-    void onSourceIndexChanged(int index);
+    void changeSource(int index);
 
-    /**
-* @brief Adds a medToolBox to the medToolBoxContainer.
-*
-* @param toolbox
-*/
-    void addToolBox(medToolBox *toolbox);
-    /**
-* @brief Removes a medToolBox from the medToolBoxContainer.
-*
-* @param toolbox
-*/
-    void removeToolBox(medToolBox *toolbox);
 
 protected:
-    void setToolBoxesVisible(int index, bool visible);
     void addDataSource(medAbstractDataSource* dataSource);
 
 private:
     medBrowserAreaPrivate *d;
+};
+
+class medDatabasePreview;
+class medBrowserPannelFramePrivate;
+class medBrowserPannelFrame: public QFrame
+{
+    Q_OBJECT
+
+public:
+    medBrowserPannelFrame(QWidget *parent = NULL);
+    virtual ~medBrowserPannelFrame();
+
+public:
+    void setWidgetAndPreview(QWidget *widget, QWidget *preview);
+
+protected:
+    void resizeEvent(QResizeEvent *event);
+
+private:
+    medBrowserPannelFramePrivate *d;
 };

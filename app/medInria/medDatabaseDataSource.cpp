@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -36,6 +36,7 @@ public:
     QPointer<medDatabaseView> largeView;
     medDatabaseView *compactView;
 
+    QPointer<medDatabasePreview>preview;
     medDatabasePreview *compactPreview;
 
     medDatabaseProxyModel *proxy;
@@ -55,6 +56,10 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
 
     d->compactProxy = new medDatabaseProxyModel(this);
     d->compactProxy->setSourceModel(d->model);
+
+    d->preview = NULL;
+    d->mainWidget = NULL;
+    d->compactView = NULL;
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()
@@ -95,10 +100,37 @@ QWidget* medDatabaseDataSource::mainViewWidget()
             connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
         }
 
+        if(!d->preview.isNull())
+        {
+            connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(showPatientPreview(const medDataIndex&)), Qt::UniqueConnection);
+            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->preview, SLOT(showStudyPreview(const medDataIndex&)),Qt::UniqueConnection);
+            connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(showSeriesPreview(const medDataIndex&)),Qt::UniqueConnection);
+        }
+
     }
 
     return d->mainWidget;
 }
+
+QWidget* medDatabaseDataSource::previewWidget()
+{
+    if(d->preview.isNull())
+    {
+        d->preview = new medDatabasePreview;
+
+        connect(d->preview, SIGNAL(openRequest(medDataIndex)), this , SIGNAL(open(medDataIndex)));
+
+        if(!d->largeView.isNull())
+        {
+            connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(showPatientPreview(const medDataIndex&)), Qt::UniqueConnection);
+            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->preview, SLOT(showStudyPreview(const medDataIndex&)),Qt::UniqueConnection);
+            connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(showSeriesPreview(const medDataIndex&)),Qt::UniqueConnection);
+        }
+    }
+
+    return d->preview;
+}
+
 
 QWidget* medDatabaseDataSource::compactViewWidget()
 {
@@ -128,11 +160,6 @@ QWidget* medDatabaseDataSource::compactViewWidget()
     return d->compactWidget;
 }
 
-QWidget* medDatabaseDataSource::sourceSelectorWidget()
-{
-    return new QWidget();
-}
-
 QString medDatabaseDataSource::tabName()
 {
     return tr("Database");
@@ -142,6 +169,7 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
 {
     if(d->toolBoxes.isEmpty())
     {
+
         d->actionsToolBox = new medActionsToolBox(0, false);
         d->toolBoxes.push_back(d->actionsToolBox);
 
@@ -150,6 +178,8 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
         d->toolBoxes.push_back(d->searchPanel);
 
         connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)));
+
+        medDatabasePreview* preview = new medDatabasePreview(d->compactWidget);
 
         if( !d->largeView.isNull())
         {
