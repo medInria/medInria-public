@@ -270,7 +270,7 @@ void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
     {
         d->mainLayout->removeWidget(d->defaultWidget);
         delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0/*, Qt::AlignCenter*/);
     }
     d->defaultWidget = defaultWidget;
 }

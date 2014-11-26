@@ -37,8 +37,11 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstr
     layerGroup1->setLinkAllParameters(true);
 
     medToolBox * manualRegistrationToolBox = medToolBoxFactory::instance()->createToolBox("manualRegistrationToolBox");
-    manualRegistrationToolBox->setWorkspace(this);
-    this->addToolBox(manualRegistrationToolBox);
+    if (manualRegistrationToolBox)
+    {
+        manualRegistrationToolBox->setWorkspace(this);
+        this->addToolBox(manualRegistrationToolBox);
+    }
 }
 
 void medVisualizationWorkspace::setupViewContainerStack()
