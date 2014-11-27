@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(medApplyTransformationToScalarImagePlugin)
+project(medRpiApplyTransformationPlugin)
 
 ## #############################################################################
 ## Setup version numbering

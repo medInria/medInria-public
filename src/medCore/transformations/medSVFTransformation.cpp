@@ -13,7 +13,7 @@
 
 #include <medSVFTransformation.h>
 
-#include <medAbstractData.h>
+#include <medAbstractImageData.h>
 
 class medSVFTransformationPrivate
 {

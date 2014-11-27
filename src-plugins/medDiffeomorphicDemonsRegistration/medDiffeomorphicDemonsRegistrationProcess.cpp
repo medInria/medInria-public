@@ -161,7 +161,7 @@ medDiffeomorphicDemonsRegistrationProcess::~medDiffeomorphicDemonsRegistrationPr
 bool medDiffeomorphicDemonsRegistrationProcess::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("medDiffeomorphicDemonsRegistrationProcess",
-                                                                      createmedDiffeomorphicDemonsRegistration, "medAbstractRegistrationProcess");
+                                                                      createmedDiffeomorphicDemonsRegistration, "medAbstractEstimateTransformationProcess");
 }
 
 QString medDiffeomorphicDemonsRegistrationProcess::description() const

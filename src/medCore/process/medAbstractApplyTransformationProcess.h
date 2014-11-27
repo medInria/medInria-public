@@ -13,32 +13,27 @@
 
 #pragma once
 
-#include <medRpiApplyTransformationExport.h>
-#include <medAbstractApplyTransformationProcess.h>
+#include <medCoreExport.h>
 
+#include <medAbstractProcess.h>
 
+class medAbstractData;
 class medAbstractTransformation;
 
-class medRpiApplyTransformationProcessPrivate;
-class MEDRPIAPPLYTRANSFORMATIONPLUGIN_EXPORT medRpiApplyTransformationProcess : public medAbstractApplyTransformationProcess
+class medAbstractApplyTransformationProcessPrivate;
+class MEDCORE_EXPORT medAbstractApplyTransformationProcess : public medAbstractProcess
 {
     Q_OBJECT
 
 public:
-
-    medRpiApplyTransformationProcess();
-    virtual ~medRpiApplyTransformationProcess();
-
-public:
-    virtual QString description() const;
-    virtual QString identifier() const;
-    static bool registered();
+    medAbstractApplyTransformationProcess();
+    virtual ~medAbstractApplyTransformationProcess();
 
 public:
-    virtual bool isInteractive() const;
+    virtual bool isInteractive() const = 0;
 
 public:
-    virtual int update();
+    virtual int update() = 0;
 
 public:
     void addTransformation(medAbstractTransformation *transfo);
@@ -55,13 +50,9 @@ public:
     medAbstractImageData* inputImage() const;
 
 public:
-    QList<medAbstractParameter*> parameters();
+    virtual QList<medAbstractParameter*> parameters();
 
 private:
-    medRpiApplyTransformationProcessPrivate *d;
+    medAbstractApplyTransformationProcessPrivate* d;
+
 };
-
-
-dtkAbstractProcess *createmedRpiApplyTransformation();
-
-

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -30,10 +30,10 @@ public:
     medItkFiltersProcessBase(medItkFiltersProcessBase * parent = 0);
     medItkFiltersProcessBase(const medItkFiltersProcessBase& other);
     virtual ~medItkFiltersProcessBase(void);
-    
+
 public:
     medItkFiltersProcessBase& operator = (const medItkFiltersProcessBase& other);
-        
+
     QString description() const;
     void setDescription(QString description);
 
@@ -50,7 +50,7 @@ public:
 
 public:
     virtual QList<medAbstractParameter*> parameters();
-    bool isInteractive();
+    bool isInteractive() const;
 
 
 private:

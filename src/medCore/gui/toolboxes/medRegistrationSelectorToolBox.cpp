@@ -27,7 +27,7 @@
 
 #include <medAbstractView.h>
 #include <medAbstractImageView.h>
-#include <medAbstractRegistrationProcess.h>
+#include <medAbstractEstimateTransformationProcess.h>
 
 #include <medAbstractImageData.h>
 #include <medToolBoxTab.h>

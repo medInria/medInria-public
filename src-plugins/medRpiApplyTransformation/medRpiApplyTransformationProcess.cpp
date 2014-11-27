@@ -14,6 +14,8 @@
 
 #include <medRpiApplyTransformationProcess.h>
 
+#include <dtkCore/dtkAbstractProcessFactory.h>
+
 #include <medAbstractImageData.h>
 #include <medSVFTransformation.h>
 #include <medAbstractTransformation.h>
@@ -22,25 +24,18 @@
 // medRpiApplyTransformationDiffeomorphicDemonsPrivate
 // /////////////////////////////////////////////////////////////////
 
-class medRpiApplyTransformationPrivate
+class medRpiApplyTransformationProcessPrivate
 {
-public:
-    medAbstractImageData *geometry;
-    medAbstractImageData *inputImage;
-    medAbstractImageData *transformedImage;
 
-    QList<medAbstractTransformation *> transformations;
 };
 
 // /////////////////////////////////////////////////////////////////
 // medRpiApplyTransformationProcess
 // /////////////////////////////////////////////////////////////////
 
-medRpiApplyTransformationProcess::medRpiApplyTransformationProcess() : medAbstractProcess(), d(new medRpiApplyTransformationPrivate)
+medRpiApplyTransformationProcess::medRpiApplyTransformationProcess() : medAbstractProcess(), d(new medRpiApplyTransformationProcessPrivate)
 {
-    d->geometry = NULL;
-    d->inputImage = NULL;
-    d->transformedImage = NULL;
+
 }
 
 medRpiApplyTransformationProcess::~medRpiApplyTransformationProcess()
@@ -52,7 +47,7 @@ medRpiApplyTransformationProcess::~medRpiApplyTransformationProcess()
 bool medRpiApplyTransformationProcess::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("medRpiApplyTransformationProcess",
-                                                                      createmedRpiApplyTransformation, "medAbstractRegistrationProcess");
+                                                                      createmedRpiApplyTransformation, "medAbstractEstimateTransformationProcess");
 }
 
 QString medRpiApplyTransformationProcess::description() const
@@ -70,63 +65,23 @@ QList<medAbstractParameter*> medRpiApplyTransformationProcess::parameters()
 
 }
 
-void medRpiApplyTransformationProcess::addTransformation(medAbstractTransformation *transfo)
+int medRpiApplyTransformationProcess::update()
 {
-    d->transformations << transfo;
+    if(!this->geometry() || !this->inputImage() || this->transformationStack().isEmpty())
+    {
+        qDebug() << "Wrong parameters, could not apply rpi transformation...";
+        return false;
+    }
+
+    qDebug() << "medRpiApplyTransformationProcess update !!!";
+    return true;
 }
 
-void medRpiApplyTransformationProcess::addTransformation(QList<medAbstractTransformation *> transfo)
+bool medRpiApplyTransformationProcess::isInteractive() const
 {
-    d->transformations << transfo;
+    return false;
 }
 
-QList<medAbstractTransformation *> medRpiApplyTransformationProcess::transformationStack() const
-{
-    return d->transformations;
-}
-
-void medRpiApplyTransformationProcess::setGeometry(medAbstractImageData *geometry)
-{
-    d->geometry = geometry;
-}
-
-medAbstractImageData * medRpiApplyTransformationProcess::geometry() const
-{
-    return d->geometry;
-}
-
-void medRpiApplyTransformationProcess::setInputImage(medAbstractImageData *inputImage)
-{
-    d->inputImage = inputImage;
-}
-
-medAbstractImageData* medRpiApplyTransformationProcess::inputImage() const
-{
-    return d->inputImage;
-}
-
-void medRpiApplyTransformationProcess::resetTransformationStack()
-{
-    d->transformations.clear();
-}
-
-void medRpiApplyTransformationProcess::update()
-{
-    if(!d->geometry || ! !d->inputImage || d->transformations.isEmpty())
-        return;
-
-
-}
-
-// /////////////////////////////////////////////////////////////////
-// Type instanciation
-// /////////////////////////////////////////////////////////////////
-/**
- * @brief Function to instantiate the process from the factory.
- * @see registered()
- *
- * @param void
-*/
 dtkAbstractProcess *createmedRpiApplyTransformation()
 {
     return new medRpiApplyTransformationProcess;

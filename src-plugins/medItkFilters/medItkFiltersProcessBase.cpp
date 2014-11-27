@@ -138,7 +138,7 @@ QList<medAbstractParameter*> medItkFiltersProcessBase::parameters()
     return QList<medAbstractParameter*>();
 }
 
-bool medItkFiltersProcessBase::isInteractive()
+bool medItkFiltersProcessBase::isInteractive() const
 {
     return false;
 }
