@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -19,68 +19,27 @@
 #include <medAbstractDataSource.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medDataManager.h>
-#include <medPacsWidget.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
 #include <medMessageController.h>
-
-#include <medFileSystemDataSource.h>
-#include <medDatabaseDataSource.h>
-#include <medPacsDataSource.h>
-
-#include <medApplication.h>
 
 class medDataSourceManagerPrivate
 {
 public:
     QList <medAbstractDataSource*> dataSources;
 
-    medDatabaseDataSource *dbSource;
-    medFileSystemDataSource *fsSource;
-    medPacsDataSource *pacsSource;
+
 };
 
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 {
-    // Data base data source
-    d->dbSource = new medDatabaseDataSource();
-    d->dataSources.push_back(d->dbSource);
-    connectDataSource(d->dbSource);
-
-    // File system data source
-    d->fsSource = new medFileSystemDataSource();
-    d->dataSources.push_back(d->fsSource);
-    connectDataSource(d->fsSource);
-
-    // Pacs data source
-    medPacsDataSource *pacsDataSource = new medPacsDataSource;
-    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->mainViewWidget());
-    //make the widget hide if not functional (otehrwise it flickers in and out).
-    mainPacsWidget->hide();
-    if (mainPacsWidget->isServerFunctional())
-    {
-        d->pacsSource = new medPacsDataSource();
-        d->dataSources.push_back(d->pacsSource);
-        connectDataSource(d->pacsSource);
-    }
-    else mainPacsWidget->deleteLater();
-
-    // dynamic data sources (from plugins)
-
-    foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins())
+    foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSources())
     {
         qDebug()<< "factory creates dataSource:" << dataSourceName;
         medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, 0);
         d->dataSources.push_back(dataSource);
         connectDataSource(dataSource);
     }
-
-    connect(d->fsSource, SIGNAL(open(QString)),
-            this, SLOT(openFromPath(QString)));
-    connect(d->fsSource, SIGNAL(load(QString)),
-            this, SLOT(loadFromPath(QString)));
-    connect(d->dbSource, SIGNAL(open(const medDataIndex&)),
-            this, SLOT(openFromIndex(medDataIndex)));
 }
 
 
@@ -100,6 +59,13 @@ void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)
 
     connect(dataSource, SIGNAL(dataToIndexReceived(QString)),
             this, SLOT(indexFile(QString)));
+
+    connect(dataSource, SIGNAL(open(QString)),
+            this, SIGNAL(openFromPathRequest(QString)));
+    connect(dataSource, SIGNAL(load(QString)),
+            this, SLOT(loadFromPath(QString)));
+    connect(dataSource, SIGNAL(open(const medDataIndex&)),
+            this, SIGNAL(openFromIndexRequest(medDataIndex)));
 }
 
 //TODO: Maybe it is not the best place to put it (medDataManager?)
@@ -147,7 +113,7 @@ void medDataSourceManager::indexFile(QString path)
 
 void medDataSourceManager::emitDataReceivingFailed(QString fileName)
 {
-  medMessageController::instance()->showError(tr("Unable to get from source the data named ") + fileName, 3000);
+    medMessageController::instance()->showError(tr("Unable to get from source the data named ") + fileName, 3000);
 }
 
 medDataSourceManager * medDataSourceManager::instance( void )
@@ -161,16 +127,6 @@ medDataSourceManager::~medDataSourceManager( void )
 {
     delete d;
     d = NULL;
-}
-
-void medDataSourceManager::openFromPath(QString path)
-{
-    qobject_cast<medApplication*>(qApp)->open(path);
-}
-
-void medDataSourceManager::openFromIndex(medDataIndex index)
-{
-    qobject_cast<medApplication*>(qApp)->open(index);
 }
 
 void medDataSourceManager::loadFromPath(QString path)
@@ -190,11 +146,6 @@ void medDataSourceManager::destroy( void )
 QList <medAbstractDataSource*> medDataSourceManager::dataSources()
 {
     return d->dataSources;
-}
-
-medDatabaseDataSource* medDataSourceManager::databaseDataSource()
-{
-    return d->dbSource;
 }
 
 medDataSourceManager *medDataSourceManager::s_instance = NULL;

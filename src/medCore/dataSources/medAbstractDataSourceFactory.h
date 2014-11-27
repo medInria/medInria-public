@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -41,7 +41,7 @@ public:
     bool registerDataSource(QString type, medAbstractDataSourceCreator func);
 
     /** Returns a list of available source data plugins */
-    QList<QString> dataSourcePlugins();
+    QList<QString> dataSources();
 
 public slots:
     /** Method to instantiate a plugin */

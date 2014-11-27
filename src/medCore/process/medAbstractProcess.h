@@ -71,8 +71,11 @@ template <typename T>
 class medProcessInput : public medProcessIOPort
 {
 public:
-    medProcessInput(QString name, bool isOptional) : medProcessIOPort(name)
-    {m_isOptional = isOptional;}
+    medProcessInput(QString name, bool isOptional, T* input = NULL) : medProcessIOPort(name)
+    {
+        m_isOptional = isOptional;
+        m_input = input;
+    }
     virtual ~medProcessInput(){}
 
 public:
@@ -115,8 +118,10 @@ template <typename T>
 class medProcessOutput : public medProcessIOPort
 {
 public:
-    medProcessOutput(QString name) : medProcessIOPort(name)
-    {}
+    medProcessOutput(QString name, T* output = NULL) : medProcessIOPort(name)
+    {
+        m_output = output;
+    }
     virtual ~medProcessOutput(){}
 
 public:

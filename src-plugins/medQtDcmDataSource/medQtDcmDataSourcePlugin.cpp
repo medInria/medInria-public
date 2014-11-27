@@ -44,7 +44,10 @@ medQtDcmDataSourcePlugin::~medQtDcmDataSourcePlugin()
 
 bool medQtDcmDataSourcePlugin::initialize()
 {
-    if ( !medQtDcmDataSource::registered() ) { dtkWarn() << "Unable to register medQtDcmDataSource type"; }
+    if (!medQtDcmDataSource::registered())
+    {
+        dtkWarn() << "Unable to register medQtDcmDataSource type";  return false;
+    }
 
     return true;
 }

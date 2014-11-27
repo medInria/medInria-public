@@ -129,6 +129,8 @@ void medFilteringWorkspace::setupProcess(QString process)
     {
         d->process->retrieveInputs(temp);
     }
+
+    delete temp;
 }
 
 bool medFilteringWorkspace::isUsable()

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -279,7 +279,12 @@ void medAbstractProcess::handleOutputs()
     foreach(medOutputDataPort* port, d->containerForOutputPort.keys())
     {
         medAbstractData* ouputData = port->output();
+        if(!ouputData)
+            return;
+
         medAbstractData* inputData = d->containerForInputPort.keys()[0]->input();
+        if(!inputData)
+            return;
 
         if(!ouputData->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         {

@@ -20,10 +20,10 @@
 
 medAbstractFilteringProcess::medAbstractFilteringProcess(medAbstractProcess *parent)
 {
-    medInputDataPort *input = new medInputDataPort("Input", false);
+    medInputDataPort *input = new medInputDataPort("Input", false, NULL);
     input->setInput(NULL);
 
-    medOutputDataPort *output = new medOutputDataPort("Output");
+    medOutputDataPort *output = new medOutputDataPort("Output", NULL);
     //output->output= NULL;
 
     //TODO: Should this be done here or by implementation

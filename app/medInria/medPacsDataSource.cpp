@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -23,6 +23,9 @@
 
 #include <medPacsWidget.h>
 #include <medPacsMover.h>
+
+#include <medAbstractDataSourceFactory.h>
+
 
 class medPacsDataSourcePrivate
 {
@@ -101,7 +104,7 @@ QList<medToolBox*> medPacsDataSource::getToolBoxes()
 
 QString medPacsDataSource::description(void) const
 {
-	return tr("Browse PACS server");
+    return tr("Browse PACS server");
 }
 
 void medPacsDataSource::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
@@ -111,3 +114,19 @@ void medPacsDataSource::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
     medJobManager::instance()->registerJob(mover, tr("Moving"));
     QThreadPool::globalInstance()->start(mover);
 }
+
+// /////////////////////////////////////////////////////////////////
+// Type instantiation
+// /////////////////////////////////////////////////////////////////
+
+bool medPacsDataSource::registered()
+{
+    return medAbstractDataSourceFactory::instance()->registerDataSource ( "medPacsDataSource", createmedPacsDataSource);
+}
+
+
+medAbstractDataSource *createmedPacsDataSource(QWidget *)
+{
+    return new medPacsDataSource;
+}
+

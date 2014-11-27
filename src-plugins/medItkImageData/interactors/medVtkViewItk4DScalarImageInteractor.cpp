@@ -126,7 +126,7 @@ void medVtkViewItk4DScalarImageInteractor::setInputData(medAbstractData *data)
     if(!d->imageData)
         return;
 
-    if( data->identifier().contains("medItkImageData") &&  d->imageData->Dimension() == 4 ) {
+    if( data->identifier().contains("medItkImageData") &&  d->imageData->dimension() == 4 ) {
 
         d->sequence = vtkMetaDataSetSequence::New();
 
