@@ -26,7 +26,6 @@
 #include <medAbstractDataFactory.h>
 #include <medClickAndMoveEventFilter.h>
 #include <medAbstractPaintCommand.h>
-#include <medPaintCommandStack.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
@@ -171,8 +170,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     showButtons(false);
 
-
-    m_undoStack = new medPaintCommandStack(this);
+    m_undoStack = new QUndoStack(this);
 
     m_undoView = new QUndoView(m_undoStack);
     m_undoView->setWindowTitle(tr("Command List"));
@@ -185,6 +183,8 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     redoAction->setShortcuts(QKeySequence::Redo);
 
     layout->addWidget(m_undoView);
+
+    //m_labelMap = LabelMapType::New();
 }
 
 AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
@@ -193,7 +193,7 @@ AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
 
 medAbstractData* AlgorithmPaintToolbox::processOutput()
 {
-    return m_maskData;
+    return NULL;
 }
 
 void AlgorithmPaintToolbox::setWandSliderValue(double val)
@@ -263,12 +263,6 @@ void AlgorithmPaintToolbox::activateMagicWand()
     emit installEventFilterRequest(m_viewFilter);
 }
 
-void AlgorithmPaintToolbox::import()
-{
-    //setOutputMetadata(m_imageData, m_maskData);
-    medDataManager::instance()->importData(m_maskData, true);
-}
-
 void AlgorithmPaintToolbox::setLabel(int newVal)
 {
     QColor labelColor = m_labelColorMap[newVal-1].second;
@@ -301,8 +295,6 @@ void AlgorithmPaintToolbox::clearMask()
 //        m_maskAnnotationData->invokeModified();
 //    }
 }
-
-
 
 void AlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
 {
@@ -379,7 +371,6 @@ void AlgorithmPaintToolbox::updateButtons()
     }
 }
 
-
 void AlgorithmPaintToolbox::updateMouseInteraction() //Apply the current interaction (paint, ...) to a new view
 {
     if (m_paintState != PaintState::None)
@@ -389,7 +380,6 @@ void AlgorithmPaintToolbox::updateMouseInteraction() //Apply the current interac
     }
 }
 
-
 dtkPlugin* AlgorithmPaintToolbox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
@@ -398,12 +388,10 @@ dtkPlugin* AlgorithmPaintToolbox::plugin()
 }
 
 
-
 void AlgorithmPaintToolbox::addCommand(QUndoCommand *command)
 {
     m_undoStack->push(command);
 }
-
 
 bool AlgorithmPaintToolbox::isWand3D() const
 {

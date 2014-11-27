@@ -14,8 +14,10 @@
 #include <medPaintCommand.h>
 
 #include <medAbstractImageView.h>
-
-#include <itkImage.h>
+#include <medAbstractImageData.h>
+#include <medAbstractDataFactory.h>
+#include <medDataManager.h>
+#include <medMetaDataKeys.h>
 
 #include <vnl/vnl_cross.h>
 #include <vnl/vnl_vector.h>
@@ -23,13 +25,27 @@
 #include <QtCore>
 #include <QVector3D>
 
+#include <itkImage.h>
+#include <itkLabelObject.h>
+#include <itkLabelMapToLabelImageFilter.h>
+#include <itkLabelMapToAttributeImageFilter.h>
+
+
+
 class medPaintCommandPrivate
 {
 public:
     QVector3D lastVup;
     QVector3D lastVpn;
     double sampleSpacing[2];
+
+    LabelObjectType::Pointer label;
+    LabelMapType::Pointer labelMap;
+
+    typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
+    MapToImageFilter::Pointer filter;
 };
+
 
 medPaintCommand::medPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent)
     : medAbstractPaintCommand(options, parent), d(new medPaintCommandPrivate)
@@ -37,11 +53,15 @@ medPaintCommand::medPaintCommand(medPaintCommandOptions *options, QUndoCommand *
     d->lastVup = QVector3D();
     d->lastVpn = QVector3D();
 
+    d->label = 0;
+
     this->setText("Paint");
+
+    d->labelMap = medPaintCommandManager::instance()->labelMap(this->options()->itkMask);
 }
 
 
-void medPaintCommand::paint(unsigned int maskValue)
+void medPaintCommand::paint()
 {
     //this->updateFromGuiItems();
 
@@ -52,6 +72,11 @@ void medPaintCommand::paint(unsigned int maskValue)
 //        dtkWarn() << "Could not set data";
 //        return;
 //    }
+
+    qDebug() << "paint";
+
+    d->label = LabelObjectType::New();
+    d->label->SetAttribute(this->options()->maskValue);
 
     foreach(QVector3D newPoint, this->options()->points)
     {
@@ -114,7 +139,7 @@ void medPaintCommand::paint(unsigned int maskValue)
         const int Nx = std::max( 1, (int)std::ceil(this->options()->radius/d->sampleSpacing[0]) );
         const int Ny = std::max( 1, (int)std::ceil(this->options()->radius/d->sampleSpacing[1]) );
 
-        MaskType::PixelType pxValue = maskValue;
+        MaskType::PixelType pxValue = this->options()->maskValue;
 
         MaskType::IndexType index;
         itk::Point<ElemType,3> testPt;
@@ -131,8 +156,10 @@ void medPaintCommand::paint(unsigned int maskValue)
                 }
 
                 bool isInside = this->options()->itkMask->TransformPhysicalPointToIndex( testPt, index );
-                if ( isInside ) {
+                if ( isInside )
+                {
                     this->options()->itkMask->SetPixel( index, pxValue );
+                    d->label->AddIndex(index);
                 }
             }
         }
@@ -142,13 +169,40 @@ void medPaintCommand::paint(unsigned int maskValue)
     }
 }
 
-void medPaintCommand::paint()
+void medPaintCommand::undo()
 {
-    this->paint(this->options()->maskValue);
+    d->labelMap->RemoveLabelObject(d->label);
+
+    typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
+    d->filter = MapToImageFilter::New();
+
+    d->filter->SetInput(d->labelMap);
+    d->filter->Update();
+
+    this->options()->itkMask->Graft(d->filter->GetOutput());
+
+    this->options()->view->render();
 }
 
-void medPaintCommand::unpaint()
+void medPaintCommand::redo()
 {
-    qDebug() << "medPaintCommand::unpaint()";
-    this->paint(0);
+    if(!d->label)
+    {
+        paint();
+        d->labelMap->PushLabelObject(d->label);
+    }
+    else
+    {
+        d->labelMap->PushLabelObject(d->label);
+
+        typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
+        d->filter = MapToImageFilter::New();
+
+        d->filter->SetInput(d->labelMap);
+        d->filter->Update();
+
+        this->options()->itkMask->Graft(d->filter->GetOutput());
+    }
+
+    this->options()->view->render();
 }

@@ -23,6 +23,7 @@ class medPaintCommandPrivate;
 
 class medClickAndMoveEventFilter;
 class medAbstractImageView;
+class medAbstractData;
 
 
 class medPaintCommand : public medAbstractPaintCommand
@@ -30,11 +31,10 @@ class medPaintCommand : public medAbstractPaintCommand
 public:
     medPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent = 0);
 
-protected:
-    void paint();
-    void unpaint();
+    virtual void undo();
+    virtual void redo();
 
-    void paint(unsigned int maskValue);
+    void paint();
 
 private:
     medPaintCommandPrivate *d;

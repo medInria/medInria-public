@@ -15,8 +15,10 @@
 
 #include <medAbstractImageView.h>
 
-#include <itkConnectedThresholdImageFilter.h>
 #include <itkImageRegionIterator.h>
+#include <itkLabelMapToLabelImageFilter.h>
+#include <itkConnectedThresholdImageFilter.h>
+#include <itkLabelMapToAttributeImageFilter.h>
 
 #include <QVector3D>
 
@@ -24,6 +26,12 @@ class medMagicWandCommandPrivate
 {
 public:
     bool run3D;
+
+    LabelObjectType::Pointer label;
+    LabelMapType::Pointer labelMap;
+
+    typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
+    MapToImageFilter::Pointer filter;
 
 };
 
@@ -34,10 +42,14 @@ medMagicWandCommand::medMagicWandCommand(medPaintCommandOptions *options, bool r
     d->run3D = run3D;
 
     this->setText("Magic Wand");
+
+    d->label = 0;
+
+    d->labelMap = medPaintCommandManager::instance()->labelMap(this->options()->itkMask);
 }
 
 
-void medMagicWandCommand::updateWandRegion(unsigned int maskValue)
+void medMagicWandCommand::paint()
 {
     //this->updateFromGuiItems();
 
@@ -58,6 +70,9 @@ void medMagicWandCommand::updateWandRegion(unsigned int maskValue)
 //        medMessageController::instance()->showError(tr("Magic wand option is only available for 3D images"),3000);
 //        return;
 //    }
+
+    d->label = LabelObjectType::New();
+    d->label->SetAttribute(this->options()->maskValue);
 
     const QVector3D vpn = this->options()->view->viewPlaneNormal();
 
@@ -92,16 +107,16 @@ void medMagicWandCommand::updateWandRegion(unsigned int maskValue)
 
     if (isInside)
     {
-        RunConnectedFilter < itk::Image <char,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <unsigned char,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <short,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <unsigned short,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <int,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <unsigned int,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <long,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <unsigned long,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <float,3> > (index,planeIndex, maskValue);
-        RunConnectedFilter < itk::Image <double,3> > (index,planeIndex, maskValue);
+        RunConnectedFilter < itk::Image <char,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <unsigned char,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <short,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <unsigned short,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <int,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <unsigned int,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <long,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <unsigned long,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <float,3> > (index,planeIndex, this->options()->maskValue);
+        RunConnectedFilter < itk::Image <double,3> > (index,planeIndex, this->options()->maskValue);
     }
 }
 
@@ -162,7 +177,10 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
         while (!maskFilterItr.IsAtEnd())
         {
             if (outFilterItr.Get() != 0)
+            {
                 maskFilterItr.Set(pxValue);
+                d->label->AddIndex(maskFilterItr.GetIndex());
+            }
 
             ++outFilterItr;
             ++maskFilterItr;
@@ -180,7 +198,10 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
         while (!maskFilterItr.IsAtEnd())
         {
             if (outFilterItr.Get() != 0)
+            {
                 maskFilterItr.Set(pxValue);
+                d->label->AddIndex(maskFilterItr.GetIndex());
+            }
 
             ++outFilterItr;
             ++maskFilterItr;
@@ -193,14 +214,40 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
 }
 
 
-void medMagicWandCommand::paint()
+void medMagicWandCommand::undo()
 {
-    updateWandRegion(this->options()->maskValue);
+    d->labelMap->RemoveLabelObject(d->label);
 
+    typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
+    d->filter = MapToImageFilter::New();
+
+    d->filter->SetInput(d->labelMap);
+    d->filter->Update();
+
+    this->options()->itkMask->Graft(d->filter->GetOutput());
+
+    this->options()->view->render();
 }
 
-void medMagicWandCommand::unpaint()
+void medMagicWandCommand::redo()
 {
-    updateWandRegion(0);
-}
+    if(!d->label)
+    {
+        paint();
+        d->labelMap->PushLabelObject(d->label);
+    }
+    else
+    {
+        d->labelMap->PushLabelObject(d->label);
 
+        typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
+        d->filter = MapToImageFilter::New();
+
+        d->filter->SetInput(d->labelMap);
+        d->filter->Update();
+
+        this->options()->itkMask->Graft(d->filter->GetOutput());
+    }
+
+    this->options()->view->render();
+}

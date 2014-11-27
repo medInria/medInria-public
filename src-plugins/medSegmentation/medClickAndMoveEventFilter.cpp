@@ -21,6 +21,7 @@
 #include <medMetaDataKeys.h>
 
 #include <itkMinimumMaximumImageCalculator.h>
+#include <itkLabelMapToLabelImageFilter.h>
 
 
 medClickAndMoveEventFilter::medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb) :
@@ -29,11 +30,13 @@ medClickAndMoveEventFilter::medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb
     m_paintState(PaintState::None),
     m_lastPaintState(PaintState::None)
 {
-
     m_maskAnnotationData = NULL;
-    //TODO smartPointing have to be managed only in abstraction -rde
     m_maskData = NULL;
     m_imageData = NULL;
+}
+
+medClickAndMoveEventFilter::~medClickAndMoveEventFilter()
+{
 }
 
 void medClickAndMoveEventFilter::setColorMap( medImageMaskAnnotationData::ColorMapType colorMap)
@@ -112,7 +115,6 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
         }
         else
         {
-            //m_toolbox->updateWandRegion(imageView, posImage);
             medPaintCommandOptions *options = new medPaintCommandOptions;
             QVector<QVector3D> vpoints;
             vpoints.append(posImage);
@@ -122,6 +124,7 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
             options->data = m_imageData;
             options->radius = m_toolbox->wandRadius();
             options->itkMask = m_itkMask;
+            options->maskData = m_maskData;
             options->maskValue = m_toolbox->strokeLabel();
 
             medMagicWandCommand *magicWandCommand = new medMagicWandCommand(options, m_toolbox->isWand3D());
@@ -150,20 +153,18 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
         QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->posF() );
         //Project vector onto plane
         this->m_points.push_back(posImage);
-        //m_toolbox->updateStroke( this,imageView );
 
-//        medPaintCommand *paintCommand = new medPaintCommand(m_points, imageView, m_toolbox->strokeRadius(), m_itkMask, m_toolbox->strokeLabel());
-//        paintCommand->redo();
         medPaintCommandOptions *options = new medPaintCommandOptions;
         options->points = m_points;
         options->view = imageView;
         options->data = m_imageData;
         options->radius = m_toolbox->strokeRadius();
         options->itkMask = m_itkMask;
+        options->maskData = m_maskData;
         options->maskValue = m_toolbox->strokeLabel();
 
         medPaintCommand *paintCommand = new medPaintCommand(options);
-        paintCommand->redo();
+        paintCommand->paint();
 
         m_maskAnnotationData->invokeModified();
     }
@@ -183,16 +184,14 @@ bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMous
 
     if (imageView->is2D()) {
         m_paintState = PaintState::None; //Painting is done
-        //m_toolbox->updateStroke(this, imageView);
 
-//        medPaintCommand *paintCommand = new medPaintCommand(m_points, imageView, m_toolbox->strokeRadius(), m_itkMask, m_toolbox->strokeLabel());
-//        m_toolbox->addCommand(paintCommand);
         medPaintCommandOptions *options = new medPaintCommandOptions;
         options->points = m_points;
         options->view = imageView;
         options->data = m_imageData;
         options->radius = m_toolbox->strokeRadius();
         options->itkMask = m_itkMask;
+        options->maskData = m_maskData;
         options->maskValue = m_toolbox->strokeLabel();
 
         medPaintCommand *paintCommand = new medPaintCommand(options);
@@ -249,8 +248,7 @@ void medClickAndMoveEventFilter::setData( medAbstractData *medData )
 
         } else {
 
-            m_maskData =
-                    medAbstractDataFactory::instance()->createSmartPointer( "itkDataImageUChar3" );
+            m_maskData = medAbstractDataFactory::instance()->createSmartPointer( "itkDataImageUChar3" );
 
             if ( !m_maskData ) {
                 dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create itkDataImageUChar3";
@@ -259,6 +257,8 @@ void medClickAndMoveEventFilter::setData( medAbstractData *medData )
 
             m_maskAnnotationData = new medImageMaskAnnotationData;
             this->initializeMaskData( m_imageData, m_maskData );
+            //this->initializeLabelMapData( m_imageData );
+
             m_maskAnnotationData->setMaskData(qobject_cast<medAbstractImageData*>(m_maskData));
 
             m_maskAnnotationData->setColorMap( m_labelColorMap );
@@ -362,12 +362,11 @@ void medClickAndMoveEventFilter::initializeMaskData( medAbstractData * imageData
     mask->SetLargestPossibleRegion(region);
     mask->SetBufferedRegion(region);
     mask->Allocate();
-    //mask->FillBuffer( medSegmentationSelectorToolBox::MaskPixelValues::Unset );
     mask->FillBuffer( 0 );
-
 
     maskData->setData((QObject*)(mask.GetPointer()));
 }
+
 
 
 template <typename IMAGE>

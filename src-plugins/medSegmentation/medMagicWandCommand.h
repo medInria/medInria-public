@@ -29,14 +29,13 @@ class medMagicWandCommand : public medAbstractPaintCommand
 public:
     medMagicWandCommand( medPaintCommandOptions *options,  bool run3D, QUndoCommand *parent = 0);
 
-protected:
+    virtual void undo();
+    virtual void redo();
+
     void paint();
-    void unpaint();
 
 private:
     template <typename IMAGE> void RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex, unsigned int maskValue);
-
-    void updateWandRegion(unsigned int maskValue);
 
 private:
     medMagicWandCommandPrivate *d;

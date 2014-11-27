@@ -16,14 +16,16 @@
 #include <medViewEventFilter.h>
 #include <msegAlgorithmPaintToolbox.h>
 
+#include <itkImage.h>
+#include <itkLabelObject.h>
+#include <itkLabelMap.h>
+#include <itkLabelMapToLabelImageFilter.h>
+
 class medClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
-
-    //TODO what is it for ? - RDE
-    struct MaskPixelValues {enum E{ Unset = 0, Foreground = 1, Background = 2 };};
-
     medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb  = NULL);
+    ~medClickAndMoveEventFilter();
 
     virtual bool mousePressEvent(medAbstractView *view, QMouseEvent *mouseEvent );
     virtual bool mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent );
@@ -33,6 +35,7 @@ public:
 
     void setData( medAbstractData *data );
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
+    //void initializeLabelMapData( medAbstractData * imageData );
 
     template <typename IMAGE> void GenerateMinMaxValuesFromImage ();
 
@@ -54,7 +57,13 @@ private :
     medAbstractData* m_imageData;
 
     typedef itk::Image<unsigned char, 3> MaskType;
+    typedef itk::AttributeLabelObject<unsigned char, 3, unsigned char> LabelObjectType;
+    typedef itk::LabelMap< LabelObjectType > LabelMapType;
+
     MaskType::Pointer m_itkMask;
+
+    typedef itk::LabelMapToLabelImageFilter< LabelMapType, MaskType > MapToImageFilter;
+    MapToImageFilter::Pointer m_filter;
 
     double m_MinValueImage;
     double m_MaxValueImage;

@@ -22,7 +22,6 @@
 #include <medDataIndex.h>
 #include <medViewEventFilter.h>
 #include <medImageMaskAnnotationData.h>
-#include <medPaintCommandStack.h>
 
 #include <QVector3D>
 #include <QTextEdit>
@@ -30,6 +29,9 @@
 #include <vector>
 
 #include <itkImage.h>
+#include <itkLabelObject.h>
+#include <itkLabelMap.h>
+#include <itkAttributeLabelObject.h>
 
 class medAbstractData;
 class medAbstractImageView;
@@ -52,6 +54,9 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegment
                           <<"segmentation")
 public:
 
+    typedef itk::AttributeLabelObject<unsigned char, 3, unsigned char> LabelObjectType;
+    typedef itk::LabelMap< LabelObjectType > LabelMapType;
+
     AlgorithmPaintToolbox( QWidget *parent );
     ~AlgorithmPaintToolbox();
 
@@ -61,7 +66,6 @@ public:
     dtkPlugin* plugin();
 
     medAbstractData* processOutput();
-
 
     double wandRadius () const  { return m_wandThresholdSizeSpinBox->value(); }
     double strokeRadius( ) const {return m_brushSizeSlider->value(); }
@@ -74,7 +78,6 @@ public slots:
     void activateStroke();
     void activateMagicWand();
 
-    void import();
     void clearMask();
 
     void setLabel(int newVal);
@@ -124,16 +127,10 @@ private:
 
     dtkSmartPointer< medClickAndMoveEventFilter > m_viewFilter;
 
-    dtkSmartPointer<medImageMaskAnnotationData> m_maskAnnotationData;
-    //TODO smartPointing have to be managed only in abstraction -rde
-
-    dtkSmartPointer<medAbstractData> m_maskData;
-    medAbstractData* m_imageData;
-
     medImageMaskAnnotationData::ColorMapType m_labelColorMap;
+
     double m_MinValueImage;
     double m_MaxValueImage;
-
 
     double m_wandRadius;
     double m_strokeRadius;
@@ -141,7 +138,7 @@ private:
 
     PaintState::E m_paintState;
 
-    medPaintCommandStack *m_undoStack;
+    QUndoStack *m_undoStack;
     QUndoView *m_undoView;
 };
 
