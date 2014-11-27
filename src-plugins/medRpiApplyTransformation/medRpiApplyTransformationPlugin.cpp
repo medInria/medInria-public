@@ -84,7 +84,7 @@ QString medRpiApplyTransformationPlugin::description() const
 
 QString medRpiApplyTransformationPlugin::version() const
 {
-    return MEDDIFFEOMORPHICDEMONSREGISTRATIONPLUGIN_VERSION;
+    return MEDRPIAPPLYTRANSFORMATIONPLUGIN_VERSION;
 }
 
 QStringList medRpiApplyTransformationPlugin::dependencies() const

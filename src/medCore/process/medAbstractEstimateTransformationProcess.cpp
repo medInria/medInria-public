@@ -4,18 +4,18 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <medAbstractRegistrationProcess.h>
+#include <medAbstractEstimateTransformationProcess.h>
 
 #include <medAbstractImageData.h>
 
-medAbstractRegistrationProcess::medAbstractRegistrationProcess(medAbstractProcess *parent):
+medAbstractEstimateTransformationProcess::medAbstractEstimateTransformationProcess(medAbstractProcess *parent):
     medAbstractProcess(parent)
 {
     medProcessInput<medAbstractImageData> *fixed = new medProcessInput<medAbstractImageData>("Fixed Image", false);
@@ -28,17 +28,17 @@ medAbstractRegistrationProcess::medAbstractRegistrationProcess(medAbstractProces
 
 }
 
-medAbstractRegistrationProcess::~medAbstractRegistrationProcess()
+medAbstractEstimateTransformationProcess::~medAbstractEstimateTransformationProcess()
 {
 
 }
 
-bool medAbstractRegistrationProcess::isInteractive()
+bool medAbstractEstimateTransformationProcess::isInteractive() const
 {
     return false;
 }
 
-QList<medAbstractParameter*> medAbstractRegistrationProcess::parameters()
+QList<medAbstractParameter*> medAbstractEstimateTransformationProcess::parameters()
 {
     //TODO GPR: temporary
     return QList<medAbstractParameter*>();

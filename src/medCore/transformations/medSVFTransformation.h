@@ -16,7 +16,7 @@
 #include <medCoreExport.h>
 #include <medAbstractTransformation.h>
 
-class medAbstractImageData;
+#include <medAbstractImageData.h>
 
 class medSVFTransformationPrivate;
 class MEDCORE_EXPORT medSVFTransformation: public medAbstractTransformation
@@ -28,7 +28,7 @@ public:
     ~medSVFTransformation();
 
 public:
-    virtual medAbstractImageData parameter() const;
+    virtual medAbstractImageData* parameter() const;
     virtual void setParameter(medAbstractImageData *parameter);
 
 private:

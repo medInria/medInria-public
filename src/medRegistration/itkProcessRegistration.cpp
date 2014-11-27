@@ -70,7 +70,7 @@ public:
 // itkProcessRegistration
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistration::itkProcessRegistration() : medAbstractRegistrationProcess(), d(new itkProcessRegistrationPrivate)
+itkProcessRegistration::itkProcessRegistration() : medAbstractEstimateTransformationProcess(), d(new itkProcessRegistrationPrivate)
 {
     d->fixedImage = NULL;
     d->output = NULL;

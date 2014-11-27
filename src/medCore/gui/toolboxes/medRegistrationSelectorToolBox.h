@@ -17,7 +17,7 @@
 #include <medCoreExport.h>
 #include <medAbstractJob.h>
 
-class medAbstractRegistrationProcess;
+class medAbstractEstimateTransformationProcess;
 class medAbstractImageView;
 class medAbstractImageData;
 class medDataIndex;

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -35,21 +35,10 @@ public:
     static bool isUsable();
     void setupTabbedViewContainer ();
 
-    enum typeOfOperation { algorithm, undo, redo, reset };
-
 protected slots:
-    void updateFromFixedContainer();
-    void updateFromMovingContainer();
-    void updateUserLayerClosable(int tabIndex);
-    void updateFromRegistrationSuccess(medAbstractData *output);
     void setupProcess(QString);
     void startProcess();
-    void handleOutput(typeOfOperation type, QString algoName);
-    void saveTrans();
-    //void onJobAdded(medAbstractJob* item, QString jobName);
-    void handleUndo();
-    void handleRedo();
-    void handleReset();
+    void enableSelectorToolBox();
 
 
 private slots:
