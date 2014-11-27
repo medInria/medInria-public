@@ -205,7 +205,8 @@ void medClutEditorToolBox::setData(medAbstractData *data)
 
         for ( int i = min_range; i <= max_range; ++i ) {
             qreal count = static_cast< qreal >(
-                image->scalarValueCount( i - min_range ) );
+                image->scalarValueCount( i - min_range ) ); //the histogram (calculated in itkDataImage)'s first value is 0
+                                                            //otherwise shift of this histogram
             bins.insert( static_cast< qreal >( i ), count );
         }
         d->histogram->setValues( bins );
