@@ -33,7 +33,7 @@ class medRpiApplyTransformationProcessPrivate
 // medRpiApplyTransformationProcess
 // /////////////////////////////////////////////////////////////////
 
-medRpiApplyTransformationProcess::medRpiApplyTransformationProcess() : medAbstractProcess(), d(new medRpiApplyTransformationProcessPrivate)
+medRpiApplyTransformationProcess::medRpiApplyTransformationProcess() : medAbstractApplyTransformationProcess(), d(new medRpiApplyTransformationProcessPrivate)
 {
 
 }
@@ -47,7 +47,7 @@ medRpiApplyTransformationProcess::~medRpiApplyTransformationProcess()
 bool medRpiApplyTransformationProcess::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("medRpiApplyTransformationProcess",
-                                                                      createmedRpiApplyTransformation, "medAbstractEstimateTransformationProcess");
+                                                                      createmedRpiApplyTransformation, "medAbstractApplyTransformationProcess");
 }
 
 QString medRpiApplyTransformationProcess::description() const
@@ -62,7 +62,7 @@ QString medRpiApplyTransformationProcess::identifier() const
 
 QList<medAbstractParameter*> medRpiApplyTransformationProcess::parameters()
 {
-
+    return QList<medAbstractParameter *>();
 }
 
 int medRpiApplyTransformationProcess::update()
@@ -70,11 +70,11 @@ int medRpiApplyTransformationProcess::update()
     if(!this->geometry() || !this->inputImage() || this->transformationStack().isEmpty())
     {
         qDebug() << "Wrong parameters, could not apply rpi transformation...";
-        return false;
+        return EXIT_FAILURE;
     }
 
     qDebug() << "medRpiApplyTransformationProcess update !!!";
-    return true;
+    return EXIT_SUCCESS;
 }
 
 bool medRpiApplyTransformationProcess::isInteractive() const

@@ -40,6 +40,7 @@ list_source_files(${PROJECT_NAME}
   views/navigators
   parameters
   transformations
+  dataSources
   )
 
 set(${PROJECT_NAME}_QRC resources/medCore.qrc)

@@ -40,10 +40,6 @@ protected slots:
     void startProcess();
     void enableSelectorToolBox();
 
-
-private slots:
-    void removeSlectorInternToolBox();
-
 private:
     medRegistrationWorkspacePrivate *d;
 };

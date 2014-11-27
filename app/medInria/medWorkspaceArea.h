@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -65,7 +65,7 @@ public:
     medAbstractWorkspace* currentWorkspace();
 
 protected:
-    void addDatabaseView(medDatabaseDataSource* dataSource);
+    void addDatabaseView();
     void switchTotabbedViewContainers(medTabbedViewContainers* stack);
 
 signals:

@@ -41,20 +41,6 @@ public:
     virtual int update();
 
 public:
-    void addTransformation(medAbstractTransformation *transfo);
-    void addTransformation(QList<medAbstractTransformation *> transfo);
-    QList<medAbstractTransformation *> transformationStack() const;
-
-public:
-    void resetTransformationStack();
-
-public:
-    void setGeometry(medAbstractImageData *geometry);
-    medAbstractImageData*  geometry() const;
-    void setInputImage(medAbstractImageData *imageData);
-    medAbstractImageData* inputImage() const;
-
-public:
     QList<medAbstractParameter*> parameters();
 
 private:

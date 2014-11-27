@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -96,7 +96,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->splitter->addWidget(d->viewContainer);
     d->splitter->addWidget(d->toolBoxContainer);
 
-    this->addDatabaseView(medDataSourceManager::instance()->databaseDataSource());
+    this->addDatabaseView();
     connect(medDataSourceManager::instance(), SIGNAL(open(medDataIndex)), this, SIGNAL(open(medDataIndex)));
 
     if (!d->splitter->restoreState(medSettingsManager::instance()->value("medWorkspaceArea", "splitterState").toByteArray()))
@@ -220,22 +220,30 @@ void medWorkspaceArea::setupWorkspace(const QString &id)
     workspace->setupTabbedViewContainer();
 }
 
-void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
+void medWorkspaceArea::addDatabaseView()
 {
-    QVBoxLayout *databaseViewLayout = new QVBoxLayout;
-    databaseViewLayout->setSpacing(0);
-    databaseViewLayout->setContentsMargins(0,0,0,0);
+    foreach (medAbstractDataSource* dataSource, medDataSourceManager::instance()->dataSources())
+    {
+        //TODO - Fix this, it's ugly - RDE
 
-    databaseViewLayout->addWidget(dataSource->compactViewWidget());
-    d->navigatorContainer->setLayout(databaseViewLayout);
+        if(medDatabaseDataSource* dbDataSource = qobject_cast<medDatabaseDataSource*>(dataSource))
+        {
+            QVBoxLayout *databaseViewLayout = new QVBoxLayout;
+            databaseViewLayout->setSpacing(0);
+            databaseViewLayout->setContentsMargins(0,0,0,0);
 
-    dataSource->compactViewWidget()->resize(dataSource->compactViewWidget()->width(), dataSource->compactViewWidget()->height());
-    //little tricks to force to recompute the stylesheet.
-    dataSource->compactViewWidget()->setStyleSheet("/* */");
+            databaseViewLayout->addWidget(dbDataSource->compactViewWidget());
+            d->navigatorContainer->setLayout(databaseViewLayout);
 
-    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
-            this, SIGNAL(open(const medDataIndex&)),
-            Qt::UniqueConnection);
+            dbDataSource->compactViewWidget()->resize(dbDataSource->compactViewWidget()->width(), dbDataSource->compactViewWidget()->height());
+            //little tricks to force to recompute the stylesheet.
+            dbDataSource->compactViewWidget()->setStyleSheet("/* */");
+
+//            connect(dbDataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
+//                    this, SIGNAL(open(const medDataIndex&)),
+//                    Qt::UniqueConnection);
+        }
+    }
 }
 
 void medWorkspaceArea::switchTotabbedViewContainers(medTabbedViewContainers* stack)

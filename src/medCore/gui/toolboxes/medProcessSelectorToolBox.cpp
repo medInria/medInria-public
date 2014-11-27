@@ -42,7 +42,6 @@ public:
 
 medProcessSelectorToolBox::medProcessSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medProcessSelectorToolBoxPrivate)
 {
-
     // --- Setting up custom toolboxes list ---
     d->processesCombobox = new QComboBox(this);
     d->processesCombobox->addItem(tr("Choose algorithm"));

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -17,7 +17,9 @@
 #include <dtkGui/dtkFinder.h>
 
 #include <medActionsToolBox.h>
-#include<medSettingsManager.h>
+#include <medSettingsManager.h>
+
+#include <medAbstractDataSourceFactory.h>
 
 class medFileSystemDataSourcePrivate
 {
@@ -317,4 +319,19 @@ void medFileSystemDataSource::saveTreeViewSettings()
 {
     medSettingsManager* mng = medSettingsManager::instance();
     mng->setValue("medFileSystemDataSource", "listView", true);
+}
+
+// /////////////////////////////////////////////////////////////////
+// Type instantiation
+// /////////////////////////////////////////////////////////////////
+
+bool medFileSystemDataSource::registered()
+{
+    return medAbstractDataSourceFactory::instance()->registerDataSource ("medFileSystemDataSource", createmedFileSystemDataSource);
+}
+
+
+medAbstractDataSource* createmedFileSystemDataSource(QWidget *)
+{
+    return new medFileSystemDataSource;
 }

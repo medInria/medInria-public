@@ -20,7 +20,6 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
-#include <medFilteringAbstractToolBox.h>
 #include <medAbstractData.h>
 #include <medDataManager.h>
 
@@ -32,7 +31,7 @@
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
 
-#include <medAbstractFilteringProcess.h>
+#include <medAbstractApplyTransformationProcess.h>
 #include <medTriggerParameter.h>
 #include <medViewContainerSplitter.h>
 
@@ -46,21 +45,22 @@ public:
     medAbstractData *movingData;
     medAbstractData *fixedData;
 
-    dtkSmartPointer <medAbstractFilteringProcess> process;
+    dtkSmartPointer <medAbstractApplyTransformationProcess> process;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medRegistrationWorkspacePrivate)
 {
-    d->filterInput = NULL;
-    d->filterOutput = NULL;
+    d->movingData = NULL;
+    d->fixedData = NULL;
+    d->process = NULL;
 
     d->applyTransfoToolBox = new medProcessSelectorToolBox(parent);
     d->applyTransfoToolBox->setTitle("Apply transformation");
 
     this->addToolBox(d->applyTransfoToolBox);
 
-    QStringList implementations = dtkAbstractProcessFactory::instance()->implementations("medAbstractFilteringProcess");
-    d->filteringToolBox->setAvailableProcesses(implementations);
+    QStringList implementations = dtkAbstractProcessFactory::instance()->implementations("medAbstractApplyTransformationProcess");
+    d->applyTransfoToolBox->setAvailableProcesses(implementations);
 
     medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
     viewGroup1->setLinkAllParameters(true);
@@ -69,7 +69,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent): medAbstract
     medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this,  this->identifier());
     layerGroup1->setLinkAllParameters(true);
 
-    connect(d->filteringToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupProcess(QString)));
+    connect(d->applyTransfoToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupProcess(QString)));
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace()
@@ -117,10 +117,10 @@ void medRegistrationWorkspace::setupTabbedViewContainer()
 void medRegistrationWorkspace::setupProcess(QString process)
 {
     medAbstractProcess *temp = d->process;
-    d->process = dynamic_cast<medAbstractFilteringProcess*>(dtkAbstractProcessFactory::instance()->create(process));
+    d->process = dynamic_cast<medAbstractApplyTransformationProcess*>(dtkAbstractProcessFactory::instance()->create(process));
     if(d->process)
     {
-        d->filteringToolBox->setProcessToolbox(d->process->toolbox());
+        d->applyTransfoToolBox->setProcessToolbox(d->process->toolbox());
         connect(d->process->runParameter(), SIGNAL(triggered()), this, SLOT(startProcess()));
         this->tabbedViewContainers()->setSplitter(0, d->process->viewContainerSplitter());
     }
@@ -129,6 +129,8 @@ void medRegistrationWorkspace::setupProcess(QString process)
     {
         d->process->retrieveInputs(temp);
     }
+
+    delete temp;
 }
 
 bool medRegistrationWorkspace::isUsable()
@@ -142,7 +144,7 @@ void medRegistrationWorkspace::startProcess()
     if(!d->process)
         return;
 
-    d->filteringToolBox->setEnabled(false);
+    d->applyTransfoToolBox->setEnabled(false);
 
     medRunnableProcess *runProcess = new medRunnableProcess(d->process, d->process->name());
     connect (runProcess, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
@@ -153,5 +155,5 @@ void medRegistrationWorkspace::startProcess()
 
 void medRegistrationWorkspace::enableSelectorToolBox()
 {
-    d->filteringToolBox->setEnabled(true);
+    d->applyTransfoToolBox->setEnabled(true);
 }

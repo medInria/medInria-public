@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -53,10 +53,10 @@ public:
 
     /** Returns all ToolBoxes owned by the source data plugin*/
     virtual QList<medToolBox*> getToolBoxes() = 0;
-	
-	/** Returns a short description of the data source */
-	virtual QString description() const = 0;
-	
+
+    /** Returns a short description of the data source */
+    virtual QString description() const = 0;
+
 signals:
     /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for importing*/
     void dataToImportReceived(QString pathToData);
@@ -80,6 +80,10 @@ signals:
 
     /** emitted when the source is about to remove a data.*/
     void dataRemoved(const medDataIndex& index);
+
+    void open(QString path);
+    void load(QString);
+    void open(const medDataIndex&);
 };
 
 

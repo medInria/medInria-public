@@ -18,6 +18,7 @@
 #include <medAbstractProcess.h>
 
 class medAbstractData;
+class medAbstractImageData;
 class medAbstractTransformation;
 
 class medAbstractApplyTransformationProcessPrivate;
@@ -26,7 +27,7 @@ class MEDCORE_EXPORT medAbstractApplyTransformationProcess : public medAbstractP
     Q_OBJECT
 
 public:
-    medAbstractApplyTransformationProcess();
+    medAbstractApplyTransformationProcess(medAbstractProcess *parent = NULL);
     virtual ~medAbstractApplyTransformationProcess();
 
 public:
@@ -41,6 +42,9 @@ public:
     QList<medAbstractTransformation *> transformationStack() const;
 
 public:
+    virtual medToolBox* toolbox();
+
+public:
     void resetTransformationStack();
 
 public:
@@ -51,6 +55,12 @@ public:
 
 public:
     virtual QList<medAbstractParameter*> parameters();
+
+protected slots:
+    void addSVFTransfoDialog();
+
+signals:
+    void addSVFTransfoRequest(medAbstractImageData *data);
 
 private:
     medAbstractApplyTransformationProcessPrivate* d;

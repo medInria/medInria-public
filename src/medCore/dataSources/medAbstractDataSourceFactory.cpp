@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -38,7 +38,7 @@ bool medAbstractDataSourceFactory::registerDataSource(QString type, medAbstractD
     return false;
 }
 
-QList<QString> medAbstractDataSourceFactory::dataSourcePlugins(void)
+QList<QString> medAbstractDataSourceFactory::dataSources(void)
 {
     return d->dataSourceCreators.keys();
 }

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -23,6 +23,7 @@
 #include <medDatabaseExporter.h>
 #include <medDatabasePreview.h>
 #include <medDatabaseCompactWidget.h>
+#include <medAbstractDataSourceFactory.h>
 
 #include <medActionsToolBox.h>
 
@@ -183,4 +184,19 @@ void medDatabaseDataSource::onFilter( const QString &text, int column )
 void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index, QUuid)
 {
     d->largeView->onOpeningFailed(index);
+}
+
+// /////////////////////////////////////////////////////////////////
+// Type instantiation
+// /////////////////////////////////////////////////////////////////
+
+bool medDatabaseDataSource::registered()
+{
+    return medAbstractDataSourceFactory::instance()->registerDataSource ( "medDatabaseDataSource", createmedDatabaseDataSource);
+}
+
+
+medAbstractDataSource *createmedDatabaseDataSource (QWidget *)
+{
+    return new medDatabaseDataSource;
 }

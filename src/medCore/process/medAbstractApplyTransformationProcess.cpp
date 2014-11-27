@@ -14,6 +14,8 @@
 #include <medAbstractApplyTransformationProcess.h>
 
 #include <medAbstractImageData.h>
+#include <medToolBox.h>
+#include <medDataSourceDialog.h>
 
 
 class medAbstractApplyTransformationProcessPrivate
@@ -24,23 +26,30 @@ public:
     medAbstractImageData *transformedImage;
 
     QList<medAbstractTransformation *> transformations;
+
+    QPointer<medToolBox> toolBox;
+    QPushButton* addLinearTransfoButton;
+    QPushButton* addSVFTransfoButton;
+    QPushButton* addDFTransfoButton;
 };
 
-medAbstractApplyTransformationProcess::medAbstractApplyTransformationProcess():
+medAbstractApplyTransformationProcess::medAbstractApplyTransformationProcess(medAbstractProcess * parent):
     medAbstractProcess(parent), d(new medAbstractApplyTransformationProcessPrivate)
 {
     d->geometry = NULL;
     d->inputImage = NULL;
     d->transformedImage = NULL;
 
-    medProcessInput<medAbstractImageData> *geometry = new medProcessInput<medAbstractImageData>("Fixed Image", false);
+    medProcessInput<medAbstractImageData> *geometry = new medProcessInput<medAbstractImageData>("Fixed Image", false, d->geometry);
     this->appendInput(geometry);
 
-    medProcessInput<medAbstractImageData> *moving = new medProcessInput<medAbstractImageData>("Moving Image", false);
+    medProcessInput<medAbstractImageData> *moving = new medProcessInput<medAbstractImageData>("Moving Image", false, d->inputImage);
     this->appendInput(moving);
 
-    this->appendOutput( new medProcessOutput<medAbstractImageData>("Output"));
+    medProcessOutput<medAbstractImageData> *output = new medProcessOutput<medAbstractImageData>(("Output"), d->transformedImage);
+    this->appendOutput(output);
 
+    d->toolBox = NULL;
 }
 
 medAbstractApplyTransformationProcess::~medAbstractApplyTransformationProcess()
@@ -98,4 +107,29 @@ medAbstractImageData* medAbstractApplyTransformationProcess::inputImage() const
 void medAbstractApplyTransformationProcess::resetTransformationStack()
 {
     d->transformations.clear();
+}
+
+medToolBox* medAbstractApplyTransformationProcess::toolbox()
+{
+    if(d->toolBox.isNull())
+    {
+        d->toolBox = new medToolBox;
+
+        d->addSVFTransfoButton = new QPushButton(tr("Add SVF transfo"));
+        connect(d->addSVFTransfoButton, SIGNAL(clicked()), this, SLOT(addSVFTransfoDialog()));
+
+        d->toolBox->addWidget(d->addSVFTransfoButton);
+    }
+
+    return d->toolBox;
+}
+
+void medAbstractApplyTransformationProcess::addSVFTransfoDialog()
+{
+    medAbstractImageData *data = NULL;
+    medDataSourceDialog dialog(NULL);
+    dialog.exec();
+
+
+    emit addSVFTransfoRequest(data);
 }
