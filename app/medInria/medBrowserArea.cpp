@@ -50,7 +50,7 @@ public:
     QList <medAbstractDataSource *> dataSources;
 
     QStackedWidget *mainStack;
-    QTabWidget *pannelTabWidget;
+    QTabWidget *panelTabWidget;
 
     QSplitter *splitter;
     QVBoxLayout *leftSideLayout;
@@ -64,9 +64,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->splitter->setHandleWidth(2);
 
     d->mainStack = new QStackedWidget(this);
-    d->pannelTabWidget = new QTabWidget(this);
+    d->panelTabWidget = new QTabWidget(this);
 
-    connect(d->pannelTabWidget, SIGNAL(currentChanged(int)), this, SLOT(changeSource(int)));
+    connect(d->panelTabWidget, SIGNAL(currentChanged(int)), this, SLOT(changeSource(int)));
 
     // Check if there are already item in the database, otherwise, switch to File system datasource
     // Soooooo ugly :(
@@ -87,10 +87,10 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     this->setLayout(layout);
     layout->setContentsMargins(1, 0, 1, 0);
 
-    d->pannelTabWidget->setMinimumWidth(340);
-    d->pannelTabWidget->setMaximumWidth(340);
+    d->panelTabWidget->setMinimumWidth(340);
+    d->panelTabWidget->setMaximumWidth(340);
 
-    d->splitter->addWidget(d->pannelTabWidget);
+    d->splitter->addWidget(d->panelTabWidget);
     d->splitter->addWidget(d->mainStack);
  }
 
@@ -110,32 +110,32 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
     d->dataSources.push_back(dataSource);
     d->mainStack->addWidget(dataSource->mainViewWidget());
 
-    medBrowserPannelFrame *pannelFrame= new medBrowserPannelFrame;
-    QWidget *pannelWidget = new QWidget;
-    QVBoxLayout *pannelLayout = new QVBoxLayout;
-    pannelLayout->setContentsMargins(0,0,0,0);
+    medBrowserPanelFrame *panelFrame= new medBrowserPanelFrame;
+    QWidget *panelWidget = new QWidget;
+    QVBoxLayout *panelLayout = new QVBoxLayout;
+    panelLayout->setContentsMargins(0,0,0,0);
 
     if(dataSource->sourceSelectorWidget())
     {
-        pannelLayout->addWidget(dataSource->sourceSelectorWidget(), 0);
+        panelLayout->addWidget(dataSource->sourceSelectorWidget(), 0);
 //        dataSource->sourceSelectorWidget()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     }
 
     foreach(QWidget* toolbox, dataSource->getToolBoxes())
     {
-        pannelLayout->addWidget(toolbox, 0);
+        panelLayout->addWidget(toolbox, 0);
 //        toolbox->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     }
 
 
 
-    pannelWidget->setLayout(pannelLayout);
-    pannelFrame->setWidgetAndPreview(pannelWidget, dataSource->previewWidget());
+    panelWidget->setLayout(panelLayout);
+    panelFrame->setWidgetAndPreview(panelWidget, dataSource->previewWidget());
 
-    d->pannelTabWidget->addTab(pannelFrame, dataSource->tabName());
+    d->panelTabWidget->addTab(panelFrame, dataSource->tabName());
 }
 
-class medBrowserPannelFramePrivate
+class medBrowserPanelFramePrivate
 {
 public:
     QWidget *preview;
@@ -144,8 +144,8 @@ public:
 };
 
 
-medBrowserPannelFrame::medBrowserPannelFrame(QWidget *parent):
-    d(new medBrowserPannelFramePrivate)
+medBrowserPanelFrame::medBrowserPanelFrame(QWidget *parent):
+    d(new medBrowserPanelFramePrivate)
 {
     this->setContentsMargins(0,0,0,0);
 
@@ -156,14 +156,14 @@ medBrowserPannelFrame::medBrowserPannelFrame(QWidget *parent):
 }
 
 
-medBrowserPannelFrame::~medBrowserPannelFrame()
+medBrowserPanelFrame::~medBrowserPanelFrame()
 {
     delete d;
     d = NULL;
 }
 
 
-void medBrowserPannelFrame::resizeEvent(QResizeEvent *event)
+void medBrowserPanelFrame::resizeEvent(QResizeEvent *event)
 {
     delete d->layout;
     d->layout = new QVBoxLayout(this);
@@ -186,7 +186,7 @@ void medBrowserPannelFrame::resizeEvent(QResizeEvent *event)
 
 
 void
-medBrowserPannelFrame::setWidgetAndPreview(QWidget *widget, QWidget *preview)
+medBrowserPanelFrame::setWidgetAndPreview(QWidget *widget, QWidget *preview)
 {
     d->widget = widget;
     d->preview = preview;

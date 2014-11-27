@@ -38,14 +38,14 @@ private:
 };
 
 class medDatabasePreview;
-class medBrowserPannelFramePrivate;
-class medBrowserPannelFrame: public QFrame
+class medBrowserPanelFramePrivate;
+class medBrowserPanelFrame: public QFrame
 {
     Q_OBJECT
 
 public:
-    medBrowserPannelFrame(QWidget *parent = NULL);
-    virtual ~medBrowserPannelFrame();
+    medBrowserPanelFrame(QWidget *parent = NULL);
+    virtual ~medBrowserPanelFrame();
 
 public:
     void setWidgetAndPreview(QWidget *widget, QWidget *preview);
@@ -54,5 +54,5 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
-    medBrowserPannelFramePrivate *d;
+    medBrowserPanelFramePrivate *d;
 };
