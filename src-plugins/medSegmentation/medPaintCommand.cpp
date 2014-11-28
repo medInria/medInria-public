@@ -60,6 +60,12 @@ medPaintCommand::medPaintCommand(medPaintCommandOptions *options, QUndoCommand *
     d->labelMap = medPaintCommandManager::instance()->labelMap(this->options()->itkMask);
 }
 
+medPaintCommand::~medPaintCommand()
+{
+    delete d;
+    d = 0;
+}
+
 
 void medPaintCommand::paint()
 {

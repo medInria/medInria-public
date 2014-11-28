@@ -52,6 +52,12 @@ medMagicWandCommand::medMagicWandCommand(medPaintCommandOptions *options, bool r
     d->filter = MapToImageFilter::New();
 }
 
+medMagicWandCommand::~medMagicWandCommand()
+{
+    delete d;
+    d = 0;
+}
+
 
 void medMagicWandCommand::paint()
 {

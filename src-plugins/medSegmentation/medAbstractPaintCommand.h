@@ -80,6 +80,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medAbstractPaintCommand : public QUndoCom
 {
 public:
     medAbstractPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent = 0);
+    virtual ~medAbstractPaintCommand();
 
     virtual void undo() = 0;
     virtual void redo() = 0;

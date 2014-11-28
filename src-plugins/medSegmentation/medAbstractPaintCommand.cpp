@@ -66,6 +66,13 @@ medAbstractPaintCommand::medAbstractPaintCommand(medPaintCommandOptions *options
     d->option = options;
 }
 
+medAbstractPaintCommand::~medAbstractPaintCommand()
+{
+    delete d->option;
+    delete d;
+    d = 0;
+}
+
 medPaintCommandOptions* medAbstractPaintCommand::options() const
 {
     return d->option;

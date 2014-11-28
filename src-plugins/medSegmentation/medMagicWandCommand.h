@@ -28,6 +28,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medMagicWandCommand : public medAbstractP
 {
 public:
     medMagicWandCommand( medPaintCommandOptions *options,  bool run3D, QUndoCommand *parent = 0);
+    virtual ~medMagicWandCommand();
 
     virtual void undo();
     virtual void redo();
