@@ -18,7 +18,7 @@
 #include <medAbstractView.h>
 #include <itkImage.h>
 
-#include <msegPluginExport.h>
+#include <medSegmentationPluginExport.h>
 
 
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medClearMaskCommand : public QUndoCommand

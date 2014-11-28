@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medViewEventFilter.h>
-#include <msegAlgorithmPaintToolbox.h>
+#include <medAlgorithmPaintToolbox.h>
 
 #include <itkImage.h>
 #include <itkLabelObject.h>

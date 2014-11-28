@@ -25,7 +25,7 @@
 #include <itkLabelImageToLabelMapFilter.h>
 #include <itkSmartPointer.h>
 
-#include <msegPluginExport.h>
+#include <medSegmentationPluginExport.h>
 
 class medAbstractPaintCommandPrivate;
 
