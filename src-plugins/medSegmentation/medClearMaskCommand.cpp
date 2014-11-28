@@ -13,24 +13,49 @@
 
 #include <medClearMaskCommand.h>
 
-medClearMaskCommand::medClearMaskCommand(QUndoCommand *parent)
-{
+#include <itkImageDuplicator.h>
 
+
+medClearMaskCommand::medClearMaskCommand(medAbstractView* view, QUndoCommand *parent): QUndoCommand(parent)
+{
+    m_view = view;
+    m_mask = 0;
+    m_previousMask = MaskType::New();
+}
+
+void medClearMaskCommand::setMaskToClear(MaskType::Pointer mask)
+{
+    m_mask = mask;
 }
 
 void medClearMaskCommand::undo()
 {
-
+    if(m_mask)
+    {
+        m_mask->Graft( m_previousMask );
+        m_mask->Modified();
+        m_mask->GetPixelContainer()->Modified();
+        m_mask->SetPipelineMTime(m_mask->GetMTime());
+        m_view->render();
+    }
 }
 
 void medClearMaskCommand::redo()
 {
-    //    if ( m_maskData && m_itkMask ){
-    //        m_itkMask->FillBuffer( medSegmentationSelectorToolBox::MaskPixelValues::Unset );
-    //        m_itkMask->Modified();
-    //        m_itkMask->GetPixelContainer()->Modified();
-    //        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+    typedef itk::ImageDuplicator< MaskType > DuplicatorType;
+    DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    m_mask->Print(std::cout);
+    duplicator->SetInputImage(m_mask);
+    duplicator->Update();
+    m_previousMask = duplicator->GetOutput();
 
-    //        m_maskAnnotationData->invokeModified();
-    //    }
+    if ( m_mask )
+    {
+        m_mask->FillBuffer(0);
+        m_mask->Modified();
+        m_mask->GetPixelContainer()->Modified();
+        m_mask->SetPipelineMTime(m_mask->GetMTime());
+
+        m_view->render();
+    }
 }

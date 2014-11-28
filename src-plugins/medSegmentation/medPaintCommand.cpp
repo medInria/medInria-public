@@ -73,8 +73,6 @@ void medPaintCommand::paint()
 //        return;
 //    }
 
-    qDebug() << "paint";
-
     d->label = LabelObjectType::New();
     d->label->SetAttribute(this->options()->maskValue);
 

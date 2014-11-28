@@ -25,7 +25,7 @@
 #include <medDataManager.h>
 #include <medAbstractDataFactory.h>
 #include <medClickAndMoveEventFilter.h>
-#include <medAbstractPaintCommand.h>
+#include <medClearMaskCommand.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
@@ -169,22 +169,6 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     connect(this->segmentationToolBox(), SIGNAL(inputChanged()), this, SLOT(updateMouseInteraction()));
 
     showButtons(false);
-
-    m_undoStack = new QUndoStack(this);
-
-    m_undoView = new QUndoView(m_undoStack);
-    m_undoView->setWindowTitle(tr("Command List"));
-    m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
-
-    QAction *undoAction = m_undoStack->createUndoAction(this, tr("&Undo"));
-    undoAction->setShortcuts(QKeySequence::Undo);
-
-    QAction * redoAction = m_undoStack->createRedoAction(this, tr("&Redo"));
-    redoAction->setShortcuts(QKeySequence::Redo);
-
-    layout->addWidget(m_undoView);
-
-    //m_labelMap = LabelMapType::New();
 }
 
 AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
@@ -286,14 +270,11 @@ void AlgorithmPaintToolbox::setLabelColor()
 
 void AlgorithmPaintToolbox::clearMask()
 {
-//    if ( m_maskData && m_itkMask ){
-//        m_itkMask->FillBuffer( medSegmentationSelectorToolBox::MaskPixelValues::Unset );
-//        m_itkMask->Modified();
-//        m_itkMask->GetPixelContainer()->Modified();
-//        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+    medClearMaskCommand *clearCommand = new medClearMaskCommand(m_viewFilter->view());
+    clearCommand->setMaskToClear(m_itkMask);
+    m_viewFilter->view()->undoStack()->push(clearCommand);
 
-//        m_maskAnnotationData->invokeModified();
-//    }
+    //m_viewFilter->view()->viewWidget()->setFocus();
 }
 
 void AlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
@@ -385,12 +366,6 @@ dtkPlugin* AlgorithmPaintToolbox::plugin()
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin ( "segmentationPlugin" );
     return plugin;
-}
-
-
-void AlgorithmPaintToolbox::addCommand(QUndoCommand *command)
-{
-    m_undoStack->push(command);
 }
 
 bool AlgorithmPaintToolbox::isWand3D() const

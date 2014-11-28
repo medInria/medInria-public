@@ -39,8 +39,6 @@ LabelMapType::Pointer medPaintCommandManager::labelMap(MaskType* mask)
         labelMap ->Graft(filter->GetOutput());
 
         labelMaps.insert(mask, labelMap);
-
-        qDebug() << "creating new label Map" << labelMap;
     }
     return labelMaps[mask];
 }
@@ -67,20 +65,6 @@ medAbstractPaintCommand::medAbstractPaintCommand(medPaintCommandOptions *options
 {
     d->option = options;
 }
-
-//void medAbstractPaintCommand::undo()
-//{
-//    this->unpaint();
-
-//    d->option->view->render();
-//}
-
-//void medAbstractPaintCommand::redo()
-//{
-//    this->paint();
-
-//    d->option->view->render();
-//}
 
 medPaintCommandOptions* medAbstractPaintCommand::options() const
 {

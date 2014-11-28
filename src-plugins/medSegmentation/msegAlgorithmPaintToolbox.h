@@ -54,8 +54,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegment
                           <<"segmentation")
 public:
 
-    typedef itk::AttributeLabelObject<unsigned char, 3, unsigned char> LabelObjectType;
-    typedef itk::LabelMap< LabelObjectType > LabelMapType;
+    typedef itk::Image<unsigned char, 3> MaskType;
 
     AlgorithmPaintToolbox( QWidget *parent );
     ~AlgorithmPaintToolbox();
@@ -72,7 +71,8 @@ public:
     unsigned int strokeLabel( )  const {return m_strokeLabelSpinBox->value(); }
     bool isWand3D () const;
 
-    void addCommand(QUndoCommand *command);
+    void setMask(MaskType::Pointer mask){m_itkMask = mask;}
+
 
 public slots:
     void activateStroke();
@@ -86,15 +86,18 @@ public slots:
     void setWandSliderValue(double val);
     void setWandSpinBoxValue(int val);
 
+    void setMinValue(double min){m_MinValueImage = min;}
+    void setMaxValue(double max){m_MaxValueImage = max;}
+
     void updateMouseInteraction();
+
+    void showButtons( bool value);
 
 protected:
     friend class ClickAndMoveEventFilter;
 
     // update with seed point data.
     void updateTableRow(int row);
-
-    void showButtons( bool value);
 
     void generateLabelColorMap(unsigned int numLabels);
 
@@ -129,6 +132,8 @@ private:
 
     medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 
+    MaskType::Pointer m_itkMask;
+
     double m_MinValueImage;
     double m_MaxValueImage;
 
@@ -137,9 +142,6 @@ private:
     unsigned int m_strokeLabel;
 
     PaintState::E m_paintState;
-
-    QUndoStack *m_undoStack;
-    QUndoView *m_undoView;
 };
 
 

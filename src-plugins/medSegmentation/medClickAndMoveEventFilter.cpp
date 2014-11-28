@@ -33,10 +33,12 @@ medClickAndMoveEventFilter::medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb
     m_maskAnnotationData = NULL;
     m_maskData = NULL;
     m_imageData = NULL;
+    m_view = NULL;
 }
 
 medClickAndMoveEventFilter::~medClickAndMoveEventFilter()
 {
+    qDebug() << "~medClickAndMoveEventFilter()";
 }
 
 void medClickAndMoveEventFilter::setColorMap( medImageMaskAnnotationData::ColorMapType colorMap)
@@ -54,6 +56,7 @@ void medClickAndMoveEventFilter::setColorMap( medImageMaskAnnotationData::ColorM
 bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEvent *mouseEvent )
 {
     m_paintState = m_toolbox->paintState();
+    m_view = view;
 
     if ( this->m_paintState == PaintState::DeleteStroke )
     {
@@ -128,7 +131,7 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
             options->maskValue = m_toolbox->strokeLabel();
 
             medMagicWandCommand *magicWandCommand = new medMagicWandCommand(options, m_toolbox->isWand3D());
-            m_toolbox->addCommand(magicWandCommand);
+            imageView->undoStack()->push(magicWandCommand);
 
             m_paintState = PaintState::None; //Wand operation is over
         }
@@ -139,6 +142,8 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
 
 bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    m_view = view;
+
     medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
     if(!imageView)
         return false;
@@ -161,7 +166,11 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
         options->radius = m_toolbox->strokeRadius();
         options->itkMask = m_itkMask;
         options->maskData = m_maskData;
-        options->maskValue = m_toolbox->strokeLabel();
+
+        if(this->m_paintState == PaintState::Stroke)
+            options->maskValue = m_toolbox->strokeLabel();
+        else if(this->m_paintState == PaintState::DeleteStroke)
+            options->maskValue = 0;
 
         medPaintCommand *paintCommand = new medPaintCommand(options);
         paintCommand->paint();
@@ -175,6 +184,8 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
 
 bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    m_view = view;
+
     medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
     if(!imageView)
         return false;
@@ -182,9 +193,8 @@ bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMous
     if ( this->m_paintState == PaintState::None )
         return false;
 
-    if (imageView->is2D()) {
-        m_paintState = PaintState::None; //Painting is done
-
+    if (imageView->is2D())
+    {
         medPaintCommandOptions *options = new medPaintCommandOptions;
         options->points = m_points;
         options->view = imageView;
@@ -192,12 +202,18 @@ bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMous
         options->radius = m_toolbox->strokeRadius();
         options->itkMask = m_itkMask;
         options->maskData = m_maskData;
-        options->maskValue = m_toolbox->strokeLabel();
+
+        if(this->m_paintState == PaintState::Stroke)
+            options->maskValue = m_toolbox->strokeLabel();
+        else if(this->m_paintState == PaintState::DeleteStroke)
+            options->maskValue = 0;
 
         medPaintCommand *paintCommand = new medPaintCommand(options);
-        m_toolbox->addCommand(paintCommand);
+        imageView->undoStack()->push(paintCommand);
 
         m_maskAnnotationData->invokeModified();
+
+        m_paintState = PaintState::None; //Painting is done
 
         this->m_points.clear();
     }
@@ -257,7 +273,6 @@ void medClickAndMoveEventFilter::setData( medAbstractData *medData )
 
             m_maskAnnotationData = new medImageMaskAnnotationData;
             this->initializeMaskData( m_imageData, m_maskData );
-            //this->initializeLabelMapData( m_imageData );
 
             m_maskAnnotationData->setMaskData(qobject_cast<medAbstractImageData*>(m_maskData));
 
@@ -270,11 +285,13 @@ void medClickAndMoveEventFilter::setData( medAbstractData *medData )
 
     if ( m_imageData ) {
         m_itkMask = dynamic_cast<MaskType*>( reinterpret_cast<itk::Object*>(m_maskData->data()) );
-        //this->showButtons(true);
+        m_toolbox->showButtons(true);
     } else {
         m_itkMask = NULL;
-        //this->showButtons(false);
+        m_toolbox->showButtons(false);
     }
+
+    m_toolbox->setMask(m_itkMask);
 }
 
 void medClickAndMoveEventFilter::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
@@ -388,7 +405,9 @@ medClickAndMoveEventFilter::GenerateMinMaxValuesFromImage ()
     m_MinValueImage = minMaxFilter->GetMinimum();
     m_MaxValueImage = minMaxFilter->GetMaximum();
 
-    //this->setWandSpinBoxValue(m_wandThresholdSizeSlider->value());
+    m_toolbox->setMinValue(m_MinValueImage);
+    m_toolbox->setMaxValue(m_MaxValueImage);
+    m_toolbox->setWandSliderValue(m_toolbox->wandRadius());
 }
 
 void medClickAndMoveEventFilter::setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData)

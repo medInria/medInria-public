@@ -46,6 +46,9 @@ medMagicWandCommand::medMagicWandCommand(medPaintCommandOptions *options, bool r
     d->label = 0;
 
     d->labelMap = medPaintCommandManager::instance()->labelMap(this->options()->itkMask);
+
+    typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
+    d->filter = MapToImageFilter::New();
 }
 
 
@@ -135,9 +138,17 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
     typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
 
     double value = tmpPtr->GetPixel(index);
+    double valueMin =  value - this->options()->radius;
+    double valueMax = value + this->options()->radius;
 
-    ctiFilter->SetUpper( value + this->options()->radius );
-    ctiFilter->SetLower( value - this->options()->radius );
+    if(valueMin < std::numeric_limits<typename IMAGE::PixelType>::min() )
+        valueMin = std::numeric_limits<typename IMAGE::PixelType>::min();
+
+    if(valueMax > std::numeric_limits<typename IMAGE::PixelType>::max() )
+        valueMax = std::numeric_limits<typename IMAGE::PixelType>::max();
+
+    ctiFilter->SetUpper( valueMax );
+    ctiFilter->SetLower( valueMin );
 
     MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
     regionRequested.SetIndex(planeIndex, index[planeIndex]);
@@ -218,9 +229,6 @@ void medMagicWandCommand::undo()
 {
     d->labelMap->RemoveLabelObject(d->label);
 
-    typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
-    d->filter = MapToImageFilter::New();
-
     d->filter->SetInput(d->labelMap);
     d->filter->Update();
 
@@ -239,9 +247,6 @@ void medMagicWandCommand::redo()
     else
     {
         d->labelMap->PushLabelObject(d->label);
-
-        typedef itk::LabelMapToAttributeImageFilter< LabelMapType, MaskType > MapToImageFilter;
-        d->filter = MapToImageFilter::New();
 
         d->filter->SetInput(d->labelMap);
         d->filter->Update();

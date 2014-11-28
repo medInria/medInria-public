@@ -60,6 +60,8 @@ public:
     // Smart pointed.
     // dtkSmartPointer should only be used in views, process and dataManager.
     dtkSmartPointer<medAbstractData> data;
+
+    QUndoStack *undoStack;
 };
 
 
@@ -75,6 +77,8 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     d->toolBarWidget = NULL;
     d->navigatorWidget = NULL;
     d->mouseInteractionWidget = NULL;
+
+    d->undoStack = new QUndoStack(this);
 }
 
 medAbstractView::~medAbstractView( void )
@@ -290,6 +294,14 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
             if(mouseEvent && mouseEvent->button() == Qt::LeftButton)
               emit selectedRequest(true);
         }
+        else if(event->type() == QEvent::KeyPress)
+        {
+            QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
+            if( keyEvent && keyEvent->matches(QKeySequence::Undo) )
+              d->undoStack->undo();
+            if( keyEvent && keyEvent->matches(QKeySequence::Redo) )
+              d->undoStack->redo();
+        }
 
     }
     return dtkAbstractView::eventFilter(obj, event);
@@ -427,4 +439,10 @@ QWidget* medAbstractView::mouseInteractionWidget()
     d->mouseInteractionWidget = groupParam->getPushButtonGroup();
 
     return d->mouseInteractionWidget;
+}
+
+
+QUndoStack* medAbstractView::undoStack() const
+{
+    return d->undoStack;
 }

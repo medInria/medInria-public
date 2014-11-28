@@ -24,6 +24,13 @@
 class medClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
+
+    typedef itk::Image<unsigned char, 3> MaskType;
+    typedef itk::AttributeLabelObject<unsigned char, 3, unsigned char> LabelObjectType;
+    typedef itk::LabelMap< LabelObjectType > LabelMapType;
+    typedef itk::LabelMapToLabelImageFilter< LabelMapType, MaskType > MapToImageFilter;
+
+
     medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb  = NULL);
     ~medClickAndMoveEventFilter();
 
@@ -35,11 +42,16 @@ public:
 
     void setData( medAbstractData *data );
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
-    //void initializeLabelMapData( medAbstractData * imageData );
 
     template <typename IMAGE> void GenerateMinMaxValuesFromImage ();
 
     void setColorMap( medImageMaskAnnotationData::ColorMapType colorMap);
+
+
+    MaskType::Pointer mask(){return m_itkMask;}
+    medAbstractView* view(){
+        return m_view;
+    }
 
 protected:
      void setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData);
@@ -55,14 +67,10 @@ private :
 
     dtkSmartPointer<medAbstractData> m_maskData;
     medAbstractData* m_imageData;
-
-    typedef itk::Image<unsigned char, 3> MaskType;
-    typedef itk::AttributeLabelObject<unsigned char, 3, unsigned char> LabelObjectType;
-    typedef itk::LabelMap< LabelObjectType > LabelMapType;
+    medAbstractView *m_view;
 
     MaskType::Pointer m_itkMask;
 
-    typedef itk::LabelMapToLabelImageFilter< LabelMapType, MaskType > MapToImageFilter;
     MapToImageFilter::Pointer m_filter;
 
     double m_MinValueImage;

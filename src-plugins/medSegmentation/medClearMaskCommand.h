@@ -15,13 +15,23 @@
 
 #include <QUndoCommand>
 
+#include <medAbstractView.h>
+#include <itkImage.h>
+
 class medClearMaskCommand : public QUndoCommand
 {
 public:
-    medClearMaskCommand(QUndoCommand *parent = 0);
+    typedef itk::Image<unsigned char, 3> MaskType;
+
+    medClearMaskCommand(medAbstractView* view, QUndoCommand *parent = 0);
 
     void undo();
     void redo();
 
-    int id() const { return 12345; }
+    void setMaskToClear(MaskType::Pointer mask);
+
+private:
+    MaskType::Pointer m_mask;
+    MaskType::Pointer m_previousMask;
+    medAbstractView* m_view;
 };

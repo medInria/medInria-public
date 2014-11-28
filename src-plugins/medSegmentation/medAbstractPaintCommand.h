@@ -67,7 +67,6 @@ struct medPaintCommandOptions
     medAbstractImageView *view;
     medAbstractData* data;
     medAbstractData *maskData;
-    //LabelMapType::Pointer labelMap;
     MaskType::Pointer itkMask;
     QVector<QVector3D> points;
     unsigned int maskValue;
@@ -84,10 +83,6 @@ public:
     virtual void redo() = 0;
 
     medPaintCommandOptions *options() const;
-
-//protected:
-//    virtual void paint() = 0;
-//    virtual void unpaint() = 0;
 
 private:
     medAbstractPaintCommandPrivate *d;
