@@ -26,7 +26,7 @@ class medAbstractImageView;
 class medAbstractData;
 
 
-class medPaintCommand : public medAbstractPaintCommand
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medPaintCommand : public medAbstractPaintCommand
 {
 public:
     medPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent = 0);

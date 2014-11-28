@@ -97,7 +97,7 @@ public:
     vtkSmartPointer<vtkSeedCallback> spCbk;
 };
 
-msegAnnIntSeedPointHelper::msegAnnIntSeedPointHelper(msegAnnotationInteractor * annInt)
+msegAnnIntSeedPointHelper::msegAnnIntSeedPointHelper(medAnnotationInteractor * annInt)
     : msegAnnIntHelper(annInt) ,
     d(new msegAnnIntSeedPointHelperPrivate)
 {

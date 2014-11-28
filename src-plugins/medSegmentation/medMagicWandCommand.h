@@ -24,7 +24,7 @@ class medAbstractImageView;
 class medAbstractData;
 
 
-class medMagicWandCommand : public medAbstractPaintCommand
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medMagicWandCommand : public medAbstractPaintCommand
 {
 public:
     medMagicWandCommand( medPaintCommandOptions *options,  bool run3D, QUndoCommand *parent = 0);

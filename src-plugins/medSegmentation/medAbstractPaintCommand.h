@@ -25,6 +25,8 @@
 #include <itkLabelImageToLabelMapFilter.h>
 #include <itkSmartPointer.h>
 
+#include <msegPluginExport.h>
+
 class medAbstractPaintCommandPrivate;
 
 class medClickAndMoveEventFilter;
@@ -43,7 +45,7 @@ typedef itk::SmartPointer<itk::Image<unsigned char, 3> >MaskTypePointer;
 typedef itk::SmartPointer<itk::LabelMap< LabelObjectType > > LabelMapTypePointer;
 
 
-class medPaintCommandManager : public QObject
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medPaintCommandManager : public QObject
 {
     Q_OBJECT
 
@@ -74,7 +76,7 @@ struct medPaintCommandOptions
 };
 
 
-class medAbstractPaintCommand : public QUndoCommand
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medAbstractPaintCommand : public QUndoCommand
 {
 public:
     medAbstractPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent = 0);

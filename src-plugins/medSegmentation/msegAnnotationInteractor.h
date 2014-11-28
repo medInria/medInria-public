@@ -22,32 +22,32 @@
 
 
 class msegAnnotationInteractorPrivate;
-class msegAnnotationInteractor;
+class medAnnotationInteractor;
 
 // Helper class for msegAnnotationInteractor
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT msegAnnIntHelper {
 public :
-    msegAnnIntHelper(msegAnnotationInteractor * annInt);
+    msegAnnIntHelper(medAnnotationInteractor * annInt);
     virtual ~msegAnnIntHelper();
     virtual bool addAnnotation( medAnnotationData* annData ) = 0;
     virtual void removeAnnotation( medAnnotationData * annData ) = 0;
     virtual void annotationModified( medAnnotationData* annData ) = 0;
 protected:
     medAbstractImageView * getView();
-    msegAnnotationInteractor * m_msegAnnInt;
+    medAnnotationInteractor * m_msegAnnInt;
 };
 
 
 //! Interface between annotations and the mseg.
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT msegAnnotationInteractor: public medAbstractImageViewInteractor
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medAnnotationInteractor: public medAbstractImageViewInteractor
 {
     typedef medAbstractImageViewInteractor BaseClass;
 
     Q_OBJECT
 
 public:
-    msegAnnotationInteractor(medAbstractView *parent);
-    virtual ~msegAnnotationInteractor();
+    medAnnotationInteractor(medAbstractView *parent);
+    virtual ~medAnnotationInteractor();
 
     //! Override dtkAbstractObject
     virtual QString description() const;

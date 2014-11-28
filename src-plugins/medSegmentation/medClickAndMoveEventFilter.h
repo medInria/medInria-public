@@ -21,7 +21,7 @@
 #include <itkLabelMap.h>
 #include <itkLabelMapToLabelImageFilter.h>
 
-class medClickAndMoveEventFilter : public medViewEventFilter
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
 
@@ -31,7 +31,7 @@ public:
     typedef itk::LabelMapToLabelImageFilter< LabelMapType, MaskType > MapToImageFilter;
 
 
-    medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb  = NULL);
+    medClickAndMoveEventFilter(medAlgorithmPaintToolbox *cb  = NULL);
     ~medClickAndMoveEventFilter();
 
     virtual bool mousePressEvent(medAbstractView *view, QMouseEvent *mouseEvent );
@@ -57,7 +57,7 @@ protected:
      void setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData);
 
 private :
-    AlgorithmPaintToolbox *m_toolbox;
+    medAlgorithmPaintToolbox *m_toolbox;
     QVector<QVector3D> m_points;
     PaintState::E m_paintState;
     PaintState::E m_lastPaintState;

@@ -18,7 +18,10 @@
 #include <medAbstractView.h>
 #include <itkImage.h>
 
-class medClearMaskCommand : public QUndoCommand
+#include <msegPluginExport.h>
+
+
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medClearMaskCommand : public QUndoCommand
 {
 public:
     typedef itk::Image<unsigned char, 3> MaskType;

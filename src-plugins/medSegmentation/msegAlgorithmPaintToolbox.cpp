@@ -39,7 +39,7 @@
 
 
 
-AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
+medAlgorithmPaintToolbox::medAlgorithmPaintToolbox(QWidget *parent ) :
     medSegmentationAbstractToolBox( parent),
     m_MinValueImage(0),
     m_MaxValueImage(500),
@@ -166,16 +166,16 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     showButtons(false);
 }
 
-AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
+medAlgorithmPaintToolbox::~medAlgorithmPaintToolbox()
 {
 }
 
-medAbstractData* AlgorithmPaintToolbox::processOutput()
+medAbstractData* medAlgorithmPaintToolbox::processOutput()
 {
     return NULL;
 }
 
-void AlgorithmPaintToolbox::setWandSliderValue(double val)
+void medAlgorithmPaintToolbox::setWandSliderValue(double val)
 {
     double perc = 4000.0 * val / (m_MaxValueImage - m_MinValueImage);
 
@@ -186,7 +186,7 @@ void AlgorithmPaintToolbox::setWandSliderValue(double val)
     m_wandThresholdSizeSlider->blockSignals(false);
 }
 
-void AlgorithmPaintToolbox::setWandSpinBoxValue(int val)
+void medAlgorithmPaintToolbox::setWandSpinBoxValue(int val)
 {
     double realValue = val * (m_MaxValueImage - m_MinValueImage) / 4000.0;
 
@@ -210,7 +210,7 @@ void AlgorithmPaintToolbox::setWandSpinBoxValue(int val)
     m_wandThresholdSizeSpinBox->blockSignals(false);
 }
 
-void AlgorithmPaintToolbox::activateStroke()
+void medAlgorithmPaintToolbox::activateStroke()
 {
     if ( this->m_strokeButton->isChecked() ) {
         this->m_viewFilter->removeFromAllViews();
@@ -226,7 +226,7 @@ void AlgorithmPaintToolbox::activateStroke()
     emit installEventFilterRequest(m_viewFilter);
 }
 
-void AlgorithmPaintToolbox::activateMagicWand()
+void medAlgorithmPaintToolbox::activateMagicWand()
 {
     if ( this->m_magicWandButton->isChecked() ) {
         this->m_viewFilter->removeFromAllViews();
@@ -242,13 +242,13 @@ void AlgorithmPaintToolbox::activateMagicWand()
     emit installEventFilterRequest(m_viewFilter);
 }
 
-void AlgorithmPaintToolbox::setLabel(int newVal)
+void medAlgorithmPaintToolbox::setLabel(int newVal)
 {
     QColor labelColor = m_labelColorMap[newVal-1].second;
     m_labelColorWidget->setStyleSheet("background-color: " + labelColor.name() + ";border:0;border-radius: 0px;width:20px;height:20px;");
 }
 
-void AlgorithmPaintToolbox::setLabelColor()
+void medAlgorithmPaintToolbox::setLabelColor()
 {
     QColor currentColor = m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second;
     QColor newColor = QColorDialog::getColor(currentColor,this);
@@ -263,7 +263,7 @@ void AlgorithmPaintToolbox::setLabelColor()
     }
 }
 
-void AlgorithmPaintToolbox::clearMask()
+void medAlgorithmPaintToolbox::clearMask()
 {
     medClearMaskCommand *clearCommand = new medClearMaskCommand(m_viewFilter->view());
     clearCommand->setMaskToClear(m_itkMask);
@@ -272,7 +272,7 @@ void AlgorithmPaintToolbox::clearMask()
     //m_viewFilter->view()->viewWidget()->setFocus();
 }
 
-void AlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
+void medAlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
 {
     medImageMaskAnnotationData::ColorMapType colorMap;
     typedef medImageMaskAnnotationData::ColorMapType::value_type PairType;
@@ -294,7 +294,7 @@ void AlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
 }
 
 
-void AlgorithmPaintToolbox::showButtons( bool value )
+void medAlgorithmPaintToolbox::showButtons( bool value )
 {
     if (value)
     {
@@ -306,7 +306,7 @@ void AlgorithmPaintToolbox::showButtons( bool value )
     }
 }
 
-void AlgorithmPaintToolbox::updateButtons()
+void medAlgorithmPaintToolbox::updateButtons()
 {
     if ( m_paintState == PaintState::None ) {
         m_wandThresholdSizeSlider->hide();
@@ -345,7 +345,7 @@ void AlgorithmPaintToolbox::updateButtons()
     }
 }
 
-void AlgorithmPaintToolbox::updateMouseInteraction() //Apply the current interaction (paint, ...) to a new view
+void medAlgorithmPaintToolbox::updateMouseInteraction() //Apply the current interaction (paint, ...) to a new view
 {
     if (m_paintState != PaintState::None)
     {
@@ -355,14 +355,14 @@ void AlgorithmPaintToolbox::updateMouseInteraction() //Apply the current interac
     }
 }
 
-dtkPlugin* AlgorithmPaintToolbox::plugin()
+dtkPlugin* medAlgorithmPaintToolbox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin ( "segmentationPlugin" );
     return plugin;
 }
 
-bool AlgorithmPaintToolbox::isWand3D() const
+bool medAlgorithmPaintToolbox::isWand3D() const
 {
     return m_wand3DCheckbox->isChecked();
 }

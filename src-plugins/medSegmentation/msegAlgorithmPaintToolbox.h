@@ -47,7 +47,7 @@ struct PaintState {
 };
 
 //! Segmentation toolbox to allow manual painting of pixels
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegmentationAbstractToolBox
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medAlgorithmPaintToolbox : public medSegmentationAbstractToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Paint Segmentation", "Paint Tool",
@@ -56,8 +56,8 @@ public:
 
     typedef itk::Image<unsigned char, 3> MaskType;
 
-    AlgorithmPaintToolbox( QWidget *parent );
-    ~AlgorithmPaintToolbox();
+    medAlgorithmPaintToolbox( QWidget *parent );
+    ~medAlgorithmPaintToolbox();
 
     inline void setPaintState( PaintState::E value){m_paintState = value;}
     inline PaintState::E paintState(){return m_paintState;}

@@ -24,7 +24,7 @@
 #include <itkLabelMapToLabelImageFilter.h>
 
 
-medClickAndMoveEventFilter::medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb) :
+medClickAndMoveEventFilter::medClickAndMoveEventFilter(medAlgorithmPaintToolbox *cb) :
     medViewEventFilter(),
     m_toolbox(cb),
     m_paintState(PaintState::None),

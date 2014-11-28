@@ -39,7 +39,7 @@ class msegAnnIntImageMaskHelperPrivate {
 public:
 };
 
-msegAnnIntImageMaskHelper::msegAnnIntImageMaskHelper(msegAnnotationInteractor * annInt)
+msegAnnIntImageMaskHelper::msegAnnIntImageMaskHelper(medAnnotationInteractor * annInt)
     : msegAnnIntHelper(annInt) ,
     d(new msegAnnIntImageMaskHelperPrivate)
 {

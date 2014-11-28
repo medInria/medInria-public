@@ -20,7 +20,7 @@
 #include <vtkSmartPointer.h>
 
 class medSeedPointAnnotationData;
-class msegAnnotationInteractor;
+class medAnnotationInteractor;
 class msegAnnIntSeedPointHelperPrivate;
 class vtkSeedWidget;
 class vtkAbstractWidget;
@@ -28,7 +28,7 @@ class vtkAbstractWidget;
 class msegAnnIntSeedPointHelper : public msegAnnIntHelper {
 
 public:
-    msegAnnIntSeedPointHelper(msegAnnotationInteractor * annInt);
+    msegAnnIntSeedPointHelper(medAnnotationInteractor * annInt);
     virtual ~msegAnnIntSeedPointHelper();
 
     bool addAnnotation( medAnnotationData* annData );

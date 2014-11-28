@@ -20,7 +20,7 @@ class msegAnnIntImageMaskHelperPrivate;
 class msegAnnIntImageMaskHelper : public msegAnnIntHelper {
 
 public:
-    msegAnnIntImageMaskHelper(msegAnnotationInteractor * annInt);
+    msegAnnIntImageMaskHelper(medAnnotationInteractor * annInt);
     virtual ~msegAnnIntImageMaskHelper();
 
     enum { AnnotationId = 2 };
