@@ -42,6 +42,8 @@ public:
     */
     virtual QWidget *mainViewWidget() = 0;
 
+    virtual QWidget* dialogWidget() {return NULL;}
+
     /**
     * Returns the source selector widget
     * A widget that let's the user choose between different data locations

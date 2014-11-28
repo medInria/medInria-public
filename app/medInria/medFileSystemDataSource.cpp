@@ -155,6 +155,11 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
       d->finder->switchToTreeView();
 }
 
+QWidget* medFileSystemDataSource::dialogWidget()
+{
+    return this->mainViewWidget();
+}
+
 medFileSystemDataSource::~medFileSystemDataSource()
 {
     delete d;

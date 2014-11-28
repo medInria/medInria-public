@@ -26,6 +26,9 @@ public:
 protected:
     void addDataSource(medAbstractDataSource* dataSource);
 
+protected:
+    virtual void closeEvent(QCloseEvent *event);
+
 private:
     medDataSourceDialogPrivate *d;
 };

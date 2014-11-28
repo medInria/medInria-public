@@ -101,6 +101,11 @@ QWidget* medDatabaseDataSource::mainViewWidget()
     return d->mainWidget;
 }
 
+QWidget* medDatabaseDataSource::dialogWidget()
+{
+    return this->mainViewWidget();
+}
+
 QWidget* medDatabaseDataSource::compactViewWidget()
 {
     if(d->compactWidget.isNull())
