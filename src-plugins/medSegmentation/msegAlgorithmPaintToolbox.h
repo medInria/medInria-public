@@ -125,7 +125,6 @@ private:
     QDoubleSpinBox *m_wandThresholdSizeSpinBox;
     QCheckBox *m_wand3DCheckbox;
 
-    QPushButton *m_applyButton;
     QPushButton *m_clearMaskButton;
 
     dtkSmartPointer< medClickAndMoveEventFilter > m_viewFilter;

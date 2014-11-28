@@ -38,7 +38,6 @@ medClickAndMoveEventFilter::medClickAndMoveEventFilter(AlgorithmPaintToolbox *cb
 
 medClickAndMoveEventFilter::~medClickAndMoveEventFilter()
 {
-    qDebug() << "~medClickAndMoveEventFilter()";
 }
 
 void medClickAndMoveEventFilter::setColorMap( medImageMaskAnnotationData::ColorMapType colorMap)
@@ -159,8 +158,11 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
         //Project vector onto plane
         this->m_points.push_back(posImage);
 
+        QVector<QVector3D> vpoints;
+        vpoints.append(posImage);
+
         medPaintCommandOptions *options = new medPaintCommandOptions;
-        options->points = m_points;
+        options->points = vpoints;
         options->view = imageView;
         options->data = m_imageData;
         options->radius = m_toolbox->strokeRadius();

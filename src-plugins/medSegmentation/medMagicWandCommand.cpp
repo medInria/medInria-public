@@ -14,6 +14,7 @@
 #include <medMagicWandCommand.h>
 
 #include <medAbstractImageView.h>
+#include <medMessageController.h>
 
 #include <itkImageRegionIterator.h>
 #include <itkLabelMapToLabelImageFilter.h>
@@ -54,25 +55,20 @@ medMagicWandCommand::medMagicWandCommand(medPaintCommandOptions *options, bool r
 
 void medMagicWandCommand::paint()
 {
-    //this->updateFromGuiItems();
+    if (!this->options()->data)
+    {
+        dtkWarn() << "Could not set data";
+        return;
+    }
 
-//    if ( !m_imageData )
-//    {
-//        this->setData(view->layerData(view->currentLayer()));
-//    }
-//    if (!m_imageData) {
-//        dtkWarn() << "Could not set data";
-//        return;
-//    }
-
-//    if ((m_imageData->identifier().contains("4"))||
-//            (m_imageData->identifier().contains("RGB"))||
-//            (m_imageData->identifier().contains("Vector"))||
-//            (m_imageData->identifier().contains("2")))
-//    {
-//        medMessageController::instance()->showError(tr("Magic wand option is only available for 3D images"),3000);
-//        return;
-//    }
+    if ((this->options()->data->identifier().contains("4"))||
+            (this->options()->data->identifier().contains("RGB"))||
+            (this->options()->data->identifier().contains("Vector"))||
+            (this->options()->data->identifier().contains("2")))
+    {
+        medMessageController::instance()->showError("Magic wand option is only available for 3D images",3000);
+        return;
+    }
 
     d->label = LabelObjectType::New();
     d->label->SetAttribute(this->options()->maskValue);
@@ -227,6 +223,9 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
 
 void medMagicWandCommand::undo()
 {
+    if(!d->label)
+        return;
+
     d->labelMap->RemoveLabelObject(d->label);
 
     d->filter->SetInput(d->labelMap);
@@ -242,7 +241,9 @@ void medMagicWandCommand::redo()
     if(!d->label)
     {
         paint();
-        d->labelMap->PushLabelObject(d->label);
+
+        if(d->label)
+          d->labelMap->PushLabelObject(d->label);
     }
     else
     {

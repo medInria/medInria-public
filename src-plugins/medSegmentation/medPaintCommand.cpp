@@ -63,16 +63,6 @@ medPaintCommand::medPaintCommand(medPaintCommandOptions *options, QUndoCommand *
 
 void medPaintCommand::paint()
 {
-    //this->updateFromGuiItems();
-
-//    if ( !m_imageData ) {
-//        this->setData(view->layerData(view->currentLayer()));
-//    }
-//    if (!m_imageData) {
-//        dtkWarn() << "Could not set data";
-//        return;
-//    }
-
     d->label = LabelObjectType::New();
     d->label->SetAttribute(this->options()->maskValue);
 

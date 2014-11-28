@@ -152,20 +152,15 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     layout->addLayout( labelSelectionLayout );
 
-    m_applyButton = new QPushButton( tr("Save") , displayWidget);
-    m_applyButton->setToolTip(tr("Save result to the Database"));
-
     m_clearMaskButton = new QPushButton( tr("Clear Mask") , displayWidget);
     m_clearMaskButton->setToolTip(tr("Resets the mask."));
     QHBoxLayout * dataButtonsLayout = new QHBoxLayout();
-    dataButtonsLayout->addWidget(m_applyButton);
     dataButtonsLayout->addWidget(m_clearMaskButton);
     layout->addLayout(dataButtonsLayout);
 
     connect (m_strokeButton, SIGNAL(pressed()), this, SLOT(activateStroke ()));
     connect (m_magicWandButton, SIGNAL(pressed()),this,SLOT(activateMagicWand()));
     connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clearMask()));
-    connect (m_applyButton, SIGNAL(pressed()),this, SLOT(import()));
     connect(this->segmentationToolBox(), SIGNAL(inputChanged()), this, SLOT(updateMouseInteraction()));
 
     showButtons(false);
@@ -303,12 +298,10 @@ void AlgorithmPaintToolbox::showButtons( bool value )
 {
     if (value)
     {
-        m_applyButton->show();
         m_clearMaskButton->show();
     }
     else
     {
-        m_applyButton->hide();
         m_clearMaskButton->hide();
     }
 }
@@ -357,6 +350,7 @@ void AlgorithmPaintToolbox::updateMouseInteraction() //Apply the current interac
     if (m_paintState != PaintState::None)
     {
         m_viewFilter = ( new medClickAndMoveEventFilter(this) );
+        m_viewFilter->setColorMap(m_labelColorMap);
         emit installEventFilterRequest(m_viewFilter);
     }
 }
