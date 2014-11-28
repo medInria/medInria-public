@@ -17,9 +17,11 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QCloseEvent>
 
 #include <medAbstractDataSource.h>
 #include <medDataSourceManager.h>
+#include <medSettingsManager.h>
 
 class medDataSourceDialogPrivate
 {
@@ -53,7 +55,10 @@ medDataSourceDialog::medDataSourceDialog(QWidget* parent, Qt::WindowFlags flags)
     hLayout->addWidget(d->cancelButton, 0, Qt::AlignRight);
 
     vLayout->addLayout(hLayout);
+    vLayout->setContentsMargins(1,1,1,1);
     this->setLayout(vLayout);
+
+    this->restoreGeometry(medSettingsManager::instance()->value("medDataSourceDialog", "geometry").toByteArray());
 }
 
 medDataSourceDialog::~medDataSourceDialog()
@@ -64,6 +69,14 @@ medDataSourceDialog::~medDataSourceDialog()
 
 void medDataSourceDialog::addDataSource( medAbstractDataSource* dataSource )
 {
+    if(!dataSource->dialogWidget())
+        return;
+
     d->dataSources << dataSource;
-    d->tabDataSourceWidget->addTab(dataSource->mainViewWidget(), dataSource->tabName());
+    d->tabDataSourceWidget->addTab(dataSource->dialogWidget(), dataSource->tabName());
+}
+
+void medDataSourceDialog::closeEvent(QCloseEvent *event)
+{
+    medSettingsManager::instance()->setValue("medDataSourceDialog", "geometry", this->saveGeometry());
 }

@@ -205,8 +205,6 @@ void medApplication::initialize()
     settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 
     //Register annotations
-    //TODO there is obviously something that have to be done here. - RDE
-    //TODO I did something... was it enough ? - Flo
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType<medSeedPointAnnotationData>();
 }

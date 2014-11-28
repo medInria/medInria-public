@@ -34,6 +34,7 @@ public:
 
     QWidget* mainViewWidget();
     QWidget* compactViewWidget();
+    virtual QWidget* dialogWidget();
 
     QWidget* sourceSelectorWidget();
 

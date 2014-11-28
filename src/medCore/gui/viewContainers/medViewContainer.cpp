@@ -726,8 +726,11 @@ void medViewContainer::openFromSystem()
     connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
     d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
 
+
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
+
+    QThreadPool::globalInstance()->waitForDone();
 }
 
 void medViewContainer::updateToolBar()
