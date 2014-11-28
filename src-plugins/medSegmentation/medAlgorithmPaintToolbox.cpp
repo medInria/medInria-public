@@ -269,7 +269,7 @@ void medAlgorithmPaintToolbox::clearMask()
     clearCommand->setMaskToClear(m_itkMask);
     m_viewFilter->view()->undoStack()->push(clearCommand);
 
-    //m_viewFilter->view()->viewWidget()->setFocus();
+    m_viewFilter->view()->viewWidget()->setFocus();
 }
 
 void medAlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
