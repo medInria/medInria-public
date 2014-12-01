@@ -307,9 +307,9 @@ void medClickAndMoveEventFilter::initializeMaskData( medAbstractData * imageData
     //Q_ASSERT(mask->GetImageDimension() >= mImage->Dimension());
 
     MaskType::RegionType region;
-    region.SetSize(0, ( mImage->Dimension() > 0 ? mImage->xDimension() : 1 ) );
-    region.SetSize(1, ( mImage->Dimension() > 1 ? mImage->yDimension() : 1 ) );
-    region.SetSize(2, ( mImage->Dimension() > 2 ? mImage->zDimension() : 1 ) );
+    region.SetSize(0, ( mImage->dimension() > 0 ? mImage->xDimension() : 1 ) );
+    region.SetSize(1, ( mImage->dimension() > 1 ? mImage->yDimension() : 1 ) );
+    region.SetSize(2, ( mImage->dimension() > 2 ? mImage->zDimension() : 1 ) );
 
     MaskType::DirectionType direction;
     MaskType::SpacingType spacing;
@@ -321,9 +321,9 @@ void medClickAndMoveEventFilter::initializeMaskData( medAbstractData * imageData
     for (unsigned int i = 0;i < mask->GetImageDimension();++i)
         direction(i,i) = 1;
 
-    unsigned int maxIndex = std::min<unsigned int>(mask->GetImageDimension(),mImage->Dimension());
+    unsigned int maxIndex = std::min<unsigned int>(mask->GetImageDimension(),mImage->dimension());
 
-    switch (mImage->Dimension())
+    switch (mImage->dimension())
     {
     case 2:
     {
