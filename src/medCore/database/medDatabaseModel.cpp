@@ -948,14 +948,14 @@ QStringList medDatabaseModel::columnNames() const
             ret.append(QString());
 
         int i=0;
-        ret[i++] = tr("Patient / Study / Serie");
-        ret[i++] = tr("Date of birth");
+        ret[i++] = tr("Patient/Study/Serie");
+        ret[i++] = tr("Birth Date");
         ret[i++] = tr("Gender");
         ret[i++] = tr("Slice Count");
         ret[i++] = tr("Age");
         ret[i++] = tr("Modality");
-        ret[i++] = tr("Date acquired");
-        ret[i++] = tr("Date imported");
+        ret[i++] = tr("Acq. date");
+        ret[i++] = tr("Import date");
         ret[i++] = tr("Referee");
         ret[i++] = tr("Performer");
         ret[i++] = tr("Institution");
