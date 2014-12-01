@@ -119,7 +119,7 @@ bool medAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
 
     //double zero[2] = {0,0};
-    typedef vtkSmartPointer<edVtkSeedPointHandle> RepSmartPointer;
+    typedef vtkSmartPointer<medVtkSeedPointHandle> RepSmartPointer;
     RepSmartPointer handleRep = RepSmartPointer::New();
     // Blue, close to selected color in table widget.
     handleRep->GetSelectedProperty()->SetColor(0x33/255., 0x99/255., 0xff/255.);

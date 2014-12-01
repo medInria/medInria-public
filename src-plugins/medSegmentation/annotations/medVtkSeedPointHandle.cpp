@@ -25,9 +25,9 @@
 
 #include <cmath>
 
-vtkStandardNewMacro(edVtkSeedPointHandle);
+vtkStandardNewMacro(medVtkSeedPointHandle);
 
-edVtkSeedPointHandle::edVtkSeedPointHandle()
+medVtkSeedPointHandle::medVtkSeedPointHandle()
 {
     this->PolyData = vtkSmartPointer<vtkPolyData>::New();
     this->Mapper2D = vtkSmartPointer<vtkPolyDataMapper2D>::New();
@@ -43,19 +43,19 @@ edVtkSeedPointHandle::edVtkSeedPointHandle()
     this->GetProperty()->SetColor(1,0,0);
 }
 
-edVtkSeedPointHandle::~edVtkSeedPointHandle()
+medVtkSeedPointHandle::~medVtkSeedPointHandle()
 {
     // TODO Auto-generated destructor stub
 }
 
 //----------------------------------------------------------------------------
-void edVtkSeedPointHandle::PrintSelf(ostream& os, vtkIndent indent)
+void medVtkSeedPointHandle::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
 
 //----------------------------------------------------------------------------
-void edVtkSeedPointHandle::BuildPolyData()
+void medVtkSeedPointHandle::BuildPolyData()
 {
   // Check to see whether we have to rebuild everything
   // Initialize and get important info
@@ -101,23 +101,23 @@ void edVtkSeedPointHandle::BuildPolyData()
   this->Modified();
 }
 
-void edVtkSeedPointHandle::DeepCopy( vtkProp *prop )
+void medVtkSeedPointHandle::DeepCopy( vtkProp *prop )
 {
     Superclass::DeepCopy(prop);
-    if (edVtkSeedPointHandle * h = edVtkSeedPointHandle::SafeDownCast(prop) ) {
+    if (medVtkSeedPointHandle * h = medVtkSeedPointHandle::SafeDownCast(prop) ) {
         this->SizeInDisplayUnits = h->SizeInDisplayUnits;
     }
 }
 
-void edVtkSeedPointHandle::ShallowCopy( vtkProp *prop )
+void medVtkSeedPointHandle::ShallowCopy( vtkProp *prop )
 {
     Superclass::ShallowCopy(prop);
-    if (edVtkSeedPointHandle * h = edVtkSeedPointHandle::SafeDownCast(prop) ) {
+    if (medVtkSeedPointHandle * h = medVtkSeedPointHandle::SafeDownCast(prop) ) {
         this->SizeInDisplayUnits = h->SizeInDisplayUnits;
     }
 }
 
-void edVtkSeedPointHandle::SetWorldPosition( double pos[3] )
+void medVtkSeedPointHandle::SetWorldPosition( double pos[3] )
 {
     Superclass::SetWorldPosition(pos);
 
@@ -125,10 +125,3 @@ void edVtkSeedPointHandle::SetWorldPosition( double pos[3] )
     // otherwise the bounds are not returned correctly.
     this->UpdateHandle();
 }
-
-
-
-
-
-
-//----------------------------------------------------------------------------

@@ -20,18 +20,18 @@ class vtkPolyData;
 class vtkPolyDataMapper2D;
 class vtkActor2D;
 
-class edVtkSeedPointHandle : public vtkOrientedPolygonalHandleRepresentation3D {
+class medVtkSeedPointHandle : public vtkOrientedPolygonalHandleRepresentation3D {
 public:
     void PrintSelf(ostream& os, vtkIndent indent);
-    vtkTypeMacro(edVtkSeedPointHandle,vtkOrientedPolygonalHandleRepresentation3D);
+    vtkTypeMacro(medVtkSeedPointHandle,vtkOrientedPolygonalHandleRepresentation3D);
 
     // Description:
     // Creates an actor2D with the following defaults: 
     // position (0,0) (coordinate system is viewport);
     // at layer 0.
-    static edVtkSeedPointHandle* New();
+    static medVtkSeedPointHandle* New();
 
-    virtual ~edVtkSeedPointHandle();
+    virtual ~medVtkSeedPointHandle();
 
     //! Get set the radius of the displayed item
     vtkSetMacro(SizeInDisplayUnits,double);
@@ -46,7 +46,7 @@ public:
     virtual void SetWorldPosition(double pos[3]);
 
 protected:
-    edVtkSeedPointHandle();
+    medVtkSeedPointHandle();
 
     //! Build the polydata
     void BuildPolyData();
