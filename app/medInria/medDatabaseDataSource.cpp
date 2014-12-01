@@ -188,7 +188,6 @@ void medDatabaseDataSource::filter( const QString &text, int column )
 
 void medDatabaseDataSource::compactFilter( const QString &text, int column )
 {
-    qDebug() << "Compact filter" << column << text;
     // adding or overriding filter on column
     d->compactProxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
