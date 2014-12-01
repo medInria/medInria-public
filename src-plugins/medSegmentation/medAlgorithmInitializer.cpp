@@ -11,39 +11,39 @@
 
 =========================================================================*/
 
-#include <msegAlgorithmInitializer.h>
+#include <medAlgorithmInitializer.h>
 
-#include <msegAlgorithmPaintToolbox.h>
+#include <medAlgorithmPaintToolbox.h>
 #include <medToolBoxFactory.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-AlgorithmInitializer::AlgorithmInitializer()
+medAlgorithmInitializer::medAlgorithmInitializer()
 {
 }
 
-AlgorithmInitializer::~AlgorithmInitializer()
+medAlgorithmInitializer::~medAlgorithmInitializer()
 {
 }
 
-bool AlgorithmInitializer::initialize()
+bool medAlgorithmInitializer::initialize()
 {
     bool ret = initializeProcesses();
     ret &= initializeWidgets();
     return ret;
 }
 
-bool AlgorithmInitializer::initializeProcesses()
+bool medAlgorithmInitializer::initializeProcesses()
 {
     return true;
 }
 
-bool AlgorithmInitializer::initializeWidgets()
+bool medAlgorithmInitializer::initializeWidgets()
 {
     bool ret (true);
     medToolBoxFactory * factory = medToolBoxFactory::instance();
 
-    ret &= factory->registerToolBox<AlgorithmPaintToolbox>();
+    ret &= factory->registerToolBox<medAlgorithmPaintToolbox>();
 
     return ret;
 }

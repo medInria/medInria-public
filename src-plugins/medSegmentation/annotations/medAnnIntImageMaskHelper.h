@@ -13,15 +13,15 @@
 
 #pragma once
 
-#include <msegAnnotationInteractor.h>
+#include <medAnnotationInteractor.h>
 
-class msegAnnIntImageMaskHelperPrivate;
+class medAnnIntImageMaskHelperPrivate;
 
-class msegAnnIntImageMaskHelper : public msegAnnIntHelper {
+class medAnnIntImageMaskHelper : public msegAnnIntHelper {
 
 public:
-    msegAnnIntImageMaskHelper(msegAnnotationInteractor * annInt);
-    virtual ~msegAnnIntImageMaskHelper();
+    medAnnIntImageMaskHelper(medAnnotationInteractor * annInt);
+    virtual ~medAnnIntImageMaskHelper();
 
     enum { AnnotationId = 2 };
     bool addAnnotation( medAnnotationData * annData );
@@ -32,7 +32,7 @@ private:
     void setColorLookupTable ( QList<double> scalars, QList<QColor> colors );
 
 private:
-    msegAnnIntImageMaskHelperPrivate * d;
+    medAnnIntImageMaskHelperPrivate * d;
 };
 
 

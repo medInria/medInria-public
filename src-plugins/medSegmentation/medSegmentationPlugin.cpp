@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include <msegPlugin.h>
+#include <medSegmentationPlugin.h>
 
-#include <msegAlgorithmInitializer.h>
-#include <msegAnnotationInteractor.h>
+#include <medAlgorithmInitializer.h>
+#include <medAnnotationInteractor.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -22,47 +22,47 @@
 // PluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class PluginPrivate
+class medSegmentationPluginPrivate
 {
 public:
     // Class variables go here.
     static const char *s_Name;
 };
-const char * PluginPrivate::s_Name = "segmentationPlugin";
+const char * medSegmentationPluginPrivate::s_Name = "segmentationPlugin";
 
 // /////////////////////////////////////////////////////////////////
 // Plugin
 // /////////////////////////////////////////////////////////////////
 
-Plugin::Plugin(QObject *parent) : dtkPlugin(parent), d(new PluginPrivate)
+medSegmentationPlugin::medSegmentationPlugin(QObject *parent) : dtkPlugin(parent), d(new medSegmentationPluginPrivate)
 {
 
 }
 
-Plugin::~Plugin()
+medSegmentationPlugin::~medSegmentationPlugin()
 {
     delete d;
     d = NULL;
 }
 
-bool Plugin::initialize()
+bool medSegmentationPlugin::initialize()
 {
-    if(!msegAnnotationInteractor::registered())
-        qDebug() << "Unable to register v3dViewAnnotationInteractor";
-    return AlgorithmInitializer::initialize();
+    if(!medAnnotationInteractor::registered())
+        qDebug() << "Unable to register medAnnotationInteractor";
+    return medAlgorithmInitializer::initialize();
 }
 
-bool Plugin::uninitialize()
+bool medSegmentationPlugin::uninitialize()
 {
     return true;
 }
 
-QString Plugin::name() const
+QString medSegmentationPlugin::name() const
 {
-    return PluginPrivate::s_Name;
+    return medSegmentationPluginPrivate::s_Name;
 }
 
-QString Plugin::description() const
+QString medSegmentationPlugin::description() const
 {
     return tr("Segmentation plugin\n<br/>"
               "Manual painting of regions: inside, and outside."
@@ -71,24 +71,24 @@ QString Plugin::description() const
               "for simple binary masks.");
 }
 
-QString Plugin::version() const
+QString medSegmentationPlugin::version() const
 {
     return MEDSEGMENTATIONPLUGIN_VERSION;
 }
 
-QString Plugin::contact() const
+QString medSegmentationPlugin::contact() const
 {
     return "John.Stark@inria.fr";
 }
 
-QStringList Plugin::authors() const
+QStringList medSegmentationPlugin::authors() const
 {
     QStringList list;
     list << "John Stark";
     return list;
 }
 
-QStringList Plugin::contributors() const
+QStringList medSegmentationPlugin::contributors() const
 {
     QStringList list;
     list <<  QString::fromUtf8("Benoît Bleuzé")
@@ -96,19 +96,19 @@ QStringList Plugin::contributors() const
     return list;
 }
 
-QString Plugin::identifier() const
+QString medSegmentationPlugin::identifier() const
 {
-    return PluginPrivate::s_Name;
+    return medSegmentationPluginPrivate::s_Name;
 }
 
-QStringList Plugin::tags() const
-{
-    return QStringList();
-}
-
-QStringList Plugin::types() const
+QStringList medSegmentationPlugin::tags() const
 {
     return QStringList();
 }
 
-Q_EXPORT_PLUGIN2(Plugin, Plugin)
+QStringList medSegmentationPlugin::types() const
+{
+    return QStringList();
+}
+
+Q_EXPORT_PLUGIN2(medSegmentationPlugin, medSegmentationPlugin)

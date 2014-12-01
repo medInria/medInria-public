@@ -11,11 +11,11 @@
 
 =========================================================================*/
 
-#include <msegAnnIntImageMaskHelper.h>
+#include <medAnnIntImageMaskHelper.h>
 
 #include <medImageMaskAnnotationData.h>
 
-#include <msegAnnotationInteractor.h>
+#include <medAnnotationInteractor.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -35,23 +35,23 @@
 #include <medVtkViewBackend.h>
 
 
-class msegAnnIntImageMaskHelperPrivate {
+class medAnnIntImageMaskHelperPrivate {
 public:
 };
 
-msegAnnIntImageMaskHelper::msegAnnIntImageMaskHelper(msegAnnotationInteractor * annInt)
+medAnnIntImageMaskHelper::medAnnIntImageMaskHelper(medAnnotationInteractor * annInt)
     : msegAnnIntHelper(annInt) ,
-    d(new msegAnnIntImageMaskHelperPrivate)
+    d(new medAnnIntImageMaskHelperPrivate)
 {
 }
 
-msegAnnIntImageMaskHelper::~msegAnnIntImageMaskHelper()
+medAnnIntImageMaskHelper::~medAnnIntImageMaskHelper()
 {
     delete d;
     d = NULL;
 }
 
-bool msegAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
+bool medAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
 {
     medImageMaskAnnotationData * imad = qobject_cast<medImageMaskAnnotationData*>(annData);
     if ( !imad )
@@ -89,7 +89,7 @@ bool msegAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
 }
 
 
-void msegAnnIntImageMaskHelper::setColorLookupTable ( QList<double> scalars, QList<QColor> colors )
+void medAnnIntImageMaskHelper::setColorLookupTable ( QList<double> scalars, QList<QColor> colors )
 {
     medAbstractImageView * view = this->getView();
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
@@ -140,13 +140,13 @@ void msegAnnIntImageMaskHelper::setColorLookupTable ( QList<double> scalars, QLi
     delete [] alphaTable;
 }
 
-void msegAnnIntImageMaskHelper::removeAnnotation( medAnnotationData * annData )
+void medAnnIntImageMaskHelper::removeAnnotation( medAnnotationData * annData )
 {
     medAbstractImageView * view = this->getView();
     view->removeData(annData);
 }
 
-void msegAnnIntImageMaskHelper::annotationModified( medAnnotationData * annData )
+void medAnnIntImageMaskHelper::annotationModified( medAnnotationData * annData )
 {
     medImageMaskAnnotationData * imad = qobject_cast<medImageMaskAnnotationData*>(annData);
     medAbstractImageView * view = this->getView();

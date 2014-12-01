@@ -74,6 +74,8 @@ public:
     QImage generateThumbnail(const QSize &size);
     virtual void setOffscreenRendering(bool isOffscreen);
 
+    QUndoStack* undoStack() const;
+
 public slots:
     virtual void reset() = 0;
     virtual void render() = 0;

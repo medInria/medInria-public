@@ -11,13 +11,13 @@
 
 =========================================================================*/
 
-#include <msegAnnIntSeedPointHelper.h>
+#include <medAnnIntSeedPointHelper.h>
 
 #include <medSeedPointAnnotationData.h>
 
-#include <msegAnnotationInteractor.h>
+#include <medAnnotationInteractor.h>
 
-#include <vtkSeedPointHandle.h>
+#include <medVtkSeedPointHandle.h>
 
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
@@ -84,32 +84,32 @@ public:
             }
         }
     }
-    msegAnnIntSeedPointHelper * helper;
+    medAnnIntSeedPointHelper * helper;
 protected:
     vtkSeedCallback() : vtkCommandWithDisable() {}
 };
 
 
-class msegAnnIntSeedPointHelperPrivate {
+class medAnnIntSeedPointHelperPrivate {
 public:
-    msegAnnIntSeedPointHelper::ActorMap actors;
+    medAnnIntSeedPointHelper::ActorMap actors;
 
     vtkSmartPointer<vtkSeedCallback> spCbk;
 };
 
-msegAnnIntSeedPointHelper::msegAnnIntSeedPointHelper(msegAnnotationInteractor * annInt)
+medAnnIntSeedPointHelper::medAnnIntSeedPointHelper(medAnnotationInteractor * annInt)
     : msegAnnIntHelper(annInt) ,
-    d(new msegAnnIntSeedPointHelperPrivate)
+    d(new medAnnIntSeedPointHelperPrivate)
 {
     d->spCbk = vtkSmartPointer<vtkSeedCallback>::New();
 }
 
-msegAnnIntSeedPointHelper::~msegAnnIntSeedPointHelper()
+medAnnIntSeedPointHelper::~medAnnIntSeedPointHelper()
 {
     delete d; d = NULL;
 }
 
-bool msegAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
+bool medAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
 {
     medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annData);
     if ( !spad ) 
@@ -119,7 +119,7 @@ bool msegAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
 
     //double zero[2] = {0,0};
-    typedef vtkSmartPointer<vtkSeedPointHandle> RepSmartPointer;
+    typedef vtkSmartPointer<medVtkSeedPointHandle> RepSmartPointer;
     RepSmartPointer handleRep = RepSmartPointer::New();
     // Blue, close to selected color in table widget.
     handleRep->GetSelectedProperty()->SetColor(0x33/255., 0x99/255., 0xff/255.);
@@ -162,7 +162,7 @@ bool msegAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
 }
 
 
-void msegAnnIntSeedPointHelper::removeAnnotation( medAnnotationData * annData )
+void medAnnIntSeedPointHelper::removeAnnotation( medAnnotationData * annData )
 {
     medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annData);
 
@@ -180,7 +180,7 @@ void msegAnnIntSeedPointHelper::removeAnnotation( medAnnotationData * annData )
     backend->view3D->Render();
 }
 
-void msegAnnIntSeedPointHelper::annotationModified( medAnnotationData* annData )
+void medAnnIntSeedPointHelper::annotationModified( medAnnotationData* annData )
 {
     medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annData);
 
@@ -243,7 +243,7 @@ void msegAnnIntSeedPointHelper::annotationModified( medAnnotationData* annData )
     return;
 }
 
-void msegAnnIntSeedPointHelper::refreshFromWidget( vtkSeedWidget * spW )
+void medAnnIntSeedPointHelper::refreshFromWidget( vtkSeedWidget * spW )
 {
     ActorMap::iterator it;
     if ( ! this->findActorMapForWidget(spW, it) ){
@@ -268,12 +268,12 @@ void msegAnnIntSeedPointHelper::refreshFromWidget( vtkSeedWidget * spW )
     }
 }
 
-msegAnnIntSeedPointHelper::ActorMap & msegAnnIntSeedPointHelper::getActorMap()
+medAnnIntSeedPointHelper::ActorMap & medAnnIntSeedPointHelper::getActorMap()
 {
     return d->actors;
 }
 
-bool msegAnnIntSeedPointHelper::findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it)
+bool medAnnIntSeedPointHelper::findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it)
 {
     for( it = d->actors.begin(); it != d->actors.end(); ++it ) {
         if ( ( it->second.actor2d == w ) ||

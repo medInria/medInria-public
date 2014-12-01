@@ -15,7 +15,7 @@
 
 #include <medSegmentationAbstractToolBox.h>
 
-#include <msegPluginExport.h>
+#include <medSegmentationPluginExport.h>
 
 #include <medAbstractData.h>
 
@@ -29,6 +29,9 @@
 #include <vector>
 
 #include <itkImage.h>
+#include <itkLabelObject.h>
+#include <itkLabelMap.h>
+#include <itkAttributeLabelObject.h>
 
 class medAbstractData;
 class medAbstractImageView;
@@ -36,23 +39,25 @@ class medAnnotationData;
 
 class dtkAbstractProcessFactory;
 class medSeedPointAnnotationData;
-class ClickAndMoveEventFilter;
+
+class medClickAndMoveEventFilter;
 
 struct PaintState {
     enum E{ None, Wand, Stroke, DeleteStroke };
 };
 
 //! Segmentation toolbox to allow manual painting of pixels
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegmentationAbstractToolBox
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medAlgorithmPaintToolbox : public medSegmentationAbstractToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Paint Segmentation", "Paint Tool",
                           <<"segmentation")
 public:
 
+    typedef itk::Image<unsigned char, 3> MaskType;
 
-    AlgorithmPaintToolbox( QWidget *parent );
-    ~AlgorithmPaintToolbox();
+    medAlgorithmPaintToolbox( QWidget *parent );
+    ~medAlgorithmPaintToolbox();
 
     inline void setPaintState( PaintState::E value){m_paintState = value;}
     inline PaintState::E paintState(){return m_paintState;}
@@ -61,11 +66,18 @@ public:
 
     medAbstractData* processOutput();
 
+    double wandRadius () const  { return m_wandThresholdSizeSpinBox->value(); }
+    double strokeRadius( ) const {return m_brushSizeSlider->value(); }
+    unsigned int strokeLabel( )  const {return m_strokeLabelSpinBox->value(); }
+    bool isWand3D () const;
+
+    void setMask(MaskType::Pointer mask){m_itkMask = mask;}
+
+
 public slots:
     void activateStroke();
     void activateMagicWand();
 
-    void import();
     void clearMask();
 
     void setLabel(int newVal);
@@ -74,26 +86,18 @@ public slots:
     void setWandSliderValue(double val);
     void setWandSpinBoxValue(int val);
 
-    void updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view);
-    void updateWandRegion(medAbstractImageView * view, QVector3D &vec);
+    void setMinValue(double min){m_MinValueImage = min;}
+    void setMaxValue(double max){m_MaxValueImage = max;}
+
     void updateMouseInteraction();
+
+    void showButtons( bool value);
 
 protected:
     friend class ClickAndMoveEventFilter;
 
-    void addStroke( medAbstractImageView *view, const QVector3D &vec );
-    void setData( medAbstractData *data );
-
     // update with seed point data.
     void updateTableRow(int row);
-
-    void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
-
-    void setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData);
-
-    void updateFromGuiItems();
-
-    void showButtons( bool value);
 
     void generateLabelColorMap(unsigned int numLabels);
 
@@ -121,32 +125,16 @@ private:
     QDoubleSpinBox *m_wandThresholdSizeSpinBox;
     QCheckBox *m_wand3DCheckbox;
 
-    double m_MinValueImage;
-    double m_MaxValueImage;
-
-    QPushButton *m_applyButton;
-
     QPushButton *m_clearMaskButton;
 
-    dtkSmartPointer< medViewEventFilter > m_viewFilter;
-
-    dtkSmartPointer<medImageMaskAnnotationData> m_maskAnnotationData;
-    //TODO smartPointing have to be managed only in abstraction -rde
-
-    dtkSmartPointer<medAbstractData> m_maskData;
-    medAbstractData* m_imageData;
+    dtkSmartPointer< medClickAndMoveEventFilter > m_viewFilter;
 
     medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 
-    typedef itk::Image<unsigned char, 3> MaskType;
     MaskType::Pointer m_itkMask;
 
-    template <typename IMAGE> void RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex);
-    template <typename IMAGE> void GenerateMinMaxValuesFromImage ();
-
-    QVector3D m_lastVup;
-    QVector3D m_lastVpn;
-    double m_sampleSpacing[2];
+    double m_MinValueImage;
+    double m_MaxValueImage;
 
     double m_wandRadius;
     double m_strokeRadius;

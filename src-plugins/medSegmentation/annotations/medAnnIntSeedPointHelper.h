@@ -13,23 +13,23 @@
 
 #pragma once
 
-#include <msegAnnotationInteractor.h>
+#include <medAnnotationInteractor.h>
 
 #include <map>
 
 #include <vtkSmartPointer.h>
 
 class medSeedPointAnnotationData;
-class msegAnnotationInteractor;
-class msegAnnIntSeedPointHelperPrivate;
+class medAnnotationInteractor;
+class medAnnIntSeedPointHelperPrivate;
 class vtkSeedWidget;
 class vtkAbstractWidget;
 
-class msegAnnIntSeedPointHelper : public msegAnnIntHelper {
+class medAnnIntSeedPointHelper : public msegAnnIntHelper {
 
 public:
-    msegAnnIntSeedPointHelper(msegAnnotationInteractor * annInt);
-    virtual ~msegAnnIntSeedPointHelper();
+    medAnnIntSeedPointHelper(medAnnotationInteractor * annInt);
+    virtual ~medAnnIntSeedPointHelper();
 
     bool addAnnotation( medAnnotationData* annData );
     void removeAnnotation( medAnnotationData * annData );
@@ -37,7 +37,7 @@ public:
 
     void refreshFromWidget(vtkSeedWidget * spW);
 private:
-    friend class msegAnnIntSeedPointHelperPrivate;
+    friend class medAnnIntSeedPointHelperPrivate;
 
     typedef vtkSmartPointer <vtkAbstractWidget>  WidgetSmartPointer;
     struct ActorInfo {
@@ -51,7 +51,7 @@ private:
 
     bool findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it);
 
-    msegAnnIntSeedPointHelperPrivate * d;
+    medAnnIntSeedPointHelperPrivate * d;
 };
 
 

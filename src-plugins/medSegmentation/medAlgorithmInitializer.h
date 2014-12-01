@@ -14,10 +14,10 @@
 #pragma once
 
 //! Register all algorithms with factory.
-class AlgorithmInitializer {
+class medAlgorithmInitializer {
 public:
-    AlgorithmInitializer();
-    virtual ~AlgorithmInitializer();
+    medAlgorithmInitializer();
+    virtual ~medAlgorithmInitializer();
 
     static bool initialize();
     static bool initializeProcesses();
