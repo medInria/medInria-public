@@ -52,7 +52,7 @@ bool medDatabaseProxyModel::filterAcceptsColumn( int source_column, const QModel
 void medDatabaseProxyModel::setFilterRegExpWithColumn( const QRegExp &regExp, int column )
 {
     filterVector[column] = regExp;
-    filterChanged();
+    invalidateFilter();
 }
 
 void medDatabaseProxyModel::clearAllFilters()
@@ -62,7 +62,6 @@ void medDatabaseProxyModel::clearAllFilters()
 
 bool medDatabaseProxyModel::customFilterAcceptsRow( int source_row, const QModelIndex & source_parent ) const
 {
-
     // get the current model index
     QModelIndex current(sourceModel()->index(source_row, 0, source_parent));
     // get the data we want to check

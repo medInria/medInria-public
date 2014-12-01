@@ -15,6 +15,7 @@
 
 #include <medDatabaseView.h>
 #include <medDatabasePreview.h>
+#include <medDatabaseSearchPanel.h>
 
 #include <medDataIndex.h>
 
@@ -25,6 +26,7 @@
 class medDatabaseCompactWidgetPrivate
 {
 public:
+    medDatabaseSearchPanel *panel;
     medDatabasePreview *preview;
     medDatabaseView *view;
     QVBoxLayout *layout;
@@ -58,25 +60,27 @@ void medDatabaseCompactWidget::resizeEvent(QResizeEvent *event)
 
     this->setLayout(d->layout);
 
-    d->layout->addWidget(d->view, 0);
+    d->layout->addWidget(d->panel, 0);
+    d->layout->addWidget(d->view, 1);
     d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
     d->layout->addWidget(d->preview->label(), 0);
 
     QWidget::resizeEvent(event);
 }
 
-
-
 void
-medDatabaseCompactWidget::setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview)
+medDatabaseCompactWidget::setSearchPanelViewAndPreview(medDatabaseSearchPanel *panel, medDatabaseView *view,
+                                                       medDatabasePreview *preview)
 {
+    d->panel = panel;
     d->view = view;
     connect(d->view, SIGNAL(open(const medDataIndex&)),
             this, SIGNAL(open(const medDataIndex&))
             );
 
     d->preview = preview;
-    d->layout->addWidget(d->view, 0);
+    d->layout->addWidget(d->panel, 0);
+    d->layout->addWidget(d->view, 1);
     d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
     d->layout->addWidget(d->preview->label(), 0);
 }

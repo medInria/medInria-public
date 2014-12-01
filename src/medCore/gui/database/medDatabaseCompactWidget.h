@@ -17,6 +17,7 @@
 #include <medCoreExport.h>
 
 class medDatabaseCompactWidgetPrivate;
+class medDatabaseSearchPanel;
 class medDatabaseView;
 class medDatabasePreview;
 class medDataIndex;
@@ -32,7 +33,8 @@ public :
     medDatabaseCompactWidget(QWidget *parent = NULL);
     virtual ~medDatabaseCompactWidget();
 
-    void setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview);
+    void setSearchPanelViewAndPreview(medDatabaseSearchPanel *panel, medDatabaseView *view,
+                                      medDatabasePreview *preview);
 
 protected:
     void resizeEvent(QResizeEvent *event);
