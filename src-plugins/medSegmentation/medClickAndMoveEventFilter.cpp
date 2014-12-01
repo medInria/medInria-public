@@ -266,10 +266,10 @@ void medClickAndMoveEventFilter::setData( medAbstractData *medData )
 
         } else {
 
-            m_maskData = medAbstractDataFactory::instance()->createSmartPointer( "itkDataImageUChar3" );
+            m_maskData = medAbstractDataFactory::instance()->createSmartPointer( "medItkUChar3ImageData" );
 
             if ( !m_maskData ) {
-                dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create itkDataImageUChar3";
+                dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create medItkUChar3ImageData";
                 return;
             }
 
