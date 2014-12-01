@@ -729,8 +729,6 @@ void medViewContainer::openFromSystem()
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
-
-    QThreadPool::globalInstance()->waitForDone();
 }
 
 void medViewContainer::updateToolBar()
