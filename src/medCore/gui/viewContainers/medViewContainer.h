@@ -92,6 +92,8 @@ public slots:
     void highlight(QString color = "#FFAA88");
     void unHighlight();
 
+    void splitContainer(int numY, int numX);
+
 signals:
     void maximized(QUuid uuid, bool maximized);
     void maximized(bool maximized);
@@ -125,6 +127,7 @@ private slots:
     void removeInternView();
     DropArea computeDropArea(int x, int y);
     void popupMenu();
+    void togglePopupPresetSplitter();
 
 private:
     medViewContainerPrivate *d;
