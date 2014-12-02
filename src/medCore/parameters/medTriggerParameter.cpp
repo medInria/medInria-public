@@ -28,12 +28,12 @@ public:
 };
 
 
-medTriggerParameter::medTriggerParameter(QString name, QObject *parent):
+medTriggerParameter::   medTriggerParameter(QString name, QObject *parent):
     medAbstractTriggerParameter(name, parent),
     d(new medTriggerParameterPrivate)
 {
      d->pushButton = NULL;
-     d->text = QString(name);
+     d->text = QString();
      d->icon = QIcon();
      d->iconSize = QSize(15,15);
 }
