@@ -842,7 +842,7 @@ void vtkFibersManager::SetRenderingModeToTubes()
   else // the rendering is not supported
        // and the mapper is a regular polydatamapper
   {
-    this->Mapper->SetInputData (this->TubeFilter->GetOutput());
+    this->Mapper->SetInputConnection (this->TubeFilter->GetOutputPort());
   }
 
 }
@@ -859,7 +859,7 @@ void vtkFibersManager::SetRenderingModeToRibbons()
   }
   else
   {
-    this->Mapper->SetInputData (this->RibbonFilter->GetOutput());
+    this->Mapper->SetInputConnection (this->RibbonFilter->GetOutputPort());
   }
 
 }
