@@ -68,6 +68,7 @@ medAbstractProcess::medAbstractProcess(medAbstractProcess * parent):dtkAbstractP
     d->toolbox = NULL;
     d->parameterWidget = NULL;
     d->runParameter = new medTriggerParameter("Run", this);
+    d->runParameter->setButtonText("Run");
 
     connect(this, SIGNAL(success()), this, SLOT(handleOutputs()));
 }

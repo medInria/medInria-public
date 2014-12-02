@@ -21,6 +21,6 @@ public:
     medAbstractModelEstimationProcess(medAbstractProcess *parent = NULL);
 
 public:
-    virtual bool isInteractive();
+    virtual bool isInteractive() const;
 };
 

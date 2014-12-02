@@ -32,9 +32,9 @@ medAbstractFilteringProcess::medAbstractFilteringProcess(medAbstractProcess *par
     this->appendOutput(output);
 }
 
-bool medAbstractFilteringProcess::isInteractive()
+bool medAbstractFilteringProcess::isInteractive() const
 {
-    return true;
+    return false;
 }
 
 

@@ -25,7 +25,7 @@ medAbstractDiffScalarMapsProcess::medAbstractDiffScalarMapsProcess(medAbstractPr
     this->appendOutput( new medProcessOutput<medAbstractImageData*>("Output", NULL));
 }
 
-bool medAbstractDiffScalarMapsProcess::isInteractive()
+bool medAbstractDiffScalarMapsProcess::isInteractive() const
 {
     return false;
 }

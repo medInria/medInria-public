@@ -22,5 +22,5 @@ public:
     medAbstractDiffScalarMapsProcess(medAbstractProcess *parent = NULL);
 
 public:
-    virtual bool isInteractive();
+    virtual bool isInteractive() const;
 };
