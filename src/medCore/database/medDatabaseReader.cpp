@@ -26,8 +26,6 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
-#include <rot13.h>
-
 class medDatabaseReaderPrivate
 {
 public:
