@@ -301,7 +301,7 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	    tubeFilter->CappingOn();
         tubeFilter->SetInputData ( bundle );
 	    
-        mapper->SetInputData ( tubeFilter->GetOutput() );
+        mapper->SetInputConnection ( tubeFilter->GetOutputPort() );
 	  }
 	  break;
 	  
@@ -318,7 +318,7 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	    ribbonFilter->SetWidth ( this->GetRadius() );
         ribbonFilter->SetInputData ( bundle );
 	    
-        mapper->SetInputData ( ribbonFilter->GetOutput() );
+        mapper->SetInputConnection ( ribbonFilter->GetOutputPort() );
 	  }
 	  break;
 	  

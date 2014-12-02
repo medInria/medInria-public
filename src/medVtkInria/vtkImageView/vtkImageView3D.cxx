@@ -1312,7 +1312,7 @@ void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
   ImageActorCallback* cbk = ImageActorCallback::New();
   vtkImageActor* actor = vtkImageActor::New();
   cbk->SetActor (actor);
-  actor->SetInputData (input->GetInput());
+  actor->SetInputData(input->GetInput());
   actor->SetDisplayExtent (input->GetDisplayExtent());
   actor->SetUserMatrix (input->GetUserMatrix());
   actor->SetInterpolate(input->GetInterpolate());

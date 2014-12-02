@@ -166,7 +166,7 @@ void vtkImage2DDisplay::SetInput(vtkImageData * image)
   else
   {
     this->WindowLevel->SetInputData(image);
-    this->ImageActor->SetInputData( this->WindowLevel->GetOutput() );   
+    this->ImageActor->SetInputData( this->WindowLevel->GetOutput() );
   }
 }
 

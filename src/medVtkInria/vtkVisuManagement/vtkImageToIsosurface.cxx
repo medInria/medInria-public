@@ -54,7 +54,7 @@ vtkImageToIsosurface::vtkImageToIsosurface()
 
   this->Normals->SetInputConnection (this->Decimate->GetOutputPort());
 
-  this->Mapper->SetInputData (this->Normals->GetOutput());
+  this->Mapper->SetInputConnection (this->Normals->GetOutputPort());
   //this->Mapper->SetInput (this->Smoother->GetOutput());
     
   this->Actor->GetProperty()->SetAmbient (0.1);
@@ -104,7 +104,7 @@ void vtkImageToIsosurface::ReverseNormals ()
   reverse->SetInputConnection ( this->Normals->GetOutputPort() );
   reverse->ReverseNormalsOn();
   reverse->ReverseCellsOff();
-  this->Mapper->SetInputData (reverse->GetOutput());
+  this->Mapper->SetInputConnection (reverse->GetOutputPort());
   reverse->Delete();
 }
 

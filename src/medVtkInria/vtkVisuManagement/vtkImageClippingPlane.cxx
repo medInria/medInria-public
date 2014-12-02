@@ -288,7 +288,7 @@ void vtkImageClippingPlane::GetMask(vtkImageData* image)
 
   // Threshold the positive values
   vtkImageThreshold* thresholdFilter = vtkImageThreshold::New();
-  thresholdFilter->SetInputData(sample->GetOutput());
+  thresholdFilter->SetInputConnection(sample->GetOutputPort());
   thresholdFilter->ThresholdByLower(0.0);
   thresholdFilter->ReplaceInOn();
   thresholdFilter->SetInValue(1.0);
