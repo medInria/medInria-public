@@ -94,7 +94,7 @@ QString medVtkViewItk4DScalarImageInteractor::identifier() const
 
 QStringList medVtkViewItk4DScalarImageInteractor::handled() const
 {
-    return medVtkViewItk4DScalarImageInteractor::dataHandled();
+    return dataHandled();
 }
 
 QStringList medVtkViewItk4DScalarImageInteractor::dataHandled()
@@ -126,8 +126,8 @@ void medVtkViewItk4DScalarImageInteractor::setInputData(medAbstractData *data)
     if(!d->imageData)
         return;
 
-    if( data->identifier().contains("medItkImageData") &&  d->imageData->dimension() == 4 ) {
-
+    if( data->identifier().contains("medItk") && data->identifier().contains("ImageData") &&  d->imageData->dimension() == 4 )
+    {
         d->sequence = vtkMetaDataSetSequence::New();
 
         int layer = d->view->layer(data);
@@ -185,25 +185,25 @@ QWidget* medVtkViewItk4DScalarImageInteractor::buildToolBoxWidget()
 {
     QWidget *toolBoxWidget = new QWidget;
     QVBoxLayout *tbLayout = new QVBoxLayout(toolBoxWidget);
-    tbLayout->addWidget(medVtkViewItk4DScalarImageInteractor::buildToolBoxWidget());
+    tbLayout->addWidget(medVtkViewItkScalarImageInteractor::buildToolBoxWidget());
 
     return toolBoxWidget;
 }
 
 QWidget* medVtkViewItk4DScalarImageInteractor::buildToolBarWidget()
 {
-    return medVtkViewItk4DScalarImageInteractor::buildToolBarWidget();
+    return medVtkViewItkScalarImageInteractor::buildToolBarWidget();
 }
 
 QWidget* medVtkViewItk4DScalarImageInteractor::buildLayerWidget()
 {
-    return medVtkViewItk4DScalarImageInteractor::buildLayerWidget();
+    return medVtkViewItkScalarImageInteractor::buildLayerWidget();
 }
 
 QList<medAbstractParameter*> medVtkViewItk4DScalarImageInteractor::linkableParameters()
 {
     QList<medAbstractParameter*> parameters;
-    parameters << medVtkViewItk4DScalarImageInteractor::linkableParameters();
+    parameters << medVtkViewItkScalarImageInteractor::linkableParameters();
     return parameters;
 }
 
@@ -216,7 +216,7 @@ void medVtkViewItk4DScalarImageInteractor::setCurrentTime(double time)
 
 void medVtkViewItk4DScalarImageInteractor::updateWidgets()
 {
-    medVtkViewItk4DScalarImageInteractor::updateWidgets();
+    medVtkViewItkScalarImageInteractor::updateWidgets();
 }
 
 

@@ -239,9 +239,9 @@ void medWorkspaceArea::addDatabaseView()
             //little tricks to force to recompute the stylesheet.
             dbDataSource->compactViewWidget()->setStyleSheet("/* */");
 
-//            connect(dbDataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
-//                    this, SIGNAL(open(const medDataIndex&)),
-//                    Qt::UniqueConnection);
+            connect(dbDataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
+                    this, SIGNAL(open(const medDataIndex&)),
+                    Qt::UniqueConnection);
         }
     }
 }
