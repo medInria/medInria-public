@@ -21,7 +21,6 @@
 #include <dtkGui/dtkFinder.h>
 
 #include <medMessageController.h>
-#include <medJobManager.h>
 #include <medDataManager.h>
 
 #include <medStorage.h>

@@ -15,7 +15,6 @@
 
 #include <medDatabaseImporter.h>
 #include <medDatabaseController.h>
-#include <medJobManager.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medToolBox.h>
 

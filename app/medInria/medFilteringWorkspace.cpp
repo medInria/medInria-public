@@ -24,8 +24,6 @@
 #include <medAbstractData.h>
 #include <medDataManager.h>
 
-#include <medJobManager.h>
-
 #include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
 

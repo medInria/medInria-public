@@ -18,7 +18,6 @@
 
 #include <medDataIndex.h>
 #include <medMessageController.h>
-#include <medJobManager.h>
 
 #include <medMetaDataKeys.h>
 

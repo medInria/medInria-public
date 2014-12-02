@@ -26,7 +26,6 @@
 #include <medViewEventFilter.h>
 #include <medViewContainerManager.h>
 #include <medDataManager.h>
-#include <medJobManager.h>
 #include <medMetaDataKeys.h>
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>

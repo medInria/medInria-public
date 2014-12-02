@@ -20,7 +20,6 @@
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseExporter.h>
 #include <medMessageController.h>
-#include <medJobManager.h>
 #include <medPluginManager.h>
 
 /* THESE CLASSES NEED TO BE THREAD-SAFE, don't forget to lock the mutex in the
@@ -225,15 +224,7 @@ void medDataManager::exportData(medAbstractData* data)
 void medDataManager::exportDataToPath(medAbstractData *data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
-    QFileInfo info(filename);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
-
-    connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
-    connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(exporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-
-    medJobManager::instance()->registerJob(exporter);
-    QThreadPool::globalInstance()->start(exporter);
+    exporter->start();
 }
 
 

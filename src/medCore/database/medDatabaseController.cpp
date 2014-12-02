@@ -25,7 +25,6 @@
 
 #include <medMessageController.h>
 #include <medStorage.h>
-#include <medJobManager.h>
 #include <medMetaDataKeys.h>
 
 #include <medDataManager.h>
