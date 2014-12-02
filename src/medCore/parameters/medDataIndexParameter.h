@@ -21,30 +21,38 @@
 class QComboBox;
 class QWidget;
 class QStringList;
+class medDropSite;
 
 class medDataIndex;
 
 class medDataListParameterPrivate;
-class MEDCORE_EXPORT medDataListParameter: public medAbstractParameter
+class MEDCORE_EXPORT medDataIndexParameter: public medAbstractParameter
 {
     Q_OBJECT
 
 public:
-    medDataListParameter(QString name = "Unknown data list parameter", QObject* parent = 0);
-    virtual ~medDataListParameter();
+    medDataIndexParameter(QString name = "Unknown data index parameter", QObject* parent = 0);
+    virtual ~medDataIndexParameter();
 
-    void setValues(QList<medDataIndex> values);
+    void setValue(medDataIndex values);
     void clear();
-
-    QList <medDataIndex> &values() const;
+    medDataIndex value() const;
 
     virtual QWidget* getWidget();
+    medDropSite* getDropSite();
 
-    virtual void trigger();
+public:
+    void updateInternWigets();
+
+public:
+    void setText(const QString &text);
+
+private:
+    void removeInternDropSite();
 
 signals:
-    void valuesChanged (QList <medDataIndex>);
-    
+    void valueChanged (medDataIndex);
+
 private:
     medDataListParameterPrivate* d;
 };

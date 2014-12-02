@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medDataListParameter.h>
+#include <medDataIndexListParameter.h>
 #include <medDataIndex.h>
 #include <QLabel>
 
@@ -21,36 +21,36 @@ public:
     QList <medDataIndex> values;
 };
 
-medDataListParameter::medDataListParameter(QString name, QObject* parent):
+medDataIndexListParameter::medDataIndexListParameter(QString name, QObject* parent):
     medAbstractParameter(name, parent),
     d(new medDataListParameterPrivate)
 {
     d->values.clear();
 }
 
-medDataListParameter::~medDataListParameter()
+medDataIndexListParameter::~medDataIndexListParameter()
 {
     delete d;
 }
 
-void medDataListParameter::setValues(QList<medDataIndex> values)
+void medDataIndexListParameter::setValues(QList<medDataIndex> values)
 {
     d->values = values;
     emit valuesChanged(d->values);
 }
 
-void medDataListParameter::clear()
+void medDataIndexListParameter::clear()
 {
     d->values.clear();
     emit valuesChanged(d->values);
 }
 
-QList<medDataIndex> &medDataListParameter::values() const
+QList<medDataIndex> &medDataIndexListParameter::values() const
 {
     return d->values;
 }
 
-QWidget* medDataListParameter::getWidget()
+QWidget* medDataIndexListParameter::getWidget()
 {
     return this->getLabel();
 }

@@ -21,7 +21,7 @@
 #include <medViewFactory.h>
 #include <medStringListParameter.h>
 #include <medBoolGroupParameter.h>
-#include <medDataListParameter.h>
+#include <medDataIndexListParameter.h>
 #include <medLayerParameterGroup.h>
 #include <medParameterGroupManager.h>
 #include <medDataIndex.h>
@@ -39,7 +39,7 @@ public:
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
-    medDataListParameter *dataListParameter;
+    medDataIndexListParameter *dataListParameter;
 
     unsigned int currentLayer;
 };
@@ -49,7 +49,7 @@ medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractVie
     d->primaryNavigator = NULL;
     d->currentLayer = 0;
 
-    d->dataListParameter = new medDataListParameter("DataList",this);
+    d->dataListParameter = new medDataIndexListParameter("DataList",this);
     connect(d->dataListParameter,SIGNAL(valuesChanged(QList<medDataIndex>)),this,SLOT(setDataList(QList<medDataIndex>)));
     connect(this,SIGNAL(layerAdded(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
     connect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
@@ -357,7 +357,7 @@ unsigned int medAbstractLayeredView::layersCount() const
     return d->layersDataList.count();
 }
 
-medDataListParameter *medAbstractLayeredView::dataListParameter() const
+medDataIndexListParameter *medAbstractLayeredView::dataListParameter() const
 {
     return d->dataListParameter;
 }
