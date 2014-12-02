@@ -13,7 +13,6 @@
 
 #include <medPacsDataSource.h>
 
-#include <medJobManager.h>
 #include <medBrowserPacsHostToolBox.h>
 #include <medBrowserPacsNodesToolBox.h>
 #include <medBrowserPacsSearchToolBox.h>
@@ -114,8 +113,7 @@ void medPacsDataSource::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
 {
     medPacsMover* mover = new medPacsMover(cmdList);
     connect(mover, SIGNAL(import(QString)), this, SIGNAL(dataReceived(QString)));
-    medJobManager::instance()->registerJob(mover, tr("Moving"));
-    QThreadPool::globalInstance()->start(mover);
+    mover->start();
 }
 
 // /////////////////////////////////////////////////////////////////

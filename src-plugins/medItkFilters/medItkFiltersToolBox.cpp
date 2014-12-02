@@ -21,7 +21,6 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medJobManager.h>
 #include <medPluginManager.h>
 
 #include <medToolBoxHeader.h>

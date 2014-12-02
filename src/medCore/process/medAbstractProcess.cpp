@@ -17,7 +17,6 @@
 #include <medToolBox.h>
 #include <medTriggerParameter.h>
 #include <medAbstractJob.h>
-#include <medJobManager.h>
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
 #include <medAbstractData.h>

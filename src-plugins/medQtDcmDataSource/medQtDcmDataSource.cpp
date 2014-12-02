@@ -13,7 +13,10 @@
 
 #include <medQtDcmDataSource.h>
 
-#include <dtkCore/dtkAbstractDataReader.h>
+#include <medDatabaseImporter.h>
+#include <medDatabaseController.h>
+#include <medAbstractDataSourceFactory.h>
+#include <medToolBox.h>
 
 #include <QtDcm.h>
 #include <QtDcmLocalDicomSettingsWidget.h>
