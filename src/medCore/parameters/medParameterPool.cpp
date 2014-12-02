@@ -19,7 +19,8 @@
 
 #include <medAbstractParameter.h>
 #include <medCompositeParameter.h>
-#include <medDataListParameter.h>
+#include <medDataIndexListParameter.h>
+#include <medDataIndexParameter.h>
 #include <medStringListParameter.h>
 
 #include <medDataIndex.h>
@@ -67,7 +68,7 @@ void medParameterPool::setColor(QColor color)
 
 void medParameterPool::append(medAbstractParameter *parameter)
 {
-    if(medAbstractGroupParameter* group = dynamic_cast<medAbstractGroupParameter*>(parameter))
+    if(medAbstractGroupParameter* group = qobject_cast<medAbstractGroupParameter*>(parameter))
     {
         foreach(medAbstractParameter* param, group->parametersCandidateToPool())
         {
@@ -98,7 +99,7 @@ void medParameterPool::append(QList<medAbstractParameter *> parameters)
 
 void medParameterPool::remove(medAbstractParameter* parameter)
 {
-    if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(parameter))
+    if(medAbstractGroupParameter *group = qobject_cast<medAbstractGroupParameter *>(parameter))
     {
         foreach(medAbstractParameter *paramInGroup, group->parametersCandidateToPool())
         {
@@ -150,14 +151,14 @@ QStringList medParameterPool::parametersNames()
 
 void medParameterPool::triggerParams()
 {
-    medAbstractTriggerParameter *sender = dynamic_cast<medAbstractTriggerParameter*>(QObject::sender());
+    medAbstractTriggerParameter *sender = qobject_cast<medAbstractTriggerParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractTriggerParameter *triggerParam = dynamic_cast<medAbstractTriggerParameter*>(param);
+        medAbstractTriggerParameter *triggerParam = qobject_cast<medAbstractTriggerParameter*>(param);
         if(triggerParam && triggerParam != sender)
         {
             triggerParam->disconnect(this);
@@ -170,14 +171,14 @@ void medParameterPool::triggerParams()
 
 void medParameterPool::changeParamsValue(bool value)
 {
-    medAbstractBoolParameter *sender = dynamic_cast<medAbstractBoolParameter*>(QObject::sender());
+    medAbstractBoolParameter *sender = qobject_cast<medAbstractBoolParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractBoolParameter *boolParam = dynamic_cast<medAbstractBoolParameter*>(param);
+        medAbstractBoolParameter *boolParam = qobject_cast<medAbstractBoolParameter*>(param);
         if(boolParam && boolParam != sender)
         {
             boolParam->disconnect(this);
@@ -190,14 +191,14 @@ void medParameterPool::changeParamsValue(bool value)
 
 void medParameterPool::changeParamsValue(int value)
 {
-    medAbstractIntParameter *sender = dynamic_cast<medAbstractIntParameter*>(QObject::sender());
+    medAbstractIntParameter *sender = qobject_cast<medAbstractIntParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractIntParameter *intParam = dynamic_cast<medAbstractIntParameter*>(param);
+        medAbstractIntParameter *intParam = qobject_cast<medAbstractIntParameter*>(param);
         if(intParam && intParam != sender)
         {
             intParam->disconnect(this);
@@ -210,14 +211,14 @@ void medParameterPool::changeParamsValue(int value)
 
 void medParameterPool::changeParamsValue(double value)
 {
-    medAbstractDoubleParameter *sender = dynamic_cast<medAbstractDoubleParameter*>(QObject::sender());
+    medAbstractDoubleParameter *sender = qobject_cast<medAbstractDoubleParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractDoubleParameter *doubleParam = dynamic_cast<medAbstractDoubleParameter*>(param);
+        medAbstractDoubleParameter *doubleParam = qobject_cast<medAbstractDoubleParameter*>(param);
         if(doubleParam && doubleParam != sender)
         {
             doubleParam->disconnect(this);
@@ -230,14 +231,14 @@ void medParameterPool::changeParamsValue(double value)
 
 void medParameterPool::changeParamsValue(const QString &value)
 {
-    medAbstractStringParameter *sender = dynamic_cast<medAbstractStringParameter*>(QObject::sender());
+    medAbstractStringParameter *sender = qobject_cast<medAbstractStringParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractStringParameter *listParam = dynamic_cast<medAbstractStringParameter*>(param);
+        medAbstractStringParameter *listParam = qobject_cast<medAbstractStringParameter*>(param);
         if(listParam && listParam != sender)
         {
             listParam->disconnect(this);
@@ -250,14 +251,14 @@ void medParameterPool::changeParamsValue(const QString &value)
 
 void medParameterPool::changeParamsValue(const QVector2D& value)
 {
-    medAbstractVector2DParameter *sender = dynamic_cast<medAbstractVector2DParameter*>(QObject::sender());
+    medAbstractVector2DParameter *sender = qobject_cast<medAbstractVector2DParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractVector2DParameter *vector2DParam = dynamic_cast<medAbstractVector2DParameter*>(param);
+        medAbstractVector2DParameter *vector2DParam = qobject_cast<medAbstractVector2DParameter*>(param);
         if(vector2DParam && vector2DParam != sender)
         {
             vector2DParam->disconnect(this);
@@ -270,14 +271,14 @@ void medParameterPool::changeParamsValue(const QVector2D& value)
 
 void medParameterPool::changeParamsValue(const QVector3D& value)
 {
-    medAbstractVector3DParameter *sender = dynamic_cast<medAbstractVector3DParameter*>(QObject::sender());
+    medAbstractVector3DParameter *sender = qobject_cast<medAbstractVector3DParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractVector3DParameter *vector3DParam = dynamic_cast<medAbstractVector3DParameter*>(param);
+        medAbstractVector3DParameter *vector3DParam = qobject_cast<medAbstractVector3DParameter*>(param);
         if(vector3DParam && vector3DParam != sender)
         {
             vector3DParam->disconnect(this);
@@ -290,14 +291,14 @@ void medParameterPool::changeParamsValue(const QVector3D& value)
 
 void medParameterPool::changeParamsValue(const QVector4D& value)
 {
-    medAbstractVector4DParameter *sender = dynamic_cast<medAbstractVector4DParameter*>(QObject::sender());
+    medAbstractVector4DParameter *sender = qobject_cast<medAbstractVector4DParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medAbstractVector4DParameter *vector4DParam = dynamic_cast<medAbstractVector4DParameter*>(param);
+        medAbstractVector4DParameter *vector4DParam = qobject_cast<medAbstractVector4DParameter*>(param);
         if(vector4DParam && vector4DParam != sender)
         {
             vector4DParam->disconnect(this);
@@ -310,14 +311,14 @@ void medParameterPool::changeParamsValue(const QVector4D& value)
 
 void medParameterPool::changeParamsValue(const QHash<QString, QVariant>& values)
 {
-    medCompositeParameter *sender = dynamic_cast<medCompositeParameter*>(QObject::sender());
+    medCompositeParameter *sender = qobject_cast<medCompositeParameter*>(QObject::sender());
 
     if(!sender)
         return;
 
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medCompositeParameter *compositeParam = dynamic_cast<medCompositeParameter*>(param);
+        medCompositeParameter *compositeParam = qobject_cast<medCompositeParameter*>(param);
         if(compositeParam && compositeParam != sender)
         {
             compositeParam->disconnect(this);
@@ -331,20 +332,40 @@ void medParameterPool::changeParamsValue(const QHash<QString, QVariant>& values)
 
 void medParameterPool::changeParamsValue(const QList<medDataIndex>& values)
 {
-    medDataListParameter *sender = dynamic_cast<medDataListParameter*>(QObject::sender());
+    medDataIndexListParameter *sender = qobject_cast<medDataIndexListParameter*>(QObject::sender());
     
     if(!sender)
         return;
     
     foreach(medAbstractParameter *param, d->pool.values(sender->name()))
     {
-        medDataListParameter *dataListParam = dynamic_cast<medDataListParameter*>(param);
+        medDataIndexListParameter *dataListParam = qobject_cast<medDataIndexListParameter*>(param);
         if(dataListParam && dataListParam != sender)
         {
             dataListParam->disconnect(this);
             dataListParam->setValues(values);
             connect(dataListParam, SIGNAL(valuesChanged(QList<medDataIndex>)), this, SLOT(changeParamsValue(QList<medDataIndex>)), Qt::UniqueConnection);
             connect(dataListParam, SIGNAL(aboutToBeDestroyed()), this, SLOT(removeInternParam()), Qt::UniqueConnection);
+        }
+    }
+}
+
+void medParameterPool::changeParamsValue(const medDataIndex &value)
+{
+    medDataIndexParameter *sender = qobject_cast<medDataIndexParameter*>(QObject::sender());
+
+    if(!sender)
+        return;
+
+    foreach(medAbstractParameter *param, d->pool.values(sender->name()))
+    {
+        medDataIndexParameter *dataIndexParam = qobject_cast<medDataIndexParameter*>(param);
+        if(dataIndexParam && dataIndexParam != sender)
+        {
+            dataIndexParam->disconnect(this);
+            dataIndexParam->setValue(value);
+            connect(dataIndexParam, SIGNAL(valuesChanged(medDataIndex)), this, SLOT(changeParamsValue(medDataIndex)), Qt::UniqueConnection);
+            connect(dataIndexParam, SIGNAL(aboutToBeDestroyed()), this, SLOT(removeInternParam()), Qt::UniqueConnection);
         }
     }
 }
@@ -365,27 +386,28 @@ void medParameterPool::connectParam(medAbstractParameter *parameter)
 {
     connect(parameter, SIGNAL(aboutToBeDestroyed()), this, SLOT(removeInternParam()), Qt::UniqueConnection);
 
-    if(medAbstractTriggerParameter* param = dynamic_cast<medAbstractTriggerParameter*>(parameter))
+    if(medAbstractTriggerParameter* param = qobject_cast<medAbstractTriggerParameter*>(parameter))
         connect(param, SIGNAL(triggered()), this, SLOT(triggerParams()), Qt::UniqueConnection);
-    else if(medAbstractBoolParameter* param = dynamic_cast<medAbstractBoolParameter*>(parameter))
+    else if(medAbstractBoolParameter* param = qobject_cast<medAbstractBoolParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(bool)), this, SLOT(changeParamsValue(bool)), Qt::UniqueConnection);
-    else if(medAbstractDoubleParameter* param = dynamic_cast<medAbstractDoubleParameter*>(parameter))
+    else if(medAbstractDoubleParameter* param = qobject_cast<medAbstractDoubleParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(double)), this, SLOT(changeParamsValue(double)), Qt::UniqueConnection);
-    else if(medAbstractIntParameter* param = dynamic_cast<medAbstractIntParameter*>(parameter))
+    else if(medAbstractIntParameter* param = qobject_cast<medAbstractIntParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(int)), this, SLOT(changeParamsValue(int)), Qt::UniqueConnection);
-    else if(medAbstractStringParameter* param = dynamic_cast<medAbstractStringParameter*>(parameter))
+    else if(medAbstractStringParameter* param = qobject_cast<medAbstractStringParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(QString)), this, SLOT(changeParamsValue(QString)), Qt::UniqueConnection);
-    else if(medAbstractVector2DParameter* param = dynamic_cast<medAbstractVector2DParameter*>(parameter))
+    else if(medAbstractVector2DParameter* param = qobject_cast<medAbstractVector2DParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(QVector2D)), this, SLOT(changeParamsValue(QVector2D)), Qt::UniqueConnection);
-    else if(medAbstractVector3DParameter* param = dynamic_cast<medAbstractVector3DParameter*>(parameter))
+    else if(medAbstractVector3DParameter* param = qobject_cast<medAbstractVector3DParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(QVector3D)), this, SLOT(changeParamsValue(QVector3D)), Qt::UniqueConnection);
-    else if(medAbstractVector4DParameter* param = dynamic_cast<medAbstractVector4DParameter*>(parameter))
+    else if(medAbstractVector4DParameter* param = qobject_cast<medAbstractVector4DParameter*>(parameter))
         connect(param, SIGNAL(valueChanged(QVector4D)), this, SLOT(changeParamsValue(QVector4D)), Qt::UniqueConnection);
-    else if(medCompositeParameter* param = dynamic_cast<medCompositeParameter*>(parameter))
+    else if(medCompositeParameter* param = qobject_cast<medCompositeParameter*>(parameter))
         connect(param, SIGNAL(valuesChanged(QHash<QString,QVariant>)), this, SLOT(changeParamsValue(QHash<QString,QVariant>)), Qt::UniqueConnection);
-	else if(medDataListParameter* param = dynamic_cast<medDataListParameter*>(parameter))
+    else if(medDataIndexListParameter* param = qobject_cast<medDataIndexListParameter*>(parameter))
         connect(param, SIGNAL(valuesChanged(QList<medDataIndex>)), this, SLOT(changeParamsValue(QList<medDataIndex>)), Qt::UniqueConnection);
-
+    else if(medDataIndexParameter* param = qobject_cast<medDataIndexParameter*>(parameter))
+        connect(param, SIGNAL(valuesChanged(medDataIndex)), this, SLOT(changeParamsValue(medDataIndex)), Qt::UniqueConnection);
 }
 
 void medParameterPool::disconnectParam(medAbstractParameter *parameter)

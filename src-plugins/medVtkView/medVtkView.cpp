@@ -40,7 +40,7 @@
 #include <medVtkViewObserver.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
-#include <medDataListParameter.h>
+#include <medDataIndexListParameter.h>
 #include <medToolBox.h>
 #include <medMetaDataKeys.h>
 #include <medParameterPool.h>

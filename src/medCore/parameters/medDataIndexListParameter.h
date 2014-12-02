@@ -25,13 +25,13 @@ class QStringList;
 class medDataIndex;
 
 class medDataListParameterPrivate;
-class MEDCORE_EXPORT medDataListParameter: public medAbstractParameter
+class MEDCORE_EXPORT medDataIndexListParameter: public medAbstractParameter
 {
     Q_OBJECT
 
 public:
-    medDataListParameter(QString name = "Unknown data list parameter", QObject* parent = 0);
-    virtual ~medDataListParameter();
+    medDataIndexListParameter(QString name = "Unknown data list parameter", QObject* parent = 0);
+    virtual ~medDataIndexListParameter();
 
     void setValues(QList<medDataIndex> values);
     void clear();

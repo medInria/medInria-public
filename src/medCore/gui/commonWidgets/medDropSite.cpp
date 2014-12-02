@@ -37,13 +37,13 @@ medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePri
     setBackgroundRole(QPalette::Base);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->index = medDataIndex();
+    d->expectedUuid = QUuid();
     d->canAutomaticallyChangeAppereance = true;
 }
 
 medDropSite::~medDropSite(void)
 {
     delete d;
-
     d = NULL;
 }
 
@@ -81,7 +81,6 @@ void medDropSite::setValue(const medDataIndex &index)
 void medDropSite::dragEnterEvent(QDragEnterEvent *event)
 {
     setBackgroundRole(QPalette::Highlight);
-
     event->acceptProposedAction();
 }
 
@@ -93,7 +92,6 @@ void medDropSite::dragMoveEvent(QDragMoveEvent *event)
 void medDropSite::dragLeaveEvent(QDragLeaveEvent *event)
 {
     setBackgroundRole(QPalette::Base);
-
     event->accept();
 }
 
@@ -103,11 +101,10 @@ void medDropSite::dropEvent(QDropEvent *event)
 
     medDataIndex index( medDataIndex::readMimeData(mimeData) );
     if (index.isValid())
-    {
         this->setValue(d->index);
-        setBackgroundRole(QPalette::Base);
-        event->acceptProposedAction();
-    }
+
+    setBackgroundRole(QPalette::Base);
+    event->acceptProposedAction();
 }
 
 void medDropSite::clear(){
@@ -115,21 +112,6 @@ void medDropSite::clear(){
     d->index = medDataIndex();
 }
 
-void medDropSite::paintEvent(QPaintEvent *event)
-{
-    QLabel::paintEvent(event);
-
-//    // Optionally draw something (e.g. a tag) over the label in case it is a pixmap
-
-//    if(!this->pixmap())
-//        return;
-//
-//    QPainter painter;
-//    painter.begin(this);
-//    painter.setPen(Qt::white);
-//    painter.drawText(event->rect(), "Overlay", QTextOption(Qt::AlignHCenter | Qt::AlignCenter));
-//    painter.end();
-}
 
 void medDropSite::dataReady(medDataIndex index, QUuid uuid)
 {
