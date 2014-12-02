@@ -24,6 +24,7 @@ class medDatabaseSettingsWidgetPrivate {
 public:
   QLineEdit* dbPath;
   QPushButton *selectDirectoryButton;
+  QCheckBox* anonymousDb;
 };
 
 medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
@@ -35,6 +36,8 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
     d->dbPath = new QLineEdit(this);
     d->selectDirectoryButton = new QPushButton(tr("Select directory..."), this);
     d->selectDirectoryButton->setToolTip("Change the database directory or create a new database by selecting an empty directory");
+    d->anonymousDb = new QCheckBox(this);
+    d->anonymousDb->setToolTip(tr("Hide patient name in GUI"));
 
     QWidget* databaseLocation = new QWidget(this);
     QHBoxLayout* dbLayout = new QHBoxLayout;
@@ -49,6 +52,8 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
     QFormLayout* formLayout = new QFormLayout(this);
     formLayout->addRow(tr("Database location:"), databaseLocation);
     formLayout->addRow(new QLabel("* The changes will only be effective after saving and restarting the application."));
+    formLayout->addRow(tr("Anonymous database:"),d->anonymousDb);
+ //   connect(d->anonymousDb, SIGNAL(clicked()), this, SLOT(anonymousDb()));
 }
 
 void medDatabaseSettingsWidget::selectDirectory()
@@ -90,11 +95,14 @@ void medDatabaseSettingsWidget::read()
 {
     // we always show the datalocation here, the medStorage class takes care of retrieving the correct one
     d->dbPath->setText(medStorage::dataLocation());
+    medSettingsManager * mnger = medSettingsManager::instance();
+    d->anonymousDb->setChecked(mnger->value("database","anonymous").toBool());
 }
 
 bool medDatabaseSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
     mnger->setValue(this->identifier(),"new_database_location", d->dbPath->text());
+    mnger->setValue("database","anonymous",d->anonymousDb->isChecked());
     return true;
 }

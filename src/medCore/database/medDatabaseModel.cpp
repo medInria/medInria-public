@@ -28,6 +28,8 @@
 #include <medMetaDataKeys.h>
 #include <medAbstractDatabaseItem.h>
 
+#include <medSettingsManager.h>
+#include <medGlobal.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseModelPrivate
@@ -207,6 +209,9 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
 
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
+    if(medSettingsManager::instance()->value("database", "anonymous", false).toBool())
+        if(index.column() == 0 && !item->dataIndex().isValidForStudy() && !item->dataIndex().isValidForSeries())
+            return QVariant(anonymise(item->data(0).toString()));
     return item->data(index.column());
 }
 
