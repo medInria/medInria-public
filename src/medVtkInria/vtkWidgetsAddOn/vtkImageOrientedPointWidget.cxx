@@ -96,12 +96,12 @@ vtkImageOrientedPointWidget::vtkImageOrientedPointWidget()
   // Transform filters for glyph1
   this->TransformFilter1 = vtkTransformPolyDataFilter::New();
   this->TransformFilter1->SetTransform(this->Transform);
-  this->TransformFilter1->SetInputData(this->HandleGenerator1->GetOutput());
+  this->TransformFilter1->SetInputConnection(this->HandleGenerator1->GetOutputPort());
   this->TransformFilter1->Update();
   // Transform filters for glyph2
   this->TransformFilter2 = vtkTransformPolyDataFilter::New();
   this->TransformFilter2->SetTransform(this->Transform);
-  this->TransformFilter2->SetInputData(this->HandleGenerator2->GetOutput());
+  this->TransformFilter2->SetInputConnection(this->HandleGenerator2->GetOutputPort());
   this->TransformFilter2->Update();
 
   this->TemporaryHandlePoints = vtkFloatArray::New();
