@@ -1110,29 +1110,6 @@ void medVtkViewVtkFibersInteractor::setRoiNullOperation(bool value)
         this->setRoiBoolean(roi, 0);
 }
 
-void medVtkViewVtkFibersInteractor::loadRoiFromFile()
-{
-    if (!d->view)
-        return;
-
-    QString roiFileName = QFileDialog::getOpenFileName(0, tr("Open ROI"), "", tr("Image file (*.*)"));
-
-    if (roiFileName.isEmpty())
-        return;
-
-    d->roiImportUuid = medDataManager::instance()->importPath(roiFileName,false);
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
-            this, SLOT(importROI(medDataIndex,QUuid)), Qt::UniqueConnection);
-}
-
-void medVtkViewVtkFibersInteractor::importROI(const medDataIndex& index, QUuid uuid)
-{
-    if (uuid != d->roiImportUuid)
-        return;
-
-    this->importROI(index);
-}
-
 void medVtkViewVtkFibersInteractor::importROI(const medDataIndex& index)
 {
     dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
@@ -1298,7 +1275,7 @@ QWidget* medVtkViewVtkFibersInteractor::buildToolBoxWidget()
     bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
     bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);
 
-    connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
+    connect (d->dropOrOpenRoi, SIGNAL(valueChange(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
     connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(loadRoiFromFile()));
     connect (clearRoiButton,   SIGNAL(clicked()), this, SLOT(clearRoi()));
     connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(selectRoi(int)));

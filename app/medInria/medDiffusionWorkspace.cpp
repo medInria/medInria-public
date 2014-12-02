@@ -248,4 +248,5 @@ bool medDiffusionWorkspace::isUsable()
 //                           (tbFactory->toolBoxesFromCategory("diffusion-tractography").size()!=0);
 
 //    return workspaceUsable;
+    return false;
 }

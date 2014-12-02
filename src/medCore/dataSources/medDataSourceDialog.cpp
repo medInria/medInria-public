@@ -18,6 +18,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QCloseEvent>
+#include <QFileDialog>
 
 #include <medAbstractDataSource.h>
 #include <medDataSourceManager.h>
@@ -79,4 +80,43 @@ void medDataSourceDialog::addDataSource( medAbstractDataSource* dataSource )
 void medDataSourceDialog::closeEvent(QCloseEvent *event)
 {
     medSettingsManager::instance()->setValue("medDataSourceDialog", "geometry", this->saveGeometry());
+}
+
+
+QString medDataSourceDialog::getFilenameFromFileSystem(QWidget *parent)
+{
+    //  get last directory opened in settings.
+    QString path;
+    QFileDialog dialog(parent);
+
+    medSettingsManager::instance()->setValue("getFilenameFromFileSystem", "state", dialog.saveState());
+    medSettingsManager::instance()->setValue("getFilenameFromFileSystem", "geometry", dialog.saveGeometry());
+
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.restoreState(medSettingsManager::instance()->value("getFilenameFromFileSystem", "state").toByteArray());
+    dialog.restoreGeometry(medSettingsManager::instance()->value("getFilenameFromFileSystem", "geometry").toByteArray());
+    if(dialog.exec())
+        path = dialog.selectedFiles().first();
+
+    return path;
+}
+
+QStringList medDataSourceDialog::getFilenamesFromFileSystem(QWidget *parent)
+{
+    //  get last directory opened in settings.
+    QStringList paths;
+    QFileDialog dialog(parent);
+
+    medSettingsManager::instance()->setValue("getFilenameFromFileSystem", "state", dialog.saveState());
+    medSettingsManager::instance()->setValue("getFilenameFromFileSystem", "geometry", dialog.saveGeometry());
+
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.restoreState(medSettingsManager::instance()->value("getFilenameFromFileSystem", "state").toByteArray());
+    dialog.restoreGeometry(medSettingsManager::instance()->value("getFilenameFromFileSystem", "geometry").toByteArray());
+    if(dialog.exec())
+        paths = dialog.selectedFiles();
+
+    return paths;
 }

@@ -23,6 +23,9 @@ public:
     medDataSourceDialog(QWidget * parent = NULL, Qt::WindowFlags flag = 0);
     virtual ~medDataSourceDialog();
 
+    static QString getFilenameFromFileSystem(QWidget *parent = NULL);
+    static QStringList getFilenamesFromFileSystem(QWidget *parent = NULL);
+
 protected:
     void addDataSource(medAbstractDataSource* dataSource);
 

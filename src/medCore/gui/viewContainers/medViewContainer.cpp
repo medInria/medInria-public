@@ -37,6 +37,7 @@
 #include <medSettingsManager.h>
 #include <medAbstractInteractor.h>
 #include <medPoolIndicator.h>
+#include <medDataSourceDialog.h>
 #include <medLayoutChooser.h>
 
 class medViewContainerPrivate
@@ -115,6 +116,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->toolBarMenu = new QMenu(this);
     connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()));
+
 
     d->openAction = new QAction(tr("Open"), d->toolBarMenu);
     d->openAction->setIcon(QIcon(":/pixmaps/open.png"));
@@ -705,21 +707,7 @@ void medViewContainer::closeEvent(QCloseEvent * /*event*/)
 
 void medViewContainer::openFromSystem()
 {
-    //  get last directory opened in settings.
-    QString path;
-    QFileDialog dialog(this);
-
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setViewMode(QFileDialog::Detail);
-    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
-    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
-    if(dialog.exec())
-        path = dialog.selectedFiles().first();
-
-    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
-    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
-
-
+    QString path = medDataSourceDialog::getFilenameFromFileSystem(this);
     if (path.isEmpty())
         return;
 
