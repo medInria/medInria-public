@@ -37,6 +37,7 @@
 #include <medSettingsManager.h>
 #include <medAbstractInteractor.h>
 #include <medPoolIndicator.h>
+#include <medDataSourceDialog.h>
 
 
 class medViewContainerPrivate
@@ -659,30 +660,12 @@ void medViewContainer::closeEvent(QCloseEvent * /*event*/)
 
 void medViewContainer::openFromSystem()
 {
-    //  get last directory opened in settings.
-    QString path;
-    QFileDialog dialog(this);
-
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setViewMode(QFileDialog::Detail);
-    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
-    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
-    if(dialog.exec())
-        path = dialog.selectedFiles().first();
-
-    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
-    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
-
-
+    QString path = medDataSourceDialog::getFilenameFromFileSystem(this);
     if (path.isEmpty())
         return;
 
     connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
     d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
-
-
-    //  save last directory opened in settings.
-    medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }
 
 void medViewContainer::updateToolBar()

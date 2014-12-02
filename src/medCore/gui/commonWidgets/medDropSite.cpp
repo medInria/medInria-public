@@ -16,6 +16,9 @@
 #include <medDataIndex.h>
 
 #include <medDropSite.h>
+#include <medDataManager.h>
+#include <medDataSourceDialog.h>
+#include <medAbstractData.h>
 
 #include <QtGui>
 
@@ -24,6 +27,7 @@ class medDropSitePrivate
 public:
     medDataIndex index;
     bool canAutomaticallyChangeAppereance;
+    QUuid expectedUuid;
 };
 
 medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePrivate)
@@ -59,9 +63,19 @@ void medDropSite::setCanAutomaticallyChangeAppereance(bool can)
     d->canAutomaticallyChangeAppereance = can;
 }
 
-medDataIndex medDropSite::index(void) const
+medDataIndex medDropSite::value(void) const
 {
     return d->index;
+}
+
+void medDropSite::setValue(const medDataIndex &index)
+{
+    if(!index.isValidForImage())
+        return;
+
+    d->index = index;
+    if (d->canAutomaticallyChangeAppereance )
+        setPixmap(QPixmap::fromImage(medDataManager::instance()->retrieveData(index)->thumbnail()));
 }
 
 void medDropSite::dragEnterEvent(QDragEnterEvent *event)
@@ -87,20 +101,13 @@ void medDropSite::dropEvent(QDropEvent *event)
 {
     const QMimeData *mimeData = event->mimeData();
 
-    if (d->canAutomaticallyChangeAppereance && mimeData->hasImage()) {
-        setPixmap(qvariant_cast<QPixmap>(mimeData->imageData()));
-    }
-
     medDataIndex index( medDataIndex::readMimeData(mimeData) );
-    if (index.isValid()) {
-        d->index = index;
+    if (index.isValid())
+    {
+        this->setValue(d->index);
+        setBackgroundRole(QPalette::Base);
+        event->acceptProposedAction();
     }
-
-    setBackgroundRole(QPalette::Base);
-
-    event->acceptProposedAction();
-    
-    emit objectDropped(d->index);
 }
 
 void medDropSite::clear(){
@@ -124,9 +131,26 @@ void medDropSite::paintEvent(QPaintEvent *event)
 //    painter.end();
 }
 
+void medDropSite::dataReady(medDataIndex index, QUuid uuid)
+{
+    if(d->expectedUuid != uuid)
+        return;
+
+    d->expectedUuid = QUuid();
+    disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
+    this->setValue(index);
+}
+
 void medDropSite::mousePressEvent(QMouseEvent* event)
 {
     Qt::MouseButtons mouseButtons = event->buttons();
     if( mouseButtons & Qt::LeftButton )
-        emit clicked();
+    {
+        QString path = medDataSourceDialog::getFilenameFromFileSystem(this);
+        if (path.isEmpty())
+            return;
+
+        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
+        d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
+    }
 }
