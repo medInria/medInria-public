@@ -23,7 +23,7 @@ medAbstractSegmentationProcess::medAbstractSegmentationProcess(medAbstractProces
     this->appendOutput( new medProcessOutput<medAbstractImageData>("Output", NULL));
 }
 
-bool medAbstractSegmentationProcess::isInteractive()
+bool medAbstractSegmentationProcess::isInteractive() const
 {
     return true;
 }

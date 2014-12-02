@@ -25,7 +25,7 @@ medAbstractModelEstimationProcess::medAbstractModelEstimationProcess(medAbstract
     this->appendOutput( new medProcessOutput<medAbstractDiffusionModelImageData>("Output", NULL));
 }
 
-bool medAbstractModelEstimationProcess::isInteractive()
+bool medAbstractModelEstimationProcess::isInteractive() const
 {
     return false;
 }

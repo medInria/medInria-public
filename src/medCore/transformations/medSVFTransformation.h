@@ -33,4 +33,6 @@ public:
 
 private:
     medSVFTransformationPrivate* d;
+
+    using medAbstractTransformation::setParameter;
 };

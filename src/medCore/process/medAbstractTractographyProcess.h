@@ -21,6 +21,6 @@ public:
     medAbstractTractographyProcess(medAbstractProcess* parent = 0);
 
 public:
-    virtual bool isInteractive();
+    virtual bool isInteractive() const;
 };
 

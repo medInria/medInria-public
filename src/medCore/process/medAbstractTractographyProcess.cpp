@@ -25,7 +25,7 @@ medAbstractTractographyProcess::medAbstractTractographyProcess(medAbstractProces
     this->appendOutput( new medProcessOutput<medAbstractFibersData>("Output"));
 }
 
-bool medAbstractTractographyProcess::isInteractive()
+bool medAbstractTractographyProcess::isInteractive() const
 {
     return false;
 }
