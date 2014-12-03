@@ -91,6 +91,8 @@ medDropSite* medDataIndexParameter::getDropSite()
     {
         d->dropSite = new medDropSite;
         d->dropSite->setText(d->text);
+        connect(d->dropSite, SIGNAL(valueChanged(medDataIndex)),
+                this, SLOT(setValue(medDataIndex)));
     }
 
     return d->dropSite;
