@@ -40,6 +40,7 @@ public slots:
     void setJobProgress(int progress);
     void setJobSuccess();
     void setJobFailure();
+    void displayJobError(QString errorMessage);
 
     void disableJobCancel();
     void cancelJob();
