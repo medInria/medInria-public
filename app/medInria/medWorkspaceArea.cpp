@@ -97,7 +97,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->splitter->addWidget(d->toolBoxContainer);
 
     this->addDatabaseView();
-    connect(medDataSourceManager::instance(), SIGNAL(openRequest(medDataIndex)), this, SIGNAL(open(medDataIndex)));
+    connect(medDataSourceManager::instance(), SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
 
     if (!d->splitter->restoreState(medSettingsManager::instance()->value("medWorkspaceArea", "splitterState").toByteArray()))
     {
@@ -238,9 +238,9 @@ void medWorkspaceArea::addDatabaseView()
             //little tricks to force to recompute the stylesheet.
             dbDataSource->compactViewWidget()->setStyleSheet("/* */");
 
-            connect(dbDataSource->compactViewWidget(), SIGNAL(openRequest(const medDataIndex&)),
-                    this, SIGNAL(openRequest(const medDataIndex&)),
-                    Qt::UniqueConnection);
+//            connect(dbDataSource->compactViewWidget(), SIGNAL(openRequest(const medDataIndex&)),
+//                    this, SIGNAL(openRequest(const medDataIndex&)),
+//                    Qt::UniqueConnection);
         }
     }
 }

@@ -125,7 +125,8 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(showStudyPreview(const medDataIndex&)));
         connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(showSeriesPreview(const medDataIndex&)));
 
-        connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), d->compactView , SIGNAL(openRequest(medDataIndex)));
+        connect(d->compactView, SIGNAL(openRequest(medDataIndex)), this , SIGNAL(openRequest(medDataIndex)));
+        connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), this , SIGNAL(openRequest(medDataIndex)));
         connect(d->compactView, SIGNAL(exportDataRequest(const medDataIndex&)), this, SLOT(exportData(const medDataIndex&)));
     }
     return d->compactWidget;
