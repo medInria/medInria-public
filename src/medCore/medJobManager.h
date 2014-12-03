@@ -49,6 +49,7 @@ public:
 signals:
     void cancel();
     void jobRegistered(medAbstractJob* job, QString jobName);
+    void jobRemoved(medAbstractJob* job);
 
 protected:
     medJobManager();

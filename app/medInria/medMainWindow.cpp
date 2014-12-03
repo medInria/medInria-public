@@ -33,6 +33,8 @@
 #include <medDatabaseController.h>
 
 #include <medJobManager.h>
+#include <medAttachedPopupWidget.h>
+#include <medJobListWidget.h>
 
 #include <medWorkspaceFactory.h>
 #include <medAbstractWorkspace.h>
@@ -84,6 +86,7 @@ public:
     QToolButton*                quitButton;
     QToolButton*              fullscreenButton;
     QToolButton*              adjustSizeButton;
+    QToolButton*              jobWidgetButton;
     QList<QString>            importUuids;
     medQuickAccessMenu * quickAccessWidget;
     bool controlPressed;
@@ -219,12 +222,28 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->adjustSizeButton->setToolTip(tr("Adjust containers size"));
     QObject::connect(d->adjustSizeButton, SIGNAL(clicked()), this, SLOT(adjustContainersSize()));
 
+    // Job manager widget button
+    d->jobWidgetButton = new QToolButton(this);
+    d->jobWidgetButton->setIcon(adjustIcon);
+    d->jobWidgetButton->setObjectName("jobWidgetButton");
+    d->jobWidgetButton->setShortcut(Qt::AltModifier + Qt::Key_J);
+    d->jobWidgetButton->setToolTip("Jobs management");
+
+    medAttachedPopupWidget *jobManagerPopupWidget = new medAttachedPopupWidget(d->jobWidgetButton);
+    QWidget *jobManagerCenterWidget = jobManagerPopupWidget->centerWidget();
+    medJobListWidget *jobListWidget = new medJobListWidget(jobManagerCenterWidget);
+    jobManagerCenterWidget->setLayout(new QVBoxLayout);
+    jobManagerCenterWidget->layout()->addWidget(jobListWidget);
+    jobManagerPopupWidget->attachTo(d->jobWidgetButton, medAttachedPopupWidget::TOP);
+
+    QObject::connect(d->jobWidgetButton, SIGNAL(clicked()), jobManagerPopupWidget, SLOT(display()));
 
     //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
     d->rightEndButtons = new QWidget(this);
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->jobWidgetButton );
     rightEndButtonsLayout->addWidget( d->adjustSizeButton );
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
