@@ -25,7 +25,7 @@ class medDropSite;
 
 class medDataIndex;
 
-class medDataListParameterPrivate;
+class medDataIndexParameterPrivate;
 class MEDCORE_EXPORT medDataIndexParameter: public medAbstractParameter
 {
     Q_OBJECT
@@ -54,5 +54,5 @@ signals:
     void valueChanged (medDataIndex);
 
 private:
-    medDataListParameterPrivate* d;
+    medDataIndexParameterPrivate* d;
 };

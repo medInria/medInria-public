@@ -24,7 +24,7 @@ class QStringList;
 
 class medDataIndex;
 
-class medDataListParameterPrivate;
+class medDataListIndexParameterPrivate;
 class MEDCORE_EXPORT medDataIndexListParameter: public medAbstractParameter
 {
     Q_OBJECT
@@ -46,5 +46,5 @@ signals:
     void valuesChanged (QList <medDataIndex>);
     
 private:
-    medDataListParameterPrivate* d;
+    medDataListIndexParameterPrivate* d;
 };
