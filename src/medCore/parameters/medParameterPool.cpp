@@ -364,7 +364,7 @@ void medParameterPool::changeParamsValue(const medDataIndex &value)
         {
             dataIndexParam->disconnect(this);
             dataIndexParam->setValue(value);
-            connect(dataIndexParam, SIGNAL(valuesChanged(medDataIndex)), this, SLOT(changeParamsValue(medDataIndex)), Qt::UniqueConnection);
+            connect(dataIndexParam, SIGNAL(valueChanged(medDataIndex)), this, SLOT(changeParamsValue(medDataIndex)), Qt::UniqueConnection);
             connect(dataIndexParam, SIGNAL(aboutToBeDestroyed()), this, SLOT(removeInternParam()), Qt::UniqueConnection);
         }
     }
@@ -407,7 +407,7 @@ void medParameterPool::connectParam(medAbstractParameter *parameter)
     else if(medDataIndexListParameter* param = qobject_cast<medDataIndexListParameter*>(parameter))
         connect(param, SIGNAL(valuesChanged(QList<medDataIndex>)), this, SLOT(changeParamsValue(QList<medDataIndex>)), Qt::UniqueConnection);
     else if(medDataIndexParameter* param = qobject_cast<medDataIndexParameter*>(parameter))
-        connect(param, SIGNAL(valuesChanged(medDataIndex)), this, SLOT(changeParamsValue(medDataIndex)), Qt::UniqueConnection);
+        connect(param, SIGNAL(valueChanged(medDataIndex)), this, SLOT(changeParamsValue(medDataIndex)), Qt::UniqueConnection);
 }
 
 void medParameterPool::disconnectParam(medAbstractParameter *parameter)
