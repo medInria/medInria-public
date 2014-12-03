@@ -13,8 +13,9 @@
 
 #include <medJobListWidget.h>
 
-#include <QtCore>
-#include <QtGui>
+#include <QLabel>
+#include <QProgressBar>
+#include <QPushButton>
 
 #include <medAbstractJob.h>
 #include <medJobManager.h>
@@ -29,6 +30,7 @@ class medJobListWidgetPrivate
 public:
     QVBoxLayout *layout;
     QList <medAbstractJob *> jobsList;
+
     QList <QProgressBar *> progressBars;
     QList <QLabel *> jobsLabels;
     QList <QPushButton *> cancelButtons;
@@ -48,6 +50,9 @@ medJobListWidget::medJobListWidget(QWidget *parent) : QWidget(parent), d(new med
 
     connect(medJobManager::instance(), SIGNAL(jobRemoved(medAbstractJob *)),
             this, SLOT(removeJob(medAbstractJob *)));
+
+    this->setFixedWidth(350);
+    this->setMinimumHeight(20);
 }
 
 medJobListWidget::~medJobListWidget(void)
@@ -83,6 +88,7 @@ void medJobListWidget::addJob(medAbstractJob *job, QString label)
 
     QPushButton *cancelButton = new QPushButton(widget);
     cancelButton->setText("C");
+    cancelButton->setStyleSheet("height: 15px;width: 15px;min-width: 15px;");
     connect(cancelButton,SIGNAL(clicked()), this, SLOT(cancelJob()));
     d->cancelButtons.append(cancelButton);
 
@@ -98,7 +104,7 @@ void medJobListWidget::addJob(medAbstractJob *job, QString label)
     connect(job, SIGNAL(success()), this, SLOT(setJobSuccess()));
     connect(job, SIGNAL(failure()), this, SLOT(setJobFailure()));
     connect(job, SIGNAL(disableCancel()), this, SLOT(disableJobCancel()));
-
+    connect(job, SIGNAL(showError(QString)), this, SLOT(displayJobError(QString)));
     connect(job, SIGNAL(cancelled()), this, SLOT(setJobFailure()));
 }
 
@@ -179,6 +185,29 @@ void medJobListWidget::setJobFailure()
     d->cancelButtons[indexJob]->setVisible(false);
 }
 
+void medJobListWidget::displayJobError(QString errorMessage)
+{
+    medAbstractJob *job = qobject_cast <medAbstractJob *> (QObject::sender());
+
+     if (!job || !d->jobsList.contains(job))
+         return;
+
+     unsigned int indexJob = d->jobsList.indexOf(job);
+
+     QScrollArea *errorScroll = new QScrollArea(d->widgets[indexJob]);
+     QLabel *errorLabel = new QLabel(errorScroll);
+     errorLabel->setText(errorMessage);
+     errorLabel->setStyleSheet("background:none;");
+     errorScroll->setMaximumHeight(errorLabel->height());
+     errorScroll->setWidget(errorLabel);
+     unsigned int layoutIndex = d->widgets[indexJob]->layout()->indexOf(d->progressBars[indexJob]);
+     d->progressBars[indexJob]->setVisible(false);
+
+     QHBoxLayout *internalLayout = qobject_cast <QHBoxLayout *> (d->widgets[indexJob]->layout());
+     internalLayout->removeWidget(d->progressBars[indexJob]);
+     internalLayout->insertWidget(layoutIndex,errorScroll);
+}
+
 void medJobListWidget::removeJob(medAbstractJob *job)
 {
     if (!d->jobsList.contains(job))
@@ -199,9 +228,11 @@ void medJobListWidget::removeJobWidgets()
 
         d->cancelButtons.removeAt(indexJob);
         d->jobsLabels.removeAt(indexJob);
+
         d->jobsList.removeAt(indexJob);
         d->progressBars.removeAt(indexJob);
         d->layout->removeWidget(d->widgets[indexJob]);
+        delete d->widgets[indexJob];
         d->widgets.removeAt(indexJob);
     }
 

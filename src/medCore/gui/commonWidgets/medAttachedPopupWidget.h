@@ -26,7 +26,7 @@ public slots:
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent * event);
-    virtual void resizeEvent(QResizeEvent * e);
+    virtual void resizeEvent(QResizeEvent *event);
 
 private:
     void placeArrow();

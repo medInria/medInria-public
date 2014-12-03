@@ -2,6 +2,7 @@
 
 #include <QGraphicsDropShadowEffect>
 #include <QMouseEvent>
+#include <QDebug>
 
 medAttachedPopupWidget::medAttachedPopupWidget(QWidget *parent)
     : QWidget(parent)
@@ -68,7 +69,7 @@ medAttachedPopupWidget::Orientation medAttachedPopupWidget::orientation() const
     return m_orientation;
 }
 
-void medAttachedPopupWidget::resizeEvent(QResizeEvent *)
+void medAttachedPopupWidget::resizeEvent(QResizeEvent *event)
 {
     if (this->isVisible())
         display();

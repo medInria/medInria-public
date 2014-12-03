@@ -253,7 +253,7 @@ void medAbstractDatabaseImporter::importFile ( void )
                 {
                     emit showError ( tr ( "Your database path is too long" ), 5000 );
                     emit dataImported(medDataIndex(), d->uuid);
-                emit failure ( this );
+                emit failure ();
                 return;
                 }
             #endif
