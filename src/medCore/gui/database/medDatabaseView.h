@@ -52,12 +52,10 @@ signals:
     /** Signal emitted when the selection changes and no item is selected. */
     void noPatientOrSeriesSelected();
 
-    void open(const medDataIndex&);
-    void exportData(const medDataIndex &index);
-    void dataRemoved(const medDataIndex &index);
+    void openRequest(const medDataIndex&);
+    void exportDataRequest(const medDataIndex &index);
 
 public slots:
-
     virtual void onViewSelectedItemRequested();
     virtual void onExportSelectedItemRequested();
     virtual void onRemoveSelectedItemRequested();

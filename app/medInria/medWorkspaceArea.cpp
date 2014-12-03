@@ -97,7 +97,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->splitter->addWidget(d->toolBoxContainer);
 
     this->addDatabaseView();
-    connect(medDataSourceManager::instance(), SIGNAL(open(medDataIndex)), this, SIGNAL(open(medDataIndex)));
+    connect(medDataSourceManager::instance(), SIGNAL(openRequest(medDataIndex)), this, SIGNAL(open(medDataIndex)));
 
     if (!d->splitter->restoreState(medSettingsManager::instance()->value("medWorkspaceArea", "splitterState").toByteArray()))
     {
@@ -161,10 +161,10 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     if (!d->workspaces.contains(workspace->identifier()))
         this->setupWorkspace(workspace->identifier());
 
-    this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
+    this->disconnect(this, SIGNAL(openRequest(medDataIndex)), d->currentWorkspace, 0);
 
     d->currentWorkspace = workspace;
-    connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
+    connect(this, SIGNAL(openRequest(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
 
     //clean toolboxes
     d->toolBoxContainer->hide();
@@ -225,7 +225,6 @@ void medWorkspaceArea::addDatabaseView()
     foreach (medAbstractDataSource* dataSource, medDataSourceManager::instance()->dataSources())
     {
         //TODO - Fix this, it's ugly - RDE
-
         if(medDatabaseDataSource* dbDataSource = qobject_cast<medDatabaseDataSource*>(dataSource))
         {
             QVBoxLayout *databaseViewLayout = new QVBoxLayout;
@@ -239,8 +238,8 @@ void medWorkspaceArea::addDatabaseView()
             //little tricks to force to recompute the stylesheet.
             dbDataSource->compactViewWidget()->setStyleSheet("/* */");
 
-            connect(dbDataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
-                    this, SIGNAL(open(const medDataIndex&)),
+            connect(dbDataSource->compactViewWidget(), SIGNAL(openRequest(const medDataIndex&)),
+                    this, SIGNAL(openRequest(const medDataIndex&)),
                     Qt::UniqueConnection);
         }
     }

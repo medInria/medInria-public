@@ -43,77 +43,15 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 }
 
 
+QList <medAbstractDataSource*> medDataSourceManager::dataSources()
+{
+    return d->dataSources;
+}
+
 void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)
 {
-    connect(dataSource, SIGNAL(exportData(const medDataIndex&)),
-            this, SLOT(exportData(const medDataIndex&)));
-
-    connect(dataSource, SIGNAL(dataReceived(medAbstractData*)),
-            this, SLOT(importData(medAbstractData*)));
-
-    connect(dataSource, SIGNAL(dataReceivingFailed(QString)),
-            this, SLOT(emitDataReceivingFailed(QString)));
-
-    connect(dataSource, SIGNAL(dataToImportReceived(QString)),
-            this, SLOT(importFile(QString)));
-
-    connect(dataSource, SIGNAL(dataToIndexReceived(QString)),
-            this, SLOT(indexFile(QString)));
-
-    connect(dataSource, SIGNAL(open(QString)),
-            this, SIGNAL(openFromPathRequest(QString)));
-    connect(dataSource, SIGNAL(load(QString)),
-            this, SLOT(loadFromPath(QString)));
-    connect(dataSource, SIGNAL(open(const medDataIndex&)),
-            this, SIGNAL(openFromIndexRequest(medDataIndex)));
-}
-
-//TODO: Maybe it is not the best place to put it (medDataManager?)
-void medDataSourceManager::importData(medAbstractData *data)
-{
-    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
-    QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
-    QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
-
-    QString s_patientName = patientName.simplified();
-    QString s_studyName = studyName.simplified();
-    QString s_seriesName = seriesName.simplified();
-
-    if ((s_patientName == "")||(s_studyName == "")||(s_seriesName == ""))
-        return;
-
-    QFileInfo fileInfo (medStorage::dataLocation() + "/" + s_patientName + "/" + s_studyName + "/");
-
-    if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
-    {
-        qDebug() << "Cannot create directory: " << fileInfo.dir().path();
-        return;
-    }
-
-    medDataManager::instance()->importData(data, true);
-}
-
-void medDataSourceManager::exportData(const medDataIndex &index)
-{
-    //TODO did it all from the medDataManager ? - RDE
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-    medDataManager::instance()->exportData(data);
-}
-
-void medDataSourceManager::importFile(QString path)
-{
-    medDataManager::instance()->importPath(path, false, true);
-}
-
-void medDataSourceManager::indexFile(QString path)
-{
-    medDataManager::instance()->importPath(path, true, true);
-}
-
-
-void medDataSourceManager::emitDataReceivingFailed(QString fileName)
-{
-    medMessageController::instance()->showError(tr("Unable to get from source the data named ") + fileName, 3000);
+    connect(dataSource, SIGNAL(openRequest(const medDataIndex&)),
+            this, SIGNAL(openRequest(const medDataIndex&)));
 }
 
 medDataSourceManager * medDataSourceManager::instance( void )
@@ -129,11 +67,6 @@ medDataSourceManager::~medDataSourceManager( void )
     d = NULL;
 }
 
-void medDataSourceManager::loadFromPath(QString path)
-{
-    medDataManager::instance()->importPath(path, false);
-}
-
 void medDataSourceManager::destroy( void )
 {
     if (s_instance)
@@ -143,9 +76,5 @@ void medDataSourceManager::destroy( void )
     }
 }
 
-QList <medAbstractDataSource*> medDataSourceManager::dataSources()
-{
-    return d->dataSources;
-}
 
 medDataSourceManager *medDataSourceManager::s_instance = NULL;

@@ -46,12 +46,11 @@ QString description() const;
 
 public slots:
     void onOpeningFailed(const medDataIndex& index, QUuid);
-
-signals:
-    void open(const medDataIndex&);
+;
 
 protected slots:
     void onFilter(const QString &text, int column);
+    void exportData(const medDataIndex& index);
 
 
 private:

@@ -184,12 +184,8 @@ void medApplication::initialize()
     else
         qDebug() << "medDatabaseDataSource type Registered";
 
-    connect(medDataSourceManager::instance(), SIGNAL(openFromIndexRequest(medDataIndex)),
+    connect(medDataSourceManager::instance(), SIGNAL(openRequest(medDataIndex)),
             this, SLOT(open(medDataIndex)));
-
-    connect(medDataSourceManager::instance(), SIGNAL(openFromPathRequest(QString)),
-            this, SLOT(open(QString)));
-
 
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();

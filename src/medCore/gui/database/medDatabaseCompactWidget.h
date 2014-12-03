@@ -39,7 +39,7 @@ protected:
 
 
 signals:
-    void open(const medDataIndex& index);
+    void openRequest(const medDataIndex& index);
 
 private:
     medDatabaseCompactWidgetPrivate *d;

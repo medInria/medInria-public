@@ -15,6 +15,9 @@
 
 #include <QWidget>
 #include <QtCore>
+
+#include <medDataIndex.h>
+
 #include <medCoreExport.h>
 
 class medToolBox;
@@ -44,6 +47,9 @@ public:
 
     virtual QWidget* dialogWidget() {return NULL;}
 
+    // TODO consider if it should be virtual.
+    virtual QList<medDataIndex> dataSelected() {return QList<medDataIndex>();}
+
     /**
     * Returns the source selector widget
     * A widget that let's the user choose between different data locations
@@ -60,32 +66,7 @@ public:
     virtual QString description() const = 0;
 
 signals:
-    /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for importing*/
-    void dataToImportReceived(QString pathToData);
-
-    /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for indexing*/
-    void dataToIndexReceived(QString pathToData);
-
-    /** A source data may emit a signal to a medAbstractData in memory when it successfully received the data and is ready for importing*/
-    void dataReceived(medAbstractData *data);
-
-    /** A data source emits a signal when it failed to get the data*/
-    void dataReceivingFailed(QString pathToData);
-
-    /**
-     * @brief Emits this signal when the source wants to export some data to a file.
-     *
-     * The medBrowserArea will treat the demand based on the medDataIndex.
-     * @param index
-    */
-    void exportData(const medDataIndex& index);
-
-    /** emitted when the source is about to remove a data.*/
-    void dataRemoved(const medDataIndex& index);
-
-    void open(QString path);
-    void load(QString);
-    void open(const medDataIndex&);
+    void openRequest(const medDataIndex &index);
 };
 
 

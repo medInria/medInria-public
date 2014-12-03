@@ -71,8 +71,8 @@ void
 medDatabaseCompactWidget::setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview)
 {
     d->view = view;
-    connect(d->view, SIGNAL(open(const medDataIndex&)),
-            this, SIGNAL(open(const medDataIndex&))
+    connect(d->view, SIGNAL(openRequest(const medDataIndex&)),
+            this, SIGNAL(openRequest(const medDataIndex&))
             );
 
     d->preview = preview;

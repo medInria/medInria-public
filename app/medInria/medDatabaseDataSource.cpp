@@ -13,11 +13,11 @@
 
 #include "medDatabaseDataSource.h"
 
-#include <medDataManager.h>
+#include <dtkCore/dtkSmartPointer>
 
+#include <medDataManager.h>
 #include <medDatabaseSearchPanel.h>
 #include <medDatabaseView.h>
-
 #include <medDatabaseProxyModel.h>
 #include <medDatabaseModel.h>
 #include <medDatabaseExporter.h>
@@ -77,9 +77,8 @@ QWidget* medDatabaseDataSource::mainViewWidget()
         database_layout->setSpacing(0);
         database_layout->addWidget(d->largeView);
 
-        connect(d->largeView, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
-        connect(d->largeView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
-        connect(d->largeView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
+        connect(d->largeView, SIGNAL(openRequest(const medDataIndex&)), this, SIGNAL(openRequest(const medDataIndex&)));
+        connect(d->largeView, SIGNAL(exportDataRequest(const medDataIndex&)), this, SLOT(exportData(const medDataIndex&)));
 
         if(!d->toolBoxes.isEmpty())
         {
@@ -126,10 +125,8 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(showStudyPreview(const medDataIndex&)));
         connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(showSeriesPreview(const medDataIndex&)));
 
-        connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), d->compactView , SIGNAL(open(medDataIndex)));
-        connect(d->compactView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
-        connect(d->compactView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
-
+        connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), d->compactView , SIGNAL(openRequest(medDataIndex)));
+        connect(d->compactView, SIGNAL(exportDataRequest(const medDataIndex&)), this, SLOT(exportData(const medDataIndex&)));
     }
     return d->compactWidget;
 }
@@ -189,6 +186,12 @@ void medDatabaseDataSource::onFilter( const QString &text, int column )
 void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index, QUuid)
 {
     d->largeView->onOpeningFailed(index);
+}
+
+void medDatabaseDataSource::exportData(const medDataIndex &index)
+{
+    medAbstractData *data = medDataManager::instance()->retrieveData(index);
+    medDataManager::instance()->exportData(data);
 }
 
 // /////////////////////////////////////////////////////////////////

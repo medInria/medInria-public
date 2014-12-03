@@ -45,6 +45,7 @@ public:
 
 private slots:
     void onPacsMove( const QVector<medMoveCommandItem>& cmdList);
+    void importToDataBase(QString dicomPath);
 
 private:
     medPacsDataSourcePrivate* d;
