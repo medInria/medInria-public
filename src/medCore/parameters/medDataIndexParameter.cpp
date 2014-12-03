@@ -17,14 +17,14 @@
 
 #include <QLabel>
 
-class medDataListParameterPrivate
+class medDataIndexParameterPrivate
 {
 public:
     medDataIndex value;
     medDropSite* dropSite;
     QString text;
 
-    ~medDataListParameterPrivate()
+    ~medDataIndexParameterPrivate()
     {
         delete dropSite;
     }
@@ -32,7 +32,7 @@ public:
 
 medDataIndexParameter::medDataIndexParameter(QString name, QObject* parent):
     medAbstractParameter(name, parent),
-    d(new medDataListParameterPrivate)
+    d(new medDataIndexParameterPrivate)
 {
     d->value = medDataIndex();
 }

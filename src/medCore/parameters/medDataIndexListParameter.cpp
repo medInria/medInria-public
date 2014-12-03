@@ -15,7 +15,7 @@
 #include <medDataIndex.h>
 #include <QLabel>
 
-class medDataListParameterPrivate
+class medDataListIndexParameterPrivate
 {
 public:
     QList <medDataIndex> values;
@@ -23,9 +23,9 @@ public:
 
 medDataIndexListParameter::medDataIndexListParameter(QString name, QObject* parent):
     medAbstractParameter(name, parent),
-    d(new medDataListParameterPrivate)
+    d(new medDataListIndexParameterPrivate)
 {
-    d->values.clear();
+//    d->values.clear();
 }
 
 medDataIndexListParameter::~medDataIndexListParameter()
