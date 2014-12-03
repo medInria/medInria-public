@@ -120,6 +120,10 @@ bool medApplication::event(QEvent *event)
 void medApplication::setMainWindow(medMainWindow *mw)
 {
     d->mainWindow = mw;
+    connect(this, SIGNAL(openRequest(medDataIndex)),
+            mw, SLOT(open(medDataIndex)));
+    connect(this, SIGNAL(openRequest(QString)),
+            mw, SLOT(open(QString)));
 
     //TODO - Fix this, shouldn't be needed.
     QVariant var = QVariant::fromValue((QObject*)d->mainWindow);
@@ -145,16 +149,6 @@ void medApplication::redirectErrorMessageToLog(const QString &message)
 void medApplication::redirectMessageToSplash(const QString &message)
 {
     emit showMessage(message);
-}
-
-void medApplication::open(const medDataIndex & index)
-{
-    d->mainWindow->open(index);
-}
-
-void medApplication::open(QString path)
-{
-    d->mainWindow->open(path);
 }
 
 void medApplication::initialize()
@@ -185,7 +179,7 @@ void medApplication::initialize()
         qDebug() << "medDatabaseDataSource type Registered";
 
     connect(medDataSourceManager::instance(), SIGNAL(openRequest(medDataIndex)),
-            this, SLOT(open(medDataIndex)));
+            this, SIGNAL(openRequest(medDataIndex)));
 
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();

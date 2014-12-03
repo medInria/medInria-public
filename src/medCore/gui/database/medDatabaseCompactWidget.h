@@ -37,10 +37,6 @@ public :
 protected:
     void resizeEvent(QResizeEvent *event);
 
-
-signals:
-    void openRequest(const medDataIndex& index);
-
 private:
     medDatabaseCompactWidgetPrivate *d;
 };

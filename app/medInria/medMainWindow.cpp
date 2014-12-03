@@ -350,7 +350,7 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
 
 void medMainWindow::open(const medDataIndex &index)
 {
-    this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
+    this->showWorkspace(d->workspaceArea->currentWorkspace()->identifier());
     d->workspaceArea->currentWorkspace()->open(index);
 }
 
