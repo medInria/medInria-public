@@ -75,7 +75,6 @@ bool medJobManager::unRegisterJob(medAbstractJob *job)
         disconnect(this, SIGNAL(cancel()), job, SLOT(cancel()) );
         d->itemList.removeAt(index);
 
-        emit jobRemoved(job);
         return true;
     }
     return false;
