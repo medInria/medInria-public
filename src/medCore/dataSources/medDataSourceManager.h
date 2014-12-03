@@ -30,36 +30,18 @@ class medDataSourceManager : public QObject
 
 public:
     static medDataSourceManager *instance();
-
     static void destroy();
-
     QList<medAbstractDataSource*> dataSources();
 
-
-protected slots:
-    void exportData(const medDataIndex &index);
-    void importData(medAbstractData *data);
-    void importFile(QString path);
-    void indexFile(QString path);
-    void emitDataReceivingFailed(QString fileName);
-
 signals:
-    void open(const medDataIndex&);
-    void open(QString);
-    void load(QString);
-    void openFromPathRequest(QString path);
-    void openFromIndexRequest(medDataIndex index);
+    void openRequest(const medDataIndex&);
 
 protected:
     void connectDataSource(medAbstractDataSource* dataSource);
 
-
+protected:
     medDataSourceManager();
     ~medDataSourceManager();
-
-
-protected slots:
-    void loadFromPath(QString path);
 
 private:
 

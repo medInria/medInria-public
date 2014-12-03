@@ -13,11 +13,7 @@
 
 #include <medQtDcmDataSource.h>
 
-#include <medDatabaseImporter.h>
-#include <medDatabaseController.h>
-#include <medJobManager.h>
-#include <medAbstractDataSourceFactory.h>
-#include <medToolBox.h>
+#include <dtkCore/dtkAbstractDataReader.h>
 
 #include <QtDcm.h>
 #include <QtDcmLocalDicomSettingsWidget.h>
@@ -25,12 +21,16 @@
 #include <QtDcmManager.h>
 #include <QtDcmPreferences.h>
 
-#include <dtkCore/dtkAbstractDataReader.h>
+#include <medDatabaseImporter.h>
+#include <medDatabaseController.h>
+#include <medJobManager.h>
+#include <medAbstractDataSourceFactory.h>
+#include <medToolBox.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-
 #include <medQtDcmDataSourceSerieToolBox.h>
 #include <medQtDcmDataSourceServersSettingsToolBox.h>
+#include <medDataManager.h>
 
 // /////////////////////////////////////////////////////////////////
 // medQtDcmDataSourcePrivate
@@ -181,7 +181,7 @@ void medQtDcmDataSource::initWidgets()
 
 void medQtDcmDataSource::onSerieMoved ( QString directory )
 {
-    emit dataToImportReceived ( directory );
+    medDataManager::instance()->importPath(directory, false, true);
 }
 
 void medQtDcmDataSource::onSaveLocalSettings()

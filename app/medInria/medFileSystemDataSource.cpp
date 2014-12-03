@@ -18,8 +18,9 @@
 
 #include <medActionsToolBox.h>
 #include <medSettingsManager.h>
-
 #include <medAbstractDataSourceFactory.h>
+#include <medDataSourceManager.h>
+#include <medDataManager.h>
 
 class medFileSystemDataSourcePrivate
 {
@@ -199,7 +200,7 @@ void medFileSystemDataSource::onFileSystemImportRequested(void)
     foreach(QString path, purgedList)
     {
         QFileInfo info(path);
-        emit dataToImportReceived(info.absoluteFilePath());
+        medDataManager::instance()->importPath(path, false, true);
     }
 }
 
@@ -211,7 +212,7 @@ void medFileSystemDataSource::onFileSystemIndexRequested(void)
     foreach(QString path, purgedList)
     {
         QFileInfo info(path);
-        emit dataToIndexReceived(info.absoluteFilePath());
+        medDataManager::instance()->importPath(info.absoluteFilePath(), true, true);
     }
 }
 

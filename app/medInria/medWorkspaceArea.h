@@ -69,7 +69,7 @@ protected:
     void switchTotabbedViewContainers(medTabbedViewContainers* stack);
 
 signals:
-    void open(const medDataIndex&);
+    void openRequest(const medDataIndex&);
 
 private:
     friend class medMessageController;
