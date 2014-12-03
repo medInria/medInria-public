@@ -35,6 +35,7 @@ medDataIndexParameter::medDataIndexParameter(QString name, QObject* parent):
     d(new medDataIndexParameterPrivate)
 {
     d->value = medDataIndex();
+    d->dropSite = NULL;
 }
 
 medDataIndexParameter::~medDataIndexParameter()
@@ -93,6 +94,8 @@ medDropSite* medDataIndexParameter::getDropSite()
         d->dropSite->setText(d->text);
         connect(d->dropSite, SIGNAL(valueChanged(medDataIndex)),
                 this, SLOT(setValue(medDataIndex)));
+        connect(d->dropSite, SIGNAL(destroyed()),
+                this, SLOT(removeInternDropSite()));
     }
 
     return d->dropSite;

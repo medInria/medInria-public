@@ -54,7 +54,7 @@ public:
 protected:
     void updateInternWigets();
 
-private:
+private slots:
     void removeInternDropSite();
 
 private:
