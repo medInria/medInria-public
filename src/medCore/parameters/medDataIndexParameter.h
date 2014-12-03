@@ -34,24 +34,28 @@ public:
     medDataIndexParameter(QString name = "Unknown data index parameter", QObject* parent = 0);
     virtual ~medDataIndexParameter();
 
-    void setValue(medDataIndex values);
-    void clear();
+public:
     medDataIndex value() const;
 
-    virtual QWidget* getWidget();
-    medDropSite* getDropSite();
+public slots:
+    void setValue(medDataIndex values);
+    void clear();
 
-public:
-    void updateInternWigets();
+signals:
+    void valueChanged (medDataIndex);
 
 public:
     void setText(const QString &text);
 
+public:
+    virtual QWidget* getWidget();
+    medDropSite* getDropSite();
+
+protected:
+    void updateInternWigets();
+
 private:
     void removeInternDropSite();
-
-signals:
-    void valueChanged (medDataIndex);
 
 private:
     medDataIndexParameterPrivate* d;
