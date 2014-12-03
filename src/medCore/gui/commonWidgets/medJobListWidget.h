@@ -36,7 +36,7 @@ public:
 
 public slots:
     void addJob(medAbstractJob* job, QString label);
-    void removeJob(medAbstractJob *job);
+    void removeJob();
     void setJobProgress(int progress);
     void setJobSuccess();
     void setJobFailure();
@@ -44,9 +44,6 @@ public slots:
 
     void disableJobCancel();
     void cancelJob();
-
-private slots:
-    void removeJobWidgets();
 
 private:
     medJobListWidgetPrivate *d;
