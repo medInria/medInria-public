@@ -1112,42 +1112,48 @@ void medVtkViewVtkFibersInteractor::setRoiNullOperation(bool value)
 
 void medVtkViewVtkFibersInteractor::importROI(const medDataIndex& index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-
-    // we accept only ROIs (medItkUChar3ImageData)
-    // TODO try dynamic_cast of medAbstractMaskData would be better - RDE
-    if (!data ||
-            (data->identifier() != "medItkUChar3ImageData" &&
-             data->identifier() != "medItkChar3ImageData" &&
-             data->identifier() != "medItkUShort3ImageData" &&
-             data->identifier() != "medItkShort3ImageData" &&
-             data->identifier() != "medItkUInt3ImageData" &&
-             data->identifier() != "medItkInt3ImageData" &&
-             data->identifier() != "medItkFloat3ImageData" &&
-             data->identifier() != "medItkDouble3ImageData"))
+    if(index == medDataIndex())
     {
-        medMessageController::instance()->showError(tr("Unable to load ROI, format not supported yet"), 3000);
-        return;
+        d->manager->GetROILimiter()->SetMaskImage (0);
+        d->manager->GetROILimiter()->SetDirectionMatrix (0);
+        d->roiManager->ResetData();
     }
+    else if(index.isValidForSeries())
+    {
+        dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
 
-    d->setROI<unsigned char>(data);
-    d->setROI<char>(data);
-    d->setROI<unsigned short>(data);
-    d->setROI<short>(data);
-    d->setROI<unsigned int>(data);
-    d->setROI<int>(data);
-    d->setROI<float>(data);
-    d->setROI<double>(data);
+        // we accept only ROIs (medItkUChar3ImageData)
+        if (!data ||
+                (data->identifier() != "medItkUChar3ImageData" &&
+                 data->identifier() != "medItkChar3ImageData" &&
+                 data->identifier() != "medItkUShort3ImageData" &&
+                 data->identifier() != "medItkShort3ImageData" &&
+                 data->identifier() != "medItkUInt3ImageData" &&
+                 data->identifier() != "medItkInt3ImageData" &&
+                 data->identifier() != "medItkFloat3ImageData" &&
+                 data->identifier() != "medItkDouble3ImageData"))
+        {
+            medMessageController::instance()->showError(tr("Unable to load ROI, format not supported yet"), 3000);
+            return;
+        }
+        d->setROI<unsigned char>(data);
+        d->setROI<char>(data);
+        d->setROI<unsigned short>(data);
+        d->setROI<short>(data);
+        d->setROI<unsigned int>(data);
+        d->setROI<int>(data);
+        d->setROI<float>(data);
+        d->setROI<double>(data);
+    }
+    else
+        return;
+
+    d->view->render();
 }
 
 
 void medVtkViewVtkFibersInteractor::clearRoi(void)
 {
-    d->manager->GetROILimiter()->SetMaskImage (0);
-    d->manager->GetROILimiter()->SetDirectionMatrix (0);
-
-    d->roiManager->ResetData();
-
     // clear medDropSite and put text again
     d->roiParameter->clear();
     d->roiParameter->setText(tr("Drag-and-drop\nfrom the database\nor click here\nto open a ROI."));
@@ -1156,8 +1162,6 @@ void medVtkViewVtkFibersInteractor::clearRoi(void)
         d->roiComboBox->clear();
 
     d->roiLabels.clear();
-
-    d->view->render();
 }
 
 void medVtkViewVtkFibersInteractor::selectRoi(int value)
