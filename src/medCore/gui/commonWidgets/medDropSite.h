@@ -47,7 +47,7 @@ signals:
      * This signal is emitted when an object containing
      * a valid medDataIndex is dropped.
      */
-    void valueChange (const medDataIndex& value);
+    void valueChanged (const medDataIndex& value);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

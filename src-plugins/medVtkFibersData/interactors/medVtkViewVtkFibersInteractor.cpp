@@ -1251,7 +1251,6 @@ QWidget* medVtkViewVtkFibersInteractor::buildToolBoxWidget()
     d->dropOrOpenRoi = new medDropSite(d->toolboxWidget);
     d->dropOrOpenRoi->setToolTip(tr("Drag-and-drop A ROI from the database."));
     d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
-    d->dropOrOpenRoi->setCanAutomaticallyChangeAppereance(false);
 
     QPushButton *clearRoiButton = new QPushButton("Clear ROI", d->toolboxWidget);
     clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
@@ -1275,7 +1274,7 @@ QWidget* medVtkViewVtkFibersInteractor::buildToolBoxWidget()
     bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
     bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);
 
-    connect (d->dropOrOpenRoi, SIGNAL(valueChange(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
+    connect (d->dropOrOpenRoi, SIGNAL(valueChanged(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
     connect (d->dropOrOpenRoi, SIGNAL(clicked()), this, SLOT(loadRoiFromFile()));
     connect (clearRoiButton,   SIGNAL(clicked()), this, SLOT(clearRoi()));
     connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(selectRoi(int)));

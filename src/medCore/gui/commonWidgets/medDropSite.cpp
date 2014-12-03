@@ -70,12 +70,14 @@ medDataIndex medDropSite::value(void) const
 
 void medDropSite::setValue(const medDataIndex &index)
 {
-    if(!index.isValidForImage())
+    if(!index.isValidForSeries())
         return;
 
     d->index = index;
     if (d->canAutomaticallyChangeAppereance )
-        setPixmap(QPixmap::fromImage(medDataManager::instance()->retrieveData(index)->thumbnail()));
+        setPixmap(QPixmap::fromImage(medDataManager::instance()->retrieveData(index)->thumbnail()).scaled(128,128));
+
+    emit valueChanged(index);
 }
 
 void medDropSite::dragEnterEvent(QDragEnterEvent *event)
@@ -101,13 +103,14 @@ void medDropSite::dropEvent(QDropEvent *event)
 
     medDataIndex index( medDataIndex::readMimeData(mimeData) );
     if (index.isValid())
-        this->setValue(d->index);
+        this->setValue(index);
 
     setBackgroundRole(QPalette::Base);
     event->acceptProposedAction();
 }
 
-void medDropSite::clear(){
+void medDropSite::clear()
+{
     QLabel::clear();
     d->index = medDataIndex();
 }
