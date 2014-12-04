@@ -425,14 +425,6 @@ void medMainWindow::setFullScreen (const bool full)
         this->showNormal();
 }
 
-void medMainWindow::toggleFullScreen()
-{
-    if ( !this->isFullScreen())
-        this->showFullScreen();
-    else
-        this->showNormal();
-}
-
 void medMainWindow::saveScene() {
 }
 
