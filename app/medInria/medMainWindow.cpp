@@ -81,9 +81,13 @@ public:
     QWidget*                  rightEndButtons;
     medStatusBar*             statusBar;
     medQuickAccessPushButton* quickAccessButton;
-    QToolButton*                quitButton;
-    QToolButton*              fullscreenButton;
+    
+    QToolButton*              saveSceneButton;
     QToolButton*              adjustSizeButton;
+    QToolButton*              screenshotButton;
+    QToolButton*              fullscreenButton;
+    QToolButton*              quitButton;
+
     QList<QString>            importUuids;
     medQuickAccessMenu * quickAccessWidget;
     bool controlPressed;
@@ -92,7 +96,7 @@ public:
     bool shortcutAccessVisible;
     QShortcut * shortcutShortcut;
 
-    QToolButton *screenshotButton;
+
     QList<QUuid> expectedUuids;
 };
 
@@ -200,6 +204,16 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
                        this, SLOT ( setFullScreen(bool) ) );
 
+    QIcon saveSceneIcon;
+    saveSceneIcon.addPixmap(QPixmap(":icons/saveScene.png"),QIcon::Normal);
+    saveSceneIcon.addPixmap(QPixmap(":icons/saveScene_grey.png"),QIcon::Disabled);
+    d->saveSceneButton = new QToolButton(this);
+    d->saveSceneButton->setIcon(saveSceneIcon);
+    d->saveSceneButton->setObjectName("saveSceneButton");
+    //d->saveSceneButton->setShortcut(Qt::AltModifier + Qt::Key_S);
+    d->saveSceneButton->setToolTip(tr("Save scene"));
+    QObject::connect(d->saveSceneButton, SIGNAL(clicked()), this, SLOT(saveScene()));
+
     QIcon cameraIcon;
     cameraIcon.addPixmap(QPixmap(":icons/camera.png"),QIcon::Normal);
     cameraIcon.addPixmap(QPixmap(":icons/camera_grey.png"),QIcon::Disabled);
@@ -225,6 +239,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->saveSceneButton );
     rightEndButtonsLayout->addWidget( d->adjustSizeButton );
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
@@ -416,6 +431,9 @@ void medMainWindow::toggleFullScreen()
         this->showFullScreen();
     else
         this->showNormal();
+}
+
+void medMainWindow::saveScene() {
 }
 
 void medMainWindow::captureScreenshot()
