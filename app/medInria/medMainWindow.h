@@ -56,7 +56,7 @@ public slots:
      * @brief Switches from the Fullscreen mode to the normal mode.
      *
      */
-    void toggleFullScreen();
+    void toggleFullScreen() { setFullScreen(!isFullScreen()); }
     void switchToArea(const AreaType areaIndex);
 
     void open(const medDataIndex & index);
