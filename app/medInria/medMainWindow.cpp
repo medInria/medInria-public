@@ -223,8 +223,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect(d->adjustSizeButton, SIGNAL(clicked()), this, SLOT(adjustContainersSize()));
 
     // Job manager widget button
+    QIcon jobWidgetIcon;
+    jobWidgetIcon.addPixmap(QPixmap(":icons/job-stack.png"),QIcon::Normal);
     d->jobWidgetButton = new QToolButton(this);
-    d->jobWidgetButton->setIcon(adjustIcon);
+    d->jobWidgetButton->setIcon(jobWidgetIcon);
     d->jobWidgetButton->setObjectName("jobWidgetButton");
     d->jobWidgetButton->setShortcut(Qt::AltModifier + Qt::Key_J);
     d->jobWidgetButton->setToolTip("Jobs management");

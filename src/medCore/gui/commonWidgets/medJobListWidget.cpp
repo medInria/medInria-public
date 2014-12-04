@@ -19,7 +19,7 @@
 
 #include <medAbstractJob.h>
 #include <medJobManager.h>
-#include <medMessageController.h>
+#include <medListWidget.h>
 
 // /////////////////////////////////////////////////////////////////
 // medJobListWidget
@@ -28,27 +28,30 @@
 class medJobListWidgetPrivate
 {
 public:
-    QVBoxLayout *layout;
     QList <medAbstractJob *> jobsList;
 
     QList <QProgressBar *> progressBars;
     QList <QLabel *> jobsLabels;
     QList <QPushButton *> cancelButtons;
     QHash <QPushButton *, medAbstractJob *> lineRemovalButtons;
-    QList <QWidget *> widgets;
+
+    medListWidget *listWidget;
 
     QList <medAbstractJob *> jobsToRemove;
 };
 
 medJobListWidget::medJobListWidget(QWidget *parent) : QWidget(parent), d(new medJobListWidgetPrivate)
 {
-    d->layout = new QVBoxLayout(this);
-    d->layout->setContentsMargins(0, 0, 0, 0);
-    d->layout->setSpacing(0);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
 
     QLabel *titleText = new QLabel("Job management", this);
     titleText->setStyleSheet("background: none;");
-    d->layout->addWidget(titleText);
+    layout->addWidget(titleText);
+
+    d->listWidget = new medListWidget(this);
+    layout->addWidget(d->listWidget);
 
     connect(medJobManager::instance(), SIGNAL(jobRegistered(medAbstractJob*, QString)),
             this, SLOT(addJob(medAbstractJob *, QString)));
@@ -76,7 +79,7 @@ void medJobListWidget::addJob(medAbstractJob *job, QString label)
 
     d->jobsList.append(job);
 
-    QWidget *widget = new QWidget(this);
+    QWidget *widget = new QWidget(d->listWidget);
     QLabel *jobLabel = new QLabel(label, widget);
     d->jobsLabels.append(jobLabel);
     jobLabel->setStyleSheet("background:none;");
@@ -96,8 +99,10 @@ void medJobListWidget::addJob(medAbstractJob *job, QString label)
     layout->addWidget(bar);
     layout->addWidget(cancelButton);
 
-    d->layout->addWidget(widget);
-    d->widgets.append(widget);
+    QListWidgetItem *item = new QListWidgetItem(d->listWidget);
+    item->setSizeHint(widget->sizeHint());
+    d->listWidget->addItem(item);
+    d->listWidget->setItemWidget(item,widget);
 
     connect(job, SIGNAL(progressed(int)), this, SLOT(setJobProgress(int)));
     connect(job, SIGNAL(success()), this, SLOT(setJobSuccess()));
@@ -163,12 +168,14 @@ void medJobListWidget::setJobSuccess()
 
     d->cancelButtons[indexJob]->setVisible(false);
 
-    QPushButton *jobRemovalButton = new QPushButton(d->widgets[indexJob]);
+    QWidget *widget = d->listWidget->itemWidget(d->listWidget->item(indexJob));
+    QPushButton *jobRemovalButton = new QPushButton(widget);
     jobRemovalButton->setText("x");
     jobRemovalButton->setStyleSheet("height: 15px;width: 15px;min-width: 15px;");
     d->lineRemovalButtons[jobRemovalButton] = d->jobsList[indexJob];
     connect(jobRemovalButton,SIGNAL(clicked()), this, SLOT(removeJob()));
-    d->widgets[indexJob]->layout()->addWidget(jobRemovalButton);
+    widget->layout()->addWidget(jobRemovalButton);
+    d->listWidget->item(indexJob)->setSizeHint(widget->sizeHint());
 }
 
 void medJobListWidget::setJobFailure()
@@ -190,12 +197,14 @@ void medJobListWidget::setJobFailure()
 
     d->cancelButtons[indexJob]->setVisible(false);
 
-    QPushButton *jobRemovalButton = new QPushButton(d->widgets[indexJob]);
+    QWidget *widget = d->listWidget->itemWidget(d->listWidget->item(indexJob));
+    QPushButton *jobRemovalButton = new QPushButton(widget);
     jobRemovalButton->setText("x");
     jobRemovalButton->setStyleSheet("height: 15px;width: 15px;min-width: 15px;");
     d->lineRemovalButtons[jobRemovalButton] = d->jobsList[indexJob];
     connect(jobRemovalButton,SIGNAL(clicked()), this, SLOT(removeJob()));
-    d->widgets[indexJob]->layout()->addWidget(jobRemovalButton);
+    widget->layout()->addWidget(jobRemovalButton);
+    d->listWidget->item(indexJob)->setSizeHint(widget->sizeHint());
 }
 
 void medJobListWidget::displayJobError(QString errorMessage)
@@ -207,17 +216,20 @@ void medJobListWidget::displayJobError(QString errorMessage)
 
      unsigned int indexJob = d->jobsList.indexOf(job);
 
-     QScrollArea *errorScroll = new QScrollArea(d->widgets[indexJob]);
+     QWidget *widget = d->listWidget->itemWidget(d->listWidget->item(indexJob));
+     QScrollArea *errorScroll = new QScrollArea(widget);
      QLabel *errorLabel = new QLabel(errorMessage,errorScroll);
      errorLabel->setStyleSheet("background:none;");
      errorScroll->setMaximumHeight(errorLabel->height());
      errorScroll->setWidget(errorLabel);
-     unsigned int layoutIndex = d->widgets[indexJob]->layout()->indexOf(d->progressBars[indexJob]);
+     unsigned int layoutIndex = widget->layout()->indexOf(d->progressBars[indexJob]);
      d->progressBars[indexJob]->setVisible(false);
 
-     QHBoxLayout *internalLayout = qobject_cast <QHBoxLayout *> (d->widgets[indexJob]->layout());
+     QHBoxLayout *internalLayout = qobject_cast <QHBoxLayout *> (widget->layout());
      internalLayout->removeWidget(d->progressBars[indexJob]);
      internalLayout->insertWidget(layoutIndex,errorScroll);
+
+     d->listWidget->item(indexJob)->setSizeHint(widget->sizeHint());
 }
 
 void medJobListWidget::removeJob()
@@ -232,7 +244,8 @@ void medJobListWidget::removeJob()
 
     d->jobsList.removeAt(indexJob);
     d->progressBars.removeAt(indexJob);
-    d->layout->removeWidget(d->widgets[indexJob]);
-    delete d->widgets[indexJob];
-    d->widgets.removeAt(indexJob);
+
+    d->listWidget->removeItemWidget(d->listWidget->item(indexJob));
+    QListWidgetItem *item = d->listWidget->takeItem(indexJob);
+    delete item;
 }
