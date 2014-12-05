@@ -158,9 +158,12 @@ void medJobListWidget::cancelJob()
     d->jobsLabels[indexJob]->setText(d->jobsLabels[indexJob]->text() + " cancelled");
     d->progressBars[indexJob]->setVisible(false);
 
-    d->runningJobs[indexJob] = false;
-    d->numRunningJobs--;
-    emit runningJobNumberChanged(d->numRunningJobs);
+    if (d->runningJobs[d->jobsList.indexOf(d->lineRemovalButtons[button])])
+    {
+        d->runningJobs[indexJob] = false;
+        d->numRunningJobs--;
+        emit runningJobNumberChanged(d->numRunningJobs);
+    }
 }
 
 void medJobListWidget::setJobProgress(int progress)
@@ -197,9 +200,12 @@ void medJobListWidget::setJobSuccess()
     connect(jobRemovalButton,SIGNAL(clicked()), this, SLOT(removeJob()));
     widget->layout()->addWidget(jobRemovalButton);
 
-    d->runningJobs[indexJob] = false;
-    d->numRunningJobs--;
-    emit runningJobNumberChanged(d->numRunningJobs);
+    if (d->runningJobs[indexJob])
+    {
+        d->runningJobs[indexJob] = false;
+        d->numRunningJobs--;
+        emit runningJobNumberChanged(d->numRunningJobs);
+    }
 }
 
 void medJobListWidget::setJobFailure()
@@ -225,9 +231,12 @@ void medJobListWidget::setJobFailure()
     connect(jobRemovalButton,SIGNAL(clicked()), this, SLOT(removeJob()));
     widget->layout()->addWidget(jobRemovalButton);
 
-    d->runningJobs[indexJob] = false;
-    d->numRunningJobs--;
-    emit runningJobNumberChanged(d->numRunningJobs);
+    if (d->runningJobs[indexJob])
+    {
+        d->runningJobs[indexJob] = false;
+        d->numRunningJobs--;
+        emit runningJobNumberChanged(d->numRunningJobs);
+    }
 }
 
 void medJobListWidget::displayJobError(QString errorMessage)
@@ -253,6 +262,13 @@ void medJobListWidget::displayJobError(QString errorMessage)
      internalLayout->insertWidget(layoutIndex,errorScroll);
      d->listWidget->item(indexJob)->setSizeHint(QSize(d->listWidget->item(indexJob)->sizeHint().width(),
                                                       widget->sizeHint().height()));
+
+     if (d->runningJobs[indexJob])
+     {
+         d->runningJobs[indexJob] = false;
+         d->numRunningJobs--;
+         emit runningJobNumberChanged(d->numRunningJobs);
+     }
 }
 
 void medJobListWidget::clearJobs()
@@ -277,11 +293,8 @@ void medJobListWidget::clearJobs()
 void medJobListWidget::removeJob()
 {
     QPushButton *button = qobject_cast <QPushButton *> (QObject::sender());
+    d->runningJobs.removeAt(d->jobsList.indexOf(d->lineRemovalButtons[button]));
     this->removeJob(d->jobsList.indexOf(d->lineRemovalButtons[button]));
-
-    d->runningJobs[d->jobsList.indexOf(d->lineRemovalButtons[button])] = false;
-    d->numRunningJobs--;
-    emit runningJobNumberChanged(d->numRunningJobs);
 }
 
 void medJobListWidget::removeJob(unsigned int indexJob)
