@@ -157,7 +157,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->maximizedAction->setEnabled(false);
 
     d->presetSplitButton = new QPushButton(this);
-    d->presetSplitButton->setIcon(QIcon(":/pixmaps/tools.png"));
+    d->presetSplitButton->setIcon(QIcon(":/icons/splitPresets.png"));
     d->presetSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->presetSplitButton->setToolTip(tr("Split into presets"));
     connect(d->presetSplitButton, SIGNAL(clicked()), this, SLOT(togglePopupPresetSplitter()));
