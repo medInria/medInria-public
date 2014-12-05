@@ -20,6 +20,7 @@
 #include <medHomepageArea.h>
 
 #include <medTabbedViewContainers.h>
+#include <medAbstractLayeredView.h>
 
 #include <medSettingsManager.h>
 #include <medSettingsEditor.h>
@@ -425,7 +426,37 @@ void medMainWindow::setFullScreen (const bool full)
         this->showNormal();
 }
 
+/**	Saves views (all layers), and toolboxes parameters
+ * 	expected tree is as follow:
+ *  workingDir (user-defined)
+ * 		|-viewID0
+ * 			|-mapping.xml
+ * 			|-layerID01.xml
+ * 			|-layerID02.xml
+ * 			|-data_file (as saved by the dedicated writer)
+ *	 	|-viewID1		
+ * 		|-viewID2
+ */
 void medMainWindow::saveScene() {
+	medTabbedViewContainers* currentContainer = d->workspaceArea->currentWorkspace()->stackedViewContainers();
+	QList<medAbstractView*>  viewList = currentContainer->viewsInTab(currentContainer->currentIndex());
+	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Open Directory"),"/home",QFileDialog::ShowDirsOnly);
+	QDir workingDir(dirPath);
+	//saving views
+	for (QList<medAbstractView*>::const_iterator i=viewList.begin();i!=viewList.end();++i){
+		medAbstractLayeredView* layeredView=dynamic_cast<medAbstractLayeredView*>(*i);
+		if (layeredView!=0){
+			qDebug() << layeredView->layersCount();
+			QString subDirName="view"+QUuid::createUuid ().toString();
+			if(!workingDir.mkdir(subDirName))
+				qDebug() << " failed to create new directory "; 
+			workingDir.cd(subDirName);
+			QString generatedPath=workingDir.canonicalPath()+"/mapping.xml";
+			layeredView->write(generatedPath);
+			workingDir.cdUp();
+		}
+	}//views loop
+	
 }
 
 void medMainWindow::captureScreenshot()
