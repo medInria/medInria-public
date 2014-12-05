@@ -20,6 +20,7 @@
 
 #include <dtkCore/dtkSmartPointer>
 
+#include <medAbstractData.h>
 #include <medDropSite.h>
 #include <QComboBox>
 
@@ -108,7 +109,7 @@ private:
     QComboBox * _targetList;
 };
 
-class dtkAbstractData;
+class medAbstractData;
 class cliFileHandler : public QObject
 {
     Q_OBJECT
@@ -118,13 +119,14 @@ public:
 
     static QString compatibleImportExtension(QStringList supportedExtensions);
 
-    dtkAbstractData * importFromFile(QString file);
-    QString exportToFile(dtkAbstractData * data, QString filePath, QStringList formats);
+    medAbstractData * importFromFile(QString file);
+    QString exportToFile(medAbstractData * data, QString filePath, QStringList formats);
 
 protected slots:
-    void dataImported(medDataIndex index);
+    void dataImported(medDataIndex index, QUuid uuid);
 
 private:
     QEventLoop _loopyLoop;
-    dtkSmartPointer<dtkAbstractData> _data;
+    QUuid _expectedUuid;
+    dtkSmartPointer<medAbstractData> _data;
 };

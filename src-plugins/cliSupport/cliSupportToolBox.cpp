@@ -166,6 +166,7 @@ void cliSupportToolBox::init()
             QDir dir(path);
             if (dir.exists())
             {
+                qDebug() << "Adding module path:" << dir.absolutePath();
                 dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
 //                dir.setNameFilters(QStringList() << "ctkCmdLineModule*");
                 dir.setSorting(QDir::Name);
@@ -285,19 +286,22 @@ void cliSupportToolBox::moduleSelected(int index)
 void cliSupportToolBox::runCurrentModule()
 {
     d->moduleProgress->setEnabled(true);
+    d->moduleProgress->setRange(0,0); // busy indicator by default
+    d->moduleProgress->setValue(-1);
     d->moduleRun->setEnabled(false);
     d->moduleList->setEnabled(false);
     d->moduleGui->setEnabled(false);
     d->frontend->preRun();
     ctkCmdLineModuleFuture future = d->manager->run(d->frontend);
     d->futureWatcher = new ctkCmdLineModuleFutureWatcher();
-    d->futureWatcher->setFuture(future);
 
-    //FIXME : slight race condition here, the module could have already finished.
     connect(d->futureWatcher, SIGNAL(finished()), this, SLOT(moduleFinished()));
     connect(d->futureWatcher, SIGNAL(progressRangeChanged(int,int)), d->moduleProgress, SLOT(setRange(int,int)));
 //        connect(d->futureWatcher, SIGNAL(progressTextChanged(QString)), d->moduleProgress, SLOT());
     connect(d->futureWatcher, SIGNAL(progressValueChanged(int)), d->moduleProgress, SLOT(setValue(int)));
+
+    //FIXME : slight race condition here, the module could have already finished.
+    d->futureWatcher->setFuture(future);
 }
 
 

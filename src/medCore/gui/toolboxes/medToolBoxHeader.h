@@ -44,7 +44,6 @@ public:
 
     virtual QSize sizeHint() const;
 protected:
-    void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent *event);
 
 signals:

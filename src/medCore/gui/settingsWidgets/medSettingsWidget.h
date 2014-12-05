@@ -33,8 +33,7 @@ public:
 
     virtual QString identifier() const = 0;
     virtual QString name() const = 0;
-    virtual QString identifier() const = 0;
-    virtual QString name() const = 0;
+
     /**
     * description - mandatory method to describe the plug-in
     * Should be used as the section name (QSettings) when using the setttingsmanager

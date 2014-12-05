@@ -14,6 +14,7 @@
 #include <dtkCore/dtkGlobal.h>
 
 #include <medDataIndex.h>
+#include <medDataManager.h>
 
 #include <medDropSite.h>
 
@@ -32,8 +33,8 @@ medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePri
     setAlignment(Qt::AlignCenter);
     setAcceptDrops(true);
     setBackgroundRole(QPalette::Base);
-    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setScaledContents(true);
+    setFixedSize(QSize(32,32));
     d->index = medDataIndex();
     d->canAutomaticallyChangeAppereance = true;
 }
@@ -45,10 +46,6 @@ medDropSite::~medDropSite(void)
     d = NULL;
 }
 
-QSize medDropSite::sizeHint(void) const
-{
-    return QSize(32, 32);
-}
 
 /**
  * Whenever an object is dropped on the medDropSite it
@@ -114,7 +111,7 @@ void medDropSite::dropEvent(QDropEvent *event)
     if (index.isValid()) {
         d->index = index;
     }
-
+    setPixmap(medDataManager::instance()->thumbnail(index));
     setBackgroundRole(QPalette::Base);
 
     event->acceptProposedAction();
@@ -125,22 +122,6 @@ void medDropSite::dropEvent(QDropEvent *event)
 void medDropSite::clear(){
     QLabel::clear();
     d->index = medDataIndex();
-}
-
-void medDropSite::paintEvent(QPaintEvent *event)
-{
-    QLabel::paintEvent(event);
-
-//    // Optionally draw something (e.g. a tag) over the label in case it is a pixmap
-
-//    if(!this->pixmap())
-//        return;
-//
-//    QPainter painter;
-//    painter.begin(this);
-//    painter.setPen(Qt::white);
-//    painter.drawText(event->rect(), "Overlay", QTextOption(Qt::AlignHCenter | Qt::AlignCenter));
-//    painter.end();
 }
 
 void medDropSite::mousePressEvent(QMouseEvent* event)

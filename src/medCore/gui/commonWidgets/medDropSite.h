@@ -29,8 +29,6 @@ public:
      medDropSite(QWidget *parent = 0);
     virtual ~medDropSite();
 
-    QSize sizeHint() const;
-
     void setCanAutomaticallyChangeAppereance(bool can);
 
     void setAcceptedTypes(const QStringList & types);
@@ -57,7 +55,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-    void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent* event);
     
 private:

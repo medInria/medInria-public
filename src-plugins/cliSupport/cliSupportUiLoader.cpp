@@ -17,14 +17,13 @@
 #include <ctkCmdLineModuleDescription.h>
 #include <ctkCmdLineModuleParameter.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-
+#include <medAbstractDataFactory.h>
 #include <medAbstractDataReader.h>
 #include <medDataManager.h>
 #include <medAbstractWorkspace.h>
 #include <medTabbedViewContainers.h>
 #include <medAbstractData.h>
-#include<medAbstractView.h>
+#include <medAbstractView.h>
 
 #include <QDebug>
 #include <QScopedPointer>
@@ -135,9 +134,9 @@ void cliSupportFrontendQtGui::preRun()
 
     // no clear standard yet on whether extensions are formatted as :
     // "*.ext", ".ext" or "ext", so we handle all 3 possiblities.
-    QRegExp extensionRegex("\\s*(?:\\*?\\.)?([^,]+)\\s*");
+    QRegExp extensionRegex("\\s*(?:\\*?\\.)?([^,]+?)\\s*");
     foreach(cliDataInputWidget * w, _inputList) {
-        dtkAbstractData * data = medDataManager::instance()->data(w->index());
+        medAbstractData * data = medDataManager::instance()->retrieveData(w->index());
         if ( ! data) continue;
 
         QStringList possibleExtensions = w->parameter().fileExtensions().replaceInStrings(extensionRegex, ".\\1");
@@ -147,6 +146,7 @@ void cliSupportFrontendQtGui::preRun()
         QString exportPath = exporter.exportToFile(data, finalPath, possibleExtensions);
 
         w->setFilePath(exportPath);
+        qDebug() << "======" << exportPath << possibleExtensions << w->parameter().fileExtensions();
     }
 
     foreach(cliDataOutputWidget * w, _outputList) {
@@ -163,10 +163,11 @@ void cliSupportFrontendQtGui::postRun()
     foreach(cliDataOutputWidget * w, _outputList) {
         cliFileHandler importer;
         medAbstractData * data = qobject_cast<medAbstractData*>(importer.importFromFile(w->filePath()));
-        _workspace->stackedViewContainers()->open(data);
+        if (data)
+            _workspace->open(data->dataIndex());
     }
 
-    removeDir(_runDir.absolutePath());
+    //removeDir(_runDir.absolutePath());
 }
 
 
@@ -279,11 +280,11 @@ cliFileHandler::~cliFileHandler()
 
 QString cliFileHandler::compatibleImportExtension(QStringList supportedExtensions)
 {
-    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = medAbstractDataFactory::instance()->readers();
     QScopedPointer<medAbstractDataReader> reader;
     foreach(QString currentExtension, supportedExtensions) {
         for (int i=0; i<readers.size(); i++) {
-            reader.reset(qobject_cast<medAbstractDataReader*>(dtkAbstractDataFactory::instance()->reader(readers[i])));
+            reader.reset(qobject_cast<medAbstractDataReader*>(medAbstractDataFactory::instance()->reader(readers[i])));
 
             if ( ! reader || ! reader->supportedFileExtensions().contains(currentExtension))
                 continue;
@@ -294,28 +295,37 @@ QString cliFileHandler::compatibleImportExtension(QStringList supportedExtension
     return QString();
 }
 
-dtkAbstractData * cliFileHandler::importFromFile(QString file)
+medAbstractData * cliFileHandler::importFromFile(QString file)
 {
-    connect(medDataManager::instance(), SIGNAL(dataAdded(medDataIndex)),
-            this, SLOT(dataImported(medDataIndex)));
+    qDebug() << "asdffffffffff";
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
+            this, SLOT(dataImported(medDataIndex,QUuid)));
+    //TODO, no more failedToImport signal in MDM
     // We connect fail to import on the same slot, as failure will end up with NULL _data
-    connect(medDataManager::instance(), SIGNAL(failedToOpen(medDataIndex)),
-            this, SLOT(dataImported(medDataIndex)));
-    medDataManager::instance()->importNonPersistent(file);
+//    connect(medDataManager::instance(), SIGNAL((medDataIndex)),
+//            this, SLOT(dataImported()));
+    _expectedUuid = medDataManager::instance()->importPath(file,false,false);
+    QTimer timeout;
+    connect(&timeout, SIGNAL(timeout()), &_loopyLoop, SLOT(quit()));
+//    timeout.start(10000);
+    qDebug() << file;
     _loopyLoop.exec(QEventLoop::ExcludeUserInputEvents);
+    qDebug() << "dsfsdfipsdfpdsof";
     return _data;
 }
 
-QString cliFileHandler::exportToFile(dtkAbstractData * data, QString filePath, QStringList formats)
+QString cliFileHandler::exportToFile(medAbstractData * data, QString filePath, QStringList formats)
 {
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = medAbstractDataFactory::instance()->writers();
     bool written = false;
     QString finalFullPath;
     QScopedPointer<dtkAbstractDataWriter> dataWriter;
+    qDebug() << "000000000000000000" << writers;
     foreach(QString currentFormat, formats) {
         for (int i=0; i<writers.size(); i++) {
-            dataWriter.reset(dtkAbstractDataFactory::instance()->writer(writers[i]));
+            dataWriter.reset(medAbstractDataFactory::instance()->writer(writers[i]));
 
+            qDebug() << dataWriter->identifier();
             if (! dataWriter->handled().contains(data->identifier()) ||
                 ! dataWriter->supportedFileExtensions().contains(currentFormat))
                 continue;
@@ -335,9 +345,13 @@ QString cliFileHandler::exportToFile(dtkAbstractData * data, QString filePath, Q
 }
 
 
-void cliFileHandler::dataImported(medDataIndex index)
+void cliFileHandler::dataImported(medDataIndex index, QUuid uuid)
 {
-    _data = medDataManager::instance()->data(index);
+    qDebug() << "HEEEEEEEEEEEElllllooooooooooooooooooo";
+    if (uuid != _expectedUuid)
+        return;
+    _expectedUuid = QUuid();
+    _data = medDataManager::instance()->retrieveData(index);
     qDebug() << "Looooooooooooopyyyy";
     _loopyLoop.quit();
     qDebug() << "Looooooooooooopyyyy looooooooop";
