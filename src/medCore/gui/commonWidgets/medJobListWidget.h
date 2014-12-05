@@ -37,6 +37,9 @@ public:
 public slots:
     void addJob(medAbstractJob* job, QString label);
     void removeJob();
+    void removeJob(unsigned int indexJob);
+    void clearJobs();
+
     void setJobProgress(int progress);
     void setJobSuccess();
     void setJobFailure();
