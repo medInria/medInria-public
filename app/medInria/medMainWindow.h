@@ -103,6 +103,8 @@ private slots:
 
     void adjustContainersSize();
 
+    void setNumberOfRunningJobs(unsigned int numJobs);
+
     void open_waitForImportedSignal(medDataIndex,QUuid);
 
 protected:

@@ -230,6 +230,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->jobWidgetButton->setObjectName("jobWidgetButton");
     d->jobWidgetButton->setShortcut(Qt::AltModifier + Qt::Key_J);
     d->jobWidgetButton->setToolTip("Jobs management");
+    d->jobWidgetButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->jobWidgetButton->setText("0");
 
     medAttachedPopupWidget *jobManagerPopupWidget = new medAttachedPopupWidget(d->jobWidgetButton);
     QWidget *jobManagerCenterWidget = jobManagerPopupWidget->centerWidget();
@@ -239,6 +241,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     jobManagerPopupWidget->attachTo(d->jobWidgetButton, medAttachedPopupWidget::TOP);
 
     QObject::connect(d->jobWidgetButton, SIGNAL(clicked()), jobManagerPopupWidget, SLOT(display()));
+    QObject::connect(jobListWidget, SIGNAL(runningJobNumberChanged(unsigned int)),
+                     this, SLOT(setNumberOfRunningJobs(unsigned int)));
 
     //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
     d->rightEndButtons = new QWidget(this);
@@ -738,4 +742,9 @@ bool medMainWindow::event(QEvent * e)
 void medMainWindow::adjustContainersSize()
 {
     d->workspaceArea->currentWorkspace()->tabbedViewContainers()->adjustContainersSize();
+}
+
+void medMainWindow::setNumberOfRunningJobs(unsigned int numJobs)
+{
+    d->jobWidgetButton->setText(QString::number(numJobs));
 }

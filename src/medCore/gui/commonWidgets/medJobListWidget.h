@@ -48,6 +48,9 @@ public slots:
     void disableJobCancel();
     void cancelJob();
 
+signals:
+    void runningJobNumberChanged(unsigned int);
+
 private:
     medJobListWidgetPrivate *d;
 };
