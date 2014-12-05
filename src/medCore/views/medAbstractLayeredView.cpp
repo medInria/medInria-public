@@ -26,6 +26,9 @@
 #include <medParameterGroupManager.h>
 #include <medDataIndex.h>
 
+#include <QDomDocument>
+#include <QDomElement>
+
 class medAbstractLayeredViewPrivate
 {
 public:
@@ -440,4 +443,37 @@ QList<medAbstractParameter*> medAbstractLayeredView::linkableParameters()
 QList<medAbstractParameter*> medAbstractLayeredView::linkableParameters(unsigned int layer)
 {
     return interactorsParameters(layer);
+}
+
+
+void medAbstractLayeredView::write(QString& path)
+{
+	QFile file(path);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+		return;
+	QFileInfo fileInfo(file);
+	QString workingDir=fileInfo.canonicalPath();
+
+    QTextStream out(&file);
+    QDomDocument doc(fileInfo.fileName());
+	QDomElement root = doc.createElement("xml");
+	doc.appendChild(root);
+
+	QString xml = doc.toString();
+	for(unsigned int i=0;i<this->layersCount();i++)
+	{
+		QDomElement layerDescription = doc.createElement("layer");
+		layerDescription.setAttribute("id",i);
+		
+		//generating filename 
+		//hack to by-pass itkDataImageWriterBase::canWrite method
+		//TODO: give the file its real extension 
+		QString currentFile=workingDir+"/layer"+QString::number(i)+".nii";
+		if(medDataReaderWriter::write(currentFile,layerData(i)))
+			layerDescription.setAttribute("filename",currentFile);
+		else
+			layerDescription.setAttribute("filename","failed to save data");
+		root.appendChild(layerDescription);
+	}
+	out << doc.toString();
 }
