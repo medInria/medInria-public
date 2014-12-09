@@ -18,6 +18,7 @@
 #include <medCoreExport.h>
 
 #include <QWidget>
+#include <QDomDocument>
 
 #include <medAbstractView.h>
 #include <medAbstractData.h>
@@ -54,6 +55,9 @@ public:
 
     virtual QList<medAbstractParameter*> linkableParameters() = 0;
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
+    
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+
 
 public slots:
     virtual void updateWidgets();

@@ -462,6 +462,7 @@ void medAbstractLayeredView::write(QString& path)
 	QString xml = doc.toString();
 	for(unsigned int i=0;i<this->layersCount();i++)
 	{
+		qDebug()<<interactors().size()<<" "<<navigators().size();
 		QDomElement layerDescription = doc.createElement("layer");
 		layerDescription.setAttribute("id",i);
 		
@@ -473,6 +474,28 @@ void medAbstractLayeredView::write(QString& path)
 			layerDescription.setAttribute("filename",currentFile);
 		else
 			layerDescription.setAttribute("filename","failed to save data");
+		
+		//saving navigators
+		QDomElement navigatorsNode=doc.createElement("navigators");
+		for(int j=0;j<navigators().size();j++)
+		{
+			QDomElement currentNavigatorNode = doc.createElement("navigator");
+			navigators()[j]->toXMLNode(&doc,&currentNavigatorNode);
+			navigatorsNode.appendChild(currentNavigatorNode);
+
+		}
+		layerDescription.appendChild(navigatorsNode);
+		
+		//saving interactors
+		QDomElement interactorsNode=doc.createElement("interactors");
+		for(int j=0;j<interactors().size();j++)
+		{
+			QDomElement currentInteractorNode = doc.createElement("interactor");
+			interactors()[j]->toXMLNode(&doc,&currentInteractorNode);
+			interactorsNode.appendChild(currentInteractorNode);
+
+		}
+		layerDescription.appendChild(interactorsNode);
 		root.appendChild(layerDescription);
 	}
 	out << doc.toString();

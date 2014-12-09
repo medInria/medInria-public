@@ -79,3 +79,10 @@ void medAbstractNavigator::updateWidgets()
 {
 
 }
+
+void medAbstractNavigator::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
+{
+	QDomElement elmt=doc->createElement("description");
+	elmt.appendChild(doc->createTextNode(description()));
+	currentNode->appendChild(elmt);
+}
