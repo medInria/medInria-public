@@ -22,6 +22,8 @@
 #include <medTabbedViewContainers.h>
 #include <medAbstractLayeredView.h>
 
+#include <medToolBox.h>
+
 #include <medSettingsManager.h>
 #include <medSettingsEditor.h>
 
@@ -426,7 +428,9 @@ void medMainWindow::setFullScreen (const bool full)
         this->showNormal();
 }
 
-/**	Saves views (all layers), and toolboxes parameters
+/**	
+ * @brief saves the scene in a XML file
+ * Saves views (all layers), and toolboxes parameters
  * 	expected tree is as follow:
  *  workingDir (user-defined)
  * 		|-viewID0
@@ -438,15 +442,19 @@ void medMainWindow::setFullScreen (const bool full)
  * 		|-viewID2
  */
 void medMainWindow::saveScene() {
+	medAbstractWorkspace* workspace=d->workspaceArea->currentWorkspace();
+	if(workspace==0)
+		return;
 	medTabbedViewContainers* currentContainer = d->workspaceArea->currentWorkspace()->stackedViewContainers();
 	QList<medAbstractView*>  viewList = currentContainer->viewsInTab(currentContainer->currentIndex());
 	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Open Directory"),"/home",QFileDialog::ShowDirsOnly);
 	QDir workingDir(dirPath);
 	//saving views
-	for (QList<medAbstractView*>::const_iterator i=viewList.begin();i!=viewList.end();++i){
+	for (QList<medAbstractView*>::const_iterator i=viewList.begin();i!=viewList.end();++i)
+	{
 		medAbstractLayeredView* layeredView=dynamic_cast<medAbstractLayeredView*>(*i);
-		if (layeredView!=0){
-			qDebug() << layeredView->layersCount();
+		if (layeredView!=0)
+		{
 			QString subDirName="view"+QUuid::createUuid ().toString();
 			if(!workingDir.mkdir(subDirName))
 				qDebug() << " failed to create new directory "; 
@@ -456,6 +464,21 @@ void medMainWindow::saveScene() {
 			workingDir.cdUp();
 		}
 	}//views loop
+	//saves toolboxes
+	QString generatedPath=workingDir.canonicalPath()+"/toolboxes.xml";
+
+	QList<medToolBox*> toolboxes=d->workspaceArea->currentWorkspace()->toolBoxes();
+	QDomDocument doc("xml");
+	QDomElement element=doc.createElement("toolboxes");
+	for (QList<medToolBox*>::const_iterator i=toolboxes.begin();i!=toolboxes.end();++i)
+			(*i)->toXMLNode(&doc,&element);
+	doc.appendChild(element);
+	QFile file(generatedPath);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+		return;
+
+    QTextStream out(&file);
+    out << doc.toString();
 	
 }
 

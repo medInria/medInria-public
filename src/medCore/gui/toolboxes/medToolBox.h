@@ -17,6 +17,8 @@
 #include <medAbstractWorkspace.h>
 
 #include <QtGui>
+#include <QDomDocument>
+#include <QDomElement>
 
 class dtkAbstractView;
 class medAbstractData;
@@ -62,6 +64,8 @@ public:
     virtual QString name() const {return QString();}
     virtual QString description() const {return QString();}
     virtual QStringList categories() const {return QStringList();}
+    
+    virtual void toXMLNode(QDomDocument* doc, QDomElement* currentNode);
 
 signals:
     /**
