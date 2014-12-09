@@ -331,7 +331,7 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
     try
     {
-        if (!res && castFilterAdapterPtr)
+        if (castFilterAdapterPtr)
         {
             castFilterAdapterPtr->SetInput(data->data());
             castFilterAdapterPtr->Update();
