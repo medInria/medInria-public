@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -31,6 +31,8 @@ public:
     medPacsDataSource(QWidget* parent = 0);
     ~medPacsDataSource();
 
+    static bool registered();
+
     QWidget* mainViewWidget();
 
     QWidget* sourceSelectorWidget();
@@ -43,10 +45,11 @@ public:
 
 private slots:
     void onPacsMove( const QVector<medMoveCommandItem>& cmdList);
+    void importToDataBase(QString dicomPath);
 
 private:
     medPacsDataSourcePrivate* d;
 
 };
 
-
+medAbstractDataSource* createmedPacsDataSource(QWidget*);

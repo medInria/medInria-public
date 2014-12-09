@@ -59,7 +59,7 @@ const QString medDatabaseRemoverPrivate::T_STUDY = "study";
 const QString medDatabaseRemoverPrivate::T_SERIES = "series";
 const QString medDatabaseRemoverPrivate::T_IMAGE = "image";
 
-medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobItem(), d ( new medDatabaseRemoverPrivate )
+medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medAbstractJob("Remove data"), d ( new medDatabaseRemoverPrivate )
 {
     d->index = index_;
     d->db = medDatabaseController::instance()->database();
@@ -160,7 +160,7 @@ void medDatabaseRemover::internalRun()
                 {
                     int imageId = imQuery.value ( 0 ).toInt();
                     this->removeImage ( patientDbId, studyDbId, seriesDbId, imageId );
-                    emit progress (this, imQuery.at() / nbImage * 100 );
+                    emit progressed (imQuery.at() / nbImage * 100 );
                 }
                 while ( imQuery.next() );
                 if ( this->isSeriesEmpty ( seriesDbId ) )
@@ -177,9 +177,9 @@ void medDatabaseRemover::internalRun()
     } // ptQuery.next
 
     if ( d->isCancelled )
-        emit failure ( this );
+        emit failure ();
     else
-        emit success ( this );
+        emit success();
 
     return;
 }

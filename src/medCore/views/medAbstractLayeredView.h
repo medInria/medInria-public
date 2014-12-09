@@ -27,7 +27,7 @@
 class medAbstractData;
 class medAbstractBoolParameter;
 class medStringListParameter;
-class medDataListParameter;
+class medDataIndexListParameter;
 
 class medAbstractLayeredViewPrivate;
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
@@ -60,7 +60,7 @@ public:
     QList<medAbstractNavigator*> navigators();
 
     medAbstractBoolParameter* visibilityParameter(unsigned int layer);
-    medDataListParameter *dataListParameter() const;
+    medDataIndexListParameter *dataListParameter() const;
 
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medAbstractParameter*> linkableParameters(unsigned int layer);

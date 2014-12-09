@@ -52,8 +52,6 @@ list_source_files(${PROJECT_NAME}
   writers
   )
 
-set(${PROJECT_NAME}_QRC medVtkFibersData.qrc)
-
 
 ## #############################################################################
 ## include directorie.
@@ -76,7 +74,6 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 

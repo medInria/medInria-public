@@ -25,3 +25,7 @@ public:
 
     virtual const QString PixelMeaning() const;
 };
+
+
+Q_DECLARE_METATYPE(medAbstractDiffusionModelImageData)
+Q_DECLARE_METATYPE(medAbstractDiffusionModelImageData *)

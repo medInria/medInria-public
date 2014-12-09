@@ -70,7 +70,7 @@ public:
 // itkProcessRegistration
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistration::itkProcessRegistration() : medAbstractRegistrationProcess(), d(new itkProcessRegistrationPrivate)
+itkProcessRegistration::itkProcessRegistration() : medAbstractEstimateTransformationProcess(), d(new itkProcessRegistrationPrivate)
 {
     d->fixedImage = NULL;
     d->output = NULL;
@@ -235,7 +235,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
     *last_charac = '3';
     typedef itk::Image< float, 3 > RegImageType;
 
-    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData");
     foreach ( QString metaData, data->metaDataList() )
         if (!convertedData->hasMetaData(metaData))
             convertedData->addMetaData ( metaData, data->metaDataValues ( metaData ) );
@@ -244,8 +244,8 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         convertedData->addProperty ( property,data->propertyValues ( property ) );
 
     if (channel==0)
-        d->output = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
-    if (id =="itkDataImageChar3") {
+        d->output = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData");
+    if (id =="medItkChar3ImageData") {
         typedef itk::Image< char, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -256,7 +256,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageUChar3") {
+    else if (id =="medItkUChar3ImageData") {
         typedef itk::Image< unsigned char, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -267,7 +267,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageShort3") {
+    else if (id =="medItkShort3ImageData") {
         typedef itk::Image< short, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -278,7 +278,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageUShort3") {
+    else if (id =="medItkUShort3ImageData") {
         typedef itk::Image< unsigned short, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -290,7 +290,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         d->setInput<float>(convertedData,channel);
     }
 
-    else if (id =="itkDataImageInt3") {
+    else if (id =="medItkInt3ImageData") {
         typedef itk::Image< int, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -301,7 +301,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageUInt3") {
+    else if (id =="medItkUInt3ImageData") {
         typedef itk::Image< unsigned int, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -313,7 +313,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         d->setInput<float>(convertedData,channel);
     }
 
-    else if (id =="itkDataImageLong3") {
+    else if (id =="medItkLong3ImageData") {
         typedef itk::Image< long, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -324,7 +324,7 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id=="itkDataImageULong3") {
+    else if (id=="medItkULong3ImageData") {
         typedef itk::Image< unsigned long, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -335,10 +335,10 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
         d->setInput<float>(convertedData,channel);
     }
-    else if (id =="itkDataImageFloat3") {
+    else if (id =="medItkFloat3ImageData") {
         d->setInput<float>(data,channel);
     }
-    else if (id =="itkDataImageDouble3") {
+    else if (id =="medItkDouble3ImageData") {
         typedef itk::Image< double, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
@@ -352,6 +352,14 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
 }
 
+/**
+ * @brief Sets the fixed or moving image paramters of the process.
+ *
+ * Directly converts the inputs in <float, 3> images.
+ * The output is allocated and is also a <float,3 image>
+ * @param data: Pointer to an medItkImageDataXXY.
+ * @param channel: 0 for the fixed image, 1 for the moving one.
+*/
 void itkProcessRegistration::setFixedInput(medAbstractData *data)
 {
     this->setInputData(data, 0);
@@ -362,13 +370,26 @@ void itkProcessRegistration::setMovingInput(medAbstractData *data)
     this->setInputData(data, 1);
 }
 
+/**
+ * @brief Apply the update on a specified fixed image type.
+ *
+ * Called by update(). The image type is the fixed image type.
+ *
+ * @param ImageType: the fixed image type
+ * @return int
+*/
 int itkProcessRegistration::update(itkProcessRegistration::ImageType)
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return 1;
 }
 
-
+/**
+ * @brief Runs the process.
+ *
+ * @param void
+ * @return int 0 if it succeeded, any other value is an error. (could be used as error code)
+*/
 int itkProcessRegistration::update()
 {
     if (!d->mutex.tryLock())
@@ -384,6 +405,12 @@ int itkProcessRegistration::update()
     return retval;
 }
 
+/**
+ * @brief Gets the registered image.
+ *
+ * @param void
+ * @return medAbstractData *: medItkImageDataXXY, same type as the moving input image.
+*/
 medAbstractData *itkProcessRegistration::output()
 {
     return d->output;
@@ -393,25 +420,67 @@ void itkProcessRegistration::setOutput(medAbstractData * output)
     d->output = output;
 }
 
+/**
+ * @brief Gets an itk smart pointer to the fixed image.
+ *
+ * It uses the itkImageBase class to avoid a templated method.
+ * Using the fixedImageType() method will give the type necessary for a down cast.
+ *
+ * @return itk::ImageBase<int> NULL if none is set yet.
+*/
 itk::ImageBase<3>::Pointer itkProcessRegistration::fixedImage()
 {
     return d->fixedImage;
 }
 
+/**
+ * @brief Gets an itk smart pointer to the moving image.
+ *
+ * it uses the itkImageBase class to avoid a templated method.
+ * Using the movingImageType() method will give the type necessary for a down cast.
+ *
+ * @return itk::ImageBase<int> NULL if none is set yet.
+*/
 QVector<itk::ImageBase<3>::Pointer> itkProcessRegistration::movingImages()
 {
     return d->movingImages;
 }
+
+/**
+ * @brief Gets the fixed image ImageType.
+ *
+ * @return itkProcessRegistration::ImageType
+*/
 itkProcessRegistration::ImageType itkProcessRegistration::fixedImageType()
 {
     return d->fixedImageType;
 }
 
+/**
+ * @brief Gets the moving image ImageType.
+ *
+ * @return itkProcessRegistration::ImageType
+*/
 itkProcessRegistration::ImageType itkProcessRegistration::movingImageType()
 {
     return d->movingImageType;
 }
 
+/**
+ * @brief Writes to a file an image or a transformation.
+ *
+ * This function is inherited from dtk.
+ * @warning This function writes the image in the first file,
+ * and the transformation in the second. Otheritems in the list are ignored.
+ * An empty string as a first element with a path as the second only writes the transformation.
+ * A single element in the list means only the image will be written.
+ *
+ * This function is usualy called from the generic registration toolbox.
+ *
+ * @param files: list of File path. Here files[0] is a path to the image,
+ * and files[1] a path to a transformation.
+ * @return bool: true on successful operation, false otherwise.
+*/
 bool itkProcessRegistration::write(const QStringList& files)
 {
     if (files.count()!=2)
@@ -432,6 +501,15 @@ bool itkProcessRegistration::write(const QStringList& files)
     return false;
 }
 
+/**
+ * @brief Writes a transformation to a file.
+ *
+ * Given the registration (rigid, non-rigid),
+ * this could be a simple matrix or a displacement field.
+ *
+ * @param file: path to the file.
+ * @return bool: true on successful operation, false otherwise.
+*/
 bool itkProcessRegistration::writeTransform(const QString& file)
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -439,7 +517,14 @@ bool itkProcessRegistration::writeTransform(const QString& file)
     return false;
 }
 
-
+/**
+ * @brief Writes the resulting image to a file.
+ *
+ * Uses a dtkAbstractDataWriter to export it the file.
+ * If no suitable writer is found by the factory, the method returns false.
+ * @param file: path to the file.
+ * @return bool: true on successful operation, false otherwise.
+*/
 bool itkProcessRegistration::write(const QString& file)
 {
     if (output() == NULL)

@@ -350,7 +350,7 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
 
 void medMainWindow::open(const medDataIndex &index)
 {
-    this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
+    this->showWorkspace(d->workspaceArea->currentWorkspace()->identifier());
     d->workspaceArea->currentWorkspace()->open(index);
 }
 
@@ -719,5 +719,5 @@ bool medMainWindow::event(QEvent * e)
 
 void medMainWindow::adjustContainersSize()
 {
-    d->workspaceArea->currentWorkspace()->stackedViewContainers()->adjustContainersSize();
+    d->workspaceArea->currentWorkspace()->tabbedViewContainers()->adjustContainersSize();
 }

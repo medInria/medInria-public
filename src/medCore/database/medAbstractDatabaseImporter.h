@@ -21,7 +21,7 @@
 #include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medJobItem.h>
+#include <medAbstractJob.h>
 #include <medDataIndex.h>
 
 class medAbstractDatabaseImporterPrivate;
@@ -33,12 +33,12 @@ class medAbstractData;
 * @medAbstractDatabaseImporter is in charge of importing (or indexing, any word will be used
 * hereafter) items into medInria databases.
 * It is designed to run as a thread, to know how to use it, check the documentation
-* of @medJobItem.
+* of @medAbstractJob.
 * It defines a set of usefuls method (populateMissingMetadata, getSuitableReader,...) and implements a default run() method.
 * To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary.
 * For example, see @medDatabaseImporter and @medDatabaseNonPersistentReader
 **/
-class MEDCORE_EXPORT medAbstractDatabaseImporter : public medJobItem
+class MEDCORE_EXPORT medAbstractDatabaseImporter : public medAbstractJob
 {
     Q_OBJECT
 

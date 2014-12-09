@@ -28,7 +28,7 @@ public:
 };
 
 
-medTriggerParameter::medTriggerParameter(QString name, QObject *parent):
+medTriggerParameter::   medTriggerParameter(QString name, QObject *parent):
     medAbstractTriggerParameter(name, parent),
     d(new medTriggerParameterPrivate)
 {

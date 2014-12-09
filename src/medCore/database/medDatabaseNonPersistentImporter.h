@@ -25,7 +25,7 @@ class medAbstractData;
 /**
 * @brief Reads files and adds them to the medNonPersistentDatabase.
 *
-* This class inherits from medJobItem and is meant to be run by the medJobManager.
+* This class inherits from medAbstractJob and is meant to be run by the medJobManager.
 *
 */
 class MEDCORE_EXPORT medDatabaseNonPersistentImporter : public medAbstractDatabaseImporter
@@ -44,13 +44,9 @@ public:
     ~medDatabaseNonPersistentImporter();
 
 public:
-
     QString getPatientID(QString patientName, QString birthDate);
-
     medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
-
     QString ensureUniqueSeriesName ( const QString seriesName );
-
     bool checkIfExists ( medAbstractData* medData, QString imageName );
 
 private:

@@ -20,7 +20,6 @@
 #include <medDataIndex.h>
 
 class medDropSitePrivate;
-
 class MEDCORE_EXPORT medDropSite : public QLabel
 {
     Q_OBJECT
@@ -30,32 +29,31 @@ public:
     ~medDropSite();
 
     QSize sizeHint() const;
-
     void setCanAutomaticallyChangeAppereance(bool can);
-
-public:
-    medDataIndex index() const;
 
 public slots:
     void clear();
 
-signals:
+public slots:
+    void setValue(const medDataIndex& index);
+public:
+    medDataIndex value() const;
 
+protected slots:
+    void dataReady(medDataIndex data, QUuid uuid);
+
+signals:
     /**
      * This signal is emitted when an object containing
      * a valid medDataIndex is dropped.
      */
-    void objectDropped (const medDataIndex& index);
+    void valueChanged (const medDataIndex& value);
 
-    /** Signal emitted when the user clicks on the medDropSite. */
-    void clicked();
-    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-    void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent* event);
     
 private:

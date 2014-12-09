@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -30,8 +30,11 @@ public:
     medDatabaseDataSource(QWidget *parent = 0);
     ~medDatabaseDataSource();
 
+    static bool registered();
+
     QWidget* mainViewWidget();
     QWidget* compactViewWidget();
+    virtual QWidget* dialogWidget();
 
     QWidget* sourceSelectorWidget();
 
@@ -43,12 +46,11 @@ QString description() const;
 
 public slots:
     void onOpeningFailed(const medDataIndex& index, QUuid);
-
-signals:
-    void open(const medDataIndex&);
+;
 
 protected slots:
     void onFilter(const QString &text, int column);
+    void exportData(const medDataIndex& index);
 
 
 private:
@@ -56,3 +58,4 @@ private:
 
 };
 
+medAbstractDataSource *createmedDatabaseDataSource ( QWidget* );

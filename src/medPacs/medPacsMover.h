@@ -14,14 +14,14 @@
 #pragma once
 
 
-#include <medJobItem.h>
+#include <medAbstractJob.h>
 #include <medPacsExport.h>
 #include <medMoveCommandItem.h>
 
 class medPacsMoverPrivate;
 
 
-class MEDPACS_EXPORT medPacsMover : public medJobItem
+class MEDPACS_EXPORT medPacsMover : public medAbstractJob
 {
     Q_OBJECT
 

@@ -71,10 +71,6 @@ void
 medDatabaseCompactWidget::setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview)
 {
     d->view = view;
-    connect(d->view, SIGNAL(open(const medDataIndex&)),
-            this, SIGNAL(open(const medDataIndex&))
-            );
-
     d->preview = preview;
     d->layout->addWidget(d->view, 0);
     d->layout->addWidget(d->preview, 0, Qt::AlignBottom);

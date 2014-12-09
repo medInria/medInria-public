@@ -44,7 +44,7 @@ QMutex medAbstractDatabaseImporterPrivate::mutex;
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, const QUuid& uuid, bool indexWithoutImporting) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, const QUuid& uuid, bool indexWithoutImporting) : medAbstractJob("File import"), d ( new medAbstractDatabaseImporterPrivate )
 {
     d->isCancelled = false;
     d->file = file;
@@ -55,7 +55,7 @@ medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, 
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+medAbstractDatabaseImporter::medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid) : medAbstractJob("Data import"), d ( new medAbstractDatabaseImporterPrivate )
 {
     d->isCancelled = false;
     d->data = medData;
@@ -190,7 +190,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         if ( d->isCancelled ) // check if user cancelled the process
             break;
 
-        emit progress ( this, ( ( qreal ) currentFileNumber/ ( qreal ) fileList.count() ) * 50.0 ); //TODO: reading and filtering represents 50% of the importing process?
+        emit progressed ( ( ( qreal ) currentFileNumber/ ( qreal ) fileList.count() ) * 50.0 ); //TODO: reading and filtering represents 50% of the importing process?
 
         currentFileNumber++;
 
@@ -263,7 +263,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         // we care whether we can write the image or not if we are importing
         if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
-            emit showError(tr("Could not save file due to unhandled data type: ") + medData->identifier(), 5000);
+            emit showError(tr("Could not save file due to unhandled data type: ") + medData->identifier());
             continue;
         }
 
@@ -286,12 +286,12 @@ void medAbstractDatabaseImporter::importFile ( void )
     {
         emit showError (tr ( "User cancelled import process" ), 5000 );
         emit dataImported(medDataIndex(), d->uuid);
-        emit cancelled ( this );
+        emit cancelled ();
         return;
     }
 
     // from now on the process cannot be cancelled
-    emit disableCancel ( this );
+    emit disableCancel ();
 
     // 3) Re-read selected files and re-populate them with missing metadata
     //    then write them to medInria db and populate db tables
@@ -307,7 +307,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         // TODO we know if it's either one or the other error, we can make this error better...
         emit showError (tr ( "No compatible image found or all of them had been already imported." ), 5000 );
         emit dataImported(medDataIndex(), d->uuid);
-        emit failure ( this );
+        emit failure ();
         return;
     }
     else
@@ -321,7 +321,7 @@ void medAbstractDatabaseImporter::importFile ( void )
     // final loop: re-read, re-populate and write to db
     for ( ; it != imagesGroupedByVolume.end(); it++ )
     {
-        emit progress ( this, ( ( qreal ) currentImageIndex/ ( qreal ) imagesCount ) * 50.0 + 50.0 ); // 50? I do not think that reading all the headers is half the job...
+        emit progressed ( ( ( qreal ) currentImageIndex/ ( qreal ) imagesCount ) * 50.0 + 50.0 ); // 50? I do not think that reading all the headers is half the job...
 
         currentImageIndex++;
 
@@ -356,7 +356,7 @@ void medAbstractDatabaseImporter::importFile ( void )
             qWarning() << "Could not repopulate data!";
             emit showError (tr ( "Could not read data: " ) + filesPaths[0], 5000 );
             emit dataImported(medDataIndex(), d->uuid);
-            emit failure(this);
+            emit failure();
             return;
         }
 
@@ -400,16 +400,16 @@ void medAbstractDatabaseImporter::importFile ( void )
     } // end of the final loop
 
     if ( ! atLeastOneImportSucceeded) {
-        emit progress ( this,100 );
+        emit progressed ( 100 );
         emit dataImported(medDataIndex(), d->uuid);
-        emit failure(this);
+        emit failure();
         return;
     }
 
     d->index = index;
     
-    emit progress ( this,100 );
-    emit success ( this );
+    emit progressed ( 100 );
+    emit success ( );
 }
 
 void medAbstractDatabaseImporter::importData()
@@ -418,7 +418,7 @@ void medAbstractDatabaseImporter::importData()
      
     if ( !d->data )
     {
-        emit failure ( this );
+        emit failure ( );
         emit dataImported(medDataIndex(), d->uuid);
         return;
     }
@@ -456,7 +456,7 @@ void medAbstractDatabaseImporter::importData()
             if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
             {
                 qWarning() << "Unable to create directory for images";
-                emit failure ( this );
+                emit failure ( );
                 emit dataImported(medDataIndex(), d->uuid);
                 return ;
             }
@@ -488,8 +488,8 @@ void medAbstractDatabaseImporter::importData()
     // Now, populate the database
    medDataIndex index = this->populateDatabaseAndGenerateThumbnails (  d->data, thumb_dir );
 
-    emit progress(this, 100);
-    emit success(this);
+    emit progressed(100);
+    emit success();
 
     if (d->uuid == "")
         emit dataImported(index);
@@ -682,7 +682,7 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
     if ( readers.size() ==0 )
     {
         emit showError (tr ( "No reader plugin" ), 5000 );
-        emit failure ( this );
+        emit failure ();
         return NULL;
     }
 
@@ -865,9 +865,9 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
     {
         // Determine the appropriate extension to use according to the type of data.
         // TODO: The image and CompositeDatasets types are weakly recognized (contains("Image/CompositeData")). to be improved
-        if (identifier == "vtkDataMesh") {
+        if (identifier == "medVtkMeshData") {
             extension = ".vtk";
-        } else if (identifier == "vtkDataMesh4D") {
+        } else if (identifier == "medVtk4DMeshData") {
             extension = ".v4d";
         } else if (identifier == "medVtkFibersData") {
             extension = ".xml";
