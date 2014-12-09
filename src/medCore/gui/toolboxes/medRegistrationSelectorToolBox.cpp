@@ -417,24 +417,20 @@ void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobNam
                 enableSelectorToolBox(false);
         }
 }
-void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
+bool medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
 
-    if(d->undoRedoProcess)
-    {
-        d->undoRedoProcess->setFixedInput(d->fixedData);
-        d->undoRedoProcess->setMovingInput(d->movingData);
-    }
+    return d->undoRedoProcess
+            && d->undoRedoProcess->setFixedInput(d->fixedData)
+            && d->undoRedoProcess->setMovingInput(d->movingData);
 }
 
-void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
+bool medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
 
-    if(d->undoRedoProcess)
-    {
-        d->undoRedoProcess->setFixedInput(d->fixedData);
-        d->undoRedoProcess->setMovingInput(d->movingData);
-    }
+    return d->undoRedoProcess
+            && d->undoRedoProcess->setFixedInput(d->fixedData)
+            && d->undoRedoProcess->setMovingInput(d->movingData);
 }

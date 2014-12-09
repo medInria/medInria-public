@@ -28,8 +28,8 @@ public:
     virtual ~medAbstractRegistrationProcess();
 
 public:
-    virtual void setFixedInput(medAbstractData *data) = 0;
-    virtual void setMovingInput(medAbstractData *data) = 0;
+    virtual bool setFixedInput(medAbstractData *data) = 0;
+    virtual bool setMovingInput(medAbstractData *data) = 0;
     virtual bool write(const QString &file) = 0;
     virtual bool write(const QStringList& files) = 0;
 

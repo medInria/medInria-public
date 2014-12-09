@@ -213,11 +213,57 @@ template <typename PixelType>
     }
 }
 
-
-void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
+class CastFilterAdapter
 {
+public:
+    virtual ~CastFilterAdapter() { }
+    virtual int SetInput(void* iData) = 0;
+    virtual int Update() = 0;
+    virtual void* GetOutput() = 0;
+
+};
+
+template <class T, unsigned int S = 3>
+class CastFilterTemplateAdapter : public CastFilterAdapter
+{
+public:
+    CastFilterTemplateAdapter() : CastFilterAdapter() { m_CasterPointer = CastFilterType::New(); }
+
+    typedef typename itk::Image< float, 3 > RegImageType; // We always convert to float,3
+    typedef typename itk::Image<T, S> ImageType; // input data type
+    typedef typename itk::CastImageFilter<ImageType, RegImageType> CastFilterType;
+    typedef typename CastFilterType::Pointer TYPEPTR;
+
+    int SetInput(void* iData)
+    {
+        m_CasterPointer->SetInput((const ImageType*)iData);
+        return 0;
+    }
+
+    int Update()
+    {
+        m_CasterPointer->Update();
+        return 0;
+    }
+
+    void* GetOutput()
+    {
+        return m_CasterPointer->GetOutput();
+    }
+
+private:
+
+    TYPEPTR m_CasterPointer;
+
+
+};
+
+
+bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
+{
+    bool res = true; // default behaviour is to always pass, except in exceptional cases
     if (!data)
-        return;
+        return res;
 
     QString id = QString (data->identifier());
     QString::iterator last_charac = id.end() - 1;
@@ -233,7 +279,6 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
     }
 
     *last_charac = '3';
-    typedef itk::Image< float, 3 > RegImageType;
 
     dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
     foreach ( QString metaData, data->metaDataList() )
@@ -245,121 +290,72 @@ void itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
     if (channel==0)
         d->output = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
-    if (id =="itkDataImageChar3") {
-        typedef itk::Image< char, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
 
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    QScopedPointer<CastFilterAdapter> castFilterAdapterPtr;
+    if (id =="itkDataImageChar3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<char>);
     }
-    else if (id =="itkDataImageUChar3") {
-        typedef itk::Image< unsigned char, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    else if (id =="itkDataImageUChar3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned char>);
     }
-    else if (id =="itkDataImageShort3") {
-        typedef itk::Image< short, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    else if (id == "itkDataImageShort3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<short>);
     }
-    else if (id =="itkDataImageUShort3") {
-        typedef itk::Image< unsigned short, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    else if(id == "itkDataImageInt3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<int>);
     }
-
-    else if (id =="itkDataImageInt3") {
-        typedef itk::Image< int, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    else if(id == "itkDataImageUInt3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned int>);
     }
-    else if (id =="itkDataImageUInt3") {
-        typedef itk::Image< unsigned int, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    else if(id == "itkDataImageLong3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<long>);
     }
-
-    else if (id =="itkDataImageLong3") {
-        typedef itk::Image< long, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    else if(id == "itkDataImageULong3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned long>);
     }
-    else if (id=="itkDataImageULong3") {
-        typedef itk::Image< unsigned long, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
-    }
-    else if (id =="itkDataImageFloat3") {
+    else if(id == "itkDataImageFloat3")
+    {
         d->setInput<float>(data,channel);
     }
-    else if (id =="itkDataImageDouble3") {
-        typedef itk::Image< double, 3 > InputImageType;
-        typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        caster->SetInput((const InputImageType*)data->data());
-        caster->Update();
-        convertedData->setData(caster->GetOutput());
-
-        d->setInput<float>(convertedData,channel);
+    else if(id == "itkDataImageDouble3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<double>);
     }
 
+    try
+    {
+        if (!res && castFilterAdapterPtr)
+        {
+            castFilterAdapterPtr->SetInput(data->data());
+            castFilterAdapterPtr->Update();
+            convertedData->setData(castFilterAdapterPtr->GetOutput());
+            d->setInput<float>(convertedData,channel);
+        }
+    }
+    catch(itk::ExceptionObject& e)
+    {
+        qDebug() << e.what();
+        res = false; // In this case, we've failed
+    }
+
+    return res;
 }
 
-void itkProcessRegistration::setFixedInput(medAbstractData *data)
+bool itkProcessRegistration::setFixedInput(medAbstractData *data)
 {
-    this->setInputData(data, 0);
+    return this->setInputData(data, 0);
 }
 
-void itkProcessRegistration::setMovingInput(medAbstractData *data)
+bool itkProcessRegistration::setMovingInput(medAbstractData *data)
 {
-    this->setInputData(data, 1);
+    return this->setInputData(data, 1);
 }
 
 int itkProcessRegistration::update(itkProcessRegistration::ImageType)
