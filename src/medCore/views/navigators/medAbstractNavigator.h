@@ -13,6 +13,9 @@
 
 #pragma once
 
+#include <QDomDocument>
+
+
 #include <dtkCore/dtkAbstractViewNavigator.h>
 
 #include <medCoreExport.h>
@@ -40,6 +43,9 @@ public:
 
     virtual QList<medAbstractParameter*> linkableParameters() = 0;
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
+    
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+
 
 protected:
     virtual QWidget* buildToolBoxWidget() = 0;
