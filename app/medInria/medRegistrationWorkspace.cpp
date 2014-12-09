@@ -239,7 +239,7 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
     }
 
-    if (!d->registrationToolBox->setFixedData(fixedData))\
+    if (!d->registrationToolBox->setFixedData(fixedData))
     {
         // delete the view because something failed at some point
         d->viewGroup->removeImpactedView(fixedView);
