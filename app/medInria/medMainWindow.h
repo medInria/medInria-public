@@ -16,6 +16,8 @@
 #include <QtGui/QMainWindow>
 #include <QUuid>
 #include <QUrl>
+#include <QFileInfo>
+
 class medDataIndex;
 class medMainWindowPrivate;
 
@@ -68,6 +70,7 @@ private slots:
 
     void showWorkspace(QString workspace);
     void saveScene();
+    void loadScene();
     void captureScreenshot();
 
     void switchToBrowserArea();
