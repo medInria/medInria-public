@@ -101,7 +101,7 @@ void medDatabaseNonPersistentController::insert(medDataIndex index, medDatabaseN
 
 void medDatabaseNonPersistentController::importPath(const QString& file,const QUuid & importUuid, bool /*indexWithoutCopying*/)
 {
-    medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(file,importUuid);
+    medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(file,importUuid, this);
     medMessageProgress * message = medMessageController::instance()->showProgress(tr("Opening file item"));
 
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
@@ -146,7 +146,7 @@ bool medDatabaseNonPersistentController::isConnected() const
 void medDatabaseNonPersistentController::importData(medAbstractData *data,
                                                     const QUuid & callerUuid)
 {
-    medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(data,callerUuid);
+    medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(data,callerUuid, this);
     medMessageProgress * message = medMessageController::instance()->showProgress("Importing data item");
 
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));

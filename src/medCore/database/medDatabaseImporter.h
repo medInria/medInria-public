@@ -38,26 +38,11 @@ class MEDCORE_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
     Q_OBJECT
 
 public:
-    medDatabaseImporter ( const QString& file, const QUuid& uuid, bool indexWithoutImporting = false);
-    medDatabaseImporter ( medAbstractData* medData, const QUuid& callerUuid );
+    medDatabaseImporter ( const QString& file, const QUuid& uuid, medAbstractDbController *iController, bool indexWithoutImporting = false);
+    medDatabaseImporter (medAbstractData* medData, const QUuid& callerUuid , medAbstractDbController *iController);
     ~medDatabaseImporter ( void );
 
 
-private:
-
-    QString ensureUniqueSeriesName ( const QString seriesName );
-
-    bool checkIfExists ( medAbstractData* medData, QString imageName );
-
-    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
-
-    int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
-    int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );
-    int getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyId );
-
-    void createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesId, QStringList thumbPaths );
-
-    QString getPatientID(QString patientName, QString birthDate);
 
 };
 

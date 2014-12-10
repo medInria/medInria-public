@@ -26,6 +26,7 @@
 
 class medAbstractDatabaseImporterPrivate;
 class medAbstractData;
+class medAbstractDbController;
 
 /**
 * @class medAbstractDatabaseImporter
@@ -43,8 +44,8 @@ class MEDCORE_EXPORT medAbstractDatabaseImporter : public medJobItem
     Q_OBJECT
 
 public:
-    medAbstractDatabaseImporter (const QString& file, const QUuid &uuid, bool indexWithoutImporting = false);
-    medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid);
+    medAbstractDatabaseImporter (const QString& file, const QUuid &uuid, medAbstractDbController* controller, bool indexWithoutImporting = false);
+    medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid, medAbstractDbController* controller);
 
     ~medAbstractDatabaseImporter ( void );
 
@@ -106,7 +107,7 @@ protected:
     * @param seriesName - the series name
     * @return newSeriesName - a new, unused, series name
     **/
-    virtual QString ensureUniqueSeriesName ( const QString seriesName ) = 0;
+    virtual QString ensureUniqueSeriesName ( const QString seriesName );
 
     /**
     * Checks if the image which was used to create the medData object
@@ -115,13 +116,13 @@ protected:
     * @param imageName - the name of the image we are looking for
     * @return true if already exists, false otherwise
     **/
-    virtual bool checkIfExists ( medAbstractData* medData, QString imageName ) = 0;
+    virtual bool checkIfExists ( medAbstractData* medData, QString imageName );
 
     /**
      * Retrieves patientID. Checks if patient is already in the database
      * if so, returns his Id, otherwise creates a new guid
      */
-    virtual QString getPatientID(QString patientName, QString birthDate) = 0;
+    virtual QString getPatientID(QString patientName, QString birthDate);
 
     /**
     * Populates database tables and generates thumbnails.
@@ -129,7 +130,12 @@ protected:
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
-    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails ) = 0;
+    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
+    int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
+    int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );
+    int getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyId );
+
+    void createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesId, QStringList thumbPaths );
 
 
 
