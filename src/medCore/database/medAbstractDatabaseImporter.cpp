@@ -24,6 +24,7 @@
 #include <medDatabaseController.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
+#include <medGlobalDefs.h>
 
 class medAbstractDatabaseImporterPrivate
 {
@@ -210,7 +211,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         }
 
         // 2.2) Fill missing metadata
-        populateMissingMetadata ( medData, fileInfo.baseName() );
+        populateMissingMetadata ( medData, med::smartBaseName(fileInfo.fileName()) );
         QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
         QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
         tmpPatientId = patientName + birthDate;
@@ -344,7 +345,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         {
             // 3.3) a) re-populate missing metadata
             // as files might be aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
-            populateMissingMetadata ( imagemedData, imagefileInfo.baseName() );
+            populateMissingMetadata ( imagemedData, med::smartBaseName(imagefileInfo.fileName()) );
             imagemedData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
             imagemedData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << seriesID );
 

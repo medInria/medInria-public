@@ -22,6 +22,7 @@
 #include <medMessageController.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
+#include <medGlobalDefs.h>
 
 /* THESE CLASSES NEED TO BE THREAD-SAFE, don't forget to lock the mutex in the
  * methods below that access state.
@@ -289,11 +290,7 @@ void medDataManager::exportDialog_updateSuffix(int index)
     QFileDialog * exportDialog = qobject_cast<QFileDialog*>(typesHandled->itemData(index, Qt::UserRole+2).value<QObject*>());
     QString extension = typesHandled->itemData(index, Qt::UserRole+1).toString();
 
-    QString currentFilename = exportDialog->selectedFiles().first();
-    int lastDot = currentFilename.lastIndexOf('.');
-    if (lastDot != -1) {
-        currentFilename = currentFilename.mid(0, lastDot);
-    }
+    QString currentFilename = med::smartBaseName(exportDialog->selectedFiles().first());
     currentFilename += extension;
     exportDialog->selectFile(currentFilename);
 }
