@@ -32,8 +32,7 @@ static QStringList s_handled() {
                           << "itkDataImageLong3" << "itkDataImageLong4"
                           << "itkDataImageULong3" << "itkDataImageULong4"
                           << "itkDataImageFloat3" << "itkDataImageFloat4"
-                          << "itkDataImageDouble3" << "itkDataImageDouble4"
-                          << "itkDataImageRGB3" << "itkDataImageRGBA3";
+                          << "itkDataImageDouble3" << "itkDataImageDouble4";
 }
 
 itkNiftiDataImageWriter::itkNiftiDataImageWriter(): itkDataImageWriterBase() {
