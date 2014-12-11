@@ -413,19 +413,7 @@ void medDatabaseController::importPath(const QString& file, const QUuid &importU
 */
 void medDatabaseController::importData( medAbstractData *data, const QUuid & importUuid)
 {    
-    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid, this);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-  
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
 
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
 }
 
 void medDatabaseController::showOpeningError(QObject *sender)
@@ -437,7 +425,7 @@ void medDatabaseController::createPatientTable(void)
 {
     QSqlQuery query(this->database());
     query.exec(
-            "CREATE TABLE patient ("
+            "CREATE TABLE IF NOT EXISTS patient ("
             " id       INTEGER PRIMARY KEY,"
             " name        TEXT,"
             " thumbnail   TEXT,"
@@ -453,7 +441,7 @@ void medDatabaseController::createStudyTable(void)
     QSqlQuery query(this->database());
 
     query.exec(
-            "CREATE TABLE study ("
+            "CREATE TABLE IF NOT EXISTS study ("
             " id        INTEGER      PRIMARY KEY,"
             " patient   INTEGER," // FOREIGN KEY
             " name         TEXT,"
@@ -468,7 +456,7 @@ void medDatabaseController::createSeriesTable(void)
 {
     QSqlQuery query(this->database());
     query.exec(
-            "CREATE TABLE series ("
+            "CREATE TABLE IF NOT EXISTS series ("
             " id       INTEGER      PRIMARY KEY,"
             " study    INTEGER," // FOREIGN KEY
             " size     INTEGER,"
@@ -507,7 +495,7 @@ void medDatabaseController::createImageTable(void)
 
     QSqlQuery query(this->database());
     query.exec(
-            "CREATE TABLE image ("
+            "CREATE TABLE IF NOT EXISTS image ("
             " id         INTEGER      PRIMARY KEY,"
             " series     INTEGER," // FOREIGN KEY
             " name          TEXT,"
@@ -979,7 +967,7 @@ bool medDatabaseController::contains(const medDataIndex &index) const
 
 medAbstractData* medDatabaseController::retrieve(const medDataIndex &index) const
 {
-    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index, this));
     medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
 
     connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));

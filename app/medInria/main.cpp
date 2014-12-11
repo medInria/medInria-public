@@ -24,7 +24,7 @@
 
 #include <medPluginManager.h>
 #include <medDataIndex.h>
-#include <medDatabaseController.h>
+#include <medDataManager.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
@@ -157,7 +157,7 @@ int main(int argc,char* argv[]) {
         //  If the locations are different we need to move the db to the new location
 
         if (currentLocation.compare(newLocation)!=0) {
-            if (!medDatabaseController::instance()->moveDatabase(newLocation)) {
+            if (!medDataManager::instance()->moveDatabase(newLocation, medDataManager::ePersistent)) {
                 qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
                 //  The new location is invalid so set it to zero
                 newLocation = "";

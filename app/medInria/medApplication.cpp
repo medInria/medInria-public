@@ -155,10 +155,6 @@ void medApplication::initialize()
 {
     qRegisterMetaType<QUuid>("QUuid");
 
-    //  Setting up database connection
-    if ( ! medDatabaseController::instance()->createConnection())
-        qDebug() << "Unable to create a connection to the database";
-
     medDataManager::initialize();
 
     // Registering different workspaces

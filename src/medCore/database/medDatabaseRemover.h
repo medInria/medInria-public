@@ -21,6 +21,7 @@
 #include <medCoreExport.h>
 
 class medDatabaseRemoverPrivate;
+class medDatabaseController;
 
 /**
  * @class medDatabaseRemover

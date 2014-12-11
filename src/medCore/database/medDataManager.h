@@ -25,11 +25,20 @@ class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
 
+
+
+
 class MEDCORE_EXPORT medDataManager : public QObject
 {
     Q_OBJECT
 
 public:
+    enum eDataSource
+    {
+        eAll,
+        ePersistent,
+        eNonPersistent
+    };
     static void initialize();
     static medDataManager * instance();
 
@@ -38,10 +47,13 @@ public:
     QUuid importData(medAbstractData* data, bool persistent = false);
     QUuid importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent = false);
 
+    bool empty(eDataSource iDataSource = eAll);
+
     void exportData(medAbstractData* data);
     void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
 
     QUuid makePersistent(medAbstractData* data);
+    bool moveDatabase(const QString& iNewLocation, eDataSource iDataSource = eAll);
 
     bool setMetadata(const medDataIndex& index, const QString& key, const QString& value);
     void removeData(const medDataIndex& index);

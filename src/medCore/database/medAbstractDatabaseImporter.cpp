@@ -1224,7 +1224,7 @@ medDataIndex medAbstractDatabaseImporter::populateDatabaseAndGenerateThumbnails 
 
         createMissingImages ( medData, db, seriesDbId, thumbPaths );
 
-        index = medDataIndex ( medDatabaseController::instance()->dataSourceId(), patientDbId, studyDbId, seriesDbId, -1 );
+        index = medDataIndex ( dbController->dataSourceId(), patientDbId, studyDbId, seriesDbId, -1 );
     }
     else if (medDatabaseNonPersistentController* npController = dynamic_cast<medDatabaseNonPersistentController*>(d->controller))
     {
@@ -1236,7 +1236,7 @@ medDataIndex medAbstractDatabaseImporter::populateDatabaseAndGenerateThumbnails 
         QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(medData);
 
         // check if patient is already in the persistent database
-        medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
+        medDataIndex databaseIndex = dbController->indexForPatient ( patientName );
         medDatabaseNonPersistentItem *patientItem = NULL;
 
         if ( databaseIndex.isValid() )
@@ -1293,6 +1293,7 @@ medDataIndex medAbstractDatabaseImporter::populateDatabaseAndGenerateThumbnails 
         if( studyName!="EmptyStudy" || seriesName!="EmptySerie" )
         {
             // check if study is already in the persistent database
+            //TODO - We need to validate if we can keep this behaviour or not
             databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
             medDatabaseNonPersistentItem *studyItem = NULL;
 
@@ -1375,6 +1376,13 @@ medDataIndex medAbstractDatabaseImporter::populateDatabaseAndGenerateThumbnails 
             item->setData(medData);
             item->setSeriesUid(seriesUid);
             item->setStudyUid(studyUid);
+            item->setOrientation(orientation);
+            item->setSeriesNumber(seriesNumber);
+            item->setSequenceName(sequenceName);
+            item->setSliceThickness(sliceThickness);
+            item->setRows(rows);
+            item->setColumns(columns);
+
             npController->insert ( index, item );
         }
     }

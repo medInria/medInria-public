@@ -17,6 +17,7 @@
 #include <dtkCore/dtkSmartPointer.h>
 
 class medAbstractData;
+class medDatabaseController;
 class medDatabaseReaderPrivate;
 class medDataIndex;
 
@@ -25,7 +26,7 @@ class medDatabaseReader : public QObject
     Q_OBJECT
 
 public:
-    medDatabaseReader(const medDataIndex& index);
+    medDatabaseReader(const medDataIndex& index, const medDatabaseController* iDbController);
     ~medDatabaseReader();
 
     medAbstractData *run();
