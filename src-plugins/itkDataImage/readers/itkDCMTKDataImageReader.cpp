@@ -359,7 +359,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 
     if (medData) {
 
-     QStringList patientName;
+    QStringList patientName;
     QStringList studyName;
     QStringList seriesName;
 
@@ -457,8 +457,9 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     medData->setMetaData(medMetaDataKeys::Status.key(),          status);
 
     medData->addMetaData(medMetaDataKeys::FilePaths.key(),      filePaths);
-
-
+    
+    if (modality[0]=="US" && seriesName[0]=="") // hack for vp2hf 
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), filePaths[0].section('/', -1));
     }
     else {
       qDebug() << "Unsupported pixel type";

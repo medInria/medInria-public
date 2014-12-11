@@ -114,7 +114,8 @@ public:
     std::string GetSliceThickness() const;
     std::string GetRows() const;
     std::string GetColumns() const;
-
+    std::string GetNumberOfFrames() const;
+    
     const StringVectorType& GetOrderedFileNames() const
     { return m_OrderedFileNames; }
 

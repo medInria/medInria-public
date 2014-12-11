@@ -23,6 +23,7 @@
 #include <dcmtk/dcmdata/dcistrmf.h>
 #include <dcmtk/ofstd/ofstdinc.h>
 #include <dcmtk/dcmimgle/dcmimage.h>
+#include "dcmtk/dcmimage/diregist.h"
 
 /* The path separator for this platform.  */
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -248,7 +249,14 @@ void DCMTKImageIO::ReadImageInformation()
         this->SetNumberOfDimensions (3);
     }
     m_Dimensions[2] =  sizeZ;
-
+    if ( this->GetNumberOfFrames().size() )
+    {
+       int nbFrames = atoi(this->GetNumberOfFrames().c_str());
+       if (nbFrames>1)
+        m_Dimensions[2]=nbFrames;
+    }
+    std::cout<< "the number of frames is " << this->GetNumberOfFrames() << std::endl;
+    
     /**
        Now that m_FilenameToIndexMap and m_LocationToFilenamesMap are up-to-date, we may determine
        the pixel type, spacing, origin and so on.
@@ -344,13 +352,9 @@ void DCMTKImageIO::DetermineNumberOfPixelComponents()
     this->SetNumberOfComponents ( samplesPerPixel );
 
     if( samplesPerPixel==1 )
-    {
         this->SetPixelType ( SCALAR );
-    }
     else
-    {
         this->SetPixelType ( RGB );
-    }
 }
 
 
@@ -703,7 +707,7 @@ void DCMTKImageIO::ThreadedRead (void* buffer, RegionType region, int threadId)
 
     int start = region.GetIndex()[0];
     int length = region.GetSize()[0];
-
+    
     for( int i=start; i<start+length; i++)
     {
         this->InternalRead (buffer, i, pixelCount);
@@ -787,7 +791,7 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     if (!destBuffer) {
         itkExceptionMacro ( << "Bad copy or dest buffer" );
     }
-
+    
     // If the image has more than one component, the DicomImage stores it as an
     // array of array, each sub-array containing all the pixels for one of the
     // components
@@ -796,9 +800,13 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
         if (!copyBuffer) {
             itkExceptionMacro ( << "Bad copy buffer" );
         }
-
+        
         int nbPixels = dmp->getCount();
         int nbComponents = dmp->getPlanes();
+        
+        std::cout<< "the number of components is " << nbComponents << std::endl;
+        std::cout<< "pixelCount is " << pixelCount << std::endl;
+        std::cout<< "dmp->getCount() : " << nbPixels << std::endl;
         Uint8* destSliceBuffer = destBuffer+slice*length;
 
         for (int c = 0; c < nbComponents; ++c) {
@@ -993,14 +1001,16 @@ std::string DCMTKImageIO::GetPatientStatus() const
     return this->GetMetaDataValueString ( "(0011,1010)", 0 );
 }
 
+std::string DCMTKImageIO::GetNumberOfFrames() const
+{
+    return this->GetMetaDataValueString ( "(0028,0008)", 0 );
+}
+
 void
 DCMTKImageIO
 ::SwapBytesIfNecessary( void* buffer, unsigned long numberOfPixels )
 {
 }
-
-
-
 
 void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, const int& fileCount )
 {
