@@ -180,7 +180,14 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         d->movingLayerGroup->addImpactedlayer(movingView, movingData);
         d->movingLayerGroup->addImpactedlayer(fuseView, movingData);
     }
-    d->registrationToolBox->setMovingData(movingData);
+    if (!d->registrationToolBox->setMovingData(movingData))
+    {
+        // delete the view because something failed at some point
+        d->viewGroup->removeImpactedView(movingView);
+        d->movingLayerGroup->removeImpactedlayer(movingView, movingData);
+        d->movingLayerGroup->removeImpactedlayer(fuseView, movingData);
+        movingView->deleteLater();
+    }
 }
 
 void medRegistrationWorkspace::updateFromFixedContainer()
@@ -232,7 +239,14 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
     }
 
-    d->registrationToolBox->setFixedData(fixedData);
+    if (!d->registrationToolBox->setFixedData(fixedData))
+    {
+        // delete the view because something failed at some point
+        d->viewGroup->removeImpactedView(fixedView);
+        d->fixedLayerGroup->removeImpactedlayer(fixedView, fixedData);
+        d->fixedLayerGroup->removeImpactedlayer(fuseView, fixedData);
+        fixedView->deleteLater();
+    }
 }
 
 
