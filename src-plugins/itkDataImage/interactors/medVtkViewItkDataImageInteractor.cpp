@@ -99,7 +99,7 @@ QStringList medVtkViewItkDataImageInteractor::dataHandled()
                                   << "itkDataImageDouble3"
                                   << "itkDataImageRGB3"
                                   << "itkDataImageRGBA3"
-                                  << "itkDataImageVector3";
+                                  << "itkDataImageVectorUChar3";
     return  d;
 }
 
@@ -166,7 +166,7 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
           SetViewInput<itk::Image<double,3> >("itkDataImageDouble3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3", data, d->view->layer(data))))
+          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVectorUChar3", data, d->view->layer(data))))
     {
         qDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
         return;
