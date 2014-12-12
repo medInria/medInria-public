@@ -1236,7 +1236,8 @@ medDataIndex medAbstractDatabaseImporter::populateDatabaseAndGenerateThumbnails 
         QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(medData);
 
         // check if patient is already in the persistent database
-        medDataIndex databaseIndex = dbController->indexForPatient ( patientName );
+        //TODO - We need to validate if we can keep this behaviour or not
+        medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
         medDatabaseNonPersistentItem *patientItem = NULL;
 
         if ( databaseIndex.isValid() )

@@ -135,6 +135,7 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 
     // Ternary operator twice because it can't implicitly convert between medDatabaseController and medNonPersistentController, needs a hint
     medAbstractDbController * controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
+    QString messageText = persistent ? "Saving database item" : tr("Opening file item");
 
     medAbstractDatabaseImporter *importer = new medAbstractDatabaseImporter(data, uuid, controller);
     medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
@@ -166,10 +167,12 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     QFileInfo info(dataPath);
 
     // Ternary operator twice because it can't implicitly convert between medDatabaseController and medNonPersistentController, needs a hint
+
     medAbstractDbController * controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
+    QString messageText = persistent ? "Importing " + info.fileName() : "Importing data item";
 
     medAbstractDatabaseImporter *importer = new medAbstractDatabaseImporter(info.absoluteFilePath(), uuid, controller, indexWithoutCopying);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
+    medMessageProgress *message = medMessageController::instance()->showProgress(messageText);
 
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
@@ -192,13 +195,13 @@ bool medDataManager::empty(eDataSource iDataSource)
     switch(iDataSource)
     {
         case eNonPersistent:
-             d->nonPersDbController->availableItems().empty();
+            res = d->nonPersDbController->availableItems().empty();
             break;
         case ePersistent:
-            d->dbController->patients().empty();
+            res = d->dbController->patients().empty();
             break;
         case eAll:
-            (d->dbController->patients().empty() && d->nonPersDbController->availableItems().empty());
+            res = (d->dbController->patients().empty() && d->nonPersDbController->availableItems().empty());
             break;
     }
 

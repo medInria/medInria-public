@@ -396,26 +396,6 @@ medDataIndex medDatabaseController::indexForImage(const QString &patientName, co
     return medDataIndex();
 }
 
-/**
-* Import data into the db read from file
-* @param const QString & file The file containing the data
-* @param bool indexWithoutCopying true if the file must only be indexed by its current path,
-* false if the file will be imported (copied or converted to the internal storage format)
-*/
-void medDatabaseController::importPath(const QString& file, const QUuid &importUuid, bool indexWithoutCopying)
-{
-
-}
-
-/**
-* Import data into the db read from memory
-* @param medAbstractData * data dataObject
-*/
-void medDatabaseController::importData( medAbstractData *data, const QUuid & importUuid)
-{    
-
-}
-
 void medDatabaseController::showOpeningError(QObject *sender)
 {
     medMessageController::instance()->showError("Opening item failed.", 3000);
@@ -601,7 +581,7 @@ medDatabaseController::~medDatabaseController()
 /** override base class */
 void medDatabaseController::remove( const medDataIndex& index )
 {
-    medDatabaseRemover *remover = new medDatabaseRemover(index);
+    medDatabaseRemover *remover = new medDatabaseRemover(index, this);
     medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
 
     connect(remover, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));

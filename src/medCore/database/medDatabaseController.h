@@ -72,10 +72,6 @@ public:
 public slots:
 
     medAbstractData *retrieve(const medDataIndex &index) const;
-
-    void importPath(const QString& file, const QUuid& importUuid, bool indexWithoutCopying = false);
-    void importData(medAbstractData *data, const QUuid & importUuid);
-
     virtual void remove(const medDataIndex& index);
 
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
