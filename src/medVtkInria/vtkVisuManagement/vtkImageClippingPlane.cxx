@@ -136,8 +136,8 @@ void vtkImageClippingPlaneCallback::Execute(vtkObject* caller, unsigned long eve
 
   // Override the stencil to the image
   vtkImageStencil* stencil = vtkImageStencil::New();
-  stencil->SetInput(this->BackupImage);
-  stencil->SetStencil(planeStencil->GetOutput());
+  stencil->SetInputData(this->BackupImage);
+  stencil->SetStencilData(planeStencil->GetOutput());
   stencil->SetBackgroundValue(r[0]);
   stencil->ReverseStencilOn();
   stencil->Update();
@@ -230,7 +230,7 @@ void vtkImageClippingPlane::CreateClippingPlane()
     this->PlaneWidget->OutlineTranslationOff();
     this->PlaneWidget->ScaleEnabledOff();
     this->PlaneWidget->GetOutlineProperty()->SetOpacity(0);
-    this->PlaneWidget->SetInput((vtkDataSet*) this->Image);
+    this->PlaneWidget->SetInputData((vtkDataSet*) this->Image);
     this->PlaneWidget->SetInteractor(this->IRen4);
     this->PlaneWidget->SetPlaceFactor(1.25);
     this->PlaneWidget->PlaceWidget();
@@ -288,7 +288,7 @@ void vtkImageClippingPlane::GetMask(vtkImageData* image)
 
   // Threshold the positive values
   vtkImageThreshold* thresholdFilter = vtkImageThreshold::New();
-  thresholdFilter->SetInput(sample->GetOutput());
+  thresholdFilter->SetInputConnection(sample->GetOutputPort());
   thresholdFilter->ThresholdByLower(0.0);
   thresholdFilter->ReplaceInOn();
   thresholdFilter->SetInValue(1.0);

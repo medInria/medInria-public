@@ -68,7 +68,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore 
   dtkLog
   ITKCommon
-  vtkCommon
+  ${VTK_LIBRARIES}
   )
 
 ## #############################################################################

@@ -52,12 +52,12 @@ class MEDVTKINRIA_EXPORT vtkImageToIsosurface: public vtkObject
 
   void SetDecimationOff()
   {
-    this->Mapper->SetInput (this->Smoother->GetOutput());
+    this->Mapper->SetInputConnection (this->Smoother->GetOutputPort());
   }
 
   void SetDecimationOn()
   {
-    this->Mapper->SetInput (this->Decimate->GetOutput());
+    this->Mapper->SetInputConnection (this->Decimate->GetOutputPort());
   }
   
 

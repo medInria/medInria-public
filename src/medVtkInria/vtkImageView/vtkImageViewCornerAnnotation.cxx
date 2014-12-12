@@ -603,6 +603,27 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
 }
 
 
+namespace {
+// Ported from old vtkTextMapper implementation
+int GetNumberOfLines(const char *str)
+{
+  if (str == NULL || *str == '\0')
+    {
+    return 0;
+    }
+
+  int result = 1;
+  while (str != NULL)
+    {
+    if ((str = strstr(str, "\n")) != NULL)
+      {
+      result++;
+      str++; // Skip '\n'
+      }
+    }
+  return result;
+}
+}
 
 
 //----------------------------------------------------------------------------
@@ -641,12 +662,7 @@ int vtkImageViewCornerAnnotation::RenderOpaqueGeometry(vtkViewport *viewport)
       {
       ia = vtkImageActor::SafeDownCast(pc->GetItemAsObject(i));
       if (ia)
-        {
-        if (ia->GetInput() && !wl)
-          {
-          wl = vtkImageMapToWindowLevelColors::SafeDownCast(
-            ia->GetInput()->GetProducerPort()->GetProducer());
-          }
+        {       
         break;
         }
       }
@@ -743,14 +759,13 @@ int vtkImageViewCornerAnnotation::RenderOpaqueGeometry(vtkViewport *viewport)
       int width_23 = tempi[4] + tempi[6];
 
       int max_width = (width_01 > width_23) ? width_01 : width_23;
+      
+      
+      int num_lines_02 = GetNumberOfLines(this->TextMapper[0]->GetInput())
+          + GetNumberOfLines(this->TextMapper[2]->GetInput());
 
-      int num_lines_02 =
-        this->TextMapper[0]->GetNumberOfLines() +
-        this->TextMapper[2]->GetNumberOfLines();
-
-      int num_lines_13 =
-        this->TextMapper[1]->GetNumberOfLines() +
-        this->TextMapper[3]->GetNumberOfLines();
+      int num_lines_13 = GetNumberOfLines(this->TextMapper[1]->GetInput())
+          + GetNumberOfLines(this->TextMapper[3]->GetInput());
 
       int line_max_02 = (int)(vSize[1] * this->MaximumLineHeight) *
         (num_lines_02 ? num_lines_02 : 1);

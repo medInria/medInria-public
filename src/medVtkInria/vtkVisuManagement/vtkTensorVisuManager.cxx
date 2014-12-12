@@ -39,10 +39,10 @@ vtkTensorVisuManager::vtkTensorVisuManager()
 
   this->VOI = vtkExtractVOI::New();
   this->VOI->SetSampleRate(1,1,1);
-  this->VOI->SetInput ( this->Fliper->GetOutput() );
+  this->VOI->SetInputConnection ( this->Fliper->GetOutputPort() );
 
   this->Glyph = vtkTensorGlyph::New();
-  this->Glyph->SetInput( this->VOI->GetOutput() );
+  this->Glyph->SetInputConnection( this->VOI->GetOutputPort() );
   this->Glyph->SetScaleFactor(1.0);
   this->Glyph->ClampScalingOn();
   this->Glyph->ColorGlyphsOn();
@@ -50,11 +50,11 @@ vtkTensorVisuManager::vtkTensorVisuManager()
   this->SetGlyphShapeToSphere();
 
   this->Normals = vtkPolyDataNormals::New();
-  this->Normals->SetInput( this->Glyph->GetOutput() );
+  this->Normals->SetInputConnection( this->Glyph->GetOutputPort() );
 
   this->Mapper = vtkPolyDataMapper::New();
   this->Mapper->SetColorModeToMapScalars();
-  this->Mapper->SetInput( this->Normals->GetOutput() );
+  this->Mapper->SetInputConnection( this->Normals->GetOutputPort() );
 
   this->Actor = vtkActor::New();
   this->Actor->SetMapper( this->Mapper );
@@ -160,7 +160,7 @@ void vtkTensorVisuManager::SetGlyphShapeToLine()
 {
   this->ShapeMode = GLYPH_LINE;
   this->Shape = vtkLineSource::New();
-  this->Glyph->SetSource(this->Shape->GetOutput());
+  this->Glyph->SetSourceConnection(this->Shape->GetOutputPort());
   this->Shape->Delete();
 }
 
@@ -170,7 +170,7 @@ void vtkTensorVisuManager::SetGlyphShapeToDisk()
   vtkDiskSource* source = vtkDiskSource::New();
   source->SetInnerRadius (0.0);
   this->Shape = source;
-  this->Glyph->SetSource(this->Shape->GetOutput());
+  this->Glyph->SetSourceConnection(this->Shape->GetOutputPort());
   this->Shape->Delete();
 }
 
@@ -183,7 +183,7 @@ void vtkTensorVisuManager::SetGlyphShapeToArrow()
   arrow->SetTipRadius (0.0);
   arrow->SetShaftRadius (0.18);
 
-  this->Glyph->SetSource(this->Shape->GetOutput());
+  this->Glyph->SetSourceConnection(this->Shape->GetOutputPort());
   this->Shape->Delete();
 }
 
@@ -191,7 +191,7 @@ void vtkTensorVisuManager::SetGlyphShapeToCube()
 {
   this->ShapeMode = GLYPH_CUBE;
   this->Shape = vtkCubeSource::New();
-  this->Glyph->SetSource(this->Shape->GetOutput());
+  this->Glyph->SetSourceConnection(this->Shape->GetOutputPort());
   this->Shape->Delete();
 }
 
@@ -199,7 +199,7 @@ void vtkTensorVisuManager::SetGlyphShapeToCylinder()
 {
   this->ShapeMode = GLYPH_CYLINDER;
   this->Shape = vtkCylinderSource::New();
-  this->Glyph->SetSource(this->Shape->GetOutput());
+  this->Glyph->SetSourceConnection(this->Shape->GetOutputPort());
   this->Shape->Delete();
 }
 
@@ -207,7 +207,7 @@ void vtkTensorVisuManager::SetGlyphShapeToSphere()
 {
   this->ShapeMode = GLYPH_SPHERE;
   this->Shape = vtkSphereSource::New();
-  this->Glyph->SetSource(this->Shape->GetOutput());
+  this->Glyph->SetSourceConnection(this->Shape->GetOutputPort());
   this->Shape->Delete();
 }
 
@@ -217,7 +217,7 @@ void vtkTensorVisuManager::SetGlyphShapeToSuperquadric()
   this->Shape = vtkSuperquadricSource::New();
   vtkSuperquadricSource::SafeDownCast (this->Shape)->SetPhiRoundness (0.25);
   vtkSuperquadricSource::SafeDownCast (this->Shape)->SetThetaRoundness (0.25);
-  this->Glyph->SetSource(this->Shape->GetOutput());
+  this->Glyph->SetSourceConnection(this->Shape->GetOutputPort());
   this->Shape->Delete();
 }
 
@@ -349,8 +349,9 @@ void vtkTensorVisuManager::SetInput(vtkStructuredPoints* data, vtkMatrix4x4 *mat
     this->Actor->SetUserMatrix(matrix);
   }
 
-  this->Fliper->SetInput ( this->Input );
-  this->VOI->SetInput ( this->Fliper->GetOutput() );
+  this->Fliper->SetInputData ( this->Input );
+  this->Fliper->Update();
+
   this->UpdateLUT();
 }
 
@@ -385,7 +386,8 @@ void vtkTensorVisuManager::SetInput(vtkUnstructuredGrid* data, vtkMatrix4x4 *mat
     this->Actor->SetUserMatrix(matrix);
   }
 
-  this->Glyph->SetInput( data );
+  this->Glyph->SetInputData( data );
+  this->Glyph->Update();
   this->UpdateLUT();
 }
 
