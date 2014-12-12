@@ -16,7 +16,7 @@
 #include <QDebug>
 
 #include <medAbstractDataFactory.h>
-#include <medAbstractDatabaseImporter.h>
+#include <medImporter.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseExporter.h>

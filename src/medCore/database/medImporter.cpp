@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medAbstractDatabaseImporter.h>
+#include <medImporter.h>
 
 #include <medAbstractImageData.h>
 
@@ -182,12 +182,12 @@ void medAbstractDatabaseImporter::importFile ( void )
     // new files ARE NOT written in medInria database yet, but are stored in a map for writing in a posterior step
 
     QString tmpPatientId;
-    QString currentPatientId = "";
+    QString currentPatientId;
     QString patientID;
 
     QString tmpSeriesUid;
     QString currentSeriesUid = "-1";
-    QString currentSeriesId = "";
+    QString currentSeriesId;
 
     bool atLeastOneImportSucceeded = false;
 
@@ -200,14 +200,11 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         currentFileNumber++;
 
-        QFileInfo fileInfo ( file );
-
-        dtkSmartPointer<medAbstractData> medData;
+        QFileInfo fileInfo ( file );        
 
         // 2.1) Try reading file information, just the header not the whole file
-
-        bool readOnlyImageInformation = true;
-        medData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation );
+        const bool readOnlyImageInformation = true;
+        dtkSmartPointer<medAbstractData> medData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation );
 
         if ( !medData )
         {
@@ -435,7 +432,7 @@ void medAbstractDatabaseImporter::importData()
         d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medInria" );
         
 
-    QString size ="";
+    QString size;
     if ( medAbstractImageData *imagedata = dynamic_cast<medAbstractImageData*> ( d->data.data()) )
         size = QString::number ( imagedata->zDimension() );
     d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
@@ -990,6 +987,9 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 }
 
 //-----------------------------------------------------------------------------------------------------------
+
+// TODO : The following code is lifted unabridged from the now-defunct Database and NonPersistent importers. It needs to be refactored
+//        to remove duplicate code
 /**
 * Finds if parameter @seriesName is already being used in the database
 * if is not, it returns @seriesName unchanged
