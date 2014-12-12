@@ -30,10 +30,11 @@
 
 #include <medDataManager.h>
 
-#include <medDatabaseImporter.h>
 #include <medDatabaseExporter.h>
 #include <medDatabaseReader.h>
 #include <medDatabaseRemover.h>
+
+#include <QSqlError>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace {

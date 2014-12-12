@@ -14,7 +14,6 @@
 #include <medDatabaseNonPersistentItem.h>
 #include <medDatabaseNonPersistentItem_p.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medDatabaseNonPersistentImporter.h>
 
 #include <medDataIndex.h>
 #include <medMessageController.h>

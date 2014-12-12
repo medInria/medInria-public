@@ -28,7 +28,6 @@
 
 #include <medDataManager.h>
 #include <medDatabaseExporter.h>
-#include <medDatabaseImporter.h>
 
 #include <medProgressionStack.h>
 #include <medToolBox.h>
