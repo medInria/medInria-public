@@ -438,6 +438,7 @@ void medClutEditorTable::setDiscreteMode(bool value)
 {
     d->discreteMode = value;
     updateVerticesToDisplay();
+    emit switchMode();
 }
 
 QHash<medClutEditorVertex *, medClutEditorVertex *> *
@@ -469,7 +470,6 @@ void medClutEditorTable::updateVerticesToDisplay()
         if(hash && hash->size()>2) //if less than 2 vertices, stay in continuous mode
         {
             d->verticesToDisplay.clear(); //reset list of vertices to display
-
             QHash<medClutEditorVertex *, medClutEditorVertex *>::const_iterator i = hash->constBegin();
             while(i!=hash->constEnd())
             {
@@ -593,7 +593,7 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
     bool interpolate )
 {
     d->principalVertices<< vertex;
-    d->verticesToDisplay << vertex;
+    d->verticesToDisplay<< vertex;
 
     if ( vertex->parentItem() != this )
         vertex->setParentItem( this );
@@ -743,39 +743,39 @@ void medClutEditorTable::shiftWindowCenter( qreal amount )
 
 void medClutEditorTable::setup(float min, float max, int size, int *table)
 {
-    for (int i = 0 ; i < d->principalVertices.count()-1; i++) {
+    //for (int i = 0 ; i < d->principalVertices.count()-1; i++) {
 
-        QPointF value1 = d->principalVertices.at(i+0)->value();
-        QPointF value2 = d->principalVertices.at(i+1)->value();
-        qreal x1 = qMax(static_cast<qreal>(min), value1.x());
-        qreal x2 = qMin(static_cast<qreal>(max), value2.x());
+    //    QPointF value1 = d->principalVertices.at(i+0)->value();
+    //    QPointF value2 = d->principalVertices.at(i+1)->value();
+    //    qreal x1 = qMax(static_cast<qreal>(min), value1.x());
+    //    qreal x2 = qMin(static_cast<qreal>(max), value2.x());
 
-        qreal r1 = d->principalVertices.at(i+0)->color().redF();
-        qreal r2 = d->principalVertices.at(i+1)->color().redF();
-        qreal g1 = d->principalVertices.at(i+0)->color().greenF();
-        qreal g2 = d->principalVertices.at(i+1)->color().greenF();
-        qreal b1 = d->principalVertices.at(i+0)->color().blueF();
-        qreal b2 = d->principalVertices.at(i+1)->color().blueF();
-        qreal a1 = value1.y();
-        qreal a2 = value2.y();
-        // qreal a1 = this->coordinateToValue(d->vertices.at(i+0)->pos()).y();
-        // qreal a2 = this->coordinateToValue(d->vertices.at(i+1)->pos()).y();
+    //    qreal r1 = d->principalVertices.at(i+0)->color().redF();
+    //    qreal r2 = d->principalVertices.at(i+1)->color().redF();
+    //    qreal g1 = d->principalVertices.at(i+0)->color().greenF();
+    //    qreal g2 = d->principalVertices.at(i+1)->color().greenF();
+    //    qreal b1 = d->principalVertices.at(i+0)->color().blueF();
+    //    qreal b2 = d->principalVertices.at(i+1)->color().blueF();
+    //    qreal a1 = value1.y();
+    //    qreal a2 = value2.y();
+    //    // qreal a1 = this->coordinateToValue(d->vertices.at(i+0)->pos()).y();
+    //    // qreal a2 = this->coordinateToValue(d->vertices.at(i+1)->pos()).y();
 
-        for (int x = static_cast< int >( x1 );
-            x < static_cast< int >( x2 ); ++x ) {
+    //    for (int x = static_cast< int >( x1 );
+    //        x < static_cast< int >( x2 ); ++x ) {
 
-                qreal xf = static_cast< qreal >( x );
-                qreal r = ((xf-x1)/(x2-x1))*(r2-r1)+r1;
-                qreal g = ((xf-x1)/(x2-x1))*(g2-g1)+g1;
-                qreal b = ((xf-x1)/(x2-x1))*(b2-b1)+b1;
-                qreal a = ((xf-x1)/(x2-x1))*(a2-a1)+a1;
+    //            qreal xf = static_cast< qreal >( x );
+    //            qreal r = ((xf-x1)/(x2-x1))*(r2-r1)+r1;
+    //            qreal g = ((xf-x1)/(x2-x1))*(g2-g1)+g1;
+    //            qreal b = ((xf-x1)/(x2-x1))*(b2-b1)+b1;
+    //            qreal a = ((xf-x1)/(x2-x1))*(a2-a1)+a1;
 
-                table[x-static_cast<int>(min)+(0*size)] = 255 * r;
-                table[x-static_cast<int>(min)+(1*size)] = 255 * g;
-                table[x-static_cast<int>(min)+(2*size)] = 255 * b;
-                table[x-static_cast<int>(min)+(3*size)] = 255 * a;
-        }
-    }
+    //            table[x-static_cast<int>(min)+(0*size)] = 255 * r;
+    //            table[x-static_cast<int>(min)+(1*size)] = 255 * g;
+    //            table[x-static_cast<int>(min)+(2*size)] = 255 * b;
+    //            table[x-static_cast<int>(min)+(3*size)] = 255 * a;
+    //    }
+    //}
 }
 
 void medClutEditorTable::getTransferFunction( QList<double> &scalars,

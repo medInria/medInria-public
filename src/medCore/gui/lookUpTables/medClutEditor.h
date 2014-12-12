@@ -152,6 +152,7 @@ signals:
     void vertexChanged();
     void vertexRemoved();
     void vertexAdded();
+    void switchMode();
     
 // public slots:
 //     void onDeleteVertex(medClutEditorVertex * v);

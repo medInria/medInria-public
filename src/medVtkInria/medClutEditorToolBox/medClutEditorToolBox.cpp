@@ -261,7 +261,6 @@ void medClutEditorToolBox::initializeTable(void)
     connect (lut, SIGNAL(vertexChanged()), this, SLOT(onVertexMoved()));
     connect (lut, SIGNAL(vertexAdded()),   this, SLOT(onVertexMoved()));
     connect (lut, SIGNAL(vertexRemoved()), this, SLOT(onVertexMoved()));
-
     if(d->discreteMode)
     {
         lut->setDiscreteMode(true);
@@ -282,33 +281,12 @@ void medClutEditorToolBox::deleteTable(void)
 
 void medClutEditorToolBox::applyTable(medAbstractView* view)
 {
-    //if (d->layerForced!=-1)
-    //    d->med_view->setCurrentLayer(d->layerForced);
-
     if ( view != NULL )
     {
         QList<double> scalars;
         QList<QColor> colors;
         medClutEditorTable * clutTable = d->scene->table();
         clutTable->getTransferFunction(scalars, colors);
-        int size= qMin ( scalars.count(),colors.count() );
-
-        vtkColorTransferFunction * color   = vtkColorTransferFunction::New();
-        vtkPiecewiseFunction     * opacity = vtkPiecewiseFunction::New();
-
-        for ( int i = 0; i < size; i++ )
-        {
-            color->AddRGBPoint ( scalars.at ( i ),
-                                 colors.at ( i ).redF(),
-                                 colors.at ( i ).greenF(),
-                                 colors.at ( i ).blueF() );
-            opacity->AddPoint ( scalars.at ( i ), colors.at ( i ).alphaF() );
-        }
-        double * range = color->GetRange();
-        static_cast<medVtkViewBackend*>(view->backend())->view2D->SetColorRange(range);
-        static_cast<medVtkViewBackend*>(view->backend())->view2D->SetColorTransferFunction(color);
-        static_cast<medVtkViewBackend*>(view->backend())->view2D->SetOpacityTransferFunction(opacity);
-
         this->setColorLookupTable(view, scalars, colors);
         view->viewWidget()->update();
     }
@@ -524,7 +502,9 @@ void medClutEditorToolBox::setColorLookupTable ( medAbstractView *view, QList<do
         ctf->AddRGBPoint ( scalars.at ( i ),
                            colors.at ( i ).redF(),
                            colors.at ( i ).greenF(),
-                           colors.at ( i ).blueF() );
+                           colors.at ( i ).blueF(),
+                           d->discreteMode ? 1 : 0.5,   //midpoint (point between 2 vertices): either on the right vertex or in the middle
+                           d->discreteMode ? 1 : 0.0);  //sharpness (distribution between 2 vertices): either constant or linear
         pf->AddPoint ( scalars.at ( i ),colors.at ( i ).alphaF() );
     }
 
@@ -534,8 +514,12 @@ void medClutEditorToolBox::setColorLookupTable ( medAbstractView *view, QList<do
     n = std::max(n, size);
     double * table = new double[3*n];
     double * alphaTable = new double[n];
-    if(d->discreteMode)
-        n=size;
+
+    double * range = ctf->GetRange();
+    static_cast<medVtkViewBackend*>(view->backend())->view2D->SetColorRange(range);
+    static_cast<medVtkViewBackend*>(view->backend())->view2D->SetColorTransferFunction(ctf);
+    static_cast<medVtkViewBackend*>(view->backend())->view2D->SetOpacityTransferFunction(pf);
+
     ctf->GetTable ( min, max, n, table );
     ctf->Build();
     ctf->Delete();
@@ -545,7 +529,6 @@ void medClutEditorToolBox::setColorLookupTable ( medAbstractView *view, QList<do
     vtkLookupTable * lut = vtkLookupTable::New();
     lut->SetNumberOfTableValues ( n + 2 );
     lut->SetTableRange ( min - 1.0, max + 1.0 );
-    // lut->Build();
           
     lut->SetTableValue ( 0, 0.0, 0.0, 0.0, 0.0 );
     int i, j;
@@ -553,13 +536,9 @@ void medClutEditorToolBox::setColorLookupTable ( medAbstractView *view, QList<do
         lut->SetTableValue ( i+1, table[j], table[j+1], table[j+2], alphaTable[i] );
     lut->SetTableValue ( n + 1, table[j-3], table[j-2], table[j-1], alphaTable[i-1] ); //last value of the lut
 
-    //if ( d->currentView == d->view2d ) {
-    //    d->view2d->SetLookupTable( lut , this->currentLayer() );
-    //} else {
-        static_cast<medVtkViewBackend*>(view->backend())->view2D->SetLookupTable ( lut );
-        static_cast<medVtkViewBackend*>(view->backend())->view3D->vtkImageView::SetLookupTable ( lut );
-    //}
-    //static_cast<medVtkViewBackend*>(d->med_view->backend())->view2D->Render();
+    static_cast<medVtkViewBackend*>(view->backend())->view2D->SetLookupTable ( lut );
+    static_cast<medVtkViewBackend*>(view->backend())->view3D->vtkImageView::SetLookupTable ( lut );
+
     lut->Delete();
     delete [] table;
     delete [] alphaTable;
