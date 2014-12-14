@@ -75,10 +75,7 @@ public:
 
     QList <medAbstractParameter*> parameters;
 
-    medDoubleParameter *opacityParam;
     medIntParameter *slicingParameter;
-
-
     PropertySmartPointer actorProperty;
 };
 
@@ -255,13 +252,6 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
     d->manager->GetTensorVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetTensorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );
 
-
-    d->opacityParam = new medDoubleParameter("Opacity", this);
-    d->opacityParam->setRange(0,1);
-    d->opacityParam->setSingleStep(0.01);
-    d->opacityParam->setValue(1);
-    d->parameters << d->opacityParam;
-
     medStringListParameter *shapeParam = new medStringListParameter("Shape", data);
     d->parameters << shapeParam;
 
@@ -306,8 +296,8 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
     d->parameters << multiplierParam;
 
     d->parameters << visibilityParameter();
+    d->parameters << opacityParameter();
 
-    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
     connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
@@ -527,14 +517,13 @@ void itkDataTensorImageVtkViewInteractor::moveToSlice(int slice)
 
 QWidget* itkDataTensorImageVtkViewInteractor::buildLayerWidget()
 {
-    QSlider *slider = d->opacityParam->getSlider();
+    QSlider *slider = opacityParameter()->getSlider();
     slider->setOrientation(Qt::Horizontal);
     return slider;
 }
 
 QWidget* itkDataTensorImageVtkViewInteractor::buildToolBoxWidget()
 {
-
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
     foreach(medAbstractParameter *parameter, d->parameters)
