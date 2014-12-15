@@ -124,6 +124,24 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     return NULL;
 }
 
+void medDataManager::runImporter(medImporter* iMedImporter, const QString& iMessageText)
+{
+    Q_D(medDataManager);
+
+    medMessageProgress *message = medMessageController::instance()->showProgress(iMessageText);
+
+    connect(iMedImporter, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    connect(iMedImporter, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
+
+    connect(iMedImporter, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(iMedImporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(iMedImporter, SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+
+    medJobManager::instance()->registerJobItem(iMedImporter);
+    QThreadPool::globalInstance()->start(iMedImporter);
+}
+
 
 QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 {
@@ -134,22 +152,11 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
     QUuid uuid = QUuid::createUuid();
 
     // Ternary operator twice because it can't implicitly convert between medDatabaseController and medNonPersistentController, needs a hint
-    medAbstractDbController * controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
-    QString messageText = persistent ? "Saving database item" : tr("Opening file item");
+    medAbstractDbController* const controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
+    const QString messageText = persistent ? "Saving database item" : tr("Opening file item");
 
-    medAbstractDatabaseImporter *importer = new medAbstractDatabaseImporter(data, uuid, controller);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer, SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
+    medImporter *importer = new medImporter(data, uuid, controller);
+    this->runImporter(importer, messageText);
 
     return uuid;
 }
@@ -168,22 +175,11 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
 
     // Ternary operator twice because it can't implicitly convert between medDatabaseController and medNonPersistentController, needs a hint
 
-    medAbstractDbController * controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
-    QString messageText = persistent ? "Importing " + info.fileName() : "Importing data item";
+    medAbstractDbController * const controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
+    const QString messageText = persistent ? "Importing " + info.fileName() : "Importing data item";
 
-    medAbstractDatabaseImporter *importer = new medAbstractDatabaseImporter(info.absoluteFilePath(), uuid, controller, indexWithoutCopying);
-    medMessageProgress *message = medMessageController::instance()->showProgress(messageText);
-
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
+    medImporter *importer = new medImporter(info.absoluteFilePath(), uuid, controller, indexWithoutCopying);
+    this->runImporter(importer, messageText);
     return uuid;
 }
 

@@ -24,6 +24,7 @@
 class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
+class medImporter;
 
 
 
@@ -90,6 +91,8 @@ protected:
 private:
     medDataManager();
     virtual ~medDataManager();
+
+    void runImporter(medImporter*, const QString&);
 
     static medDataManager * s_instance;
 

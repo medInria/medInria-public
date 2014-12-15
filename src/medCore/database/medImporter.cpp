@@ -28,7 +28,7 @@
 #include <medStorage.h>
 #include <medGlobalDefs.h>
 
-class medAbstractDatabaseImporterPrivate
+class medImporterPrivate
 {
 public:
     QString file;
@@ -44,11 +44,11 @@ public:
     QUuid uuid;
 };
 
-QMutex medAbstractDatabaseImporterPrivate::mutex;
+QMutex medImporterPrivate::mutex;
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, const QUuid& uuid, medAbstractDbController *iController, bool indexWithoutImporting) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+medImporter::medImporter ( const QString& file, const QUuid& uuid, medAbstractDbController *iController, bool indexWithoutImporting) : medJobItem(), d ( new medImporterPrivate )
 {
     d->isCancelled = false;
     d->file = file;
@@ -60,7 +60,7 @@ medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, 
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::medAbstractDatabaseImporter (medAbstractData* medData, const QUuid& uuid, medAbstractDbController *iController) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+medImporter::medImporter (medAbstractData* medData, const QUuid& uuid, medAbstractDbController *iController) : medJobItem(), d ( new medImporterPrivate )
 {
     d->isCancelled = false;
     d->data = medData;
@@ -72,7 +72,7 @@ medAbstractDatabaseImporter::medAbstractDatabaseImporter (medAbstractData* medDa
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::~medAbstractDatabaseImporter ( void )
+medImporter::~medImporter ( void )
 {
     delete d;
 
@@ -82,7 +82,7 @@ medAbstractDatabaseImporter::~medAbstractDatabaseImporter ( void )
 /**
 * Returns file or directory used for import.
 **/
-QString medAbstractDatabaseImporter::file ( void )
+QString medImporter::file ( void )
 {
     return d->file;
 }
@@ -90,7 +90,7 @@ QString medAbstractDatabaseImporter::file ( void )
 /**
 * Returns if pocess has been cancelled.
 **/
-bool medAbstractDatabaseImporter::isCancelled ( void )   
+bool medImporter::isCancelled ( void )   
 {
     return d->isCancelled;
 }
@@ -98,7 +98,7 @@ bool medAbstractDatabaseImporter::isCancelled ( void )
 /**
 * Returns true if process is indexing without importing.
 **/
-bool medAbstractDatabaseImporter::indexWithoutImporting ( void )   
+bool medImporter::indexWithoutImporting ( void )   
 {
     return d->indexWithoutImporting;
 }
@@ -106,7 +106,7 @@ bool medAbstractDatabaseImporter::indexWithoutImporting ( void )
 /**
 * Returns a QMap linking volume id to image file.
 **/
-QMap<int, QString> medAbstractDatabaseImporter::volumeIdToImageFile ( void )  
+QMap<int, QString> medImporter::volumeIdToImageFile ( void )  
 {
     return d->volumeIdToImageFile;
 }
@@ -115,7 +115,7 @@ QMap<int, QString> medAbstractDatabaseImporter::volumeIdToImageFile ( void )
   Returns the index of the data which has been read. Index is not
   valid if reading was not successful.
 */
-medDataIndex medAbstractDatabaseImporter::index() const
+medDataIndex medImporter::index() const
 {
     return d->index;
 }
@@ -123,7 +123,7 @@ medDataIndex medAbstractDatabaseImporter::index() const
 /**
 * Returns caller Uuid.
 **/
-QString medAbstractDatabaseImporter::callerUuid()
+QString medImporter::callerUuid()
 {
     return d->uuid;
 }
@@ -132,7 +132,7 @@ QString medAbstractDatabaseImporter::callerUuid()
 * Runs the import process based on the input file
 * or directory given in the constructor
 **/
-void medAbstractDatabaseImporter::internalRun ( void )
+void medImporter::internalRun ( void )
 {
     if(!d->file.isEmpty())
         importFile();
@@ -141,7 +141,7 @@ void medAbstractDatabaseImporter::internalRun ( void )
 }
 
 
-void medAbstractDatabaseImporter::importFile ( void )
+void medImporter::importFile ( void )
 {
     QMutexLocker locker ( &d->mutex );
 
@@ -415,7 +415,7 @@ void medAbstractDatabaseImporter::importFile ( void )
     emit success ( this );
 }
 
-void medAbstractDatabaseImporter::importData()
+void medImporter::importData()
 {   
     QMutexLocker locker ( &d->mutex );
      
@@ -503,7 +503,7 @@ void medAbstractDatabaseImporter::importData()
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medAbstractDatabaseImporter::onCancel ( QObject* )
+void medImporter::onCancel ( QObject* )
 {
     d->isCancelled = true;
 }
@@ -516,7 +516,7 @@ void medAbstractDatabaseImporter::onCancel ( QObject* )
 * @param medData - the object whose missing metadata will be filled
 * @param seriesDescription - string used to fill SeriesDescription field if not present
 **/
-void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* medData, const QString seriesDescription )
+void medImporter::populateMissingMetadata ( medAbstractData* medData, const QString seriesDescription )
 {
     if ( !medData )
     {
@@ -647,7 +647,7 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
 * @param pathToStoreThumbnails - path where the thumbnails will be stored
 * @return a list of the thumbnails paths
 **/
-QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
+QStringList medImporter::generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
 {
     QList<QImage> thumbnails = medData->thumbnails();
 
@@ -678,7 +678,7 @@ QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* m
 * @param filename - Input file/s we would like to find a reader for
 * @return a proper reader if found, NULL otherwise
 **/
-dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableReader ( QStringList filename )
+dtkSmartPointer<dtkAbstractDataReader> medImporter::getSuitableReader ( QStringList filename )
 {
     QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
@@ -709,7 +709,7 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
 * @param medData - the @medAbstractData object we want to write
 * @return a proper writer if found, NULL otherwise
 **/
-dtkSmartPointer<dtkAbstractDataWriter> medAbstractDatabaseImporter::getSuitableWriter(QString filename,medAbstractData* medData)
+dtkSmartPointer<dtkAbstractDataWriter> medImporter::getSuitableWriter(QString filename,medAbstractData* medData)
 {
     if ( !medData )
         return NULL;
@@ -736,7 +736,7 @@ dtkSmartPointer<dtkAbstractDataWriter> medAbstractDatabaseImporter::getSuitableW
 * @param fileOrDirectory - File or directory to search
 * @return a list containing all files found
 **/
-QStringList medAbstractDatabaseImporter::getAllFilesToBeProcessed ( QString fileOrDirectory )
+QStringList medImporter::getAllFilesToBeProcessed ( QString fileOrDirectory )
 {
     QString file = fileOrDirectory;
 
@@ -768,7 +768,7 @@ QStringList medAbstractDatabaseImporter::getAllFilesToBeProcessed ( QString file
 * @param readOnlyImageInformation - if true only image header is read, otherwise the full image
 * @return a @medAbstractData containing the read data
 **/
-medAbstractData* medAbstractDatabaseImporter::tryReadImages ( const QStringList& filesPaths,const bool readOnlyImageInformation )
+medAbstractData* medImporter::tryReadImages ( const QStringList& filesPaths,const bool readOnlyImageInformation )
 {
     medAbstractData *medData = NULL;
 
@@ -802,7 +802,7 @@ medAbstractData* medAbstractDatabaseImporter::tryReadImages ( const QStringList&
 * @param volumeNumber - the volume number
 * @return a string with the new filename
 **/
-QString medAbstractDatabaseImporter::determineFutureImageFileName ( const medAbstractData* medData, int volumeNumber )
+QString medImporter::determineFutureImageFileName ( const medAbstractData* medData, int volumeNumber )
 {
     // we cache the generated file name corresponding to volume number
     // because:
@@ -837,7 +837,7 @@ QString medAbstractDatabaseImporter::determineFutureImageFileName ( const medAbs
 * @param medData - the @medAbstractData that will be written
 * @return a string with the desired extension if found, and empty string otherwise
 **/
-QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( const medAbstractData* medData )
+QString medImporter::determineFutureImageExtensionByDataType ( const medAbstractData* medData )
 {
     QString identifier = medData->identifier();
     QString extension = "";
@@ -893,7 +893,7 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
 * @param medData - @medAbstractData object to be written
 * @return true is writing was successful, false otherwise
 **/
-bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, medAbstractData* imData )
+bool medImporter::tryWriteImage ( QString filePath, medAbstractData* imData )
 {
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter = getSuitableWriter ( filePath, imData );
     if ( dataWriter )
@@ -913,7 +913,7 @@ bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, medAbstractD
 * @param fileName - file name where the object will be written to
 * @param filePaths - if the file is aggregating more than one file, all of them will be listed here
 **/
-void medAbstractDatabaseImporter::addAdditionalMetaData ( medAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths )
+void medImporter::addAdditionalMetaData ( medAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths )
 {
     QStringList size;
     if ( medAbstractImageData *imageData = dynamic_cast<medAbstractImageData*> ( imData ) )
@@ -939,7 +939,7 @@ void medAbstractDatabaseImporter::addAdditionalMetaData ( medAbstractData* imDat
 * @param medData - @medAbstractData object whose id will be generate
 * @return the volume id of the medData object
 **/
-QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractData* medData )
+QString medImporter::generateUniqueVolumeId ( const medAbstractData* medData )
 {
     if ( !medData )
     {
@@ -997,7 +997,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medAbstractDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
+QString medImporter::ensureUniqueSeriesName ( const QString seriesName )
 {
     QString newSeriesName;
     QStringList seriesNamesList;
@@ -1049,7 +1049,7 @@ QString medAbstractDatabaseImporter::ensureUniqueSeriesName ( const QString seri
  * Retrieves patientID. Checks if patient is already in the database
  * if so, returns his Id, otherwise creates a new guid
  */
-QString medAbstractDatabaseImporter::getPatientID(QString patientName, QString birthDate)
+QString medImporter::getPatientID(QString patientName, QString birthDate)
 {
     QString patientID;
     if (medDatabaseController* dbController = dynamic_cast<medDatabaseController*>(d->controller))
@@ -1102,7 +1102,7 @@ QString medAbstractDatabaseImporter::getPatientID(QString patientName, QString b
 * @param imageName - the name of the image we are looking for
 * @return true if already exists, false otherwise
 **/
-bool medAbstractDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imageName )
+bool medImporter::checkIfExists ( medAbstractData* medData, QString imageName )
 {
     bool imageExists = false;
     if (medDatabaseController* dbController = dynamic_cast<medDatabaseController*>(d->controller))
@@ -1206,7 +1206,7 @@ bool medAbstractDatabaseImporter::checkIfExists ( medAbstractData* medData, QStr
 * @param pathToStoreThumbnails - path where the thumbnails will be stored
 * @return medDataIndex the new medDataIndex associated with this imported series.
 **/
-medDataIndex medAbstractDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
+medDataIndex medImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
 {
     medDataIndex index;
 
@@ -1395,7 +1395,7 @@ medDataIndex medAbstractDatabaseImporter::populateDatabaseAndGenerateThumbnails 
  * Retrieves the patient id of the existent (or newly created)
  * patient record in the patient table.
  */
-int medAbstractDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db )
+int medImporter::getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db )
 {
     int patientDbId = -1;
 
@@ -1446,7 +1446,7 @@ int medAbstractDatabaseImporter::getOrCreatePatient ( const medAbstractData* med
  * Retrieves the study id of the existent (or newly created)
  * study record in the study table.
  */
-int medAbstractDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientDbId )
+int medImporter::getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientDbId )
 {
     int studyDbId = -1;
 
@@ -1497,7 +1497,7 @@ int medAbstractDatabaseImporter::getOrCreateStudy ( const medAbstractData* medDa
  * Retrieves the series id of the existent (or newly created)
  * series record in the series table.
  */
-int medAbstractDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyDbId )
+int medImporter::getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyDbId )
 {
     int seriesDbId = -1;
 
@@ -1605,7 +1605,7 @@ int medAbstractDatabaseImporter::getOrCreateSeries ( const medAbstractData* medD
 /**
  * Creates records in the image table for the files we are importing/indexing.
  */
-void medAbstractDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesDbId, QStringList thumbPaths )
+void medImporter::createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesDbId, QStringList thumbPaths )
 {
     QSqlQuery query ( db );
 
