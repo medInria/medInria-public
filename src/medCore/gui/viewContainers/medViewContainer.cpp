@@ -65,8 +65,8 @@ public:
     QMenu *toolBarMenu;
     QPushButton *menuButton;
 
-    QPushButton *presetSplitButton;
     medLayoutChooser *presetLayoutChooser;
+    QMenu* presetMenu;
 
     QAction *openAction;
     QAction* vSplitAction;
@@ -156,20 +156,26 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(d->maximizedAction, SIGNAL(triggered()), this, SLOT(toggleMaximized()));
     d->maximizedAction->setEnabled(false);
 
-    d->presetSplitButton = new QPushButton(this);
-    d->presetSplitButton->setIcon(QIcon(":/icons/splitPresets.png"));
-    d->presetSplitButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->presetSplitButton->setToolTip(tr("Split into presets"));
-    connect(d->presetSplitButton, SIGNAL(clicked()), this, SLOT(togglePopupPresetSplitter()));
-
-    d->presetLayoutChooser = new medLayoutChooser(this);
-    d->presetLayoutChooser->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)));
-
     d->toolBarMenu = new QMenu(this);
     d->toolBarMenu->addActions(QList<QAction*>() << d->openAction);
     d->toolBarMenu->addSeparator();
     d->toolBarMenu->addActions(QList<QAction*>() << d->vSplitAction << d->hSplitAction);
+
+    d->presetMenu = new QMenu(tr("Presets"),this);
+    d->presetMenu->setToolTip(tr("Split into presets"));
+
+    d->presetLayoutChooser = new medLayoutChooser(this);
+    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)));
+
+    QVBoxLayout *presetMenuLayout = new QVBoxLayout;
+    presetMenuLayout->setContentsMargins(0,0,0,0);
+    presetMenuLayout->addWidget(d->presetLayoutChooser);
+    d->presetMenu->setLayout(presetMenuLayout);
+
+    QAction* presetAction = d->toolBarMenu->addMenu(d->presetMenu );
+    presetAction->setIcon(QIcon(":/icons/splitPresets.png"));
+    presetAction->setIconVisibleInMenu(true);
+
     d->toolBarMenu->addSeparator();
     d->toolBarMenu->addActions(QList<QAction*>() << d->maximizedAction);
 
@@ -195,7 +201,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     containerToolbarLayout->setSpacing(2);
     containerToolbarLayout->addWidget(d->poolIndicator);
     containerToolbarLayout->addWidget(d->menuButton);
-    containerToolbarLayout->addWidget(d->presetSplitButton);
     containerToolbarLayout->addWidget(d->closeContainerButton);
 
     d->toolBarLayout->addWidget(viewToolbarContainer);
@@ -242,19 +247,6 @@ void medViewContainer::popupMenu()
     pos.setY(pos.y() + d->menuButton->height());
     pos.setX(pos.x() + 2);
     d->toolBarMenu->popup(pos);
-}
-
-void medViewContainer::togglePopupPresetSplitter()
-{
-    QPoint pos = d->presetSplitButton->mapToGlobal(QPoint(0, 0));
-    pos.setY(pos.y() + d->presetSplitButton->height());
-    pos.setX(pos.x() + 2);
-    d->presetLayoutChooser->move(pos.x(), pos.y());
-
-    if (d->presetLayoutChooser->isVisible())
-        d->presetLayoutChooser->hide();
-    else
-        d->presetLayoutChooser->show();
 }
 
 QUuid medViewContainer::uuid() const
@@ -318,6 +310,7 @@ void medViewContainer::setUserSplittable(bool splittable)
     {
           d->hSplitAction->setEnabled(true);
           d->vSplitAction->setEnabled(true);
+          d->presetMenu->setEnabled(true);
 
         if (view)
             view->fourViewsParameter()->show();
@@ -326,6 +319,7 @@ void medViewContainer::setUserSplittable(bool splittable)
     {
         d->hSplitAction->setEnabled(false);
         d->vSplitAction->setEnabled(false);
+        d->presetMenu->setEnabled(false);
 
         if (view)
             view->fourViewsParameter()->hide();
@@ -334,8 +328,6 @@ void medViewContainer::setUserSplittable(bool splittable)
 
 void medViewContainer::splitContainer(unsigned int numY, unsigned int numX)
 {
-    d->presetLayoutChooser->hide();
-
     if (!this->isUserSplittable())
         return;
 
@@ -355,6 +347,9 @@ void medViewContainer::splitContainer(unsigned int numY, unsigned int numX)
     }
 
     motherSplitter->adjustContainersSize();
+
+    if(d->toolBarMenu->isVisible())
+        d->toolBarMenu->hide();
 }
 
 medViewContainer::ClosingMode medViewContainer::closingMode() const
