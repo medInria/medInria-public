@@ -332,7 +332,7 @@ void medViewContainer::setUserSplittable(bool splittable)
     }
 }
 
-void medViewContainer::splitContainer(int numY, int numX)
+void medViewContainer::splitContainer(unsigned int numY, unsigned int numX)
 {
     d->presetLayoutChooser->hide();
 

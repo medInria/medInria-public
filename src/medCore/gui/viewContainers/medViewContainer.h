@@ -92,7 +92,7 @@ public slots:
     void highlight(QString color = "#FFAA88");
     void unHighlight();
 
-    void splitContainer(int numY, int numX);
+    void splitContainer(unsigned int numY, unsigned int numX);
 
 signals:
     void maximized(QUuid uuid, bool maximized);
