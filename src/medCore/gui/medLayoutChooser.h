@@ -33,7 +33,7 @@ public:
     int sizeHintForColumn(int column) const;
 
 signals:
-    void selected(int rows, int cols);
+    void selected(unsigned int rows, unsigned int cols);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

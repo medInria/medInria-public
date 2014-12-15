@@ -18,10 +18,10 @@
 class medLayoutChooserPrivate
 {
 public:
-    int left;
-    int right;
-    int top;
-    int bottom;
+    unsigned int left;
+    unsigned int right;
+    unsigned int top;
+    unsigned int bottom;
 };
 
 medLayoutChooser::medLayoutChooser(QWidget *parent) : QTableWidget(parent), d(new medLayoutChooserPrivate)
@@ -97,8 +97,8 @@ void medLayoutChooser::onSelectionChanged(const QItemSelection& selected, const 
     if(!selected.count())
         return;
 
-    d->left   = qMin(d->left,   selected.first().left());
-    d->right  = qMax(d->right,  selected.first().right());
-    d->top    = qMin(d->top,    selected.first().top());
-    d->bottom = qMax(d->bottom, selected.first().bottom());
+    d->left   = qMin(d->left,   (unsigned int)selected.first().left());
+    d->right  = qMax(d->right,  (unsigned int)selected.first().right());
+    d->top    = qMin(d->top,    (unsigned int)selected.first().top());
+    d->bottom = qMax(d->bottom, (unsigned int)selected.first().bottom());
 }

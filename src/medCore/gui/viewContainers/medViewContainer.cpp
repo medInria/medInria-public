@@ -164,7 +164,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->presetLayoutChooser = new medLayoutChooser(this);
     d->presetLayoutChooser->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    connect(d->presetLayoutChooser, SIGNAL(selected(int,int)), this, SLOT(splitContainer(int,int)));
+    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)));
 
     d->toolBarMenu = new QMenu(this);
     d->toolBarMenu->addActions(QList<QAction*>() << d->openAction);
