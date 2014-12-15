@@ -85,7 +85,7 @@ public:
         //  We need to call this function because GetOutput() just returns the input
 
         manager->SetInput(filter->GetVTKSphericalHarmonic());
-        manager->SetMatrixT(filter->GetDirectionMatrix());
+        manager->SetDirectionMatrix(filter->GetDirectionMatrix());
 
         manager->ResetPosition();
 

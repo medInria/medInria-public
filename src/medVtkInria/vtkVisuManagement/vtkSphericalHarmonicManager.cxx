@@ -13,6 +13,7 @@
 
 #include <vtkSphericalHarmonicManager.h>
 #include <vtkObjectFactory.h>
+#include <vtkMath.h>
 
 vtkCxxRevisionMacro(vtkSphericalHarmonicManager, "$Revision: 477 $");
 vtkStandardNewMacro(vtkSphericalHarmonicManager);
@@ -21,12 +22,15 @@ vtkSphericalHarmonicManager::vtkSphericalHarmonicManager() {
     RenderWindowInteractor = 0;
 
     Input    = 0;
-    MatrixT  = 0;
+    DirectionMatrix = 0;
     Renderer = 0;
 
     SHVisuManagerAxial    = vtkSphericalHarmonicVisuManager::New();
     SHVisuManagerSagittal = vtkSphericalHarmonicVisuManager::New();
     SHVisuManagerCoronal  = vtkSphericalHarmonicVisuManager::New();
+
+    this->PhysicalToVoxelCoordinatesTransformMatrix = vtkMatrix4x4::New();
+    this->PhysicalToVoxelCoordinatesTransformMatrix->Identity();
 
     for(int i=0;i<3;++i)
         CurrentPosition[i] = 0;
@@ -42,8 +46,8 @@ vtkSphericalHarmonicManager::~vtkSphericalHarmonicManager() {
     if (Input)
         Input->Delete();
 
-    if (MatrixT)
-        MatrixT->Delete();
+    if (DirectionMatrix)
+        DirectionMatrix->Delete();
 
     if (SHVisuManagerAxial)
         SHVisuManagerAxial->Delete();
@@ -114,9 +118,9 @@ void vtkSphericalHarmonicManager::Update() {
     const int Y = clamp(CurrentPosition[1],dims[1]);
     const int Z = clamp(CurrentPosition[2],dims[2]);
 
-    SHVisuManagerAxial->SetMatrixT(MatrixT);
-    SHVisuManagerSagittal->SetMatrixT(MatrixT);
-    SHVisuManagerCoronal->SetMatrixT(MatrixT);
+    SHVisuManagerAxial->SetMatrixT(DirectionMatrix);
+    SHVisuManagerSagittal->SetMatrixT(DirectionMatrix);
+    SHVisuManagerCoronal->SetMatrixT(DirectionMatrix);
 
     // synchronize with VOI
     SHVisuManagerSagittal->SetVOI(X, X, 0, dims[1]-1, 0, dims[2]-1);
@@ -133,6 +137,16 @@ void vtkSphericalHarmonicManager::Update() {
         Renderer->AddActor(SHVisuManagerSagittal->GetActor());
         Renderer->AddActor(SHVisuManagerCoronal->GetActor());
     }
+}
+
+void vtkSphericalHarmonicManager::SetDirectionMatrix(vtkMatrix4x4 *mat)
+{
+    if (!mat)
+        return;
+
+    vtkSetObjectBodyMacro(DirectionMatrix, vtkMatrix4x4, mat);
+
+    vtkMatrix4x4::Invert(this->DirectionMatrix, this->PhysicalToVoxelCoordinatesTransformMatrix);
 }
 
 void
@@ -161,6 +175,32 @@ vtkSphericalHarmonicManager::SetCurrentPosition(const int& X, const int& Y, cons
 
 void vtkSphericalHarmonicManager::SetCurrentPosition(const int pos[3]) {
     SetCurrentPosition(pos[0], pos[1], pos[2]);
+}
+
+void vtkSphericalHarmonicManager::SetCurrentPosition (double pos[3])
+{
+  this->SetCurrentPosition (pos[0], pos[1], pos[2]);
+}
+
+void vtkSphericalHarmonicManager::SetCurrentPosition(const double& X, const double& Y, const double& Z)
+{
+    if( !this->Input )
+    {
+      return;
+    }
+
+    double *spacing = this->Input->GetSpacing();
+    double *origin  = this->Input->GetOrigin();
+
+    double pos[4]={X, Y, Z, 1.0};
+
+    this->PhysicalToVoxelCoordinatesTransformMatrix->MultiplyPoint(pos, pos);
+
+    int vox_pos[3];
+    for (int i=0; i<3; i++)
+        vox_pos[i] = vtkMath::Round((pos[i]-origin[i])/spacing[i]);
+
+    this->SetCurrentPosition(vox_pos[0], vox_pos[1], vox_pos[2]);
 }
 
 void vtkSphericalHarmonicManager::ResetPosition() {
