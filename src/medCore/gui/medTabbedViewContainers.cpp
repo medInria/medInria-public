@@ -131,7 +131,10 @@ void medTabbedViewContainers::resetTabState()
 
 medViewContainer* medTabbedViewContainers::addContainerInTab()
 {
-    return this->addContainerInTab(QString("%0 %1").arg(d->owningWorkspace->name()).arg(count()));
+    if (this->count())
+        return this->addContainerInTab(QString("%0 %1").arg(d->owningWorkspace->name()).arg(count()));
+    else
+        return this->addContainerInTab(QString("%0").arg(d->owningWorkspace->name()));
 }
 
 medViewContainer* medTabbedViewContainers::addContainerInTab(const QString &name)

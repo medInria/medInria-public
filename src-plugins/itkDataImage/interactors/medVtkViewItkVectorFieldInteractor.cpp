@@ -22,6 +22,7 @@
 #include <vtkVectorManager.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
+#include <vtkProperty.h>
 
 #include <itkVector.h>
 #include <itkImage.h>
@@ -48,6 +49,8 @@ typedef itk::ImageToVTKImageFilter< VectorDoubleImageType > DoubleFilterType;
 class medVtkViewItkVectorFieldInteractorPrivate
 {
 public:
+    typedef vtkSmartPointer <vtkProperty>  PropertySmartPointer;
+
     medAbstractData* data;
     medAbstractImageView *view;
     vtkImageView2D *view2d;
@@ -64,8 +67,10 @@ public:
     vtkVectorManager                 *manager;
 
     medIntParameter *slicingParameter;
+    medDoubleParameter *opacityParam;
 
     double imageBounds[6];
+    PropertySmartPointer actorProperty;
 };
 
 medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstractView *parent):
@@ -216,6 +221,11 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
     d->view2d->SetInput(d->manager->GetVectorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim);
     d->view2d->SetInput(d->manager->GetVectorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
 
+    d->actorProperty = medVtkViewItkVectorFieldInteractorPrivate::PropertySmartPointer::New();
+    d->manager->GetVectorVisuManagerAxial()->GetActor()->SetProperty(d->actorProperty);
+    d->manager->GetVectorVisuManagerSagittal()->GetActor()->SetProperty(d->actorProperty);
+    d->manager->GetVectorVisuManagerCoronal()->GetActor()->SetProperty(d->actorProperty);
+
     setupParameters();
     update();
 }
@@ -248,6 +258,11 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
 
     medBoolParameter *projection = new medBoolParameter("Projection", this);
 
+    d->opacityParam = new medDoubleParameter("Opacity", this);
+    d->opacityParam->setRange(0,1);
+    d->opacityParam->setSingleStep(0.01);
+    d->opacityParam->setValue(1);
+
     d->parameters.append(scaleFactor);
     d->parameters.append(sampleRateControl);
     d->parameters.append(colorMode);
@@ -257,6 +272,7 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     connect(sampleRateControl,SIGNAL(valueChanged(int)),this,SLOT(setSampleRate(int)));
     connect(colorMode, SIGNAL(valueChanged(QString)), this, SLOT(setColorMode(QString)));
     connect(projection, SIGNAL(valueChanged(bool)), this, SLOT(setProjection(bool)));
+    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
 
 
     //TODO - should be done automaticly from vtkImageView - RDE
@@ -291,7 +307,9 @@ void medVtkViewItkVectorFieldInteractor::setWindowLevel(QHash<QString,QVariant>)
 
 void medVtkViewItkVectorFieldInteractor::setOpacity(double opacity)
 {
-    //TODO
+    d->actorProperty->SetOpacity(opacity);
+
+    this->update();
 }
 
 void medVtkViewItkVectorFieldInteractor::setVisibility(bool visibility)
@@ -403,7 +421,9 @@ void medVtkViewItkVectorFieldInteractor::moveToSlice(int slice)
 
 QWidget* medVtkViewItkVectorFieldInteractor::buildLayerWidget()
 {
-    return new QWidget;
+    QSlider *slider = d->opacityParam->getSlider();
+    slider->setOrientation(Qt::Horizontal);
+    return slider;
 }
 
 QWidget* medVtkViewItkVectorFieldInteractor::buildToolBoxWidget()
