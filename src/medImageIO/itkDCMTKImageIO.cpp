@@ -253,7 +253,11 @@ void DCMTKImageIO::ReadImageInformation()
     {
        int nbFrames = atoi(this->GetNumberOfFrames().c_str());
        if (nbFrames>1)
+       {
         m_Dimensions[2]=nbFrames;
+        /*this->SetNumberOfDimensions (4); // TODO : need to create a type itkDataImageRGB4
+            m_Dimensions[3]=nbFrames;*/
+        }
     }
     std::cout<< "the number of frames is " << this->GetNumberOfFrames() << std::endl;
     
