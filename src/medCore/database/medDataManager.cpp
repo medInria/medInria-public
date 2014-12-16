@@ -183,7 +183,7 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     return uuid;
 }
 
-bool medDataManager::empty(DatabaseType inputDataSource)
+bool medDataManager::isEmpty(DatabaseType inputDataSource)
 {
     Q_D(medDataManager);
     bool res = false;

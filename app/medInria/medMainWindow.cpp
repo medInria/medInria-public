@@ -537,7 +537,7 @@ void medMainWindow::switchToWorkspaceArea()
                 QVariant(true)).toBool();
     if ( showWarning )
     {
-        if(medDataManager::instance()->empty(medDataManager::AllDatabases))
+        if(medDataManager::instance()->isEmpty(medDataManager::AllDatabases))
         {
             medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
             msgBox->exec();
@@ -631,7 +631,7 @@ void medMainWindow::hideShortcutAccess()
 
 int medMainWindow::saveModified( void )
 {
-    if(medDataManager::instance()->empty(medDataManager::NonPersistent))
+    if(medDataManager::instance()->isEmpty(medDataManager::NonPersistent))
         return QDialog::Accepted;
 
     medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);

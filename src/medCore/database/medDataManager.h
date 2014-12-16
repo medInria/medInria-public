@@ -48,7 +48,7 @@ public:
     QUuid importData(medAbstractData* data, bool persistent = false);
     QUuid importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent = false);
 
-    bool empty(DatabaseType inputDataSource = AllDatabases);
+    bool isEmpty(DatabaseType inputDataSource = AllDatabases);
 
     void exportData(medAbstractData* data);
     void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
