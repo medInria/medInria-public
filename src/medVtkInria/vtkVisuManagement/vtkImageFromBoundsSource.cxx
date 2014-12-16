@@ -138,15 +138,8 @@ int vtkImageFromBoundsSource::RequestInformation (
             }
         }
 
-        // If spacing has been set by the user, estimate size to match spacing.
-        if (this->SpacingSet)
-        {
-            for (unsigned int i=0; i<3; i++)
-                this->OutputImageSize[i] = (unsigned int)((double)(this->OutputImageBounds[2*i+1] - this->OutputImageBounds[2*i])/this->OutputImageSpacing[i]);
-
-        }
-        // Else even if size has not been set by the user, estimate spacing to match size.
-        else
+        // If spacing has not been set by the user, estimate it.
+        if (!this->SpacingSet)
         {
             for (unsigned int i=0; i<3; i++)
                 this->OutputImageSpacing[i] = (this->OutputImageBounds[2*i+1] - this->OutputImageBounds[2*i])/(double)this->OutputImageSize[i];

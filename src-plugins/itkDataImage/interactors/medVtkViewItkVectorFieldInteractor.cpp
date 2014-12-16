@@ -141,7 +141,7 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
     d->data = data;
 
     vtkMatrix4x4 *mat = vtkMatrix4x4::New(); //start with identity matrix
-
+    double v_spacing[3], v_origin[4];
     if( identifier.compare("itkDataImageVectorFloat3") == 0 )
     {
         typedef    itk::Vector< float, 3 >    InputPixelType;
@@ -156,13 +156,16 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
             for (int k=0; k<3; k++)
                 mat->SetElement(i,k, direction(i,k));
 
-        double v_origin[4], v_origin2[4];
+        double v_origin2[4];
         for (int i=0; i<3; i++)
           v_origin[i] = i_origin[i];
         v_origin[3] = 1.0;
         mat->MultiplyPoint (v_origin, v_origin2);
         for (int i=0; i<3; i++)
           mat->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
+        for (int i=0; i<3; i++)
+            v_spacing[i] = d->floatData->GetSpacing()[i];
 
         d->floatFilter = FloatFilterType::New();
         d->floatFilter->SetInput( d->floatData );
@@ -188,13 +191,17 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
             for (int k=0; k<3; k++)
                 mat->SetElement(i,k, direction(i,k));
 
-        double v_origin[4], v_origin2[4];
+        double v_origin2[4];
         for (int i=0; i<3; i++)
           v_origin[i] = i_origin[i];
         v_origin[3] = 1.0;
         mat->MultiplyPoint (v_origin, v_origin2);
         for (int i=0; i<3; i++)
           mat->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
+
+        for (int i=0; i<3; i++)
+            v_spacing[i] = d->doubleData->GetSpacing()[i];
 
         d->doubleFilter = DoubleFilterType::New();
         d->doubleFilter->SetInput( d->doubleData );
@@ -212,9 +219,9 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
     int *dim;
     dim = d->manager->GetInput()->GetDimensions();
 
-    d->view2d->SetInput(d->manager->GetVectorVisuManagerAxial()->GetActor(), d->view->layer(data), dim);
-    d->view2d->SetInput(d->manager->GetVectorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim);
-    d->view2d->SetInput(d->manager->GetVectorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
+    d->view2d->SetInput(d->manager->GetVectorVisuManagerAxial()->GetActor(), d->view->layer(data), mat, dim, v_spacing, v_origin);
+    d->view2d->SetInput(d->manager->GetVectorVisuManagerSagittal()->GetActor(), d->view->layer(data), mat, dim, v_spacing, v_origin);
+    d->view2d->SetInput(d->manager->GetVectorVisuManagerCoronal()->GetActor(), d->view->layer(data), mat, dim, v_spacing, v_origin);
 
     setupParameters();
     update();

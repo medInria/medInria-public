@@ -1708,7 +1708,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 
 }
 
-void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[])
+void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix, const int imageSize[], const double imageSpacing[], const double imageOrigin[])
 {
     vtkRenderer *renderer = 0;
 
@@ -1740,8 +1740,11 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, const int imageSize[]
     bounds[4] = floor(bounds[4]+0.5);
     bounds[5] = floor(bounds[5]+0.5)+1;
 
-    UpdateBounds(bounds, imageSize, layer);
+    unsigned int numberOfLayers = GetNumberOfLayers();
+    UpdateBounds(bounds, layer, imageSize, imageSpacing, imageOrigin);
 
+    if ((numberOfLayers == 0) && matrix)
+        this->SetOrientationMatrix(matrix);
 }
 
 void vtkImageView2D::RemoveLayerActor(vtkActor *actor, int layer)
@@ -1960,39 +1963,29 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   return widget->GetActor();
 }
 
-void vtkImageView2D::UpdateBounds (const double bounds[6], const int imageSize[3], int layer)
+void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int imageSize[3], const double imageSpacing[3],
+                                   const double imageOrigin[3])
 {
     bool isImageOutBounded = false;
     double imageBounds[6];
 
     if( GetNumberOfLayers() == 0 )
     {
-        for (int i=0; i<6; i++)
+        if (imageSize)
         {
-            imageBounds[i]=bounds[i];
+            for (int i=0; i<6; i+=2)
+                imageBounds[i]=0;
+            for (int i=1; i<6; i+=2)
+                imageBounds[i]=imageSize[(i-1)/2];
+        }
+        else
+        {
+            for (int i=0; i<6; i++)
+            {
+                imageBounds[i]=bounds[i];
+            }
         }
         isImageOutBounded = true;
-    }
-    else
-    {
-        GetInputBounds(imageBounds);
-
-        for (int i=0; i<6; i=i+2)
-        {
-            if (bounds[i] < imageBounds[i])
-            {
-                imageBounds[i]=bounds[i];
-                isImageOutBounded=true;
-            }
-        }
-        for (int i=1; i<6; i=i+2)
-        {
-            if (bounds[i] > imageBounds[i])
-            {
-                imageBounds[i]=bounds[i];
-                isImageOutBounded=true;
-            }
-        }
     }
 
     if(isImageOutBounded)
@@ -2001,28 +1994,23 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], const int imageSize[3
         unsigned int imSize [3];
         if( imageSize != 0 )
         {
-//            switch(this->GetSliceOrientation())
-//            {
-//                // TODO this kind of things should be mutualized
-//                // (and IMO orientation of acquisition should be accesible from medAbstractWhateverImageData) - RDE
-//                case 0:
-//                imSize[0] = imageSize[0], imSize[1] = imageSize[1], imSize[2] = imageSize[2];
-//                break;
-//                case 1:
-//                imSize[0] = imageSize[1], imSize[1] = imageSize[2], imSize[2] = imageSize[0];
-//                break;
-//                case 2:
-//                imSize[0] = imageSize[2], imSize[1] = imageSize[1], imSize[2] = imageSize[0];
-//                break;
-//            }
-            imSize[0] = imageSize[0], imSize[1] = imageSize[1], imSize[2] = imageSize[2];
+            imSize[0] = imageSize[0];
+            imSize[1] = imageSize[1];
+            imSize[2] = imageSize[2];
         }
         else
         {
-            imSize[0]=100; imSize[1]=100; imSize[2]=100;
+            imSize[0]=100;
+            imSize[1]=100;
+            imSize[2]=100;
         }
 
         imagegenerator->SetOutputImageSize(imSize);
+        if (imageSpacing)
+            imagegenerator->SetOutputImageSpacing(imageSpacing);
+        if (imageOrigin)
+            imagegenerator->SetOutputImageOrigin(imageOrigin);
+
         imagegenerator->SetOutputImageBounds(imageBounds);
 
         vtkImageData * image = imagegenerator->GetOutput();

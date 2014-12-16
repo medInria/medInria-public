@@ -47,6 +47,7 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkRenderWindow *render;
+    vtkMatrix4x4 *orientationMatrix;
 
     QList <medAbstractParameter*> parameters;
     vtkSphericalHarmonicManager* manager;
@@ -82,6 +83,25 @@ public:
 
         filter->Update();
 
+        itk::ImageBase<3>::DirectionType directions = dataset->GetDirection();
+        itk::ImageBase<3>::PointType origin = dataset->GetOrigin();
+        orientationMatrix = vtkMatrix4x4::New();
+        orientationMatrix->Identity();
+        for (int i=0; i<3; i++)
+            for (int j=0; j<3; j++)
+                orientationMatrix->SetElement (i, j, directions (i,j));
+        double v_origin[4], v_origin2[4];
+        for (int i=0; i<3; i++)
+            v_origin[i] = origin[i];
+        v_origin[3] = 1.0;
+        orientationMatrix->MultiplyPoint (v_origin, v_origin2);
+        for (int i=0; i<3; i++)
+            orientationMatrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
+        double v_spacing[3];
+        for (int i=0; i<3; i++)
+            v_spacing[i] = dataset->GetSpacing()[i];
+
         //  We need to call this function because GetOutput() just returns the input
 
         manager->SetInput(filter->GetVTKSphericalHarmonic());
@@ -94,7 +114,17 @@ public:
         manager->SetOrder(Order);
 
         manager->Update();
+
         data = d;
+
+        if (view)
+        {
+            int dim[3];
+            manager->GetSphericalHarmonicDimensions(dim);
+            view2d->SetInput(manager->GetSHVisuManagerAxial()->GetActor(), view->layer(data), orientationMatrix, dim, v_spacing, v_origin);
+            view2d->SetInput(manager->GetSHVisuManagerSagittal()->GetActor(), view->layer(data), orientationMatrix, dim, v_spacing, v_origin);
+            view2d->SetInput(manager->GetSHVisuManagerCoronal()->GetActor(), view->layer(data), orientationMatrix, dim, v_spacing, v_origin);
+        }
     }
 };
 
@@ -110,6 +140,7 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
+    d->orientationMatrix = 0;
 
     d->manager = vtkSphericalHarmonicManager::New();
 
@@ -188,12 +219,6 @@ void itkDataSHImageVtkViewInteractor::setInputData(medAbstractData *data)
         qDebug() << "Unrecognized SH data type: " << identifier;
         return;
     }
-
-    int dim[3];
-    d->manager->GetSphericalHarmonicDimensions(dim);
-    d->view2d->SetInput(d->manager->GetSHVisuManagerAxial()->GetActor(), d->view->layer(d->data), dim);
-    d->view2d->SetInput(d->manager->GetSHVisuManagerSagittal()->GetActor(), d->view->layer(d->data), dim);
-    d->view2d->SetInput(d->manager->GetSHVisuManagerCoronal()->GetActor(), d->view->layer(d->data), dim);
 
     d->actorProperty = itkDataSHImageVtkViewInteractorPrivate::PropertySmartPointer::New();
     d->manager->GetSHVisuManagerAxial()->GetActor()->SetProperty( d->actorProperty );
