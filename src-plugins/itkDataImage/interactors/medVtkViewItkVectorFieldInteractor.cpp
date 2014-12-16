@@ -22,6 +22,7 @@
 #include <vtkVectorManager.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
+#include <vtkProperty.h>
 
 #include <itkVector.h>
 #include <itkImage.h>
@@ -64,6 +65,9 @@ public:
     vtkVectorManager                 *manager;
 
     medIntParameter *slicingParameter;
+
+    typedef vtkSmartPointer <vtkProperty>  PropertySmartPointer;
+    PropertySmartPointer actorProperty;
 
     double imageBounds[6];
 };
@@ -223,6 +227,11 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
     d->view2d->SetInput(d->manager->GetVectorVisuManagerSagittal()->GetActor(), d->view->layer(data), mat, dim, v_spacing, v_origin);
     d->view2d->SetInput(d->manager->GetVectorVisuManagerCoronal()->GetActor(), d->view->layer(data), mat, dim, v_spacing, v_origin);
 
+    d->actorProperty = medVtkViewItkVectorFieldInteractorPrivate::PropertySmartPointer::New();
+    d->manager->GetVectorVisuManagerAxial()->GetActor()->SetProperty( d->actorProperty );
+    d->manager->GetVectorVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
+    d->manager->GetVectorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );
+
     setupParameters();
     update();
 }
@@ -298,7 +307,9 @@ void medVtkViewItkVectorFieldInteractor::setWindowLevel(QHash<QString,QVariant>)
 
 void medVtkViewItkVectorFieldInteractor::setOpacity(double opacity)
 {
-    //TODO
+    d->actorProperty->SetOpacity(opacity);
+
+    d->view->render();
 }
 
 void medVtkViewItkVectorFieldInteractor::setVisibility(bool visibility)
@@ -410,7 +421,8 @@ void medVtkViewItkVectorFieldInteractor::moveToSlice(int slice)
 
 QWidget* medVtkViewItkVectorFieldInteractor::buildLayerWidget()
 {
-    return new QWidget;
+    this->opacityParameter()->getSlider()->setOrientation(Qt::Horizontal);
+    return this->opacityParameter()->getSlider();
 }
 
 QWidget* medVtkViewItkVectorFieldInteractor::buildToolBoxWidget()
@@ -432,7 +444,7 @@ QWidget* medVtkViewItkVectorFieldInteractor::buildToolBarWidget()
 QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::linkableParameters()
 {
     QList <medAbstractParameter*> linkableParams = d->parameters;
-    linkableParams << this->visibilityParameter();
+    linkableParams << this->visibilityParameter() << this->opacityParameter();
     return linkableParams;
 }
 
