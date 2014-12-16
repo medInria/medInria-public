@@ -177,7 +177,7 @@ void vtkSphericalHarmonicManager::SetCurrentPosition(const int pos[3]) {
     SetCurrentPosition(pos[0], pos[1], pos[2]);
 }
 
-void vtkSphericalHarmonicManager::SetCurrentPosition (double pos[3])
+void vtkSphericalHarmonicManager::SetCurrentPosition (const double pos[3])
 {
   this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }

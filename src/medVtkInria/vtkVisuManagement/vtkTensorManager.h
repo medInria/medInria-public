@@ -145,7 +145,7 @@ class MEDVTKINRIA_EXPORT vtkTensorManager: public vtkObject
   void SetCurrentPosition(const double&, const double&, const double&);
 
   /** Set the current position in physical coordinates. */
-  void SetCurrentPosition(double pos[3]);
+  void SetCurrentPosition(const double pos[]);
 
   /** Get the current position. */
   const int* GetCurrentPosition() const

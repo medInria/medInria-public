@@ -96,7 +96,7 @@ public:
     void SetCurrentPosition(const double& X, const double& Y, const double& Z);
 
     /** Set the current position in physical coordinates. */
-    void SetCurrentPosition(double pos[3]);
+    void SetCurrentPosition(const double pos[]);
 
     /** Set the current position in voxel coordinates. */
     void SetCurrentPosition(const int pos[3]);
