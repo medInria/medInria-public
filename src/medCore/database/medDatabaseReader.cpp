@@ -33,10 +33,10 @@ public:
     const medDatabaseController* dbController;
 };
 
-medDatabaseReader::medDatabaseReader ( const medDataIndex& index, const medDatabaseController* iDbController ) : QObject(), d ( new medDatabaseReaderPrivate )
+medDatabaseReader::medDatabaseReader ( const medDataIndex& index, const medDatabaseController* inputDbController ) : QObject(), d ( new medDatabaseReaderPrivate )
 {
     d->index = index;
-    d->dbController = iDbController;
+    d->dbController = inputDbController;
 }
 
 medDatabaseReader::~medDatabaseReader()

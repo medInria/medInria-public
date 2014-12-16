@@ -59,11 +59,11 @@ const QString medDatabaseRemoverPrivate::T_STUDY = "study";
 const QString medDatabaseRemoverPrivate::T_SERIES = "series";
 const QString medDatabaseRemoverPrivate::T_IMAGE = "image";
 
-medDatabaseRemover::medDatabaseRemover (const medDataIndex &index_ , medDatabaseController *iDbController) : medJobItem(), d ( new medDatabaseRemoverPrivate )
+medDatabaseRemover::medDatabaseRemover (const medDataIndex &index_ , medDatabaseController *inputDbController) : medJobItem(), d ( new medDatabaseRemoverPrivate )
 {
     d->index = index_;
-    d->dbController = iDbController;
-    d->db = iDbController->database();
+    d->dbController = inputDbController;
+    d->db = inputDbController->database();
     d->isCancelled = false;
 }
 

@@ -157,7 +157,7 @@ int main(int argc,char* argv[]) {
         //  If the locations are different we need to move the db to the new location
 
         if (currentLocation.compare(newLocation)!=0) {
-            if (!medDataManager::instance()->moveDatabase(newLocation, medDataManager::ePersistent)) {
+            if (!medDataManager::instance()->moveDatabase(newLocation, medDataManager::Persistent)) {
                 qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
                 //  The new location is invalid so set it to zero
                 newLocation = "";

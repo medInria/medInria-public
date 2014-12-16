@@ -80,7 +80,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
 
-    if (medDataManager::instance()->empty(medDataManager::eAll))
+    if (medDataManager::instance()->empty(medDataManager::AllDatabases))
     {
         d->sourceSelectorToolBox->setCurrentTab(1);
     }

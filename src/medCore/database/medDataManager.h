@@ -34,11 +34,11 @@ class MEDCORE_EXPORT medDataManager : public QObject
     Q_OBJECT
 
 public:
-    enum eDataSource
+    enum DatabaseType
     {
-        eAll,
-        ePersistent,
-        eNonPersistent
+        AllDatabases,
+        Persistent,
+        NonPersistent
     };
     static void initialize();
     static medDataManager * instance();
@@ -48,13 +48,13 @@ public:
     QUuid importData(medAbstractData* data, bool persistent = false);
     QUuid importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent = false);
 
-    bool empty(eDataSource iDataSource = eAll);
+    bool empty(DatabaseType inputDataSource = AllDatabases);
 
     void exportData(medAbstractData* data);
     void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
 
     QUuid makePersistent(medAbstractData* data);
-    bool moveDatabase(const QString& iNewLocation, eDataSource iDataSource = eAll);
+    bool moveDatabase(const QString& inputNewLocation, DatabaseType inputDataSource = AllDatabases);
 
     bool setMetadata(const medDataIndex& index, const QString& key, const QString& value);
     void removeData(const medDataIndex& index);

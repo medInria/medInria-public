@@ -48,26 +48,26 @@ QMutex medImporterPrivate::mutex;
 
 //-----------------------------------------------------------------------------------------------------------
 
-medImporter::medImporter ( const QString& file, const QUuid& uuid, medAbstractDbController *iController, bool indexWithoutImporting) : medJobItem(), d ( new medImporterPrivate )
+medImporter::medImporter ( const QString& file, const QUuid& uuid, medAbstractDbController *inputController, bool indexWithoutImporting) : medJobItem(), d ( new medImporterPrivate )
 {
     d->isCancelled = false;
     d->file = file;
     d->data = NULL;
     d->indexWithoutImporting = indexWithoutImporting;
     d->uuid = uuid;
-    d->controller = iController;
+    d->controller = inputController;
 }
 
 //-----------------------------------------------------------------------------------------------------------
 
-medImporter::medImporter (medAbstractData* medData, const QUuid& uuid, medAbstractDbController *iController) : medJobItem(), d ( new medImporterPrivate )
+medImporter::medImporter (medAbstractData* medData, const QUuid& uuid, medAbstractDbController *inputController) : medJobItem(), d ( new medImporterPrivate )
 {
     d->isCancelled = false;
     d->data = medData;
     d->file = QString("");
     d->indexWithoutImporting = false;
     d->uuid = uuid;
-    d->controller = iController;
+    d->controller = inputController;
 }
 
 //-----------------------------------------------------------------------------------------------------------

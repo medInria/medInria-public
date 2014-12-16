@@ -26,7 +26,7 @@ class medDatabaseReader : public QObject
     Q_OBJECT
 
 public:
-    medDatabaseReader(const medDataIndex& index, const medDatabaseController* iDbController);
+    medDatabaseReader(const medDataIndex& index, const medDatabaseController* inputDbController);
     ~medDatabaseReader();
 
     medAbstractData *run();

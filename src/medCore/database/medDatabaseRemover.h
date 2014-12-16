@@ -32,7 +32,7 @@ class MEDCORE_EXPORT medDatabaseRemover : public medJobItem
     Q_OBJECT;
 
 public:
-     medDatabaseRemover(const medDataIndex &index, medDatabaseController* iDbController);
+     medDatabaseRemover(const medDataIndex &index, medDatabaseController* inputDbController);
     ~medDatabaseRemover();
 
 

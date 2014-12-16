@@ -183,20 +183,20 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     return uuid;
 }
 
-bool medDataManager::empty(eDataSource iDataSource)
+bool medDataManager::empty(DatabaseType inputDataSource)
 {
     Q_D(medDataManager);
     bool res = false;
 
-    switch(iDataSource)
+    switch(inputDataSource)
     {
-        case eNonPersistent:
+        case NonPersistent:
             res = d->nonPersDbController->availableItems().empty();
             break;
-        case ePersistent:
+        case Persistent:
             res = d->dbController->patients().empty();
             break;
-        case eAll:
+        case AllDatabases:
             res = (d->dbController->patients().empty() && d->nonPersDbController->availableItems().empty());
             break;
     }
@@ -403,17 +403,17 @@ QUuid medDataManager::makePersistent(medAbstractData* data)
     return jobUuid;
 }
 
-bool medDataManager::moveDatabase(const QString& iNewLocation, eDataSource iDataSource)
+bool medDataManager::moveDatabase(const QString& inputNewLocation, DatabaseType inputDataSource)
 {
     Q_D(medDataManager);
     bool res = false;
-    switch(iDataSource)
+    switch(inputDataSource)
     {
-        case eNonPersistent:
+        case NonPersistent:
             break;
-        case eAll:
-        case ePersistent:
-            res = d->dbController->moveDatabase(iNewLocation);
+        case AllDatabases:
+        case Persistent:
+            res = d->dbController->moveDatabase(inputNewLocation);
     }
     return res;
 }
