@@ -560,8 +560,8 @@ QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
     layout->addRow(d->range_button);
     d->minRange->getSlider()->setOrientation(Qt::Horizontal);
     d->maxRange->getSlider()->setOrientation(Qt::Horizontal);
-    QHBoxLayout *minRangeLayout = new QHBoxLayout(toolbox);
-    QHBoxLayout *maxRangeLayout = new QHBoxLayout(toolbox);
+    QHBoxLayout *minRangeLayout = new QHBoxLayout();
+    QHBoxLayout *maxRangeLayout = new QHBoxLayout();
     minRangeLayout->addWidget(d->minRange->getSlider());
     minRangeLayout->addWidget(d->minRange->getSpinBox());
     maxRangeLayout->addWidget(d->maxRange->getSlider());
@@ -645,6 +645,8 @@ void vtkDataMeshInteractor::updateRange()
     if (!lut)
         return;
     
+    if (d->minRange->value()>d->maxRange->value())
+        return;
     lut->SetRange(d->minRange->value(),d->maxRange->value());
     mapper2d->SetLookupTable(lut);
     mapper3d->SetLookupTable(lut);
