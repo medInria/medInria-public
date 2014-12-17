@@ -124,22 +124,22 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     return NULL;
 }
 
-void medDataManager::runImporter(medImporter* iMedImporter, const QString& iMessageText)
+void medDataManager::runImporter(medImporter* medImporter, const QString& messageText)
 {
     Q_D(medDataManager);
 
-    medMessageProgress *message = medMessageController::instance()->showProgress(iMessageText);
+    medMessageProgress *message = medMessageController::instance()->showProgress(messageText);
 
-    connect(iMedImporter, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(iMedImporter, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
+    connect(medImporter, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    connect(medImporter, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
 
-    connect(iMedImporter, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(iMedImporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(iMedImporter, SIGNAL(showError(const QString&,unsigned int)),
+    connect(medImporter, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(medImporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(medImporter, SIGNAL(showError(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
-    medJobManager::instance()->registerJobItem(iMedImporter);
-    QThreadPool::globalInstance()->start(iMedImporter);
+    medJobManager::instance()->registerJobItem(medImporter);
+    QThreadPool::globalInstance()->start(medImporter);
 }
 
 
@@ -151,8 +151,7 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
     Q_D(medDataManager);
     QUuid uuid = QUuid::createUuid();
 
-    // Ternary operator twice because it can't implicitly convert between medDatabaseController and medNonPersistentController, needs a hint
-    medAbstractDbController* const controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
+    medAbstractDbController * const controller = persistent ?  static_cast<medAbstractDbController*>(d->dbController) : static_cast<medAbstractDbController*>(d->nonPersDbController);
     const QString messageText = persistent ? "Saving database item" : tr("Opening file item");
 
     medImporter *importer = new medImporter(data, uuid, controller);
@@ -173,9 +172,7 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     QUuid uuid = QUuid::createUuid();
     QFileInfo info(dataPath);
 
-    // Ternary operator twice because it can't implicitly convert between medDatabaseController and medNonPersistentController, needs a hint
-
-    medAbstractDbController * const controller = persistent ?  d->dbController : (true ? d->nonPersDbController : controller);
+    medAbstractDbController * const controller = persistent ?  static_cast<medAbstractDbController*>(d->dbController) : static_cast<medAbstractDbController*>(d->nonPersDbController);
     const QString messageText = persistent ? "Importing " + info.fileName() : "Importing data item";
 
     medImporter *importer = new medImporter(info.absoluteFilePath(), uuid, controller, indexWithoutCopying);
@@ -191,13 +188,13 @@ bool medDataManager::isEmpty(DatabaseType inputDataSource)
     switch(inputDataSource)
     {
         case NonPersistent:
-            res = d->nonPersDbController->availableItems().empty();
+            res = d->nonPersDbController->availableItems().isEmpty();
             break;
         case Persistent:
-            res = d->dbController->patients().empty();
+            res = d->dbController->patients().isEmpty();
             break;
         case AllDatabases:
-            res = (d->dbController->patients().empty() && d->nonPersDbController->availableItems().empty());
+            res = (d->dbController->patients().isEmpty() && d->nonPersDbController->availableItems().isEmpty());
             break;
     }
 
