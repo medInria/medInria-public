@@ -50,6 +50,7 @@ public:
     void addVertex(QPointF value, QColor color);
     void reset();
     void deleteTable();
+    void invertLUT(bool);
 
 public slots:
     void setDiscreteMode(bool);

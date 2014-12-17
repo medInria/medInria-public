@@ -59,6 +59,7 @@ public:
     medClutEditorHistogram *histogram;
     unsigned int layerForced;
     bool discreteMode;
+    bool invertLUT; //for the moment, only used in substrateWorkspace
 
     medAbstractData *dtk_data;
     medAbstractView *med_view;
@@ -141,6 +142,7 @@ medClutEditorToolBox::medClutEditorToolBox(QWidget *parent) : medToolBox(parent)
     }
 
     d->discreteMode = false;
+    d->invertLUT = false;  //"conventional" LUT is /
     d->layerForced = 0;
 }
 
@@ -362,7 +364,15 @@ void medClutEditorToolBox::setDiscreteMode(bool value)
 {
     d->discreteMode = value;
     if(this->getScene()->table())
-        this->getScene()->table()->setDiscreteMode(value);
+        this->getScene()->table()->setDiscreteMode(value);  //purely visual changes
+    this->applyTable(d->med_view);                          // LUT changes
+}
+
+void medClutEditorToolBox::invertLUT(bool value)
+{
+    d->invertLUT = value;
+    if(this->getScene()->table())
+        this->getScene()->table()->invertLUT(value);
     this->applyTable(d->med_view);
 }
 
@@ -496,16 +506,23 @@ void medClutEditorToolBox::setColorLookupTable ( medAbstractView *view, QList<do
 {
     int size= qMin ( scalars.count(),colors.count() );
     vtkColorTransferFunction * ctf = vtkColorTransferFunction::New();
+    //ctf->ClampingOff();
     vtkPiecewiseFunction * pf = vtkPiecewiseFunction::New();
+    //pf->ClampingOff();
     for ( int i=0;i<size;i++ )
     {
         ctf->AddRGBPoint ( scalars.at ( i ),
                            colors.at ( i ).redF(),
                            colors.at ( i ).greenF(),
                            colors.at ( i ).blueF(),
-                           d->discreteMode ? 1 : 0.5,   //midpoint (point between 2 vertices): either on the right vertex or in the middle
+                           d->discreteMode ? !d->invertLUT : 0.5,   //midpoint (point between 2 vertices): 
+                                                                    //either on the right vertex (1), on the left (0), or at the middle (0.5)
                            d->discreteMode ? 1 : 0.0);  //sharpness (distribution between 2 vertices): either constant or linear
-        pf->AddPoint ( scalars.at ( i ),colors.at ( i ).alphaF() );
+        
+        pf->AddPoint (  scalars.at ( i ),
+                        colors.at ( i ).alphaF(),
+                        d->discreteMode ? !d->invertLUT : 0.5,
+                        d->discreteMode ? 1 : 0.0);
     }
 
     double min = scalars.first();
@@ -519,6 +536,12 @@ void medClutEditorToolBox::setColorLookupTable ( medAbstractView *view, QList<do
     static_cast<medVtkViewBackend*>(view->backend())->view2D->SetColorRange(range);
     static_cast<medVtkViewBackend*>(view->backend())->view2D->SetColorTransferFunction(ctf);
     static_cast<medVtkViewBackend*>(view->backend())->view2D->SetOpacityTransferFunction(pf);
+
+    //static_cast<medVtkViewBackend*>(view->backend())->view3D->SetColorRange(range);
+    //static_cast<medVtkViewBackend*>(view->backend())->view3D->SetTransferFunctions(ctf, pf, d->layerForced);
+    
+    //static_cast<medVtkViewBackend*>(view->backend())->view3D->vtkImageView::SetColorTransferFunction(ctf);
+    //static_cast<medVtkViewBackend*>(view->backend())->view3D->vtkImageView::SetOpacityTransferFunction(pf);
 
     ctf->GetTable ( min, max, n, table );
     ctf->Build();
@@ -534,10 +557,12 @@ void medClutEditorToolBox::setColorLookupTable ( medAbstractView *view, QList<do
     int i, j;
     for ( i = 0, j = 0; i < n; ++i, j += 3 )
         lut->SetTableValue ( i+1, table[j], table[j+1], table[j+2], alphaTable[i] );
-    lut->SetTableValue ( n + 1, table[j-3], table[j-2], table[j-1], alphaTable[i-1] ); //last value of the lut
+    //lut->SetTableValue ( n + 1, table[j-3], table[j-2], table[j-1], alphaTable[i-1] ); //last value of the lut
+    lut->SetTableValue ( n + 1, 0, 0, 0, 0); //last value of the lut (values above max are black )
 
     static_cast<medVtkViewBackend*>(view->backend())->view2D->SetLookupTable ( lut );
-    static_cast<medVtkViewBackend*>(view->backend())->view3D->vtkImageView::SetLookupTable ( lut );
+    unsigned int layer = static_cast<medAbstractLayeredView*>(view)->currentLayer();
+    static_cast<medVtkViewBackend*>(view->backend())->view3D->SetLookupTable ( lut, layer );
 
     lut->Delete();
     delete [] table;

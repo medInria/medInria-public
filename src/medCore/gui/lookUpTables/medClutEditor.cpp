@@ -162,8 +162,7 @@ void medClutEditorVertex::setValue()
     this->shiftValue(amount);
     if ( medClutEditorTable * table =
         dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
-        table->updateVerticesToDisplay();
-
+        table->triggerVertexChanged();
     d->setValueSpinBox->blockSignals(false);
 }
 
@@ -386,7 +385,7 @@ public:
     //difference between these 2 lists occurs only in Discrete Mode
     QString title;
     qreal displayAlpha;
-    bool discreteMode;
+    bool discreteMode, LUTinverted;
 };
 
 
@@ -398,6 +397,7 @@ medClutEditorTable::medClutEditorTable(const QString & title,
     d->title = title;
     d->displayAlpha = 0.25;
     d->discreteMode = false;
+    d->LUTinverted = false;
 
     //this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -441,6 +441,13 @@ void medClutEditorTable::setDiscreteMode(bool value)
     emit switchMode();
 }
 
+void medClutEditorTable::invertLUT(bool value)
+{
+    d->LUTinverted = value;
+    updateVerticesToDisplay();
+    emit switchMode();//to update 3D view
+}
+
 QHash<medClutEditorVertex *, medClutEditorVertex *> *
     medClutEditorTable::calculateCoupledVertices(QList<medClutEditorVertex *>list)
 {
@@ -452,9 +459,19 @@ QHash<medClutEditorVertex *, medClutEditorVertex *> *
             hash->insert(list.at(i), NULL); //first one coupled with NULL ...
         else
         {
-            QPointF value = QPointF(list.at(i)->value().x(), list.at(i-1)->value().y()); //same abscissa, ordinate of the previous vertex
-            QPointF position = QPointF(list.at(i)->pos().x()-epsilon, list.at(i-1)->pos().y());
-            medClutEditorVertex * coupledVertex = new medClutEditorVertex(value, position, list.at(i-1)->color()); //color of the previous
+            QPointF value, position;
+            medClutEditorVertex * coupledVertex;
+
+            if(!d->LUTinverted){
+                value = QPointF(list.at(i)->value().x(), list.at(i-1)->value().y()); //same abscissa, ordinate of the previous vertex
+                position = QPointF(list.at(i)->pos().x()-epsilon, list.at(i-1)->pos().y());
+                coupledVertex = new medClutEditorVertex(value, position, list.at(i-1)->color()); //color of the previous
+            }
+            else{
+                value = QPointF(list.at(i-1)->value().x(), list.at(i)->value().y()); //
+                position = QPointF(list.at(i-1)->pos().x()+epsilon, list.at(i)->pos().y());
+                coupledVertex = new medClutEditorVertex(value, position, list.at(i)->color()); //color of the previous
+            }
             if(coupledVertex && !hash->contains(list.at(i)))
                 hash->insert(list.at(i), coupledVertex);
         }
@@ -470,6 +487,7 @@ void medClutEditorTable::updateVerticesToDisplay()
         if(hash && hash->size()>2) //if less than 2 vertices, stay in continuous mode
         {
             d->verticesToDisplay.clear(); //reset list of vertices to display
+            
             QHash<medClutEditorVertex *, medClutEditorVertex *>::const_iterator i = hash->constBegin();
             while(i!=hash->constEnd())
             {
@@ -479,12 +497,15 @@ void medClutEditorTable::updateVerticesToDisplay()
                 i++;
             }
         }
+        else
+            d->verticesToDisplay = d->principalVertices;
     }
     else
         d->verticesToDisplay = d->principalVertices;
 
     qSort( d->verticesToDisplay.begin(), d->verticesToDisplay.end(),
         medClutEditorVertex::LessThan );
+    this->update();
 }
 
 

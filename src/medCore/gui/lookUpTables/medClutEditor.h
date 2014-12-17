@@ -66,6 +66,7 @@ public:
                          const medClutEditorVertex *v2) {
         return (v1->x() < v2->x());
     }
+
 public slots:
     void setValue (void);
     void showColorSelection();
@@ -108,6 +109,7 @@ public:
     const QSizeF & size() const;
     // void setRange( qreal min, qreal max );
     void setDiscreteMode(bool);
+    void invertLUT(bool);
     QHash<medClutEditorVertex *, medClutEditorVertex *> *calculateCoupledVertices(QList<medClutEditorVertex *>);
     void updateVerticesToDisplay();
 
