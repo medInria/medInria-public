@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -38,8 +38,6 @@ medLayoutChooser::medLayoutChooser(QWidget *parent) : QTableWidget(parent), d(ne
 
     d->left = d->right = d->top = d->bottom = 0;
 
-    connect(this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)));
-
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
@@ -71,13 +69,20 @@ int medLayoutChooser::sizeHintForColumn(int column) const
 
 void medLayoutChooser::mousePressEvent(QMouseEvent *event)
 {
-    d->left = d->right = d->top = d->bottom = 0;
+//    d->left = d->right = d->top = d->bottom = 0;
 
     QTableWidget::mousePressEvent(event);
 }
 
 void medLayoutChooser::mouseReleaseEvent(QMouseEvent *event)
 {
+
+    QItemSelection selec = this->selectionModel()->selection();
+    d->left   = qMin(d->left,   static_cast<unsigned int>(selec.first().left()));
+    d->right  = qMax(d->right,  static_cast<unsigned int>(selec.first().right()));
+    d->top    = qMin(d->top,    static_cast<unsigned int>(selec.first().top()));
+    d->bottom = qMax(d->bottom, static_cast<unsigned int>(selec.first().bottom()));
+
     emit selected(d->bottom-d->top+1, d->right-d->left+1);
 
     QTableWidget::mouseReleaseEvent(event);
@@ -90,15 +95,3 @@ void medLayoutChooser::mouseReleaseEvent(QMouseEvent *event)
     d->bottom = 0;
 }
 
-void medLayoutChooser::onSelectionChanged(const QItemSelection& selected, const QItemSelection& unselected)
-{
-    Q_UNUSED(unselected);
-
-    if(!selected.count())
-        return;
-
-    d->left   = qMin(d->left,   (unsigned int)selected.first().left());
-    d->right  = qMax(d->right,  (unsigned int)selected.first().right());
-    d->top    = qMin(d->top,    (unsigned int)selected.first().top());
-    d->bottom = qMax(d->bottom, (unsigned int)selected.first().bottom());
-}
