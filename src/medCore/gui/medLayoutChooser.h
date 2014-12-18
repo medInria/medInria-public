@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -28,7 +28,6 @@ public:
     ~medLayoutChooser();
 
     QSize sizeHint() const;
-
     int sizeHintForRow(int row) const;
     int sizeHintForColumn(int column) const;
 
@@ -36,11 +35,7 @@ signals:
     void selected(unsigned int rows, unsigned int cols);
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-
-protected slots:
-    void onSelectionChanged(const QItemSelection& selected, const QItemSelection& unselected);
 
 private:
     medLayoutChooserPrivate *d;

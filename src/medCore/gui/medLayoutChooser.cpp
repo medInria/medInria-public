@@ -44,7 +44,6 @@ medLayoutChooser::medLayoutChooser(QWidget *parent) : QTableWidget(parent), d(ne
 medLayoutChooser::~medLayoutChooser(void)
 {
     delete d;
-
     d = NULL;
 }
 
@@ -56,23 +55,15 @@ QSize medLayoutChooser::sizeHint(void) const
 int medLayoutChooser::sizeHintForRow(int row) const
 {
     Q_UNUSED(row);
-
     return 30;
 }
 
 int medLayoutChooser::sizeHintForColumn(int column) const
 {
     Q_UNUSED(column);
-
     return 30;
 }
 
-void medLayoutChooser::mousePressEvent(QMouseEvent *event)
-{
-//    d->left = d->right = d->top = d->bottom = 0;
-
-    QTableWidget::mousePressEvent(event);
-}
 
 void medLayoutChooser::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -83,7 +74,7 @@ void medLayoutChooser::mouseReleaseEvent(QMouseEvent *event)
     d->top    = qMin(d->top,    static_cast<unsigned int>(selec.first().top()));
     d->bottom = qMax(d->bottom, static_cast<unsigned int>(selec.first().bottom()));
 
-    emit selected(d->bottom-d->top+1, d->right-d->left+1);
+    emit selected(d->bottom - d->top + 1, d->right - d->left + 1);
 
     QTableWidget::mouseReleaseEvent(event);
 
