@@ -189,13 +189,15 @@ QString medDatabaseDataSource::description(void) const
 void medDatabaseDataSource::filter( const QString &text, int column )
 {
     // adding or overriding filter on column
-    d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
+    d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column+1);
+    // column+1 because we removed the first column from the searchable fields, and we have to restablish
+    // the link between "search field" and the column number in the db model
 }
 
 void medDatabaseDataSource::compactFilter( const QString &text, int column )
 {
     // adding or overriding filter on column
-    d->compactProxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
+    d->compactProxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column+1);
 }
 
 void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index, QUuid)

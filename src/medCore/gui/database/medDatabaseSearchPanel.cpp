@@ -34,6 +34,7 @@ EditCombo::EditCombo( QString txt, int clmn )
     this->column = clmn;
 
     QHBoxLayout* layout = new QHBoxLayout(this);
+    layout->setContentsMargins(3,3,3,3);
     layout->addWidget(&edit);
     layout->addWidget(&label);
 
@@ -72,6 +73,7 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
     vlayout->addWidget(d->removeButton);
 
     d->layout = new QVBoxLayout();
+    d->layout->setContentsMargins(0,0,0,0);
 
     this->setTitle(tr("Filter"));
 
@@ -105,9 +107,12 @@ void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
         d->columnBox->addItem(columnName);
     }
 
-    //d->columnBox->setCurrentIndex(2); // debug
-    addBox(); // add patient name
-
+    // add patient/study/serie by default
+    for(int i =0; i<3; i++)
+    {
+        d->columnBox->setCurrentIndex(i);
+        addBox();
+    }
 }
 
 void medDatabaseSearchPanel::addBox( )
