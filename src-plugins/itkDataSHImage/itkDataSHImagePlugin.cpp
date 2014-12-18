@@ -99,9 +99,7 @@ QStringList itkDataSHImagePlugin::tags() const {
 QStringList itkDataSHImagePlugin::types() const {
     return QStringList() << "itkDataSHImageFloat3"
                          << "itkDataSHImageDouble3"
-                         << "itkMetaDataSHImageReader"
-                         << "itkNiftiDataSHImageReader"
-                         << "itkNrrdDataSHImageReader"
+                         << "itkDataSHImageReader"
                          << "itkMetaDataSHImageWriter";
 }
 
