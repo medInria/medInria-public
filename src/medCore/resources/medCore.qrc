@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>icons/fourViews.png</file>
+        <file>icons/splitPresets.png</file>
         <file>pixmaps/plus_button.png</file>
         <file>pixmaps/closebutton.png</file>
         <file>pixmaps/splitbutton_horizontal.png</file>

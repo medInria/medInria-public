@@ -92,6 +92,8 @@ public slots:
     void highlight(QString color = "#FFAA88");
     void unHighlight();
 
+    void splitContainer(unsigned int numY, unsigned int numX);
+
 signals:
     void maximized(QUuid uuid, bool maximized);
     void maximized(bool maximized);
