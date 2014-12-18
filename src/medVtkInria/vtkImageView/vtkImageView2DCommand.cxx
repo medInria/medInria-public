@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -102,46 +102,22 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
       (isi->GetWindowLevelStartPosition()[1] -
        isi->GetWindowLevelCurrentPosition()[1]) / size[1];
 
-    // The problem with the following code is that it could get stucked near 0
-    // // Scale by current values
-    // if (fabs(window) > 0.01)
-    //   dx = dx * window;
-    // else
-    //   dx = dx * (window < 0 ? -0.01 : 0.01);
-    // if (fabs(level) > 0.01)
-    //   dy = dy * level;
-    // else
-    //   dy = dy * (level < 0 ? -0.01 : 0.01);
-
-    // // Abs so that direction does not flip
-    // if (window < 0.0)
-    //   dx = -1*dx;
-    // if (level < 0.0)
-    //   dy = -1*dy;
-    // double slowingEffectCoef = 1.0;
-    // if(window / windowImage <= speedInflectionRatio){
-    //   slowingEffectCoef = exp((window / windowImage / speedInflectionRatio - 1.0)*10);
-    //   std::cout << "slowingEffectCoef  "  << slowingEffectCoef << std::endl;
-    // }
 
     dx = dx * windowImage * mouseToLevelSpeed;
     dy = dy * levelImage * mouseToLevelSpeed;
-
 
     // Compute new window level
     double newWindow = dx + window;
     double newLevel = level - dy;
 
-    // Stay away from zero and really
-    // if (fabs(newWindow) < 0.01)
-    //   newWindow = 0.01*(newWindow < 0 ? -1 : 1);
-    // if (fabs(newLevel) < 0.01)
-    //   newLevel = 0.01*(newLevel < 0 ? -1 : 1);
-
-
     // Keep window values above 0
     if (newWindow < 0)
-      newWindow = 0;
+    {
+        double levelMin = range[0] - 0.5 * windowImage;
+        double levelMax = range[1] + 0.5 * windowImage;
+
+        newWindow = std::min(0.1, (levelMax-levelMin) / 1000);
+    }
 
     this->Viewer->SetColorWindow(newWindow);
     this->Viewer->SetColorLevel(newLevel);
@@ -183,25 +159,25 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     return;
   }
 
-	// Start Slice Move
-	if (event == vtkImageView2DCommand::StartTimeChangeEvent)
-	{
-		return;
-	}
+    // Start Slice Move
+    if (event == vtkImageView2DCommand::StartTimeChangeEvent)
+    {
+        return;
+    }
 
-	// End Slice Move
-	if (event == vtkImageView2DCommand::EndTimeChangeEvent)
-	{
-		return;
-	}
+    // End Slice Move
+    if (event == vtkImageView2DCommand::EndTimeChangeEvent)
+    {
+        return;
+    }
 
-	// Move Slice
-	if (event == vtkImageView2DCommand::TimeChangeEvent)
-	{
-		this->Viewer->SetTimeIndex (this->Viewer->GetTimeIndex()+isi->GetSliceStep());
-		this->Viewer->Render();
-		return;
-	}
+    // Move Slice
+    if (event == vtkImageView2DCommand::TimeChangeEvent)
+    {
+        this->Viewer->SetTimeIndex (this->Viewer->GetTimeIndex()+isi->GetSliceStep());
+        this->Viewer->Render();
+        return;
+    }
 
   // Position requested
   if (event == vtkImageView2DCommand::RequestedPositionEvent)

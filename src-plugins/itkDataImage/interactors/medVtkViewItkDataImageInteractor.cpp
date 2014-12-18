@@ -568,7 +568,7 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> va
     double l = values["Level"].toDouble();
 
     if (d->view2d->GetColorWindow(d->view->layer(d->imageData)) != w)
-    {      
+    {
         d->view2d->SetColorWindow(w, d->view->layer(d->imageData));
 
         if (d->view->is2D())
@@ -584,7 +584,7 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> va
     }
 
     if (d->view2d->GetColorLevel(d->view->layer(d->imageData)) != l)
-    {       
+    {
         d->view2d->SetColorLevel(l, d->view->layer(d->imageData));
 
         if (d->view->is2D())
