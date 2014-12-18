@@ -645,8 +645,23 @@ void vtkDataMeshInteractor::updateRange()
     if (!lut)
         return;
     
-    if (d->minRange->value()>d->maxRange->value())
-        return;
+    medDoubleParameter *sender = dynamic_cast<medDoubleParameter *>(this->sender());
+    if(sender)
+    {
+        if( sender == d->minRange && d->minRange->value() >= d->maxRange->value() )
+        {
+            d->maxRange->blockSignals(true);
+            d->maxRange->setValue(d->minRange->value());
+            d->maxRange->blockSignals(false);
+        }
+        else if( sender == d->maxRange && d->maxRange->value() <= d->minRange->value() )
+        {
+            d->minRange->blockSignals(true);
+            d->minRange->setValue(d->maxRange->value());
+            d->minRange->blockSignals(false);
+        }
+    }
+    
     lut->SetRange(d->minRange->value(),d->maxRange->value());
     mapper2d->SetLookupTable(lut);
     mapper3d->SetLookupTable(lut);
