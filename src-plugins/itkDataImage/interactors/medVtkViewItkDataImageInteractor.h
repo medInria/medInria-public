@@ -75,6 +75,7 @@ private:
 private slots:
     void updateSlicingParam();
     void updateImageViewInternalLayer();
+    void setWindowLevelFromMinMax();
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;

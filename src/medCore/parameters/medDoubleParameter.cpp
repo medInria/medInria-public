@@ -20,14 +20,32 @@
 
 #include <cmath>
 
+#include <iomanip>
+#include <sstream>
+
+
+class medDoubleSpinBox : public QDoubleSpinBox
+{
+public:
+    virtual QString textFromValue ( double value ) const
+    {
+        std::ostringstream oss;
+        oss << std::setprecision(7) << value;
+
+        QString res = QString(oss.str().c_str());
+        return res;
+    }
+};
+
 class medDoubleParameterPrivate
 {
 public:
     double min;
     double max;
     double step;
+    int decimals;
 
-    QDoubleSpinBox *spinBox;
+    medDoubleSpinBox *spinBox;
     QSlider *slider;
     QLabel *valueLabel;
 
@@ -48,6 +66,7 @@ medDoubleParameter::medDoubleParameter(QString name, QObject *parent):
     d->slider = NULL;
     d->valueLabel = NULL;
     d->step = 0.1;
+    d->decimals = -1;
 }
 
 medDoubleParameter::~medDoubleParameter()
@@ -116,29 +135,41 @@ void medDoubleParameter::setSingleStep(double step)
         d->slider->setSingleStep(convertToInt(step));
 }
 
+void medDoubleParameter::setDecimals(unsigned int decimals)
+{
+    d->decimals = decimals;
+
+    if(d->spinBox)
+        d->spinBox->setDecimals(decimals);
+}
 
 QDoubleSpinBox* medDoubleParameter::getSpinBox()
 {
     if(!d->spinBox)
     {
-        d->spinBox = new QDoubleSpinBox;
+        d->spinBox = new medDoubleSpinBox;
         d->spinBox->setRange(d->min, d->max);
         d->spinBox->setValue(m_value);
         d->spinBox->setSingleStep(d->step);
+        d->spinBox->setKeyboardTracking(false);
 
-        unsigned int numDecimals = 0;
-        bool nullDecimal = true;
-        double multipliedStep = d->step;
-        while (nullDecimal)
+        // if decimals has not been set
+        if(d->decimals == -1)
         {
-            numDecimals++;
-            multipliedStep *= 10;
-            int testNumber = floor(multipliedStep);
-            if (testNumber > 0)
-                nullDecimal = false;
+            d->decimals = 0;
+            bool nullDecimal = true;
+            double multipliedStep = d->step;
+            while (nullDecimal)
+            {
+                d->decimals++;
+                multipliedStep *= 10;
+                int testNumber = floor(multipliedStep);
+                if (testNumber > 0)
+                    nullDecimal = false;
+            }
         }
 
-        d->spinBox->setDecimals(numDecimals);
+        d->spinBox->setDecimals(d->decimals);
 
         this->addToInternWidgets(d->spinBox);
         connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(removeInternSpinBox()));
@@ -203,5 +234,4 @@ void medDoubleParameter::setIntValue(int value)
 {
     double dValue = (double)value*d->step + d->min;
     setValue(dValue);
-
 }

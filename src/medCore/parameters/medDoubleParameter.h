@@ -33,6 +33,7 @@ public:
 
     void setRange(double min, double max);
     void setSingleStep(double step);
+    void setDecimals(unsigned int decimals);
 
     QDoubleSpinBox* getSpinBox();
     QSlider* getSlider();

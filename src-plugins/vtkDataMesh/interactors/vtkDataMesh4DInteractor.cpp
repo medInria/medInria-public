@@ -21,7 +21,6 @@
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
 #include <medTimeLineParameter.h>
-#include <medDoubleParameter.h>
 
 
 class vtkDataMesh4DInteractorPrivate

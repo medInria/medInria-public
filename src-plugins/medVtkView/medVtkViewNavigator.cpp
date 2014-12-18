@@ -29,7 +29,6 @@
 #include <medDoubleParameter.h>
 #include <medVector2DParameter.h>
 #include <medVector3DParameter.h>
-#include <medDoubleParameter.h>
 #include <medCompositeParameter.h>
 #include <medStringListParameter.h>
 #include <medTimeLineParameter.h>
