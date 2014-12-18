@@ -60,7 +60,7 @@ public:
 
     QHash<medDataIndex, QModelIndex> medIndexMap;
 
-    enum { DataCount = 12 };
+    enum { DataCount = 15 };
 };
 
 medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
@@ -115,6 +115,10 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->stAttributes[i] = medMetaDataKeys::StudyDescription.key();
     d->seAttributes[i++] = medMetaDataKeys::SeriesDescription.key();
 
+    d->ptAttributes[i++] = medMetaDataKeys::PatientName.key();
+    d->stAttributes[i++] = medMetaDataKeys::StudyDescription.key();
+    d->seAttributes[i++] = medMetaDataKeys::SeriesDescription.key();
+
     d->ptAttributes[i++] = medMetaDataKeys::BirthDate.key();
     d->ptAttributes[i++] = medMetaDataKeys::Gender.key();
 
@@ -131,14 +135,12 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->seAttributes[i++] = medMetaDataKeys::Institution.key();
     d->seAttributes[i++] = medMetaDataKeys::Report.key();
 
-
     d->ptDefaultData =  d->data;
     d->ptDefaultData[0] = tr("[No Patient Name]");
 
     d->stDefaultData =  d->data;
 
     d->seDefaultData =  d->data;
-
 
     d->root = new medDatabaseItem(medDataIndex(), d->data, d->data);
 
@@ -949,6 +951,9 @@ QStringList medDatabaseModel::columnNames() const
 
         int i=0;
         ret[i++] = tr("Patient/Study/Serie");
+        ret[i++] = tr("Patient");
+        ret[i++] = tr("Study");
+        ret[i++] = tr("Serie");
         ret[i++] = tr("Birth Date");
         ret[i++] = tr("Gender");
         ret[i++] = tr("Slice Count");
@@ -960,11 +965,21 @@ QStringList medDatabaseModel::columnNames() const
         ret[i++] = tr("Performer");
         ret[i++] = tr("Institution");
         ret[i++] = tr("Report");
+
         d->columnNames = ret;
     }
     return d->columnNames;
 }
 
+
+QList<int> medDatabaseModel::columnToHide() const
+{
+    QList<int> col;
+    col.append(1);
+    col.append(2);
+    col.append(3);
+    return col;
+}
 
 QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString value)
 {

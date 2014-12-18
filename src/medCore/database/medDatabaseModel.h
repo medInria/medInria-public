@@ -64,6 +64,8 @@ public:
 
     bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
+    QList<int> columnToHide() const;
+
 protected slots:
     void repopulate();
 

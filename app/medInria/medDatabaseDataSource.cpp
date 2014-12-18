@@ -95,6 +95,8 @@ QWidget* medDatabaseDataSource::mainViewWidget()
             connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
         }
 
+        foreach(int col, d->model->columnToHide())
+            d->largeView->hideColumn(col);
     }
 
     return d->mainWidget;
@@ -107,7 +109,9 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         d->compactWidget = new medDatabaseCompactWidget();
 
         d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
-        d->compactSearchPanel->setColumnNames(d->model->columnNames());
+        QStringList columns = d->model->columnNames();
+        columns.removeAt(0);
+        d->compactSearchPanel->setColumnNames(columns);
         connect(d->compactSearchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(compactFilter(const QString &, int)),
                 Qt::UniqueConnection);
 
@@ -118,7 +122,7 @@ QWidget* medDatabaseDataSource::compactViewWidget()
 
         d->compactWidget->setSearchPanelViewAndPreview(d->compactSearchPanel, d->compactView, d->compactPreview);
 
-        for(int i =1; i<12; ++i)
+        for(int i =1; i<d->model->columnCount(); ++i)
             d->compactView->hideColumn(i);
 
         connect(d->compactView, SIGNAL(patientClicked(const medDataIndex&)), d->compactPreview, SLOT(showPatientPreview(const medDataIndex&)));
@@ -151,7 +155,9 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
         d->toolBoxes.push_back(d->actionsToolBox);
 
         d->searchPanel = new medDatabaseSearchPanel();
-        d->searchPanel->setColumnNames(d->model->columnNames());
+        QStringList columns = d->model->columnNames();
+        columns.removeAt(0);
+        d->searchPanel->setColumnNames(columns);
         d->toolBoxes.push_back(d->searchPanel);
 
         connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(filter(const QString &, int)),
