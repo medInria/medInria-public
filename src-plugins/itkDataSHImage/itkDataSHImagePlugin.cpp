@@ -17,10 +17,7 @@
 #include <itkDataSHImageFloat3.h>
 #include <itkDataSHImageVtkViewInteractor.h>
 
-#include <itkNrrdDataSHImageReader.h>
-#include <itkNiftiDataSHImageReader.h>
-#include <itkMetaDataSHImageReader.h>
-
+#include <itkDataSHImageReader.h>
 #include <itkMetaDataSHImageWriter.h>
 
 #include <dtkLog/dtkLog.h>
@@ -57,11 +54,8 @@ bool itkDataSHImagePlugin::initialize() {
     if (!itkDataSHImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataSHImageFloat3 type";  }
     if (!itkDataSHImageVtkViewInteractor::registered())  { dtkWarn() << "Unable to register itkDataSHImageVtkViewInteractor type";  }
 
-    if (!itkMetaDataSHImageReader::registered())  { dtkWarn() << "Unable to register itkMetaDataSHImageReader type";  }
-    if (!itkNiftiDataSHImageReader::registered()) { dtkWarn() << "Unable to register itkNiftiDataSHImageReader type"; }
-    if (!itkNrrdDataSHImageReader::registered())  { dtkWarn() << "Unable to register itkNrrdDataSHImageReader type";  }
-
-    if(!itkMetaDataSHImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataSHImageWriter type"; }
+    if (!itkDataSHImageReader::registered())  { dtkWarn() << "Unable to register itkDataSHImageReader type";  }
+    if (!itkMetaDataSHImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataSHImageWriter type"; }
 
     return true;
 }

@@ -18,17 +18,22 @@
 #include <itkDataSHImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageReaderBase : public dtkAbstractDataReader
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageReader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
 public:
-             itkDataSHImageReaderBase();
-    virtual ~itkDataSHImageReaderBase();
+             itkDataSHImageReader();
+    virtual ~itkDataSHImageReader();
 
     virtual QStringList handled() const;
 
     static QStringList s_handled();
+
+    virtual QString identifier()  const;
+    virtual QString description() const;
+
+    static bool registered();
 
 public slots:
 
@@ -44,6 +49,6 @@ public slots:
     virtual bool read (const QString &path);
     virtual bool read (const QStringList &paths);
 
-protected:
-    itk::ImageIOBase::Pointer io;
 };
+
+dtkAbstractDataReader *createItkDataSHImageReader();

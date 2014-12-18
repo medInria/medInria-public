@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <itkDataSHImageReaderBase.h>
+#include <itkDataSHImageReader.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
@@ -25,49 +25,67 @@
 // itkDataSHImageReader
 // /////////////////////////////////////////////////////////////////
 
-itkDataSHImageReaderBase::itkDataSHImageReaderBase() : dtkAbstractDataReader()
-{
-    this->io = 0;
-}
-
-itkDataSHImageReaderBase::~itkDataSHImageReaderBase()
+itkDataSHImageReader::itkDataSHImageReader() : dtkAbstractDataReader()
 {
 }
 
-QStringList itkDataSHImageReaderBase::handled() const
+itkDataSHImageReader::~itkDataSHImageReader()
 {
-    return QStringList() << "itkDataSHImageDouble3"
-                         << "itkDataSHImageFloat3";
 }
 
-QStringList itkDataSHImageReaderBase::s_handled()
+QStringList itkDataSHImageReader::handled() const
 {
     return QStringList() << "itkDataSHImageDouble3"
                          << "itkDataSHImageFloat3";
 }
 
-bool itkDataSHImageReaderBase::canRead (const QStringList &paths)
+QStringList itkDataSHImageReader::s_handled()
+{
+    return QStringList() << "itkDataSHImageDouble3"
+                         << "itkDataSHImageFloat3";
+}
+
+bool itkDataSHImageReader::registered()
+{
+  return medAbstractDataFactory::instance()->registerDataReaderType("itkDataSHImageReader", s_handled(),
+                                                                    createItkDataSHImageReader);
+}
+
+QString itkDataSHImageReader::identifier() const
+{
+    return "itkDataSHImageReader";
+}
+
+QString itkDataSHImageReader::description() const
+{
+    return "Reader for spherical harmonics images";
+}
+
+bool itkDataSHImageReader::canRead (const QStringList &paths)
 {
     if (paths.count())
         return this->canRead (paths[0]);
     return false;
 }
 
-bool itkDataSHImageReaderBase::canRead (const QString &path)
+bool itkDataSHImageReader::canRead (const QString &path)
 {
-    if (!this->io.IsNull()) {
-        if (!this->io->CanReadFile ( path.toAscii().constData() ))
+    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toAscii().constData(),
+                                                                           itk::ImageIOFactory::ReadMode);
+
+    if (!imageIO.IsNull()) {
+        if (!imageIO->CanReadFile ( path.toAscii().constData() ))
             return false;
 
-        this->io->SetFileName (path.toAscii().constData());
+        imageIO->SetFileName (path.toAscii().constData());
         try {
-            this->io->ReadImageInformation();
+            imageIO->ReadImageInformation();
         }
         catch (itk::ExceptionObject &e) {
             qDebug() << e.GetDescription();
             return false;
         }
-        if (this->io->GetNumberOfComponents/*PerPixel*/() != 15 && this->io->GetNumberOfComponents/*PerPixel*/() != 28)
+        if (imageIO->GetNumberOfComponents/*PerPixel*/() != 15 && imageIO->GetNumberOfComponents/*PerPixel*/() != 28)
             return false;
 
         return true;
@@ -75,7 +93,7 @@ bool itkDataSHImageReaderBase::canRead (const QString &path)
     return false;
 }
 
-bool itkDataSHImageReaderBase::readInformation (const QStringList &paths)
+bool itkDataSHImageReader::readInformation (const QStringList &paths)
 {
     if (paths.count())
         return this->readInformation (paths[0]);
@@ -83,14 +101,14 @@ bool itkDataSHImageReaderBase::readInformation (const QStringList &paths)
     return false;
 }
 
-bool itkDataSHImageReaderBase::readInformation (const QString &path)
+bool itkDataSHImageReader::readInformation (const QString &path)
 {
-    if (this->io.IsNull())
-        return false;
+    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toAscii().constData(),
+                                                                           itk::ImageIOFactory::ReadMode);
     
-    this->io->SetFileName ( path.toAscii().constData() );
+    imageIO->SetFileName ( path.toAscii().constData() );
     try {
-        this->io->ReadImageInformation();
+        imageIO->ReadImageInformation();
     }
     catch (itk::ExceptionObject &e) {
         qDebug() << e.GetDescription();
@@ -101,8 +119,8 @@ bool itkDataSHImageReaderBase::readInformation (const QString &path)
 
     if (!medData) {
 
-        switch (this->io->GetComponentType()) {
-        //            qDebug() << this->io->GetPixelTypeAsString() << this->io->GetComponentTypeAsString();
+        switch (imageIO->GetComponentType()) {
+        //            qDebug() << imageIO->GetPixelTypeAsString() << imageIO->GetComponentTypeAsString();
 
         case itk::ImageIOBase::FLOAT:
             medData = medAbstractDataFactory::instance()->create ("itkDataSHImageFloat3");
@@ -128,18 +146,15 @@ bool itkDataSHImageReaderBase::readInformation (const QString &path)
     return true;
 }
 
-bool itkDataSHImageReaderBase::read (const QStringList &paths)
+bool itkDataSHImageReader::read (const QStringList &paths)
 {
     if (paths.count())
         return this->read (paths[0]);
     return false;
 }
 
-bool itkDataSHImageReaderBase::read (const QString &path)
+bool itkDataSHImageReader::read (const QString &path)
 {
-    if (this->io.IsNull())
-        return false;
-	
     this->readInformation ( path );
 	
     qDebug() << "Read with: " << this->description();
@@ -154,7 +169,6 @@ bool itkDataSHImageReaderBase::read (const QString &path)
             SHImageType::Pointer image = 0;
 
             ReaderType::Pointer reader = ReaderType::New();
-            reader->SetImageIO (this->io);
             reader->SetFileName ( path.toAscii().constData() );
             try {
                 reader->Update();
@@ -174,7 +188,6 @@ bool itkDataSHImageReaderBase::read (const QString &path)
             SHImageType::Pointer image = 0;
 
             ReaderType::Pointer reader = ReaderType::New();
-            reader->SetImageIO (this->io);
             reader->SetFileName ( path.toAscii().constData() );
             try {
                 reader->Update();
@@ -199,4 +212,9 @@ bool itkDataSHImageReaderBase::read (const QString &path)
 
     return true;
     
+}
+
+dtkAbstractDataReader *createItkDataSHImageReader()
+{
+    return new itkDataSHImageReader;
 }
