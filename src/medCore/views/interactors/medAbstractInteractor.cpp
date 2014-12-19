@@ -113,7 +113,13 @@ void medAbstractInteractor::updateWidgets()
 
 void medAbstractInteractor::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
 {
-	QDomElement elmt=doc->createElement("description");
-	elmt.appendChild(doc->createTextNode(description()));
+QDomElement elmt=doc->createElement("Parameters");
+	elmt.setAttribute("number",this->linkableParameters().size());
+	for(int i=0;i<linkableParameters().size();i++)
+	{
+		QDomElement paramNode=doc->createElement("Parameter");
+		linkableParameters()[i]->toXMLNode(doc,&paramNode);
+		elmt.appendChild(paramNode);
+	}
 	currentNode->appendChild(elmt);
 }

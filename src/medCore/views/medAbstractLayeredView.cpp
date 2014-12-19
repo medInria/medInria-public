@@ -462,7 +462,6 @@ void medAbstractLayeredView::write(QString& path)
 	QString xml = doc.toString();
 	for(unsigned int i=0;i<this->layersCount();i++)
 	{
-		qDebug()<<interactors().size()<<" "<<navigators().size();
 		QDomElement layerDescription = doc.createElement("layer");
 		layerDescription.setAttribute("id",i);
 		
@@ -474,6 +473,19 @@ void medAbstractLayeredView::write(QString& path)
 			layerDescription.setAttribute("filename",currentFile);
 		else
 			layerDescription.setAttribute("filename","failed to save data");
+		
+		/*//saving linkable parameters
+		QDomElement parametersNode=doc.createElement("LinkableParameters");
+		QList<medAbstractParameter*> parametersList=this->linkableParameters();
+
+		for(int j=0;j<parametersList.size();j++)
+		{
+			QDomElement currentParameterNode = doc.createElement("parameter");
+			parametersList[j]->toXMLNode(&doc,&currentParameterNode);
+			parametersNode.appendChild(currentParameterNode);
+		}		
+		layerDescription.appendChild(parametersNode);*/
+		
 		
 		//saving navigators
 		QDomElement navigatorsNode=doc.createElement("navigators");
@@ -499,4 +511,20 @@ void medAbstractLayeredView::write(QString& path)
 		root.appendChild(layerDescription);
 	}
 	out << doc.toString();
+}
+
+void medAbstractLayeredView::restoreState(QDomElement* element)
+{
+	qDebug()<<"medAbstractLayeredView::restoreState";
+	QDomNodeList nodeList=element->elementsByTagName("navigator");
+	QList<medAbstractNavigator*> navigatorList=navigators();
+	if(navigatorList.size()!=nodeList.size())
+	{
+		qWarning()<< "inconsistent data, failed to reload navigator parameters";
+	}
+	for(int i=0;i<navigatorList.size();i++)
+	{
+		QDomElement currentNavigator=nodeList.at(i).toElement();
+		navigatorList[i]->fromXMLNode(&currentNavigator);
+	}
 }

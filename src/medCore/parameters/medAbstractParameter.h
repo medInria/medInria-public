@@ -18,6 +18,9 @@
 #include <QVector3D>
 #include <QVector4D>
 
+#include <QDomDocument>
+#include <QDomElement>
+
 #include <medCoreExport.h>
 
 class QLabel;
@@ -45,6 +48,8 @@ public:
     bool match(medAbstractParameter const *other);
     void show();
     void hide();
+    
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
 
     void setToolTip(QString tooltip);
 
@@ -90,6 +95,9 @@ public:
     medAbstractStringParameter(QString name = "unknown  string parameter", QObject* parent = 0):
         medAbstractParameter(name, parent){}
     virtual QString value() const;
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+    static QString fromString(QString value); //provided for consistency
+
 public slots:
     virtual void setValue(QString value);
 signals:
@@ -113,6 +121,10 @@ public:
     medAbstractIntParameter(QString name = "unknown int parameter", QObject* parent = 0):
         medAbstractParameter(name, parent){}
     virtual int value() const;
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+    static int fromString(QString value);
+
+
 public slots:
     virtual void setValue(int value);
 protected:
@@ -137,6 +149,11 @@ public:
     medAbstractDoubleParameter(QString name = "unknown double parameter", QObject* parent = 0):
         medAbstractParameter(name, parent){}
     virtual double value() const;
+    
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+    static double fromString(QString value);
+
+
 public slots:
     virtual void setValue(double value);
 protected:
@@ -159,7 +176,10 @@ class MEDCORE_EXPORT medAbstractBoolParameter : public medAbstractParameter
 public:
     medAbstractBoolParameter(QString name = "unknown bool parameter", QObject* parent = 0):
         medAbstractParameter(name, parent){}
+       
+	virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
     virtual bool value() const;
+    static bool fromString(QString value);
 public slots:
     virtual void setValue(bool value);
 protected:
@@ -210,8 +230,12 @@ public:
     medAbstractVector2DParameter(QString name = "Unknow Vector 2D parameter", QObject* parent = 0):
         medAbstractParameter(name, parent){}
     virtual ~medAbstractVector2DParameter(){}
+    
+	virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
 
     virtual QVector2D value() const;
+    static QVector2D fromString(QString value);
+
 
 public slots:
     virtual void setValue(const QVector2D &);
@@ -241,8 +265,11 @@ public:
     medAbstractVector3DParameter(QString name = "Unknow Vector 3D parameter", QObject* parent = 0):
         medAbstractParameter(name, parent){}
     virtual ~medAbstractVector3DParameter(){}
-
+    
+	virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
     virtual QVector3D value() const;
+    static QVector3D fromString(QString value);
+
 
 public slots:
     virtual void setValue(const QVector3D &);
@@ -271,11 +298,15 @@ class MEDCORE_EXPORT medAbstractVector4DParameter : public medAbstractParameter
     Q_OBJECT
 
 public:
-    medAbstractVector4DParameter(QString name = "Unknow Vector 3D parameter", QObject* parent = 0):
+    medAbstractVector4DParameter(QString name = "Unknow Vector 4D parameter", QObject* parent = 0):
         medAbstractParameter(name, parent){}
     virtual ~medAbstractVector4DParameter(){}
-
+    
+	virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
     virtual QVector4D value() const;
+    
+    static QVector4D fromString(QString value);
+
 
 public slots:
     virtual void setValue(const QVector4D &);
