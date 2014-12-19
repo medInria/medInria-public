@@ -113,13 +113,53 @@ void medAbstractInteractor::updateWidgets()
 
 void medAbstractInteractor::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
 {
-QDomElement elmt=doc->createElement("Parameters");
+	QDomElement elmt=doc->createElement("parameters");
 	elmt.setAttribute("number",this->linkableParameters().size());
 	for(int i=0;i<linkableParameters().size();i++)
 	{
-		QDomElement paramNode=doc->createElement("Parameter");
+		QDomElement paramNode=doc->createElement("parameter");
 		linkableParameters()[i]->toXMLNode(doc,&paramNode);
 		elmt.appendChild(paramNode);
 	}
 	currentNode->appendChild(elmt);
+}
+
+void medAbstractInteractor::fromXMLNode(QDomElement* element)
+{
+	if(element->nodeName()!="interactor")
+	{
+		qWarning()<<"Unable to parse "<<element->nodeName();
+		return;
+	}
+	QDomNodeList parameterList=element->elementsByTagName("parameter");
+	qDebug()<<element->elementsByTagName("parameter").size();
+	QHash<QString,QString> parameters;
+	for(int i=0;i<parameterList.size();i++)
+	{
+		if(!(parameterList.at(i).isElement()))
+		{
+			qWarning()<<"failed to read a parameter";
+		}
+		QDomElement currentParameterElement =parameterList.at(i).toElement();
+		QDomNodeList currentParametersValues=currentParameterElement.childNodes();
+		QString name,type,value;
+		for(int j=0;j<currentParametersValues.size();j++)
+		{
+			QString nodeName=currentParametersValues.at(j).nodeName();
+			if(nodeName=="name")
+				name=currentParametersValues.at(j).firstChild().toText().nodeValue();
+			else if(nodeName=="type")
+				type=currentParametersValues.at(j).firstChild().toText().nodeValue();
+			else if(nodeName=="value")
+				value=currentParametersValues.at(j).firstChild().toText().nodeValue();
+		}
+		parameters[name]=value;
+	}
+	
+	restoreParameters(parameters);
+}
+
+void medAbstractInteractor::restoreParameters(QHash<QString,QString> parameters)
+{
+		
 }
