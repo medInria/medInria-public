@@ -441,6 +441,8 @@ QWidget* medAbstractView::mouseInteractionWidget()
     return d->mouseInteractionWidget;
 }
 
+void medAbstractView::restoreState(QDomElement* element){}
+
 
 QUndoStack* medAbstractView::undoStack() const
 {
