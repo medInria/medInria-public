@@ -43,6 +43,10 @@ public:
     QComboBox* getComboBox();
 
     virtual QWidget* getWidget();
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+    static QString fromString(QString value);
+
+
 
 protected:
     virtual void updateInternWigets();

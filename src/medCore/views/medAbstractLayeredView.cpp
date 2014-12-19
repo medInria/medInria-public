@@ -515,7 +515,6 @@ void medAbstractLayeredView::write(QString& path)
 
 void medAbstractLayeredView::restoreState(QDomElement* element)
 {
-	qDebug()<<"medAbstractLayeredView::restoreState";
 	QDomNodeList nodeList=element->elementsByTagName("navigator");
 	QList<medAbstractNavigator*> navigatorList=navigators();
 	if(navigatorList.size()!=nodeList.size())
@@ -526,5 +525,17 @@ void medAbstractLayeredView::restoreState(QDomElement* element)
 	{
 		QDomElement currentNavigator=nodeList.at(i).toElement();
 		navigatorList[i]->fromXMLNode(&currentNavigator);
+	}
+	
+	nodeList=element->elementsByTagName("interactor");
+	QList<medAbstractInteractor*> interactorList=interactors();
+	if(interactorList.size()!=nodeList.size())
+	{
+		qWarning()<< "inconsistent data, failed to reload interactor parameters";
+	}
+	for(int i=0;i<interactorList.size();i++)
+	{
+		QDomElement currentInteractor=nodeList.at(i).toElement();
+		interactorList[i]->fromXMLNode(&currentInteractor);
 	}
 }

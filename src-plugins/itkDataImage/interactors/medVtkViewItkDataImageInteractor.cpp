@@ -634,3 +634,24 @@ void medVtkViewItkDataImageInteractor::enableWIndowLevel(bool enable)
         d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeWindowLevel );
 
 }
+
+void medVtkViewItkDataImageInteractor::restoreParameters(QHash<QString,QString> parameters)
+{
+	QHash<QString, QString>::const_iterator i = parameters.constBegin();
+	while (i != parameters.constEnd()) 
+	{
+		qDebug() <<"processing: "<<i.key() << ": " << i.value() << endl;
+		++i;
+	}
+	
+	if(parameters.contains("Opacity"))
+		setOpacity(medDoubleParameter::fromString(parameters["Opacity"]));
+	if(parameters.contains("Visibility"))
+		setVisibility(medBoolParameter::fromString(parameters["Visibility"]));
+	if(parameters.contains("Preset"))
+		setPreset(medStringListParameter::fromString(parameters["Preset"]));
+	if(parameters.contains("Lut"))
+		setLut(medStringListParameter::fromString(parameters["Lut"]));
+		
+}
+
