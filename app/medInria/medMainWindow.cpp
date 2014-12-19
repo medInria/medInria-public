@@ -480,19 +480,14 @@ void medMainWindow::saveScene() {
 			QString generatedPath=workingDir.canonicalPath()+"/mapping.xml";
 			QDomElement layeredViewInfo=doc.createElement("layeredView");
 			layeredViewInfo.setAttribute("path",generatedPath);
+			layeredViewInfo.setAttribute("id",layeredView->identifier());
 			root.appendChild(layeredViewInfo);
 			layeredView->write(generatedPath);
 			workingDir.cdUp();
 		}
 	}//views loop
-	//saves toolboxes
 	QString generatedPath=workingDir.canonicalPath()+"/globalMapping.xml";
 
-	QList<medToolBox*> toolboxes=d->workspaceArea->currentWorkspace()->toolBoxes();
-	QDomElement toolboxesXML=doc.createElement("toolboxes");
-	for (QList<medToolBox*>::const_iterator i=toolboxes.begin();i!=toolboxes.end();++i)
-			(*i)->toXMLNode(&doc,&toolboxesXML);
-	root.appendChild(toolboxesXML);
 	QFile file(generatedPath);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
 		return;
@@ -542,14 +537,13 @@ void medMainWindow::loadScene()
 		showWorkspace(workspaceName);
 		
 	}
-		
-	//reload the toolboxes
-	
 	//call dedicated method to read each view folder
 	QFileInfo fileInfo(file);
 	QDir workingDir(fileInfo.dir());
+	bool hasContainer=false;
 	for(int i=0;i<viewsNodes.size();i++)
 	{
+
 		QDomElement viewElement=viewsNodes.item(i).toElement();
 		if(viewElement.isNull())
 		{
@@ -575,12 +569,30 @@ void medMainWindow::loadScene()
 			 return;
 		}
 		QDomNodeList layersNodes=viewInfo.elementsByTagName("layer");
+		
+		medViewContainer *newContainer=NULL;
+		if(hasContainer)
+		{//need to create a new view, to avoid the new layers to be stacked with the previous ones
+			//retrieve existing container
+			medViewContainer *formerContainer = medViewContainerManager::instance()->container(d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersSelected().first());
+			//split existing container
+			newContainer=formerContainer->split();		
+		}
+
 		for(int j=0;j<layersNodes.size();j++)
 		{
 			QDomElement layerElement=layersNodes.item(j).toElement();
 			QString fileName=layerElement.attribute("filename");
+			QString id=layerElement.attribute("id");
 			open(fileName);
+			qDebug()<<"point 1";
+			medAbstractView *view = medViewContainerManager::instance()->container(d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersSelected().first())->view();
+			if(view)
+				view->restoreState(&layerElement);
+
 		}
+
+		hasContainer=true;
 	}
 	
 	
