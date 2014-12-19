@@ -134,3 +134,19 @@ QIcon medStringListParameter::createIconFromColor(const QString &colorName)
     QIcon itemIcon(iconPixmap);
     return itemIcon;
 }
+
+QString medStringListParameter::fromString(QString value)
+{
+    return value;
+}
+
+void medStringListParameter::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
+{
+	medAbstractParameter::toXMLNode(doc,currentNode);
+	QDomElement type=doc->createElement("type");
+	type.appendChild(doc->createTextNode("String"));
+	currentNode->appendChild(type);
+	QDomElement elmt=doc->createElement("value");
+	elmt.appendChild(doc->createTextNode(getComboBox()->currentText()));
+	currentNode->appendChild(elmt);
+}
