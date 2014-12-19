@@ -16,6 +16,8 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <medCoreExport.h>
 
+#include <QDomElement>
+
 class medAbstractViewPrivate;
 
 class medViewBackend;
@@ -73,6 +75,9 @@ public:
 
     QImage generateThumbnail(const QSize &size);
     virtual void setOffscreenRendering(bool isOffscreen);
+    
+    virtual void restoreState(QDomElement* element);
+
 
     QUndoStack* undoStack() const;
 

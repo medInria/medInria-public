@@ -23,6 +23,8 @@
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 #include <medImageViewEnum.h>
+#include <medAbstractParameter.h>
+
 
 class medAbstractParameter;
 class medBoolParameter;

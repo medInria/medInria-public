@@ -18,6 +18,11 @@
 #include <QUrl>
 #include <QFileInfo>
 
+#include <medViewContainerManager.h>
+#include <medViewContainer.h>
+#include <medViewFactory.h>
+#include <medAbstractView.h>
+
 class medDataIndex;
 class medMainWindowPrivate;
 

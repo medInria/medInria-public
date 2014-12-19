@@ -37,6 +37,7 @@ public:
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
 
+
     virtual medImageView::Orientation orientation() const ;
 
 public slots:
@@ -60,6 +61,9 @@ signals:
 protected:
     virtual QWidget* buildToolBoxWidget();
     virtual QWidget* buildToolBarWidget();
+    
+    virtual void restoreParameters(QHash<QString,QString> parameters);
+
 
     void cameraUp(double *coordinates) const;
     void cameraPosition(double *coordinates) const;

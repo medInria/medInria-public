@@ -70,6 +70,7 @@ public:
     virtual QList<medAbstractParameter*> linkableParameters(unsigned int layer);
     
     virtual void write(QString& path);
+    virtual void restoreState(QDomElement* element);
 
 public slots:
     void setDataList(QList<medDataIndex> dataList);
