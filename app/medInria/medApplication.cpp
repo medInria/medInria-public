@@ -37,7 +37,6 @@
 
 #include <medSettingsWidgetFactory.h>
 #include <medSettingsWidget.h>
-#include <medSystemSettingsWidget.h>
 #include <medStartupSettingsWidget.h>
 #include <medDatabaseSettingsWidget.h>
 
@@ -172,7 +171,6 @@ void medApplication::initialize()
 
     //Register settingsWidgets
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
-    settingsWidgetFactory->registerSettingsWidget<medSystemSettingsWidget>();
     settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
     settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 

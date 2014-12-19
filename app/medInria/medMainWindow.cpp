@@ -271,6 +271,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
                                                      SLOT(showShortcutAccess()),
                                                      Qt::ApplicationShortcut);
     this->restoreSettings();
+
+    // medQuickAccessMenu loads default workspace to open, so we can switch to it npw
+    d->quickAccessWidget->switchToCurrentlySelected();
 }
 
 medMainWindow::~medMainWindow()
@@ -289,9 +292,6 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
 void medMainWindow::restoreSettings()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-
-    const AreaType areaIndex = static_cast<AreaType>(mnger->value("medMainWindow","StartingArea", 0).toInt());
-    switchToArea(areaIndex);
 
     this->restoreState(mnger->value("medMainWindow", "state").toByteArray());
     this->restoreGeometry(mnger->value("medMainWindow", "geometry").toByteArray());
