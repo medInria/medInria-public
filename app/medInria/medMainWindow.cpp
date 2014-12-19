@@ -272,7 +272,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
                                                      Qt::ApplicationShortcut);
     this->restoreSettings();
 
-    // medQuickAccessMenu loads default workspace to open, so we can switch to it npw
+    // medQuickAccessMenu loads default workspace to open, so we can switch to it now
     d->quickAccessWidget->switchToCurrentlySelected();
 }
 
