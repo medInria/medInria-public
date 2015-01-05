@@ -17,10 +17,7 @@
 #include <medItkFloat3SHImageData.h>
 #include <medVtkViewItkSHImageInteractor.h>
 
-#include <medItkSHImageDataNrrdReader.h>
-#include <medItkSHImageDataNiftiReader.h>
-#include <medItkSHImageMetaDataReader.h>
-
+#include <itkDataSHImageReader.h>
 #include <medItkSHImageMetaDataWriter.h>
 
 #include <dtkLog/dtkLog.h>
@@ -57,10 +54,7 @@ bool medItkSHImagePlugin::initialize() {
     if (!medItkFloat3SHImageData::registered())  { dtkWarn() << "Unable to register medItkFloat3SHImageData type";  }
     if (!medVtkViewItkSHImageInteractor::registered())  { dtkWarn() << "Unable to register medVtkViewItkSHImageInteractor type";  }
 
-    if (!medItkSHImageMetaDataReader::registered())  { dtkWarn() << "Unable to register medItkSHImageMetaDataReader type";  }
-    if (!medItkSHImageDataNiftiReader::registered()) { dtkWarn() << "Unable to register medItkSHImageDataNiftiReader type"; }
-    if (!medItkSHImageDataNrrdReader::registered())  { dtkWarn() << "Unable to register medItkSHImageDataNrrdReader type";  }
-
+    if (!medItkSHImageReader::registered())  { dtkWarn() << "Unable to register medItkSHImageReader type";  }
     if(!medItkSHImageMetaDataWriter::registered())  { dtkWarn() << "Unable to register medItkSHImageMetaDataWriter type"; }
 
     return true;
@@ -105,10 +99,7 @@ QStringList medItkSHImagePlugin::tags() const {
 QStringList medItkSHImagePlugin::types() const {
     return QStringList() << "medItkFloat3SHImageData"
                          << "medItkDouble3SHImageData"
-                         << "medItkSHImageMetaDataReader"
-                         << "medItkSHImageDataNiftiReader"
-                         << "medItkSHImageDataNrrdReader"
-                         << "medItkSHImageMetaDataWriter";
+                         << "medItkSHImageReader";
 }
 
 Q_EXPORT_PLUGIN2(medItkSHImagePlugin, medItkSHImagePlugin)

@@ -220,7 +220,7 @@ void medVtkViewItkSHImageInteractor::setInputData(medAbstractData *data)
         return;
     }
 
-    d->actorProperty = itkDataSHImageVtkViewInteractorPrivate::PropertySmartPointer::New();
+    d->actorProperty = medVtkViewItkSHImageInteractorPrivate::PropertySmartPointer::New();
     d->manager->GetSHVisuManagerAxial()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetSHVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetSHVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );

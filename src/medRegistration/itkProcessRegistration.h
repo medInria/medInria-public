@@ -100,7 +100,7 @@ protected :
 
     virtual int update(ImageType);
 
-    virtual void setInputData(medAbstractData *data, int channel);
+    virtual bool setInputData(medAbstractData *data, int channel);
 
 private:
     itkProcessRegistrationPrivate *d;
