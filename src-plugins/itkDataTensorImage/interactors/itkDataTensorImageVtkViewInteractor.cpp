@@ -60,6 +60,7 @@ public:
     medAbstractData *data;
     vtkTensorManager *manager;
     vtkRenderWindow *render;
+    vtkMatrix4x4 *orientationMatrix;
 
     // the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
     itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::Pointer filterFloat;
@@ -75,10 +76,7 @@ public:
 
     QList <medAbstractParameter*> parameters;
 
-    medDoubleParameter *opacityParam;
     medIntParameter *slicingParameter;
-
-
     PropertySmartPointer actorProperty;
 };
 
@@ -92,6 +90,7 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
+    d->orientationMatrix = 0;
 
     d->manager = vtkTensorManager::New();
 
@@ -192,6 +191,25 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
             vtkStructuredPoints *tensors = d->filterFloat->GetVTKTensors();
             vtkMatrix4x4 *matrix = d->filterFloat->GetDirectionMatrix();
 
+            itk::ImageBase<3>::DirectionType directions = dataset->GetDirection();
+            itk::ImageBase<3>::PointType origin = dataset->GetOrigin();
+            d->orientationMatrix = vtkMatrix4x4::New();
+            d->orientationMatrix->Identity();
+            for (int i=0; i<3; i++)
+                for (int j=0; j<3; j++)
+                    d->orientationMatrix->SetElement (i, j, directions (i,j));
+            double v_origin[4], v_origin2[4];
+            for (int i=0; i<3; i++)
+                v_origin[i] = origin[i];
+            v_origin[3] = 1.0;
+            d->orientationMatrix->MultiplyPoint (v_origin, v_origin2);
+            for (int i=0; i<3; i++)
+                d->orientationMatrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
+            double v_spacing[3];
+            for (int i=0; i<3; i++)
+                v_spacing[i] = dataset->GetSpacing()[i];
+
             d->manager->SetInput(tensors);
             d->manager->SetDirectionMatrix(matrix);
 
@@ -202,9 +220,9 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
 
             if (d->view) {
                 int* dim = d->manager->GetInput()->GetDimensions();
-                d->view2d->SetInput( d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), dim );
-                d->view2d->SetInput( d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim );
-                d->view2d->SetInput( d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
+                d->view2d->SetInput( d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), d->orientationMatrix, dim, v_spacing, v_origin);
+                d->view2d->SetInput( d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim, v_spacing, v_origin);
+                d->view2d->SetInput( d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim, v_spacing, v_origin);
             }
 
             d->data = data;
@@ -228,6 +246,21 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
             vtkStructuredPoints* tensors = d->filterDouble->GetVTKTensors();
             vtkMatrix4x4 *matrix = d->filterDouble->GetDirectionMatrix();
 
+            itk::ImageBase<3>::DirectionType directions = dataset->GetDirection();
+            itk::ImageBase<3>::PointType origin = dataset->GetOrigin();
+            d->orientationMatrix = vtkMatrix4x4::New();
+            d->orientationMatrix->Identity();
+            for (int i=0; i<3; i++)
+                for (int j=0; j<3; j++)
+                    d->orientationMatrix->SetElement (i, j, directions (i,j));
+            double v_origin[4], v_origin2[4];
+            for (int i=0; i<3; i++)
+                v_origin[i] = origin[i];
+            v_origin[3] = 1.0;
+            d->orientationMatrix->MultiplyPoint (v_origin, v_origin2);
+            for (int i=0; i<3; i++)
+                d->orientationMatrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
             d->manager->SetInput(tensors);
             d->manager->SetDirectionMatrix(matrix);
 
@@ -238,9 +271,9 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
 
             if (d->view) {
                 int* dim = d->manager->GetInput()->GetDimensions();
-                d->view2d->SetInput(d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), dim);
-                d->view2d->SetInput(d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), dim);
-                d->view2d->SetInput(d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), dim);
+                d->view2d->SetInput(d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), d->orientationMatrix, dim);
+                d->view2d->SetInput(d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim);
+                d->view2d->SetInput(d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim);
             }
 
             d->data = data;
@@ -254,13 +287,6 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
     d->manager->GetTensorVisuManagerAxial()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetTensorVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetTensorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );
-
-
-    d->opacityParam = new medDoubleParameter("Opacity", this);
-    d->opacityParam->setRange(0,1);
-    d->opacityParam->setSingleStep(0.01);
-    d->opacityParam->setValue(1);
-    d->parameters << d->opacityParam;
 
     medStringListParameter *shapeParam = new medStringListParameter("Shape", data);
     d->parameters << shapeParam;
@@ -306,8 +332,8 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
     d->parameters << multiplierParam;
 
     d->parameters << visibilityParameter();
+    d->parameters << opacityParameter();
 
-    connect(d->opacityParam, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     connect(shapeParam, SIGNAL(valueChanged(QString)), this, SLOT(setGlyphShape(QString)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
     connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
@@ -527,14 +553,13 @@ void itkDataTensorImageVtkViewInteractor::moveToSlice(int slice)
 
 QWidget* itkDataTensorImageVtkViewInteractor::buildLayerWidget()
 {
-    QSlider *slider = d->opacityParam->getSlider();
+    QSlider *slider = opacityParameter()->getSlider();
     slider->setOrientation(Qt::Horizontal);
     return slider;
 }
 
 QWidget* itkDataTensorImageVtkViewInteractor::buildToolBoxWidget()
 {
-
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
     foreach(medAbstractParameter *parameter, d->parameters)

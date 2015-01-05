@@ -37,10 +37,8 @@ public:
     vtkSetObjectMacro(Input, vtkImageData);
     vtkGetObjectMacro(Input, vtkImageData);
 
-    /** Get/set the transformation matrix that is used to display the glyphs
-     *  according to the image coordinate system */
-    vtkSetObjectMacro(MatrixT,vtkMatrix4x4);
-    vtkGetObjectMacro(MatrixT, vtkMatrix4x4);
+    void SetDirectionMatrix(vtkMatrix4x4 *mat);
+    vtkGetObjectMacro (DirectionMatrix, vtkMatrix4x4);
 
     vtkGetObjectMacro(SHVisuManagerAxial,    vtkSphericalHarmonicVisuManager);
     vtkGetObjectMacro(SHVisuManagerSagittal, vtkSphericalHarmonicVisuManager);
@@ -94,6 +92,12 @@ public:
     /** Set the current position in voxel coordinates. */
     void SetCurrentPosition(const int&, const int&, const int&);
 
+    /** Set the current position in physical coordinates. */
+    void SetCurrentPosition(const double& X, const double& Y, const double& Z);
+
+    /** Set the current position in physical coordinates. */
+    void SetCurrentPosition(const double pos[]);
+
     /** Set the current position in voxel coordinates. */
     void SetCurrentPosition(const int pos[3]);
 
@@ -132,7 +136,8 @@ private:
     vtkRenderWindowInteractor* RenderWindowInteractor;
 
     vtkImageData* Input;
-    vtkMatrix4x4* MatrixT;
+    vtkMatrix4x4 *DirectionMatrix;
+    vtkMatrix4x4 *PhysicalToVoxelCoordinatesTransformMatrix;
 
     vtkRenderer* Renderer;
 

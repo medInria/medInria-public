@@ -177,7 +177,7 @@ void vtkVectorManager::SetCurrentPosition (const double& X, const double& Y, con
 }
 
 
-void vtkVectorManager::SetCurrentPosition (double pos[3])
+void vtkVectorManager::SetCurrentPosition (const double pos[3])
 {
     this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }
