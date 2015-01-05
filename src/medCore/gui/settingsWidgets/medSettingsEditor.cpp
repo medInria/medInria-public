@@ -20,7 +20,7 @@
 #include <dtkGui/dtkSettingsEditor.h>
 
 #include <medMessageController.h>
-#include <medSystemSettingsWidget.h>
+#include <medSettingsWidget.h>
 #include <medSettingsWidgetFactory.h>
 
 class medSettingsEditorPrivate {
@@ -84,7 +84,6 @@ void medSettingsEditor::onSaveClicked()
 {
     if (this->save())
     {
-//       this->close();
         emit finished();
     }
 }
@@ -95,7 +94,6 @@ void medSettingsEditor::onSaveClicked()
 */
 void medSettingsEditor::onCancelClicked()
 {
-//   this->close();
     emit finished();
 }
 
