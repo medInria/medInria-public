@@ -227,7 +227,7 @@ void medVtkViewItkVectorImageInteractor::setInputData(medAbstractData *data)
     d->view2d->SetInput(d->manager->GetVectorVisuManagerSagittal()->GetActor(), d->view->layer(data), mat, dim, v_spacing, v_origin);
     d->view2d->SetInput(d->manager->GetVectorVisuManagerCoronal()->GetActor(), d->view->layer(data), mat, dim, v_spacing, v_origin);
 
-    d->actorProperty = medVtkViewItkVectorFieldInteractorPrivate::PropertySmartPointer::New();
+    d->actorProperty = medVtkViewItkVectorImageInteractorPrivate::PropertySmartPointer::New();
     d->manager->GetVectorVisuManagerAxial()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetVectorVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetVectorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );

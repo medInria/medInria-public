@@ -101,12 +101,13 @@ void undoRedoRegistration::reset()
     //TODO
 }
 
-void undoRedoRegistration::setInputData(medAbstractData *data, int channel)
+bool undoRedoRegistration::setInputData(medAbstractData *data, int channel)
 {
-    itkProcessRegistration::setInputData(data,channel);
-    typedef itk::Image< float, 3 > RegImageType;
-    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
-
+    bool result = itkProcessRegistration::setInputData(data,channel);
+    if (result)
+    {
+        typedef itk::Image< float, 3 > RegImageType;
+        itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
 
         if (channel==0)
             m_factory->SetFixedImage((RegImageType*)this->fixedImage().GetPointer());

@@ -17,7 +17,7 @@
 #include <medItkFloat3SHImageData.h>
 #include <medVtkViewItkSHImageInteractor.h>
 
-#include <itkDataSHImageReader.h>
+#include <medItkSHImageDataReader.h>
 #include <medItkSHImageMetaDataWriter.h>
 
 #include <dtkLog/dtkLog.h>
@@ -54,7 +54,7 @@ bool medItkSHImagePlugin::initialize() {
     if (!medItkFloat3SHImageData::registered())  { dtkWarn() << "Unable to register medItkFloat3SHImageData type";  }
     if (!medVtkViewItkSHImageInteractor::registered())  { dtkWarn() << "Unable to register medVtkViewItkSHImageInteractor type";  }
 
-    if (!medItkSHImageReader::registered())  { dtkWarn() << "Unable to register medItkSHImageReader type";  }
+    if (!medItkSHImageDataReader::registered())  { dtkWarn() << "Unable to register medItkSHImageDataReader type";  }
     if(!medItkSHImageMetaDataWriter::registered())  { dtkWarn() << "Unable to register medItkSHImageMetaDataWriter type"; }
 
     return true;
