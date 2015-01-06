@@ -15,10 +15,9 @@
 
 #include <dtkCore/dtkAbstractProcess.h>
 
-#ifdef DTK_BUILD_COMPOSER
-#include <dtkComposer/dtkComposerTransmitter.h>
-#include <dtkComposer/dtkComposerTransmitterReceiver.h>
-#endif
+#include <medProcessPort.h>
+#include <medProcessInput.h>
+#include <medProcessOutput.h>
 
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
@@ -32,105 +31,6 @@ class medAbstractParameter;
 class medToolBox;
 class medTriggerParameter;
 class medViewContainerSplitter;
-
-
-class medProcessIOPort
-{
-public:
-    medProcessIOPort(QString name) {m_name = name;}
-    virtual ~medProcessIOPort(){}
-
-public:
-    QString name() const {return m_name;}
-
-    virtual void retrieveData(medProcessIOPort *port) {}
-
-/////////////////////////////////////////////////////
-//
-// TODO: Sould we consider using dtkComposerTransmitter* directly??
-// or find another way to link process input/output and composer port ??
-//
-/////////////////////////////////////////////////////
-//#ifdef DTK_BUILD_COMPOSER
-#ifdef IN_PROGRESS
-    virtual dtkComposerTransmitter* toTransmitter()
-    {
-        return NULL;
-    }
-    virtual void updateFromTransmitter(dtkComposerTransmitter* )
-    {
-        return;
-    }
-#endif
-
-private:
-    QString m_name;
-};
-
-template <typename T>
-class medProcessInput : public medProcessIOPort
-{
-public:
-    medProcessInput(QString name, bool isOptional, T* input = NULL) : medProcessIOPort(name)
-    {
-        m_isOptional = isOptional;
-        m_input = input;
-    }
-    virtual ~medProcessInput(){}
-
-public:
-    bool isOptional() const {return m_isOptional;}
-
-    T* input() const {return m_input;}
-    void setInput(T* input) {m_input = input;}
-
-    virtual void retrieveData(medProcessIOPort *otherport)
-    {
-        medProcessInput<T> *otherInputPort = dynamic_cast<medProcessInput<T> *>(otherport);
-        if(otherInputPort)
-            this->setInput(otherInputPort->input());
-    }
-
-//#ifdef DTK_BUILD_COMPOSER
-#ifdef IN_PROGRESS
-    virtual dtkComposerTransmitter* toTransmitter()
-    {
-        dtkComposerTransmitterReceiver<T> *transmitter = new dtkComposerTransmitterReceiver<T>();
-        return transmitter;
-    }
-    virtual void updateFromTransmitter(dtkComposerTransmitter* transmitter)
-    {
-        dtkComposerTransmitterReceiver<T> *receiver = dynamic_cast<dtkComposerTransmitterReceiver<T> *>(transmitter);
-        if(receiver)
-        {
-            this->setInput(receiver->data());
-        }
-        return;
-    }
-#endif
-
-private:
-    bool m_isOptional;
-    T* m_input;
-};
-
-template <typename T>
-class medProcessOutput : public medProcessIOPort
-{
-public:
-    medProcessOutput(QString name, T* output = NULL) : medProcessIOPort(name)
-    {
-        m_output = output;
-    }
-    virtual ~medProcessOutput(){}
-
-public:
-    T* output() const {return m_output;}
-    void setOutput(T* output) {m_output = output;}
-
-private:
-    T* m_output;
-};
 
 
 /**
@@ -152,74 +52,32 @@ public:
     virtual ~medAbstractProcess();
 
 public:
-    QList<medProcessIOPort*> inputs() const;
-    QList<medProcessIOPort*> outputs() const;
+    QList<medProcessPort*> inputs() const;
+    QList<medProcessPort*> outputs() const;
 
-    medProcessIOPort* input(QString name) const;
+    medProcessPort* input(QString name) const;
 
     void retrieveInputs(const medAbstractProcess *);
 
 protected:
-    void appendInput(medProcessIOPort*);
-    void appendOutput(medProcessIOPort*);
+    void appendInput(medProcessPort*);
+    void appendOutput(medProcessPort*);
 
 public:
     virtual QList<medAbstractParameter*> parameters() = 0;
     medAbstractParameter* parameter(QString parameterName);
 
+    template <class T>
+    void setInput(T* data, unsigned int port);
 
+    template <class T>
+    T* input(unsigned int port);
 
-template <class T>
-void setInput(T* data, unsigned int port)
-{
-    if(port >= (unsigned int)this->inputs().size())
-        return;
+    template <class T>
+    void setOutput(T* data, unsigned int port);
 
-    medProcessInput<T>* inputPort = reinterpret_cast< medProcessInput<T> *>(this->inputs().at(port));
-    if(inputPort)
-        inputPort->setInput(data);
-
-    medInputDataPort* inputDataPort = reinterpret_cast< medInputDataPort*>(this->inputs().at(port));
-    if(inputDataPort)
-    {
-        updateContainer(inputDataPort);
-    }
-}
-
-template <class T>
-T* input(unsigned int port)
-{
-    if(port >= (unsigned int)this->inputs().size())
-        return NULL;
-
-    medProcessInput<T>* inputPort = reinterpret_cast< medProcessInput<T> *>(this->inputs().at(port));
-    if(inputPort)
-        return inputPort->input();
-    else return NULL;
-}
-
-template <class T>
-void setOutput(T* data, unsigned int port)
-{
-    if(port >= (unsigned int)this->outputs().size())
-        return;
-
-    medProcessOutput<T>* outputPort = reinterpret_cast<medProcessOutput<T> *>(this->outputs().at(port));
-    if(outputPort)
-        outputPort->setOutput(data);
-}
-
-template <class T>
-T* output(unsigned int port)
-{
-    if(port >= (unsigned int)this->outputs().size())
-        return NULL;
-
-    medProcessOutput<T>* outputPort = reinterpret_cast<medProcessOutput<T> *>(this->outputs().at(port));
-    if(outputPort)
-        return outputPort->output();
-    else return NULL;
-}
+    template <class T>
+    T* output(unsigned int port);
 
 protected slots:
     virtual void handleInput();
@@ -263,6 +121,7 @@ private:
     medAbstractProcessPrivate* d;
 };
 
+
 class medRunnableProcess: public medAbstractJob
 {
     Q_OBJECT
@@ -276,3 +135,5 @@ public:
     virtual void internalRun();
     virtual void cancel();
 };
+
+#include <medAbstractProcess.txx>

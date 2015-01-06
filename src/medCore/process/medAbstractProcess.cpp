@@ -52,8 +52,8 @@ void medRunnableProcess::cancel()
 class medAbstractProcessPrivate
 {
   public:
-    QList<medProcessIOPort*> inputs;
-    QList<medProcessIOPort*> outputs;
+    QList<medProcessPort*> inputs;
+    QList<medProcessPort*> outputs;
     QPointer<medToolBox> toolbox;
     QPointer<QWidget> parameterWidget;
     medTriggerParameter* runParameter;
@@ -79,20 +79,20 @@ medAbstractProcess::~medAbstractProcess()
 }
 
 
-QList<medProcessIOPort*> medAbstractProcess::inputs() const
+QList<medProcessPort*> medAbstractProcess::inputs() const
 {
    return d->inputs;
 }
 
-QList<medProcessIOPort*> medAbstractProcess::outputs() const
+QList<medProcessPort*> medAbstractProcess::outputs() const
 {
     return d->outputs;
 }
 
-medProcessIOPort* medAbstractProcess::input(QString name) const
+medProcessPort* medAbstractProcess::input(QString name) const
 {
-    medProcessIOPort* res = NULL;
-    foreach(medProcessIOPort* port, this->inputs())
+    medProcessPort* res = NULL;
+    foreach(medProcessPort* port, this->inputs())
     {
         if(port->name() == name)
         {
@@ -103,7 +103,7 @@ medProcessIOPort* medAbstractProcess::input(QString name) const
     return res;
 }
 
-void medAbstractProcess::appendInput(medProcessIOPort *input)
+void medAbstractProcess::appendInput(medProcessPort *input)
 {
     d->inputs.append(input);
     medInputDataPort* i = reinterpret_cast< medInputDataPort*>(input);
@@ -111,7 +111,7 @@ void medAbstractProcess::appendInput(medProcessIOPort *input)
         d->containerForInputPort.insert(i, NULL);
 }
 
-void medAbstractProcess::appendOutput(medProcessIOPort *output)
+void medAbstractProcess::appendOutput(medProcessPort *output)
 {
     d->outputs.append(output);
     medOutputDataPort* o = reinterpret_cast< medOutputDataPort*>(output);
@@ -167,13 +167,13 @@ medViewContainerSplitter* medAbstractProcess::viewContainerSplitter()
         QList<medInputDataPort*> inputDataPortList;
         QList<medOutputDataPort*> outputDataPortList;
 
-        foreach(medProcessIOPort *port, this->inputs())
+        foreach(medProcessPort *port, this->inputs())
         {
             medInputDataPort* input = reinterpret_cast< medInputDataPort*>(port);
             if(input)
                 inputDataPortList << input;
         }
-        foreach(medProcessIOPort *port, this->outputs())
+        foreach(medProcessPort *port, this->outputs())
         {
             medOutputDataPort *output = reinterpret_cast<medOutputDataPort*>(port);
             if(output)
@@ -320,9 +320,9 @@ void medAbstractProcess::updateContainer(medInputDataPort *inputDataPort)
 
 void medAbstractProcess::retrieveInputs(const medAbstractProcess *other)
 {
-    foreach(medProcessIOPort *otherProcessPort, other->inputs())
+    foreach(medProcessPort *otherProcessPort, other->inputs())
     {
-        medProcessIOPort *port = this->input(otherProcessPort->name());
+        medProcessPort *port = this->input(otherProcessPort->name());
         if(port)
         {
             port->retrieveData(otherProcessPort);
