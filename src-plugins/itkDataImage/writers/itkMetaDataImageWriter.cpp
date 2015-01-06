@@ -34,8 +34,7 @@ QStringList s_handled() {
                           << "itkDataImageFloat3" << "itkDataImageFloat4"
                           << "itkDataImageDouble3" << "itkDataImageDouble4"
                           << "itkDataImageVectorUChar3" << "itkDataImageVectorFloat3"
-                          << "itkDataImageVectorDouble3"
-                          << "itkDataImageRGB3" << "itkDataImageRGBA3";
+                          << "itkDataImageVectorDouble3";
 }
 
 itkMetaDataImageWriter::itkMetaDataImageWriter(): itkDataImageWriterBase() {
