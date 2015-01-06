@@ -37,6 +37,8 @@ public:
     QList<QPair <QVariant, QVariant> > ranges() const;
     QList<QVariant> steps() const;
 
+    virtual void trigger();
+
 public slots:
     virtual void setValues(const QHash<QString, QVariant> );
 

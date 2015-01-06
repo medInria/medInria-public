@@ -371,7 +371,8 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 
 void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 {
-    d->lutParam->setValue(d->presetToLut[preset]);
+    if(!d->presetToLut[preset].isEmpty())
+      d->lutParam->setValue(d->presetToLut[preset]);
 
     if ( preset == "None" )
     {

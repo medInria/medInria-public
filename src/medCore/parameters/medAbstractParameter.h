@@ -42,6 +42,8 @@ public:
      */
     virtual QWidget* getWidget() = 0;
 
+    virtual void trigger() = 0;
+
     bool match(medAbstractParameter const *other);
     void show();
     void hide();
@@ -92,6 +94,7 @@ public:
     virtual QString value() const;
 public slots:
     virtual void setValue(QString value);
+    virtual void trigger();
 signals:
     void valueChanged(QString);
 protected:
@@ -115,6 +118,7 @@ public:
     virtual int value() const;
 public slots:
     virtual void setValue(int value);
+    virtual void trigger();
 protected:
     /**
      * @brief updateInternWigets
@@ -139,6 +143,7 @@ public:
     virtual double value() const;
 public slots:
     virtual void setValue(double value);
+    virtual void trigger();
 protected:
     /**
      * @brief updateInternWigets
@@ -162,6 +167,7 @@ public:
     virtual bool value() const;
 public slots:
     virtual void setValue(bool value);
+    virtual void trigger();
 protected:
     /**
      * @brief updateInternWigets
@@ -215,6 +221,7 @@ public:
 
 public slots:
     virtual void setValue(const QVector2D &);
+    virtual void trigger();
 
 protected:
     virtual void updateInternWigets() = 0;
@@ -246,6 +253,7 @@ public:
 
 public slots:
     virtual void setValue(const QVector3D &);
+    virtual void trigger();
 
 protected:
     virtual void updateInternWigets() = 0;
@@ -279,6 +287,7 @@ public:
 
 public slots:
     virtual void setValue(const QVector4D &);
+    virtual void trigger();
 
 protected:
     virtual void updateInternWigets() = 0;

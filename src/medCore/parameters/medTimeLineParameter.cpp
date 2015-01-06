@@ -382,3 +382,8 @@ void medTimeLineParameter::removeInternWidget()
     this->removeFromInternWidgets(d->widget);
     d->widget = NULL;
 }
+
+void medTimeLineParameter::trigger()
+{
+    d->timeParameter->trigger();
+}

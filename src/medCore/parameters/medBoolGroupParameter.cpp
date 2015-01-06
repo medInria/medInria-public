@@ -250,3 +250,10 @@ void medBoolGroupParameter::removeInternRadioButtonGroup()
     d->radioButtonLayout = NULL;
 }
 
+void medBoolGroupParameter::trigger()
+{
+    //TODO: to check
+    if(!d->parameters.isEmpty())
+        d->parameters[0]->trigger();
+
+}

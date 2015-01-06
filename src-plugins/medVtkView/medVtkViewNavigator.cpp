@@ -78,7 +78,6 @@ class medVtkViewNavigatorPrivate
 
 };
 
-
 /*=========================================================================
 
     public
@@ -591,7 +590,24 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     switch(orientation)
     {
     case medImageView::VIEW_ORIENTATION_3D:
+    {
         d->currentView = d->view3d;
+        double *pos = d->view3d->GetRenderer()->GetActiveCamera()->GetPosition();
+        double *vup = d->view3d->GetRenderer()->GetActiveCamera()->GetViewUp();
+        double *foc = d->view3d->GetRenderer()->GetActiveCamera()->GetFocalPoint();
+        double   ps = d->view3d->GetRenderer()->GetActiveCamera()->GetParallelScale();
+        QVector3D position( pos[0], pos[1], pos[2] );
+        QVector3D viewup( vup[0], vup[1], vup[2] );
+        QVector3D focal( foc[0], foc[1], foc[2] );
+        QHash <QString,QVariant> cam;
+        cam["Camera Position"] = QVariant(position);
+        cam["Camera Up"] = QVariant(viewup);
+        cam["Camera Focal"] = QVariant(focal);
+        cam["Parallel Scale"] = QVariant(ps);
+
+        if(d->parent->cameraParameter())
+            d->parent->cameraParameter()->setValues(cam);
+    }
         break;
     case medImageView::VIEW_ORIENTATION_AXIAL:
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
