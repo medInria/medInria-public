@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -978,10 +978,6 @@ void vtkImageView::SetColorWindow(double s)
 //----------------------------------------------------------------------------
 void vtkImageView::SetColorWindow(double s,int layer)
 {
-  //layer is not used here yet.
-  if (s < 0)
-    s = 0;
-
   if (s == this->GetColorWindow(layer))
     return;
 
