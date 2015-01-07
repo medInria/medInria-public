@@ -312,12 +312,11 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
     connect(d->minIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
     d->minIntensityParameter->setRange(levelMin, levelMax);
 
-    d->minIntensityParameter->setValue(range[0]);
-
     d->maxIntensityParameter = new medDoubleParameter("Max Intensity", this);
     connect(d->maxIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
     d->maxIntensityParameter->setRange(levelMin, levelMax);
 
+    d->minIntensityParameter->setValue(range[0]);
     d->maxIntensityParameter->setValue(range[1]);
 
     if(d->isFloatImage)

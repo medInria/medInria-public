@@ -29,11 +29,7 @@ class medDoubleSpinBox : public QDoubleSpinBox
 public:
     virtual QString textFromValue ( double value ) const
     {
-        std::ostringstream oss;
-        oss << std::setprecision(7) << value;
-
-        QString res = QString(oss.str().c_str());
-        return res;
+        return QString::number(value, 'g', 7);
     }
 };
 
