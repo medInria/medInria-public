@@ -218,13 +218,17 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->adjustSizeButton->setShortcut(Qt::AltModifier + Qt::Key_A);
     d->adjustSizeButton->setToolTip(tr("Adjust containers size"));
     QObject::connect(d->adjustSizeButton, SIGNAL(clicked()), this, SLOT(adjustContainersSize()));
-
-
+    
     //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
     d->rightEndButtons = new QWidget(this);
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    QLabel * prototypeLabel = new QLabel("PROTOTYPE NOT FOR CLINICAL USE");
+    prototypeLabel->setStyleSheet("QLabel { color : red; }");
+    QFont f( "Arial", 10, QFont::Bold);
+    prototypeLabel->setFont(f);
+    rightEndButtonsLayout->addWidget(prototypeLabel);
     rightEndButtonsLayout->addWidget( d->adjustSizeButton );
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
