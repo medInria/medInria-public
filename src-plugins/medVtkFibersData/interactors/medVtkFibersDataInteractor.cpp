@@ -1372,7 +1372,7 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
         it++;
     }
 
-    dtkSmartPointer <medAbstractData> savedBundle = medAbstractDataFactory::instance()->createSmartPointer("medVtkFibersData");
+    medAbstractData *savedBundle = medAbstractDataFactory::instance()->create("medVtkFibersData");
     if (!savedBundle)
         return;
     
