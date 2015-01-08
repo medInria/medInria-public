@@ -48,8 +48,6 @@ public slots:
     void moveToSlice(int slice);
     void setPreset(QString value);
     virtual void setLut(QString lut);
-    void setWindow(double window);
-    void setLevel(double level);
     void setWindowLevel(QHash<QString, QVariant>);
     void enableWIndowLevel(bool enable);
 
