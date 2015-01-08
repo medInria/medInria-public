@@ -441,6 +441,8 @@ void medDatabaseView::onCreatePatientRequested(void)
         birthdate = editDialog.value(medMetaDataKeys::BirthDate.label()).toString();
         gender = editDialog.value(medMetaDataKeys::Gender.label()).toString();
 
+        // TODO: Hack to be able to create patient using medAbstractData
+        // Need to be rethought
         medAbstractData* medData = new medAbstractData();
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
@@ -495,6 +497,8 @@ void medDatabaseView::onCreateStudyRequested(void)
         {
             QString studyName = editDialog.value(medMetaDataKeys::StudyDescription.label()).toString();
 
+            // TODO: Hack to be able to create study using medAbstractData
+            // Need to be rethought
             medAbstractData* medData = new medAbstractData();
 
             medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );

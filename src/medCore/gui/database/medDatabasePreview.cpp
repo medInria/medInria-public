@@ -189,6 +189,9 @@ medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()
 
 void medDatabasePreviewDynamicScene::previewMouseMoveEvent(QMouseEvent *event, int width)
 {
+    if(d->seriesDescriptionDataIndexPairList.empty())
+        return;
+
     int seriesIndex = event->x() / (width / (double)d->seriesDescriptionDataIndexPairList.size());
     seriesIndex = qBound(0, seriesIndex, d->seriesDescriptionDataIndexPairList.size()-1);
     this->setImage(d->seriesDescriptionDataIndexPairList.at(seriesIndex).first);

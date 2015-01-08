@@ -30,7 +30,7 @@ class medAbstractDatabaseImporterPrivate
 {
 public:
     QString file;
-    medAbstractData *data;
+    dtkSmartPointer<medAbstractData> data;
     static QMutex mutex;
     bool isCancelled;
     bool indexWithoutImporting;
@@ -431,7 +431,7 @@ void medAbstractDatabaseImporter::importData()
         
 
     QString size ="";
-    if ( medAbstractImageData *imagedata = dynamic_cast<medAbstractImageData*> ( d->data) )
+    if ( medAbstractImageData *imagedata = dynamic_cast<medAbstractImageData*> ( d->data.data()) )
         size = QString::number ( imagedata->zDimension() );
     d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
 
