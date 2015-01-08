@@ -1,3 +1,12 @@
+medInria v2.2.2:
+- Minimum CMake version is now 2.8.10, as it corrects problem with automoc
+- Window/Level sliders are now expressed as Min/Max for easier manipulation
+- Fixed a bug that was wasting disk space by saving non persistent items on disk
+- Restore split presets, ROI file loading, RGB(A) image support
+- Undo/Redo support in paint segmentation
+- Allow coloring of vector field by a single color for field comparisons
+- Various bugs and crashes corrections
+
 medInria v2.2.1:
 - Presets for images are back
 - Reversed Loni Lut added
