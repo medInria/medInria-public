@@ -138,7 +138,6 @@ void medAbstractData::invokeModified()
 
 QImage& medAbstractData::thumbnail()
 {
-    this->retain();
     if(d->thumbnail == QImage())
     {
         if (QThread::currentThread() != QApplication::instance()->thread())
@@ -146,7 +145,6 @@ QImage& medAbstractData::thumbnail()
         else
             this->generateThumbnail();
     }
-    this->release();
 
     return d->thumbnail;
 }
