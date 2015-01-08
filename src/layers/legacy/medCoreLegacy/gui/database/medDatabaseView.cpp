@@ -11,8 +11,6 @@
 
 =========================================================================*/
 
-#include <qnamespace.h>
-
 #include <medDatabaseView.h>
 #include <medDataManager.h>
 #include <medAbstractDatabaseItem.h>
