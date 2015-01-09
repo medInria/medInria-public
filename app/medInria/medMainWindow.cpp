@@ -20,6 +20,7 @@
 #include <medHomepageArea.h>
 
 #include <medTabbedViewContainers.h>
+#include <medViewContainer.h>
 
 #include <medSettingsManager.h>
 #include <medSettingsEditor.h>
@@ -94,6 +95,8 @@ public:
 
     QToolButton *screenshotButton;
     QList<QUuid> expectedUuids;
+    QHash<QString, medViewContainer*> fileToContainerHash;
+    QHash<QUuid, medViewContainer*> uuidToContainerHash;
 };
 
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
@@ -317,14 +320,41 @@ void medMainWindow::processNewInstanceMessage(const QString& message)
     if (message.toLower().startsWith("/open "))
     {
         const QString filename = message.mid(6);
-        this->setStartup(medMainWindow::WorkSpace, QStringList() << filename);
+        QStringList files(filename);
+        QList<QStringList> allFiles;
+        this->setStartup(medMainWindow::WorkSpace, allFiles << files);
     }
 }
 
-void medMainWindow::setStartup(const AreaType areaIndex,const QStringList& filenames) {
+void medMainWindow::setStartup(const AreaType areaIndex,const QList<QStringList>& filenames)
+{
     switchToArea(areaIndex);
-    for (QStringList::const_iterator i= filenames.constBegin();i!=filenames.constEnd();++i)
-        open(i->toLocal8Bit().constData());
+
+    QList<medViewContainer*> currentContainers = d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersInTab(0);
+
+    medViewContainer* currentContainer = 0;
+    medViewContainer* initialContainer = 0;
+
+    if(!currentContainers.isEmpty())
+    {
+        currentContainer = currentContainers[0];
+        initialContainer = currentContainer;
+    }
+
+    for(QList<QStringList>::const_iterator it=filenames.constBegin(); it!=filenames.constEnd(); ++it)
+    {
+        medViewContainer *newContainer = currentContainer->splitVertically();
+        currentContainer = newContainer;
+        QStringList list = *it;
+        for (QStringList::const_iterator i= list.constBegin();i!=list.constEnd();++i)
+        {
+            d->fileToContainerHash.insert(i->toLocal8Bit().constData(), newContainer);
+            open(i->toLocal8Bit().constData());
+        }
+    }
+
+    // initial container is empty so we can close it
+    initialContainer->close();
 }
 
 void medMainWindow::switchToArea(const AreaType areaIndex)
@@ -359,6 +389,7 @@ void medMainWindow::open(const QString & path)
     QEventLoop loop;
     QUuid uuid = medDataManager::instance()->importPath(path, false);
     d->expectedUuids.append(uuid);
+    d->uuidToContainerHash.insert(uuid, d->fileToContainerHash.value(path));
     connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
             this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
     while( d->expectedUuids.contains(uuid)) {
@@ -375,7 +406,15 @@ void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
                    this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
         if (index.isValid()) {
             this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
-            d->workspaceArea->currentWorkspace()->open(index);
+            medViewContainer *container = d->uuidToContainerHash.value(uuid);
+            if(container)
+            {
+                container->addData(index);
+                d->fileToContainerHash.remove(d->fileToContainerHash.key(container));
+                this->adjustContainersSize();
+                d->uuidToContainerHash.remove(uuid);
+            }
+            else d->workspaceArea->currentWorkspace()->open(index);
         }
     }
 }
@@ -437,6 +476,12 @@ void medMainWindow::captureScreenshot()
     outImage.save(fileName, format.constData());
 }
 
+
+/**
+ * @brief Overload existing showFullScreen().
+ *
+ * Allows the update of the fullScreen button.
+ */
 void medMainWindow::showFullScreen()
 {
     d->fullscreenButton->blockSignals(true);
@@ -446,6 +491,11 @@ void medMainWindow::showFullScreen()
     this->setAcceptDrops(true);
 }
 
+/**
+ * @brief Overload existing showNormal().
+ *
+ * Allows the update of the fullScreen button.
+ */
 void medMainWindow::showNormal()
 {
     d->fullscreenButton->blockSignals(true);
@@ -454,6 +504,11 @@ void medMainWindow::showNormal()
     QMainWindow::showNormal();
 }
 
+/**
+ * @brief Overload existing showMaximized().
+ *
+ * Allows the update of the fullScreen button.
+ */
 void medMainWindow::showMaximized()
 {
     d->fullscreenButton->blockSignals(true);

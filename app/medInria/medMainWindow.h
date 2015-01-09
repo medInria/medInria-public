@@ -39,7 +39,7 @@ public:
     void saveSettings();
     QWidget* currentArea() const;
 
-    void setStartup(const AreaType areaIndex,const QStringList& filenames);
+    void setStartup(const AreaType areaIndex, const QList<QStringList> &filenames);
     void resizeEvent( QResizeEvent * event );
 
 signals:
@@ -80,25 +80,8 @@ private slots:
 
     void availableSpaceOnStatusBar();
 
-    /**
-     * @brief Overload existing showFullScreen().
-     *
-     * Allows the update of the fullScreen button.
-     */
     void showFullScreen();
-
-    /**
-     * @brief Overload existing showNormal().
-     *
-     * Allows the update of the fullScreen button.
-     */
     void showNormal();
-
-    /**
-     * @brief Overload existing showMaximized().
-     *
-     * Allows the update of the fullScreen button.
-     */
     void showMaximized();
 
     void adjustContainersSize();

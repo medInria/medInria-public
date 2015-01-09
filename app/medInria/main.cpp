@@ -97,7 +97,8 @@ int main(int argc,char* argv[]) {
 
     medSettingsManager* mnger = medSettingsManager::instance();
 
-    QStringList posargs;
+    QList<QStringList> posargs;
+    int k = 0;
     for (int i=1;i<application.argc();++i) {
         const QString arg = application.argv()[i];
         if (arg.startsWith("--")) {
@@ -112,19 +113,32 @@ int main(int argc,char* argv[]) {
             for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
                 if (arg.startsWith(*opt))
                     valid_option = true;
+                if(arg.startsWith("--view"))
+                {
+                    posargs.append(QStringList());
+                    k++;
+                }
             if (!valid_option) { qDebug() << "Ignoring unknown option " << arg; }
             continue;
         }
-        posargs.append(arg);
+        if(k==0)
+            continue;
+
+        posargs[k-1].append(arg);
     }
 
     const bool DirectView = dtkApplicationArgumentsContain(&application,"--view") || posargs.size()!=0;
     int runningMedInria = 0;
     if (DirectView) {
         show_splash = false;
-        for (QStringList::const_iterator i=posargs.constBegin();i!=posargs.constEnd();++i) {
-            const QString& message = QString("/open ")+*i;
-            runningMedInria = application.sendMessage(message);
+        for(QList<QStringList>::const_iterator it=posargs.constBegin(); it!=posargs.constEnd(); ++it)
+        {
+            QStringList list = *it;
+            for (QStringList::const_iterator i= list.constBegin();i!=list.constEnd();++i)
+            {
+                const QString& message = QString("/open ")+*i;
+                runningMedInria = application.sendMessage(message);
+            }
         }
     } else {
         runningMedInria = application.sendMessage("");
