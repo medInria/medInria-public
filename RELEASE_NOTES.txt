@@ -5,6 +5,7 @@ medInria v2.2.2:
 - Restore split presets, ROI file loading, RGB(A) image support
 - Undo/Redo support in paint segmentation
 - Allow coloring of vector field by a single color for field comparisons
+- Fixed Depth-Peeling on NVidia cards, improved general performance a bit
 - Various bugs and crashes corrections
 
 medInria v2.2.1:
