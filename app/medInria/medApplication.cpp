@@ -170,7 +170,7 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
 
     //Register settingsWidgets
-    medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
+    medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
     settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
     settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 
