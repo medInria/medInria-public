@@ -146,12 +146,14 @@ public:
     void changeDisplayAlpha( qreal step );
     void resetDisplayAlpha();
 
-    void triggerVertexChanged();
+    void triggerVertexMoving();
+    void triggerVertexSet();
     // void keyPressEvent(QKeyEvent *event);
     // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 signals:
-    void vertexChanged();
+    void vertexMoving();
+    void vertexSet();
     void vertexRemoved();
     void vertexAdded();
     void switchMode();

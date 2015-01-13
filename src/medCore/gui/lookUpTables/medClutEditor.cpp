@@ -162,7 +162,7 @@ void medClutEditorVertex::setValue()
     this->shiftValue(amount);
     if ( medClutEditorTable * table =
         dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
-        table->triggerVertexChanged();
+        table->triggerVertexSet();
     d->setValueSpinBox->blockSignals(false);
 }
 
@@ -329,7 +329,7 @@ void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if ( medClutEditorTable * table =
         dynamic_cast< medClutEditorTable * >( this->parentItem() ) ) {
             table->constrainMoveSelection( this, withShift );
-            table->triggerVertexChanged();
+            table->triggerVertexMoving();
     }
     d->setValueSpinBox->setValue((double)this->value().x());
     // this->updateValue();
@@ -371,7 +371,10 @@ void medClutEditorVertex::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     this->QGraphicsItem::mouseReleaseEvent(event);
     if ( medClutEditorTable * table =
         dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+    {
         table->finalizeMoveSelection();
+        table->triggerVertexSet();
+    }
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -484,7 +487,7 @@ void medClutEditorTable::updateVerticesToDisplay()
     if(d->discreteMode)
     {
         QHash<medClutEditorVertex *, medClutEditorVertex *> *hash = this->calculateCoupledVertices(d->principalVertices);
-        if(hash && hash->size()>2) //if less than 2 vertices, stay in continuous mode
+        if(hash)
         {
             d->verticesToDisplay.clear(); //reset list of vertices to display
             
@@ -592,7 +595,6 @@ void medClutEditorTable::constrainMoveSelection( medClutEditorVertex * driver,
 
                 vertex->forceGeometricalConstraints( limits );
     }
-    // emit vertexChanged();
 }
 
 void medClutEditorTable::finalizeMoveSelection()
@@ -600,7 +602,6 @@ void medClutEditorTable::finalizeMoveSelection()
     foreach (medClutEditorVertex * vertex, d->principalVertices)
         if ( vertex->isSelected() )
             vertex->finalizeMove();
-    // emit vertexChanged();
 }
 
 void medClutEditorTable::updateCoordinates()
@@ -706,7 +707,7 @@ void medClutEditorTable::setColorOfSelection( const QColor & color )
         if ( vertex->isSelected() ) {
             vertex->setColor( newColor );
             updateVerticesToDisplay();
-            emit vertexChanged();
+            emit vertexSet();
         }
 }
 
@@ -747,7 +748,7 @@ void medClutEditorTable::scaleWindowWidth( qreal factor )
         vertex->shiftValue( offset * ( factor - 1.0 ), false );
     }
 
-    emit vertexChanged();
+    emit vertexMoving();
 }
 
 void medClutEditorTable::shiftWindowCenter( qreal amount )
@@ -759,7 +760,7 @@ void medClutEditorTable::shiftWindowCenter( qreal amount )
     foreach (medClutEditorVertex * vertex, d->principalVertices)
         vertex->shiftValue( factor * amount, false );
 
-    emit vertexChanged();
+    emit vertexMoving();
 }
 
 void medClutEditorTable::setup(float min, float max, int size, int *table)
@@ -1012,10 +1013,16 @@ void medClutEditorTable::resetDisplayAlpha()
     this->update();
 }
 
-void medClutEditorTable::triggerVertexChanged()
+void medClutEditorTable::triggerVertexMoving()
 {
     updateVerticesToDisplay();
-    emit vertexChanged();
+    emit vertexMoving();
+}
+
+void medClutEditorTable::triggerVertexSet()
+{
+    updateVerticesToDisplay();
+    emit vertexSet();
 }
 
 // void medClutEditorTable::keyPressEvent(QKeyEvent *event)

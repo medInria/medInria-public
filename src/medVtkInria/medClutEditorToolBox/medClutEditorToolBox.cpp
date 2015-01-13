@@ -260,7 +260,8 @@ void medClutEditorToolBox::initializeTable(void)
 
     medClutEditorTable *lut = new medClutEditorTable("Unknown");
     d->scene->addItem( lut );
-    connect (lut, SIGNAL(vertexChanged()), this, SLOT(onVertexMoved()));
+    connect (lut, SIGNAL(vertexMoving()), this, SLOT(onVertexMoved()));
+    connect (lut, SIGNAL(vertexSet()), this, SLOT(onVertexMoved()));
     connect (lut, SIGNAL(vertexAdded()),   this, SLOT(onVertexMoved()));
     connect (lut, SIGNAL(vertexRemoved()), this, SLOT(onVertexMoved()));
     if(d->discreteMode)
@@ -291,6 +292,10 @@ void medClutEditorToolBox::applyTable(medAbstractView* view)
         clutTable->getTransferFunction(scalars, colors);
         this->setColorLookupTable(view, scalars, colors);
         view->viewWidget()->update();
+
+        //modifies the interpolation used before rendering (default=linear, set when setting VR), 
+        //Neareast-N does not create new values (good for histogram consistency)
+        static_cast<medVtkViewBackend*>(view->backend())->view3D->GetVolumeProperty()->SetInterpolationTypeToNearest();
     }
 }
 
@@ -325,7 +330,7 @@ void medClutEditorToolBox::onNewTableAction(void)
 {
     this->initializeTable();
     if ( medClutEditorTable * table = d->scene->table() )
-        table->triggerVertexChanged();
+        table->triggerVertexSet();
 }
 
 // void medClutEditorToolBox::onColorAction(void)
@@ -575,7 +580,6 @@ void medClutEditorToolBox::addVertex(QPointF value, QColor color)
     medClutEditorVertex *vertex = new medClutEditorVertex(value, position, color);
     this->getScene()->table()->addVertex(vertex);
     this->getScene()->table()->finalizeMoveSelection();
-    this->getScene()->table()->triggerVertexChanged();
 }
 
 void medClutEditorToolBox::forceLayer(int layer)
