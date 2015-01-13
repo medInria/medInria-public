@@ -106,3 +106,8 @@ void medDataIndexParameter::removeInternDropSite()
     this->removeFromInternWidgets(d->dropSite);
     d->dropSite = NULL;
 }
+
+void medDataIndexParameter::trigger()
+{
+    emit valueChanged(d->value);
+}

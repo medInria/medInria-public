@@ -496,7 +496,7 @@ QWidget* medVtkViewItkScalarImageInteractor::buildLayerWidget()
         return this->opacityParameter()->getSlider();
 }
 
-void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
+void medVtkViewItkScalarImageInteractor::setWindowLevelFromMinMax()
 {
     medDoubleParameter *sender = dynamic_cast<medDoubleParameter *>(this->sender());
     if(!sender)

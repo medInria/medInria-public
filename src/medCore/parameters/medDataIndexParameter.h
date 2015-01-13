@@ -40,6 +40,7 @@ public:
 public slots:
     void setValue(medDataIndex values);
     void clear();
+    virtual void trigger();
 
 signals:
     void valueChanged (medDataIndex);

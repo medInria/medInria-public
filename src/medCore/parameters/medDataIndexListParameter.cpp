@@ -55,7 +55,7 @@ QWidget* medDataIndexListParameter::getWidget()
     return this->getLabel();
 }
 
-void medDataListParameter::trigger()
+void medDataIndexListParameter::trigger()
 {
     emit valuesChanged(d->values);
 }
