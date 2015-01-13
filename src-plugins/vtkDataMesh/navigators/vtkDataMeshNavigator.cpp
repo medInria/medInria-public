@@ -132,12 +132,6 @@ void vtkDataMeshNavigator::enableDepthPeeling(bool enabled)
 {
     if ( enabled )
     {
-        // Necessary options for depth-peeling
-        vtkRenderWindow * renWin = d->view3d->GetRenderWindow();
-        if (renWin) {
-            renWin->SetAlphaBitPlanes(1);
-            renWin->SetMultiSamples(0);
-        }
         // Activate depth-peeling to have a proper opacity rendering
         d->view3d->GetRenderer()->SetUseDepthPeeling(1);
         d->view3d->GetRenderer()->SetMaximumNumberOfPeels(100);

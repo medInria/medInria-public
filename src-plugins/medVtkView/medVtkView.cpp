@@ -83,6 +83,8 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->renWin = vtkRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
+    d->renWin->SetAlphaBitPlanes(1);
+    d->renWin->SetMultiSamples(0);
             // needed for imersive room
     if (qApp->arguments().contains("--stereo"))
         d->renWin->SetStereoRender(1);
