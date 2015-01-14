@@ -65,7 +65,8 @@ public:
             std::cerr << err << std::endl;
         }
 
-        
+        output->copyMetaDataFrom(input);
+
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " threshold (" + QString::number(threshold) + ")";
     
