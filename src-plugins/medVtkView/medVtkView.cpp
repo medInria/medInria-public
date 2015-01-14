@@ -47,6 +47,11 @@
 #include <medParameterPoolManager.h>
 #include <medSettingsManager.h>
 
+// declare x11-specific function to prevent the window manager breaking thumbnail generation
+#ifdef Q_WS_X11
+void qt_x11_wait_for_window_manager(QWidget*);
+#endif
+
 class medVtkViewPrivate
 {
 public:
@@ -430,6 +435,10 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     d->renWin->SetSize(w,h);
     render();
 
+// X11 likes to animate window creation, which breaks our rendering as we want to take a single snapshot to use as the thumbnail
+#ifdef Q_WS_X11
+    qt_x11_wait_for_window_manager(d->viewWidget);
+#endif
     QImage thumbnail = QPixmap::grabWidget(d->viewWidget).toImage();
 
     this->blockSignals(false);

@@ -22,6 +22,10 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
+#ifdef Q_WS_X11
+void qt_x11_wait_for_window_manager(QWidget*);
+#endif
+
 class medAbstractDataPrivate
 {
 public:
@@ -153,10 +157,31 @@ void medAbstractData::generateThumbnail()
 {
     //TODO find which view is handled by this type of data - RDE
 
+    // We need to get a handle to the main window, so we can A) find its position, and B) ensure it is drawn over the temporary window
+    const QVariant property = QApplication::instance()->property("MainWindow");
+    QObject* qObject = property.value<QObject*>();
+    QMainWindow* aMainWindow = dynamic_cast<QMainWindow*>(qObject);
+
+    const QSize windowSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height);
     dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
-    view->setOffscreenRendering(true);
+
+    // Show our view in a seperate, temporary window
+    view->viewWidget()->show();
+    // position the temporary window behind the main application
+    view->viewWidget()->move(aMainWindow->geometry().x(), aMainWindow->geometry().y());
+    // and raise the main window above the temporary
+    aMainWindow->raise();
+
+    // We need to wait for the window manager to finish animating before we can continue.
+#ifdef Q_WS_X11
+    qt_x11_wait_for_window_manager(view->viewWidget());
+#endif
+
     view->addLayer(this);
-    d->thumbnail = view->generateThumbnail(QSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height));
+
+    // We're rendering here, to the temporary window, and will then use the resulting image
+    d->thumbnail = view->generateThumbnail(windowSize);
+    view->viewWidget()->hide();
 }
 
 
