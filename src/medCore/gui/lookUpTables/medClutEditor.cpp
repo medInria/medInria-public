@@ -1427,43 +1427,43 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
 
 void medClutEditorView::wheelEvent( QWheelEvent * event )
 {
-    qreal shift = event->delta();
-    qreal scale = exp( 0.001 * static_cast< double >( event->delta() ) );
-    scale = qMax( 0.0, scale );
+    //qreal shift = event->delta();
+    //qreal scale = exp( 0.001 * static_cast< double >( event->delta() ) );
+    //scale = qMax( 0.0, scale );
 
-    bool withShift =
-        static_cast<bool>( event->modifiers() & Qt::ShiftModifier );
-    bool withCtrl =
-        static_cast<bool>( event->modifiers() & Qt::ControlModifier );
+    //bool withShift =
+    //    static_cast<bool>( event->modifiers() & Qt::ShiftModifier );
+    //bool withCtrl =
+    //    static_cast<bool>( event->modifiers() & Qt::ControlModifier );
 
-    if ( !withCtrl )
-    {
-        medClutEditorScene * scene =
-            dynamic_cast< medClutEditorScene * >( this->scene() );
-        if ( scene != NULL )
-        {
-            if ( !withShift )
-                scene->scaleRange( scale );
-            else
-                scene->shiftRange( shift );
+    //if ( !withCtrl )
+    //{
+    //    medClutEditorScene * scene =
+    //        dynamic_cast< medClutEditorScene * >( this->scene() );
+    //    if ( scene != NULL )
+    //    {
+    //        if ( !withShift )
+    //            scene->scaleRange( scale );
+    //        else
+    //            scene->shiftRange( shift );
 
-            if(scene->table())
-                scene->table()->updateVerticesToDisplay();
-        }
-    }
-    else {
-        medClutEditorTable * table = this->table();
-        if ( table != NULL )
-        {
-            if ( !withShift )
-                table->scaleWindowWidth( scale );
-            else
-                table->shiftWindowCenter( shift );
-            table->updateVerticesToDisplay();
-        }
-    }
+    //        if(scene->table())
+    //            scene->table()->updateVerticesToDisplay();
+    //    }
+    //}
+    //else {
+    //    medClutEditorTable * table = this->table();
+    //    if ( table != NULL )
+    //    {
+    //        if ( !withShift )
+    //            table->scaleWindowWidth( scale );
+    //        else
+    //            table->shiftWindowCenter( shift );
+    //        table->updateVerticesToDisplay();
+    //    }
+    //}
 
-    this->update();
+    //this->update();
 }
 
 void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
