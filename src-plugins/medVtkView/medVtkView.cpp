@@ -435,10 +435,15 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     d->renWin->SetSize(w,h);
     render();
 
-// X11 likes to animate window creation, which breaks our rendering as we want to take a single snapshot to use as the thumbnail
 #ifdef Q_WS_X11
-    qt_x11_wait_for_window_manager(d->viewWidget);
+    // X11 likes to animate window creation, which means by the time we grab the
+    // widget, it might not be fully ready yet, in which case we get artefacts.
+    // Only necessary if rendering to an actual screen window.
+    if(d->renWin->GetOffScreenRendering() == 0) {
+        qt_x11_wait_for_window_manager(d->viewWidget);
+    }
 #endif
+
     QImage thumbnail = QPixmap::grabWidget(d->viewWidget).toImage();
 
     this->blockSignals(false);
