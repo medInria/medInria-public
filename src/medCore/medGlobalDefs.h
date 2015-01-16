@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QSize>
 
 namespace med {
 
@@ -13,5 +14,7 @@ struct GPUInfo {
 };
 
 GPUInfo gpuModel();
+
+static const QSize defaultThumbnailSize = QSize(320,320);
 
 }

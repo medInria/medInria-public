@@ -18,7 +18,6 @@
 #include <medAbstractLayeredView.h>
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
-#include <medDatabaseThumbnailHelper.h>
 #include <medGlobalDefs.h>
 
 #include <dtkCore/dtkSmartPointer.h>
@@ -176,7 +175,6 @@ void medAbstractData::generateThumbnail()
         offscreenCapable = true;
 #endif
 
-    const QSize windowSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height);
     dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
 
     if(offscreenCapable) {
@@ -204,7 +202,7 @@ void medAbstractData::generateThumbnail()
     view->addLayer(this);
 
     // We're rendering here, to the temporary window, and will then use the resulting image
-    d->thumbnail = view->generateThumbnail(windowSize);
+    d->thumbnail = view->generateThumbnail(med::defaultThumbnailSize);
 }
 
 
