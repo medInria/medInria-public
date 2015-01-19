@@ -38,11 +38,11 @@ public:
 
 public:
     void addTransformation(medAbstractTransformation *transfo);
-    void addTransformation(QList<medAbstractTransformation *> transfo);
+    void addTransformations(QList<medAbstractTransformation *> transfo);
     QList<medAbstractTransformation *> transformationStack() const;
 
 public:
-    virtual medToolBox* toolbox();
+    //virtual medToolBox* toolbox();
 
 public:
     void resetTransformationStack();

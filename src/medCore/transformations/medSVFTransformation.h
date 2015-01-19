@@ -29,7 +29,7 @@ public:
 
 public:
     virtual medAbstractImageData* parameter() const;
-    virtual void setParameter(medAbstractImageData *parameter);
+    virtual void setParameter(medAbstractImageData *parameter) = 0;
 
 private:
     medSVFTransformationPrivate* d;

@@ -82,14 +82,14 @@ public:
     itkProcessRegistration::ImageType fixedImageType();
     itkProcessRegistration::ImageType movingImageType();
 
-    virtual itk::Transform<double,3,3>::Pointer getTransform() = 0;
+    //virtual itk::Transform<double,3,3>::Pointer getTransform() = 0;
 
     /**
     * @brief Returns a pointer on a QStringList containing the title of the algorithm and its parameters. The first element of the list is the title.
     *
     * @return QString
     */
-    virtual QString getTitleAndParameters() = 0;
+    //virtual QString getTitleAndParameters() = 0;
 
 public slots:
     virtual bool write(const QStringList& files);

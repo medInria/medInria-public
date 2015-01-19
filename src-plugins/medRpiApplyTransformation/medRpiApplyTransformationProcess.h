@@ -43,6 +43,9 @@ public:
 public:
     QList<medAbstractParameter*> parameters();
 
+private slots:
+    void onSVFDropped(const medDataIndex &);
+
 private:
     medRpiApplyTransformationProcessPrivate *d;
 };

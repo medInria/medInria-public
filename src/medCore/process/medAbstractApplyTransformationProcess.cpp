@@ -31,6 +31,7 @@ public:
     QPushButton* addLinearTransfoButton;
     QPushButton* addSVFTransfoButton;
     QPushButton* addDFTransfoButton;
+
 };
 
 medAbstractApplyTransformationProcess::medAbstractApplyTransformationProcess(medAbstractProcess * parent):
@@ -65,8 +66,8 @@ bool medAbstractApplyTransformationProcess::isInteractive() const
 
 QList<medAbstractParameter*> medAbstractApplyTransformationProcess::parameters()
 {
-    //TODO GPR: temporary
-    return QList<medAbstractParameter*>();
+    QList<medAbstractParameter*> params;
+    return params;
 }
 
 void medAbstractApplyTransformationProcess::addTransformation(medAbstractTransformation *transfo)
@@ -74,7 +75,7 @@ void medAbstractApplyTransformationProcess::addTransformation(medAbstractTransfo
     d->transformations << transfo;
 }
 
-void medAbstractApplyTransformationProcess::addTransformation(QList<medAbstractTransformation *> transfo)
+void medAbstractApplyTransformationProcess::addTransformations(QList<medAbstractTransformation *> transfo)
 {
     d->transformations << transfo;
 }
@@ -108,7 +109,7 @@ void medAbstractApplyTransformationProcess::resetTransformationStack()
 {
     d->transformations.clear();
 }
-
+/*
 medToolBox* medAbstractApplyTransformationProcess::toolbox()
 {
     if(d->toolBox.isNull())
@@ -122,7 +123,7 @@ medToolBox* medAbstractApplyTransformationProcess::toolbox()
     }
 
     return d->toolBox;
-}
+}*/
 
 void medAbstractApplyTransformationProcess::addSVFTransfoDialog()
 {
@@ -133,3 +134,5 @@ void medAbstractApplyTransformationProcess::addSVFTransfoDialog()
 
     emit addSVFTransfoRequest(data);
 }
+
+

@@ -266,19 +266,9 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         return res;
 
     QString id = QString (data->identifier());
-    QString::iterator last_charac = id.end() - 1;
-    if (*last_charac == '3'){
-        d->dimensions = 3;
-    }
-    else if (*last_charac == '4'){
-        d->dimensions = 4;
-    }
-    else{
-        qDebug() << "Unable to handle the number of dimensions " \
-                << "for an image of description: "<< data->identifier();
-    }
-
-    *last_charac = '3';
+    medAbstractImageData *imageData = dynamic_cast<medAbstractImageData *>(data);
+    if(imageData)
+        d->dimensions = imageData->dimension();
 
     dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData");
     foreach ( QString metaData, data->metaDataList() )

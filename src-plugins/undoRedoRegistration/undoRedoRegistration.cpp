@@ -141,7 +141,7 @@ void undoRedoRegistration::generateOutput(bool algorithm,itkProcessRegistration 
 
 void undoRedoRegistration::onRegistrationSuccess()
 {
-    registrationFactory::instance()->addTransformation(d->currentProcess->getTransform(), d->currentProcess->getTitleAndParameters());
+    //registrationFactory::instance()->addTransformation(d->currentProcess->getTransform(), d->currentProcess->getTitleAndParameters());
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
     this->generateOutput(true, d->currentProcess);
     //this->parentToolBox()->handleOutput();
