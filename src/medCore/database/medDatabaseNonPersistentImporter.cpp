@@ -19,6 +19,7 @@
 
 #include <medAbstractImageData.h>
 #include <medMetaDataKeys.h>
+#include <medGlobalDefs.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -240,7 +241,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         item->d->seriesName = seriesName;
         item->d->seriesId = seriesId;
         item->d->file = file();
-        item->d->thumb = data->thumbnail();
+        item->d->thumb = data->generateThumbnail(med::defaultThumbnailSize);
         item->d->index = index;
         item->d->data = data;
         item->d->orientation = orientation;

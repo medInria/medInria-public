@@ -93,7 +93,7 @@ protected:
     QString determineFutureImageExtensionByDataType ( const medAbstractData* medData );
 
     QString generateUniqueVolumeId ( const medAbstractData* medData );
-    QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
+    QString generateThumbnail(medAbstractData* medData, QString pathToStoreThumbnail );
 
     void importData();
     void importFile();

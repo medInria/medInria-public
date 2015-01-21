@@ -36,7 +36,6 @@ public:
 
 protected:
     medAbstractData* readFile(QString filename);
-    medAbstractData* readFile(const QStringList filenames );
 
 signals:
     void success(QObject *);

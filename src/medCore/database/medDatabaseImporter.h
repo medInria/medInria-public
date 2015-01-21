@@ -49,7 +49,7 @@ private:
 
     bool checkIfExists ( medAbstractData* medData, QString imageName );
 
-    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
+    medDataIndex populateDatabaseAndGenerateThumbnails (medAbstractData* medData, QString pathToStoreThumbnail );
 
     int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
     int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );

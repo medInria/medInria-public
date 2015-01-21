@@ -645,29 +645,15 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
 * @param pathToStoreThumbnails - path where the thumbnails will be stored
 * @return a list of the thumbnails paths
 **/
-QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
+QString medAbstractDatabaseImporter::generateThumbnail ( medAbstractData* medData, QString pathToStoreThumbnail )
 {
-    QList<QImage> thumbnails = medData->thumbnails();
+    QImage thumbnail = medData->generateThumbnail(med::defaultThumbnailSize);
+    QString thumbnailPath = pathToStoreThumbnail + "thumbnail.png";
+    thumbnail.save ( medStorage::dataLocation() + thumbnailPath, "PNG" );
 
-    QStringList thumbPaths;
+    medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), thumbnailPath );
 
-    if ( !medStorage::mkpath ( medStorage::dataLocation() + pathToStoreThumbnails ) )
-        qDebug() << "Cannot create directory: " << pathToStoreThumbnails;
-
-    for ( int i=0; i < thumbnails.count(); i++ )
-    {
-        QString thumb_name = pathToStoreThumbnails + QString().setNum ( i ) + ".png";
-        thumbnails[i].save ( medStorage::dataLocation() + thumb_name, "PNG" );
-        thumbPaths << thumb_name;
-    }
-
-    QImage refThumbnail = medData->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
-    QString refThumbPath = pathToStoreThumbnails + "ref.png";
-    refThumbnail.save ( medStorage::dataLocation() + refThumbPath, "PNG" );
-
-    medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), refThumbPath );
-
-    return thumbPaths;
+    return thumbnailPath;
 }
 
 //-----------------------------------------------------------------------------------------------------------
