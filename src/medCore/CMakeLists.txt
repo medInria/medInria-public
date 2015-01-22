@@ -13,6 +13,9 @@
 
 project(medCore)
 
+#required for querying the GPU, can be removed once using Qt 5.3
+#using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
+find_package(OpenGL REQUIRED)
 
 ## #############################################################################
 ## List Sources
@@ -85,6 +88,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
+    ${OPENGL_LIBRARIES}
     dtkCore
     dtkGui
     dtkLog
