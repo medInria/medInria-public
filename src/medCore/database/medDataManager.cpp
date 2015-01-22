@@ -16,7 +16,7 @@
 #include <QDebug>
 
 #include <medAbstractDataFactory.h>
-#include <medImporter.h>
+#include <medDatabaseImporter.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseExporter.h>
@@ -124,22 +124,22 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     return NULL;
 }
 
-void medDataManager::runImporter(medImporter* medImporter, const QString& messageText)
+void medDataManager::runImporter(medDatabaseImporter* medDatabaseImporter, const QString& messageText)
 {
     Q_D(medDataManager);
 
     medMessageProgress *message = medMessageController::instance()->showProgress(messageText);
 
-    connect(medImporter, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(medImporter, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
+    connect(medDatabaseImporter, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    connect(medDatabaseImporter, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
 
-    connect(medImporter, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(medImporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(medImporter, SIGNAL(showError(const QString&,unsigned int)),
+    connect(medDatabaseImporter, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(medDatabaseImporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(medDatabaseImporter, SIGNAL(showError(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
-    medJobManager::instance()->registerJobItem(medImporter);
-    QThreadPool::globalInstance()->start(medImporter);
+    medJobManager::instance()->registerJobItem(medDatabaseImporter);
+    QThreadPool::globalInstance()->start(medDatabaseImporter);
 }
 
 
@@ -154,7 +154,7 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
     medAbstractDbController * const controller = persistent ?  static_cast<medAbstractDbController*>(d->dbController) : static_cast<medAbstractDbController*>(d->nonPersDbController);
     const QString messageText = persistent ? "Saving database item" : tr("Opening file item");
 
-    medImporter *importer = new medImporter(data, uuid, controller);
+    medDatabaseImporter *importer = new medDatabaseImporter(data, uuid, controller);
     this->runImporter(importer, messageText);
 
     return uuid;
@@ -175,7 +175,7 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     medAbstractDbController * const controller = persistent ?  static_cast<medAbstractDbController*>(d->dbController) : static_cast<medAbstractDbController*>(d->nonPersDbController);
     const QString messageText = persistent ? "Importing " + info.fileName() : "Importing data item";
 
-    medImporter *importer = new medImporter(info.absoluteFilePath(), uuid, controller, indexWithoutCopying);
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), uuid, controller, indexWithoutCopying);
     this->runImporter(importer, messageText);
     return uuid;
 }

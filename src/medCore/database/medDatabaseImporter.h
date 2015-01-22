@@ -24,14 +24,14 @@
 #include <medJobItem.h>
 #include <medDataIndex.h>
 
-class medImporterPrivate;
+class medDatabaseImporterPrivate;
 class medAbstractData;
 class medAbstractDbController;
 
 /**
-* @class medImporter
+* @class medDatabaseImporter
 * @brief Base class for database importers.
-* @medImporter is in charge of importing (or indexing, any word will be used
+* @medDatabaseImporter is in charge of importing (or indexing, any word will be used
 * hereafter) items into medInria databases.
 * It is designed to run as a thread, to know how to use it, check the documentation
 * of @medJobItem.
@@ -39,15 +39,15 @@ class medAbstractDbController;
 * To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary.
 * For example, see @medDatabaseImporter and @medDatabaseNonPersistentReader
 **/
-class MEDCORE_EXPORT medImporter : public medJobItem
+class MEDCORE_EXPORT medDatabaseImporter : public medJobItem
 {
     Q_OBJECT
 
 public:
-    medImporter (const QString& file, const QUuid &uuid, medAbstractDbController* controller, bool indexWithoutImporting = false);
-    medImporter ( medAbstractData* medData, const QUuid& uuid, medAbstractDbController* controller);
+    medDatabaseImporter (const QString& file, const QUuid &uuid, medAbstractDbController* controller, bool indexWithoutImporting = false);
+    medDatabaseImporter ( medAbstractData* medData, const QUuid& uuid, medAbstractDbController* controller);
 
-    ~medImporter ( void );
+    ~medDatabaseImporter ( void );
 
 
 signals:
@@ -140,7 +140,7 @@ protected:
 
 
 
-    medImporterPrivate *d;
+    medDatabaseImporterPrivate *d;
 
 
 };

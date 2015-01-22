@@ -24,7 +24,7 @@
 class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
-class medImporter;
+class medDatabaseImporter;
 
 
 
@@ -92,7 +92,7 @@ private:
     medDataManager();
     virtual ~medDataManager();
 
-    void runImporter(medImporter*, const QString&);
+    void runImporter(medDatabaseImporter*, const QString&);
 
     static medDataManager * s_instance;
 
