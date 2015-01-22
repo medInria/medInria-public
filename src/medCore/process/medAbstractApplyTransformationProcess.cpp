@@ -32,6 +32,9 @@ public:
     QPushButton* addSVFTransfoButton;
     QPushButton* addDFTransfoButton;
 
+    QUndoStack *commandStack;
+    QUndoView* commandView;
+
 };
 
 medAbstractApplyTransformationProcess::medAbstractApplyTransformationProcess(medAbstractProcess * parent):
@@ -41,16 +44,20 @@ medAbstractApplyTransformationProcess::medAbstractApplyTransformationProcess(med
     d->inputImage = NULL;
     d->transformedImage = NULL;
 
-    medProcessInput<medAbstractImageData> *geometry = new medProcessInput<medAbstractImageData>("Fixed Image", false, d->geometry);
-    this->appendInput(geometry);
+    medProcessDataInput<medAbstractImageData> *geometry = new medProcessDataInput<medAbstractImageData>("Fixed Image", false, d->geometry);
+    this->appendDataInput(geometry);
 
-    medProcessInput<medAbstractImageData> *moving = new medProcessInput<medAbstractImageData>("Moving Image", false, d->inputImage);
-    this->appendInput(moving);
+    medProcessDataInput<medAbstractImageData> *moving = new medProcessDataInput<medAbstractImageData>("Moving Image", false, d->inputImage);
+    this->appendDataInput(moving);
 
     medProcessOutput<medAbstractImageData> *output = new medProcessOutput<medAbstractImageData>(("Output"), d->transformedImage);
-    this->appendOutput(output);
+    this->appendDataOutput(output);
 
     d->toolBox = NULL;
+
+    d->commandStack = new QUndoStack(this);
+    d->commandView = new QUndoView(d->commandStack);
+    d->commandView->hide();
 }
 
 medAbstractApplyTransformationProcess::~medAbstractApplyTransformationProcess()
@@ -109,21 +116,18 @@ void medAbstractApplyTransformationProcess::resetTransformationStack()
 {
     d->transformations.clear();
 }
-/*
+
 medToolBox* medAbstractApplyTransformationProcess::toolbox()
 {
     if(d->toolBox.isNull())
     {
-        d->toolBox = new medToolBox;
-
-        d->addSVFTransfoButton = new QPushButton(tr("Add SVF transfo"));
-        connect(d->addSVFTransfoButton, SIGNAL(clicked()), this, SLOT(addSVFTransfoDialog()));
-
-        d->toolBox->addWidget(d->addSVFTransfoButton);
+        d->toolBox = medAbstractProcess::toolbox();
+        d->toolBox->addWidget(this->commandView());
+        this->commandView()->show();
     }
 
     return d->toolBox;
-}*/
+}
 
 void medAbstractApplyTransformationProcess::addSVFTransfoDialog()
 {
@@ -135,4 +139,13 @@ void medAbstractApplyTransformationProcess::addSVFTransfoDialog()
     emit addSVFTransfoRequest(data);
 }
 
+QUndoStack* medAbstractApplyTransformationProcess::commandStack()
+{
+    return d->commandStack;
+}
+
+QUndoView* medAbstractApplyTransformationProcess::commandView()
+{
+    return d->commandView;
+}
 

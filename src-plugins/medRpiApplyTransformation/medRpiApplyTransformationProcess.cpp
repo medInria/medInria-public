@@ -18,16 +18,20 @@
 
 #include <medAbstractImageData.h>
 #include <medSVFTransformation.h>
+#include <medDisplacementFieldTransformation.h>
 #include <medAbstractTransformation.h>
 #include <medAbstractDataFactory.h>
 #include <medDataIndexParameter.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
+#include <medRpiApplyTransformationCommand.h>
 
 #include <itkProcessRegistration.h>
 #include <rpiDisplacementFieldTransform.h>
 #include <itkImageRegistrationFactory.h>
 #include <itkCastImageFilter.h>
+
+#include <QUndoCommand>
 
 
 // /////////////////////////////////////////////////////////////////
@@ -37,17 +41,11 @@
 class medRpiApplyTransformationProcessPrivate
 {
 public:
-    medDataIndexParameter* SVFTransfoParam;
-    medAbstractImageData *SVFImage;
-
-    typedef itk::Image< float, 3 > RegImageType;
-    itk::ImageRegistrationFactory<RegImageType>::Pointer factory;
-
-    // dummy itkProcessRegistration to beneficiate from input conversions
-    // TODO: find a better solution
-    itkProcessRegistration *dummyProcess;
+    medDataIndexParameter* DisplFieldTransfoParam;
+    medAbstractImageData *DisplFieldImage;
 
 
+    itk::ImageRegistrationFactory<medRpiApplyTransformationProcess::RegImageType>::Pointer factory;
 
 };
 
@@ -57,12 +55,11 @@ public:
 
 medRpiApplyTransformationProcess::medRpiApplyTransformationProcess() : medAbstractApplyTransformationProcess(), d(new medRpiApplyTransformationProcessPrivate)
 {
-    d->SVFTransfoParam = new medDataIndexParameter("SVF Transfo", this);
-    connect(d->SVFTransfoParam, SIGNAL(valueChanged(const medDataIndex &)),this,SLOT(onSVFDropped(const medDataIndex &)));
+    d->DisplFieldTransfoParam = new medDataIndexParameter("Displ Field Transfo", this);
+    connect(d->DisplFieldTransfoParam, SIGNAL(valueChanged(const medDataIndex &)),this,SLOT(addDisplFieldTransfo(const medDataIndex &)));
 
     typedef itk::Image< float, 3 > RegImageType;
     d->factory = itk::ImageRegistrationFactory<RegImageType>::New();
-    d->dummyProcess = new itkProcessRegistration();
 }
 
 medRpiApplyTransformationProcess::~medRpiApplyTransformationProcess()
@@ -90,7 +87,7 @@ QString medRpiApplyTransformationProcess::identifier() const
 QList<medAbstractParameter*> medRpiApplyTransformationProcess::parameters()
 {
     QList<medAbstractParameter *> params;
-    params << d->SVFTransfoParam;
+    params << d->DisplFieldTransfoParam;
     return params;
 }
 
@@ -111,71 +108,47 @@ bool medRpiApplyTransformationProcess::isInteractive() const
     return false;
 }
 
-void medRpiApplyTransformationProcess::onSVFDropped(const medDataIndex &index)
+ void medRpiApplyTransformationProcess::addTransformation(medAbstractTransformation *transfo)
+ {
+     // dummy itkProcessRegistration to beneficiate from input conversions
+     // TODO: find a better solution
+     itkProcessRegistration* dummyProcess = new itkProcessRegistration();
+     dummyProcess->setFixedInput(this->input<medAbstractData>(0));
+     dummyProcess->setMovingInput(this->input<medAbstractData>(1));
+
+     d->factory->SetFixedImage((RegImageType*)dummyProcess->fixedImage().GetPointer());
+     d->factory->SetMovingImage((RegImageType*)dummyProcess->movingImages()[0].GetPointer());
+
+     medRpiApplyTransformationCommand* command = new medRpiApplyTransformationCommand(transfo, d->factory);
+     connect(command, SIGNAL(commandUndone()), this, SLOT(handleEndOfCommand()));
+     connect(command, SIGNAL(commandDone()), this, SLOT(handleEndOfCommand()));
+
+     this->commandStack()->push(command);
+
+     this->setOutput<medAbstractData>(command->output(), 0);
+     handleOutputs();
+
+ }
+
+void medRpiApplyTransformationProcess::addDisplFieldTransfo(const medDataIndex &index)
 {
     if (!index.isValid()){
         return;
     }
 
-    d->SVFImage = dynamic_cast <medAbstractImageData *> ( medDataManager::instance()->retrieveData(index));
+    medAbstractImageData* displFieldImage = dynamic_cast <medAbstractImageData *> ( medDataManager::instance()->retrieveData(index));
+    medDisplacementFieldTransformation* displFieldImageTransfo = new medDisplacementFieldTransformation;
+    displFieldImageTransfo->setParameter(displFieldImage);
 
-    typedef float       PixelType;
-    typedef double      VectorComponentType;
-    const   unsigned int        Dimension = 3;
-
-    typedef itk::Vector< VectorComponentType, Dimension  > VectorPixelType;
-    typedef itk::Image< VectorPixelType, Dimension > DeformationFieldType;
-    typedef rpi::DisplacementFieldTransform<VectorComponentType, Dimension> DisplacementFieldTransformType;
-
-    DeformationFieldType::Pointer deformationField = NULL;
-
-    if(d->SVFImage->PixelType() == typeid(itk::Vector< float, Dimension >))
-    {
-        typedef typename itk::Image< VectorPixelType, Dimension > ConvertedImageType; // We always convert to itk::Vector< double, 3 >
-        typedef typename itk::Image<itk::Vector< float, Dimension >, Dimension> ImageType; // input data type
-        typedef typename itk::CastImageFilter<ImageType, ConvertedImageType> CastFilterType;
-
-        CastFilterType::Pointer caster = CastFilterType::New();
-
-        itk::Object *itkObj = static_cast<itk::Object*>(d->SVFImage->data());
-        ImageType *vectorField = dynamic_cast<ImageType *>(itkObj);
-
-        caster->SetInput(vectorField);
-        caster->Update();
-        deformationField = caster->GetOutput();
-    }
-    else if(d->SVFImage->PixelType() == typeid(itk::Vector< double, Dimension >))
-    {
-        itk::Object *itkObj = static_cast<itk::Object*>(d->SVFImage->data());
-        deformationField = dynamic_cast<DeformationFieldType *>(itkObj);
-    }
-
-    const DisplacementFieldTransformType::Pointer displacementFieldTransform = DisplacementFieldTransformType::New();
-    displacementFieldTransform->SetParametersAsVectorField( deformationField );
-
-    itk::Transform<VectorComponentType,3,3>::ConstPointer test = static_cast<itk::Transform<VectorComponentType,3,3>::ConstPointer>(displacementFieldTransform);
-
-    d->factory->GetGeneralTransform()->InsertTransform(test);
-
-    typedef itk::Image< PixelType, 3 > RegImageType;
-    d->dummyProcess->setFixedInput(this->input<medAbstractData>(0));
-    d->dummyProcess->setMovingInput(this->input<medAbstractData>(1));
-
-    d->factory->SetFixedImage((RegImageType*)d->dummyProcess->fixedImage().GetPointer());
-    d->factory->SetMovingImage((RegImageType*)d->dummyProcess->movingImages()[0].GetPointer());
-
-    d->factory->Update();
-
-    itk::ImageBase<3>::Pointer result = d->factory->GetOutput();
-    result->DisconnectPipeline();
-
-    medAbstractData *output = medAbstractDataFactory::instance()->create("medItkFloat3ImageData");
-    output->setData(result);
-    this->setOutput<medAbstractData>(output, 0);
-
-    handleOutputs();
+    addTransformation(displFieldImageTransfo);
 }
 
+void medRpiApplyTransformationProcess::handleEndOfCommand()
+{
+    medRpiApplyTransformationCommand* command = dynamic_cast<medRpiApplyTransformationCommand*>(this->sender());
+    this->setOutput<medAbstractData>(command->output(), 0);
+    handleOutputs();
+}
 
 dtkAbstractProcess *createmedRpiApplyTransformation()
 {

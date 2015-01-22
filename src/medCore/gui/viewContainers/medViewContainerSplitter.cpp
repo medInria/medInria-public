@@ -266,6 +266,9 @@ void medViewContainerSplitter::adjustContainersSize()
     foreach(int s, currentSizes)
         splitterSize+=s;
 
+    if( this->count() == 0 )
+        return;
+
     int newSize = splitterSize / this->count();
     QList<int> newSizes;
 

@@ -39,13 +39,31 @@ T* medProcessInput<T>::input() const
 }
 
 template <typename T>
+QObject* medProcessInput<T>::content() const
+{
+    return m_input;
+}
+
+template <typename T>
 void medProcessInput<T>::setInput(T* input)
 {
     m_input = input;
 }
 
 template <typename T>
-void medProcessInput<T>::retrieveData(medProcessPort *otherport)
+bool medProcessInput<T>::setContent(QObject* obj)
+{
+    T* data = dynamic_cast<T*>(obj);
+    if(data)
+    {
+        m_input = data;
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+void medProcessInput<T>::retrieveContentFromPort(medProcessPort *otherport)
 {
     medProcessInput<T> *otherInputPort = dynamic_cast<medProcessInput<T> *>(otherport);
     if(otherInputPort)

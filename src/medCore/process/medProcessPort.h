@@ -14,14 +14,16 @@
 #pragma once
 
 #include <QString>
+#include <QObject>
 
 #ifdef DTK_BUILD_COMPOSER
 #include <dtkComposer/dtkComposerTransmitter.h>
 #include <dtkComposer/dtkComposerTransmitterReceiver.h>
 #endif
 
-class medProcessPort
+class medProcessPort: public QObject
 {
+
 public:
     medProcessPort(QString name) {m_name = name;}
     virtual ~medProcessPort(){}
@@ -29,7 +31,10 @@ public:
 public:
     QString name() const {return m_name;}
 
-    virtual void retrieveData(medProcessPort *port) {}
+    virtual void retrieveContentFromPort(medProcessPort *port) {}
+
+    virtual QObject* content() const = 0;
+    virtual bool setContent(QObject*) = 0;
 
     /////////////////////////////////////////////////////
     //

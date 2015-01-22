@@ -37,12 +37,12 @@ public:
     virtual int update() = 0;
 
 public:
-    void addTransformation(medAbstractTransformation *transfo);
+    virtual void addTransformation(medAbstractTransformation *transfo);
     void addTransformations(QList<medAbstractTransformation *> transfo);
     QList<medAbstractTransformation *> transformationStack() const;
 
 public:
-    //virtual medToolBox* toolbox();
+    virtual medToolBox* toolbox();
 
 public:
     void resetTransformationStack();
@@ -50,8 +50,12 @@ public:
 public:
     void setGeometry(medAbstractImageData *geometry);
     medAbstractImageData*  geometry() const;
+
     void setInputImage(medAbstractImageData *imageData);
     medAbstractImageData* inputImage() const;
+
+    QUndoStack *commandStack();
+    QUndoView *commandView();
 
 public:
     virtual QList<medAbstractParameter*> parameters();

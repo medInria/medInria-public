@@ -38,3 +38,21 @@ void medProcessOutput<T>::setOutput(T* output)
 {
     m_output = output;
 }
+
+template <typename T>
+QObject* medProcessOutput<T>::content() const
+{
+    return m_output;
+}
+
+template <typename T>
+bool medProcessOutput<T>::setContent(QObject* obj)
+{
+    T* data = dynamic_cast<T*>(obj);
+    if(data)
+    {
+        m_output = data;
+        return true;
+    }
+    return false;
+}

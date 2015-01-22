@@ -11,27 +11,9 @@
 
 =========================================================================*/
 
-#pragma once
+#include <medAbstractApplyTransformationCommand.h>
 
-#include <medProcessPort.h>
-
-template <typename T>
-class medProcessOutput : public medProcessPort
+medAbstractApplyTransformationCommand::medAbstractApplyTransformationCommand(medAbstractTransformation *transfo)
+    :QUndoCommand()
 {
-
-public:
-    medProcessOutput(QString name, T* output = NULL);
-    virtual ~medProcessOutput();
-
-public:
-    T* output() const;
-    void setOutput(T* output);
-
-    QObject* content() const;
-    bool setContent(QObject* obj);
-
-private:
-    T* m_output;
-};
-
-#include <medProcessOutput.txx>
+}

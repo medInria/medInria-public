@@ -30,8 +30,7 @@ public:
 public:
     virtual bool setFixedInput(medAbstractData *data) = 0;
     virtual bool setMovingInput(medAbstractData *data) = 0;
-    virtual bool write(const QString &file) = 0;
-    virtual bool write(const QStringList& files) = 0;
+    virtual bool writeTransform(const QString &file) = 0;
 
 public:
     virtual bool isInteractive() const;

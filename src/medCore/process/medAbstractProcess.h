@@ -18,6 +18,7 @@
 #include <medProcessPort.h>
 #include <medProcessInput.h>
 #include <medProcessOutput.h>
+#include <medProcessDataInput.h>
 
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
@@ -41,11 +42,11 @@ class MEDCORE_EXPORT medAbstractProcess : public dtkAbstractProcess
     Q_OBJECT
 
 public:
-    typedef medProcessOutput<medAbstractData> medOutputDataPort;
-    typedef medProcessInput<medAbstractData> medInputDataPort;
+//    typedef medProcessOutput<medAbstractData> medOutputDataPort;
+//    typedef medProcessInput<medAbstractData> medInputDataPort;
 
-    typedef medProcessOutput<medAbstractImageData> medOutputImageDataPort;
-    typedef medProcessInput<medAbstractImageData> medInputImageDataPort;
+//    typedef medProcessOutput<medAbstractImageData> medOutputImageDataPort;
+//    typedef medProcessInput<medAbstractImageData> medInputImageDataPort;
 
 public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
@@ -62,6 +63,12 @@ public:
 protected:
     void appendInput(medProcessPort*);
     void appendOutput(medProcessPort*);
+
+    template <class T>
+    void appendDataInput(medProcessDataInput<T> *);
+
+    void appendDataOutput(medProcessPort*);
+
 
 public:
     virtual QList<medAbstractParameter*> parameters() = 0;
@@ -99,7 +106,8 @@ private:
     virtual int update () = 0;
 
 private:
-    virtual void updateContainer(medInputDataPort *);
+    virtual void updateContainer(medProcessPort *);
+    void appendDataInputToList(medProcessPort* );
 
 signals:
     void showError(QString message, unsigned int timeout = 5000);

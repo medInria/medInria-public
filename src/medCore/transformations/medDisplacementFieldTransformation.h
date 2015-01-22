@@ -18,21 +18,21 @@
 
 #include <medAbstractImageData.h>
 
-class medSVFTransformationPrivate;
-class MEDCORE_EXPORT medSVFTransformation: public medAbstractTransformation
+class medDisplacementFieldTransformationPrivate;
+class medDisplacementFieldTransformation : public medAbstractTransformation
 {
     Q_OBJECT
 
 public:
-    medSVFTransformation(QObject  *parent = NULL);
-    ~medSVFTransformation();
+    medDisplacementFieldTransformation(QObject  *parent = NULL);
+    ~medDisplacementFieldTransformation();
 
 public:
     virtual medAbstractImageData* parameter() const;
     virtual void setParameter(medAbstractData *parameter);
 
 private:
-    medSVFTransformationPrivate* d;
+    medDisplacementFieldTransformationPrivate* d;
 
     //using medAbstractTransformation::setParameter;
 };

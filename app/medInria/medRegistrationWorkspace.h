@@ -36,9 +36,12 @@ public:
     void setupTabbedViewContainer ();
 
 protected slots:
-    void setupProcess(QString);
-    void startProcess();
+    void setupApplicationProcess(QString);
+    void setupEstimationProcess(QString);
+    void startApplicationProcess();
+    void startEstimationProcess();
     void enableSelectorToolBox();
+    void applyTransformation();
 
 private:
     medRegistrationWorkspacePrivate *d;

@@ -14,17 +14,18 @@
 #include <medAbstractEstimateTransformationProcess.h>
 
 #include <medAbstractImageData.h>
+#include <medAbstractTransformation.h>
 
 medAbstractEstimateTransformationProcess::medAbstractEstimateTransformationProcess(medAbstractProcess *parent):
     medAbstractProcess(parent)
 {
-    medProcessInput<medAbstractImageData> *fixed = new medProcessInput<medAbstractImageData>("Fixed Image", false);
-    this->appendInput( fixed );
+    medProcessDataInput<medAbstractImageData> *fixed = new medProcessDataInput<medAbstractImageData>("Fixed Image", false);
+    this->appendDataInput( fixed );
 
-    medProcessInput<medAbstractImageData> *moving = new medProcessInput<medAbstractImageData>("Moving Image", false);
-    this->appendInput( moving );
+    medProcessDataInput<medAbstractImageData> *moving = new medProcessDataInput<medAbstractImageData>("Moving Image", false);
+    this->appendDataInput( moving );
 
-    this->appendOutput( new medProcessOutput<medAbstractImageData>("Output"));
+    this->appendOutput( new medProcessOutput<medAbstractTransformation>("Output"));
 
 }
 

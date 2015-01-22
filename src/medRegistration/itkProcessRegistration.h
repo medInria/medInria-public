@@ -73,8 +73,8 @@ public:
     virtual bool setFixedInput(medAbstractData *data);
     virtual bool setMovingInput(medAbstractData *data);
 
-    medAbstractData *output();
-    void setOutput(medAbstractData * output);
+//    medAbstractData *output();
+//    void setOutput(medAbstractData * output);
 
     itk::ImageBase<3>::Pointer fixedImage();
     QVector<itk::ImageBase<3>::Pointer> movingImages();
@@ -92,8 +92,8 @@ public:
     //virtual QString getTitleAndParameters() = 0;
 
 public slots:
-    virtual bool write(const QStringList& files);
-    virtual bool write(const QString& file);
+//    virtual bool write(const QStringList& files);
+//    virtual bool write(const QString& file);
 
 protected :
     virtual bool writeTransform(const QString& file);

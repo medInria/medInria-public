@@ -16,6 +16,8 @@
 #include <medRpiApplyTransformationExport.h>
 #include <medAbstractApplyTransformationProcess.h>
 
+#include <itkImage.h>
+
 
 class medAbstractTransformation;
 
@@ -25,6 +27,8 @@ class MEDRPIAPPLYTRANSFORMATIONPLUGIN_EXPORT medRpiApplyTransformationProcess : 
     Q_OBJECT
 
 public:
+
+    typedef itk::Image< float, 3 > RegImageType;
 
     medRpiApplyTransformationProcess();
     virtual ~medRpiApplyTransformationProcess();
@@ -43,8 +47,11 @@ public:
 public:
     QList<medAbstractParameter*> parameters();
 
+    void addTransformation(medAbstractTransformation *transfo);
+
 private slots:
-    void onSVFDropped(const medDataIndex &);
+    void addDisplFieldTransfo(const medDataIndex &);
+    void handleEndOfCommand();
 
 private:
     medRpiApplyTransformationProcessPrivate *d;

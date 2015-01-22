@@ -380,7 +380,16 @@ int itkProcessRegistration::update()
     }
 
     if(d->fixedImage.IsNull() || d->movingImages.empty())
-        return 1;
+    {
+        //Try to retrieve inputs from port
+        //TODO: TO REVIEW
+        medAbstractData *fixedImage = this->input<medAbstractData>(0);
+        medAbstractData *movingImage = this->input<medAbstractData>(1);
+        setFixedInput(fixedImage);
+        setMovingInput(movingImage);
+        if(d->fixedImage.IsNull() || d->movingImages.empty())
+          return 1;
+    }
 
     int retval =  update(d->fixedImageType);
     d->mutex.unlock();
@@ -393,14 +402,14 @@ int itkProcessRegistration::update()
  * @param void
  * @return medAbstractData *: medItkImageDataXXY, same type as the moving input image.
 */
-medAbstractData *itkProcessRegistration::output()
-{
-    return d->output;
-}
-void itkProcessRegistration::setOutput(medAbstractData * output)
-{
-    d->output = output;
-}
+//medAbstractData *itkProcessRegistration::output()
+//{
+//    return d->output;
+//}
+//void itkProcessRegistration::setOutput(medAbstractData * output)
+//{
+//    d->output = output;
+//}
 
 /**
  * @brief Gets an itk smart pointer to the fixed image.
@@ -463,25 +472,25 @@ itkProcessRegistration::ImageType itkProcessRegistration::movingImageType()
  * and files[1] a path to a transformation.
  * @return bool: true on successful operation, false otherwise.
 */
-bool itkProcessRegistration::write(const QStringList& files)
-{
-    if (files.count()!=2)
-    {
-        qDebug() << "can't write, the list doesn't have 2 items";
-        return false;
-    }
+//bool itkProcessRegistration::write(const QStringList& files)
+//{
+//    if (files.count()!=2)
+//    {
+//        qDebug() << "can't write, the list doesn't have 2 items";
+//        return false;
+//    }
 
-    if (!files.at(0).isEmpty())
-    {
-        return write(files.at(0));
-    }
+//    if (!files.at(0).isEmpty())
+//    {
+//        return write(files.at(0));
+//    }
 
-    if(!files.at(1).isEmpty())
-    {
-        return writeTransform(files.at(1));
-    }
-    return false;
-}
+//    if(!files.at(1).isEmpty())
+//    {
+//        return writeTransform(files.at(1));
+//    }
+//    return false;
+//}
 
 /**
  * @brief Writes a transformation to a file.
@@ -507,42 +516,42 @@ bool itkProcessRegistration::writeTransform(const QString& file)
  * @param file: path to the file.
  * @return bool: true on successful operation, false otherwise.
 */
-bool itkProcessRegistration::write(const QString& file)
-{
-    if (output() == NULL)
-    {
-        qDebug() << "the registration method hasn't been run yet.";
-        return false;
-    }
+//bool itkProcessRegistration::write(const QString& file)
+//{
+//    if (output() == NULL)
+//    {
+//        qDebug() << "the registration method hasn't been run yet.";
+//        return false;
+//    }
 
-    bool writeSuccess = false;
-    medAbstractData * out = output();
-    QList<QString> writers = medAbstractDataFactory::instance()->writers();
-    for (int i=0; i<writers.size(); i++)
-    {
-        dtkAbstractDataWriter *dataWriter = medAbstractDataFactory::instance()->writer(writers[i]);
-        qDebug() << "trying " << dataWriter->identifier();
+//    bool writeSuccess = false;
+//    medAbstractData * out = output();
+//    QList<QString> writers = medAbstractDataFactory::instance()->writers();
+//    for (int i=0; i<writers.size(); i++)
+//    {
+//        dtkAbstractDataWriter *dataWriter = medAbstractDataFactory::instance()->writer(writers[i]);
+//        qDebug() << "trying " << dataWriter->identifier();
 
-        if (! dataWriter->handled().contains(out->identifier()))
-        {
-          qDebug() << "failed with " << dataWriter->identifier();
-          continue;
-        }
+//        if (! dataWriter->handled().contains(out->identifier()))
+//        {
+//          qDebug() << "failed with " << dataWriter->identifier();
+//          continue;
+//        }
 
-        qDebug() << "success with " << dataWriter->identifier();
-        dataWriter->setData (out);
+//        qDebug() << "success with " << dataWriter->identifier();
+//        dataWriter->setData (out);
 
-        qDebug() << "trying to write in file : "<<file;
+//        qDebug() << "trying to write in file : "<<file;
 
-        if (dataWriter->canWrite( file )) {
-            if (dataWriter->write( file )) {
-                //medDataList.push_back (output);
-                writeSuccess = true;
-                delete dataWriter;
-                break;
-            }
-        }
-        delete dataWriter;
-    }
-    return writeSuccess;
-}
+//        if (dataWriter->canWrite( file )) {
+//            if (dataWriter->write( file )) {
+//                //medDataList.push_back (output);
+//                writeSuccess = true;
+//                delete dataWriter;
+//                break;
+//            }
+//        }
+//        delete dataWriter;
+//    }
+//    return writeSuccess;
+//}

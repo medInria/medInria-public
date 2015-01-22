@@ -31,11 +31,14 @@
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
 #include <rpiCommonTools.hxx>
 #include <registrationFactory.h>
+#include <itkStationaryVelocityFieldTransform.h>
 
 #include <medStringParameter.h>
 #include <medStringListParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
+#include <medDisplacementFieldTransformation.h>
+#include <medSVFTransformation.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDiffeomorphicDemonsRegistrationDiffeomorphicDemonsPrivate
@@ -264,30 +267,45 @@ template <typename PixelType>
 
     emit proc->progressed(80);
 
-    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
-    typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
-    resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
-    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
-    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
-    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
-    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
-    resampler->SetDefaultPixelValue( 0 );
+//    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
+//    typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
+//    resampler->SetTransform(registration->GetTransformation());
+//    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
+//    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
+//    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
+//    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
+//    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
+//    resampler->SetDefaultPixelValue( 0 );
 
-    try {
-        resampler->Update();
+//    try {
+//        resampler->Update();
+//    }
+//    catch (itk::ExceptionObject &e) {
+//        qDebug() << e.GetDescription();
+//        return 1;
+//    }
+
+//    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
+//    qDebug() << "Resampled? ";
+//    result->DisconnectPipeline();
+
+    medAbstractData *imageTransfo = medAbstractDataFactory::instance()->create("medItkVectorDouble3ImageData");
+
+    rpi::DisplacementFieldTransform<double> *rpiTransfo =
+            dynamic_cast< rpi::DisplacementFieldTransform<double>* >(static_cast<itk::Object*>(registration->GetTransformation()) );
+
+    if(rpiTransfo)
+    {
+        typedef rpi::DisplacementFieldTransform<double>::VectorFieldType VectorFieldType;
+        VectorFieldType::Pointer temp = const_cast<VectorFieldType*>(rpiTransfo->GetParametersAsVectorField());
+        imageTransfo->setData(temp);
     }
-    catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        return 1;
-    }
 
-    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    qDebug() << "Resampled? ";
-    result->DisconnectPipeline();
+    medDisplacementFieldTransformation *transfo = new medDisplacementFieldTransformation;
+    transfo->setParameter(imageTransfo);
 
-    if (proc->output())
-        proc->output()->setData (result);
+    proc->setOutput(transfo, 0);
+
 
     return 0;
 }

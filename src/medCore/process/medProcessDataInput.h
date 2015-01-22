@@ -13,7 +13,8 @@
 
 #pragma once
 
-#include <medProcessPort.h>
+#include <medProcessInput.h>
+#include <medAbstractData.h>
 
 #ifdef DTK_BUILD_COMPOSER
 #include <dtkComposer/dtkComposerTransmitter.h>
@@ -22,22 +23,17 @@
 
 
 template <typename T>
-class medProcessInput : public medProcessPort
+class medProcessDataInput : public medProcessInput<T>
 {
 public:
-    medProcessInput(QString name, bool isOptional, T* input = NULL);
-    virtual ~medProcessInput();
+    medProcessDataInput(QString name, bool isOptional, T* input = NULL);
+    virtual ~medProcessDataInput();
 
 public:
-    bool isOptional() const;
+    medAbstractData* input() const;
+    void setInput(medAbstractData* input);
 
-    T* input() const;
-    void setInput(T* input);
-
-    QObject* content() const;
-    bool setContent(QObject*);
-
-    virtual void retrieveContentFromPort(medProcessPort *otherport);
+    //virtual void retrieveContentFromPort(medProcessPort *otherport);
 
 //#ifdef DTK_BUILD_COMPOSER
 #ifdef IN_PROGRESS
@@ -46,8 +42,7 @@ public:
 #endif
 
 private:
-    bool m_isOptional;
-    T* m_input;
+    medAbstractData* m_input;
 };
 
-#include <medProcessInput.txx>
+#include <medProcessDataInput.txx>

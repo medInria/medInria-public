@@ -13,25 +13,14 @@
 
 #pragma once
 
-#include <medProcessPort.h>
+#include <QUndoCommand>
 
-template <typename T>
-class medProcessOutput : public medProcessPort
+class medAbstractTransformation;
+
+class medAbstractApplyTransformationCommand : public QUndoCommand
 {
-
 public:
-    medProcessOutput(QString name, T* output = NULL);
-    virtual ~medProcessOutput();
-
-public:
-    T* output() const;
-    void setOutput(T* output);
-
-    QObject* content() const;
-    bool setContent(QObject* obj);
-
-private:
-    T* m_output;
+    medAbstractApplyTransformationCommand(medAbstractTransformation *transfo);
 };
 
-#include <medProcessOutput.txx>
+
