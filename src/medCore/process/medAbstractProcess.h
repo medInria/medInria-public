@@ -52,7 +52,6 @@ public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
     virtual ~medAbstractProcess();
 
-public:
     QList<medProcessPort*> inputs() const;
     QList<medProcessPort*> outputs() const;
 
@@ -60,17 +59,6 @@ public:
 
     void retrieveInputs(const medAbstractProcess *);
 
-protected:
-    void appendInput(medProcessPort*);
-    void appendOutput(medProcessPort*);
-
-    template <class T>
-    void appendDataInput(medProcessDataInput<T> *);
-
-    void appendDataOutput(medProcessPort*);
-
-
-public:
     virtual QList<medAbstractParameter*> parameters() = 0;
     medAbstractParameter* parameter(QString parameterName);
 
@@ -86,32 +74,37 @@ public:
     template <class T>
     T* output(unsigned int port);
 
-protected slots:
-    virtual void handleInput();
-    virtual void handleOutputs();
-
-public slots:
-    int start();
-
-public:
     virtual medToolBox* toolbox();
     virtual QWidget* parameterWidget();
     virtual medTriggerParameter* runParameter() const;
     virtual medViewContainerSplitter* viewContainerSplitter();
 
-public:
     virtual bool isInteractive() const = 0;
 
-private:
-    virtual int update () = 0;
-
-private:
-    virtual void updateContainer(medProcessPort *);
-    void appendDataInputToList(medProcessPort* );
+public slots:
+    int start();
 
 signals:
     void showError(QString message, unsigned int timeout = 5000);
 
+protected:
+    void appendInput(medProcessPort*);
+    void appendOutput(medProcessPort*);
+
+    template <class T>
+    void appendDataInput(medProcessDataInput<T> *);
+
+    void appendDataOutput(medProcessPort*);
+
+protected slots:
+    virtual void handleInput();
+    virtual void handleOutputs();
+
+private:
+    virtual int update () = 0;
+
+    virtual void updateContainer(medProcessPort *);
+    void appendDataInputToList(medProcessPort* );
 
 private:
     using dtkAbstractProcess::onCanceled;
