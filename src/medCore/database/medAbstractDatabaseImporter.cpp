@@ -649,7 +649,13 @@ QString medAbstractDatabaseImporter::generateThumbnail ( medAbstractData* medDat
 {
     QImage thumbnail = medData->generateThumbnail(med::defaultThumbnailSize);
     QString thumbnailPath = pathToStoreThumbnail + "thumbnail.png";
-    thumbnail.save ( medStorage::dataLocation() + thumbnailPath, "PNG" );
+    QString fullThumbnailPath = medStorage::dataLocation() + thumbnailPath;
+
+    if ( ! medStorage::mkpath ( medStorage::dataLocation() + pathToStoreThumbnail ) )
+        qWarning("medAbstractDatabaseImporter: Cannot create directory: %s", qPrintable(pathToStoreThumbnail));
+
+    if ( ! thumbnail.save ( fullThumbnailPath, "PNG" ))
+        qWarning("medAbstractDatabaseImporter: Saving thumbnail to %s failed.", qPrintable(fullThumbnailPath));
 
     medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), thumbnailPath );
 
