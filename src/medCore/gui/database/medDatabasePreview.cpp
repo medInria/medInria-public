@@ -18,12 +18,11 @@
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
+#include <medGlobalDefs.h>
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
-
-#include <medDatabaseThumbnailHelper.h>
 
 class medDatabasePreviewStaticScenePrivate
 {
@@ -39,8 +38,8 @@ public:
 medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
     d(new medDatabasePreviewStaticScenePrivate)
 {
-    d->baseWidth = medDatabaseThumbnailHelper::width;
-    d->baseHeight = medDatabaseThumbnailHelper::height;
+    d->baseWidth = med::defaultThumbnailSize.width();
+    d->baseHeight = med::defaultThumbnailSize.height();
 
     d->pen = QPen(QColor(70,70,70));
     d->pen.setWidth(4);

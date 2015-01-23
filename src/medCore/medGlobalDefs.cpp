@@ -1,6 +1,7 @@
 #include <medGlobalDefs.h>
 
 #include <QFileInfo>
+#include <QtOpenGL>
 
 namespace med {
 
@@ -16,6 +17,22 @@ QString smartBaseName(const QString & fileName) {
         return infoWithoutCompression.completeBaseName();
     }
     else return info.completeBaseName();
+}
+
+GPUInfo gpuModel()
+{
+    // just fill it once, we are not going to change GPU on the fly
+    static GPUInfo gpu;
+    if (gpu.renderer.isEmpty()) {
+        // glGetString requires a valid OpenGL context, the easiest way is to
+        // create a bogus QGLWidget and force a render.
+        QGLWidget glw;
+        glw.updateGL();
+        gpu.renderer = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+        gpu.version = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+        gpu.vendor = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+    }
+    return gpu;
 }
 
 }
