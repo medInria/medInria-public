@@ -49,9 +49,6 @@ public slots:
 protected:
     virtual void internalRun();
 
-    void removeImage( int patientId, int studyId, int seriesId, int imageId);
-
-
     bool isSeriesEmpty( int seriesId );
     void removeSeries( int patientId, int studyId, int seriesId );
     bool isStudyEmpty( int studyId );

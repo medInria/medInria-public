@@ -98,6 +98,8 @@ private:
     void  createSeriesTable();
     void   createImageTable();
 
+    void updateFromNoVersionToVersion1();
+
     QSqlDatabase m_database;
 
     medDatabaseControllerPrivate * d;

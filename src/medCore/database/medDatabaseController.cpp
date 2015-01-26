@@ -61,13 +61,11 @@ public:
 
     MetaDataMap metaDataLookup;
     // Reusable table names.
-    static const QString T_image ;
     static const QString T_series ;
     static const QString T_study ;
     static const QString T_patient ;
 };
 
-const QString medDatabaseControllerPrivate::T_image = "image";
 const QString medDatabaseControllerPrivate::T_series = "series";
 const QString medDatabaseControllerPrivate::T_study = "study";
 const QString medDatabaseControllerPrivate::T_patient = "patient";
@@ -76,10 +74,9 @@ void medDatabaseControllerPrivate::buildMetaDataLookup()
 {
 // The table defines the mapping between metadata in the medAbstractData and the database tables.
     metaDataLookup.insert(medMetaDataKeys::ThumbnailPath.key(),
-        TableEntryList() << TableEntry(T_image, "thumbnail", true)
-        << TableEntry(T_series, "thumbnail", true)
-        << TableEntry(T_study, "thumbnail", true)
-        << TableEntry(T_patient, "thumbnail", true) );
+        TableEntryList() << TableEntry(T_series, "thumbnail", true)
+                         << TableEntry(T_study, "thumbnail", true)
+                         << TableEntry(T_patient, "thumbnail", true) );
 
 //Patient data
     metaDataLookup.insert(medMetaDataKeys::PatientName.key(),
@@ -187,7 +184,6 @@ bool medDatabaseController::createConnection(void)
     createPatientTable();
     createStudyTable();
     createSeriesTable();
-    createImageTable();
 
     // optimize speed of sqlite db
     QSqlQuery query(m_database);
@@ -530,7 +526,32 @@ void medDatabaseController::createImageTable(void)
             " slice      INTEGER,"
             " isIndexed  BOOLEAN"
             ");"
-            );
+                );
+}
+
+void medDatabaseController::updateFromNoVersionToVersion1()
+{
+    // Updates the DB schema from the orignial, un-versioned schema, to the
+    // version 2 schema.
+
+    QSqlQuery q;
+    if ( ! (q.exec("PRAGMA user_version") && q.first())) {
+        qWarning("medDatabaseController: testing DB version for upgrade failed.");
+        return;
+    }
+    int version = q.value(0).toInt();
+    if (version >= 0) {
+        // nothing to do, up to date
+        return;
+    }
+
+    //
+
+    // finally, update DB version
+    if ( ! q.exec("PRAGMA user_version = 1")) {
+        qWarning("medDatabaseController: updating DB version to 1 after upgrade failed.");
+        return;
+    }
 }
 
 /**
@@ -744,9 +765,7 @@ QString medDatabaseController::metaData(const medDataIndex& index,const QString&
         isPath = entryIt->isPath;
 
         int id = -1;
-        if ( tableName == d->T_image && index.isValidForImage() ) {
-            id = index.imageId();
-        } else if ( tableName == d->T_series && index.isValidForSeries() ) {
+        if ( tableName == d->T_series && index.isValidForSeries() ) {
             id = index.seriesId();
         } else if ( tableName == d->T_study && index.isValidForStudy() ) {
             id = index.studyId();
@@ -796,9 +815,7 @@ bool medDatabaseController::setMetaData( const medDataIndex& index, const QStrin
         const QString columnName = entryIt->column;
 
         int id = -1;
-        if ( tableName == d->T_image && index.isValidForImage() ) {
-            id = index.imageId();
-        } else if ( tableName == d->T_series && index.isValidForSeries() ) {
+        if ( tableName == d->T_series && index.isValidForSeries() ) {
             id = index.seriesId();
         } else if ( tableName == d->T_study && index.isValidForStudy() ) {
             id = index.studyId();

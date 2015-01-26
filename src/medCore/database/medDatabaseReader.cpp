@@ -13,18 +13,17 @@
 
 #include <QSqlError>
 
-#include <medDatabaseController.h>
-#include <medDatabaseReader.h>
-#include <medStorage.h>
-#include <medAbstractImageData.h>
-
-#include <medMetaDataKeys.h>
-#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
+
+#include <medAbstractDataFactory.h>
+#include <medDatabaseController.h>
+#include <medDatabaseReader.h>
+#include <medMetaDataKeys.h>
+#include <medStorage.h>
+
 
 class medDatabaseReaderPrivate
 {
