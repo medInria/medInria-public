@@ -16,6 +16,7 @@
 #include <medAbstractImageData.h>
 #include <medSVFTransformation.h>
 #include <medDisplacementFieldTransformation.h>
+#include <medLinearTransformation.h>
 #include <medAbstractTransformation.h>
 #include <medAbstractDataFactory.h>
 #include <medDataIndexParameter.h>
@@ -26,6 +27,7 @@
 #include <rpiDisplacementFieldTransform.h>
 #include <itkImageRegistrationFactory.h>
 #include <itkCastImageFilter.h>
+#include <itkAffineTransform.h>
 
 
 
@@ -63,56 +65,111 @@ void medRpiApplyTransformationCommand::redo()
     medDisplacementFieldTransformation *displFieldtransfo = dynamic_cast<medDisplacementFieldTransformation *>(m_transfo);
     if(displFieldtransfo)
     {
-        medAbstractImageData *transfoImage = displFieldtransfo->parameter();
-
-        typedef float       PixelType;
-        typedef double      VectorComponentType;
-        const   unsigned int        Dimension = 3;
-
-        typedef itk::Vector< VectorComponentType, Dimension  > VectorPixelType;
-        typedef itk::Image< VectorPixelType, Dimension > DeformationFieldType;
-        typedef rpi::DisplacementFieldTransform<VectorComponentType, Dimension> DisplacementFieldTransformType;
-
-        DeformationFieldType::Pointer deformationField = NULL;
-
-        if(transfoImage->PixelType() == typeid(itk::Vector< float, Dimension >))
-        {
-            typedef typename itk::Image< VectorPixelType, Dimension > ConvertedImageType; // We always convert to itk::Vector< double, 3 >
-            typedef typename itk::Image<itk::Vector< float, Dimension >, Dimension> ImageType; // input data type
-            typedef typename itk::CastImageFilter<ImageType, ConvertedImageType> CastFilterType;
-
-            CastFilterType::Pointer caster = CastFilterType::New();
-
-            itk::Object *itkObj = static_cast<itk::Object*>(transfoImage->data());
-            ImageType *vectorField = dynamic_cast<ImageType *>(itkObj);
-
-            caster->SetInput(vectorField);
-            caster->Update();
-            deformationField = caster->GetOutput();
-        }
-        else if(transfoImage->PixelType() == typeid(itk::Vector< double, Dimension >))
-        {
-            itk::Object *itkObj = static_cast<itk::Object*>(transfoImage->data());
-            deformationField = dynamic_cast<DeformationFieldType *>(itkObj);
-        }
-
-        const DisplacementFieldTransformType::Pointer displacementFieldTransform = DisplacementFieldTransformType::New();
-        displacementFieldTransform->SetParametersAsVectorField( deformationField );
-
-        itk::Transform<VectorComponentType,3,3>::ConstPointer test = static_cast<itk::Transform<VectorComponentType,3,3>::ConstPointer>(displacementFieldTransform);
-
-        m_factory->GetGeneralTransform()->InsertTransform(test);
-
-        m_factory->Update();
-
-        itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
-        result->DisconnectPipeline();
-
-        m_output = medAbstractDataFactory::instance()->create("medItkFloat3ImageData");
-        m_output->setData(result);
+        applyDisplFieldTransfo(displFieldtransfo);
+        return;
     }
 
+    medLinearTransformation *linearTransfo = dynamic_cast<medLinearTransformation *>(m_transfo);
+    if(linearTransfo)
+    {
+        applyLinearTransfo(linearTransfo);
+        return;
+    }
+}
+
+void medRpiApplyTransformationCommand::applyDisplFieldTransfo(medDisplacementFieldTransformation *displFieldtransfo)
+{
+    medAbstractImageData *transfoImage = displFieldtransfo->parameter();
+
+    typedef float       PixelType;
+    typedef double      VectorComponentType;
+    const   unsigned int        Dimension = 3;
+
+    typedef itk::Vector< VectorComponentType, Dimension  > VectorPixelType;
+    typedef itk::Image< VectorPixelType, Dimension > DeformationFieldType;
+    typedef rpi::DisplacementFieldTransform<VectorComponentType, Dimension> DisplacementFieldTransformType;
+
+    DeformationFieldType::Pointer deformationField = NULL;
+
+    if(transfoImage->PixelType() == typeid(itk::Vector< float, Dimension >))
+    {
+        typedef typename itk::Image< VectorPixelType, Dimension > ConvertedImageType; // We always convert to itk::Vector< double, 3 >
+        typedef typename itk::Image<itk::Vector< float, Dimension >, Dimension> ImageType; // input data type
+        typedef typename itk::CastImageFilter<ImageType, ConvertedImageType> CastFilterType;
+
+        CastFilterType::Pointer caster = CastFilterType::New();
+
+        itk::Object *itkObj = static_cast<itk::Object*>(transfoImage->data());
+        ImageType *vectorField = dynamic_cast<ImageType *>(itkObj);
+
+        caster->SetInput(vectorField);
+        caster->Update();
+        deformationField = caster->GetOutput();
+    }
+    else if(transfoImage->PixelType() == typeid(itk::Vector< double, Dimension >))
+    {
+        itk::Object *itkObj = static_cast<itk::Object*>(transfoImage->data());
+        deformationField = dynamic_cast<DeformationFieldType *>(itkObj);
+    }
+
+    const DisplacementFieldTransformType::Pointer displacementFieldTransform = DisplacementFieldTransformType::New();
+    displacementFieldTransform->SetParametersAsVectorField( deformationField );
+
+    itk::Transform<VectorComponentType,3,3>::ConstPointer test = static_cast<itk::Transform<VectorComponentType,3,3>::ConstPointer>(displacementFieldTransform);
+
+    m_factory->GetGeneralTransform()->InsertTransform(test);
+
+    m_factory->Update();
+
+    itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
+    result->DisconnectPipeline();
+
+    m_output = medAbstractDataFactory::instance()->create("medItkFloat3ImageData");
+    m_output->setData(result);
+
     emit commandDone();
+
+}
+
+void medRpiApplyTransformationCommand::applySVFTransfo()
+{
+
+}
+
+void medRpiApplyTransformationCommand::applyLinearTransfo(medLinearTransformation* linearTransfo)
+{
+    typedef double      VectorComponentType;
+
+    QMatrix4x4 qmatrix = linearTransfo->matrix();
+
+    const itk::AffineTransform<>::Pointer itkTransfo = itk::AffineTransform<>::New();
+    itk::AffineTransform<>::MatrixType matrix;
+    itk::AffineTransform<>::OutputVectorType offset;
+
+    for(int i=0; i<3; i++)
+        for(int j=0; j<3; j++)
+            matrix[i][j] = qmatrix(i,j);
+
+    for(int i=0; i<3; i++)
+        offset[i] = qmatrix(i,3);
+
+    itkTransfo->SetMatrix(matrix);
+    itkTransfo->SetOffset(offset);
+
+    itk::Transform<VectorComponentType,3,3>::ConstPointer test = static_cast<itk::Transform<VectorComponentType,3,3>::ConstPointer>(itkTransfo);
+    m_factory->GetGeneralTransform()->InsertTransform(test);
+
+    m_factory->Update();
+
+    itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
+    result->DisconnectPipeline();
+
+    m_output = medAbstractDataFactory::instance()->create("medItkFloat3ImageData");
+    m_output->setData(result);
+
+    emit commandDone();
+
+
 }
 
 medAbstractData* medRpiApplyTransformationCommand::output()

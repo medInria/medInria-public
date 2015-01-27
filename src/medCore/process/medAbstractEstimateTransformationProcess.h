@@ -18,6 +18,7 @@
 #include <medAbstractProcess.h>
 
 class medAbstractData;
+class medAbstractEstimateTransformationProcessPrivate;
 
 class MEDCORE_EXPORT medAbstractEstimateTransformationProcess : public medAbstractProcess
 {
@@ -32,10 +33,14 @@ public:
     virtual bool setMovingInput(medAbstractData *data) = 0;
     virtual bool writeTransform(const QString &file) = 0;
 
-public:
     virtual bool isInteractive() const;
 
-public:
     virtual QList<medAbstractParameter*> parameters();
+
+public slots:
+    virtual bool saveTransform();
+
+private:
+    medAbstractEstimateTransformationProcessPrivate *d;
 
 };

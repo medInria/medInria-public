@@ -18,6 +18,9 @@
 #include <itkProcessRegistration.h>
 #include <itkImageRegistrationFactory.h>
 
+class medLinearTransformation;
+class medDisplacementFieldTransformation;
+
 class medRpiApplyTransformationCommand : public QObject, public medAbstractApplyTransformationCommand
 {
     Q_OBJECT
@@ -36,6 +39,12 @@ public:
 signals:
     void commandUndone();
     void commandDone();
+
+private:
+    void applyDisplFieldTransfo(medDisplacementFieldTransformation*);
+    void applySVFTransfo();
+    void applyLinearTransfo(medLinearTransformation *);
+
 
 private:
     medAbstractTransformation *m_transfo;
