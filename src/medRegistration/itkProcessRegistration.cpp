@@ -304,6 +304,10 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<short>);
     }
+    else if (id == "itkDataImageUShort3")
+    {
+        castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned short>);
+    }
     else if(id == "itkDataImageInt3")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<int>);
