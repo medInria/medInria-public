@@ -365,33 +365,6 @@ medDataIndex medDatabaseController::indexForImage(int id)
     return medDataIndex(this->dataSourceId(),patientId.toInt(), studyId.toInt(), seriesId.toInt(), id);
 }
 
-medDataIndex medDatabaseController::indexForImage(const QString &patientName, const QString &studyName,
-                                                  const QString &seriesName,  const QString &imageName)
-{
-    medDataIndex index = this->indexForSeries(patientName, studyName, seriesName);
-    if (!index.isValid())
-        return index;
-
-    QSqlQuery query(m_database);
-
-    QVariant seriesId = index.seriesId();
-
-    query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
-    query.bindValue(":id",   seriesId);
-    query.bindValue(":name", imageName);
-
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
-    if(query.first()) {
-        QVariant imageId = query.value(0);
-        index.setImageId(imageId .toInt());
-        return index;
-    }
-
-    return medDataIndex();
-}
-
 /**
 * Import data into the db read from file
 * @param const QString & file The file containing the data
@@ -508,27 +481,6 @@ void medDatabaseController::createSeriesTable(void)
             );
 }
 
-void medDatabaseController::createImageTable(void)
-{
-    // Note to the reader who came here looking for the 'size' column:
-    // it was removed because it was always filled with a
-    // placeholder (number 64), and it was never read.
-
-    QSqlQuery query(this->database());
-    query.exec(
-            "CREATE TABLE image ("
-            " id         INTEGER      PRIMARY KEY,"
-            " series     INTEGER," // FOREIGN KEY
-            " name          TEXT,"
-            " path          TEXT,"
-            " instance_path TEXT,"
-            " thumbnail     TEXT,"
-            " slice      INTEGER,"
-            " isIndexed  BOOLEAN"
-            ");"
-                );
-}
-
 void medDatabaseController::updateFromNoVersionToVersion1()
 {
     // Updates the DB schema from the orignial, un-versioned schema, to the
@@ -545,13 +497,18 @@ void medDatabaseController::updateFromNoVersionToVersion1()
         return;
     }
 
-    //
+    if ( ! q.exec("SELECT id,path FROM image")) {
+        qWarning("medDatabaseController: getting a list of path from the `image` table failed.");
+    }
+    while(q.next()) {
+
+    }
 
     // finally, update DB version
-    if ( ! q.exec("PRAGMA user_version = 1")) {
-        qWarning("medDatabaseController: updating DB version to 1 after upgrade failed.");
-        return;
-    }
+//    if ( ! q.exec("PRAGMA user_version = 1")) {
+//        qWarning("medDatabaseController: updating DB version to 1 after upgrade failed.");
+//        return;
+//    }
 }
 
 /**

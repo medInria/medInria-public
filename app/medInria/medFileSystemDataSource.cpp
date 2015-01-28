@@ -30,6 +30,7 @@ public:
     QList<medToolBox*> toolBoxes;
     medActionsToolBox* actionsToolBox;
     QLabel * infoText;
+    QAction * indexAction;
 };
 
 medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
@@ -63,9 +64,10 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     QAction *importAction = new QAction(tr("Import"), this);
     importAction->setIconVisibleInMenu(true);
     importAction->setIcon(QIcon(":icons/import.png"));
-    QAction *indexAction = new QAction(tr("Index"), this);
-    indexAction->setIconVisibleInMenu(true);
-    indexAction->setIcon(QIcon(":icons/finger.png"));
+    d->indexAction = new QAction(tr("Index"), this);
+    d->indexAction->setIconVisibleInMenu(true);
+    d->indexAction->setIcon(QIcon(":icons/finger.png"));
+    connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), this, SLOT(updateIndexAction(const QStringList&)));
     QAction *loadAction = new QAction(tr("Load"), this);
     loadAction->setIconVisibleInMenu(true);
     loadAction->setIcon(QIcon(":icons/document-open.png"));
@@ -74,12 +76,12 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     viewAction->setIcon(QIcon(":icons/eye.png"));
 
     d->finder->addContextMenuAction(importAction);
-    d->finder->addContextMenuAction(indexAction);
+    d->finder->addContextMenuAction(d->indexAction);
     d->finder->addContextMenuAction(loadAction);
     d->finder->addContextMenuAction(viewAction);
 
     connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportRequested()));
-    connect(indexAction, SIGNAL(triggered()), this, SLOT(onFileSystemIndexRequested()));
+    connect(d->indexAction, SIGNAL(triggered()), this, SLOT(onFileSystemIndexRequested()));
     connect( loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
     connect( viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
 
@@ -317,4 +319,14 @@ void medFileSystemDataSource::saveTreeViewSettings()
 {
     medSettingsManager* mng = medSettingsManager::instance();
     mng->setValue("medFileSystemDataSource", "listView", true);
+}
+
+void medFileSystemDataSource::updateIndexAction(const QStringList &paths)
+{
+    // disables the Index action on directories (unsupported)
+    bool hasNoDir = true;
+    foreach(QString p, paths) {
+        hasNoDir &= ! QFileInfo(p).isDir();
+    }
+    d->indexAction->setEnabled(hasNoDir);
 }

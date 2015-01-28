@@ -259,34 +259,6 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     return index;
 }
 
-
-//-----------------------------------------------------------------------------------------------------------
-/**
-* Checks if the image which was used to create the medData object
-* passed as parameter already exists in the database
-* @param medData - a @medAbstractData object created from the original image
-* @param imageName - the name of the image we are looking for
-* @return true if already exists, false otherwise
-**/
-bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* medData, QString imageName )
-{
-    bool imageExists = false;
-
-    QPointer<medDatabaseNonPersistentController> npdc =
-            medDatabaseNonPersistentController::instance();
-
-    QList<medDatabaseNonPersistentItem*> items = npdc->items();
-
-    foreach(medDatabaseNonPersistentItem* item, items)
-    {
-        imageExists = item->file() == imageName;
-        if (imageExists)
-            break;
-    }
-
-    return imageExists;
-}
-
 //-----------------------------------------------------------------------------------------------------------
 /**
 * Finds if parameter @seriesName is already being used in the database

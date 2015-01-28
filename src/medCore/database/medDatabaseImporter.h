@@ -47,8 +47,6 @@ private:
 
     QString ensureUniqueSeriesName ( const QString seriesName );
 
-    bool checkIfExists ( medAbstractData* medData, QString imageName );
-
     medDataIndex populateDatabaseAndGenerateThumbnails (medAbstractData* medData, QString pathToStoreThumbnail );
 
     int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );

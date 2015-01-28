@@ -109,15 +109,6 @@ protected:
     virtual QString ensureUniqueSeriesName ( const QString seriesName ) = 0;
 
     /**
-    * Checks if the image which was used to create the medData object
-    * passed as parameter already exists in the database
-    * @param medData - a @medAbstractData object created from the original image
-    * @param imageName - the name of the image we are looking for
-    * @return true if already exists, false otherwise
-    **/
-    virtual bool checkIfExists ( medAbstractData* medData, QString imageName ) = 0;
-
-    /**
      * Retrieves patientID. Checks if patient is already in the database
      * if so, returns his Id, otherwise creates a new guid
      */

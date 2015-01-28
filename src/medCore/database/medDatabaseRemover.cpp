@@ -15,17 +15,17 @@
 
 #include <QSqlError>
 
-#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 #include <medDatabaseController.h>
-#include <medStorage.h>
 #include <medDataIndex.h>
-#include <medAbstractImageData.h>
+#include <medStorage.h>
+
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace
@@ -49,7 +49,6 @@ public:
     static const QString T_PATIENT;
     static const QString T_STUDY;
     static const QString T_SERIES;
-    static const QString T_IMAGE;
 
     bool isCancelled;
 };
@@ -57,7 +56,6 @@ public:
 const QString medDatabaseRemoverPrivate::T_PATIENT = "patient";
 const QString medDatabaseRemoverPrivate::T_STUDY = "study";
 const QString medDatabaseRemoverPrivate::T_SERIES = "series";
-const QString medDatabaseRemoverPrivate::T_IMAGE = "image";
 
 medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobItem(), d ( new medDatabaseRemoverPrivate )
 {
@@ -137,34 +135,8 @@ void medDatabaseRemover::internalRun()
                     break;
 
                 int seriesDbId = seQuery.value ( 0 ).toInt();
-                QSqlQuery imQuery ( db );
-
-                if ( index.isValidForImage() )
-                {
-                    imQuery.prepare ( "SELECT id FROM " + d->T_IMAGE + " WHERE id = :id AND series = :seriesId" );
-                    imQuery.bindValue ( ":id", index.imageId() );
-                }
-                else
-                {
-                    imQuery.prepare ( "SELECT id FROM " + d->T_IMAGE + " WHERE series = :series" );
-                }
-                imQuery.bindValue ( ":series", seriesDbId );
-
-                EXEC_QUERY ( imQuery );
-
-                imQuery.last();
-                double nbImage = imQuery.at();
-                imQuery.first();
-
-                do
-                {
-                    int imageId = imQuery.value ( 0 ).toInt();
-                    this->removeImage ( patientDbId, studyDbId, seriesDbId, imageId );
-                    emit progress (this, imQuery.at() / nbImage * 100 );
-                }
-                while ( imQuery.next() );
-                if ( this->isSeriesEmpty ( seriesDbId ) )
-                    this->removeSeries ( patientDbId, studyDbId, seriesDbId );
+                this->removeSeries ( patientDbId, studyDbId, seriesDbId );
+                emit progress (this, 50 );
 
             } // seQuery.next
             if ( this->isStudyEmpty ( studyDbId ) )
@@ -175,6 +147,7 @@ void medDatabaseRemover::internalRun()
             this->removePatient ( patientDbId );
 
     } // ptQuery.next
+    emit progress (this, 100 );
 
     if ( d->isCancelled )
         emit failure ( this );
@@ -182,33 +155,6 @@ void medDatabaseRemover::internalRun()
         emit success ( this );
 
     return;
-}
-
-void medDatabaseRemover::removeImage ( int patientDbId, int studyDbId, int seriesDbId, int imageId )
-{
-    QSqlDatabase db(d->db);
-    QSqlQuery query ( db );
-
-    query.prepare ( "SELECT thumbnail FROM " + d->T_IMAGE + " WHERE id = :imageId " );
-    query.bindValue ( ":id", imageId );
-    EXEC_QUERY ( query );
-    if ( query.next() )
-    {
-        QString thumbnail = query.value ( 0 ).toString();
-        this->removeFile ( thumbnail );
-    }
-    removeTableRow ( d->T_IMAGE, imageId );
-}
-
-bool medDatabaseRemover::isSeriesEmpty ( int seriesDbId )
-{
-    QSqlDatabase db(d->db);
-    QSqlQuery query ( db );
-
-    query.prepare ( "SELECT id FROM " + d->T_IMAGE + " WHERE series = :series " );
-    query.bindValue ( ":series", seriesDbId );
-    EXEC_QUERY ( query );
-    return !query.next();
 }
 
 void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seriesDbId )

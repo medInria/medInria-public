@@ -51,8 +51,6 @@ public:
 
     QString ensureUniqueSeriesName ( const QString seriesName );
 
-    bool checkIfExists ( medAbstractData* medData, QString imageName );
-
 private:
 
 };

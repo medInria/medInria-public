@@ -249,15 +249,15 @@ void medAbstractDatabaseImporter::importFile ( void )
         // 2.3) a) Determine future file name and path based on patient/study/series/image
         // i.e.: where we will write the imported image
         QString imageFileName = determineFutureImageFileName ( medData, volumeUniqueIdToVolumeNumber[volumeId] );
-        #ifdef Q_OS_WIN32
-                if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
-                {
-                    emit showError ( tr ( "Your database path is too long" ), 5000 );
-                    emit dataImported(medDataIndex(), d->uuid);
-                emit failure ( this );
-                return;
-                }
-            #endif
+#ifdef Q_OS_WIN32
+        if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
+        {
+            emit showError ( tr ( "Your database path is too long" ), 5000 );
+            emit dataImported(medDataIndex(), d->uuid);
+            emit failure ( this );
+            return;
+        }
+#endif
         // 2.3) b) Find the proper extension according to the type of the data
         // i.e.: in which format we will write the file in our database
         QString futureExtension  = determineFutureImageExtensionByDataType ( medData );
@@ -274,12 +274,9 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         // First check if patient/study/series/image path already exists in the database
         // Should we emit a message otherwise ??? TO
-        if ( !checkIfExists ( medData, fileInfo.fileName() ) )
-        {
-            imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
-            imagesGroupedByPatient[imageFileName] = patientID;
-            imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
-        }
+        imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
+        imagesGroupedByPatient[imageFileName] = patientID;
+        imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
     }
 
     // some checks to see if the user cancelled or something failed

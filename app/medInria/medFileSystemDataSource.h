@@ -67,6 +67,7 @@ private slots:
     void saveHiddenFilesSettings(bool show);
     void saveListViewSettings();
     void saveTreeViewSettings();
+    void updateIndexAction(const QStringList& paths);
 
 private:
 
