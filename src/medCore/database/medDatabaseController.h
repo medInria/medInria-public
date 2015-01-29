@@ -93,12 +93,11 @@ protected slots:
 private:
     medDatabaseController();
 
-    void createPatientTable();
-    void   createStudyTable();
-    void  createSeriesTable();
-    void   createImageTable();
+    bool createPatientTable();
+    bool   createStudyTable();
+    bool  createSeriesTable();
 
-    void updateFromNoVersionToVersion1();
+    bool updateFromNoVersionToVersion1();
 
     QSqlDatabase m_database;
 

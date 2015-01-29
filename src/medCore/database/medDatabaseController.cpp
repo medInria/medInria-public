@@ -181,9 +181,12 @@ bool medDatabaseController::createConnection(void)
         d->isConnected = true;
     }
 
-    createPatientTable();
-    createStudyTable();
-    createSeriesTable();
+    if(    !createPatientTable()
+        || !createStudyTable()
+        || !createSeriesTable()
+        || !updateFromNoVersionToVersion1()) {
+        return false;
+    }
 
     // optimize speed of sqlite db
     QSqlQuery query(m_database);
@@ -193,7 +196,6 @@ bool medDatabaseController::createConnection(void)
     if ( !query.exec( QLatin1String( "PRAGMA journal_mode=wal" ) ) ) {
         qDebug() << "Could not set sqlite write-ahead-log journal mode";
     }
-
 
     return true;
 }
@@ -415,100 +417,165 @@ void medDatabaseController::showOpeningError(QObject *sender)
     medMessageController::instance()->showError("Opening item failed.", 3000);
 }
 
-void medDatabaseController::createPatientTable(void)
+bool medDatabaseController::createPatientTable(void)
 {
     QSqlQuery query(this->database());
-    query.exec(
-            "CREATE TABLE patient ("
-            " id       INTEGER PRIMARY KEY,"
-            " name        TEXT,"
-            " thumbnail   TEXT,"
-            " birthdate   TEXT,"
-            " gender      TEXT,"
-            " patientId   TEXT"
-            ");"
-            );
+    if( ! query.prepare(
+                "CREATE TABLE IF NOT EXISTS patient ("
+                " id       INTEGER PRIMARY KEY,"
+                " name        TEXT,"
+                " thumbnail   TEXT,"
+                " birthdate   TEXT,"
+                " gender      TEXT,"
+                " patientId   TEXT"
+                ");"
+                ) ) {
+        qDebug() << query.lastError();
+    }
+        return EXEC_QUERY(query);
 }
 
-void medDatabaseController::createStudyTable(void)
+bool medDatabaseController::createStudyTable(void)
 {
     QSqlQuery query(this->database());
-
-    query.exec(
-            "CREATE TABLE study ("
-            " id        INTEGER      PRIMARY KEY,"
-            " patient   INTEGER," // FOREIGN KEY
-            " name         TEXT,"
-            " uid          TEXT,"
-            " thumbnail    TEXT,"
-            " studyId      TEXT"
-            ");"
-            );
+    return query.prepare(
+                "CREATE TABLE IF NOT EXISTS study ("
+                " id        INTEGER      PRIMARY KEY,"
+                " patient   INTEGER," // FOREIGN KEY
+                " name         TEXT,"
+                " uid          TEXT,"
+                " thumbnail    TEXT,"
+                " studyId      TEXT"
+                ");"
+                ) && EXEC_QUERY(query);
 }
 
-void medDatabaseController::createSeriesTable(void)
+bool medDatabaseController::createSeriesTable(void)
 {
     QSqlQuery query(this->database());
-    query.exec(
-            "CREATE TABLE series ("
-            " id       INTEGER      PRIMARY KEY,"
-            " study    INTEGER," // FOREIGN KEY
-            " size     INTEGER,"
-            " name            TEXT,"
-            " path            TEXT,"
-            " uid             TEXT,"
-            " seriesId        TEXT,"
-            " orientation     TEXT,"
-            " seriesNumber    TEXT,"
-            " sequenceName    TEXT,"
-            " sliceThickness  TEXT,"
-            " rows            TEXT,"
-            " columns         TEXT,"
-            " thumbnail       TEXT,"
-            " age             TEXT,"
-            " description     TEXT,"
-            " modality        TEXT,"
-            " protocol        TEXT,"
-            " comments        TEXT,"
-            " status          TEXT,"
-            " acquisitiondate TEXT,"
-            " importationdate TEXT,"
-            " referee         TEXT,"
-            " performer       TEXT,"
-            " institution     TEXT,"
-            " report          TEXT"
-            ");"
-            );
+    return query.prepare(
+                "CREATE TABLE IF NOT EXISTS series ("
+                " id       INTEGER      PRIMARY KEY,"
+                " study    INTEGER," // FOREIGN KEY
+                " size     INTEGER,"
+                " name            TEXT,"
+                " path            TEXT,"
+                " uid             TEXT,"
+                " seriesId        TEXT,"
+                " orientation     TEXT,"
+                " seriesNumber    TEXT,"
+                " sequenceName    TEXT,"
+                " sliceThickness  TEXT,"
+                " rows            TEXT,"
+                " columns         TEXT,"
+                " thumbnail       TEXT,"
+                " age             TEXT,"
+                " description     TEXT,"
+                " modality        TEXT,"
+                " protocol        TEXT,"
+                " comments        TEXT,"
+                " status          TEXT,"
+                " acquisitiondate TEXT,"
+                " importationdate TEXT,"
+                " referee         TEXT,"
+                " performer       TEXT,"
+                " institution     TEXT,"
+                " report          TEXT"
+                ");"
+                ) && EXEC_QUERY(query);
 }
 
-void medDatabaseController::updateFromNoVersionToVersion1()
+bool medDatabaseController::updateFromNoVersionToVersion1()
 {
-    // Updates the DB schema from the orignial, un-versioned schema, to the
-    // version 2 schema.
+    // Updates the DB schema from the original, un-versioned schema, to the
+    // version 1 schema:
+    // - Table series gains a column isIndexed
+    // - Field image.isIndexed is migrated to series.isIndexed
+    // - Field image.path is migrated to series.path if image.isIndexed is true
+    // - Table image is removed
+    // We to do this in a transaction so that we won't mess up the DB if for
+    // whatever reason the app/computer crashes, and we'll just try again on the
+    // next launch.
 
-    QSqlQuery q;
+    QSqlQuery q(this->database());
+
+    if ( ! q.exec("BEGIN EXCLUSIVE TRANSACTION")) {
+        qWarning("medDatabaseController: Could not begin transaction.");
+        qDebug() << q.lastError();
+        return false;
+    }
+
     if ( ! (q.exec("PRAGMA user_version") && q.first())) {
-        qWarning("medDatabaseController: testing DB version for upgrade failed.");
-        return;
+        qWarning("medDatabaseController: Testing DB version for upgrade failed.");
+        qDebug() << q.lastError();
+        return false;
     }
+
     int version = q.value(0).toInt();
-    if (version >= 0) {
+    if (version >= 1) {
         // nothing to do, up to date
-        return;
+        return true;
     }
 
-    if ( ! q.exec("SELECT id,path FROM image")) {
+    // Test for isIndexed column to series
+    if ( ! (q.exec("SELECT sql FROM sqlite_master WHERE type=='table' AND tbl_name=='series'") && q.first())) {
+        qWarning("medDatabaseController: Could not test for `isIndexed` column in table `series`.");
+        qDebug() << q.lastError();
+        return false;
+    }
+
+    bool missingColumn = (q.value(0).toString().indexOf("isIndexed") == -1);
+
+    if( missingColumn ) {
+        // Add isIndexed column if missing
+        if ( ! q.exec("ALTER TABLE series ADD COLUMN isIndexed BOOLEAN")) {
+            qWarning("medDatabaseController: Could not add `isIndexed` column to table `series`.");
+            qDebug() << q.lastError();
+            return false;
+        }
+    }
+
+    // Migrate path and isIndexed fields from table `image` to `series`
+    if ( ! q.exec("SELECT id,path FROM image WHERE isIndexed == 'true'")) {
         qWarning("medDatabaseController: getting a list of path from the `image` table failed.");
+        qDebug() << q.lastError();
+        return false;
     }
+    QHash<int, QStringList> imagePaths;
     while(q.next()) {
+        imagePaths[q.value(0).toInt()] += q.value(0).toString();
+    }
+    foreach(int id, imagePaths.keys()) {
+        q.prepare("UPDATE series SET path==:paths,isIndexed='true' WHERE id==:seriesId");
+        q.bindValue(":paths", imagePaths[id].join(";"));
+        q.bindValue(":seriesId", id);
+        if ( ! q.exec()) {
+            qWarning("medDatabaseController: updating the `series` table failed for id %d.", id);
+            qDebug() << q.lastError();
+            return false;
+        }
+    }
 
+    // Delete table `image`
+    if ( ! q.exec("DROP TABLE image")) {
+        qWarning("medDatabaseController: could not drop table `image`.");
+        qDebug() << q.lastError();
+        return false;
     }
 
     // finally, update DB version
-//    if ( ! q.exec("PRAGMA user_version = 1")) {
-//        qWarning("medDatabaseController: updating DB version to 1 after upgrade failed.");
-//        return;
-//    }
+    if ( ! q.exec("PRAGMA user_version = 1")) {
+        qWarning("medDatabaseController: updating DB version to 1 after upgrade failed.");
+        qDebug() << q.lastError();
+        return false;
+    }
+
+    if ( ! q.exec("END TRANSACTION")) {
+        qWarning("medDatabaseController: Could not end transaction.");
+        qDebug() << q.lastError();
+        return false;
+    }
+    return true;
 }
 
 /**
