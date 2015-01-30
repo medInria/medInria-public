@@ -86,7 +86,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 {
     qDebug() << "itkFiltersToolBox";
     //Filters selection combobox
-    d->filters = new QComboBox;
+    d->filters = new QComboBox(this);
     QStringList filtersList;
     filtersList << "Add Constant to Image" 
                 << "Substract Constant from Image" 
@@ -103,7 +103,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     
     d->filters->addItems ( filtersList );
 
-    QObject::connect ( d->filters, SIGNAL ( activated ( int ) ), this, SLOT ( onFiltersActivated ( int ) ) );
+    QObject::connect ( d->filters, SIGNAL ( currentIndexChanged ( int ) ), this, SLOT ( onFiltersActivated ( int ) ) );
 
     QLabel * dataTypeLabel = new QLabel ( tr ( "Data type :" ) );
     d->dataTypeValue = new QLabel ( tr ( "Unknown" ) );
