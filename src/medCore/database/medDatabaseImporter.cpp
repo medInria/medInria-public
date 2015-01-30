@@ -238,9 +238,6 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     query.bindValue ( ":rows", rows );
     query.bindValue ( ":columns", columns );
 
-    if( seriesName=="EmptySerie" )
-        return seriesDbId;
-
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -253,12 +250,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         // if we are creating a new series while indexing then we need to empty
         // the column 'path', as there won't be a file aggregating the images
 
-        QString seriesPath = "";
-        if ( !indexWithoutImporting() )
-        {
-            QStringList fileNames  = medData->metaDataValues( "FileName" );
-            seriesPath = fileNames.count()>0 ? fileNames[0] : "" ;
-        }
+        QString seriesPath = medData->metaDataValues( "FilePaths" ).join(";");
         int size               = medMetaDataKeys::Size.getFirstValue(medData).toInt();
         QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
         QString age            = medMetaDataKeys::Age.getFirstValue(medData);
@@ -274,8 +266,10 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         QString institution    = medMetaDataKeys::Institution.getFirstValue(medData);
         QString report         = medMetaDataKeys::Report.getFirstValue(medData);
 
-        query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) \
-                                     VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)" );
+        query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report, isIndexed) \
+                                     VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report, :isIndexed)" );
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
         query.bindValue ( ":study",          studyDbId );
         query.bindValue ( ":seriesId",       seriesId );
         query.bindValue ( ":size",           size );
@@ -301,6 +295,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         query.bindValue ( ":performer",      performer );
         query.bindValue ( ":institution",    institution );
         query.bindValue ( ":report",         report );
+        query.bindValue ( ":isIndexed",      indexWithoutImporting());
 
         if ( !query.exec() )
           qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;

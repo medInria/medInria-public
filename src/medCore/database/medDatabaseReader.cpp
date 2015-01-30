@@ -59,6 +59,7 @@ medAbstractData* medDatabaseReader::run()
             sliceThickness, rows, columns, thumbnailPath, description, protocol,
             comments, status, acquisitiondate, importationdate, referee,
             institution, report, modality, seriesId;
+    bool indexed;
 
     query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
     query.bindValue ( ":id", patientDbId );
@@ -85,7 +86,7 @@ medAbstractData* medDatabaseReader::run()
 
     query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, \
                      description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
-                     institution, report, modality, seriesId, path, thumbnail \
+                     institution, report, modality, seriesId, path, thumbnail, isIndexed \
                      FROM series WHERE id = :id" );
 
     query.bindValue ( ":id", seriesDbId );
@@ -116,16 +117,22 @@ medAbstractData* medDatabaseReader::run()
     seriesId = query.value ( 18 ).toString();
     seriesPath = query.value ( 19 ).toString();
     thumbnailPath = query.value ( 20 ).toString();
+    indexed = query.value ( 21 ).toBool();
 
-    QString fullPath(medStorage::dataLocation() + seriesPath);
-    QFileInfo fullPathInfo(fullPath);
-    if ( ! fullPathInfo.exists())
-        FAILURE("No data found at path:" + fullPath);
+    QStringList filePaths = seriesPath.split(';', QString::SkipEmptyParts);
+    for(int i = 0 ; i < filePaths.size(); i++) {
+        // Non-indexed file paths are relative to the DB directory
+        QString fullPath = (indexed ? QString() : medStorage::dataLocation()) + filePaths.at(i);
+        QFileInfo fullPathInfo(fullPath);
+        if ( ! fullPathInfo.exists())
+            FAILURE("No data found at path:" + fullPath);
+        filePaths[i] = fullPath;
+    }
 
-    medAbstractData *medData = this->readFile(fullPath);
+    medAbstractData *medData = this->readFile(filePaths);
 
     if ( ! medData)
-        FAILURE("Failed to read data at path:" + fullPath);
+        FAILURE("Failed to read data at path:" + seriesPath);
 
     QString fullThumbnailPath(medStorage::dataLocation() + thumbnailPath);
     QFileInfo fullThumbnailPathInfo(fullThumbnailPath);
@@ -165,7 +172,7 @@ medAbstractData* medDatabaseReader::run()
     return medData;
 }
 
-medAbstractData *medDatabaseReader::readFile( const QString filename )
+medAbstractData *medDatabaseReader::readFile( const QStringList& filenames )
 {
     medAbstractData *medData = NULL;
 
@@ -178,9 +185,9 @@ medAbstractData *medDatabaseReader::readFile( const QString filename )
         dataReader = medAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
 
         connect ( dataReader, SIGNAL ( progressed ( int ) ), this, SIGNAL ( progressed ( int ) ) );
-        if ( dataReader->canRead ( filename ) )
+        if ( dataReader->canRead ( filenames ) )
         {
-            dataReader->read ( filename );
+            dataReader->read ( filenames );
             dataReader->enableDeferredDeletion ( false );
             medData = dynamic_cast<medAbstractData*>(dataReader->data());
 
