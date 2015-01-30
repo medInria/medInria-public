@@ -179,7 +179,10 @@ QString medDiffeomorphicDemonsRegistrationProcess::identifier() const
 
 QList<medAbstractParameter*> medDiffeomorphicDemonsRegistrationProcess::parameters()
 {
-    return d->parameters;
+    QList<medAbstractParameter*>  params;
+    params << d->parameters;
+    params << itkProcessRegistration::parameters();
+    return params;
 }
 
 // /////////////////////////////////////////////////////////////////

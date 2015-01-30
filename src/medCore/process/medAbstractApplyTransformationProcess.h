@@ -32,22 +32,14 @@ public:
 
 public:
     virtual bool isInteractive() const = 0;
-
-public:
     virtual int update() = 0;
 
-public:
     virtual void addTransformation(medAbstractTransformation *transfo);
     void addTransformations(QList<medAbstractTransformation *> transfo);
     QList<medAbstractTransformation *> transformationStack() const;
 
-public:
     virtual medToolBox* toolbox();
 
-public:
-    void resetTransformationStack();
-
-public:
     void setGeometry(medAbstractImageData *geometry);
     medAbstractImageData*  geometry() const;
 
@@ -57,11 +49,11 @@ public:
     QUndoStack *commandStack();
     QUndoView *commandView();
 
-public:
     virtual QList<medAbstractParameter*> parameters();
 
 protected slots:
     void addSVFTransfoDialog();
+    void resetTransformationStack();
 
 signals:
     void addSVFTransfoRequest(medAbstractImageData *data);

@@ -19,9 +19,11 @@
 #include <medAbstractImageData.h>
 #include <medSVFTransformation.h>
 #include <medDisplacementFieldTransformation.h>
+#include <medLinearTransformation.h>
 #include <medAbstractTransformation.h>
 #include <medAbstractDataFactory.h>
 #include <medDataIndexParameter.h>
+#include <medPathParameter.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medRpiApplyTransformationCommand.h>
@@ -30,23 +32,25 @@
 #include <rpiDisplacementFieldTransform.h>
 #include <itkImageRegistrationFactory.h>
 #include <itkCastImageFilter.h>
+#include <itkAffineTransform.h>
 
 #include <QUndoCommand>
 
 
 // /////////////////////////////////////////////////////////////////
-// medRpiApplyTransformationDiffeomorphicDemonsPrivate
+// medRpiApplyTransformationPrivate
 // /////////////////////////////////////////////////////////////////
 
 class medRpiApplyTransformationProcessPrivate
 {
 public:
-    medDataIndexParameter* DisplFieldTransfoParam;
-    medAbstractImageData *DisplFieldImage;
+    medDataIndexParameter* displFieldTransfoParam;
+    medPathParameter* linearTransfoParam;
+    medDataIndexParameter* SVFTransfoParam;
 
+    medAbstractTransformation* currentTransfo;
 
     itk::ImageRegistrationFactory<medRpiApplyTransformationProcess::RegImageType>::Pointer factory;
-
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -55,11 +59,19 @@ public:
 
 medRpiApplyTransformationProcess::medRpiApplyTransformationProcess() : medAbstractApplyTransformationProcess(), d(new medRpiApplyTransformationProcessPrivate)
 {
-    d->DisplFieldTransfoParam = new medDataIndexParameter("Displ Field Transfo", this);
-    connect(d->DisplFieldTransfoParam, SIGNAL(valueChanged(const medDataIndex &)),this,SLOT(addDisplFieldTransfo(const medDataIndex &)));
+    d->displFieldTransfoParam = new medDataIndexParameter("Displ Field Transfo", this);
+    connect(d->displFieldTransfoParam, SIGNAL(valueChanged(const medDataIndex &)),this,SLOT(addDisplFieldTransfo(const medDataIndex &)));
+
+    d->linearTransfoParam = new medPathParameter("Linear Transfo", this);
+    connect(d->linearTransfoParam, SIGNAL(valueChanged(QString)),this,SLOT(addLinearTransfo(QString)));
+
+    d->SVFTransfoParam = new medDataIndexParameter("SVF Transfo", this);
+    connect(d->SVFTransfoParam, SIGNAL(valueChanged(const medDataIndex &)),this,SLOT(addSVFTransfo(const medDataIndex &)));
 
     typedef itk::Image< float, 3 > RegImageType;
     d->factory = itk::ImageRegistrationFactory<RegImageType>::New();
+
+    d->currentTransfo = NULL;
 }
 
 medRpiApplyTransformationProcess::~medRpiApplyTransformationProcess()
@@ -87,19 +99,21 @@ QString medRpiApplyTransformationProcess::identifier() const
 QList<medAbstractParameter*> medRpiApplyTransformationProcess::parameters()
 {
     QList<medAbstractParameter *> params;
-    params << d->DisplFieldTransfoParam;
+    params << d->displFieldTransfoParam;
+    params << d->linearTransfoParam;
+    params << d->SVFTransfoParam;
     return params;
 }
 
 int medRpiApplyTransformationProcess::update()
 {
-    if(!this->geometry() || !this->inputImage() || this->transformationStack().isEmpty())
+    if(d->currentTransfo)
     {
-        qDebug() << "Wrong parameters, could not apply rpi transformation...";
-        return EXIT_FAILURE;
+        addTransformation(d->currentTransfo);
+
+        //TODO: delete current transfo after application?
     }
 
-    qDebug() << "medRpiApplyTransformationProcess update !!!";
     return EXIT_SUCCESS;
 }
 
@@ -124,10 +138,6 @@ bool medRpiApplyTransformationProcess::isInteractive() const
      connect(command, SIGNAL(commandDone()), this, SLOT(handleEndOfCommand()));
 
      this->commandStack()->push(command);
-
-     this->setOutput<medAbstractData>(command->output(), 0);
-     handleOutputs();
-
  }
 
 void medRpiApplyTransformationProcess::addDisplFieldTransfo(const medDataIndex &index)
@@ -140,7 +150,65 @@ void medRpiApplyTransformationProcess::addDisplFieldTransfo(const medDataIndex &
     medDisplacementFieldTransformation* displFieldImageTransfo = new medDisplacementFieldTransformation;
     displFieldImageTransfo->setParameter(displFieldImage);
 
-    addTransformation(displFieldImageTransfo);
+    d->currentTransfo = displFieldImageTransfo;
+}
+
+void medRpiApplyTransformationProcess::addSVFTransfo(const medDataIndex &index)
+{
+    if (!index.isValid()){
+        return;
+    }
+
+    medAbstractImageData* SVFImage = dynamic_cast <medAbstractImageData *> ( medDataManager::instance()->retrieveData(index));
+    medSVFTransformation* SVFTransfo = new medSVFTransformation;
+    SVFTransfo->setParameter(SVFImage);
+
+    d->currentTransfo = SVFTransfo;
+
+}
+
+void medRpiApplyTransformationProcess::addLinearTransfo(QString transfoFile)
+{
+    if (transfoFile != "")
+    {
+        itk::TransformFileReader::Pointer tmpTrRead = itk::TransformFileReader::New();
+        tmpTrRead->SetFileName (transfoFile.toStdString());
+
+        itk::AffineTransform<> * affineTransfo = NULL;
+        medLinearTransformation *transfo = NULL;
+
+        try
+        {
+            tmpTrRead->Update();
+
+            itk::TransformFileReader::TransformListType trsfList = * (tmpTrRead->GetTransformList());
+            itk::TransformFileReader::TransformListType::iterator tr_it = trsfList.begin();
+
+            transfo = new medLinearTransformation;
+            affineTransfo = dynamic_cast <itk::AffineTransform<> *> ((*tr_it).GetPointer());
+        }
+        catch (itk::ExceptionObject &e)
+        {
+            qWarning() << "Unable to read linear transform...";
+        }
+
+        if(affineTransfo)
+        {
+            QMatrix4x4 qmatrix;
+            for(int i=0; i<3; i++)
+                for(int j=0; j<3; j++)
+                    qmatrix(i,j) =  affineTransfo->GetMatrix()[i][j];
+
+            for(int i=0; i<3; i++)
+                qmatrix(i,3) = affineTransfo->GetOffset()[i];
+
+            qmatrix(3,3) = 1;
+
+            transfo->setMatrix(qmatrix);
+
+            d->currentTransfo = transfo;
+        }
+    }
 }
 
 void medRpiApplyTransformationProcess::handleEndOfCommand()

@@ -35,10 +35,13 @@ public:
 
     virtual bool isInteractive() const;
 
-    virtual QList<medAbstractParameter*> parameters();
+    virtual medToolBox* toolbox();
 
 public slots:
     virtual bool saveTransform();
+
+protected slots:
+    void enableSaveTransform();
 
 private:
     medAbstractEstimateTransformationProcessPrivate *d;

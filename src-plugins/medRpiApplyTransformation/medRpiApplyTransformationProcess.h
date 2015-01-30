@@ -51,6 +51,8 @@ public:
 
 private slots:
     void addDisplFieldTransfo(const medDataIndex &);
+    void addSVFTransfo(const medDataIndex &);
+    void addLinearTransfo(QString);
     void handleEndOfCommand();
 
 private:

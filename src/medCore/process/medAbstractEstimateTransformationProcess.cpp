@@ -16,12 +16,15 @@
 #include <medAbstractImageData.h>
 #include <medAbstractTransformation.h>
 #include <medTriggerParameter.h>
+#include <medToolBox.h>
+#include <medMessageController.h>
 
 
 class medAbstractEstimateTransformationProcessPrivate
 {
 public:
     medTriggerParameter* saveTransfoParameter;
+    QPointer<medToolBox> toolbox;
 };
 
 
@@ -38,7 +41,12 @@ medAbstractEstimateTransformationProcess::medAbstractEstimateTransformationProce
     this->appendOutput( new medProcessOutput<medAbstractTransformation>("Output"));
 
     d->saveTransfoParameter = new medTriggerParameter("Save Transfo", this);
+    d->saveTransfoParameter->setButtonText("Save Transfo");
+
+    d->saveTransfoParameter->getPushButton()->setEnabled(false);
+
     connect(d->saveTransfoParameter, SIGNAL(triggered()), this, SLOT(saveTransform()));
+    connect(this, SIGNAL(success()), this, SLOT(enableSaveTransform()));
 }
 
 medAbstractEstimateTransformationProcess::~medAbstractEstimateTransformationProcess()
@@ -51,15 +59,35 @@ bool medAbstractEstimateTransformationProcess::isInteractive() const
     return false;
 }
 
-QList<medAbstractParameter*> medAbstractEstimateTransformationProcess::parameters()
+medToolBox* medAbstractEstimateTransformationProcess::toolbox()
 {
-    QList<medAbstractParameter*> params;
-    params << d->saveTransfoParameter;
-    return params;
+    if(d->toolbox.isNull())
+    {
+        d->toolbox = new medToolBox;
+        d->toolbox->addWidget(this->parameterWidget());
+        d->toolbox->addWidget(d->saveTransfoParameter->getPushButton());
+        d->toolbox->addWidget(this->runParameter()->getPushButton());
+    }
+    return d->toolbox;
 }
 
 bool medAbstractEstimateTransformationProcess::saveTransform()
 {
-    return true;
+    QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save transform file"),QDir::homePath());
 
+    bool res = false;
+    if(!fileName.isEmpty())
+        res = writeTransform(fileName);
+    else return false;
+
+    if(res)
+        medMessageController::instance()->showInfo("File successfully saved", 2000);
+    else medMessageController::instance()->showError("Error saving file", 2000);
+
+    return res;
+}
+
+void medAbstractEstimateTransformationProcess::enableSaveTransform()
+{
+    d->saveTransfoParameter->getPushButton()->setEnabled(true);
 }

@@ -16,6 +16,7 @@
 #include <medAbstractImageData.h>
 #include <medToolBox.h>
 #include <medDataSourceDialog.h>
+#include <medTriggerParameter.h>
 
 
 class medAbstractApplyTransformationProcessPrivate
@@ -34,6 +35,8 @@ public:
 
     QUndoStack *commandStack;
     QUndoView* commandView;
+
+    medTriggerParameter* resetStackParameter;
 
 };
 
@@ -58,6 +61,11 @@ medAbstractApplyTransformationProcess::medAbstractApplyTransformationProcess(med
     d->commandStack = new QUndoStack(this);
     d->commandView = new QUndoView(d->commandStack);
     d->commandView->hide();
+
+    d->resetStackParameter = new medTriggerParameter("Reset Stack", this);
+    d->resetStackParameter->setButtonText("Reset Stack");
+
+    connect(d->resetStackParameter, SIGNAL(triggered()), this, SLOT(resetTransformationStack()));
 }
 
 medAbstractApplyTransformationProcess::~medAbstractApplyTransformationProcess()
@@ -115,6 +123,7 @@ medAbstractImageData* medAbstractApplyTransformationProcess::inputImage() const
 void medAbstractApplyTransformationProcess::resetTransformationStack()
 {
     d->transformations.clear();
+    d->commandStack->clear();
 }
 
 medToolBox* medAbstractApplyTransformationProcess::toolbox()
@@ -123,6 +132,7 @@ medToolBox* medAbstractApplyTransformationProcess::toolbox()
     {
         d->toolBox = medAbstractProcess::toolbox();
         d->toolBox->addWidget(this->commandView());
+        d->toolBox->addWidget(d->resetStackParameter->getPushButton());
         this->commandView()->show();
     }
 

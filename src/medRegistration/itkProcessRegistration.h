@@ -91,8 +91,9 @@ public:
     */
     //virtual QString getTitleAndParameters() = 0;
 
+    virtual QList<medAbstractParameter*> parameters() { return QList<medAbstractParameter*>(); }
+
 public slots:
-//    virtual bool write(const QStringList& files);
 //    virtual bool write(const QString& file);
 
 protected :
@@ -106,8 +107,5 @@ private:
     itkProcessRegistrationPrivate *d;
 };
 
-//Implement this function only in actual implementation of registration Plugins
-// This class is abstracted, so we won't register it in the factory.
-//dtkAbstractProcess *createItkProcessRegistration();
 
 

@@ -20,6 +20,7 @@
 
 class medLinearTransformation;
 class medDisplacementFieldTransformation;
+class medSVFTransformation;
 
 class medRpiApplyTransformationCommand : public QObject, public medAbstractApplyTransformationCommand
 {
@@ -41,8 +42,8 @@ signals:
     void commandDone();
 
 private:
-    void applyDisplFieldTransfo(medDisplacementFieldTransformation*);
-    void applySVFTransfo();
+    void applyDisplFieldTransfo(medDisplacementFieldTransformation *);
+    void applySVFTransfo(medSVFTransformation *);
     void applyLinearTransfo(medLinearTransformation *);
 
 

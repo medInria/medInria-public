@@ -212,6 +212,9 @@ void medRegistrationWorkspace::enableSelectorToolBox()
 
 void medRegistrationWorkspace::applyTransformation()
 {
+    if(!d->applyTransfoProcess)
+        return;
+
     if(d->currentSplitter != d->applyTransfoProcess->viewContainerSplitter())
     {
         this->tabbedViewContainers()->setSplitter(0, d->applyTransfoProcess->viewContainerSplitter());
