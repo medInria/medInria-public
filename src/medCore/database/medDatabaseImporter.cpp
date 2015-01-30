@@ -247,10 +247,16 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     }
     else
     {
-        // if we are creating a new series while indexing then we need to empty
-        // the column 'path', as there won't be a file aggregating the images
+        // TODO: fix this. Not the greatest code ever, not quite sure why this
+        // is necessary.
+        QString seriesPath;
+        if (indexWithoutImporting()) {
+            seriesPath = medData->metaDataValues( "FilePaths" ).join(";");
+        } else {
+            seriesPath = medData->metaDataValues( "FileName" ).join(";");
+        }
+        // END TODO
 
-        QString seriesPath = medData->metaDataValues( "FilePaths" ).join(";");
         int size               = medMetaDataKeys::Size.getFirstValue(medData).toInt();
         QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
         QString age            = medMetaDataKeys::Age.getFirstValue(medData);

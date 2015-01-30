@@ -499,12 +499,6 @@ bool medDatabaseController::updateFromNoVersionToVersion1()
 
     QSqlQuery q(this->database());
 
-    if ( ! q.exec("BEGIN EXCLUSIVE TRANSACTION")) {
-        qWarning("medDatabaseController: Could not begin transaction.");
-        qDebug() << q.lastError();
-        return false;
-    }
-
     if ( ! (q.exec("PRAGMA user_version") && q.first())) {
         qWarning("medDatabaseController: Testing DB version for upgrade failed.");
         qDebug() << q.lastError();
@@ -515,6 +509,12 @@ bool medDatabaseController::updateFromNoVersionToVersion1()
     if (version >= 1) {
         // nothing to do, up to date
         return true;
+    }
+
+    if ( ! q.exec("BEGIN EXCLUSIVE TRANSACTION")) {
+        qWarning("medDatabaseController: Could not begin transaction.");
+        qDebug() << q.lastError();
+        return false;
     }
 
     // Test for isIndexed column to series
