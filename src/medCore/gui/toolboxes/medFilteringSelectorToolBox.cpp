@@ -102,9 +102,14 @@ medAbstractData*  medFilteringSelectorToolBox::data()
  */
 void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
 {    
-    medFilteringAbstractToolBox *toolbox = NULL;
     //get identifier for toolbox.
     QString identifier = d->chooseFilter->itemData(index).toString();
+    this->changeCurrentToolBox(identifier);
+}
+
+void medFilteringSelectorToolBox::changeCurrentToolBox(QString identifier)
+{
+    medFilteringAbstractToolBox *toolbox = NULL;
     if (d->toolBoxes.contains (identifier))
         toolbox = d->toolBoxes[identifier];
     else
@@ -162,9 +167,6 @@ void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
 void medFilteringSelectorToolBox::onInputSelected(medAbstractData *data)
 {   
     d->inputData = data;
-
-    if (d->inputData != NULL && !d->inputData->dataIndex().isValidForSeries())
-        d->inputData = NULL;
 
     if(d->currentToolBox)
         d->currentToolBox->update(d->inputData);

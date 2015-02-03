@@ -43,6 +43,7 @@ signals:
 
 public slots:
     void changeCurrentToolBox(int index);
+    void changeCurrentToolBox(QString identifier);
     void clear();
     void onInputSelected(medAbstractData *data);
 
