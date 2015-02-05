@@ -32,10 +32,6 @@ public:
     medAbstractData* processOutput();
     dtkPlugin* plugin();
 
-signals:
-    void success();
-    void failure();
-
 public slots:
 
     void onFiltersActivated(int index);
