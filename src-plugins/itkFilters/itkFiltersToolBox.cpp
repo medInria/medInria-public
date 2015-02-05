@@ -87,6 +87,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     qDebug() << "itkFiltersToolBox";
     //Filters selection combobox
     d->filters = new QComboBox(this);
+    d->filters->setObjectName("Add Constant to Image");
     QStringList filtersList;
     filtersList << "Add Constant to Image" 
                 << "Substract Constant from Image" 
@@ -284,6 +285,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     //Size threshold Widget
     d->componentSizeThresholdFilterWidget = new QWidget(this);
     d->componentSizeThresholdFilterValue = new QSpinBox;
+    d->componentSizeThresholdFilterValue->setObjectName("Minimum size of an object: ");
     d->componentSizeThresholdFilterValue->setMaximum ( 100000 );
     d->componentSizeThresholdFilterValue->setValue ( 50 );
     QLabel * componentSizeThresholdFilterLabel = new QLabel ( tr ( "Minimum size of an object: " ) );
