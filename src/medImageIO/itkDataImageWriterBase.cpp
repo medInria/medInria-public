@@ -46,6 +46,7 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
 template <unsigned DIM,typename T>
 bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
+    
     if (medData && medData->identifier()!=type)
         return false;
 
@@ -100,7 +101,8 @@ bool itkDataImageWriterBase::write(const QString& path)
               write_image<3,itk::Vector<float,3> >(path,"itkDataImageVectorFloat3") ||
               write_image<3,itk::Vector<double,3> >(path,"itkDataImageVectorDouble3") ||
               write_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
-              write_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
+              write_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3") ||
+              write_image<4,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB4"))) 
         {
             qWarning() << "Unrecognized pixel type";
             return false;

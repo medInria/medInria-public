@@ -79,6 +79,9 @@ public:
 
     QGridLayout* mainLayout();
 
+    void hideToolBar();
+    void showToolBar();
+
 public slots:
     void setView(medAbstractView* view);
     void removeView();

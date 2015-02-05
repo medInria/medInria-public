@@ -36,6 +36,7 @@
 #include <itkDataImageVectorFloat3.h>
 #include <itkDataImageVectorDouble3.h>
 #include <itkDataImageRGB3.h>
+#include <itkDataImageRGB4.h>
 #include <itkDataImageRGBA3.h>
 
 #include <medVtkViewItkDataImageInteractor.h>
@@ -131,6 +132,7 @@ bool itkDataImagePlugin::initialize()
     if(!itkDataImageVectorFloat3::registered()) { dtkWarn() << "Unable to register itkDataImageVectorFloat3 type"; }
     if(!itkDataImageVectorDouble3::registered()) { dtkWarn() << "Unable to register itkDataImageVectorDouble3 type"; }
     if(!itkDataImageRGB3::registered()) { dtkWarn() << "Unable to register itkDataImageRGB3 type"; }
+    if(!itkDataImageRGB4::registered()) { dtkWarn() << "Unable to register itkDataImageRGB4 type"; }
     if(!itkDataImageRGBA3::registered()) { dtkWarn() << "Unable to register itkDataImageRGBA3 type"; }
 
     if(!medVtkViewItkDataImageInteractor::registered()) { dtkWarn() << "Unable to register medVtkViewItkDataImageInteractor"; }
@@ -216,6 +218,7 @@ QStringList itkDataImagePlugin::types() const
             << "itkDataImageVectorFloat3"
             << "itkDataImageVectorDouble3"
             << "itkDataImageRGB3"
+            << "itkDataImageRGB4"
             << "itkDataImageRGBA3";
 }
 

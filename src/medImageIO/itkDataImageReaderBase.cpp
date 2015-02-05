@@ -96,19 +96,18 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         return false;
     }
 
+    const int  dim  = this->io->GetNumberOfDimensions();
+    if (!(dim>0 && dim<=4))
+    {
+        qDebug() << "Unrecognized component type";
+        return false;
+    }
+    const char cdim = '0'+((dim<=3) ? 3 : 4);
+
     //TODO why all of this is in a methode named readInformation ? - RDE
     medAbstractData *medData = NULL;
     if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR )
     {
-
-        const int  dim  = this->io->GetNumberOfDimensions();
-        if (!(dim>0 && dim<=4))
-        {
-            qDebug() << "Unrecognized component type";
-            return false;
-        }
-        const char cdim = '0'+((dim<=3) ? 3 : 4);
-
         switch (this->io->GetComponentType())
         {
 
@@ -164,7 +163,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         {
 
             case itk::ImageIOBase::UCHAR:
-                medData = medAbstractDataFactory::instance()->create ("itkDataImageRGB3");
+                medData = medAbstractDataFactory::instance()->create (QString("itkDataImageRGB").append(cdim)); 
                 break;
 
             default:
@@ -234,6 +233,7 @@ template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
 {
     medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
+    
     if (medData && medData->identifier()!=type)
         return false;
 
@@ -301,7 +301,8 @@ bool itkDataImageReaderBase::read(const QString& path)
               read_image<3,itk::Vector<float,3> >(path,"itkDataImageVectorFloat3") ||
               read_image<3,itk::Vector<double,3> >(path,"itkDataImageVectorDouble3") ||
               read_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
-              read_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
+              read_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")   ||
+              read_image<4,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB4"))) 
         {
             qWarning() << "Unrecognized pixel type";
             return false;

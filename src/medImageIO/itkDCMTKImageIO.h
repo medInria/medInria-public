@@ -114,7 +114,13 @@ public:
     std::string GetSliceThickness() const;
     std::string GetRows() const;
     std::string GetColumns() const;
+    std::string GetFrameTime() const;
+    
+    // US Images (VP2HF Project)
     std::string GetNumberOfFrames() const;
+    std::string GetRegionLocation() const;
+    std::string GetPhysicalDelta() const;
+    
     
     const StringVectorType& GetOrderedFileNames() const
     { return m_OrderedFileNames; }

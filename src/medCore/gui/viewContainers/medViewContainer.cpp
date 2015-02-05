@@ -46,6 +46,7 @@ public:
 
     QWidget *defaultWidget;
     QWidget *viewToolbar;
+    QWidget* toolBar;
 
     medAbstractView* view;
     medViewContainerSplitter* parent;
@@ -181,10 +182,10 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->poolIndicator = new medPoolIndicator;
 
-    QWidget* toolBar = new QWidget(this);
-    toolBar->setObjectName("containerToolBar");
-    toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-    d->toolBarLayout = new QHBoxLayout(toolBar);
+    d->toolBar = new QWidget(this);
+    d->toolBar->setObjectName("containerToolBar");
+    d->toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+    d->toolBarLayout = new QHBoxLayout(d->toolBar);
     d->toolBarLayout->setContentsMargins(0, 0, 0, 0);
     d->toolBarLayout->setSpacing(2);
 
@@ -209,7 +210,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
     d->mainLayout->setSpacing(0);
-    d->mainLayout->addWidget(toolBar, 0, 0, Qt::AlignTop);
+    d->mainLayout->addWidget(d->toolBar, 0, 0, Qt::AlignTop);
     d->mainLayout->addWidget(d->defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
 
     this->setAcceptDrops(true);
@@ -672,12 +673,11 @@ void medViewContainer::addData(medDataIndex index)
     this->addData(medDataManager::instance()->retrieveData(index));
 }
 
-
 medViewContainer * medViewContainer::splitHorizontally()
 {
     if(!d->parent)
         return NULL;
-
+    
     return d->parent->splitHorizontally(this);
 }
 
@@ -825,4 +825,12 @@ QGridLayout* medViewContainer::mainLayout()
     return d->mainLayout;
 }
 
+void medViewContainer::hideToolBar()
+{
+    d->toolBar->hide();
+}
 
+void medViewContainer::showToolBar()
+{
+    d->toolBar->show();
+}

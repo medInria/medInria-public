@@ -75,7 +75,7 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->numberOfFramesLabel = NULL;
 
     d->speedFactorParameter = new medIntParameter("Speed", this);
-    d->speedFactorParameter->setRange(1,5000);
+    d->speedFactorParameter->setRange(1,10000);
     d->speedFactorParameter->setValue(100);
 
     d->playParameter = new medBoolParameter("Play", this);

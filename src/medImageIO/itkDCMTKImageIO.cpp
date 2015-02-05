@@ -254,9 +254,9 @@ void DCMTKImageIO::ReadImageInformation()
        int nbFrames = atoi(this->GetNumberOfFrames().c_str());
        if (nbFrames>1)
        {
-        m_Dimensions[2]=nbFrames;
-        /*this->SetNumberOfDimensions (4); // TODO : need to create a type itkDataImageRGB4
-            m_Dimensions[3]=nbFrames;*/
+        //m_Dimensions[2]=nbFrames;
+        this->SetNumberOfDimensions (4); // TODO : need to create a type itkDataImageRGB4
+        m_Dimensions[3]=nbFrames;
         }
     }
     std::cout<< "the number of frames is " << this->GetNumberOfFrames() << std::endl;
@@ -1005,9 +1005,28 @@ std::string DCMTKImageIO::GetPatientStatus() const
     return this->GetMetaDataValueString ( "(0011,1010)", 0 );
 }
 
-std::string DCMTKImageIO::GetNumberOfFrames() const
+std::string DCMTKImageIO::GetFrameTime() const // sequence
+{
+    return this->GetMetaDataValueString("(0018,1063)",0);
+}
+
+std::string DCMTKImageIO::GetNumberOfFrames() const // US images
 {
     return this->GetMetaDataValueString ( "(0028,0008)", 0 );
+}
+
+std::string DCMTKImageIO::GetRegionLocation() const // US images
+{
+    return this->GetMetaDataValueString ( "(0018,6018)", 0 ) + " " 
+         + this->GetMetaDataValueString ( "(0018,601a)", 0 ) + " " 
+         + this->GetMetaDataValueString ( "(0018,601c)", 0 ) + " " 
+         + this->GetMetaDataValueString ( "(0018,601e)", 0 );
+}
+
+std::string DCMTKImageIO::GetPhysicalDelta() const // US images
+{
+    return this->GetMetaDataValueString ( "(0018,602c)", 0 ) + " "
+         + this->GetMetaDataValueString ( "(0018,602e)", 0 );
 }
 
 void
@@ -1037,7 +1056,7 @@ void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, con
     for ( unsigned long e = 0; e < metaInfo->card(); e++ )
     {
         DcmElement* element = metaInfo->getElement( e );
-
+        
         DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
         if (!pixelData) // don't want to read PixData right now
         {
@@ -1050,6 +1069,24 @@ void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, con
     for ( unsigned long e = 0; e < dataSet->card(); e++ )
     {
         DcmElement* element = dataSet->getElement( e );
+        if (element->getVR()==DcmEVR::EVR_SQ)
+        {
+            DcmSequenceOfItems * sequence;
+            dataSet->findAndGetSequence(element->getTag(),sequence);
+            for ( unsigned long i = 0; i < sequence->card(); i++ )
+            {
+                DcmItem * item = sequence->getItem(i);
+                for ( unsigned long ie = 0; ie < item->card(); ie++ )
+                {
+                    DcmElement * itemElement = item->getElement(ie);
+                    DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(itemElement);
+                    if (!pixelData) // don't want to read PixData right now
+                    {
+                        this->ReadDicomElement( itemElement, fileIndex, fileCount );
+                    }
+                }
+            }
+        }
         DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
         if (!pixelData) // don't want to read PixData right now
         {
@@ -1097,7 +1134,11 @@ inline void DCMTKImageIO::ReadDicomElement(DcmElement* element, const int &fileI
     {
         MetaDataVectorStringType* vec = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() );
         StringVectorType& value = const_cast< StringVectorType& >(vec->GetMetaDataObjectValue());
-        value[fileIndex] = s_value;
+        if (value[fileIndex].length()!=0)
+            value[fileIndex] = value[fileIndex].append(" " + s_value);
+        else
+            value[fileIndex] = s_value;
+        
     }
     else
     {

@@ -157,7 +157,8 @@ void medVtkViewItkDataImageNavigator::updateWidgets()
          d->imageView->contains("itkDataImageLong4")     ||
          d->imageView->contains("itkDataImageULong4")    ||
          d->imageView->contains("itkDataImageFloat4")    ||
-         d->imageView->contains("itkDataImageDouble4")))
+         d->imageView->contains("itkDataImageDouble4")   ||
+         d->imageView->contains("itkDataImageRGB4")))
     {
         if(this->toolBoxWidget())
             this->toolBoxWidget()->show();

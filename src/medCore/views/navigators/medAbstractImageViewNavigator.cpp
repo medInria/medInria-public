@@ -114,16 +114,15 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
         {
             double sd = data->metadata("SequenceDuration").toDouble();
             sequenceDuration = (sequenceDuration < sd) ? sd : sequenceDuration;
-
             double sf = data->metadata("SequenceFrameRate").toDouble();
             sequenceFrameRate = (sequenceFrameRate < sf) ? sf : sequenceFrameRate;
-
             viewHasTemporalData = true;
         }
     }
     if(viewHasTemporalData)
     {
-        unsigned int numFrames = (unsigned int)floor(sequenceDuration * sequenceFrameRate + 0.5);
+        unsigned int numFrames = (unsigned int)floor(sequenceDuration /sequenceFrameRate + 0.5);
+        
         d->timeLineParameter->setNumberOfFrame(numFrames);
         d->timeLineParameter->setDuration(sequenceDuration);
         d->timeLineParameter->show();

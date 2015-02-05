@@ -24,6 +24,7 @@
 #include <medViewFactory.h>
 #include <medAbstractImageData.h>
 #include <medDoubleParameter.h>
+#include <medMetaDataKeys.h>
 
 
 class medVtkViewItkDataImage4DInteractorPrivate
@@ -108,7 +109,8 @@ QStringList medVtkViewItkDataImage4DInteractor::dataHandled()
                                   << "itkDataImageLong4"
                                   << "itkDataImageULong4"
                                   << "itkDataImageFloat4"
-                                  << "itkDataImageDouble4";
+                                  << "itkDataImageDouble4"
+                                  << "itkDataImageRGB4";
     return  d;
 }
 
@@ -141,15 +143,29 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
               AppendImageSequence<long>(data,d->view,d->sequence, layer)           ||
               AppendImageSequence<unsigned long>(data,d->view,d->sequence, layer)  ||
               AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
+              AppendImageSequence<itk::RGBPixel<unsigned char> >(data,d->view,d->sequence, layer) ||
               AppendImageSequence<double>(data,d->view,d->sequence, layer))
         {
-            d->imageData->addMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
-            d->imageData->addMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
-                                                                           (double)d->sequence->GetMaxTime()));
-
-            qDebug() << "SequenceDuration" << d->sequence->GetMaxTime();
-            qDebug() << "SequenceFrameRate" <<(double)d->sequence->GetNumberOfMetaDataSets() / (double)d->sequence->GetMaxTime();
-
+            QString frameTime;
+            QString comments = d->imageData->metadatas(medMetaDataKeys::Comments.key())[0];
+            int ind = comments.lastIndexOf("FrameTime");
+            if (ind!=-1)
+            {
+                ind +=QString("FrameTime ").length();
+                frameTime = QString::number(comments.right(comments.length()-ind).toDouble()/1000); // convert ms to s
+                d->sequence->SetSequenceDuration(d->sequence->GetNumberOfMetaDataSets() * frameTime.toDouble());
+                d->imageData->addMetaData("SequenceDuration", QString::number(d->sequence->GetNumberOfMetaDataSets() * frameTime.toDouble()));
+            }
+            else
+            {
+                frameTime = QString::number((double)d->sequence->GetMaxTime()/(double)d->sequence->GetNumberOfMetaDataSets());
+                d->imageData->addMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
+            }
+            
+            d->imageData->addMetaData("SequenceFrameRate", frameTime);
+            qDebug() << "SequenceDuration" << d->imageData->metadata("SequenceDuration");
+            qDebug() << "SequenceFrameRate" << frameTime;
+            
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
 

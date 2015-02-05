@@ -211,7 +211,8 @@ bool itkDCMTKDataImageReader::registered()
                                                                       << "itkDataImageUChar3"
                                                                       << "itkDataImageChar3"
                                                                       << "itkDataImageChar4"
-                                                                      << "itkDataImageRGB3",
+                                                                      << "itkDataImageRGB3"
+                                                                      << "itkDataImageRGB4",
                                                                       createItkDCMTKDataImageReader);
 }
 
@@ -236,7 +237,8 @@ QStringList itkDCMTKDataImageReader::handled() const
                          << "itkDataImageUChar4"
                          << "itkDataImageChar3"
                          << "itkDataImageChar4"
-                         << "itkDataImageRGB3";
+                         << "itkDataImageRGB3"
+                         << "itkDataImageRGB4";
 }
 
 QString itkDCMTKDataImageReader::identifier() const {
@@ -336,12 +338,13 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 this->setData(medData);
         }
         else if (d->io->GetPixelType()==itk::ImageIOBase::RGB) {
-
+            imagetypestring << "RGB";
             switch (d->io->GetComponentType()) {
 
             case itk::ImageIOBase::UCHAR:
-                medData = medAbstractDataFactory::instance()->create("itkDataImageRGB3");
-
+                imagetypestring <<d->io->GetNumberOfDimensions() ;
+                medData = medAbstractDataFactory::instance()->create(imagetypestring.str().c_str());
+                
                 if (medData)
                     this->setData(medData);
                 break;
@@ -412,7 +415,19 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     performer      << d->io->GetPerformingPhysicianName().c_str();
     institution    << d->io->GetInstitution().c_str();
     protocol       << d->io->GetProtocolName().c_str();
-    comments       << d->io->GetAcquisitionComments().c_str();
+    comments       << "v001 Comments " + QString(d->io->GetAcquisitionComments().c_str());
+    if (modality[0]=="US")// hack for vp2hf
+    {
+        QString RegionLocation = QString(d->io->GetRegionLocation().c_str());
+        QString PhysicalDelta = QString(d->io->GetPhysicalDelta().c_str());
+        QString FrameTime = QString(d->io->GetFrameTime().c_str());
+        if (RegionLocation.length()>3)
+            comments[0].append("//RegionLocation " + RegionLocation); 
+        if (PhysicalDelta.length()>1)
+            comments[0].append("//PhysicalDelta " + PhysicalDelta);
+        if (FrameTime.length()>0)
+            comments[0].append("//FrameTime " + FrameTime);
+    }
     status         << d->io->GetPatientStatus().c_str();
     report << "";
 
@@ -458,8 +473,11 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 
     medData->addMetaData(medMetaDataKeys::FilePaths.key(),      filePaths);
     
-    if (modality[0]=="US" && seriesName[0]=="") // hack for vp2hf 
-        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), filePaths[0].section('/', -1));
+    if (modality[0]=="US")// hack for vp2hf 
+    {
+        if (seriesName[0]=="") 
+            medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), filePaths[0].section('/', -1));
+    }
     }
     else {
       qDebug() << "Unsupported pixel type";
@@ -507,6 +525,7 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
             else if (medData->identifier()=="itkDataImageFloat3")  { ReadImage<float,3>(medData,d->io,paths);                        }
             else if (medData->identifier()=="itkDataImageDouble3") { ReadImage<double,3>(medData,d->io,paths);                       }
             else if (medData->identifier()=="itkDataImageRGB3")    { ReadImage<itk::RGBPixel<unsigned char>,3>(medData,d->io,paths); }
+            else if (medData->identifier()=="itkDataImageRGB4")    { ReadImage<itk::RGBPixel<unsigned char>,4>(medData,d->io,paths); }
             else if (medData->identifier()=="itkDataImageUShort4") { ReadImage<unsigned short,4>(medData,d->io,paths);               }
             else if (medData->identifier()=="itkDataImageUChar4")  { ReadImage<unsigned char,4>(medData,d->io,paths);                }
             else if (medData->identifier()=="itkDataImageShort4")  { ReadImage<short,4>(medData,d->io,paths);                        }

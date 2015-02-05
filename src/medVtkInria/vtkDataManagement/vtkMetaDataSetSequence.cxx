@@ -731,7 +731,6 @@ vtkMetaDataSet* vtkMetaDataSetSequence::FindMetaDataSet (double time, unsigned i
   vtkMetaDataSet* ret = 0;
   unsigned int i;
   
-  
   for (i=0; i<this->MetaDataSetList.size(); i++)
   {
     framedistance = fabs (time - this->MetaDataSetList[i]->GetTime());
@@ -742,10 +741,8 @@ vtkMetaDataSet* vtkMetaDataSetSequence::FindMetaDataSet (double time, unsigned i
       id = i;
     }    
   }
-
   
   return ret;
-
 }
 
   
@@ -858,7 +855,6 @@ void vtkMetaDataSetSequence::ComputeSequenceDuration()
   double step = (this->GetMaxTime() - this->GetMinTime())/(double)(this->GetNumberOfMetaDataSets()-1);
   
   this->SequenceDuration = this->GetMaxTime() - this->GetMinTime() + step;
-  
 }
 
 
@@ -1513,10 +1509,9 @@ void vtkMetaDataSetSequence::CopyInformation (vtkMetaDataSet* metadataset)
 //----------------------------------------------------------------------------
 void vtkMetaDataSetSequence::ComputeTimesFromDuration()
 {
-
   for (int i=0; i<this->GetNumberOfMetaDataSets(); i++)
   {
-    this->GetMetaDataSet(i)->SetTime((double) ( i )/ (double)(this->GetNumberOfMetaDataSets() ) );
+      this->GetMetaDataSet(i)->SetTime((double)i * (double) ( SequenceDuration )/ (double)(this->GetNumberOfMetaDataSets() ) );
   }
 }
 
