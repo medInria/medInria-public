@@ -566,6 +566,8 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> va
 
     double w = values["Window"].toDouble();
     double l = values["Level"].toDouble();
+    if(w != w || l != l) // NaN values
+        return;
 
     if (d->view2d->GetColorWindow(d->view->layer(d->imageData)) != w)
     {
