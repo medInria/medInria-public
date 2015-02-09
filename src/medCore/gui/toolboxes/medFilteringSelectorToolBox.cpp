@@ -107,7 +107,7 @@ void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
     this->changeCurrentToolBox(identifier);
 }
 
-void medFilteringSelectorToolBox::changeCurrentToolBox(QString identifier)
+void medFilteringSelectorToolBox::changeCurrentToolBox(const QString &identifier)
 {
     medFilteringAbstractToolBox *toolbox = NULL;
     if (d->toolBoxes.contains (identifier))
