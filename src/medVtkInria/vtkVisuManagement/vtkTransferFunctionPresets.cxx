@@ -16,7 +16,7 @@
 #include <time.h>
 #include <string>
 
-
+#include <vtkMath.h>
 #include <vtkObjectFactory.h>
 
 #include <vtkColorTransferFunction.h>
@@ -82,6 +82,7 @@ std::vector< std::string > vtkTransferFunctionPresets::GetAvailablePresets()
   * it = "Gray Rainbow";           ++it;
   * it = "Stern";                  ++it;
   * it = "Black Body";             ++it;
+  * it = "Binary Map";             ++it;
 
   presetNames.erase( it, presetNames.end() );
 
@@ -157,6 +158,8 @@ void vtkTransferFunctionPresets::GetTransferFunction(
     Self::GetSternTransferFunction( rgb, alpha );
   else if ( name == "Black Body" )
     Self::GetBlackBodyTransferFunction( rgb, alpha );
+  else if (name == "Binary Map")
+    Self::GetBinaryMapTransferFunction( rgb, alpha );
   else
     Self::GetBWTransferFunction( rgb, alpha );
 }
@@ -612,4 +615,34 @@ void vtkTransferFunctionPresets::GetBlackBodyTransferFunction(
 {
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, BlackBody, true, rgb, alpha );
+}
+
+void vtkTransferFunctionPresets::GetBinaryMapTransferFunction(
+  vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
+{
+    double realHueValue = 0;
+    double factor = (1.0 + sqrt(5.0)) / 2.0;
+
+    float rgbValue[3];
+    float hsv[3];
+
+    hsv[1] = 1.0;
+    hsv[2] = 1.0;
+
+    rgb->AddRGBPoint(0.0,0.0,0.0,0.0);
+
+    for (unsigned int i = 1;i < 256;++i)
+    {
+        hsv[0] = realHueValue;
+        vtkMath::HSVToRGB(hsv, rgbValue);
+
+        rgb->AddRGBPoint(i / 255.0,rgbValue[0],rgbValue[1],rgbValue[2]);
+
+        realHueValue += 1.0 / factor;
+        if (realHueValue > 1.0)
+            realHueValue -= 1.0;
+    }
+
+    alpha->AddPoint(0.0, 1.0);
+    alpha->AddPoint(1.0, 1.0);
 }
