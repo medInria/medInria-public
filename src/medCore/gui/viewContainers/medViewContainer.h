@@ -81,9 +81,10 @@ public:
 
     void hideToolBar();
     void showToolBar();
+    QWidget * getToolBar();
 
 public slots:
-    void setView(medAbstractView* view);
+    virtual void setView(medAbstractView* view);
     void removeView();
     void addData(medAbstractData* data);
     void addData(medDataIndex index);
