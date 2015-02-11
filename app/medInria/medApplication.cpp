@@ -65,14 +65,14 @@ medApplication::medApplication(int & argc, char**argv) :
 {
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addMonths(2);
     qDebug() << MEDINRIA_BUILD_DATE << expiryDate;
-    if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
-    {
-        QMessageBox msg;
-        msg.setText("This copy of MUSIC has expired, please contact "
-        "maxime.sermesant@inria.fr for more information.");
-        msg.exec();
-        ::exit(1);
-    }
+    //if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
+    //{
+    //    QMessageBox msg;
+    //    msg.setText("This copy of MUSIC has expired, please contact "
+    //    "maxime.sermesant@inria.fr for more information.");
+    //    msg.exec();
+    //    ::exit(1);
+    //}
     d->mainWindow = NULL;
 
     this->setApplicationName("MUSIC");
