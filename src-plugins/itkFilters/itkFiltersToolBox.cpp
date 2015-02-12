@@ -396,6 +396,7 @@ void itkFiltersToolBox::update (medAbstractData *data )
     else
     {
         QString identifier = data->identifier();
+        qDebug() << "itkFiltersToolBox, update : " << identifier;
 
         if ( identifier == "itkDataImageChar3" )
         {
@@ -622,7 +623,7 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else
         {
-            qWarning() << "Error : pixel type not yet implemented ("
+            qWarning() << "itkFiltersToolBox Error : pixel type not yet implemented ("
             << identifier
             << ")";
         }

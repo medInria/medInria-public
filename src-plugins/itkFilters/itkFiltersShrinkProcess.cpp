@@ -129,7 +129,7 @@ int itkFiltersShrinkProcess::update ( void )
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
+        qDebug() << "itkFiltersShrinkProcess Error : pixel type not yet implemented ("
         << id
         << ")";
         return -1;

@@ -83,8 +83,7 @@ int itkFiltersThresholdingProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFilters, update : " << id;
-
+    qDebug() << "itkFiltersThresholdingProcess, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {
@@ -128,7 +127,7 @@ int itkFiltersThresholdingProcess::update ( void )
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
+        qDebug() << "itkFiltersThresholdingProcess Error : pixel type not yet implemented ("
         << id
         << ")";
         return -1;

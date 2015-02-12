@@ -63,7 +63,7 @@ int itkFiltersNormalizeProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFilters, update : " << id;
+    qDebug() << "itkFiltersNormalizeProcess, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {

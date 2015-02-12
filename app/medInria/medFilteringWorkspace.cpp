@@ -128,8 +128,6 @@ void medFilteringWorkspace::onProcessSuccess()
     if ( !d->filterOutput )
         return;
 
-    qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
-
     medAbstractData *inputData(d->filteringToolBox->data());
 
     if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
@@ -139,12 +137,15 @@ void medFilteringWorkspace::onProcessSuccess()
         d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
       }
 
-    foreach ( QString metaData, inputData->metaDataList() )
-      if (!d->filterOutput->hasMetaData(metaData))
-        d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
+    if (inputData)
+    {
+        foreach ( QString metaData, inputData->metaDataList() )
+            if (!d->filterOutput->hasMetaData(metaData))
+                d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
 
-    foreach ( QString property, inputData->propertyList() )
-      d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
+        foreach ( QString property, inputData->propertyList() )
+            d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
+    }
 
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
