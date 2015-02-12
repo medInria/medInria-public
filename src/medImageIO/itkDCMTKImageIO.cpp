@@ -1069,7 +1069,7 @@ void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, con
     for ( unsigned long e = 0; e < dataSet->card(); e++ )
     {
         DcmElement* element = dataSet->getElement( e );
-        if (element->getVR()==DcmEVR::EVR_SQ)
+        if (element->getVR()==EVR_SQ)
         {
             DcmSequenceOfItems * sequence;
             dataSet->findAndGetSequence(element->getTag(),sequence);
