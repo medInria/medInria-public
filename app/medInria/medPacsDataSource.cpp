@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,22 +14,23 @@
 #include <medPacsDataSource.h>
 
 #include <medJobManager.h>
-
 #include <medBrowserPacsHostToolBox.h>
 #include <medBrowserPacsNodesToolBox.h>
 #include <medBrowserPacsSearchToolBox.h>
 #include <medPacsSelector.h>
 #include <medToolBox.h>
-
 #include <medPacsWidget.h>
 #include <medPacsMover.h>
+#include <medAbstractDataSourceFactory.h>
+#include <medDataManager.h>
+
 
 class medPacsDataSourcePrivate
 {
 public:
 
     // mainViewWidget
-    medPacsWidget* pacsWidget;
+    QPointer<medPacsWidget> pacsWidget;
 
     // selector
     medPacsSelector* pacsSelector;
@@ -57,7 +58,7 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     d->toolBoxes.push_back(d->pacsSearchToolBox);
 
     connect(d->pacsWidget, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
-    connect(d->pacsWidget, SIGNAL(import(QString)), this, SIGNAL(dataToImportReceived(QString)));
+    connect(d->pacsWidget, SIGNAL(import(QString)), this, SLOT(importToDataBase(QString)));
 
     connect(d->pacsNodesToolBox, SIGNAL(nodesUpdated()), d->pacsSelector, SLOT(updateList()));
     connect(d->pacsSelector, SIGNAL(selectionChanged(QVector<int>)), d->pacsWidget, SLOT(updateSelectedNodes(QVector<int>)));
@@ -69,12 +70,17 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
 
 }
 
+void medPacsDataSource::importToDataBase(QString dicom)
+{
+    medDataManager::instance()->importPath(dicom, false, true);
+}
+
+
 medPacsDataSource::~medPacsDataSource()
 {
-    //I don't know what happens if the browser destroys pacsWidget before
-    //destroying medPacsDataSource...
-    //we can delete the pacsdatasource without destroying the parent.
-    d->pacsWidget->deleteLater();
+    if(!d->pacsWidget.isNull())
+        d->pacsWidget->deleteLater();
+
     delete d;
     d = NULL;
 }
@@ -101,13 +107,29 @@ QList<medToolBox*> medPacsDataSource::getToolBoxes()
 
 QString medPacsDataSource::description(void) const
 {
-	return tr("Browse PACS server");
+    return tr("Browse PACS server");
 }
 
 void medPacsDataSource::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
 {
     medPacsMover* mover = new medPacsMover(cmdList);
     connect(mover, SIGNAL(import(QString)), this, SIGNAL(dataReceived(QString)));
-    medJobManager::instance()->registerJobItem(mover, tr("Moving"));
+    medJobManager::instance()->registerJob(mover, tr("Moving"));
     QThreadPool::globalInstance()->start(mover);
 }
+
+// /////////////////////////////////////////////////////////////////
+// Type instantiation
+// /////////////////////////////////////////////////////////////////
+
+bool medPacsDataSource::registered()
+{
+    return medAbstractDataSourceFactory::instance()->registerDataSource ( "medPacsDataSource", createmedPacsDataSource);
+}
+
+
+medAbstractDataSource *createmedPacsDataSource(QWidget *)
+{
+    return new medPacsDataSource;
+}
+

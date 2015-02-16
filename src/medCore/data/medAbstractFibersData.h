@@ -34,3 +34,5 @@ private:
 };
 
 
+Q_DECLARE_METATYPE(medAbstractFibersData)
+Q_DECLARE_METATYPE(medAbstractFibersData *)

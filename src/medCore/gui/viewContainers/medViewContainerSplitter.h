@@ -34,6 +34,7 @@ public:
 public slots:
     void addViewContainer(medViewContainer* container);
     void insertViewContainer(int index, medViewContainer* container);
+
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
     medViewContainer* splitVertically(medViewContainer *sender);
     medViewContainer* splitHorizontally(medViewContainer *sender);

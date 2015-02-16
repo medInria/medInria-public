@@ -256,7 +256,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item && item->dataIndex().isValidForSeries())
-        emit (open(item->dataIndex()));
+        emit (openRequest(item->dataIndex()));
 }
 
 /** Opens the currently selected item. */
@@ -277,7 +277,7 @@ void medDatabaseView::onViewSelectedItemRequested(void)
 
     if (item && (item->dataIndex().isValidForSeries()))
     {
-        emit open(item->dataIndex ());
+        emit openRequest(item->dataIndex ());
     }
 }
 
@@ -298,7 +298,7 @@ void medDatabaseView::onExportSelectedItemRequested(void)
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if(item)
-        emit exportData(item->dataIndex());
+        emit exportDataRequest(item->dataIndex());
 }
 
 void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)

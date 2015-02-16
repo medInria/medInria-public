@@ -36,12 +36,12 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstr
     layerGroup1->setLinkAllParameters(true);
 }
 
-void medVisualizationWorkspace::setupViewContainerStack()
+void medVisualizationWorkspace::setupTabbedViewContainer()
 {
-    if (!stackedViewContainers()->count()) {
-        this->stackedViewContainers()->addContainerInTab(this->name());
+    if (!tabbedViewContainers()->count()) {
+        this->tabbedViewContainers()->addContainerInTab(this->name());
     }
-    this->stackedViewContainers()->unlockTabs();
+    this->tabbedViewContainers()->unlockTabs();
 }
 
 medVisualizationWorkspace::~medVisualizationWorkspace(void)

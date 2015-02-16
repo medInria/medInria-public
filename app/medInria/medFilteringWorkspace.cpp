@@ -13,38 +13,54 @@
 
 #include <medFilteringWorkspace.h>
 
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
-#include <medStorage.h>
-#include <medFilteringSelectorToolBox.h>
+#include <medProcessSelectorToolBox.h>
+#include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
-#include <medTabbedViewContainers.h>
 #include <medFilteringAbstractToolBox.h>
 #include <medAbstractData.h>
 #include <medDataManager.h>
+
+#include <medJobManager.h>
+
 #include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
+
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
+
+#include <medAbstractFilteringProcess.h>
+#include <medTriggerParameter.h>
+#include <medViewContainerSplitter.h>
 
 class medFilteringWorkspacePrivate
 {
 public:
-    QPointer<medFilteringSelectorToolBox> filteringToolBox;
+    QPointer<medProcessSelectorToolBox> filteringToolBox;
     medViewContainer *inputContainer;
     medViewContainer *outputContainer;
 
-
+    medAbstractData *filterInput;
     medAbstractData *filterOutput;
+
+    dtkSmartPointer <medAbstractFilteringProcess> process;
 };
 
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medFilteringWorkspacePrivate)
 {
-    d->filteringToolBox = new medFilteringSelectorToolBox(parent);
-    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
+    d->filterInput = NULL;
+    d->filterOutput = NULL;
+
+    d->filteringToolBox = new medProcessSelectorToolBox(parent);
+    d->filteringToolBox->setTitle("Filtering");
+
     this->addToolBox(d->filteringToolBox);
+
+    QStringList implementations = dtkAbstractProcessFactory::instance()->implementations("medAbstractFilteringProcess");
+    d->filteringToolBox->setAvailableProcesses(implementations);
 
     medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
     viewGroup1->setLinkAllParameters(true);
@@ -52,6 +68,8 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
 
     medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this,  this->identifier());
     layerGroup1->setLinkAllParameters(true);
+
+    connect(d->filteringToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupProcess(QString)));
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -63,95 +81,56 @@ medFilteringWorkspace::~medFilteringWorkspace()
 /**
  * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
  */
-void medFilteringWorkspace::setupViewContainerStack()
+void medFilteringWorkspace::setupTabbedViewContainer()
 {
-    if ( !this->stackedViewContainers()->count() )
-    {
-        d->inputContainer = this->stackedViewContainers()->addContainerInTab(this->name());
-        QLabel *inputLabel = new QLabel("INPUT");
-        inputLabel->setAlignment(Qt::AlignCenter);
-        d->inputContainer->setDefaultWidget(inputLabel);
+//    if ( !this->tabbedViewContainers()->count() )
+//    {
+//        d->inputContainer = this->tabbedViewContainers()->addContainerInTab(this->name());
+//        QLabel *inputLabel = new QLabel("INPUT");
+//        inputLabel->setAlignment(Qt::AlignCenter);
+//        d->inputContainer->setDefaultWidget(inputLabel);
 
-        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->inputContainer->setUserSplittable(false);
-        d->inputContainer->setMultiLayered(false);
+//        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
+//        d->inputContainer->setUserSplittable(false);
+//        d->inputContainer->setMultiLayered(false);
 
-        d->outputContainer = d->inputContainer->splitVertically();
-        QLabel *outputLabel = new QLabel("OUTPUT");
-        outputLabel->setAlignment(Qt::AlignCenter);
-        d->outputContainer->setDefaultWidget(outputLabel);
-        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->outputContainer->setUserSplittable(false);
-        d->outputContainer->setMultiLayered(false);
-        d->outputContainer->setUserOpenable(false);
+//        d->outputContainer = d->inputContainer->splitVertically();
+//        QLabel *outputLabel = new QLabel("OUTPUT");
+//        outputLabel->setAlignment(Qt::AlignCenter);
+//        d->outputContainer->setDefaultWidget(outputLabel);
+//        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
+//        d->outputContainer->setUserSplittable(false);
+//        d->outputContainer->setMultiLayered(false);
+//        d->outputContainer->setUserOpenable(false);
 
-        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
-        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
+//        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(updateInput()));
+//        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(updateInput()));
 
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->hideTabBar();
-        d->inputContainer->setSelected(true);
-        d->outputContainer->setSelected(false);
-    }
+//        this->tabbedViewContainers()->lockTabs();
+//        this->tabbedViewContainers()->hideTabBar();
+//        d->inputContainer->setSelected(true);
+//        d->outputContainer->setSelected(false);
+//    }
 }
 
-void medFilteringWorkspace::changeToolBoxInput()
-{
-    if(d->filteringToolBox.isNull())
-        return;
 
-    if(!d->inputContainer->view())
+void medFilteringWorkspace::setupProcess(QString process)
+{
+    medAbstractProcess *temp = d->process;
+    d->process = dynamic_cast<medAbstractFilteringProcess*>(dtkAbstractProcessFactory::instance()->create(process));
+    if(d->process)
     {
-        d->filteringToolBox->clear();
-        return;
+        d->filteringToolBox->setProcessToolbox(d->process->toolbox());
+        connect(d->process->runParameter(), SIGNAL(triggered()), this, SLOT(startProcess()));
+        this->tabbedViewContainers()->setSplitter(0, d->process->viewContainerSplitter());
     }
 
-    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
-    if(!layeredView)
+    if(d->process && temp)
     {
-        qWarning() << "Non layered view are not supported in filtering workspace yet.";
-        d->filteringToolBox->clear();
-        return;
+        d->process->retrieveInputs(temp);
     }
-    d->filteringToolBox->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
-}
 
-/**
- * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
- */
-void medFilteringWorkspace::onProcessSuccess()
-{
-    if(d->filteringToolBox.isNull())
-        return;
-
-    d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
-    if ( !d->filterOutput )
-        return;
-
-    qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
-
-    medAbstractData *inputData(d->filteringToolBox->data());
-
-    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-      {
-        QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " filtered";
-        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-      }
-
-    foreach ( QString metaData, inputData->metaDataList() )
-      if (!d->filterOutput->hasMetaData(metaData))
-        d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
-
-    foreach ( QString property, inputData->propertyList() )
-      d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
-
-    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
-
-    medDataManager::instance()->importData(d->filterOutput);
-
-    d->outputContainer->addData(d->filterOutput);
+    delete temp;
 }
 
 bool medFilteringWorkspace::isUsable()
@@ -160,10 +139,21 @@ bool medFilteringWorkspace::isUsable()
     return (tbFactory->toolBoxesFromCategory("filtering").size()!=0);
 }
 
-void medFilteringWorkspace::open(const medDataIndex &index)
+void medFilteringWorkspace::startProcess()
 {
-    if(!index.isValidForSeries() || !d->inputContainer->isSelected())
+    if(!d->process)
         return;
 
-    d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
+    d->filteringToolBox->setEnabled(false);
+
+    medRunnableProcess *runProcess = new medRunnableProcess(d->process, d->process->name());
+    connect (runProcess, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (runProcess, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+
+    runProcess->start();
+}
+
+void medFilteringWorkspace::enableSelectorToolBox()
+{
+    d->filteringToolBox->setEnabled(true);
 }

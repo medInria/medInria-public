@@ -333,7 +333,7 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
     if (fileName.isEmpty())
         return;
 
-    medAbstractData *gradients = medAbstractDataFactory::instance()->create ("itkDataDiffusionGradientList");
+    medAbstractData *gradients = medAbstractDataFactory::instance()->create ("medItkDiffusionGradientListData");
     if (!gradients)
         return;
 

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -21,6 +21,7 @@
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
 class medAbstractData;
+class medAbstractJob;
 
 class medRegistrationWorkspace : public medAbstractWorkspace
 {
@@ -32,16 +33,15 @@ public:
     ~medRegistrationWorkspace();
 
     static bool isUsable();
-    void setupViewContainerStack ();
+    void setupTabbedViewContainer ();
 
 protected slots:
-    void updateFromFixedContainer();
-    void updateFromMovingContainer();
-    void updateUserLayerClosable(int tabIndex);
-    void updateFromRegistrationSuccess(medAbstractData *output);
-
-private slots:
-    void removeSlectorInternToolBox();
+    void setupApplicationProcess(QString);
+    void setupEstimationProcess(QString);
+    void startApplicationProcess();
+    void startEstimationProcess();
+    void enableSelectorToolBox();
+    void applyTransformation();
 
 private:
     medRegistrationWorkspacePrivate *d;

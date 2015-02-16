@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -65,11 +65,11 @@ public:
     medAbstractWorkspace* currentWorkspace();
 
 protected:
-    void addDatabaseView(medDatabaseDataSource* dataSource);
-    void switchToStackedViewContainers(medTabbedViewContainers* stack);
+    void addDatabaseView();
+    void switchTotabbedViewContainers(medTabbedViewContainers* stack);
 
 signals:
-    void open(const medDataIndex&);
+    void openRequest(const medDataIndex&);
 
 private:
     friend class medMessageController;

@@ -61,6 +61,7 @@ private slots:
     void changeParamsValue(const QVector4D& value);
     void changeParamsValue(const QHash<QString, QVariant> &values);
     void changeParamsValue(const QList<medDataIndex> &values);
+    void changeParamsValue(const medDataIndex &value);
 
     void removeInternParam();
 

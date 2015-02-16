@@ -32,14 +32,13 @@ public:
 
 signals:
     void showMessage(const QString& message);
+    void openRequest(const medDataIndex & index);
+    void openRequest(QString path);
 
 public slots:
     void redirectMessageToSplash(const QString& message);
     void redirectMessageToLog(const QString & message);
     void redirectErrorMessageToLog(const QString & message);
-
-    void open(const medDataIndex & index);
-    void open(QString path);
 
 protected:
     void initialize();

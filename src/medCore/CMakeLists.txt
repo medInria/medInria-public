@@ -39,6 +39,8 @@ list_source_files(${PROJECT_NAME}
   views/interactors
   views/navigators
   parameters
+  transformations
+  dataSources
   )
 
 set(${PROJECT_NAME}_QRC resources/medCore.qrc)
@@ -86,12 +88,22 @@ add_library(${PROJECT_NAME} SHARED
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
-    ${QT_LIBRARIES}
-    ${OPENGL_LIBRARIES}
+set(LINK_LIBRARIES
     dtkCore
     dtkGui
     dtkLog
+    )
+
+if(DTK_BUILD_COMPOSER)
+    set(LINK_LIBRARIES
+        dtkComposer
+        ${LINK_LIBRARIES}
+        )
+endif()
+
+target_link_libraries(${PROJECT_NAME}
+    ${QT_LIBRARIES}
+    ${LINK_LIBRARIES}
     )
 
 if (WIN32) #TODO is that for the memory management thing ?

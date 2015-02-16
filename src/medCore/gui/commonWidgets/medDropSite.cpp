@@ -16,6 +16,9 @@
 #include <medDataIndex.h>
 
 #include <medDropSite.h>
+#include <medDataManager.h>
+#include <medDataSourceDialog.h>
+#include <medAbstractData.h>
 
 #include <QtGui>
 
@@ -24,6 +27,7 @@ class medDropSitePrivate
 public:
     medDataIndex index;
     bool canAutomaticallyChangeAppereance;
+    QUuid expectedUuid;
 };
 
 medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePrivate)
@@ -33,13 +37,13 @@ medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePri
     setBackgroundRole(QPalette::Base);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->index = medDataIndex();
+    d->expectedUuid = QUuid();
     d->canAutomaticallyChangeAppereance = true;
 }
 
 medDropSite::~medDropSite(void)
 {
     delete d;
-
     d = NULL;
 }
 
@@ -59,15 +63,26 @@ void medDropSite::setCanAutomaticallyChangeAppereance(bool can)
     d->canAutomaticallyChangeAppereance = can;
 }
 
-medDataIndex medDropSite::index(void) const
+medDataIndex medDropSite::value(void) const
 {
     return d->index;
+}
+
+void medDropSite::setValue(const medDataIndex &index)
+{
+    if(!index.isValidForSeries())
+        return;
+
+    d->index = index;
+    if (d->canAutomaticallyChangeAppereance )
+        setPixmap(medDataManager::instance()->thumbnail(index).scaled(this->sizeHint()));
+
+    emit valueChanged(index);
 }
 
 void medDropSite::dragEnterEvent(QDragEnterEvent *event)
 {
     setBackgroundRole(QPalette::Highlight);
-
     event->acceptProposedAction();
 }
 
@@ -79,7 +94,6 @@ void medDropSite::dragMoveEvent(QDragMoveEvent *event)
 void medDropSite::dragLeaveEvent(QDragLeaveEvent *event)
 {
     setBackgroundRole(QPalette::Base);
-
     event->accept();
 }
 
@@ -87,46 +101,41 @@ void medDropSite::dropEvent(QDropEvent *event)
 {
     const QMimeData *mimeData = event->mimeData();
 
-    if (d->canAutomaticallyChangeAppereance && mimeData->hasImage()) {
-        setPixmap(qvariant_cast<QPixmap>(mimeData->imageData()));
-    }
-
     medDataIndex index( medDataIndex::readMimeData(mimeData) );
-    if (index.isValid()) {
-        d->index = index;
-    }
+    if (index.isValid())
+        this->setValue(index);
 
     setBackgroundRole(QPalette::Base);
-
     event->acceptProposedAction();
-    
-    emit objectDropped(d->index);
 }
 
-void medDropSite::clear(){
+void medDropSite::clear()
+{
     QLabel::clear();
     d->index = medDataIndex();
 }
 
-void medDropSite::paintEvent(QPaintEvent *event)
+
+void medDropSite::dataReady(medDataIndex index, QUuid uuid)
 {
-    QLabel::paintEvent(event);
+    if(d->expectedUuid != uuid)
+        return;
 
-//    // Optionally draw something (e.g. a tag) over the label in case it is a pixmap
-
-//    if(!this->pixmap())
-//        return;
-//
-//    QPainter painter;
-//    painter.begin(this);
-//    painter.setPen(Qt::white);
-//    painter.drawText(event->rect(), "Overlay", QTextOption(Qt::AlignHCenter | Qt::AlignCenter));
-//    painter.end();
+    d->expectedUuid = QUuid();
+    disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
+    this->setValue(index);
 }
 
 void medDropSite::mousePressEvent(QMouseEvent* event)
 {
     Qt::MouseButtons mouseButtons = event->buttons();
     if( mouseButtons & Qt::LeftButton )
-        emit clicked();
+    {
+        QString path = medDataSourceDialog::getFilenameFromFileSystem(this);
+        if (path.isEmpty())
+            return;
+
+        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
+        d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
+    }
 }

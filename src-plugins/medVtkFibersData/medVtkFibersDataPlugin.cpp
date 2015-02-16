@@ -20,7 +20,7 @@
 #include <medVtkFibersData.h>
 #include <medVtkFibersDataWriter.h>
 #include <medVtkFibersDataReader.h>
-#include <medVtkFibersDataInteractor.h>
+#include <medVtkViewVtkFibersInteractor.h>
 
 // /////////////////////////////////////////////////////////////////
 // medVtkFibersDataPluginPrivate
@@ -71,8 +71,8 @@ bool medVtkFibersDataPlugin::initialize()
         dtkWarn() << "Unable to register medVtkFibersDataReader type";
     }
 
-    if (!medVtkFibersDataInteractor::registered()) {
-        dtkWarn() << "Unable to register medVtkFibersDataInteractor";
+    if (!medVtkViewVtkFibersInteractor::registered()) {
+        dtkWarn() << "Unable to register medVtkViewVtkFibersInteractor";
     }
 
     return true;

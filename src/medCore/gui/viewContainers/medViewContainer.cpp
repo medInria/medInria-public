@@ -37,6 +37,7 @@
 #include <medSettingsManager.h>
 #include <medAbstractInteractor.h>
 #include <medPoolIndicator.h>
+#include <medDataSourceDialog.h>
 #include <medLayoutChooser.h>
 
 class medViewContainerPrivate
@@ -115,6 +116,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->toolBarMenu = new QMenu(this);
     connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()));
+
 
     d->openAction = new QAction(tr("Open"), d->toolBarMenu);
     d->openAction->setIcon(QIcon(":/pixmaps/open.png"));
@@ -367,7 +369,7 @@ void medViewContainer::setClosingMode(medViewContainer::ClosingMode mode)
         d->closeContainerButton->disconnect(this, SLOT(removeView()));
         connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(close()));
         break;
-    case medViewContainer::CLOSE_VIEW:
+    case medViewContainer::CLOSE_VIEW_ONLY:
         d->closeContainerButton->show();
         d->closeContainerButton->disconnect(this, SLOT(close()));
         connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));
@@ -633,7 +635,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
 void medViewContainer::addData(medAbstractData *data)
 {
-    if( ! d->expectedUuid.isNull())
+    if(!d->expectedUuid.isNull())
         return; // we're already waiting for a import to finish, don't accept other data
 
     if(!data)
@@ -705,26 +707,13 @@ void medViewContainer::closeEvent(QCloseEvent * /*event*/)
 
 void medViewContainer::openFromSystem()
 {
-    //  get last directory opened in settings.
-    QString path;
-    QFileDialog dialog(this);
-
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setViewMode(QFileDialog::Detail);
-    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
-    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
-    if(dialog.exec())
-        path = dialog.selectedFiles().first();
-
-    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
-    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
-
-
+    QString path = medDataSourceDialog::getFilenameFromFileSystem(this);
     if (path.isEmpty())
         return;
 
     connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
     d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
+
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);

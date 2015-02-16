@@ -161,14 +161,14 @@ bool medAbstractWorkspace::isDatabaseVisible(void) const
     return d->databaseVisibility;
 }
 
-medTabbedViewContainers* medAbstractWorkspace::stackedViewContainers() const
+medTabbedViewContainers* medAbstractWorkspace::tabbedViewContainers() const
 {
     return d->viewContainerStack;
 }
 
 void medAbstractWorkspace::clear()
 {
-    this->setupViewContainerStack();
+    this->setupTabbedViewContainer();
     this->clearWorkspaceToolBoxes();
     return;
 }
@@ -557,7 +557,7 @@ void medAbstractWorkspace::open(const medDataIndex &index)
         return;
 
     medViewContainer *container = medViewContainerManager::instance()->container(containersSelected.first());
-    if(index.isValidForSeries())
+    if(index.isValidForSeries() && container->isUserOpenable())
         container->addData(medDataManager::instance()->retrieveData(index));
 }
 

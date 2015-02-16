@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -46,7 +46,7 @@ void *medAbstractImageData::image(void)
     return this->data();
 }
 
-int medAbstractImageData::Dimension() const
+int medAbstractImageData::dimension() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
@@ -91,7 +91,7 @@ int medAbstractImageData::zDimension(void)
 int medAbstractImageData::tDimension(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
-	
+
     return 0;
 }
 

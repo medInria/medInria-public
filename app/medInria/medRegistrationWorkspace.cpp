@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,299 +13,217 @@
 
 #include <medRegistrationWorkspace.h>
 
-#include <dtkCore/dtkSignalBlocker.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <medViewFactory.h>
-#include <medAbstractView.h>
-
-#include <medRegistrationSelectorToolBox.h>
-#include <medViewContainer.h>
+#include <medMetaDataKeys.h>
+#include <medProcessSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
-#include <medRegistrationSelectorToolBox.h>
-#include <medAbstractLayeredView.h>
-#include <medStringListParameter.h>
-
 #include <medToolBoxFactory.h>
+#include <medViewContainer.h>
+#include <medAbstractData.h>
+#include <medDataManager.h>
+
+#include <medJobManager.h>
+
+#include <medAbstractView.h>
+#include <medAbstractLayeredView.h>
 
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
 
+#include <medAbstractApplyTransformationProcess.h>
+#include <medAbstractEstimateTransformationProcess.h>
+#include <medTriggerParameter.h>
+#include <medViewContainerSplitter.h>
+
 class medRegistrationWorkspacePrivate
 {
 public:
-    medRegistrationSelectorToolBox * registrationToolBox;
-    medViewContainer *fixedContainer;
+    QPointer<medProcessSelectorToolBox> estimateTransfoToolBox;
+    QPointer<medProcessSelectorToolBox> applyTransfoToolBox;
     medViewContainer *movingContainer;
-    medViewContainer *fuseContainer;
+    medViewContainer *fixedContainer;
 
-    medViewParameterGroup *viewGroup;
-    medLayerParameterGroup *fixedLayerGroup;
-    medLayerParameterGroup *movingLayerGroup;
+    medAbstractData *movingData;
+    medAbstractData *fixedData;
+
+    dtkSmartPointer <medAbstractApplyTransformationProcess> applyTransfoProcess;
+    dtkSmartPointer <medAbstractEstimateTransformationProcess> estimateTransfoProcess;
+
+    QPointer<medViewContainerSplitter> currentSplitter;
 };
 
-medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medRegistrationWorkspacePrivate)
+medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medRegistrationWorkspacePrivate)
 {
-    // -- Registration toolbox --
+    d->movingData = NULL;
+    d->fixedData = NULL;
+    d->applyTransfoProcess = NULL;
+    d->estimateTransfoProcess = NULL;
 
-    d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
-    this->addToolBox(d->registrationToolBox);
+    d->estimateTransfoToolBox = new medProcessSelectorToolBox(parent);
+    d->estimateTransfoToolBox->setTitle("Estimate transformation");
 
-    d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
-    d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this, this->identifier());
-    d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
+    d->applyTransfoToolBox = new medProcessSelectorToolBox(parent);
+    d->applyTransfoToolBox->setTitle("Apply transformation");
 
-    d->viewGroup->setLinkAllParameters(true);
+    this->addToolBox(d->estimateTransfoToolBox);
+    this->addToolBox(d->applyTransfoToolBox);
 
-    d->fixedLayerGroup->setLinkAllParameters(true);
-    d->movingLayerGroup->setLinkAllParameters(true);
+    QStringList implementations = dtkAbstractProcessFactory::instance()->implementations("medAbstractEstimateTransformationProcess");
+    d->estimateTransfoToolBox->setAvailableProcesses(implementations);
 
-    QList<medLayerParameterGroup*> layerGroups;
-    layerGroups.append(d->fixedLayerGroup);
-    layerGroups.append(d->movingLayerGroup);
-    this->setLayerGroups(layerGroups);
+    implementations = dtkAbstractProcessFactory::instance()->implementations("medAbstractApplyTransformationProcess");
+    d->applyTransfoToolBox->setAvailableProcesses(implementations);
 
-//    this->setUserLayerPoolable(false);
-    connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
-    connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
-    connect(d->registrationToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));
+    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
+    viewGroup1->setLinkAllParameters(true);
+    viewGroup1->removeParameter("DataList");
 
+    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this,  this->identifier());
+    layerGroup1->setLinkAllParameters(true);
+
+    connect(d->estimateTransfoToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupEstimationProcess(QString)));
+    connect(d->applyTransfoToolBox, SIGNAL(processSelected(QString)), this, SLOT(setupApplicationProcess(QString)));
 }
 
-medRegistrationWorkspace::~medRegistrationWorkspace(void)
+medRegistrationWorkspace::~medRegistrationWorkspace()
 {
     delete d;
     d = NULL;
 }
 
-void medRegistrationWorkspace::setupViewContainerStack()
+/**
+ * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
+ */
+void medRegistrationWorkspace::setupTabbedViewContainer()
 {
+//    if ( !this->tabbedViewContainers()->count() )
+//    {
+//        d->inputContainer = this->tabbedViewContainers()->addContainerInTab(this->name());
+//        QLabel *inputLabel = new QLabel("INPUT");
+//        inputLabel->setAlignment(Qt::AlignCenter);
+//        d->inputContainer->setDefaultWidget(inputLabel);
 
-    //the stack has been instantiated in constructor
-    if (!this->stackedViewContainers()->count())
-    {
-        d->fixedContainer = this->stackedViewContainers()->addContainerInTab(tr("Compare"));
-        QLabel *fixedLabel = new QLabel(tr("FIXED"));
-        fixedLabel->setAlignment(Qt::AlignCenter);
-        d->fixedContainer->setDefaultWidget(fixedLabel);
-        d->fixedContainer->setMultiLayered(false);
-        d->fixedContainer->setUserSplittable(false);
-        d->fixedContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+//        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
+//        d->inputContainer->setUserSplittable(false);
+//        d->inputContainer->setMultiLayered(false);
 
-        d->movingContainer = d->fixedContainer->splitVertically();
-        QLabel *movingLabel = new QLabel(tr("MOVING"));
-        movingLabel->setAlignment(Qt::AlignCenter);
-        d->movingContainer->setDefaultWidget(movingLabel);
-        d->movingContainer->setUserSplittable(false);
-        d->movingContainer->setMultiLayered(false);
-        d->movingContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+//        d->outputContainer = d->inputContainer->splitVertically();
+//        QLabel *outputLabel = new QLabel("OUTPUT");
+//        outputLabel->setAlignment(Qt::AlignCenter);
+//        d->outputContainer->setDefaultWidget(outputLabel);
+//        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW_ONLY);
+//        d->outputContainer->setUserSplittable(false);
+//        d->outputContainer->setMultiLayered(false);
+//        d->outputContainer->setUserOpenable(false);
 
+//        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(updateInput()));
+//        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(updateInput()));
 
-        d->fuseContainer = this->stackedViewContainers()->addContainerInTab(tr("Fuse"));
-        QLabel *fuseLabel = new QLabel(tr("FUSE"));
-        fuseLabel->setAlignment(Qt::AlignCenter);
-        d->fuseContainer->setDefaultWidget(fuseLabel);
-        d->fuseContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-        d->fuseContainer->setUserSplittable(false);
-        d->fuseContainer->setAcceptDrops(false);
-
-        connect(d->fixedContainer, SIGNAL(viewContentChanged()),
-                this, SLOT(updateFromFixedContainer()));
-        connect(d->movingContainer,SIGNAL(viewContentChanged()),
-                this, SLOT(updateFromMovingContainer()));
-
-        connect(d->fixedContainer,SIGNAL(viewRemoved()),
-                this, SLOT(updateFromFixedContainer()));
-        connect(d->movingContainer,SIGNAL(viewRemoved()),
-                this, SLOT(updateFromMovingContainer()));
-
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->setCurrentIndex(0);
-        d->fixedContainer->setSelected(true);
-        d->movingContainer->setSelected(false);
-    }
+//        this->tabbedViewContainers()->lockTabs();
+//        this->tabbedViewContainers()->hideTabBar();
+//        d->inputContainer->setSelected(true);
+//        d->outputContainer->setSelected(false);
+//    }
 }
+
+
+void medRegistrationWorkspace::setupApplicationProcess(QString process)
+{
+    medAbstractProcess *temp = d->applyTransfoProcess;
+    d->applyTransfoProcess = dynamic_cast<medAbstractApplyTransformationProcess*>(dtkAbstractProcessFactory::instance()->create(process));
+    if(d->applyTransfoProcess)
+    {
+        d->applyTransfoToolBox->setProcessToolbox(d->applyTransfoProcess->toolbox());
+        connect(d->applyTransfoProcess->runParameter(), SIGNAL(triggered()), this, SLOT(startApplicationProcess()));
+        this->tabbedViewContainers()->setSplitter(0, d->applyTransfoProcess->viewContainerSplitter());
+        d->currentSplitter = d->applyTransfoProcess->viewContainerSplitter();
+    }
+
+    if(d->applyTransfoProcess && temp)
+    {
+        d->applyTransfoProcess->retrieveInputs(temp);
+    }
+
+    delete temp;
+}
+
+void medRegistrationWorkspace::setupEstimationProcess(QString process)
+{
+    medAbstractProcess *temp = d->estimateTransfoProcess;
+    d->estimateTransfoProcess = dynamic_cast<medAbstractEstimateTransformationProcess*>(dtkAbstractProcessFactory::instance()->create(process));
+    if(d->estimateTransfoProcess)
+    {
+        d->estimateTransfoToolBox->setProcessToolbox(d->estimateTransfoProcess->toolbox());
+        connect(d->estimateTransfoProcess->runParameter(), SIGNAL(triggered()), this, SLOT(startEstimationProcess()));
+        this->tabbedViewContainers()->setSplitter(0, d->estimateTransfoProcess->viewContainerSplitter());
+        d->currentSplitter = d->estimateTransfoProcess->viewContainerSplitter();
+    }
+
+    if(d->estimateTransfoProcess && temp)
+    {
+        d->estimateTransfoProcess->retrieveInputs(temp);
+    }
+
+    delete temp;
+}
+
 
 bool medRegistrationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("registration").size()!=0);
+    return (tbFactory->toolBoxesFromCategory("filtering").size()!=0);
 }
 
-void medRegistrationWorkspace::updateFromMovingContainer()
+void medRegistrationWorkspace::startApplicationProcess()
 {
-    if(!d->registrationToolBox)
+    if(!d->applyTransfoProcess)
         return;
 
-    if(!d->movingContainer->view())
-    {
-        medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-        if(fuseView)
-        {
-            if(fuseView->layer(d->registrationToolBox->movingData()) == 0)
-            {
-                d->fuseContainer->removeView();
-                d->fuseContainer->addData(d->registrationToolBox->fixedData());
-            }
-            else
-                fuseView->removeLayer(1);
+    d->applyTransfoToolBox->setEnabled(false);
 
-        }
+    medRunnableProcess *runProcess = new medRunnableProcess(d->applyTransfoProcess, d->applyTransfoProcess->name());
+    connect (runProcess, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (runProcess, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
-        d->registrationToolBox->setMovingData(NULL);
-        return;
-    }
-
-    medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->movingContainer->view());
-    if(!movingView)
-    {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
-        return;
-    }
-
-    medAbstractData *movingData = movingView->layerData(movingView->currentLayer());
-
-    medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-    if(fuseView)
-        fuseView->removeData(movingData);
-
-    d->fuseContainer->addData(movingData);
-    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-
-    if(movingData)
-    {
-        d->viewGroup->addImpactedView(movingView);
-        d->viewGroup->addImpactedView(fuseView);
-        d->viewGroup->removeParameter("DataList");
-
-        d->movingLayerGroup->addImpactedlayer(movingView, movingData);
-        d->movingLayerGroup->addImpactedlayer(fuseView, movingData);
-    }
-    if (!d->registrationToolBox->setMovingData(movingData))
-    {
-        // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(movingView);
-        d->movingLayerGroup->removeImpactedlayer(movingView, movingData);
-        d->movingLayerGroup->removeImpactedlayer(fuseView, movingData);
-        movingView->deleteLater();
-    }
+    runProcess->start();
 }
 
-void medRegistrationWorkspace::updateFromFixedContainer()
+void medRegistrationWorkspace::startEstimationProcess()
 {
-    if(!d->registrationToolBox)
+    if(!d->estimateTransfoProcess)
         return;
 
-    if(!d->fixedContainer->view())
-    {
-        medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-        if(fuseView)
-        {
-            if(fuseView->layer(d->registrationToolBox->fixedData()) == 0)
-            {
-                d->fuseContainer->removeView();
-                d->fuseContainer->addData(d->registrationToolBox->movingData());
-            }
-            else
-                fuseView->removeLayer(1);
+    d->estimateTransfoToolBox->setEnabled(false);
 
-        }
+    medRunnableProcess *runProcess = new medRunnableProcess(d->estimateTransfoProcess, d->estimateTransfoProcess->name());
+    connect (runProcess, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (runProcess, SIGNAL (success()),this,SLOT(applyTransformation()));
+    connect (runProcess, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
-        d->registrationToolBox->setFixedData(NULL);
-        return;
-    }
-
-    medAbstractLayeredView* fixedView  = dynamic_cast<medAbstractLayeredView*>(d->fixedContainer->view());
-    if(!fixedView)
-    {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
-        return;
-    }
-
-    medAbstractData *fixedData = fixedView->layerData(fixedView->currentLayer());
-    medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-    if(fuseView)
-        fuseView->removeData(fixedData);
-
-    d->fuseContainer->addData(fixedData);
-    fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-
-    if(fixedData)
-    {
-        d->viewGroup->addImpactedView(fixedView);
-        d->viewGroup->addImpactedView(fuseView);
-        d->viewGroup->removeParameter("DataList");
-
-        d->fixedLayerGroup->addImpactedlayer(fixedView, fixedData);
-        d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
-    }
-
-    if (!d->registrationToolBox->setFixedData(fixedData))
-    {
-        // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(fixedView);
-        d->fixedLayerGroup->removeImpactedlayer(fixedView, fixedData);
-        d->fixedLayerGroup->removeImpactedlayer(fuseView, fixedData);
-        fixedView->deleteLater();
-    }
+    runProcess->start();
 }
 
-
-void medRegistrationWorkspace::updateUserLayerClosable(int tabIndex)
+void medRegistrationWorkspace::enableSelectorToolBox()
 {
-    if(tabIndex == 0)
-        this->setUserLayerClosable(true);
-    else
-        this->setUserLayerClosable(false);
+    d->applyTransfoToolBox->setEnabled(true);
+    d->estimateTransfoToolBox->setEnabled(true);
 }
 
-void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *output)
+void medRegistrationWorkspace::applyTransformation()
 {
-    if(!d->registrationToolBox)
+    if(!d->applyTransfoProcess)
         return;
 
-    //TODO disconnect because we dont want to change input of the undo redo process.
-    //  find a better way to do it ? - RDE
-    d->movingContainer->disconnect(this);
-
-    d->movingContainer->removeView();
-    d->movingContainer->addData(output);
-
-    d->fuseContainer->removeView();
-    d->fuseContainer->addData(d->registrationToolBox->fixedData());
-    d->fuseContainer->addData(output);
-
-
-    // Relink the views...
-    medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->movingContainer->view());
-    if(!movingView)
+    if(d->currentSplitter != d->applyTransfoProcess->viewContainerSplitter())
     {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
-        return;
+        this->tabbedViewContainers()->setSplitter(0, d->applyTransfoProcess->viewContainerSplitter());
+        d->currentSplitter = d->applyTransfoProcess->viewContainerSplitter();
     }
 
+    medAbstractTransformation *transfo = d->estimateTransfoProcess->output<medAbstractTransformation>(0);
 
-    medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
-    if(!fuseView)
-    {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
-        return;
-    }
+    d->applyTransfoProcess->retrieveInputs(d->estimateTransfoProcess);
 
-    d->viewGroup->addImpactedView(movingView);
-    d->viewGroup->addImpactedView(fuseView);
-    d->viewGroup->removeParameter("DataList");
-
-    d->movingLayerGroup->addImpactedlayer(movingView, output);
-    d->movingLayerGroup->addImpactedlayer(fuseView, output);
-
-    connect(d->movingContainer,SIGNAL(viewContentChanged()),
-            this, SLOT(updateFromMovingContainer()));
-
-    connect(d->movingContainer,SIGNAL(viewRemoved()),
-            this, SLOT(updateFromMovingContainer()));
-}
-
-void medRegistrationWorkspace::removeSlectorInternToolBox()
-{
-    d->registrationToolBox = NULL;
+    d->applyTransfoProcess->addTransformation(transfo);
 }

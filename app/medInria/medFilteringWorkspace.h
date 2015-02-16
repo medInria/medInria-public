@@ -35,24 +35,13 @@ public:
 
     static bool isUsable();
 
-    void setupViewContainerStack ();
+    void setupTabbedViewContainer ();
 
-    virtual void open(const medDataIndex &index);
-
-signals:
-
-    /**
-     * @brief signal emitted to refresh the output view with the data resulting from a successful filtering process
-     *
-     * This is a connection between the medFilteringSelectorToolBox and the medFilteringViewContainer which displays input/output images
-     *
-     */
-    void outputDataChanged ( medAbstractData * );
 
 protected slots:
-
-    void changeToolBoxInput();
-    void onProcessSuccess();
+    void setupProcess(QString);
+    void startProcess();
+    void enableSelectorToolBox();
 
 private:
     medFilteringWorkspacePrivate *d;

@@ -25,7 +25,6 @@
 #include <medToolBoxFactory.h>
 #include <medViewEventFilter.h>
 #include <medViewContainerManager.h>
-#include <medRunnableProcess.h>
 #include <medDataManager.h>
 #include <medJobManager.h>
 #include <medMetaDataKeys.h>
@@ -72,16 +71,16 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
     medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
     layerGroup1->setLinkAllParameters(true);
 
-    connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
+    connect(this->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),
             d->segmentationToolBox, SIGNAL(inputChanged()));
 }
 
-void medSegmentationWorkspace::setupViewContainerStack()
+void medSegmentationWorkspace::setupTabbedViewContainer()
 {
-    if (!stackedViewContainers()->count()) {
-        this->stackedViewContainers()->addContainerInTab(this->name());
+    if (!tabbedViewContainers()->count()) {
+        this->tabbedViewContainers()->addContainerInTab(this->name());
     }
-    this->stackedViewContainers()->unlockTabs();
+    this->tabbedViewContainers()->unlockTabs();
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)
@@ -99,12 +98,12 @@ medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 bool medSegmentationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
+    return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0);
 }
 
 void medSegmentationWorkspace::addViewEventFilter( medViewEventFilter * filter)
 {
-    foreach(QUuid uuid, this->stackedViewContainers()->containersSelected())
+    foreach(QUuid uuid, this->tabbedViewContainers()->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         if(!container)

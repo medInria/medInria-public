@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -96,8 +96,8 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->splitter->addWidget(d->viewContainer);
     d->splitter->addWidget(d->toolBoxContainer);
 
-    this->addDatabaseView(medDataSourceManager::instance()->databaseDataSource());
-    connect(medDataSourceManager::instance(), SIGNAL(open(medDataIndex)), this, SIGNAL(open(medDataIndex)));
+    this->addDatabaseView();
+    connect(medDataSourceManager::instance(), SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
 
     if (!d->splitter->restoreState(medSettingsManager::instance()->value("medWorkspaceArea", "splitterState").toByteArray()))
     {
@@ -123,7 +123,7 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    return QPixmap::grabWidget(this->currentWorkspace()->stackedViewContainers()->currentWidget());
+    return QPixmap::grabWidget(this->currentWorkspace()->tabbedViewContainers()->currentWidget());
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
@@ -161,15 +161,15 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     if (!d->workspaces.contains(workspace->identifier()))
         this->setupWorkspace(workspace->identifier());
 
-    this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
+    this->disconnect(this, SIGNAL(openRequest(medDataIndex)), d->currentWorkspace, 0);
 
     d->currentWorkspace = workspace;
-    connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
+    connect(this, SIGNAL(openRequest(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
 
     //clean toolboxes
     d->toolBoxContainer->hide();
     d->toolBoxContainer->clear();
-    this->switchToStackedViewContainers(workspace->stackedViewContainers());
+    this->switchTotabbedViewContainers(workspace->tabbedViewContainers());
 
     //setup database visibility
     d->navigatorContainer->setVisible(workspace->isDatabaseVisible());
@@ -217,28 +217,35 @@ void medWorkspaceArea::setupWorkspace(const QString &id)
         qWarning()<< "Workspace " << id << " couldn't be created";
         return;
     }
-    workspace->setupViewContainerStack();
+    workspace->setupTabbedViewContainer();
 }
 
-void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
+void medWorkspaceArea::addDatabaseView()
 {
-    QVBoxLayout *databaseViewLayout = new QVBoxLayout;
-    databaseViewLayout->setSpacing(0);
-    databaseViewLayout->setContentsMargins(0,0,0,0);
+    foreach (medAbstractDataSource* dataSource, medDataSourceManager::instance()->dataSources())
+    {
+        //TODO - Fix this, it's ugly - RDE
+        if(medDatabaseDataSource* dbDataSource = qobject_cast<medDatabaseDataSource*>(dataSource))
+        {
+            QVBoxLayout *databaseViewLayout = new QVBoxLayout;
+            databaseViewLayout->setSpacing(0);
+            databaseViewLayout->setContentsMargins(0,0,0,0);
 
-    databaseViewLayout->addWidget(dataSource->compactViewWidget());
-    d->navigatorContainer->setLayout(databaseViewLayout);
+            databaseViewLayout->addWidget(dbDataSource->compactViewWidget());
+            d->navigatorContainer->setLayout(databaseViewLayout);
 
-    dataSource->compactViewWidget()->resize(dataSource->compactViewWidget()->width(), dataSource->compactViewWidget()->height());
-    //little tricks to force to recompute the stylesheet.
-    dataSource->compactViewWidget()->setStyleSheet("/* */");
+            dbDataSource->compactViewWidget()->resize(dbDataSource->compactViewWidget()->width(), dbDataSource->compactViewWidget()->height());
+            //little tricks to force to recompute the stylesheet.
+            dbDataSource->compactViewWidget()->setStyleSheet("/* */");
 
-    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
-            this, SIGNAL(open(const medDataIndex&)),
-            Qt::UniqueConnection);
+//            connect(dbDataSource->compactViewWidget(), SIGNAL(openRequest(const medDataIndex&)),
+//                    this, SIGNAL(openRequest(const medDataIndex&)),
+//                    Qt::UniqueConnection);
+        }
+    }
 }
 
-void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
+void medWorkspaceArea::switchTotabbedViewContainers(medTabbedViewContainers* stack)
 {
     if(!stack )
     {

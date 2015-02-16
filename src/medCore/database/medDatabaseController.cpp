@@ -406,18 +406,8 @@ void medDatabaseController::importPath(const QString& file, const QUuid &importU
 {
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),importUuid, indexWithoutCopying);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
- 
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-    
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
+    importer->start();
 }
 
 /**
@@ -427,18 +417,8 @@ void medDatabaseController::importPath(const QString& file, const QUuid &importU
 void medDatabaseController::importData( medAbstractData *data, const QUuid & importUuid)
 {    
     medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-  
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
+    importer->start();
 }
 
 void medDatabaseController::showOpeningError(QObject *sender)
@@ -627,15 +607,8 @@ medDatabaseController::~medDatabaseController()
 void medDatabaseController::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
-
-    connect(remover, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(remover, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(remover, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(dataRemoved(medDataIndex)));
-
-    medJobManager::instance()->registerJobItem(remover);
-    QThreadPool::globalInstance()->start(remover);
+    remover->start();
 }
 
 /**

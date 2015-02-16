@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -17,7 +17,10 @@
 #include <dtkGui/dtkFinder.h>
 
 #include <medActionsToolBox.h>
-#include<medSettingsManager.h>
+#include <medSettingsManager.h>
+#include <medAbstractDataSourceFactory.h>
+#include <medDataSourceManager.h>
+#include <medDataManager.h>
 
 class medFileSystemDataSourcePrivate
 {
@@ -153,6 +156,11 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
       d->finder->switchToTreeView();
 }
 
+QWidget* medFileSystemDataSource::dialogWidget()
+{
+    return this->mainViewWidget();
+}
+
 medFileSystemDataSource::~medFileSystemDataSource()
 {
     delete d;
@@ -192,7 +200,7 @@ void medFileSystemDataSource::onFileSystemImportRequested(void)
     foreach(QString path, purgedList)
     {
         QFileInfo info(path);
-        emit dataToImportReceived(info.absoluteFilePath());
+        medDataManager::instance()->importPath(path, false, true);
     }
 }
 
@@ -204,7 +212,7 @@ void medFileSystemDataSource::onFileSystemIndexRequested(void)
     foreach(QString path, purgedList)
     {
         QFileInfo info(path);
-        emit dataToIndexReceived(info.absoluteFilePath());
+        medDataManager::instance()->importPath(info.absoluteFilePath(), true, true);
     }
 }
 
@@ -317,4 +325,19 @@ void medFileSystemDataSource::saveTreeViewSettings()
 {
     medSettingsManager* mng = medSettingsManager::instance();
     mng->setValue("medFileSystemDataSource", "listView", true);
+}
+
+// /////////////////////////////////////////////////////////////////
+// Type instantiation
+// /////////////////////////////////////////////////////////////////
+
+bool medFileSystemDataSource::registered()
+{
+    return medAbstractDataSourceFactory::instance()->registerDataSource ("medFileSystemDataSource", createmedFileSystemDataSource);
+}
+
+
+medAbstractDataSource* createmedFileSystemDataSource(QWidget *)
+{
+    return new medFileSystemDataSource;
 }

@@ -70,7 +70,7 @@ public:
 // itkProcessRegistration
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistration::itkProcessRegistration() : medAbstractRegistrationProcess(), d(new itkProcessRegistrationPrivate)
+itkProcessRegistration::itkProcessRegistration() : medAbstractEstimateTransformationProcess(), d(new itkProcessRegistrationPrivate)
 {
     d->fixedImage = NULL;
     d->output = NULL;
@@ -266,21 +266,11 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         return res;
 
     QString id = QString (data->identifier());
-    QString::iterator last_charac = id.end() - 1;
-    if (*last_charac == '3'){
-        d->dimensions = 3;
-    }
-    else if (*last_charac == '4'){
-        d->dimensions = 4;
-    }
-    else{
-        qDebug() << "Unable to handle the number of dimensions " \
-                << "for an image of description: "<< data->identifier();
-    }
+    medAbstractImageData *imageData = dynamic_cast<medAbstractImageData *>(data);
+    if(imageData)
+        d->dimensions = imageData->dimension();
 
-    *last_charac = '3';
-
-    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData");
     foreach ( QString metaData, data->metaDataList() )
         if (!convertedData->hasMetaData(metaData))
             convertedData->addMetaData ( metaData, data->metaDataValues ( metaData ) );
@@ -289,46 +279,46 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         convertedData->addProperty ( property,data->propertyValues ( property ) );
 
     if (channel==0)
-        d->output = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+        d->output = medAbstractDataFactory::instance()->create ("medItkFloat3ImageData3");
 
     QScopedPointer<CastFilterAdapter> castFilterAdapterPtr;
-    if (id =="itkDataImageChar3")
+    if (id =="medItkChar3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<char>);
     }
-    else if (id =="itkDataImageUChar3")
+    else if (id =="medItkUChar3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned char>);
     }
-    else if (id == "itkDataImageShort3")
+    else if (id == "medItkShort3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<short>);
     }
-    else if (id == "itkDataImageUShort3")
+    else if (id == "medItkUShort3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned short>);
     }
-    else if(id == "itkDataImageInt3")
+    else if(id == "medItkInt3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<int>);
     }
-    else if(id == "itkDataImageUInt3")
+    else if(id == "medItkUInt3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned int>);
     }
-    else if(id == "itkDataImageLong3")
+    else if(id == "medItkLong3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<long>);
     }
-    else if(id == "itkDataImageULong3")
+    else if(id == "medItkULong3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<unsigned long>);
     }
-    else if(id == "itkDataImageFloat3")
+    else if(id == "medItkFloat3ImageData")
     {
         d->setInput<float>(data,channel);
     }
-    else if(id == "itkDataImageDouble3")
+    else if(id == "medItkDouble3ImageData")
     {
         castFilterAdapterPtr.reset(new CastFilterTemplateAdapter<double>);
     }
@@ -362,13 +352,26 @@ bool itkProcessRegistration::setMovingInput(medAbstractData *data)
     return this->setInputData(data, 1);
 }
 
+/**
+ * @brief Apply the update on a specified fixed image type.
+ *
+ * Called by update(). The image type is the fixed image type.
+ *
+ * @param ImageType: the fixed image type
+ * @return int
+*/
 int itkProcessRegistration::update(itkProcessRegistration::ImageType)
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return 1;
 }
 
-
+/**
+ * @brief Runs the process.
+ *
+ * @param void
+ * @return int 0 if it succeeded, any other value is an error. (could be used as error code)
+*/
 int itkProcessRegistration::update()
 {
     if (!d->mutex.tryLock())
@@ -377,61 +380,127 @@ int itkProcessRegistration::update()
     }
 
     if(d->fixedImage.IsNull() || d->movingImages.empty())
-        return 1;
+    {
+        //Try to retrieve inputs from port
+        //TODO: TO REVIEW
+        medAbstractData *fixedImage = this->input<medAbstractData>(0);
+        medAbstractData *movingImage = this->input<medAbstractData>(1);
+        setFixedInput(fixedImage);
+        setMovingInput(movingImage);
+        if(d->fixedImage.IsNull() || d->movingImages.empty())
+          return 1;
+    }
 
     int retval =  update(d->fixedImageType);
     d->mutex.unlock();
     return retval;
 }
 
-medAbstractData *itkProcessRegistration::output()
-{
-    return d->output;
-}
-void itkProcessRegistration::setOutput(medAbstractData * output)
-{
-    d->output = output;
-}
+/**
+ * @brief Gets the registered image.
+ *
+ * @param void
+ * @return medAbstractData *: medItkImageDataXXY, same type as the moving input image.
+*/
+//medAbstractData *itkProcessRegistration::output()
+//{
+//    return d->output;
+//}
+//void itkProcessRegistration::setOutput(medAbstractData * output)
+//{
+//    d->output = output;
+//}
 
+/**
+ * @brief Gets an itk smart pointer to the fixed image.
+ *
+ * It uses the itkImageBase class to avoid a templated method.
+ * Using the fixedImageType() method will give the type necessary for a down cast.
+ *
+ * @return itk::ImageBase<int> NULL if none is set yet.
+*/
 itk::ImageBase<3>::Pointer itkProcessRegistration::fixedImage()
 {
     return d->fixedImage;
 }
 
+/**
+ * @brief Gets an itk smart pointer to the moving image.
+ *
+ * it uses the itkImageBase class to avoid a templated method.
+ * Using the movingImageType() method will give the type necessary for a down cast.
+ *
+ * @return itk::ImageBase<int> NULL if none is set yet.
+*/
 QVector<itk::ImageBase<3>::Pointer> itkProcessRegistration::movingImages()
 {
     return d->movingImages;
 }
+
+/**
+ * @brief Gets the fixed image ImageType.
+ *
+ * @return itkProcessRegistration::ImageType
+*/
 itkProcessRegistration::ImageType itkProcessRegistration::fixedImageType()
 {
     return d->fixedImageType;
 }
 
+/**
+ * @brief Gets the moving image ImageType.
+ *
+ * @return itkProcessRegistration::ImageType
+*/
 itkProcessRegistration::ImageType itkProcessRegistration::movingImageType()
 {
     return d->movingImageType;
 }
 
-bool itkProcessRegistration::write(const QStringList& files)
-{
-    if (files.count()!=2)
-    {
-        qDebug() << "can't write, the list doesn't have 2 items";
-        return false;
-    }
+/**
+ * @brief Writes to a file an image or a transformation.
+ *
+ * This function is inherited from dtk.
+ * @warning This function writes the image in the first file,
+ * and the transformation in the second. Otheritems in the list are ignored.
+ * An empty string as a first element with a path as the second only writes the transformation.
+ * A single element in the list means only the image will be written.
+ *
+ * This function is usualy called from the generic registration toolbox.
+ *
+ * @param files: list of File path. Here files[0] is a path to the image,
+ * and files[1] a path to a transformation.
+ * @return bool: true on successful operation, false otherwise.
+*/
+//bool itkProcessRegistration::write(const QStringList& files)
+//{
+//    if (files.count()!=2)
+//    {
+//        qDebug() << "can't write, the list doesn't have 2 items";
+//        return false;
+//    }
 
-    if (!files.at(0).isEmpty())
-    {
-        return write(files.at(0));
-    }
+//    if (!files.at(0).isEmpty())
+//    {
+//        return write(files.at(0));
+//    }
 
-    if(!files.at(1).isEmpty())
-    {
-        return writeTransform(files.at(1));
-    }
-    return false;
-}
+//    if(!files.at(1).isEmpty())
+//    {
+//        return writeTransform(files.at(1));
+//    }
+//    return false;
+//}
 
+/**
+ * @brief Writes a transformation to a file.
+ *
+ * Given the registration (rigid, non-rigid),
+ * this could be a simple matrix or a displacement field.
+ *
+ * @param file: path to the file.
+ * @return bool: true on successful operation, false otherwise.
+*/
 bool itkProcessRegistration::writeTransform(const QString& file)
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -439,43 +508,50 @@ bool itkProcessRegistration::writeTransform(const QString& file)
     return false;
 }
 
+/**
+ * @brief Writes the resulting image to a file.
+ *
+ * Uses a dtkAbstractDataWriter to export it the file.
+ * If no suitable writer is found by the factory, the method returns false.
+ * @param file: path to the file.
+ * @return bool: true on successful operation, false otherwise.
+*/
+//bool itkProcessRegistration::write(const QString& file)
+//{
+//    if (output() == NULL)
+//    {
+//        qDebug() << "the registration method hasn't been run yet.";
+//        return false;
+//    }
 
-bool itkProcessRegistration::write(const QString& file)
-{
-    if (output() == NULL)
-    {
-        qDebug() << "the registration method hasn't been run yet.";
-        return false;
-    }
+//    bool writeSuccess = false;
+//    medAbstractData * out = output();
+//    QList<QString> writers = medAbstractDataFactory::instance()->writers();
+//    for (int i=0; i<writers.size(); i++)
+//    {
+//        dtkAbstractDataWriter *dataWriter = medAbstractDataFactory::instance()->writer(writers[i]);
+//        qDebug() << "trying " << dataWriter->identifier();
 
-    bool writeSuccess = false;
-    medAbstractData * out = output();
-    QList<QString> writers = medAbstractDataFactory::instance()->writers();
-    for (int i=0; i<writers.size(); i++)
-    {
-        dtkAbstractDataWriter *dataWriter = medAbstractDataFactory::instance()->writer(writers[i]);
-        qDebug() << "trying " << dataWriter->identifier();
+//        if (! dataWriter->handled().contains(out->identifier()))
+//        {
+//          qDebug() << "failed with " << dataWriter->identifier();
+//          continue;
+//        }
 
-        if (! dataWriter->handled().contains(out->identifier()))
-        {
-          qDebug() << "failed with " << dataWriter->identifier();
-          continue;
-        }
+//        qDebug() << "success with " << dataWriter->identifier();
+//        dataWriter->setData (out);
 
-        qDebug() << "success with " << dataWriter->identifier();
-        dataWriter->setData (out);
+//        qDebug() << "trying to write in file : "<<file;
 
-        qDebug() << "trying to write in file : "<<file;
-
-        if (dataWriter->canWrite( file )) {
-            if (dataWriter->write( file )) {
-                //medDataList.push_back (output);
-                writeSuccess = true;
-                delete dataWriter;
-                break;
-            }
-        }
-        delete dataWriter;
-    }
-    return writeSuccess;
-}
+//        if (dataWriter->canWrite( file )) {
+//            if (dataWriter->write( file )) {
+//                //medDataList.push_back (output);
+//                writeSuccess = true;
+//                delete dataWriter;
+//                break;
+//            }
+//        }
+//        delete dataWriter;
+//    }
+//    return writeSuccess;
+//}
