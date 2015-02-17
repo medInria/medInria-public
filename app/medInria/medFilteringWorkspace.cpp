@@ -121,24 +121,22 @@ void medFilteringWorkspace::changeToolBoxInput()
  */
 void medFilteringWorkspace::onProcessSuccess()
 {
-    if(d->filteringToolBox.isNull())
-        return;
+    if(d->filteringToolBox.isNull()) return;
 
     d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
-    if ( !d->filterOutput )
-        return;
+    if ( !d->filterOutput ) return;
 
     medAbstractData *inputData(d->filteringToolBox->data());
 
-    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-      {
-        QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " filtered";
-        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-      }
-
-    if (inputData)
+    if (inputData) // filters without data in "Input" container
     {
+        if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+        {
+            QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
+            newSeriesDescription += " filtered";
+            d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        }
+
         foreach ( QString metaData, inputData->metaDataList() )
             if (!d->filterOutput->hasMetaData(metaData))
                 d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
