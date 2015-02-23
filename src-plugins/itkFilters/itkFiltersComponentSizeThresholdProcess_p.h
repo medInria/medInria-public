@@ -39,41 +39,49 @@ public:
     double minimumSize;
     
     template <class PixelType> void update ( void )
-    {        
-        typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::ConnectedComponentImageFilter <ImageType, ImageType> ConnectedComponentFilterType;
-        typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
+    {
+        try
+        {
+            typedef itk::Image< PixelType, 3 > ImageType;
+            typedef itk::ConnectedComponentImageFilter <ImageType, ImageType> ConnectedComponentFilterType;
+            typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
         
-        connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        connectedComponentFilter->Update();
+            connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+            connectedComponentFilter->Update();
 
-        // RELABEL COMPONENTS according to their sizes (0:largest(background))
-        typedef itk::RelabelComponentImageFilter<ImageType, ImageType> FilterType;
-        typename FilterType::Pointer relabelFilter = FilterType::New();
-        relabelFilter->SetInput(connectedComponentFilter->GetOutput());
-        relabelFilter->SetMinimumObjectSize(minimumSize);
-        relabelFilter->Update();
+            // RELABEL COMPONENTS according to their sizes (0:largest(background))
+            typedef itk::RelabelComponentImageFilter<ImageType, ImageType> FilterType;
+            typename FilterType::Pointer relabelFilter = FilterType::New();
+            relabelFilter->SetInput(connectedComponentFilter->GetOutput());
+            relabelFilter->SetMinimumObjectSize(minimumSize);
+            relabelFilter->Update();
 
-        // BINARY FILTER
-        typedef itk::BinaryThresholdImageFilter <ImageType, ImageType>
-        BinaryThresholdImageFilterType;
+            // BINARY FILTER
+            typedef itk::BinaryThresholdImageFilter <ImageType, ImageType>
+            BinaryThresholdImageFilterType;
  
-        typename BinaryThresholdImageFilterType::Pointer thresholdFilter
-        = BinaryThresholdImageFilterType::New();
-        thresholdFilter->SetInput(relabelFilter->GetOutput());
-        thresholdFilter->SetUpperThreshold(0);
-        thresholdFilter->SetInsideValue(0);
-        thresholdFilter->SetOutsideValue(1);
-        thresholdFilter->Update();
+            typename BinaryThresholdImageFilterType::Pointer thresholdFilter
+            = BinaryThresholdImageFilterType::New();
+            thresholdFilter->SetInput(relabelFilter->GetOutput());
+            thresholdFilter->SetUpperThreshold(0);
+            thresholdFilter->SetInsideValue(0);
+            thresholdFilter->SetOutsideValue(1);
+            thresholdFilter->Update();
 
         
-        callback = itk::CStyleCommand::New();
-        callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
+            callback = itk::CStyleCommand::New();
+            callback->SetClientData ( ( void * ) this );
+            callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
         
-        connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
+            connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
         
-        output->setData ( thresholdFilter->GetOutput() );
+            output->setData ( thresholdFilter->GetOutput() );
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            std::cerr << "ExceptionObject caught in sizeThresholdingProcess!" << std::endl;
+            std::cerr << err << std::endl;
+        }
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " ConnectedComponent filter (" + QString::number(minimumSize) + ")";

@@ -17,7 +17,10 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
+#include <itkCastImageFilter.h>
+
 #include <medMetaDataKeys.h>
+#include <medAbstractDataFactory.h>
 
 #include "itkFiltersComponentSizeThresholdProcess_p.h"
 
@@ -109,6 +112,23 @@ int itkFiltersComponentSizeThresholdProcess::update ( void )
     else if ( id== "itkDataImageULong3" )
     {
         d->update<unsigned long>();
+    }
+    else if ( id== "itkDataImageFloat3" )
+    {
+        //we will later label the image so we don't care about precision.
+        typedef itk::Image< float, 3 > InputImageType;
+        typedef itk::Image< unsigned int, 3 > OutputImageType;
+        typedef itk::CastImageFilter< InputImageType, OutputImageType > CastFilterType;
+
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(d->input->data()));
+        caster->SetInput(im);
+        caster->Update();
+        d->input = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
+        d->output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
+        d->input->setData(caster->GetOutput());
+
+        d->update<unsigned int>();
     }
     else
     {
