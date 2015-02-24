@@ -22,27 +22,24 @@
 #endif
 
 
-template <typename T>
-class medProcessDataInput : public medProcessInput<T>
-{
-public:
-    medProcessDataInput(QString name, bool isOptional, T* input = NULL);
-    virtual ~medProcessDataInput();
+//template <typename T>
+//class medProcessDataInput : public medProcessInput<T>
+//{
+//public:
+//    medProcessDataInput(QString name, bool isOptional, T* input = NULL);
+//    virtual ~medProcessDataInput();
 
-public:
-    medAbstractData* input() const;
-    void setInput(medAbstractData* input);
+//public:
+//    medAbstractData* input() const;
+//    void setInput(medAbstractData* input);
 
-    //virtual void retrieveContentFromPort(medProcessPort *otherport);
+//    //virtual void retrieveContentFromPort(medProcessPort *otherport);
 
-//#ifdef DTK_BUILD_COMPOSER
-#ifdef IN_PROGRESS
-    virtual dtkComposerTransmitter* toTransmitter();
-    virtual void updateFromTransmitter(dtkComposerTransmitter* transmitter);
-#endif
+////#ifdef DTK_BUILD_COMPOSER
+//#ifdef IN_PROGRESS
+//    virtual dtkComposerTransmitter* toTransmitter();
+//    virtual void updateFromTransmitter(dtkComposerTransmitter* transmitter);
+//#endif
+//};
 
-private:
-    medAbstractData* m_input;
-};
-
-#include <medProcessDataInput.txx>
+//#include <medProcessDataInput.txx>

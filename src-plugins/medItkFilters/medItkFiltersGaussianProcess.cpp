@@ -99,7 +99,7 @@ QList<medAbstractParameter*> medItkFiltersGaussianProcess::parameters()
 
 int medItkFiltersGaussianProcess::update ( void )
 {
-    if ( !this->input<medAbstractData *>(0) )
+    if ( !this->input<medAbstractData>(0) )
         return -1;
 
     QString id = this->input<medAbstractData>(0)->identifier();

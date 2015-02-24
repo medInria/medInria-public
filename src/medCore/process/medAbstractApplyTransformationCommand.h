@@ -14,8 +14,7 @@
 #pragma once
 
 #include <QUndoCommand>
-
-class medAbstractTransformation;
+#include <medAbstractTransformation.h>
 
 class medAbstractApplyTransformationCommand : public QUndoCommand
 {

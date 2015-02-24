@@ -32,10 +32,10 @@ public:
 medAbstractEstimateTransformationProcess::medAbstractEstimateTransformationProcess(medAbstractProcess *parent):
     medAbstractProcess(parent), d(new medAbstractEstimateTransformationProcessPrivate)
 {
-    medProcessDataInput<medAbstractImageData> *fixed = new medProcessDataInput<medAbstractImageData>("Fixed Image", false);
+    medProcessInput<medAbstractImageData> *fixed = new medProcessInput<medAbstractImageData>("Fixed Image", false);
     this->appendDataInput( fixed );
 
-    medProcessDataInput<medAbstractImageData> *moving = new medProcessDataInput<medAbstractImageData>("Moving Image", false);
+    medProcessInput<medAbstractImageData> *moving = new medProcessInput<medAbstractImageData>("Moving Image", false);
     this->appendDataInput( moving );
 
     this->appendOutput( new medProcessOutput<medAbstractTransformation>("Output"));

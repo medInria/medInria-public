@@ -81,7 +81,7 @@ public:
 medItkSubtractImageFilter::medItkSubtractImageFilter(medItkFiltersProcessBase *parent):
     medItkFiltersProcessBase(parent), d(new medItkSubtractImageFilterPrivate(this))
 {
-    medProcessDataInput<medAbstractImageData> *input = new medProcessDataInput<medAbstractImageData>("Image to subtract", false);
+    medProcessInput<medAbstractImageData> *input = new medProcessInput<medAbstractImageData>("Image to subtract", false);
     //input->setInput(NULL);
 
     this->appendDataInput(input);
@@ -111,7 +111,7 @@ QList<medAbstractParameter*> medItkSubtractImageFilter::parameters()
 
 int medItkSubtractImageFilter::update()
 {
-    if ( !this->input<medAbstractData*>(0) )
+    if ( !this->input<medAbstractData>(0) )
         return -1;
 
     QString id = this->input<medAbstractData>(0)->identifier();

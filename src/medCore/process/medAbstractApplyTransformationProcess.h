@@ -16,10 +16,11 @@
 #include <medCoreExport.h>
 
 #include <medAbstractProcess.h>
+#include <medAbstractTransformation.h>
 
 class medAbstractData;
 class medAbstractImageData;
-class medAbstractTransformation;
+
 
 class medAbstractApplyTransformationProcessPrivate;
 class MEDCORE_EXPORT medAbstractApplyTransformationProcess : public medAbstractProcess
