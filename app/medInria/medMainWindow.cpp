@@ -475,7 +475,7 @@ void medMainWindow::saveScene() {
 		{
 			QString subDirName="view"+QUuid::createUuid ().toString();
 			if(!workingDir.mkdir(subDirName))
-				qDebug() << " failed to create new directory "; 
+				qDebug() << " failed to create new directory: "<<subDirName; 
 			workingDir.cd(subDirName);
 			QString generatedPath=workingDir.canonicalPath()+"/mapping.xml";
 			QDomElement layeredViewInfo=doc.createElement("layeredView");

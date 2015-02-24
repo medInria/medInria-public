@@ -458,17 +458,36 @@ void medAbstractLayeredView::write(QString& path)
     QDomDocument doc(fileInfo.fileName());
 	QDomElement root = doc.createElement("xml");
 	doc.appendChild(root);
-
+	QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
 	QString xml = doc.toString();
 	for(unsigned int i=0;i<this->layersCount();i++)
 	{
+    
+    QList<dtkAbstractDataWriter*> possibleWriters;
+
+    foreach(QString writerType, allWriters) 
+    {
+        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
+        if (writer->handled().contains(layerData(i)->identifier()))
+            possibleWriters.append(writer);
+        else
+            delete writer;
+    }
+
+    if (possibleWriters.isEmpty()) {
+        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
+        return;
+    }
+		
+		
 		QDomElement layerDescription = doc.createElement("layer");
 		layerDescription.setAttribute("id",i);
-		
+		//QString currentFile=layerData(i)->path();
+		qDebug()<<layerData(i)->description()<<" "<<layerData(i)->name()<<" "<<layerData(i)->identifier();
 		//generating filename 
 		//hack to by-pass itkDataImageWriterBase::canWrite method
 		//TODO: give the file its real extension 
-		QString currentFile=workingDir+"/layer"+QString::number(i)+".nii";
+		QString currentFile=workingDir+"/layer"+QString::number(i)+possibleWriters[0]->supportedFileExtensions()[0];
 		if(medDataReaderWriter::write(currentFile,layerData(i)))
 			layerDescription.setAttribute("filename",currentFile);
 		else
