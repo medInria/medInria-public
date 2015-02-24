@@ -344,6 +344,9 @@ QString medVtkViewItkDataImageInteractor::lut() const
 
 void medVtkViewItkDataImageInteractor::setLut(QString value)
 {
+	for(int i=0;i<d->lutParam->getComboBox()->count();i++)
+		if(this->d->lutParam->getComboBox()->itemText(i)==value)
+			d->lutParam->getComboBox()->setCurrentIndex(i);
     typedef vtkTransferFunctionPresets Presets;
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
@@ -372,6 +375,9 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 {
     d->lutParam->setValue(d->presetToLut[preset]);
+    for(int i=0;i<d->presetParam->getComboBox()->count();i++)
+		if(this->d->presetParam->getComboBox()->itemText(i)==preset)
+			d->presetParam->getComboBox()->setCurrentIndex(i);
 
     if ( preset == "None" )
     {
@@ -651,7 +657,10 @@ void medVtkViewItkDataImageInteractor::restoreParameters(QHash<QString,QString> 
 	if(parameters.contains("Preset"))
 		setPreset(medStringListParameter::fromString(parameters["Preset"]));
 	if(parameters.contains("Lut"))
+	{
+		//d->lutParameter->();
 		setLut(medStringListParameter::fromString(parameters["Lut"]));
+	}
 		
 }
 
