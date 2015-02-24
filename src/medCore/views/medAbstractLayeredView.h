@@ -24,6 +24,8 @@
 #include <medAbstractData.h>
 #include <medAbstractInteractor.h>
 #include <medDataReaderWriter.h>
+#include <medMessageController.h>
+#include <medAbstractDataFactory.h>
 #include <QFile>
 #include <QFileInfo>
 
