@@ -69,6 +69,7 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     d->roiManagementToolBox= medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox");
     d->roiManagementToolBox->setWorkspace(this);
+    d->roiManagementToolBox->switchMinimize();
     this->addToolBox(d->roiManagementToolBox);
 
     medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());

@@ -49,14 +49,13 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
 
     if (itk::Image<TYPE,4>* image = dynamic_cast<itk::Image<TYPE,4>*>(static_cast<itk::Object*>(data->data())))
     {
-
         medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
-
+        
         sequence->SetITKDataSet<TYPE>(image);
 
         vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
         vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(sequence->GetDataSet());
-
+        
         backend->view2D->SetInput(vtkimage,metaimage->GetOrientationMatrix(), layer);
         backend->view3D->SetInput(vtkimage,metaimage->GetOrientationMatrix(), layer);
         layer = backend->view2D->GetNumberOfLayers()-1;
@@ -162,6 +161,7 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
                 d->imageData->addMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
             }
             
+            d->imageData->addMetaData("NumberOfFrames",QString::number(d->sequence->GetNumberOfMetaDataSets()));
             d->imageData->addMetaData("SequenceFrameRate", frameTime);
             qDebug() << "SequenceDuration" << d->imageData->metadata("SequenceDuration");
             qDebug() << "SequenceFrameRate" << frameTime;

@@ -366,7 +366,7 @@ void medTimeLineParameter::updateFrameLabel()
     if(d->frameLabel.isNull())
         return;
 
-    d->frameLabel->setText(QString::number(d->currentFrame + 1));
+    d->frameLabel->setText(QString::number(d->currentFrame));
 }
 
 void medTimeLineParameter::updateNumberOfFrameLabel()
@@ -374,7 +374,7 @@ void medTimeLineParameter::updateNumberOfFrameLabel()
     if(d->numberOfFramesLabel.isNull())
         return;
 
-    d->numberOfFramesLabel->setText("/ " + QString::number(d->numberOfFrames) + " frames");
+    d->numberOfFramesLabel->setText("/ " + QString::number(d->numberOfFrames-1) + " frames");
 }
 
 void medTimeLineParameter::removeInternWidget()
