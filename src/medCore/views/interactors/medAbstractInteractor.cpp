@@ -113,6 +113,8 @@ void medAbstractInteractor::updateWidgets()
 
 void medAbstractInteractor::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
 {
+	currentNode->setAttribute("name",name());
+	currentNode->setAttribute("version",version());
 	QDomElement elmt=doc->createElement("parameters");
 	elmt.setAttribute("number",this->linkableParameters().size());
 	for(int i=0;i<linkableParameters().size();i++)
@@ -151,7 +153,7 @@ void medAbstractInteractor::fromXMLNode(QDomElement* element)
 			else if(nodeName=="type")
 				type=currentParametersValues.at(j).firstChild().toText().nodeValue();
 			else if(nodeName=="value")
-				value=currentParametersValues.at(j).firstChild().toText().nodeValue();
+				value=currentParametersValues.at(j).firstChild().toText().nodeValue(); 
 		}
 		parameters[name]=value;
 	}
@@ -160,6 +162,16 @@ void medAbstractInteractor::fromXMLNode(QDomElement* element)
 }
 
 void medAbstractInteractor::restoreParameters(QHash<QString,QString> parameters)
-{
+{//default implementation: do nothing
 		
+}
+
+QString medAbstractInteractor::version() const
+{
+	return "0.0.1";
+}
+
+QString medAbstractInteractor::name() const
+{
+	return "undefined interactor";
 }
