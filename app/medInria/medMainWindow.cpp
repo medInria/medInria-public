@@ -475,7 +475,7 @@ void medMainWindow::saveScene() {
 		{
 			QString subDirName="view"+QUuid::createUuid ().toString();
 			if(!workingDir.mkdir(subDirName))
-				qDebug() << " failed to create new directory: "<<subDirName; 
+                qWarning() << " failed to create new directory: "<<subDirName;
 			workingDir.cd(subDirName);
 			QString generatedPath=workingDir.canonicalPath()+"/mapping.xml";
 			QDomElement layeredViewInfo=doc.createElement("layeredView");
@@ -539,7 +539,6 @@ void medMainWindow::loadScene()
 	}
 	//call dedicated method to read each view folder
 	QFileInfo fileInfo(file);
-	QDir workingDir(fileInfo.dir());
 	bool hasContainer=false;
 	for(int i=0;i<viewsNodes.size();i++)
 	{
@@ -547,19 +546,19 @@ void medMainWindow::loadScene()
 		QDomElement viewElement=viewsNodes.item(i).toElement();
 		if(viewElement.isNull())
 		{
-			qWarning()<< "failed to open a view";
+            qWarning()<< "failed to open a view: unable to find element";
 			continue;
 		}
 		QString path=viewElement.attribute("path");
 		if(!QFile::exists(path))
 		{
-			qWarning()<< "failed to open a view: ";
+            qWarning()<< "failed to open a view: path "<< path << " does not exist";
 			continue;
 		}
 		QFile mappingFile(path);
 		if(!mappingFile.open(QIODevice::ReadOnly ))
 		{
-			qWarning()<< "failed to open a view: ";
+            qWarning()<< "failed to open a view: unable to open mappimg file";
 			continue;
 		}
 		QDomDocument viewInfo("xml");
@@ -583,9 +582,7 @@ void medMainWindow::loadScene()
 		{
 			QDomElement layerElement=layersNodes.item(j).toElement();
 			QString fileName=layerElement.attribute("filename");
-			QString id=layerElement.attribute("id");
 			open(fileName);
-			qDebug()<<"point 1";
 			medAbstractView *view = medViewContainerManager::instance()->container(d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersSelected().first())->view();
 			if(view)
 				view->restoreState(&layerElement);
