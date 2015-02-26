@@ -27,6 +27,9 @@ public:
 
 public:
     virtual QString  identifier() const;
+    virtual QString name() const;
+    virtual QString version() const;
+
     static QString  s_identifier();
     static bool registered();
     virtual QStringList handled(void) const;

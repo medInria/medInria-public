@@ -38,6 +38,8 @@ public:
 
 public:
     virtual QString description() const = 0;
+    virtual QString name() const;	//should be pure virtual
+    virtual QString version() const;
 
     QWidget* toolBoxWidget();
     QWidget* toolBarWidget();
@@ -47,6 +49,8 @@ public:
     
     virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
 	void fromXMLNode(QDomElement* element);
+	
+	
 
 
 protected:

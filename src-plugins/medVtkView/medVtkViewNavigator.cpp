@@ -673,13 +673,6 @@ void medVtkViewNavigator::enableMeasuring(bool enable)
 
 void medVtkViewNavigator::restoreParameters(QHash<QString,QString> parameters)
 {
-	QHash<QString, QString>::const_iterator i = parameters.constBegin();
-	while (i != parameters.constEnd()) 
-	{
-		qDebug() <<"processing: "<<i.key() << ": " << i.value() << endl;
-		++i;
-	}
-	
 	if(parameters.contains("Axes"))
 		d->showAxesParameter->setValue(medBoolParameter::fromString(parameters["Axes"]));
 	if(parameters.contains("Ruler"))

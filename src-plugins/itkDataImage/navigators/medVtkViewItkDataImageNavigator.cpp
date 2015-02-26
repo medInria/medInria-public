@@ -120,7 +120,7 @@ QStringList medVtkViewItkDataImageNavigator::handled(void) const
 
 QString medVtkViewItkDataImageNavigator::description() const
 {
-    return "Navigator to interact with itk images in a medVtkView";
+    return "Navigator to interact with itk image";
 }
 
 QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::linkableParameters()
@@ -283,7 +283,15 @@ QWidget *medVtkViewItkDataImageNavigator::buildToolBarWidget()
     return toolBarWidget;
 }
 
+QString medVtkViewItkDataImageNavigator::name() const
+{
+    return "medVtkViewItkDataImageNavigator";
+}
 
+QString medVtkViewItkDataImageNavigator::version() const
+{
+    return "0.0.1";
+}
 
 
 

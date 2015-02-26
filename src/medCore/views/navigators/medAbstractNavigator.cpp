@@ -81,7 +81,8 @@ void medAbstractNavigator::updateWidgets()
 }
 
 void medAbstractNavigator::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
-{
+{	currentNode->setAttribute("name",name());
+	currentNode->setAttribute("version",version());
 	QDomElement elmt=doc->createElement("parameters");
 	elmt.setAttribute("number",this->linkableParameters().size());
 	for(int i=0;i<linkableParameters().size();i++)
@@ -129,6 +130,16 @@ void medAbstractNavigator::fromXMLNode(QDomElement* element)
 }
 
 void medAbstractNavigator::restoreParameters(QHash<QString,QString> parameters)
-{
+{//default implementation: do nothing
 		
+}
+
+QString medAbstractNavigator::version() const
+{
+	return "0.0.1";
+}
+
+QString medAbstractNavigator::name() const
+{
+	return "undefined navigator";
 }
