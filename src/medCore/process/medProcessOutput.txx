@@ -17,7 +17,6 @@
 template <typename T>
 medProcessOutput<T>::medProcessOutput(QString name, T* output) : medProcessPort(name)
 {
-    //m_output = output;
     m_variant.setValue(output);
 }
 

@@ -17,7 +17,6 @@ template <typename T>
 medProcessInput<T>::medProcessInput(QString name, bool isOptional, T* input) : medProcessPort(name)
 {
     m_isOptional = isOptional;
-    m_input = input;
     m_variant.setValue(input);
 }
 
@@ -36,21 +35,18 @@ bool medProcessInput<T>::isOptional() const
 template <typename T>
 T* medProcessInput<T>::input() const
 {
-    //return m_input;
     return m_variant.value<T*>();
 }
 
 template <typename T>
 QObject* medProcessInput<T>::content() const
 {
-    //return m_input;
     return m_variant.value<T*>();
 }
 
 template <typename T>
 void medProcessInput<T>::setInput(T* input)
 {
-    m_input = input;
     m_variant.setValue(input);
 }
 
