@@ -452,14 +452,12 @@ void medAbstractLayeredView::write(QString& path)
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
 		return;
 	QFileInfo fileInfo(file);
-	QString workingDir=fileInfo.canonicalPath();
 
     QTextStream out(&file);
     QDomDocument doc(fileInfo.fileName());
 	QDomElement root = doc.createElement("xml");
 	doc.appendChild(root);
 	QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
-	QString xml = doc.toString();
 	for(unsigned int i=0;i<this->layersCount();i++)
 	{
     
@@ -482,29 +480,12 @@ void medAbstractLayeredView::write(QString& path)
 		
 		QDomElement layerDescription = doc.createElement("layer");
 		layerDescription.setAttribute("id",i);
-		//QString currentFile=layerData(i)->path();
-		qDebug()<<layerData(i)->description()<<" "<<layerData(i)->name()<<" "<<layerData(i)->identifier();
 		//generating filename 
-		//hack to by-pass itkDataImageWriterBase::canWrite method
-		//TODO: give the file its real extension 
-		QString currentFile=workingDir+"/layer"+QString::number(i)+possibleWriters[0]->supportedFileExtensions()[0];
+        QString currentFile=layerData(i)->metadata("SeriesDescription")+possibleWriters[0]->supportedFileExtensions()[0];
 		if(medDataReaderWriter::write(currentFile,layerData(i)))
 			layerDescription.setAttribute("filename",currentFile);
 		else
 			layerDescription.setAttribute("filename","failed to save data");
-		
-		/*//saving linkable parameters
-		QDomElement parametersNode=doc.createElement("LinkableParameters");
-		QList<medAbstractParameter*> parametersList=this->linkableParameters();
-
-		for(int j=0;j<parametersList.size();j++)
-		{
-			QDomElement currentParameterNode = doc.createElement("parameter");
-			parametersList[j]->toXMLNode(&doc,&currentParameterNode);
-			parametersNode.appendChild(currentParameterNode);
-		}		
-		layerDescription.appendChild(parametersNode);*/
-		
 		
 		//saving navigators
 		QDomElement navigatorsNode=doc.createElement("navigators");
@@ -543,7 +524,13 @@ void medAbstractLayeredView::restoreState(QDomElement* element)
 	for(int i=0;i<navigatorList.size();i++)
 	{
 		QDomElement currentNavigator=nodeList.at(i).toElement();
-		navigatorList[i]->fromXMLNode(&currentNavigator);
+        //check interactor name and version
+        if(navigatorList[i]->name()==currentNavigator.attributeNode("name").value() && navigatorList[i]->version()==currentNavigator.attributeNode("version").value())
+            navigatorList[i]->fromXMLNode(&currentNavigator);
+        else
+            qWarning()<<"failed to a navigator: attempted to load navigator "<<
+                      currentNavigator.attributeNode("name").value()<<"v"<<currentNavigator.attributeNode("version").value()         <<"in navigator "<<
+                      navigatorList[i]->name()                      <<"v"<<navigatorList[i]->version();
 	}
 	
 	nodeList=element->elementsByTagName("interactor");
@@ -555,6 +542,11 @@ void medAbstractLayeredView::restoreState(QDomElement* element)
 	for(int i=0;i<interactorList.size();i++)
 	{
 		QDomElement currentInteractor=nodeList.at(i).toElement();
+        if(interactorList[i]->name()==currentInteractor.attributeNode("name").value() && interactorList[i]->version()==currentInteractor.attributeNode("version").value())
 		interactorList[i]->fromXMLNode(&currentInteractor);
+        else
+            qDebug()<<"failed to a interactor: attempted to load interactor "<<
+                      currentInteractor.attributeNode("name").value()<<"v"<<currentInteractor.attributeNode("version").value()         <<"in interactor "<<
+                      interactorList[i]->name()                      <<"v"<<interactorList[i]->version();
 	}
 }

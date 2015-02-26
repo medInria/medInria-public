@@ -1,14 +1,11 @@
 /*=========================================================================
-
  medInria
-
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
-
 =========================================================================*/
 
 #include <medStringListParameter.h>
@@ -137,6 +134,9 @@ QIcon medStringListParameter::createIconFromColor(const QString &colorName)
 
 QString medStringListParameter::fromString(QString value)
 {
+	/*for(int i=0;i<getComboBox()->count();i++)
+		if(this->getComboBox()->itemText(i)==value)
+			getComboBox()->setCurrentIndex(i);*/
     return value;
 }
 
