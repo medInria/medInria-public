@@ -102,7 +102,6 @@ void medAbstractNavigator::fromXMLNode(QDomElement* element)
 		return;
 	}
 	QDomNodeList parameterList=element->elementsByTagName("parameter");
-	qDebug()<<element->elementsByTagName("parameter").size();
 	QHash<QString,QString> parameters;
 	for(int i=0;i<parameterList.size();i++)
 	{

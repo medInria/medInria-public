@@ -45,6 +45,7 @@ public:
     virtual ~medVtkFibersDataInteractor();
 
     virtual QString description() const;
+    virtual QString name() const;
     virtual QString identifier() const;
     virtual QStringList handled() const;
 
