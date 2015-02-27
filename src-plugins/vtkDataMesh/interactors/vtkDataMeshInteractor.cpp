@@ -674,3 +674,8 @@ void vtkDataMeshInteractor::showRangeWidgets(bool checked)
         d->minRange->hide();
     }
 }
+
+QString vtkDataMeshInteractor::name() const
+{
+    return "vtkDataMeshInteractor";
+}

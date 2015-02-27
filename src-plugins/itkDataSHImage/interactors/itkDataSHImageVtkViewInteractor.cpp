@@ -585,3 +585,8 @@ void itkDataSHImageVtkViewInteractor::updateSlicingParam()
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
 }
+
+QString itkDataSHImageVtkViewInteractor::name() const
+{
+    return "itkDataSHImageVtkViewInteractor";
+}
