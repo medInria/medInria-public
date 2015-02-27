@@ -30,6 +30,7 @@ public:
     virtual ~medVtkViewItkDataImageInteractor();
 
     virtual QString description() const;
+    virtual QString name() const;
     virtual QString identifier() const;
     static bool registered();
 

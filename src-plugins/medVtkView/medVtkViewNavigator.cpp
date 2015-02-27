@@ -687,3 +687,8 @@ void medVtkViewNavigator::restoreParameters(QHash<QString,QString> parameters)
 		setCameraPosition(medVector3DParameter::fromString(parameters["Position"]));
 
 }
+
+QString medVtkViewNavigator::name() const
+{
+    return "medVtkViewNavigator";
+}

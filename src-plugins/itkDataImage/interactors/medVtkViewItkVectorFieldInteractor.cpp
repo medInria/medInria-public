@@ -514,3 +514,8 @@ void medVtkViewItkVectorFieldInteractor::updatePlaneVisibility()
 
 //    this->update();
 }
+
+QString medVtkViewItkVectorFieldInteractor::name() const
+{
+    return "medVtkViewItkVectorFieldInteractor";
+}

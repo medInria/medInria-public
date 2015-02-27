@@ -586,3 +586,8 @@ void vtkDataMeshInteractor::updateSlicingParam()
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
 }
+
+QString vtkDataMeshInteractor::name() const
+{
+    return "vtkDataMeshInteractor";
+}

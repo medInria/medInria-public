@@ -240,7 +240,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     }
 
     connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
-
     if(d->view->layer(data) > 0)
         this->opacityParameter()->setValue(0.5);
     else
@@ -643,24 +642,17 @@ void medVtkViewItkDataImageInteractor::enableWIndowLevel(bool enable)
 
 void medVtkViewItkDataImageInteractor::restoreParameters(QHash<QString,QString> parameters)
 {
-	QHash<QString, QString>::const_iterator i = parameters.constBegin();
-	while (i != parameters.constEnd()) 
-	{
-		qDebug() <<"processing: "<<i.key() << ": " << i.value() << endl;
-		++i;
-	}
-	
 	if(parameters.contains("Opacity"))
 		setOpacity(medDoubleParameter::fromString(parameters["Opacity"]));
 	if(parameters.contains("Visibility"))
 		setVisibility(medBoolParameter::fromString(parameters["Visibility"]));
 	if(parameters.contains("Preset"))
 		setPreset(medStringListParameter::fromString(parameters["Preset"]));
-	if(parameters.contains("Lut"))
-	{
-		//d->lutParameter->();
+    if(parameters.contains("Lut"))
 		setLut(medStringListParameter::fromString(parameters["Lut"]));
-	}
-		
 }
 
+QString medVtkViewItkDataImageInteractor::name() const
+{
+    return "medVtkViewItkDataImageInteractor";
+}

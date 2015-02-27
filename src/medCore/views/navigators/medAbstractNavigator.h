@@ -38,7 +38,7 @@ public:
 
 public:
     virtual QString description() const = 0;
-    virtual QString name() const;	//should be pure virtual
+    virtual QString name() const;
     virtual QString version() const;
 
     QWidget* toolBoxWidget();

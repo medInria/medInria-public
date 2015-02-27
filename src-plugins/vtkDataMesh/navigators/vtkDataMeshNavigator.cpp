@@ -149,6 +149,11 @@ void vtkDataMeshNavigator::enableDepthPeeling(bool enabled)
     d->imageView->render();
 }
 
+QString vtkDataMeshNavigator::name() const
+{
+    return "vtkDataMeshNavigator";
+}
+
 
 /*=========================================================================
 
