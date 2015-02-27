@@ -271,7 +271,7 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
             QString newGroup = groupsLayer0[0]->name() + " Layer " + QString::number(layerNumber+1);
             medLayerParameterGroup* layerGroup = medParameterGroupManager::instance()->layerGroup(newGroup);
             if(!layerGroup)
-              layerGroup = new medLayerParameterGroup(newGroup, this);
+                layerGroup = new medLayerParameterGroup(newGroup, this);
             layerGroup->setLinkAllParameters(true);
             layerGroup->addImpactedlayer(this, data);
         }
@@ -448,105 +448,121 @@ QList<medAbstractParameter*> medAbstractLayeredView::linkableParameters(unsigned
 
 void medAbstractLayeredView::write(QString& path)
 {
-	QFile file(path);
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
-		return;
-	QFileInfo fileInfo(file);
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+        return;
+    QFileInfo fileInfo(file);
 
     QTextStream out(&file);
     QDomDocument doc(fileInfo.fileName());
-	QDomElement root = doc.createElement("xml");
-	doc.appendChild(root);
-	QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
-	for(unsigned int i=0;i<this->layersCount();i++)
-	{
-    
-    QList<dtkAbstractDataWriter*> possibleWriters;
-
-    foreach(QString writerType, allWriters) 
+    QDomElement root = doc.createElement("xml");
+    doc.appendChild(root);
+    QHash<QString,int> usedFilenames;
+    for(unsigned int i=0;i<this->layersCount();i++)
     {
-        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
-        if (writer->handled().contains(layerData(i)->identifier()))
-            possibleWriters.append(writer);
+
+        //getting a working file extension
+        //1. find suitable writers
+        QHash<QString, dtkAbstractDataWriter*> possibleWriters=medDataManager::instance()->getPossibleWriters(layerData(i));
+
+
+        //2. use these writers to get a suitable file extension
+        QString fileExtension;
+        foreach(QString key,possibleWriters.keys())
+        {
+            if(!possibleWriters[key]->supportedFileExtensions().isEmpty())
+            {
+                fileExtension=possibleWriters[key]->supportedFileExtensions()[0];
+                break;
+            }
+        }
+        //3.releasing allocated memory
+        qDeleteAll(possibleWriters);
+
+        QDomElement layerDescription = doc.createElement("layer");
+        layerDescription.setAttribute("id",i);
+        //generating filename
+        QString currentFile=layerData(i)->metadata("SeriesDescription")+fileExtension;
+
+        //cleaning filename
+        currentFile=currentFile.replace('/','_').replace('\\','_');
+
+        //if the filename is already in use, make it unique by suffixing a number
+        if(usedFilenames.contains(currentFile))
+        {
+            int suffix=usedFilenames[currentFile]+1;
+            currentFile=currentFile+QString::number(suffix);
+        }
         else
-            delete writer;
+        {
+            usedFilenames[currentFile]=1;
+        }
+
+        if(medDataReaderWriter::write(fileInfo.dir().canonicalPath()+"/"+currentFile,layerData(i)))
+            layerDescription.setAttribute("filename",currentFile);
+        else
+            layerDescription.setAttribute("filename","failed to save data");
+
+        //saving navigators
+        QDomElement navigatorsNode=doc.createElement("navigators");
+        for(int j=0;j<navigators().size();j++)
+        {
+            QDomElement currentNavigatorNode = doc.createElement("navigator");
+            navigators()[j]->toXMLNode(&doc,&currentNavigatorNode);
+            navigatorsNode.appendChild(currentNavigatorNode);
+
+        }
+        layerDescription.appendChild(navigatorsNode);
+
+        //saving interactors
+        QDomElement interactorsNode=doc.createElement("interactors");
+        for(int j=0;j<layerInteractors(i).size();j++)
+        {
+            QDomElement currentInteractorNode = doc.createElement("interactor");
+            layerInteractors(i)[j]->toXMLNode(&doc,&currentInteractorNode);
+            interactorsNode.appendChild(currentInteractorNode);
+
+        }
+        layerDescription.appendChild(interactorsNode);
+        root.appendChild(layerDescription);
     }
-
-    if (possibleWriters.isEmpty()) {
-        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
-        return;
-    }
-		
-		
-		QDomElement layerDescription = doc.createElement("layer");
-		layerDescription.setAttribute("id",i);
-		//generating filename 
-        QString currentFile=layerData(i)->metadata("SeriesDescription")+possibleWriters[0]->supportedFileExtensions()[0];
-		if(medDataReaderWriter::write(currentFile,layerData(i)))
-			layerDescription.setAttribute("filename",currentFile);
-		else
-			layerDescription.setAttribute("filename","failed to save data");
-		
-		//saving navigators
-		QDomElement navigatorsNode=doc.createElement("navigators");
-		for(int j=0;j<navigators().size();j++)
-		{
-			QDomElement currentNavigatorNode = doc.createElement("navigator");
-			navigators()[j]->toXMLNode(&doc,&currentNavigatorNode);
-			navigatorsNode.appendChild(currentNavigatorNode);
-
-		}
-		layerDescription.appendChild(navigatorsNode);
-		
-		//saving interactors
-		QDomElement interactorsNode=doc.createElement("interactors");
-		for(int j=0;j<interactors().size();j++)
-		{
-			QDomElement currentInteractorNode = doc.createElement("interactor");
-			interactors()[j]->toXMLNode(&doc,&currentInteractorNode);
-			interactorsNode.appendChild(currentInteractorNode);
-
-		}
-		layerDescription.appendChild(interactorsNode);
-		root.appendChild(layerDescription);
-	}
-	out << doc.toString();
+    out << doc.toString();
 }
 
 void medAbstractLayeredView::restoreState(QDomElement* element)
 {
-	QDomNodeList nodeList=element->elementsByTagName("navigator");
-	QList<medAbstractNavigator*> navigatorList=navigators();
-	if(navigatorList.size()!=nodeList.size())
-	{
-		qWarning()<< "inconsistent data, failed to reload navigator parameters";
-	}
-	for(int i=0;i<navigatorList.size();i++)
-	{
-		QDomElement currentNavigator=nodeList.at(i).toElement();
+    QDomNodeList nodeList=element->elementsByTagName("navigator");
+    QList<medAbstractNavigator*> navigatorList=navigators();
+    if(navigatorList.size()!=nodeList.size())
+    {
+        qWarning()<< "inconsistent data, failed to reload navigator parameters";
+    }
+    for(int i=0;i<navigatorList.size();i++)
+    {
+        QDomElement currentNavigator=nodeList.at(i).toElement();
         //check interactor name and version
         if(navigatorList[i]->name()==currentNavigator.attributeNode("name").value() && navigatorList[i]->version()==currentNavigator.attributeNode("version").value())
             navigatorList[i]->fromXMLNode(&currentNavigator);
         else
-            qWarning()<<"failed to a navigator: attempted to load navigator "<<
-                      currentNavigator.attributeNode("name").value()<<"v"<<currentNavigator.attributeNode("version").value()         <<"in navigator "<<
-                      navigatorList[i]->name()                      <<"v"<<navigatorList[i]->version();
-	}
-	
-	nodeList=element->elementsByTagName("interactor");
-	QList<medAbstractInteractor*> interactorList=interactors();
-	if(interactorList.size()!=nodeList.size())
-	{
-		qWarning()<< "inconsistent data, failed to reload interactor parameters";
-	}
-	for(int i=0;i<interactorList.size();i++)
-	{
-		QDomElement currentInteractor=nodeList.at(i).toElement();
+            qWarning()<<"failed to reload a navigator: attempted to load navigator "<<
+                        currentNavigator.attributeNode("name").value()<<"v"<<currentNavigator.attributeNode("version").value()         <<"in navigator "<<
+                        navigatorList[i]->name()                      <<"v"<<navigatorList[i]->version();
+    }
+
+    nodeList=element->elementsByTagName("interactor");
+    QList<medAbstractInteractor*> interactorList=interactors();
+    if(interactorList.size()!=nodeList.size())
+    {
+        qWarning()<< "inconsistent data, failed to reload interactor parameters";
+    }
+    for(int i=0;i<interactorList.size();i++)
+    {
+        QDomElement currentInteractor=nodeList.at(i).toElement();
         if(interactorList[i]->name()==currentInteractor.attributeNode("name").value() && interactorList[i]->version()==currentInteractor.attributeNode("version").value())
-		interactorList[i]->fromXMLNode(&currentInteractor);
+            interactorList[i]->fromXMLNode(&currentInteractor);
         else
-            qDebug()<<"failed to a interactor: attempted to load interactor "<<
-                      currentInteractor.attributeNode("name").value()<<"v"<<currentInteractor.attributeNode("version").value()         <<"in interactor "<<
-                      interactorList[i]->name()                      <<"v"<<interactorList[i]->version();
-	}
+            qWarning()<<"failed to reaload an interactor: attempted to load interactor "<<
+                        currentInteractor.attributeNode("name").value()<<"v"<<currentInteractor.attributeNode("version").value()         <<"in interactor "<<
+                        interactorList[i]->name()                      <<"v"<<interactorList[i]->version();
+    }
 }
