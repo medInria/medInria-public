@@ -123,9 +123,9 @@ void medAbstractParameter::blockInternWidgetsSignals(bool block) const
 
 void medAbstractParameter::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
 {
-    QDomElement elmt=doc->createElement("name");
-    elmt.appendChild(doc->createTextNode(name()));
-    currentNode->appendChild(elmt);
+	QDomElement elmt=doc->createElement("name");
+	elmt.appendChild(doc->createTextNode(name()));
+	currentNode->appendChild(elmt);
 }
 
 //--------------------------------------------------------------------------
@@ -151,7 +151,6 @@ void medAbstractStringParameter::setValue(QString value)
 
     emit valueChanged(value);
 }
-
 QString medAbstractStringParameter::value() const
 {
     return m_value;
@@ -235,7 +234,6 @@ void medAbstractDoubleParameter::setValue(double value)
 
     emit valueChanged(value);
 }
-
 double medAbstractDoubleParameter::value() const
 {
     return m_value;
@@ -277,7 +275,6 @@ void medAbstractBoolParameter::setValue(bool value)
 
     emit valueChanged(value);
 }
-
 bool medAbstractBoolParameter::value() const
 {
     return m_value;
@@ -326,20 +323,9 @@ void medAbstractVector2DParameter::setValue(const QVector2D &value)
     emit valueChanged(value);
 }
 
-QVector2D medAbstractVector2DParameter::value() const
-{
-    return m_value;
-}
-
 void medAbstractVector2DParameter::trigger()
 {
     emit valueChanged(m_value);
-}
-
-QVector2D medAbstractVector2DParameter::fromString(QString value)
-{
-    QStringList tokens=value.split(" ");
-    return QVector2D(tokens[0].toDouble(),tokens[1].toDouble());
 }
 
 void medAbstractVector2DParameter::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
@@ -352,6 +338,18 @@ void medAbstractVector2DParameter::toXMLNode(QDomDocument* doc,QDomElement* curr
     elmt.appendChild(doc->createTextNode(QString::number(value().x())+" "+QString::number(value().y())));
     currentNode->appendChild(elmt);
 }
+
+QVector2D medAbstractVector2DParameter::fromString(QString value)
+{
+    QStringList tokens=value.split(" ");
+    return QVector2D(tokens[0].toDouble(),tokens[1].toDouble());
+}
+
+QVector2D medAbstractVector2DParameter::value() const
+{
+    return m_value;
+}
+
 //--------------------------------------------------------------------------
 //  medAbstractVector3DParameter
 void medAbstractVector3DParameter::setValue(const QVector3D &value)
@@ -412,7 +410,6 @@ void medAbstractVector4DParameter::setValue(const QVector4D &value)
 
     emit valueChanged(value);
 }
-
 QVector4D medAbstractVector4DParameter::value() const
 {
     return m_value;
