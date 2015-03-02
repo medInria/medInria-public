@@ -406,6 +406,9 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
     for(int i=0;i<d->presetParam->getComboBox()->count();i++)
 		if(this->d->presetParam->getComboBox()->itemText(i)==preset)
 			d->presetParam->getComboBox()->setCurrentIndex(i);
+    for(int i=0;i<d->presetParam->getComboBox()->count();i++)
+		if(this->d->presetParam->getComboBox()->itemText(i)==preset)
+			d->presetParam->getComboBox()->setCurrentIndex(i);
     if ( preset == "None" )
     {
         double *range = d->view2d->GetInput(d->view->layer(d->imageData))->GetScalarRange();
