@@ -15,6 +15,7 @@
 
 #include <medAlgorithmInitializer.h>
 #include <medAnnotationInteractor.h>
+#include <msegAlgorithmPaintToolbox.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -50,6 +51,10 @@ bool medSegmentationPlugin::initialize()
     if(!medAnnotationInteractor::registered())
         qDebug() << "Unable to register medAnnotationInteractor";
     return medAlgorithmInitializer::initialize();
+    }
+    if(!AlgorithmPaintToolbox::registered())
+    {
+        qDebug() << "Unable to register msegAlgorithmPaintToolbox";
 }
 
 bool medSegmentationPlugin::uninitialize()
