@@ -54,6 +54,7 @@ public:
 public slots:
 
     virtual QString description() const;
+    virtual QString name() const;
     virtual QString identifier() const;
     virtual QStringList handled() const;
 

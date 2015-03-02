@@ -30,6 +30,7 @@ public:
     virtual ~medVtkViewItkDataImageInteractor();
 
     virtual QString description() const;
+    virtual QString name() const;
     virtual QString identifier() const;
     static bool registered();
 
@@ -42,6 +43,8 @@ public:
     virtual QString lut() const;
     virtual QString preset() const;
     virtual QStringList handled() const;
+    
+    virtual void restoreParameters(QHash<QString,QString> parameters);
 
 public slots:
     virtual void setOpacity (double opacity);

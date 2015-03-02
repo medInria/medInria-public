@@ -23,6 +23,12 @@
 #include <medAbstractLayeredViewNavigator.h>
 #include <medAbstractData.h>
 #include <medAbstractInteractor.h>
+#include <medDataReaderWriter.h>
+#include <medMessageController.h>
+#include <medAbstractDataFactory.h>
+#include <QFile>
+#include <QFileInfo>
+
 
 class medAbstractData;
 class medAbstractBoolParameter;
@@ -64,6 +70,9 @@ public:
 
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medAbstractParameter*> linkableParameters(unsigned int layer);
+    
+    virtual void write(QString& path);
+    virtual void restoreState(QDomElement* element);
 
 public slots:
     void setDataList(QList<medDataIndex> dataList);

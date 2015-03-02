@@ -1,14 +1,11 @@
 /*=========================================================================
-
  medInria
-
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
-
 =========================================================================*/
 
 #include <medStringListParameter.h>
@@ -133,4 +130,23 @@ QIcon medStringListParameter::createIconFromColor(const QString &colorName)
     iconPixmap.fill(QColor(colorName));
     QIcon itemIcon(iconPixmap);
     return itemIcon;
+}
+
+QString medStringListParameter::fromString(QString value)
+{
+	/*for(int i=0;i<getComboBox()->count();i++)
+		if(this->getComboBox()->itemText(i)==value)
+			getComboBox()->setCurrentIndex(i);*/
+    return value;
+}
+
+void medStringListParameter::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
+{
+	medAbstractParameter::toXMLNode(doc,currentNode);
+	QDomElement type=doc->createElement("type");
+	type.appendChild(doc->createTextNode("String"));
+	currentNode->appendChild(type);
+	QDomElement elmt=doc->createElement("value");
+	elmt.appendChild(doc->createTextNode(getComboBox()->currentText()));
+	currentNode->appendChild(elmt);
 }

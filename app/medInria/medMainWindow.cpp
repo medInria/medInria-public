@@ -20,6 +20,9 @@
 #include <medHomepageArea.h>
 
 #include <medTabbedViewContainers.h>
+#include <medAbstractLayeredView.h>
+
+#include <medToolBox.h>
 
 #include <medSettingsManager.h>
 #include <medSettingsEditor.h>
@@ -81,9 +84,14 @@ public:
     QWidget*                  rightEndButtons;
     medStatusBar*             statusBar;
     medQuickAccessPushButton* quickAccessButton;
-    QToolButton*                quitButton;
-    QToolButton*              fullscreenButton;
+    
+    QToolButton*              loadSceneButton;
+    QToolButton*              saveSceneButton;
     QToolButton*              adjustSizeButton;
+    QToolButton*              screenshotButton;
+    QToolButton*              fullscreenButton;
+    QToolButton*              quitButton;
+
     QList<QString>            importUuids;
     medQuickAccessMenu * quickAccessWidget;
     bool controlPressed;
@@ -92,7 +100,7 @@ public:
     bool shortcutAccessVisible;
     QShortcut * shortcutShortcut;
 
-    QToolButton *screenshotButton;
+
     QList<QUuid> expectedUuids;
 };
 
@@ -200,6 +208,25 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
                        this, SLOT ( setFullScreen(bool) ) );
 
+    QIcon saveSceneIcon;
+    saveSceneIcon.addPixmap(QPixmap(":icons/saveScene.png"),QIcon::Normal);
+    saveSceneIcon.addPixmap(QPixmap(":icons/saveScene_grey.png"),QIcon::Disabled);
+    d->saveSceneButton = new QToolButton(this);
+    d->saveSceneButton->setIcon(saveSceneIcon);
+    d->saveSceneButton->setObjectName("saveSceneButton");
+    //d->saveSceneButton->setShortcut(Qt::AltModifier + Qt::Key_S);
+    d->saveSceneButton->setToolTip(tr("Save scene"));
+    QObject::connect(d->saveSceneButton, SIGNAL(clicked()), this, SLOT(saveScene()));
+
+	QIcon loadSceneIcon;
+    loadSceneIcon.addPixmap(QPixmap(":icons/import.svg"),QIcon::Normal);
+    d->loadSceneButton = new QToolButton(this);
+    d->loadSceneButton->setIcon(loadSceneIcon);
+    d->loadSceneButton->setObjectName("loadSceneButton");
+    //d->loadSceneButton->setShortcut(Qt::AltModifier + Qt::Key_S);
+    d->loadSceneButton->setToolTip(tr("Load scene"));
+    QObject::connect(d->loadSceneButton, SIGNAL(clicked()), this, SLOT(loadScene()));
+
     QIcon cameraIcon;
     cameraIcon.addPixmap(QPixmap(":icons/camera.png"),QIcon::Normal);
     cameraIcon.addPixmap(QPixmap(":icons/camera_grey.png"),QIcon::Disabled);
@@ -225,6 +252,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->loadSceneButton );
+    rightEndButtonsLayout->addWidget( d->saveSceneButton );
     rightEndButtonsLayout->addWidget( d->adjustSizeButton );
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
@@ -409,12 +438,158 @@ void medMainWindow::setFullScreen (const bool full)
         this->showNormal();
 }
 
-void medMainWindow::toggleFullScreen()
+/**	
+ * @brief saves the scene in a XML file
+ * Saves views (all layers), and toolboxes parameters
+ * 	expected tree is as follow:
+ *  workingDir (user-defined)
+ * 		|-viewID0
+ * 			|-mapping.xml
+ * 			|-layerID01.xml
+ * 			|-layerID02.xml
+ * 			|-data_file (as saved by the dedicated writer)
+ *	 	|-viewID1		
+ * 		|-viewID2
+ */
+void medMainWindow::saveScene() {
+	medAbstractWorkspace* workspace=d->workspaceArea->currentWorkspace();
+	if(workspace==0)
+		return;
+	medTabbedViewContainers* currentContainer = d->workspaceArea->currentWorkspace()->stackedViewContainers();
+	QList<medAbstractView*>  viewList = currentContainer->viewsInTab(currentContainer->currentIndex());
+	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Open Directory"),"/home",QFileDialog::ShowDirsOnly);
+	QDir workingDir(dirPath);
+	QDomDocument doc("xml");
+	QDomElement root=doc.createElement("scene");
+	doc.appendChild(root);
+	QDomElement workspaceXML=doc.createElement("workspace");
+	workspaceXML.setAttribute("name",workspace->identifier());
+	root.appendChild(workspaceXML);
+
+	//saving views
+	for (QList<medAbstractView*>::const_iterator i=viewList.begin();i!=viewList.end();++i)
+	{
+		medAbstractLayeredView* layeredView=dynamic_cast<medAbstractLayeredView*>(*i);
+		if (layeredView!=0)
+		{
+			QString subDirName="view"+QUuid::createUuid ().toString();
+			if(!workingDir.mkdir(subDirName))
+                qWarning() << " failed to create new directory: "<<subDirName;
+			workingDir.cd(subDirName);
+            QString generatedPath=workingDir.canonicalPath()+"/mapping.xml";
+			QDomElement layeredViewInfo=doc.createElement("layeredView");
+            layeredViewInfo.setAttribute("path",subDirName+"/mapping.xml");
+			layeredViewInfo.setAttribute("id",layeredView->identifier());
+			root.appendChild(layeredViewInfo);
+            layeredView->write(generatedPath);
+			workingDir.cdUp();
+		}
+	}//views loop
+	QString generatedPath=workingDir.canonicalPath()+"/globalMapping.xml";
+
+	QFile file(generatedPath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+		return;
+
+    QTextStream out(&file);
+    out << doc.toString();
+	
+}
+
+void medMainWindow::loadScene()
 {
-    if ( !this->isFullScreen())
-        this->showFullScreen();
-    else
-        this->showNormal();
+	//parsing the XML file describing the scene, 
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),"/home",tr("XML files (*.xml)"));
+	QFile file(fileName);
+    QFileInfo fileInfo(file);
+    QDir workingDir=fileInfo.dir();
+	if(!file.open(QIODevice::ReadOnly))
+	{
+		 qWarning() << "failed to open file "<<fileName; 
+		 return;
+	}
+	QDomDocument doc("xml");
+	if(!doc.setContent(&file))		
+	{
+		 qWarning() << "failed to parse "<<fileName; 
+		 return;
+	}
+	//doc now contains the full XML tree
+	QDomNodeList viewsNodes=doc.elementsByTagName("layeredView");
+	QDomNodeList workspaceNode=doc.elementsByTagName("workspace"); //length should always be 1
+	
+	//processing the lists
+	//switch to the right workspace
+	if(workspaceNode.size()==1 )
+	{
+		QDomElement workspaceElement=workspaceNode.item(0).toElement();
+		if(workspaceElement.isNull())
+		{
+			qWarning()<< "failed to read workspace";
+			return;
+		}
+		QString workspaceName=workspaceElement.attribute("name");
+		if(workspaceName.isEmpty())
+		{
+			qWarning()<< "failed to read workspace";
+			return;
+		}
+		showWorkspace(workspaceName);
+		
+	}
+	//call dedicated method to read each view folder
+	bool hasContainer=false;
+	for(int i=0;i<viewsNodes.size();i++)
+	{
+
+		QDomElement viewElement=viewsNodes.item(i).toElement();
+		if(viewElement.isNull())
+		{
+            qWarning()<< "failed to open a view: unable to find element";
+			continue;
+		}
+        QString path=workingDir.canonicalPath()+"/"+viewElement.attribute("path");
+		if(!QFile::exists(path))
+		{
+            qWarning()<< "failed to open a view: path "<< path << " does not exist";
+			continue;
+		}
+		QFile mappingFile(path);
+        QFileInfo mappingFileInfo(mappingFile);
+		if(!mappingFile.open(QIODevice::ReadOnly ))
+		{
+            qWarning()<< "failed to open a view: unable to open mapping file";
+			continue;
+		}
+		QDomDocument viewInfo("xml");
+		if(!viewInfo.setContent(&mappingFile))		
+		{
+			 qWarning() << "failed to parse "<<fileName; 
+			 return;
+		}
+		QDomNodeList layersNodes=viewInfo.elementsByTagName("layer");
+		
+		if(hasContainer)
+		{//need to create a new view, to avoid the new layers to be stacked with the previous ones
+			//retrieve existing container
+			medViewContainer *formerContainer = medViewContainerManager::instance()->container(d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersSelected().first());
+			//split existing container
+            formerContainer->split();
+		}
+
+		for(int j=0;j<layersNodes.size();j++)
+		{
+			QDomElement layerElement=layersNodes.item(j).toElement();
+			QString fileName=layerElement.attribute("filename");
+            open(mappingFileInfo.dir().canonicalPath()+"/"+fileName);
+			medAbstractView *view = medViewContainerManager::instance()->container(d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersSelected().first())->view();
+			if(view)
+				view->restoreState(&layerElement);
+
+		}
+
+		hasContainer=true;
+	}
 }
 
 void medMainWindow::captureScreenshot()

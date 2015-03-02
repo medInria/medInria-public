@@ -250,7 +250,6 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     }
 
     connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
-
     if(d->view->layer(data) > 0)
         this->opacityParameter()->setValue(0.5);
     else
@@ -370,6 +369,9 @@ QString medVtkViewItkDataImageInteractor::lut() const
 
 void medVtkViewItkDataImageInteractor::setLut(QString value)
 {
+	for(int i=0;i<d->lutParam->getComboBox()->count();i++)
+		if(this->d->lutParam->getComboBox()->itemText(i)==value)
+			d->lutParam->getComboBox()->setCurrentIndex(i);
     typedef vtkTransferFunctionPresets Presets;
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
@@ -401,6 +403,12 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
       d->lutParam->setValue(d->presetToLut[preset]);
 
     QHash <QString, QVariant> wl;
+    for(int i=0;i<d->presetParam->getComboBox()->count();i++)
+		if(this->d->presetParam->getComboBox()->itemText(i)==preset)
+			d->presetParam->getComboBox()->setCurrentIndex(i);
+    for(int i=0;i<d->presetParam->getComboBox()->count();i++)
+		if(this->d->presetParam->getComboBox()->itemText(i)==preset)
+			d->presetParam->getComboBox()->setCurrentIndex(i);
 
     if ( preset == "None" )
     {
@@ -692,4 +700,21 @@ void medVtkViewItkDataImageInteractor::enableWIndowLevel(bool enable)
     if(enable)
         d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeWindowLevel );
 
+}
+
+void medVtkViewItkDataImageInteractor::restoreParameters(QHash<QString,QString> parameters)
+{
+	if(parameters.contains("Opacity"))
+		setOpacity(medDoubleParameter::fromString(parameters["Opacity"]));
+	if(parameters.contains("Visibility"))
+		setVisibility(medBoolParameter::fromString(parameters["Visibility"]));
+	if(parameters.contains("Preset"))
+		setPreset(medStringListParameter::fromString(parameters["Preset"]));
+    if(parameters.contains("Lut"))
+		setLut(medStringListParameter::fromString(parameters["Lut"]));
+}
+
+QString medVtkViewItkDataImageInteractor::name() const
+{
+    return "medVtkViewItkDataImageInteractor";
 }

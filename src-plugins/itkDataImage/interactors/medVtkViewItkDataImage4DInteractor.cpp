@@ -219,4 +219,7 @@ void medVtkViewItkDataImage4DInteractor::updateWidgets()
     medVtkViewItkDataImageInteractor::updateWidgets();
 }
 
-
+QString medVtkViewItkDataImage4DInteractor::name() const
+{
+    return "medVtkViewItkDataImage4DInteractor";
+}

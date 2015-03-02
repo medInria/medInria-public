@@ -685,3 +685,25 @@ void medVtkViewNavigator::enableMeasuring(bool enable)
         d->view2d->ShowDistanceWidgetOff();
     }
 }
+
+void medVtkViewNavigator::restoreParameters(QHash<QString,QString> parameters)
+{
+	if(parameters.contains("Axes"))
+		d->showAxesParameter->setValue(medBoolParameter::fromString(parameters["Axes"]));
+	if(parameters.contains("Ruler"))
+		d->showRulerParameter->setValue(medBoolParameter::fromString(parameters["Ruler"]));
+	if(parameters.contains("Annotations"))
+		d->showAnnotationParameter->setValue(medBoolParameter::fromString(parameters["Annotations"]));
+	if(parameters.contains("Scalar Bar"))
+		d->showScalarBarParameter->setValue(medBoolParameter::fromString(parameters["Scalar Bar"]));
+	if(parameters.contains("Pan"))
+		setPan(medVector2DParameter::fromString(parameters["Pan"]));
+	if(parameters.contains("Position"))
+		setCameraPosition(medVector3DParameter::fromString(parameters["Position"]));
+
+}
+
+QString medVtkViewNavigator::name() const
+{
+    return "medVtkViewNavigator";
+}

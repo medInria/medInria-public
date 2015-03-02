@@ -631,3 +631,7 @@ void itkDataTensorImageVtkViewInteractor::updateSlicingParam()
     d->slicingParameter->setValue(d->view2d->GetSlice());
 }
 
+QString itkDataTensorImageVtkViewInteractor::name() const
+{
+    return "itkDataTensorImageVtkViewInteractor";
+}
