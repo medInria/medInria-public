@@ -85,7 +85,7 @@ medItkFiltersGaussianProcess::~medItkFiltersGaussianProcess( void )
 
 bool medItkFiltersGaussianProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkGaussianProcess", createmedItkFiltersGaussianProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("medItkGaussianProcess", createmedItkFiltersGaussianProcess);
 }
 
 //-------------------------------------------------------------------------------------------

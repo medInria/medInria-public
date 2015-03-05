@@ -87,7 +87,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
 {
     if(process == "Add Constant to Image")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkAddProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkAddProcess" );
     }
     else if(process == "Substract Constant from Image")
     {
@@ -103,7 +103,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
     }
     else if(process == "Gaussian blur" )
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkGaussianProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkGaussianProcess" );
     }
     else if(process == "Normalize image filter")
     {

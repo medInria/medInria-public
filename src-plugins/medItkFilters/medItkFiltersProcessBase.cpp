@@ -127,8 +127,13 @@ int medItkFiltersProcessBase::update()
 
     QString id = this->input<medAbstractData>(0)->identifier();
 
-    medAbstractData *output = medAbstractDataFactory::instance()->create(id);
-    this->setOutput<medAbstractData>(output, 0);
+    // Only set the output if it hasn't been set already by the client
+    // otherwise we risk overriding their behaviour (example : itkBasicFilters)
+    if (!this->output<medAbstractData>(0))
+    {
+        medAbstractData *output = medAbstractDataFactory::instance()->create(id);
+        this->setOutput<medAbstractData>(output, 0);
+    }
 
     int res = d->wrapper->update(id);
 
