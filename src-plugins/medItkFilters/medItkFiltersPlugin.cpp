@@ -25,7 +25,7 @@
 //#include <itkFiltersInvertProcess.h>
 //#include <itkFiltersShrinkProcess.h>
 //#include <itkFiltersWindowingProcess.h>
-//#include <itkFiltersDilateProcess.h>
+#include <medItkDilateProcess.h>
 //#include <itkFiltersErodeProcess.h>
 #include <medItkCloseProcess.h>
 //#include <itkFiltersOpenProcess.h>
@@ -67,7 +67,7 @@ bool medItkFiltersPlugin::initialize()
 //    if ( !itkFiltersWindowingProcess::registered() ) { dtkWarn() << "Unable to register itkFilters windowing filter process type";}
 //    if ( !itkFiltersInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type";   }
 //    if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type";   }
-//    if ( !itkFiltersDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
+    if ( !medItkDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
 //    if ( !itkFiltersErodeProcess::registered() )     { dtkWarn() << "Unable to register itkFilters erode filter process type";    }
     if ( !medItkCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
 //    if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
