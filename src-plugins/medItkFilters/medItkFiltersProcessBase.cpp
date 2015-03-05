@@ -24,7 +24,7 @@
 class medItkFiltersProcessBasePrivate
 {
 public:
-    medItkFiltersProcessBasePrivate(medItkFiltersProcessBase *q = 0){}
+    medItkFiltersProcessBasePrivate(medItkFiltersProcessBase *q = 0){ wrapper = NULL;}
 
     virtual ~medItkFiltersProcessBasePrivate(void) {}
 
@@ -33,6 +33,8 @@ public:
 
     itk::CStyleCommand::Pointer callback;
     medItkFiltersProcessBase *filter;
+    medItkWrapper* wrapper;
+    QList<medAbstractParameter*> parameters;
 
     template <class PixelType> void setupFilter() {}
     virtual void setFilterDescription() {}
@@ -57,7 +59,8 @@ medItkFiltersProcessBase::medItkFiltersProcessBase(medItkFiltersProcessBase *par
 medItkFiltersProcessBase::medItkFiltersProcessBase(const medItkFiltersProcessBase& other)
     : medAbstractFilteringProcess(other)
 {
-
+    delete d->wrapper;
+    delete d;
 }
 
 
@@ -117,6 +120,30 @@ void medItkFiltersProcessBase::setFilter(medItkFiltersProcessBase *filter)
     d->filter = filter;
 }
 
+int medItkFiltersProcessBase::update()
+{
+    if ( !d->wrapper || !this->input<medAbstractData>(0) )
+        return -1;
+
+    QString id = this->input<medAbstractData>(0)->identifier();
+
+    medAbstractData *output = medAbstractDataFactory::instance()->create(id);
+    this->setOutput<medAbstractData>(output, 0);
+
+    int res = d->wrapper->update(id);
+
+
+    if(!d->wrapper->resultString.isEmpty())
+        emit showError(d->wrapper->resultString);
+
+    return res;
+}
+
+void medItkFiltersProcessBase::setWrapper(medItkWrapper *processWrapper)
+{
+    d->wrapper = processWrapper;
+}
+
 //void medItkFiltersProcessBase::setInputImage(medAbstractData *data)
 //{
 //    if (!data)
@@ -135,7 +162,12 @@ void medItkFiltersProcessBase::setFilter(medItkFiltersProcessBase *filter)
 
 QList<medAbstractParameter*> medItkFiltersProcessBase::parameters()
 {
-    return QList<medAbstractParameter*>();
+    return d->parameters;
+}
+
+QList<medAbstractParameter *> &medItkFiltersProcessBase::accessParameters()
+{
+    return d->parameters;
 }
 
 bool medItkFiltersProcessBase::isInteractive() const
