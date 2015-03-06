@@ -107,7 +107,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
     }
     else if(process == "Normalize image filter")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkNormalizeProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkNormalizeProcess" );
     }
     else if(process == "Median filter")
     {

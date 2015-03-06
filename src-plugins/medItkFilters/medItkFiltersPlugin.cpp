@@ -21,7 +21,7 @@
 #include <medItkDivideProcess.h>
 #include <medItkFiltersGaussianProcess.h>
 #include <medItkMedianProcess.h>
-//#include <itkFiltersNormalizeProcess.h>
+#include <medItkNormalizeProcess.h>
 #include <medItkInvertProcess.h>
 //#include <itkFiltersShrinkProcess.h>
 //#include <itkFiltersWindowingProcess.h>
@@ -63,7 +63,7 @@ bool medItkFiltersPlugin::initialize()
     if ( !medItkDivideProcess::registered() )    { dtkWarn() << "Unable to register itkFilters divide process type";          }
     if ( !medItkFiltersGaussianProcess::registered() )  { dtkWarn() << "Unable to register itkFilters gaussian filter process type"; }
     if ( !medItkMedianProcess::registered() )    { dtkWarn() << "Unable to register itkFilters median filter process type";   }
-//    if ( !itkFiltersNormalizeProcess::registered() ) { dtkWarn() << "Unable to register itkFilters normalize filter process type";}
+    if ( !medItkNormalizeProcess::registered() ) { dtkWarn() << "Unable to register itkFilters normalize filter process type";}
 //    if ( !itkFiltersWindowingProcess::registered() ) { dtkWarn() << "Unable to register itkFilters windowing filter process type";}
     if ( !medItkInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type";   }
 //    if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type";   }
