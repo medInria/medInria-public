@@ -17,7 +17,7 @@
 //#include <itkMorphologicalFilters.h>
 #include <medItkAddProcess.h>
 //#include <itkFiltersSubtractProcess.h>
-//#include <itkFiltersMultiplyProcess.h>
+#include <medItkMultiplyProcess.h>
 #include <medItkDivideProcess.h>
 #include <medItkFiltersGaussianProcess.h>
 #include <medItkMedianProcess.h>
@@ -59,7 +59,7 @@ bool medItkFiltersPlugin::initialize()
 //    if ( !itkMorphologicalFilters::registered() )       { dtkWarn() << "Unable to register itkMorphologicalFilters type";             }
     if ( !medItkAddProcess::registered() )       { dtkWarn() << "Unable to register medItkAddProcess add process type";             }
 //    if ( !itkFiltersSubtractProcess::registered() )  { dtkWarn() << "Unable to register itkFilters subtract process type";        }
-//    if ( !itkFiltersMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
+    if ( !medItkMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
     if ( !medItkDivideProcess::registered() )    { dtkWarn() << "Unable to register itkFilters divide process type";          }
     if ( !medItkFiltersGaussianProcess::registered() )  { dtkWarn() << "Unable to register itkFilters gaussian filter process type"; }
     if ( !medItkMedianProcess::registered() )    { dtkWarn() << "Unable to register itkFilters median filter process type";   }

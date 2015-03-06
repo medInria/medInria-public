@@ -95,7 +95,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
     }
     else if(process == "Multiply image by constant")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMultiplyProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkMultiplyProcess" );
     }
     else if(process == "Divide image by constant")
     {
