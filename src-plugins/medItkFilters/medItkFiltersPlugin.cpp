@@ -28,7 +28,7 @@
 #include <medItkDilateProcess.h>
 #include <medItkErodeProcess.h>
 #include <medItkCloseProcess.h>
-//#include <itkFiltersOpenProcess.h>
+#include <medItkOpenProcess.h>
 #include <medItkFiltersToolBox.h>
 //#include <itkMorphologicalFiltersToolBox.h>
 #include <medItkSubtractImageFilter.h>
@@ -70,7 +70,7 @@ bool medItkFiltersPlugin::initialize()
     if ( !medItkDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
     if ( !medItkErodeProcess::registered() )     { dtkWarn() << "Unable to register itkFilters erode filter process type";    }
     if ( !medItkCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
-//    if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
+    if ( !medItkOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
     if ( !medItkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
 //    if ( !itkMorphologicalFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";                      }
     if ( !medItkSubtractImageFilter::registered() )    { dtkWarn() << "Unable to register medItkSubtractImageFilter type";   }
