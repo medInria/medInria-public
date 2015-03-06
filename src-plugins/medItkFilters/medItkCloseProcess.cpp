@@ -32,7 +32,7 @@ public:
 };
 
 template <>
-class PrototypeInternal<itk::GrayscaleMorphologicalClosingImageFilter>
+class PrototypeInternal3<itk::GrayscaleMorphologicalClosingImageFilter>
 {
     public:
     template <class T>
@@ -108,7 +108,7 @@ bool medItkCloseProcess::registered()
 dtkAbstractProcess * createmedItkCloseProcess()
 {
     medItkFiltersProcessBase* baseProcess = new medItkCloseProcessDerived;
-    medItkWrapper* aWrapper = new TemplateWrapper<itk::GrayscaleMorphologicalClosingImageFilter>(baseProcess);
+    medItkWrapper* aWrapper = new TemplateWrapper3<itk::GrayscaleMorphologicalClosingImageFilter>(baseProcess);
     baseProcess->setWrapper(aWrapper);
     return baseProcess;
 }

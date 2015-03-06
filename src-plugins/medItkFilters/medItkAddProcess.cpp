@@ -32,7 +32,7 @@ public:
 };
 
 template <>
-class PrototypeInternal<itk::AddImageFilter>
+class PrototypeInternal3<itk::AddImageFilter>
 {
     public:
     template <class T>
@@ -116,7 +116,7 @@ dtkAbstractProcess * createmedItkAddProcess()
 {
     qDebug() << "createmedItkAddProcess";
     medItkFiltersProcessBase* baseProcess = new medItkAddProcessDerived;
-    medItkWrapper* aWrapper = new TemplateWrapper<itk::AddImageFilter>(baseProcess);
+    medItkWrapper* aWrapper = new TemplateWrapper3<itk::AddImageFilter>(baseProcess);
     baseProcess->setWrapper(aWrapper);
     return baseProcess;
 }

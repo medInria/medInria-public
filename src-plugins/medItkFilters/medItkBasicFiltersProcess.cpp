@@ -99,7 +99,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
     }
     else if(process == "Divide image by constant")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDivideProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkDivideProcess" );
     }
     else if(process == "Gaussian blur" )
     {

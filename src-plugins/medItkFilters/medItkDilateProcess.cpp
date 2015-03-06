@@ -32,7 +32,7 @@ public:
 };
 
 template <>
-class PrototypeInternal<itk::GrayscaleDilateImageFilter>
+class PrototypeInternal3<itk::GrayscaleDilateImageFilter>
 {
     public:
     template <class T>
@@ -109,7 +109,7 @@ bool medItkDilateProcess::registered()
 dtkAbstractProcess * createmedItkDilateProcess()
 {
     medItkFiltersProcessBase* baseProcess = new medItkDilateProcessDerived;
-    medItkWrapper* aWrapper = new TemplateWrapper<itk::GrayscaleDilateImageFilter>(baseProcess);
+    medItkWrapper* aWrapper = new TemplateWrapper3<itk::GrayscaleDilateImageFilter>(baseProcess);
     baseProcess->setWrapper(aWrapper);
     return baseProcess;
 }
