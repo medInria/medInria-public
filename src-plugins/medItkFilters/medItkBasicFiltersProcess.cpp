@@ -111,7 +111,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
     }
     else if(process == "Median filter")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMedianProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkMedianProcess" );
     }
     else if(process == "Invert intensity filter")
     {

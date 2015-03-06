@@ -19,16 +19,16 @@
 
 #include <medItkFiltersPluginExport.h>
 
-class medItkFiltersPlugin_EXPORT medItkInvertProcess : public medItkFiltersProcessBase
+class medItkFiltersPlugin_EXPORT medItkMedianProcess : public medItkFiltersProcessBase
 {
     Q_OBJECT
 
 public:
-    medItkInvertProcess(medItkFiltersProcessBase *parent = NULL);
-    virtual ~medItkInvertProcess();
+    medItkMedianProcess(medItkFiltersProcessBase *parent = NULL);
+    virtual ~medItkMedianProcess();
 
     static bool registered ();
 };
 
-dtkAbstractProcess * createmedItkInvertProcess();
+dtkAbstractProcess * createmedItkMedianProcess();
 
