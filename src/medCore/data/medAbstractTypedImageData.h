@@ -26,8 +26,7 @@ public:
     virtual int                                Dimension() const { return DIM;       }
     virtual const medAbstractImageData::PixId& PixelType() const { return typeid(T); }
 
-    virtual const QString PixelMeaning() const
-    {
+    virtual const QString PixelMeaning() const {
         if (hasMetaData(medAbstractImageData::PixelMeaningMetaData))
             return metadata(medAbstractImageData::PixelMeaningMetaData);
         return "";
