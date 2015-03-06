@@ -115,7 +115,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
     }
     else if(process == "Invert intensity filter")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkInvertProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkInvertProcess" );
     }
     else if(process == "Shrink image filter")
     {
