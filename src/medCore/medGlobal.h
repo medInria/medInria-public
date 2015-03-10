@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <QString.h>
+#include <QString>
 #include <medCoreExport.h>
 
 MEDCORE_EXPORT QString anonymise(const QString name);
