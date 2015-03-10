@@ -46,6 +46,7 @@
 #include <medParameterPool.h>
 #include <medParameterPoolManager.h>
 #include <medSettingsManager.h>
+#include <medGlobal.h>
 
 // declare x11-specific function to prevent the window manager breaking thumbnail generation
 #ifdef Q_WS_X11
@@ -404,7 +405,9 @@ void medVtkView::displayDataInfo(uint layer)
     {
         if ( data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
         {
-            const QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+            QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+            if(medSettingsManager::instance()->value("database", "anonymous", false).toBool())
+                patientName = anonymise(patientName);
             d->view2d->SetPatientName ( patientName.toAscii().constData() );
             d->view3d->SetPatientName ( patientName.toAscii().constData() );
         }
@@ -492,7 +495,7 @@ void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
 
 void medVtkView::enableRubberBandZoom(bool enable)
 {
-    if(this->orientation() == medImageView::VIEW_ORIENTATION_3D)
+    //if(this->orientation() == medImageView::VIEW_ORIENTATION_3D) // correction tool vp2hf philips issue so we deactivate rubberband zoom
         return;
 
     if(enable)
