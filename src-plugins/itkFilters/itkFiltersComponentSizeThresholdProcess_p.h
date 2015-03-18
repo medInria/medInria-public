@@ -85,8 +85,10 @@ public:
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " ConnectedComponent filter (" + QString::number(minimumSize) + ")";
-        
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        output->copyMetaDataFrom(input);
+        output->setMetaData ( medMetaDataKeys::StudyDescription.key(), "mask");
+        output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
