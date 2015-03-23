@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -20,19 +20,19 @@
 
 #include <itkFiltersInvertProcess_p.h>
 
-itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent) 
+itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent)
     : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(this), parent)
 {
     DTK_D(itkFiltersInvertProcess);
-    
+
     d->filter = this;
     d->output = NULL;
-    
+
      d->description = tr("ITK invert intensity filter");
 }
 
 
-itkFiltersInvertProcess::itkFiltersInvertProcess(const itkFiltersInvertProcess& other) 
+itkFiltersInvertProcess::itkFiltersInvertProcess(const itkFiltersInvertProcess& other)
     : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(*other.d_func()), other)
 {
 }
@@ -55,7 +55,7 @@ bool itkFiltersInvertProcess::registered( void )
 int itkFiltersInvertProcess::update ( void )
 {
     DTK_D(itkFiltersInvertProcess);
-    
+
     if ( !d->input )
         return -1;
 
@@ -97,11 +97,13 @@ int itkFiltersInvertProcess::update ( void )
     }
     else if ( id == "itkDataImageFloat3" )
     {
-        d->update<float>();
+        qDebug() << "Error : Invert image filter does not suport floating pixel values";
+        return -1;
     }
     else if ( id == "itkDataImageDouble3" )
     {
-        d->update<double>();
+        qDebug() << "Error : Invert image filter does not suport floating pixel values";
+        return -1;
     }
     else
     {
