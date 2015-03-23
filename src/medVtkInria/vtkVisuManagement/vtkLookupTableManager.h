@@ -48,7 +48,8 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
     LUT_CARDIAC,
     LUT_GRAYRAINBOW,
     LUT_STERN,
-    LUT_JET
+    LUT_JET,
+    LUT_BINARY_MAP
   };
   //ETX
 
@@ -104,6 +105,8 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
   static vtkLookupTable* GetBlackBodyLookupTable();
   
   static vtkLookupTable* GetJetLookupTable();
+
+  static vtkLookupTable* GetBinaryMapLookupTable();
   
   //BTX
   static std::vector<std::string> GetAvailableLookupTables();

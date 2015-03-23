@@ -223,7 +223,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
                                      << "Asymmetry" << "P-Value" << "Red Black Alpha"
                                      << "Green Black Alpha" << "Blue Black Alpha"
                                      << "Muscles & Bones" << "Bones" << "Red Vessels"
-                                     << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
+                                     << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body" << "Binary Map";
     foreach(QString lut, luts)
         d->lutParam->addItem(lut);
 

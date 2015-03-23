@@ -13,6 +13,7 @@
 
 #include "vtkLookupTableManager.h"
 #include <vtkObjectFactory.h>
+#include <vtkMath.h>
 
 vtkCxxRevisionMacro(vtkLookupTableManager, "$Revision: 1378 $");
 vtkStandardNewMacro(vtkLookupTableManager);
@@ -72,7 +73,8 @@ std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
 			  "Gray Rainbow",
 			  "Stern",
 			  "Black Body",
-  			  "Jet"};
+              "Jet",
+              "Binary Map"};
     
 
   std::vector<std::string> v_lutNames;
@@ -148,6 +150,8 @@ vtkLookupTable* vtkLookupTableManager::GetLookupTable(const std::string & name)
     return vtkLookupTableManager::GetBlackBodyLookupTable();
   else if ( name == "Jet" )
     return vtkLookupTableManager::GetJetLookupTable();
+  else if (name == "Binary Map")
+    return vtkLookupTableManager::GetBinaryMapLookupTable();
   else
     return vtkLookupTableManager::GetBWLookupTable();
 }
@@ -619,4 +623,36 @@ vtkLookupTable* vtkLookupTableManager::GetJetLookupTable()
   
   return lut;
 
+}
+
+vtkLookupTable* vtkLookupTableManager::GetBinaryMapLookupTable()
+{
+    vtkLookupTable* lut = vtkLookupTable::New();
+    lut->SetNumberOfTableValues(256);
+    lut->Build();
+
+    double realHueValue = 0;
+    double factor = (1.0 + sqrt(5.0)) / 2.0;
+
+    float rgb[3];
+    float hsv[3];
+
+    hsv[1] = 1.0;
+    hsv[2] = 1.0;
+
+    lut->SetTableValue(0,0.0,0.0,0.0,0.0);
+
+    for (unsigned int i = 1;i < 256;++i)
+    {
+        hsv[0] = realHueValue;
+        vtkMath::HSVToRGB(hsv, rgb);
+
+        lut->SetTableValue(i,rgb[0],rgb[1],rgb[2],1.0);
+
+        realHueValue += 1.0 / factor;
+        if (realHueValue > 1.0)
+            realHueValue -= 1.0;
+    }
+
+    return lut;
 }

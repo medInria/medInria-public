@@ -100,6 +100,8 @@ protected:
 					vtkPiecewiseFunction * alpha );
   static void GetBlackBodyTransferFunction( vtkColorTransferFunction * rgb,
 					    vtkPiecewiseFunction * alpha );
+  static void GetBinaryMapTransferFunction( vtkColorTransferFunction * rgb,
+                                            vtkPiecewiseFunction * alpha );
 
   vtkTransferFunctionPresets();
   ~vtkTransferFunctionPresets();
