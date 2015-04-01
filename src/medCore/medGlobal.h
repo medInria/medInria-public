@@ -14,5 +14,6 @@
 #pragma once
 
 #include <QString.h>
+#include <medCoreExport.h>
 
-QString anonymise(const QString name);
+MEDCORE_EXPORT QString anonymise(const QString name);
