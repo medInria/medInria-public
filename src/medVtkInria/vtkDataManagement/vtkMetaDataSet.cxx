@@ -695,7 +695,7 @@ double* vtkMetaDataSet::GetCurrentScalarRange()
   if (this->GetCurrentScalarArray())
   {
     double nullValue = this->GetScalarNullValue(this->GetCurrentScalarArray()->GetName());
-    if (isnan(nullValue))
+    if (nullValue != nullValue) //NaN value
     {
         double* range2 = this->GetCurrentScalarArray()->GetRange();
         val[0] = range2[0];
