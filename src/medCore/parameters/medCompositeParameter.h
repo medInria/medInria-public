@@ -34,7 +34,7 @@ public:
                     QVariant min = QVariant(0), QVariant max = QVariant(100), QVariant step = QVariant(1));
 
     virtual QList<QVariant> values() const;
-    virtual QList<QVariant> values(const QString) const;
+    virtual QVariant value(const QString) const;
     QList<QPair <QVariant, QVariant> > ranges() const;
     QList<QVariant> steps() const;
 

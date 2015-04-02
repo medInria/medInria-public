@@ -132,9 +132,9 @@ QList<QVariant> medCompositeParameter::values() const
     return d->variants.values();
 }
 
-QList<QVariant> medCompositeParameter::values( const QString key) const
+QVariant medCompositeParameter::value( const QString key) const
 {
-    return d->variants.values(key);
+    return d->variants[key];
 }
 
 void medCompositeParameter::updateInternWigets()
