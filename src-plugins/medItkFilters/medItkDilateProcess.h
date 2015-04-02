@@ -19,7 +19,7 @@
 
 #include <medItkFiltersPluginExport.h>
 
-class medItkDilateProcessPrivate;
+struct medItkDilateProcessPrivate;
 class medItkFiltersPlugin_EXPORT medItkDilateProcess : public medItkFiltersProcessBase
 {
     Q_OBJECT
