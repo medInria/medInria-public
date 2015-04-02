@@ -43,7 +43,7 @@ public:
         typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
 
         subtractFilter->SetInput1 ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData>(0)->data() ) ) );
-        subtractFilter->SetInput2 ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData>(1)->data() ) ) );
+        subtractFilter->SetInput2 ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractImageData>(1)->data() ) ) );
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) parent );
@@ -65,7 +65,7 @@ public:
 
         //Set output description metadata
         QString newSeriesDescription = parent->input<medAbstractData>(0)->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        QString seriesDescription2 = parent->input<medAbstractData>(1)->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString seriesDescription2 = parent->input<medAbstractImageData>(1)->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " minus " + seriesDescription2;
 
         parent->output<medAbstractData>(0)->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
@@ -81,7 +81,7 @@ public:
 medItkSubtractImageFilter::medItkSubtractImageFilter(medItkFiltersProcessBase *parent):
     medItkFiltersProcessBase(parent), d(new medItkSubtractImageFilterPrivate(this))
 {
-    medProcessDataInput<medAbstractImageData> *input = new medProcessDataInput<medAbstractImageData>("Image to subtract", false);
+    medProcessInput<medAbstractImageData> *input = new medProcessInput<medAbstractImageData>("Image to subtract", false);
     //input->setInput(NULL);
 
     this->appendDataInput(input);
@@ -111,7 +111,7 @@ QList<medAbstractParameter*> medItkSubtractImageFilter::parameters()
 
 int medItkSubtractImageFilter::update()
 {
-    if ( !this->input<medAbstractData*>(0) )
+    if ( !this->input<medAbstractData>(0) )
         return -1;
 
     QString id = this->input<medAbstractData>(0)->identifier();

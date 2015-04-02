@@ -102,9 +102,9 @@ void medRpiApplyTransformationCommand::applyDisplFieldTransfo(medDisplacementFie
 
     if(transfoImage->PixelType() == typeid(itk::Vector< float, Dimension >))
     {
-        typedef typename itk::Image< VectorPixelType, Dimension > ConvertedImageType; // We always convert to itk::Vector< double, 3 >
-        typedef typename itk::Image<itk::Vector< float, Dimension >, Dimension> ImageType; // input data type
-        typedef typename itk::CastImageFilter<ImageType, ConvertedImageType> CastFilterType;
+        typedef itk::Image< VectorPixelType, Dimension > ConvertedImageType; // We always convert to itk::Vector< double, 3 >
+        typedef itk::Image<itk::Vector< float, Dimension >, Dimension> ImageType; // input data type
+        typedef itk::CastImageFilter<ImageType, ConvertedImageType> CastFilterType;
 
         CastFilterType::Pointer caster = CastFilterType::New();
 
@@ -159,9 +159,9 @@ void medRpiApplyTransformationCommand::applySVFTransfo(medSVFTransformation* svf
 
     if(transfoImage->PixelType() == typeid(itk::Vector< float, Dimension >))
     {
-        typedef typename itk::Image< VectorPixelType, Dimension > ConvertedImageType; // We always convert to itk::Vector< double, 3 >
-        typedef typename itk::Image<itk::Vector< float, Dimension >, Dimension> ImageType; // input data type
-        typedef typename itk::CastImageFilter<ImageType, ConvertedImageType> CastFilterType;
+        typedef itk::Image< VectorPixelType, Dimension > ConvertedImageType; // We always convert to itk::Vector< double, 3 >
+        typedef itk::Image<itk::Vector< float, Dimension >, Dimension> ImageType; // input data type
+        typedef itk::CastImageFilter<ImageType, ConvertedImageType> CastFilterType;
 
         CastFilterType::Pointer caster = CastFilterType::New();
 

@@ -18,7 +18,6 @@
 #include <medProcessPort.h>
 #include <medProcessInput.h>
 #include <medProcessOutput.h>
-#include <medProcessDataInput.h>
 
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
@@ -92,7 +91,7 @@ protected:
     void appendOutput(medProcessPort*);
 
     template <class T>
-    void appendDataInput(medProcessDataInput<T> *);
+    void appendDataInput(medProcessInput<T> *);
 
     void appendDataOutput(medProcessPort*);
 

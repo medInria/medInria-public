@@ -20,7 +20,7 @@
 
 medAbstractFilteringProcess::medAbstractFilteringProcess(medAbstractProcess *parent)
 {
-    medProcessDataInput<medAbstractData> *input = new medProcessDataInput<medAbstractData>("Input", false, NULL);
+    medProcessInput<medAbstractData> *input = new medProcessInput<medAbstractData>("Input", false, NULL);
     medProcessOutput<medAbstractData> *output = new medProcessOutput<medAbstractData>("Output", NULL);
     //output->output= NULL;
 

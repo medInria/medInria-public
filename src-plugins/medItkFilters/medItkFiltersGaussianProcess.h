@@ -18,8 +18,13 @@
 
 #include <medItkFiltersPluginExport.h>
 
-class medItkFiltersGaussianProcessPrivate;
+template <template<typename, typename> class Prototype> class medItkFiltersGaussianProcessPrivate;
 class medAbstractData;
+namespace itk
+{
+template <class T, class X>
+class SmoothingRecursiveGaussianImageFilter;
+}
 
 class medItkFiltersPlugin_EXPORT medItkFiltersGaussianProcess : public medItkFiltersProcessBase
 {
@@ -38,7 +43,7 @@ public:
     QList<medAbstractParameter*> parameters();
 
 private:
-    medItkFiltersGaussianProcessPrivate *d;
+    medItkFiltersGaussianProcessPrivate<itk::SmoothingRecursiveGaussianImageFilter> *d;
 };
 
 dtkAbstractProcess * createmedItkFiltersGaussianProcess(void);

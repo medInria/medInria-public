@@ -13,25 +13,22 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-#include <QObject>
+#include <medAbstractFilteringProcess.h>
+#include <medAbstractData.h>
+#include <medItkFiltersProcessBase.h>
 
-#include <QMetaType>
+#include <medItkFiltersPluginExport.h>
 
-class medAbstractData;
-
-class MEDCORE_EXPORT medAbstractTransformation: public QObject
+class medItkFiltersPlugin_EXPORT medItkMedianProcess : public medItkFiltersProcessBase
 {
     Q_OBJECT
 
 public:
-    medAbstractTransformation(QObject  *parent = NULL) : QObject(parent) { }
-    ~medAbstractTransformation() {}
+    medItkMedianProcess(medItkFiltersProcessBase *parent = NULL);
+    virtual ~medItkMedianProcess();
 
-public:
-    virtual medAbstractData* parameter() const { return 0; }
-    virtual void setParameter(medAbstractData *parameter) { }
+    static bool registered ();
 };
 
-Q_DECLARE_METATYPE(medAbstractTransformation*)
+dtkAbstractProcess * createmedItkMedianProcess();
 

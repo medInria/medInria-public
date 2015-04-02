@@ -47,7 +47,6 @@ public:
 
 private:
     bool m_isOptional;
-    T* m_input;
 };
 
 #include <medProcessInput.txx>

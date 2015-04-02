@@ -54,6 +54,9 @@ public:
     }
 #endif
 
+protected:
+    QVariant m_variant;
+
 private:
     QString m_name;
 };

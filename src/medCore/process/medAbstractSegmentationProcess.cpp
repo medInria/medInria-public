@@ -17,7 +17,7 @@
 
 medAbstractSegmentationProcess::medAbstractSegmentationProcess(medAbstractProcess *parent): medAbstractProcess(parent)
 {
-    medProcessDataInput<medAbstractImageData> *input = new medProcessDataInput<medAbstractImageData>("Image", false, NULL);
+    medProcessInput<medAbstractImageData> *input = new medProcessInput<medAbstractImageData>("Image", false, NULL);
     this->appendDataInput( input );
 
     this->appendDataOutput( new medProcessOutput<medAbstractImageData>("Output", NULL));

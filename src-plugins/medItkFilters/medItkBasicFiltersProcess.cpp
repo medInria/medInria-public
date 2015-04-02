@@ -87,7 +87,7 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
 {
     if(process == "Add Constant to Image")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkAddProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkAddProcess" );
     }
     else if(process == "Substract Constant from Image")
     {
@@ -95,27 +95,27 @@ void medItkBasicFiltersProcess::setupProcess(QString process)
     }
     else if(process == "Multiply image by constant")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMultiplyProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkMultiplyProcess" );
     }
     else if(process == "Divide image by constant")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDivideProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkDivideProcess" );
     }
     else if(process == "Gaussian blur" )
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkGaussianProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkGaussianProcess" );
     }
     else if(process == "Normalize image filter")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkNormalizeProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkNormalizeProcess" );
     }
     else if(process == "Median filter")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMedianProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkMedianProcess" );
     }
     else if(process == "Invert intensity filter")
     {
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkInvertProcess" );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "medItkInvertProcess" );
     }
     else if(process == "Shrink image filter")
     {

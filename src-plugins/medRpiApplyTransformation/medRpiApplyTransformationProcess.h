@@ -19,7 +19,7 @@
 #include <itkImage.h>
 
 
-class medAbstractTransformation;
+#include <medAbstractTransformation.h>
 
 class medRpiApplyTransformationProcessPrivate;
 class MEDRPIAPPLYTRANSFORMATIONPLUGIN_EXPORT medRpiApplyTransformationProcess : public medAbstractApplyTransformationProcess

@@ -29,9 +29,6 @@ public:
 
     QObject* content() const;
     bool setContent(QObject* obj);
-
-private:
-    T* m_output;
 };
 
 #include <medProcessOutput.txx>

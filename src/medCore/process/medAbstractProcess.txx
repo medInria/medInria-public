@@ -36,7 +36,8 @@ T* medAbstractProcess::input(unsigned int port)
     medProcessInput<T>* inputPort = reinterpret_cast< medProcessInput<T> *>(this->inputs().at(port));
     if(inputPort)
         return inputPort->input();
-    else return NULL;
+
+    return NULL;
 }
 
 template <class T>
@@ -59,11 +60,12 @@ T* medAbstractProcess::output(unsigned int port)
     medProcessOutput<T>* outputPort = reinterpret_cast<medProcessOutput<T> *>(this->outputs().at(port));
     if(outputPort)
         return outputPort->output();
+
     else return NULL;
 }
 
 template <class T>
-void medAbstractProcess::appendDataInput(medProcessDataInput<T> *port)
+void medAbstractProcess::appendDataInput(medProcessInput<T> *port)
 {
     appendDataInputToList(port);
 }

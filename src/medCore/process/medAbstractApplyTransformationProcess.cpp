@@ -47,10 +47,10 @@ medAbstractApplyTransformationProcess::medAbstractApplyTransformationProcess(med
     d->inputImage = NULL;
     d->transformedImage = NULL;
 
-    medProcessDataInput<medAbstractImageData> *geometry = new medProcessDataInput<medAbstractImageData>("Fixed Image", false, d->geometry);
+    medProcessInput<medAbstractImageData> *geometry = new medProcessInput<medAbstractImageData>("Fixed Image", false, d->geometry);
     this->appendDataInput(geometry);
 
-    medProcessDataInput<medAbstractImageData> *moving = new medProcessDataInput<medAbstractImageData>("Moving Image", false, d->inputImage);
+    medProcessInput<medAbstractImageData> *moving = new medProcessInput<medAbstractImageData>("Moving Image", false, d->inputImage);
     this->appendDataInput(moving);
 
     medProcessOutput<medAbstractImageData> *output = new medProcessOutput<medAbstractImageData>(("Output"), d->transformedImage);

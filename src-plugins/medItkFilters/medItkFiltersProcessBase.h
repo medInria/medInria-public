@@ -19,6 +19,7 @@
 #include <itkCommand.h>
 
 #include <medItkFiltersPluginExport.h>
+#include <medItkWrapper.h>
 
 class medItkFiltersProcessBasePrivate;
 
@@ -48,13 +49,20 @@ public:
 
     void emitProgress(int progress);
 
+    // Base update method
+    virtual int update ();
+    void setWrapper(medItkWrapper*);
+
 public:
     virtual QList<medAbstractParameter*> parameters();
     bool isInteractive() const;
 
+protected:
+    QList<medAbstractParameter*>& accessParameters();
 
 private:
     medItkFiltersProcessBasePrivate *d;
+
 
 };
 

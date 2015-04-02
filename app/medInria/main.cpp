@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -75,6 +75,7 @@ int main(int argc,char* argv[]) {
     medApplication application(argc,argv);
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     setlocale(LC_NUMERIC, "C");
+    QLocale::setDefault(QLocale("C"));
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
         qDebug() << "Usage: medInria [--fullscreen|--no-fullscreen] [--stereo] "

@@ -15,20 +15,20 @@
 
 #include <medItkBasicFiltersProcess.h>
 //#include <itkMorphologicalFilters.h>
-//#include <itkFiltersAddProcess.h>
+#include <medItkAddProcess.h>
 //#include <itkFiltersSubtractProcess.h>
-//#include <itkFiltersMultiplyProcess.h>
-//#include <itkFiltersDivideProcess.h>
+#include <medItkMultiplyProcess.h>
+#include <medItkDivideProcess.h>
 #include <medItkFiltersGaussianProcess.h>
-//#include <itkFiltersMedianProcess.h>
-//#include <itkFiltersNormalizeProcess.h>
-//#include <itkFiltersInvertProcess.h>
+#include <medItkMedianProcess.h>
+#include <medItkNormalizeProcess.h>
+#include <medItkInvertProcess.h>
 //#include <itkFiltersShrinkProcess.h>
 //#include <itkFiltersWindowingProcess.h>
-//#include <itkFiltersDilateProcess.h>
-//#include <itkFiltersErodeProcess.h>
-//#include <itkFiltersCloseProcess.h>
-//#include <itkFiltersOpenProcess.h>
+#include <medItkDilateProcess.h>
+#include <medItkErodeProcess.h>
+#include <medItkCloseProcess.h>
+#include <medItkOpenProcess.h>
 #include <medItkFiltersToolBox.h>
 //#include <itkMorphologicalFiltersToolBox.h>
 #include <medItkSubtractImageFilter.h>
@@ -57,20 +57,20 @@ bool medItkFiltersPlugin::initialize()
 //    if ( !itkFilters::registered() )                 { dtkWarn() << "Unable to register itkFilters type";                         }
     if ( !medItkBasicFiltersProcess::registered() )       { dtkWarn() << "Unable to register medItkBasicFiltersProcess type";             }
 //    if ( !itkMorphologicalFilters::registered() )       { dtkWarn() << "Unable to register itkMorphologicalFilters type";             }
-//    if ( !itkFiltersAddProcess::registered() )       { dtkWarn() << "Unable to register itkFilters add process type";             }
+    if ( !medItkAddProcess::registered() )       { dtkWarn() << "Unable to register medItkAddProcess add process type";             }
 //    if ( !itkFiltersSubtractProcess::registered() )  { dtkWarn() << "Unable to register itkFilters subtract process type";        }
-//    if ( !itkFiltersMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
-//    if ( !itkFiltersDivideProcess::registered() )    { dtkWarn() << "Unable to register itkFilters divide process type";          }
+    if ( !medItkMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
+    if ( !medItkDivideProcess::registered() )    { dtkWarn() << "Unable to register itkFilters divide process type";          }
     if ( !medItkFiltersGaussianProcess::registered() )  { dtkWarn() << "Unable to register itkFilters gaussian filter process type"; }
-//    if ( !itkFiltersMedianProcess::registered() )    { dtkWarn() << "Unable to register itkFilters median filter process type";   }
-//    if ( !itkFiltersNormalizeProcess::registered() ) { dtkWarn() << "Unable to register itkFilters normalize filter process type";}
+    if ( !medItkMedianProcess::registered() )    { dtkWarn() << "Unable to register itkFilters median filter process type";   }
+    if ( !medItkNormalizeProcess::registered() ) { dtkWarn() << "Unable to register itkFilters normalize filter process type";}
 //    if ( !itkFiltersWindowingProcess::registered() ) { dtkWarn() << "Unable to register itkFilters windowing filter process type";}
-//    if ( !itkFiltersInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type";   }
+    if ( !medItkInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type";   }
 //    if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type";   }
-//    if ( !itkFiltersDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
-//    if ( !itkFiltersErodeProcess::registered() )     { dtkWarn() << "Unable to register itkFilters erode filter process type";    }
-//    if ( !itkFiltersCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
-//    if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
+    if ( !medItkDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
+    if ( !medItkErodeProcess::registered() )     { dtkWarn() << "Unable to register itkFilters erode filter process type";    }
+    if ( !medItkCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
+    if ( !medItkOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
     if ( !medItkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
 //    if ( !itkMorphologicalFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";                      }
     if ( !medItkSubtractImageFilter::registered() )    { dtkWarn() << "Unable to register medItkSubtractImageFilter type";   }

@@ -26,7 +26,7 @@
 #include <itkExceptionObject.h>
 #include <itkSmoothingRecursiveGaussianImageFilter.h>
 
-
+template <template<typename, typename> class Prototype>
 class medItkFiltersGaussianProcessPrivate
 {
 public:
@@ -40,7 +40,7 @@ public:
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
+        typedef Prototype< ImageType, ImageType >  GaussianFilterType;
         typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
 
         gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( parent->input<medAbstractData>(0)->data() ) ) );
@@ -64,7 +64,7 @@ public:
 
 
 medItkFiltersGaussianProcess::medItkFiltersGaussianProcess(medItkFiltersGaussianProcess *parent)
-    : medItkFiltersProcessBase(parent), d(new medItkFiltersGaussianProcessPrivate(this))
+    : medItkFiltersProcessBase(parent), d(new medItkFiltersGaussianProcessPrivate<itk::SmoothingRecursiveGaussianImageFilter>(this))
 {
     this->setFilter(this);
 
@@ -85,7 +85,7 @@ medItkFiltersGaussianProcess::~medItkFiltersGaussianProcess( void )
 
 bool medItkFiltersGaussianProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkGaussianProcess", createmedItkFiltersGaussianProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("medItkGaussianProcess", createmedItkFiltersGaussianProcess);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ QList<medAbstractParameter*> medItkFiltersGaussianProcess::parameters()
 
 int medItkFiltersGaussianProcess::update ( void )
 {
-    if ( !this->input<medAbstractData *>(0) )
+    if ( !this->input<medAbstractData>(0) )
         return -1;
 
     QString id = this->input<medAbstractData>(0)->identifier();

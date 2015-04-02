@@ -36,3 +36,5 @@ private:
 
     //using medAbstractTransformation::setParameter;
 };
+
+Q_DECLARE_METATYPE(medDisplacementFieldTransformation *)
