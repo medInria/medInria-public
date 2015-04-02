@@ -35,7 +35,7 @@ enum pluginType
     IMAGE_NAVIGATOR,
     EXTRA_NAVIGATOR,
 
-    FILTERING = 17,
+    FILTERING = 18,
     REGISTRATION,
     DIFFUSION,
 

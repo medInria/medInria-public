@@ -38,6 +38,8 @@ public:
 
     QList< medAttachedData * > attachedData() const;
 
+    medAbstractData *convert(const QString &type);
+
     virtual QImage& thumbnail();
 
 public slots:

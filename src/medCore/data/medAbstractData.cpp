@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
+#include <medAbstractDataFactory.h>
 
 #include <medDataIndex.h>
 #include <medAttachedData.h>
@@ -72,6 +73,37 @@ void medAbstractData::setDataIndex( const medDataIndex& index )
 medDataIndex medAbstractData::dataIndex() const
 {
     return d->index;
+}
+
+/**
+* Re-implements conversion to another data type from dtkAbstractData
+* @return medAbstractData *
+*/
+medAbstractData * medAbstractData::convert(const QString &toType)
+{
+    medAbstractData *conversion = NULL;
+
+    foreach (QString converterId, medAbstractDataFactory::instance()->converters())
+    {
+        QScopedPointer<dtkAbstractDataConverter> converter (medAbstractDataFactory::instance()->converter(converterId));
+
+        if (converter->fromTypes().contains(this->identifier()) && converter->canConvert(toType))
+        {
+            converter->setData(this);
+            conversion = dynamic_cast <medAbstractData *> (converter->convert());
+
+            if(conversion)
+            {
+                foreach(QString metaDataKey, this->metaDataList())
+                    conversion->addMetaData(metaDataKey, this->metaDataValues(metaDataKey));
+
+                foreach(QString propertyKey, this->propertyList())
+                    conversion->addProperty(propertyKey, this->propertyValues(propertyKey));
+            }
+        }
+    }
+
+    return conversion;
 }
 
 /**
