@@ -41,7 +41,8 @@ medAbstractLayeredViewInteractor::~medAbstractLayeredViewInteractor()
 
 medAbstractBoolParameter* medAbstractLayeredViewInteractor::visibilityParameter()
 {
-    if(!d->visibilityParameter)
+    bool newVisibilityParameter = !d->visibilityParameter;
+    if(newVisibilityParameter)
     {
         d->visibilityParameter = new medBoolParameter("Visibility", this);
         connect(d->visibilityParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
@@ -63,7 +64,8 @@ medAbstractBoolParameter* medAbstractLayeredViewInteractor::visibilityParameter(
             thumbnailButton->setIcon(thumbnailIcon);
             thumbnailButton->setIconSize(QSize(22,22));
             thumbnailButton->setCheckable(true);
-            thumbnailButton->setChecked(true);
+            if (newVisibilityParameter)
+                thumbnailButton->setChecked(true);
             thumbnailButton->setFlat(true);
         }
     }
