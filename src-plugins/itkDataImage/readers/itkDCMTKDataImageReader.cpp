@@ -415,22 +415,22 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     performer      << d->io->GetPerformingPhysicianName().c_str();
     institution    << d->io->GetInstitution().c_str();
     protocol       << d->io->GetProtocolName().c_str();
-    comments       << "v002 Comments " + QString(d->io->GetAcquisitionComments().c_str());
+    comments       << "v002 Comments " + QString(d->io->GetAcquisitionComments().c_str())+" //";
     if (modality[0]=="US")// hack for vp2hf
     {
         QString RegionLocation = QString(d->io->GetRegionLocation().c_str());
         QString PhysicalDelta = QString(d->io->GetPhysicalDelta().c_str());
         QString FrameTime = QString(d->io->GetFrameTime().c_str());
         if (RegionLocation.length()>3)
-            comments[0].append("//RegionLocation " + RegionLocation); 
+            comments[0].append("RegionLocation " + RegionLocation +" //"); 
         if (PhysicalDelta.length()>1)
-            comments[0].append("//PhysicalDelta " + PhysicalDelta);
+            comments[0].append("PhysicalDelta " + PhysicalDelta +" //");
         if (FrameTime.length()>0)
-            comments[0].append("//FrameTime " + FrameTime);
+            comments[0].append("FrameTime " + FrameTime +" //");
     }
     QString manufacturer = QString(d->io->GetManufacturer().c_str());
     if (manufacturer.length()>0)
-            comments[0].append("//Manufacturer " + manufacturer);
+            comments[0].append("Manufacturer " + manufacturer +" //");
 
     status         << d->io->GetPatientStatus().c_str();
     report << "";

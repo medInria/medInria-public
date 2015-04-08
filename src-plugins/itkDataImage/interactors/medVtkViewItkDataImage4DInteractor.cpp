@@ -148,11 +148,14 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
             QString frameTime;
             QString comments = d->imageData->metadatas(medMetaDataKeys::Comments.key())[0];
             int ind = comments.lastIndexOf("FrameTime");
+            qDebug() << comments;
             if (ind!=-1)
             {
                 qDebug() << "Frame time tag found";
                 ind +=QString("FrameTime ").length();
-                frameTime = QString::number(comments.right(comments.length()-ind).toDouble()/1000); // convert ms to s
+                QString rightFrameTime = comments.right(comments.length()-ind);
+                ind = rightFrameTime.indexOf(" //");
+                frameTime = QString::number(rightFrameTime.left(ind).toDouble()/1000); // convert ms to s
                 d->sequence->SetSequenceDuration(d->sequence->GetNumberOfMetaDataSets() * frameTime.toDouble());
                 d->imageData->addMetaData("SequenceDuration", QString::number(d->sequence->GetNumberOfMetaDataSets() * frameTime.toDouble()));
             }
