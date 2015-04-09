@@ -163,7 +163,7 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     
     this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
     this->disconnect(d->currentWorkspace,SIGNAL(databaseVisibilitySetted(bool)),d->navigatorContainer,SLOT(setVisible(bool)));
-    this->disconnect(d->currentWorkspace,SIGNAL(toolBoxesVisibilitySetted(bool)),d->navigatorContainer,SLOT(setVisible(bool)));
+    this->disconnect(d->currentWorkspace,SIGNAL(toolBoxesVisibilitySetted(bool)),d->toolBoxContainer,SLOT(setVisible(bool)));
     d->currentWorkspace = workspace;
     
     connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
@@ -184,7 +184,8 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     foreach (medToolBox * toolbox, workspace->toolBoxes())
     {
         d->toolBoxContainer->addToolBox(toolbox);
-        toolbox->show();
+        if (!toolbox->isHidden())
+            toolbox->show();
     }
     d->toolBoxContainer->setVisible(workspace->areToolBoxesVisible());
     connect(d->currentWorkspace,SIGNAL(toolBoxesVisibilitySetted(bool)),d->toolBoxContainer,SLOT(setVisible(bool)));
