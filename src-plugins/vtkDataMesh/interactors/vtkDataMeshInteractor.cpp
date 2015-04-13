@@ -257,7 +257,9 @@ void vtkDataMeshInteractor::setupParameters()
     d->parameters << this->visibilityParameter();
 
     d->minRange = new medDoubleParameter("Min",this);
+    d->parameters << d->minRange;
     d->maxRange = new medDoubleParameter("Max",this);
+    d->parameters << d->maxRange;
 
     connect(d->minRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
     connect(d->maxRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
