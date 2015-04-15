@@ -115,19 +115,12 @@ int itkFiltersComponentSizeThresholdProcess::update ( void )
     }
     else if ( id== "itkDataImageFloat3" )
     {
-        //we will later label the image so we don't care about precision.
-        typedef itk::Image< float, 3 > InputImageType;
-        typedef itk::Image< unsigned int, 3 > OutputImageType;
-        typedef itk::CastImageFilter< InputImageType, OutputImageType > CastFilterType;
-
-        CastFilterType::Pointer  caster = CastFilterType::New();
-        InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(d->input->data()));
-        caster->SetInput(im);
-        caster->Update();
-        d->input = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
-        d->output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
-        d->input->setData(caster->GetOutput());
-
+        d->castToUInt3<float>();
+        d->update<unsigned int>();
+    }
+    else if ( id== "itkDataImageDouble3" )
+    {
+        d->castToUInt3<double>();
         d->update<unsigned int>();
     }
     else

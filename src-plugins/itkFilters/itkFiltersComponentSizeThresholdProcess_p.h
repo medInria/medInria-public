@@ -37,6 +37,31 @@ public:
     virtual ~itkFiltersComponentSizeThresholdProcessPrivate(void) {}
     
     double minimumSize;
+
+    template <class PixelType> void castToUInt3 ( void )
+    {
+        try
+        {
+            //we will later label the image so we don't care about precision.
+            typedef itk::Image< PixelType, 3 > InputImageType;
+            typedef itk::Image< unsigned int, 3 > OutputImageType;
+            typedef itk::CastImageFilter< InputImageType, OutputImageType > CastFilterType;
+
+            typename CastFilterType::Pointer  caster = CastFilterType::New();
+            typename InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(input->data()));
+            caster->SetInput(im);
+            caster->Update();
+            input = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
+            output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
+            input->setData(caster->GetOutput());
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            std::cerr << "ExceptionObject caught in sizeThresholdingProcess!" << std::endl;
+            std::cerr << err << std::endl;
+        }
+
+    }
     
     template <class PixelType> void update ( void )
     {
