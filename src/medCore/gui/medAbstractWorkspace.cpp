@@ -59,6 +59,7 @@ public:
 
     QList<medToolBox*> toolBoxes;
     medToolBox *selectionToolBox;
+    medToolBox *layersToolBox;
     medToolBox *layerListToolBox;
     medToolBox *interactorToolBox;
     medToolBox *navigatorToolBox;
@@ -100,16 +101,19 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->navigatorToolBox->hide();
     d->selectionToolBox->addWidget(d->navigatorToolBox);
 
-    d->layerListToolBox = new medToolBox;
-    d->layerListToolBox->setTitle("Layer settings");
-    d->layerListToolBox->hide();
-    d->selectionToolBox->addWidget(d->layerListToolBox);
+    d->layersToolBox = new medToolBox;
+    d->layersToolBox->setTitle("Layer settings");
+    d->layersToolBox->hide();
 
-    d->interactorToolBox = new medToolBox;
-    d->interactorToolBox->setTitle("Interactors");
+    d->layerListToolBox = new medToolBox(d->layersToolBox);
+    d->layerListToolBox->header()->hide();
+    d->layersToolBox->addWidget(d->layerListToolBox);
+
+    d->interactorToolBox = new medToolBox(d->layersToolBox);
     d->interactorToolBox->header()->hide();
-    d->interactorToolBox->hide();
-    d->selectionToolBox->addWidget(d->interactorToolBox);
+    d->layersToolBox->addWidget(d->interactorToolBox);
+
+    d->selectionToolBox->addWidget(d->layersToolBox);
 
     d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -390,7 +394,7 @@ void medAbstractWorkspace::updateLayersToolBox()
         }
     }
     // add the layer widgets
-    d->layerListToolBox->show();
+    d->layersToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
 
     d->layerListWidget->show();
