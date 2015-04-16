@@ -14,8 +14,9 @@
 #pragma once
 
 #include <QInputDialog>
+#include <medCoreExport.h>
 
-class medLoadLUTDialog : public QInputDialog
+class MEDCORE_EXPORT medLoadLUTDialog : public QInputDialog
 {
     Q_OBJECT
 public:

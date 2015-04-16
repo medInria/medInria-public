@@ -34,9 +34,6 @@ public:
 
     virtual medAbstractData *processOutput() = 0;
 
-    virtual void setWorkspace(medAbstractWorkspace*);
-    medAbstractWorkspace * getWorkspace();
-
 signals:
     void success();
 

@@ -18,7 +18,6 @@ class medSegmentationAbstractToolBoxPrivate
 {
 public:
     medSegmentationSelectorToolBox * segmentationToolBox;
-    medAbstractWorkspace * workspace;
 };
 
 //! Parent should be a medSegmentationSelectorToolBox
@@ -37,14 +36,4 @@ medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
 medSegmentationSelectorToolBox *medSegmentationAbstractToolBox::segmentationToolBox(void)
 {
     return d->segmentationToolBox;
-}
-
-void medSegmentationAbstractToolBox::setWorkspace(medAbstractWorkspace *workspace)
-{
-    d->workspace = workspace;
-}
-
-medAbstractWorkspace * medSegmentationAbstractToolBox::getWorkspace()
-{
-    return d->workspace;
 }

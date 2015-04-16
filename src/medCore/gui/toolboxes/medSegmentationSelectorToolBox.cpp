@@ -35,7 +35,6 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent):
     medToolBox(parent),
     d(new medSegmentationSelectorToolBoxPrivate)
 {
-    d->workspace = NULL;
     d->currentSegmentationToolBox = NULL;
     d->chooseSegmentationComboBox = new QComboBox;
     //TODO algorithm is not the best IMO - RDE
@@ -75,11 +74,6 @@ medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox(void)
 medSegmentationAbstractToolBox* medSegmentationSelectorToolBox::currentToolBox()
 {
     return d->currentSegmentationToolBox;
-}
-
-void medSegmentationSelectorToolBox::setWorkspace(medAbstractWorkspace* workspace)
-{
-    d->workspace = workspace;
 }
 
 void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
