@@ -188,6 +188,20 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
     )
 endif()
 
+################################################################################
+# LOOK FOR PYTHON AND TCL (HACK FOR PACKAGING)
+################################################################################
 
+if (WIN32)
+	set(PYTHON_DLL "python.dll needed" CACHE FILEPATH REQUIRED)
+else()
+	set(PYTHON_SO "Python.so needed" CACHE FILEPATH REQUIRED)
+endif()
 
-
+if (WIN32)  
+	file(COPY ${PYTHON_DLL} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin/Release) #needed for packaging
+	#file(COPY ${PHILIPS_LIB_DIR}/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../lib/Release) # tcl same thing
+else() 
+	install(DIRECTORY ${PYTHON_DLL} DESTINATION bin FILES_MATCHING PATTERN)
+	#install(DIRECTORY ${PHILIPS_LIB_DIR}/ DESTINATION lib FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}") TCL same thing
+endif()
