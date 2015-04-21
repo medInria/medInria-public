@@ -42,6 +42,7 @@ public:
     void lockTabs();
     void unlockTabs();
     void hideTabBar();
+    void showTabBar();
     QList<QUuid> containersSelected();
     void adjustContainersSize();
     QList<medAbstractView*> viewsInTab(int index = 0);

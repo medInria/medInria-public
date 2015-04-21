@@ -162,6 +162,12 @@ void medTabbedViewContainers::hideTabBar()
     tabBar->hide();
 }
 
+void medTabbedViewContainers::showTabBar()
+{
+    QTabBar *tabBar = this->tabBar();
+    tabBar->show();
+}
+
 void medTabbedViewContainers::connectContainer(QUuid container)
 {
     medViewContainer* cont = medViewContainerManager::instance()->container(container);
