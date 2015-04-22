@@ -58,6 +58,7 @@ public:
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgetsItem;
 
     QList<medToolBox*> toolBoxes;
+    QList<bool> * toolBoxesVisibilityList;
     medToolBox *selectionToolBox;
     medToolBox *layerListToolBox;
     medToolBox *interactorToolBox;
@@ -123,6 +124,8 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
 
     d->viewLinkMenu = NULL;
     d->layerLinkMenu = NULL;
+
+    d->toolBoxesVisibilityList = new QList<bool>();
 }
 
 medAbstractWorkspace::~medAbstractWorkspace(void)
@@ -178,6 +181,11 @@ void medAbstractWorkspace::setToolBoxesVisibility (bool value)
 {
     d->toolBoxesVisibility = value;
     emit toolBoxesVisibilitySetted(value);
+}
+
+QList<bool> * medAbstractWorkspace::toolBoxesVisibilityList() const
+{
+    return d->toolBoxesVisibilityList;
 }
 
 bool medAbstractWorkspace::areToolBoxesVisible() const

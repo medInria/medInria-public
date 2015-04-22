@@ -61,6 +61,7 @@ public:
     virtual QString category() const =0;
 
     QList <medToolBox*> toolBoxes() const;
+    QList <bool> * toolBoxesVisibilityList() const;
     medToolBox* selectionToolBox() const;
     void setDatabaseVisibility(bool);
     bool isDatabaseVisible() const;

@@ -164,6 +164,21 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
     this->disconnect(d->currentWorkspace,SIGNAL(databaseVisibilitySetted(bool)),d->navigatorContainer,SLOT(setVisible(bool)));
     this->disconnect(d->currentWorkspace,SIGNAL(toolBoxesVisibilitySetted(bool)),d->toolBoxContainer,SLOT(setVisible(bool)));
+    
+    // Keep in mind the visibility of toolboxes
+    if (d->currentWorkspace)
+    {
+        d->currentWorkspace->toolBoxesVisibilityList()->clear();
+        foreach (medToolBox * toolbox, d->currentWorkspace->toolBoxes())
+            d->currentWorkspace->toolBoxesVisibilityList()->append(toolbox->isVisible());
+    }
+
+    if (workspace->toolBoxesVisibilityList()->isEmpty())
+    {
+        foreach (medToolBox * toolbox, workspace->toolBoxes())
+            workspace->toolBoxesVisibilityList()->append(toolbox->isVisible());
+    }
+    
     d->currentWorkspace = workspace;
     
     connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
@@ -181,11 +196,13 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     d->toolBoxContainer->addToolBox(workspace->selectionToolBox());
     workspace->selectionToolBox()->show();
 
+    int cpt=0;
     foreach (medToolBox * toolbox, workspace->toolBoxes())
     {
         d->toolBoxContainer->addToolBox(toolbox);
-        if (!toolbox->isHidden())
+        if (d->currentWorkspace->toolBoxesVisibilityList()->at(cpt))
             toolbox->show();
+        cpt++;
     }
     d->toolBoxContainer->setVisible(workspace->areToolBoxesVisible());
     connect(d->currentWorkspace,SIGNAL(toolBoxesVisibilitySetted(bool)),d->toolBoxContainer,SLOT(setVisible(bool)));
