@@ -1,157 +1,157 @@
 <RCC>
-<qresource prefix="/">
-<file>../../../LICENSE.txt</file>
-<file>../../../RELEASE_NOTES.txt</file>
-<file>medInria.ico</file>
-<file>music_logo.png</file>
-<file>music_logo_small.png</file>
-<file>icons/AxialIcon.png</file>
-<file>icons/CoronalIcon.png</file>
-<file>icons/SagittalIcon.png</file>
-<file>icons/3DIcon.png</file>
-<file>icons/about.png</file>
-<file>icons/quit.png</file>
-<file>icons/cog.png</file>
-<file>icons/camera.png</file>
-<file>icons/camera_grey.png</file>
-<file>icons/cropping.png</file>
-<file>icons/database.png</file>
-<file>icons/home_sc.png</file>
-<file>icons/workspace_Diffusion.png</file>
-<file>icons/workspace_Visualization.png</file>
-<file>icons/workspace_Registration.png</file>
-<file>icons/workspace_Filtering.png</file>
-<file>icons/workspace_Segmentation.png</file>
-<file>icons/folder.png</file>
-<file>icons/home.png</file>
-<file>icons/error.png</file>
-<file>icons/error_add.png</file>
-<file>icons/error_delete.png</file>
-<file>icons/error_go.png</file>
-<file>icons/exclamation.png</file>
-<file>icons/eye.png</file>
-<file>icons/help.png</file>
-<file>icons/help.svg</file>
-<file>icons/information.png</file>
-<file>icons/layer.png</file>
-<file>icons/length.png</file>
-<file>icons/lightbulb.png</file>
-<file>icons/lightbulb_add.png</file>
-<file>icons/lightbulb_delete.png</file>
-<file>icons/lightbulb_off.png</file>
-<file>icons/lightning.png</file>
-<file>icons/lightning_add.png</file>
-<file>icons/lightning_delete.png</file>
-<file>icons/lightning_go.png</file>
-<file>icons/link.png</file>
-<file>icons/link_add.png</file>
-<file>icons/link_break.png</file>
-<file>icons/link_delete.png</file>
-<file>icons/link_edit.png</file>
-<file>icons/link_error.png</file>
-<file>icons/link_go.png</file>
-<file>icons/link_wl.png</file>
-<file>icons/lock.png</file>
-<file>icons/lock_add.png</file>
-<file>icons/lock_break.png</file>
-<file>icons/lock_delete.png</file>
-<file>icons/lock_edit.png</file>
-<file>icons/lock_go.png</file>
-<file>icons/lock_open.png</file>
-<file>icons/magnify.png</file>
-<file>icons/magifier_zoom_out.png</file>
-<file>icons/magnifier.png</file>
-<file>icons/magnifier_zoom_in.png</file>
-<file>icons/medCustomViewContainerA.png</file>
-<file>icons/medCustomViewContainerB.png</file>
-<file>icons/medCustomViewContainerC.png</file>
-<file>icons/medCustomViewContainerD.png</file>
-<file>icons/medCustomViewContainerE.png</file>
-<file>icons/medCustomViewContainerF.png</file>
-<file>icons/mouse.png</file>
-<file>icons/mouse_add.png</file>
-<file>icons/mouse_delete.png</file>
-<file>icons/mouse_error.png</file>
-<file>icons/page_add.png</file>
-<file>icons/page_edit.png</file>
-<file>icons/page_white_copy.png</file>
-<file>icons/page_white_database.png</file>
-<file>icons/page_white_delete.png</file>
-<file>icons/page_white_dvd.png</file>
-<file>icons/page_white_error.png</file>
-<file>icons/page_white_gear.png</file>
-<file>icons/page_white_get.png</file>
-<file>icons/page_white_go.png</file>
-<file>icons/page_white_key.png</file>
-<file>icons/page_white_lightning.png</file>
-<file>icons/page_white_link.png</file>
-<file>icons/page_white_magnify.png</file>
-<file>icons/page_white_put.png</file>
-<file>icons/page_white_stack.png</file>
-<file>icons/settings.svg</file>
-<file>icons/stack.png</file>
-<file>icons/widget.png</file>
-<file>icons/wlww.png</file>
-<file>icons/zoom.png</file>
-<file>icons/zoom_in.png</file>
-<file>icons/zoom_out.png</file>
-<file>icons/backward.png</file>
-<file>icons/forward.png</file>
-<file>icons/star.svg</file>
-<file>icons/user_add.png</file>
-<file>icons/user_edit.png</file>
-<file>medInria.qss</file>
-<file>pixmaps/unknown.jpg</file>
-<file>pixmaps/checkbox.png</file>
-<file>pixmaps/checkbox-checked.png</file>
-<file>pixmaps/checkbox-partial.png</file>
-<file>pixmaps/radio.png</file>
-<file>pixmaps/radio-checked.png</file>
-<file>pixmaps/radio-partial.png</file>
-<file>pixmaps/drop-down.png</file>
-<file>pixmaps/treeview-branch-closed.png</file>
-<file>pixmaps/treeview-branch-open.png</file>
-<file>pixmaps/database_navigator_item_checker_checked.png</file>
-<file>pixmaps/database_navigator_item_checker_unchecked.png</file>
-<file>pixmaps/medInria-logo-homepage.png</file>
-<file>pixmaps/medInria-splash.png</file>
-<file>pixmaps/delete.png</file>
-<file>icons/settings.png</file>
-<file>icons/stop.png</file>
-<file>icons/pause.png</file>
-<file>icons/play.png</file>
-<file>authors.html</file>
-<file>icons/fullscreenExpand.png</file>
-<file>icons/fullscreenReduce.png</file>
-<file>icons/medInriaPlugin.png</file>
-<file>icons/import.png</file>
-<file>icons/export.png</file>
-<file>icons/load.svg</file>
-<file>icons/export.svg</file>
-<file>icons/save.svg</file>
-<file>icons/save.png</file>
-<file>icons/magnifier.svg</file>
-<file>icons/cross.svg</file>
-<file>icons/finger.png</file>
-<file>icons/document-open.png</file>
-<file>icons/maximize.svg</file>
-<file>icons/whitecross.svg</file>
-<file>icons/link.svg</file>
-<file>icons/broken_link.svg</file>
-<file>icons/un_maximize.svg</file>
-<file>pixmaps/radio-disabled.png</file>
-<file>pixmaps/radio-checked-disabled.png</file>
-<file>pixmaps/plus-button.png</file>
-<file>pixmaps/checkbox-disabled.png</file>
-<file>pixmaps/checkbox-checked-disabled.png</file>
-<file>pixmaps/arrow-top-disabled.png</file>
-<file>pixmaps/arrow-top.png</file>
-<file>pixmaps/arrow-right-disabled.png</file>
-<file>pixmaps/arrow-right.png</file>
-<file>pixmaps/arrow-left-disabled.png</file>
-<file>pixmaps/arrow-left.png</file>
-<file>pixmaps/arrow-bot-disabled.png</file>
-<file>pixmaps/arrow-bot.png</file>
-<file>icons/adjust_size.png</file>
-</qresource>
+    <qresource prefix="/">
+        <file>../../../LICENSE.txt</file>
+        <file>../../../RELEASE_NOTES.txt</file>
+        <file>medInria.ico</file>
+        <file>music_logo.png</file>
+        <file>music_logo_small.png</file>
+        <file>icons/AxialIcon.png</file>
+        <file>icons/CoronalIcon.png</file>
+        <file>icons/SagittalIcon.png</file>
+        <file>icons/3DIcon.png</file>
+        <file>icons/about.png</file>
+        <file>icons/quit.png</file>
+        <file>icons/cog.png</file>
+        <file>icons/camera.png</file>
+        <file>icons/camera_grey.png</file>
+        <file>icons/cropping.png</file>
+        <file>icons/database.png</file>
+        <file>icons/home_sc.png</file>
+        <file>icons/workspace_Diffusion.png</file>
+        <file>icons/workspace_Visualization.png</file>
+        <file>icons/workspace_Registration.png</file>
+        <file>icons/workspace_Filtering.png</file>
+        <file>icons/workspace_Segmentation.png</file>
+        <file>icons/folder.png</file>
+        <file>icons/home.png</file>
+        <file>icons/error.png</file>
+        <file>icons/error_add.png</file>
+        <file>icons/error_delete.png</file>
+        <file>icons/error_go.png</file>
+        <file>icons/exclamation.png</file>
+        <file>icons/eye.png</file>
+        <file>icons/help.png</file>
+        <file>icons/help.svg</file>
+        <file>icons/information.png</file>
+        <file>icons/layer.png</file>
+        <file>icons/length.png</file>
+        <file>icons/lightbulb.png</file>
+        <file>icons/lightbulb_add.png</file>
+        <file>icons/lightbulb_delete.png</file>
+        <file>icons/lightbulb_off.png</file>
+        <file>icons/lightning.png</file>
+        <file>icons/lightning_add.png</file>
+        <file>icons/lightning_delete.png</file>
+        <file>icons/lightning_go.png</file>
+        <file>icons/link.png</file>
+        <file>icons/link_add.png</file>
+        <file>icons/link_break.png</file>
+        <file>icons/link_delete.png</file>
+        <file>icons/link_edit.png</file>
+        <file>icons/link_error.png</file>
+        <file>icons/link_go.png</file>
+        <file>icons/link_wl.png</file>
+        <file>icons/lock.png</file>
+        <file>icons/lock_add.png</file>
+        <file>icons/lock_break.png</file>
+        <file>icons/lock_delete.png</file>
+        <file>icons/lock_edit.png</file>
+        <file>icons/lock_go.png</file>
+        <file>icons/lock_open.png</file>
+        <file>icons/magnify.png</file>
+        <file>icons/magifier_zoom_out.png</file>
+        <file>icons/magnifier.png</file>
+        <file>icons/magnifier_zoom_in.png</file>
+        <file>icons/medCustomViewContainerA.png</file>
+        <file>icons/medCustomViewContainerB.png</file>
+        <file>icons/medCustomViewContainerC.png</file>
+        <file>icons/medCustomViewContainerD.png</file>
+        <file>icons/medCustomViewContainerE.png</file>
+        <file>icons/medCustomViewContainerF.png</file>
+        <file>icons/mouse.png</file>
+        <file>icons/mouse_add.png</file>
+        <file>icons/mouse_delete.png</file>
+        <file>icons/mouse_error.png</file>
+        <file>icons/page_add.png</file>
+        <file>icons/page_edit.png</file>
+        <file>icons/page_white_copy.png</file>
+        <file>icons/page_white_database.png</file>
+        <file>icons/page_white_delete.png</file>
+        <file>icons/page_white_dvd.png</file>
+        <file>icons/page_white_error.png</file>
+        <file>icons/page_white_gear.png</file>
+        <file>icons/page_white_get.png</file>
+        <file>icons/page_white_go.png</file>
+        <file>icons/page_white_key.png</file>
+        <file>icons/page_white_lightning.png</file>
+        <file>icons/page_white_link.png</file>
+        <file>icons/page_white_magnify.png</file>
+        <file>icons/page_white_put.png</file>
+        <file>icons/page_white_stack.png</file>
+        <file>icons/settings.svg</file>
+        <file>icons/stack.png</file>
+        <file>icons/widget.png</file>
+        <file>icons/wlww.png</file>
+        <file>icons/zoom.png</file>
+        <file>icons/zoom_in.png</file>
+        <file>icons/zoom_out.png</file>
+        <file>icons/backward.png</file>
+        <file>icons/forward.png</file>
+        <file>icons/star.svg</file>
+        <file>icons/user_add.png</file>
+        <file>icons/user_edit.png</file>
+        <file>medInria.qss</file>
+        <file>pixmaps/unknown.jpg</file>
+        <file>pixmaps/checkbox.png</file>
+        <file>pixmaps/checkbox-checked.png</file>
+        <file>pixmaps/checkbox-partial.png</file>
+        <file>pixmaps/radio.png</file>
+        <file>pixmaps/radio-checked.png</file>
+        <file>pixmaps/radio-partial.png</file>
+        <file>pixmaps/drop-down.png</file>
+        <file>pixmaps/treeview-branch-closed.png</file>
+        <file>pixmaps/treeview-branch-open.png</file>
+        <file>pixmaps/database_navigator_item_checker_checked.png</file>
+        <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
+        <file>pixmaps/medInria-logo-homepage.png</file>
+        <file>pixmaps/medInria-splash.png</file>
+        <file>pixmaps/delete.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
+        <file>authors.html</file>
+        <file>icons/fullscreenExpand.png</file>
+        <file>icons/fullscreenReduce.png</file>
+        <file>icons/medInriaPlugin.png</file>
+        <file>icons/import.png</file>
+        <file>icons/export.png</file>
+        <file>icons/load.svg</file>
+        <file>icons/export.svg</file>
+        <file>icons/save.svg</file>
+        <file>icons/save.png</file>
+        <file>icons/magnifier.svg</file>
+        <file>icons/cross.svg</file>
+        <file>icons/finger.png</file>
+        <file>icons/document-open.png</file>
+        <file>icons/maximize.svg</file>
+        <file>icons/whitecross.svg</file>
+        <file>icons/link.svg</file>
+        <file>icons/broken_link.svg</file>
+        <file>icons/un_maximize.svg</file>
+        <file>pixmaps/radio-disabled.png</file>
+        <file>pixmaps/radio-checked-disabled.png</file>
+        <file>pixmaps/plus-button.png</file>
+        <file>pixmaps/checkbox-disabled.png</file>
+        <file>pixmaps/checkbox-checked-disabled.png</file>
+        <file>pixmaps/arrow-top-disabled.png</file>
+        <file>pixmaps/arrow-top.png</file>
+        <file>pixmaps/arrow-right-disabled.png</file>
+        <file>pixmaps/arrow-right.png</file>
+        <file>pixmaps/arrow-left-disabled.png</file>
+        <file>pixmaps/arrow-left.png</file>
+        <file>pixmaps/arrow-bot-disabled.png</file>
+        <file>pixmaps/arrow-bot.png</file>
+        <file>icons/adjust_size.png</file>
+    </qresource>
 </RCC>

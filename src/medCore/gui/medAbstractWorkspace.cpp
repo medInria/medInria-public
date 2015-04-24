@@ -332,7 +332,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QFontMetrics fm(myFont);
                 //TODO: could be nice to elide according to current width (update when resize)
                 QString text = fm.elidedText(name, Qt::ElideRight, 100);
-                QLabel *layerName = new QLabel("<font color='Black'>"+text+"</font>", layerWidget);
+                QLabel *layerName = new QLabel("<font color='darkorange'>"+text+"</font>", layerWidget);
                 layerName->setToolTip(name);
 
                 layout->addWidget(thumbnailButton);
@@ -459,7 +459,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     QList<QString> interactorsIdentifier;
     QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
     medViewContainer *container = containerMng->container(containerUuid);
-    container->highlight("#FF8844");
+    container->highlight("#FF8844"); //container contour color
 
     medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 

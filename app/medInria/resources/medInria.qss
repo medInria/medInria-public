@@ -18,18 +18,6 @@
 $HUE        = 228;
 $SATURATION = 255;
 
-/*$GREY00     = hsv($HUE,$SATURATION,25);
-$GREY01     = hsv($HUE,$SATURATION,48);
-$GREY02     = hsv($HUE,$SATURATION,56);
-$GREY03     = hsv($HUE,$SATURATION,60);
-$GREY04     = hsv($HUE,$SATURATION,64);
-$GREY05     = hsv($HUE,$SATURATION,80);
-$GREY06     = hsv($HUE,$SATURATION,96);
-$GREY07     = hsv($HUE,$SATURATION,112);
-$GREY08     = hsv($HUE,$SATURATION,128);
-$GREY09     = hsv($HUE,$SATURATION,144);
-$GREY10     = hsv($HUE,$SATURATION,160);*/
-
 $GREY10     = hsv($HUE,$SATURATION,0);
 $GREY09     = hsv($HUE,$SATURATION,10);
 $GREY08     = hsv($HUE,$SATURATION,20);
@@ -42,14 +30,13 @@ $GREY02     = hsv($HUE,$SATURATION,80);
 $GREY01     = hsv($HUE,$SATURATION,90);
 $GREY00     = hsv($HUE,$SATURATION,120);
 
-$GREY11     = #C0C0C0;/*hsv($HUE,$SATURATION,192);*/
-
+$GREY11     = #C0C0C0;
 $GREEN      = #64FF32;
 $RED        = #FF3333;
 $YELLOW     = #FFFF99;
 $DARKGRAY   = #6D6E6F;
-
-$HIGHLIGHT_COLOR = #FF8833;
+$HIGHLIGHT_COLOR = #FF8833; /*orange*/
+$MEDINRIA_DARKGRAY = #2b2b2d;
 
 /*******************************************************************************
     BACKGROUND
@@ -96,8 +83,8 @@ $SCROLL_BAR_VERTICAL_BACKGROUND         = $GREY04;
 $HOME_PAGE_BUTTON_BACKGROUND            = $GREY03;
 $HOME_PAGE_BUTTON_HOVER_BACKGROUND      = $GREY00;
 
-$TOOLBOX_CONTAINER_BACKGROUND           = $GREY01;
-$TOOLBOX_HEADER_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY05, stop: 0.3 $GREY00, stop: 1 $GREY05);
+$TOOLBOX_CONTAINER_BACKGROUND           = $GREY01; /*does not seem to be visible*/
+$TOOLBOX_HEADER_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $DARKGRAY, stop: 1 $MEDINRIA_DARKGRAY);
 $TOOLBOX_BODY_BACKGROUND                = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $TOOLBOX_BACKGROUND                     = $GREY05;
 
