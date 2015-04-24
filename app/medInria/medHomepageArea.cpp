@@ -127,11 +127,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * VP2HFLabel = new QLabel ( this );
-    QLabel * SFPLabel = new QLabel ( this );
+    QLabel * EuLabel = new QLabel ( this );
     QPixmap VP2HFLogo( ":VP2HF.png" );
     VP2HFLabel->setPixmap ( VP2HFLogo );
-    QPixmap SFPlogo( ":SFP.png" );
-    SFPLabel->setPixmap ( SFPlogo );
+    QPixmap Eulogo( ":EuFlag.jpg" );
+    EuLabel->setPixmap ( Eulogo );
 //     QLabel * textLabel = new QLabel;
 
     QTextBrowser  * textEdit = new QTextBrowser (this);
@@ -140,7 +140,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                            " and integrated biophysical models mainly developed"
                            " in previous VPH projects, into a single clinical workflow"
                            " to improve therapy selection and treatment optimisation in HF."
-                           " The VP2HF project is funded under the EU Seventh Framework Programme."
+                           " The VP2HF project has received funding from the European Union’s Seventh Framework Programme"
+                           " for research, technological development and demonstration under grant agreement no 611823."
                            " This software is based on the <a href=\"http://med.inria.fr/\">medInria</a> platform."));
 
     textEdit->setOpenExternalLinks(true);
@@ -149,7 +150,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     textEdit->setMaximumHeight ( 200 );
     QHBoxLayout * logolayout = new QHBoxLayout(d->infoWidget);
     logolayout->addWidget(VP2HFLabel );
-    logolayout->addWidget(SFPLabel );
+    logolayout->addWidget(EuLabel );
     infoLayout->addLayout(logolayout);
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
@@ -496,7 +497,7 @@ void medHomepageArea::onShowInfo()
 
 void medHomepageArea::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("http://www.kcl.ac.uk/medicine/research/divisions/imaging/centres/vp2hf/index.aspx"));
+    QDesktopServices::openUrl(QUrl("http://vp2hf.eu/"));
 }
 
 void medHomepageArea::onShowSettings()
