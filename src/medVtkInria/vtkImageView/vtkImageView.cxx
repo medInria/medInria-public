@@ -151,7 +151,7 @@ vtkImageView::vtkImageView()
   this->CornerAnnotation->PickableOff();
   this->CornerAnnotation->SetText (3, "<patient>\n<study>\n<series>");
 
-  this->ScalarBar->SetLabelFormat ("%.0f");
+  this->ScalarBar->SetLabelFormat ("%.3E");
   this->ScalarBar->SetNumberOfLabels (3);
   this->ScalarBar->GetPositionCoordinate()->SetCoordinateSystemToNormalizedViewport();
   this->ScalarBar->SetLabelTextProperty (this->TextProperty);
@@ -164,8 +164,6 @@ vtkImageView::vtkImageView()
   this->ScalarBar->SetPosition (0.9,0.3);
   this->ScalarBar->PickableOff();
   this->ScalarBar->VisibilityOn();
-
-
 
   for(int i=0; i<3; i++)
     this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
@@ -847,34 +845,6 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
                   targetRange[1]);
       touched = true;
   }
-
-  if ( touched )
-  {
-    //todo: Call Modified on the right object
-//    this->GetWindowLevel(layer)->Modified();
-
-    //probably should change the lookuptable of this scalar bar?
-    //no, done in setLookupTable.
-
-    this->SetScalarBarLabelFormat(targetRange);
-    this->ScalarBar->Modified();
-  }
-}
-
-void vtkImageView::SetScalarBarLabelFormat(double* intensityRange)
-{
-    double diff = fabs(fabs(intensityRange[1])-fabs(intensityRange[0]));
-
-    if (diff>1 || diff == 0)
-    {
-        this->ScalarBar->SetLabelFormat ("%.f");
-        return;
-    }
-
-    int precision = -floor(log10(diff))+1; //+1 for the third value displayed (mean) not to be rounded
-    char format[10];
-    snprintf(format, 10, "%%.%df", precision);
-    this->ScalarBar->SetLabelFormat (format);
 }
 
 //----------------------------------------------------------------------------

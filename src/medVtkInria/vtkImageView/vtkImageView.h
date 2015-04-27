@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -733,10 +733,6 @@ class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
      the closest position that lies within the image boundaries.
    */
   virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
-  /**
-      Set the precision of the scalarBar values
-    */
-   void SetScalarBarLabelFormat(double* range);
 
   private:
     //! Template function which implements SetInput for all types.
