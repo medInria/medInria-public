@@ -293,5 +293,15 @@ QString medVtkViewItkDataImageNavigator::version() const
     return "0.0.1";
 }
 
+void medVtkViewItkDataImageNavigator::restoreParameters(QHash<QString, QString> parameters)
+{
+    qDebug()<<parameters;
+    if(parameters.contains("3D Mode"))
+        setMode3D(parameters["3D Mode"]);
+    if(parameters.contains("Cropping"))
+        enableCropping(medBoolParameter::fromString(parameters["Cropping"]));
+    if(parameters.contains("Renderer"))
+        setRenderer(parameters["Renderer"]);
 
+}
 

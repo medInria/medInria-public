@@ -583,6 +583,11 @@ void medMainWindow::loadScene()
 			QDomElement layerElement=layersNodes.item(j).toElement();
 			QString fileName=layerElement.attribute("filename");
             open(mappingFileInfo.dir().canonicalPath()+"/"+fileName);
+            if(d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersSelected().isEmpty())
+            {
+                qWarning()<<"no container selected, aborting\n Please select a container in which the views will be reloaded";
+                return;
+            }
 			medAbstractView *view = medViewContainerManager::instance()->container(d->workspaceArea->currentWorkspace()->stackedViewContainers()->containersSelected().first())->view();
 			if(view)
 				view->restoreState(&layerElement);

@@ -700,6 +700,15 @@ void medVtkViewNavigator::restoreParameters(QHash<QString,QString> parameters)
 		setPan(medVector2DParameter::fromString(parameters["Pan"]));
 	if(parameters.contains("Position"))
 		setCameraPosition(medVector3DParameter::fromString(parameters["Position"]));
+    if(parameters.contains("axial") && medBoolParameter::fromString(parameters["axial"]))
+        setAxial(true);
+    if(parameters.contains("coronal") && medBoolParameter::fromString(parameters["coronal"]))
+        setCoronal(true);
+    if(parameters.contains("sagittal") && medBoolParameter::fromString(parameters["sagittal"]))
+        setSagittal(true);
+    if(parameters.contains("3d") && medBoolParameter::fromString(parameters["3d"]))
+        d->o3dParameter->setValue(true);
+
 
 }
 

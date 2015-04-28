@@ -48,6 +48,8 @@ protected:
     virtual QWidget * buildToolBoxWidget();
     virtual QWidget * buildToolBarWidget();
 
+    virtual void restoreParameters(QHash<QString, QString> parameters);
+
 private:
     medVtkViewItkDataImageNavigatorPrivate *d;
 
