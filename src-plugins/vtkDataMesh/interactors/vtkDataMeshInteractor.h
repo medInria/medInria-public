@@ -78,6 +78,7 @@ protected:
     void setLut(vtkLookupTable * lut);
 
     void setupParameters();
+    void restoreParameters(QHash<QString, QString> parameters);
 
 private:
     static QStringList dataHandled();

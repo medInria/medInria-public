@@ -134,9 +134,9 @@ QIcon medStringListParameter::createIconFromColor(const QString &colorName)
 
 QString medStringListParameter::fromString(QString value)
 {
-	/*for(int i=0;i<getComboBox()->count();i++)
+    /*for(int i=0;i<getComboBox()->count();i++)
 		if(this->getComboBox()->itemText(i)==value)
-			getComboBox()->setCurrentIndex(i);*/
+            getComboBox()->setCurrentIndex(i);*/
     return value;
 }
 
