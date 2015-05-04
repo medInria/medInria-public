@@ -446,3 +446,5 @@ QUndoStack* medAbstractView::undoStack() const
 {
     return d->undoStack;
 }
+
+void medAbstractView::restoreState(QDomElement* element){}

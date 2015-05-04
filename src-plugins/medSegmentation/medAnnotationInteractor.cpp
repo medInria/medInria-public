@@ -422,7 +422,7 @@ void medAnnotationInteractor::enableWindowLevelInteraction()
     }
 }
 
-QString medAnnotationInteractor::name () const
+QString msegAnnotationInteractor::name () const
 {
     return "medAnnotationInteractor";
 }

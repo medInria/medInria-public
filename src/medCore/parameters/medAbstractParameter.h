@@ -47,6 +47,7 @@ public:
 
     virtual void trigger() = 0;
 
+
     bool match(medAbstractParameter const *other);
     void show();
     void hide();
