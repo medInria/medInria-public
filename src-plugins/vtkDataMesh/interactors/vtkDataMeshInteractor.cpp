@@ -270,7 +270,7 @@ void vtkDataMeshInteractor::setupParameters()
 void vtkDataMeshInteractor::setOpacity(double value)
 {
     d->actorProperty->SetOpacity(value);
-
+    this->opacityParameter()->setValue(value);
     d->view->render();
 }
 
