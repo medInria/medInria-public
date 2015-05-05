@@ -131,3 +131,67 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
     else
         d->timeLineParameter->hide();
 }
+
+void medAbstractImageViewNavigator::toXMLNode(QDomDocument* doc,QDomElement* currentNode)
+{
+    qDebug()<<"in medAbstractImageViewNavigator::toXMLNode(QDomDocument* doc,QDomElement* currentNode)";
+    currentNode->setAttribute("name",name());
+    currentNode->setAttribute("version",version());
+    QDomElement elmt=doc->createElement("parameters");
+    elmt.setAttribute("number",this->linkableParameters().size());
+    for(int i=0;i<linkableParameters().size();i++)
+    {
+        if(linkableParameters()[i]->name()=="Camera")   //composite parameters cannot save themselves
+            continue;
+        QDomElement paramNode=doc->createElement("parameter");
+        linkableParameters()[i]->toXMLNode(doc,&paramNode);
+        elmt.appendChild(paramNode);
+    }
+
+    //handle Camera parameter we skipped previously:
+    QHash<QString,QString> paramsToBeSaved;
+    paramsToBeSaved["Camera Position"]="QVector3D";
+    paramsToBeSaved["Camera Up"]="QVector3D";
+    paramsToBeSaved["Camera Focal"]="QVector3D";
+    paramsToBeSaved["Parallel Scale"]="double";
+
+    QHashIterator<QString, QString> it(paramsToBeSaved);
+    while (it.hasNext())
+    {
+        it.next();
+
+        qDebug()<<it.key()<<" "<<it.value();
+
+        QDomElement paramNode=doc->createElement("parameter");
+        QDomElement nameNode=doc->createElement("name");
+        nameNode.appendChild(doc->createTextNode(it.key()));
+        QDomElement typeNode=doc->createElement("type");
+        typeNode.appendChild(doc->createTextNode(it.value()));
+        QDomElement valueNode=doc->createElement("value");
+        QString textValue;
+        QVariant var=d->cameraParameter->value(it.key());
+        if(var==QVariant())
+            continue;
+
+        if(it.value()=="QVector3D")
+        {
+            QVector3D obj=var.value<QVector3D>();
+            textValue=QString::number(obj.x())+" "+QString::number(obj.y())+" "+QString::number(obj.z());
+
+        }
+        else if(it.value()=="double")
+        {
+            double obj=var.toDouble();
+            textValue=QString::number(obj);
+        }
+        valueNode.appendChild(doc->createTextNode(textValue));
+
+        paramNode.appendChild(nameNode);
+        paramNode.appendChild(typeNode);
+        paramNode.appendChild(valueNode);
+
+        elmt.appendChild(paramNode);
+    }
+
+    currentNode->appendChild(elmt);
+}

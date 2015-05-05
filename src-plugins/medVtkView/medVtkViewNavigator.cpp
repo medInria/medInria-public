@@ -709,6 +709,18 @@ void medVtkViewNavigator::restoreParameters(QHash<QString,QString> parameters)
     if(parameters.contains("3d") && medBoolParameter::fromString(parameters["3d"]))
         d->o3dParameter->setValue(true);
 
+    QHash<QString,QVariant> cameraOptions;
+    if(parameters.contains("Camera Up") && parameters.contains("Camera Focal")
+       && parameters.contains("Parallel Scale") && parameters.contains("Camera Position"))
+    {
+        cameraOptions["Camera Up"]=QVariant(medVector3DParameter::fromString(parameters["Camera Up"]));
+        cameraOptions["Camera Focal"]=QVariant(medVector3DParameter::fromString(parameters["Camera Focal"]));
+        cameraOptions["Parallel Scale"]=QVariant(medDoubleParameter::fromString(parameters["Parallel Scale"]));
+        cameraOptions["Camera Position"]=QVariant(medVector3DParameter::fromString(parameters["Camera Position"]));
+
+    }
+
+    setCamera(cameraOptions);
 
 }
 

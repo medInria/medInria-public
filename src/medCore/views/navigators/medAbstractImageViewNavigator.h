@@ -38,6 +38,8 @@ public:
     virtual medCompositeParameter* cameraParameter();
     virtual medAbstractVector3DParameter* positionBeingViewedParameter();
     virtual medTimeLineParameter* timeLineParameter();
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+
 
 public slots:
 

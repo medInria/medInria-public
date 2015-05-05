@@ -48,7 +48,7 @@ public:
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
     
     virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
-	void fromXMLNode(QDomElement* element);
+    void fromXMLNode(QDomElement* element);
 	
 	
 
