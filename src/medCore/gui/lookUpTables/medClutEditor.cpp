@@ -238,11 +238,11 @@ void medClutEditorVertex::forceGeometricalConstraints( const QRectF & limits,
 
     if ( inManhattan ) {
         QPointF move = this->pos() - d->lastPos;
-        if ( abs( move.x() ) > abs( move.y() ) ) {
+        if ( std::abs( move.x() ) > std::abs( move.y() ) ) {
             this->setY( d->lastPos.y() );
             forced = true;
         }
-        if ( abs( move.x() ) < abs( move.y() ) ) {
+        if ( std::abs( move.x() ) < std::abs( move.y() ) ) {
             this->setX( d->lastPos.x() );
             forced = true;
         }

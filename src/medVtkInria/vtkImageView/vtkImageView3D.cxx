@@ -352,13 +352,13 @@ void vtkImageView3D::SetupVolumeRendering()
   this->VolumeProperty->SetSpecularPower (15.0);
   //Warning circular reasonning here
   if ( !this->GetUseLookupTable(0)  &&
-       this-VolumeProperty->GetIndependentComponents())
+       this->VolumeProperty->GetIndependentComponents())
   {
     this->VolumeProperty->SetScalarOpacity(0, this->GetOpacityTransferFunction(0) );
     this->VolumeProperty->SetColor(0, this->GetColorTransferFunction(0) );
     this->PlanarWindowLevel->SetLookupTable(this->GetColorTransferFunction(0));
   }
-  else if (!this-VolumeProperty->GetIndependentComponents())
+  else if (!this->VolumeProperty->GetIndependentComponents())
   {
     this->VolumeProperty->SetScalarOpacity(
           this->GetOpacityTransferFunction(0));
