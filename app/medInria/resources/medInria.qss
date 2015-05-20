@@ -15,8 +15,8 @@
 /*******************************************************************************
     COLOR
  *******************************************************************************/
-$HUE        = 228;
-$SATURATION = 255;
+$HUE        = 220;
+$SATURATION = 64.8;
 
 $GREY10     = hsv($HUE,$SATURATION,0);
 $GREY09     = hsv($HUE,$SATURATION,10);
@@ -30,14 +30,14 @@ $GREY02     = hsv($HUE,$SATURATION,80);
 $GREY01     = hsv($HUE,$SATURATION,90);
 $GREY00     = hsv($HUE,$SATURATION,120);
 
-$GREY11     = #C0C0C0;
-$GREEN      = #64FF32;
-$RED        = #FF3333;
-$YELLOW     = #FFFF99;
-$DARKGRAY   = #6D6E6F;
-$HIGHLIGHT_COLOR = #FF8833; /*orange*/
-$MEDINRIA_DARKGRAY = #2b2b2d;
+$GREY11            = #e3ecf1; /*texts*/
+$HIGHLIGHT_COLOR   = #ED6639; /*highlight*/
+$DARKGRAY          = #2a416f; /*toolbox headers*/
+$MEDINRIA_DARKGRAY = #39548a; /*toolbox headers*/
 
+$YELLOW     = #FFFF99; /*only in tooltip background*/
+$GREEN      = #64FF32; /*only in success progress bar*/
+$RED        = #FF3333; /*only in failure progress bar*/
 /*******************************************************************************
     BACKGROUND
  *******************************************************************************/
