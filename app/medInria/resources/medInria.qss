@@ -35,7 +35,7 @@ $HIGHLIGHT_COLOR   = #ED6639; /*highlight*/
 $DARKGRAY          = #2a416f; /*toolbox headers*/
 $MEDINRIA_DARKGRAY = #39548a; /*toolbox headers*/
 
-$YELLOW     = #FFFF99; /*only in tooltip background*/
+$ORANGE     = #fc875f; /*only in tooltip background*/
 $GREEN      = #64FF32; /*only in success progress bar*/
 $RED        = #FF3333; /*only in failure progress bar*/
 /*******************************************************************************
@@ -43,7 +43,7 @@ $RED        = #FF3333; /*only in failure progress bar*/
  *******************************************************************************/
 $WIDGET_BACKGROUND                      = $GREY01;
 
-$TOOLTIP_BACKGROUND                     = $YELLOW;
+$TOOLTIP_BACKGROUND                     = $ORANGE;
 
 $LIST_BACKGROUND                        = $GREY02;
 $ALT_LIST_BACKGROUND                    = $GREY03;
