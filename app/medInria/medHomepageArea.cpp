@@ -156,10 +156,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
 
-    QString aboutText = QString(QString::fromUtf8("<br/><br/>"
-                      "MUSIC is the cardiac imaging platform based on medInria (%1) developed at "
-                      "Inria and IHU LIRYC.<br/><br/>"
-                      "<center>Copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria</center>"))
+    QString aboutText = QString::fromUtf8("MUSIC is the cardiac imaging platform based on medInria (%1) developed at "
+                      "Inria and IHU LIRYC.<br/>"
+                      "<center>Copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria</center>")
                       .arg(qApp->applicationVersion());
     
 #ifdef MEDINRIA_HAS_REVISIONS
