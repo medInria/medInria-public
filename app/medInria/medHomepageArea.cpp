@@ -121,8 +121,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 2, aboutButton );
     userButtonsLayout->insertWidget ( 3, helpButton );
 //#endif
-    //no need to set the layout the userWidget is the parent of the layout already.
-//    d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
@@ -130,7 +128,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QPixmap medLogo( ":music_logo.png" );
     medLogo = medLogo.scaled(350, 150, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     medInriaLabel->setPixmap ( medLogo );
-//     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
     textEdit->setHtml ( tr("<b>MUSIC</b> is a software developed in collaboration with "
@@ -147,8 +144,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
 
-    //no need to set the layout, the infoWidget is the parent of the layout already.
-//    d->infoWidget->setLayout ( infoLayout );
     d->infoWidget->setMaximumHeight ( medInriaLabel->height() + textEdit->height() );
 
     //About widget
@@ -162,7 +157,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
     
     QString aboutText = QString(tr("<br/><br/>"
-                      "MUSIC %1 is the cardiac imaging platform based on medInria developed at "
+                      "MUSIC is the cardiac imaging platform based on medInria %1 developed at "
                       "Inria and IHU LIRYC.<br/><br/>"
                       "<center>Inria & IHU LIRYC, Copyright 2013</center>"))
                       .arg(qApp->applicationVersion());
