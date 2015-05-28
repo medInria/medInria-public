@@ -135,7 +135,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                            "dedicated to cardiac interventional planning and "
                            "guidance, based on the medInria software platform."
                            "<br/><br/>"
-                           "<b>MUSIC</b> is proprietary software, copyright (c) 2014, IHU Liryc, Université de Bordeaux and Inria." ));
+                           "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria." ));
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight(300);
@@ -159,7 +159,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QString aboutText = QString(QString::fromUtf8("<br/><br/>"
                       "MUSIC is the cardiac imaging platform based on medInria (%1) developed at "
                       "Inria and IHU LIRYC.<br/><br/>"
-                      "<center>Copyright (c) 2014, IHU Liryc, Université de Bordeaux and Inria</center>"))
+                      "<center>Copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria</center>"))
                       .arg(qApp->applicationVersion());
     
 #ifdef MEDINRIA_HAS_REVISIONS
