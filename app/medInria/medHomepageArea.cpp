@@ -133,8 +133,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 //     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>MUSIC: Multi-modality Platform for Specific Imaging in Cardiology</b><br/><br/>"
-                           "<b>MUSIC</b> is a software developed in collaboration with "
+    textEdit->setHtml ( tr("<b>MUSIC</b> is a software developed in collaboration with "
                            "the IHU LIRYC in order to propose functionalities "
                            "dedicated to cardiac interventional planning and "
                            "guidance, based on the medInria software platform."
@@ -163,9 +162,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
     
     QString aboutText = QString(tr("<br/><br/>"
-                      "medInria %1 is the medical imaging platform developed at "
-                      "Inria<br/><br/>"
-                      "<center>Inria, Copyright 2013</center>"))
+                      "MUSIC %1 is the cardiac imaging platform based on medInria developed at "
+                      "Inria and IHU LIRYC.<br/><br/>"
+                      "<center>Inria & IHU LIRYC, Copyright 2013</center>"))
                       .arg(qApp->applicationVersion());
     
 #ifdef MEDINRIA_HAS_REVISIONS
