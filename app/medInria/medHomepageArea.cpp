@@ -130,12 +130,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel->setPixmap ( medLogo );
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>MUSIC</b> is a software developed in collaboration with "
+    textEdit->setHtml ( QString::fromUtf8("<b>MUSIC</b> is a software developed in collaboration with "
                            "the IHU LIRYC in order to propose functionalities "
                            "dedicated to cardiac interventional planning and "
                            "guidance, based on the medInria software platform."
                            "<br/><br/>"
-                           "<b>MUSIC</b> is proprietary software, copyright Inria - IHU Liryc 2014." ));
+                           "<b>MUSIC</b> is proprietary software, copyright (c) 2014, IHU Liryc, Université de Bordeaux and Inria." ));
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight(300);
@@ -155,11 +155,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel2->setPixmap ( medLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
-    
-    QString aboutText = QString(tr("<br/><br/>"
-                      "MUSIC is the cardiac imaging platform based on medInria %1 developed at "
+
+    QString aboutText = QString(QString::fromUtf8("<br/><br/>"
+                      "MUSIC is the cardiac imaging platform based on medInria (%1) developed at "
                       "Inria and IHU LIRYC.<br/><br/>"
-                      "<center>Inria & IHU LIRYC, Copyright 2013</center>"))
+                      "<center>Copyright (c) 2014, IHU Liryc, Université de Bordeaux and Inria</center>"))
                       .arg(qApp->applicationVersion());
     
 #ifdef MEDINRIA_HAS_REVISIONS
@@ -177,10 +177,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
     QFile license ( ":LICENSE.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
-    QString licenseContent = license.readAll();
-    license.close();
-    aboutLicenseTextEdit->setText ( licenseContent );
+    QTextStream licenseContent(&license);
+    licenseContent.setCodec("UTF-8");
+    aboutLicenseTextEdit->setText ( licenseContent.readAll() );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
+    license.close();
 
     QTextEdit * releaseNotesTextEdit = new QTextEdit(this);
     QFile releaseNotes ( ":RELEASE_NOTES.txt" );

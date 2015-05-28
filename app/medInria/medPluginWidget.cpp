@@ -253,7 +253,7 @@ void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int colum
     Q_UNUSED (column);
     QDialog * dial = new QDialog(this);
     dtkPlugin * plugin = medPluginManager::instance()->plugin(item->text(0));
-    QString windowTitle = tr("medInria: about ");
+    QString windowTitle = tr("MUSIC: about ");
     windowTitle += plugin->name();
     dial->setWindowTitle(windowTitle);
     dtkAboutPlugin * apWidget = new dtkAboutPlugin(plugin,dial);
@@ -282,7 +282,7 @@ void medPluginWidget::onErrorTreeItemActivated(QTreeWidgetItem* item,int column)
     Q_UNUSED (column);
     QDialog * dial = new QDialog(this);
 
-    QString windowTitle = tr("medInria: error message");
+    QString windowTitle = tr("MUSIC: error message");
     dial->setWindowTitle(windowTitle);
 
     QVBoxLayout * layout = new QVBoxLayout(dial);
