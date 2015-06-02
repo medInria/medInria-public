@@ -105,11 +105,11 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->layersToolBox->setTitle("Layer settings");
     d->layersToolBox->hide();
 
-    d->layerListToolBox = new medToolBox(d->layersToolBox);
+    d->layerListToolBox = new medToolBox();
     d->layerListToolBox->header()->hide();
     d->layersToolBox->addWidget(d->layerListToolBox);
 
-    d->interactorToolBox = new medToolBox(d->layersToolBox);
+    d->interactorToolBox = new medToolBox();
     d->interactorToolBox->header()->hide();
     d->layersToolBox->addWidget(d->interactorToolBox);
 
@@ -391,13 +391,15 @@ void medAbstractWorkspace::updateLayersToolBox()
                 d->layerListWidget->blockSignals(false);
 
             }
+            // add the layer widgets
+            if (layeredView->layersCount() > 0)
+            {
+                d->layersToolBox->show();
+                d->layerListToolBox->addWidget(d->layerListWidget);
+                d->layerListWidget->show();
+            }
         }
     }
-    // add the layer widgets
-    d->layersToolBox->show();
-    d->layerListToolBox->addWidget(d->layerListWidget);
-
-    d->layerListWidget->show();
 
     this->updateInteractorsToolBox();
 }
