@@ -105,6 +105,20 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
 
     if(d->currentSegmentationToolBox)
     {
+        // Remove interactor on previous tlbx
+        if (d->currentSegmentationToolBox->findChild<QPushButton*>("closedPolygonButton"))
+        {
+            d->currentSegmentationToolBox->findChild<QPushButton*>("closedPolygonButton")->setChecked(false);
+        }
+        else if (d->currentSegmentationToolBox->findChild<QPushButton*>("paintButton"))
+        {
+            if (d->currentSegmentationToolBox->findChild<QPushButton*>("paintButton")->isChecked())
+            {
+                d->currentSegmentationToolBox->findChild<QPushButton*>("paintButton")->click();
+            }
+        }
+
+        // Remove previous tlbx from current tlbx
         d->currentSegmentationToolBox->hide();
         d->mainLayout->removeWidget(d->currentSegmentationToolBox);
         d->currentSegmentationToolBox = NULL;
