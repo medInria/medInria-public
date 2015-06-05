@@ -20,7 +20,7 @@
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// PluginPrivate
+// medSegmentationPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
 class medSegmentationPluginPrivate
@@ -52,9 +52,6 @@ bool medSegmentationPlugin::initialize()
         qDebug() << "Unable to register medAnnotationInteractor";
     return medAlgorithmInitializer::initialize();
     }
-    if(!AlgorithmPaintToolbox::registered())
-    {
-        qDebug() << "Unable to register msegAlgorithmPaintToolbox";
 }
 
 bool medSegmentationPlugin::uninitialize()
@@ -111,6 +108,11 @@ QStringList medSegmentationPlugin::contributors() const
 }
 
 QString medSegmentationPlugin::identifier() const
+{
+    return medSegmentationPluginPrivate::s_Name;
+}
+
+QStringList medSegmentationPlugin::tags() const
 {
     return medSegmentationPluginPrivate::s_Name;
 }

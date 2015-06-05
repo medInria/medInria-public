@@ -41,10 +41,10 @@ public:
     virtual QString description() const;
     virtual QString identifier() const;
     virtual QString version() const;
-
     virtual QStringList authors() const;
     virtual QString contact() const;
     virtual QStringList contributors() const;
+    virtual QStringList dependencies(void) const;
     virtual QStringList tags() const;
     virtual QStringList types() const;
 
