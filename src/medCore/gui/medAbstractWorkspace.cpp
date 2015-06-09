@@ -105,11 +105,11 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->layersToolBox->setTitle("Layer settings");
     d->layersToolBox->hide();
 
-    d->layerListToolBox = new medToolBox();
+    d->layerListToolBox = new medToolBox(d->layersToolBox);
     d->layerListToolBox->header()->hide();
     d->layersToolBox->addWidget(d->layerListToolBox);
 
-    d->interactorToolBox = new medToolBox();
+    d->interactorToolBox = new medToolBox(d->layersToolBox);
     d->interactorToolBox->header()->hide();
     d->layersToolBox->addWidget(d->interactorToolBox);
 
