@@ -268,10 +268,20 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
 
 QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
 {
+    // Build layout for Data orientation (not-mesh) parameters
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+
     foreach(medAbstractParameter *parameter, d->parameters)
-        layout->addRow(parameter->getLabel(), parameter->getWidget());
+    {
+        if (parameter->getWidget() && parameter->getLabel())
+        {
+            layout->addRow(parameter->getLabel(), parameter->getWidget());
+        }
+    }
+
     toolBoxWidget->hide();
     return toolBoxWidget;
 }
