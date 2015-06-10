@@ -116,6 +116,10 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
             {
                 d->currentSegmentationToolBox->findChild<QPushButton*>("paintButton")->click();
             }
+            if (d->currentSegmentationToolBox->findChild<QPushButton*>("Magic Wand")->isChecked())
+            {
+                d->currentSegmentationToolBox->findChild<QPushButton*>("Magic Wand")->click();
+            }
         }
 
         // Remove previous tlbx from current tlbx
