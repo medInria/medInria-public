@@ -166,8 +166,41 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}  
   ${OPENGL_LIBRARIES}
-  ${ITK_LIBRARIES}
-  ${VTK_LIBRARIES}
+  ITKIOImageBase
+  ITKIOBMP
+  ITKIOLSM
+  ITKIOJPEG
+  ITKIOPNG
+  ITKIOVTK
+  ITKIOGDCM
+  ITKIOGE
+  ITKNrrdIO
+  ITKIONRRD
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIOGIPL
+  ITKIOHDF5
+  ITKIOBioRad
+  ITKIOStimulate
+  ${ITKIOPhilipsREC_LIBRARIES}
+  ITKIOMRC
+  ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
+  vtkCommonCore
+  vtkIOCore
+  vtkIOLegacy
+  vtkIOXML
+  vtkRenderingCore
+  vtkRenderingOpenGL
+  vtkRenderingVolumeOpenGL
+  vtkRenderingVolumeOpenGLNew
+  vtkRenderingFreeTypeOpenGL
+  vtkRenderingContextOpenGL
+  vtkInteractionWidgets
+  vtkInteractionStyle
+  vtkFiltersExtraction
+  vtkImagingStencil
+  vtkFiltersGeometry
+  vtksys
   )
 
 
