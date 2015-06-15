@@ -293,7 +293,7 @@ unsigned long vtkImageView::GetMTime()
 /** Attach an interactor for the internal render window. */
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
-  this->UnInstallPipeline();
+  //this->UnInstallPipeline();
 
   vtkSetObjectBodyMacro (Interactor, vtkRenderWindowInteractor, arg);
 
@@ -304,7 +304,7 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 /** Set your own renderwindow and renderer */
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 {
-  this->UnInstallPipeline();
+  //this->UnInstallPipeline();
 
   vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
 
@@ -318,7 +318,7 @@ void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 //----------------------------------------------------------------------------
 void vtkImageView::SetRenderer(vtkRenderer *arg)
 {
-  this->UnInstallPipeline();
+  //this->UnInstallPipeline();
 
   vtkSetObjectBodyMacro (Renderer, vtkRenderer, arg);
 
