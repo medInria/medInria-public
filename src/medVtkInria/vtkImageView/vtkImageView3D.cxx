@@ -486,7 +486,7 @@ void vtkImageView3D::UnInstallPipeline()
 {
   if (this->Renderer)
   {
-    this->Renderer->RemoveViewProp (this->VolumeActor);
+    //this->Renderer->RemoveViewProp (this->VolumeActor);
     this->Renderer->RemoveViewProp (this->ActorX);
     this->Renderer->RemoveViewProp (this->ActorY);
     this->Renderer->RemoveViewProp (this->ActorZ);
