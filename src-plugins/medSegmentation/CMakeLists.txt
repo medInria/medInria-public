@@ -100,7 +100,6 @@ target_link_libraries(${PROJECT_NAME}
   ITKCommon
   medCore
   medVtkInria
-  ${VTK_LIBRARIES}
   )
 
 

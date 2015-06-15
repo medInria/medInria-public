@@ -102,7 +102,6 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  ${VTK_LIBRARIES}
   medCore
   medLog
   medVtkInria
