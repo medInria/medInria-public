@@ -32,8 +32,7 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 
 include(${dtk_USE_FILE})
-include(${medInria_USE_FILE})
-include(dtkPlugin)
+include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -65,7 +64,7 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt5_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 

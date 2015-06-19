@@ -16,10 +16,10 @@
 #include <medCoreExport.h>
 
 #include <QtCore>
-#include <QtSql>
+#include <QtSql/QtSql>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medJobItem.h>
 #include <medDataIndex.h>

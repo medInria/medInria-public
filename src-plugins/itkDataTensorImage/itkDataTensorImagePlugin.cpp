@@ -121,4 +121,4 @@ QStringList itkDataTensorImagePlugin::types() const
                          << "itkNrrdDataTensorImageReader";
 }
 
-Q_EXPORT_PLUGIN2(itkDataTensorImagePlugin, itkDataTensorImagePlugin)
+//Q_EXPORT_PLUGIN2(itkDataTensorImagePlugin, itkDataTensorImagePlugin)

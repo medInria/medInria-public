@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <medVtkViewPluginExport.h>
 
@@ -22,6 +22,7 @@ class medVtkViewPluginPrivate;
 class MEDVTKVIEWPLUGIN_EXPORT medVtkViewPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.medVtkViewPlugin" FILE "medVtkViewPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

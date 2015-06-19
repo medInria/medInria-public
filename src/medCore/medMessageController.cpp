@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 #include <medMessageController.h>
 

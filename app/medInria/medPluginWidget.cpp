@@ -16,12 +16,13 @@
 #include <medPluginManager.h>
 
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkPlugin.h>
-#include <dtkGui/dtkAboutPlugin.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractViewFactory.h>
+#include <dtkCoreSupport/dtkPlugin.h>
+#include <dtkGuiSupport/dtkAboutPlugin.h>
 
 #include <QtGui>
+#include <QtWidgets>
 
 
 ////////////////////////////////////////////////////////////////////////////////

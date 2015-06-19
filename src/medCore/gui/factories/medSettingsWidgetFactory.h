@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medCoreExport.h>
-#include <dtkCore/dtkAbstractFactory.h>
+#include <dtkCoreSupport/dtkAbstractFactory.h>
 #include <QtCore>
 
 class medSettingsWidget;

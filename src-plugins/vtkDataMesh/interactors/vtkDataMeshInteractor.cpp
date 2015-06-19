@@ -53,6 +53,11 @@
 #include <medVtkViewBackend.h>
 
 #include <vector>
+#include <QSlider>
+#include <QFormLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QCheckBox>
 
 typedef QPair<vtkSmartPointer<vtkLookupTable>, QString> LutPair;
 

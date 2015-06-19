@@ -40,7 +40,7 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
     if (this->io.IsNull())
         return false;
 
-    return this->io->CanWriteFile ( path.toAscii().constData() );
+    return this->io->CanWriteFile ( path.toLatin1().constData() );
 }
 
 template <unsigned DIM,typename T>
@@ -60,7 +60,7 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);
     writer->UseCompressionOn();
-    writer->SetFileName(path.toAscii().constData());
+    writer->SetFileName(path.toLatin1().constData());
     writer->SetInput(image);
     writer->Update();
 

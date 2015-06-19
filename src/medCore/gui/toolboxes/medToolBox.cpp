@@ -21,9 +21,9 @@
 #include <medToolBoxTab.h>
 #include <medButton.h>
 
-#include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkPlugin>
-#include <dtkGui/dtkAboutPlugin.h>
+#include <dtkCoreSupport/dtkGlobal.h>
+#include <dtkCoreSupport/dtkPlugin>
+#include <dtkGuiSupport/dtkAboutPlugin.h>
 
 class medToolBoxPrivate
 {

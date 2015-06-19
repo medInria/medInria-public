@@ -25,7 +25,7 @@
 #include <QtDcmManager.h>
 #include <QtDcmPreferences.h>
 
-#include <dtkCore/dtkAbstractDataReader.h>
+#include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 

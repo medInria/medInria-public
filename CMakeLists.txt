@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 2.8.10)
+cmake_minimum_required(VERSION 2.8.11)
 
 project(MEDINRIA)
 
@@ -53,7 +53,6 @@ endif()
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## Options
 ## #############################################################################
@@ -71,6 +70,36 @@ option(${PROJECT_NAME}_BUILD_DOCUMENTATION
   OFF
   )
 
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Xml REQUIRED)
+find_package(Qt5Sql REQUIRED)
+find_package(Qt5Concurrent  REQUIRED)
+find_package(Qt5Quick       REQUIRED)
+find_package(Qt5Network     REQUIRED)
+find_package(Qt5Test        REQUIRED)
+find_package(Qt5Declarative REQUIRED)
+
+# variables used by doc and tst
+get_target_property(QT5_QMAKE_EXECUTABLE Qt5::qmake LOCATION)
+get_filename_component(QT5_BINARY_DIR ${QT5_QMAKE_EXECUTABLE} PATH)
+
+set(QT_HEADERS
+    ${Qt5Core_INCLUDE_DIRS}
+    ${Qt5OpenGL_INCLUDE_DIRS}
+    ${Qt5Gui_INCLUDE_DIRS}
+    ${Qt5Xml_INCLUDE_DIRS}
+    ${Qt5Sql_INCLUDE_DIRS}
+    ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt5Concurrent_INCLUDE_DIRS}
+    ${Qt5Quick_INCLUDE_DIRS}
+    ${Qt5Network_INCLUDE_DIRS}
+    ${Qt5Test_INCLUDE_DIRS}
+    ${Qt5Declarative_INCLUDE_DIRS})
+
+set(QT_LIBRAIRIES Qt5::Core Qt5::OpenGL Qt5::Gui Qt5::Xml Qt5::Sql Qt5::Widgets Qt5::Concurrent Qt5::Quick Qt5::Network Qt5::Test Qt5::Declarative)
 
 ## #############################################################################
 ## Additionals modules
@@ -101,13 +130,8 @@ endif()
 ## Find package
 ## #############################################################################
 
-set(QT_USE_QTOPENGL on)
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-
-
 find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
+include_directories(${dtk_INCLUDE_DIRS})
 
 
 ## #############################################################################

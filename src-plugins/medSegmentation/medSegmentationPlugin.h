@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <medSegmentationPluginExport.h>
 
@@ -28,6 +28,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medSegmentationPluginPrivate;
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medSegmentationPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.medSegmentationPlugin" FILE "medSegmentationPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

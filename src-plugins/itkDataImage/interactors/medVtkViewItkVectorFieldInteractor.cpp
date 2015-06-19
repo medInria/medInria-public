@@ -38,6 +38,9 @@
 #include <medBoolParameter.h>
 #include <medAbstractImageData.h>
 
+#include <QSlider>
+#include <QLabel>
+#include <QFormLayout>
 
 const int ImageDimension = 3;
 typedef itk::Image< itk::Vector< float, 3 >,  ImageDimension >   VectorFloatImageType;

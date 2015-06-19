@@ -15,7 +15,7 @@
 
 #include <medCoreExport.h>
 
-#include <QSqlDatabase>
+#include <QtSql/QSqlDatabase>
 
 #include <medAbstractDatabaseImporter.h>
 #include <medDataIndex.h>

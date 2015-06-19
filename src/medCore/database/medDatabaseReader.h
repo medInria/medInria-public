@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QtCore/QObject>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 class medAbstractData;
 class medDatabaseReaderPrivate;

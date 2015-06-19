@@ -15,7 +15,7 @@
 
 #include <medTestExport.h>
 
-#include <dtkCore/dtkAbstractDataWriter.h>
+#include <dtkCoreSupport/dtkAbstractDataWriter.h>
 
 /** A concrete implementation of a dtkAbstractDataWriter for use in testing. */
 class MEDTEST_EXPORT medQtDataImageWriter : public dtkAbstractDataWriter

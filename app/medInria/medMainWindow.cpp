@@ -14,6 +14,7 @@
 #include <medMainWindow.h>
 
 #include <QtGui>
+#include <QtWidgets>
 
 #include <medBrowserArea.h>
 #include <medWorkspaceArea.h>
@@ -47,7 +48,7 @@
 //--------------------------------------------------------------------------
 // medMainWindowStyle
 
-class medMainWindowStyle : public QPlastiqueStyle
+class medMainWindowStyle : public QStyle
 {
 public:
     void drawPrimitive ( PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0 ) const
@@ -57,7 +58,7 @@ public:
         case PE_FrameFocusRect:
             break;
         default:
-            QPlastiqueStyle::drawPrimitive ( element, option, painter, widget );
+            QStyle::drawPrimitive ( element, option, painter, widget );
             break;
         }
     }
@@ -190,7 +191,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->fullscreenButton->setCheckable(true);
     d->fullscreenButton->setChecked(false);
     d->fullscreenButton->setObjectName("fullScreenButton");
-#if defined(Q_WS_MAC)
+#if defined(Q_OS_MAC)
     d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
     d->fullscreenButton->setToolTip(tr("Switch FullScreen state (Cmd+f)"));
 #else
@@ -424,7 +425,7 @@ void medMainWindow::captureScreenshot()
                                                     QDir::home().absolutePath(),
                                                     QString(), 0, QFileDialog::HideNameFilterDetails);
 
-    QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toAscii();
+    QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toLatin1();
     if ( ! QImageWriter::supportedImageFormats().contains(format) )
         format = "PNG";
 

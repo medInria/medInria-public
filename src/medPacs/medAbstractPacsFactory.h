@@ -15,7 +15,7 @@
 
 #include <medPacsExport.h>
 
-#include <dtkCore/dtkAbstractFactory.h>
+#include <dtkCoreSupport/dtkAbstractFactory.h>
 
 #include <QtCore>
 

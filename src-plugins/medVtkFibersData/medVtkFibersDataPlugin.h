@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 #include <medVtkFibersDataPluginExport.h>
 
 class medVtkFibersDataPluginPrivate;
@@ -21,6 +21,7 @@ class medVtkFibersDataPluginPrivate;
 class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.medVtkFibersDataPlugin" FILE "medVtkFibersDataPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

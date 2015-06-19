@@ -18,6 +18,9 @@
 #include <medAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>
 
+#include <QImageWriter>
+#include <QImageReader>
+
 namespace {
     // Used to sort formats in order of priority, highest first.
     class CompareReversePriority {

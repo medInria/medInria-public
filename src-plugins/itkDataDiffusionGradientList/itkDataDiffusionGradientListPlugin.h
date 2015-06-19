@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <itkDataDiffusionGradientListPluginExport.h>
 
@@ -22,6 +22,7 @@ class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPlug
 class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.itkDataDiffusionGradientListPlugin" FILE "itkDataDiffusionGradientListPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

@@ -13,7 +13,7 @@
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractDiffusionProcess.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
 #include <medAbstractImageData.h>
 #include <medPluginManager.h>

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <itkDataTensorImagePluginExport.h>
 
@@ -22,6 +22,7 @@ class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePluginPrivate;
 class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.itkDataTensorImagePlugin" FILE "itkDataTensorImagePlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

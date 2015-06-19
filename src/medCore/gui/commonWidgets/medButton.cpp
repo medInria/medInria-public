@@ -14,6 +14,7 @@
 #include <medButton.h>
 
 #include <QtGui>
+#include <QtWidgets>
 
 class medButtonPrivate
 {

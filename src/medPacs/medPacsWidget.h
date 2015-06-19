@@ -13,7 +13,8 @@
 
 #pragma once
 
-#include <QtGui/QTreeWidget>
+#include <QtWidgets>
+#include <QTreeWidget>
 
 #include <medPacsExport.h>
 #include <medMoveCommandItem.h>

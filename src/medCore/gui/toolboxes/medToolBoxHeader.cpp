@@ -14,7 +14,7 @@
 #include <medToolBoxHeader.h>
 #include <medButton.h>
 
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 class medToolBoxHeaderPrivate
 {

@@ -16,10 +16,10 @@
 #include <medAbstractImageData.h>
 
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractDataReader.h>
-#include <dtkCore/dtkAbstractDataWriter.h>
+#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <dtkCoreSupport/dtkAbstractDataWriter.h>
 #include <medAbstractData.h>
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <medDatabaseController.h>
 #include <medMetaDataKeys.h>
@@ -120,7 +120,7 @@ medDataIndex medAbstractDatabaseImporter::index() const
 **/
 QString medAbstractDatabaseImporter::callerUuid()
 {
-    return d->uuid;
+    return d->uuid.toString();
 }
     
 /**

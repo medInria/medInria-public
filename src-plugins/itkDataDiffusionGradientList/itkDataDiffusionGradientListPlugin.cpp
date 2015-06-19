@@ -97,4 +97,4 @@ QStringList itkDataDiffusionGradientListPlugin::types() const
     return QStringList() << "itkDataDiffusionGradientList";
 }
 
-Q_EXPORT_PLUGIN2(itkDataDiffusionGradientListPlugin, itkDataDiffusionGradientListPlugin)
+////Q_EXPORT_PLUGIN2(itkDataDiffusionGradientListPlugin, itkDataDiffusionGradientListPlugin)

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets>
 #include <QUuid>
 #include <QUrl>
 class medDataIndex;

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <itkProcessRegistrationDiffeomorphicDemonsPluginExport.h>
 
@@ -22,6 +22,7 @@ class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrat
 class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.itkProcessRegistrationDiffeomorphicDemonsPlugin" FILE "itkProcessRegistrationDiffeomorphicDemonsPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

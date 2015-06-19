@@ -40,6 +40,10 @@
 #include <medCompositeParameter.h>
 
 #include <QFormLayout>
+#include <QSlider>
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QComboBox>
 
 class medVtkViewItkDataImageInteractorPrivate
 {

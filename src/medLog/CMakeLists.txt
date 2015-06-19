@@ -19,7 +19,7 @@ project(medLog)
 
 # find dtk
 find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
+include_directories(${dtk_INCLUDE_DIRS})
 
 # find itk
 find_package(ITK REQUIRED)
@@ -65,7 +65,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore 
+  dtkCoreSupport 
   dtkLog
   ITKCommon
   vtkCommonCore

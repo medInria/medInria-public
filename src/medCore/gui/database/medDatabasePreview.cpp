@@ -22,7 +22,11 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsSceneMouseEvent>
+#include <QDrag>
 #include <QPixmap>
+#include <QMouseEvent>
+#include <QLabel>
 
 class medDatabasePreviewStaticScenePrivate
 {
@@ -81,8 +85,10 @@ void medDatabasePreviewStaticScene::addImage(const medDataIndex &index)
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
     pixmap->setPixmap(medDataManager::instance()->thumbnail(index));
-    pixmap->scale(d->baseWidth / pixmap->boundingRect().width(),
+    QTransform transfo;
+    transfo=transfo.scale(d->baseWidth / pixmap->boundingRect().width(),
                   d->baseHeight / pixmap->boundingRect().height());
+    pixmap->setTransform(transfo);
     this->addItem(pixmap);
 
     switch(nbItem)

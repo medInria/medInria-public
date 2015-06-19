@@ -14,7 +14,7 @@
 #include <medAbstractPacsMoveScu.h>
 #include <medAbstractPacsNode.h>
 
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 int medAbstractPacsMoveScu::sendMoveRequest( const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort )
 {

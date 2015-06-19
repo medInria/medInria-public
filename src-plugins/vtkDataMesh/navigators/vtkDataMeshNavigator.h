@@ -14,6 +14,9 @@
 #pragma once
 
 #include <medAbstractNavigator.h>
+#include <QFormLayout>
+#include <QSlider>
+#include <QWidget>
 
 class vtkDataMeshNavigatorPrivate;
 

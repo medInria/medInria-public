@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <vtkDataMeshPluginExport.h>
 
@@ -22,6 +22,7 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPluginPrivate;
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.vtkDataMeshPlugin" FILE "vtkDataMeshPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

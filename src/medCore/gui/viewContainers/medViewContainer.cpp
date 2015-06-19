@@ -18,6 +18,8 @@
 #include <QPushButton>
 #include <QUuid>
 #include <QFileDialog>
+#include <QMenu>
+#include <QApplication>
 
 #include <medViewContainerManager.h>
 #include <medAbstractView.h>

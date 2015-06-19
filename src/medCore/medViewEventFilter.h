@@ -18,14 +18,17 @@
 // /////////////////////////////////////////////////////////////////
 
 
-#include <dtkCore/dtkAbstractObject.h>
+#include <dtkCoreSupport/dtkAbstractObject.h>
 
 #include <medCoreExport.h>
+#include <QMouseEvent>
 
 //Forward declarations
 class medAbstractView;
 class medAbstractViewScene;
 class medSegmentationSelectorToolBox;
+class QMouseEvent;
+class QGraphicsSceneMouseEvent;
 
 /** class medViewEventFilter
  * This class can be added as an EventFilter on a medAbstractView.

@@ -14,7 +14,7 @@
 #include <medAbstractParameter.h>
 
 #include <QtGui>
-
+#include <QtWidgets>
 
 class medAbstractParameterPrivate
 {
