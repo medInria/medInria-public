@@ -69,9 +69,10 @@ int main(int argc,char* argv[]) {
 
     // this needs to be done before creating the QApplication object, as per the
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
-    QApplication::setStyle("plastique");
+    //QApplication::setStyle("plastique");
     medApplication application(argc,argv);
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
+
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
 
