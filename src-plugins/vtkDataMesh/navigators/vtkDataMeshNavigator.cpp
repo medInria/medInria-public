@@ -24,6 +24,7 @@
 #include <medAbstractImageView.h>
 #include <medBoolParameter.h>
 
+#include <QLabel>
 
 /*=========================================================================
 

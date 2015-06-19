@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkAbstractDataReader.h>
-#include <dtkCore/dtkAbstractDataWriter.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <dtkCoreSupport/dtkAbstractDataWriter.h>
 #include <medAbstractData.h>
 
 #include <medCoreExport.h>

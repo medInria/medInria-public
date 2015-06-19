@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <qtdcmDataSourcePluginExport.h>
 
@@ -22,6 +22,7 @@ class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSourcePluginPrivate;
 class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSourcePlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.qtdcmDataSourcePlugin" FILE "qtdcmDataSourcePlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

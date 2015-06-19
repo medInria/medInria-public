@@ -27,9 +27,9 @@
 #include <medClickAndMoveEventFilter.h>
 #include <medClearMaskCommand.h>
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 #include <QtCore>
 #include <QColorDialog>

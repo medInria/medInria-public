@@ -13,8 +13,8 @@
 
 #include <medRunnableProcess.h>
 
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 class medRunnableProcessPrivate
 {

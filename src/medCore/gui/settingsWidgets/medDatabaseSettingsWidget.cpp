@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include <medDatabaseSettingsWidget.h>
-#include <QWidget>
+#include <QtWidgets>
 #include <QtGui>
 #include <QtCore>
 

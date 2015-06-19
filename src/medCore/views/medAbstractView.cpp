@@ -14,9 +14,11 @@
 #include <medAbstractView.h>
 
 #include <QPair>
+#include <QUndoStack>
+#include <QMouseEvent>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkSmartPointer>
+#include <dtkCoreSupport/dtkSmartPointer>
 
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>

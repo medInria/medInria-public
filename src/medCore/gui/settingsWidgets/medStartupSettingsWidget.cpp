@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include <medStartupSettingsWidget.h>
-#include <QWidget>
+#include <QtWidgets>
 #include <QtGui>
 #include <QtCore>
 

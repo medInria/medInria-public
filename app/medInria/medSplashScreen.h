@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QtGui>
+#include <QtWidgets>
 
 class medSplashScreenPrivate;
 

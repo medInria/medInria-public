@@ -23,6 +23,8 @@
 #include <medAbstractLayeredViewInteractor.h>
 
 
+#include <QLabel>
+
 class medQtViewPrivate
 {
 public:

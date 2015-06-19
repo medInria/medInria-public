@@ -55,12 +55,12 @@ QString medStorage::dataLocation(void)
         // if the location is still not set we return the default paths
         if ( vDbLoc.isEmpty() )
         {
-#ifdef Q_WS_MAC
-            vDbLoc = QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation))
+#ifdef Q_OS_MAC
+            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
                 .remove(QCoreApplication::applicationName())
                 .append(QCoreApplication::applicationName());
 #else
-            vDbLoc = QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
 #endif
         }
         setDataLocation(vDbLoc);
@@ -70,7 +70,7 @@ QString medStorage::dataLocation(void)
 
 QString medStorage::configLocation(void)
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     return(QDir::homePath() + "/Library/Preferences/" + "com" + "." + QCoreApplication::organizationName() + "." + QCoreApplication::applicationName() + "." + "plist");
 #else
     return(dataLocation());

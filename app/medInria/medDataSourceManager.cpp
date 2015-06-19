@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include <medDataSourceManager.h>
-#include <dtkCore>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <QList>
 #include <QUuid>
@@ -165,12 +165,12 @@ medDataSourceManager::~medDataSourceManager( void )
 
 void medDataSourceManager::openFromPath(QString path)
 {
-    qobject_cast<medApplication*>(qApp)->open(path);
+    //qobject_cast<medApplication*>(qApp)->open(path);
 }
 
 void medDataSourceManager::openFromIndex(medDataIndex index)
 {
-    qobject_cast<medApplication*>(qApp)->open(index);
+    //qobject_cast<medApplication*>(qApp)->open(index);
 }
 
 void medDataSourceManager::loadFromPath(QString path)

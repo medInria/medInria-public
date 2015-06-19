@@ -17,10 +17,10 @@
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
-#include <dtkVr/dtkVrHeadRecognizer.h>
-#include <dtkVr/dtkVrGestureRecognizer.h>
+#include <dtkVrSupport/dtkVrHeadRecognizer.h>
+#include <dtkVrSupport/dtkVrGestureRecognizer.h>
 
 #include <medAbstractDbController.h>
 #include <medSettingsManager.h>
@@ -48,7 +48,8 @@
 #include <medParameterGroupManager.h>
 
 #include <QtGui>
-#include <QGLWidget>
+#include <QtWidgets>
+#include <QtOpenGL/QGLWidget>
 
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)

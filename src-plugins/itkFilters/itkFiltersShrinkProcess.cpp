@@ -13,7 +13,7 @@
 
 #include <itkFiltersShrinkProcess.h>
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <medAbstractDataFactory.h>
 
 #include <medMetaDataKeys.h>

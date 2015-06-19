@@ -19,6 +19,8 @@
 #include <vtkXMLFiberDataSetReader.h>
 #include <vtkFiberDataSet.h>
 
+#include <QColor>
+
 class medVtkFibersDataReaderPrivate {
 public:
     vtkXMLFiberDataSetReader *reader;
@@ -41,7 +43,7 @@ QStringList medVtkFibersDataReader::handled() const {
 }
 
 bool medVtkFibersDataReader::canRead (const QString& path) {
-    return d->reader->CanReadFile (path.toAscii().constData());
+    return d->reader->CanReadFile (path.toLatin1().constData());
 }
 
 bool medVtkFibersDataReader::canRead (const QStringList& paths) {
@@ -51,7 +53,7 @@ bool medVtkFibersDataReader::canRead (const QStringList& paths) {
 }
 
 bool medVtkFibersDataReader::readInformation (const QString& path) {
-    // d->reader->SetFileName (path.toAscii().constData());
+    // d->reader->SetFileName (path.toLatin1().constData());
 
     medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 
@@ -67,7 +69,7 @@ bool medVtkFibersDataReader::readInformation (const QString& path) {
 bool medVtkFibersDataReader::readInformation (const QStringList& paths) {
     if (!paths.count())
         return false;
-    return this->readInformation ( paths[0].toAscii().constData() );
+    return this->readInformation ( paths[0].toLatin1().constData() );
 }
 
 bool medVtkFibersDataReader::read (const QString& path) {
@@ -78,7 +80,7 @@ bool medVtkFibersDataReader::read (const QString& path) {
   this->setProgress (25);
 
   if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data())) {
-    d->reader->SetFileName (path.toAscii().constData());
+    d->reader->SetFileName (path.toLatin1().constData());
     d->reader->Update();
 
     if (vtkFiberDataSet *dataset = d->reader->GetOutput()) {
@@ -113,7 +115,7 @@ bool medVtkFibersDataReader::read (const QString& path) {
 bool medVtkFibersDataReader::read (const QStringList& paths) {
     if (!paths.count())
         return false;
-    return this->read ( paths[0].toAscii().constData() );
+    return this->read ( paths[0].toLatin1().constData() );
 }
   
 void medVtkFibersDataReader::setProgress (int value) {

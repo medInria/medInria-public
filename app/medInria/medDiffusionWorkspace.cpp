@@ -13,9 +13,9 @@
 
 #include "medDiffusionWorkspace.h"
 
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 #include <medAbstractDiffusionProcess.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
 #include <medAbstractLayeredView.h>
 #include <medAbstractImageData.h>

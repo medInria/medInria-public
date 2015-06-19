@@ -17,7 +17,7 @@
 #include <QtGui>
 #include <QWidget>
 
-#include <dtkGui/dtkSettingsEditor.h>
+#include <dtkGuiSupport/dtkSettingsEditor.h>
 
 #include <medMessageController.h>
 #include <medSettingsWidget.h>

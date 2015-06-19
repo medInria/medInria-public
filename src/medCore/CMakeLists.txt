@@ -49,6 +49,8 @@ set(${PROJECT_NAME}_QRC resources/medCore.qrc)
 
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
+  ${QT_HEADERS}
+
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
@@ -71,7 +73,7 @@ endif()
 ## add library
 ## #############################################################################
 
-qt4_add_resources(${PROJECT_NAME}_QRC
+qt5_add_resources(${PROJECT_NAME}_QRC
   ${${PROJECT_NAME}_QRC}
   )
 
@@ -89,8 +91,8 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     ${OPENGL_LIBRARIES}
-    dtkCore
-    dtkGui
+    dtkCoreSupport
+    dtkGuiSupport
     dtkLog
     )
 

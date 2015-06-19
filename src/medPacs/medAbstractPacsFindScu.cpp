@@ -13,7 +13,7 @@
 
 #include <medAbstractPacsFindScu.h>
 
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 medAbstractPacsFindScu::medAbstractPacsFindScu(void)
 {

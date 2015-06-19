@@ -17,10 +17,10 @@
 
 #include <QtGui>
 
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <dtkCoreSupport/dtkAbstractDataFactory.h>
+#include <dtkCoreSupport/dtkAbstractData.h>
 
 #include <medPluginManager.h>
 
@@ -60,7 +60,7 @@ public:
 // /////////////////////////////////////////////////////////////////
 
 medApplication::medApplication(int & argc, char**argv) :
-        QtSingleApplication(argc,argv),
+        QApplication(argc,argv),
         d(new medApplicationPrivate)
 {
     d->mainWindow = NULL;
@@ -73,7 +73,8 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
-    this->setStyleSheet(parser.result());
+    qDebug()<<parser.result();
+    //this->setStyleSheet(parser.result());*/
 
     //  Redirect msgs to the logs
 
@@ -100,13 +101,11 @@ bool medApplication::event(QEvent *event)
     {
         // Handle file system open requests, but only if the main window has been created and set
         case QEvent::FileOpen:
-            if (d->mainWindow)
-                emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
-            else
+            if (!d->mainWindow)
                 d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
             return true;
         default:
-            return QtSingleApplication::event(event);
+            return QApplication::event(event);
     }
 }
 
@@ -116,13 +115,6 @@ void medApplication::setMainWindow(medMainWindow *mw)
 
     QVariant var = QVariant::fromValue((QObject*)d->mainWindow);
     this->setProperty("MainWindow",var);
-
-    // If there are any requests to open files not yet treated, send signal to do so
-    foreach(QString openInstruction, d->systemOpenInstructions)
-    {
-        emit messageReceived(openInstruction);
-    }
-
     d->systemOpenInstructions.clear();
 }
 

@@ -39,19 +39,19 @@ QStringList vtkDataMesh4DReader::s_handled() {
 }
 
 bool vtkDataMesh4DReader::canRead (const QString& path) {
-    return this->reader->CanReadFile (path.toAscii().constData());
+    return this->reader->CanReadFile (path.toLatin1().constData());
 }
 
 bool vtkDataMesh4DReader::canRead (const QStringList& paths) {
     if (!paths.count())
         return false;
-    return this->canRead ( paths[0].toAscii().constData() );
+    return this->canRead ( paths[0].toLatin1().constData() );
 }
 
 bool vtkDataMesh4DReader::readInformation (const QString& path) {
   
     medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
-    this->reader->SetFileName (path.toAscii().constData());
+    this->reader->SetFileName (path.toLatin1().constData());
   
     if (!medData) {
         medData = medAbstractDataFactory::instance()->create("vtkDataMesh4D");
@@ -68,7 +68,7 @@ bool vtkDataMesh4DReader::readInformation (const QString& path) {
 bool vtkDataMesh4DReader::readInformation (const QStringList& paths) {
     if (!paths.count())
         return false;
-    return this->readInformation ( paths[0].toAscii().constData() );
+    return this->readInformation ( paths[0].toLatin1().constData() );
 }
 
 bool vtkDataMesh4DReader::read (const QString& path) {
@@ -85,7 +85,7 @@ bool vtkDataMesh4DReader::read (const QString& path) {
         if (!(medData->identifier()=="vtkDataMesh4D"))
             return false;
 
-        this->reader->SetFileName (path.toAscii().constData());
+        this->reader->SetFileName (path.toLatin1().constData());
         this->reader->Update();
         vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (this->reader->GetOutput()->GetMetaDataSet ((unsigned int)0));
         if (sequence)
@@ -99,7 +99,7 @@ bool vtkDataMesh4DReader::read (const QString& path) {
 bool vtkDataMesh4DReader::read (const QStringList& paths) {
     if (!paths.count())
         return false;
-    return this->read ( paths[0].toAscii().constData() );
+    return this->read ( paths[0].toLatin1().constData() );
 }
 
 void vtkDataMesh4DReader::setProgress (int value) {

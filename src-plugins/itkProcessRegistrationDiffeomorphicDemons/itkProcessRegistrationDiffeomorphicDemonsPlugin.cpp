@@ -108,6 +108,6 @@ QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::types() const
     return QStringList() << "itkProcessRegistrationDiffeomorphicDemons";
 }
 
-Q_EXPORT_PLUGIN2(itkProcessRegistrationDiffeomorphicDemonsPlugin, itkProcessRegistrationDiffeomorphicDemonsPlugin)
+//Q_EXPORT_PLUGIN2(itkProcessRegistrationDiffeomorphicDemonsPlugin, itkProcessRegistrationDiffeomorphicDemonsPlugin)
 
 

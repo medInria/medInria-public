@@ -21,8 +21,9 @@
 #include <medAbstractPacsResultDataset.h>
 
 #include <QUuid>
+#include <QMenu>
 
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 // /////////////////////////////////////////////////////////////////
 // medPacsWidgetPrivate
@@ -176,7 +177,7 @@ void medPacsWidget::search(QString query)
     {
         d->find->clearAllQueryAttributes();
         d->find->setQueryLevel(medAbstractPacsFindScu::STUDY);
-        d->find->addQueryAttribute(0x0010,0x0010, query.toAscii().constData()); // patient name
+        d->find->addQueryAttribute(0x0010,0x0010, query.toLatin1().constData()); // patient name
         d->find->addQueryAttribute(0x0008,0x0030, "\0"); // study date
         d->find->addQueryAttribute(0x0008,0x0050, "\0"); // accession no
         d->find->addQueryAttribute(0x0008,0x0061, "\0"); // modalities in study

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractDataReader.h>
+#include <dtkCoreSupport/dtkAbstractDataReader.h>
 
 #include <medImageIOExport.h>
 #include <itkImageIOBase.h>

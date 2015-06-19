@@ -30,6 +30,8 @@
 #include <medLayerParameterGroup.h>
 #include <medParameterGroupManager.h>
 
+#include <QLayout>
+#include <QPushButton>
 
 
 /**

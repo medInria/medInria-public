@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractViewNavigator.h>
+#include <dtkCoreSupport/dtkAbstractViewNavigator.h>
 
 #include <medCoreExport.h>
 #include <medImageViewEnum.h>

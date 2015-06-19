@@ -13,7 +13,7 @@
 
 #include <medVtkFibersDataWriter.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <dtkCoreSupport/dtkAbstractData.h>
 #include <medAbstractDataFactory.h>
 
 #include <vtkPolyData.h>
@@ -60,7 +60,7 @@ bool medVtkFibersDataWriter::write(const QString& path)
   //dataset->Update();
   
   vtkXMLFiberDataSetWriter *writer = vtkXMLFiberDataSetWriter::New();
-  writer->SetFileName ( path.toAscii().constData() );
+  writer->SetFileName ( path.toLatin1().constData() );
   writer->SetInputData ( dataset );
   writer->SetDataModeToBinary();
   writer->Write();

@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medAbstractMeshData.h>
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 #include <vtkDataMeshPluginExport.h>
 

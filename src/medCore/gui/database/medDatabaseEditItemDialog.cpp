@@ -17,7 +17,7 @@
 #include <medAbstractDatabaseItem.h>
 
 #include <QtGui>
-
+#include <QtWidgets>
 
 class medDatabaseEditItemDialogPrivate
 {

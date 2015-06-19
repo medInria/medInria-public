@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 #include <itkFiltersPluginExport.h>
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersPluginPrivate;
@@ -21,6 +21,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersPluginPrivate;
 class ITKFILTERSPLUGIN_EXPORT itkFiltersPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.itkFiltersPlugin" FILE "itkFiltersPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

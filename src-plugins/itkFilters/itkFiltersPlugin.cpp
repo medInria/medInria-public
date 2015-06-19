@@ -140,4 +140,4 @@ QStringList itkFiltersPlugin::types() const
                          << "itkOpenProcess";
 }
 
-Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )
+//Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )

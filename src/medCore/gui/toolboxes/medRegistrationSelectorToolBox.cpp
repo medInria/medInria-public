@@ -13,13 +13,13 @@
 
 #include <medRegistrationSelectorToolBox.h>
 
-#include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCoreSupport/dtkAbstractViewFactory.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkAbstractViewInteractor.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medDataManager.h>
 #include <medJobManager.h>

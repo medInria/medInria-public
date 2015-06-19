@@ -100,4 +100,4 @@ QStringList qtdcmDataSourcePlugin::types() const
     return QStringList() << "qtdcmDataSource";
 }
 
-Q_EXPORT_PLUGIN2 ( qtdcmDataSourcePlugin, qtdcmDataSourcePlugin )
+//Q_EXPORT_PLUGIN2 ( qtdcmDataSourcePlugin, qtdcmDataSourcePlugin )

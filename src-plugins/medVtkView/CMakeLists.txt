@@ -29,8 +29,7 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
 
 find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
-include(dtkPlugin)
+include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
@@ -81,7 +80,7 @@ endif()
 ## #############################################################################
 
 
-qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+qt5_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
 
 
 add_library(${PROJECT_NAME} SHARED

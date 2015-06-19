@@ -21,6 +21,8 @@ class medAbstractData;
 class medAbstractImageView;
 class medAbstractParameter;
 
+class QStandardItem;
+
 class medVtkFibersDataInteractorPrivate;
 
 /**

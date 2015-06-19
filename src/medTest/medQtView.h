@@ -15,7 +15,7 @@
 
 #include <medTestExport.h>
 
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractLayeredView.h>
 

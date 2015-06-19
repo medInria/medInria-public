@@ -42,6 +42,8 @@ list_source_files(${PROJECT_NAME}
 
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
+    ${QT_HEADERS}
+
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
@@ -66,7 +68,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore 
+  dtkCoreSupport 
   dtkLog
   medCore
   ITKCommon
