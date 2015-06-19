@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
 #include <medAbstractData.h>
 
 #include <medCoreExport.h>

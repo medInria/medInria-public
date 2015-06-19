@@ -33,6 +33,13 @@
 #include <medStringListParameter.h>
 #include <medTimeLineParameter.h>
 
+#include <QLabel>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+
+
 /*=========================================================================
 
     D pointer

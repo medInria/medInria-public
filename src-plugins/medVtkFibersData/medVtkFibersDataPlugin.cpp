@@ -112,4 +112,4 @@ QStringList medVtkFibersDataPlugin::types() const
                          << "medVtkFibersDataReader";
 }
 
-Q_EXPORT_PLUGIN2(medVtkFibersDataPlugin, medVtkFibersDataPlugin)
+////Q_EXPORT_PLUGIN2(medVtkFibersDataPlugin, medVtkFibersDataPlugin)

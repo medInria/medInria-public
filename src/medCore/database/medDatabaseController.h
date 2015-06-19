@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
 
 #include <medCoreExport.h>
 #include <medAbstractDbController.h>

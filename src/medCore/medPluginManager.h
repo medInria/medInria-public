@@ -15,7 +15,7 @@
 
 #include <QtCore>
 
-#include <dtkCore/dtkPluginManager.h>
+#include <dtkCoreSupport/dtkPluginManager.h>
 
 #include <medCoreExport.h>
 

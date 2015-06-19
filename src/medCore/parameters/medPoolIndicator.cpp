@@ -14,6 +14,7 @@
 #include <medPoolIndicator.h>
 
 #include <QtGui>
+#include <QtWidgets>
 
 class medPoolIndiactorPrivate
 {

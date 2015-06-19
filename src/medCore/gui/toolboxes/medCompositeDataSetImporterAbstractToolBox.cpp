@@ -13,7 +13,7 @@
 
 #include <medCompositeDataSetImporterSelectorToolBox.h>
 #include <medCompositeDataSetImporterAbstractToolBox.h>
-#include <dtkCore/dtkAbstractObject.h>
+#include <dtkCoreSupport/dtkAbstractObject.h>
 
 class medCompositeDataSetImporterAbstractToolBoxPrivate
 {

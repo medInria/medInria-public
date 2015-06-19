@@ -27,8 +27,7 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
-include(dtkPlugin)
+include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK)
 include(${ITK_USE_FILE})

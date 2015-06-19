@@ -13,7 +13,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
-#include <dtkCore/dtkAbstractView.h>
+#include <dtkCoreSupport/dtkAbstractView.h>
 #include <medAbstractImageView.h>
 #include <medStorage.h>
 #include <medClutEditor.h>

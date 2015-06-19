@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractProcess_p.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkAbstractProcess_p.h>
 #include <medAbstractImageData.h>
 #include <dtkLog/dtkLog.h>
 

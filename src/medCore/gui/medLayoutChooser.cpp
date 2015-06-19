@@ -14,6 +14,7 @@
 #include <medLayoutChooser.h>
 
 #include <QtGui>
+#include <QtWidgets>
 
 class medLayoutChooserPrivate
 {

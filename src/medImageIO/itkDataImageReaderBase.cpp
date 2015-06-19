@@ -18,7 +18,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
@@ -42,7 +42,7 @@ bool itkDataImageReaderBase::canRead (const QString& path)
     if (this->io.IsNull())
         return false;
 
-    if (!this->io->CanReadFile( path.toAscii().constData() ))
+    if (!this->io->CanReadFile( path.toLatin1().constData() ))
     {
         return false;
     }
@@ -53,7 +53,7 @@ bool itkDataImageReaderBase::canRead (const QString& path)
         // will be handled by more specific image readers
         // (e.g. tensors if 6 or 9 components)
 
-        this->io->SetFileName( path.toAscii().constData() );
+        this->io->SetFileName( path.toLatin1().constData() );
         try {
            this->io->ReadImageInformation();
         }
@@ -77,7 +77,7 @@ bool itkDataImageReaderBase::canRead (const QStringList& paths)
 {
     if (!paths.count())
         return false;
-    return this->canRead ( paths[0].toAscii().constData() );
+    return this->canRead ( paths[0].toLatin1().constData() );
 }
 
 bool itkDataImageReaderBase::readInformation (const QString& path)
@@ -85,7 +85,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
     if (this->io.IsNull())
         return false;
 
-    this->io->SetFileName(path.toAscii().constData());
+    this->io->SetFileName(path.toLatin1().constData());
     try
     {
         this->io->ReadImageInformation();
@@ -227,7 +227,7 @@ bool itkDataImageReaderBase::readInformation (const QStringList& paths)
 {
     if (!paths.count())
         return false;
-    return this->readInformation ( paths[0].toAscii().constData() );
+    return this->readInformation ( paths[0].toLatin1().constData() );
 }
 
 template <unsigned DIM,typename T>
@@ -240,7 +240,7 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     typedef itk::Image<T,DIM> Image;
     typename itk::ImageFileReader<Image>::Pointer TReader = itk::ImageFileReader<Image>::New();
     TReader->SetImageIO(this->io);
-    TReader->SetFileName(path.toAscii().constData());
+    TReader->SetFileName(path.toLatin1().constData());
     TReader->SetUseStreaming(true);
     typename Image::Pointer im = TReader->GetOutput();
     medData->setData(im);
@@ -322,7 +322,7 @@ bool itkDataImageReaderBase::read (const QStringList& paths)
 {
     if (paths.count() < 1)
         return false;
-    return this->read(paths[0].toAscii().constData());
+    return this->read(paths[0].toLatin1().constData());
 }
 
 void itkDataImageReaderBase::setProgress (int value)

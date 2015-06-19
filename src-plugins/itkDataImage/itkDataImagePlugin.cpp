@@ -219,4 +219,4 @@ QStringList itkDataImagePlugin::types() const
             << "itkDataImageRGBA3";
 }
 
-Q_EXPORT_PLUGIN2(itkDataImagePlugin, itkDataImagePlugin)
+////Q_EXPORT_PLUGIN2(itkDataImagePlugin, itkDataImagePlugin)

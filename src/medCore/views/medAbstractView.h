@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractView.h>
+#include <dtkCoreSupport/dtkAbstractView.h>
 #include <medCoreExport.h>
 
 class medAbstractViewPrivate;
@@ -28,7 +28,7 @@ class medAbstractParameter;
 class medDoubleParameter;
 class medAbstractVector2DParameter;
 class medStringListParameter;
-
+class QUndoStack;
 
 /**
  * @brief The medViewBackend class

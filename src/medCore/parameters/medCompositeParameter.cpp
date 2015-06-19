@@ -14,6 +14,7 @@
 #include "medCompositeParameter.h"
 
 #include <QtGui>
+#include <QtWidgets>
 #include <QPair>
 
 

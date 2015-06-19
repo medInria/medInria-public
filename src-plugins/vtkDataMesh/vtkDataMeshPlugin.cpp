@@ -113,4 +113,4 @@ QStringList vtkDataMeshPlugin::types() const
                        << "vtkDataMesh4DWriter";
 }
 
-Q_EXPORT_PLUGIN2(vtkDataMeshPlugin, vtkDataMeshPlugin)
+////Q_EXPORT_PLUGIN2(vtkDataMeshPlugin, vtkDataMeshPlugin)

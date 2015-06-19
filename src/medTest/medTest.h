@@ -15,8 +15,8 @@
 
 #include <medTestExport.h>
 
-#include <dtkCore/dtkTest.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkTest.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 #include <medAbstractData.h>
 
 namespace medTest

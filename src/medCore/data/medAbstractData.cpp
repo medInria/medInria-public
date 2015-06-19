@@ -21,9 +21,11 @@
 #include <medAbstractImageView.h>
 #include <medGlobalDefs.h>
 
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
+#include <QApplication>
+#include <QMainWindow>
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_X11
 void qt_x11_wait_for_window_manager(QWidget*);
 #endif
 
@@ -226,7 +228,7 @@ void medAbstractData::generateThumbnail()
         aMainWindow->raise();
 
         // We need to wait for the window manager to finish animating before we can continue.
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_X11
         qt_x11_wait_for_window_manager(viewWidget);
     #endif
     }

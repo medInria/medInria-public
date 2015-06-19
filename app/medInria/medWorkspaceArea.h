@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QtGui>
-
+#include <QtWidgets>
 #include <medAbstractWorkspace.h>
 
 class medAbstractView;

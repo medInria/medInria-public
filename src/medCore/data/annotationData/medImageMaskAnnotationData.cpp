@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include <medImageMaskAnnotationData.h>
-
+#include <QtWidgets>
 #include <medAbstractImageData.h>
 
 medImageMaskAnnotationData::medImageMaskAnnotationData() :

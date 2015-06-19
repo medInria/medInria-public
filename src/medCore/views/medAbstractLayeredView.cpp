@@ -13,7 +13,7 @@
 
 #include <medAbstractLayeredView.h>
 
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 #include <medDataManager.h>
 
 #include <medAbstractData.h>
