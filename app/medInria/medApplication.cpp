@@ -73,8 +73,7 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
-    qDebug()<<parser.result();
-    //this->setStyleSheet(parser.result());*/
+    //this->setStyleSheet(parser.result());
 
     //  Redirect msgs to the logs
 
