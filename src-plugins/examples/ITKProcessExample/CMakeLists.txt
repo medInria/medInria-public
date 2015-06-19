@@ -33,8 +33,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #################################################################
 
 find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
-include(dtkPlugin)
+include_directories(${dtk_INCLUDE_DIRS})
 
 # ITK
 find_package(ITK REQUIRED)
@@ -63,7 +62,7 @@ configure_file(
       ${CMAKE_CURRENT_BINARY_DIR}/ITKProcessExampleDefinitions.h
       )
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt5_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}

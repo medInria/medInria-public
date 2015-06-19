@@ -16,7 +16,7 @@
 #include <medAlgorithmPaintToolbox.h>
 #include <medToolBoxFactory.h>
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
 medAlgorithmInitializer::medAlgorithmInitializer()
 {

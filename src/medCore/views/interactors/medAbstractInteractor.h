@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <dtkCoreSupport/dtkAbstractViewInteractor.h>
 
 #include <medCoreExport.h>
 

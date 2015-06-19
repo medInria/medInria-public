@@ -16,6 +16,7 @@
 #include<medSettingsManager.h>
 
 #include <QtGui>
+#include <QtWidgets>
 
 class medEmptyDbWarningPrivate
 {

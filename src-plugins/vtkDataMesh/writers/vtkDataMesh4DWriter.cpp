@@ -73,7 +73,7 @@ bool vtkDataMesh4DWriter::write(const QString& path)
   vtkDataManager* manager = vtkDataManager::New();
   manager->AddMetaDataSet (sequence);
 
-  this->writer->SetFileName(path.toAscii().constData());
+  this->writer->SetFileName(path.toLatin1().constData());
   this->writer->SetInput (manager);
   // this->writer->SetFileTypeToBinary();
   this->writer->Update();

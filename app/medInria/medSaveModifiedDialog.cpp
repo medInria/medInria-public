@@ -16,6 +16,7 @@
 #include <medDataIndex.h>
 
 #include <QtGui>
+#include <QtWidgets>
 
 #include <medSaveModifiedDialog.h>
 

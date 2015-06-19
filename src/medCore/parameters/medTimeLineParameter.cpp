@@ -16,8 +16,8 @@
 #include <math.h>       // floor
 
 #include <QtGui>
-
-#include <dtkCore/dtkSignalBlocker.h>
+#include <QtWidgets>
+#include <dtkCoreSupport/dtkSignalBlocker.h>
 
 #include <medIntParameter.h>
 #include <medBoolParameter.h>

@@ -83,7 +83,7 @@ template <typename TYPE,unsigned DIM>
 void ReadImage(medAbstractData* medData,itk::DCMTKImageIO::Pointer io,const QStringList& paths) {
     typename itk::ImageFileReader<itk::Image<TYPE,DIM> >::Pointer Reader = itk::ImageFileReader<itk::Image<TYPE,DIM> >::New();
     Reader->SetImageIO(io);
-    Reader->SetFileName(paths[0].toAscii().constData());
+    Reader->SetFileName(paths[0].toLatin1().constData());
     medData->setData(Reader->GetOutput());
     Reader->Update();
 }
@@ -248,12 +248,12 @@ QString itkDCMTKDataImageReader::description() const {
 }
 
 bool itkDCMTKDataImageReader::canRead(const QString& path) {
-    return d->io->CanReadFile(path.toAscii().constData());
+    return d->io->CanReadFile(path.toLatin1().constData());
 }
 
 bool itkDCMTKDataImageReader::canRead(const QStringList& paths) {
     for (int i=0; i<paths.size(); i++)
-        if (!d->io->CanReadFile(paths[i].toAscii().constData()))
+        if (!d->io->CanReadFile(paths[i].toLatin1().constData()))
             return false;
     return true;
 }

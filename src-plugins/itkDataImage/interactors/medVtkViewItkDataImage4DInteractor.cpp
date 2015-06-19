@@ -25,6 +25,8 @@
 #include <medAbstractImageData.h>
 #include <medDoubleParameter.h>
 
+#include <QVBoxLayout>
+#include <QWidget>
 
 class medVtkViewItkDataImage4DInteractorPrivate
 {

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <itkDataImagePluginExport.h>
 
@@ -22,6 +22,7 @@ class itkDataImagePluginPrivate;
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImagePlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.itkDataImagePlugin" FILE "itkDataImagePlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

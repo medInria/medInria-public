@@ -40,6 +40,10 @@
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>
 
+#include <QLabel>
+#include <QSlider>
+#include <QFormLayout>
+
 
 typedef itk::Tensor<float, 3>    TensorTypeFloat;
 typedef itk::Image<TensorTypeFloat, 3> TensorImageTypeFloat;

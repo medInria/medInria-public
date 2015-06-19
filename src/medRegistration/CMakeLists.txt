@@ -19,7 +19,7 @@ project(medRegistration)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
+include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -65,7 +65,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
-  dtkCore
+  dtkCoreSupport
   medCore
   dtkLog
   ITKCommon

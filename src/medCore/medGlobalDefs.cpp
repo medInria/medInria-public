@@ -1,7 +1,7 @@
 #include <medGlobalDefs.h>
 
 #include <QFileInfo>
-#include <QtOpenGL>
+#include <QtOpenGL/QtOpenGL>
 
 namespace med {
 

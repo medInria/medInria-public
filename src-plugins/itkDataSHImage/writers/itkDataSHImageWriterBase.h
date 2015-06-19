@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractDataWriter.h>
+#include <dtkCoreSupport/dtkAbstractDataWriter.h>
 
 #include <itkDataSHImagePluginExport.h>
 #include <itkImageIOBase.h>

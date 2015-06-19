@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
@@ -225,12 +225,12 @@ QString itkGDCMDataImageReader::description() const {
 }
 
 bool itkGDCMDataImageReader::canRead(const QString &path) {
-    return d->io->CanReadFile(path.toAscii().constData());
+    return d->io->CanReadFile(path.toLatin1().constData());
 }
 
 bool itkGDCMDataImageReader::canRead(const QStringList &paths) {
     for (int i=0; i<paths.size(); i++)
-        if (!d->io->CanReadFile(paths[i].toAscii().constData()))
+        if (!d->io->CanReadFile(paths[i].toLatin1().constData()))
             return false;
     return true;
 }
@@ -248,7 +248,7 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
 
     FileList filenames;
     for (int i=0; i<paths.size(); i++)
-        filenames.push_back(paths[i].toAscii().constData());
+        filenames.push_back(paths[i].toLatin1().constData());
 
     FileListMapType map = this->sort(filenames);
 
@@ -421,7 +421,7 @@ bool itkGDCMDataImageReader::read (const QStringList &paths)
 
     FileList filenames;
     for (int i=0;i<paths.size();i++)
-        filenames.push_back(paths[i].toAscii().constData());
+        filenames.push_back(paths[i].toLatin1().constData());
 
     FileListMapType map = this->sort(filenames);
 
@@ -438,9 +438,9 @@ bool itkGDCMDataImageReader::read (const QStringList &paths)
         QStringList qfilelist = medData->metaDataValues("FilePaths");
         FileList filelist;
         for (int i=0;i<qfilelist.size();i++)
-            filelist.push_back(qfilelist[i].toAscii().constData());
+            filelist.push_back(qfilelist[i].toLatin1().constData());
 
-        std::cout << "reading : "    << medData->identifier().toAscii().constData() << std::endl;
+        std::cout << "reading : "    << medData->identifier().toLatin1().constData() << std::endl;
         std::cout << "containing : " << map.size() << " volumes" << std::endl;
 
         try {

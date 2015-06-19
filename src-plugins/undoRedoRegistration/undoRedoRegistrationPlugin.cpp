@@ -111,4 +111,4 @@ QStringList undoRedoRegistrationPlugin::dependencies(void) const
     return QStringList();
 }
 
-Q_EXPORT_PLUGIN2(undoRedoRegistrationPlugin, undoRedoRegistrationPlugin)
+//Q_EXPORT_PLUGIN2(undoRedoRegistrationPlugin, undoRedoRegistrationPlugin)

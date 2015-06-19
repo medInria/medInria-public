@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QtGui>
-
+#include <QtWidgets>
 
 class medBrowserAreaPrivate;
 class medAbstractDataSource;

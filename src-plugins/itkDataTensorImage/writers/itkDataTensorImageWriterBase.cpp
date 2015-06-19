@@ -65,7 +65,7 @@ bool itkDataTensorImageWriterBase::canWrite(const QString& path)
     if (this->io.IsNull())
         return false;
 
-    return this->io->CanWriteFile ( path.toAscii().constData() );
+    return this->io->CanWriteFile ( path.toLatin1().constData() );
 }
 
 bool itkDataTensorImageWriterBase::write(const QString& path)
@@ -149,7 +149,7 @@ bool itkDataTensorImageWriterBase::write(const QString& path, PixelType dummyArg
 
     typedef typename itk::ImageFileWriter<VectorImageType>::Pointer ImageFileWriterPointer;
     ImageFileWriterPointer myWriter = itk::ImageFileWriter<VectorImageType>::New();
-    myWriter->SetFileName(path.toAscii().constData());
+    myWriter->SetFileName(path.toLatin1().constData());
     myWriter->SetInput(myTensorImage);
     try {
         myWriter->Write();

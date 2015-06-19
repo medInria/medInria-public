@@ -660,10 +660,10 @@ void medVtkFibersDataInteractor::validateSelection(const QString &name, const QC
 
     double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
 
-    d->manager->Validate (name.toAscii().constData(), color_d);
+    d->manager->Validate (name.toLatin1().constData(), color_d);
 
-    d->view2d->SetInput(d->manager->GetBundleActor(name.toAscii().constData()), d->view->layer(d->data));
-    d->view3d->GetRenderer()->AddActor(d->manager->GetBundleActor(name.toAscii().constData()));
+    d->view2d->SetInput(d->manager->GetBundleActor(name.toLatin1().constData()), d->view->layer(d->data));
+    d->view3d->GetRenderer()->AddActor(d->manager->GetBundleActor(name.toLatin1().constData()));
     
     d->data->addMetaData("BundleList", name);
     d->data->addMetaData("BundleColorList", color.name());
@@ -728,7 +728,7 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
                                                         QMap <QString, double> &max,
                                                         QMap <QString, double> &var)
 {
-    vtkPolyData *bundleData = d->dataset->GetBundle(bundleName.toAscii().constData()).Bundle;
+    vtkPolyData *bundleData = d->dataset->GetBundle(bundleName.toLatin1().constData()).Bundle;
 
     if (!bundleData)
         return;
@@ -851,7 +851,7 @@ void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &n
                                                                 double &max,
                                                                 double &var)
 {
-    vtkPolyData *bundleData = d->dataset->GetBundle(name.toAscii().constData()).Bundle;
+    vtkPolyData *bundleData = d->dataset->GetBundle(name.toLatin1().constData()).Bundle;
 
     if (!bundleData)
         return;
@@ -978,14 +978,14 @@ int medVtkFibersDataInteractor::roiBoolean(int roi)
 
 void medVtkFibersDataInteractor::setBundleVisibility(const QString &name, bool visibility)
 {
-    d->manager->SetBundleVisibility(name.toAscii().constData(), (int)visibility);
+    d->manager->SetBundleVisibility(name.toLatin1().constData(), (int)visibility);
     d->view->render();
 
 }
 
 bool medVtkFibersDataInteractor::bundleVisibility(const QString &name) const
 {
-    return d->manager->GetBundleVisibility(name.toAscii().constData());
+    return d->manager->GetBundleVisibility(name.toLatin1().constData());
 }
 
 void medVtkFibersDataInteractor::setAllBundlesVisibility(bool visibility)
@@ -1409,10 +1409,10 @@ void medVtkFibersDataInteractor::removeCurrentBundle()
     QModelIndex index = d->bundlingList->currentIndex();
     QString bundleName = d->bundlingModel->item(index.row())->data(Qt::UserRole+1).toString();
     
-    d->view2d->RemoveLayerActor(d->manager->GetBundleActor(bundleName.toAscii().constData()),d->view->layer(d->data));
-    d->view3d->GetRenderer()->RemoveActor(d->manager->GetBundleActor(bundleName.toAscii().constData()));
+    d->view2d->RemoveLayerActor(d->manager->GetBundleActor(bundleName.toLatin1().constData()),d->view->layer(d->data));
+    d->view3d->GetRenderer()->RemoveActor(d->manager->GetBundleActor(bundleName.toLatin1().constData()));
     
-    d->manager->RemoveBundle(bundleName.toAscii().constData());
+    d->manager->RemoveBundle(bundleName.toLatin1().constData());
     
     // TO DO : better handle bundle list: how to remove metadata from object ?
     //d->data->addMetaData("BundleList", name);

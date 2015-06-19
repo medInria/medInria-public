@@ -32,6 +32,7 @@ add_subdirectory(medVtkInria)
 ## #############################################################################
 
 set(${PROJECT_NAME}_INCLUDE_DIRS
+    ${QT_HEADERS}
   ${medCore_INCLUDE_DIRS}
   ${medGui_INCLUDE_DIRS}
   ${medPacs_INCLUDE_DIRS}

@@ -105,4 +105,4 @@ QStringList medVtkViewPlugin::types() const
 }
 
 //TODO What is it for - RDE
-Q_EXPORT_PLUGIN2(medVtkViewPlugin, medVtkViewPlugin)
+//Q_EXPORT_PLUGIN2(medVtkViewPlugin, medVtkViewPlugin)

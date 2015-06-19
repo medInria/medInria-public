@@ -41,17 +41,18 @@ set(${PROJECT_NAME}_QRC
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+    ${${PROJECT_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+                    ${QT_HEADERS})
 
 ## #############################################################################
 ## Add Exe
 ## #############################################################################
 
-qt4_wrap_ui(${PROJECT_NAME}_UI ${${PROJECT_NAME}_UI})
-qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+qt5_wrap_ui(${PROJECT_NAME}_UI ${${PROJECT_NAME}_UI})
+qt5_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
 
 if (APPLE)
   set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)

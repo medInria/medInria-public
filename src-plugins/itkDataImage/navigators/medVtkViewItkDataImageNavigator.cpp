@@ -23,6 +23,8 @@
 #include <medStringListParameter.h>
 #include <medBoolParameter.h>
 
+#include <QtWidgets>
+
 
 /*=========================================================================
 

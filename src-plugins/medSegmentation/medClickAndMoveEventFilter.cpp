@@ -109,7 +109,7 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
     if (imageView->is2D())
     {
         // Convert mouse click to a 3D point in the image.
-        QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->posF() );
+        QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
 
         if (m_paintState != PaintState::Wand)
         {
@@ -154,7 +154,7 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
 
     if (imageView->is2D())
     {
-        QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->posF() );
+        QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
         //Project vector onto plane
         this->m_points.push_back(posImage);
 

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <undoRedoRegistrationPluginExport.h>
 
@@ -22,6 +22,7 @@ class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationPluginPrivate;
 class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.undoRedoRegistrationPlugin" FILE "undoRedoRegistrationPlugin.json")
     Q_INTERFACES(dtkPlugin)
     
 public:

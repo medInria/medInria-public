@@ -14,6 +14,7 @@
 #include <medPacsSelector.h>
 
 #include <QtGui>
+#include <QtWidgets>
 #include <QListWidget>
 
 

@@ -70,14 +70,14 @@ bool itkDataSHImageReader::canRead (const QStringList &paths)
 
 bool itkDataSHImageReader::canRead (const QString &path)
 {
-    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toAscii().constData(),
+    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toLatin1().constData(),
                                                                            itk::ImageIOFactory::ReadMode);
 
     if (!imageIO.IsNull()) {
-        if (!imageIO->CanReadFile ( path.toAscii().constData() ))
+        if (!imageIO->CanReadFile ( path.toLatin1().constData() ))
             return false;
 
-        imageIO->SetFileName (path.toAscii().constData());
+        imageIO->SetFileName (path.toLatin1().constData());
         try {
             imageIO->ReadImageInformation();
         }
@@ -103,10 +103,10 @@ bool itkDataSHImageReader::readInformation (const QStringList &paths)
 
 bool itkDataSHImageReader::readInformation (const QString &path)
 {
-    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toAscii().constData(),
+    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toLatin1().constData(),
                                                                            itk::ImageIOFactory::ReadMode);
     
-    imageIO->SetFileName ( path.toAscii().constData() );
+    imageIO->SetFileName ( path.toLatin1().constData() );
     try {
         imageIO->ReadImageInformation();
     }
@@ -169,7 +169,7 @@ bool itkDataSHImageReader::read (const QString &path)
             SHImageType::Pointer image = 0;
 
             ReaderType::Pointer reader = ReaderType::New();
-            reader->SetFileName ( path.toAscii().constData() );
+            reader->SetFileName ( path.toLatin1().constData() );
             try {
                 reader->Update();
             }
@@ -188,7 +188,7 @@ bool itkDataSHImageReader::read (const QString &path)
             SHImageType::Pointer image = 0;
 
             ReaderType::Pointer reader = ReaderType::New();
-            reader->SetFileName ( path.toAscii().constData() );
+            reader->SetFileName ( path.toLatin1().constData() );
             try {
                 reader->Update();
             }

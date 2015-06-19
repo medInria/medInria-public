@@ -13,7 +13,7 @@
 
 #include <medRegistrationWorkspace.h>
 
-#include <dtkCore/dtkSignalBlocker.h>
+#include <dtkCoreSupport/dtkSignalBlocker.h>
 
 #include <medViewFactory.h>
 #include <medAbstractView.h>

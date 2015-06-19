@@ -17,8 +17,11 @@ project(medInria)
 ## List Sources
 ## #############################################################################
 
-add_subdirectory(QSingleApplication)
+#add_subdirectory(QSingleApplication)
 add_subdirectory(resources)
+
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -88,7 +91,7 @@ endif()
 ## Add Exe
 ## #############################################################################
 
-qt4_add_resources(${PROJECT_NAME}_QRC 
+qt5_add_resources(${PROJECT_NAME}_QRC 
   ${${PROJECT_NAME}_QRC}
   )
 
@@ -108,15 +111,21 @@ endif()
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
+  Qt5::Widgets
+  Qt5::Gui
+  Qt5::OpenGL
+  Qt5::Core
+  dtkCoreSupport
   dtkScript
-  dtkGui
-  dtkVr
+  dtkGuiSupport
+  dtkVrSupport
   medCore
   medPacs
   )
 
+qt5_use_modules(${PROJECT_NAME} Widgets)
+qt5_use_modules(${PROJECT_NAME} Core)
+qt5_use_modules(${PROJECT_NAME} Gui)
 
 ## #############################################################################
 ## install

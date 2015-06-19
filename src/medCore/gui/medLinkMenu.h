@@ -15,6 +15,7 @@
 
 #include <medCoreExport.h>
 #include <QtGui>
+#include <QtWidgets>
 
 #include <medAbstractParameterGroup.h>
 

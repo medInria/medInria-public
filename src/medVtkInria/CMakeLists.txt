@@ -116,6 +116,7 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${Qt5Core_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
   ${medCore_INCLUDE_DIRS}
   ${${PROJECT_NAME}_BINARY_DIR}/shaders
@@ -159,7 +160,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkRenderingCore
   vtkRenderingOpenGL
   vtkRenderingVolumeOpenGL
-  vtkRenderingVolumeOpenGLNew
+  #vtkRenderingVolumeOpenGLNew
   vtkRenderingFreeTypeOpenGL
   vtkRenderingContextOpenGL
   vtkInteractionWidgets

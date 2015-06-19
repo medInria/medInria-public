@@ -15,7 +15,7 @@
 
 #include <QtGui>
 #include <QUuid>
-
+#include <QtWidgets>
 #include <medCoreExport.h>
 
 class medAbstractData;

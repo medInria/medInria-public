@@ -13,7 +13,7 @@
 
 #include <medAbstractPacsStoreScu.h>
 
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCoreSupport/dtkGlobal.h>
 
 medAbstractPacsStoreScu::medAbstractPacsStoreScu( void )
 {

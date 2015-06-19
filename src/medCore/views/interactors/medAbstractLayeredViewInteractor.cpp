@@ -14,7 +14,7 @@
 #include <medAbstractLayeredViewInteractor.h>
 
 #include <QAbstractButton>
-
+#include <QtWidgets>
 #include <medAbstractLayeredView.h>
 #include <medAbstractParameter.h>
 #include <medBoolParameter.h>

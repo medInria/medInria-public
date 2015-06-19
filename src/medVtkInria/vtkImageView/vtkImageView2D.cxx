@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #include "vtkImageView2D.h"
 

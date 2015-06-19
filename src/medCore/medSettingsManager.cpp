@@ -13,7 +13,7 @@
 
 #include <medSettingsManager.h>
 
-#include <QtCore/QSettings>
+#include <QSettings>
 
 class medSettingsManagerPrivate
 {

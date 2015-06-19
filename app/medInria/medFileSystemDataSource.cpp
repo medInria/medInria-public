@@ -13,8 +13,8 @@
 
 #include "medFileSystemDataSource.h"
 
-#include <dtkCore/dtkGlobal.h>
-#include <dtkGui/dtkFinder.h>
+#include <dtkCoreSupport/dtkGlobal.h>
+#include <dtkGuiSupport/dtkFinder.h>
 
 #include <medActionsToolBox.h>
 #include<medSettingsManager.h>

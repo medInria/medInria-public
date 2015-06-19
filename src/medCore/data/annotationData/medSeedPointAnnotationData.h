@@ -16,7 +16,7 @@
 #include <medCoreExport.h>
 
 #include <medAnnotationData.h>
-
+#include <QtWidgets>
 #include <QVector3D>
 
 /** Defines a set of seed points that may be attached to a data

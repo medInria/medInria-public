@@ -111,4 +111,4 @@ QStringList medSegmentationPlugin::types() const
     return QStringList();
 }
 
-Q_EXPORT_PLUGIN2(medSegmentationPlugin, medSegmentationPlugin)
+//Q_EXPORT_PLUGIN2(medSegmentationPlugin, medSegmentationPlugin)

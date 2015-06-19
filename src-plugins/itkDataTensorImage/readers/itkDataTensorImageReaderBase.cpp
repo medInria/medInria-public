@@ -57,10 +57,10 @@ bool itkDataTensorImageReaderBase::canRead (const QStringList &paths)
 bool itkDataTensorImageReaderBase::canRead (const QString &path)
 {
     if (!this->io.IsNull()) {
-        if (!this->io->CanReadFile ( path.toAscii().constData() ))
+        if (!this->io->CanReadFile ( path.toLatin1().constData() ))
             return false;
 
-        this->io->SetFileName (path.toAscii().constData());
+        this->io->SetFileName (path.toLatin1().constData());
         try {
             this->io->ReadImageInformation();
         }
@@ -90,7 +90,7 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
     if (this->io.IsNull())
         return false;
     
-    this->io->SetFileName ( path.toAscii().constData() );
+    this->io->SetFileName ( path.toLatin1().constData() );
     try {
         this->io->ReadImageInformation();
     }
@@ -164,7 +164,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toAscii().constData() );
+	      reader->SetFileName ( path.toLatin1().constData() );
 	      try {
 		reader->Update();
 	      }
@@ -227,7 +227,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toAscii().constData() );
+	      reader->SetFileName ( path.toLatin1().constData() );
 	      try {
 		reader->Update();
 	      }
@@ -297,7 +297,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toAscii().constData() );
+	      reader->SetFileName ( path.toLatin1().constData() );
 	      try {
 		reader->Update();
 	      }
@@ -359,7 +359,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toAscii().constData() );
+	      reader->SetFileName ( path.toLatin1().constData() );
 	      try {
 		reader->Update();
 	      }

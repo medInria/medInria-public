@@ -20,8 +20,6 @@
 #include <medSplashScreen.h>
 
 
-#include <dtkCore>
-
 #include <medPluginManager.h>
 #include <medDataIndex.h>
 #include <medDatabaseController.h>
@@ -38,7 +36,7 @@ void forceShow(medMainWindow& mainwindow )
     //       the foreground, so... instead we do what follows, depending on the
     //       operating system...
 
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
     // Retrieve window Id
 
     WId mainWinId = mainwindow.winId();
@@ -99,8 +97,8 @@ int main(int argc,char* argv[]) {
     medSettingsManager* mnger = medSettingsManager::instance();
 
     QStringList posargs;
-    for (int i=1;i<application.argc();++i) {
-        const QString arg = application.argv()[i];
+    for (int i=1;i<application.arguments().size();++i) {
+        const QString arg = application.arguments().at(i);
         if (arg.startsWith("--")) {
             bool valid_option = false;
             const QStringList options = (QStringList()
@@ -120,19 +118,9 @@ int main(int argc,char* argv[]) {
     }
 
     const bool DirectView = dtkApplicationArgumentsContain(&application,"--view") || posargs.size()!=0;
-    int runningMedInria = 0;
     if (DirectView) {
         show_splash = false;
-        for (QStringList::const_iterator i=posargs.constBegin();i!=posargs.constEnd();++i) {
-            const QString& message = QString("/open ")+*i;
-            runningMedInria = application.sendMessage(message);
-        }
-    } else {
-        runningMedInria = application.sendMessage("");
     }
-
-    if (runningMedInria)
-        return 0;
 
     if (show_splash) {
         QObject::connect(medPluginManager::instance(),SIGNAL(loadError(const QString&)),
@@ -228,7 +216,6 @@ int main(int argc,char* argv[]) {
     QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
                      mainwindow,SLOT(processNewInstanceMessage(const QString&)));
 
-    application.setActivationWindow(mainwindow);
     application.setMainWindow(mainwindow);
 
     forceShow(*mainwindow);
