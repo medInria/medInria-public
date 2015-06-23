@@ -177,7 +177,7 @@ void DCMTKImageIO::ReadImageInformation()
             //Forcing sliceLocation to be a multiple of spacing between slices
             //Prevents from some sorting issues (e.g due to extremely small differences in sliceLocations)
 
-            sliceLocation = -floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2]; // "-" is a hack for the plugin philips
+            sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2]; 
             m_LocationSet.insert( sliceLocation );
             m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *it ) );
             m_FilenameToIndexMap[ *it ] = fileIndex;
@@ -289,7 +289,7 @@ void DCMTKImageIO::ReadImageInformation()
     double startSlice = this->GetZPositionForImage ( startIndex );
     double endSlice   = this->GetZPositionForImage ( endIndex );
 
-    int sliceDirection = endSlice>startSlice?locSign:-locSign;
+    int sliceDirection = endSlice>startSlice?locSign:-locSign; 
 
     /**
        Now order filenames such that we can read them sequentially and build the 3D/4D volume.
@@ -306,7 +306,7 @@ void DCMTKImageIO::ReadImageInformation()
         for (SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound( *l );
              n!=m_LocationToFilenamesMap.upper_bound( *l ); n++)
         {
-            if( sliceDirection>0 )
+            if( !(sliceDirection>0) ) // hack for the plugin philips
                 m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
             else
                 m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;

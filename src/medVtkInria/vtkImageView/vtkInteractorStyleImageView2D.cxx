@@ -279,7 +279,7 @@ void vtkInteractorStyleImageView2D::OnMiddleButtonUp()
 }
 
 //----------------------------------------------------------------------------
-void vtkInteractorStyleImageView2D::OnRightButtonDown() 
+void vtkInteractorStyleImageView2D::OnRightButtonDown() // TODO COMMENT THIS ??
 {
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
