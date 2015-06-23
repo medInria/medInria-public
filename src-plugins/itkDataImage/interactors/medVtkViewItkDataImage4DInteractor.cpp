@@ -79,7 +79,14 @@ medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstra
 
 medVtkViewItkDataImage4DInteractor::~medVtkViewItkDataImage4DInteractor()
 {
+    if (d->sequence)
+    {
+        d->sequence->Delete();
+        d->sequence=0;
+    }
 
+    delete d;
+    qDebug() << "Delete medVtkViewItkDataImage4DInteractor done";
 }
 
 QString medVtkViewItkDataImage4DInteractor::description() const

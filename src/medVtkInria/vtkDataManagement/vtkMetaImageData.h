@@ -240,8 +240,8 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
     vtkinput->Delete();
 #endif    
 
-    this->m_ItkImage = input;
-    this->m_Converter = converter;
+    this->m_ItkImage = 0;
+    this->m_Converter = 0;
     
     this->Modified();
     
