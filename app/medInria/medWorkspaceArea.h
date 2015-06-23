@@ -70,6 +70,7 @@ protected:
 
 signals:
     void open(const medDataIndex&);
+    void switchingWorkspace(const QString&);
 
 private:
     friend class medMessageController;

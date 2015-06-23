@@ -79,6 +79,9 @@ public slots:
 
     virtual void removeAll();
 
+signals:
+    void importCompleted();
+
 private:
     medDatabaseNonPersistentController();
 

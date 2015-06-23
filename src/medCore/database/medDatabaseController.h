@@ -90,6 +90,9 @@ public slots:
 protected slots:
     void showOpeningError(QObject *sender);
 
+signals:
+    void importCompleted();
+
 private:
     medDatabaseController();
 

@@ -212,6 +212,8 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
 
 void medWorkspaceArea::setCurrentWorkspace(const QString &id)
 {
+    emit switchingWorkspace(id);
+
     if (!d->workspaces.contains(id))
         this->setupWorkspace(id);
 

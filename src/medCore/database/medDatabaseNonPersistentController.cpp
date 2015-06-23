@@ -108,6 +108,7 @@ void medDatabaseNonPersistentController::importPath(const QString& file,const QU
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
 
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(success(QObject *)), this, SIGNAL(importCompleted()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(importer, SIGNAL(showError(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
