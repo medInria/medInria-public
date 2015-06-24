@@ -745,34 +745,34 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
         itkExceptionMacro("Jpeg2000 encoding not supported yet.");
     }
 
-    size_t length = pixelCount;
+    size_t length;
     switch( this->GetComponentType() ) {
         case CHAR:
-            length *= sizeof(char);
+            length = sizeof(char);
             break;
 
         case UCHAR:
-            length *= sizeof(Uint8);
+            length = sizeof(Uint8);
             break;
 
         case SHORT:
-            length *= sizeof(Sint16);
+            length = sizeof(Sint16);
             break;
 
         case USHORT:
-            length *= sizeof(Uint16);
+            length = sizeof(Uint16);
             break;
 
         case INT:
-            length *= sizeof(Sint32);
+            length = sizeof(Sint32);
             break;
 
         case UINT:
-            length *= sizeof(Uint32);
+            length = sizeof(Uint32);
             break;
 
         case DOUBLE:
-            length *= sizeof(Float64);
+            length = sizeof(Float64);
             break;
 
         default:
@@ -799,19 +799,21 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     // If the image has more than one component, the DicomImage stores it as an
     // array of array, each sub-array containing all the pixels for one of the
     // components
+    
+    int nbPixels = dmp->getCount();
+    int nbComponents = dmp->getPlanes();
+        
+    length *= nbPixels;
+
     if (dmp->getPlanes() > 1) {
         const Uint8** copyBuffer = (const Uint8 **)dmp->getData();
         if (!copyBuffer) {
             itkExceptionMacro ( << "Bad copy buffer" );
         }
-        
-        int nbPixels = dmp->getCount();
-        int nbComponents = dmp->getPlanes();
-        
-        std::cout<< "the number of components is " << nbComponents << std::endl;
-        std::cout<< "pixelCount is " << pixelCount << std::endl;
-        std::cout<< "dmp->getCount() : " << nbPixels << std::endl;
+            
         Uint8* destSliceBuffer = destBuffer+slice*length;
+        std::cout<< "The number of components is " << nbComponents << std::endl;
+        std::cout<< "PixelCount is " << nbPixels << std::endl;
 
         for (int c = 0; c < nbComponents; ++c) {
             for(int p = 0; p < nbPixels; ++p) {
@@ -824,6 +826,7 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
         if (!copyBuffer) {
             itkExceptionMacro ( << "Bad copy buffer" );
         }
+        
         std::memcpy (destBuffer + slice*length, copyBuffer, length);
     }
 
