@@ -544,21 +544,26 @@ bool medDatabaseController::moveDatabase( QString newLocation)
 
     QString oldLocation = medStorage::dataLocation();
 
-    // now copy all the images and thumbnails
-    QStringList sourceList;
-    medStorage::recurseAddDir(QDir(oldLocation), sourceList);
+    // if there's no existing db in the new location
+    if(QDir(newLocation).entryInfoList(QStringList("db")).isEmpty()) 
+    {
+        // now copy all the images and thumbnails
+        QStringList sourceList;
+        medStorage::recurseAddDir(QDir(oldLocation), sourceList);
 
-    // create destination filelist
-    QStringList destList;
-    if (!medStorage::createDestination(sourceList,destList,oldLocation, newLocation))
-    {
-        res = false;
-    }
-    else
-    {
-        // now copy
-        if (!medStorage::copyFiles(sourceList, destList))
+        // create destination filelist
+        QStringList destList;
+
+        if (!medStorage::createDestination(sourceList,destList,oldLocation, newLocation))
+        {
             res = false;
+        }
+        else
+        {
+            // now copy
+            if (!medStorage::copyFiles(sourceList, destList))
+                res = false;
+        }
     }
 
     if (res)
@@ -587,13 +592,6 @@ bool medDatabaseController::moveDatabase( QString newLocation)
             qDebug() << "Restarting connection...";
             this->createConnection();
         }
-
-        // now delete the old archive
-        if(medStorage::removeDir(oldLocation))
-            qDebug() << "deleting old database: success";
-        else
-            qDebug() << "deleting old database: failure";
-
     }
 
     if (res)
