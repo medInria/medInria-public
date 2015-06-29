@@ -15,7 +15,7 @@
 
 #include <medCoreExport.h>
 
-#include <QtGui/QScrollArea>
+#include <QtWidgets/QScrollArea>
 
 class medToolBox;
 class medToolBoxContainerPrivate;

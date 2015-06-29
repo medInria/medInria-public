@@ -15,7 +15,7 @@
 
 #include <medCoreExport.h>
 
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 #include <medDataIndex.h>
 

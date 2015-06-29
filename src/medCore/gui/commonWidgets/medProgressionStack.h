@@ -15,7 +15,7 @@
 
 #include <medCoreExport.h>
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class medJobItem;
 class medProgressionStackPrivate;
