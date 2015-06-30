@@ -72,6 +72,7 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
+    QApplication::setStyle(QStyleFactory::create("fusion"));
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
     this->setStyleSheet(parser.result());
 
