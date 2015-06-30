@@ -16,6 +16,7 @@ macro(set_lib_install_rules
   headers_list
   )
 
+
 ################################################################################
 #
 # Usage: set_lib_install_rules(target, header1, header2, header3 ...)
@@ -28,6 +29,9 @@ set(MEDINRIA_BINARY_DIR
   ${${project_name}_BINARY_DIR}/lib
   ${MEDINRIA_BINARY_DIR}
   )
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
 
 install(TARGETS ${project_name}
   RUNTIME DESTINATION bin

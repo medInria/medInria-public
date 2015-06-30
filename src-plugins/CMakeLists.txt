@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 #
 # medInria
 #
@@ -10,6 +10,16 @@
 #  PURPOSE.
 #
 ################################################################################
+
+if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
+  file(GLOB MEDPLUGINSPCH_H
+    medPluginsPch/*.h
+    )
+  
+  file(GLOB MEDPLUGINSPCH_CPP
+    medPluginsPch/*.cpp
+    )
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
