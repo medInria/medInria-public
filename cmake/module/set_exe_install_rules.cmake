@@ -48,7 +48,7 @@ if (APPLE)
     "Version ${${target}_VERSION}"
     )
   set(${target}_RESOURCE_DIR
-    ${EXECUTABLE_OUTPUT_PATH}/${target}.app/Contents/Resources
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.app/Contents/Resources
     )
   add_custom_command(TARGET ${target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${target}_RESOURCE_DIR}
