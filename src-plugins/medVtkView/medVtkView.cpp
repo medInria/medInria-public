@@ -16,7 +16,7 @@
 #include <QWidget>
 #include <QHash>
 
-#include <QVTKWidget.h>
+#include <QVTKWidget2.h>
 
 #include <vtkRenderer.h>
 #include <vtkImageView2D.h>
@@ -47,6 +47,8 @@
 #include <medParameterPoolManager.h>
 #include <medSettingsManager.h>
 
+#include <vtkGenericOpenGLRenderWindow.h>
+
 // declare x11-specific function to prevent the window manager breaking thumbnail generation
 #ifdef Q_OS_X11
 void qt_x11_wait_for_window_manager(QWidget*);
@@ -61,13 +63,13 @@ public:
     vtkInteractorStyle *interactorStyle2D;
 
     // renderers
-    vtkRenderWindow *renWin;
+    vtkGenericOpenGLRenderWindow *renWin;
     // views
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
 
     // widgets
-    QPointer<QVTKWidget> viewWidget;
+    QPointer<QVTKWidget2> viewWidget;
 
     medVtkViewObserver *observer;
 
@@ -85,7 +87,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
     // construct render window
         // renWin
-    d->renWin = vtkRenderWindow::New();
+    d->renWin = vtkGenericOpenGLRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
     d->renWin->SetAlphaBitPlanes(1);
@@ -123,7 +125,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
-    d->viewWidget = new QVTKWidget;
+    d->viewWidget = new QVTKWidget2;
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );

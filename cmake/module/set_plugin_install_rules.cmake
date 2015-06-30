@@ -22,6 +22,10 @@ macro(set_plugin_install_rules
 #
 ################################################################################
 
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
+
 install(TARGETS ${project_name}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
