@@ -523,40 +523,18 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
     double level = 0.5 * (d->maxIntensityParameter->value() - d->minIntensityParameter->value()) + d->minIntensityParameter->value();
     double window = d->maxIntensityParameter->value() - d->minIntensityParameter->value();
 
-    bool needsUpdate = false;
-
     this->windowLevelParameter()->blockSignals(true);
 
     if(d->view2d->GetColorWindow(d->view->layer(d->imageData)) != window)
-    {
         d->view2d->SetColorWindow(window, d->view->layer(d->imageData));
-        if (d->view->is2D())
-            needsUpdate = true;
-    }
     if(d->view3d->GetColorWindow(d->view->layer(d->imageData)) != window)
-    {
         d->view3d->SetColorWindow(window, d->view->layer(d->imageData));
-        if (!d->view->is2D())
-            needsUpdate = true;
-    }
-
     if(d->view2d->GetColorLevel(d->view->layer(d->imageData)) != level)
-    {
         d->view2d->SetColorLevel(level, d->view->layer(d->imageData));
-        if (d->view->is2D())
-            needsUpdate = true;
-    }
     if(d->view3d->GetColorLevel(d->view->layer(d->imageData)) != level)
-    {
         d->view3d->SetColorLevel(level, d->view->layer(d->imageData));
-        if (!d->view->is2D())
-            needsUpdate = true;
-    }
 
     this->windowLevelParameter()->blockSignals(false);
-
-    if (needsUpdate)
-        this->update();
 }
 
 void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> values)
@@ -567,47 +545,25 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> va
         return;
     }
 
-    bool needUpdate = false;
-
     double w = values["Window"].toDouble();
     double l = values["Level"].toDouble();
     if(w != w || l != l) // NaN values
         return;
 
     if (d->view2d->GetColorWindow(d->view->layer(d->imageData)) != w)
-    {
         d->view2d->SetColorWindow(w, d->view->layer(d->imageData));
 
-        if (d->view->is2D())
-            needUpdate = true;
-    }
 
     if (d->view3d->GetColorWindow(d->view->layer(d->imageData)) != w)
-    {
         d->view3d->SetColorWindow(w, d->view->layer(d->imageData));
 
-        if (!d->view->is2D())
-            needUpdate = true;
-    }
-
     if (d->view2d->GetColorLevel(d->view->layer(d->imageData)) != l)
-    {
         d->view2d->SetColorLevel(l, d->view->layer(d->imageData));
 
-        if (d->view->is2D())
-            needUpdate = true;
-    }
 
     if (d->view3d->GetColorLevel(d->view->layer(d->imageData)) != l)
-    {
         d->view3d->SetColorLevel(l, d->view->layer(d->imageData));
 
-        if (!d->view->is2D())
-            needUpdate = true;
-    }
-
-    if(needUpdate)
-        this->update();
 
     d->minIntensityParameter->blockSignals(true);
     d->maxIntensityParameter->blockSignals(true);
