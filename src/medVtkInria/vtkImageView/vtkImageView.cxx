@@ -1013,7 +1013,9 @@ void vtkImageView::SetColorWindow(double s,int layer)
   this->SetTransferFunctionRangeFromWindowSettings(layer);
 
   this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
-  this->Modified();
+//  this->Modified();
+  if(this->Interactor)
+    this->Interactor->Render();
 }
 
 //----------------------------------------------------------------------------
@@ -1027,7 +1029,9 @@ void vtkImageView::SetColorLevel(double s,int layer)
   this->SetTransferFunctionRangeFromWindowSettings(layer);
 
   this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
-  this->Modified();
+//  this->Modified();
+  if(this->Interactor)
+    this->Interactor->Render();
 }
 
 /**
