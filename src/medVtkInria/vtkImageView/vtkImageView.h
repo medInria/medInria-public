@@ -370,6 +370,9 @@ public:
     virtual double GetColorLevel() const;
     virtual double GetColorLevel(int layer) const = 0;
 
+    void SetColorWindowLevel(double w, double l);
+    void SetColorWindowLevel(double w, double l, int layer);
+
     virtual void SetColorRange( double r[2] );
 
     virtual void GetColorRange( double r[2] );
