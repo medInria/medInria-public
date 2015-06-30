@@ -21,6 +21,8 @@ if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
     )
 endif()
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
 
 ## #############################################################################
 ## Options

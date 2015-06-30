@@ -70,6 +70,10 @@ option(${PROJECT_NAME}_BUILD_DOCUMENTATION
   OFF
   )
 
+## #############################################################################
+## Find package
+## #############################################################################
+
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
@@ -97,9 +101,25 @@ set(QT_HEADERS
     ${Qt5Quick_INCLUDE_DIRS}
     ${Qt5Network_INCLUDE_DIRS}
     ${Qt5Test_INCLUDE_DIRS}
-    ${Qt5Declarative_INCLUDE_DIRS})
+    ${Qt5Declarative_INCLUDE_DIRS}
+    )
 
-set(QT_LIBRAIRIES Qt5::Core Qt5::OpenGL Qt5::Gui Qt5::Xml Qt5::Sql Qt5::Widgets Qt5::Concurrent Qt5::Quick Qt5::Network Qt5::Test Qt5::Declarative)
+set(QT_LIBRAIRIES
+    Qt5::Core
+    Qt5::OpenGL
+    Qt5::Gui
+    Qt5::Xml
+    Qt5::Sql
+    Qt5::Widgets
+    Qt5::Concurrent
+    Qt5::Quick
+    Qt5::Network
+    Qt5::Test
+    Qt5::Declarative
+    )
+
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## Additionals modules
@@ -126,12 +146,6 @@ if(APPLE)
   include(FixDCMTKMacInstall)
 endif()
 
-## #############################################################################
-## Find package
-## #############################################################################
-
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 
 ## #############################################################################
