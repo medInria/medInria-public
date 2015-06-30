@@ -24,7 +24,8 @@ class medVisualizationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Visualization",
-                            "Visualize images, Mesh and other data types.")
+                            "Visualize images, Mesh and other data types.",
+                            "Basic")
 public:
      medVisualizationWorkspace(QWidget *parent = 0);
     ~medVisualizationWorkspace();

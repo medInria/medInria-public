@@ -30,7 +30,8 @@ class medSegmentationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Segmentation",
-                            "Segmentation workspace.")
+                            "Segmentation workspace.",
+                            "Methodology")
 public:
     medSegmentationWorkspace(QWidget * parent = NULL);
 
