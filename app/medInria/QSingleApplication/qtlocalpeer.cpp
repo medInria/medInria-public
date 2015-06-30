@@ -38,27 +38,26 @@
 ****************************************************************************/
 
 
-#include <qtlocalpeer.h>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QTime>
+#include "qtlocalpeer.h"
+#include <QCoreApplication>
+#include <QTime>
 
 #if defined(Q_OS_WIN)
-#include <QtCore/QLibrary>
-#include <QtCore/qt_windows.h>
+#include <QLibrary>
+#include <qt_windows.h>
 typedef BOOL(WINAPI*PProcessIdToSessionId)(DWORD,DWORD*);
 static PProcessIdToSessionId pProcessIdToSessionId = 0;
 #endif
 #if defined(Q_OS_UNIX)
 #include <time.h>
-#include <unistd.h>
 #endif
 
 namespace QtLP_Private {
-#include <qtlockedfile.cpp>
+#include "qtlockedfile.cpp"
 #if defined(Q_OS_WIN)
-#include <qtlockedfile_win.cpp>
+#include "qtlockedfile_win.cpp"
 #else
-#include <qtlockedfile_unix.cpp>
+#include "qtlockedfile_unix.cpp"
 #endif
 }
 
@@ -94,7 +93,7 @@ QtLocalPeer::QtLocalPeer(QObject* parent, const QString &appId)
         socketName += QLatin1Char('-') + QString::number(sessionId, 16);
     }
 #else
-    socketName += QLatin1Char('-') + QString::number(::getuid(), 16);
+    socketName += QLatin1Char('-') + QString::number(QtLP_Private::getuid(), 16);
 #endif
 
     server = new QLocalServer(this);
