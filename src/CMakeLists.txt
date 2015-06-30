@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 #
 # medInria
 #
@@ -10,6 +10,19 @@
 #  PURPOSE.
 #
 ################################################################################
+
+if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
+  file(GLOB MEDPCH_H
+    medPch/*.h
+    )
+
+  file(GLOB MEDPCH_CPP
+    medPch/*.cpp
+    )
+endif()
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
 
 ## #############################################################################
 ## Add subdirectories
