@@ -104,7 +104,7 @@ set(QT_HEADERS
     ${Qt5Declarative_INCLUDE_DIRS}
     )
 
-set(QT_LIBRAIRIES
+set(QT_LIBRARIES
     Qt5::Core
     Qt5::OpenGL
     Qt5::Gui
