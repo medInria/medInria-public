@@ -515,8 +515,10 @@ void DCMTKImageIO::DetermineSpacing()
             if (!(is_stream >> m_Spacing[3]))
                 itkWarningMacro ( << "Cannot convert string to double: " << temporalSpacingStr.c_str() << std::endl);
             if(m_Spacing[3] != 0.0)
+                // convert from milliseconds to seconds
                 m_Spacing[3] *= 0.001;
             else
+                // use 1.0 in case the Repetition Time is 0
                 m_Spacing[3] = 1.0;
         }
         else
