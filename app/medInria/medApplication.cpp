@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -73,7 +73,7 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
-    //this->setStyleSheet(parser.result());
+    this->setStyleSheet(parser.result());
 
     //  Redirect msgs to the logs
 
