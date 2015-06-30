@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medVtkViewObserver.h>
+#include "medVtkViewObserver.h"
 
 #include <QVector>
 
@@ -115,6 +115,7 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
 
         if(m_view->windowLevelParameter(layer))
             m_view->windowLevelParameter(layer)->setValues(wl);
+        m_view->render();
         break;
     }
     case vtkCommand::InteractionEvent:
