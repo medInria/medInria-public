@@ -256,10 +256,11 @@ void DCMTKImageIO::ReadImageInformation()
        {
         //m_Dimensions[2]=nbFrames;
         this->SetNumberOfDimensions (4); // TODO : need to create a type itkDataImageRGB4
+        std::cout<< "The number of frames is " << nbFrames << std::endl;
         m_Dimensions[3]=nbFrames;
         }
     }
-    std::cout<< "the number of frames is " << this->GetNumberOfFrames() << std::endl;
+    
     
     /**
        Now that m_FilenameToIndexMap and m_LocationToFilenamesMap are up-to-date, we may determine
@@ -289,7 +290,7 @@ void DCMTKImageIO::ReadImageInformation()
     double startSlice = this->GetZPositionForImage ( startIndex );
     double endSlice   = this->GetZPositionForImage ( endIndex );
 
-    int sliceDirection = endSlice>startSlice?locSign:-locSign; 
+    int sliceDirection = endSlice>=startSlice?locSign:-locSign; // hack for the plugin philips
 
     /**
        Now order filenames such that we can read them sequentially and build the 3D/4D volume.
@@ -306,7 +307,7 @@ void DCMTKImageIO::ReadImageInformation()
         for (SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound( *l );
              n!=m_LocationToFilenamesMap.upper_bound( *l ); n++)
         {
-            if( !(sliceDirection>0) ) // hack for the plugin philips
+            if( sliceDirection>0) 
                 m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
             else
                 m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
@@ -407,7 +408,6 @@ void DCMTKImageIO::DeterminePixelType()
         delete image;
     }
 }
-
 
 void DCMTKImageIO::DetermineSpacing()
 {
