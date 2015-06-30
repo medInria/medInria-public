@@ -60,7 +60,7 @@ public:
 // /////////////////////////////////////////////////////////////////
 
 medApplication::medApplication(int & argc, char**argv) :
-        QApplication(argc,argv),
+        QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
     d->mainWindow = NULL;
@@ -104,7 +104,7 @@ bool medApplication::event(QEvent *event)
                 d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
             return true;
         default:
-            return QApplication::event(event);
+            return QtSingleApplication::event(event);
     }
 }
 
