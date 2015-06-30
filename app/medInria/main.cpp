@@ -119,9 +119,20 @@ int main(int argc,char* argv[]) {
     }
 
     const bool DirectView = dtkApplicationArgumentsContain(&application,"--view") || posargs.size()!=0;
+
+    int runningMedInria = 0;
     if (DirectView) {
         show_splash = false;
+        for (QStringList::const_iterator i=posargs.constBegin();i!=posargs.constEnd();++i) {
+            const QString& message = QString("/open ")+*i;
+            runningMedInria = application.sendMessage(message);
+        }
+    } else {
+        runningMedInria = application.sendMessage("");
     }
+
+    if (runningMedInria)
+        return 0;
 
     if (show_splash) {
         QObject::connect(medPluginManager::instance(),SIGNAL(loadError(const QString&)),

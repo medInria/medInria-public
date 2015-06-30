@@ -17,7 +17,7 @@ project(medInria)
 ## List Sources
 ## #############################################################################
 
-#add_subdirectory(QSingleApplication)
+add_subdirectory(QSingleApplication)
 add_subdirectory(resources)
 
 find_package(dtk REQUIRED)

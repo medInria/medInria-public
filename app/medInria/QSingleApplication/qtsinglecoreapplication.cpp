@@ -38,8 +38,8 @@
 ****************************************************************************/
 
 
-#include <qtsinglecoreapplication.h>
-#include <qtlocalpeer.h>
+#include "qtsinglecoreapplication.h"
+#include "qtlocalpeer.h"
 
 /*!
     \class QtSingleCoreApplication qtsinglecoreapplication.h

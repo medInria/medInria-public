@@ -37,13 +37,12 @@
 **
 ****************************************************************************/
 
-
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 
-#include <qtlockedfile.h>
+#include "qtlockedfile.h"
 
 bool QtLockedFile::lock(LockMode mode, bool block)
 {
