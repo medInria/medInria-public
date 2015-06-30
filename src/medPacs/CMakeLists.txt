@@ -82,10 +82,7 @@ qt5_use_modules(${PROJECT_NAME} Gui)
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-    ${QT_LIBRAIRIES}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
+    ${QT_LIBRARIES}
     dtkCoreSupport
     dtkLog
     medCore
