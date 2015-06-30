@@ -125,10 +125,7 @@ endif()
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-  Qt5::Widgets
-  Qt5::Gui
-  Qt5::OpenGL
-  Qt5::Core
+  ${QT_LIBRARIES}
   dtkCoreSupport
   dtkScript
   dtkGuiSupport

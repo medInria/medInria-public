@@ -33,8 +33,6 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
-    Q_INTERFACES(QGraphicsItem)
-
 public:
     medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white,
 			QGraphicsItem *parent = 0);
@@ -87,8 +85,6 @@ class medClutEditorTablePrivate;
 class medClutEditorTable : public QObject, public QGraphicsItem
 {
     Q_OBJECT
-
-    Q_INTERFACES(QGraphicsItem)
 
 public:
     //medClutEditorTable(QGraphicsItem *parent = 0);
