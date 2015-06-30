@@ -42,7 +42,7 @@ double sphLegendre(const int l,const int m,const double theta) {
     const unsigned lmm = l-m;
     const unsigned lpm = l+m;
     const double fact   = boost::math::factorial<double>(lmm)/boost::math::factorial<double>(lpm);
-    const double factor = static_cast<double>(2*l+1)/(4.0*vtkMath::DoublePi())*fact;
+    const double factor = static_cast<double>(2*l+1)/(8.0*vtkMath::Pi())*fact;
     return sqrt(factor)*boost::math::legendre_p(l,m,cos(theta));
 }
 #else
