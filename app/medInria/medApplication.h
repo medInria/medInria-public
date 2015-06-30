@@ -12,13 +12,13 @@
 =========================================================================*/
 
 #pragma once
-#include <QApplication>
+#include <QtSingleApplication>
 #include <medDataIndex.h>
 
 class medApplicationPrivate;
 class medMainWindow;
 
-class medApplication : public QApplication
+class medApplication : public QtSingleApplication
 {
     Q_OBJECT
 
