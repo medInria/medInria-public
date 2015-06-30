@@ -11,7 +11,8 @@
 
 =========================================================================*/
 
-#include <medVtkView.h>
+#include "medVtkView.h"
+
 
 #include <QWidget>
 #include <QHash>
@@ -49,10 +50,10 @@
 
 #include <vtkGenericOpenGLRenderWindow.h>
 
-// declare x11-specific function to prevent the window manager breaking thumbnail generation
-#ifdef Q_OS_X11
-void qt_x11_wait_for_window_manager(QWidget*);
-#endif
+//// declare x11-specific function to prevent the window manager breaking thumbnail generation
+//#ifdef Q_OS_X11
+//void qt_x11_wait_for_window_manager(QWidget*);
+//#endif
 
 class medVtkViewPrivate
 {
@@ -437,17 +438,16 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     d->renWin->SetSize(w,h);
     render();
 
-#ifdef Q_OS_X11
-    // X11 likes to animate window creation, which means by the time we grab the
-    // widget, it might not be fully ready yet, in which case we get artefacts.
-    // Only necessary if rendering to an actual screen window.
-    if(d->renWin->GetOffScreenRendering() == 0) {
-        qt_x11_wait_for_window_manager(d->viewWidget);
-    }
-#endif
+//#ifdef Q_OS_X11
+//    // X11 likes to animate window creation, which means by the time we grab the
+//    // widget, it might not be fully ready yet, in which case we get artefacts.
+//    // Only necessary if rendering to an actual screen window.
+//    if(d->renWin->GetOffScreenRendering() == 0) {
+//        qt_x11_wait_for_window_manager(d->viewWidget);
+//    }
+//#endif
 
-    QImage thumbnail = QPixmap::grabWidget(d->viewWidget).toImage();
-
+    QImage thumbnail = d->viewWidget->grabFrameBuffer(true);
     this->blockSignals(false);
     return thumbnail;
 }
