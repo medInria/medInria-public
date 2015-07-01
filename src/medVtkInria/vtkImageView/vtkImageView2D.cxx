@@ -395,8 +395,8 @@ int* vtkImageView2D::GetSliceRange() const
   vtkImageData *input = this->GetInput();
   if (input)
   {
-      this->GetInputAlgorithm()->UpdateInformation();
-      int* w_ext = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+//      this->GetInputAlgorithm()->UpdateInformation();
+      int* w_ext = this->GetInput()->GetExtent();
       return w_ext + this->SliceOrientation * 2;
   }
   return NULL;
@@ -564,8 +564,8 @@ void vtkImageView2D::UpdateDisplayExtent()
     return;
   }
 
-  this->GetInputAlgorithm()->UpdateInformation();
-  int* w_ext = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+
+  int* w_ext = this->GetInput()->GetExtent();
 
   int slice = this->Slice;
   int *range = this->GetSliceRange();
