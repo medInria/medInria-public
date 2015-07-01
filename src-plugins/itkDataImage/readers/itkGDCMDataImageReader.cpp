@@ -54,7 +54,6 @@ void Read4DImage(medAbstractData* medData, itk::GDCMImageIO::Pointer io, itkGDCM
     typedef typename ImageType::PointType                 PointType;
     typedef typename ImageType::DirectionType             DirectionType;
     typedef itk::ImageRegionIterator<ImageType>  IteratorType;
-    typedef typename IteratorType::IndexType              IndexType;
 
     typename ImageType::Pointer image = ImageType::New();
 
@@ -488,9 +487,8 @@ bool itkGDCMDataImageReader::read (const QStringList &paths)
     {
 
         // copy over the dicom dictionary into metadata
-        typedef itk::MetaDataObject <std::string>                 MetaDataStringType;
-        typedef itk::MetaDataObject <std::vector<std::string> >   MetaDataVectorStringType;
-        typedef std::vector<std::string>                     StringVectorType;
+        typedef itk::MetaDataObject <std::vector<std::string>>  MetaDataVectorStringType;
+        typedef std::vector<std::string>                        StringVectorType;
 
         const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
         itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
