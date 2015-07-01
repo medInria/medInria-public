@@ -854,8 +854,6 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
         targetRange[1] = 1.0;
     }
 
-    bool touched = false;
-
     // lookup table
     vtkScalarsToColors * lookupTable = this->GetLookupTable(layer);
     if ( this->GetUseLookupTable(layer) && lookupTable != NULL )
@@ -865,7 +863,6 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
              currentRange[1] != targetRange[1] )
         {
             lookupTable->SetRange( targetRange );
-            touched = true;
         }
     }
 
@@ -877,7 +874,6 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
                     this->GetOpacityTransferFunction(layer),
                     targetRange[0],
                 targetRange[1]);
-        touched = true;
     }
 }
 
