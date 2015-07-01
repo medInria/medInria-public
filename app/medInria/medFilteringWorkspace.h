@@ -28,7 +28,7 @@ class medFilteringWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Filtering",
-                            "Filtering workspace.",
+                            "Workspace to apply filters to images.",
                             "Methodology")
 public:
     medFilteringWorkspace(QWidget *parent = 0);

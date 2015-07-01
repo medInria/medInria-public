@@ -352,7 +352,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 void medHomepageArea::initPage()
 {
     //Initialization of the navigation widget with available workspaces
-    QHash<QString,medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetails();
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
 
     QVBoxLayout * workspaceButtonsLayoutBasic = new QVBoxLayout;
     workspaceButtonsLayoutBasic->setSpacing ( 10 );
@@ -370,6 +370,7 @@ void medHomepageArea::initPage()
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
     browserButton->setFocusPolicy ( Qt::NoFocus );
+    browserButton->setToolTip("Workspace to manage and import data.");
     workspaceButtonsLayoutBasic->addWidget ( browserButton );
     workspaceButtonsLayoutBasic->addSpacing(10);
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
