@@ -50,20 +50,6 @@ add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
-
-## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if (MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_PCH
-    ${MEDPCH_H}
-    ${MEDPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
-    )
-endif()
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
