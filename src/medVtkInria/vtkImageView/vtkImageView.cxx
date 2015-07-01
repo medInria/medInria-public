@@ -526,8 +526,7 @@ void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (pos1, indices);
 
-    this->GetInputAlgorithm()->UpdateInformation();
-    int* w_extent = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+    int* w_extent = this->GetInput()->GetExtent();
     bool out_of_bounds = false;
 
     for (unsigned int i=0; i<3; i++)
@@ -1336,8 +1335,7 @@ double vtkImageView::GetZoom()
         return 1.0;
 
     // Ensure that the spacing and dimensions are up-to-date.
-    this->GetInputAlgorithm()->UpdateInformation();
-    int* extent = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+    int* extent = this->GetInput()->GetExtent();
 
     double* spacing = this->GetInput()->GetSpacing();
     double xyz[3] = {0,0,0};
