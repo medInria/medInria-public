@@ -1150,7 +1150,7 @@ int layer )
     this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
     this->GetInputAlgorithm()->UpdateInformation();
 
-    int* w_extent = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+    int* w_extent = this->GetInput()->GetExtent();
     if ( (indices[0] < w_extent[0]) ||
          (indices[0] > w_extent[1]) ||
          (indices[1] < w_extent[2]) ||
@@ -1185,7 +1185,7 @@ int layer )
         } else {
 
             this->GetInputAlgorithm(layer)->Update ();
-            int* new_extent = this->GetInputAlgorithm(layer)->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+            int* new_extent = this->GetInput()->GetExtent();
             if ( (indices[0] < new_extent[0]) ||
                  (indices[0] > new_extent[1]) ||
                  (indices[1] < new_extent[2]) ||
@@ -1302,9 +1302,7 @@ void vtkImageView::SetZoom (double arg)
     if (!cam)
         return;
 
-    // Ensure that the spacing and dimensions are up-to-date.
-    this->GetInputAlgorithm()->UpdateInformation();
-    int* extent = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+    int* extent = this->GetInput()->GetExtent();
 
     double* spacing = this->GetInput()->GetSpacing();
     double xyz[3] = {0,0,0};
@@ -1719,8 +1717,6 @@ void vtkImageView::SetTimeIndex ( vtkIdType index )
                 };
             }
             this->TimeIndex = index;
-            this->GetInputAlgorithm()->UpdateInformation();
-            this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
             this->InvokeEvent( vtkImageView2DCommand::TimeChangeEvent );
             this->Modified ();
         }
@@ -1964,8 +1960,7 @@ itk::ImageBase<4>* vtkImageView::GetTemporalITKInput() const
 */
 void vtkImageView::GetInputBounds ( double * bounds )
 {
-    this->GetInputAlgorithm()->UpdateInformation();
-    const int* wholeExtent = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+    const int* wholeExtent = this->GetInput()->GetExtent();
     const double * spacing = this->GetInput ()->GetSpacing ();
     const double * origin = this->GetInput ()->GetOrigin ();
 
@@ -1982,11 +1977,9 @@ void vtkImageView::GetInputBounds ( double * bounds )
 void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
 {
     double imageBounds [6];
-
-    this->GetInputAlgorithm()->UpdateInformation();
-    const int* wholeExtent = this->GetInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
-    const double * spacing = this->GetInput ()->GetSpacing ();
-    const double * origin = this->GetInput ()->GetOrigin ();
+    const int* wholeExtent = this->GetInput()->GetExtent();
+    const double * spacing = this->GetInput ()->GetSpacing();
+    const double * origin = this->GetInput ()->GetOrigin();
 
     for ( int i(0); i < 3; ++i )
     {
