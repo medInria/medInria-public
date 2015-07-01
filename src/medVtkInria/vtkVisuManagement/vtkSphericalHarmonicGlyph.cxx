@@ -21,7 +21,7 @@
 #include <vtkInformationVector.h>
 #include <vtkTransform.h>
 
-#include <vtkSphericalHarmonicGlyph.h>
+#include "vtkSphericalHarmonicGlyph.h"
 
 vtkCxxRevisionMacro(vtkSphericalHarmonicGlyph,"$Revision: 0 $");
 vtkStandardNewMacro(vtkSphericalHarmonicGlyph);
@@ -130,7 +130,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     vtkDataSet*  input     = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
     const vtkIdType numPts = input->GetNumberOfPoints();  //number of points in the data
 
-    if (!numPts) {
+    if (!numPts || numPts < 0) {
         vtkErrorMacro(<<"No data to glyph!");
         return 1;
     }
@@ -149,6 +149,11 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     // Number of points on the shell
 
     const vtkIdType numSourcePts   = sourcePts->GetNumberOfPoints();
+    if (!numSourcePts || numSourcePts < 0) {
+        vtkErrorMacro(<<"No data to glyph!");
+        return 1;
+    }
+
 
     // Number of cells is the number of triangles in shell
 
