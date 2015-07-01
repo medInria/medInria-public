@@ -658,7 +658,6 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             QModelIndex parentIndex = index.parent();
             medDataIndex stDataIndex(dataIndex);
             stDataIndex.setSeriesId(-1);
-            QModelIndex stIndex = d->medIndexMap.value(stDataIndex);
 
             medAbstractDatabaseItem *parent = item->parent();
             if(!parent)
@@ -767,7 +766,6 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
             medDataIndex ptDataIndex(dataIndex);
             ptDataIndex.setStudyId(-1);
 
-            QModelIndex ptIndex = d->medIndexMap.value(ptDataIndex);
             medAbstractDatabaseItem *parent = item->parent();
 
             if(!parent)
