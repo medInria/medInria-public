@@ -11,19 +11,17 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 2.8.1)
+set(undoRedoRegistrationPlugin_VERSION_NUMBER ${MEDINRIA_VERSION})
+mark_as_advanced(undoRedoRegistrationPlugin_VERSION_NUMBER)
 
-project(undoRedoRegistrationPlugin)
+project(undoRedoRegistrationPlugin VERSION ${undoRedoRegistrationPlugin_VERSION_NUMBER})
 
 ## #############################################################################
 ## Setup version numbering
 ## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
-
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
-
 
 ## #################################################################
 ## Resolve dependencies
