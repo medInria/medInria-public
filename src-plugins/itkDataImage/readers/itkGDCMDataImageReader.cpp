@@ -487,7 +487,7 @@ bool itkGDCMDataImageReader::read (const QStringList &paths)
     {
 
         // copy over the dicom dictionary into metadata
-        typedef itk::MetaDataObject <std::vector<std::string>>  MetaDataVectorStringType;
+        typedef itk::MetaDataObject <std::vector<std::string> >  MetaDataVectorStringType;
         typedef std::vector<std::string>                        StringVectorType;
 
         const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
