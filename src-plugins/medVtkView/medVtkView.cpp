@@ -17,7 +17,13 @@
 #include <QWidget>
 #include <QHash>
 
-#include <QVTKWidget2.h>
+#include <QVTKGraphicsItem.h>
+#include <QGLFramebufferObject>
+#include <QGLContext>
+
+#include <QVTKInteractorAdapter.h>
+#include <QVTKInteractor.h>
+#include <vtkEventQtSlotConnect.h>
 
 #include <vtkRenderer.h>
 #include <vtkImageView2D.h>
@@ -34,11 +40,13 @@
 #include <vtkMatrix4x4.h>
 #include <vtkMath.h>
 
+#include <vtkImageViewCollection.h>
+
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
-#include <medVtkViewObserver.h>
+#include "medVtkViewObserver.h"
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
 #include <medDataListParameter.h>
@@ -49,6 +57,92 @@
 #include <medSettingsManager.h>
 
 #include <vtkGenericOpenGLRenderWindow.h>
+
+#include "medVtkViewQGraphicsView.h"
+
+class MEDVTKVIEWPLUGIN_EXPORT medVtkViewQVtkInteractorAdapter : public QVTKInteractorAdapter
+{
+
+public:
+
+    medVtkViewQVtkInteractorAdapter(QObject* parentObject):
+        QVTKInteractorAdapter(parentObject)
+    {
+
+    }
+
+
+
+    bool processDoubleClickEvent(QEvent* e, vtkRenderWindowInteractor* iren)
+    {
+        if(iren == NULL || e == NULL || e->type() != QEvent::MouseButtonDblClick)
+          return false;
+
+        QMouseEvent *e2 = static_cast<QMouseEvent *>(e);
+        iren->SetEventInformationFlipY(e2->x(), e2->y(),
+                                    (e2->modifiers() & Qt::ControlModifier) > 0 ? 1 : 0,
+                                    (e2->modifiers() & Qt::ShiftModifier ) > 0 ? 1 : 0,
+                                    1,
+                                    1);
+        switch(e2->button())
+        {
+            case Qt::LeftButton:
+            iren->InvokeEvent(vtkCommand::LeftButtonPressEvent, e2);
+            break;
+
+            case Qt::MidButton:
+            iren->InvokeEvent(vtkCommand::MiddleButtonPressEvent, e2);
+            break;
+
+            case Qt::RightButton:
+            iren->InvokeEvent(vtkCommand::RightButtonPressEvent, e2);
+            break;
+
+            default:
+            break;
+        }
+        return true;
+    }
+};
+
+
+class MEDVTKVIEWPLUGIN_EXPORT medVtkViewQVtkGraphicsItem : public QVTKGraphicsItem
+{
+public:
+
+    medVtkViewQVtkInteractorAdapter* mVtkViewIrenAdapter;
+    QGLWidget *mGlWidget;
+    int plic, ploc;
+
+    medVtkViewQVtkGraphicsItem(QGLContext* ctx, QGraphicsItem* p = 0, QGLWidget* glWidget = 0):
+        QVTKGraphicsItem(ctx, p), mGlWidget(glWidget), plic(0), ploc(0)
+    {
+        this->moveToThread(QApplication::instance()->thread());
+        this->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+        mVtkViewIrenAdapter = new medVtkViewQVtkInteractorAdapter(this);
+    }
+
+    QImage toImage()
+    {
+        QImage img;
+        if(mFBO)
+            img = mFBO->toImage();
+
+        return img;
+    }
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
+    {
+        QPointF pf = e->pos();
+        QPoint pi = pf.toPoint();
+
+        e->accept();
+        QMouseEvent e2(QEvent::MouseButtonDblClick, pi, e->button(),
+            e->buttons(), e->modifiers());
+        mVtkViewIrenAdapter->processDoubleClickEvent(&e2, mIren);
+    }
+};
+
 
 //// declare x11-specific function to prevent the window manager breaking thumbnail generation
 //#ifdef Q_OS_X11
@@ -63,14 +157,14 @@ public:
 
     vtkInteractorStyle *interactorStyle2D;
 
-    // renderers
-    vtkGenericOpenGLRenderWindow *renWin;
+
     // views
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
 
-    // widgets
-    QPointer<QVTKWidget2> viewWidget;
+    vtkGenericOpenGLRenderWindow *renWin;
+    medVtkViewQVtkGraphicsItem *vtkItem;
+    medVtkViewQGraphicsView *viewWidget;
 
     medVtkViewObserver *observer;
 
@@ -126,11 +220,25 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
-    d->viewWidget = new QVTKWidget2;
+    d->viewWidget = new medVtkViewQGraphicsView;
+    connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
+    // Event filter used to know if the view is selecetd or not
+
+    QGLWidget *glWidget = new QGLWidget();
+    d->viewWidget->setViewport(glWidget);
+
+    d->vtkItem = new medVtkViewQVtkGraphicsItem(const_cast<QGLContext*>(glWidget->context()), 0, glWidget);
+    d->vtkItem->SetRenderWindow(d->renWin);
+    QGraphicsScene *scene = new QGraphicsScene;
+    d->viewWidget->setScene(scene);
+    d->viewWidget->setQVtkGraphicsItem(d->vtkItem);
+    scene->addItem(d->vtkItem);
+
+    // Don'yt ask me why, this is necessary ... - RDE
+    d->vtkItem->resize(d->viewWidget->size());
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
-    d->viewWidget->SetRenderWindow(d->renWin);
     d->viewWidget->setCursor(QCursor(Qt::CrossCursor));
 
     d->backend.reset(new medVtkViewBackend(d->view2d, d->view3d, d->renWin));
@@ -424,25 +532,27 @@ void medVtkView::displayDataInfo(uint layer)
 
 QImage medVtkView::buildThumbnail(const QSize &size)
 {
-    this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
+//    this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
     int w(size.width()), h(size.height());
 
-    // will cause crashes if any calls to renWin->Render() happened before this line
-    d->viewWidget->resize(w,h);
-    d->renWin->SetSize(w,h);
-    render();
+//    // will cause crashes if any calls to renWin->Render() happened before this line
+//    d->viewWidget->resize(w,h);
+//    d->renWin->SetSize(w,h);
+//    render();
 
-//#ifdef Q_OS_X11
-//    // X11 likes to animate window creation, which means by the time we grab the
-//    // widget, it might not be fully ready yet, in which case we get artefacts.
-//    // Only necessary if rendering to an actual screen window.
-//    if(d->renWin->GetOffScreenRendering() == 0) {
-//        qt_x11_wait_for_window_manager(d->viewWidget);
-//    }
-//#endif
+////#ifdef Q_OS_X11
+////    // X11 likes to animate window creation, which means by the time we grab the
+////    // widget, it might not be fully ready yet, in which case we get artefacts.
+////    // Only necessary if rendering to an actual screen window.
+////    if(d->renWin->GetOffScreenRendering() == 0) {
+////        qt_x11_wait_for_window_manager(d->viewWidget);
+////    }
+////#endif
 
-    QImage thumbnail = d->viewWidget->grabFrameBuffer(true);
-    this->blockSignals(false);
+//    QImage thumbnail = d->viewWidget->grabFrameBuffer(true);
+//    this->blockSignals(false);
+    QImage thumbnail = d->vtkItem->toImage();
+    thumbnail = thumbnail.copy(0, thumbnail.height() - h, w, h);
     return thumbnail;
 }
 
