@@ -324,17 +324,23 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
 
     if (activeKeyboardModifiers & (Qt::ControlModifier | Qt::ShiftModifier))
     {
+        QVector<medDataIndex> test;
+        for (int i = 0; i < selected.size(); i++)
+        {
+            QModelIndex index = selected.indexes()[i];
+            medAbstractDatabaseItem* item = getItemFromIndex(index);
+
+            if (item)
+                test.push_back(item->dataIndex());
+
+        }
+        emit multipleEntriesSelected(test);
         return;
     }
         
     // If we don't have the modifer keys pressed, expand the selected element.
     QModelIndex index = selected.indexes()[0];
-    medAbstractDatabaseItem *item = NULL;
-
-    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+    medAbstractDatabaseItem *item = getItemFromIndex(index);
 
     if (!item)
         return;
@@ -357,6 +363,19 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
         emit patientClicked(item->dataIndex());
     }
 
+}
+
+medAbstractDatabaseItem* medDatabaseView::getItemFromIndex(const QModelIndex& index)
+{
+    medAbstractDatabaseItem *item = NULL;
+
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+
+
+    return item;
 }
 
 /** Removes the currently selected item. */

@@ -21,6 +21,7 @@
 class medDataIndex;
 class medDatabaseModel;
 class medDatabaseViewPrivate;
+class medAbstractDatabaseItem;
 
 class MEDCORELEGACY_EXPORT medDatabaseView : public QTreeView
 {
@@ -53,6 +54,9 @@ signals:
     /** Signal emitted when the selection changes and no item is selected. */
     void noPatientOrSeriesSelected();
 
+    /** Signal emitted when multiple entries are selected **/
+    void multipleEntriesSelected(const QVector<medDataIndex>& selectedIndexes);
+
     void open(const medDataIndex&);
     void exportData(const medDataIndex &index);
     void dataRemoved(const medDataIndex &index);
@@ -72,6 +76,9 @@ protected slots:
     virtual void updateContextMenu(const QPoint&);
     virtual void onItemDoubleClicked(const QModelIndex& index);
     virtual void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+
+protected:
+    medAbstractDatabaseItem* getItemFromIndex(const QModelIndex& selected);
 
 private:
     medDatabaseViewPrivate *d;

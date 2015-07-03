@@ -93,6 +93,7 @@ QWidget* medDatabaseDataSource::mainViewWidget()
             connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
+            connect(d->largeView, SIGNAL(multipleEntriesSelected(const QVector<medDataIndex>&)), d->actionsToolBox, SLOT(multipleEntriesSelected(const QVector<medDataIndex>&)));
         }
 
     }
@@ -164,6 +165,7 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
             connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
+            connect(d->largeView, SIGNAL(multipleEntriesSelected(const QVector<medDataIndex>&)), d->actionsToolBox, SLOT(multipleEntriesSelected(const QVector<medDataIndex>&)));
         }
     }
     return d->toolBoxes;
