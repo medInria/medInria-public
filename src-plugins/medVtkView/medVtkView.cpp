@@ -536,9 +536,9 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     int w(size.width()), h(size.height());
 
 //    // will cause crashes if any calls to renWin->Render() happened before this line
-//    d->viewWidget->resize(w,h);
-//    d->renWin->SetSize(w,h);
-//    render();
+    d->viewWidget->resize(w,h);
+    d->renWin->SetSize(w,h);
+    render();
 
 ////#ifdef Q_OS_X11
 ////    // X11 likes to animate window creation, which means by the time we grab the
