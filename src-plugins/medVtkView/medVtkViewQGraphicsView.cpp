@@ -15,6 +15,7 @@
 
 
 #include <QVTKGraphicsItem.h>
+#include <QGraphicsView>
 #include <QDebug>
 
 class medVtkViewQGraphicsViewPrivate
@@ -78,4 +79,10 @@ void medVtkViewQGraphicsView::dragLeaveEvent(QDragLeaveEvent *event)
 void medVtkViewQGraphicsView::dropEvent(QDropEvent *event)
 {
     QWidget::dropEvent(event);
+}
+
+void medVtkViewQGraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    QGraphicsView::mousePressEvent(event);
+    QWidget::mousePressEvent(event);
 }
