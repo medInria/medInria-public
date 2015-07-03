@@ -107,7 +107,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->setAnimated(false);
     this->setSortingEnabled(true);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
     this->header()->setDefaultAlignment(Qt::AlignCenter);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -208,48 +208,47 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
     {
         QModelIndex index = this->indexAt(point);
 
-        d->contextMenu->clear();
-        d->contextMenu->addAction(d->addPatientAction);
+    d->contextMenu->clear();
+    d->contextMenu->addAction(d->addPatientAction);
 
-        medAbstractDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = NULL;
 
-        if(index.isValid())
+    if(index.isValid())
+    {
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+        else if (dynamic_cast<QAbstractItemModel *>(this->model()))
+            item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+    }
+
+    if (item)
+    {
+        if( item->dataIndex().isValidForSeries())
         {
-            if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
-                item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-            else if (dynamic_cast<QAbstractItemModel *>(this->model()))
-                item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+            d->contextMenu->addAction(d->editAction);
+            d->editAction->setIcon(QIcon(":icons/page_edit.png"));
+            d->contextMenu->addAction(d->viewAction);
+            d->contextMenu->addAction(d->exportAction);
+            d->contextMenu->addAction(d->removeAction);
+            if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                d->contextMenu->addAction(d->saveAction);
         }
-
-        if (item)
+        else if (item->dataIndex().isValidForStudy())
         {
-            if( item->dataIndex().isValidForSeries())
-            {
-                d->contextMenu->addAction(d->editAction);
-                d->editAction->setIcon(QIcon(":icons/page_edit.png"));
-                d->contextMenu->addAction(d->viewAction);
-                d->contextMenu->addAction(d->exportAction);
-                d->contextMenu->addAction(d->removeAction);
-                if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
-                    d->contextMenu->addAction(d->saveAction);
-            }
-            else if (item->dataIndex().isValidForStudy())
-            {
-                d->contextMenu->addAction(d->editAction);
-                d->editAction->setIcon(QIcon(":icons/page_edit.png"));
-                d->contextMenu->addAction(d->removeAction);
-                if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
-                    d->contextMenu->addAction(d->saveAction);
-            }
-            else if (item->dataIndex().isValidForPatient())
-            {
-                d->contextMenu->addAction(d->addStudyAction);
-                d->contextMenu->addAction(d->editAction);
-                d->editAction->setIcon(QIcon(":icons/user_edit.png"));
-                d->contextMenu->addAction(d->removeAction);
-                if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
-                    d->contextMenu->addAction(d->saveAction);
-            }
+            d->contextMenu->addAction(d->editAction);
+            d->editAction->setIcon(QIcon(":icons/page_edit.png"));
+            d->contextMenu->addAction(d->removeAction);
+            if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                d->contextMenu->addAction(d->saveAction);
+        }
+        else if (item->dataIndex().isValidForPatient())
+        {
+            d->contextMenu->addAction(d->addStudyAction);
+            d->contextMenu->addAction(d->editAction);
+            d->editAction->setIcon(QIcon(":icons/user_edit.png"));
+            d->contextMenu->addAction(d->removeAction);
+            if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                d->contextMenu->addAction(d->saveAction);
         }
     }
 
@@ -338,7 +337,7 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
         return;
     }
         
-    // If we don't have the modifer keys pressed, expand the selected element.
+    // so far we only allow single selection
     QModelIndex index = selected.indexes()[0];
     medAbstractDatabaseItem *item = getItemFromIndex(index);
 
@@ -387,7 +386,7 @@ void medDatabaseView::onRemoveSelectedItemRequested( void )
             tr("Are you sure you want to continue?\n""This cannot be undone."),
             QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
 
-    if (reply == QMessageBox::Yes)
+    if( reply == QMessageBox::Yes )
     {
         foreach(const QModelIndex& index, this->selectionModel()->selectedRows())
         {
