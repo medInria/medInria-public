@@ -68,6 +68,7 @@ public slots:
     void seriesSelected(const medDataIndex& index);
     void noPatientOrSeriesSelected();
     void selectedPathsChanged(const QStringList& paths);
+    void multipleEntriesSelected(const QVector<medDataIndex>& selectedIndexes);
 
 protected:
 
