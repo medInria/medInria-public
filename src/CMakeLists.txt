@@ -19,8 +19,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
 ## #############################################################################
 
 ## be sure medCore  is first in the list, it will be used by the other lib.
-add_subdirectory(medCore)
 add_subdirectory(medCoreLegacy)
+add_subdirectory(medCore)
 
 add_subdirectory(medTest)
 add_subdirectory(medPacs)

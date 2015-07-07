@@ -47,6 +47,7 @@
 #include <medMainWindow.h>
 
 #include <medStyleSheetParser.h>
+#include <medTestWorkspace.h>
 
 class medApplicationPrivate
 {
@@ -160,6 +161,7 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
 
     //Register settingsWidgets
     medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();

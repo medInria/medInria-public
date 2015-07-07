@@ -18,6 +18,7 @@ project(medCore)
 ## #############################################################################
 
 list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   process
   )
 
@@ -29,10 +30,11 @@ list_source_files(${PROJECT_NAME}
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
   ${QT_HEADERS}
-
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${medCoreLegacy_INCLUDE_DIRS}
+  )
 
 
 ## #############################################################################
