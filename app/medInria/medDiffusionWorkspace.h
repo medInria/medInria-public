@@ -26,7 +26,8 @@ class medDiffusionWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Diffusion",
-                            "Diffusion Tensor Images.")
+                            "Workspace for the processing of Diffusion Weighted Images and tractography.",
+                            "Methodology")
 
 public:
      medDiffusionWorkspace(QWidget *parent = 0);
