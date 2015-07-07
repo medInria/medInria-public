@@ -15,7 +15,6 @@
 
 #include <medAlgorithmInitializer.h>
 #include <medAnnotationInteractor.h>
-#include <msegAlgorithmPaintToolbox.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -51,7 +50,6 @@ bool medSegmentationPlugin::initialize()
     if(!medAnnotationInteractor::registered())
         qDebug() << "Unable to register medAnnotationInteractor";
     return medAlgorithmInitializer::initialize();
-    }
 }
 
 bool medSegmentationPlugin::uninitialize()
@@ -108,11 +106,6 @@ QStringList medSegmentationPlugin::contributors() const
 }
 
 QString medSegmentationPlugin::identifier() const
-{
-    return medSegmentationPluginPrivate::s_Name;
-}
-
-QStringList medSegmentationPlugin::tags() const
 {
     return medSegmentationPluginPrivate::s_Name;
 }

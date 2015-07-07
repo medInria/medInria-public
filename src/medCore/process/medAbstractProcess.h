@@ -36,7 +36,7 @@ public:
 public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;
-    virtual void setInput ( medAbstractData *data, int channel = 0 ) = 0;
+
 private:
     using dtkAbstractProcess::onCanceled;
     using dtkAbstractProcess::read;

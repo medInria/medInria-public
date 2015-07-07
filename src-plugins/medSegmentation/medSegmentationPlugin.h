@@ -44,7 +44,6 @@ public:
     virtual QStringList authors() const;
     virtual QString contact() const;
     virtual QStringList contributors() const;
-    virtual QStringList dependencies(void) const;
     virtual QStringList tags() const;
     virtual QStringList types() const;
 
