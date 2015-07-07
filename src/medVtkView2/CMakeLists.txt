@@ -11,35 +11,28 @@
 #
 ################################################################################
 
-project(medRegistration)
+cmake_minimum_required(VERSION 2.8.9)
+
+project(medVtkView2)
+
+## #############################################################################
+## Find required
+## #############################################################################
+
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
 
 ## #############################################################################
-## find requireds
-## #############################################################################
-
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
-
-
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
-
-
-## #############################################################################
-## List Sources
+## List sources
 ## #############################################################################
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
@@ -47,7 +40,8 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${medCoreLegacy_INCLUDE_DIRS}
+  ${Qt5Core_INCLUDE_DIRS}
+  ${medCore_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -58,42 +52,21 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
   )
 
-
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-    ${QT_LIBRARIES}
-  dtkCoreSupport
-  medCoreLegacy
-  dtkLog
-  RegistrationAddOn
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOGE
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKStatistics
-  ITKIOTransformBase
-  ITKIOTransformHDF5
-  ITKIOTransformMatlab
-  ITKIOTransformInsightLegacy
-  ITKIOMRC
+#  vtkCommonCore
+#  vtkIOCore
+#  vtkIOXML
+#  vtkRenderingCore
+#  vtkRenderingOpenGL
+#  vtkRenderingVolumeOpenGL
+#  vtkRenderingFreeTypeOpenGL
+#  vtkRenderingContextOpenGL
+  ${VTK_LIBRARIES}
   )
-
 
 ## #############################################################################
 ## install

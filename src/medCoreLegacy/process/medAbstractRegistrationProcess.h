@@ -15,16 +15,16 @@
 
 #include <medCoreExport.h>
 
-#include <medAbstractProcess.h>
+#include <medAbstractProcessLegacy.h>
 
 class medAbstractData;
 
-class MEDCORE_EXPORT medAbstractRegistrationProcess : public medAbstractProcess
+class MEDCORE_EXPORT medAbstractRegistrationProcess : public medAbstractProcessLegacy
 {
     Q_OBJECT
 
 public:
-    medAbstractRegistrationProcess(medAbstractProcess *parent = NULL);
+    medAbstractRegistrationProcess(medAbstractProcessLegacy *parent = NULL);
     virtual ~medAbstractRegistrationProcess();
 
 public:

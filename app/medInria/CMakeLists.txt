@@ -116,6 +116,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkGuiSupport
   dtkVrSupport
   medCore
+  medCoreLegacy
   medPacs
   )
 
