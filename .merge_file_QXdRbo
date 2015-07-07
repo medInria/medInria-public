@@ -13,20 +13,21 @@
 
 #pragma once
 
-#include <medCoreExport.h>
+#include <itkDataSHImageReaderBase.h>
+#include <itkDataSHImagePluginExport.h>
 
-#include <medAbstractProcess.h>
-
-class medAbstractData;
-
-class MEDCORE_EXPORT medAbstractDiffusionProcess : public medAbstractProcess
+class ITKDATASHIMAGEPLUGIN_EXPORT itkMetaDataSHImageReader: public itkDataSHImageReaderBase
 {
     Q_OBJECT
-
+	
 public:
-    medAbstractDiffusionProcess(medAbstractProcess *parent = NULL);
-    virtual ~medAbstractDiffusionProcess();
+    itkMetaDataSHImageReader();
+    virtual ~itkMetaDataSHImageReader();
+	
+    virtual QString description() const;
+    virtual QString identifier() const;
 
-    virtual void setInputImage(medAbstractData *data) = 0;
-
+    static bool registered();	
 };
+
+dtkAbstractDataReader *createItkMetaDataSHImageReader();

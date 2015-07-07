@@ -13,35 +13,14 @@
 
 project(medCore)
 
-#required for querying the GPU, can be removed once using Qt 5.3
-#using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
-find_package(OpenGL REQUIRED)
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
 list_source_files(${PROJECT_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  data
-  database
-  data/annotationData
-  gui
-  gui/commonWidgets
-  gui/database
-  gui/factories
-  gui/lookUpTables
-  gui/settingsWidgets
-  gui/toolboxes
-  gui/viewContainers
   process
-  views
-  views/interactors
-  views/navigators
-  parameters
   )
 
-set(${PROJECT_NAME}_QRC resources/medCore.qrc)
 
 ## #############################################################################
 ## include directories.
@@ -55,13 +34,10 @@ list_header_directories_to_include(${PROJECT_NAME}
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
+
 ## #############################################################################
 ## add library
 ## #############################################################################
-
-qt5_add_resources(${PROJECT_NAME}_QRC
-  ${${PROJECT_NAME}_QRC}
-  )
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
@@ -76,16 +52,10 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
-    ${OPENGL_LIBRARIES}
     dtkCoreSupport
     dtkGuiSupport
     dtkLog
     )
-
-if (WIN32) #TODO is that for the memory management thing ?
-  target_link_libraries(${PROJECT_NAME} psapi.lib)
-endif()
-
 
 ## #############################################################################
 ## install

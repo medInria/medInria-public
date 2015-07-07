@@ -11,15 +11,17 @@
 
 =========================================================================*/
 
-#include <medAbstractDiffusionProcess.h>
+#pragma once
 
-medAbstractDiffusionProcess::medAbstractDiffusionProcess(medAbstractProcess *parent):
-    medAbstractProcess(parent)
-{
+#ifdef WIN32
+    #ifdef vtkDataMeshPlugin_EXPORTS
+        #define VTKDATAMESHPLUGIN_EXPORT __declspec(dllexport) 
+    #else
+        #define VTKDATAMESHPLUGIN_EXPORT __declspec(dllimport) 
+    #endif
+#else
+    #define VTKDATAMESHPLUGIN_EXPORT
+#endif
 
-}
 
-medAbstractDiffusionProcess::~medAbstractDiffusionProcess()
-{
 
-}
