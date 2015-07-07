@@ -505,7 +505,25 @@ void DCMTKImageIO::DetermineSpacing()
     }
 
     if (this->GetNumberOfDimensions()==4)
-        m_Spacing[3] = 1.0;
+    {
+        // try to use the Repetition Time as an estimate of temporal resolution (should work for cardiac)
+        const StringVectorType &temporalSpacing = this->GetMetaDataValueVectorString ("(0018,0080)");
+        if (temporalSpacing.size())
+        {
+            std::string temporalSpacingStr = temporalSpacing[0];
+            std::istringstream is_stream( temporalSpacingStr );
+            if (!(is_stream >> m_Spacing[3]))
+                itkWarningMacro ( << "Cannot convert string to double: " << temporalSpacingStr.c_str() << std::endl);
+            if(m_Spacing[3] != 0.0)
+                // convert from milliseconds to seconds
+                m_Spacing[3] *= 0.001;
+            else
+                // use 1.0 in case the Repetition Time is 0
+                m_Spacing[3] = 1.0;
+        }
+        else
+            m_Spacing[3] = 1.0;
+    }
 }
 
 
