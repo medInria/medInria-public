@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -69,43 +69,43 @@ shader_to_header(HWShading/shaders/AnisotropicLighting.frag
 shader_to_header(HWShading/shaders/ShadowMapping.vert
   ShadowMappingVertexText
   )
-  
+
 shader_to_header(HWShading/shaders/ShadowMapping.frag
   ShadowMappingFragmentText
   )
-  
+
 shader_to_header(HWShading/shaders/Spotlight.func
   SpotlightFunctionsText
   )
-  
+
 shader_to_header(HWShading/shaders/AnisotropicLighting.func
   AnisotropicLightingFunctionsText
   )
-  
+
 shader_to_header(HWShading/shaders/AnisoLiShadowMap.frag
   AnisotropicLightingShadowMappingFragmentText
   )
-  
+
 shader_to_header(HWShading/shaders/AnisoLiShadowMap.vert
   AnisotropicLightingShadowMappingVertexText
   )
-  
+
 shader_to_header(HWShading/shaders/BuildShadowMap.vert
   BuildShadowMapVertexText
   )
-  
+
 shader_to_header(HWShading/shaders/BuildShadowMap.frag
   BuildShadowMapFragmentText
   )
-  
+
 shader_to_header(HWShading/shaders/BuildShadowMapLines.vert
   BuildShadowMapLinesVertexText
   )
-  
+
 shader_to_header(HWShading/shaders/BuildShadowMapLines.frag
   BuildShadowMapLinesFragmentText
   )
-  
+
 
 ## #############################################################################
 ## include directories.
@@ -118,21 +118,54 @@ list_header_directories_to_include(${PROJECT_NAME}
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${Qt5Core_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
-  ${medCore_INCLUDE_DIRS}
+  ${medCoreLegacy_INCLUDE_DIRS}
   ${${PROJECT_NAME}_BINARY_DIR}/shaders
   )
+
+
+## #############################################################################
+## Embed vtkInriaPch
+## #############################################################################
+
+if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
+  file(GLOB VTKINRIAPCH_H
+    vtkInriaPch/*.h
+    )
+
+  file(GLOB VTKINRIAPCH_CPP
+    vtkInriaPch/*.cpp
+    )
+endif()
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${VTKINRIAPCH_H}
+    ${VTKINRIAPCH_CPP}
+    ${${PROJECT_NAME}_SOURCES}
+    )
+endif()
+
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
+add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_PCH}
+  )
+
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}  
+target_link_libraries(${PROJECT_NAME}
   ${OPENGL_LIBRARIES}
   ITKIOImageBase
   ITKIOBMP

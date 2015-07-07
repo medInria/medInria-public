@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -33,15 +33,15 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-    ${medCore_INCLUDE_DIRS}
+    ${medCoreLegacy_INCLUDE_DIRS}
     )
 
-    
+
 ## #############################################################################
 ## Add definition
 ## #############################################################################
 
-if (NOT MSVC) #TODO : what is it for ? 
+if (NOT MSVC) #TODO : what is it for ?
   add_definitions(-Wno-write-strings)
   add_definitions(-Wformat=0)
 endif()
@@ -71,7 +71,7 @@ target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCoreSupport
     dtkLog
-    medCore
+    medCoreLegacy
     )
 qt5_use_modules(${PROJECT_NAME} Widgets)
 qt5_use_modules(${PROJECT_NAME} Core)

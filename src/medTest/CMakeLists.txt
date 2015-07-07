@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -31,10 +31,10 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-    ${medCore_INCLUDE_DIRS}
+    ${medCoreLegacy_INCLUDE_DIRS}
     )
 
-    
+
 ## #############################################################################
 ## add library
 ## #############################################################################
@@ -53,7 +53,7 @@ target_link_libraries(${PROJECT_NAME}
     ${QT_QTTEST_LIBRARY}
     dtkCoreSupport
     dtkLog
-    medCore
+    medCoreLegacy
     )
 
 

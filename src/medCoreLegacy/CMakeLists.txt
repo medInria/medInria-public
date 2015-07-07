@@ -11,23 +11,11 @@
 #
 ################################################################################
 
-project(medRegistration)
+project(medCoreLegacy)
 
-
-## #############################################################################
-## find requireds
-## #############################################################################
-
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
-
-
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
-
+#required for querying the GPU, can be removed once using Qt 5.3
+#using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
+find_package(OpenGL REQUIRED)
 
 ## #############################################################################
 ## List Sources
@@ -35,27 +23,50 @@ include(${RPI_USE_FILE})
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  data
+  database
+  data/annotationData
+  gui
+  gui/commonWidgets
+  gui/database
+  gui/factories
+  gui/lookUpTables
+  gui/settingsWidgets
+  gui/toolboxes
+  gui/viewContainers
+  process
+  views
+  views/interactors
+  views/navigators
+  parameters
   )
 
+set(${PROJECT_NAME}_QRC resources/medCore.qrc)
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
+  ${QT_HEADERS}
+
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${medCoreLegacy_INCLUDE_DIRS}
-  )
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
+qt5_add_resources(${PROJECT_NAME}_QRC
+  ${${PROJECT_NAME}_QRC}
+  )
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_QRC}
   )
 
 
@@ -65,33 +76,15 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
-  dtkCoreSupport
-  medCoreLegacy
-  dtkLog
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOGE
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKStatistics
-  ITKIOTransformBase
-  ITKIOTransformHDF5
-  ITKIOTransformMatlab
-  ITKIOTransformInsightLegacy
-  ITKIOMRC
-  )
+    ${OPENGL_LIBRARIES}
+    dtkCoreSupport
+    dtkGuiSupport
+    dtkLog
+    )
+
+if (WIN32) #TODO is that for the memory management thing ?
+  target_link_libraries(${PROJECT_NAME} psapi.lib)
+endif()
 
 
 ## #############################################################################
@@ -101,3 +94,18 @@ target_link_libraries(${PROJECT_NAME}
 set_lib_install_rules(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
   )
+
+
+## #############################################################################
+## Build tests
+## #############################################################################
+
+if(MEDINRIA_BUILD_TESTS)
+  add_subdirectory(tests)
+  #TODO: we will need to change the tests organization because of dependance to medTest...
+  #add_subdirectory(gui/tests)
+  #add_subdirectory(parameters/tests)
+  #add_subdirectory(view/tests)
+  #add_subdirectory(data/tests)
+  #add_subdirectory(process/tests)
+endif()
