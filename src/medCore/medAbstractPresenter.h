@@ -17,10 +17,10 @@
 #include <QString>
 #include <QStringList>
 
-class medAbstractPlugin : public QObject
+class medAbstractPresenter : public QObject
 {
 public:
-    medAbstractPlugin(QObject *parent = NULL): QObject(parent) {}
+    medAbstractPresenter(QObject *parent = NULL): QObject(parent) {}
 
     virtual QString name() const = 0;
     virtual QString description() const = 0;
