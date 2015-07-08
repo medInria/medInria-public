@@ -177,7 +177,17 @@ void medApplication::initialize()
     datafactory->registerDataType<medSeedPointAnnotationData>();
 
 
+    QDir plugins_dir;
+    QString defaultPath;
+#ifdef Q_OS_MAC
+    plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
+#else
+    plugins_dir = qApp->applicationDirPath() + "/../plugins";
+#endif
+    defaultPath = plugins_dir.absolutePath();
+
+
     // layer process:
     process::substractImage::pluginManager().setVerboseLoading(true);
-    process::substractImage::pluginManager().initialize("/home/rdebroiz/medinria2/bld-qt54/plugins");
+    process::substractImage::pluginManager().initialize(defaultPath);
 }

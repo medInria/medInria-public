@@ -82,5 +82,5 @@ target_link_libraries(${PROJECT_NAME}
 ## Install rules
 ## #############################################################################
 
-set_plugin_install_rules(${PROJECT_NAME})
+set_plugin_install_rules_legacy(${PROJECT_NAME})
 
