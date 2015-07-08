@@ -1,19 +1,27 @@
-#include "medItkSubstractImageProcessPlugin.h"
+/*=========================================================================
 
-#include <dtkCore>
+ medInria
 
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <medItkSubstractImageProcessPlugin.h>
+
+#include <medProcessLayer.h>
 #include <medItkSubstractImageProcessPresenter.h>
 
-// ///////////////////////////////////////////////////////////////////
-// maphysSparseSolverPlugin
-// ///////////////////////////////////////////////////////////////////
 
 void medItkSubstractImageProcessPlugin::initialize(void)
 {
-    dtkDebug() << "\n\n\n\n\npouette";
-    std::cout << "\n\n\n\n\npouette" << std::endl;
-    process::substractImage::pluginFactory().record("medItkSubstractImageProcess", medItkSubstractImageProcessPresenterCreator);
+
+    medProcessLayer::substractImage::pluginFactory().record("medItkSubstractImageProcess",
+                                                            medItkSubstractImageProcessPresenterCreator);
 }
 
 void medItkSubstractImageProcessPlugin::uninitialize(void)
@@ -26,7 +34,4 @@ void medItkSubstractImageProcessPlugin::uninitialize(void)
 // ///////////////////////////////////////////////////////////////////
 
 DTK_DEFINE_PLUGIN(medItkSubstractImageProcess)
-
-//
-// maphysSparseSolverPlugin.cpp ends here
 

@@ -24,6 +24,7 @@
 
 #include <medPluginManager.h>
 
+
 #include <medWorkspaceFactory.h>
 #include <medAbstractWorkspace.h>
 #include <medFilteringWorkspace.h>
@@ -49,6 +50,7 @@
 #include <medStyleSheetParser.h>
 #include <medTestWorkspace.h>
 
+#include <medProcessLayer.h>
 #include <medAbstractArithmeticOperationProcess.h>
 
 class medApplicationPrivate
@@ -186,8 +188,7 @@ void medApplication::initialize()
 #endif
     defaultPath = plugins_dir.absolutePath();
 
-
-    // layer process:
-    process::substractImage::pluginManager().setVerboseLoading(true);
-    process::substractImage::pluginManager().initialize(defaultPath);
+    // process layer:
+    medProcessLayer::substractImage::pluginManager().setVerboseLoading(true);
+    medProcessLayer::substractImage::pluginManager().initialize(defaultPath);
 }

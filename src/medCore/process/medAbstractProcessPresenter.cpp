@@ -13,13 +13,15 @@
 
 #include <medAbstractProcessPresenter.h>
 
+#include <QStringList>
+
 class medAsbtractProcessPresenterPrivate
 {
 public:
     QStringList tags;
 };
 
-medAsbtractProcessPresenter::medAsbtractProcessPresenter(QObject *parent): medAbstractPresenter(parent),
+medAsbtractProcessPresenter::medAsbtractProcessPresenter(QObject *parent): QObject(parent),
     d(new medAsbtractProcessPresenterPrivate)
 {
 

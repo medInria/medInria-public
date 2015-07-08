@@ -1,5 +1,17 @@
-#include <medItkSubstractImageProcessPresenter.h>
+/*=========================================================================
 
+ medInria
+
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <medItkSubstractImageProcessPresenter.h>
 #include <medItkSubstractImageProcess.h>
 
 #include <QLabel>
@@ -11,7 +23,7 @@ public:
 };
 
 
-medItkSubstractImageProcessPresenter::medItkSubstractImageProcessPresenter(QObject *parent): medAbstractSubstractimageProcessPresenter(parent),
+medItkSubstractImageProcessPresenter::medItkSubstractImageProcessPresenter(QObject *parent): medAbstractSubstractImageProcessPresenter(parent),
     d(new medItkSubstractImageProcessPresenterPrivate)
 {
     d->process = new medItkSubstractImageProcess(this);
@@ -22,7 +34,7 @@ medItkSubstractImageProcessPresenter::~medItkSubstractImageProcessPresenter()
     delete d;
 }
 
-medAbstractSubstractimageProcess* medItkSubstractImageProcessPresenter::process() const
+medAbstractSubstractImageProcess* medItkSubstractImageProcessPresenter::process() const
 {
     return d->process;
 }

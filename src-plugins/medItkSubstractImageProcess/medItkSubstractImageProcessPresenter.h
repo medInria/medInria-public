@@ -1,16 +1,29 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #pragma once
 
-#include <medAbstractArithmeticOperationProcess.h>
+#include <medAbstractSubstractImageProcessPresenter.h>
 
 class medItkSubstractImageProcessPresenterPrivate;
 
-class medItkSubstractImageProcessPresenter: public medAbstractSubstractimageProcessPresenter
+class medItkSubstractImageProcessPresenter: public medAbstractSubstractImageProcessPresenter
 {
 public:
     medItkSubstractImageProcessPresenter(QObject *parent = NULL);
     virtual ~medItkSubstractImageProcessPresenter();
 
-    virtual medAbstractSubstractimageProcess* process() const;
+    virtual medAbstractSubstractImageProcess* process() const;
     virtual QWidget* toolbox() const;
 
     virtual QString name() const {return "yolo";}
@@ -23,7 +36,7 @@ private:
 
 // ///////////////////////////////////////////////////////////////////
 
-inline medAbstractSubstractimageProcessPresenter* medItkSubstractImageProcessPresenterCreator(void)
+inline medAbstractSubstractImageProcessPresenter* medItkSubstractImageProcessPresenterCreator(void)
 {
     return new medItkSubstractImageProcessPresenter();
 }

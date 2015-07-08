@@ -13,12 +13,10 @@
 
 #pragma once
 
-#include <medAbstractSubstractImageProcess.h>
+#include <medAbstractArithmeticOperationProcess.h>
 
-class medItkSubstractImageProcess: public medAbstractSubstractImageProcess
+class medAbstractSubstractImageProcess: public medAbstractArithmeticOperationProcess
 {
 public:
-    medItkSubstractImageProcess(QObject* parent = NULL);
-    ~medItkSubstractImageProcess();
-    virtual void start();
+    medAbstractSubstractImageProcess(QObject* parent = NULL);
 };
