@@ -45,28 +45,34 @@ public:
         typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  WindowingFilterType;
         typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
     
-        windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        windowingFilter->SetWindowMinimum ( ( PixelType ) minimumIntensityValue );
-        windowingFilter->SetWindowMaximum ( ( PixelType ) maximumIntensityValue );
-        windowingFilter->SetOutputMinimum ( ( PixelType ) minimumOutputIntensityValue );
-        windowingFilter->SetOutputMaximum ( ( PixelType ) maximumOutputIntensityValue );
-        
-        callback = itk::CStyleCommand::New();
-        callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersWindowingProcessPrivate::eventCallback );
-    
-        windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
-    
-        windowingFilter->Update();
-        output->setData ( windowingFilter->GetOutput() );
-        
-        //Set output description metadata
-        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " intensity filter";
-        
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-    }
+        try
+        {
+            windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+            windowingFilter->SetWindowMinimum ( ( PixelType ) minimumIntensityValue );
+            windowingFilter->SetWindowMaximum ( ( PixelType ) maximumIntensityValue );
+            windowingFilter->SetOutputMinimum ( ( PixelType ) minimumOutputIntensityValue );
+            windowingFilter->SetOutputMaximum ( ( PixelType ) maximumOutputIntensityValue );
 
+            callback = itk::CStyleCommand::New();
+            callback->SetClientData ( ( void * ) this );
+            callback->SetCallback ( itkFiltersWindowingProcessPrivate::eventCallback );
+
+            windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+            windowingFilter->Update();
+            output->setData ( windowingFilter->GetOutput() );
+
+            //Set output description metadata
+            QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+            newSeriesDescription += " intensity filter";
+        
+            output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        }
+        catch (itk::ExceptionObject & err){
+            std::cerr << "ExceptionObject caught in itkFiltersWindowingProcess!" << std::endl;
+            std::cerr << err << std::endl;
+        }
+    }
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersWindowingProcess, itkFiltersProcessBase)

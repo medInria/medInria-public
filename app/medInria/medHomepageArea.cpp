@@ -23,6 +23,7 @@
 #include <medSettingsManager.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
+#include <dtkLog/dtkLogView.h>
 
 
 class medHomepageAreaPrivate
@@ -60,7 +61,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
     d->userWidget->setMinimumWidth ( 250 );
-    d->userWidget->setMaximumWidth ( 350 ); //TODO: find the right solution
+    d->userWidget->setMaximumWidth ( 400 ); //TODO: find the right solution
     d->userWidget->setMinimumHeight ( 40 );
 
     //Setup the about container widget (with a QTabWidget inside)
@@ -105,6 +106,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( pluginButton,SIGNAL ( clicked() ),this, SLOT ( onShowPlugin() ) );
 
+    medHomepageButton * logButton = new medHomepageButton ( this );
+    logButton->setText ( "Log" );
+    logButton->setMinimumHeight ( 30 );
+    logButton->setMaximumWidth ( 150 );
+    logButton->setMinimumWidth ( 150 );
+    logButton->setToolTip(tr("Display log window"));
+    logButton->setFocusPolicy ( Qt::NoFocus );
+    logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
+    logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( showLogWindow() ) );
+
     medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
@@ -119,7 +131,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
-    userButtonsLayout->insertWidget ( 3, helpButton );
+    userButtonsLayout->insertWidget ( 3, logButton );
+    userButtonsLayout->insertWidget ( 4, helpButton );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
@@ -267,7 +280,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 400 ,  this->height() - 90 ) );
 
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
@@ -324,7 +337,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
     //Recompute the widgets position when the window is resized
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 400 ,  this->height() - 90 ) );
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
@@ -517,4 +530,12 @@ void medHomepageArea::onShowSettings()
     d->settingsWidget->setFocus();
 }
 
-
+void medHomepageArea::showLogWindow()
+{
+    dtkLogView* logView = new dtkLogView();
+    logView->setAttribute( Qt::WA_QuitOnClose, false );
+    logView->setWindowTitle("medInria Log View");
+    logView->resize(680, 350);
+    logView->show();
+    logView->raise();
+}

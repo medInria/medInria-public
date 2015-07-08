@@ -40,37 +40,42 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        try
-        {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::ThresholdImageFilter < ImageType>  ThresholdImageFilterType;
         typename ThresholdImageFilterType::Pointer thresholdFilter = ThresholdImageFilterType::New();
-        thresholdFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        if (comparisonOperator)
-            thresholdFilter->SetUpper( threshold ); // <= threshold
-        else
-            thresholdFilter->SetLower( threshold );
-        thresholdFilter->SetOutsideValue( outsideValue );
-        callback = itk::CStyleCommand::New();
-        callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersThresholdingProcessPrivate::eventCallback );
-    
-        thresholdFilter->AddObserver ( itk::ProgressEvent(), callback );
-    
-        thresholdFilter->Update();
-        output->setData ( thresholdFilter->GetOutput() );
+
+        try
+        {
+            thresholdFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+            if (comparisonOperator)
+            {
+                thresholdFilter->SetUpper( threshold ); // <= threshold
+            }
+            else
+            {
+                thresholdFilter->SetLower( threshold );
+            }
+            thresholdFilter->SetOutsideValue( outsideValue );
+            callback = itk::CStyleCommand::New();
+            callback->SetClientData ( ( void * ) this );
+            callback->SetCallback ( itkFiltersThresholdingProcessPrivate::eventCallback );
+
+            thresholdFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+            thresholdFilter->Update();
+            output->setData ( thresholdFilter->GetOutput() );
+
+            output->copyMetaDataFrom(input);
+
+            QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+            newSeriesDescription += " threshold (" + QString::number(threshold) + ")";
+
+            output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
         }
         catch (itk::ExceptionObject & err){
-            std::cerr << "ExceptionObject caught !" << std::endl;
+            std::cerr << "ExceptionObject caught in itkFiltersThresholdingProcess!" << std::endl;
             std::cerr << err << std::endl;
         }
-
-        output->copyMetaDataFrom(input);
-
-        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " threshold (" + QString::number(threshold) + ")";
-
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 

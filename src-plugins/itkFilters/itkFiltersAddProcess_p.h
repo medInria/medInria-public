@@ -41,22 +41,30 @@ public:
         typedef itk::AddImageFilter<ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType> AddFilterType;
         typename AddFilterType::Pointer addFilter = AddFilterType::New();
         
-        addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        addFilter->SetConstant ( addValue );
-        
-        callback = itk::CStyleCommand::New();
-        callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
-        
-        addFilter->AddObserver ( itk::ProgressEvent(), callback );
-        
-        addFilter->Update();
-        output->setData ( addFilter->GetOutput() );
-        
-        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " add filter (" + QString::number(addValue) + ")";
-        
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        try
+        {
+            addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+            addFilter->SetConstant ( addValue );
+
+            callback = itk::CStyleCommand::New();
+            callback->SetClientData ( ( void * ) this );
+            callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
+
+            addFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+            addFilter->Update();
+            output->setData ( addFilter->GetOutput() );
+
+            QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+            newSeriesDescription += " add filter (" + QString::number(addValue) + ")";
+
+            output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            std::cerr << "ExceptionObject caught in itkFiltersAddProcess!" << std::endl;
+            std::cerr << err << std::endl;
+        }
     }
 };
 

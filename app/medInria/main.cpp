@@ -11,6 +11,9 @@
 
 =========================================================================*/
 
+#include <boost/iostreams/tee.hpp>
+#include <boost/iostreams/stream.hpp>
+
 #include <QtGui>
 #include <QtOpenGL>
 #include <QtDebug>
@@ -19,8 +22,8 @@
 #include <medApplication.h>
 #include <medSplashScreen.h>
 
-
 #include <dtkCore>
+#include <dtkLog/dtkLog.h>
 
 #include <medPluginManager.h>
 #include <medDataIndex.h>
@@ -65,6 +68,26 @@ void forceShow(medMainWindow& mainwindow )
 #endif
 }
 
+
+void myMessageOutput(QtMsgType type, const char *msg)
+{
+    switch (type)
+    {
+    case QtDebugMsg:
+        dtkDebug()<<msg;
+        break;
+    case QtWarningMsg:
+        dtkWarn()<<msg;
+        break;
+    case QtCriticalMsg:
+        dtkError()<<msg;
+        break;
+    case QtFatalMsg:
+        dtkFatal()<<msg;
+        abort();
+    }
+}
+
 int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
@@ -73,6 +96,35 @@ int main(int argc,char* argv[]) {
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
     QApplication::setStyle("plastique");
     medApplication application(argc,argv);
+
+    // Copy std::cout and std::cerr in log file
+    typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
+    typedef boost::iostreams::stream<TeeDevice> TeeStream;
+
+    std::ofstream logFile(dtkLogPath(&application).toLocal8Bit().data(), std::ios::app);
+
+    std::ostream tmp(std::cout.rdbuf());
+    TeeDevice outputDevice(tmp, logFile);
+    TeeStream logger(outputDevice);
+    std::cout.rdbuf(logger.rdbuf());
+
+    std::ostream tmpErr(std::cerr.rdbuf());
+    TeeDevice outputDeviceErr(tmpErr, logFile);
+    TeeStream loggerErr(outputDeviceErr);
+    std::cerr.rdbuf(loggerErr.rdbuf());
+
+    // Redirect Qt messages into dtkMsg
+    qInstallMsgHandler(myMessageOutput);
+
+    // Copy dtkMsg into log file
+    // TRACE >> DEBUG >> INFO >> WARN >> ERROR >> FATAL
+    // Note that these levels form a hierarchy.
+    // If dtk’s logging level is set to TRACE, all logs will be visible,
+    // unless set to WARN, only WARN, ERROR and FATAL log messages will be visible.
+    dtkLogger::instance().setLevel(dtkLog::Debug);
+    dtkLogger::instance().attachFile(dtkLogPath(&application));
+    dtkLogger::instance().attachConsole();
+
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
