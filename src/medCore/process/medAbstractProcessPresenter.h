@@ -13,24 +13,24 @@
 
 #pragma once
 
-#include <medAbstractPlugin.h>
+#include <medAbstractPresenter.h>
 
 class medAbstractProcess;
-class medAsbtractProcessPluginPrivate;
+class medAsbtractProcessPresenterPrivate;
 
-class medAsbtractProcessPlugin : public medAbstractPlugin
+class medAsbtractProcessPresenter : public medAbstractPresenter
 {
 
 public:
-    medAsbtractProcessPlugin(QObject *parent = 0);
-    ~medAsbtractProcessPlugin();
+    medAsbtractProcessPresenter(QObject *parent = 0);
+    ~medAsbtractProcessPresenter();
 
-    virtual medAbstractProcess *process() const = 0;
-    virtual QWidget toolbox() const = 0;
+    virtual medAbstractProcess* process() const = 0;
+    virtual QWidget* toolbox() const = 0;
 
     void addTags(QStringList tags);
     QStringList tags() const;
 
 private:
-    medAsbtractProcessPluginPrivate *d;
+    medAsbtractProcessPresenterPrivate *d;
 };

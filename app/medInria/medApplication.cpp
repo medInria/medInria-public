@@ -49,6 +49,8 @@
 #include <medStyleSheetParser.h>
 #include <medTestWorkspace.h>
 
+#include <medAbstractArithmeticOperationProcess.h>
+
 class medApplicationPrivate
 {
 public:
@@ -173,4 +175,9 @@ void medApplication::initialize()
     //TODO I did something... was it enough ? - Flo
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType<medSeedPointAnnotationData>();
+
+
+    // layer process:
+    process::substractImage::pluginManager().setVerboseLoading(true);
+    process::substractImage::pluginManager().initialize("/home/rdebroiz/medinria2/bld-qt54/plugins");
 }
