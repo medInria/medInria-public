@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <medAbstractPresenter.h>
+#include <QObject>
 
 class medAbstractProcess;
 class medAsbtractProcessPresenterPrivate;
 
-class medAsbtractProcessPresenter : public medAbstractPresenter
+class medAsbtractProcessPresenter : public QObject
 {
 
 public:

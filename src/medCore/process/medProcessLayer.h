@@ -15,17 +15,17 @@
 
 #include <medAbstractSubstractImageProcessPlugin.h>
 
-class medItkSubstractImageProcessPlugin : public medAbstractSubstractImageProcessPlugin
+namespace medProcessLayer
 {
-    Q_OBJECT
-    Q_INTERFACES(medAbstractSubstractImageProcessPlugin)
-    Q_PLUGIN_METADATA(IID "fr.inria.medItkSubstractImageProcessPlugin" FILE "medItkSubstractImageProcessPlugin.json")
+    namespace pluginManager
+    {
+        void initialize(const QString& path = QString());
+    }
 
-public:
-     medItkSubstractImageProcessPlugin(void) {}
-    virtual ~medItkSubstractImageProcessPlugin(void) {}
-
-public:
-    void initialize(void);
-    void uninitialize(void);
-};
+    namespace substractImage
+    {
+        medAbstractSubstractImageProcessPluginManager& pluginManager(void);
+        medAbstractSubstractImageProcessPluginFactory& pluginFactory(void);
+        void initialize(const QString& path);
+    }
+}

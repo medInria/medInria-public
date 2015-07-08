@@ -11,14 +11,12 @@
 
 =========================================================================*/
 
-#pragma once
+#include <medAbstractArithmeticOperationProcessPresenter.h>
 
-#include <medAbstractSubstractImageProcess.h>
+#include <QStringList>
 
-class medItkSubstractImageProcess: public medAbstractSubstractImageProcess
+medAbstractArithmeticOperationProcessPresenter::medAbstractArithmeticOperationProcessPresenter(QObject *parent):
+    medAsbtractProcessPresenter(parent)
 {
-public:
-    medItkSubstractImageProcess(QObject* parent = NULL);
-    ~medItkSubstractImageProcess();
-    virtual void start();
-};
+    this->addTags(QStringList() << "arithmetic" << "operation");
+}
