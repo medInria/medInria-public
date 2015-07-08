@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -73,9 +73,9 @@ void medPluginManager::readSettings(void)
     QDir plugins_dir;
     QString defaultPath;
 #ifdef Q_OS_MAC
-    plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
+    plugins_dir = qApp->applicationDirPath() + "/../PlugIns_Legacy";
 #else
-    plugins_dir = qApp->applicationDirPath() + "/../plugins";
+    plugins_dir = qApp->applicationDirPath() + "/../plugins_legacy";
 #endif
     defaultPath = plugins_dir.absolutePath();
 
@@ -83,7 +83,7 @@ void medPluginManager::readSettings(void)
     QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
 
     // Path for extra plugins
-    QString extraPlugins_path = medStorage::dataLocation() + "/../medInria-plugins";
+    QString extraPlugins_path = medStorage::dataLocation() + "/../medInria-plugins_legacy";
 
 
     if ( !pluginVarArray.isEmpty() )
