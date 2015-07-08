@@ -20,6 +20,7 @@ project(medCore)
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   process
+  process/arithmetic_operation
   )
 
 

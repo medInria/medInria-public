@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medAbstractArithmeticOperationProcess.h>
-
 #include <medAbstractImageData.h>
 
 class medAbstractArithmeticOperationProcessPrivate
@@ -60,50 +59,4 @@ medAbstractImageData* medAbstractArithmeticOperationProcess::input2() const
 medAbstractImageData* medAbstractArithmeticOperationProcess::output() const
 {
     return d->output;
-}
-
-
-
-namespace process
-{
-    namespace pluginManager
-    {
-        void initialize(const QString& path)
-        {
-            QString realpath=path;
-            if (path.isEmpty())
-            {
-//                dtkLinearAlgebraSparseSettings linear_algebra_sparse_settings;
-//                linear_algebra_sparse_settings.beginGroup("linear-algebra-sparse");
-//                realpath = linear_algebra_sparse_settings.value("plugins").toString();
-//                linear_algebra_sparse_settings.endGroup();
-            }
-            process::substractImage::initialize(realpath);
-        }
-    }
-
-    namespace substractImage
-    {
-
-        namespace _private
-        {
-            medAbstractSubstractimageProcessPluginManager manager;
-            medAbstractSubstractimageProcessPluginFactory factory;
-        }
-
-        void initialize(const QString& path)
-        {
-            pluginManager().initialize(path);
-        }
-
-        medAbstractSubstractimageProcessPluginManager& pluginManager(void)
-        {
-            return _private::manager;
-        }
-
-        medAbstractSubstractimageProcessPluginFactory& pluginFactory(void)
-        {
-            return _private::factory;
-        }
-    }
 }

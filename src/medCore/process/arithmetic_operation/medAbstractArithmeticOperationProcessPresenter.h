@@ -13,16 +13,11 @@
 
 #pragma once
 
-#include <QObject>
-#include <QString>
-#include <QStringList>
+#include <medAbstractProcessPresenter.h>
 
-class medAbstractPresenter : public QObject
+class medAbstractArithmeticOperationProcessPresenter: public medAsbtractProcessPresenter
 {
 public:
-    medAbstractPresenter(QObject *parent = NULL): QObject(parent) {}
+    medAbstractArithmeticOperationProcessPresenter(QObject *parent = NULL);
 
-    virtual QString name() const = 0;
-    virtual QString description() const = 0;
-    virtual QString version() const = 0;
 };
