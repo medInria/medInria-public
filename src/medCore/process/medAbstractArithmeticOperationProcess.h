@@ -13,8 +13,11 @@
 
 #pragma once
 
+#include <dtkCore/dtkCorePluginManager.h>
+#include <dtkCore/dtkCorePlugin.h>
+
 #include <medAbstractProcess.h>
-#include <medAbstractProcessPlugin.h>
+#include <medAbstractProcessPresenter.h>
 
 class medAbstractImageData;
 
@@ -41,27 +44,69 @@ private:
 
 };
 
-class medAbstractSubstractimageProcess: public medAbstractArithmeticOperationProcess
-{
 
-};
-
-class medAbstractArithmeticOperationProcessPlugin: public medAsbtractProcessPlugin
+class medAbstractArithmeticOperationProcessPresenter: public medAsbtractProcessPresenter
 {
 public:
-    medAbstractArithmeticOperationProcessPlugin(QObject *parent = NULL)
+    medAbstractArithmeticOperationProcessPresenter(QObject *parent = NULL)
     {
         this->addTags(QStringList() << "arithmetic" << "operation");
     }
 };
 
-class medAbstractSubstractimageProcessPlugin: public medAbstractArithmeticOperationProcessPlugin
+
+class medAbstractSubstractimageProcess: public medAbstractArithmeticOperationProcess
 {
 public:
-    medAbstractSubstractimageProcessPlugin(QObject *parent = NULL)
+    medAbstractSubstractimageProcess(QObject* parent = NULL): medAbstractArithmeticOperationProcess(parent) {}
+};
+
+class medAbstractSubstractimageProcessPresenter: public medAbstractArithmeticOperationProcessPresenter
+{
+public:
+    medAbstractSubstractimageProcessPresenter(QObject *parent = NULL)
     {
         this->addTags(QStringList() << "substraction" << "minus");
     }
 
     medAbstractSubstractimageProcess *process() const = 0;
 };
+
+
+class medAbstractSubstractimageProcessPlugin : public QObject
+{
+    Q_OBJECT
+
+ public:
+             medAbstractSubstractimageProcessPlugin(void) {}
+    virtual ~medAbstractSubstractimageProcessPlugin(void) {}
+
+ public:
+    virtual void   initialize(void) = 0;
+    virtual void uninitialize(void) = 0;
+};
+
+
+Q_DECLARE_INTERFACE(medAbstractSubstractimageProcessPlugin, DTK_DECLARE_PLUGIN_INTERFACE(medAbstractSubstractimageProcessPresenter))
+
+class medAbstractSubstractimageProcessPluginFactory : public dtkCorePluginFactory<medAbstractSubstractimageProcessPresenter>
+{
+};
+
+class medAbstractSubstractimageProcessPluginManager : public dtkCorePluginManager<medAbstractSubstractimageProcessPlugin>
+{
+};
+
+namespace process
+{
+    namespace pluginManager
+    {
+        void initialize(const QString& path = QString());
+    }
+    namespace substractImage
+    {
+        void initialize(const QString& path);
+        medAbstractSubstractimageProcessPluginManager& pluginManager(void);
+        medAbstractSubstractimageProcessPluginFactory& pluginFactory(void);
+    }
+}

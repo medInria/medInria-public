@@ -11,31 +11,31 @@
 
 =========================================================================*/
 
-#include <medAbstractProcessPlugin.h>
+#include <medAbstractProcessPresenter.h>
 
-class medAsbtractProcessPluginPrivate
+class medAsbtractProcessPresenterPrivate
 {
 public:
     QStringList tags;
 };
 
-medAsbtractProcessPlugin::medAsbtractProcessPlugin(QObject *parent): medAbstractPlugin(parent),
-    d(new medAsbtractProcessPluginPrivate)
+medAsbtractProcessPresenter::medAsbtractProcessPresenter(QObject *parent): medAbstractPresenter(parent),
+    d(new medAsbtractProcessPresenterPrivate)
 {
 
 }
 
-medAsbtractProcessPlugin::~medAsbtractProcessPlugin()
+medAsbtractProcessPresenter::~medAsbtractProcessPresenter()
 {
     delete d;
 }
 
-void medAsbtractProcessPlugin::addTags(QStringList tags)
+void medAsbtractProcessPresenter::addTags(QStringList tags)
 {
     d->tags << tags;
 }
 
-QStringList medAsbtractProcessPlugin::tags() const
+QStringList medAsbtractProcessPresenter::tags() const
 {
     return d->tags;
 }

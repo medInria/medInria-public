@@ -27,6 +27,8 @@
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
 
+#include <medAbstractArithmeticOperationProcess.h>
+
 class medTestWorkspacePrivate
 {
 public:
@@ -76,7 +78,10 @@ void medTestWorkspace::setupViewContainerStack()
         d->inputContainer2 = d->inputContainer1->splitHorizontally();
         QLabel *label2 = new QLabel("Input 2");
         label1->setAlignment(Qt::AlignCenter);
-        d->inputContainer2->setDefaultWidget(label2);
+
+        medAbstractSubstractimageProcessPresenter *p = process::substractImage::pluginFactory().create("medItkSubstractImageProcess");
+
+        d->inputContainer2->setDefaultWidget(p->toolbox());
 
         d->inputContainer2->setClosingMode(medViewContainer::CLOSE_VIEW);
         d->inputContainer2->setUserSplittable(false);
