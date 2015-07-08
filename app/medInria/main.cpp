@@ -171,10 +171,10 @@ int main(int argc,char* argv[]) {
         }
     }
     // END OF DATABASE INITIALISATION
-    dtkLogger::instance().setLevel("trace");
-    dtkLogger::instance().attachConsole();
+//    dtkLogger::instance().setLevel("trace");
+//    dtkLogger::instance().attachConsole();
     medPluginManager::instance()->setVerboseLoading(true);
-//    medPluginManager::instance()->initialize();
+    medPluginManager::instance()->initialize();
 
     //Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
     medMainWindow *mainwindow = new medMainWindow;
@@ -238,7 +238,7 @@ int main(int argc,char* argv[]) {
     //  Start main loop.
     const int status = application.exec();
 
-//    medPluginManager::instance()->uninitialize();
+    medPluginManager::instance()->uninitialize();
 
     return status;
 }
