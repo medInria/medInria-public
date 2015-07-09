@@ -33,7 +33,8 @@ public:
     ~medTestWorkspace();
 
     static bool isUsable();
-    void setupViewContainerStack ();
+    void setupTabbedViewContainer ();
+
 
 private:
     medTestWorkspacePrivate *d;

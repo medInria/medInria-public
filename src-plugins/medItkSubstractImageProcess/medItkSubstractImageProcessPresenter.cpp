@@ -38,8 +38,3 @@ medAbstractSubstractImageProcess* medItkSubstractImageProcessPresenter::process(
 {
     return d->process;
 }
-
-QWidget* medItkSubstractImageProcessPresenter::toolbox() const
-{
-    return new QLabel("Le truc de OUF");
-}

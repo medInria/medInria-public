@@ -60,3 +60,8 @@ medAbstractImageData* medAbstractArithmeticOperationProcess::output() const
 {
     return d->output;
 }
+
+void medAbstractArithmeticOperationProcess::setOutput(medAbstractImageData *data)
+{
+    d->output = data;
+}

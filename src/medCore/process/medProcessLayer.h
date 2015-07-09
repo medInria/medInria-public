@@ -27,5 +27,6 @@ namespace medProcessLayer
         medAbstractSubstractImageProcessPluginManager& pluginManager(void);
         medAbstractSubstractImageProcessPluginFactory& pluginFactory(void);
         void initialize(const QString& path);
+
     }
 }
