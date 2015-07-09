@@ -63,11 +63,11 @@ medFilteringWorkspace::~medFilteringWorkspace()
 /**
  * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
  */
-void medFilteringWorkspace::setupViewContainerStack()
+void medFilteringWorkspace::setupTabbedViewContainer()
 {
-    if ( !this->stackedViewContainers()->count() )
+    if ( !this->tabbedViewContainers()->count() )
     {
-        d->inputContainer = this->stackedViewContainers()->addContainerInTab(this->name());
+        d->inputContainer = this->tabbedViewContainers()->addContainerInTab(this->name());
         QLabel *inputLabel = new QLabel("INPUT");
         inputLabel->setAlignment(Qt::AlignCenter);
         d->inputContainer->setDefaultWidget(inputLabel);
@@ -88,8 +88,8 @@ void medFilteringWorkspace::setupViewContainerStack()
         connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
         connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
 
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->hideTabBar();
+        this->tabbedViewContainers()->lockTabs();
+        this->tabbedViewContainers()->hideTabBar();
         d->inputContainer->setSelected(true);
         d->outputContainer->setSelected(false);
     }

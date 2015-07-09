@@ -30,7 +30,7 @@ public:
      medVisualizationWorkspace(QWidget *parent = 0);
     ~medVisualizationWorkspace();
 
-    virtual void setupViewContainerStack();
+    virtual void setupTabbedViewContainer();
 
     static bool isUsable();
 
