@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -53,6 +53,9 @@ public slots:
     medViewContainer* addContainerInTab();
     medViewContainer* addContainerInTab(const QString &name);
     medViewContainer* insertContainerInTab(int index, const QString &name);
+    // TODO mutualize all of this sh**
+    void setSplitter(int index, medViewContainerSplitter* splitter);
+
     void closeCurrentTab();
     void closeTab(int index);
 

@@ -36,7 +36,7 @@ public:
 
     static bool isUsable();
 
-    void setupViewContainerStack ();
+    void setupTabbedViewContainer ();
 
     virtual void open(const medDataIndex &index);
 

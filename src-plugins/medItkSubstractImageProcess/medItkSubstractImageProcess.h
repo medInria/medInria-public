@@ -15,10 +15,19 @@
 
 #include <medAbstractSubstractImageProcess.h>
 
+class medItkSubstractImageProcessPrivate;
+
 class medItkSubstractImageProcess: public medAbstractSubstractImageProcess
 {
 public:
     medItkSubstractImageProcess(QObject* parent = NULL);
     ~medItkSubstractImageProcess();
+
     virtual void start();
+
+private:
+    template <class inputType> void  _start();
+
+private:
+    medItkSubstractImageProcessPrivate *d;
 };

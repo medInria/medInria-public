@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -154,6 +154,22 @@ medViewContainer *medTabbedViewContainers::insertContainerInTab(int index, const
     splitter->addViewContainer(container);
 
     return container;
+}
+
+void medTabbedViewContainers::setSplitter(int index, medViewContainerSplitter *splitter)
+{
+    if(this->widget(index))
+        this->closeTab(index);
+
+    int idx = this->insertTab(index, splitter, QString("%0 %1").arg(d->owningWorkspace->name()).arg(count()));
+    this->setCurrentIndex(idx);
+    d->containerSelectedForTabIndex.insert(idx, QList<QUuid>());
+    connect(splitter, SIGNAL(aboutTobedestroyed()), this, SLOT(repopulateCurrentTab()));
+    connect(splitter, SIGNAL(newContainer(QUuid)), this, SLOT(connectContainer(QUuid)), Qt::UniqueConnection);
+    foreach(medViewContainer* container, splitter->containers())
+    {
+        this->connectContainer(container->uuid());
+    }
 }
 
 void medTabbedViewContainers::hideTabBar()

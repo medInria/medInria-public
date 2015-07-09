@@ -30,8 +30,8 @@ public:
     medAbstractParameter* parameter(QString name) const;
     QList<medAbstractParameter*> parameters() const;
 
-public:
-    void start();
+public slots:
+    virtual void start() = 0;
 
 signals:
     void success();

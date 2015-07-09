@@ -24,7 +24,6 @@ public:
     virtual ~medItkSubstractImageProcessPresenter();
 
     virtual medAbstractSubstractImageProcess* process() const;
-    virtual QWidget* toolbox() const;
 
     virtual QString name() const {return "yolo";}
     virtual QString description() const {return "yolo";}

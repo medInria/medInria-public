@@ -17,45 +17,47 @@
 
 namespace medProcessLayer
 {
-    namespace pluginManager
+namespace pluginManager
+{
+    void initialize(const QString& path)
     {
-        void initialize(const QString& path)
+        QString realpath=path;
+        if (path.isEmpty())
         {
-            QString realpath=path;
-            if (path.isEmpty())
-            {
 
-                // Use settings to get plugins location.
-    //                dtkLinearAlgebraSparseSettings linear_algebra_sparse_settings;
-    //                linear_algebra_sparse_settings.beginGroup("linear-algebra-sparse");
-    //                realpath = linear_algebra_sparse_settings.value("plugins").toString();
-    //                linear_algebra_sparse_settings.endGroup();
-            }
-            medProcessLayer::substractImage::initialize(realpath);
+            // Use settings to get plugins location.
+//                dtkLinearAlgebraSparseSettings linear_algebra_sparse_settings;
+//                linear_algebra_sparse_settings.beginGroup("linear-algebra-sparse");
+//                realpath = linear_algebra_sparse_settings.value("plugins").toString();
+//                linear_algebra_sparse_settings.endGroup();
         }
-    }
-
-    namespace substractImage
-    {
-        namespace _private
-        {
-            medAbstractSubstractImageProcessPluginManager manager;
-            medAbstractSubstractImageProcessPluginFactory factory;
-        }
-
-        medAbstractSubstractImageProcessPluginManager& pluginManager(void)
-        {
-            return _private::manager;
-        }
-
-        medAbstractSubstractImageProcessPluginFactory& pluginFactory(void)
-        {
-            return _private::factory;
-        }
-
-        void initialize(const QString& path)
-        {
-            pluginManager().initialize(path);
-        }
+        medProcessLayer::substractImage::initialize(realpath);
     }
 }
+
+namespace substractImage
+{
+    namespace _private
+    {
+        medAbstractSubstractImageProcessPluginManager manager;
+        medAbstractSubstractImageProcessPluginFactory factory;
+    }
+
+    medAbstractSubstractImageProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    medAbstractSubstractImageProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+
+    void initialize(const QString& path)
+    {
+        pluginManager().initialize(path);
+    }
+}
+
+}// end of medProcessLayer
+

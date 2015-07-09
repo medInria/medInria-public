@@ -33,6 +33,8 @@ public:
     medAbstractImageData* input2() const;
 
     medAbstractImageData* output() const;
+protected:
+    void setOutput(medAbstractImageData* data);
 
 private:
     medAbstractArithmeticOperationProcessPrivate* d;

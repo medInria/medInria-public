@@ -40,7 +40,7 @@ public:
     static bool isUsable();
 
     //! Implement abstract method in base class.
-    void setupViewContainerStack();
+    void setupTabbedViewContainer();
 
     medSegmentationSelectorToolBox * segmentationToobox();
 
