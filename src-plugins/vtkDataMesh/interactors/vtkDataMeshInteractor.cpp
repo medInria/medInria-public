@@ -52,6 +52,7 @@
 #include <medIntParameter.h>
 #include <medVtkViewBackend.h>
 #include <vtkScalarBarActor.h>
+#include <medMeshVisibilityMenu.h>
 
 #include <vector>
 
@@ -86,6 +87,8 @@ public:
     medDoubleParameter *minRange,*maxRange;
 
     QPushButton * range_button;
+    medMeshVisibilityMenu * meshVisibility_button;
+    bool labelsColorsInitialized;
     
     QList <medAbstractParameter*> parameters;
 
@@ -117,8 +120,16 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->range_button = new QPushButton("Modify Range");
     d->range_button->setCheckable(true);
     connect(d->range_button,SIGNAL(toggled(bool)),this,SLOT(showRangeWidgets(bool)));
-}
 
+    d->meshVisibility_button = new medMeshVisibilityMenu();
+    d->meshVisibility_button->hide();
+    d->meshVisibility_button->setText("Labels Visibility");
+    d->meshVisibility_button->setToolTip("If you have graphical issues, activating DepthPeeling may solve them");
+    d->labelsColorsInitialized = false;
+    connect(d->meshVisibility_button,SIGNAL(clicked()),this,SLOT(initializeLabelsColors()));
+    connect(d->meshVisibility_button,SIGNAL(labelUnchecked(int)),this,SLOT(hideLabel(int)));
+    connect(d->meshVisibility_button,SIGNAL(labelChecked(int)),this,SLOT(showLabel(int)));
+}
 
 vtkDataMeshInteractor::~vtkDataMeshInteractor()
 {
@@ -126,18 +137,15 @@ vtkDataMeshInteractor::~vtkDataMeshInteractor()
     d = NULL;
 }
 
-
 QString vtkDataMeshInteractor::description() const
 {
     return tr("Interactor displaying Meshes");
 }
 
-
 QString vtkDataMeshInteractor::identifier() const
 {
     return "vtkDataMeshInteractor";
 }
-
 
 QStringList vtkDataMeshInteractor::handled() const
 {
@@ -157,7 +165,6 @@ bool vtkDataMeshInteractor::registered()
                                                                   QStringList () << "medVtkView" <<
                                                                   vtkDataMeshInteractor::dataHandled());
 }
-
 
 void vtkDataMeshInteractor::setInputData(medAbstractData *data)
 {
@@ -289,12 +296,10 @@ void vtkDataMeshInteractor::setEdgeVisibility(bool visible)
     d->view->render();
 }
 
-
 bool vtkDataMeshInteractor::edgeVisibility() const
 {
     return (d->actorProperty->GetEdgeVisibility() == 1);
 }
-
 
 void vtkDataMeshInteractor::setColor(QColor color)
 {
@@ -320,7 +325,6 @@ QColor vtkDataMeshInteractor::color() const
     return QColor::fromRgbF(r, b, g);
 }
 
-
 void vtkDataMeshInteractor::setRenderingType(const QString & type)
 {
     QString value = type.toLower();
@@ -334,12 +338,10 @@ void vtkDataMeshInteractor::setRenderingType(const QString & type)
     d->view->render();
 }
 
-
 QString vtkDataMeshInteractor::renderingType() const
 {
     return QString::fromStdString(d->actorProperty->GetRepresentationAsString()).toLower();
 }
-
 
 void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 {
@@ -365,7 +367,6 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
     if (attributes)
     {
-        
         if(d->colorParam)
             d->colorParam->hide();
         if(d->LUTParam)
@@ -393,6 +394,15 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         mapper2d->SetScalarVisibility(1);
         mapper3d->SetScalarVisibility(1);
         d->range_button->show();
+        if (attribute()=="SubPartID")
+        {
+            checkAnatomicalLabels(d->meshVisibility_button->getAllAnatomicalLabels());
+            d->meshVisibility_button->show();
+            d->labelsColorsInitialized=false;
+        }
+        else
+            d->meshVisibility_button->hide();
+        
         double * range = d->metaDataSet->GetCurrentScalarRange();
         double step = (range[1]-range[0])/100.0;
         d->minRange->setSingleStep(step);
@@ -410,6 +420,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     {
         d->range_button->setChecked(false);
         d->range_button->hide();
+        d->meshVisibility_button->hide();
         if(d->LUTParam)
             d->LUTParam->hide();
         if(d->colorParam)
@@ -420,9 +431,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         mapper3d->SetScalarVisibility(0);
     }
 
-   
-
-    /*dtkBlocker1.blockSignals(false);
+  /*dtkBlocker1.blockSignals(false);
     dtkBlocker2.blockSignals(false);
 */
     //if (sameAttribute && d->rangeView->contains(d->view))
@@ -436,19 +445,14 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     //    d->minRange->setValue(range[0]);
     //    d->maxRange->setValue(range[1]);
     //}
-
-
-
-
+    
     d->view->render();
 }
-
 
 QString vtkDataMeshInteractor::attribute() const
 {
     return QString::fromUtf8(d->actor2d->GetMapper()->GetArrayName());
 }
-
 
 void vtkDataMeshInteractor::setLut(const QString & lutName)
 {
@@ -466,12 +470,10 @@ void vtkDataMeshInteractor::setLut(const QString & lutName)
     d->view->render();
 }
 
-
 QString vtkDataMeshInteractor::lut() const
 {
     return d->lut.second;
 }
-
 
 void vtkDataMeshInteractor::updatePipeline ()
 {
@@ -494,7 +496,6 @@ void vtkDataMeshInteractor::updatePipeline ()
     }
     d->view3d->ResetCamera();
 }
-
 
 void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
 {
@@ -537,7 +538,6 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     d->view3d->GetScalarBar()->SetLookupTable(lut);
     updateRange();
 }
-
 
 void vtkDataMeshInteractor::removeData()
 {
@@ -586,6 +586,7 @@ QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
     layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
     layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
     layout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
+    layout->addWidget(d->meshVisibility_button);
     layout->addRow(d->range_button);
     d->minRange->getSlider()->setOrientation(Qt::Horizontal);
     d->maxRange->getSlider()->setOrientation(Qt::Horizontal);
@@ -648,7 +649,6 @@ void vtkDataMeshInteractor::updateWidgets()
     }
 }
 
-
 void vtkDataMeshInteractor::updateSlicingParam()
 {
     if(!d->view->is2D())
@@ -683,6 +683,8 @@ void vtkDataMeshInteractor::updateRange()
     d->view2d->GetScalarBar()->SetLookupTable(lut);
 
     d->view->viewWidget()->update();
+    if (attribute()=="SubPartID")
+        d->meshVisibility_button->setLabels(this->getLabels());
 }
 
 void vtkDataMeshInteractor::showRangeWidgets(bool checked)
@@ -696,5 +698,100 @@ void vtkDataMeshInteractor::showRangeWidgets(bool checked)
     {
         d->maxRange->hide();
         d->minRange->hide();
+    }
+}
+
+void vtkDataMeshInteractor::SetAlphaForValue(double alpha,int i)
+{
+    if (!d->metaDataSet)
+        return;
+
+    vtkMapper * mapper2d = d->actor2d->GetMapper();
+    vtkMapper * mapper3d = d->actor3d->GetMapper();
+
+    vtkLookupTable * lut = vtkLookupTable::SafeDownCast(mapper3d->GetLookupTable());
+
+    if (lut)
+    {
+        double values[4];
+        vtkIdType k = lut->GetIndex(i);
+        lut->GetTableValue(k, values);
+        values[3] = alpha;
+        lut->SetTableValue(k, values);
+    }
+
+    mapper2d->SetLookupTable(lut);
+    mapper3d->SetLookupTable(lut);
+    d->view3d->GetScalarBar()->SetLookupTable(lut);
+    d->view2d->GetScalarBar()->SetLookupTable(lut);
+    d->view->viewWidget()->update();
+}
+
+QList<double*> * vtkDataMeshInteractor::getLabels()
+{
+    QList<double*> * listValues = new QList<double*>();
+
+    if (!d->metaDataSet)
+        return listValues;
+
+    vtkMapper * mapper3d = d->actor3d->GetMapper();
+    
+    vtkLookupTable * lut = vtkLookupTable::SafeDownCast(mapper3d->GetLookupTable());
+     
+    QList<QPair<QString,int> > labelsForMesh = d->meshVisibility_button->getAnatomicalLabelsForMesh();
+
+    if (lut)
+    {
+        for(int i = 0; i < labelsForMesh.count(); i++)
+        {
+            double *values= new double[3];
+            lut->GetColor(labelsForMesh[i].second,values);
+            listValues->append(values);
+        }
+    }
+   
+    return listValues;
+}
+
+void vtkDataMeshInteractor::showLabel(int i)
+{
+    SetAlphaForValue(1,i);
+}
+
+void vtkDataMeshInteractor::hideLabel(int i)
+{
+    SetAlphaForValue(0,i);
+}
+
+void vtkDataMeshInteractor::checkAnatomicalLabels(QList<QPair<QString,int> > &listAnatomicalLabels)
+{
+    vtkDataArray * array = d->attribute;
+    unsigned int nbTuples = array->GetNumberOfTuples();
+    unsigned int nbComponents = array->GetNumberOfComponents();
+    double val;
+    QList<int> list;
+    for(unsigned int i = 0; i < nbTuples; i++)
+        for(unsigned int j = 0; j < nbComponents; j++)
+        {
+            val = array->GetComponent(i,j);
+            if (!list.contains(val))
+                list << val;
+        }
+
+        QList<QPair<QString,int> > listAnatomicalLabelsForMesh;
+        for(unsigned int i=0;i<listAnatomicalLabels.count();i++)
+        {
+            if (list.contains(listAnatomicalLabels[i].second))
+                listAnatomicalLabelsForMesh << listAnatomicalLabels[i];
+        }
+        d->meshVisibility_button->setAnatomicalLabelsForMesh(listAnatomicalLabelsForMesh);
+}
+
+void vtkDataMeshInteractor::initializeLabelsColors()
+{
+    if (!d->labelsColorsInitialized)
+    {
+        updateRange();
+        d->labelsColorsInitialized = true;
     }
 }

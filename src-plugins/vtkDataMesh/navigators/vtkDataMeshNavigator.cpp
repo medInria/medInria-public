@@ -136,11 +136,11 @@ void vtkDataMeshNavigator::enableDepthPeeling(bool enabled)
         d->view3d->GetRenderer()->SetUseDepthPeeling(1);
         d->view3d->GetRenderer()->SetMaximumNumberOfPeels(100);
         d->view3d->GetRenderer()->SetOcclusionRatio(0.01);
-
     }
     else d->view3d->GetRenderer()->SetUseDepthPeeling(0);
 
     d->imageView->render();
+    d->view3d->Render();
 }
 
 

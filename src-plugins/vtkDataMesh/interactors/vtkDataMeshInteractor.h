@@ -54,7 +54,12 @@ public:
     virtual QList<medAbstractParameter*> linkableParameters();
     virtual QList<medBoolParameter*> mouseInteractionParameters();
 
-public slots:
+    void SetAlphaForValue(double alpha,int i);
+    QList<double*> * getLabels();
+
+    void checkAnatomicalLabels(QList<QPair<QString,int> > &listAnatomicalLabels);
+    
+    public slots:
     void setOpacity(double value);
     void setWindowLevel (QHash<QString,QVariant>);
     void setColor(const QString &color);
@@ -68,7 +73,9 @@ public slots:
     virtual void removeData();
     virtual void setUpViewForThumbnail();
     virtual void moveToSlice  (int slice);
-
+    void showLabel(int);
+    void hideLabel(int);
+    void initializeLabelsColors();
 
     virtual void updateWidgets();
     
