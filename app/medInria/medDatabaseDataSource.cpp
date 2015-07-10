@@ -154,7 +154,7 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
         d->searchPanel->setColumnNames(d->model->columnNames());
         d->toolBoxes.push_back(d->searchPanel);
 
-        connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(filter(const QString &, int)),
+        connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)),
                 Qt::UniqueConnection);
 
         if( !d->largeView.isNull())
@@ -180,7 +180,7 @@ QString medDatabaseDataSource::description(void) const
     return tr("Browse the MUSIC Database");
 }
 
-void medDatabaseDataSource::filter( const QString &text, int column )
+void medDatabaseDataSource::onFilter( const QString &text, int column )
 {
     // adding or overriding filter on column
     d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);

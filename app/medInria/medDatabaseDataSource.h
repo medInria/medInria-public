@@ -48,7 +48,7 @@ signals:
     void open(const medDataIndex&);
 
 protected slots:
-    void filter(const QString &text, int column);
+    void onFilter(const QString &text, int column);
     void compactFilter(const QString &text, int column);
 
 private:

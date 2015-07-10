@@ -121,29 +121,30 @@ void medFilteringWorkspace::changeToolBoxInput()
  */
 void medFilteringWorkspace::onProcessSuccess()
 {
-    if(d->filteringToolBox.isNull()) return;
+    if(d->filteringToolBox.isNull())
+        return;
 
     d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
-    if ( !d->filterOutput ) return;
+    if ( !d->filterOutput )
+        return;
+
+    qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
 
     medAbstractData *inputData(d->filteringToolBox->data());
 
-    if (inputData) // filters without data in "Input" container
-    {
-        if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-        {
-            QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
-            newSeriesDescription += " filtered";
-            d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-        }
+    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+      {
+        QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " filtered";
+        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+      }
 
-        foreach ( QString metaData, inputData->metaDataList() )
-            if (!d->filterOutput->hasMetaData(metaData))
-                d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
+    foreach ( QString metaData, inputData->metaDataList() )
+      if (!d->filterOutput->hasMetaData(metaData))
+        d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
 
-        foreach ( QString property, inputData->propertyList() )
-            d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
-    }
+    foreach ( QString property, inputData->propertyList() )
+      d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
 
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
