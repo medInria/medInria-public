@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include <medAbstractSubstractImageProcessPresenter.h>
+#include <medAbstractSubtractImageProcessPresenter.h>
 
 #include <QStringList>
 
-medAbstractSubstractImageProcessPresenter::medAbstractSubstractImageProcessPresenter(QObject *parent):
+medAbstractSubtractImageProcessPresenter::medAbstractSubtractImageProcessPresenter(QObject *parent):
     medAbstractArithmeticOperationProcessPresenter(parent)
 {
-    this->addTags(QStringList() << "substraction" << "minus");
+    this->addTags(QStringList() << "subtraction" << "minus");
 }

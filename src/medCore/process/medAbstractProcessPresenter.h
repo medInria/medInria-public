@@ -15,13 +15,15 @@
 
 #include <QObject>
 
+class QPushButton;
 class medAbstractProcess;
-class medAsbtractProcessPresenterPrivate;
-
 class medViewContainerSplitter;
+
+class medAsbtractProcessPresenterPrivate;
 
 class medAsbtractProcessPresenter : public QObject
 {
+    Q_OBJECT
 
 public:
     medAsbtractProcessPresenter(QObject *parent = 0);
@@ -35,8 +37,13 @@ public:
     virtual QWidget* toolbox() const = 0;
     virtual medViewContainerSplitter* viewContainerSplitter() const = 0;
 
+    QPushButton* runButton() const;
+
     void addTags(QStringList tags);
     QStringList tags() const;
+
+protected slots:
+    void runProcessInThread();
 
 private:
     medAsbtractProcessPresenterPrivate *d;

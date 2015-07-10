@@ -11,20 +11,20 @@
 
 =========================================================================*/
 
-#include <medItkSubstractImageProcessPlugin.h>
+#include <medItkSubtractImageProcessPlugin.h>
 
 #include <medProcessLayer.h>
-#include <medItkSubstractImageProcessPresenter.h>
+#include <medItkSubtractImageProcessPresenter.h>
 
 
-void medItkSubstractImageProcessPlugin::initialize(void)
+void medItkSubtractImageProcessPlugin::initialize(void)
 {
 
-    medProcessLayer::substractImage::pluginFactory().record("medItkSubstractImageProcess",
-                                                            medItkSubstractImageProcessPresenterCreator);
+    medProcessLayer::subtractImage::pluginFactory().record("medItkSubtractImageProcess",
+                                                            medItkSubtractImageProcessPresenterCreator);
 }
 
-void medItkSubstractImageProcessPlugin::uninitialize(void)
+void medItkSubtractImageProcessPlugin::uninitialize(void)
 {
 
 }
@@ -33,5 +33,5 @@ void medItkSubstractImageProcessPlugin::uninitialize(void)
 // Plugin meta data
 // ///////////////////////////////////////////////////////////////////
 
-DTK_DEFINE_PLUGIN(medItkSubstractImageProcess)
+DTK_DEFINE_PLUGIN(medItkSubtractImageProcess)
 

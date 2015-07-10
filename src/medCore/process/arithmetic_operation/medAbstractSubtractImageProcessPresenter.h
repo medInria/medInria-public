@@ -15,12 +15,12 @@
 
 #include <medAbstractArithmeticOperationProcessPresenter.h>
 
-#include <medAbstractSubstractImageProcess.h>
+#include <medAbstractSubtractImageProcess.h>
 
-class medAbstractSubstractImageProcessPresenter: public medAbstractArithmeticOperationProcessPresenter
+class medAbstractSubtractImageProcessPresenter: public medAbstractArithmeticOperationProcessPresenter
 {
 public:
-    medAbstractSubstractImageProcessPresenter(QObject *parent = NULL);
+    medAbstractSubtractImageProcessPresenter(QObject *parent = NULL);
 
-    medAbstractSubstractImageProcess* process() const = 0;
+    medAbstractSubtractImageProcess* process() const = 0;
 };
