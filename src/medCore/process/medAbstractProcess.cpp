@@ -25,7 +25,10 @@ public:
 medAbstractProcess::medAbstractProcess(QObject *parent): QObject(parent),
     d(new medAbstractProcessPrivate)
 {
-
+    // Mandatory to be runned by a QThreadPool, since this inherits from QObject
+    // It can recieve signals trigerring slots after having be deleted by the QThreadPool
+    // if setAutoDelete is set to true (default value).
+    this->setAutoDelete(false);
 }
 
 medAbstractProcess::~medAbstractProcess()

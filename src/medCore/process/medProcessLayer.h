@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractSubstractImageProcessPlugin.h>
+#include <medAbstractSubtractImageProcessPlugin.h>
 
 namespace medProcessLayer
 {
@@ -22,10 +22,10 @@ namespace medProcessLayer
         void initialize(const QString& path = QString());
     }
 
-    namespace substractImage
+    namespace subtractImage
     {
-        medAbstractSubstractImageProcessPluginManager& pluginManager(void);
-        medAbstractSubstractImageProcessPluginFactory& pluginFactory(void);
+        medAbstractSubtractImageProcessPluginManager& pluginManager(void);
+        medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
         void initialize(const QString& path);
 
     }

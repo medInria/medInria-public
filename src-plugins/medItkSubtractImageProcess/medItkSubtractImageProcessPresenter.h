@@ -13,29 +13,29 @@
 
 #pragma once
 
-#include <medAbstractSubstractImageProcessPresenter.h>
+#include <medAbstractSubtractImageProcessPresenter.h>
 
-class medItkSubstractImageProcessPresenterPrivate;
+class medItkSubtractImageProcessPresenterPrivate;
 
-class medItkSubstractImageProcessPresenter: public medAbstractSubstractImageProcessPresenter
+class medItkSubtractImageProcessPresenter: public medAbstractSubtractImageProcessPresenter
 {
 public:
-    medItkSubstractImageProcessPresenter(QObject *parent = NULL);
-    virtual ~medItkSubstractImageProcessPresenter();
+    medItkSubtractImageProcessPresenter(QObject *parent = NULL);
+    virtual ~medItkSubtractImageProcessPresenter();
 
-    virtual medAbstractSubstractImageProcess* process() const;
+    virtual medAbstractSubtractImageProcess* process() const;
 
     virtual QString name() const {return "yolo";}
     virtual QString description() const {return "yolo";}
     virtual QString version() const {return "yolo";}
 
 private:
-    medItkSubstractImageProcessPresenterPrivate *d;
+    medItkSubtractImageProcessPresenterPrivate *d;
 };
 
 // ///////////////////////////////////////////////////////////////////
 
-inline medAbstractSubstractImageProcessPresenter* medItkSubstractImageProcessPresenterCreator(void)
+inline medAbstractSubtractImageProcessPresenter* medItkSubtractImageProcessPresenterCreator(void)
 {
-    return new medItkSubstractImageProcessPresenter();
+    return new medItkSubtractImageProcessPresenter();
 }

@@ -14,6 +14,10 @@
 #include <medAbstractProcessPresenter.h>
 
 #include <QStringList>
+#include <QThreadPool>
+#include <QPushButton>
+
+#include <medAbstractProcess.h>
 
 class medAsbtractProcessPresenterPrivate
 {
@@ -41,3 +45,18 @@ QStringList medAsbtractProcessPresenter::tags() const
 {
     return d->tags;
 }
+
+QPushButton* medAsbtractProcessPresenter::runButton() const
+{
+    QPushButton *runButton = new QPushButton(tr("Run"));
+    connect(runButton, &QPushButton::clicked,
+            this, &medAsbtractProcessPresenter::runProcessInThread);
+
+    return runButton;
+}
+
+void medAsbtractProcessPresenter::runProcessInThread()
+{
+    QThreadPool::globalInstance()->start(this->process());
+}
+

@@ -14,12 +14,13 @@
 #pragma once
 
 #include <QObject>
+#include <QRunnable>
 
 class medAbstractParameter;
 
 class medAbstractProcessPrivate;
 
-class medAbstractProcess: public QObject
+class medAbstractProcess: public QObject, public QRunnable
 {
     Q_OBJECT
 public:
@@ -30,12 +31,13 @@ public:
     medAbstractParameter* parameter(QString name) const;
     QList<medAbstractParameter*> parameters() const;
 
-public slots:
-    virtual void start() = 0;
+public:
+    virtual void cancel() = 0;
 
 signals:
     void success();
     void failure();
+    void progressed(float progression);
 
 private:
     medAbstractProcessPrivate* d;
