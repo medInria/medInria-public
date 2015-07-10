@@ -189,6 +189,6 @@ void medApplication::initialize()
     defaultPath = plugins_dir.absolutePath();
 
     // process layer:
-    medProcessLayer::substractImage::pluginManager().setVerboseLoading(true);
-    medProcessLayer::substractImage::pluginManager().initialize(defaultPath);
+    medProcessLayer::subtractImage::pluginManager().setVerboseLoading(true);
+    medProcessLayer::subtractImage::pluginManager().initialize(defaultPath);
 }

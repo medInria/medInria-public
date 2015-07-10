@@ -11,7 +11,9 @@
 
 =========================================================================*/
 
-#include <medItkSubstractImageProcess.h>
+#include <medItkSubtractImageProcess.h>
+
+#include <dtkLog>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
@@ -19,24 +21,24 @@
 #include <itkImage.h>
 #include <itkSubtractImageFilter.h>
 
-class medItkSubstractImageProcessPrivate
+class medItkSubtractImageProcessPrivate
 {
 public:
 
 };
 
-medItkSubstractImageProcess::medItkSubstractImageProcess(QObject *parent): medAbstractSubstractImageProcess(parent),
-    d(new medItkSubstractImageProcessPrivate)
+medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent): medAbstractSubtractImageProcess(parent),
+    d(new medItkSubtractImageProcessPrivate)
 {
 
 }
 
-medItkSubstractImageProcess::~medItkSubstractImageProcess()
+medItkSubtractImageProcess::~medItkSubtractImageProcess()
 {
 
 }
 
-void medItkSubstractImageProcess::start()
+void medItkSubtractImageProcess::run()
 {
     if(this->input1() && this->input2())
     {
@@ -44,43 +46,43 @@ void medItkSubstractImageProcess::start()
 
         if ( id == "itkDataImageChar3" )
         {
-            this->_start<char>();
+            this->_run<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            this->_start<unsigned char>();
+            this->_run<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            this->_start<short>();
+            this->_run<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            this->_start<unsigned short>();
+            this->_run<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            this->_start<int>();
+            this->_run<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            this->_start<unsigned int>();
+            this->_run<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            this->_start<long>();
+            this->_run<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            this->_start<unsigned long>();
+            this->_run<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            this->_start<float>();
+            this->_run<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            this->_start<double>();
+            this->_run<double>();
         }
         else
         {
@@ -90,7 +92,7 @@ void medItkSubstractImageProcess::start()
 }
 
 template <class inputType>
-void medItkSubstractImageProcess::_start()
+void medItkSubtractImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -114,4 +116,9 @@ void medItkSubstractImageProcess::_start()
     out->setData(filter->GetOutput());
     this->setOutput(out);
     emit success();
+}
+
+void medItkSubtractImageProcess::cancel()
+{
+    dtkTrace() << "No way to cancell medItkSubtractImageProcess.";
 }

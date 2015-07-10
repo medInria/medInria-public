@@ -13,7 +13,7 @@
 
 #include <medProcessLayer.h>
 
-#include <medAbstractSubstractImageProcessPlugin.h>
+#include <medAbstractSubtractImageProcessPlugin.h>
 
 namespace medProcessLayer
 {
@@ -31,24 +31,24 @@ namespace pluginManager
 //                realpath = linear_algebra_sparse_settings.value("plugins").toString();
 //                linear_algebra_sparse_settings.endGroup();
         }
-        medProcessLayer::substractImage::initialize(realpath);
+        medProcessLayer::subtractImage::initialize(realpath);
     }
 }
 
-namespace substractImage
+namespace subtractImage
 {
     namespace _private
     {
-        medAbstractSubstractImageProcessPluginManager manager;
-        medAbstractSubstractImageProcessPluginFactory factory;
+        medAbstractSubtractImageProcessPluginManager manager;
+        medAbstractSubtractImageProcessPluginFactory factory;
     }
 
-    medAbstractSubstractImageProcessPluginManager& pluginManager(void)
+    medAbstractSubtractImageProcessPluginManager& pluginManager(void)
     {
         return _private::manager;
     }
 
-    medAbstractSubstractImageProcessPluginFactory& pluginFactory(void)
+    medAbstractSubtractImageProcessPluginFactory& pluginFactory(void)
     {
         return _private::factory;
     }

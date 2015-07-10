@@ -16,8 +16,8 @@
 #include <medTabbedViewContainers.h>
 
 #include <medProcessLayer.h>
-#include <medAbstractSubstractImageProcess.h>
-#include <medAbstractSubstractImageProcessPresenter.h>
+#include <medAbstractSubtractImageProcess.h>
+#include <medAbstractSubtractImageProcessPresenter.h>
 
 #include <medToolBox.h>
 
@@ -30,7 +30,7 @@ public:
 
 medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medTestWorkspacePrivate)
 {
-    d->presenter = medProcessLayer::substractImage::pluginFactory().create("medItkSubstractImageProcess");
+    d->presenter = medProcessLayer::subtractImage::pluginFactory().create("medItkSubtractImageProcess");
     this->addToolBox(dynamic_cast<medToolBox*>(d->presenter->toolbox()));
 }
 

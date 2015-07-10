@@ -49,11 +49,7 @@ QWidget* medAbstractArithmeticOperationProcessPresenter::toolbox() const
 {
     medToolBox* tb = new medToolBox;
     tb->setTitle(this->name());
-    QPushButton *runButton = new QPushButton(tr("Run"));
-    tb->addWidget(runButton);
-
-    connect(runButton, &QPushButton::clicked,
-            this->process(), &medAbstractArithmeticOperationProcess::start);
+    tb->addWidget(this->runButton());
 
     return tb;
 }
