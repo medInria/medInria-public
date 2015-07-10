@@ -76,7 +76,7 @@ int itkFiltersGaussianProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFiltersGaussianProcess, update : " << id;
+    qDebug() << "itkFilters, update : " << id;
 
     try
     {

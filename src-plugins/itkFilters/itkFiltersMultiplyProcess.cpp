@@ -74,7 +74,7 @@ int itkFiltersMultiplyProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFiltersMultiplyProcess, update : " << id;
+    qDebug() << "itkFilters, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {

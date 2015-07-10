@@ -75,7 +75,7 @@ int itkFiltersAddProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFiltersAddProcess, update : " << id;
+    qDebug() << "itkFilters, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {

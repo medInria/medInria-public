@@ -19,7 +19,6 @@
 #include <medToolBoxFactory.h>
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
-#include <medToolBox.h>
 
 class medVisualizationWorkspacePrivate
 {
@@ -35,12 +34,6 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstr
 
     medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
     layerGroup1->setLinkAllParameters(true);
-
-    medToolBox * manualRegistrationToolBox = medToolBoxFactory::instance()->createToolBox("manualRegistrationToolBox");
-    if(!manualRegistrationToolBox)
-        return;
-    manualRegistrationToolBox->setWorkspace(this);
-    this->addToolBox(manualRegistrationToolBox);
 }
 
 void medVisualizationWorkspace::setupViewContainerStack()

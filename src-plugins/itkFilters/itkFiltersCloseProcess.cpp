@@ -76,7 +76,7 @@ int itkFiltersCloseProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFiltersCloseProcess, update : " << id;
+    qDebug() << "itkFilters, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {

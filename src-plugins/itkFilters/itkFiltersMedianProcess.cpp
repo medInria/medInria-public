@@ -63,7 +63,7 @@ int itkFiltersMedianProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFiltersMedianProcess, update : " << id;
+    qDebug() << "itkFilters, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {

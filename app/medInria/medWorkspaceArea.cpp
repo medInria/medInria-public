@@ -33,8 +33,6 @@
 #include <medAbstractImageView.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
-#include <medToolBoxFactory.h>
-#include <medCompositeParameter.h>
 
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseController.h>
@@ -51,6 +49,7 @@
 
 #include <QtGui>
 #include <QGLWidget>
+
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
@@ -252,4 +251,3 @@ void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* st
 
     d->stack->setCurrentWidget(stack);
 }
-

@@ -90,7 +90,7 @@ int itkFiltersWindowingProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFiltersWindowingProcess, update : " << id;
+    qDebug() << "itkFilters, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {
@@ -134,7 +134,7 @@ int itkFiltersWindowingProcess::update ( void )
     }
     else
     {
-        qDebug() << "itkFiltersWindowingProcess Error : pixel type not yet implemented ("
+        qDebug() << "Error : pixel type not yet implemented ("
         << id
         << ")";
         return -1;
