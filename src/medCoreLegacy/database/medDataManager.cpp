@@ -290,7 +290,7 @@ void medDataManager::exportDialog_updateSuffix(int index)
     QFileDialog * exportDialog = qobject_cast<QFileDialog*>(typesHandled->itemData(index, Qt::UserRole+2).value<QObject*>());
     QString extension = typesHandled->itemData(index, Qt::UserRole+1).toString();
 
-    QString currentFilename = med::smartBaseName(exportDialog->selectedFiles().first());
+    QString currentFilename = medInria::smartBaseName(exportDialog->selectedFiles().first());
     currentFilename += extension;
     exportDialog->selectFile(currentFilename);
 }

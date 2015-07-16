@@ -3,18 +3,17 @@
 #include <QString>
 #include <QSize>
 
-namespace med {
+namespace medInria {
 
-QString smartBaseName(const QString & fileName);
+    QString smartBaseName(const QString & fileName);
 
-struct GPUInfo {
-    QString renderer;
-    QString version;
-    QString vendor;
-};
+    struct GPUInfo {
+        QString renderer;
+        QString version;
+        QString vendor;
+    };
 
-GPUInfo gpuModel();
+    GPUInfo gpuModel();
 
-static const QSize defaultThumbnailSize = QSize(320,320);
-
+    static const QSize defaultThumbnailSize = QSize(320,320);
 }

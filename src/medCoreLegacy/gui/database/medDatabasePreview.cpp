@@ -42,8 +42,8 @@ public:
 medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
     d(new medDatabasePreviewStaticScenePrivate)
 {
-    d->baseWidth = med::defaultThumbnailSize.width();
-    d->baseHeight = med::defaultThumbnailSize.height();
+    d->baseWidth = medInria::defaultThumbnailSize.width();
+    d->baseHeight = medInria::defaultThumbnailSize.height();
 
     d->pen = QPen(QColor(70,70,70));
     d->pen.setWidth(4);

@@ -194,7 +194,7 @@ void medAbstractData::generateThumbnail()
     // proper window instead, that we try to hide behind the main medInria one.
 
     bool offscreenCapable = false;
-    med::GPUInfo gpu = med::gpuModel();
+    medInria::GPUInfo gpu = medInria::gpuModel();
 
 #if defined(Q_OS_MAC)
     // all drivers work so far
@@ -236,7 +236,7 @@ void medAbstractData::generateThumbnail()
     view->addLayer(this);
 
     // We're rendering here, to the temporary window, and will then use the resulting image
-    d->thumbnail = view->generateThumbnail(med::defaultThumbnailSize);
+    d->thumbnail = view->generateThumbnail(medInria::defaultThumbnailSize);
 }
 
 
