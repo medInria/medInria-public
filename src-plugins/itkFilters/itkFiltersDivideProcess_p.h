@@ -35,8 +35,8 @@ public:
     
     double divideFactor;
     
-    template <class PixelType> void update ( void )
-    {
+    template <class PixelType> void update() {
+
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  DivideFilterType;
         typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
@@ -61,6 +61,3 @@ public:
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersDivideProcess, itkFiltersProcessBase)
-
-
-

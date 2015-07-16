@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(medCore)
+project(medCoreLegacy)
 
 #required for querying the GPU, can be removed once using Qt 5.3
 #using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
@@ -65,7 +65,6 @@ qt5_add_resources(${PROJECT_NAME}_QRC
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_PCH}
   ${${PROJECT_NAME}_QRC}
   )
 
