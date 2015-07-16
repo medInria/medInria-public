@@ -503,16 +503,9 @@ namespace itk {
             }
         }
 
-<<<<<<< Updated upstream
-    if (this->GetNumberOfDimensions()==4)
-        m_Spacing[3] = 1.0;
-}
-=======
         if (this->GetNumberOfDimensions()==4)
             m_Spacing[3] = 1.0;
     }
->>>>>>> Stashed changes
-
 
     void DCMTKImageIO::DetermineDimensions()
     {
