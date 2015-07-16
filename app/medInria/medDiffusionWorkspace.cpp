@@ -47,7 +47,7 @@ public:
     bool processRunning;
 };
 
-medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medDiffusionWorkspacePrivate)
+medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorkspaceLegacy(parent), d(new medDiffusionWorkspacePrivate)
 {
     d->diffusionContainer = 0;
 

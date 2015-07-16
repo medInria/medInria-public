@@ -26,7 +26,7 @@
 
 
 #include <medWorkspaceFactory.h>
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 #include <medFilteringWorkspace.h>
 #include <medDiffusionWorkspace.h>
 #include <medRegistrationWorkspace.h>
@@ -52,6 +52,9 @@
 
 #include <medProcessLayer.h>
 #include <medAbstractArithmeticOperationProcess.h>
+
+#include <medGuiLayer.h>
+#include <medAbstractArea.h>
 
 class medApplicationPrivate
 {
@@ -191,4 +194,8 @@ void medApplication::initialize()
     // process layer:
     medProcessLayer::subtractImage::pluginManager().setVerboseLoading(true);
     medProcessLayer::subtractImage::pluginManager().initialize(defaultPath);
+
+    // gui layer:
+    medGuiLayer::area::pluginManager().setVerboseLoading(true);
+    medGuiLayer::area::pluginManager().initialize(defaultPath);
 }

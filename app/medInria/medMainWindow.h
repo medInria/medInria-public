@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -72,6 +72,8 @@ private slots:
     void switchToBrowserArea();
     void switchToWorkspaceArea();
     void switchToHomepageArea();
+
+    void showArea(QString const& area);
 
     void toggleQuickAccessVisibility();
     void hideQuickAccess();

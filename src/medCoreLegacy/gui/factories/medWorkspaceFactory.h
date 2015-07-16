@@ -19,7 +19,7 @@
 
 #include <QtCore>
 
-class medAbstractWorkspace;
+class medAbstractWorkspaceLegacy;
 class medWorkspaceFactoryPrivate;
 
 class MEDCORE_EXPORT medWorkspaceFactory : public dtkAbstractFactory
@@ -27,7 +27,7 @@ class MEDCORE_EXPORT medWorkspaceFactory : public dtkAbstractFactory
     Q_OBJECT
 
 public:
-    typedef medAbstractWorkspace *(*medWorkspaceCreator)(QWidget* parent);
+    typedef medAbstractWorkspaceLegacy *(*medWorkspaceCreator)(QWidget* parent);
     typedef bool (*medWorkspaceIsUsable)();
 
     struct Details
@@ -59,7 +59,7 @@ public:
     QList<QString> workspaces();
 
     /**
-     * @brief Registers a medAbstractWorkspace type with the factory.
+     * @brief Registers a medAbstractWorkspaceLegacy type with the factory.
      *
      *
      * This method is templated with the workspaceType.
@@ -96,12 +96,12 @@ public:
 
 public slots:
 
-    medAbstractWorkspace* createWorkspace(QString type,QWidget* parent=0);
+    medAbstractWorkspaceLegacy* createWorkspace(QString type,QWidget* parent=0);
 
 protected:
 
     /**
-     * @brief Registers a medAbstractWorkspace type with the factory.
+     * @brief Registers a medAbstractWorkspaceLegacy type with the factory.
      *
      * This method requires the developer to provide his own function pointer
      * to allocate the workspace memory.
@@ -130,7 +130,7 @@ private:
      * @warning keep it static if you don't want to freeze your brain (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    static medAbstractWorkspace* create ( QWidget* parent ) {
+    static medAbstractWorkspaceLegacy* create ( QWidget* parent ) {
     return ( new T(parent) );
     }
 

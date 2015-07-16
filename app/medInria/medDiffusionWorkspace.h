@@ -16,13 +16,13 @@
 
 #include <QtCore>
 
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 #include <medDiffusionSelectorToolBox.h>
 
 class medAbstractData;
 class medDiffusionWorkspacePrivate;
 
-class medDiffusionWorkspace : public medAbstractWorkspace
+class medDiffusionWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Diffusion",

@@ -45,15 +45,15 @@ class medAbstractParameterGroup;
 class medViewParameterGroup;
 class medLayerParameterGroup;
 
-class medAbstractWorkspacePrivate;
-class MEDCORE_EXPORT medAbstractWorkspace : public QObject
+class medAbstractWorkspaceLegacyPrivate;
+class MEDCORE_EXPORT medAbstractWorkspaceLegacy : public QObject
 {
     Q_OBJECT
 
 public:
 
-    medAbstractWorkspace(QWidget *parent=0);
-    ~medAbstractWorkspace();
+    medAbstractWorkspaceLegacy(QWidget *parent=0);
+    ~medAbstractWorkspaceLegacy();
 
     virtual QString identifier() const = 0;
     virtual QString name() const = 0;
@@ -120,7 +120,7 @@ private:
     QWidget* buildLayerLinkMenu(QList<QListWidgetItem*>);
 
 private:
-    medAbstractWorkspacePrivate *d;
+    medAbstractWorkspaceLegacyPrivate *d;
 };
 
 #define MED_WORKSPACE_INTERFACE(_name,_desc,_cate) \

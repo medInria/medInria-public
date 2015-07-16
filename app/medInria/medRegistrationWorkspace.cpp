@@ -43,7 +43,7 @@ public:
     medLayerParameterGroup *movingLayerGroup;
 };
 
-medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medRegistrationWorkspacePrivate)
+medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspaceLegacy(parent), d(new medRegistrationWorkspacePrivate)
 {
     // -- Registration toolbox --
 

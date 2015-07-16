@@ -15,7 +15,7 @@
 
 #include <QtGui>
 #include <QtWidgets>
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 
 class medAbstractView;
 
@@ -59,10 +59,10 @@ public:
     void insertToolBox(int index, medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
 
-    void setCurrentWorkspace(medAbstractWorkspace* workspace);
+    void setCurrentWorkspace(medAbstractWorkspaceLegacy* workspace);
     void setCurrentWorkspace(const QString& id);
 
-    medAbstractWorkspace* currentWorkspace();
+    medAbstractWorkspaceLegacy* currentWorkspace();
 
 protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);

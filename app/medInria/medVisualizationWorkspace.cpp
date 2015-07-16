@@ -26,7 +26,7 @@ public:
 
 };
 
-medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medVisualizationWorkspacePrivate)
+medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstractWorkspaceLegacy(parent), d(new medVisualizationWorkspacePrivate)
 {
     medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
     viewGroup1->setLinkAllParameters(true);

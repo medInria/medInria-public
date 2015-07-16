@@ -50,7 +50,7 @@ public:
 
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
-medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
+medAbstractWorkspaceLegacy(parent), d(new medSegmentationWorkspacePrivate)
 {
     d->segmentationToolBox = new medSegmentationSelectorToolBox(parent);
 
