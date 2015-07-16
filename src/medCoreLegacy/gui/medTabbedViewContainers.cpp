@@ -19,7 +19,7 @@
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainerManager.h>
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 #include <medAbstractView.h>
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
@@ -35,12 +35,12 @@ public:
     QPushButton *addTabButton;
     QHash <int, QList<QUuid> > containerSelectedForTabIndex;
     medParameterPool *pool;
-    medAbstractWorkspace * owningWorkspace;
+    medAbstractWorkspaceLegacy * owningWorkspace;
 
     int currentIdx;
 };
 
-medTabbedViewContainers::medTabbedViewContainers(medAbstractWorkspace* owningWorkspace, QWidget *parent)
+medTabbedViewContainers::medTabbedViewContainers(medAbstractWorkspaceLegacy* owningWorkspace, QWidget *parent)
     : QTabWidget(parent)
     , d(new medTabbedViewContainersPrivate)
 {

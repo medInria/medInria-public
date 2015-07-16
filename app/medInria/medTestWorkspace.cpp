@@ -28,9 +28,10 @@ public:
 
 };
 
-medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medTestWorkspacePrivate)
+medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
 {
-    d->presenter = medProcessLayer::subtractImage::pluginFactory().create("medItkSubtractImageProcess");
+    foreach(QString key, medProcessLayer::subtractImage::pluginFactory().keys())
+        d->presenter = medProcessLayer::subtractImage::pluginFactory().create(key);
     this->addToolBox(dynamic_cast<medToolBox*>(d->presenter->toolbox()));
 }
 

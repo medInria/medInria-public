@@ -154,7 +154,7 @@ void medWorkspaceArea::removeToolBox(medToolBox *toolbox)
     d->toolBoxContainer->removeToolBox(toolbox);
 }
 
-void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
+void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspaceLegacy *workspace)
 {
     if (d->currentWorkspace == workspace)
         return;
@@ -198,7 +198,7 @@ void medWorkspaceArea::setCurrentWorkspace(const QString &id)
     this->setCurrentWorkspace(d->workspaces.value(id));
 }
 
-medAbstractWorkspace* medWorkspaceArea::currentWorkspace()
+medAbstractWorkspaceLegacy* medWorkspaceArea::currentWorkspace()
 {
     return d->currentWorkspace;
 }
@@ -208,7 +208,7 @@ void medWorkspaceArea::setupWorkspace(const QString &id)
     if (d->workspaces.contains(id))
         return;
 
-    medAbstractWorkspace *workspace = NULL;
+    medAbstractWorkspaceLegacy *workspace = NULL;
 
     workspace = medWorkspaceFactory::instance()->createWorkspace(id, this);
     if (workspace)

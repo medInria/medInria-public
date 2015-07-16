@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -25,7 +25,7 @@ class medApplication : public QtSingleApplication
 public:
     medApplication(int & argc, char **argv);
     ~medApplication();
-    
+
     bool event(QEvent *event);
     void setMainWindow(medMainWindow *mw);
 

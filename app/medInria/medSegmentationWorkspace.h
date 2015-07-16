@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 
 
 class medAbstractView;
@@ -26,7 +26,7 @@ class medSegmentationSelectorToolBox;
  * class medSegmentationWorkspace
  * Defines the segmentation workspace.
  */
-class medSegmentationWorkspace : public medAbstractWorkspace
+class medSegmentationWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Segmentation",

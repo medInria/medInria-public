@@ -18,7 +18,7 @@
 #include <medLayerParameterGroup.h>
 
 #include <QApplication>
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 
 
 class medParameterGroupManagerPrivate
