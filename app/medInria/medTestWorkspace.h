@@ -15,7 +15,7 @@
 
 #include <QWidget>
 
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 
 class medTestWorkspacePrivate;
 
@@ -23,11 +23,12 @@ class medTestWorkspacePrivate;
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medTestWorkspace : public medAbstractWorkspace
+class medTestWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Test",
-                            "Test workspace.")
+                            "Test workspace.",
+                            "Test")
 public:
     medTestWorkspace(QWidget *parent = 0);
     ~medTestWorkspace();
@@ -39,5 +40,3 @@ public:
 private:
     medTestWorkspacePrivate *d;
 };
-
-

@@ -11,7 +11,26 @@
 #
 ################################################################################
 
-project(medCore)
+project(medComposerArea)
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
+
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
+
+string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
+add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+
+## #############################################################################
+## Resolve dependencies
+## #############################################################################
+
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -19,12 +38,6 @@ project(medCore)
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  process
-  process/arithmetic_operation
-  process/segmentation
-  gui
-  gui/workspace
-  gui/area
   )
 
 
@@ -37,18 +50,30 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${medCoreLegacy_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
   )
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_SOURCES}
+    )
+endif()
 
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_QRC}
   )
 
 
@@ -57,16 +82,17 @@ add_library(${PROJECT_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-    ${QT_LIBRARIES}
-    dtkCoreSupport
-    dtkGuiSupport
-    dtkLog
-    )
-
-## #############################################################################
-## install
-## #############################################################################
-
-set_lib_install_rules(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+  ${QT_LIBRARIES}
+  dtkCore
+  dtkLog
+  dtkComposer
+  medCore
   )
+
+
+## #############################################################################
+## Install rules
+## #############################################################################
+
+set_plugin_install_rules(${PROJECT_NAME})
+

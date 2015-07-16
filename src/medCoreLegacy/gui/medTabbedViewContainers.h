@@ -23,7 +23,7 @@ class medAbstractView;
 class medDataIndex;
 class medViewContainer;
 class medViewContainerSplitter;
-class medAbstractWorkspace;
+class medAbstractWorkspaceLegacy;
 class medTabbedViewContainersPrivate;
 
 /**
@@ -36,7 +36,7 @@ class MEDCORE_EXPORT medTabbedViewContainers : public QTabWidget
     Q_OBJECT
 
 public:
-     medTabbedViewContainers(medAbstractWorkspace* owningWorkspace, QWidget *parent = 0);
+     medTabbedViewContainers(medAbstractWorkspaceLegacy* owningWorkspace, QWidget *parent = 0);
     ~medTabbedViewContainers();
 
     void lockTabs();
@@ -47,7 +47,7 @@ public:
     QList<medAbstractView*> viewsInTab(int index = 0);
     QList<medViewContainer*> containersInTab(int index = 0);
 
-    medAbstractWorkspace * owningWorkspace() const;
+    medAbstractWorkspaceLegacy * owningWorkspace() const;
 
 public slots:
     medViewContainer* addContainerInTab();

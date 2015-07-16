@@ -26,7 +26,7 @@ class medAsbtractProcessPresenter : public QObject
     Q_OBJECT
 
 public:
-    medAsbtractProcessPresenter(QObject *parent = 0);
+    medAsbtractProcessPresenter(QObject *parent = NULL);
     ~medAsbtractProcessPresenter();
 
     virtual QString name() const = 0;

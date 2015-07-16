@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -36,8 +36,10 @@
 #include <medJobManager.h>
 
 #include <medWorkspaceFactory.h>
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 #include <medVisualizationWorkspace.h>
+
+#include <medGuiLayer.h>
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
@@ -95,6 +97,8 @@ public:
 
     QToolButton *screenshotButton;
     QList<QUuid> expectedUuids;
+
+    QHash<QString, medAbstractArea*> areas;
 };
 
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
@@ -115,6 +119,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
 
     //  Setting up widgets
+    //  Stack
+    d->stack = new QStackedWidget(this);
 
     d->settingsEditor = NULL;
     d->currentArea = NULL;
@@ -131,8 +137,13 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea = new medHomepageArea( this );
     d->homepageArea->setObjectName("medHomePageArea");
 
-    //  Stack
-    d->stack = new QStackedWidget(this);
+    foreach(QString key, medGuiLayer::area::pluginFactory().keys())
+    {
+        medAbstractArea *area = medGuiLayer::area::pluginFactory().create(key);
+        d->stack->addWidget(area);
+        d->areas.insert(key, area);
+    }
+
     d->stack->addWidget(d->homepageArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
@@ -156,6 +167,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->quickAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->quickAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
     connect(d->quickAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
+    connect(d->quickAccessWidget, SIGNAL(areaSelected(QString)), this, SLOT(showArea(QString)));
 
     d->shortcutAccessWidget = new medQuickAccessMenu( false, this );
     d->shortcutAccessWidget->setFocusPolicy(Qt::ClickFocus);
@@ -308,8 +320,8 @@ void medMainWindow::saveSettings() {
 }
 
 /**
- * If one tries to launch a new instance of medInria, the QtSingleApplication bypass it and receive 
- * the command line argument used to launch it. 
+ * If one tries to launch a new instance of medInria, the QtSingleApplication bypass it and receive
+ * the command line argument used to launch it.
  * See QtSingleApplication::messageReceived(const QString &message).
  * This method processes a message received by the QtSingleApplication from a new instance.
  */
@@ -566,6 +578,25 @@ void medMainWindow::showWorkspace(QString workspace)
 
     this->hideQuickAccess();
     this->hideShortcutAccess();
+}
+
+void medMainWindow::showArea(QString const& area)
+{
+    if(d->currentArea == d->areas[area])
+        return;
+
+    d->currentArea = d->areas[area];
+
+    this->hideQuickAccess();
+    this->hideShortcutAccess();
+
+    d->quickAccessButton->setMinimumWidth(170);
+
+    d->quickAccessButton->setText(area);
+    d->shortcutAccessWidget->updateSelected(area);
+    d->quickAccessWidget->updateSelected(area);
+    d->stack->setCurrentWidget(d->currentArea);
+
 }
 
 /**

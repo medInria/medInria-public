@@ -55,6 +55,7 @@ set(PLUGIN_LIST
   itkProcessRegistrationDiffeomorphicDemons ON
   medVtkView                                ON
   medItkSubtractImageProcess                ON
+  medComposerArea                           ON
   )
 
 

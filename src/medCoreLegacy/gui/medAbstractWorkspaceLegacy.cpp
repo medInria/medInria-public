@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 
 #include <QUuid>
 #include <QWidgetAction>
@@ -41,7 +41,7 @@
 #include <medParameterGroupManager.h>
 
 
-class medAbstractWorkspacePrivate
+class medAbstractWorkspaceLegacyPrivate
 {
 public:
     QWidget *parent;
@@ -74,7 +74,7 @@ public:
     medLinkMenu *layerLinkMenu;
 };
 
-medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d(new medAbstractWorkspacePrivate)
+medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent) : QObject(parent), d(new medAbstractWorkspaceLegacyPrivate)
 {
     d->parent = parent;
 
@@ -125,78 +125,78 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->layerLinkMenu = NULL;
 }
 
-medAbstractWorkspace::~medAbstractWorkspace(void)
+medAbstractWorkspaceLegacy::~medAbstractWorkspaceLegacy(void)
 {
     delete d;
     d = NULL;
 }
 
-void medAbstractWorkspace::addToolBox(medToolBox *toolbox)
+void medAbstractWorkspaceLegacy::addToolBox(medToolBox *toolbox)
 {
     d->toolBoxes.append(toolbox);
 }
 
-void medAbstractWorkspace::removeToolBox(medToolBox *toolbox)
+void medAbstractWorkspaceLegacy::removeToolBox(medToolBox *toolbox)
 {
     d->toolBoxes.removeOne(toolbox);
 }
 
-QList<medToolBox*> medAbstractWorkspace::toolBoxes() const
+QList<medToolBox*> medAbstractWorkspaceLegacy::toolBoxes() const
 {
     return d->toolBoxes;
 }
 
-medToolBox* medAbstractWorkspace::selectionToolBox() const
+medToolBox* medAbstractWorkspaceLegacy::selectionToolBox() const
 {
     return d->selectionToolBox;
 }
 
-void medAbstractWorkspace::setDatabaseVisibility(bool visibility)
+void medAbstractWorkspaceLegacy::setDatabaseVisibility(bool visibility)
 {
     d->databaseVisibility = visibility;
 }
 
-bool medAbstractWorkspace::isDatabaseVisible(void) const
+bool medAbstractWorkspaceLegacy::isDatabaseVisible(void) const
 {
     return d->databaseVisibility;
 }
 
-medTabbedViewContainers* medAbstractWorkspace::tabbedViewContainers() const
+medTabbedViewContainers* medAbstractWorkspaceLegacy::tabbedViewContainers() const
 {
     return d->viewContainerStack;
 }
 
-void medAbstractWorkspace::clear()
+void medAbstractWorkspaceLegacy::clear()
 {
     this->setupTabbedViewContainer();
     this->clearWorkspaceToolBoxes();
     return;
 }
 
-void medAbstractWorkspace::setToolBoxesVisibility (bool value)
+void medAbstractWorkspaceLegacy::setToolBoxesVisibility (bool value)
 {
     d->toolBoxesVisibility = value;
 }
 
-bool medAbstractWorkspace::areToolBoxesVisible() const
+bool medAbstractWorkspaceLegacy::areToolBoxesVisible() const
 {
     return d->toolBoxesVisibility;
 }
 
 
-void medAbstractWorkspace::clearWorkspaceToolBoxes()
+void medAbstractWorkspaceLegacy::clearWorkspaceToolBoxes()
 {
     foreach(medToolBox* tb,d->toolBoxes)
         tb->clear();
 }
 
-void medAbstractWorkspace::addNewTab()
+void medAbstractWorkspaceLegacy::addNewTab()
 {
     QString tabName = QString("%1 %2").arg(this->name()).arg(d->viewContainerStack->count());
     d->viewContainerStack->addContainerInTab(tabName);
 }
 
-void medAbstractWorkspace::updateNavigatorsToolBox()
+void medAbstractWorkspaceLegacy::updateNavigatorsToolBox()
 {
     d->navigatorToolBox->clear();
 
@@ -240,7 +240,7 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
     this->updateLayersToolBox();
 }
 
-void medAbstractWorkspace::updateMouseInteractionToolBox()
+void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
 {
     d->mouseInteractionToolBox->clear();
 
@@ -270,7 +270,7 @@ void medAbstractWorkspace::updateMouseInteractionToolBox()
     }
 }
 
-void medAbstractWorkspace::updateLayersToolBox()
+void medAbstractWorkspaceLegacy::updateLayersToolBox()
 {
     d->layerListToolBox->clear();
     d->containerForLayerWidgetsItem.clear();
@@ -398,7 +398,7 @@ void medAbstractWorkspace::updateLayersToolBox()
     this->updateInteractorsToolBox();
 }
 
-void medAbstractWorkspace::changeCurrentLayer(int row)
+void medAbstractWorkspaceLegacy::changeCurrentLayer(int row)
 {
     QListWidgetItem* item = d->layerListWidget->item(row);
     QUuid uuid = d->containerForLayerWidgetsItem.value(item);
@@ -421,7 +421,7 @@ void medAbstractWorkspace::changeCurrentLayer(int row)
     this->updateMouseInteractionToolBox();
 }
 
-void medAbstractWorkspace::updateInteractorsToolBox()
+void medAbstractWorkspaceLegacy::updateInteractorsToolBox()
 {
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
@@ -508,7 +508,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
 }
 
 
-void medAbstractWorkspace::removeLayer()
+void medAbstractWorkspaceLegacy::removeLayer()
 {
     QPushButton *button = dynamic_cast<QPushButton*>(this->sender());
     if(!button)
@@ -530,7 +530,7 @@ void medAbstractWorkspace::removeLayer()
 }
 
 
-void medAbstractWorkspace::buildTemporaryPool()
+void medAbstractWorkspaceLegacy::buildTemporaryPool()
 {
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
     d->temporaryPoolForInteractors->clear();
@@ -550,7 +550,7 @@ void medAbstractWorkspace::buildTemporaryPool()
     }
 }
 
-void medAbstractWorkspace::open(const medDataIndex &index)
+void medAbstractWorkspaceLegacy::open(const medDataIndex &index)
 {
     QList<QUuid> containersSelected = d->viewContainerStack->containersSelected();
     if(containersSelected.size() != 1)
@@ -561,41 +561,41 @@ void medAbstractWorkspace::open(const medDataIndex &index)
         container->addData(medDataManager::instance()->retrieveData(index));
 }
 
-void medAbstractWorkspace::setUserLayerPoolable(bool poolable)
+void medAbstractWorkspaceLegacy::setUserLayerPoolable(bool poolable)
 {
     d->userLayerPoolable = poolable;
     this->updateLayersToolBox();
 }
 
-void medAbstractWorkspace::setUserViewPoolable(bool poolable)
+void medAbstractWorkspaceLegacy::setUserViewPoolable(bool poolable)
 {
     d->userViewPoolable = poolable;
     this->updateNavigatorsToolBox();
 }
 
-void medAbstractWorkspace::setUserLayerClosable(bool Closable)
+void medAbstractWorkspaceLegacy::setUserLayerClosable(bool Closable)
 {
     d->userLayerClosable = Closable;
     this->updateLayersToolBox();
 }
 
-bool medAbstractWorkspace::isUserLayerPoolable() const
+bool medAbstractWorkspaceLegacy::isUserLayerPoolable() const
 {
     return d->userLayerPoolable;
 }
 
-bool medAbstractWorkspace::isUserViewPoolable() const
+bool medAbstractWorkspaceLegacy::isUserViewPoolable() const
 {
     return d->userViewPoolable;
 }
 
-bool medAbstractWorkspace::isUserLayerClosable() const
+bool medAbstractWorkspaceLegacy::isUserLayerClosable() const
 {
     return d->userLayerClosable;
 }
 
 
-QWidget* medAbstractWorkspace::buildViewLinkMenu()
+QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
 {
     QWidget *linkWidget = new QWidget;
     QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
@@ -673,7 +673,7 @@ QWidget* medAbstractWorkspace::buildViewLinkMenu()
 }
 
 
-QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> selectedlayers)
+QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> selectedlayers)
 {
     QStringList paramNames;
     QList<medAbstractParameter*> layersParams;
@@ -754,7 +754,7 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
 
 }
 
-void medAbstractWorkspace::addViewstoGroup(QString group)
+void medAbstractWorkspaceLegacy::addViewstoGroup(QString group)
 {
     medAbstractView* view = NULL;
 
@@ -772,7 +772,7 @@ void medAbstractWorkspace::addViewstoGroup(QString group)
     }
 }
 
-void medAbstractWorkspace::removeViewsFromGroup(QString group)
+void medAbstractWorkspaceLegacy::removeViewsFromGroup(QString group)
 {
     medAbstractView* view = NULL;
 
@@ -790,7 +790,7 @@ void medAbstractWorkspace::removeViewsFromGroup(QString group)
     }
 }
 
-void medAbstractWorkspace::addLayerstoGroup(QString group)
+void medAbstractWorkspaceLegacy::addLayerstoGroup(QString group)
 {
     medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
@@ -815,7 +815,7 @@ void medAbstractWorkspace::addLayerstoGroup(QString group)
     }
 }
 
-void medAbstractWorkspace::removeLayersFromGroup(QString group)
+void medAbstractWorkspaceLegacy::removeLayersFromGroup(QString group)
 {
     medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
@@ -837,18 +837,18 @@ void medAbstractWorkspace::removeLayersFromGroup(QString group)
     }
 }
 
-void medAbstractWorkspace::removeViewGroup(QString group)
+void medAbstractWorkspaceLegacy::removeViewGroup(QString group)
 {
     delete medParameterGroupManager::instance()->viewGroup(group, this->identifier());
 }
 
-void medAbstractWorkspace::removeLayerGroup(QString group)
+void medAbstractWorkspaceLegacy::removeLayerGroup(QString group)
 {
     delete medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     updateLayersToolBox();
 }
 
-void medAbstractWorkspace::addViewGroup(QString group)
+void medAbstractWorkspaceLegacy::addViewGroup(QString group)
 {
     medViewParameterGroup *newGroup = new medViewParameterGroup(group, this);
     newGroup->setLinkAllParameters(true);
@@ -856,44 +856,44 @@ void medAbstractWorkspace::addViewGroup(QString group)
     addViewGroup(newGroup);
 }
 
-void medAbstractWorkspace::addViewGroup(medViewParameterGroup * group)
+void medAbstractWorkspaceLegacy::addViewGroup(medViewParameterGroup * group)
 {
     if(d->viewLinkMenu)
       d->viewLinkMenu->addGroup(group, true);
 }
 
-void medAbstractWorkspace::addLayerGroup(QString group)
+void medAbstractWorkspaceLegacy::addLayerGroup(QString group)
 {
     medLayerParameterGroup *newGroup = new medLayerParameterGroup(group, this);
     newGroup->setLinkAllParameters(true);
     addLayerGroup(newGroup);
 }
 
-void medAbstractWorkspace::addLayerGroup(medLayerParameterGroup * group)
+void medAbstractWorkspaceLegacy::addLayerGroup(medLayerParameterGroup * group)
 {
     if(d->layerLinkMenu)
       d->layerLinkMenu->addGroup(group, true);
 }
 
-void medAbstractWorkspace::setViewGroups(QList<medViewParameterGroup*> groups)
+void medAbstractWorkspaceLegacy::setViewGroups(QList<medViewParameterGroup*> groups)
 {
     foreach(medViewParameterGroup* group, medParameterGroupManager::instance()->viewGroups(this->identifier()))
         addViewGroup(group);
 }
 
-void medAbstractWorkspace::setLayerGroups(QList<medLayerParameterGroup*> groups)
+void medAbstractWorkspaceLegacy::setLayerGroups(QList<medLayerParameterGroup*> groups)
 {
     foreach(medLayerParameterGroup* group, groups)
         addLayerGroup(group);
 }
 
-void medAbstractWorkspace::changeViewGroupColor(QString group, QColor color)
+void medAbstractWorkspaceLegacy::changeViewGroupColor(QString group, QColor color)
 {
     medViewParameterGroup *paramGroup = medParameterGroupManager::instance()->viewGroup(group, this->identifier());
     paramGroup->setColor(color);
 }
 
-void medAbstractWorkspace::changeLayerGroupColor(QString group, QColor color)
+void medAbstractWorkspaceLegacy::changeLayerGroupColor(QString group, QColor color)
 {
     medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     paramGroup->setColor(color);

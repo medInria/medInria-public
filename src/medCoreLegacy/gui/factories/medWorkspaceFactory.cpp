@@ -14,7 +14,7 @@
 #include <medWorkspaceFactory.h>
 
 #include <medToolBoxFactory.h>
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 #include <medWorkspaceFactory.h>
 
 class medWorkspaceFactoryPrivate
@@ -54,16 +54,16 @@ QList<QString> medWorkspaceFactory::workspaces(void)
 }
 
 /**
- * @brief allocates the memory for a medAbstractWorkspace.
+ * @brief allocates the memory for a medAbstractWorkspaceLegacy.
  * @param type identifier for the Workspace type.
  * @param parent the parentWidget for all the Widget created in the workspace, even if the workspace is not a widget, its children can be destroyed by the qobject hierarchy.
  */
-medAbstractWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
+medAbstractWorkspaceLegacy *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
 {
     if(!d->creators.contains(type))
         return NULL;
 
-    medAbstractWorkspace * workspace = d->creators[type]->creator(parent);
+    medAbstractWorkspaceLegacy * workspace = d->creators[type]->creator(parent);
 
     return workspace;
 }

@@ -19,7 +19,7 @@
 class medToolBoxContainer;
 class medDatabaseNavigator;
 class medTabbedViewContainers;
-class medAbstractWorkspace;
+class medAbstractWorkspaceLegacy;
 class medClutEditor;
 class QStackedWidget;
 class QSplitter;
@@ -48,12 +48,12 @@ public:
     QStackedWidget *stack;
     QSplitter * splitter;
     QMutex mutex;
-    QHash<QString, medAbstractWorkspace*> workspaces;
+    QHash<QString, medAbstractWorkspaceLegacy*> workspaces;
     QPointer<medToolBox> selectionToolBox;
 
 public:
     QString currentWorkspaceName;
-    medAbstractWorkspace *currentWorkspace;
+    medAbstractWorkspaceLegacy *currentWorkspace;
 };
 
 

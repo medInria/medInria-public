@@ -16,13 +16,13 @@
 
 #include <QtCore>
 
-#include <medAbstractWorkspace.h>
+#include <medAbstractWorkspaceLegacy.h>
 
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
 class medAbstractData;
 
-class medRegistrationWorkspace : public medAbstractWorkspace
+class medRegistrationWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Registration",
