@@ -125,44 +125,11 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${${PROJECT_NAME}_BINARY_DIR}/shaders
   )
 
-
-## #############################################################################
-## Embed vtkInriaPch
-## #############################################################################
-
-if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
-  file(GLOB VTKINRIAPCH_H
-    vtkInriaPch/*.h
-    )
-  
-  file(GLOB VTKINRIAPCH_CPP
-    vtkInriaPch/*.cpp
-    )
-endif()
-
-
-## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_PCH
-    ${VTKINRIAPCH_H}
-    ${VTKINRIAPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
-    )
-endif()
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_PCH}
-  )
-
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 
 ## #############################################################################
 ## Link

@@ -151,16 +151,6 @@ if (WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-if(MSVC)
-  include(dtkPch)
-  option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers"
-    OFF
-    )
-endif()
-if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
-    message("WARNING precompiled headers are not functional so far.")
-endif()
-
 ## #############################################################################
 ## Add subdirectory
 ## #############################################################################

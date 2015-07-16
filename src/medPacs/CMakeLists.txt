@@ -66,10 +66,7 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_PCH}
-  )
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 
 
 ## #############################################################################
