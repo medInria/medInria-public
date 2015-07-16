@@ -53,20 +53,6 @@ list_header_directories_to_include(${PROJECT_NAME}
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
-
-## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_PCH
-    ${MEDPCH_H}
-    ${MEDPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
-    )
-endif()
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
