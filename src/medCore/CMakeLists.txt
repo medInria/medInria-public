@@ -1,0 +1,115 @@
+################################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
+# See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+################################################################################
+
+project(medCore)
+
+#required for querying the GPU, can be removed once using Qt 5.3
+#using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
+find_package(OpenGL REQUIRED)
+
+## #############################################################################
+## List Sources
+## #############################################################################
+
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  data
+  database
+  data/annotationData
+  gui
+  gui/commonWidgets
+  gui/database
+  gui/factories
+  gui/lookUpTables
+  gui/settingsWidgets
+  gui/toolboxes
+  gui/viewContainers
+  process
+  views
+  views/interactors
+  views/navigators
+  parameters
+  )
+
+set(${PROJECT_NAME}_QRC resources/medCore.qrc)
+
+## #############################################################################
+## include directories.
+## #############################################################################
+
+#   Remove this when migration from legacy is finished.
+set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  ${QT_HEADERS}
+)
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+
+## #############################################################################
+## add library
+## #############################################################################
+
+qt5_add_resources(${PROJECT_NAME}_QRC
+  ${${PROJECT_NAME}_QRC}
+  )
+
+add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_QRC}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
+
+#   Remove medCoreLegacy when migration is done.
+
+target_link_libraries(${PROJECT_NAME}
+    medCoreLegacy
+    ${QT_LIBRARIES}
+    ${OPENGL_LIBRARIES}
+    dtkCoreSupport
+    dtkGuiSupport
+    dtkLog
+    )
+
+if (WIN32) #TODO is that for the memory management thing ?
+  target_link_libraries(${PROJECT_NAME} psapi.lib)
+endif()
+
+
+## #############################################################################
+## install
+## #############################################################################
+
+set_lib_install_rules(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+
+
+## #############################################################################
+## Build tests
+## #############################################################################
+
+if(MEDINRIA_BUILD_TESTS)
+  add_subdirectory(tests)
+  #TODO: we will need to change the tests organization because of dependance to medTest...
+  #add_subdirectory(gui/tests)
+  #add_subdirectory(parameters/tests)
+  #add_subdirectory(view/tests)
+  #add_subdirectory(data/tests)
+  #add_subdirectory(process/tests)
+endif()

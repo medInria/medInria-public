@@ -19,6 +19,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
 ## #############################################################################
 
 ## be sure medCore  is first in the list, it will be used by the other lib.
+
+add_subdirectory(medCoreLegacy)
 add_subdirectory(medCore)
 
 add_subdirectory(medTest)
@@ -36,16 +38,15 @@ add_subdirectory(medVtkInria)
 
 set(${PROJECT_NAME}_INCLUDE_DIRS
     ${QT_HEADERS}
-  ${medCore_INCLUDE_DIRS}
-  ${medGui_INCLUDE_DIRS}
-  ${medPacs_INCLUDE_DIRS}
-  ${medTest_INCLUDE_DIRS}
-  ${medSql_INCLUDE_DIRS}
-  ${medLog_INCLUDE_DIRS}
-  ${medImageIO_INCLUDE_DIRS}
-  ${medRegistration_INCLUDE_DIRS}
-  ${medVtkInria_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_INCLUDE_DIRS}
-  PARENT_SCOPE
-  )
-  
+    ${medCore_INCLUDE_DIRS}
+    ${medGui_INCLUDE_DIRS}
+    ${medPacs_INCLUDE_DIRS}
+    ${medTest_INCLUDE_DIRS}
+    ${medSql_INCLUDE_DIRS}
+    ${medLog_INCLUDE_DIRS}
+    ${medImageIO_INCLUDE_DIRS}
+    ${medRegistration_INCLUDE_DIRS}
+    ${medVtkInria_INCLUDE_DIRS}
+    ${${PROJECT_NAME}_INCLUDE_DIRS}
+    PARENT_SCOPE
+)
