@@ -82,7 +82,6 @@ enum ImageViewType {
     IMAGE_VIEW_FLOATVECTOR3TYPE  };
 }
 
-
 // pIMPL class for vtkImageView
 class vtkImageView::vtkImageViewImplementation {
 public:
@@ -203,7 +202,6 @@ vtkImageView::vtkImageView()
     this->LookupTable->Build();
 }
 
-
 vtkImageView::~vtkImageView()
 {
     std::cout<<"deleting a view"<<std::endl;
@@ -259,8 +257,6 @@ vtkImageView::~vtkImageView()
     delete this->Impl;
 
     std::cout<<"deleting a view. done"<<std::endl;
-
-
 }
 
 //----------------------------------------------------------------------------

@@ -13,15 +13,13 @@
 
 #pragma once
 
-namespace medImageView
-{
-//TODO: find a better name than orientation - RDE.
-enum Orientation
-{
-    VIEW_ORIENTATION_AXIAL,
-    VIEW_ORIENTATION_SAGITTAL,
-    VIEW_ORIENTATION_CORONAL,
-    VIEW_ORIENTATION_3D,
-    VIEW_ALL_ORIENTATION
-};
+namespace medImageView {
+    //TODO: find a better name than orientation - RDE.
+    enum Orientation {
+        VIEW_ORIENTATION_AXIAL,
+        VIEW_ORIENTATION_SAGITTAL,
+        VIEW_ORIENTATION_CORONAL,
+        VIEW_ORIENTATION_3D,
+        VIEW_ALL_ORIENTATION
+    };
 }

@@ -58,5 +58,3 @@ private:
 private:
     medPluginManagerPrivate *d; /**< TODO */
 };
-
-

@@ -28,8 +28,7 @@
 #include <medAbstractImageData.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
-namespace
-{
+namespace {
     inline bool execQuery ( QSqlQuery & query, const char *file, int line )
     {
         if ( ! query.exec() )
