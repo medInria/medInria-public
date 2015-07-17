@@ -11,24 +11,28 @@
 
 =========================================================================*/
 
-#include <medComposerAreaPlugin.h>
+#pragma once
 
-#include <medGuiLayer.h>
-#include <medComposerArea.h>
+#include <dtkComposer>
 
-void medComposerAreaPlugin::initialize(void)
-{
-    medGuiLayer::area::pluginFactory().record("medComposerArea",
-                                              medComposerAreaCreator);
-}
+#include <medAbstractSubtractImageProcessPresenter.h>
 
-void medComposerAreaPlugin::uninitialize(void)
-{
 
-}
+class medSubtractImageProcessNodePrivate;
 
 // ///////////////////////////////////////////////////////////////////
-// Plugin meta data
+//
 // ///////////////////////////////////////////////////////////////////
 
-DTK_DEFINE_PLUGIN(medItkSubtractImageProcess)
+class medSubtractImageProcessNode : public dtkComposerNodeObject<medAbstractSubtractImageProcessPresenter>
+{
+public:
+     medSubtractImageProcessNode(void);
+    ~medSubtractImageProcessNode(void);
+
+public:
+    void run(void);
+
+private:
+    medSubtractImageProcessNodePrivate *d;
+};
