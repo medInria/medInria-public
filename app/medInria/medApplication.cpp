@@ -154,6 +154,7 @@ void medApplication::open(QString path)
 void medApplication::initialize()
 {
     qRegisterMetaType<QUuid>("QUuid");
+//    qRegisterMetaType<medAbstractImageData>("medAbstractImageData");
 
     //  Setting up database connection
     if ( ! medDatabaseController::instance()->createConnection())

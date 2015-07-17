@@ -64,8 +64,20 @@ foreach(dir ${ARGV})
     ${dir}/*.txx
     )
   set(${project_name}_TEMPLATES
-    ${SOURCES}
+    ${TEMPLATES}
     ${${project_name}_TEMPLATES}
+    )
+
+## #############################################################################
+## List all ressources files and add them to {${project_name}_QRC
+## #############################################################################
+
+  file(GLOB QRC
+    ${dir}/*.qrc
+    )
+  set(${project_name}_QRC
+    ${QRC}
+    ${${project_name}_QRC}
     )
 
 
@@ -77,6 +89,7 @@ foreach(dir ${ARGV})
     ${${project_name}_HEADERS}
     ${${project_name}_SOURCES}
     ${${project_name}_TEMPLATES}
+    ${${project_name}_QRC}
     ${${project_name}_CFILES}
     )
 
