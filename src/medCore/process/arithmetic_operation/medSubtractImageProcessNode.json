@@ -1,0 +1,9 @@
+{
+          "title" : "Subtract 2 images",
+           "kind" : "process",
+           "type" : "medAbstractSubtractImageProcess",
+           "tags" : ["minus","subtract","arithmetic", "operation"],
+    "description" : "<p>Compute the difference of tow images</p>",
+         "inputs" : ["scalarImage", "scalarImage"],
+        "outputs" : ["scalarImage"]
+}

@@ -13,20 +13,17 @@
 
 #pragma once
 
-#include <medAbstractAreaPlugin.h>
+#include <dtkComposer/dtkComposerNodeFactory.h>
 
-
-class medComposerAreaPlugin : public medAbstractAreaPlugin
+class medSubtractImageProcessComposerFactoryExtension : public dtkComposerNodeFactoryExtension
 {
-    Q_OBJECT
-    Q_INTERFACES(medAbstractAreaPlugin)
-    Q_PLUGIN_METADATA(IID "fr.inria.medComposerAreaPlugin" FILE "medComposerAreaPlugin.json")
+public:
+     medSubtractImageProcessComposerFactoryExtension(void);
+     virtual ~medSubtractImageProcessComposerFactoryExtension(void);
 
 public:
-     medComposerAreaPlugin(void) {}
-    virtual ~medComposerAreaPlugin(void) {}
-
-public:
-    void initialize(void);
-    void uninitialize(void);
+    void extend(dtkComposerNodeFactory *factory);
 };
+
+//
+// dtkLinearAlgebraSparseComposerFactoryExtension.h ends here
