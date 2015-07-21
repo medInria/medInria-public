@@ -63,29 +63,11 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
 
-
-## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if (MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_PCH
-    ${MEDPLUGINSPCH_H}
-    ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
-    )
-endif()
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_CFILES}
-  )
-
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 
 ## #############################################################################
 ## Link
