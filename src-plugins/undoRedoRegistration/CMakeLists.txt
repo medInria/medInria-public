@@ -87,7 +87,6 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
-  RegistrationAddOn
   medCore
   medRegistration
   )
