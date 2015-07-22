@@ -19,7 +19,7 @@
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// medSegmentationPluginPrivate
+// PluginPrivate
 // /////////////////////////////////////////////////////////////////
 
 class medSegmentationPluginPrivate
@@ -76,7 +76,6 @@ QString medSegmentationPlugin::description() const
               "Ctrl+Backspace Remove seed<br/>"
               "Ctrl+Up        Add brush size<br/>"
               "Ctrl+Down      Reduce brush size");
-    
 }
 
 QString medSegmentationPlugin::version() const
@@ -100,8 +99,7 @@ QStringList medSegmentationPlugin::contributors() const
 {
     QStringList list;
     list <<  QString::fromUtf8("Benoît Bleuzé")
-          << "Olivier Commowick"
-             << "Mathilde Merle <mathilde.merle@ihu-liryc.fr>";
+             << "Olivier Commowick";
     return list;
 }
 
