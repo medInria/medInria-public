@@ -23,7 +23,6 @@
 #include <itkFiltersInvertProcess.h>
 #include <itkFiltersShrinkProcess.h>
 #include <itkFiltersWindowingProcess.h>
-#include <itkFiltersThresholdingProcess.h>
 #include <itkFiltersComponentSizeThresholdProcess.h>
 #include <itkFiltersDilateProcess.h>
 #include <itkFiltersErodeProcess.h>
@@ -63,7 +62,6 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersNormalizeProcess::registered() ) { dtkWarn() << "Unable to register itkFilters normalize filter process type";}
     if ( !itkFiltersWindowingProcess::registered() ) { dtkWarn() << "Unable to register itkFilters windowing filter process type";}
     if ( !itkFiltersInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type";   }
-    if ( !itkFiltersThresholdingProcess::registered() )    { dtkWarn() << "Unable to register itkFilters thresholding filter process type";   }
     if ( !itkFiltersComponentSizeThresholdProcess::registered() )    { dtkWarn() << "Unable to register itkFilters component size thresholding filter process type";   }
     if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type";   }
     if ( !itkFiltersDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
