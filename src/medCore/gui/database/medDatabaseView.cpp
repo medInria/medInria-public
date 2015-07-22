@@ -106,7 +106,6 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->setAlternatingRowColors(true);
     this->setAnimated(false);
     this->setSortingEnabled(true);
-    this->sortByColumn(0, Qt::AscendingOrder);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
