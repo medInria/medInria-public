@@ -32,6 +32,8 @@ public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
     virtual ~medAbstractProcess();
 
+    using dtkAbstractProcess::setInput;
+
 public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;
@@ -41,7 +43,6 @@ private:
     using dtkAbstractProcess::read;
     using dtkAbstractProcess::write;
     using dtkAbstractProcess::setParameter;
-    using dtkAbstractProcess::setInput;
     using dtkAbstractProcess::setData;
     //TODO rename our output methode
     //using dtkAbstractProcess::output;
