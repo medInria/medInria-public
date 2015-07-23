@@ -61,6 +61,7 @@ public:
     virtual QWidget* toolBarWidget();
 
     virtual QList<medAbstractNavigator*> navigators();
+    virtual QList<medAbstractNavigator*> extraNavigators();
     virtual QList<medAbstractInteractor*> interactors();
 
     medDoubleParameter* zoomParameter();
@@ -96,7 +97,6 @@ protected:
     virtual medAbstractViewInteractor* primaryInteractor();
     virtual QList<medAbstractInteractor*> extraInteractors();
     virtual medAbstractViewNavigator* primaryNavigator();
-    virtual QList<medAbstractNavigator*> extraNavigators();
 
     virtual bool initialiseInteractors(medAbstractData* data);
     virtual bool initialiseNavigators();
