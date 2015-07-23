@@ -68,7 +68,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   dtkLog
-  RegistrationAddOn
   ITKCommon
   ITKIOImageBase
   ITKIOBMP

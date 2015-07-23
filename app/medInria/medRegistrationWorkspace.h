@@ -26,7 +26,8 @@ class medRegistrationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Registration",
-                            "Register a moving image to a fixed image.")
+                            "Workspace to compute the spatial transformation between two images in order to register them.",
+                            "Methodology")
 public:
      medRegistrationWorkspace(QWidget *parent = 0);
     ~medRegistrationWorkspace();

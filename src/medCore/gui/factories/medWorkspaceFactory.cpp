@@ -35,12 +35,13 @@ medWorkspaceFactory* medWorkspaceFactory::instance(void)
 bool medWorkspaceFactory::registerWorkspace(QString identifier,
                                             QString name,
                                             QString description,
+                                            QString category,
                                             medWorkspaceCreator creator,
                                             medWorkspaceIsUsable isUsable)
 {
     if(!d->creators.contains(identifier))
     {
-        medWorkspaceFactory::Details* holder = new medWorkspaceFactory::Details(identifier, name, description, creator, isUsable);
+        medWorkspaceFactory::Details* holder = new medWorkspaceFactory::Details(identifier, name, description, category, creator, isUsable);
         d->creators.insert(identifier, holder);
         return true;
     }
@@ -125,4 +126,26 @@ bool medWorkspaceFactory::isUsable(QString identifier) const
     }
     
     return false;
+}
+
+
+/**
+ * Get a list of the available workspaces from a specific category.
+ *
+ */
+QList<QString> medWorkspaceFactory::workspacesFromCategory(
+        const QString& category)const
+{
+    QList<QString> ids;
+    typedef medWorkspaceFactoryPrivate::medWorkspaceCreatorHash::iterator creator_iterator;
+    creator_iterator i = d->creators.begin();
+    while (i != d->creators.end())
+    {
+        if (!i.value()->category.compare(category))
+        {
+            ids << i.key();
+        }
+        ++i;
+    }
+    return ids;
 }

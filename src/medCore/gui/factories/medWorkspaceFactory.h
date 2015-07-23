@@ -35,16 +35,19 @@ public:
         QString identifier;
         QString name;
         QString description;
+        QString category;
         medWorkspaceCreator creator;
         medWorkspaceIsUsable isUsable;
         Details(QString id_,
                 QString name_,
                 QString description_,
+                QString category_,
                 medWorkspaceCreator creator_,
                 medWorkspaceIsUsable isUsable_ = NULL)
             : identifier(id_)
             , name(name_)
             , description(description_)
+            , category(category_)
             , creator(creator_)
             , isUsable(isUsable_)
         {}
@@ -77,6 +80,7 @@ public:
         return registerWorkspace(workspaceType::staticIdentifier(),
                                  workspaceType::staticName(),
                                  workspaceType::staticDescription(),
+                                 workspaceType::staticCategory(),
                                  creator,
                                  workspaceType::isUsable);
     }
@@ -87,6 +91,8 @@ public:
     medWorkspaceFactory::Details * workspaceDetailsFromId(QString identifier) const;
 
     bool isUsable(QString identifier) const;
+
+    QList<QString> workspacesFromCategory(const QString& category) const;
 
 public slots:
 
@@ -109,6 +115,7 @@ protected:
     bool registerWorkspace(QString identifier,
                            QString name,
                            QString description,
+                           QString category,
                            medWorkspaceCreator creator,
                            medWorkspaceIsUsable isUsable=NULL);
 

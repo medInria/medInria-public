@@ -58,6 +58,7 @@ public:
     virtual QString identifier() const = 0;
     virtual QString name() const = 0;
     virtual QString description() const = 0;
+    virtual QString category() const =0;
 
     QList <medToolBox*> toolBoxes() const;
     medToolBox* selectionToolBox() const;
@@ -122,11 +123,13 @@ private:
     medAbstractWorkspacePrivate *d;
 };
 
-#define MED_WORKSPACE_INTERFACE(_name,_desc) \
+#define MED_WORKSPACE_INTERFACE(_name,_desc,_cate) \
 public:\
     static QString staticIdentifier() {return QString(staticMetaObject.className());}\
     static QString staticName() {return QString::fromUtf8(_name);}\
     static QString staticDescription() {return QString::fromUtf8(_desc);}\
+    static QString staticCategory() {return QString::fromUtf8(_cate);}\
     virtual QString identifier() const {return staticIdentifier();}\
     virtual QString name() const {return staticName();}\
-    virtual QString description() const {return staticDescription();}
+    virtual QString description() const {return staticDescription();}\
+    virtual QString category() const {return staticCategory();}
