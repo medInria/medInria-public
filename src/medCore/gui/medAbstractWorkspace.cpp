@@ -105,11 +105,11 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->layersToolBox->setTitle("Layer settings");
     d->layersToolBox->hide();
 
-    d->layerListToolBox = new medToolBox(d->layersToolBox);
+    d->layerListToolBox = new medToolBox;
     d->layerListToolBox->header()->hide();
     d->layersToolBox->addWidget(d->layerListToolBox);
 
-    d->interactorToolBox = new medToolBox(d->layersToolBox);
+    d->interactorToolBox = new medToolBox;
     d->interactorToolBox->header()->hide();
     d->layersToolBox->addWidget(d->interactorToolBox);
 
@@ -311,7 +311,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
 
                 QHBoxLayout* layout = new QHBoxLayout(layerWidget);
-                layout->setContentsMargins(0,0,0,0);
+                layout->setContentsMargins(0,0,5,0);
 
                 medBoolParameter* visibilityParam = dynamic_cast<medBoolParameter*>(layeredView->visibilityParameter(layer));
                 QPushButton* thumbnailButton = visibilityParam->getPushButton();
@@ -382,7 +382,7 @@ void medAbstractWorkspace::updateLayersToolBox()
             // add the layer widgets
             if (layeredView->layersCount() > 0)
             {
-                d->layerListToolBox->show();
+                d->layersToolBox->show();
                 d->layerListToolBox->addWidget(d->layerListWidget);
 
                 // resize layerListWidget to number of item
@@ -486,10 +486,14 @@ void medAbstractWorkspace::updateInteractorsToolBox()
         if(!interactorsIdentifier.contains(interactorIdentifier))
         {
             interactorsIdentifier << interactorIdentifier;
-            QGroupBox *groupBox = new QGroupBox;
-            QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
 
+            QGroupBox *groupBox = new QGroupBox;
+            groupBox->setStyleSheet("QGroupBox::title { border: 0px ; border-radius: 0px; padding: 0px 0px 0px 0px; margin = 0px 0px 0px 0px } \
+                                    QGroupBox { border: 0px ; border-radius: 0px; padding: 0px 0px 0px 0px;} ");
+
+            QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
             groupBoxLayout->setContentsMargins(0,0,0,0);
+
             QWidget *intercatorWidget = interactor->toolBoxWidget();
             if(intercatorWidget)
             {
