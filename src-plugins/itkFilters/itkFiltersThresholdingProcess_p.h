@@ -65,11 +65,12 @@ public:
             std::cerr << err << std::endl;
         }
 
+        output->copyMetaDataFrom(input);
+
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " threshold (" + QString::number(threshold) + ")";
 
-        output->copyMetaDataFrom(input);
-        output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 

@@ -62,9 +62,7 @@ public:
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " Close filter (" + QString::number(radius) + ")";
         
-        output->copyMetaDataFrom(input);
-        output->setMetaData ( medMetaDataKeys::StudyDescription.key(), "mask");
-        output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
