@@ -32,7 +32,7 @@ public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
     medAbstractProcess(const medAbstractProcess& other);
     virtual ~medAbstractProcess();
-    using dtkAbstractProcess::setInput;
+    virtual void setInput ( medAbstractData *data, int channel = 0 ){}
 
 public slots:
     virtual medAbstractData *output() = 0;
@@ -42,6 +42,7 @@ private:
     using dtkAbstractProcess::onCanceled;
     using dtkAbstractProcess::read;
     using dtkAbstractProcess::write;
+    using dtkAbstractProcess::setInput;
     using dtkAbstractProcess::setData;
     //TODO rename our output methode
     //using dtkAbstractProcess::output;
