@@ -220,11 +220,6 @@ int medAbstractIntParameter::value() const
     return m_value;
 }
 
-void medAbstractIntParameter::trigger()
-{
-    emit valueChanged(m_value);
-}
-
 //--------------------------------------------------------------------------
 //  medAbstractDoubleParameter
 void medAbstractDoubleParameter::setValue(double value)
@@ -447,7 +442,3 @@ void medAbstractVector4DParameter::toXMLNode(QDomDocument* doc,QDomElement* curr
     currentNode->appendChild(elmt);
 }
 
-void medAbstractVector4DParameter::trigger()
-{
-    emit valueChanged(m_value);
-}
