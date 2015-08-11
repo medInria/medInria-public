@@ -129,12 +129,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel->setPixmap ( medLogo );
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
-                           "processing and visualisation software, "
-                           "and it is <b>free</b>. Through an intuitive user "
-                           "guidance, based on the medInria software platform."
-                           "<br/><br/>"
-                           "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria." ));
+    textEdit->setHtml ( QString::fromUtf8("<b>MUSIC</b> is a software developed in collaboration with "
+                                          "the IHU LIRYC in order to propose functionalities "
+                                          "dedicated to cardiac interventional planning and "
+                                          "guidance, based on the medInria software platform."
+                                          "<br/><br/>"
+                                          "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria." ));
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight(300);
