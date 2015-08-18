@@ -1,14 +1,11 @@
 /*=========================================================================
-
  medInria
-
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
-
 =========================================================================*/
 
 #pragma once
@@ -32,11 +29,12 @@ public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
     medAbstractProcess(const medAbstractProcess& other);
     virtual ~medAbstractProcess();
+    virtual void setInput ( medAbstractData *data, int channel = 0 ){}
 
 public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;
-    virtual void setInput ( medAbstractData *data, int channel = 0 ) = 0;
+
 private:
     using dtkAbstractProcess::onCanceled;
     using dtkAbstractProcess::read;

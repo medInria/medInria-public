@@ -78,7 +78,7 @@ public:
     void initializeLabelsColors();
 
     virtual void updateWidgets();
-    
+
 protected:
     void updatePipeline ();
     void setLut(vtkLookupTable * lut);

@@ -263,8 +263,12 @@ void vtkDataMeshInteractor::setupParameters()
 
     d->parameters << this->visibilityParameter();
 
-    d->minRange = new medDoubleParameter("Min",this);
-    d->maxRange = new medDoubleParameter("Max",this);
+    d->minRange = new medDoubleParameter("MinRange",this);
+    d->maxRange = new medDoubleParameter("MaxRange",this);
+
+    d->parameters << d->minRange;
+    d->parameters << d->maxRange;
+    d->parameters << d->meshVisibility_button->getLabelsParameter();
 
     connect(d->minRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
     connect(d->maxRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
@@ -401,7 +405,10 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
             d->labelsColorsInitialized=false;
         }
         else
-            d->meshVisibility_button->hide();
+        {
+            d->meshVisibility_button->hide();  
+            d->parameters.removeOne(d->meshVisibility_button->getLabelsParameter());
+        }
         
         double * range = d->metaDataSet->GetCurrentScalarRange();
         double step = (range[1]-range[0])/100.0;
@@ -586,7 +593,7 @@ QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
     layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
     layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
     layout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
-    layout->addWidget(d->meshVisibility_button);
+    layout->addRow(d->meshVisibility_button);
     layout->addRow(d->range_button);
     d->minRange->getSlider()->setOrientation(Qt::Horizontal);
     d->maxRange->getSlider()->setOrientation(Qt::Horizontal);

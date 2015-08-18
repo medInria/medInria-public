@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include <medMeshVisibilityMenu.h>
+#include <medBoolParameter.h>
 #include <medLinkMenu.h>
 #include <medListWidget.h>
 #include <medSettingsManager.h>
@@ -23,7 +24,9 @@ public :
 
     QStringList availableLabels;
 
-    medListWidget *labelList;
+    medLabelsVisibilityParameter * labelsParameter;
+
+    //medListWidget *labelList;
     QList<double*> * listColors;
 
     QList<QPair<QString,int>> listAllAnatomicalLabels;
@@ -54,16 +57,11 @@ medMeshVisibilityMenu::medMeshVisibilityMenu(QWidget * parent) : QPushButton(par
     d->subPopupWidget->setGraphicsEffect(shadowEffect2);
 #endif
 
-    d->labelList = new medListWidget;
-    d->labelList->setMouseTracking(true);
-    d->labelList->setAlternatingRowColors(true);
-    d->labelList->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
-
     connect(this, SIGNAL(clicked()), this, SLOT(showPopup()));
-
-    connect(d->labelList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(selectLabel(QListWidgetItem*)));
-    connect(d->labelList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightItem(QListWidgetItem*)));
-    connect(d->labelList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(selectItem(QListWidgetItem*)));
+    
+    d->labelsParameter = new medLabelsVisibilityParameter("MeshLabelsVisibility");
+    connect(d->labelsParameter, SIGNAL(labelChecked(QString)), this, SLOT(emitLabelChecked(QString)));
+    connect(d->labelsParameter, SIGNAL(labelUnchecked(QString)), this, SLOT(emitLabelUnchecked(QString)));
 
     QWidget *internalSubPopWidget = new QWidget;
     internalSubPopWidget->setObjectName("internalSubPopWidget");
@@ -75,9 +73,9 @@ medMeshVisibilityMenu::medMeshVisibilityMenu(QWidget * parent) : QPushButton(par
     QVBoxLayout *subPopUpLayout = new QVBoxLayout(internalSubPopWidget);
     subPopUpLayout->setContentsMargins(3,3,3,3);
     subPopUpLayout->setSpacing(3);
-    subPopUpLayout->addWidget(d->labelList);
+    subPopUpLayout->addWidget(d->labelsParameter->getWidget());
 
-    d->labelList->installEventFilter(this);
+    d->labelsParameter->getWidget()->installEventFilter(this);
     if(qApp->activeWindow())
       qApp->activeWindow()->installEventFilter(this);
 
@@ -111,65 +109,23 @@ medMeshVisibilityMenu::~medMeshVisibilityMenu()
 void medMeshVisibilityMenu::setAvailableLabels(QStringList labels)
 {
     d->availableLabels = labels;
-
-    d->labelList->clear();
-
-    QListWidgetItem * item = new QListWidgetItem("All");
-    //item->setSizeHint(QSize(item->sizeHint().width(), 20));
-    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-    item->setCheckState(Qt::Checked);
-    d->labelList->insertItem(0,item);
-
+    d->labelsParameter->clearWidget();
+    d->labelsParameter->addLabel("All",true);
+    
     int i = 1;
     foreach(QString label, labels)
     {
         double r = (double)(d->listColors->at(i-1)[0])*255;
         double g = (double)(d->listColors->at(i-1)[1])*255;
         double b = (double)(d->listColors->at(i-1)[2])*255;
-        QPixmap pix(15,15);
-        pix.fill(QColor(r,g,b,255));
-        QListWidgetItem * item = new QListWidgetItem(d->listAnatomicalLabelsForMesh[i-1].first);
-        //item->setSizeHint(QSize(50, 20));
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-        item->setCheckState(Qt::Checked);
-        item->setIcon(QIcon(pix));
-        d->labelList->insertItem(i,item);
+        d->labelsParameter->addLabel(d->listAnatomicalLabelsForMesh[i-1].first,true,QColor(r,g,b,255));
         i++;
     }
-    d->labelList->setMaximumHeight(300);
-    d->labelList->setMinimumWidth(300);
+    
     d->subPopupWidget->setMinimumWidth(300);
     d->subPopupWidget->setMaximumHeight(300);
 }
 
-void medMeshVisibilityMenu::selectLabel(QListWidgetItem *item)
-{
-    /*QString group = d->groupList->currentItem()->data(Qt::UserRole).toString();
-    bool groupChecked = d->groupList->currentItem()->checkState() == Qt::Checked;*/
-    QString label = item->text();
-
-    if(label == "All")
-    {
-        if(item->checkState() == Qt::Checked)
-          checkAllLabels(true);
-        else checkAllLabels(false);
-        return;
-    }
-    int i = d->labelList->row(item);
-    if(item->checkState() == Qt::Checked)
-    {
-        emit labelChecked(d->listAnatomicalLabelsForMesh[i-1].second);
-    }
-    else
-    {
-        emit labelUnchecked(d->listAnatomicalLabelsForMesh[i-1].second);
-
-        // a param has been unchecked, uncheck 'All' item
-        d->labelList->blockSignals(true);
-        d->labelList->item(0)->setCheckState(Qt::Unchecked);
-        d->labelList->blockSignals(false);
-    }
-}
 
 void medMeshVisibilityMenu::showPopup()
 {
@@ -179,7 +135,7 @@ void medMeshVisibilityMenu::showPopup()
 
         d->subPopupWidget->move( globalPos.x(), globalPos.y() + this->height());
 
-        d->subPopupWidget->resize(d->subPopupWidget->width(), d->labelList->sizeHint().height());
+        d->subPopupWidget->resize(d->subPopupWidget->width(), d->labelsParameter->getWidget()->sizeHint().height());
         d->subPopupWidget->show();
     }
     else
@@ -226,52 +182,18 @@ bool medMeshVisibilityMenu::eventFilter(QObject *object, QEvent *event)
     {
         hideMenus();
     }
-    else if(object == d->labelList && event->type() == QEvent::Leave)
+    else if(object == d->labelsParameter->getWidget() && event->type() == QEvent::Leave)
     {
-        d->labelList->clearSelection();
+        static_cast<medListWidget*>(d->labelsParameter->getWidget())->clearSelection();
     }
 
     return false;
-
 }
 
 void medMeshVisibilityMenu::updateListsPosition()
 {
     QPoint globalPos = mapToGlobal(QPoint(0,0));
     d->subPopupWidget->move( globalPos.x(), globalPos.y() + this->height());
-}
-
-void medMeshVisibilityMenu::highlightItem(QListWidgetItem *item)
-{
-    item->setSelected(true);
-}
-
-void medMeshVisibilityMenu::checkAllLabels(bool check)
-{
-    for(int i=0; i<d->labelList->count(); i++)
-    {
-        QListWidgetItem *item = d->labelList->item(i);
-        if(check)
-        {
-            item->setCheckState(Qt::Checked);
-        }
-        else
-        {
-            item->setCheckState(Qt::Unchecked);
-        }
-    }
-}
-
-void medMeshVisibilityMenu::selectItem(QListWidgetItem *item)
-{
-    if(item->checkState() == Qt::Checked)
-    {
-        item->setCheckState(Qt::Unchecked);
-    }
-    else
-    {
-        item->setCheckState(Qt::Checked);
-    }
 }
 
 void medMeshVisibilityMenu::setLabels(QList<double*> * listValues)
@@ -288,6 +210,30 @@ void medMeshVisibilityMenu::setLabels(QList<double*> * listValues)
     this->setAvailableLabels(d->availableLabels);
 }
 
+void medMeshVisibilityMenu::emitLabelChecked(QString label)
+{
+    for(int i=0;i<d->listAnatomicalLabelsForMesh.count();i++)
+    {
+        if (d->listAnatomicalLabelsForMesh[i].first==label)
+        {
+            emit labelChecked(d->listAnatomicalLabelsForMesh[i].second);
+            return;
+        }
+    }
+}
+
+void medMeshVisibilityMenu::emitLabelUnchecked(QString label)
+{
+    for(int i=0;i<d->listAnatomicalLabelsForMesh.count();i++)
+    {
+        if (d->listAnatomicalLabelsForMesh[i].first==label)
+        {
+            emit labelUnchecked(d->listAnatomicalLabelsForMesh[i].second);
+            return;
+        }
+    }
+}
+
 void medMeshVisibilityMenu::setAnatomicalLabelsForMesh(QList<QPair<QString,int> > list )
 {
     d->listAnatomicalLabelsForMesh = list;
@@ -302,3 +248,93 @@ QList<QPair<QString,int> > medMeshVisibilityMenu::getAnatomicalLabelsForMesh()
 {
     return d->listAnatomicalLabelsForMesh;
 }
+
+medLabelsVisibilityParameter * medMeshVisibilityMenu::getLabelsParameter()
+{
+    return d->labelsParameter;
+}
+
+///////////////////////////////////medLabelsVisibilityParameter//////////////////////////////
+//
+//void medLabelsVisibilityParameter::setValues(const QHash<QString, bool> value)
+//{
+//    QHash<QString, QVariant>::const_iterator valuesIterator = value.constBegin();
+//    bool valueUpdated = false;
+//
+//    while (valuesIterator != value.constEnd())
+//    {
+//        QString key = valuesIterator.key();
+//        if (!d->variants.contains(key))
+//        {
+//            valuesIterator++;
+//            continue;
+//        }
+//
+//        if(d->variants[key].type() == QVariant::Double)
+//        {
+//            double previousValue = d->variants[key].toDouble();
+//
+//            if(valuesIterator.value().toDouble() < d->ranges.value(key).first.toDouble())
+//                d->variants[key] = d->ranges.value(key).first;
+//            else if(valuesIterator.value().toDouble() > d->ranges.value(key).second.toDouble())
+//                d->variants[key] = d->ranges.value(key).second;
+//            else
+//                d->variants[key] = valuesIterator.value();
+//
+//            if( previousValue != d->variants[key] )
+//                valueUpdated = true;
+//        }
+//        else if(d->variants[key].type() == QVariant::Int)
+//        {
+//            int previousValue = d->variants[key].toInt();
+//
+//            if(valuesIterator.value().toInt() < d->ranges.value(key).first.toInt())
+//                d->variants[key] = d->ranges.value(key).first;
+//            else if(valuesIterator.value().toInt() > d->ranges.value(key).second.toInt())
+//                d->variants[key] = d->ranges.value(key).second;
+//            else
+//                d->variants[key] = valuesIterator.value();
+//
+//            if( previousValue != d->variants[key] )
+//                valueUpdated = true;
+//        }
+//        else
+//        {
+//            d->variants[key] = valuesIterator.value();
+//            valueUpdated = true;
+//        }
+//
+//        valuesIterator++;
+//    }
+//
+//    if(!valueUpdated)
+//        return;
+//
+//    //  update intern widget
+//    this->blockInternWidgetsSignals(true);
+//    this->updateInternWigets();
+//    this->blockInternWidgetsSignals(false);
+//
+//    emit valuesChanged(d->variants);
+//}
+//
+//void medLabelsVisibilityParameter::updateInternWigets()
+//{
+//    QHash<QString, QVariant>::const_iterator i = d->variants.constBegin();
+//    while (i != d->variants.constEnd())
+//    {
+//        QString name = i.key();
+//        QVariant var = i.value();
+//        QWidget* widget = d->widgets.value(name);
+//
+//        if(QCheckBox *checkbox = qobject_cast<QCheckBox*>(widget))
+//            checkbox->setChecked(var.toBool());
+//        else if(QSpinBox *spinBox = qobject_cast<QSpinBox*>(widget))
+//            spinBox->setValue(var.toInt());
+//        else if(QDoubleSpinBox *doubleSpinBox = qobject_cast<QDoubleSpinBox*>(widget))
+//            doubleSpinBox->setValue(var.toDouble());
+//
+//        ++i;
+//    }
+//}
+//

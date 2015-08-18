@@ -63,6 +63,7 @@ public:
     QList <medToolBox*> toolBoxes() const;
     QList <bool> * toolBoxesVisibilityList() const;
     medToolBox* selectionToolBox() const;
+    medToolBox * mouseInteractionToolBox() const;
     void setDatabaseVisibility(bool);
     bool isDatabaseVisible() const;
     void setToolBoxesVisibility(bool);
