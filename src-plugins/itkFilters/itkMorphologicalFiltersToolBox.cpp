@@ -59,6 +59,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     qDebug() << "itkMorphologicalFiltersToolBox";
     //Filters selection combobox
     d->filters = new QComboBox;
+    d->filters->setObjectName("Dilate");
     QStringList filtersList;
     filtersList << "Dilate "
                 << "Erode "
@@ -79,6 +80,8 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->kernelSize = new QSpinBox;
     d->kernelSize->setMaximum ( 10 );
     d->kernelSize->setValue ( 1 );
+    d->kernelSize->setObjectName("kernelSize");
+
     QLabel * morphoFilterLabel = new QLabel ( tr ( "Kernel radius:" ) );
     QHBoxLayout * morphoFilterLayout = new QHBoxLayout;
     d->mmButton = new QRadioButton(tr("mm"), this);
