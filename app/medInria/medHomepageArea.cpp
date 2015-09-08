@@ -23,6 +23,7 @@
 #include <medSettingsManager.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
+#include <dtkComposer/dtkComposerWidget.h>
 
 
 class medHomepageAreaPrivate
@@ -40,6 +41,7 @@ public:
 
     QWidget * aboutWidget;
     QTabWidget * aboutTabWidget;
+
     QWidget * pluginWidget;
     QWidget * settingsWidget;
     medSettingsEditor* settingsEditor;
@@ -68,6 +70,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutWidget->setMinimumSize(400,300);
 
     d->aboutWidget->hide();
+
 
 
     //User widget content with settings, about and help buttons
@@ -262,8 +265,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsLayout->addWidget(d->settingsEditor);
     settingsLayout->addLayout(settingsHideButtonLayout);
 
-
-
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
@@ -390,6 +391,19 @@ void medHomepageArea::initPage()
             button->setToolTip("No useful plugin has been found for this workspace.");
         }
     }
+
+    medHomepageButton * button = new medHomepageButton ( this );
+    button->setText ("Composer");
+    button->setFocusPolicy ( Qt::NoFocus );
+    button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    button->setMinimumHeight ( 40 );
+    button->setMaximumWidth ( 250 );
+    button->setMinimumWidth ( 250 );
+    button->setToolTip("Opens the composer workspace");
+    button->setIdentifier("composer");
+    workspaceButtonsLayout->addWidget ( button );
+    QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowComposer() ) );
+
     workspaceButtonsLayout->addStretch();
     d->navigationWidget->setLayout ( workspaceButtonsLayout );
     d->navigationWidget->setProperty ( "pos", QPoint ( 100,  100 ) );
@@ -430,6 +444,11 @@ void medHomepageArea::onShowInfo()
 {
     d->stackedWidget->setCurrentWidget(d->infoWidget);
     d->infoWidget->setFocus();
+}
+
+void medHomepageArea::onShowComposer()
+{
+    emit showComposer();
 }
 
 void medHomepageArea::onShowHelp()

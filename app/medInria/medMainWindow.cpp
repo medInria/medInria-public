@@ -19,6 +19,7 @@
 #include <medBrowserArea.h>
 #include <medWorkspaceArea.h>
 #include <medHomepageArea.h>
+#include <medComposerArea.h>
 
 #include <medTabbedViewContainers.h>
 
@@ -38,6 +39,8 @@
 #include <medWorkspaceFactory.h>
 #include <medAbstractWorkspace.h>
 #include <medVisualizationWorkspace.h>
+
+#include <dtkComposerWidget.h>
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
@@ -74,6 +77,7 @@ public:
     QWidget *currentArea;
 
     QStackedWidget*           stack;
+    medComposerArea*        composerArea;
     medBrowserArea*           browserArea;
     medWorkspaceArea*         workspaceArea;
     medHomepageArea*          homepageArea;
@@ -131,11 +135,16 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea = new medHomepageArea( this );
     d->homepageArea->setObjectName("medHomePageArea");
 
+    //Composer
+    d->composerArea=new medComposerArea(this);
+    d->composerArea->setObjectName("medComposerArea");
+
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
+    d->stack->addWidget(d->composerArea);
 
     //  Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
@@ -178,7 +187,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
     d->quitButton->setToolTip(tr("Close medInria"));
 
-    //  Setup Fullscreen Button
+    //  Setup Fullscreen Button    medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
+
     QIcon fullscreenIcon ;
     fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
     fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
@@ -259,6 +269,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea->initPage();
     connect(d->homepageArea, SIGNAL(showBrowser()), this, SLOT(switchToBrowserArea()));
     connect(d->homepageArea, SIGNAL(showWorkspace(QString)), this, SLOT(showWorkspace(QString)));
+    connect(d->homepageArea, SIGNAL(showComposer()), this, SLOT(showComposer()));
+
 
     this->setCentralWidget ( d->stack );
     this->setWindowTitle("medInria");
@@ -298,7 +310,8 @@ void medMainWindow::restoreSettings()
     this->restoreGeometry(mnger->value("medMainWindow", "geometry").toByteArray());
 }
 
-void medMainWindow::saveSettings() {
+void medMainWindow::saveSettings()
+{
     if(!this->isFullScreen())
     {
         medSettingsManager * mnger = medSettingsManager::instance();
@@ -343,6 +356,11 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
     case medMainWindow::WorkSpace:
         this->switchToWorkspaceArea();
         break;
+
+    case medMainWindow::Composer:
+        this->switchToComposerArea();
+        break;
+
     default:
         this->switchToHomepageArea();
         break;
@@ -552,6 +570,29 @@ void medMainWindow::switchToWorkspaceArea()
     }
 }
 
+void medMainWindow::switchToComposerArea()
+{
+    if(d->currentArea == d->composerArea)
+        return;
+
+    d->currentArea = d->composerArea;
+
+    d->shortcutAccessWidget->updateSelected("Composer");
+    d->quickAccessWidget->updateSelected("Composer");
+
+    d->quickAccessButton->setText(tr("Workspace: Composer"));
+    d->quickAccessButton->setMinimumWidth(170);
+    if (d->quickAccessWidget->isVisible())
+        this->hideQuickAccess();
+
+    if (d->shortcutAccessVisible)
+        this->hideShortcutAccess();
+
+    d->screenshotButton->setEnabled(false);
+    d->adjustSizeButton->setEnabled(false);
+    d->stack->setCurrentWidget(d->composerArea);
+}
+
 void medMainWindow::showWorkspace(QString workspace)
 {
     d->quickAccessButton->setMinimumWidth(170);
@@ -563,6 +604,16 @@ void medMainWindow::showWorkspace(QString workspace)
     d->shortcutAccessWidget->updateSelected(workspace);
     d->quickAccessWidget->updateSelected(workspace);
     d->workspaceArea->setCurrentWorkspace(workspace);
+
+    this->hideQuickAccess();
+    this->hideShortcutAccess();
+}
+
+void medMainWindow::showComposer()
+{
+    d->quickAccessButton->setMinimumWidth(170);
+
+    this->switchToComposerArea();
 
     this->hideQuickAccess();
     this->hideShortcutAccess();

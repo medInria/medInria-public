@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/json">
+        <file>medGenericReaderNode.json</file>
+        <file>medImageReaderNode.json</file>
+        <file>medMeshReaderNode.json</file>
+        <file>medGenericWriterNode.json</file>
+    </qresource>
+</RCC>
