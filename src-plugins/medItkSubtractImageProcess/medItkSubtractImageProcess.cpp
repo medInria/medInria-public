@@ -120,5 +120,5 @@ void medItkSubtractImageProcess::_run()
 
 void medItkSubtractImageProcess::cancel()
 {
-    dtkTrace() << "No way to cancell medItkSubtractImageProcess.";
+    dtkTrace() << "No way to cancell " << this->name();
 }

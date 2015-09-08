@@ -13,13 +13,17 @@
 
 #include <medAbstractProcess.h>
 
-#include <medAbstractParameter.h>
 #include <QMap>
+#include <QThreadPool>
+#include <QPushButton>
+
+#include <medAbstractParameter.h>
 
 class medAbstractProcessPrivate
 {
 public:
     QMap<QString, medAbstractParameter*> parameters;
+    QStringList tags;
 };
 
 medAbstractProcess::medAbstractProcess(QObject *parent): QObject(parent),
@@ -49,4 +53,28 @@ medAbstractParameter* medAbstractProcess::parameter(QString name) const
 QList<medAbstractParameter*> medAbstractProcess::parameters() const
 {
     return d->parameters.values();
+}
+
+void medAbstractProcess::addTags(QStringList tags)
+{
+    d->tags << tags;
+}
+
+QStringList medAbstractProcess::tags() const
+{
+    return d->tags;
+}
+
+QPushButton* medAbstractProcess::runButton() const
+{
+    QPushButton *runButton = new QPushButton(tr("Run"));
+    connect(runButton, &QPushButton::clicked,
+            this, &medAbstractProcess::runInThread);
+
+    return runButton;
+}
+
+void medAbstractProcess::runInThread()
+{
+    QThreadPool::globalInstance()->start(this);
 }
