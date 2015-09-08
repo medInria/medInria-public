@@ -15,8 +15,10 @@
 
 #include <QObject>
 #include <QRunnable>
+#include <QPushButton>
 
 class medAbstractParameter;
+class medViewContainerSplitter;
 
 class medAbstractProcessPrivate;
 
@@ -30,6 +32,21 @@ public:
     void addParameter(medAbstractParameter *parameter);
     medAbstractParameter* parameter(QString name) const;
     QList<medAbstractParameter*> parameters() const;
+
+    virtual QString name() const = 0;
+    virtual QString description() const = 0;
+    virtual QString version() const = 0;
+
+    virtual QWidget* toolbox() const = 0;
+    virtual medViewContainerSplitter* viewContainerSplitter() const = 0;
+
+    QPushButton* runButton() const;
+
+    void addTags(QStringList tags);
+    QStringList tags() const;
+
+protected slots:
+    void runInThread();
 
 public:
     virtual void cancel() = 0;

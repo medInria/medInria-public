@@ -16,7 +16,7 @@
 #include <dtkCore/dtkCorePluginManager.h>
 #include <dtkCore/dtkCorePlugin.h>
 
-#include <medAbstractSubtractImageProcessPresenter.h>
+#include <medAbstractSubtractImageProcess.h>
 
 class medAbstractSubtractImageProcessPlugin : public QObject
 {
@@ -25,12 +25,10 @@ class medAbstractSubtractImageProcessPlugin : public QObject
 public:
     medAbstractSubtractImageProcessPlugin(void)
     {
-
     }
 
     virtual ~medAbstractSubtractImageProcessPlugin(void)
     {
-
     }
 
 public:
@@ -38,9 +36,9 @@ public:
     virtual void uninitialize(void) = 0;
 };
 
-Q_DECLARE_INTERFACE(medAbstractSubtractImageProcessPlugin, DTK_DECLARE_PLUGIN_INTERFACE(medAbstractSubtractImageProcessPresenter))
+Q_DECLARE_INTERFACE(medAbstractSubtractImageProcessPlugin, DTK_DECLARE_PLUGIN_INTERFACE(medAbstractSubtractImageProcess))
 
-class medAbstractSubtractImageProcessPluginFactory : public dtkCorePluginFactory<medAbstractSubtractImageProcessPresenter>
+class medAbstractSubtractImageProcessPluginFactory : public dtkCorePluginFactory<medAbstractSubtractImageProcess>
 {
 };
 
