@@ -16,6 +16,7 @@
 #include <medAbstractProcess.h>
 
 class medAbstractImageData;
+class medViewContainerSplitter;
 
 class medAbstractArithmeticOperationProcessPrivate;
 class medAbstractArithmeticOperationProcess : public medAbstractProcess
@@ -33,8 +34,17 @@ public:
     medAbstractImageData* input2() const;
 
     medAbstractImageData* output() const;
+
+    virtual QWidget* toolbox() const;
+    virtual medViewContainerSplitter* viewContainerSplitter() const;
+
 protected:
     void setOutput(medAbstractImageData* data);
+
+private slots:
+    void _setInput1();
+    void _setInput2();
+    void _fillOutputContainer();
 
 private:
     medAbstractArithmeticOperationProcessPrivate* d;
