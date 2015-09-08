@@ -24,7 +24,6 @@
 #include <dtkComposerFactory.h>
 #include <dtkComposerGraph.h>
 
-#include <medSubtractImageProcessComposerFactoryExtension.h>
 
 #include <QGridLayout>
 

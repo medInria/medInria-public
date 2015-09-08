@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/composer">
-        <file>medSubtractImageProcessNode.json</file>
-    </qresource>
-</RCC>
