@@ -17,6 +17,7 @@
 //include nodes
 #include "medReaderNodeBase.h"
 #include "medWriterNodeBase.h"
+#include "medGaussianFilterNode.h"
 
 
 // ///////////////////////////////////////////////////////////////////
@@ -39,6 +40,8 @@ void medComposerFactoryExtension::extend(dtkComposerNodeFactory *factory)
     factory->record(":json/medImageReaderNode.json"  , dtkComposerNodeCreator< medImageReaderNode  >);
     factory->record(":json/medMeshReaderNode.json"   , dtkComposerNodeCreator< medMeshReaderNode   >);
     factory->record(":json/medGenericWriterNode.json"   , dtkComposerNodeCreator< medWriterNodeBase   >);
+
+    factory->record(":json/medGaussianFilterNode.json"   , dtkComposerNodeCreator< medGaussianFilterNode >);
 
 }
 

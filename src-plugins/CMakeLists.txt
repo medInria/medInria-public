@@ -63,6 +63,7 @@ set(PLUGIN_LIST
   undoRedoRegistration                      ON
   itkProcessRegistrationDiffeomorphicDemons ON
   medVtkView                                ON
+  meditkGaussianFilterPlugin                ON
   )   
 
 

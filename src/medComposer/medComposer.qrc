@@ -4,5 +4,6 @@
         <file>medImageReaderNode.json</file>
         <file>medMeshReaderNode.json</file>
         <file>medGenericWriterNode.json</file>
+        <file>medGaussianFilterNode.json</file>
     </qresource>
 </RCC>

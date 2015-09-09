@@ -64,10 +64,13 @@ template <typename T> inline void medReaderNodeBase<T>::run(void)
     }
     else
     {
-
         medAbstractData* data=medDataReaderWriter::read(d->pathRecv.data());
-        if(data!=NULL)
-            qDebug()<<data->identifier()<<data->description()<<data->name();
+        if(!data)
+        {
+            qWarning()<<"no data found";
+            return;
+        }
+
         T* specificData=dynamic_cast<T*>(data);
         if(specificData)
             d->outTypeEmt.setData(specificData);

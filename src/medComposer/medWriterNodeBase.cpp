@@ -41,7 +41,14 @@ void medWriterNodeBase::run(void)
     }
     else
     {
-        medDataReaderWriter::write(d->pathRecv.data(),d->dataRecv.data());
+        if(!d->dataRecv.data())
+        {
+            qWarning()<<Q_FUNC_INFO<<"no data to write";
+        }
+        if(medDataReaderWriter::write(d->pathRecv.data(),d->dataRecv.data()))
+            qDebug()<<"wrote data successfully at "<<d->pathRecv.data();
+        else
+            qDebug()<<"couldn't write: "<<d->pathRecv.data()<<d->dataRecv.data()->identifier();
     }
 }
 
