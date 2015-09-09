@@ -26,9 +26,7 @@ public:
     virtual void run();
     virtual void cancel();
 
-    virtual QString name() const {return "ITK divide image filter";}
-    virtual QString description() const {return "A filter using the ITK library to perform the division between tow images";}
-    virtual QString version() const {return "0.0.1";}
+    virtual medProcessDetails details() const;
 
 private:
     template <class inputType> void  _run();

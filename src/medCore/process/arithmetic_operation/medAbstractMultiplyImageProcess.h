@@ -18,5 +18,5 @@
 class medAbstractMultiplyImageProcess: public medAbstractArithmeticOperationProcess
 {
 public:
-    medAbstractMultiplyImageProcess(QObject* parent = NULL);
+    medAbstractMultiplyImageProcess(QObject *parent): medAbstractArithmeticOperationProcess(parent) {}
 };

@@ -63,8 +63,8 @@ void forceShow(medMainWindow& mainwindow )
 #endif
 }
 
-int main(int argc,char* argv[]) {
-
+int main(int argc,char* argv[])
+{
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
     // this needs to be done before creating the QApplication object, as per the

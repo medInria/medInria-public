@@ -1,0 +1,9 @@
+{
+          "title" : "Multiply images",
+           "kind" : "process",
+           "type" : "medAbstractMultiplyImageProcess",
+           "tags" : ["multiply","multiplication","arithmetic", "operation"],
+    "description" : "<p>Compute the multiplication of tow images</p>",
+         "inputs" : ["scalarImage", "scalarImage"],
+        "outputs" : ["scalarImage"]
+}

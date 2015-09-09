@@ -36,7 +36,8 @@ public:
     virtual void uninitialize(void) = 0;
 };
 
-Q_DECLARE_INTERFACE(medAbstractAddImageProcessPlugin, DTK_DECLARE_PLUGIN_INTERFACE(medAbstractAddImageProcess))
+Q_DECLARE_INTERFACE(medAbstractAddImageProcessPlugin,
+                    DTK_DECLARE_PLUGIN_INTERFACE(medAbstractAddImageProcess))
 
 class medAbstractAddImageProcessPluginFactory : public dtkCorePluginFactory<medAbstractAddImageProcess>
 {
