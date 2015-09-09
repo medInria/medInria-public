@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(medItkSubtractImageProcess)
+project(medItkMultiplyImageProcess)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
@@ -47,6 +47,7 @@ list_header_directories_to_include(${PROJECT_NAME}
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
+
 
 ## #############################################################################
 ## add library

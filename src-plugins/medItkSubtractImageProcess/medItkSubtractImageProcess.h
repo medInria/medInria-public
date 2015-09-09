@@ -26,9 +26,10 @@ public:
     virtual void run();
     virtual void cancel();
 
+    // TODO use what is in the json file ? - RDE
     virtual QString name() const {return "ITK subtract image filter";}
     virtual QString description() const {return "A filter using the ITK library to perform the subtraction between tow images";}
-    virtual QString version() const {return "1.0.0";}
+    virtual QString version() const {return "0.0.1";}
 
 private:
     template <class inputType> void  _run();

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medItkSubtractImageProcess.h>
+#include <medItkDivideImageProcess.h>
 
 #include <dtkLog>
 
@@ -19,26 +19,26 @@
 #include <medAbstractDataFactory.h>
 
 #include <itkImage.h>
-#include <itkSubtractImageFilter.h>
+#include <itkDivideImageFilter.h>
 
-class medItkSubtractImageProcessPrivate
+class medItkDivideImageProcessPrivate
 {
 public:
 
 };
 
-medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent): medAbstractSubtractImageProcess(parent),
-    d(new medItkSubtractImageProcessPrivate)
+medItkDivideImageProcess::medItkDivideImageProcess(QObject *parent): medAbstractDivideImageProcess(parent),
+    d(new medItkDivideImageProcessPrivate)
 {
 
 }
 
-medItkSubtractImageProcess::~medItkSubtractImageProcess()
+medItkDivideImageProcess::~medItkDivideImageProcess()
 {
 
 }
 
-void medItkSubtractImageProcess::run()
+void medItkDivideImageProcess::run()
 {
     if(this->input1() && this->input2())
     {
@@ -92,7 +92,7 @@ void medItkSubtractImageProcess::run()
 }
 
 template <class inputType>
-void medItkSubtractImageProcess::_run()
+void medItkDivideImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
     typedef itk::Image<float, 3> ImageFloatType;
@@ -106,7 +106,7 @@ void medItkSubtractImageProcess::_run()
         return;
     }
 
-    typedef itk::SubtractImageFilter<ImageType, ImageType, ImageFloatType> FilterType;
+    typedef itk::DivideImageFilter<ImageType, ImageType, ImageFloatType> FilterType;
     typename FilterType::Pointer filter = FilterType::New();
 
     filter->SetInput1(in1);
@@ -119,7 +119,7 @@ void medItkSubtractImageProcess::_run()
     emit success();
 }
 
-void medItkSubtractImageProcess::cancel()
+void medItkDivideImageProcess::cancel()
 {
     dtkTrace() << "No way to cancell " << this->name();
 }
