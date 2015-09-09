@@ -13,7 +13,10 @@
 
 #pragma once
 
+#include <medAbstractAddImageProcessPlugin.h>
 #include <medAbstractSubtractImageProcessPlugin.h>
+#include <medAbstractMultiplyImageProcessPlugin.h>
+#include <medAbstractDivideImageProcessPlugin.h>
 
 namespace medProcessLayer
 {
@@ -22,11 +25,35 @@ namespace medProcessLayer
         void initialize(const QString& path = QString());
     }
 
-    namespace subtractImage
+    namespace arithmeticalOperation
     {
-        medAbstractSubtractImageProcessPluginManager& pluginManager(void);
-        medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
-        void initialize(const QString& path);
+        namespace addImage
+        {
+            medAbstractAddImageProcessPluginManager& pluginManager(void);
+            medAbstractAddImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path);
 
+        }
+        namespace subtractImage
+        {
+            medAbstractSubtractImageProcessPluginManager& pluginManager(void);
+            medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path);
+
+        }
+        namespace multiplyImage
+        {
+            medAbstractMultiplyImageProcessPluginManager& pluginManager(void);
+            medAbstractMultiplyImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path);
+
+        }
+        namespace divideImage
+        {
+            medAbstractDivideImageProcessPluginManager& pluginManager(void);
+            medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path);
+
+        }
     }
 }

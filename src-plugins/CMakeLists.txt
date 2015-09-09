@@ -54,8 +54,10 @@ set(PLUGIN_LIST
   undoRedoRegistration                      ON
   itkProcessRegistrationDiffeomorphicDemons ON
   medVtkView                                ON
+  medItkAddImageProcess                     ON
   medItkSubtractImageProcess                ON
-  medComposerArea                           ON
+  medItkMultiplyImageProcess                ON
+  medItkDivideImageProcess                  ON
   )
 
 
