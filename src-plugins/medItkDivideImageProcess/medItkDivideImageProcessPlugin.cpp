@@ -11,19 +11,19 @@
 
 =========================================================================*/
 
-#include <medItkSubtractImageProcessPlugin.h>
+#include <medItkDivideImageProcessPlugin.h>
 
 #include <medProcessLayer.h>
-#include <medItkSubtractImageProcess.h>
+#include <medItkDivideImageProcess.h>
 
 
-void medItkSubtractImageProcessPlugin::initialize(void)
+void medItkDivideImageProcessPlugin::initialize(void)
 {
-    medProcessLayer::arithmeticalOperation::subtractImage::pluginFactory().record("medItkSubtractImageProcess",
-                                                                                  medItkSubtractImageProcessCreator);
+    medProcessLayer::arithmeticalOperation::divideImage::pluginFactory().record("medItkDivideImageProcess",
+                                                                                medItkDivideImageProcessCreator);
 }
 
-void medItkSubtractImageProcessPlugin::uninitialize(void)
+void medItkDivideImageProcessPlugin::uninitialize(void)
 {
 
 }
@@ -32,5 +32,5 @@ void medItkSubtractImageProcessPlugin::uninitialize(void)
 // Plugin meta data
 // ///////////////////////////////////////////////////////////////////
 
-DTK_DEFINE_PLUGIN(medItkSubtractImageProcess)
+DTK_DEFINE_PLUGIN(medItkDivideImageProcess)
 

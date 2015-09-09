@@ -31,31 +31,107 @@ namespace pluginManager
 //                realpath = linear_algebra_sparse_settings.value("plugins").toString();
 //                linear_algebra_sparse_settings.endGroup();
         }
-        medProcessLayer::subtractImage::initialize(realpath);
+        medProcessLayer::arithmeticalOperation::addImage::initialize(realpath);
+        medProcessLayer::arithmeticalOperation::subtractImage::initialize(realpath);
+        medProcessLayer::arithmeticalOperation::multiplyImage::initialize(realpath);
+        medProcessLayer::arithmeticalOperation::divideImage::initialize(realpath);
     }
 }
 
-namespace subtractImage
+
+namespace arithmeticalOperation
 {
-    namespace _private
+    namespace addImage
     {
-        medAbstractSubtractImageProcessPluginManager manager;
-        medAbstractSubtractImageProcessPluginFactory factory;
-    }
+        namespace _private
+        {
+            medAbstractAddImageProcessPluginManager manager;
+            medAbstractAddImageProcessPluginFactory factory;
+        }
 
-    medAbstractSubtractImageProcessPluginManager& pluginManager(void)
-    {
-        return _private::manager;
-    }
+        medAbstractAddImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
 
-    medAbstractSubtractImageProcessPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
+        medAbstractAddImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
 
-    void initialize(const QString& path)
+        void initialize(const QString& path)
+        {
+            pluginManager().initialize(path);
+        }
+    }
+    namespace subtractImage
     {
-        pluginManager().initialize(path);
+        namespace _private
+        {
+            medAbstractSubtractImageProcessPluginManager manager;
+            medAbstractSubtractImageProcessPluginFactory factory;
+        }
+
+        medAbstractSubtractImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+
+        medAbstractSubtractImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        void initialize(const QString& path)
+        {
+            pluginManager().initialize(path);
+        }
+    }
+    namespace multiplyImage
+    {
+        namespace _private
+        {
+            medAbstractMultiplyImageProcessPluginManager manager;
+            medAbstractMultiplyImageProcessPluginFactory factory;
+        }
+
+        medAbstractMultiplyImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+
+        medAbstractMultiplyImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        void initialize(const QString& path)
+        {
+            pluginManager().initialize(path);
+        }
+    }
+    namespace divideImage
+    {
+        namespace _private
+        {
+            medAbstractDivideImageProcessPluginManager manager;
+            medAbstractDivideImageProcessPluginFactory factory;
+        }
+
+        medAbstractDivideImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+
+        medAbstractDivideImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        void initialize(const QString& path)
+        {
+            pluginManager().initialize(path);
+        }
     }
 }
 

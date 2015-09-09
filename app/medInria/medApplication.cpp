@@ -193,8 +193,14 @@ void medApplication::initialize()
     defaultPath = plugins_dir.absolutePath();
 
     // process layer:
-    medProcessLayer::subtractImage::pluginManager().setVerboseLoading(true);
-    medProcessLayer::subtractImage::pluginManager().initialize(defaultPath);
+    medProcessLayer::arithmeticalOperation::addImage::pluginManager().setVerboseLoading(true);
+    medProcessLayer::arithmeticalOperation::addImage::pluginManager().initialize(defaultPath);
+    medProcessLayer::arithmeticalOperation::subtractImage::pluginManager().setVerboseLoading(true);
+    medProcessLayer::arithmeticalOperation::subtractImage::pluginManager().initialize(defaultPath);
+    medProcessLayer::arithmeticalOperation::multiplyImage::pluginManager().setVerboseLoading(true);
+    medProcessLayer::arithmeticalOperation::multiplyImage::pluginManager().initialize(defaultPath);
+    medProcessLayer::arithmeticalOperation::divideImage::pluginManager().setVerboseLoading(true);
+    medProcessLayer::arithmeticalOperation::divideImage::pluginManager().initialize(defaultPath);
 
     // gui layer:
     medGuiLayer::area::pluginManager().setVerboseLoading(true);

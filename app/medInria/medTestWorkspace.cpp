@@ -29,8 +29,8 @@ public:
 
 medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
 {
-    foreach(QString key, medProcessLayer::subtractImage::pluginFactory().keys())
-        d->process = medProcessLayer::subtractImage::pluginFactory().create(key);
+    foreach(QString key, medProcessLayer::arithmeticalOperation::subtractImage::pluginFactory().keys())
+        d->process = medProcessLayer::arithmeticalOperation::subtractImage::pluginFactory().create(key);
     this->addToolBox(dynamic_cast<medToolBox*>(d->process->toolbox()));
 }
 
