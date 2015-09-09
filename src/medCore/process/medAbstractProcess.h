@@ -20,8 +20,14 @@
 class medAbstractParameter;
 class medViewContainerSplitter;
 
-class medAbstractProcessPrivate;
+struct medProcessDetails
+{
+    QString name;
+    QString version;
+    QStringList dependences;
+};
 
+class medAbstractProcessPrivate;
 class medAbstractProcess: public QObject, public QRunnable
 {
     Q_OBJECT
@@ -33,9 +39,7 @@ public:
     medAbstractParameter* parameter(QString name) const;
     QList<medAbstractParameter*> parameters() const;
 
-    virtual QString name() const = 0;
-    virtual QString description() const = 0;
-    virtual QString version() const = 0;
+    virtual medProcessDetails details() const = 0;
 
     virtual QWidget* toolbox() const = 0;
     virtual medViewContainerSplitter* viewContainerSplitter() const = 0;

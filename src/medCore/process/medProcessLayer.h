@@ -17,9 +17,12 @@
 #include <medAbstractSubtractImageProcessPlugin.h>
 #include <medAbstractMultiplyImageProcessPlugin.h>
 #include <medAbstractDivideImageProcessPlugin.h>
+#include <medAbstractProcess.h>
 
 namespace medProcessLayer
 {
+    medProcessDetails readDetailsFromJson(QString const& filePath);
+
     namespace pluginManager
     {
         void initialize(const QString& path = QString());

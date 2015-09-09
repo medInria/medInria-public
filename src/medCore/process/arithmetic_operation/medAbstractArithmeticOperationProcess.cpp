@@ -79,7 +79,7 @@ void medAbstractArithmeticOperationProcess::setOutput(medAbstractImageData *data
 QWidget* medAbstractArithmeticOperationProcess::toolbox() const
 {
     medToolBox* tb = new medToolBox;
-    tb->setTitle(this->name());
+    tb->setTitle(this->details().name);
     tb->addWidget(this->runButton());
 
     return tb;
