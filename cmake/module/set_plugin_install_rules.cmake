@@ -12,7 +12,7 @@
 ################################################################################
 
 macro(set_plugin_install_rules
-  project_name
+  target
   )
 
 ################################################################################
@@ -22,11 +22,12 @@ macro(set_plugin_install_rules
 #
 ################################################################################
 
+set_target_properties(${target} PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/
+  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/
+  )
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
-
-install(TARGETS ${project_name}
+install(TARGETS ${target}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
   ARCHIVE DESTINATION lib
