@@ -15,27 +15,33 @@
 
 #include <dtkLog>
 
-#include <medAbstractImageData.h>
-#include <medAbstractDataFactory.h>
-
 #include <itkImage.h>
 #include <itkAddImageFilter.h>
+
+#include <medAbstractImageData.h>
+#include <medAbstractDataFactory.h>
+#include <medProcessLayer.h>
 
 class medItkAddImageProcessPrivate
 {
 public:
-
+    medProcessDetails details;
 };
 
 medItkAddImageProcess::medItkAddImageProcess(QObject *parent): medAbstractAddImageProcess(parent),
     d(new medItkAddImageProcessPrivate)
 {
-
+    d->details = medProcessLayer::readDetailsFromJson(":/medItkAddImageProcessPlugin.json");
 }
 
 medItkAddImageProcess::~medItkAddImageProcess()
 {
 
+}
+
+medProcessDetails medItkAddImageProcess::details() const
+{
+    return d->details;
 }
 
 void medItkAddImageProcess::run()
@@ -120,5 +126,5 @@ void medItkAddImageProcess::_run()
 
 void medItkAddImageProcess::cancel()
 {
-    dtkTrace() << "No way to cancell " << this->name();
+    dtkTrace() << "No way to cancell " << d->details.name;
 }

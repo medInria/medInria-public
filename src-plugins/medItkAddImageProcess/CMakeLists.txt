@@ -54,8 +54,14 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## #############################################################################
 
 
+qt5_add_resources(${PROJECT_NAME}_QRC
+  ${${PROJECT_NAME}_QRC}
+  )
+
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_QRC}
   )
 
 

@@ -89,7 +89,6 @@ foreach(dir ${ARGV})
     ${${project_name}_HEADERS}
     ${${project_name}_SOURCES}
     ${${project_name}_TEMPLATES}
-    ${${project_name}_QRC}
     ${${project_name}_CFILES}
     )
 

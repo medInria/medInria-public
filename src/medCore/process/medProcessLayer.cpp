@@ -17,6 +17,41 @@
 
 namespace medProcessLayer
 {
+
+medProcessDetails readDetailsFromJson(const QString &filePath)
+{
+    medProcessDetails details;
+
+    QFile file(filePath);
+    if(!file.open(QFile::ReadOnly))
+    {
+        dtkDebug() << Q_FUNC_INFO
+                   << "Unable to read file" << filePath;
+        return details;
+    }
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
+    if (jsonDoc.isEmpty())
+    {
+        dtkDebug() << Q_FUNC_INFO
+                   << "Json document" << filePath << "is empty. Unable to create json object.";
+        return details;
+    }
+
+    QJsonObject json = jsonDoc.object();
+
+    details.name = json.value(QString("name")).toString();
+    details.version = json.value(QString("version")).toString();
+
+    QVariantList dependencies = json.value(QString("dependencies")).toArray().toVariantList();
+    for(const QVariant& dep : dependencies)
+        details.dependences << dep.toString();
+
+    file.close();
+
+    return details;
+}
+
 namespace pluginManager
 {
     void initialize(const QString& path)
