@@ -22,6 +22,10 @@ macro(set_exe_install_rules
 #
 ################################################################################
 
+set_target_properties(${target} PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/
+  )
+
 install(TARGETS ${target}
   RUNTIME DESTINATION bin
   BUNDLE  DESTINATION bin
@@ -48,7 +52,7 @@ if (APPLE)
     "Version ${${target}_VERSION}"
     )
   set(${target}_RESOURCE_DIR
-    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.app/Contents/Resources
+    ${CMAKE_BINARY_DIR}/bin/${target}.app/Contents/Resources
     )
   add_custom_command(TARGET ${target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${target}_RESOURCE_DIR}

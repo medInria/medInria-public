@@ -36,9 +36,6 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 ## list plugins
 ## #############################################################################
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/)
-
 ## ADD here any new plugin with a default compilation value,
 ## you want to include in the build,
 set(PLUGIN_LIST
