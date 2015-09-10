@@ -1,3 +1,10 @@
+medInria v2.2.3:
+- Fix registration of images encoded in unsigned short
+- Add a colormap for label images
+- Fix rare window-level crash
+- Fix rare thumbnail creation crash
+- Various bugs corrections
+
 medInria v2.2.2:
 - Minimum CMake version is now 2.8.10, as it corrects problem with automoc
 - Window/Level sliders are now expressed as Min/Max for easier manipulation
