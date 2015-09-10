@@ -13,7 +13,7 @@ class medGaussianFilterNodePrivate;
 //
 // ///////////////////////////////////////////////////////////////////
 
-class medGaussianFilterNode : public dtkComposerNodeLeaf
+class medGaussianFilterNode : public dtkComposerNodeObject<medAbstractGaussianFilter>
 {
 public:
      medGaussianFilterNode(void);

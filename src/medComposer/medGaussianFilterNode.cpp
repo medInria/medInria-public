@@ -17,8 +17,10 @@ public:
     dtkComposerTransmitterEmitter< medAbstractImageData* >      imgEmt;
 };
 
-medGaussianFilterNode::medGaussianFilterNode(void) : d(new medGaussianFilterNodePrivate())
+medGaussianFilterNode::medGaussianFilterNode(void) : dtkComposerNodeObject<medAbstractGaussianFilter>(), d(new medGaussianFilterNodePrivate())
 {
+    this->setFactory(medCore::filtering::gaussian::pluginFactory());
+
     this->appendReceiver(&d->sigmaRecv);
     this->appendReceiver(&d->imgRecv);
     
@@ -39,14 +41,10 @@ void medGaussianFilterNode::run(void)
     }
     else
     {
-        QStringList pluginsKeys=medCore::filtering::gaussian::pluginFactory().keys();
 
-        if(pluginsKeys.isEmpty())
-        {
-            qDebug()<<"no filtering plugin found";
+        medAbstractGaussianFilter* filter = this->object();
+        if(!this->object())
             return;
-        }
-        medAbstractGaussianFilter* filter=medCore::filtering::gaussian::pluginFactory().create(pluginsKeys.at(0));
         filter->setData(d->imgRecv.data());
         filter->setSigma(d->sigmaRecv.data());
         filter->run();
