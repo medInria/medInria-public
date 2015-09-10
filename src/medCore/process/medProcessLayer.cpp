@@ -52,7 +52,7 @@ medProcessDetails readDetailsFromJson(const QString &filePath)
 
 namespace pluginManager
 {
-    void initialize(const QString& path)
+    void initialize(const QString& path, bool verbose)
     {
         QString realpath=path;
         if (path.isEmpty())
@@ -92,8 +92,10 @@ namespace arithmeticalOperation
             return _private::factory;
         }
 
-        void initialize(const QString& path)
+        void initialize(const QString& path, bool verbose)
         {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
             pluginManager().initialize(path);
         }
     }
@@ -115,8 +117,10 @@ namespace arithmeticalOperation
             return _private::factory;
         }
 
-        void initialize(const QString& path)
+        void initialize(const QString& path, bool verbose)
         {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
             pluginManager().initialize(path);
         }
     }
@@ -138,8 +142,10 @@ namespace arithmeticalOperation
             return _private::factory;
         }
 
-        void initialize(const QString& path)
+        void initialize(const QString& path, bool verbose)
         {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
             pluginManager().initialize(path);
         }
     }
@@ -161,8 +167,10 @@ namespace arithmeticalOperation
             return _private::factory;
         }
 
-        void initialize(const QString& path)
+        void initialize(const QString& path, bool verbose)
         {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
             pluginManager().initialize(path);
         }
     }
