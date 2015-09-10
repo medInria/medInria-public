@@ -12,7 +12,7 @@
 ################################################################################
 
 macro(set_plugin_install_rules_legacy
-  project_name
+  target
   )
 
 ################################################################################
@@ -23,8 +23,11 @@ macro(set_plugin_install_rules_legacy
 ################################################################################
 
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/)
+set_target_properties(${target} PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
+  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
+  )
+
 
 install(TARGETS ${project_name}
   RUNTIME DESTINATION plugins_legacy

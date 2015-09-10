@@ -12,7 +12,7 @@
 ################################################################################
 
 macro(set_lib_install_rules
-  project_name
+  target
   headers_list
   )
 
@@ -25,15 +25,13 @@ macro(set_lib_install_rules
 #
 ################################################################################
 
-set(MEDINRIA_BINARY_DIR
-  ${${project_name}_BINARY_DIR}/lib
-  ${MEDINRIA_BINARY_DIR}
+
+set_target_properties(${target} PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/
+  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/
   )
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
-
-install(TARGETS ${project_name}
+install(TARGETS ${target}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
@@ -46,9 +44,9 @@ install(TARGETS ${project_name}
 
 if(${ARGC} GREATER 1)
   set(headers ${ARGV})
-  list(REMOVE_ITEM headers ${project_name})
+  list(REMOVE_ITEM headers ${target})
   install(FILES ${headers}
-    DESTINATION include/${project_name}
+    DESTINATION include/${target}
     )
 endif()
 
