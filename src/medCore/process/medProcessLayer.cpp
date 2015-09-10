@@ -13,8 +13,6 @@
 
 #include <medProcessLayer.h>
 
-#include <medAbstractSubtractImageProcessPlugin.h>
-
 namespace medProcessLayer
 {
 
