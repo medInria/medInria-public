@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(medInria)
+set(TARGET_NAME medInria)
 
 ## #############################################################################
 ## List Sources
@@ -23,7 +23,7 @@ add_subdirectory(resources)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
@@ -32,12 +32,12 @@ list_source_files(${PROJECT_NAME}
 ## #############################################################################
 
 ##  see cmake/module/list_header_directories_to_include.cmake
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
+  ${${PROJECT_NAME}_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -46,7 +46,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 
 if (EXISTS ${CMAKE_BINARY_DIR}/revisions/medRevisions.h)
   include_directories(${CMAKE_BINARY_DIR}/revisions)
-  add_definitions(-DMEDINRIA_HAS_REVISIONS)
+  add_definitions(-D${PROJECT_NAME}_HAS_REVISIONS)
 endif()
 
 
@@ -84,33 +84,33 @@ if (WIN32)
     set(DEPLOYMENT_SYSTEM WIN32)
   endif()
 
-  set(${PROJECT_NAME}_RC resources/medInria.rc)
+  set(${TARGET_NAME}_RC resources/medInria.rc)
 endif()
 
 ## #############################################################################
 ## Add Exe
 ## #############################################################################
 
-qt5_add_resources(${PROJECT_NAME}_QRC
-  ${${PROJECT_NAME}_QRC}
+qt5_add_resources(${TARGET_NAME}_QRC
+  ${${TARGET_NAME}_QRC}
   )
 
-add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
-  ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_QRC}
-  ${${PROJECT_NAME}_QSS} # Just to have it in EDI
-  ${${PROJECT_NAME}_RC}  # Empty for Unix
+add_executable(${TARGET_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
+  ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
+  ${${TARGET_NAME}_QSS} # Just to have it in EDI
+  ${${TARGET_NAME}_RC}  # Empty for Unix
   )
 
 if (APPLE)
-  set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
+  set_target_properties(${TARGET_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
 endif()
 
 ## #############################################################################
 ## Links.
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
   dtkCoreSupport
   dtkGuiSupport
@@ -120,13 +120,13 @@ target_link_libraries(${PROJECT_NAME}
   medPacs
   )
 
-qt5_use_modules(${PROJECT_NAME} Widgets)
-qt5_use_modules(${PROJECT_NAME} Core)
-qt5_use_modules(${PROJECT_NAME} Gui)
+qt5_use_modules(${TARGET_NAME} Widgets)
+qt5_use_modules(${TARGET_NAME} Core)
+qt5_use_modules(${TARGET_NAME} Gui)
 
 ## #############################################################################
 ## install
 ## #############################################################################
 
 ## see cmake/module/set_lib_install_rules.Cmake
-set_exe_install_rules(${PROJECT_NAME})
+set_exe_install_rules(${TARGET_NAME})

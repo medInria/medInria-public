@@ -11,9 +11,7 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 2.8.9)
-
-project(medVtkInria)
+set(TARGET_NAME medVtkInria)
 
 ## #############################################################################
 ## Find required
@@ -21,7 +19,6 @@ project(medVtkInria)
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
-
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -37,7 +34,7 @@ find_package(OpenGL REQUIRED)
 ## List sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   vtkDataManagement
   vtkImageView
@@ -111,53 +108,24 @@ shader_to_header(HWShading/shaders/BuildShadowMapLines.frag
 ## include directories.
 ## #############################################################################
 
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${Qt5Core_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
   ${medCoreLegacy_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_BINARY_DIR}/shaders
+  ${${TARGET_NAME}_BINARY_DIR}/shaders
   )
-
-
-## #############################################################################
-## Embed vtkInriaPch
-## #############################################################################
-
-if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
-  file(GLOB VTKINRIAPCH_H
-    vtkInriaPch/*.h
-    )
-
-  file(GLOB VTKINRIAPCH_CPP
-    vtkInriaPch/*.cpp
-    )
-endif()
-
-
-## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_PCH
-    ${VTKINRIAPCH_H}
-    ${VTKINRIAPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
-    )
-endif()
 
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_PCH}
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
   )
 
 
@@ -165,7 +133,7 @@ add_library(${PROJECT_NAME} SHARED
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
   ${OPENGL_LIBRARIES}
   ITKIOImageBase
   ITKIOBMP
@@ -209,14 +177,14 @@ target_link_libraries(${PROJECT_NAME}
 ## install
 ## #############################################################################
 
-set_lib_install_rules(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+set_lib_install_rules(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
 ## #############################################################################
 ## Build tests
 ## #############################################################################
 
-if(MEDINRIA_BUILD_TESTS)
+if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
 endif()

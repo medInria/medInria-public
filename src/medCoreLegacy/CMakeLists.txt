@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(medCoreLegacy)
+set(TARGET_NAME medCoreLegacy)
 
 #required for querying the GPU, can be removed once using Qt 5.3
 #using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
@@ -21,7 +21,7 @@ find_package(OpenGL REQUIRED)
 ## List Sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   data
   database
@@ -41,32 +41,31 @@ list_source_files(${PROJECT_NAME}
   parameters
   )
 
-set(${PROJECT_NAME}_QRC resources/medCore.qrc)
+set(${TARGET_NAME}_QRC resources/medCore.qrc)
 
 ## #############################################################################
 ## include directories.
 ## #############################################################################
 
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   ${QT_HEADERS}
 
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS})
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-qt5_add_resources(${PROJECT_NAME}_QRC
-  ${${PROJECT_NAME}_QRC}
+qt5_add_resources(${TARGET_NAME}_QRC
+  ${${TARGET_NAME}_QRC}
   )
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_QRC}
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
   )
 
 
@@ -74,7 +73,7 @@ add_library(${PROJECT_NAME} SHARED
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
     ${QT_LIBRARIES}
     ${OPENGL_LIBRARIES}
     dtkCoreSupport
@@ -83,7 +82,7 @@ target_link_libraries(${PROJECT_NAME}
     )
 
 if (WIN32) #TODO is that for the memory management thing ?
-  target_link_libraries(${PROJECT_NAME} psapi.lib)
+  target_link_libraries(${TARGET_NAME} psapi.lib)
 endif()
 
 
@@ -91,8 +90,8 @@ endif()
 ## install
 ## #############################################################################
 
-set_lib_install_rules(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+set_lib_install_rules(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
 
@@ -100,7 +99,7 @@ set_lib_install_rules(${PROJECT_NAME}
 ## Build tests
 ## #############################################################################
 
-if(MEDINRIA_BUILD_TESTS)
+if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
   #TODO: we will need to change the tests organization because of dependance to medTest...
   #add_subdirectory(gui/tests)

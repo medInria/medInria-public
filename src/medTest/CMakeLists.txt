@@ -11,13 +11,13 @@
 #
 ################################################################################
 
-project(medTest)
+set(TARGET_NAME medTest)
 
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
@@ -26,11 +26,11 @@ list_source_files(${PROJECT_NAME}
 ## include directorie.
 ## #############################################################################
 
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
     ${medCoreLegacy_INCLUDE_DIRS}
     )
 
@@ -39,8 +39,8 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CFILES}
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
   )
 
 
@@ -48,7 +48,7 @@ add_library(${PROJECT_NAME} SHARED
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
     ${QT_LIBRARIES}
     ${QT_QTTEST_LIBRARY}
     dtkCoreSupport
@@ -61,6 +61,6 @@ target_link_libraries(${PROJECT_NAME}
 ## install
 ## #############################################################################
 
-set_lib_install_rules(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+set_lib_install_rules(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )

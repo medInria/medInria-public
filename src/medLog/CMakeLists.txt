@@ -4,14 +4,14 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
 ################################################################################
 
-project(medLog)
+set(TARGET_NAME medLog)
 
 ## #############################################################################
 ## find requireds
@@ -34,7 +34,7 @@ include(${VTK_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
@@ -43,19 +43,19 @@ list_source_files(${PROJECT_NAME}
 ## include directorie.
 ## #############################################################################
 
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
-    
-    
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS})
+
+
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CFILES}
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
   )
 
 
@@ -63,9 +63,9 @@ add_library(${PROJECT_NAME} SHARED
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
-  dtkCoreSupport 
+  dtkCoreSupport
   dtkLog
   ITKCommon
   vtkCommonCore
@@ -75,6 +75,6 @@ target_link_libraries(${PROJECT_NAME}
 ## install
 ## #############################################################################
 
-set_lib_install_rules(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+set_lib_install_rules(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
