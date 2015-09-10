@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medAbstractAddImageProcessPlugin.h>
-#include <medAbstractSubtractImageProcessPlugin.h>
-#include <medAbstractMultiplyImageProcessPlugin.h>
-#include <medAbstractDivideImageProcessPlugin.h>
 #include <medAbstractProcess.h>
+#include <medAbstractAddImageProcess.h>
+#include <medAbstractSubtractImageProcess.h>
+#include <medAbstractMultiplyImageProcess.h>
+#include <medAbstractDivideImageProcess.h>
 
 namespace medProcessLayer
 {

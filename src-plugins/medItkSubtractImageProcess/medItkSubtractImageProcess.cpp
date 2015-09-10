@@ -28,7 +28,8 @@ public:
     medProcessDetails details;
 };
 
-medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent): medAbstractSubtractImageProcess(parent),
+medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent):
+    medAbstractSubtractImageProcess(parent),
     d(new medItkSubtractImageProcessPrivate)
 {
     d->details = medProcessLayer::readDetailsFromJson(":/medItkSubtractImageProcessPlugin.json");
