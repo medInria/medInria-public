@@ -4,34 +4,34 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
 ################################################################################
 
-project(medPluginGenerator)
+set(TARGET_NAME medPluginGenerator)
 
 ## #############################################################################
 ## Version
 ## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 
 ## #############################################################################
 ## Sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-set(${PROJECT_NAME}_UI
+set(${TARGET_NAME}_UI
   medPluginGeneratorMainWindow.ui
   )
 
-set(${PROJECT_NAME}_QRC
+set(${TARGET_NAME}_QRC
   template/template.qrc
   )
 
@@ -40,28 +40,28 @@ set(${PROJECT_NAME}_QRC
 ## include directorie.
 ## #############################################################################
 
-list_header_directories_to_include(${PROJECT_NAME}
-    ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+    ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
                     ${QT_HEADERS})
 
 ## #############################################################################
 ## Add Exe
 ## #############################################################################
 
-qt5_wrap_ui(${PROJECT_NAME}_UI ${${PROJECT_NAME}_UI})
-qt5_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+qt5_wrap_ui(${TARGET_NAME}_UI ${${TARGET_NAME}_UI})
+qt5_add_resources(${TARGET_NAME}_QRC ${${TARGET_NAME}_QRC})
 
 if (APPLE)
   set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)
 endif()
 
-add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM}
-  ${${PROJECT_NAME}_UI}
-  ${${PROJECT_NAME}_QRC}
-  ${${PROJECT_NAME}_CFILES}
+add_executable(${TARGET_NAME} ${DEPLOYMENT_SYSTEM}
+  ${${TARGET_NAME}_UI}
+  ${${TARGET_NAME}_QRC}
+  ${${TARGET_NAME}_CFILES}
   )
 
 
@@ -69,7 +69,7 @@ add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM}
 ## Links.
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
   )
 
@@ -78,13 +78,13 @@ target_link_libraries(${PROJECT_NAME}
 ## install
 ## #############################################################################
 
-set_exe_install_rules(${PROJECT_NAME})
+set_exe_install_rules(${TARGET_NAME})
 
 
 ## #############################################################################
 ## Build tests
 ## #############################################################################
 
-if(MEDINRIA_BUILD_TESTS)
+if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
