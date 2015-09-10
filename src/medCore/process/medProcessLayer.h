@@ -25,7 +25,7 @@ namespace medProcessLayer
 
     namespace pluginManager
     {
-        void initialize(const QString& path = QString());
+        void initialize(const QString& path = QString(), bool verbose = true);
     }
 
     namespace arithmeticalOperation
@@ -34,28 +34,28 @@ namespace medProcessLayer
         {
             medAbstractAddImageProcessPluginManager& pluginManager(void);
             medAbstractAddImageProcessPluginFactory& pluginFactory(void);
-            void initialize(const QString& path);
+            void initialize(const QString& path, bool verbose = true);
 
         }
         namespace subtractImage
         {
             medAbstractSubtractImageProcessPluginManager& pluginManager(void);
             medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
-            void initialize(const QString& path);
+            void initialize(const QString& path, bool verbose = true);
 
         }
         namespace multiplyImage
         {
             medAbstractMultiplyImageProcessPluginManager& pluginManager(void);
             medAbstractMultiplyImageProcessPluginFactory& pluginFactory(void);
-            void initialize(const QString& path);
+            void initialize(const QString& path, bool verbose = true);
 
         }
         namespace divideImage
         {
             medAbstractDivideImageProcessPluginManager& pluginManager(void);
             medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
-            void initialize(const QString& path);
+            void initialize(const QString& path, bool verbose = true);
 
         }
     }
