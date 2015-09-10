@@ -13,17 +13,17 @@
 
 #pragma once
 
-#include <medAbstractSubtractImageProcess.h>
+#include <medAbstractDivideImageProcess.h>
 
-class medItkSubtractImageProcessPlugin : public medAbstractSubtractImageProcessPlugin
+class medItkDivideImageProcessPlugin : public medAbstractDivideImageProcessPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(medAbstractSubtractImageProcessPlugin)
-    Q_PLUGIN_METADATA(IID "fr.inria.medItkSubtractImageProcessPlugin" FILE "medItkSubtractImageProcessPlugin.json")
+    Q_INTERFACES(medAbstractDivideImageProcessPlugin)
+    Q_PLUGIN_METADATA(IID "fr.inria.medItkDivideImageProcessPlugin" FILE "medItkDivideImageProcessPlugin.json")
 
 public:
-     medItkSubtractImageProcessPlugin(void) {}
-    virtual ~medItkSubtractImageProcessPlugin(void) {}
+     medItkDivideImageProcessPlugin(void) {}
+    virtual ~medItkDivideImageProcessPlugin(void) {}
 
 public:
     void initialize(void);

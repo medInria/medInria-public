@@ -11,41 +11,40 @@
 
 =========================================================================*/
 
-#include <medItkSubtractImageProcess.h>
+#include <medItkMultiplyImageProcess.h>
 
 #include <dtkLog>
 
 #include <itkImage.h>
-#include <itkSubtractImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
 #include <medProcessLayer.h>
 
-class medItkSubtractImageProcessPrivate
+class medItkMultiplyImageProcessPrivate
 {
 public:
     medProcessDetails details;
 };
 
-medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent):
-    medAbstractSubtractImageProcess(parent),
-    d(new medItkSubtractImageProcessPrivate)
+medItkMultiplyImageProcess::medItkMultiplyImageProcess(QObject *parent): medAbstractMultiplyImageProcess(parent),
+    d(new medItkMultiplyImageProcessPrivate)
 {
     d->details = medProcessLayer::readDetailsFromJson(":/medItkSubtractImageProcessPlugin.json");
 }
 
-medItkSubtractImageProcess::~medItkSubtractImageProcess()
+medItkMultiplyImageProcess::~medItkMultiplyImageProcess()
 {
 
 }
 
-medProcessDetails medItkSubtractImageProcess::details() const
+medProcessDetails medItkMultiplyImageProcess::details() const
 {
     return d->details;
 }
 
-void medItkSubtractImageProcess::run()
+void medItkMultiplyImageProcess::run()
 {
     if(this->input1() && this->input2())
     {
@@ -99,7 +98,7 @@ void medItkSubtractImageProcess::run()
 }
 
 template <class inputType>
-void medItkSubtractImageProcess::_run()
+void medItkMultiplyImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
     typedef itk::Image<float, 3> ImageFloatType;
@@ -113,7 +112,7 @@ void medItkSubtractImageProcess::_run()
         return;
     }
 
-    typedef itk::SubtractImageFilter<ImageType, ImageType, ImageFloatType> FilterType;
+    typedef itk::MultiplyImageFilter<ImageType, ImageType, ImageFloatType> FilterType;
     typename FilterType::Pointer filter = FilterType::New();
 
     filter->SetInput1(in1);
@@ -126,7 +125,7 @@ void medItkSubtractImageProcess::_run()
     emit success();
 }
 
-void medItkSubtractImageProcess::cancel()
+void medItkMultiplyImageProcess::cancel()
 {
     dtkTrace() << "No way to cancell " << d->details.name;
 }

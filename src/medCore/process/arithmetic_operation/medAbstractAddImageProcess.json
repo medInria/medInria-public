@@ -1,0 +1,9 @@
+{
+          "title" : "Add images",
+           "kind" : "process",
+           "type" : "medAbstractAddImageProcess",
+           "tags" : ["plus","add", "addition", "arithmetic", "operation"],
+    "description" : "<p>Compute the addition of tow images</p>",
+         "inputs" : ["scalarImage", "scalarImage"],
+        "outputs" : ["scalarImage"]
+}

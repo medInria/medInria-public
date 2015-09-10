@@ -11,41 +11,40 @@
 
 =========================================================================*/
 
-#include <medItkSubtractImageProcess.h>
+#include <medItkAddImageProcess.h>
 
 #include <dtkLog>
 
 #include <itkImage.h>
-#include <itkSubtractImageFilter.h>
+#include <itkAddImageFilter.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
 #include <medProcessLayer.h>
 
-class medItkSubtractImageProcessPrivate
+class medItkAddImageProcessPrivate
 {
 public:
     medProcessDetails details;
 };
 
-medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent):
-    medAbstractSubtractImageProcess(parent),
-    d(new medItkSubtractImageProcessPrivate)
+medItkAddImageProcess::medItkAddImageProcess(QObject *parent): medAbstractAddImageProcess(parent),
+    d(new medItkAddImageProcessPrivate)
 {
-    d->details = medProcessLayer::readDetailsFromJson(":/medItkSubtractImageProcessPlugin.json");
+    d->details = medProcessLayer::readDetailsFromJson(":/medItkAddImageProcessPlugin.json");
 }
 
-medItkSubtractImageProcess::~medItkSubtractImageProcess()
+medItkAddImageProcess::~medItkAddImageProcess()
 {
 
 }
 
-medProcessDetails medItkSubtractImageProcess::details() const
+medProcessDetails medItkAddImageProcess::details() const
 {
     return d->details;
 }
 
-void medItkSubtractImageProcess::run()
+void medItkAddImageProcess::run()
 {
     if(this->input1() && this->input2())
     {
@@ -99,10 +98,9 @@ void medItkSubtractImageProcess::run()
 }
 
 template <class inputType>
-void medItkSubtractImageProcess::_run()
+void medItkAddImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
-    typedef itk::Image<float, 3> ImageFloatType;
 
     typename ImageType::Pointer in1 = dynamic_cast<ImageType *>((itk::Object*)(this->input1()->data()));
     typename ImageType::Pointer in2 = dynamic_cast<ImageType *>((itk::Object*)(this->input2()->data()));
@@ -113,20 +111,20 @@ void medItkSubtractImageProcess::_run()
         return;
     }
 
-    typedef itk::SubtractImageFilter<ImageType, ImageType, ImageFloatType> FilterType;
+    typedef itk::AddImageFilter<ImageType, ImageType, ImageType> FilterType;
     typename FilterType::Pointer filter = FilterType::New();
 
     filter->SetInput1(in1);
     filter->SetInput2(in2);
     filter->Update();
 
-    medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
+    medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input1()->identifier()));
     out->setData(filter->GetOutput());
     this->setOutput(out);
     emit success();
 }
 
-void medItkSubtractImageProcess::cancel()
+void medItkAddImageProcess::cancel()
 {
     dtkTrace() << "No way to cancell " << d->details.name;
 }

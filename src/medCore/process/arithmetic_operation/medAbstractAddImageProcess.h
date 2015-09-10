@@ -19,14 +19,14 @@
 
 #include <medCoreExport.h>
 
-class medAbstractSubtractImageProcess: public medAbstractArithmeticOperationProcess
+class medAbstractAddImageProcess: public medAbstractArithmeticOperationProcess
 {
     Q_OBJECT
 public:
-     medAbstractSubtractImageProcess(QObject *parent): medAbstractArithmeticOperationProcess(parent) {}
+    medAbstractAddImageProcess(QObject *parent): medAbstractArithmeticOperationProcess(parent) {}
 };
 
-DTK_DECLARE_OBJECT        (medAbstractSubtractImageProcess*)
-DTK_DECLARE_PLUGIN        (medAbstractSubtractImageProcess, MEDCORE_EXPORT)
-DTK_DECLARE_PLUGIN_FACTORY(medAbstractSubtractImageProcess, MEDCORE_EXPORT)
-DTK_DECLARE_PLUGIN_MANAGER(medAbstractSubtractImageProcess, MEDCORE_EXPORT)
+DTK_DECLARE_OBJECT        (medAbstractAddImageProcess*)
+DTK_DECLARE_PLUGIN        (medAbstractAddImageProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractAddImageProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_MANAGER(medAbstractAddImageProcess, MEDCORE_EXPORT)

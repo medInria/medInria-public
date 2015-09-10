@@ -11,41 +11,41 @@
 
 =========================================================================*/
 
-#include <medItkSubtractImageProcess.h>
+#include <medItkDivideImageProcess.h>
 
 #include <dtkLog>
 
 #include <itkImage.h>
-#include <itkSubtractImageFilter.h>
+#include <itkDivideImageFilter.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
 #include <medProcessLayer.h>
 
-class medItkSubtractImageProcessPrivate
+class medItkDivideImageProcessPrivate
 {
 public:
     medProcessDetails details;
 };
 
-medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent):
-    medAbstractSubtractImageProcess(parent),
-    d(new medItkSubtractImageProcessPrivate)
+medItkDivideImageProcess::medItkDivideImageProcess(QObject *parent): medAbstractDivideImageProcess(parent),
+    d(new medItkDivideImageProcessPrivate)
 {
-    d->details = medProcessLayer::readDetailsFromJson(":/medItkSubtractImageProcessPlugin.json");
+    d->details = medProcessLayer::readDetailsFromJson(":/medItkDivideImageProcessPlugin.json");
 }
 
-medItkSubtractImageProcess::~medItkSubtractImageProcess()
+medItkDivideImageProcess::~medItkDivideImageProcess()
 {
 
 }
 
-medProcessDetails medItkSubtractImageProcess::details() const
+medProcessDetails medItkDivideImageProcess::details() const
 {
     return d->details;
 }
 
-void medItkSubtractImageProcess::run()
+
+void medItkDivideImageProcess::run()
 {
     if(this->input1() && this->input2())
     {
@@ -99,7 +99,7 @@ void medItkSubtractImageProcess::run()
 }
 
 template <class inputType>
-void medItkSubtractImageProcess::_run()
+void medItkDivideImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
     typedef itk::Image<float, 3> ImageFloatType;
@@ -113,7 +113,7 @@ void medItkSubtractImageProcess::_run()
         return;
     }
 
-    typedef itk::SubtractImageFilter<ImageType, ImageType, ImageFloatType> FilterType;
+    typedef itk::DivideImageFilter<ImageType, ImageType, ImageFloatType> FilterType;
     typename FilterType::Pointer filter = FilterType::New();
 
     filter->SetInput1(in1);
@@ -126,7 +126,7 @@ void medItkSubtractImageProcess::_run()
     emit success();
 }
 
-void medItkSubtractImageProcess::cancel()
+void medItkDivideImageProcess::cancel()
 {
     dtkTrace() << "No way to cancell " << d->details.name;
 }

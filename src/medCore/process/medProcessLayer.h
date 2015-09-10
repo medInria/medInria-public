@@ -13,20 +13,50 @@
 
 #pragma once
 
-#include <medAbstractSubtractImageProcessPlugin.h>
+#include <medAbstractProcess.h>
+#include <medAbstractAddImageProcess.h>
+#include <medAbstractSubtractImageProcess.h>
+#include <medAbstractMultiplyImageProcess.h>
+#include <medAbstractDivideImageProcess.h>
 
 namespace medProcessLayer
 {
+    medProcessDetails readDetailsFromJson(QString const& filePath);
+
     namespace pluginManager
     {
-        void initialize(const QString& path = QString());
+        void initialize(const QString& path = QString(), bool verbose = true);
     }
 
-    namespace subtractImage
+    namespace arithmeticalOperation
     {
-        medAbstractSubtractImageProcessPluginManager& pluginManager(void);
-        medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
-        void initialize(const QString& path);
+        namespace addImage
+        {
+            medAbstractAddImageProcessPluginManager& pluginManager(void);
+            medAbstractAddImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path, bool verbose = true);
 
+        }
+        namespace subtractImage
+        {
+            medAbstractSubtractImageProcessPluginManager& pluginManager(void);
+            medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path, bool verbose = true);
+
+        }
+        namespace multiplyImage
+        {
+            medAbstractMultiplyImageProcessPluginManager& pluginManager(void);
+            medAbstractMultiplyImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path, bool verbose = true);
+
+        }
+        namespace divideImage
+        {
+            medAbstractDivideImageProcessPluginManager& pluginManager(void);
+            medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
+            void initialize(const QString& path, bool verbose = true);
+
+        }
     }
 }

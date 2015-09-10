@@ -1,0 +1,9 @@
+{
+          "title" : "Divide images",
+           "kind" : "process",
+           "type" : "medAbstractDivideImageProcess",
+           "tags" : ["division","divide","arithmetic", "operation"],
+    "description" : "<p>Compute the division of one image by another</p>",
+         "inputs" : ["scalarImage", "scalarImage"],
+        "outputs" : ["scalarImage"]
+}
