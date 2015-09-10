@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractSubtractImageProcessPlugin.h>
+#include <medAbstractSubtractImageProcess.h>
 
 class medItkSubtractImageProcessPlugin : public medAbstractSubtractImageProcessPlugin
 {

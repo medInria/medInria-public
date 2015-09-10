@@ -19,8 +19,6 @@
 
 void medItkSubtractImageProcessPlugin::initialize(void)
 {
-
-
     medProcessLayer::arithmeticalOperation::subtractImage::pluginFactory().record("medItkSubtractImageProcess",
                                                                             medItkSubtractImageProcessCreator);
 }

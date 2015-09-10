@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/process/arithmetic_operation">
+        <file>process/arithmetic_operation/medAbstractAddImageProcess.json</file>
+        <file>process/arithmetic_operation/medAbstractDivideImageProcess.json</file>
+        <file>process/arithmetic_operation/medAbstractMultiplyImageProcess.json</file>
+        <file>process/arithmetic_operation/medAbstractSubtractImageProcess.json</file>
+    </qresource>
+</RCC>

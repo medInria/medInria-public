@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>medItkDivideImageProcessPlugin.json</file>
+    </qresource>
+</RCC>
