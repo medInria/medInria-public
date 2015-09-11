@@ -58,9 +58,13 @@ public:
     virtual void cancel() = 0;
 
 signals:
+    void running(bool isRunning);
     void success();
     void failure();
     void progressed(float progression);
+
+private:
+    void _emitNotRunning();
 
 private:
     medAbstractProcessPrivate* d;
