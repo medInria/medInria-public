@@ -17,6 +17,7 @@
 
 class medAbstractImageData;
 class medViewContainerSplitter;
+class medDoubleParameter;
 
 class medAbstractMorphomathOperationProcessPrivate;
 class medAbstractMorphomathOperationProcess : public medAbstractProcess
@@ -34,6 +35,9 @@ public:
 
     virtual QWidget* toolbox() const;
     virtual medViewContainerSplitter* viewContainerSplitter() const;
+
+    virtual medDoubleParameter* kernelRadius() const;
+    virtual void setKernelRadius(double const& radius);
 
 protected:
     void setOutput(medAbstractImageData* data);
