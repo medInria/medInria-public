@@ -18,7 +18,9 @@
 
 #include <medAbstractArea.h>
 
-class medAbstractAreaPlugin : public QObject
+#include <medInriaExport.h>
+
+class MEDINRIA_EXPORT medAbstractAreaPlugin : public QObject
 {
     Q_OBJECT
 
@@ -40,10 +42,10 @@ public:
 
 Q_DECLARE_INTERFACE(medAbstractAreaPlugin, DTK_DECLARE_PLUGIN_INTERFACE(medAbstractArea))
 
-class medAbstractAreaPluginFactory : public dtkCorePluginFactory<medAbstractArea>
+class MEDINRIA_EXPORT medAbstractAreaPluginFactory : public dtkCorePluginFactory<medAbstractArea>
 {
 };
 
-class medAbstractAreaPluginManager : public dtkCorePluginManager<medAbstractAreaPlugin>
+class MEDINRIA_EXPORT medAbstractAreaPluginManager : public dtkCorePluginManager<medAbstractAreaPlugin>
 {
 };

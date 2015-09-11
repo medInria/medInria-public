@@ -15,7 +15,7 @@
 
 #include <medAbstractMultiplyImageProcess.h>
 
-class medItkMultiplyImageProcessPlugin : public medAbstractMultiplyImageProcessPlugin
+class MEDINRIA_EXPORT medItkMultiplyImageProcessPlugin : public medAbstractMultiplyImageProcessPlugin
 {
     Q_OBJECT
     Q_INTERFACES(medAbstractMultiplyImageProcessPlugin)
