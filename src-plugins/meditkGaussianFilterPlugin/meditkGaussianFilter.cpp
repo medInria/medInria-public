@@ -20,9 +20,9 @@ void meditkGaussianFilter::setSigma(double sigma)
     process.setParameter(sigma,0);
 }
 
-void meditkGaussianFilter::setData(medAbstractImageData* data)
+void meditkGaussianFilter::setImage(medAbstractImageData* image)
 {
-    process.setInput(data);
+    process.setInput(image);
 }
 
 medAbstractImageData* meditkGaussianFilter::filteredImage(void) const

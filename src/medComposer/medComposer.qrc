@@ -5,5 +5,17 @@
         <file>medMeshReaderNode.json</file>
         <file>medGenericWriterNode.json</file>
         <file>medGaussianFilterNode.json</file>
+        <file>medAddFilterNode.json</file>
+        <file>medCloseFilterNode.json</file>
+        <file>medDilateFilterNode.json</file>
+        <file>medDivideFilterNode.json</file>
+        <file>medErodeFilterNode.json</file>
+        <file>medInvertFilterNode.json</file>
+        <file>medMedianFilterNode.json</file>
+        <file>medMultiplyFilterNode.json</file>
+        <file>medNormalizeFilterNode.json</file>
+        <file>medOpenFilterNode.json</file>
+        <file>medShrinkFilterNode.json</file>
+        <file>medWindowingFilterNode.json</file>
     </qresource>
 </RCC>

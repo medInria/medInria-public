@@ -64,6 +64,23 @@ set(PLUGIN_LIST
   itkProcessRegistrationDiffeomorphicDemons ON
   medVtkView                                ON
   meditkGaussianFilterPlugin                ON
+  
+  meditkAddFilterPlugin                     ON
+  meditkCloseFilterPlugin                   ON
+  meditkDilateFilterPlugin                  ON
+  #meditkDivideFilterPlugin                  ON
+  meditkErodeFilterPlugin                   ON
+  meditkInvertFilterPlugin                  ON
+  meditkMedianFilterPlugin                  ON
+  #meditkMultiplyFilterPlugin                ON
+  meditkNormalizeFilterPlugin               ON
+  meditkOpenFilterPlugin                    ON
+  meditkShrinkFilterPlugin                  ON
+ # meditkSubstractFilterPlugin               ON
+  meditkWindowingFilterPlugin               ON
+
+  
+  
   )   
 
 

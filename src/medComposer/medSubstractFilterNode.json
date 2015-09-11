@@ -1,0 +1,10 @@
+{
+          "title" : "Substract Filter",
+           "kind" : "process",
+           "type" : "itkSubstractFilter",
+           "tags" : ["filter","gaussian","testme"],
+    "description" : "<h3>Filter itkSubstractFilter</h3>
+                     <p>Apply the gaussian filter provided by ITK</p>",
+         "inputs" : ["radius","image"],
+         "outputs": ["image"]
+}

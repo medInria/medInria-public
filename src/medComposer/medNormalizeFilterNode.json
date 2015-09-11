@@ -1,0 +1,10 @@
+{
+          "title" : "Normalize Filter",
+           "kind" : "process",
+           "type" : "itkNormalizeFilter",
+           "tags" : ["filter","gaussian","testme"],
+    "description" : "<h3>Filter itkNormalizeFilter</h3>
+                     <p>Apply the gaussian filter provided by ITK</p>",
+         "inputs" : ["image"],
+         "outputs": ["image"]
+}

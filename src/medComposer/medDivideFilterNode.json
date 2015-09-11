@@ -1,0 +1,10 @@
+{
+          "title" : "Divide Filter",
+           "kind" : "process",
+           "type" : "itkDivideFilter",
+           "tags" : ["filter","gaussian","testme"],
+    "description" : "<h3>Filter itkDivideFilter</h3>
+                     <p>Apply the gaussian filter provided by ITK</p>",
+         "inputs" : ["radius","image"],
+         "outputs": ["image"]
+}

@@ -23,7 +23,7 @@ public:
 
 public:
     virtual void setSigma(double sigma) = 0;
-    virtual void setData(medAbstractImageData* data) = 0;
+    virtual void setImage(medAbstractImageData* image) = 0;
 
 public: 
     virtual medAbstractImageData* filteredImage(void) const = 0;

@@ -45,7 +45,7 @@ void medGaussianFilterNode::run(void)
         medAbstractGaussianFilter* filter = this->object();
         if(!this->object())
             return;
-        filter->setData(d->imgRecv.data());
+        filter->setImage(d->imgRecv.data());
         filter->setSigma(d->sigmaRecv.data());
         filter->run();
         d->imgEmt.setData(filter->filteredImage());

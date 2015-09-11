@@ -1,0 +1,10 @@
+{
+          "title" : "Multiply Filter",
+           "kind" : "process",
+           "type" : "itkMultiplyFilter",
+           "tags" : ["filter","gaussian","testme"],
+    "description" : "<h3>Filter itkMultiplyFilter</h3>
+                     <p>Apply the gaussian filter provided by ITK</p>",
+         "inputs" : ["radius","image"],
+         "outputs": ["image"]
+}

@@ -1,0 +1,10 @@
+{
+          "title" : "Median Filter",
+           "kind" : "process",
+           "type" : "itkMedianFilter",
+           "tags" : ["filter","gaussian","testme"],
+    "description" : "<h3>Filter itkMedianFilter</h3>
+                     <p>Apply the gaussian filter provided by ITK</p>",
+         "inputs" : ["image"],
+         "outputs": ["image"]
+}
