@@ -56,15 +56,16 @@ set(PLUGIN_LIST
   process/arithmetic_operation/medItkMultiplyImageProcess                ON
   process/arithmetic_operation/medItkDivideImageProcess                  ON
   process/morphomath_operation/medItkErodeImageProcess                   ON
+  process/morphomath_operation/medItkDilateImageProcess                  ON
   )
-
 
 ## #############################################################################
 ## process plugins
 ## #############################################################################
 
 ## see cmake/module/add_plugin.cmake
-add_plugins(${PLUGIN_LIST})
+add_plugins(${PLUGIN_LIST}
+  )
 
 if(BUILD_COMPOSITEDATASET_PLUGIN)
   add_subdirectory(medCompositeDataSets)
