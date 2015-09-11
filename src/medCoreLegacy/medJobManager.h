@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,8 +15,9 @@
 
 #include <QtCore/QObject>
 
-#include <medCoreExport.h>
 #include <medDataIndex.h>
+
+#include <medCoreLegacyExport.h>
 
 class medJobManagerPrivate;
 class medJobItem;
@@ -32,7 +33,7 @@ class medJobItem;
  *
  * @see medJobItem
  */
-class MEDCORE_EXPORT medJobManager : public QObject
+class MEDCORELEGACY_EXPORT medJobManager : public QObject
 {
     Q_OBJECT
 

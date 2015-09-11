@@ -15,9 +15,11 @@
 
 #include <medAbstractSubtractImageProcess.h>
 
+#include <medPluginExport.h>
+
 class medItkSubtractImageProcessPrivate;
 
-class medItkSubtractImageProcess: public medAbstractSubtractImageProcess
+class MEDPLUGIN_EXPORT medItkSubtractImageProcess: public medAbstractSubtractImageProcess
 {
 public:
     medItkSubtractImageProcess(QObject* parent = NULL);

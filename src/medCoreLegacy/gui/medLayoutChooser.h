@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QTableWidget>
+
+#include <medCoreLegacyExport.h>
 
 class medLayoutChooserPrivate;
 
-class MEDCORE_EXPORT medLayoutChooser : public QTableWidget
+class MEDCORELEGACY_EXPORT medLayoutChooser : public QTableWidget
 {
     Q_OBJECT
 

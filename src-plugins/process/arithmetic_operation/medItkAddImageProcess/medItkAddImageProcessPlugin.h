@@ -15,7 +15,9 @@
 
 #include <medAbstractAddImageProcess.h>
 
-class MEDINRIA_EXPORT medItkAddImageProcessPlugin : public medAbstractAddImageProcessPlugin
+#include <medPluginExport.h>
+
+class MEDPLUGIN_EXPORT medItkAddImageProcessPlugin : public medAbstractAddImageProcessPlugin
 {
     Q_OBJECT
     Q_INTERFACES(medAbstractAddImageProcessPlugin)

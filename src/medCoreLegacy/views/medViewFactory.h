@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,7 @@
 
 #include <dtkCoreSupport/dtkAbstractFactory.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 #include <QStringList>
 
@@ -33,7 +33,7 @@ typedef medAbstractNavigator *(*addNavigatorCreator)(medAbstractView *parent);
 typedef medAbstractInteractor *(*addInteractorCreator)(medAbstractView *parent);
 
 class medViewFactoryPrivate;
-class MEDCORE_EXPORT medViewFactory : public dtkAbstractFactory
+class MEDCORELEGACY_EXPORT medViewFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 public:

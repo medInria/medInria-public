@@ -12,11 +12,11 @@
 =========================================================================*/
 
 #ifdef WIN32
-    #ifdef MEDINRIA_EXPORTS
-        #define MEDINRIA_EXPORT __declspec(dllexport)
+    #ifdef medCore_EXPORTS
+        #define MEDCORE_EXPORT __declspec(dllexport)
     #else
-        #define MEDINRIA_EXPORT __declspec(dllimport)
+        #define MEDCORE_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define MEDINRIA_EXPORT
+    #define MEDCORE_EXPORT
 #endif

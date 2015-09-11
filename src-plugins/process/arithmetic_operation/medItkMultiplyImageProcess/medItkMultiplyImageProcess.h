@@ -15,9 +15,11 @@
 
 #include <medAbstractMultiplyImageProcess.h>
 
+#include <medPluginExport.h>
+
 class medItkMultiplyImageProcessPrivate;
 
-class MEDINRIA_EXPORT medItkMultiplyImageProcess: public medAbstractMultiplyImageProcess
+class MEDPLUGIN_EXPORT medItkMultiplyImageProcess: public medAbstractMultiplyImageProcess
 {
 public:
     medItkMultiplyImageProcess(QObject* parent = NULL);

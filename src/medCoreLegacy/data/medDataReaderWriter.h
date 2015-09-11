@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -18,9 +18,9 @@
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
 #include <medAbstractData.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
-struct MEDCORE_EXPORT medDataReaderWriter {
+struct MEDCORELEGACY_EXPORT medDataReaderWriter {
 
     typedef dtkSmartPointer<dtkAbstractDataReader> Reader;
     typedef dtkSmartPointer<dtkAbstractDataWriter> Writer;

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtGui>
 #include <QtWidgets>
+
+#include <medCoreLegacyExport.h>
 
 class dtkAbstractView;
 class medAbstractData;
@@ -34,7 +34,7 @@ class dtkPlugin;
  * They can be minimized, hidden, updated when a view is selected, etc...
  *
 */
-class MEDCORE_EXPORT medToolBox : public QWidget
+class MEDCORELEGACY_EXPORT medToolBox : public QWidget
 {
     Q_OBJECT
 
@@ -100,7 +100,7 @@ public slots:
 
 protected slots:
     void onAboutButtonClicked();
-    
+
 private:
     medToolBoxPrivate *d;
 };

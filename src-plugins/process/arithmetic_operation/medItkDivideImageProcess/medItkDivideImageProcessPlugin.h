@@ -15,7 +15,9 @@
 
 #include <medAbstractDivideImageProcess.h>
 
-class MEDINRIA_EXPORT medItkDivideImageProcessPlugin : public medAbstractDivideImageProcessPlugin
+#include <medPluginExport.h>
+
+class MEDPLUGIN_EXPORT medItkDivideImageProcessPlugin : public medAbstractDivideImageProcessPlugin
 {
     Q_OBJECT
     Q_INTERFACES(medAbstractDivideImageProcessPlugin)

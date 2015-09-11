@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,9 +13,10 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <dtkCoreSupport/dtkAbstractFactory.h>
 #include <QtCore>
+
+#include <medCoreLegacyExport.h>
 
 class medSettingsWidget;
 class medSettingsWidgetFactoryPrivate;
@@ -24,7 +25,7 @@ struct medSettingDetails;
 /**
  * @brief This factory creates Widgets that are pages in the medSettingsEditor widget.
 */
-class MEDCORE_EXPORT medSettingsWidgetFactory : public dtkAbstractFactory
+class MEDCORELEGACY_EXPORT medSettingsWidgetFactory : public dtkAbstractFactory
 {
   Q_OBJECT
 
@@ -97,7 +98,7 @@ private:
  * and a function to allocate memory.
  *
  */
-struct MEDCORE_EXPORT medSettingDetails{
+struct MEDCORELEGACY_EXPORT medSettingDetails{
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description */
     medSettingsWidgetFactory::medSettingsWidgetCreator creator; /** function pointer allocating memory for the widget*/

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,18 +14,18 @@
 #pragma once
 
 #include <QWidget>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medDatabaseCompactWidgetPrivate;
 class medDatabaseView;
 class medDatabasePreview;
 class medDataIndex;
 
-
 /**
 * @brief
 */
-class MEDCORE_EXPORT medDatabaseCompactWidget: public QWidget
+class MEDCORELEGACY_EXPORT medDatabaseCompactWidget: public QWidget
 {
     Q_OBJECT
 public :

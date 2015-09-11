@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -20,8 +20,9 @@
 
 #include <dtkCoreSupport/dtkAbstractObject.h>
 
-#include <medCoreExport.h>
 #include <QMouseEvent>
+
+#include <medCoreLegacyExport.h>
 
 //Forward declarations
 class medAbstractView;
@@ -36,9 +37,9 @@ class QGraphicsSceneMouseEvent;
  *
  * (see QObject::eventFilter & QObject::installEventFilter)
  */
-class MEDCORE_EXPORT medViewEventFilter : public dtkAbstractObject
+class MEDCORELEGACY_EXPORT medViewEventFilter : public dtkAbstractObject
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
              medViewEventFilter(dtkAbstractObject * parent = NULL);

@@ -15,12 +15,14 @@
 
 #include <medAbstractProcess.h>
 
+#include <medCoreExport.h>
+
 class medAbstractImageData;
 class medViewContainerSplitter;
 class medDoubleParameter;
 
 class medAbstractMorphomathOperationProcessPrivate;
-class medAbstractMorphomathOperationProcess : public medAbstractProcess
+class MEDCORE_EXPORT medAbstractMorphomathOperationProcess : public medAbstractProcess
 {
     Q_OBJECT
 

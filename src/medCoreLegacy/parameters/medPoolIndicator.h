@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,12 +13,12 @@
 
 #include <QLabel>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medStringListParameter;
 
 class medPoolIndiactorPrivate;
-class MEDCORE_EXPORT medPoolIndicator: public QWidget
+class MEDCORELEGACY_EXPORT medPoolIndicator: public QWidget
 {
     Q_OBJECT
 

@@ -19,7 +19,7 @@
 
 #include <medCoreExport.h>
 
-class medAbstractErodeImageProcess: public medAbstractMorphomathOperationProcess
+class MEDCORE_EXPORT medAbstractErodeImageProcess: public medAbstractMorphomathOperationProcess
 {
     Q_OBJECT
 public:

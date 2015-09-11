@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtCore/QObject>
 
 #include <medDataIndex.h>
 #include <medAbstractDatabaseImporter.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 
@@ -28,7 +28,7 @@ class medAbstractData;
 * This class inherits from medJobItem and is meant to be run by the medJobManager.
 *
 */
-class MEDCORE_EXPORT medDatabaseNonPersistentImporter : public medAbstractDatabaseImporter
+class MEDCORELEGACY_EXPORT medDatabaseNonPersistentImporter : public medAbstractDatabaseImporter
 {
     Q_OBJECT
 

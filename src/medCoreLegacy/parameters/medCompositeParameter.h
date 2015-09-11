@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,13 +14,14 @@
 #pragma once
 
 #include <medAbstractParameter.h>
+
 #include <QVariant>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medCompositeParameterPrivate;
 
-class MEDCORE_EXPORT medCompositeParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medCompositeParameter : public medAbstractParameter
 {
     Q_OBJECT
 

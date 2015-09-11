@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,14 +16,14 @@
 #include <medAbstractParameter.h>
 #include <QIcon>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class QComboBox;
 class QWidget;
 class QStringList;
 
 class medStringListParameterPrivate;
-class MEDCORE_EXPORT medStringListParameter: public medAbstractStringParameter
+class MEDCORELEGACY_EXPORT medStringListParameter: public medAbstractStringParameter
 {
     Q_OBJECT
 

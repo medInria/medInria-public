@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -18,12 +18,12 @@
 #include <QVector3D>
 #include <QVector4D>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class QLabel;
 
 class medAbstractParameterPrivate;
-class MEDCORE_EXPORT medAbstractParameter : public QObject
+class MEDCORELEGACY_EXPORT medAbstractParameter : public QObject
 {
     Q_OBJECT
 
@@ -64,13 +64,13 @@ signals:
     void aboutToBeDestroyed();
 
 private:
-  medAbstractParameterPrivate *d; 
+  medAbstractParameterPrivate *d;
 };
 
 
 //--------------------------------------------------------------------------
 //  medAbstractTriggerParameter
-class MEDCORE_EXPORT medAbstractTriggerParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractTriggerParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
@@ -85,7 +85,7 @@ signals:
 };
 //--------------------------------------------------------------------------
 //  medAbstractStringParameter
-class MEDCORE_EXPORT medAbstractStringParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractStringParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
@@ -109,7 +109,7 @@ protected:
 };
 //--------------------------------------------------------------------------
 //  medAbstractIntParameter
-class MEDCORE_EXPORT medAbstractIntParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractIntParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
@@ -134,7 +134,7 @@ protected:
 };
 //--------------------------------------------------------------------------
 //  medAbstractDoubleParameter
-class MEDCORE_EXPORT medAbstractDoubleParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractDoubleParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
@@ -158,7 +158,7 @@ protected:
 };
 //--------------------------------------------------------------------------
 //  medAbstractBoolParameter
-class MEDCORE_EXPORT medAbstractBoolParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractBoolParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
@@ -185,7 +185,7 @@ protected:
 
 //--------------------------------------------------------------------------
 //  medAbstractGroupParameter
-class MEDCORE_EXPORT medAbstractGroupParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractGroupParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
@@ -208,7 +208,7 @@ public:
 
 class QVector2D;
 
-class MEDCORE_EXPORT medAbstractVector2DParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractVector2DParameter : public medAbstractParameter
 {
     Q_OBJECT
 
@@ -240,7 +240,7 @@ protected:
 
 class QVector3D;
 
-class MEDCORE_EXPORT medAbstractVector3DParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractVector3DParameter : public medAbstractParameter
 {
     Q_OBJECT
 
@@ -274,7 +274,7 @@ protected:
 
 class QVector4D;
 
-class MEDCORE_EXPORT medAbstractVector4DParameter : public medAbstractParameter
+class MEDCORELEGACY_EXPORT medAbstractVector4DParameter : public medAbstractParameter
 {
     Q_OBJECT
 

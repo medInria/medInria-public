@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtGui>
 #include <QtWidgets>
+
+#include <medCoreLegacyExport.h>
 
 class medDataIndex;
 class medDatabaseModel;
 class medDatabaseViewPrivate;
 
-class MEDCORE_EXPORT medDatabaseView : public QTreeView
+class MEDCORELEGACY_EXPORT medDatabaseView : public QTreeView
 {
     Q_OBJECT
 
@@ -40,7 +40,7 @@ signals:
 
     /** Signal emitted when user clicks on a study item. */
     void studyClicked(const medDataIndex &index);
-    
+
     /** Signal emitted when user clicks on a series item. */
     void seriesClicked(const medDataIndex &index);
 

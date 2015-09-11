@@ -13,17 +13,17 @@
 
 #pragma once
 
-#include "medToolBox.h"
-#include "medCoreExport.h"
-
+#include <medToolBox.h>
 #include <medAbstractImageData.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractDiffusionProcess;
 class medAbstractImageData;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
 
-class MEDCORE_EXPORT medDiffusionSelectorToolBox : public medToolBox
+class MEDCORELEGACY_EXPORT medDiffusionSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 public:

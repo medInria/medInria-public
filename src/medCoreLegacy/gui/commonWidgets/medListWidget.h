@@ -13,15 +13,17 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <QtGui>
 #include <QDebug>
+#include <QListWidget>
+
+#include <medCoreLegacyExport.h>
 
 /**
   * QListWidget doesn't seem to be able to resize itself to its content
   * medListWidget should do so.
   */
-class MEDCORE_EXPORT medListWidget : public QListWidget
+class MEDCORELEGACY_EXPORT medListWidget : public QListWidget
 {
 public:
     medListWidget(QWidget *parent = 0):QListWidget(parent)

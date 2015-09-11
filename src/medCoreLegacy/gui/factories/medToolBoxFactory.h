@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <dtkCoreSupport/dtkAbstractFactory.h>
 
 #include <QtCore>
+
+#include <medCoreLegacyExport.h>
 
 class medToolBox;
 class medToolBoxFactoryPrivate;
@@ -43,7 +43,7 @@ struct medToolBoxDetails;
  * The details for each toolbox are stored in a struct of type medToolBoxDetails.
  */
 
-class MEDCORE_EXPORT medToolBoxFactory : public dtkAbstractFactory
+class MEDCORELEGACY_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 
@@ -115,7 +115,7 @@ private:
  * and a function to allocate memory.
  *
  */
-struct MEDCORE_EXPORT medToolBoxDetails{
+struct MEDCORELEGACY_EXPORT medToolBoxDetails{
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description of the Toolbox */
     QStringList categories; /** List of categories the toolbox falls in*/

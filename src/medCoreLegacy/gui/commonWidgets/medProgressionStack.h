@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include <medCoreExport.h>
+#include <QWidget>
 
-#include <QtWidgets/QWidget>
+#include <medCoreLegacyExport.h>
 
 class medJobItem;
 class medProgressionStackPrivate;
@@ -26,7 +26,7 @@ class medProgressionStackPrivate;
  * All visible jobs will be managed here. The class stores pointers in hashTables to identify the sender of status messages
  * It provides methods to communicate with the jobItems (e.g. to cancel the job)
  */
-class MEDCORE_EXPORT medProgressionStack : public QWidget
+class MEDCORELEGACY_EXPORT medProgressionStack : public QWidget
 {
     Q_OBJECT
 
