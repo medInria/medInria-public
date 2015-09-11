@@ -16,7 +16,9 @@
 #include <QWidget>
 #include <QString>
 
-class medAbstractArea : public QWidget
+#include <medInriaExport.h>
+
+class MEDINRIA_EXPORT medAbstractArea : public QWidget
 {
     Q_OBJECT
 

@@ -17,7 +17,7 @@
 
 class medItkDivideImageProcessPrivate;
 
-class medItkDivideImageProcess: public medAbstractDivideImageProcess
+class MEDINRIA_EXPORT medItkDivideImageProcess: public medAbstractDivideImageProcess
 {
 public:
     medItkDivideImageProcess(QObject* parent = NULL);

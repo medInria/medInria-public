@@ -15,11 +15,13 @@
 
 #include <medAbstractProcess.h>
 
+#include <medInriaExport.h>
+
 class medAbstractImageData;
 class medViewContainerSplitter;
 
 class medAbstractArithmeticOperationProcessPrivate;
-class medAbstractArithmeticOperationProcess : public medAbstractProcess
+class MEDINRIA_EXPORT  medAbstractArithmeticOperationProcess : public medAbstractProcess
 {
     Q_OBJECT
 
