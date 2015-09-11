@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,7 @@
 
 #include <medAbstractView.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
@@ -30,7 +30,7 @@ class medStringListParameter;
 class medDataListParameter;
 
 class medAbstractLayeredViewPrivate;
-class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
+class MEDCORELEGACY_EXPORT medAbstractLayeredView : public medAbstractView
 {
     Q_OBJECT
 
@@ -90,7 +90,7 @@ protected:
     virtual bool initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
-    virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);  
+    virtual QList<medAbstractParameter*> interactorsParameters(unsigned int layer);
 
 private slots:
     void updateDataListParameter(unsigned int layer);

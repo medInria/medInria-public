@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,8 @@
 
 #include <vector>
 #include <medAbstractData.h>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 namespace medMetaDataKeys {
 
@@ -25,7 +26,8 @@ namespace medMetaDataKeys {
     * It allows compile-time verification that the keyword is correct.
     */
 
-    class MEDCORE_EXPORT Key {
+    class MEDCORELEGACY_EXPORT Key
+    {
     public:
         typedef std::vector<const Key*> Registery;
 
@@ -86,69 +88,69 @@ namespace medMetaDataKeys {
 
     /** Define the actual keys to use */
 
-    extern MEDCORE_EXPORT const Key TransferSyntaxUID;
-    extern MEDCORE_EXPORT const Key ContainsBasicInfo;
+    extern MEDCORELEGACY_EXPORT const Key TransferSyntaxUID;
+    extern MEDCORELEGACY_EXPORT const Key ContainsBasicInfo;
 
     // PATIENT
-    extern MEDCORE_EXPORT const Key PatientID;
-    extern MEDCORE_EXPORT const Key PatientName;
-    extern MEDCORE_EXPORT const Key Age;
-    extern MEDCORE_EXPORT const Key BirthDate;
-    extern MEDCORE_EXPORT const Key Gender;
-    extern MEDCORE_EXPORT const Key Description; //what?
+    extern MEDCORELEGACY_EXPORT const Key PatientID;
+    extern MEDCORELEGACY_EXPORT const Key PatientName;
+    extern MEDCORELEGACY_EXPORT const Key Age;
+    extern MEDCORELEGACY_EXPORT const Key BirthDate;
+    extern MEDCORELEGACY_EXPORT const Key Gender;
+    extern MEDCORELEGACY_EXPORT const Key Description; //what?
 
     // STUDY
-    extern MEDCORE_EXPORT const Key StudyID;
-    extern MEDCORE_EXPORT const Key StudyDicomID;
-    extern MEDCORE_EXPORT const Key StudyDescription;
-    extern MEDCORE_EXPORT const Key Institution;
-    extern MEDCORE_EXPORT const Key Referee;
-    extern MEDCORE_EXPORT const Key StudyDate;
-    extern MEDCORE_EXPORT const Key StudyTime;
+    extern MEDCORELEGACY_EXPORT const Key StudyID;
+    extern MEDCORELEGACY_EXPORT const Key StudyDicomID;
+    extern MEDCORELEGACY_EXPORT const Key StudyDescription;
+    extern MEDCORELEGACY_EXPORT const Key Institution;
+    extern MEDCORELEGACY_EXPORT const Key Referee;
+    extern MEDCORELEGACY_EXPORT const Key StudyDate;
+    extern MEDCORELEGACY_EXPORT const Key StudyTime;
 
     // SERIES
-    extern MEDCORE_EXPORT const Key SeriesID;
-    extern MEDCORE_EXPORT const Key SeriesDicomID;
-    extern MEDCORE_EXPORT const Key SeriesStoreId;
-    extern MEDCORE_EXPORT const Key SeriesNumber;
-    extern MEDCORE_EXPORT const Key Modality;
-    extern MEDCORE_EXPORT const Key Performer;
-    extern MEDCORE_EXPORT const Key Report;
-    extern MEDCORE_EXPORT const Key Protocol;
-    extern MEDCORE_EXPORT const Key SeriesDescription;
-    extern MEDCORE_EXPORT const Key SeriesDate;
-    extern MEDCORE_EXPORT const Key SeriesTime;
-    extern MEDCORE_EXPORT const Key SeriesThumbnail;
+    extern MEDCORELEGACY_EXPORT const Key SeriesID;
+    extern MEDCORELEGACY_EXPORT const Key SeriesDicomID;
+    extern MEDCORELEGACY_EXPORT const Key SeriesStoreId;
+    extern MEDCORELEGACY_EXPORT const Key SeriesNumber;
+    extern MEDCORELEGACY_EXPORT const Key Modality;
+    extern MEDCORELEGACY_EXPORT const Key Performer;
+    extern MEDCORELEGACY_EXPORT const Key Report;
+    extern MEDCORELEGACY_EXPORT const Key Protocol;
+    extern MEDCORELEGACY_EXPORT const Key SeriesDescription;
+    extern MEDCORELEGACY_EXPORT const Key SeriesDate;
+    extern MEDCORELEGACY_EXPORT const Key SeriesTime;
+    extern MEDCORELEGACY_EXPORT const Key SeriesThumbnail;
 
     // IMAGE
-    extern MEDCORE_EXPORT const Key SOPInstanceUID;
-    extern MEDCORE_EXPORT const Key Columns;
-    extern MEDCORE_EXPORT const Key Rows;
-    extern MEDCORE_EXPORT const Key Dimensions;
-    extern MEDCORE_EXPORT const Key NumberOfDimensions;
-    extern MEDCORE_EXPORT const Key Orientation;
-    extern MEDCORE_EXPORT const Key Origin;
-    extern MEDCORE_EXPORT const Key SliceThickness;
-    extern MEDCORE_EXPORT const Key ImportationDate;
-    extern MEDCORE_EXPORT const Key AcquisitionDate;
-    extern MEDCORE_EXPORT const Key AcquisitionTime;
-    extern MEDCORE_EXPORT const Key Comments;
-    extern MEDCORE_EXPORT const Key FilePaths;
-    extern MEDCORE_EXPORT const Key Status;
-    extern MEDCORE_EXPORT const Key SequenceName;
-    extern MEDCORE_EXPORT const Key Size;
-    extern MEDCORE_EXPORT const Key VolumeUID;
-    extern MEDCORE_EXPORT const Key Spacing;
-    extern MEDCORE_EXPORT const Key XSpacing;
-    extern MEDCORE_EXPORT const Key YSpacing;
-    extern MEDCORE_EXPORT const Key ZSpacing;
-    extern MEDCORE_EXPORT const Key NumberOfComponents;
-    extern MEDCORE_EXPORT const Key ComponentType;
-    extern MEDCORE_EXPORT const Key PixelType;
-    extern MEDCORE_EXPORT const Key medDataType;
-    extern MEDCORE_EXPORT const Key PreferredDataReader;
-    extern MEDCORE_EXPORT const Key ImageID;
-    extern MEDCORE_EXPORT const Key ThumbnailPath;
+    extern MEDCORELEGACY_EXPORT const Key SOPInstanceUID;
+    extern MEDCORELEGACY_EXPORT const Key Columns;
+    extern MEDCORELEGACY_EXPORT const Key Rows;
+    extern MEDCORELEGACY_EXPORT const Key Dimensions;
+    extern MEDCORELEGACY_EXPORT const Key NumberOfDimensions;
+    extern MEDCORELEGACY_EXPORT const Key Orientation;
+    extern MEDCORELEGACY_EXPORT const Key Origin;
+    extern MEDCORELEGACY_EXPORT const Key SliceThickness;
+    extern MEDCORELEGACY_EXPORT const Key ImportationDate;
+    extern MEDCORELEGACY_EXPORT const Key AcquisitionDate;
+    extern MEDCORELEGACY_EXPORT const Key AcquisitionTime;
+    extern MEDCORELEGACY_EXPORT const Key Comments;
+    extern MEDCORELEGACY_EXPORT const Key FilePaths;
+    extern MEDCORELEGACY_EXPORT const Key Status;
+    extern MEDCORELEGACY_EXPORT const Key SequenceName;
+    extern MEDCORELEGACY_EXPORT const Key Size;
+    extern MEDCORELEGACY_EXPORT const Key VolumeUID;
+    extern MEDCORELEGACY_EXPORT const Key Spacing;
+    extern MEDCORELEGACY_EXPORT const Key XSpacing;
+    extern MEDCORELEGACY_EXPORT const Key YSpacing;
+    extern MEDCORELEGACY_EXPORT const Key ZSpacing;
+    extern MEDCORELEGACY_EXPORT const Key NumberOfComponents;
+    extern MEDCORELEGACY_EXPORT const Key ComponentType;
+    extern MEDCORELEGACY_EXPORT const Key PixelType;
+    extern MEDCORELEGACY_EXPORT const Key medDataType;
+    extern MEDCORELEGACY_EXPORT const Key PreferredDataReader;
+    extern MEDCORELEGACY_EXPORT const Key ImageID;
+    extern MEDCORELEGACY_EXPORT const Key ThumbnailPath;
 };
 
 

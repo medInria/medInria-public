@@ -16,7 +16,7 @@
 #include <medAbstractLayeredViewNavigator.h>
 #include <medImageViewEnum.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medAbstractImageView;
 class medCompositeParameter;
@@ -24,7 +24,7 @@ class medAbstractVector3DParameter;
 class medTimeLineParameter;
 
 class medAbstractImageViewNavigatorPrivate;
-class MEDCORE_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredViewNavigator
+class MEDCORELEGACY_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredViewNavigator
 {
     Q_OBJECT
 
@@ -44,7 +44,7 @@ public slots:
     virtual void setOrientation(medImageView::Orientation orientation) = 0;
     virtual void setCamera(QHash<QString,QVariant>) = 0;
     virtual void moveToPosition (const QVector3D &position) = 0;
-    
+
     virtual void setCurrentTime (const double &time);
 
 private slots:

@@ -14,9 +14,10 @@
 #pragma once
 
 #include <medAbstractParameter.h>
+
 #include <QIcon>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class QComboBox;
 class QWidget;
@@ -25,7 +26,7 @@ class QStringList;
 class medDataIndex;
 
 class medDataListParameterPrivate;
-class MEDCORE_EXPORT medDataListParameter: public medAbstractParameter
+class MEDCORELEGACY_EXPORT medDataListParameter: public medAbstractParameter
 {
     Q_OBJECT
 
@@ -44,7 +45,7 @@ public:
 
 signals:
     void valuesChanged (QList <medDataIndex>);
-    
+
 private:
     medDataListParameterPrivate* d;
 };

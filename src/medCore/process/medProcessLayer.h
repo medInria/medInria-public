@@ -19,7 +19,7 @@
 #include <medAbstractMultiplyImageProcess.h>
 #include <medAbstractDivideImageProcess.h>
 
-#include <medInriaExport.h>
+#include <medCoreExport.h>
 
 #include <medAbstractErodeImageProcess.h>
 #include <medAbstractDilateImageProcess.h>
@@ -28,41 +28,41 @@
 
 namespace medProcessLayer
 {
-    MEDINRIA_EXPORT medProcessDetails readDetailsFromJson(QString const& filePath);
+    MEDCORE_EXPORT medProcessDetails readDetailsFromJson(QString const& filePath);
 
     namespace pluginManager
     {
-        MEDINRIA_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
+        MEDCORE_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
     }
 
     namespace arithmeticalOperation
     {
         namespace addImage
         {
-            MEDINRIA_EXPORT medAbstractAddImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractAddImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractAddImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractAddImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
         }
         namespace subtractImage
         {
-            MEDINRIA_EXPORT medAbstractSubtractImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractSubtractImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractSubtractImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
         }
         namespace multiplyImage
         {
-            MEDINRIA_EXPORT medAbstractMultiplyImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractMultiplyImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractMultiplyImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractMultiplyImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
         }
         namespace divideImage
         {
-            MEDINRIA_EXPORT medAbstractDivideImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractDivideImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
         }
     }
 
@@ -70,27 +70,27 @@ namespace medProcessLayer
     {
         namespace erodeImage
         {
-            MEDINRIA_EXPORT medAbstractErodeImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractErodeImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractErodeImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractErodeImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
         }
         namespace dilateImage
         {
-            MEDINRIA_EXPORT medAbstractDilateImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractDilateImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractDilateImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractDilateImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
         }
         namespace openingImage
         {
-            MEDINRIA_EXPORT medAbstractOpeningImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractOpeningImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractOpeningImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractOpeningImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
         }
         namespace closingImage
         {
-            MEDINRIA_EXPORT medAbstractClosingImageProcessPluginManager& pluginManager(void);
-            MEDINRIA_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
-            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+            MEDCORE_EXPORT medAbstractClosingImageProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
         }
     }
 }

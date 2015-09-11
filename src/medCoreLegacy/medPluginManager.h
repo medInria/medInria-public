@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -17,7 +17,7 @@
 
 #include <dtkCoreSupport/dtkPluginManager.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medPluginManagerPrivate;
 
@@ -25,7 +25,7 @@ class medPluginManagerPrivate;
  * @brief Load and unload plugins for medInria.
  *
 */
-class MEDCORE_EXPORT medPluginManager : public dtkPluginManager
+class MEDCORELEGACY_EXPORT medPluginManager : public dtkPluginManager
 {
     Q_OBJECT
 

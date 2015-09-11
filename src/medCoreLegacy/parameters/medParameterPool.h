@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -18,14 +18,13 @@
 #include <QVector2D>
 #include <QLabel>
 
-#include <medCoreExport.h>
-
+#include <medCoreLegacyExport.h>
 class medAbstractParameter;
 class medDataIndex;
 class medStringListParameter;
 
 class medParameterPoolPrivate;
-class MEDCORE_EXPORT medParameterPool : public QObject
+class MEDCORELEGACY_EXPORT medParameterPool : public QObject
 {
     Q_OBJECT
 

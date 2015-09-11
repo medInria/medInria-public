@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,9 +13,10 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <QWidget>
 #include <QTabWidget>
+
+#include <medCoreLegacyExport.h>
 
 class medSettingsEditorPrivate;
 
@@ -28,7 +29,7 @@ class medSettingsEditorPrivate;
  * There is also an alternative advanced tree listing all the sections and keys from the application qSetting.
  *
 */
-class MEDCORE_EXPORT medSettingsEditor : public QWidget
+class MEDCORELEGACY_EXPORT medSettingsEditor : public QWidget
 {
     Q_OBJECT
 

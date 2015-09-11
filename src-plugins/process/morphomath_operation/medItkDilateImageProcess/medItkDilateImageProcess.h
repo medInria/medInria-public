@@ -15,9 +15,11 @@
 
 #include <medAbstractDilateImageProcess.h>
 
+#include <medPluginExport.h>
+
 class medItkDilateImageProcessPrivate;
 
-class MEDINRIA_EXPORT medItkDilateImageProcess: public medAbstractDilateImageProcess
+class MEDPLUGIN_EXPORT medItkDilateImageProcess: public medAbstractDilateImageProcess
 {
 public:
     medItkDilateImageProcess(QObject* parent = NULL);

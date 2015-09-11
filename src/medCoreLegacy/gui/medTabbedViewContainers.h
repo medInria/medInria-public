@@ -16,7 +16,8 @@
 #include <QtGui>
 #include <QUuid>
 #include <QtWidgets>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 class medAbstractView;
@@ -31,7 +32,7 @@ class medTabbedViewContainersPrivate;
  * There is one such stack per medViewWorkspace.
  *
 */
-class MEDCORE_EXPORT medTabbedViewContainers : public QTabWidget
+class MEDCORELEGACY_EXPORT medTabbedViewContainers : public QTabWidget
 {
     Q_OBJECT
 

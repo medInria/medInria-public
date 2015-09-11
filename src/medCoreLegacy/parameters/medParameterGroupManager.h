@@ -15,7 +15,7 @@
 
 #include <QObject>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medAbstractView;
 class medAbstractLayeredView;
@@ -26,7 +26,7 @@ class medAbstractData;
 
 class medParameterGroupManagerPrivate;
 
-class MEDCORE_EXPORT medParameterGroupManager : public QObject
+class MEDCORELEGACY_EXPORT medParameterGroupManager : public QObject
 {
     Q_OBJECT
 

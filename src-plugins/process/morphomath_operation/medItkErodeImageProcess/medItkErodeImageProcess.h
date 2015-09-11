@@ -15,9 +15,11 @@
 
 #include <medAbstractErodeImageProcess.h>
 
+#include <medPluginExport.h>
+
 class medItkErodeImageProcessPrivate;
 
-class MEDINRIA_EXPORT medItkErodeImageProcess: public medAbstractErodeImageProcess
+class MEDPLUGIN_EXPORT medItkErodeImageProcess: public medAbstractErodeImageProcess
 {
 public:
     medItkErodeImageProcess(QObject* parent = NULL);

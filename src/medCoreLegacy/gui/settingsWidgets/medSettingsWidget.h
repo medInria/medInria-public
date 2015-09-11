@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,8 +13,9 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <QWidget>
+
+#include <medCoreLegacyExport.h>
 
 class medSettingsWidgetPrivate;
 
@@ -24,7 +25,7 @@ class medSettingsWidgetPrivate;
  * All the pages in the medSettingsEditor must inherit from this class.
  *
 */
-class MEDCORE_EXPORT medSettingsWidget : public QWidget
+class MEDCORELEGACY_EXPORT medSettingsWidget : public QWidget
 {
     Q_OBJECT
 public:

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,14 +16,14 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QImage>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medDataIndex;
 class QLabel;
 
-
 class medDatabasePreviewStaticScenePrivate;
-class MEDCORE_EXPORT medDatabasePreviewStaticScene: public QGraphicsScene
+class MEDCORELEGACY_EXPORT medDatabasePreviewStaticScene: public QGraphicsScene
 {
     Q_OBJECT
 public:
@@ -45,7 +45,7 @@ private :
 
 
 class medDatabasePreviewDynamicScenePrivate;
-class MEDCORE_EXPORT medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
+class MEDCORELEGACY_EXPORT medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
 {
     Q_OBJECT
 public:
@@ -64,7 +64,7 @@ private:
 
 
 class medDatabasePreviewPrivate;
-class MEDCORE_EXPORT medDatabasePreview: public QGraphicsView
+class MEDCORELEGACY_EXPORT medDatabasePreview: public QGraphicsView
 {
     Q_OBJECT
 public :

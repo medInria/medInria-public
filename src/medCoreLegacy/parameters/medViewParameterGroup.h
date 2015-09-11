@@ -14,11 +14,12 @@
 #pragma once
 
 #include <medAbstractParameterGroup.h>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medViewParameterGroupPrivate;
 
-class MEDCORE_EXPORT medViewParameterGroup : public medAbstractParameterGroup
+class MEDCORELEGACY_EXPORT medViewParameterGroup : public medAbstractParameterGroup
 {
     Q_OBJECT
 

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,7 @@
 
 #include <medAbstractParameter.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class QWidget;
 class QSpinBox;
@@ -23,7 +23,7 @@ class QSlider;
 
 
 class medIntParameterPrivate;
-class MEDCORE_EXPORT medIntParameter : public medAbstractIntParameter
+class MEDCORELEGACY_EXPORT medIntParameter : public medAbstractIntParameter
 {
     Q_OBJECT
 

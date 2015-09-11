@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,9 +13,10 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <medToolBox.h>
 #include <medDataIndex.h>
+
+#include <medCoreLegacyExport.h>
 
 class medFilteringSelectorToolBoxPrivate;
 class medAbstractData;
@@ -26,7 +27,7 @@ class medFilteringAbstractToolBox;
  *
  * This toolbox provides a comboBox to switch between filtering process plugins and buttons to store results in a file or database.
  */
-class MEDCORE_EXPORT medFilteringSelectorToolBox : public medToolBox
+class MEDCORELEGACY_EXPORT medFilteringSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 public:

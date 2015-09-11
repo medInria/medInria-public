@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,10 +13,11 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtGui>
 #include <QtWidgets>
+
+#include <medCoreLegacyExport.h>
+
 
 class medToolBoxHeaderPrivate;
 class medButton;
@@ -27,7 +28,7 @@ class medButton;
  * This is a QFrame that draws a rectangle, a title, and reacts to mousePressEvent()s.
  *
 */
-class MEDCORE_EXPORT medToolBoxHeader : public QFrame
+class MEDCORELEGACY_EXPORT medToolBoxHeader : public QFrame
 {
     Q_OBJECT
 

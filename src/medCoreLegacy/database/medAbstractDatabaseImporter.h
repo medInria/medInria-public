@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtCore>
 #include <QtSql/QtSql>
 
-#include <medAbstractData.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
+#include <medAbstractData.h>
 #include <medJobItem.h>
 #include <medDataIndex.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractDatabaseImporterPrivate;
 class medAbstractData;
@@ -38,7 +38,7 @@ class medAbstractData;
 * To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary.
 * For example, see @medDatabaseImporter and @medDatabaseNonPersistentReader
 **/
-class MEDCORE_EXPORT medAbstractDatabaseImporter : public medJobItem
+class MEDCORELEGACY_EXPORT medAbstractDatabaseImporter : public medJobItem
 {
     Q_OBJECT
 
@@ -71,10 +71,10 @@ public slots:
 protected:
     virtual void internalRun ( void ) ;
 
-    QString file ( void );   
-    bool isCancelled ( void );   
-    bool indexWithoutImporting ( void );  
-    QMap<int, QString> volumeIdToImageFile ( void );    
+    QString file ( void );
+    bool isCancelled ( void );
+    bool indexWithoutImporting ( void );
+    QMap<int, QString> volumeIdToImageFile ( void );
     QString callerUuid ( void );
     medDataIndex index(void) const;
 

@@ -16,14 +16,14 @@
 #include <medAbstractLayeredViewInteractor.h>
 #include <medImageViewEnum.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medAbstractImageView;
 class medDoubleParameter;
 class medCompositeParameter;
 
 class medAbstractImageViewInteractorPrivate;
-class MEDCORE_EXPORT medAbstractImageViewInteractor : public medAbstractLayeredViewInteractor
+class MEDCORELEGACY_EXPORT medAbstractImageViewInteractor : public medAbstractLayeredViewInteractor
 {
     Q_OBJECT
 

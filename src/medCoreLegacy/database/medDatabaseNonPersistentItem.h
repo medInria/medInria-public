@@ -13,18 +13,18 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <medDataIndex.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QList>
 
+#include <medCoreLegacyExport.h>
+
 class medAbstractData;
 
 class medDatabaseNonPersistentItemPrivate;
 
-class MEDCORE_EXPORT medDatabaseNonPersistentItem : public QObject
+class MEDCORELEGACY_EXPORT medDatabaseNonPersistentItem : public QObject
 {
     Q_OBJECT
 

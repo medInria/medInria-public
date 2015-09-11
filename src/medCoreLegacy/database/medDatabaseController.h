@@ -16,8 +16,9 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 
-#include <medCoreExport.h>
 #include <medAbstractDbController.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 class medDatabaseControllerPrivate;
@@ -26,7 +27,7 @@ class medJobItem;
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDCORE_EXPORT medDatabaseController: public medAbstractDbController
+class MEDCORELEGACY_EXPORT medDatabaseController: public medAbstractDbController
 {
     Q_OBJECT
 
@@ -59,7 +60,7 @@ public:
     bool isConnected() const;
 
     virtual QList<medDataIndex> patients() const;
-    virtual QList<medDataIndex> studies(const medDataIndex& index ) const; 
+    virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
     virtual QList<medDataIndex> series(const medDataIndex& index) const;
     virtual QList<medDataIndex> images(const medDataIndex& index ) const;
     virtual QPixmap thumbnail(const medDataIndex& index) const;

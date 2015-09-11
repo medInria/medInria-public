@@ -18,14 +18,15 @@
 #include <QPixmap>
 #include <QUuid>
 
-#include <medCoreExport.h>
 #include <medDataIndex.h>
+
+#include <medCoreLegacyExport.h>
 
 class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
 
-class MEDCORE_EXPORT medDataManager : public QObject
+class MEDCORELEGACY_EXPORT medDataManager : public QObject
 {
     Q_OBJECT
 

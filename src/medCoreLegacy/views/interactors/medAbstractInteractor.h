@@ -15,13 +15,13 @@
 
 #include <dtkCoreSupport/dtkAbstractViewInteractor.h>
 
-#include <medCoreExport.h>
-
 #include <QWidget>
 
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 #include <medImageViewEnum.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractParameter;
 class medBoolParameter;
@@ -34,7 +34,7 @@ class medAbstractInteractorPrivate;
  * A medAbstractInteractor belongs to a medAbstractView and is responsible for managing
  * all the interactions for a type of medAbstractData in the medAbstractView.
  **/
-class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
+class MEDCORELEGACY_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
 {
     Q_OBJECT
 
@@ -47,7 +47,7 @@ public:
 
     virtual void setInputData(medAbstractData *data);
     virtual medAbstractData *inputData() const;
-    
+
     virtual QWidget* toolBoxWidget();
     virtual QWidget* toolBarWidget();
     virtual QWidget* layerWidget();
