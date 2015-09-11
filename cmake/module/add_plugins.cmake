@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -14,13 +14,13 @@
 macro(add_plugin  plugin_name default_build_value)
 
 string(TOUPPER ${plugin_name} upper_case_name)
-  
+
 ## #############################################################################
 ## Get uppercased name.
 ## #############################################################################
 
   option(BUILD_${upper_case_name}_PLUGIN
-    "Build ${plugin_name} plugin" 
+    "Build ${plugin_name} plugin"
     ${default_build_value}
     )
   mark_as_advanced(BUILD_${upper_case_name}_PLUGIN)
@@ -31,7 +31,7 @@ string(TOUPPER ${plugin_name} upper_case_name)
 ## #############################################################################
 
   if(BUILD_ALL_PLUGINS)
-    set(BUILD_${upper_case_name}_PLUGIN ON 
+    set(BUILD_${upper_case_name}_PLUGIN ON
       CACHE BOOL "Build ${plugin_name} plugin" FORCE
       )
   endif()
@@ -49,8 +49,8 @@ endmacro()
 ################################################################################
 #
 # Usage: add_plugins(plugin1, def_value1, plugin2, def_value2, plugin3 ...)
-# For each plugin, create an option in the cache with the value def_value, 
-# if it doesn't already exists. 
+# For each plugin, create an option in the cache with the value def_value,
+# if it doesn't already exists.
 # If the option is set to ON the plugin is subdirs.
 #
 ################################################################################
@@ -70,7 +70,7 @@ macro(add_plugins plugins_list)
         list(GET plugin_list ${index_} default_build_value)
 
         add_plugin(${plugin_name} ${default_build_value})
-        
+
         math(EXPR index "${index} + 2")
     endwhile()
 
