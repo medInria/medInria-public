@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,8 +15,9 @@
 
 #include <dtkCoreSupport/dtkAbstractViewNavigator.h>
 
-#include <medCoreExport.h>
 #include <medImageViewEnum.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractView;
 class medAbstractParameter;
@@ -24,7 +25,7 @@ class medBoolParameter;
 
 
 class medAbstractNavigatorPrivate;
-class MEDCORE_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
+class MEDCORELEGACY_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
 {
     Q_OBJECT
 

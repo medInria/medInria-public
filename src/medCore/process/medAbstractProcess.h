@@ -17,12 +17,12 @@
 #include <QRunnable>
 #include <QPushButton>
 
-#include <medInriaExport.h>
+#include <medCoreExport.h>
 
 class medAbstractParameter;
 class medViewContainerSplitter;
 
-struct MEDINRIA_EXPORT medProcessDetails
+struct MEDCORE_EXPORT medProcessDetails
 {
     QString name;
     QString version;
@@ -30,7 +30,7 @@ struct MEDINRIA_EXPORT medProcessDetails
 };
 
 class medAbstractProcessPrivate;
-class MEDINRIA_EXPORT medAbstractProcess: public QObject, public QRunnable
+class MEDCORE_EXPORT medAbstractProcess: public QObject, public QRunnable
 {
     Q_OBJECT
 public:

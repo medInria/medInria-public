@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,17 +13,17 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <medDataIndex.h>
-
 #include <medMetaDataKeys.h>
 #include <medAbstractData.h>
+
+#include <medCoreLegacyExport.h>
 
 class medImportJobWatcher;
 class medDataIndex;
 class medJobItem;
 
-class MEDCORE_EXPORT medAbstractDbController : public QObject
+class MEDCORELEGACY_EXPORT medAbstractDbController : public QObject
 {
     Q_OBJECT
 

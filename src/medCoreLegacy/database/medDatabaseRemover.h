@@ -18,7 +18,7 @@
 #include <medDataIndex.h>
 #include <medJobItem.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medDatabaseRemoverPrivate;
 
@@ -26,9 +26,9 @@ class medDatabaseRemoverPrivate;
  * @class medDatabaseRemover
  * @brief Removes given data from the database.
  */
-class MEDCORE_EXPORT medDatabaseRemover : public medJobItem
+class MEDCORELEGACY_EXPORT medDatabaseRemover : public medJobItem
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
      medDatabaseRemover(const medDataIndex &index);

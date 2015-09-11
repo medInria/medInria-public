@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtSql/QSqlDatabase>
 
 #include <medAbstractDatabaseImporter.h>
 #include <medDataIndex.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 
@@ -33,7 +33,7 @@ class medAbstractData;
 * medInria database (and as a result they can end up being aggregated by volume)
 * or they can be just indexed (by indicating so using the parameters in the constructor)
 **/
-class MEDCORE_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
+class MEDCORELEGACY_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
 {
     Q_OBJECT
 

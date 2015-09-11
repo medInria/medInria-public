@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,9 +13,10 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <dtkCoreSupport/dtkAbstractFactory.h>
 #include <QtCore>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractDataSource;
 class medAbstractDataSourceFactoryPrivate;
@@ -25,7 +26,7 @@ class medAbstractDataSourceFactoryPrivate;
  * @brief Dynamic source plugins (e.g. Shanoir, PACS, ...) factory
  * medAbstractSourceDataPlugin register to this factory.
  **/
-class MEDCORE_EXPORT medAbstractDataSourceFactory : public dtkAbstractFactory
+class MEDCORELEGACY_EXPORT medAbstractDataSourceFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 

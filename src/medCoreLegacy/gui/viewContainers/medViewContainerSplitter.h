@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,13 +15,13 @@
 
 #include <QSplitter>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medViewContainer;
 class medDataIndex;
 struct QUuid;
 
-class MEDCORE_EXPORT medViewContainerSplitter: public QSplitter
+class MEDCORELEGACY_EXPORT medViewContainerSplitter: public QSplitter
 {
     Q_OBJECT
 public:

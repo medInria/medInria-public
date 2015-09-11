@@ -13,18 +13,16 @@
 
 #pragma once
 
-
-#include <medCoreExport.h>
-
 #include <QSortFilterProxyModel>
 #include <QVector>
 #include <QtCore>
 
+#include <medCoreLegacyExport.h>
 
 /**
  * Proxy model that sits between a model and a view and filters + sorts items
  */
-class MEDCORE_EXPORT medDatabaseProxyModel : public QSortFilterProxyModel
+class MEDCORELEGACY_EXPORT medDatabaseProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:

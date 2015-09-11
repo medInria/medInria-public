@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtGui>
 #include <QtWidgets>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 class medAbstractImageView;
@@ -35,7 +35,7 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
 
 public:
     medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white,
-			QGraphicsItem *parent = 0);
+            QGraphicsItem *parent = 0);
     medClutEditorVertex( const medClutEditorVertex & other,
                          QGraphicsItem *parent = 0);
     ~medClutEditorVertex();
@@ -53,7 +53,7 @@ public:
     void initiateMove();
     void finalizeMove();
     void forceGeometricalConstraints( const QRectF & limits,
-				      bool inManhattan = false );
+                      bool inManhattan = false );
 
     void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
 
@@ -107,7 +107,7 @@ public:
 
     void initiateMoveSelection();
     void constrainMoveSelection( medClutEditorVertex * driver,
-				 bool inManhattan = false );
+                 bool inManhattan = false );
     void finalizeMoveSelection();
     void updateCoordinates();
 
@@ -141,7 +141,7 @@ signals:
     void vertexChanged();
     void vertexRemoved();
     void vertexAdded();
-    
+
 // public slots:
 //     void onDeleteVertex(medClutEditorVertex * v);
 
@@ -251,7 +251,7 @@ protected:
 
 class medClutEditorPrivate;
 
-class MEDCORE_EXPORT medClutEditor : public QWidget
+class MEDCORELEGACY_EXPORT medClutEditor : public QWidget
 {
     Q_OBJECT
 

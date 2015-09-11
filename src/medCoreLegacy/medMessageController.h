@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -17,7 +17,7 @@
 #include <QtGui>
 #include <QtWidgets>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medMessageControllerPrivate;
 
@@ -25,7 +25,7 @@ class medMessageControllerPrivate;
 // medMessage
 // /////////////////////////////////////////////////////////////////
 
-class MEDCORE_EXPORT medMessage : public QWidget
+class MEDCORELEGACY_EXPORT medMessage : public QWidget
 {
     Q_OBJECT
 
@@ -35,7 +35,7 @@ public:
     void startTimer();
     void stopTimer();
 
-	    
+
 protected:
     QLabel *icon;
     QTimer *timer;
@@ -81,7 +81,7 @@ public:
 // /////////////////////////////////////////////////////////////////
 
 
-class MEDCORE_EXPORT medMessageProgress : public medMessage
+class MEDCORELEGACY_EXPORT medMessageProgress : public medMessage
 {
     Q_OBJECT
 
@@ -106,7 +106,7 @@ public slots:
 // medMessageController
 // /////////////////////////////////////////////////////////////////
 
-class MEDCORE_EXPORT medMessageController : public QObject
+class MEDCORELEGACY_EXPORT medMessageController : public QObject
 {
     Q_OBJECT
 

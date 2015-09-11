@@ -16,10 +16,11 @@
 #include <typeinfo>
 #include <vector>
 
-#include <medCoreExport.h>
 #include <medAbstractData.h>
 
-class MEDCORE_EXPORT medAbstractImageData: public medAbstractData
+#include <medCoreLegacyExport.h>
+
+class MEDCORELEGACY_EXPORT medAbstractImageData: public medAbstractData
 {
     Q_OBJECT
 

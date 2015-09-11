@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,11 +14,12 @@
 #pragma once
 
 #include <QVariant>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medDataIndex;
 
-class MEDCORE_EXPORT medAbstractDatabaseItem
+class MEDCORELEGACY_EXPORT medAbstractDatabaseItem
 {
 
 public:
@@ -49,13 +50,13 @@ public:
 
     virtual const medDataIndex & dataIndex () const = 0;
     virtual void setDataIndex (const medDataIndex &) = 0;
-	
+
     virtual QVariant attribute(int column) = 0;
     virtual QVariant value(int column) = 0;
-    
+
     virtual QList<QVariant> attributes() = 0;
     virtual QList<QVariant> values() = 0;
-    
+
     virtual int rowOf(medAbstractDatabaseItem *child) const = 0;
 
 };

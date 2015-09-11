@@ -15,9 +15,11 @@
 
 #include <medAbstractClosingImageProcess.h>
 
+#include <medPluginExport.h>
+
 class medItkClosingImageProcessPrivate;
 
-class MEDINRIA_EXPORT medItkClosingImageProcess: public medAbstractClosingImageProcess
+class MEDPLUGIN_EXPORT medItkClosingImageProcess: public medAbstractClosingImageProcess
 {
 public:
     medItkClosingImageProcess(QObject* parent = NULL);

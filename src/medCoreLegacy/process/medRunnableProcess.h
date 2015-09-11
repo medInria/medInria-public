@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,7 @@
 
 #include <medJobItem.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medRunnableProcessPrivate;
 class dtkAbstractProcess;
@@ -30,7 +30,7 @@ class dtkAbstractProcess;
  * As for any medJobItem, a non-blocking connection is needed for
  * QThreadPool::waitForDone()
  */
-class MEDCORE_EXPORT medRunnableProcess : public medJobItem
+class MEDCORELEGACY_EXPORT medRunnableProcess : public medJobItem
 {
     Q_OBJECT
 
@@ -51,7 +51,7 @@ public slots:
 
 protected:
     virtual void internalRun();
-    
+
 private:
     medRunnableProcessPrivate *d;
 };
