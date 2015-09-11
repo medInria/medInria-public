@@ -25,6 +25,7 @@ macro(set_plugin_install_rules
 set_target_properties(${target} PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/
   ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/
+  DEFINE_SYMBOL MEDINRIA_EXPORTS
   )
 
 install(TARGETS ${target}

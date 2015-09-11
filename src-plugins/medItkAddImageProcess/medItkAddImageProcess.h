@@ -17,7 +17,7 @@
 
 class medItkAddImageProcessPrivate;
 
-class medItkAddImageProcess: public medAbstractAddImageProcess
+class MEDINRIA_EXPORT medItkAddImageProcess: public medAbstractAddImageProcess
 {
 public:
     medItkAddImageProcess(QObject* parent = NULL);

@@ -15,18 +15,19 @@
 
 #include <medAbstractAreaPlugin.h>
 
+#include <medInriaExport.h>
+
 namespace medGuiLayer
 {
     namespace pluginManager
     {
-        void initialize(const QString& path = QString());
+        MEDINRIA_EXPORT void initialize(const QString& path = QString());
     }
 
     namespace area
     {
-        medAbstractAreaPluginManager& pluginManager(void);
-        medAbstractAreaPluginFactory& pluginFactory(void);
-        void initialize(const QString& path);
-
+        MEDINRIA_EXPORT medAbstractAreaPluginManager& pluginManager(void);
+        MEDINRIA_EXPORT medAbstractAreaPluginFactory& pluginFactory(void);
+        MEDINRIA_EXPORT void initialize(const QString& path);
     }
 }

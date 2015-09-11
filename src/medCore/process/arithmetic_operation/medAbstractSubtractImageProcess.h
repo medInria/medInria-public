@@ -17,7 +17,7 @@
 
 #include <dtkCore>
 
-#include <medCoreExport.h>
+#include <medInriaExport.h>
 
 class medAbstractSubtractImageProcess: public medAbstractArithmeticOperationProcess
 {
@@ -27,6 +27,6 @@ public:
 };
 
 DTK_DECLARE_OBJECT        (medAbstractSubtractImageProcess*)
-DTK_DECLARE_PLUGIN        (medAbstractSubtractImageProcess, MEDCORE_EXPORT)
-DTK_DECLARE_PLUGIN_FACTORY(medAbstractSubtractImageProcess, MEDCORE_EXPORT)
-DTK_DECLARE_PLUGIN_MANAGER(medAbstractSubtractImageProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN        (medAbstractSubtractImageProcess, MEDINRIA_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractSubtractImageProcess, MEDINRIA_EXPORT)
+DTK_DECLARE_PLUGIN_MANAGER(medAbstractSubtractImageProcess, MEDINRIA_EXPORT)
