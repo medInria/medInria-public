@@ -20,6 +20,8 @@
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
 
+#include <medDoubleParameter.h>
+
 class medAbstractMorphomathOperationProcessPrivate
 {
 public:
@@ -27,6 +29,8 @@ public:
     medAbstractImageData *output;
     medViewContainer *inputContainer;
     medViewContainer *outputContainer;
+
+    medDoubleParameter *kernelRadius;
 };
 
 medAbstractMorphomathOperationProcess::medAbstractMorphomathOperationProcess(QObject *parent): medAbstractProcess(parent),
@@ -34,6 +38,11 @@ medAbstractMorphomathOperationProcess::medAbstractMorphomathOperationProcess(QOb
 {
     d->input = NULL;
     d->output = NULL;
+
+    d->kernelRadius = new medDoubleParameter("Kernel radius", this);
+    d->kernelRadius->setSingleStep(1);
+    d->kernelRadius->setRange(1, 10);
+    d->kernelRadius->setValue(1);
 }
 
 medAbstractMorphomathOperationProcess::~medAbstractMorphomathOperationProcess()
@@ -61,11 +70,21 @@ void medAbstractMorphomathOperationProcess::setOutput(medAbstractImageData *data
     d->output = data;
 }
 
+medDoubleParameter* medAbstractMorphomathOperationProcess::kernelRadius() const
+{
+    return d->kernelRadius;
+}
+
+void medAbstractMorphomathOperationProcess::setKernelRadius(const double &radius)
+{
+    d->kernelRadius->setValue(radius);
+}
 
 QWidget* medAbstractMorphomathOperationProcess::toolbox() const
 {
     medToolBox* tb = new medToolBox;
     tb->setTitle(this->details().name);
+    tb->addWidget(d->kernelRadius->getWidget());
     tb->addWidget(this->runButton());
 
     return tb;

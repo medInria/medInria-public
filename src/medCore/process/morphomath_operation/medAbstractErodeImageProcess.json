@@ -1,0 +1,9 @@
+{
+          "title" : "Erode image",
+           "kind" : "process",
+           "type" : "medAbstractErodeImageProcess",
+           "tags" : ["morphology","erode","morphomath", "operation"],
+    "description" : "<p>Erode an image.</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}
