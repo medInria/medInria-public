@@ -11,44 +11,18 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.0)
 
-project(MEDINRIA)
+if(NOT DEFINED ${MEDINRIA_VERSION})
+    set(MEDINRIA_VERSION 2.3.0.0)
+endif()
+
+project(MEDINRIA VERSION ${MEDINRIA_VERSION})
 
 
 ## #############################################################################
 ## Set version
 ## #############################################################################
-
-set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING
-  "medInria major version number."
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
-
-set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING
-  "medInria minor version number."
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
-
-set(${PROJECT_NAME}_VERSION_PATCH 2 CACHE STRING
-  "medInria build version number."
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_PATCH)
-
-set(${PROJECT_NAME}_VERSION_TWEAK git CACHE STRING
-  "medInria development marker."
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_TWEAK)
-
-if (NOT ${${PROJECT_NAME}_VERSION_TWEAK} STREQUAL "")
-  set(${PROJECT_NAME}_VERSION
-    ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}.${${PROJECT_NAME}_VERSION_TWEAK}
-    )
-else()
-  set(${PROJECT_NAME}_VERSION
-    ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}
-    )
-endif()
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
@@ -146,6 +120,7 @@ include(add_plugins)
 if(APPLE)
   include(FixDCMTKMacLink)
   include(FixDCMTKMacInstall)
+  set(CMAKE_MACOSX_RPATH OFF)
 endif()
 
 
@@ -188,16 +163,6 @@ endif()
 if (WIN32)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-endif()
-
-if(MSVC)
-  include(dtkPch)
-  option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers"
-    OFF
-    )
-endif()
-if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
-    message("WARNING precompiled headers are not functional so far.")
 endif()
 
 ## #############################################################################

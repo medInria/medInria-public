@@ -11,10 +11,6 @@
 #
 ################################################################################
 
-
-message(STATUS "Trying to find DCMTK relying on FindDCMTK.cmake")
-
-
 # adapted version of FindDCMTK, better suited for super-builds
 
 # - find DCMTK libraries and applications
@@ -250,5 +246,3 @@ set(DCMTK_INCLUDE_DIR ${DCMTK_INCLUDE_DIRS})
 find_package_handle_standard_args(DCMTK
   REQUIRED_VARS ${DCMTK_INCLUDE_DIR_NAMES} DCMTK_LIBRARIES
   FAIL_MESSAGE "Please set DCMTK_DIR and re-run configure")
-
-message(STATUS "Trying to find DCMTK relying on FindDCMTK.cmake - ok")

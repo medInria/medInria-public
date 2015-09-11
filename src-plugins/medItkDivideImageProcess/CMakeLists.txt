@@ -11,10 +11,8 @@
 #
 ################################################################################
 
-project(medItkDivideImageProcess)
+set(TARGET_NAME medItkDivideImageProcess)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
 
 ## #############################################################################
 ## Resolve dependencies
@@ -31,7 +29,7 @@ include(${ITK_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
@@ -40,12 +38,12 @@ list_source_files(${PROJECT_NAME}
 ## include directories.
 ## #############################################################################
 
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
+  ${${PROJECT_NAME}_INCLUDE_DIRS}
   )
 
 
@@ -54,21 +52,21 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## #############################################################################
 
 
-qt5_add_resources(${PROJECT_NAME}_QRC
-  ${${PROJECT_NAME}_QRC}
+qt5_add_resources(${TARGET_NAME}_QRC
+  ${${TARGET_NAME}_QRC}
   )
 
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_QRC}
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
   )
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
@@ -82,5 +80,5 @@ target_link_libraries(${PROJECT_NAME}
 ## Install rules
 ## #############################################################################
 
-set_plugin_install_rules(${PROJECT_NAME})
+set_plugin_install_rules(${TARGET_NAME})
 
