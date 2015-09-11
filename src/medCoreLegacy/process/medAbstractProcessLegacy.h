@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,7 +16,7 @@
 #include <dtkCoreSupport/dtkAbstractProcess.h>
 #include <medAbstractData.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medAbstractProcessLegacyPrivate;
 
@@ -24,7 +24,7 @@ class medAbstractProcessLegacyPrivate;
 /**
  * Extending dtkAbstractProcess class to hold more specific information
  */
-class MEDCORE_EXPORT medAbstractProcessLegacy : public dtkAbstractProcess
+class MEDCORELEGACY_EXPORT medAbstractProcessLegacy : public dtkAbstractProcess
 {
     Q_OBJECT
 

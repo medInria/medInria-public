@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,11 +16,13 @@
 #include <QtCore/QObject>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
+#include <medCoreLegacyExport.h>
+
 class medAbstractData;
 class medDatabaseReaderPrivate;
 class medDataIndex;
 
-class medDatabaseReader : public QObject
+class MEDCORELEGACY_EXPORT medDatabaseReader : public QObject
 {
     Q_OBJECT
 

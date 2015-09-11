@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,8 +13,6 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <medAnnotationData.h>
 #include <medAbstractImageData.h>
 
@@ -22,14 +20,16 @@
 
 #include <QtCore>
 
+#include <medCoreLegacyExport.h>
+
 /**
  * Implementation of an overlay image to be used to mark voxels as inside, outside or unknown.
  * Can be added to an image data as an annotation, in which case the size of this mask should
  * match the size of the image.
- * 
+ *
  * The class contains a medAbstractImageData containing the actual mask data. This can be manipulated.
  */
-class MEDCORE_EXPORT medImageMaskAnnotationData : public medAnnotationData
+class MEDCORELEGACY_EXPORT medImageMaskAnnotationData : public medAnnotationData
 {
     Q_OBJECT
 

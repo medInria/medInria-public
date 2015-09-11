@@ -15,7 +15,9 @@
 
 #include <medAbstractClosingImageProcess.h>
 
-class MEDINRIA_EXPORT medItkClosingImageProcessPlugin : public medAbstractClosingImageProcessPlugin
+#include <medPluginExport.h>
+
+class MEDPLUGIN_EXPORT medItkClosingImageProcessPlugin : public medAbstractClosingImageProcessPlugin
 {
     Q_OBJECT
     Q_INTERFACES(medAbstractClosingImageProcessPlugin)

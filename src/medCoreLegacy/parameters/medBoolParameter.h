@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,7 @@
 
 #include <medAbstractParameter.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class QCheckBox;
 class QPushButton;
@@ -24,7 +24,7 @@ class QSize;
 class QIcon;
 
 class medBoolParameterPrivate;
-class MEDCORE_EXPORT medBoolParameter : public medAbstractBoolParameter
+class MEDCORELEGACY_EXPORT medBoolParameter : public medAbstractBoolParameter
 {
     Q_OBJECT
 

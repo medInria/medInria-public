@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,11 +15,12 @@
 
 #include <medDataIndex.h>
 #include <medToolBox.h>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medActionsToolBoxPrivate;
 
-class MEDCORE_EXPORT medActionsToolBox : public medToolBox
+class MEDCORELEGACY_EXPORT medActionsToolBox : public medToolBox
 {
     Q_OBJECT
 public:
@@ -51,14 +52,14 @@ signals:
 
     /** Emitted when the 'Save' button is clicked. */
     void saveClicked();
-    
-    /** Emitted when the 'new Patient' button is clicked. */   
+
+    /** Emitted when the 'new Patient' button is clicked. */
     void newPatientClicked();
-    
-    /** Emitted when the 'new Study' button is clicked. */   
+
+    /** Emitted when the 'new Study' button is clicked. */
     void newStudyClicked();
-    
-    /** Emitted when the 'Edit' button is clicked. */   
+
+    /** Emitted when the 'Edit' button is clicked. */
     void editClicked();
 
 public slots:

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,8 @@
 
 #include <QWidget>
 #include <QtCore>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medToolBox;
 class medDataIndex;
@@ -28,7 +29,7 @@ class medAbstractData;
  * a source selection widget and several ToolBoxes.
  * All dynamic data source implementation should derive from this class.
  **/
-class MEDCORE_EXPORT medAbstractDataSource : public QObject
+class MEDCORELEGACY_EXPORT medAbstractDataSource : public QObject
 {
     Q_OBJECT
 
@@ -53,10 +54,10 @@ public:
 
     /** Returns all ToolBoxes owned by the source data plugin*/
     virtual QList<medToolBox*> getToolBoxes() = 0;
-	
-	/** Returns a short description of the data source */
-	virtual QString description() const = 0;
-	
+
+    /** Returns a short description of the data source */
+    virtual QString description() const = 0;
+
 signals:
     /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for importing*/
     void dataToImportReceived(QString pathToData);

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,8 +16,7 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <medCoreExport.h>
-
+#include <medCoreLegacyExport.h>
 struct QUuid;
 class QListWidgetItem;
 class QAction;
@@ -46,7 +45,7 @@ class medViewParameterGroup;
 class medLayerParameterGroup;
 
 class medAbstractWorkspaceLegacyPrivate;
-class MEDCORE_EXPORT medAbstractWorkspaceLegacy : public QObject
+class MEDCORELEGACY_EXPORT medAbstractWorkspaceLegacy : public QObject
 {
     Q_OBJECT
 

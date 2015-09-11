@@ -15,9 +15,11 @@
 
 #include <medAbstractDivideImageProcess.h>
 
+#include <medPluginExport.h>
+
 class medItkDivideImageProcessPrivate;
 
-class MEDINRIA_EXPORT medItkDivideImageProcess: public medAbstractDivideImageProcess
+class MEDPLUGIN_EXPORT medItkDivideImageProcess: public medAbstractDivideImageProcess
 {
 public:
     medItkDivideImageProcess(QObject* parent = NULL);

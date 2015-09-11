@@ -13,17 +13,17 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 #include <QtGui>
 #include <QtWidgets>
 
 #include <medAbstractParameterGroup.h>
 
+#include <medCoreLegacyExport.h>
 
 class medLinkMenuPrivate;
 
 
-class MEDCORE_EXPORT medLinkMenu : public QPushButton
+class MEDCORELEGACY_EXPORT medLinkMenu : public QPushButton
 {
     Q_OBJECT
 

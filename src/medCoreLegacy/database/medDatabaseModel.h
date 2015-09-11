@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtCore/QAbstractItemModel>
 #include <QtGui>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractDatabaseItem;
 class medDatabaseModelPrivate;
 class medDataIndex;
 
-class MEDCORE_EXPORT medDatabaseModel : public QAbstractItemModel
+class MEDCORELEGACY_EXPORT medDatabaseModel : public QAbstractItemModel
 {
     Q_OBJECT
 

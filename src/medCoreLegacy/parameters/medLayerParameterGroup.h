@@ -15,11 +15,12 @@
 
 #include <medAbstractParameterGroup.h>
 #include <medAbstractData.h>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medLayerParameterGroupPrivate;
 
-class MEDCORE_EXPORT medLayerParameterGroup : public medAbstractParameterGroup
+class MEDCORELEGACY_EXPORT medLayerParameterGroup : public medAbstractParameterGroup
 {
     Q_OBJECT
 

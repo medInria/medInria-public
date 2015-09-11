@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,7 +15,8 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medParameterPoolManagerPrivate;
 
@@ -24,7 +25,7 @@ class medAbstractParameter;
 class medParameterPool;
 class medAbstractView;
 
-class MEDCORE_EXPORT medParameterPoolManager : public QObject
+class MEDCORELEGACY_EXPORT medParameterPoolManager : public QObject
 {
     Q_OBJECT
 

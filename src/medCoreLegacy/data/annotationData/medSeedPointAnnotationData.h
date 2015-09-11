@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,17 +13,18 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <medAnnotationData.h>
+
 #include <QtWidgets>
 #include <QVector3D>
+
+#include <medCoreLegacyExport.h>
 
 /** Defines a set of seed points that may be attached to a data
  * One of the points may be in a selected state.
  * A singleViewContainer size and color is set, the selected point has a different color.
  */
-class MEDCORE_EXPORT medSeedPointAnnotationData : public medAnnotationData
+class MEDCORELEGACY_EXPORT medSeedPointAnnotationData : public medAnnotationData
 {
     Q_OBJECT
     MED_DATA_INTERFACE("medSeedPointAnnotationData", "medSeedPointAnnotationData")

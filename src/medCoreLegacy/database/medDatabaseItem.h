@@ -13,7 +13,6 @@
 
 #pragma once
 
-#include <medCoreExport.h>
 
 #include <QtDebug>
 #include <QtGui>
@@ -21,9 +20,11 @@
 #include <medDataIndex.h>
 #include <medAbstractDatabaseItem.h>
 
+#include <medCoreLegacyExport.h>
+
 class medDatabaseItemPrivate;
 
-class MEDCORE_EXPORT medDatabaseItem : public medAbstractDatabaseItem
+class MEDCORELEGACY_EXPORT medDatabaseItem : public medAbstractDatabaseItem
 {
 public:
      medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medAbstractDatabaseItem *parent = 0);

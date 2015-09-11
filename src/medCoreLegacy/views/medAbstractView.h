@@ -14,7 +14,8 @@
 #pragma once
 
 #include <dtkCoreSupport/dtkAbstractView.h>
-#include <medCoreExport.h>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractViewPrivate;
 
@@ -44,7 +45,7 @@ class medViewBackend {
  * medAbstractView specializes a dtkAbstractView in the context of medInria.
  * A medAbstractView contains medAbstractInteractor and medAbstractNavigator.
  **/
-class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
+class MEDCORELEGACY_EXPORT medAbstractView: public dtkAbstractView
 {
     Q_OBJECT
 

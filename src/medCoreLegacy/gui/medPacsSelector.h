@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,10 +15,11 @@
 
 class medToolBoxPacsSelectorPrivate;
 
-#include <medCoreExport.h>
 #include <QWidget>
 
-class MEDCORE_EXPORT medPacsSelector : public QWidget
+#include <medCoreLegacyExport.h>
+
+class MEDCORELEGACY_EXPORT medPacsSelector : public QWidget
 {
     Q_OBJECT
 

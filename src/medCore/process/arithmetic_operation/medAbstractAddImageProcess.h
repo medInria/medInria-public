@@ -17,9 +17,9 @@
 
 #include <dtkCore>
 
-#include <medInriaExport.h>
+#include <medCoreExport.h>
 
-class MEDINRIA_EXPORT  medAbstractAddImageProcess: public medAbstractArithmeticOperationProcess
+class MEDCORE_EXPORT  medAbstractAddImageProcess: public medAbstractArithmeticOperationProcess
 {
     Q_OBJECT
 public:
@@ -27,6 +27,6 @@ public:
 };
 
 DTK_DECLARE_OBJECT        (medAbstractAddImageProcess*)
-DTK_DECLARE_PLUGIN        (medAbstractAddImageProcess, MEDINRIA_EXPORT)
-DTK_DECLARE_PLUGIN_FACTORY(medAbstractAddImageProcess, MEDINRIA_EXPORT)
-DTK_DECLARE_PLUGIN_MANAGER(medAbstractAddImageProcess, MEDINRIA_EXPORT)
+DTK_DECLARE_PLUGIN        (medAbstractAddImageProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractAddImageProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_MANAGER(medAbstractAddImageProcess, MEDCORE_EXPORT)

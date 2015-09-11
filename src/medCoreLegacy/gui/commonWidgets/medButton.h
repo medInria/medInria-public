@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medCoreExport.h>
+#include <QWidget>
 
-#include <QtWidgets/QWidget>
+#include <medCoreLegacyExport.h>
 
 class medButtonPrivate;
 
 /**
  * @brief General custom button that loads shows an icon.
  */
-class MEDCORE_EXPORT medButton : public QWidget
+class MEDCORELEGACY_EXPORT medButton : public QWidget
 {
     Q_OBJECT
 

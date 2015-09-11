@@ -14,11 +14,12 @@
 #pragma once
 
 #include <medAbstractDbController.h>
-#include <medCoreExport.h>
 #include <medDataIndex.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QList>
+
+#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 class medDatabaseNonPersistentItem;
@@ -26,7 +27,7 @@ class medDatabaseNonPersistentControllerPrivate;
 class medImportJobWatcher;
 
 
-class MEDCORE_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
+class MEDCORELEGACY_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
 {
     Q_OBJECT
 

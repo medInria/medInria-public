@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,14 +15,14 @@
 
 #include <medAbstractNavigator.h>
 
-#include <medCoreExport.h>
+#include <medCoreLegacyExport.h>
 
 class medDoubleParameter;
 class medAbstractVector2DParameter;
 
 class medAbstractViewNavigatorPrivate;
 
-class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractNavigator
+class MEDCORELEGACY_EXPORT medAbstractViewNavigator : public medAbstractNavigator
 {
     Q_OBJECT
 

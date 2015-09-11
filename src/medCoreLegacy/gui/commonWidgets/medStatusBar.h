@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,8 +16,9 @@
 #include <QStatusBar>
 #include <QWidget>
 #include <QBoxLayout>
-#include <medCoreExport.h>
 #include <medMessageController.h>
+
+#include <medCoreLegacyExport.h>
 
 class medStatusBarPrivate;
 
@@ -26,7 +27,7 @@ class medStatusBarPrivate;
 * @author Alexandre Abadie
 * @brief  This is extended QStatusBar that can display custom messages.
 */
-class MEDCORE_EXPORT medStatusBar : public QStatusBar
+class MEDCORELEGACY_EXPORT medStatusBar : public QStatusBar
 {
     Q_OBJECT
 public:

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,17 +13,18 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QGroupBox>
 #include <QChildEvent>
+
+#include <medCoreLegacyExport.h>
+
 class medGroupBoxPrivate;
 
 /**
  * @brief Extends a QGroupBox to make it collapsible.
  *
  */
-class MEDCORE_EXPORT medGroupBox : public QGroupBox
+class MEDCORELEGACY_EXPORT medGroupBox : public QGroupBox
 {
     Q_OBJECT
 

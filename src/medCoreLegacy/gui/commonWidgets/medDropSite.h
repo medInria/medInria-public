@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,15 +13,15 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
-#include <QtWidgets/QLabel>
+#include <QLabel>
 
 #include <medDataIndex.h>
 
+#include <medCoreLegacyExport.h>
+
 class medDropSitePrivate;
 
-class MEDCORE_EXPORT medDropSite : public QLabel
+class MEDCORELEGACY_EXPORT medDropSite : public QLabel
 {
     Q_OBJECT
 
@@ -49,7 +49,7 @@ signals:
 
     /** Signal emitted when the user clicks on the medDropSite. */
     void clicked();
-    
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
@@ -57,7 +57,7 @@ protected:
     void dropEvent(QDropEvent *event);
     void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent* event);
-    
+
 private:
     medDropSitePrivate *d;
 };
