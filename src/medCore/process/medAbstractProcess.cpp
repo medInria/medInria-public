@@ -33,6 +33,11 @@ medAbstractProcess::medAbstractProcess(QObject *parent): QObject(parent),
     // It can recieve signals trigerring slots after having be deleted by the QThreadPool
     // if setAutoDelete is set to true (default value).
     this->setAutoDelete(false);
+
+    connect(this, &medAbstractProcess::success,
+            this, &medAbstractProcess::_emitNotRunning);
+    connect(this, &medAbstractProcess::failure,
+            this, &medAbstractProcess::_emitNotRunning);
 }
 
 medAbstractProcess::~medAbstractProcess()
@@ -70,6 +75,8 @@ QPushButton* medAbstractProcess::runButton() const
     QPushButton *runButton = new QPushButton(tr("Run"));
     connect(runButton, &QPushButton::clicked,
             this, &medAbstractProcess::runInThread);
+    connect(this, &medAbstractProcess::running,
+            runButton, &QPushButton::setDisabled);
 
     return runButton;
 }
@@ -77,4 +84,10 @@ QPushButton* medAbstractProcess::runButton() const
 void medAbstractProcess::runInThread()
 {
     QThreadPool::globalInstance()->start(this);
+    emit running(true);
+}
+
+void medAbstractProcess::_emitNotRunning()
+{
+    emit running(false);
 }

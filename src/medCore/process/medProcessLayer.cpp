@@ -68,10 +68,12 @@ namespace pluginManager
         medProcessLayer::arithmeticalOperation::subtractImage::initialize(realpath);
         medProcessLayer::arithmeticalOperation::multiplyImage::initialize(realpath);
         medProcessLayer::arithmeticalOperation::divideImage::initialize(realpath);
+
+        medProcessLayer::morphomathOperation::erodeImage::initialize(realpath);
     }
 }
 
-
+// artithmetic
 namespace arithmeticalOperation
 {
     namespace addImage
@@ -175,6 +177,112 @@ namespace arithmeticalOperation
         }
     }
 }
+
+// morphomath
+namespace morphomathOperation
+{
+    namespace erodeImage
+    {
+        namespace _private
+        {
+            medAbstractErodeImageProcessPluginManager manager;
+            medAbstractErodeImageProcessPluginFactory factory;
+        }
+
+        medAbstractErodeImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+
+        medAbstractErodeImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        void initialize(const QString& path, bool verbose)
+        {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
+            pluginManager().initialize(path);
+        }
+    }
+    namespace dilateImage
+    {
+        namespace _private
+        {
+            medAbstractDilateImageProcessPluginManager manager;
+            medAbstractDilateImageProcessPluginFactory factory;
+        }
+
+        medAbstractDilateImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+
+        medAbstractDilateImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        void initialize(const QString& path, bool verbose)
+        {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
+            pluginManager().initialize(path);
+        }
+    }
+    namespace openingImage
+    {
+        namespace _private
+        {
+            medAbstractOpeningImageProcessPluginManager manager;
+            medAbstractOpeningImageProcessPluginFactory factory;
+        }
+
+        medAbstractOpeningImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+
+        medAbstractOpeningImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        void initialize(const QString& path, bool verbose)
+        {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
+            pluginManager().initialize(path);
+        }
+    }
+    namespace closingImage
+    {
+        namespace _private
+        {
+            medAbstractClosingImageProcessPluginManager manager;
+            medAbstractClosingImageProcessPluginFactory factory;
+        }
+
+        medAbstractClosingImageProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+
+        medAbstractClosingImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        void initialize(const QString& path, bool verbose)
+        {
+            if(verbose)
+                pluginManager().setVerboseLoading(verbose);
+            pluginManager().initialize(path);
+        }
+    }
+}
+
 
 }// end of medProcessLayer
 

@@ -11,7 +11,19 @@
 #
 ################################################################################
 
-set(TARGET_NAME medCore)
+set(TARGET_NAME medItkOpeningImageProcess)
+
+
+## #############################################################################
+## Resolve dependencies
+## #############################################################################
+
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
+find_package(ITK)
+include(${ITK_USE_FILE})
+
 
 ## #############################################################################
 ## List Sources
@@ -19,13 +31,6 @@ set(TARGET_NAME medCore)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  process
-  process/arithmetic_operation
-  process/morphomath_operation
-  process/segmentation
-  gui
-  gui/workspace
-  gui/area
   )
 
 
@@ -38,7 +43,7 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${medCoreLegacy_INCLUDE_DIRS}
+  ${${PROJECT_NAME}_INCLUDE_DIRS}
   )
 
 
@@ -46,31 +51,34 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 ## add library
 ## #############################################################################
 
+
 qt5_add_resources(${TARGET_NAME}_QRC
   ${${TARGET_NAME}_QRC}
   )
 
+
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
   )
-
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-    ${QT_LIBRARIES}
-    dtkCoreSupport
-    dtkGuiSupport
-    dtkLog
-    dtkComposer
-    )
-
-## #############################################################################
-## install
-## #############################################################################
-
-set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
+  ${QT_LIBRARIES}
+  dtkCore
+  dtkLog
+  dtkComposer
+  ITKCommon
+  medCore
   )
+
+
+## #############################################################################
+## Install rules
+## #############################################################################
+
+set_plugin_install_rules(${TARGET_NAME})
+

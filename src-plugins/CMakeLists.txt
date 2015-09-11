@@ -39,31 +39,35 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 ## ADD here any new plugin with a default compilation value,
 ## you want to include in the build,
 set(PLUGIN_LIST
-  medVtkFibersData                          ON
-  itkDataImage                              ON
-  vtkDataMesh                               ON
-  itkDataDiffusionGradientList              ON
-  itkDataTensorImage                        ON
-  medSegmentation                           ON
-  itkFilters                                ON
-  qtdcmDataSource                           ON
-  itkDataSHImage                            ON
-  undoRedoRegistration                      ON
-  itkProcessRegistrationDiffeomorphicDemons ON
-  medVtkView                                ON
-  medItkAddImageProcess                     ON
-  medItkSubtractImageProcess                ON
-  medItkMultiplyImageProcess                ON
-  medItkDivideImageProcess                  ON
+  legacy/medVtkFibersData                                                ON
+  legacy/itkDataImage                                                    ON
+  legacy/vtkDataMesh                                                     ON
+  legacy/itkDataDiffusionGradientList                                    ON
+  legacy/itkDataTensorImage                                              ON
+  legacy/medSegmentation                                                 ON
+  legacy/itkFilters                                                      ON
+  legacy/qtdcmDataSource                                                 ON
+  legacy/itkDataSHImage                                                  ON
+  legacy/undoRedoRegistration                                            ON
+  legacy/itkProcessRegistrationDiffeomorphicDemons                       ON
+  legacy/medVtkView                                                      ON
+  process/arithmetic_operation/medItkAddImageProcess                     ON
+  process/arithmetic_operation/medItkSubtractImageProcess                ON
+  process/arithmetic_operation/medItkMultiplyImageProcess                ON
+  process/arithmetic_operation/medItkDivideImageProcess                  ON
+  process/morphomath_operation/medItkErodeImageProcess                   ON
+  process/morphomath_operation/medItkDilateImageProcess                  ON
+  process/morphomath_operation/medItkOpeningImageProcess                 ON
+  process/morphomath_operation/medItkClosingImageProcess                 ON
   )
-
 
 ## #############################################################################
 ## process plugins
 ## #############################################################################
 
 ## see cmake/module/add_plugin.cmake
-add_plugins(${PLUGIN_LIST})
+add_plugins(${PLUGIN_LIST}
+  )
 
 if(BUILD_COMPOSITEDATASET_PLUGIN)
   add_subdirectory(medCompositeDataSets)

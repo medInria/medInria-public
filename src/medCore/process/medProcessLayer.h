@@ -21,6 +21,11 @@
 
 #include <medInriaExport.h>
 
+#include <medAbstractErodeImageProcess.h>
+#include <medAbstractDilateImageProcess.h>
+#include <medAbstractOpeningImageProcess.h>
+#include <medAbstractClosingImageProcess.h>
+
 namespace medProcessLayer
 {
     MEDINRIA_EXPORT medProcessDetails readDetailsFromJson(QString const& filePath);
@@ -57,6 +62,34 @@ namespace medProcessLayer
         {
             MEDINRIA_EXPORT medAbstractDivideImageProcessPluginManager& pluginManager(void);
             MEDINRIA_EXPORT medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
+            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+        }
+    }
+
+    namespace morphomathOperation
+    {
+        namespace erodeImage
+        {
+            MEDINRIA_EXPORT medAbstractErodeImageProcessPluginManager& pluginManager(void);
+            MEDINRIA_EXPORT medAbstractErodeImageProcessPluginFactory& pluginFactory(void);
+            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+        }
+        namespace dilateImage
+        {
+            MEDINRIA_EXPORT medAbstractDilateImageProcessPluginManager& pluginManager(void);
+            MEDINRIA_EXPORT medAbstractDilateImageProcessPluginFactory& pluginFactory(void);
+            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+        }
+        namespace openingImage
+        {
+            MEDINRIA_EXPORT medAbstractOpeningImageProcessPluginManager& pluginManager(void);
+            MEDINRIA_EXPORT medAbstractOpeningImageProcessPluginFactory& pluginFactory(void);
+            MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
+        }
+        namespace closingImage
+        {
+            MEDINRIA_EXPORT medAbstractClosingImageProcessPluginManager& pluginManager(void);
+            MEDINRIA_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
             MEDINRIA_EXPORT void initialize(const QString& path, bool verbose = true);
         }
     }
