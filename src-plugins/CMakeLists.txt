@@ -58,6 +58,7 @@ set(PLUGIN_LIST
   process/morphomath_operation/medItkErodeImageProcess                   ON
   process/morphomath_operation/medItkDilateImageProcess                  ON
   process/morphomath_operation/medItkOpeningImageProcess                 ON
+  process/morphomath_operation/medItkClosingImageProcess                 ON
   )
 
 ## #############################################################################
