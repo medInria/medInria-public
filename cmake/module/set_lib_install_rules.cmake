@@ -29,6 +29,7 @@ macro(set_lib_install_rules
 set_target_properties(${target} PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/
   ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/
+  DEFINE_SYMBOL MEDINRIA_EXPORTS
   )
 
 install(TARGETS ${target}

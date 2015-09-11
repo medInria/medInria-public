@@ -17,7 +17,7 @@
 
 class medItkMultiplyImageProcessPrivate;
 
-class medItkMultiplyImageProcess: public medAbstractMultiplyImageProcess
+class MEDINRIA_EXPORT medItkMultiplyImageProcess: public medAbstractMultiplyImageProcess
 {
 public:
     medItkMultiplyImageProcess(QObject* parent = NULL);
