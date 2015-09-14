@@ -770,7 +770,7 @@ void vtkDataMeshInteractor::hideLabel(int i)
     SetAlphaForValue(0,i);
 }
 
-void vtkDataMeshInteractor::checkAnatomicalLabels(QList<QPair<QString,int> > &listAnatomicalLabels)
+void vtkDataMeshInteractor::checkAnatomicalLabels(QList<QPair<QString,int> > listAnatomicalLabels)
 {
     vtkDataArray * array = d->attribute;
     unsigned int nbTuples = array->GetNumberOfTuples();

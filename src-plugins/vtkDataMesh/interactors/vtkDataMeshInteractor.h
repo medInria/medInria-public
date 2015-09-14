@@ -57,7 +57,7 @@ public:
     void SetAlphaForValue(double alpha,int i);
     QList<double*> * getLabels();
 
-    void checkAnatomicalLabels(QList<QPair<QString,int> > &listAnatomicalLabels);
+    void checkAnatomicalLabels(QList<QPair<QString,int> > listAnatomicalLabels);
     
     public slots:
     void setOpacity(double value);

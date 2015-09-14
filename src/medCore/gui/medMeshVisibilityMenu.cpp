@@ -29,8 +29,8 @@ public :
     //medListWidget *labelList;
     QList<double*> * listColors;
 
-    QList<QPair<QString,int>> listAllAnatomicalLabels;
-    QList<QPair<QString,int>> listAnatomicalLabelsForMesh;
+    QList<QPair<QString,int> > listAllAnatomicalLabels;
+    QList<QPair<QString,int> > listAnatomicalLabelsForMesh;
 };
 
 medMeshVisibilityMenu::medMeshVisibilityMenu(QWidget * parent) : QPushButton(parent), d(new medMeshVisibilityMenuPrivate)
@@ -53,7 +53,6 @@ medMeshVisibilityMenu::medMeshVisibilityMenu(QWidget * parent) : QPushButton(par
     shadowEffect2->setBlurRadius(8);
     shadowEffect2->setColor(QColor(33, 33, 33, 200));
 
-    d->popupWidget->setGraphicsEffect(shadowEffect1);
     d->subPopupWidget->setGraphicsEffect(shadowEffect2);
 #endif
 
