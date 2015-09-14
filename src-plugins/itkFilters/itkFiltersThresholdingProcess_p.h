@@ -60,6 +60,7 @@ public:
         thresholdFilter->Update();
         output->setData ( thresholdFilter->GetOutput() );
         
+        output->copyMetaDataFrom(input);
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " threshold (" + QString::number(threshold) + ")";
     
