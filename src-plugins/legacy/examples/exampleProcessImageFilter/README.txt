@@ -1,0 +1,1 @@
+A simple example of a plugin process image filter

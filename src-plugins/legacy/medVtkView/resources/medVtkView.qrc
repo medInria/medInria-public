@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/3DIcon.png</file>
+        <file>icons/AxialIcon.png</file>
+        <file>icons/broken_link.svg</file>
+        <file>icons/CoronalIcon.png</file>
+        <file>icons/cropping.png</file>
+        <file>icons/cross.png</file>
+        <file>icons/cross.svg</file>
+        <file>icons/link.svg</file>
+        <file>icons/magnify.png</file>
+        <file>icons/SagittalIcon.png</file>
+        <file>icons/stack.png</file>
+        <file>icons/wlww.png</file>
+        <file>icons/eye.png</file>
+        <file>icons/pan.svg</file>
+    </qresource>
+</RCC>

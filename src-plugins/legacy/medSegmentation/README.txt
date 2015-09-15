@@ -1,0 +1,1 @@
+Define a segmentation plugin configuration for medInria.
