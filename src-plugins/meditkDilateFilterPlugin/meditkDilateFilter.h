@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersDilateProcess.h"
+#include "itkFiltersDilateProcess.h"
 
 #include <medAbstractDilateFilter.h>
 

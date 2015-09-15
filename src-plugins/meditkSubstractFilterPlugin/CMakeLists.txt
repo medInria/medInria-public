@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(meditkSubFilterPlugin)
+project(meditkSubstractFilterPlugin)
 
 ## #############################################################################
 ## Setup version numbering
@@ -21,7 +21,7 @@ set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
-
+add_definitions(-DITKFILTERSPLUGIN_VERSION="${${PROJECT_NAME}_VERSION}")
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
@@ -39,7 +39,6 @@ include(${ITK_USE_FILE})
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/legacy
   )
 
 
@@ -53,6 +52,7 @@ list_header_directories_to_include(${PROJECT_NAME}
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../legacy/itkFilters
   )
 
 

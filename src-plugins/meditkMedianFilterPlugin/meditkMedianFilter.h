@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersMedianProcess.h"
+#include "itkFiltersMedianProcess.h"
 
 #include <medAbstractMedianFilter.h>
 

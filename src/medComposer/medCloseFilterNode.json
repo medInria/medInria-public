@@ -2,9 +2,9 @@
           "title" : "Close Filter",
            "kind" : "process",
            "type" : "itkCloseFilter",
-           "tags" : ["filter","gaussian","testme"],
+           "tags" : ["filter","close","testme"],
     "description" : "<h3>Filter itkCloseFilter</h3>
-                     <p>Apply the gaussian filter provided by ITK</p>",
+                     <p>Apply the close filter provided by ITK</p>",
          "inputs" : ["radius","image"],
          "outputs": ["image"]
 }

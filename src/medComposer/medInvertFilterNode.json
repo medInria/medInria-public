@@ -2,9 +2,9 @@
           "title" : "Invert Filter",
            "kind" : "process",
            "type" : "itkInvertFilter",
-           "tags" : ["filter","gaussian","testme"],
+           "tags" : ["filter","invert","testme"],
     "description" : "<h3>Filter itkInvertFilter</h3>
-                     <p>Apply the gaussian filter provided by ITK</p>",
+                     <p>Apply the invert filter provided by ITK</p>",
          "inputs" : ["image"],
          "outputs": ["image"]
 }

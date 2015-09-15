@@ -27,7 +27,7 @@
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 #include <medAbstractImageView.h>
-#include <medAbstractRegistrationProcess.h>
+#include <medAbstractRegistrationProcessLegacy.h>
 
 #include <medAbstractImageData.h>
 #include <medRunnableProcess.h>
@@ -52,8 +52,8 @@ public:
     medAbstractData *fixedData;
     medAbstractData *movingData;
 
-    dtkSmartPointer <medAbstractRegistrationProcess> process;
-    dtkSmartPointer <medAbstractRegistrationProcess> undoRedoProcess;
+    dtkSmartPointer <medAbstractRegistrationProcessLegacy> process;
+    dtkSmartPointer <medAbstractRegistrationProcessLegacy> undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
     medRegistrationAbstractToolBox * currentToolBox;
@@ -219,7 +219,7 @@ void medRegistrationSelectorToolBox::clear(void)
 }
 
 //! Gets the process.
-medAbstractRegistrationProcess * medRegistrationSelectorToolBox::process(void)
+medAbstractRegistrationProcessLegacy *medRegistrationSelectorToolBox::process(void)
 {
     return d->process;
 }
@@ -229,17 +229,17 @@ medAbstractRegistrationProcess * medRegistrationSelectorToolBox::process(void)
  *
  * @param proc The new process.
  */
-void medRegistrationSelectorToolBox::setProcess(medAbstractRegistrationProcess* proc)
+void medRegistrationSelectorToolBox::setProcess(medAbstractRegistrationProcessLegacy *proc)
 {
     d->process = proc;
 }
 
-medAbstractRegistrationProcess * medRegistrationSelectorToolBox::undoRedoProcess()
+medAbstractRegistrationProcessLegacy * medRegistrationSelectorToolBox::undoRedoProcess()
 {
     return d->undoRedoProcess;
 }
 
-void medRegistrationSelectorToolBox::setUndoRedoProcess(medAbstractRegistrationProcess *proc)
+void medRegistrationSelectorToolBox::setUndoRedoProcess(medAbstractRegistrationProcessLegacy *proc)
 {
     d->undoRedoProcess = proc;
 }

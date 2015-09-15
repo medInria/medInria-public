@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersInvertProcess.h"
+#include "itkFiltersInvertProcess.h"
 
 #include <medAbstractInvertFilter.h>
 

@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersErodeProcess.h"
+#include "itkFiltersErodeProcess.h"
 
 #include <medAbstractErodeFilter.h>
 

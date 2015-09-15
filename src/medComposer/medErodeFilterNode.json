@@ -2,9 +2,9 @@
           "title" : "Erode Filter",
            "kind" : "process",
            "type" : "itkErodeFilter",
-           "tags" : ["filter","gaussian","testme"],
+           "tags" : ["filter","erode","testme"],
     "description" : "<h3>Filter itkErodeFilter</h3>
-                     <p>Apply the gaussian filter provided by ITK</p>",
+                     <p>Apply the erode filter provided by ITK</p>",
          "inputs" : ["radius","image"],
          "outputs": ["image"]
 }

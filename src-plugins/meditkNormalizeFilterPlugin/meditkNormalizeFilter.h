@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersNormalizeProcess.h"
+#include "itkFiltersNormalizeProcess.h"
 
 #include <medAbstractNormalizeFilter.h>
 

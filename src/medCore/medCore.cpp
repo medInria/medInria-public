@@ -268,6 +268,46 @@ namespace medCore
                 return _private::manager;
             }
         }
+    }
 
+    namespace registration
+    {
+        namespace nonRigid
+        {
+            namespace _private
+            {
+                medAbstractRegistrationProcessPluginFactory factory;
+                medAbstractRegistrationProcessPluginManager manager;
+            }
+
+            medAbstractRegistrationProcessPluginFactory& pluginFactory(void)
+            {
+                return _private::factory;
+            }
+
+            medAbstractRegistrationProcessPluginManager& pluginManager(void)
+            {
+                return _private::manager;
+            }
+        }
+
+        namespace rigid
+        {
+            namespace _private
+            {
+                medAbstractRigidRegistrationPluginFactory factory;
+                medAbstractRigidRegistrationPluginManager manager;
+            }
+
+            medAbstractRigidRegistrationPluginFactory& pluginFactory(void)
+            {
+                return _private::factory;
+            }
+
+            medAbstractRigidRegistrationPluginManager& pluginManager(void)
+            {
+                return _private::manager;
+            }
+        }
     }
 }

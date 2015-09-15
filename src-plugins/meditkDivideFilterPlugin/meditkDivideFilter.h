@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersDivideideProcess.h"
+#include "itkFiltersDivideProcess.h"
 
 #include <medAbstractDivideFilter.h>
 
@@ -29,7 +29,7 @@ public:
     void run();
 
 private:
-    itkFiltersDivideideProcess process;
+    itkFiltersDivideProcess process;
     medAbstractImageData* res;
 
 };

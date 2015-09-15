@@ -17,5 +17,6 @@
         <file>medOpenFilterNode.json</file>
         <file>medShrinkFilterNode.json</file>
         <file>medWindowingFilterNode.json</file>
+        <file>medRigidRegistrationNode.json</file>
     </qresource>
 </RCC>

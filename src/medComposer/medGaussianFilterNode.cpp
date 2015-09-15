@@ -42,9 +42,15 @@ void medGaussianFilterNode::run(void)
     else
     {
 
+        qDebug()<<medCore::filtering::gaussian::pluginManager().plugins();
+
+
         medAbstractGaussianFilter* filter = this->object();
         if(!this->object())
+        {
+            qWarning()<<"no plugin found";
             return;
+        }
         filter->setImage(d->imgRecv.data());
         filter->setSigma(d->sigmaRecv.data());
         filter->run();

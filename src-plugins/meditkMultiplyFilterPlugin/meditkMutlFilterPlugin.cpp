@@ -1,5 +1,5 @@
-#include "meditkMultFilter.h"
-#include "meditkMultFilterPlugin.h"
+#include "meditkMultiplyFilter.h"
+#include "meditkMultiplyFilterPlugin.h"
 
 #include <dtkCore>
 #include "medCore.h"
@@ -8,13 +8,13 @@
 // meditkMultFilterPlugin
 // ///////////////////////////////////////////////////////////////////
 
-void meditkMultFilterPlugin::initialize(void)
+void meditkMultiplyFilterPlugin::initialize(void)
 {
     qDebug()<<"loading filter plugin";
-    medCore::filtering::multiply::pluginFactory().record("itkMultFilter", meditkMultFilterCreator);
+    medCore::filtering::multiply::pluginFactory().record("itkMultFilter", meditkMultiplyFilterCreator);
 }
 
-void meditkMultFilterPlugin::uninitialize(void)
+void meditkMultiplyFilterPlugin::uninitialize(void)
 {
 
 }
@@ -23,5 +23,5 @@ void meditkMultFilterPlugin::uninitialize(void)
 // Plugin meta data
 // ///////////////////////////////////////////////////////////////////
 
-DTK_DEFINE_PLUGIN(meditkMultFilter)
+DTK_DEFINE_PLUGIN(meditkMultiplyFilter)
 

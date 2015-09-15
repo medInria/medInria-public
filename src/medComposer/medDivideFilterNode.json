@@ -2,9 +2,9 @@
           "title" : "Divide Filter",
            "kind" : "process",
            "type" : "itkDivideFilter",
-           "tags" : ["filter","gaussian","testme"],
+           "tags" : ["filter","divide","testme"],
     "description" : "<h3>Filter itkDivideFilter</h3>
-                     <p>Apply the gaussian filter provided by ITK</p>",
+                     <p>Apply the divide filter provided by ITK</p>",
          "inputs" : ["radius","image"],
          "outputs": ["image"]
 }

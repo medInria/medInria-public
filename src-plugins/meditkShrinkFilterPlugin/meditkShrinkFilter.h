@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersShrinkProcess.h"
+#include "itkFiltersShrinkProcess.h"
 
 #include <medAbstractShrinkFilter.h>
 

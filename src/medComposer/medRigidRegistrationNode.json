@@ -1,9 +1,9 @@
 {
           "title" : "Registration",
            "kind" : "process",
-           "type" : "registrationProcessNode",
+           "type" : "medRigidRegistrationNode",
            "tags" : ["registration","testme"],
-    "description" : "<h3>Registration Node</h3>"
+    "description" : "<h3>Registration Node</h3>",
          "inputs" : ["fixedImage","movingImage"],
-         "outputs": ["deformationField","image"]
+         "outputs": ["transfo","image"]
 }

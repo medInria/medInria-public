@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersGaussianProcess.h"
+#include "itkFiltersGaussianProcess.h"
 
 #include <medAbstractGaussianFilter.h>
 

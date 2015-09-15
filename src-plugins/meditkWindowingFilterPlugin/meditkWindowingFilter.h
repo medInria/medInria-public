@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersWindowingProcess.h"
+#include "itkFiltersWindowingProcess.h"
 
 #include <medAbstractWindowingFilter.h>
 

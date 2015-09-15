@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersOpenProcess.h"
+#include "itkFiltersOpenProcess.h"
 
 #include <medAbstractOpenFilter.h>
 

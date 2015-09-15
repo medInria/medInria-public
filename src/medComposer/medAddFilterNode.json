@@ -5,6 +5,6 @@
            "tags" : ["filter","Add","testme"],
     "description" : "<h3>Filter itkAddFilter</h3>
                      <p>Apply the Add filter provided by ITK</p>",
-         "inputs" : ["radius","image"],
+         "inputs" : ["value","image"],
          "outputs": ["image"]
 }

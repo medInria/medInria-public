@@ -2,9 +2,9 @@
           "title" : "Open Filter",
            "kind" : "process",
            "type" : "itkOpenFilter",
-           "tags" : ["filter","gaussian","testme"],
+           "tags" : ["filter","open","testme"],
     "description" : "<h3>Filter itkOpenFilter</h3>
-                     <p>Apply the gaussian filter provided by ITK</p>",
+                     <p>Apply the open filter provided by ITK</p>",
          "inputs" : ["radius","image"],
          "outputs": ["image"]
 }

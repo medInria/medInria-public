@@ -20,6 +20,9 @@
 #include "medAbstractShrinkFilter.h"
 #include "medAbstractSubstractFilter.h"
 #include "medAbstractWindowingFilter.h"
+#include "medAbstractRegistrationProcess.h"
+#include "medAbstractRigidRegistration.h"
+
 
 class medAbstractAddFilter;
 class medAbstractAddFilterPluginFactory;
@@ -76,6 +79,16 @@ class medAbstractWindowingFilterPluginManager;
 class medAbstractGaussianFilter;
 class medAbstractGaussianFilterPluginFactory;
 class medAbstractGaussianFilterPluginManager;
+
+class medAbstractRegistrationProcess;
+class medAbstractRegistrationProcessPluginFactory;
+class medAbstractRegistrationProcessPluginManager;
+
+class medAbstractRigidRegistration;
+class medAbstractRigidRegistrationPluginFactory;
+class medAbstractRigidRegistrationPluginManager;
+
+
 
 namespace medCore
 {
@@ -166,6 +179,23 @@ namespace medCore
         }
 
     }
+
+    namespace registration
+    {
+        namespace nonRigid
+        {
+            MEDCORE_EXPORT medAbstractRegistrationProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT medAbstractRegistrationProcessPluginManager& pluginManager(void);
+        }
+
+
+        namespace rigid
+        {
+            MEDCORE_EXPORT medAbstractRigidRegistrationPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT medAbstractRigidRegistrationPluginManager& pluginManager(void);
+        }
+    }
+
 }
 
 #endif

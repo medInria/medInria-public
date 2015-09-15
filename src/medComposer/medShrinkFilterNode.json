@@ -2,9 +2,9 @@
           "title" : "Shrink Filter",
            "kind" : "process",
            "type" : "itkShrinkFilter",
-           "tags" : ["filter","gaussian","testme"],
+           "tags" : ["filter","shrink","testme"],
     "description" : "<h3>Filter itkShrinkFilter</h3>
-                     <p>Apply the gaussian filter provided by ITK</p>",
+                     <p>Apply the shrink filter provided by ITK</p>",
          "inputs" : ["coef x","coef y","coef z","image"],
          "outputs": ["image"]
 }

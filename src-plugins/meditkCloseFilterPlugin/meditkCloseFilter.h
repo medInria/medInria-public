@@ -3,7 +3,7 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkFiltersCloseProcess.h"
+#include "itkFiltersCloseProcess.h"
 
 #include <medAbstractCloseFilter.h>
 
