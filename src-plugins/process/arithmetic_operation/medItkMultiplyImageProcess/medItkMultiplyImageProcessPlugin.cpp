@@ -19,7 +19,7 @@
 
 void medItkMultiplyImageProcessPlugin::initialize(void)
 {
-    medProcessLayer::arithmeticalOperation::multiplyImage::pluginFactory().record("medItkMultiplyImageProcess",
+    medProcessLayer::arithmeticalOperation::multiplyImage::pluginFactory().record(medItkMultiplyImageProcess::staticMetaObject.className(),
                                                                                   medItkMultiplyImageProcessCreator);
 }
 

@@ -19,7 +19,7 @@
 
 void medItkDilateImageProcessPlugin::initialize(void)
 {
-    medProcessLayer::morphomathOperation::dilateImage::pluginFactory().record("medItkDilateImageProcess",
+    medProcessLayer::morphomathOperation::dilateImage::pluginFactory().record(medItkDilateImageProcess::staticMetaObject.className(),
                                                                               medItkDilateImageProcessCreator);
 }
 
