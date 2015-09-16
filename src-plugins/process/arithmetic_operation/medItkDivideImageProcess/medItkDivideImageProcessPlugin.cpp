@@ -19,7 +19,7 @@
 
 void medItkDivideImageProcessPlugin::initialize(void)
 {
-    medProcessLayer::arithmeticalOperation::divideImage::pluginFactory().record("medItkDivideImageProcess",
+    medProcessLayer::arithmeticalOperation::divideImage::pluginFactory().record(medItkDivideImageProcess::staticMetaObject.className(),
                                                                                 medItkDivideImageProcessCreator);
 }
 
