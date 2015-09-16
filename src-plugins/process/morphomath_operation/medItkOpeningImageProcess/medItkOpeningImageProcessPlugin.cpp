@@ -19,7 +19,7 @@
 
 void medItkOpeningImageProcessPlugin::initialize(void)
 {
-    medProcessLayer::morphomathOperation::openingImage::pluginFactory().record("medItkOpeningImageProcess",
+    medProcessLayer::morphomathOperation::openingImage::pluginFactory().record(medItkOpeningImageProcess::staticMetaObject.className(),
                                                                                medItkOpeningImageProcessCreator);
 }
 
