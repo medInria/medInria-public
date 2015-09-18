@@ -51,8 +51,7 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 ## add library
 ## #############################################################################
 
-
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
