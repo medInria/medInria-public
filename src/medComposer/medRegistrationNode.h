@@ -5,7 +5,7 @@
 #include <dtkComposer>
 
 #include "medAbstractImageData.h"
-#include "medAbstractRigidRegistration.h"
+#include "medAbstractRegistrationProcess.h"
 
 class medRegistrationNodePrivate;
 
@@ -13,7 +13,7 @@ class medRegistrationNodePrivate;
 //
 // ///////////////////////////////////////////////////////////////////
 
-class medRegistrationNode : public dtkComposerNodeObject<medAbstractRigidRegistration>
+class medRegistrationNode : public dtkComposerNodeObject<medAbstractRegistrationProcess>
 {
 public:
      medRegistrationNode(void);
@@ -21,9 +21,11 @@ public:
 
 public:
     void run(void);
+    QWidget* editor();
 
 private:
     medRegistrationNodePrivate *d;
+    QWidget* m_widget;
 };
 
 //

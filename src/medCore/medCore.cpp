@@ -278,6 +278,7 @@ namespace medCore
             {
                 medAbstractRegistrationProcessPluginFactory factory;
                 medAbstractRegistrationProcessPluginManager manager;
+                medAbstractRegistrationProcessWidgetFactory widgetFactory;
             }
 
             medAbstractRegistrationProcessPluginFactory& pluginFactory(void)
@@ -288,6 +289,11 @@ namespace medCore
             medAbstractRegistrationProcessPluginManager& pluginManager(void)
             {
                 return _private::manager;
+            }
+
+            medAbstractRegistrationProcessWidgetFactory& widgetFactory(void)
+            {
+                return _private::widgetFactory;
             }
         }
 

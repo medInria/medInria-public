@@ -69,22 +69,6 @@ int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
-    medCore::filtering::gaussian    ::pluginManager().initialize("../plugins");
-    medCore::filtering::add         ::pluginManager().initialize("../plugins");
-    medCore::filtering::close       ::pluginManager().initialize("../plugins");
-    medCore::filtering::dilate      ::pluginManager().initialize("../plugins");
-    medCore::filtering::divide      ::pluginManager().initialize("../plugins");
-    medCore::filtering::erode       ::pluginManager().initialize("../plugins");
-    medCore::filtering::invert      ::pluginManager().initialize("../plugins");
-    medCore::filtering::multiply    ::pluginManager().initialize("../plugins");
-    medCore::filtering::normalize   ::pluginManager().initialize("../plugins");
-    medCore::filtering::open        ::pluginManager().initialize("../plugins");
-    medCore::filtering::shrink      ::pluginManager().initialize("../plugins");
-    medCore::filtering::substract   ::pluginManager().initialize("../plugins");
-    medCore::filtering::windowing   ::pluginManager().initialize("../plugins");
-
-    medCore::registration::rigid    ::pluginManager().initialize("../plugins");
-
 
     // this needs to be done before creating the QApplication object, as per the
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
@@ -190,6 +174,30 @@ int main(int argc,char* argv[]) {
         }
     }
     // END OF DATABASE INITIALISATION
+
+
+    QString path=QApplication::applicationDirPath()+"/../plugins";
+
+    qDebug()<<path;
+
+    medCore::filtering::gaussian    ::pluginManager().initialize(path);
+    medCore::filtering::add         ::pluginManager().initialize(path);
+    medCore::filtering::close       ::pluginManager().initialize(path);
+    medCore::filtering::dilate      ::pluginManager().initialize(path);
+    medCore::filtering::divide      ::pluginManager().initialize(path);
+    medCore::filtering::erode       ::pluginManager().initialize(path);
+    medCore::filtering::invert      ::pluginManager().initialize(path);
+    medCore::filtering::multiply    ::pluginManager().initialize(path);
+    medCore::filtering::normalize   ::pluginManager().initialize(path);
+    medCore::filtering::open        ::pluginManager().initialize(path);
+    medCore::filtering::shrink      ::pluginManager().initialize(path);
+    medCore::filtering::substract   ::pluginManager().initialize(path);
+    medCore::filtering::windowing   ::pluginManager().initialize(path);
+
+    medCore::registration::rigid    ::pluginManager().initialize(path);
+    medCore::registration::nonRigid ::pluginManager().initialize(path);
+
+
     dtkLogger::instance().setLevel("trace");
     dtkLogger::instance().attachConsole();
     medPluginManager::instance()->setVerboseLoading(true);

@@ -186,6 +186,7 @@ namespace medCore
         {
             MEDCORE_EXPORT medAbstractRegistrationProcessPluginFactory& pluginFactory(void);
             MEDCORE_EXPORT medAbstractRegistrationProcessPluginManager& pluginManager(void);
+            MEDCORE_EXPORT medAbstractRegistrationProcessWidgetFactory& widgetFactory(void);
         }
 
 
@@ -193,6 +194,7 @@ namespace medCore
         {
             MEDCORE_EXPORT medAbstractRigidRegistrationPluginFactory& pluginFactory(void);
             MEDCORE_EXPORT medAbstractRigidRegistrationPluginManager& pluginManager(void);
+
         }
     }
 

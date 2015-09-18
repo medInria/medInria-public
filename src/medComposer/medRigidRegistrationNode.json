@@ -1,5 +1,5 @@
 {
-          "title" : "Registration",
+          "title" : "Rigid Registration",
            "kind" : "process",
            "type" : "medRigidRegistrationNode",
            "tags" : ["registration","testme"],

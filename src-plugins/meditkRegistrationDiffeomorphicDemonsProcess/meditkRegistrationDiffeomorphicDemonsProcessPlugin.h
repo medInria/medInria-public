@@ -1,12 +1,12 @@
 #pragma once
 
 #include <dtkCore>
-#include <medAbstractRegistrationDiffeomorphicDemonsProcess.h>
+#include <medAbstractRegistrationProcess.h>
 
-class meditkRegistrationDiffeomorphicDemonsProcessPlugin: public medAbstractRegistrationDiffeomorphicDemonsProcessPlugin
+class meditkRegistrationDiffeomorphicDemonsProcessPlugin: public medAbstractRegistrationProcessPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(medAbstractRegistrationDiffeomorphicDemonsProcessPlugin)
+    Q_INTERFACES(medAbstractRegistrationProcessPlugin)
     Q_PLUGIN_METADATA(IID "fr.inria.meditkRegistrationDiffeomorphicDemonsProcessPlugin" FILE "meditkRegistrationDiffeomorphicDemonsProcessPlugin.json")
 
 public:

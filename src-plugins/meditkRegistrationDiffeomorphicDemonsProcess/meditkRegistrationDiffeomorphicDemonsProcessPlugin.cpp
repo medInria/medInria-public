@@ -10,7 +10,8 @@
 
 void meditkRegistrationDiffeomorphicDemonsProcessPlugin::initialize(void)
 {
-    medCore::registration::pluginFactory().record("itkRegistrationDiffeomorphicDemonsProcess", meditkRegistrationDiffeomorphicDemonsProcessCreator);
+    medCore::registration::nonRigid::pluginFactory().record("itkRegistrationDiffeomorphicDemonsProcess", meditkRegistrationDiffeomorphicDemonsProcessCreator);
+    medCore::registration::nonRigid::widgetFactory().record("itkRegistrationDiffeomorphicDemonsProcess", new meditkProcessRegistrationDiffeomorphicDemonsToolBox());
 }
 
 void meditkRegistrationDiffeomorphicDemonsProcessPlugin::uninitialize(void)

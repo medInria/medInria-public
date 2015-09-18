@@ -33,6 +33,7 @@
 #include "medWindowingFilterNode.h"
 #include "medGaussianFilterNode.h"
 #include "medRigidRegistrationNode.h"
+#include "medRegistrationNode.h"
 
 // ///////////////////////////////////////////////////////////////////
 // 
@@ -72,6 +73,7 @@ void medComposerFactoryExtension::extend(dtkComposerNodeFactory *factory)
 
     factory->record(":json/medGaussianFilterNode.json"   , dtkComposerNodeCreator< medGaussianFilterNode >);
     factory->record(":json/medRigidRegistrationNode.json"   , dtkComposerNodeCreator< medRigidRegistrationNode >);
+    factory->record(":json/medRegistrationNode.json"   , dtkComposerNodeCreator< medRegistrationNode >);
 
 
 }

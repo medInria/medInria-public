@@ -3,9 +3,10 @@
 #include <dtkCore>
 #include <medCore.h>
 
-#include "legacy/itkProcessRegistrationDiffeomorphicDemons.h"
+#include "itkProcessRegistrationDiffeomorphicDemons.h"
+#include "meditkRegistrationDiffeomorphicDemonsProcessToolbox.h"
 
-#include <medAbstractRegistrationDiffeomorphicDemonsProcess.h>
+#include <medAbstractRegistrationProcess.h>
 
 
 class meditkRegistrationDiffeomorphicDemonsProcess : public medAbstractRegistrationProcess
@@ -15,34 +16,51 @@ class meditkRegistrationDiffeomorphicDemonsProcess : public medAbstractRegistrat
 public:
      meditkRegistrationDiffeomorphicDemonsProcess(void);
     ~meditkRegistrationDiffeomorphicDemonsProcess(void);
-
-    virtual void setUpdateRule(unsigned char updateRule);
-    virtual void setGradientType(unsigned char gradientType);
-    virtual void setMaximumUpdateLength(float maximumUpdateStepLength);
-    virtual void setUpdateFieldStandardDeviation(float updateFieldStandardDeviation);
-    virtual void setDisplacementFieldStandardDeviation(float displacementFieldStandardDeviation);
-    virtual void setUseHistogramMatching(bool useHistogramMatching);
-    virtual void setNumberOfIterations(std::vector<unsigned int> iterations);
     
-    virtual void setImage(medAbstractImageData* image) = 0;
+    virtual void setFixedImage(medAbstractImageData* image);
+    virtual void setMovingImage(medAbstractImageData* image);
+
 
 public: 
-    virtual medAbstractImageData* image(void) const = 0;
-    virtual QTransform transform(void) const = 0;
+    virtual medAbstractImageData* transformedImage(void) const;
+    //virtual medAbstractImageData* transform(void) const;
+
+    //virtual QTransform transform(void) const = 0;
+
+public slots:
+      void setDisplacementFieldStandardDeviation(double value);
+      void setGradientType(int );
+      void setUpdateRule(int rule_id);
+      void setUpdateFieldStandardDeviation(double value);
+      void setMaximumUpdateLength(double value);
+      void setUseHistogramMatching(bool useHisto);
+      void setNumberOfIterations(QString text);
+      void setOutputFile(QString file);
 
 public:
     void run();
 
 private:
     itkProcessRegistrationDiffeomorphicDemons process;
-    medAbstractImageData* transformedImage;
-    QTransform resultingTransfo;
-    
+    medAbstractImageData* m_movingImage;
+    medAbstractImageData* m_fixedImage;
+
+    medAbstractImageData* m_transformedImage;
+    medAbstractData* m_transform;
+
+    std::vector<unsigned int> m_iterations;
+    unsigned char m_updateRule;
+    unsigned char m_gradientType;
+    double m_maximumUpdateStepLength;
+    double m_updateFieldStandardDeviation;
+    double m_displacementFieldStandardDeviation;
+    bool m_useHistogramMatching;
+    QString m_outputFile;
 
 };
 
 
-inline medAbstractRegistrationDiffeomorphicDemonsProcess *meditkRegistrationDiffeomorphicDemonsProcessCreator(void)
+inline medAbstractRegistrationProcess *meditkRegistrationDiffeomorphicDemonsProcessCreator(void)
 {
     return new meditkRegistrationDiffeomorphicDemonsProcess();
 }

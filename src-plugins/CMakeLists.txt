@@ -79,10 +79,8 @@ set(PLUGIN_LIST
   meditkSubstractFilterPlugin                       ON
   meditkWindowingFilterPlugin                       ON
   meditkRigidRegistration                           ON
-
-
-  
-  
+  meditkRegistrationDiffeomorphicDemonsProcess      ON
+ 
   )   
 
 

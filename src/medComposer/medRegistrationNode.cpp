@@ -6,6 +6,7 @@
 
 #include "medRegistrationNode.h"
 #include "medAbstractImageData.h"
+#include "medWidgets/medAbstractRegistrationToolBox.h"
 #include "medCore.h"
 
 class medRegistrationNodePrivate
@@ -19,9 +20,9 @@ public:
     dtkComposerTransmitterEmitter< QTransform >      transfoEmt;
 };
 
-medRegistrationNode::medRegistrationNode(void) : dtkComposerNodeObject<medAbstractRigidRegistration>(), d(new medRegistrationNodePrivate())
+medRegistrationNode::medRegistrationNode(void) : dtkComposerNodeObject<medAbstractRegistrationProcess>(), d(new medRegistrationNodePrivate())
 {
-    this->setFactory(medCore::registration::rigid::pluginFactory());
+    this->setFactory(medCore::registration::nonRigid::pluginFactory());
 
     this->appendReceiver(&d->movingImageRecv);
     this->appendReceiver(&d->fixedImageRecv);
@@ -35,9 +36,18 @@ medRegistrationNode::~medRegistrationNode(void)
     delete d;
 }
 
+QWidget* medRegistrationNode::editor()
+{
+    m_widget=medCore::registration::nonRigid::widgetFactory().get(this->currentImplementation());
+    medAbstractRegistrationToolbox* toolbox=dynamic_cast<medAbstractRegistrationToolbox*>(m_widget);
+    if(!toolbox)
+        return NULL;
+    toolbox->setProcess(this->object());
+    return toolbox;
+}
+
 void medRegistrationNode::run(void)
 {
-    qDebug()<< Q_FUNC_INFO ;
     if (d->fixedImageRecv.isEmpty() || d->movingImageRecv.isEmpty())
     {
         qDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
@@ -45,7 +55,7 @@ void medRegistrationNode::run(void)
     }
     else
     {
-        medAbstractRigidRegistration* process = this->object();
+        medAbstractRegistrationProcess* process = this->object();
         if(!process)
         {
             qDebug()<<"no implementation found";
@@ -55,9 +65,9 @@ void medRegistrationNode::run(void)
         process->setMovingImage(d->movingImageRecv.data());
         process->setFixedImage(d->fixedImageRecv.data());
         process->run();
-        //d->imgEmt.setData(process->transformedImage());
+        d->imgEmt.setData(process->transformedImage());
         
-        qDebug()<<"filtering done";
+        qDebug()<<"registration done";
     }
 }
 

@@ -4,22 +4,30 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-#
+# 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
 ################################################################################
 
-project(medComposer)
-
+project(medWidgets)
 
 ## #############################################################################
 ## find requireds
 ## #############################################################################
 
+# find dtk
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
+
+# find itk
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
+
+# find vtk
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
 
 ## #############################################################################
@@ -37,24 +45,20 @@ list_source_files(${PROJECT_NAME}
 
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../medCore
+
+
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${medCore_INCLUDE_DIRS}
-  )
-
-
-set(${PROJECT_NAME}_RCC medComposer.qrc)
-
-qt5_add_resources(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RCC})
-
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+    
+    
 ## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CFILES}
-    ${${PROJECT_NAME}_SOURCES_QRC}
   )
 
 
@@ -63,15 +67,10 @@ add_library(${PROJECT_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-    ${QT_LIBRARIES}
-  medCore
-  medCoreLegacy
-  medWidgets
-  dtkLog
-  dtkComposer
-  dtkCore
+  ${QT_LIBRARIES}
+  dtkCoreSupport
+    dtkCore
   )
-
 
 ## #############################################################################
 ## install

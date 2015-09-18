@@ -39,7 +39,6 @@ include(${ITK_USE_FILE})
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/legacy
   )
 
 
@@ -53,6 +52,7 @@ list_header_directories_to_include(${PROJECT_NAME}
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../legacy/itkProcessRegistrationDiffeomorphicDemons
   )
 
 

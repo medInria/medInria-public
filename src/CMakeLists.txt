@@ -22,6 +22,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
 
 add_subdirectory(medCoreLegacy)
 add_subdirectory(medCore)
+add_subdirectory(medWidgets)
 
 add_subdirectory(medTest)
 add_subdirectory(medPacs)
