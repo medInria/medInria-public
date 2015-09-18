@@ -59,15 +59,10 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS})
 ## add library
 ## #############################################################################
 
-qt5_add_resources(${TARGET_NAME}_QRC
-  ${${TARGET_NAME}_QRC}
-  )
-
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
-
 
 ## #############################################################################
 ## Link

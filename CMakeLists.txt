@@ -126,10 +126,11 @@ endif()
 
 
 ## #############################################################################
-## Qt Automoc
+## Qt Auto tools
 ## #############################################################################
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 #   Find includes in corresponding build (and source) directories
 #   (nedded for generated files)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
