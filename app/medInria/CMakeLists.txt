@@ -91,10 +91,6 @@ endif()
 ## Add Exe
 ## #############################################################################
 
-qt5_add_resources(${TARGET_NAME}_QRC
-  ${${TARGET_NAME}_QRC}
-  )
-
 add_executable(${TARGET_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
