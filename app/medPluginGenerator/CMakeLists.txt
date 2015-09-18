@@ -52,7 +52,6 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 ## #############################################################################
 
 qt5_wrap_ui(${TARGET_NAME}_UI ${${TARGET_NAME}_UI})
-qt5_add_resources(${TARGET_NAME}_QRC ${${TARGET_NAME}_QRC})
 
 if (APPLE)
   set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)
