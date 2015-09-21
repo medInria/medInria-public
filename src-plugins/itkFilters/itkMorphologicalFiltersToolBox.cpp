@@ -85,6 +85,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     QLabel * morphoFilterLabel = new QLabel ( tr ( "Kernel radius:" ) );
     QHBoxLayout * morphoFilterLayout = new QHBoxLayout;
     d->mmButton = new QRadioButton(tr("mm"), this);
+    d->mmButton->setObjectName("mm");
     d->mmButton->setToolTip(tr("If \"mm\" is selected, the dimensions of the structuring element will be calculated in mm."));
     d->mmButton->setChecked(true);
 
@@ -101,6 +102,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
+    runButton->setObjectName("Run");
     runButton->setFocusPolicy ( Qt::NoFocus );
     runButton->setToolTip(tr("Launch the selected filter"));
 
