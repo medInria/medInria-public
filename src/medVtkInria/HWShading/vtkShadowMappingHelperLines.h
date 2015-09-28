@@ -36,7 +36,7 @@ class MEDVTKINRIA_EXPORT vtkShadowMappingHelperLines : public vtkShadowMappingHe
 {
 public:
   static vtkShadowMappingHelperLines* New();
-  vtkTypeRevisionMacro (vtkShadowMappingHelperLines, vtkShadowMappingHelper);
+  vtkTypeMacro (vtkShadowMappingHelperLines, vtkShadowMappingHelper);
   
 protected:
   vtkShadowMappingHelperLines();

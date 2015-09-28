@@ -43,7 +43,7 @@ class MEDVTKINRIA_EXPORT vtkCompareImageManager: public vtkObject
   //ETX
   
   static vtkCompareImageManager* New();
-  vtkTypeRevisionMacro(vtkCompareImageManager, vtkObject);
+  vtkTypeMacro(vtkCompareImageManager, vtkObject);
 
   vtkGetObjectMacro (Input1, vtkImageData);
   vtkGetObjectMacro (Input2, vtkImageData);

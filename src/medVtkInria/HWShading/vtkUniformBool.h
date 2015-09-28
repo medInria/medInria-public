@@ -37,7 +37,7 @@ class MEDVTKINRIA_EXPORT vtkUniformBool: public vtkShaderUniform
 {
 public:
   static vtkUniformBool* New();
-  vtkTypeRevisionMacro(vtkUniformBool, vtkShaderUniform);
+  vtkTypeMacro(vtkUniformBool, vtkShaderUniform);
 
   vtkSetMacro(Value, bool);
   vtkGetMacro(Value, bool);

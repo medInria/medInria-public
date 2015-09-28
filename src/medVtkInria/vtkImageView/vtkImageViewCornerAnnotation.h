@@ -40,7 +40,7 @@ class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotati
 {
 
  public:
-  vtkTypeRevisionMacro(vtkImageViewCornerAnnotation, vtkCornerAnnotation);
+  vtkTypeMacro(vtkImageViewCornerAnnotation, vtkCornerAnnotation);
   static vtkImageViewCornerAnnotation *New();
 
 

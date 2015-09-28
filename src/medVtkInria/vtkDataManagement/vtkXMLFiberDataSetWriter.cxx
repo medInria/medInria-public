@@ -23,7 +23,7 @@
 #include "vtkXMLDataElement.h"
 
 vtkStandardNewMacro(vtkXMLFiberDataSetWriter);
-vtkCxxRevisionMacro(vtkXMLFiberDataSetWriter, "$Revision: 1.5 $");
+
 //----------------------------------------------------------------------------
 vtkXMLFiberDataSetWriter::vtkXMLFiberDataSetWriter()
 {

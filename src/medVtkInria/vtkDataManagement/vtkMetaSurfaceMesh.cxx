@@ -50,7 +50,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaSurfaceMesh );
-vtkCxxRevisionMacro(vtkMetaSurfaceMesh, "$Revision: 788 $");
+
 
 //----------------------------------------------------------------------------
 vtkMetaSurfaceMesh::vtkMetaSurfaceMesh()

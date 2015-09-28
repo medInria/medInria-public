@@ -21,7 +21,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaImageData );
-vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
+
 
 
 #include <itkMatrix.h>

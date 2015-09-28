@@ -25,7 +25,7 @@
 #include <vtkDelaunay3D.h>
 #include <vtkUnstructuredGrid.h>
 
-vtkCxxRevisionMacro(vtkLimitFibersToMesh, "$Revision: 1147 $");
+
 vtkStandardNewMacro(vtkLimitFibersToMesh);
 
 vtkLimitFibersToMesh::vtkLimitFibersToMesh()

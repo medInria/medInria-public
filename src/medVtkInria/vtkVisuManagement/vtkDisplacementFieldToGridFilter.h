@@ -32,7 +32,7 @@ class MEDVTKINRIA_EXPORT vtkDisplacementFieldToGridFilter: public vtkPolyDataAlg
  public:
 
   static vtkDisplacementFieldToGridFilter* New();
-  vtkTypeRevisionMacro(vtkDisplacementFieldToGridFilter, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkDisplacementFieldToGridFilter, vtkPolyDataAlgorithm);
 
 
   unsigned int* GetResolution()

@@ -15,7 +15,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkMath.h>
 
-vtkCxxRevisionMacro(vtkSphericalHarmonicManager, "$Revision: 477 $");
+
 vtkStandardNewMacro(vtkSphericalHarmonicManager);
 
 vtkSphericalHarmonicManager::vtkSphericalHarmonicManager() {

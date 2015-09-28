@@ -82,7 +82,7 @@ class MEDVTKINRIA_EXPORT vtkFiberMapper : public vtkOpenGLPolyDataMapper
 {
 public:
   static vtkFiberMapper *New();
-  vtkTypeRevisionMacro(vtkFiberMapper, vtkOpenGLPolyDataMapper);
+  vtkTypeMacro(vtkFiberMapper, vtkOpenGLPolyDataMapper);
 
   // Description:
   // Draw method for OpenGL.

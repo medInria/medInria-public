@@ -32,7 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "BuildShadowMapLinesVertexText.h"
 #include "BuildShadowMapLinesFragmentText.h"
 
-vtkCxxRevisionMacro(vtkShadowMappingHelperLines, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkShadowMappingHelperLines);
 
 vtkShadowMappingHelperLines::vtkShadowMappingHelperLines()

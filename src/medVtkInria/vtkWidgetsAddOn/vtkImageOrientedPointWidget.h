@@ -53,7 +53,7 @@ public:
   // Description:
   // Instantiate the object.
   static vtkImageOrientedPointWidget *New();
-  vtkTypeRevisionMacro(vtkImageOrientedPointWidget,vtk3DWidget);
+  vtkTypeMacro(vtkImageOrientedPointWidget,vtk3DWidget);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

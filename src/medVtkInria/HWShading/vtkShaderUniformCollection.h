@@ -32,7 +32,7 @@ class MEDVTKINRIA_EXPORT vtkShaderUniformCollection : public vtkCollection
 {
 public:
   static vtkShaderUniformCollection* New();
-  vtkTypeRevisionMacro (vtkShaderUniformCollection, vtkCollection);
+  vtkTypeMacro (vtkShaderUniformCollection, vtkCollection);
   
   /**
    * Add a ShaderObject to the list

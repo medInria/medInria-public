@@ -28,7 +28,7 @@ class MEDVTKINRIA_EXPORT vtkSphericalHarmonicVisuManager : public vtkObject {
 public:
 
     static vtkSphericalHarmonicVisuManager *New();
-    vtkTypeRevisionMacro(vtkSphericalHarmonicVisuManager, vtkObject);
+    vtkTypeMacro(vtkSphericalHarmonicVisuManager, vtkObject);
 
     void SetGlyphScale (const float& scale);
 

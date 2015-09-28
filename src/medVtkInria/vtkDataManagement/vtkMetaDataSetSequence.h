@@ -52,7 +52,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
  public:
 
   static vtkMetaDataSetSequence* New();
-  vtkTypeRevisionMacro(vtkMetaDataSetSequence,vtkMetaDataSet);
+  vtkTypeMacro(vtkMetaDataSetSequence,vtkMetaDataSet);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   /**

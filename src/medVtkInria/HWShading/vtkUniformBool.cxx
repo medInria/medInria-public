@@ -30,7 +30,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniformBool.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkUniformBool, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkUniformBool);
 
 vtkUniformBool::vtkUniformBool()

@@ -48,7 +48,7 @@ class MEDVTKINRIA_EXPORT vtkAnisotropicLightingSP : public vtkBMIAShaderProgram 
 
 public:
   static vtkAnisotropicLightingSP *New();
-  vtkTypeRevisionMacro(vtkAnisotropicLightingSP, vtkBMIAShaderProgram);
+  vtkTypeMacro(vtkAnisotropicLightingSP, vtkBMIAShaderProgram);
   /**
    * Get/Set the diffuse and specular contributions to the final lighting of
    * the line. Values must be between 0 and 1.

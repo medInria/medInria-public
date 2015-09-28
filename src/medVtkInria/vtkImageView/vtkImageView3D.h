@@ -58,7 +58,7 @@ class MEDVTKINRIA_EXPORT vtkImageView3D : public vtkImageView
 public:
 
     static vtkImageView3D* New();
-    vtkTypeRevisionMacro(vtkImageView3D, vtkImageView);
+    vtkTypeMacro(vtkImageView3D, vtkImageView);
 
     unsigned long GetMTime();
 

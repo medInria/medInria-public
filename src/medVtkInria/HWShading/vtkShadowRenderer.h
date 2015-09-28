@@ -54,7 +54,7 @@ class MEDVTKINRIA_EXPORT vtkShadowRenderer : public vtkOpenGLRenderer {
 
 public:
   static vtkShadowRenderer* New();
-  vtkTypeRevisionMacro(vtkShadowRenderer, vtkOpenGLRenderer);
+  vtkTypeMacro(vtkShadowRenderer, vtkOpenGLRenderer);
 
   /**
    * Get/Set the rendering of shadows by this renderer.

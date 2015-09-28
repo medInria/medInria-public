@@ -30,7 +30,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniformFloat.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkUniformFloat, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkUniformFloat);
 
 vtkUniformFloat::vtkUniformFloat()
