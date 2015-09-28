@@ -22,7 +22,7 @@
 #include <vtkLookupTable.h>
 #include <vtkProperty.h>
 
-vtkCxxRevisionMacro(vtkSphericalHarmonicVisuManager, "$Revision: 0 $");
+
 vtkStandardNewMacro(vtkSphericalHarmonicVisuManager);
 
 vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager() {

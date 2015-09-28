@@ -89,7 +89,7 @@ class vtkImage2DDisplay : public vtkObject
 {
 public:
   static vtkImage2DDisplay * New();
-  vtkTypeRevisionMacro (vtkImage2DDisplay, vtkObject);
+  vtkTypeMacro (vtkImage2DDisplay, vtkObject);
 
   virtual void SetInput(vtkImageData * image);
   virtual vtkImageData* GetInput() { return this->Input; }
@@ -132,7 +132,7 @@ private:
   void operator=(const vtkImage2DDisplay&);
 };
 
-vtkCxxRevisionMacro(vtkImage2DDisplay, "$Revision: $");
+
 vtkStandardNewMacro(vtkImage2DDisplay);
 
 vtkImage2DDisplay::vtkImage2DDisplay()
@@ -185,7 +185,7 @@ void vtkImage2DDisplay::SetOpacityTransferFunction(vtkPiecewiseFunction* functio
   this->OpacityTransferFunction = function;
 }
 
-vtkCxxRevisionMacro(vtkImageView2D, "$Revision: 3 $");
+
 vtkStandardNewMacro(vtkImageView2D);
 
 //----------------------------------------------------------------------------

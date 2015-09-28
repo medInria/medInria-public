@@ -21,7 +21,7 @@
 #include "vtkCamera.h"
 #include "vtkCallbackCommand.h"
 
-vtkCxxRevisionMacro(vtkInteractorStyleTrackballCamera2, "$Revision: 1.0 $");
+
 vtkStandardNewMacro(vtkInteractorStyleTrackballCamera2);
 
 vtkInteractorStyleTrackballCamera2::vtkInteractorStyleTrackballCamera2()

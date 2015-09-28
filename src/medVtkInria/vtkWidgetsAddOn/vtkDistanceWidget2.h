@@ -25,7 +25,7 @@ class MEDVTKINRIA_EXPORT vtkDistanceWidget2 : public vtkLineWidget
  public:
   
   static vtkDistanceWidget2* New();
-  vtkTypeRevisionMacro(vtkDistanceWidget2, vtkLineWidget);
+  vtkTypeMacro(vtkDistanceWidget2, vtkLineWidget);
 
   // Description:
   // Methods that satisfy the superclass' API.

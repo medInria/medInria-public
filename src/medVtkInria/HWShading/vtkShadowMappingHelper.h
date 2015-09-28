@@ -54,7 +54,7 @@ class MEDVTKINRIA_EXPORT vtkShadowMappingHelper : public vtkObject {
 
 public:
   static vtkShadowMappingHelper* New();
-  vtkTypeRevisionMacro (vtkShadowMappingHelper, vtkObject);
+  vtkTypeMacro (vtkShadowMappingHelper, vtkObject);
   
   /**
    * Initialize texture for storing&reading shadow map

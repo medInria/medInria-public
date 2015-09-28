@@ -23,7 +23,7 @@
 #include <vtkCellData.h>
 #include <vtkUnsignedCharArray.h>
 
-vtkCxxRevisionMacro(vtkLimitFibersToVOI, "$Revision: 1283 $");
+
 vtkStandardNewMacro(vtkLimitFibersToVOI);
 
 vtkLimitFibersToVOI::vtkLimitFibersToVOI()

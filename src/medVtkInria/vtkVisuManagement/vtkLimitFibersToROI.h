@@ -26,7 +26,7 @@ class MEDVTKINRIA_EXPORT vtkLimitFibersToROI: public vtkPolyDataAlgorithm
 
  public:
   static vtkLimitFibersToROI *New();
-  vtkTypeRevisionMacro(vtkLimitFibersToROI, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkLimitFibersToROI, vtkPolyDataAlgorithm);
 
   vtkSetObjectMacro (MaskImage,  vtkImageData);
   vtkGetObjectMacro (MaskImage,  vtkImageData);

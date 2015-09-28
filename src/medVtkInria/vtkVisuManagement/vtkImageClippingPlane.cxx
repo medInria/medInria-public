@@ -162,7 +162,7 @@ void vtkImageClippingPlaneCallback::Execute(vtkObject* caller, unsigned long eve
 // -----------------------------------------------------------------------------
 
 
-vtkCxxRevisionMacro(vtkImageClippingPlane, "$Revision: 644 $");
+
 vtkStandardNewMacro(vtkImageClippingPlane);
 
 

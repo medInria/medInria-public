@@ -91,7 +91,7 @@ class MEDVTKINRIA_EXPORT vtkMeshCropManager : public vtkObject
  public:
 
   static vtkMeshCropManager* New();
-  vtkTypeRevisionMacro(vtkMeshCropManager, vtkObject);
+  vtkTypeMacro(vtkMeshCropManager, vtkObject);
 
   //BTX
   enum RenderingModeIds

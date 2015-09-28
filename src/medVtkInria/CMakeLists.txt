@@ -162,7 +162,7 @@ target_link_libraries(${TARGET_NAME}
   vtkRenderingOpenGL
   vtkRenderingVolumeOpenGL
   #vtkRenderingVolumeOpenGLNew
-  vtkRenderingFreeTypeOpenGL
+  #vtkRenderingFreeTypeOpenGL
   vtkRenderingContextOpenGL
   vtkInteractionWidgets
   vtkInteractionStyle

@@ -26,7 +26,7 @@
 #include <vtkCell.h>
 
 
-vtkCxxRevisionMacro(vtkLimitVectorsToVOI, "$Revision: 880 $");
+
 vtkStandardNewMacro(vtkLimitVectorsToVOI);
 
 vtkLimitVectorsToVOI::vtkLimitVectorsToVOI()

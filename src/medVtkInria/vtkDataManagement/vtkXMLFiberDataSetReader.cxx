@@ -25,7 +25,7 @@
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 
-vtkCxxRevisionMacro(vtkXMLFiberDataSetReader, "$Revision: $");
+
 vtkStandardNewMacro(vtkXMLFiberDataSetReader);
 
 //----------------------------------------------------------------------------

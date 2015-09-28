@@ -30,7 +30,7 @@
 #include <vtkProperty.h>
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkDiffXMLWriter);
-vtkCxxRevisionMacro(vtkDiffXMLWriter, "$Revision: 1298 $");
+
 
 //----------------------------------------------------------------------------
 vtkDiffXMLWriter::vtkDiffXMLWriter()

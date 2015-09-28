@@ -20,7 +20,7 @@
 #include <vtkInformation.h>
 #include <vtkCellArray.h>
 
-vtkCxxRevisionMacro(vtkSqueezeFibers, "$Revision: 555 $");
+
 vtkStandardNewMacro(vtkSqueezeFibers);
 
 vtkSqueezeFibers::vtkSqueezeFibers()

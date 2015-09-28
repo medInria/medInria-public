@@ -34,7 +34,7 @@ class MEDVTKINRIA_EXPORT vtkUniformVec4: public vtkShaderUniform
 {
 public:
   static vtkUniformVec4* New();
-  vtkTypeRevisionMacro(vtkUniformVec4, vtkShaderUniform);
+  vtkTypeMacro(vtkUniformVec4, vtkShaderUniform);
 
   vtkSetVector4Macro(Value, float);
   vtkGetVector4Macro(Value, float);

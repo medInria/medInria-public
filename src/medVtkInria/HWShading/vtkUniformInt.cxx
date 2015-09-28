@@ -30,7 +30,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniformInt.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkUniformInt, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkUniformInt);
 
 vtkUniformInt::vtkUniformInt()

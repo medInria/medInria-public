@@ -39,7 +39,7 @@ class MEDVTKINRIA_EXPORT vtkShadowMappingSP : public vtkBMIAShaderProgram {
 
 public:
   static vtkShadowMappingSP* New();
-  vtkTypeRevisionMacro(vtkShadowMappingSP, vtkBMIAShaderProgram);
+  vtkTypeMacro(vtkShadowMappingSP, vtkBMIAShaderProgram);
 
 protected:
   vtkShadowMappingSP();

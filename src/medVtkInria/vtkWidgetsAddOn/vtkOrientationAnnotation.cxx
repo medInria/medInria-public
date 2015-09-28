@@ -18,7 +18,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkOrientationAnnotation);
-vtkCxxRevisionMacro(vtkOrientationAnnotation, "$Revision: 1284 $");
+
 
 //----------------------------------------------------------------------------
 vtkOrientationAnnotation::vtkOrientationAnnotation()
