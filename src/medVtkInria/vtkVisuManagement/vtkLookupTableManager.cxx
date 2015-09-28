@@ -15,7 +15,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkMath.h>
 
-vtkCxxRevisionMacro(vtkLookupTableManager, "$Revision: 1378 $");
+
 vtkStandardNewMacro(vtkLookupTableManager);
 
 #include "lut/Spectrum.h"

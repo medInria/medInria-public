@@ -33,7 +33,7 @@ class MEDVTKINRIA_EXPORT vtkTensorManager: public vtkObject
  public:
 
   static vtkTensorManager *New();
-  vtkTypeRevisionMacro (vtkTensorManager, vtkObject);
+  vtkTypeMacro (vtkTensorManager, vtkObject);
 
 
   //vtkSetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);

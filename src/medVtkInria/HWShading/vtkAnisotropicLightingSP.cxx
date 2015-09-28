@@ -40,7 +40,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniform.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkAnisotropicLightingSP, "$Revision: 1 $");
+
 vtkStandardNewMacro(vtkAnisotropicLightingSP);
 
 vtkAnisotropicLightingSP::vtkAnisotropicLightingSP()

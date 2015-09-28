@@ -37,7 +37,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaDataSet );
-vtkCxxRevisionMacro( vtkMetaDataSet, "$Revision: 1298 $");
+
 
 //----------------------------------------------------------------------------
 vtkMetaDataSet::vtkMetaDataSet()

@@ -89,7 +89,7 @@ class MEDVTKINRIA_EXPORT vtkImageView2D : public vtkImageView
 {
 public:
     static vtkImageView2D *New();
-    vtkTypeRevisionMacro (vtkImageView2D, vtkImageView);
+    vtkTypeMacro (vtkImageView2D, vtkImageView);
     void PrintSelf(ostream& os, vtkIndent indent);
 
     unsigned long GetMTime();

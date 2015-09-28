@@ -26,7 +26,7 @@ class vtkDiffXMLWriter : public vtkObject
 {
 public:
   static vtkDiffXMLWriter* New();
-  vtkTypeRevisionMacro(vtkDiffXMLWriter,vtkObject);
+  vtkTypeMacro(vtkDiffXMLWriter,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);  
 
   // Description:

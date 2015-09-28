@@ -41,7 +41,7 @@ class MEDVTKINRIA_EXPORT vtkShaderBaseHandle : public vtkShaderBase
 public:
 
   static vtkShaderBaseHandle* New();
-  vtkTypeRevisionMacro (vtkShaderBaseHandle, vtkShaderBase);
+  vtkTypeMacro(vtkShaderBaseHandle, vtkShaderBase);
   /**
    * Gets/Sets the handle for the current shader object or program.
    */

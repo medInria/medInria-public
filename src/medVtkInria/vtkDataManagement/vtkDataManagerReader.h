@@ -28,7 +28,7 @@ class MEDVTKINRIA_EXPORT vtkDataManagerReader : public vtkXMLReader
 {
 public:
   static vtkDataManagerReader* New();
-  vtkTypeRevisionMacro(vtkDataManagerReader,vtkXMLReader);
+  vtkTypeMacro(vtkDataManagerReader,vtkXMLReader);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

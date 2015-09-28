@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -33,7 +33,7 @@ vtkStandardNewMacro(vtkVectorOrienter)
 vtkVectorOrienter::vtkVectorOrienter()
 {
     this->VOI[0] = this->VOI[2] = this->VOI[4] = 0;
-    this->VOI[1] = this->VOI[3] = this->VOI[5] = VTK_LARGE_INTEGER;
+    this->VOI[1] = this->VOI[3] = this->VOI[5] = VTK_INT_MAX;
 
     this->Projection = false;
 }

@@ -46,7 +46,7 @@ class MEDVTKINRIA_EXPORT vtkShaderObject : public vtkShaderBaseHandle
 {
 public:
 
-  vtkTypeRevisionMacro (vtkShaderObject, vtkShaderBaseHandle);
+  vtkTypeMacro (vtkShaderObject, vtkShaderBaseHandle);
   
   /**
    * Specify the source for this object. Either set the source text directly or

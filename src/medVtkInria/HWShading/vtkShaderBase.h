@@ -44,7 +44,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <medVtkInriaExport.h>
 
 //#include <GL/glew.h> // for OpenGL types and some functions
-		     // TODO: can this be done without glew?
+             // TODO: can this be done without glew?
 #include <vtkgl.h>
 
 #include <vtkObject.h>
@@ -63,7 +63,7 @@ class MEDVTKINRIA_EXPORT vtkShaderBase : public vtkObject
 public:
 
   static vtkShaderBase *New();
-  vtkTypeRevisionMacro(vtkShaderBase, vtkObject);
+  vtkTypeMacro(vtkShaderBase, vtkObject);
 
   /**
    * Returns true if the specified version of OpenGL is supported, and

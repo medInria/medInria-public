@@ -20,7 +20,7 @@ class MEDVTKINRIA_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWr
 {
 public:
   static vtkXMLFiberDataSetWriter* New();
-  vtkTypeRevisionMacro(vtkXMLFiberDataSetWriter, vtkXMLCompositeDataWriter);
+  vtkTypeMacro(vtkXMLFiberDataSetWriter, vtkXMLCompositeDataWriter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

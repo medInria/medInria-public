@@ -38,7 +38,7 @@ class MEDVTKINRIA_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorSty
 {
  public:
   static vtkInteractorStyleImageView2D *New();
-  vtkTypeRevisionMacro (vtkInteractorStyleImageView2D, vtkInteractorStyleImage);
+  vtkTypeMacro (vtkInteractorStyleImageView2D, vtkInteractorStyleImage);
 
  
   //BTX

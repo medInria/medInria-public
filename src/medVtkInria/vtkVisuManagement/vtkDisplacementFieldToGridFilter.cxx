@@ -28,7 +28,7 @@
 #include <vtkCellArray.h>
 
 
-vtkCxxRevisionMacro(vtkDisplacementFieldToGridFilter, "$Revision: 1 $");
+
 vtkStandardNewMacro(vtkDisplacementFieldToGridFilter);
 
 vtkDisplacementFieldToGridFilter::vtkDisplacementFieldToGridFilter()

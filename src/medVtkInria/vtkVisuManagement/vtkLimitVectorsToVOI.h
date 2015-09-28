@@ -22,7 +22,7 @@ class MEDVTKINRIA_EXPORT vtkLimitVectorsToVOI: public vtkUnstructuredGridAlgorit
 
  public:
   static vtkLimitVectorsToVOI *New();
-  vtkTypeRevisionMacro(vtkLimitVectorsToVOI, vtkUnstructuredGridAlgorithm);
+  vtkTypeMacro(vtkLimitVectorsToVOI, vtkUnstructuredGridAlgorithm);
   //vtkStandardNewMacro(vtkLimitVectorsToVOI);
   //{ return new vtkLimitVectorsToVOI; }
     

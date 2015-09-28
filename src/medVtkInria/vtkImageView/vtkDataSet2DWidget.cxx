@@ -38,7 +38,7 @@
 #include <vtkImageView2DCommand.h>
 #include <vtkCutter.h>
 
-vtkCxxRevisionMacro(vtkDataSet2DWidget, "$Revision: 1.9 $");
+
 vtkStandardNewMacro(vtkDataSet2DWidget);
 
 

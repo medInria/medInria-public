@@ -43,7 +43,7 @@ class MEDVTKINRIA_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
  public:
 
   static vtkMetaSurfaceMesh* New();
-  vtkTypeRevisionMacro(vtkMetaSurfaceMesh,vtkMetaDataSet);
+  vtkTypeMacro(vtkMetaSurfaceMesh,vtkMetaDataSet);
 
   //BTX
   enum

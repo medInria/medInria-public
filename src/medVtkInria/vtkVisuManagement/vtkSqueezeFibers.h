@@ -22,7 +22,7 @@ class MEDVTKINRIA_EXPORT vtkSqueezeFibers: public vtkPolyDataAlgorithm
 
 public:
 	static vtkSqueezeFibers *New();
-	vtkTypeRevisionMacro(vtkSqueezeFibers, vtkPolyDataAlgorithm);
+	vtkTypeMacro(vtkSqueezeFibers, vtkPolyDataAlgorithm);
 
 
 	void PrintSelf(ostream &os, vtkIndent indent);

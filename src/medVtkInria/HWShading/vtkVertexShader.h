@@ -34,7 +34,7 @@ class MEDVTKINRIA_EXPORT vtkVertexShader : public vtkShaderObject
 {
 public:
   static vtkVertexShader* New();
-  vtkTypeRevisionMacro(vtkVertexShader, vtkShaderObject);
+  vtkTypeMacro(vtkVertexShader, vtkShaderObject);
 
 protected:
   vtkVertexShader();

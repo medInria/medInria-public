@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -23,7 +23,7 @@
 
 #include "vtkSphericalHarmonicGlyph.h"
 
-vtkCxxRevisionMacro(vtkSphericalHarmonicGlyph,"$Revision: 0 $");
+
 vtkStandardNewMacro(vtkSphericalHarmonicGlyph);
 
 // Function taken from 3D Slicer, SuperquadricTensorGlyph
@@ -240,9 +240,9 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
                         pts[i] = cellPts->GetId(i)+subIncr;
                     output->InsertNextCell(cell->GetCellType(),npts,pts);
                 }
-                
+
                 delete[] pts;
-                
+
             }
             inPtIdReal++;
         }
@@ -255,7 +255,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     double x[4];
     for (vtkIdType inPtId=0,inPtIdReal=0;inPtId<numPts;++inPtId) {
         if (inPtId%10000==0) {
-            UpdateProgress (static_cast<vtkFloatingPointType>(inPtId)/numPts);
+            UpdateProgress (static_cast<double>(inPtId)/numPts);
             if (GetAbortExecute())
                 break;
         }
@@ -313,7 +313,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
             }
 
             inPtIdReal++;
-              
+
             delete[] sh;
         }
     }

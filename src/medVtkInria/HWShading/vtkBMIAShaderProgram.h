@@ -70,7 +70,7 @@ class MEDVTKINRIA_EXPORT vtkBMIAShaderProgram : public vtkShaderBaseHandle
 {
 public:
   static vtkBMIAShaderProgram *New();
-  vtkTypeRevisionMacro(vtkBMIAShaderProgram, vtkShaderBaseHandle);
+  vtkTypeMacro(vtkBMIAShaderProgram, vtkShaderBaseHandle);
   
   virtual void AddShaderObject(vtkShaderObject* object);
   virtual void RemoveShaderObject(vtkShaderObject* object);

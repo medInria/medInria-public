@@ -16,7 +16,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkMath.h>
 
-vtkCxxRevisionMacro(vtkTensorManager, "$Revision: 1016 $");
+
 vtkStandardNewMacro(vtkTensorManager);
 
 vtkTensorManager::vtkTensorManager()

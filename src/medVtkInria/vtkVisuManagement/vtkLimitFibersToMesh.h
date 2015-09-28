@@ -25,7 +25,7 @@ class MEDVTKINRIA_EXPORT vtkLimitFibersToMesh: public vtkPolyDataAlgorithm
 
  public:
   static vtkLimitFibersToMesh *New();
-  vtkTypeRevisionMacro(vtkLimitFibersToMesh, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkLimitFibersToMesh, vtkPolyDataAlgorithm);
     
   void PrintSelf (ostream& os, vtkIndent indent){};
   

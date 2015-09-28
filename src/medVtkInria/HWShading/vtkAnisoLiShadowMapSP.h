@@ -43,7 +43,7 @@ class MEDVTKINRIA_EXPORT vtkAnisoLiShadowMapSP : public vtkAnisotropicLightingSP
 
 public:
   static vtkAnisoLiShadowMapSP *New();
-  vtkTypeRevisionMacro(vtkAnisoLiShadowMapSP, vtkAnisotropicLightingSP);
+  vtkTypeMacro(vtkAnisoLiShadowMapSP, vtkAnisotropicLightingSP);
 
   void SetDiffuseContributionShadow(float contribution);
   float GetDiffuseContributionShadow() { return this->DiffuseContributionShadow; }

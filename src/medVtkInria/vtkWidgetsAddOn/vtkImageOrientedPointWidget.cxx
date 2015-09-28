@@ -36,7 +36,7 @@
 #include "vtkTransformPolyDataFilter.h"
 #include "vtkTransform.h"
 
-vtkCxxRevisionMacro(vtkImageOrientedPointWidget, "$Revision: 1284 $");
+
 vtkStandardNewMacro(vtkImageOrientedPointWidget);
 
 vtkCxxSetObjectMacro(vtkImageOrientedPointWidget, HandleProperty1, vtkProperty);

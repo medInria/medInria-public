@@ -32,7 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkShaderBase.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkShaderBase, "$Revision: 1 $");
+
 vtkStandardNewMacro(vtkShaderBase);
 
 vtkShaderBase::vtkShaderBase()

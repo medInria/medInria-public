@@ -30,7 +30,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniformVec3.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkUniformVec3, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkUniformVec3);
 
 vtkUniformVec3::vtkUniformVec3()

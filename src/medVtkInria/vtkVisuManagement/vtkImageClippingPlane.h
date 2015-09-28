@@ -82,7 +82,7 @@ class VTK_EXPORT vtkImageClippingPlane : public vtkObject
  public:
 
   static vtkImageClippingPlane* New();
-  vtkTypeRevisionMacro(vtkImageClippingPlane, vtkObject);
+  vtkTypeMacro(vtkImageClippingPlane, vtkObject);
 
   /// Set the render window interactor where the plane widget must be added
   void SetRenderWindowInteractor1(vtkRenderWindowInteractor* iren)

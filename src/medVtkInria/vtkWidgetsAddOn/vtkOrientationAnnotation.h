@@ -20,7 +20,7 @@
 class MEDVTKINRIA_EXPORT vtkOrientationAnnotation : public vtkCornerAnnotation
 {
 public:
-  vtkTypeRevisionMacro(vtkOrientationAnnotation,vtkCornerAnnotation);
+  vtkTypeMacro(vtkOrientationAnnotation,vtkCornerAnnotation);
 
   // Description:
   // Instantiate object with a rectangle in normaled view coordinates

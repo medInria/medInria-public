@@ -57,7 +57,7 @@
 #include <string>
 #include <sstream>
 
-vtkCxxRevisionMacro(vtkImageViewCollection, "$Revision: 2 $");
+
 vtkStandardNewMacro(vtkImageViewCollection);
 
 

@@ -14,7 +14,7 @@
 #include "vtkCompareImageManager.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkCompareImageManager, "$Revision: 477 $");
+
 vtkStandardNewMacro(vtkCompareImageManager);
 
 vtkCompareImageManager::vtkCompareImageManager()

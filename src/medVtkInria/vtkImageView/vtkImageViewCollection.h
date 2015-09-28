@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -37,7 +37,7 @@
     while(item)								\
     {									\
       if( item!=caller && (!checkForInteractor || (checkForInteractor&&item->GetIsInteractorInstalled())) )							\
-	item->Set##name (_arg);						\
+    item->Set##name (_arg);						\
       item = this->GetNextItem();					\
     }									\
   }
@@ -52,9 +52,9 @@
     while(item)								\
     {									\
       if(item!=caller && (!checkForInteractor || (checkForInteractor&&item->GetIsInteractorInstalled())) ) {						\
-	vtkImageView2D* item2D = vtkImageView2D::SafeDownCast (item);	\
-	if (item2D)							\
-	  item2D->Set##name (_arg);					\
+    vtkImageView2D* item2D = vtkImageView2D::SafeDownCast (item);	\
+    if (item2D)							\
+      item2D->Set##name (_arg);					\
       }									\
       item = this->GetNextItem();					\
     }									\
@@ -70,7 +70,7 @@
     while(item)								\
     {									\
       if(item!=caller && (!checkForInteractor || (checkForInteractor&&item->GetIsInteractorInstalled())) )							\
-	item->Set##name (_arg);						\
+    item->Set##name (_arg);						\
       item = this->GetNextItem();					\
     }									\
   }
@@ -106,7 +106,7 @@ class vtkImageViewCollectionCommand;
 
    C)
 
-   
+
 */
 class MEDVTKINRIA_EXPORT vtkImageViewCollection : public vtkCollection
 {
@@ -114,7 +114,7 @@ class MEDVTKINRIA_EXPORT vtkImageViewCollection : public vtkCollection
  public:
 
   static vtkImageViewCollection* New();
-  vtkTypeRevisionMacro(vtkImageViewCollection, vtkCollection);
+  vtkTypeMacro(vtkImageViewCollection, vtkCollection);
 
 
   // Description:
@@ -158,7 +158,7 @@ class MEDVTKINRIA_EXPORT vtkImageViewCollection : public vtkCollection
   vtkGetMacro     (ShowSlicePlanes, unsigned int);
   void SetShowSlicePlanes (unsigned int arg);
   vtkBooleanMacro (ShowSlicePlanes, unsigned int);
-  
+
   //BTX
   vtkGetObjectMacro (Command, vtkImageViewCollectionCommand);
   //ETX
@@ -172,7 +172,7 @@ class MEDVTKINRIA_EXPORT vtkImageViewCollection : public vtkCollection
   vtkSyncSetMacro (ShowScalarBar, int);
   /// Description: Synchronize use lookup table between views
   // vtkSyncSetMacro (UseLookupTable, int);
-  
+
   /// Description: Synchronize color window between views
   vtkSyncSetMacro (ColorWindow, double);
   /// Description: Synchronize color level between views
@@ -278,8 +278,8 @@ class MEDVTKINRIA_EXPORT vtkImageViewCollection : public vtkCollection
   /// Description: link slice flag
   virtual void SetLinkTimeChange (unsigned int v);
   /// Description: link slice flag
-  vtkBooleanMacro (LinkTimeChange, unsigned int);	
-	
+  vtkBooleanMacro (LinkTimeChange, unsigned int);
+
   /// Description: link color window flag
   vtkGetMacro (LinkColorWindowLevel, unsigned int);
   /// Description: link color window flag
