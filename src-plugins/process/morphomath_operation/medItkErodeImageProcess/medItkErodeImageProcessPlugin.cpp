@@ -19,7 +19,7 @@
 
 void medItkErodeImageProcessPlugin::initialize(void)
 {
-    medProcessLayer::morphomathOperation::erodeImage::pluginFactory().record("medItkErodeImageProcess",
+    medProcessLayer::morphomathOperation::erodeImage::pluginFactory().record(medItkErodeImageProcess::staticMetaObject.className(),
                                                                              medItkErodeImageProcessCreator);
 }
 
