@@ -21,7 +21,7 @@
 #include <assert.h>
 #include <cmath>
 
-vtkCxxRevisionMacro(vtkImageToIsosurface, "$Revision: 477 $");
+
 vtkStandardNewMacro(vtkImageToIsosurface);
 
 vtkImageToIsosurface::vtkImageToIsosurface()

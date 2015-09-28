@@ -50,7 +50,7 @@
 #include "vtkFiberMapper.h"
 //using namespace bmia;
 
-vtkCxxRevisionMacro(vtkFibersManager, "$Revision: 1467 $");
+
 vtkStandardNewMacro(vtkFibersManager);
 
 

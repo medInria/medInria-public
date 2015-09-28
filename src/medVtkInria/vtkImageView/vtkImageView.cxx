@@ -57,7 +57,7 @@
 #define snprintf _snprintf_s
 #endif
 
-vtkCxxRevisionMacro(vtkImageView, "$Revision: 1 $");
+
 //vtkStandardNewMacro(vtkImageView); // pure virtual class
 
 

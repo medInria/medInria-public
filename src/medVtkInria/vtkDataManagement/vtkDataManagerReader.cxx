@@ -51,7 +51,7 @@
 // #include <vtkMultiGroupDataSet.h>
 
 
-vtkCxxRevisionMacro(vtkDataManagerReader, "$Revision: 1087 $");
+
 vtkStandardNewMacro(vtkDataManagerReader);
 
 struct vtkDataManagerReaderEntry

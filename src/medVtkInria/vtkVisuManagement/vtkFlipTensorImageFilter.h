@@ -23,7 +23,7 @@ class MEDVTKINRIA_EXPORT vtkFlipTensorImageFilter: public vtkThreadedImageAlgori
   
  public:
   static vtkFlipTensorImageFilter *New();
-  vtkTypeRevisionMacro (vtkFlipTensorImageFilter, vtkThreadedImageAlgorithm);
+  vtkTypeMacro (vtkFlipTensorImageFilter, vtkThreadedImageAlgorithm);
   void PrintSelf (ostream &os, vtkIndent indent)
   {}
   

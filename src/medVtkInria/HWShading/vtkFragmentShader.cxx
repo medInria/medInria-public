@@ -32,7 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkFragmentShader.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro (vtkFragmentShader, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkFragmentShader);
 
 vtkFragmentShader::vtkFragmentShader()

@@ -37,7 +37,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkShadowMappingSP, "$Revision: 540 $");
 vtkStandardNewMacro(vtkShadowMappingSP)
 
 vtkShadowMappingSP::vtkShadowMappingSP()

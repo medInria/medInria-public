@@ -33,7 +33,7 @@ class MEDVTKINRIA_EXPORT vtkImageToIsosurface: public vtkObject
  public:
 
   static vtkImageToIsosurface *New();
-  vtkTypeRevisionMacro(vtkImageToIsosurface, vtkObject);
+  vtkTypeMacro(vtkImageToIsosurface, vtkObject);
 
   vtkSetObjectMacro (Input, vtkImageData);
   vtkGetObjectMacro (Input, vtkImageData);

@@ -46,7 +46,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaDataSetSequence );
-vtkCxxRevisionMacro(vtkMetaDataSetSequence, "$Revision: 1370 $");
+
 
 //----------------------------------------------------------------------------
 vtkMetaDataSetSequence::vtkMetaDataSetSequence()

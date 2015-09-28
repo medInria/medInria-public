@@ -43,7 +43,7 @@ class MEDVTKINRIA_EXPORT vtkUniformSampler : public vtkUniform<int>
 {
 public:
   static vtkUniformSampler* New();
-  vtkTypeRevisionMacro(vtkUniformSampler, vtkUniform<int>);
+  vtkTypeMacro(vtkUniformSampler, vtkUniform<int>);
 
 protected:
   vtkUniformSampler();

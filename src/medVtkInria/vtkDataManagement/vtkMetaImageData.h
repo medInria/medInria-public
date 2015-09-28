@@ -76,7 +76,7 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
 
   
   static vtkMetaImageData* New();
-  vtkTypeRevisionMacro(vtkMetaImageData,vtkMetaDataSet);
+  vtkTypeMacro(vtkMetaImageData,vtkMetaDataSet);
 
   vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4);
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);

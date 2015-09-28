@@ -37,7 +37,7 @@ class MEDVTKINRIA_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
  public:
 
   static vtkMetaVolumeMesh* New();
-  vtkTypeRevisionMacro(vtkMetaVolumeMesh,vtkMetaDataSet);
+  vtkTypeMacro(vtkMetaVolumeMesh,vtkMetaDataSet);
 
   //BTX
   enum

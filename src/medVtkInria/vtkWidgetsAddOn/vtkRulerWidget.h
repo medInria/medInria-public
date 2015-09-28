@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -27,13 +27,13 @@ class MEDVTKINRIA_EXPORT vtkRulerWidget : public vtkInteractorObserver
 
  public:
   static vtkRulerWidget *New();
-  vtkTypeRevisionMacro(vtkRulerWidget, vtkInteractorObserver);
+  vtkTypeMacro(vtkRulerWidget, vtkInteractorObserver);
   void PrintSelf(ostream& os, vtkIndent indent) {};
 
   virtual void SetEnabled(int);
 
   void ExecuteCameraUpdateEvent(vtkObject *o, unsigned long event, void *calldata);
-  
+
  protected:
   vtkRulerWidget();
   ~vtkRulerWidget();
@@ -45,7 +45,7 @@ class MEDVTKINRIA_EXPORT vtkRulerWidget : public vtkInteractorObserver
 
   vtkRulerWidgetObserver *Observer;
   unsigned long StartEventObserverId;
-  
+
   vtkRenderer *RendererY;
   vtkPolyData *OutlineY;
   vtkActor2D  *OutlineYActor;

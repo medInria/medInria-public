@@ -139,7 +139,7 @@ class vtkAlgorithm;
 class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
 {
 public:
-    vtkTypeRevisionMacro(vtkImageView, vtkObject);
+    vtkTypeMacro(vtkImageView, vtkObject);
     void PrintSelf (ostream& os, vtkIndent indent);
 
 

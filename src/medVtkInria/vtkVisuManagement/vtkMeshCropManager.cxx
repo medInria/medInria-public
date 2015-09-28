@@ -29,7 +29,7 @@
 #include <vtkCellData.h>
 #include <vtkFloatArray.h>
 
-vtkCxxRevisionMacro(vtkMeshCropManager, "$Revision: 805 $");
+
 vtkStandardNewMacro(vtkMeshCropManager);
 
 void vtkMeshCropManagerCallback::Execute ( vtkObject *caller, unsigned long, void* )

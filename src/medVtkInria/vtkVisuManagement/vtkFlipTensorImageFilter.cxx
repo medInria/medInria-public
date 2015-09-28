@@ -21,7 +21,7 @@
 #include "vtkPointData.h"
 #include "vtkDoubleArray.h"
 
-vtkCxxRevisionMacro (vtkFlipTensorImageFilter, "$Revision: 477 $");
+
 vtkStandardNewMacro (vtkFlipTensorImageFilter);
 
 vtkFlipTensorImageFilter::vtkFlipTensorImageFilter()

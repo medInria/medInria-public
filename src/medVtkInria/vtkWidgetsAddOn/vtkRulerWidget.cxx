@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -28,20 +28,18 @@
 #include "vtkRenderWindowInteractor.h"
 
 vtkStandardNewMacro(vtkRulerWidget);
-vtkCxxRevisionMacro(vtkRulerWidget, "$Revision: 1.0 $");
-
 
 class vtkRulerWidgetObserver : public vtkCommand
 {
 public:
   static vtkRulerWidgetObserver *New()
   { return new vtkRulerWidgetObserver; };
-  
+
   vtkRulerWidgetObserver()
   {
     this->RulerWidget = 0;
   }
-  
+
   virtual void Execute(vtkObject* wdg, unsigned long event, void *calldata)
   {
     if (this->RulerWidget)
@@ -49,25 +47,25 @@ public:
       this->RulerWidget->ExecuteCameraUpdateEvent(wdg, event, calldata);
     }
   }
-  
+
   vtkRulerWidget *RulerWidget;
 };
 
 
 vtkRulerWidget::vtkRulerWidget()
 {
-  
+
   this->StartEventObserverId = 0;
-  
+
   this->Observer = vtkRulerWidgetObserver::New();
   this->Observer->RulerWidget = this;
-  
+
   this->RendererX = vtkRenderer::New();
   this->RendererX->SetViewport( 0.1, 0.1, 0.13, 0.95 );
   this->RendererX->SetLayer( 1 );
   this->RendererX->InteractiveOff();
 
-  
+
   this->RendererY = vtkRenderer::New();
   this->RendererY->SetViewport( 0.1, 0.1, 0.95, 0.13 );
   this->RendererY->SetLayer( 1 );
@@ -82,8 +80,8 @@ vtkRulerWidget::vtkRulerWidget()
     ptIds[i] = xpoints->InsertNextPoint( 0, 0, 0 );
   this->OutlineX->SetPoints( xpoints );
   this->OutlineX->InsertNextCell( VTK_POLY_LINE, 31, ptIds );
-  
-  
+
+
   this->OutlineY = vtkPolyData::New();
   this->OutlineY->Allocate();
   vtkPoints *ypoints = vtkPoints::New();
@@ -91,11 +89,11 @@ vtkRulerWidget::vtkRulerWidget()
     ptIds[i] = ypoints->InsertNextPoint( 0, 0, 0 );
   this->OutlineY->SetPoints( ypoints );
   this->OutlineY->InsertNextCell( VTK_POLY_LINE, 31, ptIds );
-  
+
 
   vtkCoordinate *tcoord = vtkCoordinate::New();
   tcoord->SetCoordinateSystemToDisplay();
-  
+
   vtkPolyDataMapper2D *xmapper = vtkPolyDataMapper2D::New();
   xmapper->SetInputData( this->OutlineX );
   xmapper->SetTransformCoordinate( tcoord );
@@ -115,7 +113,7 @@ vtkRulerWidget::vtkRulerWidget()
   this->OutlineYActor->SetPosition2( 1, 1 );
   this->OutlineYActor->GetProperty()->SetColor(0.0,1.0,0.0);
   this->OutlineYActor->PickableOff();
-  
+
   xpoints->Delete();
   ypoints->Delete();
   xmapper->Delete();
@@ -143,15 +141,15 @@ void vtkRulerWidget::SetEnabled (int enabling)
     vtkErrorMacro("The interactor must be set prior to enabling/disabling widget");
     return;
   }
-  
+
   if (enabling)
   {
     if (this->Enabled)
     {
       return;
     }
-    
-    
+
+
     if (!this->CurrentRenderer)
     {
       this->SetCurrentRenderer( this->Interactor->FindPokedRenderer(
@@ -163,9 +161,9 @@ void vtkRulerWidget::SetEnabled (int enabling)
         return;
       }
     }
-    
+
     this->Enabled = 1;
-    
+
     vtkRenderWindow* renwin = this->CurrentRenderer->GetRenderWindow();
     renwin->AddRenderer( this->RendererX );
     renwin->AddRenderer( this->RendererY );
@@ -191,7 +189,7 @@ void vtkRulerWidget::SetEnabled (int enabling)
     {
       ycam->SetParallelProjection( pcam->GetParallelProjection() );
     }
-    
+
     // We need to copy the camera before the compositing observer is called.
     // Compositing temporarily changes the camera to display an image.
     this->StartEventObserverId = this->CurrentRenderer->AddObserver(
@@ -204,7 +202,7 @@ void vtkRulerWidget::SetEnabled (int enabling)
     {
       return;
     }
-    
+
     this->Enabled = 0;
 
     this->OutlineXActor->VisibilityOff();
@@ -222,26 +220,26 @@ void vtkRulerWidget::SetEnabled (int enabling)
     }
     if ( this->StartEventObserverId != 0 )
       {
-	this->CurrentRenderer->RemoveObserver( this->StartEventObserverId );
+    this->CurrentRenderer->RemoveObserver( this->StartEventObserverId );
       }
-    
+
     this->InvokeEvent( vtkCommand::DisableEvent, NULL );
     this->SetCurrentRenderer( NULL );
-  }  
-  
+  }
+
 }
 
 
 
 void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
-							  unsigned long vtkNotUsed(event),
-							  void *vtkNotUsed(calldata))
+                              unsigned long vtkNotUsed(event),
+                              void *vtkNotUsed(calldata))
 {
   if (!this->CurrentRenderer)
   {
     return;
   }
-  
+
   vtkCamera *cam = this->CurrentRenderer->GetActiveCamera();
   double pos[3], fp[3], viewup[3];
   cam->GetPosition( pos );
@@ -272,12 +270,12 @@ void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
 
   vp[0] = 20;
   vp[2] = 30;
-  
+
   double dist = 0.0;
   for (int i=0; i<3; i++) {
-	dist += (ww1[i]-ww2[i])*(ww1[i]-ww2[i]);
-  }	
-	
+    dist += (ww1[i]-ww2[i])*(ww1[i]-ww2[i]);
+  }
+
   double yfactor = sqrt(dist/norma)*10; //fabs(ww2[1]-ww1[1]);
   double ymin = mid[1] - 5.0 * yfactor;
   double ymax = mid[1] + 5.0 * yfactor;
@@ -287,14 +285,14 @@ void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
 
 /*
   double xpoints[31]={vp[2], vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0],
-		    vp[0], vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[2], 
-		    vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], 
-		    vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[2]};
+            vp[0], vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[2],
+            vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0], vp[0],
+            vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[2]};
 */
 
   xpoints->SetPoint( 0, vp[2], ymin, 0 );
   xpoints->SetPoint( 1, vp[0], ymin, 0 );
-  
+
   xpoints->SetPoint( 2, vp[0], mid[1] - 4.0*ystep, 0 );
   xpoints->SetPoint( 3, vp[0]+xstep, mid[1] - 4.0*ystep, 0 );
   xpoints->SetPoint( 4, vp[0], mid[1] - 4.0*ystep, 0 );
@@ -346,8 +344,8 @@ void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
 
   vtkPoints *ypoints = this->OutlineY->GetPoints();
 
-	
-	double xfactor = yfactor; //sqrt(dist); //fabs(ww2[0]-ww1[0]);
+
+    double xfactor = yfactor; //sqrt(dist); //fabs(ww2[0]-ww1[0]);
   //double xfactor = fabs(ww2[2]-ww1[2]);
   double xmin = mid[0] - 5.0 * xfactor;
   double xmax = mid[0] + 5.0 * xfactor;
@@ -357,7 +355,7 @@ void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
 
   ypoints->SetPoint( 0, xmin, vp[3], 0 );
   ypoints->SetPoint( 1, xmin, vp[1], 0 );
-  
+
   ypoints->SetPoint( 2, mid[0] - 4.0*xstep, vp[1], 0 );
   ypoints->SetPoint( 3, mid[0] - 4.0*xstep, vp[1]+ystep, 0 );
   ypoints->SetPoint( 4, mid[0] - 4.0*xstep, vp[1], 0 );

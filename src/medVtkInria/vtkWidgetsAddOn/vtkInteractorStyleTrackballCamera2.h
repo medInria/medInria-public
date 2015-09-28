@@ -27,7 +27,7 @@ class MEDVTKINRIA_EXPORT vtkInteractorStyleTrackballCamera2 : public vtkInteract
 {
  public:
   static vtkInteractorStyleTrackballCamera2 *New();
-  vtkTypeRevisionMacro(vtkInteractorStyleTrackballCamera2,vtkInteractorStyleTrackballCamera);
+  vtkTypeMacro(vtkInteractorStyleTrackballCamera2,vtkInteractorStyleTrackballCamera);
 
   virtual void OnLeftButtonDown();
   virtual void OnMouseWheelForward();

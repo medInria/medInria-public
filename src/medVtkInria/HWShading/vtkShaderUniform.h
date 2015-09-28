@@ -49,7 +49,7 @@ class MEDVTKINRIA_EXPORT vtkShaderUniform : public vtkShaderBaseHandle
 {
 public:
 
-  vtkTypeRevisionMacro (vtkShaderUniform, vtkShaderBaseHandle);
+  vtkTypeMacro (vtkShaderUniform, vtkShaderBaseHandle);
   /**
    * Set/Get the name of the uniform. This must be a null-terminated string.
    * The array element operator ``[]'' and the structure field operator ``.''
@@ -87,6 +87,6 @@ private:
   /**
    * The name associated with this uniform.
    */
-	vtkgl::GLchar* Name;
+    vtkgl::GLchar* Name;
 
 };

@@ -38,7 +38,7 @@ class MEDVTKINRIA_EXPORT vtkFragmentShader : public vtkShaderObject
 {
 public:
   static vtkFragmentShader* New();
-  vtkTypeRevisionMacro (vtkFragmentShader, vtkShaderObject);
+  vtkTypeMacro (vtkFragmentShader, vtkShaderObject);
 
 protected:
   vtkFragmentShader();

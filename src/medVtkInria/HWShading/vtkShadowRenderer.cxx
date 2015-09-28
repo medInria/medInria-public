@@ -61,7 +61,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkAnisoLiShadowMapSP.h"
 
-vtkCxxRevisionMacro(vtkShadowRenderer, "$Revision: 540 $");
 vtkStandardNewMacro(vtkShadowRenderer);
 
 vtkShadowRenderer::vtkShadowRenderer()
@@ -98,7 +97,7 @@ void vtkShadowRenderer::DeviceRender()
   glEnable(GL_LIGHTING);
   //glEnable(GL_LIGHT0);
   //glShadeModel(GL_SMOOTH);
-    
+
   glEnable(GL_DEPTH_TEST);
   //glEnable(GL_TEXTURE_2D);
   //glFrontFace(GL_CCW);
@@ -133,7 +132,7 @@ void vtkShadowRenderer::DeviceRender()
     {  // show the shadow map for testing
     vtkDebugMacro(<<"Renderig the shadow map to be shown on-screen");
     this->DrawShadowMap();
-    }    
+    }
 
   //this->vtkOpenGLRenderer::DeviceRender();
 }
@@ -226,18 +225,18 @@ void vtkShadowRenderer::DrawShadowMap()
   // int* windowDimensions = this->RenderWindow->GetSize();
   // GLfloat windowWidth = (GLfloat)windowDimensions[0];
   // GLfloat windowHeight = (GLfloat)windowDimensions[1];
-  
+
   glBegin(GL_QUADS);
   glColor3f(1, 1, 1);
   glTexCoord2f(0.0f, 0.0f);
   glVertex2f(0.0f, 0.0f);
-  
+
   glTexCoord2f(1.0f, 0.0f);
   glVertex2f(0.3f, 0.0f);
-  
+
   glTexCoord2f(1.0f, 1.0f);
   glVertex2f(0.3f, 0.3f);
-  
+
   glTexCoord2f(0.0f, 1.0f);
   glVertex2f(0.0f, 0.3f);
   glEnd(); // GL_QUADS
@@ -259,7 +258,7 @@ void vtkShadowRenderer::RenderWithShadows()
   // As long as it leaves the shadow map texture in place I guess its ok.
 
   // =========================================================
-  // standard render method 
+  // standard render method
   this->ClearLights();
 
   this->UpdateCamera();
@@ -281,21 +280,21 @@ void vtkShadowRenderer::RenderWithShadows()
   inverseViewTransformMatrix->Transpose();
   glMatrixMode(GL_TEXTURE);
   glPushMatrix();
-  glMultMatrixd(inverseViewTransformMatrix->Element[0]);  
+  glMultMatrixd(inverseViewTransformMatrix->Element[0]);
 
   inverseViewTransformMatrix->Delete();
   inverseViewTransformMatrix = NULL;
   viewTransformMatrix = NULL;
   cam = NULL;
 
-  // set matrix mode for actors 
+  // set matrix mode for actors
   glMatrixMode(GL_MODELVIEW);
 
   this->ShadowMappingSP->Activate();
   this->UpdateGeometry();
   this->ShadowMappingSP->Deactivate();
 
-  // clean up the model view matrix set up by the camera 
+  // clean up the model view matrix set up by the camera
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
 

@@ -34,7 +34,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkVertexShader.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkVertexShader, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkVertexShader);
 
 vtkVertexShader::vtkVertexShader()

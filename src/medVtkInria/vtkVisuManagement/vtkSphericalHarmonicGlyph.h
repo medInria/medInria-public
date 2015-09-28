@@ -26,7 +26,7 @@ public:
 
     enum { COLOR_BY_SCALARS, COLOR_BY_DIRECTIONS };
 
-    vtkTypeRevisionMacro(vtkSphericalHarmonicGlyph,vtkPolyDataAlgorithm);
+    vtkTypeMacro(vtkSphericalHarmonicGlyph,vtkPolyDataAlgorithm);
     void PrintSelf(ostream& os,vtkIndent indent);
 
     /** Construct object with scale factor 1.0. Glyphs are colored with input

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -92,7 +92,7 @@ static void
 TranslateAndDeformShell(vtkPolyData* shell,vtkPoints* outPts,double center[3],
                         bool deform,vtkMatrix4x4* transform=0);
 
-vtkCxxRevisionMacro(vtkSphericalHarmonicSource,"$Revision: 0 $");
+
 vtkStandardNewMacro(vtkSphericalHarmonicSource);
 
 vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(const int tess) {
@@ -192,7 +192,7 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
     In matrix form:
     S := spherical function (discrete data on the sphere)
     C := Spherical harmonic coefficients
-    B := Basis function 
+    B := Basis function
     S = CB
     */
 
@@ -222,7 +222,7 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
 
     for (int i=0; i<N; ++i) {
         if (i%10000==0) {
-            UpdateProgress ((vtkFloatingPointType)i/N);
+            UpdateProgress ((double)i/N);
             if (GetAbortExecute())
                 break;
         }
@@ -330,7 +330,7 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool* FlipVect
         //  It is even nicer to compute the SH once (for m>0 and for m<0).
         //  The central term is given by the suite u_n
         //  TO
-  
+
         for (int l=0,j=0;l<=order;l+=2,j+=2*l-1) {
             B(j,i) = sphLegendre(l,0,theta);
 

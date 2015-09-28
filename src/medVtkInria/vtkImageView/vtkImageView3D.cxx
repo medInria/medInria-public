@@ -75,7 +75,7 @@ class vtkImage3DDisplay : public vtkObject
 {
 public:
   static vtkImage3DDisplay *New();
-  vtkTypeRevisionMacro (vtkImage3DDisplay, vtkObject);
+  vtkTypeMacro (vtkImage3DDisplay, vtkObject);
 
   vtkSetObjectMacro(Input, vtkImageData);
   virtual vtkImageData* GetInput() { return this->Input;}
@@ -114,7 +114,7 @@ private:
   void operator=(const vtkImage3DDisplay&);
 };
 
-vtkCxxRevisionMacro(vtkImage3DDisplay, "$Revision: $");
+
 vtkStandardNewMacro(vtkImage3DDisplay);
 
 vtkImage3DDisplay::vtkImage3DDisplay()
@@ -140,7 +140,7 @@ vtkImage3DDisplay::~vtkImage3DDisplay()
 
 
 
-vtkCxxRevisionMacro(vtkImageView3D, "$Revision: 1324 $");
+
 vtkStandardNewMacro(vtkImageView3D);
 
 //----------------------------------------------------------------------------

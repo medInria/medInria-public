@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniformSampler.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkUniformSampler, "$Revision: 540 $");
+
 vtkStandardNewMacro(vtkUniformSampler);
 
 vtkUniformSampler::vtkUniformSampler()
