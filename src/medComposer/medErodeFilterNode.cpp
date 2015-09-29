@@ -1,7 +1,5 @@
 // Copyright: INRIA
 
-#pragma once
-
 #include <dtkComposer>
 
 #include "medErodeFilterNode.h"
