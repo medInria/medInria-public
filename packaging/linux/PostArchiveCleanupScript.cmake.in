@@ -1,0 +1,26 @@
+set(DIR @CPACK_PACKAGE_DIRECTORY@/_CPack_Packages/Linux/@CPACK_GENERATOR@/@CPACK_PACKAGE_FILE_NAME@)
+
+# Removing useless directories
+file(REMOVE_RECURSE ${DIR}/cmake)
+file(REMOVE_RECURSE ${DIR}/etc)
+file(REMOVE_RECURSE ${DIR}/include)
+file(REMOVE_RECURSE ${DIR}/share)
+
+# Cleaning up useless stuff in /lib
+file(REMOVE_RECURSE ${DIR}/lib/cmake)
+file(REMOVE_RECURSE ${DIR}/lib/vtk-5.10/CMake)
+file(REMOVE_RECURSE ${DIR}/lib/vtk-5.10/doc)
+file(REMOVE_RECURSE ${DIR}/lib/vtk-5.10/doxygen)
+file(REMOVE_RECURSE ${DIR}/lib/vtk-5.10/testing)
+file(GLOB LIB_JUNK ${DIR}/lib/*.cmake ${DIR}/lib/vtk-5.10/*.cmake)
+file(REMOVE ${LIB_JUNK})
+
+# Cleaning up binaries in /bin
+file(GLOB BINARIES RELATIVE ${DIR}/bin/ ${DIR}/bin/*)
+
+foreach(bin ${BINARIES})
+  if(NOT bin MATCHES "^med")
+    file(REMOVE ${DIR}/bin/${bin})
+  endif()
+endforeach()
+
