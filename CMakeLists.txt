@@ -1,208 +1,120 @@
-################################################################################
-#
-# medInria
-#
-# Copyright (c) INRIA 2013 - 2014. All rights reserved.
-# See LICENSE.txt for details.
-#
-#  This software is distributed WITHOUT ANY WARRANTY; without even
-#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-#  PURPOSE.
-#
-################################################################################
+cmake_minimum_required(VERSION 3.2)
 
-cmake_minimum_required(VERSION 3.0)
-
-if(NOT DEFINED ${MEDINRIA_VERSION})
-    set(MEDINRIA_VERSION 2.3.0.0)
-endif()
-
-project(MEDINRIA VERSION ${MEDINRIA_VERSION})
-
+project(MEDINRIA_SUPERBUILD VERSION 3.0.0.0)
 
 ## #############################################################################
-## Set version
+## Add packages
 ## #############################################################################
 
-string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
-
-## #############################################################################
-## Options
-## #############################################################################
-
-option(${PROJECT_NAME}_BUILD_TESTS
-  "Build tests"
-  OFF
+find_package(Qt5 REQUIRED
+  COMPONENTS
+    Core                                                                                                                                                                                                                                          
+    Designer                                                                                                                                                                                                                                      
+    Gui                                                                                                                                                                                                                                           
+    Network                                                                                                                                                                                                                                       
+    OpenGL                                                                                                                                                                                                                                        
+    Sql                                                                                                                                                                                                                                           
+    WebKitWidgets                                                                                                                                                                                                                                 
+    WebKit                                                                                                                                                                                                                                        
+    Widgets                                                                                                                                                                                                                                       
+    Xml 
   )
-if(${PROJECT_NAME}_BUILD_TESTS)
-    enable_testing()
-endif()
+                                                                                                                                                                                                                                          
+# There are three possibilities:
+# - if the option USE_SYSTEM_${external_project} is set, then the system version  
+#   will be used (not yet fully tested)
+# - if the option USE_SYSTEM_${external_project} is not set:
+#   * there is a subdir with the package name, in which case this subdir is used 
+#     directly
+#   * otherwise use download and compile locally the package as an external 
+#     module.
 
-option(${PROJECT_NAME}_BUILD_DOCUMENTATION
-  "Build documentation"
-  OFF
+list(APPEND external_projects
+  VTK 
+  ITK 
+  RPI 
+  TTK 
+  DCMTK 
+  QtDCM 
+  dtk 
+  medInria
   )
 
 ## #############################################################################
-## Find package
+## Add modules
 ## #############################################################################
-
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5Sql REQUIRED)
-find_package(Qt5Concurrent  REQUIRED)
-find_package(Qt5Quick       REQUIRED)
-find_package(Qt5Network     REQUIRED)
-find_package(Qt5Test        REQUIRED)
-find_package(Qt5Declarative REQUIRED)
-
-# variables used by doc and tst
-get_target_property(QT5_QMAKE_EXECUTABLE Qt5::qmake LOCATION)
-get_filename_component(QT5_BINARY_DIR ${QT5_QMAKE_EXECUTABLE} PATH)
-
-set(QT_HEADERS
-    ${Qt5Core_INCLUDE_DIRS}
-    ${Qt5OpenGL_INCLUDE_DIRS}
-    ${Qt5Gui_INCLUDE_DIRS}
-    ${Qt5Xml_INCLUDE_DIRS}
-    ${Qt5Sql_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5Concurrent_INCLUDE_DIRS}
-    ${Qt5Quick_INCLUDE_DIRS}
-    ${Qt5Network_INCLUDE_DIRS}
-    ${Qt5Test_INCLUDE_DIRS}
-    ${Qt5Declarative_INCLUDE_DIRS}
-    )
-
-set(QT_LIBRARIES
-    Qt5::Core
-    Qt5::OpenGL
-    Qt5::Gui
-    Qt5::Xml
-    Qt5::Sql
-    Qt5::Widgets
-    Qt5::Concurrent
-    Qt5::Quick
-    Qt5::Network
-    Qt5::Test
-    Qt5::Declarative
-    )
-
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-## #############################################################################
-## Additionals modules
-## #############################################################################
-
-set(${PROJECT_NAME}_CMAKE_DIR
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/module
-  )
 
 set(CMAKE_MODULE_PATH
-  ${${PROJECT_NAME}_CMAKE_DIR}
+  ${CMAKE_SOURCE_DIR}/environment
+  ${CMAKE_SOURCE_DIR}/externals
+  ${CMAKE_SOURCE_DIR}/externals/configuration_steps
+  ${CMAKE_MODULE_PATH}
+    )
+
+set(GET_REVISIONS_MODULE_PATH
+  ${CMAKE_SOURCE_DIR}/externals/get_revisions
+  )
+
+# Add CMAKE_MODULE_PATH to superProjectConfig.cmake, usefull for 
+# Asclepios and visages plugins
+set(${PROJECT_NAME}_CONFIG_FILE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
+file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
+  "set(CMAKE_MODULE_PATH 
+    ${CMAKE_MODULE_PATH}
+    \${CMAKE_MODULE_PATH}
+    )\n\n
+    set(USE_GITHUB_SSH ${USE_GITHUB_SSH})\n"
+  )
+    
+# Add path of the get_revisions module to superProjectConfig.cmake
+file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
+  "set(GET_REVISIONS_MODULE_PATH 
+    ${GET_REVISIONS_MODULE_PATH}
+    )\n\n"
+  ) 
+
+set(CMAKE_MODULE_PATH
+  ${CMAKE_SOURCE_DIR}/externals/projects_modules
+  ${CMAKE_SOURCE_DIR}/packaging
   ${CMAKE_MODULE_PATH}
   )
 
-include(list_source_files)
-include(list_header_directories_to_include)
-include(set_exe_install_rules)
-include(set_lib_install_rules)
-include(set_plugin_install_rules)
-include(set_plugin_install_rules_legacy)
+option(USE_GITHUB_SSH 
+  "Use by default Git SSH addresses, requires public key set on github" OFF
+  )
 
-include(add_plugins)
-if(APPLE)
-  include(FixDCMTKMacLink)
-  include(FixDCMTKMacInstall)
-  set(CMAKE_MACOSX_RPATH OFF)
-endif()
-
-
+set(PRIVATE_PLUGINS_DIRS "" CACHE PATH "Folders containing private plugins, separated by ';'")
 
 ## #############################################################################
-## Qt Auto tools
+## Add Targets
 ## #############################################################################
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-#   Find includes in corresponding build (and source) directories
-#   (nedded for generated files)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(global_targets 
+  configure  
+  install
+  )
+  
+# This adds targets that will be run in each external-projects
+set_property(DIRECTORY PROPERTY EP_STEP_TARGETS ${global_targets})
+
+# foreach (target ${global_targets})
+#   add_custom_target(${target})
+# endforeach()
 
 ## #############################################################################
-## add definitions
+## Check build environment
 ## #############################################################################
 
-if (CMAKE_CXX_COMPILER MATCHES clang)
-    add_definitions(-DCLANG)
-endif()
-
-if (NOT MSVC) #TODO :why not this warings ?
-  add_definitions(-Wno-write-strings)
-  add_definitions(-Wformat=0)
-endif()
-
-add_definitions(${QT_DEFINITIONS}) #TODO :wath was it for ? (it is empty)
-add_definitions(-DQT_SHARED)
-
-if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-  message(STATUS "Add -DQT_NO_DEBUG")
-  add_definitions(-DQT_NO_DEBUG)
-endif()
-
+include(CheckEnvironment)
 
 ## #############################################################################
-## Windows specificity
+## Configure external-projects
 ## #############################################################################
 
-if (WIN32)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-endif()
+include(ConfigureExternalProjects)
 
 ## #############################################################################
-## Add subdirectory
+## Package
 ## #############################################################################
 
-add_subdirectory(src)
-add_subdirectory(app)
-add_subdirectory(src-plugins)
-
-if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
-  add_subdirectory(doc)
-endif()
-
-
-################################################################################
-# Setup Configuration files
-################################################################################
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
-  configure_file( ## Build tree configure file
-    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    @ONLY IMMEDIATE
-    )
-endif()
-
-################################################################################
-# Setup use file
-################################################################################
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
-  configure_file( ## Common use file
-    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in
-    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Use.cmake
-    @ONLY IMMEDIATE
-    )
-endif()
-
-
-
-
+# include(Packaging)
