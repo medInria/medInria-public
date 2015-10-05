@@ -1,0 +1,9 @@
+{
+          "title" : "Dilate image",
+           "kind" : "process",
+           "type" : "medAbstractDilateImageProcess",
+           "tags" : ["morphology","dilate","morphomath", "operation"],
+    "description" : "<p>Dilate an image.</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=medInria
+GenericName=Medical Imaging Platform
+Comment=Process and Visualize Medical Images
+Icon=@CPACK_PACKAGING_INSTALL_PREFIX@/share/icons/medInria.png
+Exec=medInria %U
+Terminal=false
+Categories=Graphics;Science;MedicalSoftware;Qt;Viewer;
+MimeType=dcm;img;mha;nii;nii.gz;vtk;fib;roi;
+Version=@CPACK_PACKAGE_VERSION@

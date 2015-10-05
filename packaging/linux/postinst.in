@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# Remove unwanted files.
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/cmake
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/include  
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/share/qtdcm
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/plugins/designer
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/*.cmake
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/testing
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/doxygen
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/doc
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/CMake
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/*.cmake
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/InsightToolkit/*.cmake
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/bin/vtk*
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/bin/ttk*
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/bin/itk*
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/bin/dtk*
+
+# Create Symbolic link
+ln -s @CPACK_PACKAGING_INSTALL_PREFIX@/share/applications/medInria.desktop /usr/share/applications/medInria.desktop
+ln -s @CPACK_PACKAGING_INSTALL_PREFIX@/bin/medInria_launcher.sh /usr/bin/medInria
