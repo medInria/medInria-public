@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.2)
 
 if(NOT DEFINED ${MEDINRIA_VERSION})
     set(MEDINRIA_VERSION 2.3.0.0)
@@ -26,6 +26,13 @@ project(MEDINRIA VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+
+## #############################################################################
+## Set language
+## #############################################################################
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## #############################################################################
 ## Options
@@ -48,17 +55,16 @@ option(${PROJECT_NAME}_BUILD_DOCUMENTATION
 ## Find package
 ## #############################################################################
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5Sql REQUIRED)
-find_package(Qt5Concurrent  REQUIRED)
-find_package(Qt5Quick       REQUIRED)
-find_package(Qt5Network     REQUIRED)
-find_package(Qt5Test        REQUIRED)
-find_package(Qt5Declarative REQUIRED)
+find_package(Qt5 REQUIRED
+  COMPONENTS
+   Core
+   Widgets
+   OpenGL
+   Gui
+   Xml
+   Sql
+   Concurrent
+  )
 
 # variables used by doc and tst
 get_target_property(QT5_QMAKE_EXECUTABLE Qt5::qmake LOCATION)

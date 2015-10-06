@@ -5,4 +5,10 @@
         <file>process/arithmetic_operation/medAbstractMultiplyImageProcess.json</file>
         <file>process/arithmetic_operation/medAbstractSubtractImageProcess.json</file>
     </qresource>
+    <qresource prefix="/process/morphomath_operation">
+        <file>process/morphomath_operation/medAbstractClosingImageProcess.json</file>
+        <file>process/morphomath_operation/medAbstractDilateImageProcess.json</file>
+        <file>process/morphomath_operation/medAbstractErodeImageProcess.json</file>
+        <file>process/morphomath_operation/medAbstractOpeningImageProcess.json</file>
+    </qresource>
 </RCC>

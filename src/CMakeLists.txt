@@ -19,6 +19,7 @@
 ## be sure medCore  is first in the list, it will be used by the other lib.
 add_subdirectory(medCoreLegacy)
 add_subdirectory(medCore)
+add_subdirectory(medComposer)
 
 add_subdirectory(medTest)
 add_subdirectory(medPacs)
@@ -37,6 +38,7 @@ set(${PROJECT_NAME}_INCLUDE_DIRS
     ${QT_HEADERS}
   ${medCore_INCLUDE_DIRS}
   ${medCoreLegacy_INCLUDE_DIRS}
+  ${medComposer_INCLUDE_DIRS}
   ${medGui_INCLUDE_DIRS}
   ${medPacs_INCLUDE_DIRS}
   ${medTest_INCLUDE_DIRS}

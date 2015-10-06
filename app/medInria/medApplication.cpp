@@ -94,6 +94,7 @@ medApplication::medApplication(int & argc, char**argv) :
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
                      this,SLOT(redirectMessageToLog(QString)));
 
+    Q_INIT_RESOURCE(medCore);
     this->initialize();
 }
 

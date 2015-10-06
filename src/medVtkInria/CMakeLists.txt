@@ -116,7 +116,7 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${Qt5Core_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
   ${medCoreLegacy_INCLUDE_DIRS}
-  ${${TARGET_NAME}_BINARY_DIR}/shaders
+  ${CMAKE_BINARY_DIR}/shaders
   )
 
 

@@ -44,8 +44,8 @@ protected:
     void setOutput(medAbstractImageData* data);
 
 private slots:
-    void _setInput1();
-    void _setInput2();
+    void _setInput1FromContainer();
+    void _setInput2FromContainer();
     void _fillOutputContainer();
 
 private:

@@ -11,11 +11,16 @@
 #
 ################################################################################
 
-set(TARGET_NAME medCoreLegacy)
+set(TARGET_NAME medComposer)
 
-#required for querying the GPU, can be removed once using Qt 5.3
-#using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
-find_package(OpenGL REQUIRED)
+
+## #############################################################################
+## find requireds
+## #############################################################################
+
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 
 ## #############################################################################
 ## List Sources
@@ -23,37 +28,22 @@ find_package(OpenGL REQUIRED)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  data
-  database
-  data/annotationData
-  gui
-  gui/commonWidgets
-  gui/database
-  gui/factories
-  gui/lookUpTables
-  gui/settingsWidgets
-  gui/toolboxes
-  gui/viewContainers
-  process
-  views
-  views/interactors
-  views/navigators
-  parameters
   )
 
-set(${TARGET_NAME}_QRC resources/medCoreLegacy.qrc)
 
 ## #############################################################################
-## include directories.
+## include directorie.
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  ${QT_HEADERS}
-
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS})
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
+  ${medCore_INCLUDE_DIRS}
+  ${medCoreLegacy_INCLUDE_DIRS}
+  )
+
 
 ## #############################################################################
 ## add library
@@ -61,24 +51,25 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS})
 
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+  ${${TARGET_NAME}_SOURCES_QRC}
+  ../medCore/medCore.qrc
   )
+
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-    ${QT_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-    dtkCoreSupport
-    dtkGuiSupport
-    dtkLog
-    )
-
-if (WIN32) #TODO is that for the memory management thing ?
-  target_link_libraries(${TARGET_NAME} psapi.lib)
-endif()
+  Qt5::Core
+  Qt5::Widgets
+  Qt5::Gui
+  medCore
+  medCoreLegacy
+  dtkLog
+  dtkComposer
+  dtkCore
+  )
 
 
 ## #############################################################################
@@ -88,18 +79,3 @@ endif()
 set_lib_install_rules(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
-
-
-## #############################################################################
-## Build tests
-## #############################################################################
-
-if(${PROJECT_NAME}_BUILD_TESTS)
-  add_subdirectory(tests)
-  #TODO: we will need to change the tests organization because of dependance to medTest...
-  #add_subdirectory(gui/tests)
-  #add_subdirectory(parameters/tests)
-  #add_subdirectory(view/tests)
-  #add_subdirectory(data/tests)
-  #add_subdirectory(process/tests)
-endif()

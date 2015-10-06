@@ -110,7 +110,7 @@ medViewContainerSplitter* medAbstractMorphomathOperationProcess::viewContainerSp
     d->outputContainer->setUserOpenable(false);
 
     connect(d->inputContainer, &medViewContainer::viewContentChanged,
-            this, &medAbstractMorphomathOperationProcess::_setInput);
+            this, &medAbstractMorphomathOperationProcess::_setInputFromContainer);
 
     connect(this, &medAbstractMorphomathOperationProcess::success,
             this, &medAbstractMorphomathOperationProcess::_fillOutputContainer);
@@ -118,7 +118,7 @@ medViewContainerSplitter* medAbstractMorphomathOperationProcess::viewContainerSp
     return splitter;
 }
 
-void medAbstractMorphomathOperationProcess::_setInput()
+void medAbstractMorphomathOperationProcess::_setInputFromContainer()
 {
     medAbstractImageView* view = dynamic_cast<medAbstractImageView*> (d->inputContainer->view());
     if(view)

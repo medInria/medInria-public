@@ -48,6 +48,7 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
+#  ${${TARGET_NAME}_QRC}
   )
 
 
@@ -56,12 +57,14 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-    ${QT_LIBRARIES}
-    dtkCoreSupport
-    dtkGuiSupport
-    dtkLog
-    dtkComposer
-    )
+  Qt5::Core
+  Qt5::Widgets
+  Qt5::Gui
+  dtkCoreSupport
+  dtkGuiSupport
+  dtkLog
+  dtkComposer
+  )
 
 ## #############################################################################
 ## install

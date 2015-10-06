@@ -111,10 +111,10 @@ medViewContainerSplitter* medAbstractArithmeticOperationProcess::viewContainerSp
     d->outputContainer->setUserOpenable(false);
 
     connect(d->inputContainer1, &medViewContainer::viewContentChanged,
-            this, &medAbstractArithmeticOperationProcess::_setInput1);
+            this, &medAbstractArithmeticOperationProcess::_setInput1FromContainer);
 
     connect(d->inputContainer2, &medViewContainer::viewContentChanged,
-            this, &medAbstractArithmeticOperationProcess::_setInput2);
+            this, &medAbstractArithmeticOperationProcess::_setInput2FromContainer);
 
     connect(this, &medAbstractArithmeticOperationProcess::success,
             this, &medAbstractArithmeticOperationProcess::_fillOutputContainer);
@@ -122,7 +122,7 @@ medViewContainerSplitter* medAbstractArithmeticOperationProcess::viewContainerSp
     return splitter;
 }
 
-void medAbstractArithmeticOperationProcess::_setInput1()
+void medAbstractArithmeticOperationProcess::_setInput1FromContainer()
 {
     medAbstractImageView* view = dynamic_cast<medAbstractImageView*> (d->inputContainer1->view());
     if(view)
@@ -135,7 +135,7 @@ void medAbstractArithmeticOperationProcess::_setInput1()
     }
 }
 
-void medAbstractArithmeticOperationProcess::_setInput2()
+void medAbstractArithmeticOperationProcess::_setInput2FromContainer()
 {
     medAbstractImageView* view = dynamic_cast<medAbstractImageView*> (d->inputContainer2->view());
     if(view)
