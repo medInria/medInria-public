@@ -48,7 +48,7 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
-#  ${${TARGET_NAME}_QRC}
+  ${${TARGET_NAME}_QRC}
   )
 
 

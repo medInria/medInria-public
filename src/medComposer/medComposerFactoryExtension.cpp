@@ -37,30 +37,21 @@ medComposerFactoryExtension::~medComposerFactoryExtension(void)
 
 void medComposerFactoryExtension::extend(dtkComposerNodeFactory *factory)
 {
-
-//    QDir dir(":/");
-//    qDebug() << "dir exist:" << dir.exists();
-//    qDebug() << "content: " << dir.entryList(QStringList() << "");
-
-    QString arithmetic_prefix = "/home/rdebroiz/medinria/src/src/medCore/process/arithmetic_operation/";
-    QString morphomath_prefix = "/home/rdebroiz/medinria/src/src/medCore/process/morphomath_operation/";
-
-    factory->record(arithmetic_prefix + "medAbstractAddImageProcess.json",
+    factory->record(":/process/arithmetic_operation/medAbstractAddImageProcess.json",
                     dtkComposerNodeCreator<medAddImageProcessNode>);
-    factory->record(arithmetic_prefix + "medAbstractSubtractImageProcess.json",
+    factory->record(":/process/arithmetic_operation/medAbstractSubtractImageProcess.json",
                     dtkComposerNodeCreator<medSubtractImageProcessNode>);
-    factory->record(arithmetic_prefix + "medAbstractMultiplyImageProcess.json",
+    factory->record(":/process/arithmetic_operation/medAbstractMultiplyImageProcess.json",
                     dtkComposerNodeCreator<medMultiplyImageProcessNode>);
-    factory->record(arithmetic_prefix + "medAbstractDivideImageProcess.json",
+    factory->record(":/process/arithmetic_operation/medAbstractDivideImageProcess.json",
                     dtkComposerNodeCreator<medDivideImageProcessNode>);
 
-    factory->record(morphomath_prefix + "medAbstractAddImageProcess.json",
+    factory->record(":/process/morphomath_operation/medAbstractErodeImageProcess.json",
                     dtkComposerNodeCreator<medErodeImageProcessNode>);
-    factory->record(morphomath_prefix + "medAbstractDilateImageProcess.json",
+    factory->record(":/process/morphomath_operation/medAbstractDilateImageProcess.json",
                     dtkComposerNodeCreator<medDilateImageProcessNode>);
-    factory->record(morphomath_prefix + "medAbstractOpeningImageProcess.json",
+    factory->record(":/process/morphomath_operation/medAbstractOpeningImageProcess.json",
                     dtkComposerNodeCreator<medOpeningImageProcessNode>);
-    factory->record(morphomath_prefix + "medAbstractClosingImageProcess.json",
+    factory->record(":/process/morphomath_operation/medAbstractClosingImageProcess.json",
                     dtkComposerNodeCreator<medClosingImageProcessNode>);
-
 }

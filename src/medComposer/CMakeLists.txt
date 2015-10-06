@@ -28,6 +28,9 @@ include_directories(${dtk_INCLUDE_DIRS})
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  process
+  process/arithmetic_operation
+  process/morphomath_operation
   )
 
 
@@ -44,17 +47,15 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${medCoreLegacy_INCLUDE_DIRS}
   )
 
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
+
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_SOURCES_QRC}
-  ../medCore/medCore.qrc
+#  ${${TARGET_NAME}_QRC}
   )
-
 
 ## #############################################################################
 ## Link
