@@ -6,19 +6,21 @@ project(MEDINRIA_SUPERBUILD VERSION 3.0.0.0)
 ## Add packages
 ## #############################################################################
 
-find_package(Qt5 REQUIRED
-  COMPONENTS
-    Core                                                                                                                                                                                                                                          
-    Designer                                                                                                                                                                                                                                      
-    Gui                                                                                                                                                                                                                                           
-    Network                                                                                                                                                                                                                                       
-    OpenGL                                                                                                                                                                                                                                        
-    Sql                                                                                                                                                                                                                                           
-    WebKitWidgets                                                                                                                                                                                                                                 
-    WebKit                                                                                                                                                                                                                                        
-    Widgets                                                                                                                                                                                                                                       
-    Xml 
+find_package(Qt5 REQUIRED COMPONENTS
+  Core
+  Designer
+  Gui
+  Network
+  OpenGL
+  Sql                                                                                                                                                                                                                                       
+  Widgets                                                                                                                                                                                                                                       
+  Xml
+  Declarative
+  Test
+  Quick
   )
+
+find_package(Boost REQUIRED)
                                                                                                                                                                                                                                           
 # There are three possibilities:
 # - if the option USE_SYSTEM_${external_project} is set, then the system version  
