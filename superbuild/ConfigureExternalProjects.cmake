@@ -67,7 +67,7 @@ include(EP_GeneratePatchCommand)
 ## #############################################################################
 
 file(GLOB projects_modules 
-  "${CMAKE_SOURCE_DIR}/externals/projects_modules/*.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/projects_modules/*.cmake"
   )
 
 foreach(module ${projects_modules})
@@ -79,7 +79,7 @@ endforeach()
 ## #############################################################################
 
 macro(call func_name)
-    set(tmp_function_file ${CMAKE_BINARY_DIR}/externals/tmp/tmp_call_ep.cmake)
+    set(tmp_function_file ${CMAKE_CURRENT_BINARY_DIR}/tmp/tmp_call_ep.cmake)
     string(REPLACE "-" "_" func ${func_name})
     file(WRITE ${tmp_function_file} "${func}()")
     include(${tmp_function_file})

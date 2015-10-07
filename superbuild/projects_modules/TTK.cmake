@@ -1,4 +1,4 @@
-################################################################################
+##############################################################################
 #
 # medInria
 #
@@ -9,10 +9,10 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-################################################################################
+##############################################################################
 
-function(ITK_project)
-set(ep ITK)
+function(TTK_project)
+set(ep TTK)
 
 
 ## #############################################################################
@@ -21,12 +21,12 @@ set(ep ITK)
 
 list(APPEND ${ep}_dependencies 
   VTK
+  ITK 
   )
-  
   
 ## #############################################################################
 ## Prepare the project
-## ############################################################################# 
+## #############################################################################
 
 EP_Initialisation(${ep} 
   USE_SYSTEM OFF 
@@ -34,15 +34,13 @@ EP_Initialisation(${ep}
   REQUIRED_FOR_PLUGINS ON
   )
 
-
 if (NOT USE_SYSTEM_${ep})
-
 ## #############################################################################
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url git://itk.org/ITK.git)
-set(git_tag release)
+set(git_url ${GITHUB_PREFIX}rdebroiz/TTK-Public.git)
+set(git_tag vtk-6)
 
 
 ## #############################################################################
@@ -51,57 +49,47 @@ set(git_tag release)
 
 # set compilation flags
 if (UNIX)
-  set(${ep}_c_flags "${${ep}_c_flags} -w")
-  set(${ep}_cxx_flags "${${ep}_cxx_flags} -w -fpermissive")
+  set(${ep}_c_flags "${${ep}_c_flags} -Wall")
+  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
 endif()
 
 set(cmake_args
   ${ep_common_cache_args}
-  -DCMAKE_C_FLAGS=${${ep}_c_flags}
-  -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
-  -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
-  -DBUILD_EXAMPLES=OFF
-  -DBUILD_TESTING=OFF
-  -DModule_ITKIOPhilipsREC=ON
-  -DModule_ITKReview=ON
-  -DModule_ITKVtkGlue=ON
-  -DVTK_DIR=${VTK_DIR}
+  -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
+  -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
+  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
+  -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}    
+  -DVTK_DIR:FILEPATH=${VTK_DIR}
+  -DITK_DIR:FILEPATH=${ITK_DIR}
+  -DBUILD_TESTING:BOOL=OFF
+  BUILD_ALWAYS  
   )
 
-## #############################################################################
-## Check if patch has to be applied
-## #############################################################################
-
-ep_GeneratePatchCommand(ITK ITK_PATCH_COMMAND ITK_Mac_Rpath.patch)
 
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
 
 ExternalProject_Add(${ep}
-  PREFIX ${CMAKE_BINARY_DIR}/externals
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  ${ITK_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
-  INSTALL_COMMAND ""
-  BUILD_ALWAYS
+  INSTALL_COMMAND ""   
   )
-
-
+  
+  
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
-ExternalProject_Get_Property(ITK binary_dir)
+ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
-
-
+  
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()
