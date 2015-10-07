@@ -99,8 +99,8 @@ set(cmake_args
 ## #############################################################################
 
 ExternalProject_Add(${ep}
-  PREFIX ${CMAKE_BINARY_DIR}/externals
-  SOURCE_DIR ${CMAKE_SOURCE_DIR}/medInria-src
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/src
   BINARY_DIR ${CMAKE_BINARY_DIR}/medInria-build
   STAMP_DIR ${CMAKE_BINARY_DIR}/medInria-stamp
   UPDATE_COMMAND ""
