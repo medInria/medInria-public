@@ -11,13 +11,13 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.2)
 
 if(NOT DEFINED ${MEDINRIA_VERSION})
-    set(MEDINRIA_VERSION 2.3.0.0)
+    set(MEDINRIA_VERSION 3.0.0.0)
 endif()
 
-project(MEDINRIA VERSION ${MEDINRIA_VERSION})
+project(medInria VERSION ${MEDINRIA_VERSION})
 
 
 ## #############################################################################
@@ -48,52 +48,25 @@ option(${PROJECT_NAME}_BUILD_DOCUMENTATION
 ## Find package
 ## #############################################################################
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5Sql REQUIRED)
-find_package(Qt5Concurrent  REQUIRED)
-find_package(Qt5Quick       REQUIRED)
-find_package(Qt5Network     REQUIRED)
-find_package(Qt5Test        REQUIRED)
-find_package(Qt5Declarative REQUIRED)
-
-# variables used by doc and tst
-get_target_property(QT5_QMAKE_EXECUTABLE Qt5::qmake LOCATION)
-get_filename_component(QT5_BINARY_DIR ${QT5_QMAKE_EXECUTABLE} PATH)
-
-set(QT_HEADERS
-    ${Qt5Core_INCLUDE_DIRS}
-    ${Qt5OpenGL_INCLUDE_DIRS}
-    ${Qt5Gui_INCLUDE_DIRS}
-    ${Qt5Xml_INCLUDE_DIRS}
-    ${Qt5Sql_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5Concurrent_INCLUDE_DIRS}
-    ${Qt5Quick_INCLUDE_DIRS}
-    ${Qt5Network_INCLUDE_DIRS}
-    ${Qt5Test_INCLUDE_DIRS}
-    ${Qt5Declarative_INCLUDE_DIRS}
-    )
-
-set(QT_LIBRARIES
-    Qt5::Core
-    Qt5::OpenGL
-    Qt5::Gui
-    Qt5::Xml
-    Qt5::Sql
-    Qt5::Widgets
-    Qt5::Concurrent
-    Qt5::Quick
-    Qt5::Network
-    Qt5::Test
-    Qt5::Declarative
-    )
+find_package(Qt5 REQUIRED COMPONENTS
+  Core
+  Gui
+  Network
+  OpenGL
+  Sql
+  Widgets
+  Xml
+  )
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
+
+## #############################################################################
+## enable c++ 11
+## #############################################################################
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## #############################################################################
 ## Additionals modules
@@ -148,9 +121,6 @@ if (NOT MSVC) #TODO :why not this warings ?
   add_definitions(-Wformat=0)
 endif()
 
-add_definitions(${QT_DEFINITIONS}) #TODO :wath was it for ? (it is empty)
-add_definitions(-DQT_SHARED)
-
 if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   message(STATUS "Add -DQT_NO_DEBUG")
   add_definitions(-DQT_NO_DEBUG)
@@ -170,9 +140,9 @@ endif()
 ## Add subdirectory
 ## #############################################################################
 
-add_subdirectory(src)
+add_subdirectory(layers)
 add_subdirectory(app)
-add_subdirectory(src-plugins)
+add_subdirectory(plugins)
 
 if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
   add_subdirectory(doc)

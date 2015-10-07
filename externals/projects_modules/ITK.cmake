@@ -84,12 +84,12 @@ ExternalProject_Add(${ep}
   PREFIX ${CMAKE_BINARY_DIR}/externals
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  UPDATE_COMMAND ""
   ${ITK_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
+  BUILD_ALWAYS
   )
 
 

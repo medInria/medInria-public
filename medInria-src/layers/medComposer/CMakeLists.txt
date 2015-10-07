@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME medRegistration)
+set(TARGET_NAME medComposer)
 
 
 ## #############################################################################
@@ -21,13 +21,6 @@ set(TARGET_NAME medRegistration)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
-
-
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
-
 
 ## #############################################################################
 ## List Sources
@@ -35,6 +28,9 @@ include(${RPI_USE_FILE})
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  process
+  process/arithmetic_operation
+  process/morphomath_operation
   )
 
 
@@ -47,6 +43,7 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
+  ${medCore_INCLUDE_DIRS}
   ${medCoreLegacy_INCLUDE_DIRS}
   )
 
@@ -54,10 +51,11 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 ## add library
 ## #############################################################################
 
+
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
+#  ${${TARGET_NAME}_QRC}
   )
-
 
 ## #############################################################################
 ## Link
@@ -67,32 +65,11 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
   Qt5::Gui
-  dtkCoreSupport
+  medCore
   medCoreLegacy
   dtkLog
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOGE
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKStatistics
-  ITKIOTransformBase
-  ITKIOTransformHDF5
-  ITKIOTransformMatlab
-  ITKIOTransformInsightLegacy
-  ITKIOMRC
+  dtkComposer
+  dtkCore
   )
 
 

@@ -20,7 +20,6 @@ set(ep medInria)
 ## #############################################################################
 
 list(APPEND ${ep}_dependencies 
-  Qt4 
   dtk 
   DCMTK 
   ITK 
@@ -29,12 +28,6 @@ list(APPEND ${ep}_dependencies
   QtDCM
   RPI
   )
-  
-set(MEDINRIA_TEST_DATA_ROOT 
-  ${CMAKE_SOURCE_DIR}/medInria-testdata CACHE PATH
-  "Root directory of the data used for the test of medInria")
-mark_as_advanced(MEDINRIA_TEST_DATA_ROOT)  
-  
   
 ## #############################################################################
 ## Prepare the project
@@ -49,25 +42,6 @@ EP_Initialisation(${ep}
 
 if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
-## Set directories
-## #############################################################################
-
-EP_SetDirectories(${ep}
-  EP_DIRECTORIES ep_dirs
-  )
-
-
-## #############################################################################
-## Define repository where get the sources
-## #############################################################################
-
-set(url ${GITHUB_PREFIX}medInria/medInria-public.git)
-if (NOT DEFINED ${ep}_SOURCE_DIR)
-  set(location GIT_REPOSITORY ${url})
-endif()
-
-
-## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
 
@@ -79,25 +53,44 @@ endif()
 
 set(cmake_args
    ${ep_common_cache_args}
-  -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
-  -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
-  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
-  -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
-  -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
-  -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
-  -Ddtk_DIR:FILEPATH=${dtk_DIR}
-  -DITK_DIR:FILEPATH=${ITK_DIR}
-  -DQTDCM_DIR:FILEPATH=${QtDCM_DIR}
-  -DRPI_DIR:FILEPATH=${RPI_DIR}
-  -DTTK_DIR:FILEPATH=${TTK_DIR}
-  -DVTK_DIR:FILEPATH=${VTK_DIR}
-  -DBOOST_ROOT:PATH=${BOOST_ROOT}
-  -DMEDINRIA-PLUGINS_BUILD_TOOLS:BOOL=ON
-  -DMEDINRIA_VERSION_MAJOR:STRING=${${PROJECT_NAME}_VERSION_MAJOR}
-  -DMEDINRIA_VERSION_MINOR:STRING=${${PROJECT_NAME}_VERSION_MINOR}
-  -DMEDINRIA_VERSION_PATCH:STRING=${${PROJECT_NAME}_VERSION_PATCH}
-  -DMEDINRIA_VERSION_TWEAK:STRING=${${PROJECT_NAME}_VERSION_TWEAK}
+  -DCMAKE_C_FLAGS=${${ep}_c_flags}
+  -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
+  -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
+  -DDCMTK_DIR=${DCMTK_DIR}
+  -Ddtk_DIR=${dtk_DIR}
+  -DITK_DIR=${ITK_DIR}
+  -DQTDCM_DIR=${QtDCM_DIR}
+  -DRPI_DIR=${RPI_DIR}
+  -DTTK_DIR=${TTK_DIR}
+  -DVTK_DIR=${VTK_DIR}
+  -DQt5_DIR=${Qt5_DIR}
+  -DBOOST_ROOT=${BOOST_ROOT}
+  -DMEDINRIA_VERSION:STRING=${${PROJECT_NAME}_VERSION}
+  -DBUILD_ALL_PLUGINS=OFF
+  -DBUILD_COMPOSITEDATASET_PLUGIN=OFF
+  -DBUILD_EXAMPLE_PLUGINS=OFF
+  -DBUILD_LEGACY/ITKDATADIFFUSIONGRADIENTLIST_PLUGIN=OFF
+  -DBUILD_LEGACY/ITKDATAIMAGE_PLUGIN=ON
+  -DBUILD_LEGACY/ITKDATASHIMAGE_PLUGIN=OFF
+  -DBUILD_LEGACY/ITKDATATENSORIMAGE_PLUGIN=OFF
+  -DBUILD_LEGACY/ITKFILTERS_PLUGIN=OFF
+  -DBUILD_LEGACY/ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONS_PLUGIN=OFF
+  -DBUILD_LEGACY/MEDSEGMENTATION_PLUGIN=OFF
+  -DBUILD_LEGACY/MEDVTKFIBERSDATA_PLUGIN=OFF
+  -DBUILD_LEGACY/MEDVTKVIEW_PLUGIN=ON
+  -DBUILD_LEGACY/QTDCMDATASOURCE_PLUGIN=OFF
+  -DBUILD_LEGACY/UNDOREDOREGISTRATION_PLUGIN=OFF
+  -DBUILD_LEGACY/VTKDATAMESH_PLUGIN=OFF
+  -DBUILD_PROCESS/ARITHMETIC_OPERATION/MEDITKADDIMAGEPROCESS_PLUGIN=ON
+  -DBUILD_PROCESS/ARITHMETIC_OPERATION/MEDITKDIVIDEIMAGEPROCESS_PLUGIN=ON
+  -DBUILD_PROCESS/ARITHMETIC_OPERATION/MEDITKMULTIPLYIMAGEPROCESS_PLUGIN=ON
+  -DBUILD_PROCESS/ARITHMETIC_OPERATION/MEDITKSUBTRACTIMAGEPROCESS_PLUGIN=ON
+  -DBUILD_PROCESS/MORPHOMATH_OPERATION/MEDITKCLOSINGIMAGEPROCESS_PLUGIN=ON
+  -DBUILD_PROCESS/MORPHOMATH_OPERATION/MEDITKDILATEIMAGEPROCESS_PLUGIN=ON
+  -DBUILD_PROCESS/MORPHOMATH_OPERATION/MEDITKERODEIMAGEPROCESS_PLUGIN=ON
+  -DBUILD_PROCESS/MORPHOMATH_OPERATION/MEDITKOPENINGIMAGEPROCESS_PLUGIN=ON
   )
   
   
@@ -106,44 +99,47 @@ set(cmake_args
 ## #############################################################################
 
 ExternalProject_Add(${ep}
-  ${ep_dirs}
-  ${location}
+  PREFIX ${CMAKE_BINARY_DIR}/externals
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/medInria-src
+  BINARY_DIR ${CMAKE_BINARY_DIR}/medInria-build
+  STAMP_DIR ${CMAKE_BINARY_DIR}/medInria-stamp
   UPDATE_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
+  # BUILD_ALWAYS
   )
 
-## #############################################################################
-## Add step to get revisions
-## #############################################################################
+# ## #############################################################################
+# ## Add step to get revisions
+# ## #############################################################################
 
-# Create a revisions directory in the binary dir.
-ExternalProject_Get_Property(${ep} binary_dir)
-set(revisions_dir ${binary_dir}/revisions)
-file(MAKE_DIRECTORY ${revisions_dir})
+# # Create a revisions directory in the binary dir.
+# ExternalProject_Get_Property(${ep} binary_dir)
+# set(revisions_dir ${binary_dir}/revisions)
+# file(MAKE_DIRECTORY ${revisions_dir})
 
-# Write out values into cmake module that will be loaded during configuration
-#TODO : Would be a good idea to find a better way.
-set(revisions_args ${revisions_dir}/revisions_args.cmake)
-file(WRITE ${revisions_args}
-  "set(projects ${external_projects})\n"
-  )
-file(APPEND ${revisions_args}
-  "set(sp_source_dir ${CMAKE_SOURCE_DIR})\n"
-  )
-file(APPEND ${revisions_args}
-  "set(GET_REVISIONS_MODULE_PATH ${GET_REVISIONS_MODULE_PATH})\n"
-  )
+# # Write out values into cmake module that will be loaded during configuration
+# #TODO : Would be a good idea to find a better way.
+# set(revisions_args ${revisions_dir}/revisions_args.cmake)
+# file(WRITE ${revisions_args}
+#   "set(projects ${external_projects})\n"
+#   )
+# file(APPEND ${revisions_args}
+#   "set(sp_source_dir ${CMAKE_SOURCE_DIR})\n"
+#   )
+# file(APPEND ${revisions_args}
+#   "set(GET_REVISIONS_MODULE_PATH ${GET_REVISIONS_MODULE_PATH})\n"
+#   )
 
-ExternalProject_Add_Step(${ep} get-revisions
-    COMMAND cmake ${GET_REVISIONS_MODULE_PATH}
-    COMMENT "Get projects revisions"
-    DEPENDEES download    
-    ALWAYS 1
-    WORKING_DIRECTORY ${revisions_dir}
-    )
+# ExternalProject_Add_Step(${ep} get-revisions
+#     COMMAND cmake ${GET_REVISIONS_MODULE_PATH}
+#     COMMENT "Get projects revisions"
+#     DEPENDEES download    
+#     ALWAYS 1
+#     WORKING_DIRECTORY ${revisions_dir}
+#     )
 
 ## #############################################################################
 ## Set variable to provide infos about the project
@@ -154,12 +150,29 @@ set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 ExternalProject_Get_Property(${ep} source_dir)
 set(${ep}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
 
-## #############################################################################
-## Add custom targets
-## #############################################################################
-
-EP_AddCustomTargets(${ep})
-
 endif() #NOT USE_SYSTEM_ep
 
-endfunction()
+endfunction()     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
