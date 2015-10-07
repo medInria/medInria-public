@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -22,23 +22,22 @@ class registrationFactoryPrivate;
 
 class MEDREGISTRATIONFACTORY_EXPORT registrationFactory : public QObject
 {
-
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
 
     typedef itk::Image< float, 3 > RegImageType;
 
     static registrationFactory * instance();
-        
+
     void setItkRegistrationFactory(itk::ImageRegistrationFactory<RegImageType>::Pointer registrationFactory);
 
     itk::ImageRegistrationFactory<RegImageType>::Pointer getItkRegistrationFactory();
 
     itk::GeneralTransform<double,3>::Pointer getGeneralTransform();
-    
+
     unsigned int addTransformation(itk::Transform<double,3,3>::Pointer arg, QString methodParameters);
-    
+
     public slots:
         void reset();
 

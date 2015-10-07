@@ -75,7 +75,10 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
+  Qt5::Core
+  Qt5::Widgets
+  Qt5::Gui
+  Qt5::OpenGL
   dtkCore
   dtkLog
   medCore
