@@ -49,8 +49,6 @@ set(${TARGET_NAME}_QRC resources/medCoreLegacy.qrc)
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  ${QT_HEADERS}
-
   )
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS})
@@ -69,12 +67,15 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-    ${QT_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-    dtkCoreSupport
-    dtkGuiSupport
-    dtkLog
-    )
+  Qt5::Core
+  Qt5::Widgets
+  Qt5::Gui
+  Qt5::Sql
+  ${OPENGL_LIBRARIES}
+  dtkCoreSupport
+  dtkGuiSupport
+  dtkLog
+  )
 
 if (WIN32) #TODO is that for the memory management thing ?
   target_link_libraries(${TARGET_NAME} psapi.lib)
