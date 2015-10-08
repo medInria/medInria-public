@@ -11,41 +11,168 @@
 #
 ################################################################################
 
+cmake_minimum_required(VERSION 3.2)
+
+if(NOT DEFINED ${MEDINRIA_VERSION})
+    set(MEDINRIA_VERSION 3.0.0.0)
+endif()
+
+project(medInria VERSION ${MEDINRIA_VERSION})
+
 
 ## #############################################################################
-## Add subdirectories
+## Set version
 ## #############################################################################
 
-## be sure medCore  is first in the list, it will be used by the other lib.
-add_subdirectory(medCoreLegacy)
-add_subdirectory(medCore)
-
-add_subdirectory(medTest)
-add_subdirectory(medPacs)
-
-add_subdirectory(medLog)
-add_subdirectory(medImageIO)
-add_subdirectory(medRegistration)
-
-add_subdirectory(medVtkInria)
+string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
+add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
 ## #############################################################################
-## complete medInria_INCLUDE_DIRS
+## Options
 ## #############################################################################
 
-set(${PROJECT_NAME}_INCLUDE_DIRS
-    ${QT_HEADERS}
-  ${medCore_INCLUDE_DIRS}
-  ${medCoreLegacy_INCLUDE_DIRS}
-  ${medGui_INCLUDE_DIRS}
-  ${medPacs_INCLUDE_DIRS}
-  ${medTest_INCLUDE_DIRS}
-  ${medSql_INCLUDE_DIRS}
-  ${medLog_INCLUDE_DIRS}
-  ${medImageIO_INCLUDE_DIRS}
-  ${medRegistration_INCLUDE_DIRS}
-  ${medVtkInria_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_INCLUDE_DIRS}
-  PARENT_SCOPE
+option(${PROJECT_NAME}_BUILD_TESTS
+  "Build tests"
+  OFF
   )
+if(${PROJECT_NAME}_BUILD_TESTS)
+    enable_testing()
+endif()
+
+option(${PROJECT_NAME}_BUILD_DOCUMENTATION
+  "Build documentation"
+  OFF
+  )
+
+## #############################################################################
+## Find package
+## #############################################################################
+
+find_package(Qt5 REQUIRED COMPONENTS
+  Core
+  Gui
+  Network
+  OpenGL
+  Sql
+  Widgets
+  Xml
+  )
+
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
+## #############################################################################
+## enable c++ 11
+## #############################################################################
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+## #############################################################################
+## Additionals modules
+## #############################################################################
+
+set(${PROJECT_NAME}_CMAKE_DIR
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/module
+  )
+
+set(CMAKE_MODULE_PATH
+  ${${PROJECT_NAME}_CMAKE_DIR}
+  ${CMAKE_MODULE_PATH}
+  )
+
+include(list_source_files)
+include(list_header_directories_to_include)
+include(set_exe_install_rules)
+include(set_lib_install_rules)
+include(set_plugin_install_rules)
+include(set_plugin_install_rules_legacy)
+
+include(add_plugins)
+if(APPLE)
+  include(FixDCMTKMacLink)
+  include(FixDCMTKMacInstall)
+  set(CMAKE_MACOSX_RPATH OFF)
+endif()
+
+
+
+## #############################################################################
+## Qt Auto tools
+## #############################################################################
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+#   Find includes in corresponding build (and source) directories
+#   (nedded for generated files)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+## #############################################################################
+## add definitions
+## #############################################################################
+
+if (CMAKE_CXX_COMPILER MATCHES clang)
+    add_definitions(-DCLANG)
+endif()
+
+if (NOT MSVC) #TODO :why not this warings ?
+  add_definitions(-Wno-write-strings)
+  add_definitions(-Wformat=0)
+endif()
+
+if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  message(STATUS "Add -DQT_NO_DEBUG")
+  add_definitions(-DQT_NO_DEBUG)
+endif()
+
+
+## #############################################################################
+## Windows specificity
+## #############################################################################
+
+if (WIN32)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+endif()
+
+## #############################################################################
+## Add subdirectory
+## #############################################################################
+
+add_subdirectory(layers)
+add_subdirectory(app)
+add_subdirectory(plugins)
+
+if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
+  add_subdirectory(doc)
+endif()
+
+
+################################################################################
+# Setup Configuration files
+################################################################################
+
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
+  configure_file( ## Build tree configure file
+    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    @ONLY IMMEDIATE
+    )
+endif()
+
+################################################################################
+# Setup use file
+################################################################################
+
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
+  configure_file( ## Common use file
+    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in
+    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Use.cmake
+    @ONLY IMMEDIATE
+    )
+endif()
+
+
+
 
