@@ -51,6 +51,10 @@ if (UNIX)
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+  set(${ep}_cxx_flags "${${ep}_cxx_flags} -fpermissive")
+endif()
+
 set(cmake_args
    ${ep_common_cache_args}
   -DCMAKE_C_FLAGS=${${ep}_c_flags}
