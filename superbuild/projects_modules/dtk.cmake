@@ -40,8 +40,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}rdebroiz/dtk.git)
-set(git_tag "cmake-find_qt5")
+set(git_url ${GITHUB_PREFIX}d-tk/dtk.git)
+set(git_tag master)
 
 
 ## #############################################################################
