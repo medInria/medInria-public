@@ -37,10 +37,11 @@
 **
 ****************************************************************************/
 
-
 #include "qtlocalpeer.h"
 
+#if !defined(Q_OS_WIN)
 #include <unistd.h>
+#endif
 
 #include <QCoreApplication>
 #include <QTime>
