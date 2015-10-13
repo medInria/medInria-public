@@ -19,7 +19,7 @@
 
 class medViewContainer;
 class medDataIndex;
-struct QUuid;
+class QUuid;
 
 class MEDCORELEGACY_EXPORT medViewContainerSplitter: public QSplitter
 {

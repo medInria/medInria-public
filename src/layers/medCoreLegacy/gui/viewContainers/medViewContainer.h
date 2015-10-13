@@ -17,7 +17,7 @@
 
 #include <medCoreLegacyExport.h>
 
-struct QUuid;
+class QUuid;
 class medAbstractView;
 class medAbstractData;
 class medDataIndex;
