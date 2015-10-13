@@ -57,6 +57,7 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
+  medCoreLegacy
   Qt5::Core
   Qt5::Widgets
   Qt5::Gui

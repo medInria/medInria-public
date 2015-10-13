@@ -154,6 +154,7 @@ target_link_libraries(${TARGET_NAME}
   ${ITKIOPhilipsREC_LIBRARIES}
   ITKIOMRC
   ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
+  ITKVTK
   vtkCommonCore
   vtkIOCore
   vtkIOLegacy

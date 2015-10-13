@@ -17,7 +17,7 @@
 #include <QtGui>
 
 #include <medCoreLegacyExport.h>
-struct QUuid;
+class QUuid;
 class QListWidgetItem;
 class QAction;
 
