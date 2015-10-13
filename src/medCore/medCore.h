@@ -22,6 +22,7 @@
 #include "medAbstractWindowingFilter.h"
 #include "medAbstractRegistrationProcess.h"
 #include "medAbstractRigidRegistration.h"
+#include "medAbstractSegmentationProcess.h"
 
 
 class medAbstractAddFilter;
@@ -88,7 +89,9 @@ class medAbstractRigidRegistration;
 class medAbstractRigidRegistrationPluginFactory;
 class medAbstractRigidRegistrationPluginManager;
 
-
+class medAbstractSegmentationProcess;
+class medAbstractSegmentationProcessPluginFactory;
+class medAbstractSegmentationProcessPluginManager;
 
 namespace medCore
 {
@@ -198,6 +201,11 @@ namespace medCore
         }
     }
 
+    namespace segmentation
+    {
+            MEDCORE_EXPORT medAbstractSegmentationProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT medAbstractSegmentationProcessPluginManager& pluginManager(void);
+    }
 }
 
 #endif

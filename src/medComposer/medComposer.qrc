@@ -20,5 +20,7 @@
         <file>medRigidRegistrationNode.json</file>
         <file>medRegistrationNode.json</file>
         <file>medSubstractFilterNode.json</file>
+        <file>medSegmentationNode.json</file>
+        <file>medFSLInitNode.json</file>
     </qresource>
 </RCC>

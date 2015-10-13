@@ -80,7 +80,7 @@ set(PLUGIN_LIST
   meditkWindowingFilterPlugin                       ON
   meditkRigidRegistration                           ON
   meditkRegistrationDiffeomorphicDemonsProcess      ON
- 
+  medManualSegmentationPlugin                       ON
   )   
 
 

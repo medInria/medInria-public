@@ -316,4 +316,23 @@ namespace medCore
             }
         }
     }
+
+    namespace segmentation
+    {
+        namespace _private
+        {
+            medAbstractSegmentationProcessPluginFactory factory;
+            medAbstractSegmentationProcessPluginManager manager;
+        }
+
+        medAbstractSegmentationProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+
+        medAbstractSegmentationProcessPluginManager& pluginManager(void)
+        {
+            return _private::manager;
+        }
+    }
 }

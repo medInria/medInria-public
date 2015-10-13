@@ -197,6 +197,9 @@ int main(int argc,char* argv[]) {
     medCore::registration::rigid    ::pluginManager().initialize(path);
     medCore::registration::nonRigid ::pluginManager().initialize(path);
 
+    medCore::segmentation           ::pluginManager().initialize(path);
+
+
 
     dtkLogger::instance().setLevel("trace");
     dtkLogger::instance().attachConsole();
