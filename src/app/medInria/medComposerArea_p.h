@@ -1,21 +1,15 @@
-/* medComposerArea_p.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008-2011 - Julien Wintz, Inria.
- * Created: Wed Feb  1 12:37:28 2012 (+0100)
- * Version: $Id: 82f3beb9fd4e7a25cbb10a39def9d298b1e35c92 $
- * Last-Updated: Tue Jun 25 10:04:05 2013 (+0200)
- *           By: Selim Kraria
- *     Update #: 154
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -53,11 +47,6 @@ public:
 
 public:
     void setCurrentFile(const QString& file);
-
-#if defined(Q_OS_MAC) && (MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_6)
-    void enableFullScreenSupport(void);
-    void showFullScreen(void);
-#endif
 
 public slots:
     void setModified(bool modified);

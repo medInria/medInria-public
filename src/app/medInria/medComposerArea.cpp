@@ -1,24 +1,18 @@
-// Version: $Id$
-//
-//
+/*=========================================================================
 
-// Commentary:
-//
-//
+ medInria
 
-// Change Log:
-//
-//
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
 
-// Code:
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
-
+=========================================================================*/
 
 #include "medComposerArea.h"
 #include "medComposerArea_p.h"
-
-
-// #include <dtkDistributedSupport/dtkDistributor.h>
 
 #include <dtkComposer/dtkComposer.h>
 #include <dtkComposer/dtkComposerNode.h>
@@ -429,10 +423,6 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
     this->setCentralWidget(central);
     this->setStyleSheet(dtkReadFile(":dtkVisualProgramming/dtkVisualProgramming.qss"));
     this->setUnifiedTitleAndToolBarOnMac(true);
-
-#if defined(Q_OS_MAC) && (MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_6)
-    d->enableFullScreenSupport();
-#endif
 
     d->setCurrentFile("");
 
