@@ -37,7 +37,11 @@
 **
 ****************************************************************************/
 
+
 #include "qtlocalpeer.h"
+
+#include <unistd.h>
+
 #include <QCoreApplication>
 #include <QTime>
 #include <QDataStream>
