@@ -118,10 +118,8 @@ meditkProcessRegistrationDiffeomorphicDemonsToolBox::meditkProcessRegistrationDi
     layout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
     layout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);
     layout->addRow(new QLabel(tr("Max. Update Step Length"),this),d->maxStepLengthBox);
-    layout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),
-                   d->updateFieldStdDevBox);
-    layout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),
-                   d->disFieldStdDevBox);
+    layout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),d->updateFieldStdDevBox);
+    layout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),d->disFieldStdDevBox);
     layout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
     layout->addRow(new QLabel(tr("output file"),this),d->outputFile);
     // progression stack
