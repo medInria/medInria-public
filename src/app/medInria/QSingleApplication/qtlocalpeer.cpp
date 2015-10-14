@@ -37,10 +37,15 @@
 **
 ****************************************************************************/
 
-
 #include "qtlocalpeer.h"
+
+#if !defined(Q_OS_WIN)
+#include <unistd.h>
+#endif
+
 #include <QCoreApplication>
 #include <QTime>
+#include <QDataStream>
 
 #if defined(Q_OS_WIN)
 #include <QLibrary>
@@ -93,7 +98,7 @@ QtLocalPeer::QtLocalPeer(QObject* parent, const QString &appId)
         socketName += QLatin1Char('-') + QString::number(sessionId, 16);
     }
 #else
-    socketName += QLatin1Char('-') + QString::number(QtLP_Private::getuid(), 16);
+    socketName += QLatin1Char('-') + QString::number(getuid(), 16);
 #endif
 
     server = new QLocalServer(this);

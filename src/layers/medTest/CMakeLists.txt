@@ -50,7 +50,7 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
     ${QT_LIBRARIES}
-    ${QT_QTTEST_LIBRARY}
+    Qt5::Test
     dtkCoreSupport
     dtkLog
     medCoreLegacy

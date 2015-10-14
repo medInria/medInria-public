@@ -195,6 +195,11 @@ void medApplication::initialize()
     // process layer:
     medProcessLayer::pluginManager::initialize(defaultPath);
 
+    const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
+    QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
+
+    medProcessLayer::pluginManager::initialize(QString(pluginVarArray.constData()));
+
     // gui layer:
     medGuiLayer::area::pluginManager().setVerboseLoading(true);
     medGuiLayer::area::pluginManager().initialize(defaultPath);

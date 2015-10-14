@@ -1,24 +1,17 @@
-/* medComposerArea.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Aug  3 17:38:47 2009 (+0200)
- * Version: $Id: 736dba4f5968cf2d506d986ea3c6cc7431d3c49f $
- * Last-Updated: Tue Jun 25 09:44:56 2013 (+0200)
- *           By: Selim Kraria
- *     Update #: 70
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
 
-#ifndef medComposerArea_H
-#define medComposerArea_H
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#pragma once
 
 #include <dtkComposer/dtkComposerWriter.h>
 
@@ -66,5 +59,3 @@ protected:
 private:
     medComposerAreaPrivate *d;
 };
-
-#endif

@@ -18,7 +18,7 @@
 #include <medCoreLegacyExport.h>
 
 
-struct QUuid;
+class QUuid;
 class medViewContainer;
 
 class medViewContainerManagerPrivate;
