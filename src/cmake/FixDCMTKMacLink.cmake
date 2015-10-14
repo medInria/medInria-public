@@ -14,15 +14,25 @@
 macro(FixDCMTKMacLink lib_name)
 
   set(dcmtkLibs 
+    charls
+    cmr
     dcmdata 
+    dcmdsig
+    dcmfg
     dcmimage 
-    dcmimgle 
-    dcmjpeg 
+    dcmimgle
+    dcmiod
+    dcmjpeg
+    dcmjpls
     dcmnet 
     dcmpstat 
-    dcmqrdb 
+    dcmqrdb
+    dcmrt
+    dcmseg
     dcmsr 
-    dcmtls 
+    dcmtls
+    dcmwlm
+    i2d
     ijg12 
     ijg16 
     ijg8 
@@ -30,12 +40,20 @@ macro(FixDCMTKMacLink lib_name)
     ofstd
     )
 
+  set(WORK_DIR "${CMAKE_BINARY_DIR}/lib")
+  if (NOT EXISTS "${WORK_DIR}/lib${lib_name}.dylib")
+    set(WORK_DIR "${CMAKE_BINARY_DIR}/plugins")
+    if (NOT EXISTS "${WORK_DIR}/lib${lib_name}.dylib")
+      set(WORK_DIR "${CMAKE_BINARY_DIR}/plugins_legacy")
+    endif()
+  endif()
+
   foreach(lib ${dcmtkLibs})
-    if(EXISTS "${DCMTK_DIR}/lib/lib${lib}.dylib")
+    if(EXISTS "${DCMTK_DIR}/../../lib${lib}.7.dylib")
       add_custom_command(TARGET ${lib_name}
 	      POST_BUILD
-	      COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change lib${lib}.dylib ${DCMTK_DIR}/lib/lib${lib}.dylib ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${lib_name}.dylib
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR}
+              COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change lib${lib}.7.dylib ${DCMTK_DIR}/../../lib${lib}.7.dylib ${WORK_DIR}/lib${lib_name}.dylib
+        WORKING_DIRECTORY ${WORK_DIR}
         )
     endif()
   endforeach()

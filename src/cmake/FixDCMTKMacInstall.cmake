@@ -13,27 +13,37 @@
 
 macro(FixDCMTKMacInstall)
     set(dcmtkLibs 
-    dcmdata 
-    dcmimage 
-    dcmimgle 
-    dcmjpeg 
-    dcmnet 
-    dcmpstat 
-    dcmqrdb 
-    dcmsr 
-    dcmtls 
-    ijg12 
-    ijg16 
-    ijg8 
-    oflog 
+    charls
+    cmr
+    dcmdata
+    dcmdsig
+    dcmfg
+    dcmimage
+    dcmimgle
+    dcmiod
+    dcmjpeg
+    dcmjpls
+    dcmnet
+    dcmpstat
+    dcmqrdb
+    dcmrt
+    dcmseg
+    dcmsr
+    dcmtls
+    dcmwlm
+    i2d
+    ijg12
+    ijg16
+    ijg8
+    oflog
     ofstd
     )
 
   foreach(lib ${dcmtkLibs})
-    if (EXISTS ${DCMTK_DIR}/lib/lib${lib}.dylib)
+    if (EXISTS ${DCMTK_DIR}/../../lib${lib}.7.dylib)
       foreach(linkedlib ${dcmtkLibs})
-        if (EXISTS ${DCMTK_DIR}/lib/lib${linkedlib}.dylib)
-          execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change lib${linkedlib}.dylib ${DCMTK_DIR}/lib/lib${linkedlib}.dylib ${DCMTK_DIR}/lib/lib${lib}.dylib)
+        if (EXISTS ${DCMTK_DIR}/../../lib${linkedlib}.7.dylib)
+          execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change lib${linkedlib}.7.dylib ${DCMTK_DIR}/../../lib${linkedlib}.7.dylib ${DCMTK_DIR}/../../lib${lib}.7.dylib)
         endif()
       endforeach()
     endif()
