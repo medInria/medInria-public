@@ -33,17 +33,8 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-
-## #############################################################################
-## include directories.
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_INCLUDE_DIRS}
   )
 
 
@@ -57,12 +48,24 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_QRC}
   )
 
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+# PRIVATE beacause plugins are not supposed to be used somewhere else
+
+
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
+  Qt5::Core
+  Qt5::Widgets
   dtkCore
   dtkLog
   dtkComposer

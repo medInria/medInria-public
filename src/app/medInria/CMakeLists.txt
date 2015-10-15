@@ -27,18 +27,11 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-## #############################################################################
-## include directorie.
-## #############################################################################
-
 ##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_INCLUDE_DIRS}
-  )
 
 ## #############################################################################
 ## Add preproc if we have revisions from the super project
@@ -103,6 +96,15 @@ if (APPLE)
 endif()
 
 ## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+# PRIVATE beacause application is not supposed to be used somewhere else
+
+## #############################################################################
 ## Links.
 ## #############################################################################
 
@@ -120,10 +122,6 @@ target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   medPacs
   )
-
-qt5_use_modules(${TARGET_NAME} Widgets)
-qt5_use_modules(${TARGET_NAME} Core)
-qt5_use_modules(${TARGET_NAME} Gui)
 
 ## #############################################################################
 ## install
