@@ -41,17 +41,9 @@ list_source_files(${TARGET_NAME}
   parameters
   )
 
-set(${TARGET_NAME}_QRC resources/medCoreLegacy.qrc)
-
-## #############################################################################
-## include directories.
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS})
 
 ## #############################################################################
 ## add library
@@ -61,6 +53,15 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+
 
 ## #############################################################################
 ## Link
