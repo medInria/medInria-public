@@ -4,14 +4,12 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
-
-#include <QtCore/QDebug>
 
 #include "vtkImageView2D.h"
 
@@ -167,7 +165,7 @@ void vtkImage2DDisplay::SetInput(vtkImageData * image)
   else
   {
     this->WindowLevel->SetInputData(image);
-	this->ImageActor->GetMapper()->SetInputConnection( this->WindowLevel->GetOutputPort() );  }
+    this->ImageActor->GetMapper()->SetInputConnection( this->WindowLevel->GetOutputPort() );  }
 }
 
 vtkLookupTable * vtkImage2DDisplay::GetLookupTable() const
@@ -1997,12 +1995,12 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix,
 void vtkImageView2D::RemoveLayerActor(vtkActor *actor, int layer)
 {
     vtkRenderer *renderer = this->GetRendererForLayer(layer);
-    
+
     if (!renderer)
         return;
-    
+
     renderer->RemoveActor(actor);
-    
+
     this->SetCurrentLayer(layer);
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
