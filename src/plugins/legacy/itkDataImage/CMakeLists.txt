@@ -59,17 +59,8 @@ list_source_files(${TARGET_NAME}
   readers
   writers
   )
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -106,11 +97,20 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+
+## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
+  Qt5::Core
+  Qt5::Widgets
   dtkCore
   dtkLog
   ITKIOImageBase

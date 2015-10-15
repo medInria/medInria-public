@@ -37,18 +37,10 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${medCoreLegacy_INCLUDE_DIRS}
-  )
 
 ## #############################################################################
 ## add library
@@ -60,13 +52,21 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+
+
+## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
-  Qt5::Gui
   dtkCoreSupport
   medCoreLegacy
   dtkLog

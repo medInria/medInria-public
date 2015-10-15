@@ -46,6 +46,9 @@ list_source_files(${TARGET_NAME}
   HWShading/helpers
   )
 
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
 
 ## #############################################################################
 ## write header shader
@@ -103,23 +106,6 @@ shader_to_header(HWShading/shaders/BuildShadowMapLines.frag
   BuildShadowMapLinesFragmentText
   )
 
-
-## #############################################################################
-## include directories.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${Qt5Core_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIR}
-  ${medCoreLegacy_INCLUDE_DIRS}
-  ${CMAKE_BINARY_DIR}/shaders
-  )
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
@@ -128,6 +114,17 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
 
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC
+  ${${TARGET_NAME}_INCLUDE_DIRS}
+  ${CMAKE_BINARY_DIR}/shaders
+  PRIVATE
+  ${Boost_INCLUDE_DIR}
+  )
 
 ## #############################################################################
 ## Link
@@ -135,6 +132,9 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
   ${OPENGL_LIBRARIES}
+  Qt5::Core
+  Qt5::Widgets
+  medCoreLegacy
   ITKIOImageBase
   ITKIOBMP
   ITKIOLSM
