@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -36,7 +36,7 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 
-find_package(DCMTK REQUIRED)
+find_package(DCMTK REQUIRED NO_MODULE)
 
 find_package(QtDCM REQUIRED)
 include(${QTDCM_USE_FILE})
@@ -64,11 +64,31 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${QTDCM_DIR}
   )
 
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_SOURCES}
+    )
+endif()
+
+
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
+link_directories(${QTDCM_LIBRARY_DIRS})
+
+add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_CFILES}
+  )
+
 
 ## #############################################################################
 ## Link
@@ -76,8 +96,8 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 
 if (WIN32)
   set(WIN_LINK_LIBRARIES
-	netapi32
-	)
+    netapi32
+    )
 endif()
 
 target_link_libraries(${PROJECT_NAME}
@@ -89,7 +109,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkLog
   medCore
   )
-  
+
 if(APPLE)
   FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})
 endif(APPLE)

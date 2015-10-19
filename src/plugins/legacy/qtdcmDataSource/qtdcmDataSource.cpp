@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -48,7 +48,7 @@ public:
     qtdcmDataSourceServersSettingsToolBox * serversSettingsToolBox;
 
     QList <medToolBox *> additional_toolboxes;
-    
+
     QPushButton * localSettingsButton;
 
     ~qtdcmDataSourcePrivate();
@@ -58,13 +58,13 @@ qtdcmDataSourcePrivate::~qtdcmDataSourcePrivate()
 {
     if (mainWidget)
         delete mainWidget;
-    
+
     if (rightWidget)
         delete rightWidget;
-    
+
     if (localSettingsButton)
         delete localSettingsButton;
-    
+
     qDeleteAll(additional_toolboxes);
 }
 
@@ -94,7 +94,7 @@ qtdcmDataSource::qtdcmDataSource() : medAbstractDataSource(), d ( new qtdcmDataS
 
     QVBoxLayout * layout = new QVBoxLayout;
     layout->setSpacing(0);
-    layout->setContentsMargins(0, 0, 0, 0); 
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget ( d->localDicomSettingsWidget );
     layout->addLayout(buttonLayout);
     layout->addStretch();
@@ -169,13 +169,13 @@ void qtdcmDataSource::initWidgets()
         QtDcmManager::instance()->setImportWidget ( d->serieToolBox->getImportWidget() );
         QtDcmManager::instance()->setSerieInfoWidget ( d->serieToolBox->getSerieInfoWidget() );
         QtDcmManager::instance()->useConverter ( false );
-        
+
         d->mainWidget->layout()->setContentsMargins(0,0,0,0);
-        
+
         QObject::connect ( QtDcmManager::instance(), SIGNAL ( serieMoved ( QString ) ), this, SLOT ( onSerieMoved ( QString ) ) );
 
-        d->localDicomSettingsWidget->setPreferences ( QtDcmPreferences::instance() );
-        d->serversSettingsToolBox->getServersDicomSettingsWidget()->setPreferences(QtDcmPreferences::instance());
+//        d->localDicomSettingsWidget->setPreferences ( QtDcmPreferences::instance() );
+//        d->serversSettingsToolBox->getServersDicomSettingsWidget()->setPreferences(QtDcmPreferences::instance());
     }
 }
 
