@@ -37,7 +37,7 @@ if (ITK_USE_SYSTEM_GDCM)
   add_definitions(-DITK_USE_SYSTEM_GDCM)
 endif()
 
-find_package(DCMTK REQUIRED)
+find_package(DCMTK REQUIRED NO_MODULE)
 if (APPLE)
   include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
