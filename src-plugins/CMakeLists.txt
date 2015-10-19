@@ -51,18 +51,36 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 ## ADD here any new plugin with a default compilation value, 
 ## you want to include in the build, 
 set(PLUGIN_LIST
-  medVtkFibersData                          ON
-  itkDataImage                              ON
-  vtkDataMesh                               ON
-  itkDataDiffusionGradientList              ON
-  itkDataTensorImage                        ON
-  medSegmentation                           ON
-  itkFilters                                ON
-  qtdcmDataSource                           ON
-  itkDataSHImage                            ON
-  undoRedoRegistration                      ON
-  itkProcessRegistrationDiffeomorphicDemons ON
-  medVtkView                                ON
+  legacy/medVtkFibersData                           ON
+  legacy/itkDataImage                               ON
+  legacy/vtkDataMesh                                ON
+  legacy/itkDataDiffusionGradientList               ON
+  legacy/itkDataTensorImage                         ON
+  legacy/medSegmentation                            ON
+  legacy/itkFilters                                 ON
+  legacy/qtdcmDataSource                            ON
+  legacy/itkDataSHImage                             ON
+  legacy/undoRedoRegistration                       ON
+  legacy/itkProcessRegistrationDiffeomorphicDemons  ON
+  legacy/medVtkView                                 ON
+  
+  meditkGaussianFilterPlugin                        ON
+  meditkAddFilterPlugin                             ON
+  meditkCloseFilterPlugin                           ON
+  meditkDilateFilterPlugin                          ON
+  meditkDivideFilterPlugin                          ON
+  meditkErodeFilterPlugin                           ON
+  meditkInvertFilterPlugin                          ON
+  meditkMedianFilterPlugin                          ON
+  meditkMultiplyFilterPlugin                        ON
+  meditkNormalizeFilterPlugin                       ON
+  meditkOpenFilterPlugin                            ON
+  meditkShrinkFilterPlugin                          ON
+  meditkSubstractFilterPlugin                       ON
+  meditkWindowingFilterPlugin                       ON
+  meditkRigidRegistration                           ON
+  meditkRegistrationDiffeomorphicDemonsProcess      ON
+  medManualSegmentationPlugin                       ON
   )   
 
 

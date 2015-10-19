@@ -26,6 +26,8 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
+#include <medCore.h>
+
 void forceShow(medMainWindow& mainwindow )
 {
     //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -66,6 +68,7 @@ void forceShow(medMainWindow& mainwindow )
 int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
+
 
     // this needs to be done before creating the QApplication object, as per the
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
@@ -171,6 +174,33 @@ int main(int argc,char* argv[]) {
         }
     }
     // END OF DATABASE INITIALISATION
+
+
+    QString path=QApplication::applicationDirPath()+"/../plugins";
+
+    qDebug()<<path;
+
+    medCore::filtering::gaussian    ::pluginManager().initialize(path);
+    medCore::filtering::add         ::pluginManager().initialize(path);
+    medCore::filtering::close       ::pluginManager().initialize(path);
+    medCore::filtering::dilate      ::pluginManager().initialize(path);
+    medCore::filtering::divide      ::pluginManager().initialize(path);
+    medCore::filtering::erode       ::pluginManager().initialize(path);
+    medCore::filtering::invert      ::pluginManager().initialize(path);
+    medCore::filtering::multiply    ::pluginManager().initialize(path);
+    medCore::filtering::normalize   ::pluginManager().initialize(path);
+    medCore::filtering::open        ::pluginManager().initialize(path);
+    medCore::filtering::shrink      ::pluginManager().initialize(path);
+    medCore::filtering::substract   ::pluginManager().initialize(path);
+    medCore::filtering::windowing   ::pluginManager().initialize(path);
+
+    medCore::registration::rigid    ::pluginManager().initialize(path);
+    medCore::registration::nonRigid ::pluginManager().initialize(path);
+
+    medCore::segmentation           ::pluginManager().initialize(path);
+
+
+
     dtkLogger::instance().setLevel("trace");
     dtkLogger::instance().attachConsole();
     medPluginManager::instance()->setVerboseLoading(true);

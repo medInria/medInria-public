@@ -1,0 +1,9 @@
+{
+          "title" : "Non Rigid Registration",
+           "kind" : "process",
+           "type" : "registrationProcessNode",
+           "tags" : ["registration","testme"],
+    "description" : "<h3>Registration Node</h3>",
+         "inputs" : ["fixedImage","movingImage"],
+         "outputs": ["image"]
+}

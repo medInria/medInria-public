@@ -1,0 +1,9 @@
+{
+          "title" : "Space",
+           "kind" : "process",
+           "type" : "space",
+           "tags" : ["space","string"],
+    "description" : "Append a space to the input string",
+         "inputs" : ["string"],
+         "outputs": ["string"]
+}

@@ -13,12 +13,11 @@
 
 #pragma once
 
-#include <medAbstractRegistrationProcess.h>
 #include <medAbstractData.h>
 #include <itkImage.h>
 #include <itkTransform.h>
 #include <medRegistrationExport.h>
-
+#include <medCoreLegacy/process/medAbstractRegistrationProcessLegacy.h>
 
 class itkProcessRegistrationPrivate;
 
@@ -42,7 +41,7 @@ class itkProcessRegistrationPrivate;
  *
  *
 */
-class MEDREGISTRATIONFACTORY_EXPORT itkProcessRegistration : public medAbstractRegistrationProcess
+class MEDREGISTRATIONFACTORY_EXPORT itkProcessRegistration : public medAbstractRegistrationProcessLegacy
 {
     Q_OBJECT
 

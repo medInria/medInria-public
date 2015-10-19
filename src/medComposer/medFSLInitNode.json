@@ -1,0 +1,10 @@
+{
+          "title" : "FSL init",
+           "kind" : "process",
+           "type" : "fslInit",
+           "tags" : ["fsl","init"],
+    "description" : "<h3>Initialize FSL</h3>
+                     <p>Set environment variables so as to be able to use FSL later in the composition</p>",
+         "inputs" : ["fslRootDir"],
+         "outputs": ["environment"]
+}

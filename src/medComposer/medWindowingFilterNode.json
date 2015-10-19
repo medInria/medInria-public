@@ -1,0 +1,10 @@
+{
+          "title" : "Windowing Filter",
+           "kind" : "process",
+           "type" : "itkWindowingFilter",
+           "tags" : ["filter","windowing","testme"],
+    "description" : "<h3>Filter itkWindowingFilter</h3>
+                     <p>Apply the windowing filter provided by ITK</p>",
+         "inputs" : ["min In","max In","min Out","max Out","image"],
+         "outputs": ["image"]
+}

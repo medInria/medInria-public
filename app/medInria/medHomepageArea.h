@@ -39,6 +39,7 @@ public slots:
     void onShowPlugin();
     void onShowHelp();
     void onShowInfo();
+    void onShowComposer();
 
 signals:
     /**
@@ -57,6 +58,7 @@ signals:
     void showBrowser();
     void showViewer();
     void showWorkspace(QString workspace);
+    void showComposer();
 
 private:
     medHomepageAreaPrivate * d;

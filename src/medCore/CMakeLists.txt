@@ -78,6 +78,7 @@ add_library(${PROJECT_NAME} SHARED
 #   Remove medCoreLegacy when migration is done.
 
 target_link_libraries(${PROJECT_NAME}
+    dtkCore
     medCoreLegacy
     ${QT_LIBRARIES}
     ${OPENGL_LIBRARIES}

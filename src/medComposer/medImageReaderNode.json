@@ -1,0 +1,10 @@
+{
+          "title" : "Image Reader",
+           "kind" : "process",
+           "type" : "imageReader",
+           "tags" : ["reader","image","testme"],
+    "description" : "<h3>Reader image reader</h3>
+                     <p>Produce an image from the given file</p>",
+         "inputs" : ["path"],
+        "outputs" : ["image"]
+}

@@ -1,0 +1,9 @@
+{
+          "title" : "Rigid Registration",
+           "kind" : "process",
+           "type" : "medRigidRegistrationNode",
+           "tags" : ["registration","testme"],
+    "description" : "<h3>Registration Node</h3>",
+         "inputs" : ["fixedImage","movingImage"],
+         "outputs": ["transfo","image"]
+}

@@ -17,7 +17,7 @@
 #include <medCoreExport.h>
 #include <medJobItem.h>
 
-class medAbstractRegistrationProcess;
+class medAbstractRegistrationProcessLegacy;
 class medAbstractImageView;
 class medAbstractImageData;
 class medDataIndex;
@@ -34,11 +34,11 @@ public:
     medAbstractData *fixedData();
     medAbstractData *movingData();
 
-    medAbstractRegistrationProcess * process();
-    void setProcess(medAbstractRegistrationProcess *process);
+    medAbstractRegistrationProcessLegacy * process();
+    void setProcess(medAbstractRegistrationProcessLegacy *process);
 
-    medAbstractRegistrationProcess * undoRedoProcess();
-    void setUndoRedoProcess(medAbstractRegistrationProcess *proc);
+    medAbstractRegistrationProcessLegacy * undoRedoProcess();
+    void setUndoRedoProcess(medAbstractRegistrationProcessLegacy *proc);
 
     QString getNameOfCurrentAlgorithm();
 

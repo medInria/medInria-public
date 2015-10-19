@@ -1,0 +1,9 @@
+{
+          "title" : "Segmentation",
+           "kind" : "view",
+           "type" : "medSegmentation",
+           "tags" : ["segmentation","testme"],
+    "description" : "<h3>Segmentation</h3>",
+         "inputs" : ["image"],
+         "outputs": []
+}

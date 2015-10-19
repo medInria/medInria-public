@@ -1,0 +1,10 @@
+{
+          "title" : "Gaussian Filter",
+           "kind" : "process",
+           "type" : "itkGaussianFilter",
+           "tags" : ["filter","gaussian","testme"],
+    "description" : "<h3>Filter itkGaussianFilter</h3>
+                     <p>Apply the gaussian filter provided by ITK</p>",
+         "inputs" : ["sigma","image"],
+         "outputs": ["image"]
+}

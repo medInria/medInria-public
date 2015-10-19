@@ -1,0 +1,10 @@
+{
+          "title" : "Erode Filter",
+           "kind" : "process",
+           "type" : "itkErodeFilter",
+           "tags" : ["filter","erode","testme"],
+    "description" : "<h3>Filter itkErodeFilter</h3>
+                     <p>Apply the erode filter provided by ITK</p>",
+         "inputs" : ["radius","image"],
+         "outputs": ["image"]
+}

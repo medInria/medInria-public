@@ -1,0 +1,11 @@
+{
+          "title" : "Get Env Variable",
+           "kind" : "process",
+           "type" : "getEnvVar",
+           "tags" : ["env","init","variable"],
+    "description" : "<h3>Evaluate an environment variable</h3>
+                     <p>Set the value of the variable <i>var</i> from the environment <i>env</i>
+                     output is an empty string if the variable was not found </p>",
+         "inputs" : ["var","env"],
+         "outputs": ["value"]
+}

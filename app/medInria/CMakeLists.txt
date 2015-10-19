@@ -115,8 +115,10 @@ target_link_libraries(${PROJECT_NAME}
   dtkCoreSupport
   dtkScript
   dtkGuiSupport
+  dtkComposer
   dtkVrSupport
   medCore
+  medComposer
   medPacs
   )
 
