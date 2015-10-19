@@ -62,7 +62,7 @@ set(cmake_args
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DQt5_DIR=${Qt5_DIR}
   -DITK_DIR:FILEPATH=${ITK_DIR}
-  -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
+  -DDCMTK_DIR:FILEPATH=${DCMTK_INSTALL_DIR}
   )
 
 ## #############################################################################

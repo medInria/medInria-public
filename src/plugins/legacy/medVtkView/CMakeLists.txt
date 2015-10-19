@@ -17,7 +17,7 @@ set(TARGET_NAME medVtkViewPlugin)
 ## Setup version numbering
 ## #############################################################################
 
-set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+set(${TARGET_NAME}_VERSION ${${TARGET_NAME}_VERSION})
 
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
@@ -57,7 +57,7 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${${TARGET_NAME}_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -99,7 +99,7 @@ set_plugin_install_rules_legacy(${TARGET_NAME})
 ## Build tests
 ## #############################################################################
 
-if(${PROJECT_NAME}_BUILD_TESTS)
+if(${TARGET_NAME}_BUILD_TESTS)
   #add_subdirectory(tests)
 endif()
 
