@@ -37,6 +37,7 @@
 #include "medSegmentationNode.h"
 #include "medFSLInitNode.h"
 #include "medGetEnvVariableNode.h"
+#include "spacerNode.h"
 
 // ///////////////////////////////////////////////////////////////////
 // 
@@ -79,8 +80,9 @@ void medComposerFactoryExtension::extend(dtkComposerNodeFactory *factory)
     factory->record(":json/medRegistrationNode.json"     , dtkComposerNodeCreator< medRegistrationNode      >);
     factory->record(":json/medSegmentationNode.json"     , dtkComposerNodeCreator< medSegmentationNode      >);
 
-    factory->record(":json/medFSLInitNode.json"          , dtkComposerNodeCreator< medFSLInitNode      >);
-    factory->record(":json/medGetEnvVariableNode.json"   , dtkComposerNodeCreator< medGetEnvVariableNode      >);
+    factory->record(":json/medFSLInitNode.json"          , dtkComposerNodeCreator< medFSLInitNode           >);
+    factory->record(":json/medGetEnvVariableNode.json"   , dtkComposerNodeCreator< medGetEnvVariableNode    >);
+    factory->record(":json/spacerNode.json"              , dtkComposerNodeCreator< SpacerNode               >);
 
 
 }

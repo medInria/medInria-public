@@ -23,5 +23,6 @@
         <file>medSegmentationNode.json</file>
         <file>medFSLInitNode.json</file>
         <file>medGetEnvVariableNode.json</file>
+        <file>spacerNode.json</file>
     </qresource>
 </RCC>
