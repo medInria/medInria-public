@@ -91,8 +91,6 @@ include(set_plugin_install_rules_legacy)
 
 include(add_plugins)
 if(APPLE)
-  include(FixDCMTKMacLink)
-  include(FixDCMTKMacInstall)
   set(CMAKE_MACOSX_RPATH OFF)
 endif()
 
