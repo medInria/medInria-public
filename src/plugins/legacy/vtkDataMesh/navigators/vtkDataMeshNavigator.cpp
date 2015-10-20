@@ -22,7 +22,7 @@
 
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
-#include <medBoolParameter.h>
+#include <medBoolParameterL.h>
 
 #include <QLabel>
 
@@ -41,9 +41,9 @@ public:
 
     medAbstractImageView *imageView;
 
-    QList <medAbstractParameter*> parameters;
+    QList <medAbstractParameterL*> parameters;
 
-    medBoolParameter *depthPeelingParameter;
+    medBoolParameterL *depthPeelingParameter;
 
 };
 
@@ -64,7 +64,7 @@ vtkDataMeshNavigator::vtkDataMeshNavigator(medAbstractView* parent):
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
 
-    d->depthPeelingParameter = new medBoolParameter("DepthPeeling", this);
+    d->depthPeelingParameter = new medBoolParameterL("DepthPeeling", this);
     connect(d->depthPeelingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableDepthPeeling(bool)));
 
     d->parameters.append(d->depthPeelingParameter);
@@ -102,15 +102,15 @@ QString vtkDataMeshNavigator::description() const
     return "Navigator to interact with meshes in a medVtkView";
 }
 
-QList<medAbstractParameter*> vtkDataMeshNavigator::linkableParameters()
+QList<medAbstractParameterL*> vtkDataMeshNavigator::linkableParameters()
 {
     return d->parameters;
 }
 
-QList<medBoolParameter*> vtkDataMeshNavigator::mouseInteractionParameters()
+QList<medBoolParameterL*> vtkDataMeshNavigator::mouseInteractionParameters()
 {
     // no parameters related to mouse interactions
-    return QList<medBoolParameter*>();
+    return QList<medBoolParameterL*>();
 }
 
 void vtkDataMeshNavigator::updateWidgets()
@@ -120,12 +120,12 @@ void vtkDataMeshNavigator::updateWidgets()
          || d->imageView->contains("vtkDataMesh4D")
          ))
     {
-        foreach(medAbstractParameter *parameter, d->parameters)
+        foreach(medAbstractParameterL *parameter, d->parameters)
             parameter->show();
 
     }
     else
-        foreach(medAbstractParameter *parameter, d->parameters)
+        foreach(medAbstractParameterL *parameter, d->parameters)
             parameter->hide();
 }
 
@@ -156,7 +156,7 @@ QWidget *  vtkDataMeshNavigator::buildToolBoxWidget()
 {
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
-    foreach(medAbstractParameter *parameter, d->parameters)
+    foreach(medAbstractParameterL *parameter, d->parameters)
         layout->addRow(parameter->getLabel(), parameter->getWidget());
     return toolBoxWidget;
 }

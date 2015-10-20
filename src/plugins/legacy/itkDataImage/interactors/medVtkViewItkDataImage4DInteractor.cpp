@@ -23,7 +23,7 @@
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
 #include <medAbstractImageData.h>
-#include <medDoubleParameter.h>
+#include <medDoubleParameterL.h>
 
 #include <QVBoxLayout>
 #include <QWidget>
@@ -202,9 +202,9 @@ QWidget* medVtkViewItkDataImage4DInteractor::buildLayerWidget()
     return medVtkViewItkDataImageInteractor::buildLayerWidget();
 }
 
-QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::linkableParameters()
+QList<medAbstractParameterL*> medVtkViewItkDataImage4DInteractor::linkableParameters()
 {
-    QList<medAbstractParameter*> parameters;
+    QList<medAbstractParameterL*> parameters;
     parameters << medVtkViewItkDataImageInteractor::linkableParameters();
     return parameters;
 }

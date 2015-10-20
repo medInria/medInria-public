@@ -30,12 +30,12 @@
 #include <itkTensor.h>
 
 #include <medAbstractData.h>
-#include <medAbstractParameter.h>
-#include <medStringListParameter.h>
-#include <medIntParameter.h>
-#include <medBoolParameter.h>
-#include <medBoolGroupParameter.h>
-#include <medDoubleParameter.h>
+#include <medAbstractParameterL.h>
+#include <medStringListParameterL.h>
+#include <medIntParameterL.h>
+#include <medBoolParameterL.h>
+#include <medBoolGroupParameterL.h>
+#include <medDoubleParameterL.h>
 #include <medAbstractImageView.h>
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>
@@ -78,9 +78,9 @@ public:
 
     double imageBounds[6];
 
-    QList <medAbstractParameter*> parameters;
+    QList <medAbstractParameterL*> parameters;
 
-    medIntParameter *slicingParameter;
+    medIntParameterL *slicingParameter;
     PropertySmartPointer actorProperty;
 };
 
@@ -119,7 +119,7 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(changePosition(QVector3D)));
 
-    d->slicingParameter = new medIntParameter("Slicing", this);
+    d->slicingParameter = new medIntParameterL("Slicing", this);
 }
 
 
@@ -293,7 +293,7 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
     d->manager->GetTensorVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetTensorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );
 
-    medStringListParameter *shapeParam = new medStringListParameter("Shape", data);
+    medStringListParameterL *shapeParam = new medStringListParameterL("Shape", data);
     d->parameters << shapeParam;
 
     shapeParam->addItem("Lines");
@@ -304,34 +304,34 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
     shapeParam->addItem("Ellipsoids");
     shapeParam->addItem("Superquadrics");
 
-    medIntParameter *sampleRateParam = new medIntParameter("Sample Rate", data);
+    medIntParameterL *sampleRateParam = new medIntParameterL("Sample Rate", data);
     d->parameters << sampleRateParam;
     sampleRateParam->setRange(1, 10);
     sampleRateParam->setValue(2);
 
-    medBoolParameter *flipXParam = new medBoolParameter("FlipX", this);
-    medBoolParameter *flipYParam = new medBoolParameter("FlipY", this);
-    medBoolParameter *flipZParam = new medBoolParameter("FlipZ", this);
+    medBoolParameterL *flipXParam = new medBoolParameterL("FlipX", this);
+    medBoolParameterL *flipYParam = new medBoolParameterL("FlipY", this);
+    medBoolParameterL *flipZParam = new medBoolParameterL("FlipZ", this);
     d->parameters << flipXParam << flipYParam << flipZParam;
 
-    medStringListParameter *eigenParam = new medStringListParameter("Color with", this);
+    medStringListParameterL *eigenParam = new medStringListParameterL("Color with", this);
     eigenParam->addItem("v1");
     eigenParam->addItem("v2");
     eigenParam->addItem("v3");
     eigenParam->setValue("v1");
     d->parameters << eigenParam;
 
-    medIntParameter *resolutionParam = new medIntParameter("Resolution", this);
+    medIntParameterL *resolutionParam = new medIntParameterL("Resolution", this);
     resolutionParam->setRange(2, 20);
     resolutionParam->setValue(6);
     d->parameters << resolutionParam;
 
-    medIntParameter *scaleParam = new medIntParameter("Scale", this);
+    medIntParameterL *scaleParam = new medIntParameterL("Scale", this);
     scaleParam->setRange(1, 9);
     scaleParam->setValue(1);
     d->parameters << scaleParam;
 
-    medIntParameter *multiplierParam = new medIntParameter("x10^", this);
+    medIntParameterL *multiplierParam = new medIntParameterL("x10^", this);
     multiplierParam->setRange(-10, 10);
     multiplierParam->setValue(0);
     d->parameters << multiplierParam;
@@ -567,7 +567,7 @@ QWidget* itkDataTensorImageVtkViewInteractor::buildToolBoxWidget()
 {
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
-    foreach(medAbstractParameter *parameter, d->parameters)
+    foreach(medAbstractParameterL *parameter, d->parameters)
     {
         if ((parameter->name() == "Opacity")||(parameter->name() == "Visibility"))
             continue;
@@ -584,15 +584,15 @@ QWidget* itkDataTensorImageVtkViewInteractor::buildToolBarWidget()
     return d->slicingParameter->getSlider();
 }
 
-QList<medAbstractParameter*> itkDataTensorImageVtkViewInteractor::linkableParameters()
+QList<medAbstractParameterL*> itkDataTensorImageVtkViewInteractor::linkableParameters()
 {
     return d->parameters;
 }
 
-QList<medBoolParameter*> itkDataTensorImageVtkViewInteractor::mouseInteractionParameters()
+QList<medBoolParameterL*> itkDataTensorImageVtkViewInteractor::mouseInteractionParameters()
 {
     // no parameters related to mouse interactions
-    return QList<medBoolParameter*>();
+    return QList<medBoolParameterL*>();
 }
 
 void itkDataTensorImageVtkViewInteractor::update()

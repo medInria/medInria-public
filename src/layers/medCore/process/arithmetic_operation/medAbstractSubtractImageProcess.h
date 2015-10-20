@@ -27,6 +27,4 @@ public:
 };
 
 DTK_DECLARE_OBJECT        (medAbstractSubtractImageProcess*)
-DTK_DECLARE_PLUGIN        (medAbstractSubtractImageProcess, MEDCORE_EXPORT)
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractSubtractImageProcess, MEDCORE_EXPORT)
-DTK_DECLARE_PLUGIN_MANAGER(medAbstractSubtractImageProcess, MEDCORE_EXPORT)

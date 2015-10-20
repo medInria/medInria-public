@@ -62,6 +62,7 @@ foreach(dir ${ARGV})
 
   file(GLOB TEMPLATES
     ${dir}/*.txx
+    ${dir}/*.tpp
     )
   set(${project_name}_TEMPLATES
     ${TEMPLATES}
@@ -91,7 +92,8 @@ foreach(dir ${ARGV})
     ${${project_name}_TEMPLATES}
     ${${project_name}_CFILES}
     )
-
 endforeach()
+
+list(REMOVE_DUPLICATES ${project_name}_CFILES)
 
 endmacro()

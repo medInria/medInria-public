@@ -19,7 +19,7 @@
 
 class medAbstractData;
 class medAbstractImageView;
-class medAbstractParameter;
+class medAbstractParameterL;
 
 class QStandardItem;
 
@@ -60,8 +60,8 @@ public:
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildToolBoxWidget();
 
-    virtual QList<medAbstractParameter*> linkableParameters();
-    virtual QList<medBoolParameter*> mouseInteractionParameters();
+    virtual QList<medAbstractParameterL*> linkableParameters();
+    virtual QList<medBoolParameterL*> mouseInteractionParameters();
 
     /**
      * Set the boolean meaning for a region of a ROI:

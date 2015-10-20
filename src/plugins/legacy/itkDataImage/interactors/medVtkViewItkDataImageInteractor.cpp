@@ -31,13 +31,13 @@
 #include <medAbstractData.h>
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
-#include <medStringListParameter.h>
-#include <medIntParameter.h>
-#include <medBoolParameter.h>
-#include <medDoubleParameter.h>
-#include <medVector3DParameter.h>
+#include <medStringListParameterL.h>
+#include <medIntParameterL.h>
+#include <medBoolParameterL.h>
+#include <medDoubleParameterL.h>
+#include <medVector3DParameterL.h>
 #include <medAbstractImageData.h>
-#include <medCompositeParameter.h>
+#include <medCompositeParameterL.h>
 
 #include <QFormLayout>
 #include <QSlider>
@@ -55,13 +55,13 @@ public:
 
     medAbstractImageView *view;
 
-    medStringListParameter *lutParam;
-    medStringListParameter *presetParam;
-    medBoolParameter *enableWindowLevelParameter;
-    medIntParameter *slicingParameter;
+    medStringListParameterL *lutParam;
+    medStringListParameterL *presetParam;
+    medBoolParameterL *enableWindowLevelParameter;
+    medIntParameterL *slicingParameter;
 
-    medDoubleParameter *minIntensityParameter;
-    medDoubleParameter *maxIntensityParameter;
+    medDoubleParameterL *minIntensityParameter;
+    medDoubleParameterL *maxIntensityParameter;
 
     QMap <QString,QString> presetToLut;
 
@@ -136,9 +136,9 @@ bool medVtkViewItkDataImageInteractor::registered()
                                                                   medVtkViewItkDataImageInteractor::dataHandled());
 }
 
-QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameters()
+QList<medAbstractParameterL*> medVtkViewItkDataImageInteractor::linkableParameters()
 {
-    QList<medAbstractParameter*> params;
+    QList<medAbstractParameterL*> params;
     params.append(d->lutParam);
     params.append(d->presetParam);
     params.append(this->visibilityParameter());
@@ -150,9 +150,9 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameter
     return params;
 }
 
-QList<medBoolParameter*> medVtkViewItkDataImageInteractor::mouseInteractionParameters()
+QList<medBoolParameterL*> medVtkViewItkDataImageInteractor::mouseInteractionParameters()
 {
-    QList<medBoolParameter*> params;
+    QList<medBoolParameterL*> params;
     params.append(d->enableWindowLevelParameter);
 
     return params;
@@ -221,7 +221,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 {
     d->imageData = data;
 
-    d->lutParam = new medStringListParameter("Lut", this);
+    d->lutParam = new medStringListParameterL("Lut", this);
     QStringList luts = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
                                      << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni Inversed" << "Loni 2"
@@ -235,7 +235,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     connect(d->lutParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
 
 
-    d->presetParam = new medStringListParameter("Preset", this);
+    d->presetParam = new medStringListParameterL("Preset", this);
     QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
                                         << "Standard" << "Glossy" ;
@@ -261,7 +261,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     else
        this->opacityParameter()->setValue(1);
 
-    d->slicingParameter = new medIntParameter("Slicing", this);
+    d->slicingParameter = new medIntParameterL("Slicing", this);
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
     int orientationId = d->view2d->GetSliceOrientation();
     if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
@@ -273,7 +273,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
 
-    d->enableWindowLevelParameter = new medBoolParameter("Windowing", this);
+    d->enableWindowLevelParameter = new medBoolParameterL("Windowing", this);
     d->enableWindowLevelParameter->setIcon(QIcon (":/icons/wlww.png"));
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWIndowLevel(bool)));
@@ -313,11 +313,11 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
     this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(windowMin), QVariant(windowMax));
     this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(levelMin), QVariant(levelMax));
 
-    d->minIntensityParameter = new medDoubleParameter("Min Intensity", this);
+    d->minIntensityParameter = new medDoubleParameterL("Min Intensity", this);
     connect(d->minIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
     d->minIntensityParameter->setRange(levelMin, levelMax);
 
-    d->maxIntensityParameter = new medDoubleParameter("Max Intensity", this);
+    d->maxIntensityParameter = new medDoubleParameterL("Max Intensity", this);
     connect(d->maxIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
     d->maxIntensityParameter->setRange(levelMin, levelMax);
 
@@ -503,7 +503,7 @@ QWidget* medVtkViewItkDataImageInteractor::buildLayerWidget()
 
 void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
 {
-    medDoubleParameter *sender = dynamic_cast<medDoubleParameter *>(this->sender());
+    medDoubleParameterL *sender = dynamic_cast<medDoubleParameterL *>(this->sender());
     if(!sender)
         return;
 

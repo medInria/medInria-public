@@ -10,26 +10,19 @@
   PURPOSE.
 
 =========================================================================*/
-
 #pragma once
 
-#include <dtkComposer>
-
+#include <medArithmeticOperationProcessNode.h>
 #include <medAbstractAddImageProcess.h>
 
 #include <medComposerExport.h>
 
 class medAddImageProcessNodePrivate;
 
-class MEDCOMPOSER_EXPORT medAddImageProcessNode : public dtkComposerNodeObject<medAbstractAddImageProcess>
+class MEDCOMPOSER_EXPORT medAddImageProcessNode : public medArithmeticOperationProcessNode<medAbstractAddImageProcess>
 {
 public:
-     medAddImageProcessNode(void);
-    ~medAddImageProcessNode(void);
-
-public:
-    void run(void);
-
-private:
-    medAddImageProcessNodePrivate *d;
+     medAddImageProcessNode();
 };
+
+

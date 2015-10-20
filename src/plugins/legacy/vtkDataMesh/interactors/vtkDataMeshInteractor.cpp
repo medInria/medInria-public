@@ -42,14 +42,14 @@
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractData.h>
-#include <medAbstractParameter.h>
-#include <medBoolParameter.h>
-#include <medDoubleParameter.h>
-#include <medStringListParameter.h>
+#include <medAbstractParameterL.h>
+#include <medBoolParameterL.h>
+#include <medDoubleParameterL.h>
+#include <medStringListParameterL.h>
 #include <medAbstractData.h>
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
-#include <medIntParameter.h>
+#include <medIntParameterL.h>
 #include <medVtkViewBackend.h>
 
 #include <vector>
@@ -82,15 +82,15 @@ public:
     AttributeSmartPointer attribute;
     double imageBounds[6];
 
-    medStringListParameter *attributesParam;
-    medStringListParameter *LUTParam;
-    medBoolParameter *edgeVisibleParam;
-    medStringListParameter *colorParam;
-    medStringListParameter *renderingParam;
+    medStringListParameterL *attributesParam;
+    medStringListParameterL *LUTParam;
+    medBoolParameterL *edgeVisibleParam;
+    medStringListParameterL *colorParam;
+    medStringListParameterL *renderingParam;
 
-    QList <medAbstractParameter*> parameters;
+    QList <medAbstractParameterL*> parameters;
 
-    medIntParameter *slicingParameter;
+    medIntParameterL *slicingParameter;
 };
 
 
@@ -175,14 +175,14 @@ void vtkDataMeshInteractor::setupParameters()
     if(!(d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
          d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
     {
-        d->LUTParam = new medStringListParameter("LUT", this);
+        d->LUTParam = new medStringListParameterL("LUT", this);
         d->LUTParam->addItem("Default");
         // TODO some LUT are missing for some attribute - RDE
         connect(d->LUTParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
         d->LUTParam->setValue("Default");
         d->parameters << d->LUTParam;
 
-        d->attributesParam = new medStringListParameter("Attributes", this);
+        d->attributesParam = new medStringListParameterL("Attributes", this);
         QStringList nameList("Default");
 
         for (int i = 0; i < d->metaDataSet->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
@@ -202,12 +202,12 @@ void vtkDataMeshInteractor::setupParameters()
         d->parameters << d->attributesParam;
     }
 
-    d->edgeVisibleParam = new medBoolParameter("Edge Visible", this);
+    d->edgeVisibleParam = new medBoolParameterL("Edge Visible", this);
     connect(d->edgeVisibleParam, SIGNAL(valueChanged(bool)), this, SLOT(setEdgeVisibility(bool)));
     d->edgeVisibleParam->setValue(false);
     d->parameters << d->edgeVisibleParam;
 
-    d->colorParam = new medStringListParameter("Color", this);
+    d->colorParam = new medStringListParameterL("Color", this);
     QStringList colors;
 
     colors << "#FFFFFF";
@@ -231,13 +231,13 @@ void vtkDataMeshInteractor::setupParameters()
     colors << "#0080C0";
 
     foreach(QString color, colors)
-        d->colorParam->addItem(color, medStringListParameter::createIconFromColor(color));
+        d->colorParam->addItem(color, medStringListParameterL::createIconFromColor(color));
 
     connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
     d->colorParam->setValue("#FFFFFF");
     d->parameters << d->colorParam;
 
-    d->renderingParam = new medStringListParameter("Rendering", this);
+    d->renderingParam = new medStringListParameterL("Rendering", this);
     d->renderingParam->addItem("WireFrame");
     d->renderingParam->addItem("Surface");
     d->renderingParam->addItem("Points");
@@ -245,7 +245,7 @@ void vtkDataMeshInteractor::setupParameters()
     d->renderingParam->setValue("Surface");
     d->parameters << d->renderingParam;
 
-    d->slicingParameter = new medIntParameter("Slicing", this);
+    d->slicingParameter = new medIntParameterL("Slicing", this);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 
@@ -538,15 +538,15 @@ QWidget* vtkDataMeshInteractor::buildToolBarWidget()
     return d->slicingParameter->getSlider();
 }
 
-QList<medAbstractParameter*> vtkDataMeshInteractor::linkableParameters()
+QList<medAbstractParameterL*> vtkDataMeshInteractor::linkableParameters()
 {
     return d->parameters;
 }
 
-QList<medBoolParameter*> vtkDataMeshInteractor::mouseInteractionParameters()
+QList<medBoolParameterL*> vtkDataMeshInteractor::mouseInteractionParameters()
 {
     // no parameters related to mouse interactions
-    return QList<medBoolParameter*>();
+    return QList<medBoolParameterL*>();
 }
 
 void vtkDataMeshInteractor::setUpViewForThumbnail()
