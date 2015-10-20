@@ -90,18 +90,9 @@ target_link_libraries(${TARGET_NAME}
   ${DCMTK_LIBRARIES}
   )
 
-if(APPLE)
-  FixDCMTKMacLink(${TARGET_NAME} ${DCMTK_LIBRARIES})
-endif(APPLE)
-
-
 ## #############################################################################
 ## install
 ## #############################################################################
-
-if(APPLE)
-  FixDCMTKMacInstall()
-endif()
 
 set_lib_install_rules(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}

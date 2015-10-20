@@ -38,10 +38,6 @@ if (ITK_USE_SYSTEM_GDCM)
 endif()
 
 find_package(DCMTK REQUIRED NO_MODULE)
-if (APPLE)
-  include(FixDCMTKMacInstall)
-  FixDCMTKMacInstall()
-endif()
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
@@ -137,11 +133,6 @@ target_link_libraries(${TARGET_NAME}
   medLog
   medVtkInria
   )
-
-# needed because of link  with medImageIO
-if(APPLE)
-  FixDCMTKMacLink(${TARGET_NAME} ${DCMTK_LIBRARIES})
-endif(APPLE)
 
 ## #############################################################################
 ## Install rules
