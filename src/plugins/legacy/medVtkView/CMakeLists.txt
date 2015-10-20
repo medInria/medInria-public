@@ -17,7 +17,7 @@ set(TARGET_NAME medVtkViewPlugin)
 ## Setup version numbering
 ## #############################################################################
 
-set(${TARGET_NAME}_VERSION ${${TARGET_NAME}_VERSION})
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
