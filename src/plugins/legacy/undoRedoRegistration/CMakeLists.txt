@@ -4,7 +4,7 @@
 #
 # Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
@@ -13,16 +13,16 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(undoRedoRegistrationPlugin)
+set(TARGET_NAME undoRedoRegistrationPlugin)
 
 ## #############################################################################
 ## Setup version numbering
 ## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
+set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 
-string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
 
 ## #################################################################
@@ -45,22 +45,20 @@ include(${RPI_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
-
-set(${PROJECT_NAME}_QRC undoRedoRegistration.qrc)
 
 
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
 
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
 
@@ -70,10 +68,10 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## #############################################################################
 
 if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_PCH
+  add_precompiled_header(${TARGET_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
+    ${${TARGET_NAME}_SOURCES}
     )
 endif()
 
@@ -82,14 +80,10 @@ endif()
 ## add library
 ## #############################################################################
 
-
-qt5_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
-
-
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_CFILES}
-  ${${PROJECT_NAME}_QRC}
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_PCH}
+  ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
   )
 
 
@@ -97,11 +91,10 @@ add_library(${PROJECT_NAME} SHARED
 ## Link
 ## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
-  RegistrationAddOn
   medCore
   medRegistration
   )
@@ -111,4 +104,4 @@ target_link_libraries(${PROJECT_NAME}
 ## Install rules
 ## #############################################################################
 
-set_plugin_install_rules_legacy(${PROJECT_NAME})
+set_plugin_install_rules_legacy(${TARGET_NAME})
