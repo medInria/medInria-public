@@ -31,8 +31,8 @@ public:
     static bool registered();
     virtual QStringList handled(void) const;
     virtual QString description() const;
-    virtual QList<medAbstractParameter*> linkableParameters();
-    QList<medBoolParameter*> mouseInteractionParameters();
+    virtual QList<medAbstractParameterL*> linkableParameters();
+    QList<medBoolParameterL*> mouseInteractionParameters();
 
 public slots:
     void updateWidgets();

@@ -20,7 +20,7 @@
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
-#include <medTimeLineParameter.h>
+#include <medTimeLineParameterL.h>
 
 
 class vtkDataMesh4DInteractorPrivate

@@ -50,11 +50,11 @@
 #include <medStyleSheetParser.h>
 #include <medTestWorkspace.h>
 
-#include <medProcessLayer.h>
+#include <medCore.h>
 #include <medAbstractArithmeticOperationProcess.h>
 
-#include <medGuiLayer.h>
-#include <medAbstractArea.h>
+//#include <medGuiLayer.h>
+//#include <medAbstractArea.h>
 
 class medApplicationPrivate
 {
@@ -68,8 +68,8 @@ public:
 // /////////////////////////////////////////////////////////////////
 
 medApplication::medApplication(int & argc, char**argv) :
-        QtSingleApplication(argc,argv),
-        d(new medApplicationPrivate)
+    QtSingleApplication(argc,argv),
+    d(new medApplicationPrivate)
 {
     d->mainWindow = NULL;
 
@@ -107,13 +107,13 @@ bool medApplication::event(QEvent *event)
 {
     switch (event->type())
     {
-        // Handle file system open requests, but only if the main window has been created and set
-        case QEvent::FileOpen:
-            if (!d->mainWindow)
-                d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
-            return true;
-        default:
-            return QtSingleApplication::event(event);
+    // Handle file system open requests, but only if the main window has been created and set
+    case QEvent::FileOpen:
+        if (!d->mainWindow)
+            d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
+        return true;
+    default:
+        return QtSingleApplication::event(event);
     }
 }
 
@@ -154,7 +154,7 @@ void medApplication::open(QString path)
 void medApplication::initialize()
 {
     qRegisterMetaType<QUuid>("QUuid");
-//    qRegisterMetaType<medAbstractImageData>("medAbstractImageData");
+    //    qRegisterMetaType<medAbstractImageData>("medAbstractImageData");
 
     //  Setting up database connection
     if ( ! medDatabaseController::instance()->createConnection())
@@ -169,7 +169,7 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
-    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
+    //    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
 
     //Register settingsWidgets
     medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
@@ -193,14 +193,20 @@ void medApplication::initialize()
     defaultPath = plugins_dir.absolutePath();
 
     // process layer:
-    medProcessLayer::pluginManager::initialize(defaultPath);
+    medCore::pluginManager::initialize(defaultPath);
 
     const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
     QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
 
-    medProcessLayer::pluginManager::initialize(QString(pluginVarArray.constData()));
+    medCore::pluginManager::initialize(QString(pluginVarArray.constData()));
 
-    // gui layer:
-    medGuiLayer::area::pluginManager().setVerboseLoading(true);
-    medGuiLayer::area::pluginManager().initialize(defaultPath);
+    // for TEST:
+    QString key = medCore::arithmeticalOperation::addImage::pluginFactory().keys().first();
+    auto process = medCore::arithmeticalOperation::addImage::pluginFactory().create(key);
+
+    qDebug() << "THIS IS A TEST\n\tCREATE PROCESS:" << process->staticMetaObject.className() << process->caption() << process->description();
+
+    //    // gui layer:
+    //    medGuiLayer::area::pluginManager().setVerboseLoading(true);
+    //    medGuiLayer::area::pluginManager().initialize(defaultPath);
 }

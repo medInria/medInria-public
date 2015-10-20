@@ -26,8 +26,8 @@
 #include <medDataManager.h>
 #include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
-#include <medViewParameterGroup.h>
-#include <medLayerParameterGroup.h>
+#include <medViewParameterGroupL.h>
+#include <medLayerParameterGroupL.h>
 
 class medFilteringWorkspacePrivate
 {
@@ -46,11 +46,11 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
     connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
     this->addToolBox(d->filteringToolBox);
 
-    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
+    medViewParameterGroupL *viewGroup1 = new medViewParameterGroupL("View Group 1", this, this->identifier());
     viewGroup1->setLinkAllParameters(true);
     viewGroup1->removeParameter("DataList");
 
-    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this,  this->identifier());
+    medLayerParameterGroupL *layerGroup1 = new medLayerParameterGroupL("Layer Group 1", this,  this->identifier());
     layerGroup1->setLinkAllParameters(true);
 }
 

@@ -31,11 +31,11 @@
 #include <medAbstractImageView.h>
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>
-#include <medAbstractParameter.h>
-#include <medDoubleParameter.h>
-#include <medIntParameter.h>
-#include <medStringListParameter.h>
-#include <medBoolParameter.h>
+#include <medAbstractParameterL.h>
+#include <medDoubleParameterL.h>
+#include <medIntParameterL.h>
+#include <medStringListParameterL.h>
+#include <medBoolParameterL.h>
 #include <medAbstractImageData.h>
 
 #include <QSlider>
@@ -58,7 +58,7 @@ public:
     vtkImageView3D *view3d;
     vtkRenderWindow *render;
 
-    QList <medAbstractParameter*> parameters;
+    QList <medAbstractParameterL*> parameters;
 
     VectorFloatImageType::Pointer    floatData;
     VectorDoubleImageType::Pointer   doubleData;
@@ -67,7 +67,7 @@ public:
 
     vtkVectorManager                 *manager;
 
-    medIntParameter *slicingParameter;
+    medIntParameterL *slicingParameter;
 
     typedef vtkSmartPointer <vtkProperty>  PropertySmartPointer;
     PropertySmartPointer actorProperty;
@@ -96,7 +96,7 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
 
-    d->slicingParameter = new medIntParameter("Slicing", this);
+    d->slicingParameter = new medIntParameterL("Slicing", this);
 }
 
 
@@ -247,25 +247,25 @@ void medVtkViewItkVectorFieldInteractor::removeData()
 
 void medVtkViewItkVectorFieldInteractor::setupParameters()
 {
-    medDoubleParameter *scaleFactor = new medDoubleParameter("Scale", this);
+    medDoubleParameterL *scaleFactor = new medDoubleParameterL("Scale", this);
     scaleFactor->setRange(0.001,10);
     scaleFactor->setValue(1.0);
 
-    medIntParameter *sampleRateControl = new medIntParameter("Sample Rate", this);
+    medIntParameterL *sampleRateControl = new medIntParameterL("Sample Rate", this);
     sampleRateControl->setRange(1,10);
     sampleRateControl->setValue(1);
 
-    medStringListParameter *colorMode = new medStringListParameter("Color mode", this);
+    medStringListParameterL *colorMode = new medStringListParameterL("Color mode", this);
     colorMode->addItem("Vector Magnitude");
     colorMode->addItem("Vector Direction");
-    colorMode->addItem("Red", medStringListParameter::createIconFromColor("red"));
-    colorMode->addItem("Green", medStringListParameter::createIconFromColor("green"));
-    colorMode->addItem("Blue", medStringListParameter::createIconFromColor("blue"));
-    colorMode->addItem("Yellow", medStringListParameter::createIconFromColor("yellow"));
-    colorMode->addItem("White", medStringListParameter::createIconFromColor("white"));
+    colorMode->addItem("Red", medStringListParameterL::createIconFromColor("red"));
+    colorMode->addItem("Green", medStringListParameterL::createIconFromColor("green"));
+    colorMode->addItem("Blue", medStringListParameterL::createIconFromColor("blue"));
+    colorMode->addItem("Yellow", medStringListParameterL::createIconFromColor("yellow"));
+    colorMode->addItem("White", medStringListParameterL::createIconFromColor("white"));
     colorMode->setValue("Vector Magnitude");
 
-    medBoolParameter *projection = new medBoolParameter("Projection", this);
+    medBoolParameterL *projection = new medBoolParameterL("Projection", this);
 
     d->parameters.append(scaleFactor);
     d->parameters.append(sampleRateControl);
@@ -432,7 +432,7 @@ QWidget* medVtkViewItkVectorFieldInteractor::buildToolBoxWidget()
 {
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
-    foreach(medAbstractParameter *parameter, d->parameters)
+    foreach(medAbstractParameterL *parameter, d->parameters)
         layout->addRow(parameter->getLabel(), parameter->getWidget());
 
     return toolbox;
@@ -444,17 +444,17 @@ QWidget* medVtkViewItkVectorFieldInteractor::buildToolBarWidget()
     return d->slicingParameter->getSlider();
 }
 
-QList<medAbstractParameter*> medVtkViewItkVectorFieldInteractor::linkableParameters()
+QList<medAbstractParameterL*> medVtkViewItkVectorFieldInteractor::linkableParameters()
 {
-    QList <medAbstractParameter*> linkableParams = d->parameters;
+    QList <medAbstractParameterL*> linkableParams = d->parameters;
     linkableParams << this->visibilityParameter() << this->opacityParameter();
     return linkableParams;
 }
 
-QList<medBoolParameter*> medVtkViewItkVectorFieldInteractor::mouseInteractionParameters()
+QList<medBoolParameterL*> medVtkViewItkVectorFieldInteractor::mouseInteractionParameters()
 {
     // no parameters related to mouse interactions
-    return QList<medBoolParameter*>();
+    return QList<medBoolParameterL*>();
 }
 
 void medVtkViewItkVectorFieldInteractor::update()

@@ -51,14 +51,8 @@ set(PLUGIN_LIST
   legacy/undoRedoRegistration                                            ON
   legacy/itkProcessRegistrationDiffeomorphicDemons                       ON
   legacy/medVtkView                                                      ON
-  process/arithmetic_operation/medItkAddImageProcess                     ON
-  process/arithmetic_operation/medItkSubtractImageProcess                ON
-  process/arithmetic_operation/medItkMultiplyImageProcess                ON
-  process/arithmetic_operation/medItkDivideImageProcess                  ON
-  process/morphomath_operation/medItkErodeImageProcess                   ON
-  process/morphomath_operation/medItkDilateImageProcess                  ON
-  process/morphomath_operation/medItkOpeningImageProcess                 ON
-  process/morphomath_operation/medItkClosingImageProcess                 ON
+  process/arithmetic_operation                                           ON
+  process/morphomath_operation                                           ON
   )
 
 ## #############################################################################

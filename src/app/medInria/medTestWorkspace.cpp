@@ -1,54 +1,52 @@
-/*=========================================================================
+///*=========================================================================
 
- medInria
+// medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
- See LICENSE.txt for details.
+// Copyright (c) INRIA 2013 - 2014. All rights reserved.
+// See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.
 
-=========================================================================*/
+//=========================================================================*/
 
-#include <medTestWorkspace.h>
+//#include <medTestWorkspace.h>
 
-#include <medTabbedViewContainers.h>
+//#include <medTabbedViewContainers.h>
 
-#include <medProcessLayer.h>
-#include <medAbstractSubtractImageProcess.h>
+//#include <medCore.h>
+//#include <medAbstractAddImageProcess.h>
 
-#include <medToolBox.h>
+//#include <medToolBox.h>
 
-class medTestWorkspacePrivate
-{
-public:
-  medAbstractMorphomathOperationProcess *process;
+//class medTestWorkspacePrivate
+//{
+//public:
+//  medAbstractAddImageProcess *process;
 
-};
+//};
 
-medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
-{
-    foreach(QString key, medProcessLayer::morphomathOperation::erodeImage::pluginFactory().keys())
-        d->process = medProcessLayer::morphomathOperation::erodeImage::pluginFactory().create(key);
-    this->addToolBox(dynamic_cast<medToolBox*>(d->process->toolbox()));
+//medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
+//{
+//    for(QString const& key : medCore::arithmeticalOperation::addImage::pluginFactory().keys())
+//        d->process = medCore::morphomathOperation::erodeImage::pluginFactory().create(key);
 
-    QLabel *test = new QLabel(d->process->details().name);
-    test->show();
-}
+//    qDebug() << "CREATE PROCESS:" << d->process->caption() << d->process->description();
+//}
 
-medTestWorkspace::~medTestWorkspace()
-{
-    delete d;
-    d = NULL;
-}
+//medTestWorkspace::~medTestWorkspace()
+//{
+//    delete d;
+//    d = NULL;
+//}
 
-void medTestWorkspace::setupTabbedViewContainer()
-{
-    this->tabbedViewContainers()->setSplitter(0, d->process->viewContainerSplitter());
-}
+//void medTestWorkspace::setupTabbedViewContainer()
+//{
 
-bool medTestWorkspace::isUsable()
-{
-    return true;
-}
+//}
+
+//bool medTestWorkspace::isUsable()
+//{
+//    return true;
+//}

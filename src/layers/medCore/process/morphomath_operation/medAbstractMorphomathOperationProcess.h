@@ -15,10 +15,11 @@
 
 #include <medAbstractProcess.h>
 
+#include <dtkCore>
+
 #include <medCoreExport.h>
 
 class medAbstractImageData;
-class medViewContainerSplitter;
 class medDoubleParameter;
 
 class medAbstractMorphomathOperationProcessPrivate;
@@ -32,22 +33,16 @@ public:
 
     void setInput(medAbstractImageData* data);
     medAbstractImageData* input() const;
-
     medAbstractImageData* output() const;
 
-    virtual QWidget* toolbox() const;
-    virtual medViewContainerSplitter* viewContainerSplitter() const;
-
     virtual medDoubleParameter* kernelRadius() const;
-    virtual void setKernelRadius(double const& radius);
 
 protected:
     void setOutput(medAbstractImageData* data);
 
-private slots:
-    void _setInputFromContainer();
-    void _fillOutputContainer();
-
 private:
-    medAbstractMorphomathOperationProcessPrivate* d;
+    const QScopedPointer<medAbstractMorphomathOperationProcessPrivate> d;
 };
+
+DTK_DECLARE_PLUGIN        (medAbstractMorphomathOperationProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_MANAGER(medAbstractMorphomathOperationProcess, MEDCORE_EXPORT)

@@ -20,7 +20,7 @@ class medVtkViewPrivate;
 class medAbstractData;
 class medAbstractImageData;
 class medVtkViewObserver;
-class medBoolParameter;
+class medBoolParameterL;
 
 class MEDVTKVIEWPLUGIN_EXPORT medVtkView : public medAbstractImageView
 {
@@ -46,7 +46,7 @@ public:
     virtual qreal sliceThickness();
     virtual qreal scale();
 
-    medBoolParameter* rubberBandZoomParameter() const;
+    medBoolParameterL* rubberBandZoomParameter() const;
 
     virtual void setOffscreenRendering(bool isOffscreen);
 public slots:

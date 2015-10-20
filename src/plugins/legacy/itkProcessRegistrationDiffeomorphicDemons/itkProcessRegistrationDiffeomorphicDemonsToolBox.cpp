@@ -26,7 +26,7 @@
 
 #include <medAbstractView.h>
 #include <medRunnableProcess.h>
-#include <medJobManager.h>
+#include <medJobManagerL.h>
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
@@ -221,6 +221,6 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progressionStack, SLOT(setActive(QObject*,bool)));
 
-    medJobManager::instance()->registerJobItem(runProcess,process->identifier());
+    medJobManagerL::instance()->registerJobItem(runProcess,process->identifier());
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }

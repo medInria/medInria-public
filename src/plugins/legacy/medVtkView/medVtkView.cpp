@@ -47,13 +47,13 @@
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
 #include "medVtkViewObserver.h"
-#include <medBoolGroupParameter.h>
-#include <medBoolParameter.h>
-#include <medDataListParameter.h>
+#include <medBoolGroupParameterL.h>
+#include <medBoolParameterL.h>
+#include <medDataListParameterL.h>
 #include <medToolBox.h>
 #include <medMetaDataKeys.h>
-#include <medParameterPool.h>
-#include <medParameterPoolManager.h>
+#include <medParameterPoolL.h>
+#include <medParameterPoolManagerL.h>
 #include <medSettingsManager.h>
 
 #include <vtkGenericOpenGLRenderWindow.h>
@@ -168,7 +168,7 @@ public:
 
     medVtkViewObserver *observer;
 
-    medBoolParameter *rubberBandZoomParameter;
+    medBoolParameterL *rubberBandZoomParameter;
 
     QScopedPointer<medVtkViewBackend> backend;
 };
@@ -254,7 +254,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view2d->AddObserver(vtkImageView2DCommand::CameraZoomEvent,d->observer,0);
     d->view3d->GetInteractorStyle()->AddObserver(vtkCommand::InteractionEvent, d->observer, 0);
 
-    d->rubberBandZoomParameter = new medBoolParameter("RubberBandZoom", this);
+    d->rubberBandZoomParameter = new medBoolParameterL("RubberBandZoom", this);
     connect(d->rubberBandZoomParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableRubberBandZoom(bool)));
 
     // Disable rubberBandMode if we leave the application.
@@ -561,7 +561,7 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     medSettingsManager * mnger = medSettingsManager::instance();
     QString interaction = mnger->value("interactions","mouse", "Windowing").toString();
 
-    QList<medBoolParameter*> params;
+    QList<medBoolParameterL*> params;
 
     params.append(primaryNavigator()->mouseInteractionParameters());
     foreach (medAbstractNavigator* navigator, this->extraNavigators())
@@ -572,9 +572,9 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
         params.append(interactor->mouseInteractionParameters());
 
     // add all mouse interaction params of the view in the "Mouse interaction" pool
-    foreach (medBoolParameter* param, params)
+    foreach (medBoolParameterL* param, params)
     {
-        medParameterPoolManager::instance()->linkParameter(param, "Mouse Interaction");
+        medParameterPoolManagerL::instance()->linkParameter(param, "Mouse Interaction");
         connect(param, SIGNAL(valueChanged(bool)), this, SLOT(saveMouseInteractionSettings(bool)));
 
         // and activate the new inserted parameter according to what was activated in other views
@@ -583,14 +583,14 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     }
 
     // Deal with rubber Zoom mode.
-    medParameterPoolManager::instance()->linkParameter(d->rubberBandZoomParameter, "Mouse Interaction");
+    medParameterPoolManagerL::instance()->linkParameter(d->rubberBandZoomParameter, "Mouse Interaction");
 }
 
 void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
 {
     if(parameterEnabled)
     {
-        medBoolParameter *parameter = dynamic_cast<medBoolParameter *>(this->sender());
+        medBoolParameterL *parameter = dynamic_cast<medBoolParameterL *>(this->sender());
         if(parameter)
             medSettingsManager::instance()->setValue("interactions","mouse", parameter->name());
     }
@@ -621,7 +621,7 @@ void medVtkView::enableRubberBandZoom(bool enable)
         d->view2d->GetInteractor()->SetInteractorStyle(d->interactorStyle2D);
 }
 
-medBoolParameter* medVtkView::rubberBandZoomParameter() const
+medBoolParameterL* medVtkView::rubberBandZoomParameter() const
 {
     return d->rubberBandZoomParameter;
 }
