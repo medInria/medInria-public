@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}aabadie/qtdcm.git)
+set(git_url ${GITHUB_PREFIX}rdebroiz/qtdcm.git)
 set(git_tag qt5.5_support) 
 
 ## #############################################################################
@@ -62,7 +62,8 @@ set(cmake_args
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DQt5_DIR=${Qt5_DIR}
   -DITK_DIR:FILEPATH=${ITK_DIR}
-  -DDCMTK_DIR:FILEPATH=${DCMTK_INSTALL_DIR}
+  -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
+  -DDCMTK_FIND_PACKAGE_USE_CONFIG_ONLY=ON
   )
 
 ## #############################################################################
