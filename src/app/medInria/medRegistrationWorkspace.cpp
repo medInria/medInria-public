@@ -23,12 +23,12 @@
 #include <medTabbedViewContainers.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medAbstractLayeredView.h>
-#include <medStringListParameter.h>
+#include <medStringListParameterL.h>
 
 #include <medToolBoxFactory.h>
 
-#include <medViewParameterGroup.h>
-#include <medLayerParameterGroup.h>
+#include <medViewParameterGroupL.h>
+#include <medLayerParameterGroupL.h>
 
 class medRegistrationWorkspacePrivate
 {
@@ -38,9 +38,9 @@ public:
     medViewContainer *movingContainer;
     medViewContainer *fuseContainer;
 
-    medViewParameterGroup *viewGroup;
-    medLayerParameterGroup *fixedLayerGroup;
-    medLayerParameterGroup *movingLayerGroup;
+    medViewParameterGroupL *viewGroup;
+    medLayerParameterGroupL *fixedLayerGroup;
+    medLayerParameterGroupL *movingLayerGroup;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspaceLegacy(parent), d(new medRegistrationWorkspacePrivate)
@@ -50,16 +50,16 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
     this->addToolBox(d->registrationToolBox);
 
-    d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
-    d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this, this->identifier());
-    d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
+    d->viewGroup = new medViewParameterGroupL("View Group 1", this, this->identifier());
+    d->fixedLayerGroup =  new medLayerParameterGroupL("Fixed Group", this, this->identifier());
+    d->movingLayerGroup = new medLayerParameterGroupL("Moving Group", this, this->identifier());
 
     d->viewGroup->setLinkAllParameters(true);
 
     d->fixedLayerGroup->setLinkAllParameters(true);
     d->movingLayerGroup->setLinkAllParameters(true);
 
-    QList<medLayerParameterGroup*> layerGroups;
+    QList<medLayerParameterGroupL*> layerGroups;
     layerGroups.append(d->fixedLayerGroup);
     layerGroups.append(d->movingLayerGroup);
     this->setLayerGroups(layerGroups);

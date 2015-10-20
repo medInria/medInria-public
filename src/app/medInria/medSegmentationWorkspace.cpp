@@ -27,10 +27,10 @@
 #include <medViewContainerManager.h>
 #include <medRunnableProcess.h>
 #include <medDataManager.h>
-#include <medJobManager.h>
+#include <medJobManagerL.h>
 #include <medMetaDataKeys.h>
-#include <medViewParameterGroup.h>
-#include <medLayerParameterGroup.h>
+#include <medViewParameterGroupL.h>
+#include <medLayerParameterGroupL.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -65,11 +65,11 @@ medAbstractWorkspaceLegacy(parent), d(new medSegmentationWorkspacePrivate)
 
     this->addToolBox(d->segmentationToolBox);
 
-    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
+    medViewParameterGroupL *viewGroup1 = new medViewParameterGroupL("View Group 1", this, this->identifier());
     viewGroup1->setLinkAllParameters(true);
     viewGroup1->removeParameter("DataList");
 
-    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
+    medLayerParameterGroupL *layerGroup1 = new medLayerParameterGroupL("Layer Group 1", this, this->identifier());
     layerGroup1->setLinkAllParameters(true);
 
     connect(this->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),

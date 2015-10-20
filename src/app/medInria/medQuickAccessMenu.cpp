@@ -15,7 +15,7 @@
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
 
-#include <medGuiLayer.h>
+//#include <medGuiLayer.h>
 
 #ifdef Q_OS_MAC
     Qt::Key OSIndependentControlKey = Qt::Key_Meta;
@@ -341,22 +341,22 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SIGNAL ( browserSelected()) );
     buttonsList.push_back(browserButton);
     //Dynamically setup area access button
-    foreach(QString key, medGuiLayer::area::pluginFactory().keys())
-    {
-        medHomepagePushButton * button = new medHomepagePushButton ( this );
-        button->setText(key);
-        button->setFocusPolicy (Qt::NoFocus);
-        button->setCursor(Qt::PointingHandCursor);
-        button->setStyleSheet("border: 0px;");
-        button->setFixedHeight(40);
-        button->setMaximumWidth(250);
-        button->setMinimumWidth(250);
-        button->setToolTip(key);
-        button->setIdentifier(key);
-        workspaceButtonsLayout->addWidget(button);
-        QObject::connect ( button, SIGNAL(clicked(QString)),this, SIGNAL(areaSelected(QString)));
-        buttonsList.push_back(button);
-    }
+//    foreach(QString key, medGuiLayer::area::pluginFactory().keys())
+//    {
+//        medHomepagePushButton * button = new medHomepagePushButton ( this );
+//        button->setText(key);
+//        button->setFocusPolicy (Qt::NoFocus);
+//        button->setCursor(Qt::PointingHandCursor);
+//        button->setStyleSheet("border: 0px;");
+//        button->setFixedHeight(40);
+//        button->setMaximumWidth(250);
+//        button->setMinimumWidth(250);
+//        button->setToolTip(key);
+//        button->setIdentifier(key);
+//        workspaceButtonsLayout->addWidget(button);
+//        QObject::connect ( button, SIGNAL(clicked(QString)),this, SIGNAL(areaSelected(QString)));
+//        buttonsList.push_back(button);
+//    }
 
     //Dynamically setup workspaces access button
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();

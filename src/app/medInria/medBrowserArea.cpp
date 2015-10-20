@@ -22,7 +22,7 @@
 #include <dtkGuiSupport/dtkFinder.h>
 
 #include <medMessageController.h>
-#include <medJobManager.h>
+#include <medJobManagerL.h>
 #include <medDataManager.h>
 
 #include <medStorage.h>

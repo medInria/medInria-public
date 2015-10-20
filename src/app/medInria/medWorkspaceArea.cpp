@@ -45,7 +45,7 @@
 
 #include "medDatabaseDataSource.h"
 #include "medDataSourceManager.h"
-#include <medParameterGroupManager.h>
+#include <medParameterGroupManagerL.h>
 
 #include <QtGui>
 #include <QtWidgets>
@@ -186,7 +186,7 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspaceLegacy *workspace
     }
     d->toolBoxContainer->setVisible(workspace->areToolBoxesVisible());
 
-    medParameterGroupManager::instance()->setCurrentWorkspace(workspace->identifier());
+    medParameterGroupManagerL::instance()->setCurrentWorkspace(workspace->identifier());
 
 }
 

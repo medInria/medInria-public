@@ -24,10 +24,10 @@
 #include <vtkCamera.h>
 #include <medVtkViewBackend.h>
 
-#include <medAbstractParameter.h>
-#include <medBoolParameter.h>
-#include <medDoubleParameter.h>
-#include <medCompositeParameter.h>
+#include <medAbstractParameterL.h>
+#include <medBoolParameterL.h>
+#include <medDoubleParameterL.h>
+#include <medCompositeParameterL.h>
 
 #include <medVtkView.h>
 

@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>medItkDilateImageProcessPlugin.json</file>
-    </qresource>
-</RCC>

@@ -17,15 +17,15 @@
 ## #############################################################################
 
 ## be sure medCore  is first in the list, it will be used by the other lib.
-add_subdirectory(medCoreLegacy)
+add_subdirectory(legacy/medCoreLegacy)
 add_subdirectory(medCore)
 add_subdirectory(medComposer)
 
-add_subdirectory(medTest)
-add_subdirectory(medPacs)
+add_subdirectory(legacy/medTest)
+add_subdirectory(legacy/medPacs)
 
-add_subdirectory(medLog)
-add_subdirectory(medImageIO)
-add_subdirectory(medRegistration)
+add_subdirectory(legacy/medLog)
+add_subdirectory(legacy/medImageIO)
+add_subdirectory(legacy/medRegistration)
 
 add_subdirectory(medVtkInria)

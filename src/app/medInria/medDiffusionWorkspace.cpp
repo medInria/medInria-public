@@ -29,7 +29,7 @@
 #include <medToolBoxFactory.h>
 
 #include <medRunnableProcess.h>
-#include <medJobManager.h>
+#include <medJobManagerL.h>
 #include <medMessageController.h>
 
 class medDiffusionWorkspacePrivate
@@ -145,7 +145,7 @@ void medDiffusionWorkspace::runProcess(QString processName, QString category)
     d->processRunning = true;
     this->tabbedViewContainers()->setEnabled(false);
 
-    medJobManager::instance()->registerJobItem(runProcess);
+    medJobManagerL::instance()->registerJobItem(runProcess);
     connect(runProcess, SIGNAL(success(QObject*)), this, SLOT(getOutput()));
     connect(runProcess, SIGNAL(failure(QObject*)), this, SLOT(resetRunningFlags()));
 

@@ -23,9 +23,9 @@
 
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
-#include <medDoubleParameter.h>
-#include <medBoolParameter.h>
-#include <medIntParameter.h>
+#include <medDoubleParameterL.h>
+#include <medBoolParameterL.h>
+#include <medIntParameterL.h>
 
 #include <medAnnIntSeedPointHelper.h>
 #include <medAnnIntImageMaskHelper.h>
@@ -59,7 +59,7 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     vtkRenderWindow *render;
-    medIntParameter *slicingParameter;
+    medIntParameterL *slicingParameter;
 
     medAbstractData *imageData;
 
@@ -80,7 +80,7 @@ medAnnotationInteractor::medAnnotationInteractor(medAbstractView *parent):
 
     d->imageData = NULL;
 
-    d->slicingParameter = new medIntParameter("Slicing", this);
+    d->slicingParameter = new medIntParameterL("Slicing", this);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
 
     connect(parent, SIGNAL(currentLayerChanged()), this, SLOT(enableWindowLevelInteraction()));
@@ -371,9 +371,9 @@ void medAnnotationInteractor::setUpViewForThumbnail()
 
 }
 
-QList<medAbstractParameter*> medAnnotationInteractor::linkableParameters()
+QList<medAbstractParameterL*> medAnnotationInteractor::linkableParameters()
 {
-    QList<medAbstractParameter*> params;
+    QList<medAbstractParameterL*> params;
     params.append(this->opacityParameter());
     params.append(this->visibilityParameter());
     return params;
@@ -402,12 +402,12 @@ void medAnnotationInteractor::updateSlicingParam()
     d->slicingParameter->setValue(d->view2d->GetSlice());
 }
 
-QList<medBoolParameter*> medAnnotationInteractor::mouseInteractionParameters()
+QList<medBoolParameterL*> medAnnotationInteractor::mouseInteractionParameters()
 {
     // no parameters related to mouse interactions
     // TODO: actually segmentation is directly related to mouse interaction
     // maybe we should investigate to add a "paint" button in the mouse interaction widget
-    return QList<medBoolParameter*>();
+    return QList<medBoolParameterL*>();
 }
 
 void medAnnotationInteractor::enableWindowLevelInteraction()

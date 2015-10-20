@@ -13,54 +13,11 @@
 
 #include <medErodeImageProcessNode.h>
 
-#include <dtkComposer>
+#include <medCore.h>
 
-#include <medProcessLayer.h>
-#include <medAbstractImageData.h>
-
-class medErodeImageProcessNodePrivate
+medErodeImageProcessNode::medErodeImageProcessNode()
 {
-public:
-    dtkComposerTransmitterReceiver<double> radius;
-    dtkComposerTransmitterReceiver<medAbstractImageData*> input;
-
-    dtkComposerTransmitterEmitter<medAbstractImageData*> output;
-};
-
-medErodeImageProcessNode::medErodeImageProcessNode(void) :
-    dtkComposerNodeObject<medAbstractErodeImageProcess>(),
-    d(new medErodeImageProcessNodePrivate())
-{
-    this->setFactory(medProcessLayer::morphomathOperation::erodeImage::pluginFactory());
-
-    this->appendReceiver(&d->input);
-    this->appendReceiver(&d->radius);
-    this->appendEmitter (&d->output);
+    this->setFactory(medCore::morphomathOperation::erodeImage::pluginFactory());
 }
 
-medErodeImageProcessNode::~medErodeImageProcessNode(void)
-{
-    delete d;
-}
-
-void medErodeImageProcessNode::run(void)
-{
-    if (d->radius.isEmpty() || d->input.isEmpty())
-    {
-        qDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
-        return;
-    }
-    else
-    {
-
-        medAbstractErodeImageProcess* filter = this->object();
-        if(!this->object())
-            return;
-        filter->setInput(d->input.data());
-        filter->setKernelRadius(d->radius.data());
-        filter->run();
-        d->output.setData(filter->output());
-        qDebug()<<"filtering done";
-    }
-}
 

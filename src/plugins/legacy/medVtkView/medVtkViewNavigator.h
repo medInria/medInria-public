@@ -34,8 +34,8 @@ public:
     static bool registered();
     virtual QStringList handled(void) const;
     virtual QString description() const;
-    virtual QList<medAbstractParameter*> linkableParameters();
-    virtual QList<medBoolParameter*> mouseInteractionParameters();
+    virtual QList<medAbstractParameterL*> linkableParameters();
+    virtual QList<medBoolParameterL*> mouseInteractionParameters();
 
     virtual medImageView::Orientation orientation() const ;
 

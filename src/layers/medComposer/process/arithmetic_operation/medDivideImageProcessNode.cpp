@@ -13,55 +13,11 @@
 
 #include <medDivideImageProcessNode.h>
 
-#include <dtkComposer>
+#include <medCore.h>
 
-#include <medProcessLayer.h>
-#include <medAbstractImageData.h>
-#include <medAbstractDivideImageProcess.h>
-
-class medDivideImageProcessNodePrivate
+medDivideImageProcessNode::medDivideImageProcessNode()
 {
-public:
-    dtkComposerTransmitterReceiver<medAbstractImageData*> input1;
-    dtkComposerTransmitterReceiver<medAbstractImageData*> input2;
-
-    dtkComposerTransmitterEmitter<medAbstractImageData*> output;
-};
-
-medDivideImageProcessNode::medDivideImageProcessNode(void) : dtkComposerNodeObject<medAbstractDivideImageProcess>(),
-    d(new medDivideImageProcessNodePrivate())
-{
-    this->setFactory(medProcessLayer::arithmeticalOperation::divideImage::pluginFactory());
-
-    this->appendReceiver(&d->input1);
-    this->appendReceiver(&d->input2);
-
-    this->appendEmitter(&d->output);
+    this->setFactory(medCore::arithmeticalOperation::divideImage::pluginFactory());
 }
 
-medDivideImageProcessNode::~medDivideImageProcessNode(void)
-{
-    delete d;
-}
-
-void medDivideImageProcessNode::run(void)
-{
-    if (d->input1.isEmpty() || d->input2.isEmpty())
-    {
-        dtkDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
-        return;
-    }
-    else
-    {
-
-        medAbstractDivideImageProcess* filter = this->object();
-        if(!this->object())
-            return;
-        filter->setInput1(d->input1.data());
-        filter->setInput2(d->input2.data());
-        filter->run();
-        d->output.setData(filter->output());
-        dtkDebug()<<"filtering done";
-    }
-}
 

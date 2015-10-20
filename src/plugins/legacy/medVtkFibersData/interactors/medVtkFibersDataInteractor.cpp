@@ -43,12 +43,12 @@
 #include <medVtkViewBackend.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractDbController.h>
-#include <medBoolParameter.h>
-#include <medBoolGroupParameter.h>
-#include <medTriggerParameter.h>
-#include <medDoubleParameter.h>
-#include <medStringListParameter.h>
-#include <medIntParameter.h>
+#include <medBoolParameterL.h>
+#include <medBoolGroupParameterL.h>
+#include <medTriggerParameterL.h>
+#include <medDoubleParameterL.h>
+#include <medStringListParameterL.h>
+#include <medIntParameterL.h>
 #include <medDropSite.h>
 
 #include <QInputDialog>
@@ -87,41 +87,41 @@ public:
     QMap<QString, double> maxLengthList;
     QMap<QString, double> varLengthList;
 
-    QList<medAbstractParameter*> parameters;
+    QList<medAbstractParameterL*> parameters;
 
-    medStringListParameter *colorFiberParameter;
-    medBoolParameter *gpuParameter;
-    medBoolGroupParameter *shapesDisplayedGroupParameter;
-    medBoolParameter *displayPolylinesParameter;
-    medBoolParameter *displayRibbonsParameter;
-    medBoolParameter *displayTubesParameter;
-    medIntParameter *radiusParameter;
+    medStringListParameterL *colorFiberParameter;
+    medBoolParameterL *gpuParameter;
+    medBoolGroupParameterL *shapesDisplayedGroupParameter;
+    medBoolParameterL *displayPolylinesParameter;
+    medBoolParameterL *displayRibbonsParameter;
+    medBoolParameterL *displayTubesParameter;
+    medIntParameterL *radiusParameter;
 
     medDropSite *dropOrOpenRoi;
     QComboBox    *roiComboBox;
     QMap <int,int> roiLabels;
     QUuid roiImportUuid;
 
-    medBoolParameter *andParameter;
-    medBoolParameter *notParameter;
-    medBoolParameter *nullParameter;
+    medBoolParameterL *andParameter;
+    medBoolParameterL *notParameter;
+    medBoolParameterL *nullParameter;
 
-    medTriggerParameter *saveParameter;
-    medTriggerParameter *validateParameter;
-    medTriggerParameter *resetParameter;
-    medBoolParameter *addParameter;
-    medTriggerParameter *tagParameter;
-    medBoolGroupParameter *bundleOperationGroupParameter;
-    medDoubleParameter* opacityParam;
+    medTriggerParameterL *saveParameter;
+    medTriggerParameterL *validateParameter;
+    medTriggerParameterL *resetParameter;
+    medBoolParameterL *addParameter;
+    medTriggerParameterL *tagParameter;
+    medBoolGroupParameterL *bundleOperationGroupParameter;
+    medDoubleParameterL* opacityParam;
 
-    medBoolParameter *showAllBundleParameter;
-    medBoolParameter *showBundleBox;
+    medBoolParameterL *showAllBundleParameter;
+    medBoolParameterL *showBundleBox;
 
     QStandardItemModel *bundlingModel;
 
     QTreeView *bundlingList;
 
-    medIntParameter *slicingParameter;
+    medIntParameterL *slicingParameter;
 };
 
 template <class T>
@@ -245,33 +245,33 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->toolboxWidget = NULL;
     d->bundleToolboxWidget = NULL;
 
-    d->colorFiberParameter = new medStringListParameter("colorFiberParameter", this);
+    d->colorFiberParameter = new medStringListParameterL("colorFiberParameter", this);
     d->colorFiberParameter->setToolTip(tr("Choose the coloring method of the fibers."));
     d->colorFiberParameter->getLabel()->setText(tr("Color fibers by:"));
     d->colorFiberParameter->addItem("Local orientation");
     d->colorFiberParameter->addItem("Global orientation");
     d->parameters << d->colorFiberParameter;
 
-    d->gpuParameter = new medBoolParameter("gpuFiberParameter", this);
+    d->gpuParameter = new medBoolParameterL("gpuFiberParameter", this);
     d->gpuParameter->setToolTip(tr("Select to use GPU hardware acceleration when possible."));
     d->gpuParameter->setText(tr("Use hardware acceleration"));
     d->gpuParameter->getCheckBox()->setEnabled(false);
     d->parameters << d->gpuParameter;
 
-    d->shapesDisplayedGroupParameter = new medBoolGroupParameter("shapesDisplayedGroupParameter", this);
+    d->shapesDisplayedGroupParameter = new medBoolGroupParameterL("shapesDisplayedGroupParameter", this);
     d->parameters << d->shapesDisplayedGroupParameter;
 
-    d->displayPolylinesParameter = new medBoolParameter("displayPolylinesParameter", this);
+    d->displayPolylinesParameter = new medBoolParameterL("displayPolylinesParameter", this);
     d->displayPolylinesParameter->setToolTip(tr("Use polylines to draw the fibers."));
     d->displayPolylinesParameter->setText(tr("Display fibers as polylines"));
     d->displayPolylinesParameter->getLabel()->hide();
     d->shapesDisplayedGroupParameter->addParameter(d->displayPolylinesParameter);
-    d->displayRibbonsParameter = new medBoolParameter("displayRibbonsParameter", this);
+    d->displayRibbonsParameter = new medBoolParameterL("displayRibbonsParameter", this);
     d->displayRibbonsParameter->setToolTip(tr("Use ribbons to draw the fibers."));
     d->displayRibbonsParameter->setText(tr("Display fibers as ribbons"));
     d->displayRibbonsParameter->getLabel()->hide();
     d->shapesDisplayedGroupParameter->addParameter(d->displayRibbonsParameter);
-    d->displayTubesParameter = new medBoolParameter("displayTubesParameter", this);
+    d->displayTubesParameter = new medBoolParameterL("displayTubesParameter", this);
     d->displayTubesParameter->setToolTip(tr("Use tubes to draw the fibers."));
     d->displayTubesParameter->setText(tr("Display fibers as tubes"));
     d->displayTubesParameter->getLabel()->hide();
@@ -279,7 +279,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
 
     d->displayPolylinesParameter->setValue(true);
 
-    d->radiusParameter = new medIntParameter("fibersRadiusParameter", this);
+    d->radiusParameter = new medIntParameterL("fibersRadiusParameter", this);
     d->radiusParameter->setToolTip(tr("Increase of decrease the radius of the fibers (except if there are being drawn with polylines)."));
     d->radiusParameter->getLabel()->setText(tr("Fibers radius:"));
     d->radiusParameter->setRange(1, 10);
@@ -292,55 +292,55 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     connect (d->radiusParameter, SIGNAL(valueChanged(int)),  this, SLOT(setRadius(int)));
 
     //--Bundling
-    d->andParameter = new medBoolParameter("andFiberParameter", this);
+    d->andParameter = new medBoolParameterL("andFiberParameter", this);
     d->andParameter->setToolTip(tr("If \"AND\" is selected fibers will need to overlap with this ROI to be displayed."));
     d->andParameter->setText("AND");
     d->andParameter->setValue(true);
     d->andParameter->getLabel()->hide();
 
-    d->notParameter = new medBoolParameter("notFiberParameter", this);
+    d->notParameter = new medBoolParameterL("notFiberParameter", this);
     d->notParameter->setToolTip(tr("If \"NOT\" is selected fibers overlapping with this ROI will not be displayed."));
     d->notParameter->setText("NOT");
     d->notParameter->getLabel()->hide();
 
-    d->nullParameter = new medBoolParameter("nullFiberParameter", this);
+    d->nullParameter = new medBoolParameterL("nullFiberParameter", this);
     d->nullParameter->setToolTip(tr("If \"NULL\" is selected this ROI won't be taken into account."));
     d->nullParameter->setText("NULL");
     d->nullParameter->getLabel()->hide();
 
-    d->bundleOperationGroupParameter = new medBoolGroupParameter("bundleOperationGroupParameter", this);
+    d->bundleOperationGroupParameter = new medBoolGroupParameterL("bundleOperationGroupParameter", this);
     d->bundleOperationGroupParameter->addParameter(d->andParameter);
     d->bundleOperationGroupParameter->addParameter(d->notParameter);
     d->bundleOperationGroupParameter->addParameter(d->nullParameter);
 
-    d->tagParameter = new medTriggerParameter("tagFiberParameter", this);
+    d->tagParameter = new medTriggerParameterL("tagFiberParameter", this);
     d->tagParameter->setToolTip(tr("Tag the currently shown bundle to let medInria memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
     d->tagParameter->setButtonText("Tag");
 
-    d->addParameter = new medBoolParameter("addFiberParameter", this);
+    d->addParameter = new medBoolParameterL("addFiberParameter", this);
     d->addParameter->setToolTip(tr("Select to either include the fibers that overlap with the bundling box, or to include the ones that do not overlap."));
     d->addParameter->setText("Add");
     d->addParameter->setValue(true);
 
-    d->resetParameter = new medTriggerParameter("resetFiberParameter", this);
+    d->resetParameter = new medTriggerParameterL("resetFiberParameter", this);
     d->resetParameter->setToolTip(tr("Reset all previously tagged bundling boxes."));
     d->resetParameter->setButtonText("Reset");
 
-    d->validateParameter = new medTriggerParameter("validateFiberParameter", this);
+    d->validateParameter = new medTriggerParameterL("validateFiberParameter", this);
     d->validateParameter->setToolTip(tr("Save the current shown bundle and show useful information about it."));
     d->validateParameter->setButtonText("Validate");
     
-    d->saveParameter = new medTriggerParameter("saveFiberParameter", this);
+    d->saveParameter = new medTriggerParameterL("saveFiberParameter", this);
     d->saveParameter->setToolTip(tr("Save all bundles to database"));
     d->saveParameter->setButtonText("Save");
     
-    d->showAllBundleParameter = new medBoolParameter("showAllBundleFiberParameter", this);
+    d->showAllBundleParameter = new medBoolParameterL("showAllBundleFiberParameter", this);
     d->showAllBundleParameter->setValue(true);
     d->showAllBundleParameter->setToolTip(tr("Uncheck if you do not want the previously validated bundles to be displayed."));
     d->showAllBundleParameter->setText(tr("Show all bundles"));
     d->parameters << d->showAllBundleParameter;
 
-    d->showBundleBox = new medBoolParameter("showBundleFiberBox", this);
+    d->showBundleBox = new medBoolParameterL("showBundleFiberBox", this);
     d->showBundleBox->setToolTip(tr("Select to activate and show the fiber bundling box on the screen."));
     d->showBundleBox->setText("Activate bundling box");
     d->showBundleBox->setValue(false);
@@ -348,7 +348,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->bundlingModel = new QStandardItemModel(0, 1, this);
     d->bundlingModel->setHeaderData(0, Qt::Horizontal, tr("Fiber bundles"));
 
-    d->opacityParam = new medDoubleParameter("Opacity", this);
+    d->opacityParam = new medDoubleParameterL("Opacity", this);
     d->opacityParam->setRange(0,1);
     d->opacityParam->setSingleStep(0.01);
     d->opacityParam->setValue(1);
@@ -388,7 +388,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
         }
     }
 
-    d->slicingParameter = new medIntParameter("Slicing", this);
+    d->slicingParameter = new medIntParameterL("Slicing", this);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 }
@@ -1447,15 +1447,15 @@ void medVtkFibersDataInteractor::setUpViewForThumbnail()
     d->view3d->ShowAnnotationsOff();
 }
 
-QList<medAbstractParameter*> medVtkFibersDataInteractor::linkableParameters()
+QList<medAbstractParameterL*> medVtkFibersDataInteractor::linkableParameters()
 {
     return d->parameters;
 }
 
-QList<medBoolParameter*> medVtkFibersDataInteractor::mouseInteractionParameters()
+QList<medBoolParameterL*> medVtkFibersDataInteractor::mouseInteractionParameters()
 {
     // no parameters related to mouse interactions
-    return QList<medBoolParameter*>();
+    return QList<medBoolParameterL*>();
 }
 
 void medVtkFibersDataInteractor::updateWidgets()

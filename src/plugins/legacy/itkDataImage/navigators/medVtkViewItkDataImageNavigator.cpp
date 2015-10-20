@@ -20,8 +20,8 @@
 
 #include <medViewFactory.h>
 #include <medAbstractImageView.h>
-#include <medStringListParameter.h>
-#include <medBoolParameter.h>
+#include <medStringListParameterL.h>
+#include <medBoolParameterL.h>
 
 #include <QtWidgets>
 
@@ -41,11 +41,11 @@ public:
 
     medAbstractImageView *imageView;
 
-    QList <medAbstractParameter*> parameters;
+    QList <medAbstractParameterL*> parameters;
 
-    medStringListParameter *mode3DParameter;
-    medStringListParameter *renderer3DParameter;
-    medBoolParameter *croppingParameter;
+    medStringListParameterL *mode3DParameter;
+    medStringListParameterL *renderer3DParameter;
+    medBoolParameterL *croppingParameter;
 
 };
 
@@ -66,7 +66,7 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
 
-    d->mode3DParameter = new medStringListParameter("3D Mode", this);
+    d->mode3DParameter = new medStringListParameterL("3D Mode", this);
     d->mode3DParameter->addItem("VR");
     d->mode3DParameter->addItem("MIP - Maximum");
     d->mode3DParameter->addItem("MIP - Minimum");
@@ -75,7 +75,7 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->mode3DParameter->setValue("MSR");
     connect(d->mode3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setMode3D(QString)));
 
-    d->renderer3DParameter = new medStringListParameter("Renderer", this);
+    d->renderer3DParameter = new medStringListParameterL("Renderer", this);
     d->renderer3DParameter->addItem("GPU");
     d->renderer3DParameter->addItem("Ray Cast / Texture");
     d->renderer3DParameter->addItem("Ray Cast");
@@ -83,7 +83,7 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->renderer3DParameter->addItem("Default");
     connect(d->renderer3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setRenderer(QString)));
 
-    d->croppingParameter = new medBoolParameter("Cropping", this);
+    d->croppingParameter = new medBoolParameterL("Cropping", this);
     connect(d->croppingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableCropping(bool)));
 
     this->setMode3D("MSR");
@@ -125,15 +125,15 @@ QString medVtkViewItkDataImageNavigator::description() const
     return "Navigator to interact with itk images in a medVtkView";
 }
 
-QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::linkableParameters()
+QList<medAbstractParameterL*> medVtkViewItkDataImageNavigator::linkableParameters()
 {
     return d->parameters;
 }
 
-QList<medBoolParameter*> medVtkViewItkDataImageNavigator::mouseInteractionParameters()
+QList<medBoolParameterL*> medVtkViewItkDataImageNavigator::mouseInteractionParameters()
 {
     // no parameters related to mouse interactions
-    return QList<medBoolParameter*>();
+    return QList<medBoolParameterL*>();
 }
 
 void medVtkViewItkDataImageNavigator::updateWidgets()
@@ -272,7 +272,7 @@ QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
 {
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
-    foreach(medAbstractParameter *parameter, d->parameters)
+    foreach(medAbstractParameterL *parameter, d->parameters)
         layout->addRow(parameter->getLabel(), parameter->getWidget());
     toolBoxWidget->hide();
     return toolBoxWidget;

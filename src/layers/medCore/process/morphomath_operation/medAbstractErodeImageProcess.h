@@ -27,6 +27,4 @@ public:
 };
 
 DTK_DECLARE_OBJECT        (medAbstractErodeImageProcess*)
-DTK_DECLARE_PLUGIN        (medAbstractErodeImageProcess, MEDCORE_EXPORT)
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractErodeImageProcess, MEDCORE_EXPORT)
-DTK_DECLARE_PLUGIN_MANAGER(medAbstractErodeImageProcess, MEDCORE_EXPORT)

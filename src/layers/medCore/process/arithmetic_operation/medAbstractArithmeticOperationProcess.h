@@ -15,10 +15,11 @@
 
 #include <medAbstractProcess.h>
 
+#include <dtkCore>
+
 #include <medCoreExport.h>
 
 class medAbstractImageData;
-class medViewContainerSplitter;
 
 class medAbstractArithmeticOperationProcessPrivate;
 class MEDCORE_EXPORT  medAbstractArithmeticOperationProcess : public medAbstractProcess
@@ -37,17 +38,12 @@ public:
 
     medAbstractImageData* output() const;
 
-    virtual QWidget* toolbox() const;
-    virtual medViewContainerSplitter* viewContainerSplitter() const;
-
 protected:
     void setOutput(medAbstractImageData* data);
 
-private slots:
-    void _setInput1FromContainer();
-    void _setInput2FromContainer();
-    void _fillOutputContainer();
-
 private:
-    medAbstractArithmeticOperationProcessPrivate* d;
+    const QScopedPointer<medAbstractArithmeticOperationProcessPrivate> d;
 };
+
+DTK_DECLARE_PLUGIN        (medAbstractArithmeticOperationProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_MANAGER(medAbstractArithmeticOperationProcess, MEDCORE_EXPORT)

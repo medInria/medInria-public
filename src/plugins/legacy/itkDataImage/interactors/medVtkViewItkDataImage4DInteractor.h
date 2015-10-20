@@ -40,7 +40,7 @@ public:
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildLayerWidget();
 
-    virtual QList<medAbstractParameter*> linkableParameters();
+    virtual QList<medAbstractParameterL*> linkableParameters();
 
 public slots:
     virtual void setCurrentTime (double time);

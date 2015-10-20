@@ -27,6 +27,4 @@ public:
 };
 
 DTK_DECLARE_OBJECT        (medAbstractDivideImageProcess*)
-DTK_DECLARE_PLUGIN        (medAbstractDivideImageProcess, MEDCORE_EXPORT)
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractDivideImageProcess, MEDCORE_EXPORT)
-DTK_DECLARE_PLUGIN_MANAGER(medAbstractDivideImageProcess, MEDCORE_EXPORT)

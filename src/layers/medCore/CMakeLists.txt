@@ -22,10 +22,8 @@ list_source_files(${TARGET_NAME}
   process
   process/arithmetic_operation
   process/morphomath_operation
-  process/segmentation
-  gui
-  gui/workspace
-  gui/area
+  parameter
+  job
   )
 
 list_header_directories_to_include(${TARGET_NAME}
