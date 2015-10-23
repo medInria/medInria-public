@@ -14,12 +14,6 @@
 #include <medAbstractMorphomathOperationProcess.h>
 
 #include <medAbstractImageData.h>
-#include <medAbstractImageView.h>
-#include <medDataManager.h>
-#include <medToolBox.h>
-#include <medViewContainerSplitter.h>
-#include <medViewContainer.h>
-
 #include <medDoubleParameter.h>
 
 class medAbstractMorphomathOperationProcessPrivate
