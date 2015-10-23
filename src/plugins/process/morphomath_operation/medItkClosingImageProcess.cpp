@@ -28,7 +28,7 @@ medItkClosingImageProcess::medItkClosingImageProcess(QObject *parent)
     : medAbstractClosingImageProcess(parent)
 
 {
-   m_filter = NULL;
+    m_filter = NULL;
 }
 
 medItkClosingImageProcess::~medItkClosingImageProcess()
@@ -135,7 +135,7 @@ void medItkClosingImageProcess::cancel()
 {
     if(this->isRunning() && m_filter.IsNotNull())
     {
-       m_filter->AbortGenerateDataOn();
-       emit failure();
+        m_filter->AbortGenerateDataOn();
+        emit failure();
     }
 }
