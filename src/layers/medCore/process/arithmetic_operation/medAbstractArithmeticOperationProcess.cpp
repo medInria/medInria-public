@@ -14,11 +14,7 @@
 #include <medAbstractArithmeticOperationProcess.h>
 
 #include <medAbstractImageData.h>
-#include <medAbstractImageView.h>
-#include <medDataManager.h>
-#include <medToolBox.h>
-#include <medViewContainerSplitter.h>
-#include <medViewContainer.h>
+
 
 class medAbstractArithmeticOperationProcessPrivate
 {
@@ -50,7 +46,6 @@ medAbstractImageData* medAbstractArithmeticOperationProcess::input1() const
 {
     return d->input1;
 }
-
 
 void medAbstractArithmeticOperationProcess::setInput2(medAbstractImageData *data)
 {
