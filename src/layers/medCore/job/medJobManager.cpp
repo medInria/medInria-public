@@ -47,7 +47,7 @@ medJobManager::~medJobManager()
     for(medAbstractJob* job : d->jobs)
     {
         dtkWarn() << "Orphan job still living at the end of the app detected:"
-                  << job->caption() << job->staticMetaObject.className() << job;
+                  << job->staticMetaObject.className() << job->caption() << job;
         delete job;
     }
 }
@@ -75,7 +75,7 @@ void medJobManager::cancelAll()
 
 void medJobManager::startJobInThread(medAbstractJob *job, int priority)
 {
-    emit job->_running(true);
+    emit job->running(true);
     QThreadPool::globalInstance()->start(job, priority);
 }
 

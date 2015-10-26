@@ -21,7 +21,7 @@
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
-#include <medDoubleParameter.h>
+#include <medIntParameter.h>
 
 
 medItkDilateImageProcess::medItkDilateImageProcess(QObject *parent)

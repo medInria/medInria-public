@@ -36,7 +36,7 @@ medAbstractJob::medAbstractJob(QObject *parent)
             this, &medAbstractJob::_emitNotRunning);
     connect(this, &medAbstractJob::failure,
             this, &medAbstractJob::_emitNotRunning);
-    connect(this, &medAbstractJob::_running,
+    connect(this, &medAbstractJob::running,
             this, &medAbstractJob::_setIsRunning);
 }
 
@@ -52,7 +52,7 @@ bool medAbstractJob::isRunning() const
 
 void medAbstractJob::_emitNotRunning()
 {
-    emit _running(false);
+    emit running(false);
 }
 
 void medAbstractJob::_setIsRunning(bool isRunning)

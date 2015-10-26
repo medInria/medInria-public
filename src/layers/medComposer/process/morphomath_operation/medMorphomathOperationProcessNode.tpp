@@ -18,12 +18,12 @@
 #include <dtkLog>
 
 #include <medAbstractImageData.h>
-#include <medDoubleParameter.h>
+#include <medIntParameter.h>
 
 class medMorphomathOperationProcessNodePrivate
 {
 public:
-    dtkComposerTransmitterReceiver<double> radius;
+    dtkComposerTransmitterReceiver<int> radius;
     dtkComposerTransmitterReceiver<medAbstractImageData*> input;
 
     dtkComposerTransmitterEmitter<medAbstractImageData*> output;

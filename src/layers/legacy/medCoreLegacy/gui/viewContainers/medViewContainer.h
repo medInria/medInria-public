@@ -104,6 +104,7 @@ signals:
     void splitRequest(medDataIndex, Qt::AlignmentFlag);
     void viewChanged();
     void viewContentChanged();
+    void dataAdded(medAbstractData *);
     void viewRemoved();
 
 

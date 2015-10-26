@@ -42,7 +42,7 @@ private slots:
     void _emitNotRunning();
     void _setIsRunning(bool isRunning);
 signals:
-    void _running(bool isRunning);
+    void running(bool isRunning);
 
 private:
     const QScopedPointer<medAbstractJobPrivate> d;

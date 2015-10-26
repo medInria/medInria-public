@@ -665,6 +665,7 @@ void medViewContainer::addData(medAbstractData *data)
     view->addLayer(data);
 
     setSelected(true);
+    emit dataAdded(data);
 }
 
 void medViewContainer::addData(medDataIndex index)
