@@ -21,7 +21,7 @@
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
-#include <medDoubleParameter.h>
+#include <medIntParameter.h>
 
 
 medItkOpeningImageProcess::medItkOpeningImageProcess(QObject *parent)

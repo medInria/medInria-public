@@ -14,7 +14,7 @@
 #include <medAbstractMorphomathOperationProcess.h>
 
 #include <medAbstractImageData.h>
-#include <medDoubleParameter.h>
+#include <medIntParameter.h>
 
 class medAbstractMorphomathOperationProcessPrivate
 {
@@ -22,7 +22,7 @@ public:
     medAbstractImageData *input;
     medAbstractImageData *output;
 
-    medDoubleParameter *kernelRadius;
+    medIntParameter *kernelRadius;
 };
 
 medAbstractMorphomathOperationProcess::medAbstractMorphomathOperationProcess(QObject *parent)
@@ -31,8 +31,9 @@ medAbstractMorphomathOperationProcess::medAbstractMorphomathOperationProcess(QOb
     d->input = NULL;
     d->output = NULL;
 
-    d->kernelRadius = new medDoubleParameter("Kernel radius", this);
-
+    d->kernelRadius = new medIntParameter("kernel_radius", this);
+    d->kernelRadius->setCaption("Kernel radius");
+    d->kernelRadius->setDescription("Set the radius in all directions of the kernel used as structuring element");
     d->kernelRadius->setValue(1);
 }
 
@@ -61,7 +62,7 @@ void medAbstractMorphomathOperationProcess::setOutput(medAbstractImageData *data
     d->output = data;
 }
 
-medDoubleParameter* medAbstractMorphomathOperationProcess::kernelRadius() const
+medIntParameter* medAbstractMorphomathOperationProcess::kernelRadius() const
 {
     return d->kernelRadius;
 }
