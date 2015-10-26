@@ -119,6 +119,7 @@ target_link_libraries(${TARGET_NAME}
   dtkComposer
   medCore
   medComposer
+  medWidgets
   medCoreLegacy
   medPacs
   )
