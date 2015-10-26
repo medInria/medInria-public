@@ -15,6 +15,7 @@
 
 #include <medAbstractParameter.h>
 
+
 class medBoolParameterPrivate;
 class MEDCORE_EXPORT medBoolParameter : public medAbstractParameter
 {
@@ -23,6 +24,8 @@ class MEDCORE_EXPORT medBoolParameter : public medAbstractParameter
 public:
     medBoolParameter(const QString & name, QObject *parent = NULL);
     virtual ~medBoolParameter();
+
+    virtual medParameterType type() const {return medParameterType::MED_PARAMETER_BOOL;}
 
     bool value() const;
 public slots:

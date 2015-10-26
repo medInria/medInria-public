@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME medCore)
+set(TARGET_NAME medWidgets)
 
 ## #############################################################################
 ## List Sources
@@ -23,7 +23,6 @@ list_source_files(${TARGET_NAME}
   process/arithmetic_operation
   process/morphomath_operation
   parameter
-  job
   )
 
 list_header_directories_to_include(${TARGET_NAME}
@@ -54,12 +53,15 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  medCoreLegacy
   Qt5::Core
+  Qt5::Widgets
+  medCore
+  dtkCore
+  dtkLog
+  # Legacy
+  medCoreLegacy
   dtkCoreSupport
   dtkGuiSupport
-  dtkLog
-  dtkComposer
   )
 
 ## #############################################################################
