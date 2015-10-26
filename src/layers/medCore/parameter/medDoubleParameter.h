@@ -24,7 +24,14 @@ public:
     medDoubleParameter(const QString & name, QObject *parent = NULL);
     virtual ~medDoubleParameter();
 
+    virtual medParameterType type() const {return medParameterType::MED_PARAMETER_DOUBLE;}
+
     double value() const;
+
+    void setRange(double min, double max);
+    double minimum() const;
+    double maximum() const;
+
 public slots:
     void setValue(double value);
 
@@ -32,6 +39,7 @@ public slots:
 
 signals:
     void valueChanged(double value);
+    void rangeChanged(double min, double max);
 
 private:
     const QScopedPointer<medDoubleParameterPrivate> d;

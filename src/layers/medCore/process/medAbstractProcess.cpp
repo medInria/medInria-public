@@ -38,12 +38,12 @@ medAbstractProcess::~medAbstractProcess()
 void medAbstractProcess::regsiterParameter(medAbstractParameter * parameter)
 {
     parameter->setParent(this);
-    d->parameters.insert(parameter->name(), parameter);
+    d->parameters.insert(parameter->id(), parameter);
 }
 
-medAbstractParameter* medAbstractProcess::parameter(QString const& name) const
+medAbstractParameter* medAbstractProcess::parameter(QString const& id) const
 {
-    return d->parameters[name];
+    return d->parameters[id];
 }
 
 QList<medAbstractParameter*> medAbstractProcess::parameters() const

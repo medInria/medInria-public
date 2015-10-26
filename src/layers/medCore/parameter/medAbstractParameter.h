@@ -17,21 +17,39 @@
 
 #include <medCoreExport.h>
 
+enum medParameterType
+{
+    MED_PARAMETER_INT,
+    MED_PARAMETER_DOUBLE,
+    MED_PARAMETER_BOOL,
+    MED_PARAMETER_STRING
+};
+
 class medAbstractParameterPrivate;
 class MEDCORE_EXPORT medAbstractParameter : public QObject
 {
     Q_OBJECT
 
 public:
-    medAbstractParameter(QString const& name, QObject* parent = NULL);
+    medAbstractParameter(QString const& id, QObject* parent = NULL);
     virtual ~medAbstractParameter();
 
-    QString name() const;
+    QString id() const;
 
     QString description() const;
     void setDescription(QString const& description);
 
+    QString caption() const;
+    void setCaption(QString const& caption);
+
     bool match(medAbstractParameter const* other) const;
+
+signals:
+    void captionChanged(QString caption);
+    void descriptionChanged(QString description);
+
+public:
+    virtual medParameterType type() const = 0;
 
 public slots:
     virtual void trigger() = 0;

@@ -16,14 +16,15 @@
 class medAbstractParameterPrivate
 {
 public:
-    QString name;
+    QString id;
     QString description;
+    QString caption;
 };
 
-medAbstractParameter::medAbstractParameter(const QString & name, QObject *parent)
+medAbstractParameter::medAbstractParameter(const QString & id, QObject *parent)
     : QObject(parent), d(new medAbstractParameterPrivate)
 {
-    d->name = name;
+    d->id = id;
 }
 
 medAbstractParameter::~medAbstractParameter()
@@ -37,23 +38,35 @@ medAbstractParameter::~medAbstractParameter()
      // declaration of medAbstractParameterPrivate.
 }
 
-QString medAbstractParameter::name() const
+QString medAbstractParameter::id() const
 {
-    return d->name;
+    return d->id;
 }
 
 
 void medAbstractParameter::setDescription(const QString & description)
 {
     d->description = description;
+    emit descriptionChanged(d->description);
 }
 
 QString medAbstractParameter::description() const
 {    
-    return d->name;
+    return d->description;
+}
+
+void medAbstractParameter::setCaption(const QString & caption)
+{
+    d->caption = caption;
+    emit captionChanged(d->caption);
+}
+
+QString medAbstractParameter::caption() const
+{
+    return d->caption;
 }
 
 bool medAbstractParameter::match(const medAbstractParameter *other) const
 {
-    return d->name == other->name();
+    return (this->type() == other->type() && d->id == other->id());
 }

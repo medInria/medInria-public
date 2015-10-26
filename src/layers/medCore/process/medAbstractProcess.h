@@ -30,7 +30,7 @@ public:
 
     virtual QString description() const = 0;
 
-    medAbstractParameter* parameter(QString const& parameterName) const;
+    medAbstractParameter* parameter(QString const& id) const;
     QList<medAbstractParameter*> parameters() const;
 
 
