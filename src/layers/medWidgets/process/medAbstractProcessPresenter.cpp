@@ -34,8 +34,9 @@ medAbstractProcessPresenter::medAbstractProcessPresenter(medAbstractProcess*pare
     if(parent == NULL)
     {
         dtkWarn() << "Constructing presenter parented to a null process"
-                  << this->staticMetaObject.className() << this;
+                  << this;
     }
+    d->process = parent;
 }
 
 medAbstractProcessPresenter::~medAbstractProcessPresenter()

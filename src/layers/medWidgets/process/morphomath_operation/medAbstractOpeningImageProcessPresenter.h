@@ -21,12 +21,12 @@
 
 #include <medCoreExport.h>
 
-class MEDCORE_EXPORT medAbstractOpeningImageProcessPresenter: public medAbstractMorphoMathOperationProcessPresenter
+class MEDCORE_EXPORT medAbstractOpeningImageProcessPresenter: public medAbstractMorphomathOperationProcessPresenter
 {
     Q_OBJECT
 public:
     medAbstractOpeningImageProcessPresenter(medAbstractOpeningImageProcess *parent)
-        : medAbstractMorphomathOperationProcess(parent)
+        : medAbstractMorphomathOperationProcessPresenter(parent)
     {
         m_process = parent;
     }

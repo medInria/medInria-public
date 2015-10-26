@@ -41,7 +41,7 @@ public:
     void cancelAll();
 
 public:
-    static void startJobInThread(medAbstractJob* job, int priority = 0);
+     void startJobInThread(medAbstractJob* job);
 
 private:
     const QScopedPointer<medJobManagerPrivate> d;

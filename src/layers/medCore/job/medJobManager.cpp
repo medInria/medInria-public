@@ -46,8 +46,8 @@ medJobManager::~medJobManager()
     // just in case some unparented job are still living.
     for(medAbstractJob* job : d->jobs)
     {
-        dtkWarn() << "Orphan job still living at the end of the app detected:"
-                  << job->staticMetaObject.className() << job->caption() << job;
+        qDebug() << "Orphan job still living at the end of the app detected:"
+                 << job->caption() << job;
         delete job;
     }
 }
@@ -73,10 +73,10 @@ void medJobManager::cancelAll()
         job->cancel();
 }
 
-void medJobManager::startJobInThread(medAbstractJob *job, int priority)
+void medJobManager::startJobInThread(medAbstractJob *job)
 {
+    QThreadPool::globalInstance()->start(job);
     emit job->running(true);
-    QThreadPool::globalInstance()->start(job, priority);
 }
 
 
