@@ -172,7 +172,7 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
-    //    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
 
     //Register settingsWidgets
     medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
