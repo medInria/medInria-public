@@ -21,8 +21,7 @@
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
-#include <medDoubleParameter.h>
-
+#include <medIntParameter.h>
 
 medItkClosingImageProcess::medItkClosingImageProcess(QObject *parent)
     : medAbstractClosingImageProcess(parent)

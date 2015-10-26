@@ -21,8 +21,7 @@
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
-#include <medDoubleParameter.h>
-
+#include <medIntParameter.h>
 
 medItkErodeImageProcess::medItkErodeImageProcess(QObject *parent)
     : medAbstractErodeImageProcess(parent)
