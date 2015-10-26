@@ -528,6 +528,44 @@ void DCMTKImageIO::DetermineSpacing()
             else
                 // use 1.0 in case the Repetition Time is 0
                 m_Spacing[3] = 1.0;
+
+            // VP2HF version of temporal resolution
+            // TODO try to make it work with trigger time if the tag is present if not try with heart rate !
+            // trigger time !
+       /*     if (m_TriggerTimeInit.empty())
+            {
+                m_TriggerTimeInit = this->GetMetaDataValueVectorString("(0018,1060)");
+                std::cout << "m_TriggerTimeInit[0] " << m_TriggerTimeInit[0] << std::endl;
+            }
+           
+            else
+            {
+                const StringVectorType & triggerTime = this->GetMetaDataValueVectorString ("(0018,1060)");
+                if (triggerTime.size())
+                {
+                    std::string triggerTimeStr = triggerTime[0];
+                    std::istringstream is_stream(triggerTimeStr);
+                    if (!(is_stream >> m_Spacing[3]))
+                        itkWarningMacro ( << "Cannot convert string to double: " << triggerTimeStr.c_str() << std::endl);
+                    
+                    double triggerInit = (double)atof(m_TriggerTimeInit[0].c_str());
+                    m_Spacing[3] = (m_Spacing[3]-triggerInit)/1000;
+                    std::cout << "triggerInit " << triggerInit << std::endl ;
+                    std::cout << "triggerTimeStr " << triggerTimeStr << std::endl;
+                    std::cout << "m_Spacing[3] " << m_Spacing[3] << std::endl ;
+                }
+            }*/
+                        
+            // heart rate !
+            const StringVectorType & heartRate = this->GetMetaDataValueVectorString ("(0018,1088)");
+            if (heartRate.size())
+            {
+                std::string heartRateStr = heartRate[0];
+                std::istringstream is_stream( heartRateStr );
+                if (!(is_stream >> m_Spacing[3]))
+                itkWarningMacro ( << "Cannot convert string to double: " << heartRateStr.c_str() << std::endl);
+                m_Spacing[3] = (60/m_Spacing[3])/m_Dimensions[3];
+            }
         }
         else
             m_Spacing[3] = 1.0;

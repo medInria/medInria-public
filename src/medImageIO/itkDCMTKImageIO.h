@@ -195,6 +195,8 @@ private:
     SliceLocationToNamesMultiMapType m_LocationToFilenamesMap;
     
     StringVectorType           m_EmptyVector;
+    StringVectorType           m_TriggerTimeInit;
+
 };
 
 } // end of namespace

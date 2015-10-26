@@ -196,13 +196,11 @@ void medTimeLineParameter::play(bool play)
     {
         d->timeLine->start();
         d->playParameter->setIcon (QPixmap(":/icons/pause.png"));
-        emit playing(play);
     }
     else if(d->timeLine->state() == QTimeLine::Paused && play)
     {
         d->timeLine->resume();
         d->playParameter->setIcon (QPixmap(":/icons/pause.png"));
-        emit playing(play);
     }
     else if(d->timeLine->state() == QTimeLine::Running && !play)
     {
@@ -210,7 +208,8 @@ void medTimeLineParameter::play(bool play)
         d->playParameter->setIcon (QPixmap(":/icons/play.png"));
     }
 
-   this->lockTimeLine();
+    emit playing(play);
+    this->lockTimeLine();
 }
 
 void medTimeLineParameter::reset()
