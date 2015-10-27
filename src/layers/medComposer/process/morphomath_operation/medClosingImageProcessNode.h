@@ -12,26 +12,17 @@
 =========================================================================*/
 #pragma once
 
-#include <dtkComposer>
-
-
 #include <medAbstractClosingImageProcess.h>
+#include <medMorphomathOperationProcessNode.h>
 
 #include <medComposerExport.h>
 
 class medClosingImageProcessNodePrivate;
 
-class MEDCOMPOSER_EXPORT medClosingImageProcessNode : public dtkComposerNodeObject<medAbstractClosingImageProcess>
+class MEDCOMPOSER_EXPORT medClosingImageProcessNode : public medMorphomathOperationProcessNode<medAbstractClosingImageProcess>
 {
 public:
-     medClosingImageProcessNode(void);
-    ~medClosingImageProcessNode(void);
-
-public:
-    void run(void);
-
-private:
-    medClosingImageProcessNodePrivate *d;
+     medClosingImageProcessNode();
 };
 
 

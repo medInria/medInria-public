@@ -13,54 +13,11 @@
 
 #include <medClosingImageProcessNode.h>
 
-#include <dtkComposer>
+#include <medCore.h>
 
-#include <medProcessLayer.h>
-#include <medAbstractImageData.h>
-
-class medClosingImageProcessNodePrivate
+medClosingImageProcessNode::medClosingImageProcessNode()
 {
-public:
-    dtkComposerTransmitterReceiver<double> radius;
-    dtkComposerTransmitterReceiver<medAbstractImageData*> input;
-
-    dtkComposerTransmitterEmitter<medAbstractImageData*> output;
-};
-
-medClosingImageProcessNode::medClosingImageProcessNode(void) :
-    dtkComposerNodeObject<medAbstractClosingImageProcess>(),
-    d(new medClosingImageProcessNodePrivate())
-{
-    this->setFactory(medProcessLayer::morphomathOperation::closingImage::pluginFactory());
-
-    this->appendReceiver(&d->input);
-    this->appendReceiver(&d->radius);
-    this->appendEmitter (&d->output);
+    this->setFactory(medCore::morphomathOperation::closingImage::pluginFactory());
 }
 
-medClosingImageProcessNode::~medClosingImageProcessNode(void)
-{
-    delete d;
-}
-
-void medClosingImageProcessNode::run(void)
-{
-    if (d->radius.isEmpty() || d->input.isEmpty())
-    {
-        qDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
-        return;
-    }
-    else
-    {
-
-        medAbstractClosingImageProcess* filter = this->object();
-        if(!this->object())
-            return;
-        filter->setInput(d->input.data());
-        filter->setKernelRadius(d->radius.data());
-        filter->run();
-        d->output.setData(filter->output());
-        qDebug()<<"filtering done";
-    }
-}
 

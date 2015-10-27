@@ -28,7 +28,7 @@
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medRunnableProcess.h>
-#include <medJobManager.h>
+#include <medJobManagerL.h>
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
@@ -297,7 +297,7 @@ void itkMorphologicalFiltersToolBox::run ( void )
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
 
-    medJobManager::instance()->registerJobItem ( runProcess );
+    medJobManagerL::instance()->registerJobItem ( runProcess );
     QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
 }
 

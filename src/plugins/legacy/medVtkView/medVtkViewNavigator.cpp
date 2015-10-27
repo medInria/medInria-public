@@ -24,14 +24,14 @@
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
 #include <medAbstractImageView.h>
-#include <medBoolGroupParameter.h>
-#include <medBoolParameter.h>
-#include <medDoubleParameter.h>
-#include <medVector2DParameter.h>
-#include <medVector3DParameter.h>
-#include <medCompositeParameter.h>
-#include <medStringListParameter.h>
-#include <medTimeLineParameter.h>
+#include <medBoolGroupParameterL.h>
+#include <medBoolParameterL.h>
+#include <medDoubleParameterL.h>
+#include <medVector2DParameterL.h>
+#include <medVector3DParameterL.h>
+#include <medCompositeParameterL.h>
+#include <medStringListParameterL.h>
+#include <medTimeLineParameterL.h>
 
 #include <QLabel>
 #include <QPushButton>
@@ -60,27 +60,27 @@ class medVtkViewNavigatorPrivate
 
     medImageView::Orientation orientation;
 
-    medBoolGroupParameter *orientationParameter;
-    medBoolParameter *oAxialParameter;
-    medBoolParameter *oSagittalParameter;
-    medBoolParameter *oCoronalParameter;
-    medBoolParameter *o3dParameter;
+    medBoolGroupParameterL *orientationParameter;
+    medBoolParameterL *oAxialParameter;
+    medBoolParameterL *oSagittalParameter;
+    medBoolParameterL *oCoronalParameter;
+    medBoolParameterL *o3dParameter;
 
-    medBoolParameter *enableZooming;
-    medBoolParameter *enablePanning;
-    medBoolParameter *enableSlicing;
-    medBoolParameter *enableMeasuring;
+    medBoolParameterL *enableZooming;
+    medBoolParameterL *enablePanning;
+    medBoolParameterL *enableSlicing;
+    medBoolParameterL *enableMeasuring;
 
-    medBoolParameter *showAxesParameter;
-    medBoolParameter *showRulerParameter;
-    medBoolParameter *showAnnotationParameter;
-    medBoolParameter *showScalarBarParameter;
+    medBoolParameterL *showAxesParameter;
+    medBoolParameterL *showRulerParameter;
+    medBoolParameterL *showAnnotationParameter;
+    medBoolParameterL *showScalarBarParameter;
     
     QPushButton *fourImageSplitterButton;
 
     QWidget *showOptionsWidget;
 
-    QList<medAbstractParameter*> parameters;
+    QList<medAbstractParameterL*> parameters;
 
 };
 
@@ -105,32 +105,32 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->renderer2d = d->view2d->GetRenderer();
     d->renderer3d = d->view3d->GetRenderer();
 
-    d->orientationParameter = new medBoolGroupParameter("Orientation", this);
+    d->orientationParameter = new medBoolGroupParameterL("Orientation", this);
     d->orientationParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
     d->orientationParameter->getLabel()->hide();
 
-    d->oAxialParameter = new medBoolParameter("axial", this);
+    d->oAxialParameter = new medBoolParameterL("axial", this);
     d->oAxialParameter->setIcon(QIcon(":/icons/AxialIcon.png"));
     d->oAxialParameter->setIconSize(QSize(40,40));
     d->oAxialParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oAxialParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setAxial(bool)));
 
-    d->oCoronalParameter = new medBoolParameter("coronal", this);
+    d->oCoronalParameter = new medBoolParameterL("coronal", this);
     d->oCoronalParameter->setIcon(QIcon(":/icons/CoronalIcon.png"));
     d->oCoronalParameter->setIconSize(QSize(40,40));
     d->oCoronalParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oCoronalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setCoronal(bool)));
 
-    d->oSagittalParameter = new medBoolParameter("sagittal", this);
+    d->oSagittalParameter = new medBoolParameterL("sagittal", this);
     d->oSagittalParameter->setIcon(QIcon(":/icons/SagittalIcon.png"));
     d->oSagittalParameter->setIconSize(QSize(40,40));
     d->oSagittalParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oSagittalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setSagittal(bool)));
 
-    d->o3dParameter = new medBoolParameter("3d", this);
+    d->o3dParameter = new medBoolParameterL("3d", this);
     d->o3dParameter->setIcon(QIcon(":/icons/3DIcon.png"));
     d->o3dParameter->setIconSize(QSize(40,40));
     d->o3dParameter->getPushButton()->setMinimumSize(64,64);
@@ -143,10 +143,10 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->orientationParameter->addParameter(d->o3dParameter);
     d->oAxialParameter->setValue(true);
 
-    d->showAxesParameter = new medBoolParameter("Axes", this);
-    d->showRulerParameter = new medBoolParameter("Ruler", this);
-    d->showAnnotationParameter = new medBoolParameter("Annotations", this);
-    d->showScalarBarParameter = new medBoolParameter("Scalar Bar", this);
+    d->showAxesParameter = new medBoolParameterL("Axes", this);
+    d->showRulerParameter = new medBoolParameterL("Ruler", this);
+    d->showAnnotationParameter = new medBoolParameterL("Annotations", this);
+    d->showScalarBarParameter = new medBoolParameterL("Scalar Bar", this);
 
     d->showAxesParameter->setText("Axes");
     d->showRulerParameter->setText("Ruler");
@@ -163,22 +163,22 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showAnnotationParameter->setValue(true);
     d->showScalarBarParameter->setValue(false);
     
-    d->enableZooming = new medBoolParameter("Zooming", this);
+    d->enableZooming = new medBoolParameterL("Zooming", this);
     d->enableZooming->setIcon(QIcon (":/icons/magnify.png"));
     d->enableZooming->setToolTip(tr("Zooming"));
     connect(d->enableZooming, SIGNAL(valueChanged(bool)), this, SLOT(enableZooming(bool)));
     
-    d->enablePanning = new medBoolParameter("Pan",this);
+    d->enablePanning = new medBoolParameterL("Pan",this);
     d->enablePanning->setIcon(QIcon (":/icons/pan.svg"));
     d->enablePanning->setToolTip(tr("Pan"));
     connect(d->enablePanning, SIGNAL(valueChanged(bool)), this, SLOT(enablePanning(bool)));
 
-    d->enableSlicing = new medBoolParameter("Slicing", this);
+    d->enableSlicing = new medBoolParameterL("Slicing", this);
     d->enableSlicing->setIcon(QIcon (":/icons/stack.png"));
     d->enableSlicing->setToolTip(tr("Slicing"));
     connect(d->enableSlicing, SIGNAL(valueChanged(bool)), this, SLOT(enableSlicing(bool)));
 
-    d->enableMeasuring = new medBoolParameter("Measuring", this);
+    d->enableMeasuring = new medBoolParameterL("Measuring", this);
     d->enableMeasuring->setIcon (QIcon (":/icons/length.png"));
     d->enableMeasuring->setToolTip(tr("Measuring"));
     connect(d->enableMeasuring, SIGNAL(valueChanged(bool)), this, SLOT(enableMeasuring(bool)));
@@ -234,14 +234,14 @@ QString medVtkViewNavigator::description() const
     return "Navigator to interact with a medVtkView";
 }
 
-QList<medAbstractParameter*> medVtkViewNavigator::linkableParameters()
+QList<medAbstractParameterL*> medVtkViewNavigator::linkableParameters()
 {
     return d->parameters;
 }
 
-QList<medBoolParameter*> medVtkViewNavigator::mouseInteractionParameters()
+QList<medBoolParameterL*> medVtkViewNavigator::mouseInteractionParameters()
 {
-    QList<medBoolParameter*> params;
+    QList<medBoolParameterL*> params;
     params.append(d->enableZooming);
     params.append(d->enableSlicing);
     params.append(d->enablePanning);

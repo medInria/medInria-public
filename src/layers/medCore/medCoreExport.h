@@ -11,12 +11,16 @@
 
 =========================================================================*/
 
-#ifdef WIN32
-    #ifdef medCore_EXPORTS
-        #define MEDCORE_EXPORT __declspec(dllexport)
-    #else
-        #define MEDCORE_EXPORT __declspec(dllimport)
-    #endif
+#pragma once
+
+#include <QtGlobal>
+
+#if defined(medCore_EXPORTS)
+#  define MEDCORE_EXPORT Q_DECL_EXPORT
 #else
-    #define MEDCORE_EXPORT
+#  define MEDCORE_EXPORT Q_DECL_IMPORT
 #endif
+
+
+
+
