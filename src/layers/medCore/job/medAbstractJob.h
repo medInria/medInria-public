@@ -14,7 +14,6 @@
 #pragma once
 
 #include <QObject>
-#include <QRunnable>
 
 #include <medCoreExport.h>
 
@@ -26,6 +25,8 @@ enum medJobExitStatus
 };
 
 Q_DECLARE_METATYPE(medJobExitStatus)
+
+class medDoubleParameter;
 
 class medAbstractJobPrivate;
 class MEDCORE_EXPORT medAbstractJob: public QObject
@@ -42,9 +43,10 @@ public:
     virtual void cancel() = 0;
     bool isRunning() const;
 
+    medDoubleParameter* progression() const;
+
 signals:
     void finished(medJobExitStatus exitStatus);
-    void progressed(float progression);
 
 private slots:
     void _setIsRunning(bool isRunning);

@@ -18,6 +18,8 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
+#include <medDoubleParameter.h>
+
 #include <medPluginExport.h>
 
 class medItkOpeningImageProcessPrivate;
@@ -26,6 +28,15 @@ class MEDPLUGINS_EXPORT medItkOpeningImageProcess: public medAbstractOpeningImag
 {
     Q_OBJECT
 public:
+    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
+        medAbstractOpeningImageProcess * source = reinterpret_cast<medAbstractOpeningImageProcess *>(clientData);
+        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
+        source->progression()->setValue(processObject->GetProgress() * 100);
+    }
+
+
+
     medItkOpeningImageProcess(QObject* parent = NULL);
     ~medItkOpeningImageProcess();
 
@@ -34,6 +45,8 @@ public:
 
     virtual QString caption() const;
     virtual QString description() const;
+
+
 
 private:
     template <class inputType> medJobExitStatus _run();
