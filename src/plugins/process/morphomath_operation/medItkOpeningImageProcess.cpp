@@ -18,6 +18,7 @@
 #include <itkImage.h>
 #include <itkGrayscaleMorphologicalOpeningImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
+#include <itkCommand.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
@@ -118,6 +119,12 @@ medJobExitStatus medItkOpeningImageProcess::_run()
 
         filter->SetKernel(kernel);
         filter->SetInput(in);
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData((void*)this);
+        callback->SetCallback(medItkOpeningImageProcess::eventCallback);
+        filter->AddObserver(itk::ProgressEvent(), callback);
+
         try
         {
             filter->Update();

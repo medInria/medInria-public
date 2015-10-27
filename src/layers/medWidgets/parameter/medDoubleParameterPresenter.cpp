@@ -15,6 +15,7 @@
 
 #include <QWidget>
 #include <QDoubleSpinBox>
+#include <QProgressBar>
 
 #include <medDoubleParameter.h>
 
@@ -40,7 +41,8 @@ medDoubleParameterPresenter::medDoubleParameterPresenter(medDoubleParameter* par
     :medAbstractParameterPresenter(parameter), d(new medDoubleParameterPresenterPrivate)
 {
     d->parameter = parameter;
-
+    connect(d->parameter, &medDoubleParameter::valueChanged,
+            this, &medDoubleParameterPresenter::_emitValueChangedInPercent);
 
     d->singleStep = 0.1;
     d->decimals = 2;
@@ -65,7 +67,7 @@ medDoubleParameter* medDoubleParameterPresenter::parameter() const
 void medDoubleParameterPresenter::setSingleStep(double step)
 {
     d->singleStep = step;
-    emit _singleStepChanged(d->singleStep);
+    emit singleStepChanged(d->singleStep);
 }
 
 double medDoubleParameterPresenter::singleStep() const
@@ -76,7 +78,7 @@ double medDoubleParameterPresenter::singleStep() const
 void medDoubleParameterPresenter::setDecimals(int precision)
 {
     d->decimals = precision;
-    emit _decimalsChanged(d->decimals);
+    emit decimalsChanged(d->decimals);
 }
 
 int medDoubleParameterPresenter::decimals() const
@@ -106,11 +108,57 @@ QDoubleSpinBox* medDoubleParameterPresenter::buildSpinBox()
     spinBox->setSingleStep(d->singleStep);
     connect(d->parameter, &medDoubleParameter::rangeChanged,
             spinBox, &QDoubleSpinBox::setRange);
-    connect(this, &medDoubleParameterPresenter::_decimalsChanged,
+    connect(this, &medDoubleParameterPresenter::decimalsChanged,
             spinBox, &QDoubleSpinBox::setDecimals);
-    connect(this, &medDoubleParameterPresenter::_singleStepChanged,
+    connect(this, &medDoubleParameterPresenter::singleStepChanged,
             spinBox, &QDoubleSpinBox::setSingleStep);
 
     return spinBox;
+}
+
+QProgressBar* medDoubleParameterPresenter::buildProgressBar()
+{
+    QProgressBar *progressBar = new QProgressBar;
+    connect(this, &medDoubleParameterPresenter::valueChanged,
+            progressBar, &QProgressBar::setValue);
+    connect(progressBar, &QProgressBar::valueChanged,
+            this, &medDoubleParameterPresenter::_setValueFromPercent);
+
+    progressBar->setToolTip(d->parameter->description());
+    this->_connectWidget(progressBar);
+
+    progressBar->setValue(_percentFromValue(d->parameter->value()));
+    progressBar->setMaximum(0);
+    progressBar->setMaximum(100);
+
+    return progressBar;
+}
+
+int medDoubleParameterPresenter::_percentFromValue(double value)
+{
+    int max = static_cast<int>(d->parameter->maximum());
+    int min = static_cast<int>(d->parameter->minimum());
+    int percent = static_cast<int>(value) * (max - min) / 100 - min;
+    return percent;
+}
+
+
+double medDoubleParameterPresenter::_valueFromPercent(int percent)
+{
+   double max = d->parameter->maximum();
+   double min = d->parameter->minimum();
+   double value = static_cast<double>(percent) * 100.0 / (max - min) - min;
+   return value;
+}
+
+void medDoubleParameterPresenter::_setValueFromPercent(int percent)
+{
+   d->parameter->setValue(_valueFromPercent(percent));
+}
+
+
+void medDoubleParameterPresenter::_emitValueChangedInPercent(double value)
+{
+    emit valueChanged(_percentFromValue(value));
 }
 

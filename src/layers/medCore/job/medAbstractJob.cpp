@@ -14,17 +14,26 @@
 #include <medAbstractJob.h>
 
 #include <medJobManager.h>
+#include <medDoubleParameter.h>
 
 class medAbstractJobPrivate
 {
 public:
     bool running;
+    medDoubleParameter *progression;
 };
 
 medAbstractJob::medAbstractJob(QObject *parent)
     : QObject(parent), d(new medAbstractJobPrivate)
 {
     d->running = false;
+    d->progression = new medDoubleParameter("job_progression", this);
+    d->progression->setRange(0, 100);
+    d->progression->setValue(0);
+
+//    d->progression->setCaption(this->caption());
+//    d->progression->setDescription(this->caption() + " progression...");
+
     medJobManager::instance()->registerJob(this);
 
     connect(this, &medAbstractJob::running,
@@ -44,4 +53,9 @@ bool medAbstractJob::isRunning() const
 void medAbstractJob::_setIsRunning(bool isRunning)
 {
     d->running = isRunning;
+}
+
+medDoubleParameter* medAbstractJob::progression() const
+{
+    return d->progression;
 }
