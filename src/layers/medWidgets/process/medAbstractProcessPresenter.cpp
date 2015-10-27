@@ -47,12 +47,25 @@ medAbstractProcessPresenter::~medAbstractProcessPresenter()
 QPushButton* medAbstractProcessPresenter::buildRunButton()
 {
     QPushButton *runButton = new QPushButton(tr("Run"));
+    runButton->setDisabled(d->process->isRunning());
     connect(runButton, &QPushButton::clicked,
             this, &medAbstractProcessPresenter::_runProcessFromThread);
     connect(d->process, &medAbstractProcess::running,
             runButton, &QPushButton::setDisabled);
 
     return runButton;
+}
+
+QPushButton* medAbstractProcessPresenter::buildCancelButton()
+{
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+    cancelButton->setEnabled(d->process->isRunning());
+    connect(cancelButton, &QPushButton::clicked,
+            d->process, &medAbstractProcess::cancel);
+    connect(d->process, &medAbstractProcess::running,
+            cancelButton, &QPushButton::setEnabled);
+
+    return cancelButton;
 }
 
 void medAbstractProcessPresenter::_runProcessFromThread()

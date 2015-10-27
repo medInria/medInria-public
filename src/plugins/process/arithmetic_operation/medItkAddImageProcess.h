@@ -27,14 +27,14 @@ public:
     medItkAddImageProcess(QObject* parent = NULL);
     ~medItkAddImageProcess();
 
-    virtual void run();
+    virtual medJobExitStatus run();
     virtual void cancel();
 
     virtual QString caption() const;
     virtual QString description() const;
 
 private:
-    template<class inputType> void _run();
+    template<class inputType> medJobExitStatus _run();
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;

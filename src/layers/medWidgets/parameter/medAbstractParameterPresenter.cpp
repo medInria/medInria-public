@@ -37,7 +37,7 @@ medAbstractParameterPresenter::medAbstractParameterPresenter(medAbstractParamete
     if(parent == NULL)
     {
         dtkWarn() << "Constructing presenter parented to a null parameter"
-                  << this->staticMetaObject.className() << this;
+                  << this;
     }
 
     d->parameter = parent;

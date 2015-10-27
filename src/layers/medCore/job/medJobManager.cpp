@@ -39,6 +39,7 @@ public:
 medJobManager::medJobManager(QObject *parent)
     : QObject(parent), d(new medJobManagerPrivate)
 {
+    qRegisterMetaType<medJobExitStatus>("medJobExitStatus");
 }
 
 medJobManager::~medJobManager()
@@ -75,10 +76,43 @@ void medJobManager::cancelAll()
 
 void medJobManager::startJobInThread(medAbstractJob *job)
 {
-    QThreadPool::globalInstance()->start(job);
-    emit job->running(true);
+    QThreadPool::globalInstance()->start(new medJobRunner(job));
 }
 
+medJobRunner::medJobRunner(medAbstractJob *parent)
+    : QObject(parent)
+{
+//    setAutoDelete(false);
+    m_job = parent;
+}
 
+void medJobRunner::run()
+{
+    emit m_job->running(true);
+    medJobExitStatus jobExitStatus = MED_JOB_EXIT_FAILURE;
+    try
+    {
+        jobExitStatus = m_job->run();
+        if(jobExitStatus == medJobExitStatus::MED_JOB_EXIT_CANCELLED)
+        {
+            dtkDebug() << "job aborted (cancelled)"
+                       << m_job->caption() << m_job;
+        }
+    }
+    catch(std::exception &err)
+    {
+        QString errorMessage = QString::fromLatin1(err.what());
+        dtkWarn() << "Error occured while runing job"
+                  << m_job->caption() << m_job
+                  << "\n\t" <<errorMessage;
 
-
+        emit exceptionCaught(errorMessage);
+    }
+    catch(...)
+    {
+        dtkWarn() << "Error occured while runing job"
+                  << m_job->caption() << m_job;
+    }
+    emit m_job->finished(jobExitStatus);
+    emit m_job->running(false);
+}

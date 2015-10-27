@@ -34,6 +34,7 @@ public:
 
     virtual QWidget *buildToolBoxWidget() = 0;
     QPushButton *buildRunButton();
+    QPushButton *buildCancelButton();
 
 protected slots:
     void _runProcessFromThread();

@@ -27,15 +27,6 @@ medAbstractJob::medAbstractJob(QObject *parent)
     d->running = false;
     medJobManager::instance()->registerJob(this);
 
-    // Mandatory to be runned by a QThreadPool, since this inherits from QObject
-    // It can recieve signals trigerring slots after having be deleted by the QThreadPool
-    // if setAutoDelete is set to true (default value).
-    this->setAutoDelete(false);
-
-    connect(this, &medAbstractJob::success,
-            this, &medAbstractJob::_emitNotRunning);
-    connect(this, &medAbstractJob::failure,
-            this, &medAbstractJob::_emitNotRunning);
     connect(this, &medAbstractJob::running,
             this, &medAbstractJob::_setIsRunning);
 }
@@ -48,11 +39,6 @@ medAbstractJob::~medAbstractJob()
 bool medAbstractJob::isRunning() const
 {
     return d->running;
-}
-
-void medAbstractJob::_emitNotRunning()
-{
-    emit running(false);
 }
 
 void medAbstractJob::_setIsRunning(bool isRunning)
