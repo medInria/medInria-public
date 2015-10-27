@@ -53,7 +53,7 @@ medIntParameter* medIntParameterPresenter::parameter() const
 void medIntParameterPresenter::setSingleStep(int step)
 {
     d->singleStep = step;
-    emit _singleStepChanged(d->singleStep);
+    emit singleStepChanged(d->singleStep);
 }
 
 int medIntParameterPresenter::singleStep() const
@@ -82,7 +82,7 @@ QSpinBox* medIntParameterPresenter::buildSpinBox()
     spinBox->setSingleStep(d->singleStep);
     connect(d->parameter, &medIntParameter::rangeChanged,
             spinBox, &QSpinBox::setRange);
-    connect(this, &medIntParameterPresenter::_singleStepChanged,
+    connect(this, &medIntParameterPresenter::singleStepChanged,
             spinBox, &QSpinBox::setSingleStep);
 
     return spinBox;

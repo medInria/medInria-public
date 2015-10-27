@@ -39,7 +39,7 @@ public:
     int singleStep() const;
 
 signals:
-    void _singleStepChanged(int step);
+    void singleStepChanged(int step);
 
 private:
     const QScopedPointer<medIntParameterPresenterPrivate> d;
