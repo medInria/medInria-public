@@ -39,4 +39,3 @@ DTK_DEFINE_PLUGIN(medItkOpeningImageProcess)
 DTK_DEFINE_PLUGIN(medItkClosingImageProcess)
 DTK_DEFINE_PLUGIN(medItkDilateImageProcess)
 DTK_DEFINE_PLUGIN(medItkErodeImageProcess)
-

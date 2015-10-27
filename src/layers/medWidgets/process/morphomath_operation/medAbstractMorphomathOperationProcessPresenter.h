@@ -40,7 +40,7 @@ public:
 
 private slots:
     // TODO RDE - have to be moved later.
-    void _importOutput();
+    void _importOutput(medJobExitStatus jobExitStatus);
     void _setInputFromContainer(medAbstractData *data);
 
 signals:

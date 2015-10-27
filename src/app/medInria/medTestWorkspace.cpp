@@ -24,6 +24,7 @@
 class medTestWorkspacePrivate
 {
 public:
+  medAbstractProcess *baseClassProcess;
   medAbstractOpeningImageProcess *process;
   medAbstractOpeningImageProcessPresenter *presenter;
 
@@ -39,6 +40,10 @@ medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy 
     tb->addWidget(d->presenter->buildToolBoxWidget());
     tb->setTitle(d->process->caption());
     this->addToolBox(tb);
+
+    d->baseClassProcess = d->process;
+
+    qDebug() << "TEST STATIC META OBJECT" << d->baseClassProcess->metaObject()->className();
 
 }
 

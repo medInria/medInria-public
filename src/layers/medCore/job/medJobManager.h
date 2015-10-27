@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QObject>
+#include <QRunnable>
 
 #include <medCoreExport.h>
 
@@ -45,4 +46,18 @@ public:
 
 private:
     const QScopedPointer<medJobManagerPrivate> d;
+};
+
+class medJobRunner: public QObject, public QRunnable
+{
+    Q_OBJECT
+public:
+    medJobRunner(medAbstractJob *parent);
+    virtual void run();
+
+signals:
+    void exceptionCaught(QString const& message);
+
+private:
+    medAbstractJob *m_job;
 };

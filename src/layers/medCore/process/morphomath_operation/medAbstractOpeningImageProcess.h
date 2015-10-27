@@ -26,5 +26,5 @@ public:
     medAbstractOpeningImageProcess(QObject *parent): medAbstractMorphomathOperationProcess(parent) {}
 };
 
-DTK_DECLARE_OBJECT        (medAbstractOpeningImageProcess*)
+//DTK_DECLARE_OBJECT        (medAbstractOpeningImageProcess*)
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractOpeningImageProcess, MEDCORE_EXPORT)
