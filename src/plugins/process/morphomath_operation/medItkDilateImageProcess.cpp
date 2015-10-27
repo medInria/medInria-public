@@ -46,61 +46,60 @@ QString medItkDilateImageProcess::description() const
 {
     return "Use itk::GrayscaleDilateImageFilter to perform a dilatation of an image.";
 }
-void medItkDilateImageProcess::run()
+medJobExitStatus medItkDilateImageProcess::run()
 {
+    medJobExitStatus jobExitSatus = medJobExitStatus::MED_JOB_EXIT_FAILURE;
+
     if(this->input())
     {
         QString id =  this->input()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            this->_run<char>();
+            jobExitSatus = this->_run<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            this->_run<unsigned char>();
+            jobExitSatus = this->_run<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            this->_run<short>();
+            jobExitSatus = this->_run<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            this->_run<unsigned short>();
+            jobExitSatus = this->_run<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            this->_run<int>();
+            jobExitSatus = this->_run<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            this->_run<unsigned int>();
+            jobExitSatus = this->_run<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            this->_run<long>();
+            jobExitSatus = this->_run<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            this->_run<unsigned long>();
+            jobExitSatus = this->_run<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            this->_run<float>();
+            jobExitSatus = this->_run<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            this->_run<double>();
-        }
-        else
-        {
-            emit failure();
+            jobExitSatus = this->_run<double>();
         }
     }
+    return jobExitSatus;
 }
 
 template <class inputType>
-void medItkDilateImageProcess::_run()
+medJobExitStatus medItkDilateImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -111,6 +110,7 @@ void medItkDilateImageProcess::_run()
         typedef itk::BinaryBallStructuringElement<inputType, 3> KernelType;
         typedef itk::GrayscaleDilateImageFilter<ImageType, ImageType, KernelType> FilterType;
         typename FilterType::Pointer filter = FilterType::New();
+        m_filter = filter;
 
         KernelType kernel;
         kernel.SetRadius(this->kernelRadius()->value());
@@ -118,17 +118,21 @@ void medItkDilateImageProcess::_run()
 
         filter->SetKernel(kernel);
         filter->SetInput(in);
-        filter->Update();
+        try
+        {
+            filter->Update();
+        }
+        catch(itk::ProcessAborted &e)
+        {
+            return medJobExitStatus::MED_JOB_EXIT_CANCELLED;
+        }
 
         medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        emit success();
+        return medJobExitStatus::MED_JOB_EXIT_SUCCES;
     }
-    else
-    {
-        emit failure();
-    }
+    return medJobExitStatus::MED_JOB_EXIT_FAILURE;
 }
 
 void medItkDilateImageProcess::cancel()
@@ -136,6 +140,5 @@ void medItkDilateImageProcess::cancel()
     if(this->isRunning() && m_filter.IsNotNull())
     {
        m_filter->AbortGenerateDataOn();
-       emit failure();
     }
 }

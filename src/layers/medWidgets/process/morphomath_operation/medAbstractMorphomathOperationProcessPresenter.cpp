@@ -40,7 +40,7 @@ medAbstractMorphomathOperationProcessPresenter::medAbstractMorphomathOperationPr
     d->process = parent;
     d->kernelRadiusPresenter = new medIntParameterPresenter(d->process->kernelRadius());
 
-    connect(d->process, &medAbstractMorphomathOperationProcess::success,
+    connect(d->process, &medAbstractMorphomathOperationProcess::finished,
             this, &medAbstractMorphomathOperationProcessPresenter::_importOutput);
 }
 
@@ -56,6 +56,7 @@ QWidget *medAbstractMorphomathOperationProcessPresenter::buildToolBoxWidget()
 
     tbLayout->addWidget(d->kernelRadiusPresenter->buildWidget());
     tbLayout->addWidget(this->buildRunButton());
+    tbLayout->addWidget(this->buildCancelButton());
 
     return tbWidget;
 }
@@ -79,13 +80,10 @@ medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildV
     outputContainer->setMultiLayered(false);
     outputContainer->setUserOpenable(false);
 
-//    connect(inputContainer, &medViewContainer::dataAdded,
-//            this, &medAbstractMorphomathOperationProcess::_setInputFromContainer);
+    connect(inputContainer, &medViewContainer::dataAdded,
+            this, &medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer);
 
-//    connect(this, &medAbstractMorphomathOperationProcessPresenter::_outputImported,
-//            outputContainer, &medViewContainer::addData);
-    connect(inputContainer, SIGNAL(dataAdded(medAbstractData*)),
-            this, SLOT(_setInputFromContainer(medAbstractData*)));
+
     connect(this, SIGNAL(_outputImported(medAbstractData*)),
             outputContainer, SLOT(addData(medAbstractData*)));
 
@@ -104,8 +102,11 @@ void medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer(medA
 }
 
 
-void medAbstractMorphomathOperationProcessPresenter::_importOutput()
+void medAbstractMorphomathOperationProcessPresenter::_importOutput(medJobExitStatus jobExitStatus)
 {
-    medDataManager::instance()->importData(d->process->output());
-    emit _outputImported(d->process->output());
+    if(jobExitStatus == medJobExitStatus::MED_JOB_EXIT_SUCCES)
+    {
+        medDataManager::instance()->importData(d->process->output());
+        emit _outputImported(d->process->output());
+    }
 }
