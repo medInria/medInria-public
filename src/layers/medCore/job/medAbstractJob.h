@@ -17,14 +17,7 @@
 
 #include <medCoreExport.h>
 
-enum medJobExitStatus
-{
-    MED_JOB_EXIT_FAILURE,
-    MED_JOB_EXIT_CANCELLED,
-    MED_JOB_EXIT_SUCCES
-};
 
-Q_DECLARE_METATYPE(medJobExitStatus)
 
 class medDoubleParameter;
 
@@ -32,7 +25,17 @@ class medAbstractJobPrivate;
 class MEDCORE_EXPORT medAbstractJob: public QObject
 {
     Q_OBJECT
+
 public:
+    enum medJobExitStatus
+    {
+        MED_JOB_EXIT_FAILURE,
+        MED_JOB_EXIT_CANCELLED,
+        MED_JOB_EXIT_SUCCES
+    };
+    Q_ENUM(medJobExitStatus)
+
+
     medAbstractJob(QObject *parent = NULL);
     virtual ~medAbstractJob();
 

@@ -26,5 +26,4 @@ public:
      medAbstractSubtractImageProcess(QObject *parent): medAbstractArithmeticOperationProcess(parent) {}
 };
 
-DTK_DECLARE_OBJECT        (medAbstractSubtractImageProcess*)
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractSubtractImageProcess, MEDCORE_EXPORT)

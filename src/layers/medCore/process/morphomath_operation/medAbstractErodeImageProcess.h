@@ -26,5 +26,4 @@ public:
     medAbstractErodeImageProcess(QObject *parent): medAbstractMorphomathOperationProcess(parent) {}
 };
 
-DTK_DECLARE_OBJECT        (medAbstractErodeImageProcess*)
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractErodeImageProcess, MEDCORE_EXPORT)
