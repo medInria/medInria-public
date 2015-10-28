@@ -46,9 +46,9 @@ QString medItkDilateImageProcess::description() const
 {
     return "Use itk::GrayscaleDilateImageFilter to perform a dilatation of an image.";
 }
-medJobExitStatus medItkDilateImageProcess::run()
+medAbstractJob::medJobExitStatus medItkDilateImageProcess::run()
 {
-    medJobExitStatus jobExitSatus = medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
 
     if(this->input())
     {
@@ -99,7 +99,7 @@ medJobExitStatus medItkDilateImageProcess::run()
 }
 
 template <class inputType>
-medJobExitStatus medItkDilateImageProcess::_run()
+medAbstractJob::medJobExitStatus medItkDilateImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -124,15 +124,15 @@ medJobExitStatus medItkDilateImageProcess::_run()
         }
         catch(itk::ProcessAborted &e)
         {
-            return medJobExitStatus::MED_JOB_EXIT_CANCELLED;
+            return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
 
         medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        return medJobExitStatus::MED_JOB_EXIT_SUCCES;
+        return medAbstractJob::MED_JOB_EXIT_SUCCES;
     }
-    return medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }
 
 void medItkDilateImageProcess::cancel()

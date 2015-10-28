@@ -45,9 +45,9 @@ QString medItkClosingImageProcess::description() const
 {
     return "Use itk::GrayscaleMorphologicalClosingImageFilter to perform a closing of an image.";
 }
-medJobExitStatus medItkClosingImageProcess::run()
+medAbstractJob::medJobExitStatus medItkClosingImageProcess::run()
 {
-    medJobExitStatus jobExitSatus = medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    medAbstractJob::medJobExitStatus jobExitSatus = medJobExitStatus::MED_JOB_EXIT_FAILURE;
 
     if(this->input())
     {
@@ -98,7 +98,7 @@ medJobExitStatus medItkClosingImageProcess::run()
 }
 
 template <class inputType>
-medJobExitStatus medItkClosingImageProcess::_run()
+medAbstractJob::medJobExitStatus medItkClosingImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -123,15 +123,15 @@ medJobExitStatus medItkClosingImageProcess::_run()
         }
         catch(itk::ProcessAborted &e)
         {
-            return medJobExitStatus::MED_JOB_EXIT_CANCELLED;
+            return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
 
         medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        return medJobExitStatus::MED_JOB_EXIT_SUCCES;
+        return medAbstractJob::MED_JOB_EXIT_SUCCES;
     }
-    return medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }
 
 void medItkClosingImageProcess::cancel()

@@ -40,7 +40,7 @@ public:
     medItkOpeningImageProcess(QObject* parent = NULL);
     ~medItkOpeningImageProcess();
 
-    virtual medJobExitStatus run();
+    virtual medAbstractJob::medJobExitStatus run();
     virtual void cancel();
 
     virtual QString caption() const;
@@ -49,7 +49,7 @@ public:
 
 
 private:
-    template <class inputType> medJobExitStatus _run();
+    template <class inputType> medAbstractJob::medJobExitStatus _run();
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;

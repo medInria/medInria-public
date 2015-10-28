@@ -108,9 +108,9 @@ void medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer(medA
 }
 
 
-void medAbstractMorphomathOperationProcessPresenter::_importOutput(medJobExitStatus jobExitStatus)
+void medAbstractMorphomathOperationProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {
-    if(jobExitStatus == medJobExitStatus::MED_JOB_EXIT_SUCCES)
+    if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_SUCCES)
     {
         medDataManager::instance()->importData(d->process->output());
         emit _outputImported(d->process->output());

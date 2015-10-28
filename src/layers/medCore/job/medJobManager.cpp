@@ -39,7 +39,9 @@ public:
 medJobManager::medJobManager(QObject *parent)
     : QObject(parent), d(new medJobManagerPrivate)
 {
-    qRegisterMetaType<medJobExitStatus>("medJobExitStatus");
+    // register medAbstractJob::medJobExitStatus at run-time
+    // to use the type it in queued signal and slot connections
+    qRegisterMetaType<medAbstractJob::medJobExitStatus>("medJobExitStatus");
 }
 
 medJobManager::~medJobManager()
@@ -89,11 +91,11 @@ medJobRunner::medJobRunner(medAbstractJob *parent)
 void medJobRunner::run()
 {
     emit m_job->running(true);
-    medJobExitStatus jobExitStatus = MED_JOB_EXIT_FAILURE;
+    medAbstractJob::medJobExitStatus jobExitStatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
     try
     {
         jobExitStatus = m_job->run();
-        if(jobExitStatus == medJobExitStatus::MED_JOB_EXIT_CANCELLED)
+        if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_CANCELLED)
         {
             dtkDebug() << "job aborted (cancelled)"
                        << m_job->caption() << m_job;
