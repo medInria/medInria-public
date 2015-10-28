@@ -18,7 +18,7 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
-#include <medDoubleParameter.h>
+#include <medIntParameter.h>
 
 #include <medPluginExport.h>
 
@@ -36,7 +36,6 @@ public:
     }
 
 
-
     medItkOpeningImageProcess(QObject* parent = NULL);
     ~medItkOpeningImageProcess();
 
@@ -45,8 +44,6 @@ public:
 
     virtual QString caption() const;
     virtual QString description() const;
-
-
 
 private:
     template <class inputType> medAbstractJob::medJobExitStatus _run();

@@ -18,6 +18,8 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
+#include <medIntParameter.h>
+
 #include <medPluginExport.h>
 
 class medItkDilateImageProcessPrivate;
@@ -26,6 +28,13 @@ class MEDPLUGINS_EXPORT medItkDilateImageProcess: public medAbstractDilateImageP
 {
     Q_OBJECT
 public:
+    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
+        medItkDilateImageProcess * source = reinterpret_cast<medItkDilateImageProcess *>(clientData);
+        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
+        source->progression()->setValue(processObject->GetProgress() * 100);
+    }
+
     medItkDilateImageProcess(QObject* parent = NULL);
     ~medItkDilateImageProcess();
 

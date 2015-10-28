@@ -19,7 +19,7 @@
 
 
 
-class medDoubleParameter;
+class medIntParameter;
 
 class medAbstractJobPrivate;
 class MEDCORE_EXPORT medAbstractJob: public QObject
@@ -46,7 +46,7 @@ public:
     virtual void cancel() = 0;
     bool isRunning() const;
 
-    medDoubleParameter* progression() const;
+    medIntParameter* progression() const;
 
 signals:
     void finished(medJobExitStatus exitStatus);

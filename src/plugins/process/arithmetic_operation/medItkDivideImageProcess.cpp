@@ -17,6 +17,7 @@
 
 #include <itkImage.h>
 #include <itkDivideImageFilter.h>
+#include <itkCommand.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
@@ -113,6 +114,12 @@ medAbstractJob::medJobExitStatus medItkDivideImageProcess::_run()
 
         filter->SetInput1(in1);
         filter->SetInput2(in2);
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData((void*)this);
+        callback->SetCallback(medItkDivideImageProcess::eventCallback);
+        filter->AddObserver(itk::ProgressEvent(), callback);
+
         try
         {
             filter->Update();
