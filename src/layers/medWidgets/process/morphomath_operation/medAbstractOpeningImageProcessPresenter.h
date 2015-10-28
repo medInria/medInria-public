@@ -14,28 +14,19 @@
 #pragma once
 
 #include <medAbstractMorphomathOperationProcessPresenter.h>
-
-#include <dtkCore>
-
+#include <medProcessPresenterFactory.h>
 #include <medAbstractOpeningImageProcess.h>
 
-#include <medCoreExport.h>
+#include <medWidgetsExport.h>
 
-class MEDCORE_EXPORT medAbstractOpeningImageProcessPresenter: public medAbstractMorphomathOperationProcessPresenter
+class MEDWIDGETS_EXPORT medAbstractOpeningImageProcessPresenter: public medAbstractMorphomathOperationProcessPresenter
 {
     Q_OBJECT
 public:
     medAbstractOpeningImageProcessPresenter(medAbstractOpeningImageProcess *parent)
         : medAbstractMorphomathOperationProcessPresenter(parent)
-    {
-        m_process = parent;
-    }
-    virtual medAbstractOpeningImageProcess* process() const
-    {
-        return m_process;
-    }
-
-private:
-    medAbstractOpeningImageProcess *m_process;
+    {}
+    virtual medAbstractOpeningImageProcess* process() const = 0;
 };
 
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractOpeningImageProcess, MEDWIDGETS_EXPORT)

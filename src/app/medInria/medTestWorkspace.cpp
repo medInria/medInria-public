@@ -16,6 +16,8 @@
 #include <medTabbedViewContainers.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
+#include <medProcessPresenterFactory.h>
 #include <medAbstractOpeningImageProcess.h>
 #include <medAbstractOpeningImageProcessPresenter.h>
 
@@ -24,7 +26,6 @@
 class medTestWorkspacePrivate
 {
 public:
-  medAbstractProcess *baseClassProcess;
   medAbstractOpeningImageProcess *process;
   medAbstractOpeningImageProcessPresenter *presenter;
 
@@ -34,17 +35,12 @@ medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy 
 {
     QString key = medCore::morphomathOperation::openingImage::pluginFactory().keys().first();
     d->process = medCore::morphomathOperation::openingImage::pluginFactory().create(key);
-    d->presenter = new medAbstractOpeningImageProcessPresenter(d->process);
+    d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(d->process);
 
     medToolBox* tb = new medToolBox;
     tb->addWidget(d->presenter->buildToolBoxWidget());
     tb->setTitle(d->process->caption());
     this->addToolBox(tb);
-
-    d->baseClassProcess = d->process;
-
-    qDebug() << "TEST STATIC META OBJECT" << d->baseClassProcess->metaObject()->className();
-
 }
 
 medTestWorkspace::~medTestWorkspace()
