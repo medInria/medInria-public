@@ -45,9 +45,9 @@ QString medItkErodeImageProcess::description() const
 {
     return "Use itk::GrayscaleErodeImageFilter to perform an erosion on an image.";
 }
-medJobExitStatus medItkErodeImageProcess::run()
+medAbstractJob::medJobExitStatus medItkErodeImageProcess::run()
 {
-    medJobExitStatus jobExitSatus = medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
 
     if(this->input())
     {
@@ -98,7 +98,7 @@ medJobExitStatus medItkErodeImageProcess::run()
 }
 
 template <class inputType>
-medJobExitStatus medItkErodeImageProcess::_run()
+medAbstractJob::medJobExitStatus medItkErodeImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -123,15 +123,15 @@ medJobExitStatus medItkErodeImageProcess::_run()
         }
         catch(itk::ProcessAborted &e)
         {
-            return medJobExitStatus::MED_JOB_EXIT_CANCELLED;
+            return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
 
         medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        return medJobExitStatus::MED_JOB_EXIT_SUCCES;
+        return medAbstractJob::MED_JOB_EXIT_SUCCES;
     }
-    return medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }
 
 void medItkErodeImageProcess::cancel()

@@ -44,9 +44,9 @@ QString medItkAddImageProcess::description() const
     return "Use itk::AddImageFilter to perform the addition of tow images.";
 }
 
-medJobExitStatus medItkAddImageProcess::run()
+medAbstractJob::medJobExitStatus medItkAddImageProcess::run()
 {
-    medJobExitStatus jobExitSatus = medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
 
     if(this->input1() && this->input2())
     {
@@ -97,7 +97,7 @@ medJobExitStatus medItkAddImageProcess::run()
 }
 
 template <class inputType>
-medJobExitStatus medItkAddImageProcess::_run()
+medAbstractJob::medJobExitStatus medItkAddImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -118,15 +118,15 @@ medJobExitStatus medItkAddImageProcess::_run()
         }
         catch(itk::ProcessAborted &e)
         {
-            return medJobExitStatus::MED_JOB_EXIT_CANCELLED;
+            return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
 
         medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        return medJobExitStatus::MED_JOB_EXIT_SUCCES;
+        return medAbstractJob::MED_JOB_EXIT_SUCCES;
     }
-    return medJobExitStatus::MED_JOB_EXIT_FAILURE;
+    return medAbstractJob::MED_JOB_EXIT_FAILURE;
 
 
 }
