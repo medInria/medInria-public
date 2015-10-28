@@ -53,6 +53,7 @@ signals:
 
 private slots:
     void _setIsRunning(bool isRunning);
+    void _resetProgression();
 
 signals:
     void running(bool isRunning);
