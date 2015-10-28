@@ -119,16 +119,14 @@ QDoubleSpinBox* medDoubleParameterPresenter::buildSpinBox()
 QProgressBar* medDoubleParameterPresenter::buildProgressBar()
 {
     QProgressBar *progressBar = new QProgressBar;
+    progressBar->setValue(_percentFromValue(d->parameter->value()));
     connect(this, &medDoubleParameterPresenter::valueChanged,
             progressBar, &QProgressBar::setValue);
-    connect(progressBar, &QProgressBar::valueChanged,
-            this, &medDoubleParameterPresenter::_setValueFromPercent);
 
     progressBar->setToolTip(d->parameter->description());
     this->_connectWidget(progressBar);
 
-    progressBar->setValue(_percentFromValue(d->parameter->value()));
-    progressBar->setMaximum(0);
+    progressBar->setMinimum(0);
     progressBar->setMaximum(100);
 
     return progressBar;

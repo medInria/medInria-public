@@ -15,6 +15,7 @@
 
 #include <QWidget>
 #include <QSpinBox>
+#include <QProgressBar>
 
 #include <medIntParameter.h>
 
@@ -88,3 +89,19 @@ QSpinBox* medIntParameterPresenter::buildSpinBox()
     return spinBox;
 }
 
+QProgressBar* medIntParameterPresenter::buildProgressBar()
+{
+    QProgressBar *progressBar = new QProgressBar;
+    progressBar->setValue(d->parameter->value());
+    connect(d->parameter, &medIntParameter::valueChanged,
+            progressBar, &QProgressBar::setValue);
+
+    progressBar->setToolTip(d->parameter->description());
+    this->_connectWidget(progressBar);
+
+    progressBar->setRange(d->parameter->minimum(), d->parameter->maximum());
+    connect(d->parameter, &medIntParameter::rangeChanged,
+            progressBar, &QProgressBar::setRange);
+
+    return progressBar;
+}

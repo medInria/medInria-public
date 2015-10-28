@@ -18,12 +18,21 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
+#include <medIntParameter.h>
+
 #include <medPluginExport.h>
 
 class MEDPLUGINS_EXPORT medItkDivideImageProcess: public medAbstractDivideImageProcess
 {
     Q_OBJECT
 public:
+    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
+        medItkDivideImageProcess * source = reinterpret_cast<medItkDivideImageProcess *>(clientData);
+        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
+        source->progression()->setValue(processObject->GetProgress() * 100);
+    }
+
     medItkDivideImageProcess(QObject* parent = NULL);
     ~medItkDivideImageProcess();
 

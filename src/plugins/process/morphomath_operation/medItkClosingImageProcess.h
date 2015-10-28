@@ -18,6 +18,8 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
+#include <medIntParameter.h>
+
 #include <medPluginExport.h>
 
 class medItkClosingImageProcessPrivate;
@@ -26,6 +28,13 @@ class MEDPLUGINS_EXPORT medItkClosingImageProcess: public medAbstractClosingImag
 {
     Q_OBJECT
 public:
+    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
+        medItkClosingImageProcess * source = reinterpret_cast<medItkClosingImageProcess *>(clientData);
+        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
+        source->progression()->setValue(processObject->GetProgress() * 100);
+    }
+
     medItkClosingImageProcess(QObject* parent = NULL);
     ~medItkClosingImageProcess();
 

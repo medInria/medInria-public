@@ -18,12 +18,21 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
+#include <medIntParameter.h>
+
 #include <medPluginExport.h>
 
 class MEDPLUGINS_EXPORT medItkSubtractImageProcess: public medAbstractSubtractImageProcess
 {
     Q_OBJECT
 public:
+    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
+        medItkSubtractImageProcess * source = reinterpret_cast<medItkSubtractImageProcess *>(clientData);
+        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
+        source->progression()->setValue(processObject->GetProgress() * 100);
+    }
+
     medItkSubtractImageProcess(QObject* parent = NULL);
     ~medItkSubtractImageProcess();
 
