@@ -18,6 +18,7 @@
 #include <itkImage.h>
 #include <itkGrayscaleErodeImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
+#include <itkCommand.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
@@ -117,6 +118,12 @@ medAbstractJob::medJobExitStatus medItkErodeImageProcess::_run()
 
         filter->SetKernel(kernel);
         filter->SetInput(in);
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData((void*)this);
+        callback->SetCallback(medItkErodeImageProcess::eventCallback);
+        filter->AddObserver(itk::ProgressEvent(), callback);
+
         try
         {
             filter->Update();

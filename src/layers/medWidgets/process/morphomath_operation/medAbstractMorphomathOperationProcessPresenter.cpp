@@ -22,8 +22,6 @@
 #include <medAbstractImageData.h>
 #include <medIntParameter.h>
 #include <medIntParameterPresenter.h>
-#include <medDoubleParameter.h>
-#include <medDoubleParameterPresenter.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
 #include <medDataManager.h>
@@ -34,7 +32,7 @@ class medAbstractMorphomathOperationProcessPresenterPrivate
 {
 public:
     medAbstractMorphomathOperationProcess *process;
-    medDoubleParameterPresenter *progressionPresenter;
+    medIntParameterPresenter *progressionPresenter;
     medIntParameterPresenter *kernelRadiusPresenter;
 };
 
@@ -43,7 +41,7 @@ medAbstractMorphomathOperationProcessPresenter::medAbstractMorphomathOperationPr
 {
     d->process = parent;
     d->kernelRadiusPresenter = new medIntParameterPresenter(d->process->kernelRadius());
-    d->progressionPresenter = new medDoubleParameterPresenter(d->process->progression());
+    d->progressionPresenter = new medIntParameterPresenter(d->process->progression());
 
     connect(d->process, &medAbstractMorphomathOperationProcess::finished,
             this, &medAbstractMorphomathOperationProcessPresenter::_importOutput);
