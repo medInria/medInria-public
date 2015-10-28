@@ -35,6 +35,8 @@ medAbstractJob::medAbstractJob(QObject *parent)
 
     connect(this, &medAbstractJob::running,
             this, &medAbstractJob::_setIsRunning);
+    connect(this, &medAbstractJob::finished,
+            this, &medAbstractJob::_resetProgression);
 }
 
 medAbstractJob::~medAbstractJob()
@@ -55,4 +57,9 @@ void medAbstractJob::_setIsRunning(bool isRunning)
 medIntParameter* medAbstractJob::progression() const
 {
     return d->progression;
+}
+
+void medAbstractJob::_resetProgression()
+{
+    d->progression->setValue(0);
 }

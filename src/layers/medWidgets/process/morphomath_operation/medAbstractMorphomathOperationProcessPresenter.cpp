@@ -97,12 +97,7 @@ medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildV
 
 void medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer(medAbstractData *data)
 {
-
-    medAbstractImageData *input = qobject_cast<medAbstractImageData *>(data);
-    if(input)
-    {
-        d->process->setInput(input);
-    }
+    d->process->setInput(qobject_cast<medAbstractImageData *>(data));
 }
 
 
