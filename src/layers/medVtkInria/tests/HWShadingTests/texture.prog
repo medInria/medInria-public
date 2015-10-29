@@ -1,3 +1,0 @@
-VERT texture.vert
-FRAG texture.frag
-UNIFORM sampler incredibles 0
