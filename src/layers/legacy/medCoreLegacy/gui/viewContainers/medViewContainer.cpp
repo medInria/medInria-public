@@ -527,6 +527,7 @@ void medViewContainer::removeView()
     if(!d->view)
         return;
 
+    emit dataAdded(NULL);
     delete d->view;
     // removeInternView should be called, so no need to set d->view to NULL
     // or whatever else
@@ -665,6 +666,7 @@ void medViewContainer::addData(medAbstractData *data)
     view->addLayer(data);
 
     setSelected(true);
+    emit dataAdded(data);
 }
 
 void medViewContainer::addData(medDataIndex index)

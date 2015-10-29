@@ -45,7 +45,8 @@ public:
     template <class PixelType> void setupFilter() {}
     virtual void setFilterDescription() {}
     
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData) {
+    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
         itkFiltersProcessBasePrivate * source = reinterpret_cast<itkFiltersProcessBasePrivate *> ( clientData );
         itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
     

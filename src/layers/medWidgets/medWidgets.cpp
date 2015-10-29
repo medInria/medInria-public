@@ -11,53 +11,40 @@
 
 =========================================================================*/
 
-#include <medGuiLayer.h>
+#include <medWidgets.h>
 
-#include <medAbstractAreaPlugin.h>
-
-namespace medGuiLayer
+namespace medWidgets
 {
 namespace pluginManager
 {
-    void initialize(const QString& path)
+    void initialize(const QString& path, bool verbose)
     {
         QString realpath=path;
         if (path.isEmpty())
         {
-
             // Use settings to get plugins location.
 //                dtkLinearAlgebraSparseSettings linear_algebra_sparse_settings;
 //                linear_algebra_sparse_settings.beginGroup("linear-algebra-sparse");
 //                realpath = linear_algebra_sparse_settings.value("plugins").toString();
 //                linear_algebra_sparse_settings.endGroup();
         }
-        medGuiLayer::area::initialize(realpath);
+//        medWidgets::morphomathOperation::initialize(realpath);
     }
-} // end of pluginManager
-
-namespace area
+}
+namespace morphomathOperation
 {
-    namespace _private
+    namespace openingImage
     {
-        medAbstractAreaPluginManager manager;
-        medAbstractAreaPluginFactory factory;
-    }
+        namespace _private
+        {
+            medAbstractOpeningImageProcessPresenterFactory factory;
+        }
 
-    medAbstractAreaPluginManager& pluginManager(void)
-    {
-        return _private::manager;
+        medAbstractOpeningImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
     }
-
-    medAbstractAreaPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
-
-    void initialize(const QString& path)
-    {
-        pluginManager().initialize(path);
-    }
-}// end of area
-
-}// end of medProcessLayer
+}
+}
 

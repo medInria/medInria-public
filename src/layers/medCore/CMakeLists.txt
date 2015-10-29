@@ -56,8 +56,6 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   Qt5::Core
-  Qt5::Widgets
-  Qt5::Gui
   dtkCoreSupport
   dtkGuiSupport
   dtkLog

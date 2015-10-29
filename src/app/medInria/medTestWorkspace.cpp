@@ -1,52 +1,60 @@
-///*=========================================================================
+/*=========================================================================
 
-// medInria
+ medInria
 
-// Copyright (c) INRIA 2013 - 2014. All rights reserved.
-// See LICENSE.txt for details.
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
 
-//  This software is distributed WITHOUT ANY WARRANTY; without even
-//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-//  PURPOSE.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
-//=========================================================================*/
+=========================================================================*/
 
-//#include <medTestWorkspace.h>
+#include <medTestWorkspace.h>
 
-//#include <medTabbedViewContainers.h>
+#include <medTabbedViewContainers.h>
 
-//#include <medCore.h>
-//#include <medAbstractAddImageProcess.h>
+#include <medCore.h>
+#include <medWidgets.h>
+#include <medProcessPresenterFactory.h>
+#include <medAbstractOpeningImageProcess.h>
+#include <medAbstractOpeningImageProcessPresenter.h>
 
-//#include <medToolBox.h>
+#include <medToolBox.h>
 
-//class medTestWorkspacePrivate
-//{
-//public:
-//  medAbstractAddImageProcess *process;
+class medTestWorkspacePrivate
+{
+public:
+  medAbstractOpeningImageProcess *process;
+  medAbstractOpeningImageProcessPresenter *presenter;
 
-//};
+};
 
-//medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
-//{
-//    for(QString const& key : medCore::arithmeticalOperation::addImage::pluginFactory().keys())
-//        d->process = medCore::morphomathOperation::erodeImage::pluginFactory().create(key);
+medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
+{
+    QString key = medCore::morphomathOperation::openingImage::pluginFactory().keys().first();
+    d->process = medCore::morphomathOperation::openingImage::pluginFactory().create(key);
+    d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(d->process);
 
-//    qDebug() << "CREATE PROCESS:" << d->process->caption() << d->process->description();
-//}
+    medToolBox* tb = new medToolBox;
+    tb->addWidget(d->presenter->buildToolBoxWidget());
+    tb->setTitle(d->process->caption());
+    this->addToolBox(tb);
+}
 
-//medTestWorkspace::~medTestWorkspace()
-//{
-//    delete d;
-//    d = NULL;
-//}
+medTestWorkspace::~medTestWorkspace()
+{
+    delete d;
+    d = NULL;
+}
 
-//void medTestWorkspace::setupTabbedViewContainer()
-//{
+void medTestWorkspace::setupTabbedViewContainer()
+{
+    this->tabbedViewContainers()->setSplitter(0, d->presenter->buildViewContainerSplitter());
+}
 
-//}
-
-//bool medTestWorkspace::isUsable()
-//{
-//    return true;
-//}
+bool medTestWorkspace::isUsable()
+{
+    return true;
+}

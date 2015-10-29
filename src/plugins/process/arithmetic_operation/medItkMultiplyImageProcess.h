@@ -18,23 +18,32 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
+#include <medIntParameter.h>
+
 #include <medPluginExport.h>
 
 class MEDPLUGINS_EXPORT medItkMultiplyImageProcess: public medAbstractMultiplyImageProcess
 {
     Q_OBJECT
 public:
+    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
+        medItkMultiplyImageProcess * source = reinterpret_cast<medItkMultiplyImageProcess *>(clientData);
+        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
+        source->progression()->setValue(processObject->GetProgress() * 100);
+    }
+
     medItkMultiplyImageProcess(QObject* parent = NULL);
     ~medItkMultiplyImageProcess();
 
-    virtual void run();
+    virtual medAbstractJob::medJobExitStatus run();
     virtual void cancel();
 
     virtual QString caption() const;
     virtual QString description() const;
 
 private:
-    template<class inputType> void _run();
+    template<class inputType> medAbstractJob::medJobExitStatus _run();
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;

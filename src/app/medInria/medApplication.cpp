@@ -16,6 +16,7 @@
 #include <locale.h>
 
 #include <QtGui>
+#include <QList>
 
 #include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
@@ -52,6 +53,8 @@
 
 #include <medCore.h>
 #include <medAbstractArithmeticOperationProcess.h>
+
+#include <medJobManager.h>
 
 //#include <medGuiLayer.h>
 //#include <medAbstractArea.h>
@@ -169,7 +172,7 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
-    //    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
 
     //Register settingsWidgets
     medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
@@ -204,7 +207,8 @@ void medApplication::initialize()
     QString key = medCore::arithmeticalOperation::addImage::pluginFactory().keys().first();
     auto process = medCore::arithmeticalOperation::addImage::pluginFactory().create(key);
 
-    qDebug() << "THIS IS A TEST\n\tCREATE PROCESS:" << process->staticMetaObject.className() << process->caption() << process->description();
+//    qDebug() << "THIS IS A TEST\n\tCREATED PROCESS:" << process->metaObject()->className() << process->caption() << process->description();
+    medJobManager *m = medJobManager::instance();
 
     //    // gui layer:
     //    medGuiLayer::area::pluginManager().setVerboseLoading(true);

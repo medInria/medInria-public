@@ -18,10 +18,11 @@
 #include <itkImage.h>
 #include <itkGrayscaleMorphologicalOpeningImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
+#include <itkCommand.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
-#include <medDoubleParameter.h>
+#include <medIntParameter.h>
 
 
 medItkOpeningImageProcess::medItkOpeningImageProcess(QObject *parent)
@@ -46,61 +47,60 @@ QString medItkOpeningImageProcess::description() const
 {
     return "Use itk::GrayscaleMorphologicalOpeningImageFilter to perform an opening on an image.";
 }
-void medItkOpeningImageProcess::run()
+medAbstractJob::medJobExitStatus medItkOpeningImageProcess::run()
 {
+    medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
+
     if(this->input())
     {
         QString id =  this->input()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            this->_run<char>();
+            jobExitSatus = this->_run<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            this->_run<unsigned char>();
+            jobExitSatus = this->_run<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            this->_run<short>();
+            jobExitSatus = this->_run<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            this->_run<unsigned short>();
+            jobExitSatus = this->_run<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            this->_run<int>();
+            jobExitSatus = this->_run<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            this->_run<unsigned int>();
+            jobExitSatus = this->_run<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            this->_run<long>();
+            jobExitSatus = this->_run<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            this->_run<unsigned long>();
+            jobExitSatus = this->_run<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            this->_run<float>();
+            jobExitSatus = this->_run<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            this->_run<double>();
-        }
-        else
-        {
-            emit failure();
+            jobExitSatus = this->_run<double>();
         }
     }
+    return jobExitSatus;
 }
 
 template <class inputType>
-void medItkOpeningImageProcess::_run()
+medAbstractJob::medJobExitStatus medItkOpeningImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -111,6 +111,7 @@ void medItkOpeningImageProcess::_run()
         typedef itk::BinaryBallStructuringElement<inputType, 3> KernelType;
         typedef itk::GrayscaleMorphologicalOpeningImageFilter<ImageType, ImageType, KernelType> FilterType;
         typename FilterType::Pointer filter = FilterType::New();
+        m_filter = filter;
 
         KernelType kernel;
         kernel.SetRadius(this->kernelRadius()->value());
@@ -118,17 +119,26 @@ void medItkOpeningImageProcess::_run()
 
         filter->SetKernel(kernel);
         filter->SetInput(in);
-        filter->Update();
 
-        medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData((void*)this);
+        callback->SetCallback(medItkOpeningImageProcess::eventCallback);
+        filter->AddObserver(itk::ProgressEvent(), callback);
+
+        try
+        {
+            filter->Update();
+        }
+        catch(itk::ProcessAborted &e)
+        {
+            return medAbstractJob::MED_JOB_EXIT_CANCELLED;
+        }
+        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        emit success();
+        return medAbstractJob::MED_JOB_EXIT_SUCCES;
     }
-    else
-    {
-        emit failure();
-    }
+    return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }
 
 void medItkOpeningImageProcess::cancel()
@@ -136,6 +146,5 @@ void medItkOpeningImageProcess::cancel()
     if(this->isRunning() && m_filter.IsNotNull())
     {
        m_filter->AbortGenerateDataOn();
-       emit failure();
     }
 }

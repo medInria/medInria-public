@@ -14,35 +14,49 @@
 #pragma once
 
 #include <QObject>
-#include <QRunnable>
 
 #include <medCoreExport.h>
 
 
+
+class medIntParameter;
+
 class medAbstractJobPrivate;
-class MEDCORE_EXPORT medAbstractJob: public QObject, public QRunnable
+class MEDCORE_EXPORT medAbstractJob: public QObject
 {
     Q_OBJECT
+
 public:
+    enum medJobExitStatus
+    {
+        MED_JOB_EXIT_FAILURE,
+        MED_JOB_EXIT_CANCELLED,
+        MED_JOB_EXIT_SUCCES
+    };
+    Q_ENUM(medJobExitStatus)
+
+
     medAbstractJob(QObject *parent = NULL);
     virtual ~medAbstractJob();
 
     virtual QString caption() const = 0;
 
 public:
+    virtual medJobExitStatus run() = 0;
     virtual void cancel() = 0;
     bool isRunning() const;
 
+    medIntParameter* progression() const;
+
 signals:
-    void success();
-    void failure();
-    void progressed(float progression);
+    void finished(medJobExitStatus exitStatus);
 
 private slots:
-    void _emitNotRunning();
     void _setIsRunning(bool isRunning);
+    void _resetProgression();
+
 signals:
-    void _running(bool isRunning);
+    void running(bool isRunning);
 
 private:
     const QScopedPointer<medAbstractJobPrivate> d;

@@ -18,6 +18,8 @@
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
+#include <medIntParameter.h>
+
 #include <medPluginExport.h>
 
 class medItkErodeImageProcessPrivate;
@@ -26,17 +28,24 @@ class MEDPLUGINS_EXPORT medItkErodeImageProcess: public medAbstractErodeImagePro
 {
     Q_OBJECT
 public:
+    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
+        medItkErodeImageProcess * source = reinterpret_cast<medItkErodeImageProcess *>(clientData);
+        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
+        source->progression()->setValue(processObject->GetProgress() * 100);
+    }
+
     medItkErodeImageProcess(QObject* parent = NULL);
     ~medItkErodeImageProcess();
 
-    virtual void run();
+    virtual medAbstractJob::medJobExitStatus run();
     virtual void cancel();
 
     virtual QString caption() const;
     virtual QString description() const;
 
 private:
-    template <class inputType> void  _run();
+    template <class inputType> medAbstractJob::medJobExitStatus _run();
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;

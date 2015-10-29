@@ -39,6 +39,9 @@ public:
 medJobManager::medJobManager(QObject *parent)
     : QObject(parent), d(new medJobManagerPrivate)
 {
+    // register medAbstractJob::medJobExitStatus at run-time
+    // to use the type it in queued signal and slot connections
+    qRegisterMetaType<medAbstractJob::medJobExitStatus>("medJobExitStatus");
 }
 
 medJobManager::~medJobManager()
@@ -46,8 +49,8 @@ medJobManager::~medJobManager()
     // just in case some unparented job are still living.
     for(medAbstractJob* job : d->jobs)
     {
-        dtkWarn() << "Orphan job still living at the end of the app detected:"
-                  << job->caption() << job->staticMetaObject.className() << job;
+        qDebug() << "Orphan job still living at the end of the app detected:"
+                 << job->caption() << job;
         delete job;
     }
 }
@@ -73,12 +76,45 @@ void medJobManager::cancelAll()
         job->cancel();
 }
 
-void medJobManager::startJobInThread(medAbstractJob *job, int priority)
+void medJobManager::startJobInThread(medAbstractJob *job)
 {
-    emit job->_running(true);
-    QThreadPool::globalInstance()->start(job, priority);
+    QThreadPool::globalInstance()->start(new medJobRunner(job));
 }
 
+medJobRunner::medJobRunner(medAbstractJob *parent)
+    : QObject(parent)
+{
+//    setAutoDelete(false);
+    m_job = parent;
+}
 
+void medJobRunner::run()
+{
+    emit m_job->running(true);
+    medAbstractJob::medJobExitStatus jobExitStatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
+    try
+    {
+        jobExitStatus = m_job->run();
+        if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_CANCELLED)
+        {
+            dtkDebug() << "job aborted (cancelled)"
+                       << m_job->caption() << m_job;
+        }
+    }
+    catch(std::exception &err)
+    {
+        QString errorMessage = QString::fromLatin1(err.what());
+        dtkWarn() << "Error occured while runing job"
+                  << m_job->caption() << m_job
+                  << "\n\t" <<errorMessage;
 
-
+        emit exceptionCaught(errorMessage);
+    }
+    catch(...)
+    {
+        dtkWarn() << "Error occured while runing job"
+                  << m_job->caption() << m_job;
+    }
+    emit m_job->finished(jobExitStatus);
+    emit m_job->running(false);
+}

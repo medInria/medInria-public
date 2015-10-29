@@ -17,6 +17,7 @@
 
 #include <itkImage.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkCommand.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
@@ -45,61 +46,60 @@ QString medItkMultiplyImageProcess::description() const
     return "Use itk::MultiplyImageFilter to perform the addition of tow images.";
 }
 
-void medItkMultiplyImageProcess::run()
+medAbstractJob::medJobExitStatus medItkMultiplyImageProcess::run()
 {
+    medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
+
     if(this->input1() && this->input2())
     {
         QString id =  this->input1()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            this->_run<char>();
+            jobExitSatus = this->_run<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            this->_run<unsigned char>();
+            jobExitSatus = this->_run<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            this->_run<short>();
+            jobExitSatus = this->_run<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            this->_run<unsigned short>();
+            jobExitSatus = this->_run<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            this->_run<int>();
+            jobExitSatus = this->_run<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            this->_run<unsigned int>();
+            jobExitSatus = this->_run<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            this->_run<long>();
+            jobExitSatus = this->_run<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            this->_run<unsigned long>();
+            jobExitSatus = this->_run<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            this->_run<float>();
+            jobExitSatus = this->_run<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            this->_run<double>();
-        }
-        else
-        {
-            emit failure();
+            jobExitSatus = this->_run<double>();
         }
     }
+    return jobExitSatus;
 }
 
 template <class inputType>
-void medItkMultiplyImageProcess::_run()
+medAbstractJob::medJobExitStatus medItkMultiplyImageProcess::_run()
 {
     typedef itk::Image<inputType, 3> ImageType;
 
@@ -110,20 +110,31 @@ void medItkMultiplyImageProcess::_run()
     {
         typedef itk::MultiplyImageFilter<ImageType, ImageType, ImageType> FilterType;
         typename FilterType::Pointer filter = FilterType::New();
+        m_filter = filter;
 
         filter->SetInput1(in1);
         filter->SetInput2(in2);
-        filter->Update();
+
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData((void*)this);
+        callback->SetCallback(medItkMultiplyImageProcess::eventCallback);
+        filter->AddObserver(itk::ProgressEvent(), callback);
+
+        try
+        {
+            filter->Update();
+        }
+        catch(itk::ProcessAborted &e)
+        {
+            return medAbstractJob::MED_JOB_EXIT_CANCELLED;
+        }
 
         medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        emit success();
+        return medAbstractJob::MED_JOB_EXIT_SUCCES;
     }
-    else
-    {
-        emit failure();
-    }
+    return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }
 
 void medItkMultiplyImageProcess::cancel()
@@ -131,6 +142,5 @@ void medItkMultiplyImageProcess::cancel()
     if(this->isRunning() && m_filter.IsNotNull())
     {
        m_filter->AbortGenerateDataOn();
-       emit failure();
     }
 }

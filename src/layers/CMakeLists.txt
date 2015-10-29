@@ -19,7 +19,9 @@
 ## be sure medCore  is first in the list, it will be used by the other lib.
 add_subdirectory(legacy/medCoreLegacy)
 add_subdirectory(medCore)
+add_subdirectory(medWidgets)
 add_subdirectory(medComposer)
+
 
 add_subdirectory(legacy/medTest)
 add_subdirectory(legacy/medPacs)

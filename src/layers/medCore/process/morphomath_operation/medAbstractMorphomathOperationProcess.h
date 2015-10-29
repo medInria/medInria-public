@@ -20,7 +20,7 @@
 #include <medCoreExport.h>
 
 class medAbstractImageData;
-class medDoubleParameter;
+class medIntParameter;
 
 class medAbstractMorphomathOperationProcessPrivate;
 class MEDCORE_EXPORT medAbstractMorphomathOperationProcess : public medAbstractProcess
@@ -35,7 +35,7 @@ public:
     medAbstractImageData* input() const;
     medAbstractImageData* output() const;
 
-    virtual medDoubleParameter* kernelRadius() const;
+    virtual medIntParameter* kernelRadius() const;
 
 protected:
     void setOutput(medAbstractImageData* data);

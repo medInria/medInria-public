@@ -14,30 +14,29 @@
 #include <medAbstractJob.h>
 
 #include <medJobManager.h>
+#include <medIntParameter.h>
 
 class medAbstractJobPrivate
 {
 public:
     bool running;
+    medIntParameter *progression;
 };
 
 medAbstractJob::medAbstractJob(QObject *parent)
     : QObject(parent), d(new medAbstractJobPrivate)
 {
     d->running = false;
+    d->progression = new medIntParameter("job_progression", this);
+    d->progression->setRange(0, 100);
+    d->progression->setValue(0);
+
     medJobManager::instance()->registerJob(this);
 
-    // Mandatory to be runned by a QThreadPool, since this inherits from QObject
-    // It can recieve signals trigerring slots after having be deleted by the QThreadPool
-    // if setAutoDelete is set to true (default value).
-    this->setAutoDelete(false);
-
-    connect(this, &medAbstractJob::success,
-            this, &medAbstractJob::_emitNotRunning);
-    connect(this, &medAbstractJob::failure,
-            this, &medAbstractJob::_emitNotRunning);
-    connect(this, &medAbstractJob::_running,
+    connect(this, &medAbstractJob::running,
             this, &medAbstractJob::_setIsRunning);
+    connect(this, &medAbstractJob::finished,
+            this, &medAbstractJob::_resetProgression);
 }
 
 medAbstractJob::~medAbstractJob()
@@ -50,12 +49,17 @@ bool medAbstractJob::isRunning() const
     return d->running;
 }
 
-void medAbstractJob::_emitNotRunning()
-{
-    emit _running(false);
-}
-
 void medAbstractJob::_setIsRunning(bool isRunning)
 {
     d->running = isRunning;
+}
+
+medIntParameter* medAbstractJob::progression() const
+{
+    return d->progression;
+}
+
+void medAbstractJob::_resetProgression()
+{
+    d->progression->setValue(0);
 }

@@ -24,6 +24,8 @@ public:
     medStringParameter(const QString & name, QObject *parent = NULL);
     virtual ~medStringParameter();
 
+    virtual medParameterType type() const {return medParameterType::MED_PARAMETER_STRING;}
+
     QString value() const;
 public slots:
     void setValue(QString const& value);

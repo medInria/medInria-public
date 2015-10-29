@@ -24,7 +24,14 @@ public:
     medIntParameter(const QString & name, QObject *parent = NULL);
     virtual ~medIntParameter();
 
+    virtual medParameterType type() const {return medParameterType::MED_PARAMETER_INT;}
+
     int value() const;
+
+    void setRange(int min, int max);
+    int minimum() const;
+    int maximum() const;
+
 public slots:
     void setValue(int value);
 
@@ -32,6 +39,7 @@ public slots:
 
 signals:
     void valueChanged(int value);
+    void rangeChanged(int min, int max);
 
 private:
     const QScopedPointer<medIntParameterPrivate> d;

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QObject>
+#include <QRunnable>
 
 #include <medCoreExport.h>
 
@@ -41,8 +42,22 @@ public:
     void cancelAll();
 
 public:
-    static void startJobInThread(medAbstractJob* job, int priority = 0);
+     void startJobInThread(medAbstractJob* job);
 
 private:
     const QScopedPointer<medJobManagerPrivate> d;
+};
+
+class medJobRunner: public QObject, public QRunnable
+{
+    Q_OBJECT
+public:
+    medJobRunner(medAbstractJob *parent);
+    virtual void run();
+
+signals:
+    void exceptionCaught(QString const& message);
+
+private:
+    medAbstractJob *m_job;
 };
