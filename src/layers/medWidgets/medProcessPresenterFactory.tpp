@@ -21,7 +21,7 @@ template<typename ProcessType, typename PresenterType>
 PresenterType * medProcessPresenterFactory<ProcessType, PresenterType>::create(ProcessType *process) const
 {
     PresenterType *presenter = NULL;
-    if(process != NULL);
+    if(process != NULL)
     {
         QString key = process->metaObject()->className();
         if(this->creators.contains(key))
