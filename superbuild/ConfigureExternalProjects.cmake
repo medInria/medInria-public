@@ -31,10 +31,10 @@ set(ep_common_shared_linker_flags
   )
 
 set(ep_common_cache_args
-  -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-  -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
-  -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-)
+  -DCMAKE_C_COMPILER:=${CMAKE_C_COMPILER}
+  -DCMAKE_CXX_COMPILER:=${CMAKE_CXX_COMPILER}
+  -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
+  )
 
 if(CMAKE_EXTRA_GENERATOR)
   set(gen "${CMAKE_EXTRA_GENERATOR} -G ${CMAKE_GENERATOR}")
@@ -90,25 +90,6 @@ foreach (external_project ${external_projects})
     call(${external_project}_project)
     
     
-# ## #############################################################################
-# ## Add custom targets update, and build to explicitly update and rebuild all.
-# ## #############################################################################
-
-#     if(update-${external_project})
-#       set(update_dependencies ${update_dependencies} update-${external_project})
-#     endif()
-#     if(build-${external_project})
-#       set(build_dependencies ${build_dependencies} build-${external_project})
-#     endif()
 endforeach()
 
 
-# add_custom_target(update
-#   DEPENDS ${update_dependencies}
-#   COMMAND echo All project have been updated. 
-#   && echo To build them, run the build target: 'cmake --build . --target build'
-#   )
-  
-# add_custom_target(build
-#   DEPENDS ${build_dependencies}
-#   )
