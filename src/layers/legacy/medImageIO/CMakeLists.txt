@@ -87,6 +87,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOBioRad
   ITKIOStimulate
   ITKIOMRC
+  ITKIOTIFF
   ${DCMTK_LIBRARIES}
   )
 

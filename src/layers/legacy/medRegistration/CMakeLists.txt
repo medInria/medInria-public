@@ -87,6 +87,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOHDF5
   ITKIOBioRad
   ITKIOStimulate
+  ITKIOTIFF
   ITKStatistics
   ITKIOTransformBase
   ITKIOTransformHDF5
