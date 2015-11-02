@@ -1,0 +1,5 @@
+#VERT average.shad
+#VERT testshader.vert
+#UNIFORM float testf 1.0;
+#UNIFORM vec3 Color 1.0 0.0 1.0
+FRAG testshader.frag
