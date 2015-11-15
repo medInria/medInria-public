@@ -26,7 +26,7 @@ add_subdirectory(medImageIO)
 add_subdirectory(medRegistration)
 
 add_subdirectory(medVtkInria)
-
+add_subdirectory(medUtilities)
 ## #############################################################################
 ## complete medInria_INCLUDE_DIRS
 ## #############################################################################
@@ -41,6 +41,7 @@ set(${PROJECT_NAME}_INCLUDE_DIRS
   ${medImageIO_INCLUDE_DIRS}
   ${medRegistration_INCLUDE_DIRS}
   ${medVtkInria_INCLUDE_DIRS}
+  ${medUtilities_INCLUDE_DIRS}
   ${${PROJECT_NAME}_INCLUDE_DIRS}
   PARENT_SCOPE
   )

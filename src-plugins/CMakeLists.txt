@@ -53,6 +53,14 @@ set(PLUGIN_LIST
   undoRedoRegistration                      ON
   itkProcessRegistrationDiffeomorphicDemons ON
   medVtkView                                ON
+  iterativeClosestPoint                     ON
+  itkN4BiasCorrection                       ON
+  manualRegistration                        ON
+  medBinaryOperation                        ON
+  medClut                                   ON
+  medMaskApplication                        ON
+  mscAlgorithmPaint                         ON
+  reformat                                  ON
   )   
 
 
