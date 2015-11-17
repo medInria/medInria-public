@@ -82,7 +82,7 @@ set(cmake_args
 ## #############################################################################
 
 ExternalProject_Add(${ep}
-  PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+  PREFIX ${EP_PREFIX_thirdparts}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   CMAKE_GENERATOR ${gen}
