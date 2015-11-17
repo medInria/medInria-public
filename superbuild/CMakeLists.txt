@@ -71,7 +71,7 @@ set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration speci
 
 set(EP_PREFIX_thirdparts 
   ${CMAKE_SOURCE_DIR}/thirdparts CACHE STRING 
-  "Prefix path of where to download and build third parts libraries."
+  "Prefix path where to download and build third parts libraries."
   )
 
 ## #############################################################################
