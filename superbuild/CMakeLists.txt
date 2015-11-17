@@ -64,6 +64,16 @@ unset(CMAKE_BUILD_TYPE CACHE)
 set(CMAKE_BUILD_TYPE_thirdparts Release CACHE STRING "Build type configuration for third parts libraries.")
 set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration specific to medInria.")
 
+
+## #############################################################################
+## Third parts prefix
+## #############################################################################
+
+set(EP_PREFIX_thirdparts 
+  ${CMAKE_SOURCE_DIR}/thirdparts CACHE STRING 
+  "Prefix path of where to download and build third parts libraries."
+  )
+
 ## #############################################################################
 ## Add modules
 ## #############################################################################

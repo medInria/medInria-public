@@ -82,7 +82,7 @@ ep_GeneratePatchCommand(ITK ITK_PATCH_COMMAND ITK_Mac_Rpath.patch)
 ## #############################################################################
 
 ExternalProject_Add(${ep}
-  PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+  PREFIX ${EP_PREFIX_thirdparts}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   ${ITK_PATCH_COMMAND}
