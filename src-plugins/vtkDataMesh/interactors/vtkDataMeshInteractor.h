@@ -60,6 +60,8 @@ public slots:
     void setWindowLevel (QHash<QString,QVariant>);
     void setColor(const QString &color);
     void setColor(QColor color);
+    void setMaxRange(double max);
+    void setMinRange(double min);
     void setVisibility(bool visible);
     void setEdgeVisibility(bool visible);
     void setRenderingType(const QString &type);
