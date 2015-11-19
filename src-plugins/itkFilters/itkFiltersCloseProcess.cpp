@@ -23,20 +23,17 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersCloseProcess::itkFiltersCloseProcess(itkFiltersCloseProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersCloseProcessPrivate(this), parent)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersCloseProcessPrivate(this), parent)
 {
     DTK_D(itkFiltersCloseProcess);
     
     d->filter = this;
-    d->output = NULL;
-    d->radius = 5;
-
     d->description = tr("ITK Close filter");
 }
 
 
 itkFiltersCloseProcess::itkFiltersCloseProcess(const itkFiltersCloseProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersCloseProcessPrivate(*other.d_func()), other)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersCloseProcessPrivate(*other.d_func()), other)
 {
 }
 
@@ -51,18 +48,6 @@ itkFiltersCloseProcess::~itkFiltersCloseProcess( void )
 bool itkFiltersCloseProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkCloseProcess", createitkFiltersCloseProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersCloseProcess::setParameter(double data, int channel)
-{
-    if (channel != 0)
-        return;
-    
-    DTK_D(itkFiltersCloseProcess);
-    d->radius = data;
-
 }
 
 //-------------------------------------------------------------------------------------------

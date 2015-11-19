@@ -23,19 +23,17 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersErodeProcess::itkFiltersErodeProcess(itkFiltersErodeProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersErodeProcessPrivate(this), parent)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersErodeProcessPrivate(this), parent)
 {
     DTK_D(itkFiltersErodeProcess);
     
     d->filter = this;
-    d->output = NULL;
-    d->radius = 5;
     d->description = tr("ITK Erode filter");
 }
 
 
 itkFiltersErodeProcess::itkFiltersErodeProcess(const itkFiltersErodeProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersErodeProcessPrivate(*other.d_func()), other)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersErodeProcessPrivate(*other.d_func()), other)
 {
 }
 
@@ -50,17 +48,6 @@ itkFiltersErodeProcess::~itkFiltersErodeProcess( void )
 bool itkFiltersErodeProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkErodeProcess", createitkFiltersErodeProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersErodeProcess::setParameter(double data, int channel)
-{
-    if (channel != 0)
-        return;
-    
-    DTK_D(itkFiltersErodeProcess);
-    d->radius = data;
 }
 
 //-------------------------------------------------------------------------------------------

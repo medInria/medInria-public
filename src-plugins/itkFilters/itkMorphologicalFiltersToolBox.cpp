@@ -36,7 +36,7 @@
 #include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
-#include <itkFiltersProcessBase.h>
+#include <itkMorphologicalFiltersProcessBase.h>
 
 #include <QtGui>
 
@@ -49,7 +49,7 @@ public:
     QRadioButton *mmButton, *pixelButton;
     
     QComboBox * filters;
-    dtkSmartPointer <itkFiltersProcessBase> process;
+    dtkSmartPointer <itkMorphologicalFiltersProcessBase> process;
     
     medProgressionStack * progressionStack;
 };
@@ -132,7 +132,6 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     setAboutPluginVisibility ( true );
 
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
-    connect ( d->pixelButton, SIGNAL ( toggled(bool) ), this, SLOT ( changeUnit(bool) ) );
 }
 
 itkMorphologicalFiltersToolBox::~itkMorphologicalFiltersToolBox()
@@ -242,7 +241,7 @@ void itkMorphologicalFiltersToolBox::setupItkErodeProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), 0 );
+    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
 }
 
 void itkMorphologicalFiltersToolBox::setupItkCloseProcess()
@@ -253,7 +252,7 @@ void itkMorphologicalFiltersToolBox::setupItkCloseProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), 0 );
+    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
 }
 
 void itkMorphologicalFiltersToolBox::setupItkOpenProcess()
@@ -264,7 +263,7 @@ void itkMorphologicalFiltersToolBox::setupItkOpenProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), 0 );
+    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
 }
 
 void itkMorphologicalFiltersToolBox::run ( void )
