@@ -222,49 +222,6 @@ void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
     }
 }
 
-void itkMorphologicalFiltersToolBox::setupItkDilateProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDilateProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
-}
-
-void itkMorphologicalFiltersToolBox::setupItkErodeProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkErodeProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
-}
-
-void itkMorphologicalFiltersToolBox::setupItkCloseProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkCloseProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
-}
-
-void itkMorphologicalFiltersToolBox::setupItkOpenProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
-}
 
 void itkMorphologicalFiltersToolBox::run ( void )
 {
@@ -274,31 +231,27 @@ void itkMorphologicalFiltersToolBox::run ( void )
     if ( !this->parentToolBox()->data() )
         return;
 
-//    if (d->process) {
-//        d->process->deleteLater();
-//    }
-    
-    //Set parameters :
-    //   channel 0 : filter type
-    //   channel 1,2,..,N : filter parameters
     switch ( d->filters->currentIndex() )
     {
     case 0: // dilate filter
-        this->setupItkDilateProcess();
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDilateProcess" );
         break;
     case 1: // erode filter
-        this->setupItkErodeProcess();
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkErodeProcess" );
         break;
     case 2: // close filter
-        this->setupItkCloseProcess();
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkCloseProcess" );
         break;
     case 3: // open filter
-        this->setupItkOpenProcess();
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
         break;
     }
 
     if (! d->process)
         return;
+        
+    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
 
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess ( d->process );
