@@ -41,7 +41,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url git://itk.org/ITK.git)
+set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
 set(git_tag v4.8.1)
 
 
