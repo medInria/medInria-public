@@ -13,7 +13,8 @@
 
 #pragma once
 
-#include <medAbstractProcess.h>
+#include <itkFiltersProcessBase.h>
+#include <itkFiltersProcessBase_p.h>
 #include <medAbstractImageData.h>
 #include <dtkLog/dtkLog.h>
 
@@ -24,53 +25,31 @@
 
 class itkMorphologicalFiltersProcessBase;
 
-class ITKFILTERSPLUGIN_EXPORT itkMorphologicalFiltersProcessBasePrivate : public medAbstractProcessPrivate
+class ITKFILTERSPLUGIN_EXPORT itkMorphologicalFiltersProcessBasePrivate : public itkFiltersProcessBasePrivate
 {
 public:
-    itkMorphologicalFiltersProcessBasePrivate(itkMorphologicalFiltersProcessBase *q = 0) : medAbstractProcessPrivate(q) {}
-    itkMorphologicalFiltersProcessBasePrivate(const itkMorphologicalFiltersProcessBasePrivate& other) : medAbstractProcessPrivate(other) {}
+    itkMorphologicalFiltersProcessBasePrivate(itkMorphologicalFiltersProcessBase *q = 0) : itkFiltersProcessBasePrivate(q) {}
+    itkMorphologicalFiltersProcessBasePrivate(const itkMorphologicalFiltersProcessBasePrivate& other) : itkFiltersProcessBasePrivate(other) {}
 
     virtual ~itkMorphologicalFiltersProcessBasePrivate(void) {}
-    
-    QString description;
-    QString filterType;
-    
-    itk::CStyleCommand::Pointer callback;
-    itkMorphologicalFiltersProcessBase *filter;
-    
-    dtkSmartPointer <medAbstractImageData> input;
-    dtkSmartPointer <medAbstractImageData> output;
+
+    int radius[3];
+    double radiusMm[3];
+    bool isRadiusInPixels;
+    int radiusInPixels;
 	
-	int radius[3];
-	double radiusMm[3];
-	bool isRadiusInPixels;
-	int radiusInPixels;
-    
-    template <class PixelType> void setupFilter() {}
-    virtual void setFilterDescription() {}
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData) {
-        itkMorphologicalFiltersProcessBasePrivate * source = reinterpret_cast<itkMorphologicalFiltersProcessBasePrivate *> ( clientData );
-        itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-    
-        if ( !source ) { dtkWarn() << "Source is null"; }
-    
-        source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-        
+    template <class ImageType> void convertMmInPixels ( void )
+    {
+        ImageType *image = dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) );
+        for (unsigned int i=0; i<image->GetSpacing().Size(); i++)
+        {
+            radius[i] = floor((radius[i]/image->GetSpacing()[i])+0.5); //rounding
+            radiusMm[i] = radius[i] * image->GetSpacing()[i];
+        }
     }
-	
-	template <class ImageType> void convertMmInPixels ( void )
-	{
-		ImageType *image = dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) );
-		for (unsigned int i=0; i<image->GetSpacing().Size(); i++)
-		{
-			radius[i] = floor((radius[i]/image->GetSpacing()[i])+0.5); //rounding
-			radiusMm[i] = radius[i] * image->GetSpacing()[i];
-		}
-	}
 
 };
 
-DTK_IMPLEMENT_PRIVATE(itkMorphologicalFiltersProcessBase, medAbstractProcess);
+DTK_IMPLEMENT_PRIVATE(itkMorphologicalFiltersProcessBase, itkFiltersProcessBase);
 
 

@@ -19,7 +19,7 @@
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
 itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorphologicalFiltersProcessBase *parent) 
-    : medAbstractProcess(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
+    : itkFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
 {
     DTK_D(itkMorphologicalFiltersProcessBase);
     
@@ -41,46 +41,14 @@ itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorpho
 
 
 itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other) 
-    : medAbstractProcess(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
+    : itkFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
 {
     
-}
-
-
-itkMorphologicalFiltersProcessBase& itkMorphologicalFiltersProcessBase::operator = (const itkMorphologicalFiltersProcessBase& other)
-{
-    return *this;
 }
 
 itkMorphologicalFiltersProcessBase::~itkMorphologicalFiltersProcessBase()
 {
     
-}
-
-void itkMorphologicalFiltersProcessBase::emitProgress(int progress)
-{
-    emit progressed(progress);
-}
-
-QString itkMorphologicalFiltersProcessBase::description()
-{
-    DTK_D(itkMorphologicalFiltersProcessBase);
-    
-    return d->description;
-}
-
-
-void itkMorphologicalFiltersProcessBase::setInput(medAbstractData *data, int channel)
-{
-    if (!data)
-        return;
- 
-    DTK_D(itkMorphologicalFiltersProcessBase);
-    
-    QString identifier = data->identifier();
-    
-    d->output = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
-    d->input = dynamic_cast<medAbstractImageData*> (data);
 }
 
 void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)
@@ -102,11 +70,3 @@ void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)
     if (channel == 0) //data is in mm
         d->isRadiusInPixels = false;
 }
-
-medAbstractData * itkMorphologicalFiltersProcessBase::output ( void )
-{
-    DTK_D(itkMorphologicalFiltersProcessBase);
-    
-    return ( d->output );
-}
-

@@ -13,14 +13,14 @@
 
 #pragma once
 
-#include <medAbstractProcess.h>
+#include <itkFiltersProcessBase.h>
 #include <medAbstractData.h>
 
 #include <itkFiltersPluginExport.h>
 
 class itkMorphologicalFiltersProcessBasePrivate;
 
-class ITKFILTERSPLUGIN_EXPORT itkMorphologicalFiltersProcessBase : public medAbstractProcess
+class ITKFILTERSPLUGIN_EXPORT itkMorphologicalFiltersProcessBase : public itkFiltersProcessBase
 {
     Q_OBJECT
 public:
@@ -29,22 +29,10 @@ public:
     virtual ~itkMorphologicalFiltersProcessBase(void);
     
 public:
-    itkMorphologicalFiltersProcessBase& operator = (const itkMorphologicalFiltersProcessBase& other);
-
-    QString description ( void );
-    
-    void setInput ( medAbstractData *data, int channel = 0 );
-	
-	void setParameter(double data, int channel);
-
-    medAbstractData *output ( void );
-    
-    void emitProgress(int progress);
+    void setParameter(double data, int channel);
     
 private:
     DTK_DECLARE_PRIVATE(itkMorphologicalFiltersProcessBase)
-    
-    using dtkAbstractProcess::description;
 };
 
 //ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkMorphologicalFiltersProcessBase& process);
