@@ -24,6 +24,7 @@
 #include <vtkWindow.h>
 
 #include <cmath>
+#include <algorithm>
 
 vtkStandardNewMacro(medVtkSeedPointHandle);
 

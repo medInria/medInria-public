@@ -58,14 +58,13 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
   ${medCore_INCLUDE_DIRS}
   ${medVtkInria_INCLUDE_DIRS}
-  ${${PROJECT_NAME}_BINARY_DIR}/shaders
   )
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
+add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_CFILES})
 
 ## #############################################################################
 ## Link
