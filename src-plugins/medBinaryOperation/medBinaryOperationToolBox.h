@@ -16,11 +16,6 @@
 #include <medFilteringAbstractToolBox.h>
 #include "medBinaryOperationPluginExport.h"
 
-#include "medToolBox.h"
-
-#include <medDataManager.h>
-
-
 class medBinaryOperationToolBoxPrivate;
 
 class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationToolBox : public medFilteringAbstractToolBox

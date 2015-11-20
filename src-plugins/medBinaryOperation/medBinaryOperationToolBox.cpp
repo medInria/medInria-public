@@ -16,25 +16,20 @@
 #include <QtGui>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medAbstractView.h>
-#include <medRunnableProcess.h>
-#include <medJobManager.h>
-
-#include <medAbstractImageData.h>
-
-#include <medToolBoxFactory.h>
-#include <medFilteringSelectorToolBox.h>
-#include <medProgressionStack.h>
-#include <medPluginManager.h>
-#include <medDataManager.h>
 #include <medAbstractDbController.h>
-#include <medMetaDataKeys.h>
-#include <medDropSite.h>
+#include <medAbstractImageData.h>
 #include <medAbstractProcess.h>
+#include <medDataManager.h>
+#include <medDropSite.h>
+#include <medFilteringSelectorToolBox.h>
+#include <medJobManager.h>
+#include <medMetaDataKeys.h>
+#include <medPluginManager.h>
+#include <medProgressionStack.h>
+#include <medRunnableProcess.h>
+#include <medToolBoxFactory.h>
 
 class medBinaryOperationToolBoxPrivate
 {
@@ -113,7 +108,7 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medFilte
     
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
-    d->secondInput = NULL;
+    d->secondInput = 0;
 }
 
 medBinaryOperationToolBox::~medBinaryOperationToolBox()
@@ -206,13 +201,7 @@ void medBinaryOperationToolBox::run()
 void medBinaryOperationToolBox::onSecondInputImported(const medDataIndex& index)
 {
     dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-    //// we accept only ROIs (itkDataImageUChar3)
-    //if (!data || data->identifier() != "itkDataImageUChar3")
-    //{
-    //    return;
-    //}
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
+
     medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
 
@@ -227,7 +216,8 @@ void medBinaryOperationToolBox::onSecondInputImported(const medDataIndex& index)
             shouldSkipLoading = true;
         }
     }
-    if (!shouldSkipLoading) {
+    if (!shouldSkipLoading)
+    {
         QImageReader reader(thumbpath);
         d->dropsite->setPixmap(QPixmap::fromImage(reader.read()));
     }

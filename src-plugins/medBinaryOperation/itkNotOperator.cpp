@@ -64,14 +64,19 @@ QString itkNotOperator::description() const
 
 void itkNotOperator::setInput (medAbstractData *data, int channel)
 {
-    if ( !data )
+    if (channel == 0)
     {
-        return;
+        d->input = data;
+        if ( data )
+        {
+            QString identifier = data->identifier();
+            d->output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
+        }
+        else
+        {
+            d->output = NULL;
+        }
     }
-
-    QString identifier = data->identifier();
-    d->output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
-    d->input = data;
 }    
 
 void itkNotOperator::setParameter ( double  data, int channel )
@@ -82,70 +87,73 @@ void itkNotOperator::setParameter ( double  data, int channel )
 // Convert medAbstractData to ITK volume
 int itkNotOperator::update()
 {
-    int res = EXIT_FAILURE;
+    int res = DTK_FAILURE;
 
-    QString id = d->input->identifier();
+    if (d->input)
+    {
+        QString id = d->input->identifier();
 
-    if ( id == "itkDataImageChar3" )
-    {
-        res = run< itk::Image <char,3> >();
-    }
-    else if ( id == "itkDataImageUChar3" )
-    {
-        res = run< itk::Image <unsigned char,3> >();
-    }
-    else if ( id == "itkDataImageShort3" )
-    {
-        res = run< itk::Image <short,3> >();
-    }
-    else if ( id == "itkDataImageUShort3" )
-    {
-        res = run< itk::Image <unsigned short,3> >();
-    }
-    else if ( id == "itkDataImageInt3" )
-    {
-        res = run< itk::Image <int,3> >();
-    }
-    else if ( id == "itkDataImageUInt3" )
-    {
-        res = run< itk::Image <unsigned int,3> >();
-    }
-    else if ( id == "itkDataImageLong3" )
-    {
-        res = run< itk::Image <long,3> >();
-    }
-    else if ( id== "itkDataImageULong3" )
-    {
-        res = run< itk::Image <unsigned long,3> >();
-    }
-    else if ( id == "itkDataImageFloat3" )
-    {
-        res = run< itk::Image <float,3> >();
-    }
-    else if ( id == "itkDataImageDouble3" )
-    {
-        res = run< itk::Image <double,3> >();
-    }
-    else
-    {
-        qDebug() << "Error : pixel type not yet implemented ("
-        << id
-        << ")";
+        if ( id == "itkDataImageChar3" )
+        {
+            res = run< itk::Image <char,3> >();
+        }
+        else if ( id == "itkDataImageUChar3" )
+        {
+            res = run< itk::Image <unsigned char,3> >();
+        }
+        else if ( id == "itkDataImageShort3" )
+        {
+            res = run< itk::Image <short,3> >();
+        }
+        else if ( id == "itkDataImageUShort3" )
+        {
+            res = run< itk::Image <unsigned short,3> >();
+        }
+        else if ( id == "itkDataImageInt3" )
+        {
+            res = run< itk::Image <int,3> >();
+        }
+        else if ( id == "itkDataImageUInt3" )
+        {
+            res = run< itk::Image <unsigned int,3> >();
+        }
+        else if ( id == "itkDataImageLong3" )
+        {
+            res = run< itk::Image <long,3> >();
+        }
+        else if ( id== "itkDataImageULong3" )
+        {
+            res = run< itk::Image <unsigned long,3> >();
+        }
+        else if ( id == "itkDataImageFloat3" )
+        {
+            res = run< itk::Image <float,3> >();
+        }
+        else if ( id == "itkDataImageDouble3" )
+        {
+            res = run< itk::Image <double,3> >();
+        }
+        else
+        {
+            qDebug() << "Error : pixel type not yet implemented ("
+                     << id
+                     << ")";
+        }
     }
     return res;
 }
 
 template <class ImageType> int itkNotOperator::run()
 {
-    if ( !d->input ||!d->input->data())
+    if ( !d->input->data() )
     {
-        return EXIT_FAILURE;
+        return DTK_FAILURE;
     }
     typename ImageType::Pointer image = dynamic_cast<ImageType  *> ( ( itk::Object* ) ( d->input->data() )) ;
 
     if (!image)
     {
-        return EXIT_FAILURE;
+        return DTK_FAILURE;
     }
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -173,12 +181,12 @@ template <class ImageType> int itkNotOperator::run()
 
     if (!d->output)
     {
-        return EXIT_FAILURE;
+        return DTK_FAILURE;
     }
 
     medUtilities::setDerivedMetaData(d->output, d->input, "NOT");
 
-    return EXIT_SUCCESS;
+    return DTK_SUCCEED;
 }        
 
 medAbstractData * itkNotOperator::output()
