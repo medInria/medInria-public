@@ -25,6 +25,7 @@ macro(set_plugin_install_rules_legacy
 
 set_target_properties(${target} PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
   ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
   )
 
@@ -32,7 +33,7 @@ set_target_properties(${target} PROPERTIES
 install(TARGETS ${project_name}
   RUNTIME DESTINATION plugins_legacy
   LIBRARY DESTINATION plugins_legacy
-  ARCHIVE DESTINATION lib
+  ARCHIVE DESTINATION plugins_legacy
   )
 
 endmacro()

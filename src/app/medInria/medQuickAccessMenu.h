@@ -18,7 +18,7 @@
 
 #include <QtGui>
 
-class MEDCORE_EXPORT medQuickAccessMenu : public QWidget
+class medQuickAccessMenu : public QWidget
 {
   Q_OBJECT
 public:
