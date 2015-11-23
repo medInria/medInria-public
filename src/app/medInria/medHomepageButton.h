@@ -17,7 +17,7 @@
 #include <QtWidgets>
 #include <medCoreExport.h>
 
-class MEDCORE_EXPORT medHomepagePushButton : public QPushButton
+class medHomepagePushButton : public QPushButton
 {
     Q_OBJECT   
     Q_PROPERTY(bool selected READ isSelected WRITE setSelected)
@@ -47,7 +47,7 @@ private:
     bool m_selected;
 };
 
-class MEDCORE_EXPORT medQuickAccessPushButton : public QPushButton
+class medQuickAccessPushButton : public QPushButton
 {
     Q_OBJECT
 
@@ -63,7 +63,7 @@ signals:
 
 
 
-class MEDCORE_EXPORT medHomepageButton : public QToolButton
+class medHomepageButton : public QToolButton
 {
     Q_OBJECT
 public:

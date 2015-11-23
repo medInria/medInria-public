@@ -36,31 +36,31 @@ void forceShow(medMainWindow& mainwindow )
     //       the foreground, so... instead we do what follows, depending on the
     //       operating system...
 
-#if defined(Q_OS_WIN)
-    // Retrieve window Id
+//#if defined(Q_OS_WIN)
+//    // Retrieve window Id
 
-    WId mainWinId = mainwindow.winId();
+//    WId mainWinId = mainwindow.winId();
 
-    // Bring main window to the foreground
-    SetForegroundWindow(mainWinId);
+//    // Bring main window to the foreground
+//    SetForegroundWindow(mainWinId);
 
-    // Show/restore the window, depending on its current state
+//    // Show/restore the window, depending on its current state
 
-    if (IsIconic(mainWinId))
-        ShowWindow(mainWinId, SW_RESTORE);
-    else
-        ShowWindow(mainWinId, SW_SHOW);
+//    if (IsIconic(mainWinId))
+//        ShowWindow(mainWinId, SW_RESTORE);
+//    else
+//        ShowWindow(mainWinId, SW_SHOW);
 
-    // Note: under Windows, to use activateWindow() will only highlight the
-    //       application in the taskbar, since under Windows no application
-    //       should be allowed to bring itself to the foreground when another
-    //       application is already in the foreground. Fair enough, but it
-    //       happens that, here, the user wants medInria to be brought to the
-    //       foreground, hence the above code to get the effect we are after...
-#else
+//    // Note: under Windows, to use activateWindow() will only highlight the
+//    //       application in the taskbar, since under Windows no application
+//    //       should be allowed to bring itself to the foreground when another
+//    //       application is already in the foreground. Fair enough, but it
+//    //       happens that, here, the user wants medInria to be brought to the
+//    //       foreground, hence the above code to get the effect we are after...
+//#else
     mainwindow.activateWindow();
     mainwindow.raise();
-#endif
+//#endif
 }
 
 int main(int argc,char* argv[])

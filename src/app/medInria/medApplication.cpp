@@ -203,12 +203,12 @@ void medApplication::initialize()
 
     medCore::pluginManager::initialize(QString(pluginVarArray.constData()));
 
-    // for TEST:
-    QString key = medCore::arithmeticalOperation::addImage::pluginFactory().keys().first();
-    auto process = medCore::arithmeticalOperation::addImage::pluginFactory().create(key);
-
-//    qDebug() << "THIS IS A TEST\n\tCREATED PROCESS:" << process->metaObject()->className() << process->caption() << process->description();
-    medJobManager *m = medJobManager::instance();
+//    // for TEST:
+//    QString key = medCore::arithmeticalOperation::addImage::pluginFactory().keys().first();
+//    auto process = medCore::arithmeticalOperation::addImage::pluginFactory().create(key);
+//
+////    qDebug() << "THIS IS A TEST\n\tCREATED PROCESS:" << process->metaObject()->className() << process->caption() << process->description();
+//    medJobManager *m = medJobManager::instance();
 
     //    // gui layer:
     //    medGuiLayer::area::pluginManager().setVerboseLoading(true);

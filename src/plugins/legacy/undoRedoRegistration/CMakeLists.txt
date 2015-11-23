@@ -64,24 +64,10 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 
 
 ## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${TARGET_NAME}_PCH
-    ${MEDPLUGINSPCH_H}
-    ${MEDPLUGINSPCH_CPP}
-    ${${TARGET_NAME}_SOURCES}
-    )
-endif()
-
-
-## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
@@ -92,7 +78,8 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
+  Qt5::Core
+  Qt5::Widgets
   dtkLog
   dtkCore
   medCore
