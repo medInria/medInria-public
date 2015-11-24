@@ -17,8 +17,6 @@
 #include "itkXorOperator.h"
 #include "medBinaryOperationPlugin.h"
 #include "medBinaryOperationToolBox.h"
-#include "itkFiltersBinaryCloseProcess.h"
-#include "itkFiltersBinaryOpenProcess.h"
 
 #include <dtkLog/dtkLog.h>
 
@@ -76,16 +74,6 @@ bool medBinaryOperationPlugin::initialize()
     if (!medBinaryOperationToolBox::registered())
     {
         dtkWarn() << "Unable to register medBinaryOperation toolbox";
-    }
-
-    if (!itkFiltersBinaryCloseProcess::registered())
-    {
-        dtkWarn() << "Unable to register itkFiltersBinaryCloseProcess toolbox";
-    }
-
-    if (!itkFiltersBinaryOpenProcess::registered())
-    {
-        dtkWarn() << "Unable to register itkFiltersBinaryOpenProcess toolbox";
     }
 
     return true;

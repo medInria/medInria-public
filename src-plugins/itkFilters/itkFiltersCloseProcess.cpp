@@ -55,7 +55,7 @@ bool itkFiltersCloseProcess::registered( void )
 int itkFiltersCloseProcess::update ( void )
 {
     DTK_D(itkFiltersCloseProcess);
-    
+
     if ( !d->input )
         return -1;
 

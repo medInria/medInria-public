@@ -35,8 +35,3 @@ private:
     DTK_DECLARE_PRIVATE(itkMorphologicalFiltersProcessBase)
 };
 
-//ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkMorphologicalFiltersProcessBase& process);
-//ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkMorphologicalFiltersProcessBase *process);
-
-
-

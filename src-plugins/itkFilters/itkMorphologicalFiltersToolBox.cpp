@@ -56,7 +56,6 @@ public:
 
 itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
 {
-    qDebug() << "itkMorphologicalFiltersToolBox";
     //Filters selection combobox
     d->filters = new QComboBox;
     d->filters->setObjectName("Dilate");
@@ -64,7 +63,9 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     filtersList << "Dilate "
                 << "Erode "
                 << "Close "
-                << "Open ";
+                << "Open "
+                << "Binary Close"
+                << "Binary Open";
     
     d->filters->addItems ( filtersList );
 
@@ -159,10 +160,7 @@ medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
 
 void itkMorphologicalFiltersToolBox::clear()
 {
-    qDebug() << "Clear itk morphological filters toolbox";
-
-    d->dataTypeValue->setText ( "Unknown" );
-    
+    d->dataTypeValue->setText ( "Unknown" );    
 }
 
 void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
@@ -244,6 +242,12 @@ void itkMorphologicalFiltersToolBox::run ( void )
         break;
     case 3: // open filter
         d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
+        break;
+    case 4: // binary close filter
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryCloseProcess" );
+        break;
+    case 5: // binary open filter
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryOpenProcess" );
         break;
     }
 

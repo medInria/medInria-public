@@ -39,19 +39,19 @@ public:
         typedef itk::Image< PixelType, 3 > ImageType;
         
         if(!isRadiusInPixels)
+        {
             convertMmInPixels<ImageType>();
+        }
 
         typedef itk::FlatStructuringElement < 3> StructuringElementType;
         StructuringElementType::RadiusType elementRadius;
         elementRadius[0] = radius[0];
         elementRadius[1] = radius[1];
         elementRadius[2] = radius[2];
-        
-        typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  OpenType;
-        typename OpenType::Pointer openFilter = OpenType::New();
-        
         StructuringElementType ball = StructuringElementType::Ball(elementRadius);
 
+        typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  OpenType;
+        typename OpenType::Pointer openFilter = OpenType::New();
         openFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         openFilter->SetKernel ( ball );
         
