@@ -12,13 +12,9 @@
 =========================================================================*/
 
 #include <itkFiltersBinaryOpenProcess.h>
+#include <itkFiltersBinaryOpenProcess_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
-
-#include <itkFiltersBinaryOpenProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 
@@ -36,13 +32,9 @@ itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryO
 {
 }
 
-//-------------------------------------------------------------------------------------------
-
 itkFiltersBinaryOpenProcess::~itkFiltersBinaryOpenProcess( void )
 {
 }
-
-//-------------------------------------------------------------------------------------------
 
 bool itkFiltersBinaryOpenProcess::registered( void )
 {
@@ -51,7 +43,6 @@ bool itkFiltersBinaryOpenProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-// Convert medAbstractData to ITK volume
 int itkFiltersBinaryOpenProcess::update()
 {
     DTK_D(itkFiltersBinaryOpenProcess);

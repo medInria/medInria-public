@@ -13,17 +13,13 @@
 
 #pragma once
 
-#include <medAbstractData.h>
-
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
-#include <medMetaDataKeys.h>
-
-#include <itkCommand.h>
 #include <itkImage.h>
+#include <itkCommand.h>
 #include <itkBinaryMorphologicalClosingImageFilter.h>
-#include <itkBinaryBallStructuringElement.h>
 #include <itkMinimumMaximumImageFilter.h>
+#include <medMetaDataKeys.h>
 
 class itkFiltersBinaryCloseProcess;
 

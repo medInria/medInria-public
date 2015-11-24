@@ -12,13 +12,9 @@
 =========================================================================*/
 
 #include <itkFiltersOpenProcess.h>
+#include <itkFiltersOpenProcess_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
-
-#include <itkFiltersOpenProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 
@@ -36,13 +32,9 @@ itkFiltersOpenProcess::itkFiltersOpenProcess(const itkFiltersOpenProcess& other)
 {
 }
 
-//-------------------------------------------------------------------------------------------
-
 itkFiltersOpenProcess::~itkFiltersOpenProcess( void )
 {
 }
-
-//-------------------------------------------------------------------------------------------
 
 bool itkFiltersOpenProcess::registered( void )
 {

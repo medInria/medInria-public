@@ -12,13 +12,9 @@
 =========================================================================*/
 
 #include <itkFiltersCloseProcess.h>
+#include <itkFiltersCloseProcess_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
-
-#include <itkFiltersCloseProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 
@@ -36,13 +32,9 @@ itkFiltersCloseProcess::itkFiltersCloseProcess(const itkFiltersCloseProcess& oth
 {
 }
 
-//-------------------------------------------------------------------------------------------
-
 itkFiltersCloseProcess::~itkFiltersCloseProcess( void )
 {
 }
-
-//-------------------------------------------------------------------------------------------
 
 bool itkFiltersCloseProcess::registered( void )
 {

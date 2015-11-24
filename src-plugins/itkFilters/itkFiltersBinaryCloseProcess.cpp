@@ -12,13 +12,9 @@
 =========================================================================*/
 
 #include <itkFiltersBinaryCloseProcess.h>
+#include <itkFiltersBinaryCloseProcess_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
-
-#include <itkFiltersBinaryCloseProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 
@@ -31,19 +27,14 @@ itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(itkFiltersBinaryClose
     d->description = tr("ITK Binary Close filter");
 }
 
-
 itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other)
     : itkMorphologicalFiltersProcessBase(*new itkFiltersBinaryCloseProcessPrivate(*other.d_func()), other)
 {
 }
 
-//-------------------------------------------------------------------------------------------
-
 itkFiltersBinaryCloseProcess::~itkFiltersBinaryCloseProcess( void )
 {
 }
-
-//-------------------------------------------------------------------------------------------
 
 bool itkFiltersBinaryCloseProcess::registered( void )
 {
