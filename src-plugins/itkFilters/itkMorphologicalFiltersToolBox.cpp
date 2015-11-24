@@ -100,7 +100,6 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     morphoFilterLayout->addStretch ( 1 );
     filterWidget->setLayout ( morphoFilterLayout );
 
-
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
     runButton->setObjectName("Run");
@@ -153,8 +152,9 @@ bool itkMorphologicalFiltersToolBox::registered()
 medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
 {
     if ( !d->process )
+    {
         return NULL;
-
+    }
     return d->process->output();
 }
 
@@ -220,53 +220,52 @@ void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
     }
 }
 
-
 void itkMorphologicalFiltersToolBox::run ( void )
 {
-    if ( !this->parentToolBox() )
-        return;
-
-    if ( !this->parentToolBox()->data() )
-        return;
-
-    switch ( d->filters->currentIndex() )
+    if ( this->parentToolBox() )
     {
-    case 0: // dilate filter
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDilateProcess" );
-        break;
-    case 1: // erode filter
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkErodeProcess" );
-        break;
-    case 2: // close filter
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkCloseProcess" );
-        break;
-    case 3: // open filter
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
-        break;
-    case 4: // binary close filter
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryCloseProcess" );
-        break;
-    case 5: // binary open filter
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryOpenProcess" );
-        break;
+        if ( this->parentToolBox()->data() )
+        {
+            switch ( d->filters->currentIndex() )
+            {
+            case 0: // dilate filter
+                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDilateProcess" );
+                break;
+            case 1: // erode filter
+                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkErodeProcess" );
+                break;
+            case 2: // close filter
+                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkCloseProcess" );
+                break;
+            case 3: // open filter
+                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
+                break;
+            case 4: // binary close filter
+                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryCloseProcess" );
+                break;
+            case 5: // binary open filter
+                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryOpenProcess" );
+                break;
+            }
+
+            if (! d->process)
+                return;
+
+            d->process->setInput ( this->parentToolBox()->data() );
+            d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
+
+            medRunnableProcess *runProcess = new medRunnableProcess;
+            runProcess->setProcess ( d->process );
+
+            d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
+
+            connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
+            connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
+
+            medJobManager::instance()->registerJobItem ( runProcess );
+            QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
+        }
     }
-
-    if (! d->process)
-        return;
-        
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
-
-    medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess ( d->process );
-
-    d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
-
-    connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
-    connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
-
-    medJobManager::instance()->registerJobItem ( runProcess );
-    QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
 }
 
 dtkPlugin* itkMorphologicalFiltersToolBox::plugin()

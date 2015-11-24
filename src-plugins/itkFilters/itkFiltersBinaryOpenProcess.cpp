@@ -31,7 +31,6 @@ itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenPro
     d->description = tr("ITK Binary Open filter");
 }
 
-
 itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other)
     : itkMorphologicalFiltersProcessBase(*new itkFiltersBinaryOpenProcessPrivate(*other.d_func()), other)
 {
