@@ -15,9 +15,11 @@
 
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
-#include <itkImage.h>
-#include <itkCommand.h>
 #include <itkGrayscaleMorphologicalClosingImageFilter.h>
+#include <itkCommand.h>
+#include <itkImage.h>
+#include <itkMinimumMaximumImageFilter.h>
+
 #include <medMetaDataKeys.h>
 
 class itkFiltersCloseProcess;
@@ -59,13 +61,16 @@ public:
         
         closeFilter->Update();
         output->setData ( closeFilter->GetOutput() );
-        
+
         // Add description on output data
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
 
-        newSeriesDescription += " Close filter\n("+ QString::number(radiusMm[0])+", "+
-                QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2]);
-        isRadiusInPixels? newSeriesDescription += " px": newSeriesDescription += " mm";
+        if (isRadiusInPixels)
+            newSeriesDescription += " Close filter\n("+ QString::number(radius[0])+", "+
+            QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
+        else
+            newSeriesDescription += " Close filter\n("+ QString::number(radiusMm[0])+", "+
+            QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }

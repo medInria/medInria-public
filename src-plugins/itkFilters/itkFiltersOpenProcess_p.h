@@ -15,9 +15,11 @@
 
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
-#include <itkImage.h>
-#include <itkCommand.h>
 #include <itkGrayscaleMorphologicalOpeningImageFilter.h>
+#include <itkCommand.h>
+#include <itkImage.h>
+#include <itkMinimumMaximumImageFilter.h>
+
 #include <medMetaDataKeys.h>
 
 class itkFiltersOpenProcess;
@@ -60,12 +62,15 @@ public:
         openFilter->Update();
         output->setData ( openFilter->GetOutput() );
         
-        // Add description on output data
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
 
-        newSeriesDescription += " Open filter\n("+ QString::number(radiusMm[0])+", "+
-                QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2]);
-        isRadiusInPixels? newSeriesDescription += " px": newSeriesDescription += " mm";
+        // Add description on output data
+        if (isRadiusInPixels)
+            newSeriesDescription += " Open filter\n("+ QString::number(radius[0])+", "+
+            QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
+        else
+            newSeriesDescription += " Open filter\n("+ QString::number(radiusMm[0])+", "+
+            QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
