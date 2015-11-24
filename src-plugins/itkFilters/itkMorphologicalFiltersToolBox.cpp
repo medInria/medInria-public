@@ -248,22 +248,22 @@ void itkMorphologicalFiltersToolBox::run ( void )
                 break;
             }
 
-            if (! d->process)
-                return;
+            if ( d->process )
+            {
+                d->process->setInput ( this->parentToolBox()->data() );
+                d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
 
-            d->process->setInput ( this->parentToolBox()->data() );
-            d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
+                medRunnableProcess *runProcess = new medRunnableProcess;
+                runProcess->setProcess ( d->process );
 
-            medRunnableProcess *runProcess = new medRunnableProcess;
-            runProcess->setProcess ( d->process );
+                d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
 
-            d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
+                connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
+                connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
 
-            connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
-            connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
-
-            medJobManager::instance()->registerJobItem ( runProcess );
-            QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
+                medJobManager::instance()->registerJobItem ( runProcess );
+                QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
+            }
         }
     }
 }

@@ -68,14 +68,12 @@ public:
         Filter->Update();
         output->setData ( Filter->GetOutput() );
 
+        // Add description on output data
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
 
-        if (isRadiusInPixels)
-            newSeriesDescription += " Bin.Open filter\n("+ QString::number(radius[0])+", "+
-            QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
-        else
-            newSeriesDescription += " Bin.Open filter\n("+ QString::number(radiusMm[0])+", "+
-            QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
+        newSeriesDescription += " Bin.Open filter\n("+ QString::number(radius[0])+", "+
+                QString::number(radius[1])+", "+ QString::number(radius[2]);
+        isRadiusInPixels? newSeriesDescription += " px": newSeriesDescription += " mm";
 
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
