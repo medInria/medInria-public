@@ -41,7 +41,7 @@ public:
     shapeBasedInterpolation();
     virtual ~shapeBasedInterpolation();
     void run();
-    void setInput(MaskType::Pointer input0, MaskType::Pointer input1, MaskType::Pointer input2, MaskType::Pointer input3);
+    void setInput(MaskType::Pointer input);
     MaskType::Pointer output();
 
 signals:

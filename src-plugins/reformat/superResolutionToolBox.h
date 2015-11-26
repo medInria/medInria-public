@@ -38,14 +38,9 @@ public:
     void onRoiImportedDo(const medDataIndex& index, int inputNumber);
     medAbstractData* processOutput();
 
-    /** Save current container when clicked*/
-    
-
 public slots:
     void enableRunButton(const bool enable);
-    void updateView();
 
-    /** Instantiate the superResolutionProcess using the instance of the dtkAbstractProcessFactory.*/
     void runProcessRequest();
 
 protected slots:

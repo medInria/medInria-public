@@ -20,8 +20,6 @@
 #include <itkBinaryDilateImageFilter.h>
 #include <itkBinaryErodeImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
-
-//#include <itkGradientMagnitudeImageFilter.h>
 #include <itkDerivativeImageFilter.h>
 #include <itkNormalizeImageFilter.h>
 #include <itkSignedMaurerDistanceMapImageFilter.h>
@@ -312,8 +310,6 @@ void shapeBasedInterpolationPrivate::computeIntermediateMRISlice(Mask2dType::Poi
 // Compute Distance Map, Gradient & Normalization on a 3D volume
 void shapeBasedInterpolationPrivate::computeGradientMap(int inputNumber)
 {
-    cout<<"shapeBasedInterpolationPrivate::computeGradientMap"<<endl;
-
     // A'->A'3d and B'->B'3d doing 3D-distance maps on volumes A' and B'
     typedef itk::SignedMaurerDistanceMapImageFilter < MaskType, MaskFloatType > DistanceMap3DType;
     DistanceMap3DType::Pointer distanceMap3DFilter = DistanceMap3DType::New();
@@ -460,15 +456,12 @@ shapeBasedInterpolation::~shapeBasedInterpolation()
     d = NULL;
 }
 
-void shapeBasedInterpolation::setInput(MaskType::Pointer input0, MaskType::Pointer input1, MaskType::Pointer input2, MaskType::Pointer input3)
+void shapeBasedInterpolation::setInput(MaskType::Pointer input)
 {
-    if (!input0 || !input1 || !input2 || !input3)
-        return;
-
-    d->input.push_back(input0);
-    d->input.push_back(input1);
-    d->input.push_back(input2);
-    d->input.push_back(input3);
+    if (input)
+    {
+        d->input.push_back(input);
+    }
 }
 
 // return output
