@@ -201,7 +201,13 @@ void medBinaryOperationToolBox::run()
 void medBinaryOperationToolBox::onSecondInputImported(const medDataIndex& index)
 {
     dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-
+    //// we accept only ROIs (itkDataImageUChar3)
+    //if (!data || data->identifier() != "itkDataImageUChar3")
+    //{
+    //    return;
+    //}
+    // put the thumbnail in the medDropSite as well
+    // (code copied from @medDatabasePreviewItem)
     medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
 
@@ -216,8 +222,7 @@ void medBinaryOperationToolBox::onSecondInputImported(const medDataIndex& index)
             shouldSkipLoading = true;
         }
     }
-    if (!shouldSkipLoading)
-    {
+    if (!shouldSkipLoading) {
         QImageReader reader(thumbpath);
         d->dropsite->setPixmap(QPixmap::fromImage(reader.read()));
     }
