@@ -67,11 +67,13 @@ superResolutionToolBox::superResolutionToolBox (QWidget *parent) : medSegmentati
     d->dropOrOpenRoi0->setToolTip(tr("Drop 1st binary mask"));
     d->dropOrOpenRoi0->setText(tr("Drop 1st mask"));
     d->dropOrOpenRoi0->setCanAutomaticallyChangeAppereance(false);
+    dropBoxLayout0->addWidget(d->dropOrOpenRoi0);
 
     d->dropOrOpenRoi1 = new medDropSite(superResolutionToolBoxBody);
     d->dropOrOpenRoi1->setToolTip(tr("Drop 2nd binary mask"));
     d->dropOrOpenRoi1->setText(tr("Drop 2nd mask"));
     d->dropOrOpenRoi1->setCanAutomaticallyChangeAppereance(false);
+    dropBoxLayout0->addWidget(d->dropOrOpenRoi1);
 
     // Drop box for volumes
     QHBoxLayout *dropBoxLayout1 = new QHBoxLayout(superResolutionToolBoxBody);
@@ -80,17 +82,14 @@ superResolutionToolBox::superResolutionToolBox (QWidget *parent) : medSegmentati
     d->dropOrOpenRoi2->setToolTip(tr("Drop anatomic volume"));
     d->dropOrOpenRoi2->setText(tr("Drop 1st volume"));
     d->dropOrOpenRoi2->setCanAutomaticallyChangeAppereance(false);
+    dropBoxLayout1->addWidget(d->dropOrOpenRoi2);
 
     d->dropOrOpenRoi3 = new medDropSite(superResolutionToolBoxBody);
     d->dropOrOpenRoi3->setToolTip(tr("Drop 2nd anatomic volume"));
     d->dropOrOpenRoi3->setText(tr("Drop 2nd volume"));
     d->dropOrOpenRoi3->setCanAutomaticallyChangeAppereance(false);
-
-
-    dropBoxLayout0->addWidget(d->dropOrOpenRoi0);
-    dropBoxLayout0->addWidget(d->dropOrOpenRoi1);
-    dropBoxLayout1->addWidget(d->dropOrOpenRoi2);
     dropBoxLayout1->addWidget(d->dropOrOpenRoi3);
+
     superResolutionToolBoxLayout->addLayout(dropBoxLayout0);
     superResolutionToolBoxLayout->addLayout(dropBoxLayout1);
 
@@ -134,67 +133,27 @@ void superResolutionToolBox::onRoiImportedDo(const medDataIndex& index, int inpu
 {
     medAbstractData * data = medDataManager::instance()->retrieveData(index);
 
-    if (!data){return;}
-
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
-    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
+    switch (inputNumber)
     {
-        // first try to get it from controller
-        QPixmap thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            switch (inputNumber)
-            {
-                case 0: {
-                    d->dropOrOpenRoi0->setPixmap(thumbImage);
-                    break;
-                }
-                case 1: {
-                    d->dropOrOpenRoi1->setPixmap(thumbImage);
-                    break;
-                }
-                case 2:
-                {
-                    d->dropOrOpenRoi2->setPixmap(thumbImage);
-                    break;
-                }
-                case 3:
-                {
-                    d->dropOrOpenRoi3->setPixmap(thumbImage);
-                }
-           }
-            shouldSkipLoading = true;
-        }
+    case 0:
+    {
+        d->dropOrOpenRoi0->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi0->sizeHint()));
+        break;
     }
-    if (!shouldSkipLoading) {
-
-        QImageReader reader(thumbpath);
-
-        switch (inputNumber)
-        {
-            case 0: {
-                d->dropOrOpenRoi0->setPixmap(QPixmap::fromImage(reader.read()));
-                break;
-            }
-            case 1: {
-                d->dropOrOpenRoi1->setPixmap(QPixmap::fromImage(reader.read()));
-                break;
-            }
-            case 2:
-            {
-                d->dropOrOpenRoi2->setPixmap(QPixmap::fromImage(reader.read()));
-                break;
-            }
-            case 3:
-            {
-                d->dropOrOpenRoi3->setPixmap(QPixmap::fromImage(reader.read()));
-            }
-       }
+    case 1:
+    {
+        d->dropOrOpenRoi1->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi1->sizeHint()));
+        break;
+    }
+    case 2:
+    {
+        d->dropOrOpenRoi2->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi2->sizeHint()));
+        break;
+    }
+    case 3:
+    {
+        d->dropOrOpenRoi3->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi3->sizeHint()));
+    }
     }
 
     d->inputs.push_back(data);

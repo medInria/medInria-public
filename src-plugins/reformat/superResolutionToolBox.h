@@ -40,8 +40,8 @@ public:
 
 public slots:
     void enableRunButton(const bool enable);
-
     void runProcessRequest();
+    void updateView(){}
 
 protected slots:
 
