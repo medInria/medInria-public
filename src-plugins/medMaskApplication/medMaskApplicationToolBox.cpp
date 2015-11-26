@@ -33,7 +33,6 @@
 #include <medProgressionStack.h>
 #include <medPluginManager.h>
 #include <medDataManager.h>
-#include <medAbstractDbController.h>
 #include <medMetaDataKeys.h>
 #include <medDropSite.h>
 
@@ -172,85 +171,26 @@ void medMaskApplicationToolBox::run()
 
 void medMaskApplicationToolBox::importMask(const medDataIndex& index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
-    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
-    {
-        // first try to get it from controller
-        QPixmap thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            d->maskDropSite->setPixmap(thumbImage);
-            shouldSkipLoading = true;
-        }
-    }
-    if (!shouldSkipLoading)
-    {
-        QImageReader reader(thumbpath);
-        d->maskDropSite->setPixmap(QPixmap::fromImage(reader.read()));
-    }
+    d->mask = medDataManager::instance()->retrieveData(index);
+    d->maskDropSite->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->maskDropSite->sizeHint()));
 
     if(!d->process)
     {
         d->process= new medMaskApplication;
     }
-
-    d->mask = data;
-    if (!d->process)
-    {
-        return;
-    }
-    d->process->setInput(data, 0);
+    d->process->setInput(d->mask, 0);
 }
 
 void medMaskApplicationToolBox::importImage(const medDataIndex& index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
+    d->data = medDataManager::instance()->retrieveData(index);
+    d->imageDropSite->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->imageDropSite->sizeHint()));
 
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
-    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
-    {
-        // first try to get it from controller
-        QPixmap thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            d->imageDropSite->setPixmap(thumbImage);
-            shouldSkipLoading = true;
-        }
-    }
-    if (!shouldSkipLoading)
-    {
-        QImageReader reader(thumbpath);
-        d->imageDropSite->setPixmap(QPixmap::fromImage(reader.read()));
-    }
-
-    if (!data)
-    {
-        return;
-    }
     if(!d->process)
     {
         d->process= new medMaskApplication;
     }
-    d->data = data;
-    
-    if (!d->process)
-    {
-        return;
-    }
-    d->process->setInput(data, 1);
-
+    d->process->setInput(d->data, 1);
 }
 
 void medMaskApplicationToolBox::clearMask(void)
