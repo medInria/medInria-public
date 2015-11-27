@@ -16,8 +16,10 @@
 #include <QtGlobal>
 
 #if defined(MEDPLUGINS_EXPORTS)
+#  undef MEDPLUGINS_EXPORT
 #  define MEDPLUGINS_EXPORT Q_DECL_EXPORT
 #else
+#  undef MEDPLUGINS_EXPORT
 #  define MEDPLUGINS_EXPORT Q_DECL_IMPORT
 #endif
 
