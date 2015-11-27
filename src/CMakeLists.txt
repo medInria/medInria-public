@@ -171,8 +171,3 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
     )
 endif()
 
-configure_file(${CMAKE_SOURCE_DIR}/cmake/medInria-dev.bat.in
-  ${CMAKE_BINARY_DIR}/medInria-dev.bat
-  )
-
-
