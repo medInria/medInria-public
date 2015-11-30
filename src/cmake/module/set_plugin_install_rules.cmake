@@ -22,17 +22,20 @@ macro(set_plugin_install_rules
 #
 ################################################################################
 
-set_target_properties(${target} PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/
-  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/
-  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/
-  DEFINE_SYMBOL MEDPLUGINS_EXPORT
-  )
+if(WIN32)
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins
+    )
+else()
+  set_target_properties(${target} PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins
+    )
+endif()
+
 
 install(TARGETS ${target}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins
+  RUNTIME DESTINATION bin/plugins
+  LIBRARY DESTINATION bin/plugins
   )
 
 endmacro()

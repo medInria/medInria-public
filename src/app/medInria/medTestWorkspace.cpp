@@ -33,14 +33,21 @@ public:
 
 medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
 {
-    QString key = medCore::morphomathOperation::openingImage::pluginFactory().keys().first();
-    d->process = medCore::morphomathOperation::openingImage::pluginFactory().create(key);
-    d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(d->process);
+    d->presenter = NULL;
+    d->process = NULL;
 
-    medToolBox* tb = new medToolBox;
-    tb->addWidget(d->presenter->buildToolBoxWidget());
-    tb->setTitle(d->process->caption());
-    this->addToolBox(tb);
+    QStringList openingImagePlugins = medCore::morphomathOperation::openingImage::pluginFactory().keys();
+    if(!openingImagePlugins.isEmpty())
+    {
+        QString key = openingImagePlugins.first();
+        d->process = medCore::morphomathOperation::openingImage::pluginFactory().create(key);
+        d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(d->process);
+
+        medToolBox* tb = new medToolBox;
+        tb->addWidget(d->presenter->buildToolBoxWidget());
+        tb->setTitle(d->process->caption());
+        this->addToolBox(tb);
+    }
 }
 
 medTestWorkspace::~medTestWorkspace()
@@ -51,7 +58,8 @@ medTestWorkspace::~medTestWorkspace()
 
 void medTestWorkspace::setupTabbedViewContainer()
 {
-    this->tabbedViewContainers()->setSplitter(0, d->presenter->buildViewContainerSplitter());
+    if(d->presenter != NULL)
+        this->tabbedViewContainers()->setSplitter(0, d->presenter->buildViewContainerSplitter());
 }
 
 bool medTestWorkspace::isUsable()

@@ -20,9 +20,9 @@
 
 #include <medIntParameter.h>
 
-#include <medPluginExport.h>
+#include <medItkArithmeticOperationProcessPluginExport.h>
 
-class MEDPLUGINS_EXPORT medItkMultiplyImageProcess: public medAbstractMultiplyImageProcess
+class MEDITKARITHMETICOPERATIONPROCESSPLUGINS_EXPORTS medItkMultiplyImageProcess: public medAbstractMultiplyImageProcess
 {
     Q_OBJECT
 public:

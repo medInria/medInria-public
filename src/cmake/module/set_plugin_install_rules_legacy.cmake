@@ -23,17 +23,19 @@ macro(set_plugin_install_rules_legacy
 ################################################################################
 
 
-set_target_properties(${target} PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
-  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
-  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins_legacy/
-  )
-
+if(WIN32)
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins_legacy
+    )
+else()
+  set_target_properties(${target} PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins_legacy
+    )
+endif()
 
 install(TARGETS ${project_name}
-  RUNTIME DESTINATION plugins_legacy
-  LIBRARY DESTINATION plugins_legacy
-  ARCHIVE DESTINATION plugins_legacy
+  RUNTIME DESTINATION bin/plugins_legacy
+  LIBRARY DESTINATION bin/plugins_legacy
   )
 
 endmacro()

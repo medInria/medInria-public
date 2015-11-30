@@ -51,7 +51,8 @@ QPushButton* medAbstractProcessPresenter::buildRunButton()
     connect(runButton, &QPushButton::clicked,
             this, &medAbstractProcessPresenter::_runProcessFromThread);
     connect(d->process, &medAbstractProcess::running,
-            runButton, &QPushButton::setDisabled);
+            runButton, &QPushButton::setDisabled,
+            Qt::QueuedConnection);
 
     return runButton;
 }
@@ -61,9 +62,11 @@ QPushButton* medAbstractProcessPresenter::buildCancelButton()
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     cancelButton->setEnabled(d->process->isRunning());
     connect(cancelButton, &QPushButton::clicked,
-            d->process, &medAbstractProcess::cancel);
+            d->process, &medAbstractProcess::cancel,
+            Qt::QueuedConnection);
     connect(d->process, &medAbstractProcess::running,
-            cancelButton, &QPushButton::setEnabled);
+            cancelButton, &QPushButton::setEnabled,
+            Qt::QueuedConnection);
 
     return cancelButton;
 }

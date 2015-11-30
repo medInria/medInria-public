@@ -124,7 +124,6 @@ if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_definitions(-DQT_NO_DEBUG)
 endif()
 
-
 ## #############################################################################
 ## Windows specificity
 ## #############################################################################
@@ -170,4 +169,3 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
     @ONLY IMMEDIATE
     )
 endif()
-
