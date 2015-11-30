@@ -187,6 +187,6 @@ void medApplication::initialize()
 
 
     // process layer:
-    QString pluginsPath = MEDINRIA_PLUGINS_DIR;
+    QString pluginsPath = getenv("MEDINRIA_PLUGINS_DIR");
     medCore::pluginManager::initialize(pluginsPath);
 }
