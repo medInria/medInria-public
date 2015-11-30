@@ -132,7 +132,7 @@ medAbstractJob::medJobExitStatus medItkDivideImageProcess::_run()
         medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        return medAbstractJob::MED_JOB_EXIT_SUCCES;
+        return medAbstractJob::MED_JOB_EXIT_SUCCESS;
     }
     return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }

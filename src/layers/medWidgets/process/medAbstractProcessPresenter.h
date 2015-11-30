@@ -20,6 +20,7 @@
 
 class QWidget;
 class QPushButton;
+class medViewContainerSplitter;
 
 class medAbstractProcessPresenterPrivate;
 class MEDWIDGETS_EXPORT medAbstractProcessPresenter : public QObject
@@ -33,6 +34,8 @@ public:
     virtual medAbstractProcess *process() const = 0;
 
     virtual QWidget *buildToolBoxWidget() = 0;
+    virtual medViewContainerSplitter *buildViewContainerSplitter() = 0;
+
     QPushButton *buildRunButton();
     QPushButton *buildCancelButton();
 

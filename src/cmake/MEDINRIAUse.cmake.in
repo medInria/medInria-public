@@ -11,14 +11,14 @@
 #
 ################################################################################
 
-if(NOT MEDINRIA_USE_FILE_INCLUDED)
-  set(MEDINRIA_INCLUDE_DIRS
-    ${MEDINRIA_INCLUDE_DIR} #Could be usefull if we want an SDK one day.
-    ${MEDINRIA_INCLUDE_DIRS}
+if(NOT medInria_USE_FILE_INCLUDED)
+  set(medInria_INCLUDE_DIRS
+    ${medInria_INCLUDE_DIR} #Could be usefull if we want an SDK one day.
+    ${medInria_INCLUDE_DIRS}
     )
   
-  include_directories(BEFORE ${MEDINRIA_INCLUDE_DIRS})
-  link_directories(${MEDINRIA_LIBRARY_DIR})
+  include_directories(BEFORE ${medInria_INCLUDE_DIRS})
+  link_directories(${medInria_LIBRARY_DIR})
   
-  set(MEDINRIA_USE_FILE_INCLUDED 1)
+  set(medInria_USE_FILE_INCLUDED 1)
 endif()

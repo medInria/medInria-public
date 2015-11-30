@@ -35,7 +35,7 @@ medAbstractProcess::~medAbstractProcess()
 {
 }
 
-void medAbstractProcess::regsiterParameter(medAbstractParameter * parameter)
+void medAbstractProcess::registerParameter(medAbstractParameter * parameter)
 {
     parameter->setParent(this);
     d->parameters.insert(parameter->id(), parameter);

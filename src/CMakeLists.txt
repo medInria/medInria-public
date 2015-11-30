@@ -13,11 +13,11 @@
 
 cmake_minimum_required(VERSION 3.2)
 
-if(NOT DEFINED ${MEDINRIA_VERSION})
-    set(MEDINRIA_VERSION 3.0.0.0)
+if(NOT DEFINED ${medInria_VERSION})
+    set(medInria_VERSION 3.0.0.0)
 endif()
 
-project(medInria VERSION ${MEDINRIA_VERSION})
+project(medInria VERSION ${medInria_VERSION})
 
 
 ## #############################################################################

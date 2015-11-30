@@ -11,61 +11,50 @@
 
 =========================================================================*/
 
-#include <medAbstractMorphomathOperationProcessPresenter.h>
+#include <medAbstractDWIMaskingProcessPresenter.h>
 
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QProgressBar>
 
-#include <medIntParameter.h>
-#include <medIntParameterPresenter.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
 #include <medDataManager.h>
-#include <medAbstractImageView.h>
 #include <medAbstractImageData.h>
 
-class medAbstractMorphomathOperationProcessPresenterPrivate
+class medAbstractDWIMaskingProcessPresenterPrivate
 {
 public:
-    medAbstractMorphomathOperationProcess *process;
-    medIntParameterPresenter *progressionPresenter;
-    medIntParameterPresenter *kernelRadiusPresenter;
+    medAbstractDWIMaskingProcess *process;
 };
 
-medAbstractMorphomathOperationProcessPresenter::medAbstractMorphomathOperationProcessPresenter(medAbstractMorphomathOperationProcess *parent)
-    : medAbstractProcessPresenter(parent), d(new medAbstractMorphomathOperationProcessPresenterPrivate)
+medAbstractDWIMaskingProcessPresenter::medAbstractDWIMaskingProcessPresenter(medAbstractDWIMaskingProcess *parent)
+    : medAbstractProcessPresenter(parent), d(new medAbstractDWIMaskingProcessPresenterPrivate)
 {
     d->process = parent;
-    d->kernelRadiusPresenter = new medIntParameterPresenter(d->process->kernelRadius());
-    d->progressionPresenter = new medIntParameterPresenter(d->process->progression());
 
-    connect(d->process, &medAbstractMorphomathOperationProcess::finished,
-            this, &medAbstractMorphomathOperationProcessPresenter::_importOutput,
-            Qt::QueuedConnection);
+    connect(d->process, &medAbstractDWIMaskingProcess::finished,
+            this, &medAbstractDWIMaskingProcessPresenter::_importOutput);
 }
 
-medAbstractMorphomathOperationProcessPresenter::~medAbstractMorphomathOperationProcessPresenter()
+medAbstractDWIMaskingProcessPresenter::~medAbstractDWIMaskingProcessPresenter()
 {
 }
 
-QWidget *medAbstractMorphomathOperationProcessPresenter::buildToolBoxWidget()
+QWidget *medAbstractDWIMaskingProcessPresenter::buildToolBoxWidget()
 {
     QWidget *tbWidget = new QWidget;
     QVBoxLayout *tbLayout = new QVBoxLayout;
     tbWidget->setLayout(tbLayout);
 
-    tbLayout->addWidget(d->kernelRadiusPresenter->buildWidget());
     tbLayout->addWidget(this->buildRunButton());
-    tbLayout->addWidget(d->progressionPresenter->buildProgressBar());
     tbLayout->addWidget(this->buildCancelButton());
 
     return tbWidget;
 }
 
-medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildViewContainerSplitter()
+medViewContainerSplitter *medAbstractDWIMaskingProcessPresenter::buildViewContainerSplitter()
 {
     medViewContainerSplitter* splitter = new medViewContainerSplitter;
     medViewContainer *inputContainer = new medViewContainer;
@@ -73,20 +62,19 @@ medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildV
 
     medViewContainer * outputContainer = inputContainer->splitVertically();
 
-    inputContainer->setDefaultWidget(new QLabel("INPUT"));
+    inputContainer->setDefaultWidget(new QLabel("Input DWI"));
     inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer->setUserSplittable(false);
     inputContainer->setMultiLayered(false);
 
-    outputContainer->setDefaultWidget(new QLabel("OUTPUT"));
+    outputContainer->setDefaultWidget(new QLabel("Output mask"));
     outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     outputContainer->setUserSplittable(false);
     outputContainer->setMultiLayered(false);
     outputContainer->setUserOpenable(false);
 
     connect(inputContainer, &medViewContainer::dataAdded,
-            this, &medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer);
-
+            this, &medAbstractDWIMaskingProcessPresenter::_setInputFromContainer);
 
     connect(this, SIGNAL(_outputImported(medAbstractData*)),
             outputContainer, SLOT(addData(medAbstractData*)),
@@ -96,13 +84,13 @@ medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildV
 }
 
 
-void medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer(medAbstractData *data)
+void medAbstractDWIMaskingProcessPresenter::_setInputFromContainer(medAbstractData *data)
 {
     d->process->setInput(qobject_cast<medAbstractImageData *>(data));
 }
 
 
-void medAbstractMorphomathOperationProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
+void medAbstractDWIMaskingProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {
     if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_SUCCESS)
     {
