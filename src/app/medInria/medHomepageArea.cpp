@@ -17,12 +17,12 @@
 #endif
 
 #include <medHomepageButton.h>
+#include <medAbstractWorkspaceLegacy.h>
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
-#include <dtkComposer/dtkComposerWidget.h>
 
 
 class medHomepageAreaPrivate
@@ -40,7 +40,6 @@ public:
 
     QWidget * aboutWidget;
     QTabWidget * aboutTabWidget;
-
     QWidget * pluginWidget;
     QWidget * settingsWidget;
     medSettingsEditor* settingsEditor;
@@ -52,7 +51,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 {
     //Setup navigation widget (with buttons for accessing available workspaces)
     d->navigationWidget = new QWidget ( this );
-    d->navigationWidget->setMinimumWidth ( 250 );
+    d->navigationWidget->setMinimumWidth ( 400 );
 
     //Setup the widget where the medInria general information are displayed
     d->infoWidget = new QWidget ( this );
@@ -69,7 +68,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutWidget->setMinimumSize(400,300);
 
     d->aboutWidget->hide();
-
 
 
     //User widget content with settings, about and help buttons
@@ -133,13 +131,13 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 //     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>medInria</b> is a multi-platform medical image "
-                           "processing and visualization software, "
-                           "and it's <b>free</b>. Through an intuitive user "
+    textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
+                           "processing and visualisation software, "
+                           "and it is <b>free</b>. Through an intuitive user "
                            "interface, <b>medInria</b> offers from standard "
                            "to cutting-edge processing functionalities for "
                            "your medical images such as 2D/3D/4D image "
-                           "visualization, image registration, or diffusion "
+                           "visualisation, image registration, or diffusion "
                            "MR processing and tractography." ));
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
@@ -163,7 +161,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
 
     QString aboutText = QString(tr("<br/><br/>"
-                      "medInria %1 is the medical imaging platform developed at "
+                      "medInria %1 is a medical imaging platform developed at "
                       "Inria<br/><br/>"
                       "<center>Inria, Copyright 2013</center>"))
                       .arg(qApp->applicationVersion());
@@ -264,6 +262,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsLayout->addWidget(d->settingsEditor);
     settingsLayout->addLayout(settingsHideButtonLayout);
 
+
+
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
@@ -353,12 +353,14 @@ void medHomepageArea::initPage()
 {
     //Initialization of the navigation widget with available workspaces
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
-    QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
-    workspaceButtonsLayout->setSpacing ( 10 );
-    QLabel * workspaceLabel = new QLabel ( "<b>Available workspaces</b>" );
-    workspaceLabel->setTextFormat(Qt::RichText);
-    workspaceLabel->setAlignment(Qt::AlignHCenter);
-    workspaceButtonsLayout->addWidget ( workspaceLabel );
+
+    QVBoxLayout * workspaceButtonsLayoutBasic = new QVBoxLayout;
+    workspaceButtonsLayoutBasic->setSpacing ( 10 );
+    QLabel * workspaceLabelBasic = new QLabel ( "<b>Basic</b>" );
+    workspaceLabelBasic->setTextFormat(Qt::RichText);
+    workspaceLabelBasic->setAlignment(Qt::AlignHCenter);
+    workspaceLabelBasic->setMargin(10);
+    workspaceButtonsLayoutBasic->addWidget ( workspaceLabelBasic );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
@@ -368,45 +370,97 @@ void medHomepageArea::initPage()
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
     browserButton->setFocusPolicy ( Qt::NoFocus );
-    workspaceButtonsLayout->addWidget ( browserButton );
+    browserButton->setToolTip("Workspace to manage and import data.");
+    workspaceButtonsLayoutBasic->addWidget ( browserButton );
+    workspaceButtonsLayoutBasic->addSpacing(10);
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
+
+    medHomepageButton * composerButton = new medHomepageButton ( this );
+    composerButton->setText ("Composer");
+    composerButton->setFocusPolicy ( Qt::NoFocus );
+    composerButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    composerButton->setMinimumHeight ( 40 );
+    composerButton->setMaximumWidth ( 250 );
+    composerButton->setMinimumWidth ( 250 );
+    composerButton->setToolTip("Opens the composer workspace");
+    composerButton->setIdentifier("composer");
+    workspaceButtonsLayoutBasic->addWidget ( composerButton );
+    workspaceButtonsLayoutBasic->addSpacing(10);
+    QObject::connect ( composerButton, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowComposer() ) );
+
+    QVBoxLayout * workspaceButtonsLayoutMethodology = new QVBoxLayout;
+    workspaceButtonsLayoutMethodology->setSpacing ( 10 );
+    QLabel * workspaceLabelMethodology = new QLabel ( "<b>Methodology</b>" );
+    workspaceLabelMethodology->setTextFormat(Qt::RichText);
+    workspaceLabelMethodology->setAlignment(Qt::AlignHCenter);
+    workspaceLabelMethodology->setMargin(10);
+    workspaceButtonsLayoutMethodology->addWidget ( workspaceLabelMethodology );
+
+    QVBoxLayout * workspaceButtonsLayoutClinical = new QVBoxLayout;
+    workspaceButtonsLayoutClinical->setSpacing ( 10 );
+    QLabel * workspaceLabelClinical = new QLabel ( "<b>Clinical</b>" );
+    workspaceLabelClinical->setTextFormat(Qt::RichText);
+    workspaceLabelClinical->setAlignment(Qt::AlignHCenter);
+    workspaceLabelClinical->setMargin(10);
+    workspaceButtonsLayoutClinical->addWidget ( workspaceLabelClinical );
+
+    QVBoxLayout * workspaceButtonsLayoutOther = new QVBoxLayout;
+    workspaceButtonsLayoutOther->setSpacing ( 10 );
+    QLabel * workspaceLabelOther = new QLabel ( "<b>Other</b>" );
+    workspaceLabelOther->setTextFormat(Qt::RichText);
+    workspaceLabelOther->setAlignment(Qt::AlignHCenter);
+    workspaceLabelOther->setMargin(10);
+    workspaceButtonsLayoutOther->addWidget ( workspaceLabelOther );
 
     foreach ( medWorkspaceFactory::Details* detail, workspaceDetails)
     {
         medHomepageButton * button = new medHomepageButton ( this );
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
-        button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
         button->setMinimumHeight ( 40 );
         button->setMaximumWidth ( 250 );
         button->setMinimumWidth ( 250 );
         button->setToolTip(detail->description);
         button->setIdentifier(detail->identifier);
-        workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
         if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
         {
             button->setDisabled(true);
             button->setToolTip("No useful plugin has been found for this workspace.");
         }
+        if(!detail->category.compare("Basic")) {
+            workspaceButtonsLayoutBasic->addWidget ( button );
+            workspaceButtonsLayoutBasic->addSpacing(10);
+        }
+        else if(!detail->category.compare("Methodology")) {
+            workspaceButtonsLayoutMethodology->addWidget ( button );
+            workspaceButtonsLayoutMethodology->addSpacing(10);
+        }
+        else if(!detail->category.compare("Clinical")) {
+            workspaceButtonsLayoutClinical->addWidget ( button );
+            workspaceButtonsLayoutClinical->addSpacing(10);
+        }
+        else {
+            workspaceButtonsLayoutOther->addWidget ( button );
+            workspaceButtonsLayoutOther->addSpacing(10);
+        }
     }
+    workspaceButtonsLayoutBasic->addStretch();
+    workspaceButtonsLayoutMethodology->addStretch();
+    workspaceButtonsLayoutClinical->addStretch();
+    workspaceButtonsLayoutOther->addStretch();
 
-    medHomepageButton * button = new medHomepageButton ( this );
-    button->setText ("Composer");
-    button->setFocusPolicy ( Qt::NoFocus );
-    button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-    button->setMinimumHeight ( 40 );
-    button->setMaximumWidth ( 250 );
-    button->setMinimumWidth ( 250 );
-    button->setToolTip("Opens the composer workspace");
-    button->setIdentifier("composer");
-    workspaceButtonsLayout->addWidget ( button );
-    QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowComposer() ) );
-
-    workspaceButtonsLayout->addStretch();
+    QGridLayout* workspaceButtonsLayout = new QGridLayout;
+    workspaceButtonsLayout->setColumnMinimumWidth(0,120);
+    workspaceButtonsLayout->setColumnMinimumWidth(1,120);
+    workspaceButtonsLayout->setColumnMinimumWidth(2,120);
+    workspaceButtonsLayout->setColumnMinimumWidth(3,120);
+    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutBasic,0,0);
+    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutMethodology,0,1);
+    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutClinical,0,2);
+    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutOther,0,3);
+    workspaceButtonsLayout->setSpacing(40);
     d->navigationWidget->setLayout ( workspaceButtonsLayout );
-    d->navigationWidget->setProperty ( "pos", QPoint ( 100,  100 ) );
-    d->navigationWidget->setMinimumHeight ( 55 * ( 1 + workspaceDetails.size() ) );
 }
 
 QParallelAnimationGroup* medHomepageArea::getAnimation()
@@ -445,11 +499,6 @@ void medHomepageArea::onShowInfo()
     d->infoWidget->setFocus();
 }
 
-void medHomepageArea::onShowComposer()
-{
-    emit showComposer();
-}
-
 void medHomepageArea::onShowHelp()
 {
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
@@ -466,3 +515,10 @@ void medHomepageArea::onShowSettings()
 }
 
 
+
+
+
+void medHomepageArea::onShowComposer()
+{
+    emit showComposer();
+}
