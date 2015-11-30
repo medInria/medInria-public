@@ -20,17 +20,13 @@ namespace pluginManager
 {
     void initialize(const QString& path, bool verbose)
     {
-        QString realpath=path;
-        if (path.isEmpty())
+        for(QString const& realpath : path.split(';'))
         {
-            // Use settings to get plugins location.
-//                dtkLinearAlgebraSparseSettings linear_algebra_sparse_settings;
-//                linear_algebra_sparse_settings.beginGroup("linear-algebra-sparse");
-//                realpath = linear_algebra_sparse_settings.value("plugins").toString();
-//                linear_algebra_sparse_settings.endGroup();
+            if(realpath.isEmpty())
+                break;
+            medCore::arithmeticalOperation::initialize(realpath, verbose);
+            medCore::morphomathOperation::initialize(realpath, verbose);
         }
-        medCore::arithmeticalOperation::initialize(realpath);
-        medCore::morphomathOperation::initialize(realpath);
     }
 }
 

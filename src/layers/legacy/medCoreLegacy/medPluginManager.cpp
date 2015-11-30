@@ -70,39 +70,7 @@ void medPluginManager::uninitialize()
 */
 void medPluginManager::readSettings(void)
 {
-//    QDir plugins_dir;
-//    QString defaultPath;
-//#ifdef Q_OS_MAC
-//    plugins_dir = qApp->applicationDirPath() + "/../PlugIns_Legacy";
-//#else
-//    plugins_dir = qApp->applicationDirPath() + "/../plugins_legacy";
-//#endif
-//    defaultPath = plugins_dir.absolutePath();
-
-//    const char PLUGIN_LEGACY_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_LEGACY_PATH";
-//    QByteArray pluginVarArray = qgetenv(PLUGIN_LEGACY_PATH_VAR_NAME);
-
-//    // Path for extra plugins
-//    QString extraPlugins_path = medStorage::dataLocation() + "/../medInria-plugins_legacy";
-
-//    if ( !pluginVarArray.isEmpty() )
-//    {
-
-//    }
-//    else
-//    {
-//        setPath(defaultPath + ":" + extraPlugins_path);
-//    }
-
-//    if(path().isEmpty()) {
-//        qWarning() << "Your config does not seem to be set correctly.";
-//        qWarning() << "Please set plugins.path.";
-//        qWarning() << "Default directory would be: " << defaultPath;
-//    }
-    setPath(MEDINRIA_PLUGINS_DIR_LEGACY);
-    qDebug() << "MEDINRIA_PLUGINS_DIR_LEGACY : " << MEDINRIA_PLUGINS_DIR_LEGACY;
-
-
+    setPath(QString(getenv("MEDINRIA_PLUGINS_DIR_LEGACY")));
 }
 
 /**
