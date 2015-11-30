@@ -15,9 +15,9 @@
 
 #include <medAbstractArithmeticOperationProcess.h>
 
-#include <medPluginExport.h>
+#include <medItkArithmeticOperationProcessPluginExport.h>
 
-class MEDPLUGINS_EXPORT medItkArithmeticOperationProcessPlugin : public medAbstractArithmeticOperationProcessPlugin
+class MEDITKARITHMETICOPERATIONPROCESSPLUGINS_EXPORTS medItkArithmeticOperationProcessPlugin : public medAbstractArithmeticOperationProcessPlugin
 {
     Q_OBJECT
 

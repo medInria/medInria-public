@@ -20,11 +20,11 @@
 
 #include <medIntParameter.h>
 
-#include <medPluginExport.h>
+#include <medItkMorphomathOperationProcessPluginExport.h>
 
 class medItkDilateImageProcessPrivate;
 
-class MEDPLUGINS_EXPORT medItkDilateImageProcess: public medAbstractDilateImageProcess
+class MEDITKMORPHOMATHOPERATIONPROCESSPLUGIN_EXPORT medItkDilateImageProcess: public medAbstractDilateImageProcess
 {
     Q_OBJECT
 public:

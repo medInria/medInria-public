@@ -186,31 +186,7 @@ void medApplication::initialize()
     datafactory->registerDataType<medSeedPointAnnotationData>();
 
 
-    QDir plugins_dir;
-    QString defaultPath;
-#ifdef Q_OS_MAC
-    plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
-#else
-    plugins_dir = qApp->applicationDirPath() + "/../plugins";
-#endif
-    defaultPath = plugins_dir.absolutePath();
-
     // process layer:
-    medCore::pluginManager::initialize(defaultPath);
-
-    const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
-    QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
-
-    medCore::pluginManager::initialize(QString(pluginVarArray.constData()));
-
-//    // for TEST:
-//    QString key = medCore::arithmeticalOperation::addImage::pluginFactory().keys().first();
-//    auto process = medCore::arithmeticalOperation::addImage::pluginFactory().create(key);
-//
-////    qDebug() << "THIS IS A TEST\n\tCREATED PROCESS:" << process->metaObject()->className() << process->caption() << process->description();
-//    medJobManager *m = medJobManager::instance();
-
-    //    // gui layer:
-    //    medGuiLayer::area::pluginManager().setVerboseLoading(true);
-    //    medGuiLayer::area::pluginManager().initialize(defaultPath);
+    QString pluginsPath = MEDINRIA_PLUGINS_DIR;
+    medCore::pluginManager::initialize(pluginsPath);
 }

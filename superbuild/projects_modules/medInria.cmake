@@ -100,10 +100,9 @@ set(cmake_args
 ## #############################################################################
 
 ExternalProject_Add(${ep}
-  PREFIX ${CMAKE_CURRENT_BINARY_DIR}
-  SOURCE_DIR ${CMAKE_SOURCE_DIR}/src
-  BINARY_DIR ${CMAKE_BINARY_DIR}/medInria-build
-  STAMP_DIR ${CMAKE_BINARY_DIR}/medInria-stamp
+  SOURCE_DIR ${medInria_SOURCE_DIR}
+  BINARY_DIR ${medInria_BINARY_DIR}
+  STAMP_DIR ${medinria_Stamp_DIR}
   UPDATE_COMMAND ""
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS ${cmake_args}
@@ -111,36 +110,6 @@ ExternalProject_Add(${ep}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
   )
-
-# ## #############################################################################
-# ## Add step to get revisions
-# ## #############################################################################
-
-# # Create a revisions directory in the binary dir.
-# ExternalProject_Get_Property(${ep} binary_dir)
-# set(revisions_dir ${binary_dir}/revisions)
-# file(MAKE_DIRECTORY ${revisions_dir})
-
-# # Write out values into cmake module that will be loaded during configuration
-# #TODO : Would be a good idea to find a better way.
-# set(revisions_args ${revisions_dir}/revisions_args.cmake)
-# file(WRITE ${revisions_args}
-#   "set(projects ${external_projects})\n"
-#   )
-# file(APPEND ${revisions_args}
-#   "set(sp_source_dir ${CMAKE_SOURCE_DIR})\n"
-#   )
-# file(APPEND ${revisions_args}
-#   "set(GET_REVISIONS_MODULE_PATH ${GET_REVISIONS_MODULE_PATH})\n"
-#   )
-
-# ExternalProject_Add_Step(${ep} get-revisions
-#     COMMAND cmake ${GET_REVISIONS_MODULE_PATH}
-#     COMMENT "Get projects revisions"
-#     DEPENDEES download    
-#     ALWAYS 1
-#     WORKING_DIRECTORY ${revisions_dir}
-#     )
 
 ## #############################################################################
 ## Set variable to provide infos about the project

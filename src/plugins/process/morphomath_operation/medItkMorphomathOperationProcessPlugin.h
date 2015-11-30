@@ -15,9 +15,9 @@
 
 #include <medAbstractMorphomathOperationProcess.h>
 
-#include <medPluginExport.h>
+#include <medItkMorphomathOperationProcessPluginExport.h>
 
-class MEDPLUGINS_EXPORT medItkMorphomathOperationProcessPlugin : public medAbstractMorphomathOperationProcessPlugin
+class MEDITKMORPHOMATHOPERATIONPROCESSPLUGIN_EXPORT medItkMorphomathOperationProcessPlugin : public medAbstractMorphomathOperationProcessPlugin
 {
     Q_OBJECT
 

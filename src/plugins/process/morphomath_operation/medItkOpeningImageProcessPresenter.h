@@ -16,9 +16,9 @@
 #include <medAbstractOpeningImageProcessPresenter.h>
 #include <medItkOpeningImageProcess.h>
 
-#include <medPluginExport.h>
+#include <medItkMorphomathOperationProcessPluginExport.h>
 
-class MEDPLUGINS_EXPORT medItkOpeningImageProcessPresenter: public medAbstractOpeningImageProcessPresenter
+class MEDITKMORPHOMATHOPERATIONPROCESSPLUGIN_EXPORT medItkOpeningImageProcessPresenter: public medAbstractOpeningImageProcessPresenter
 {
     Q_OBJECT
 public:

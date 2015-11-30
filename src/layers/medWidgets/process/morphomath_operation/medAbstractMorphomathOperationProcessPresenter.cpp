@@ -44,7 +44,8 @@ medAbstractMorphomathOperationProcessPresenter::medAbstractMorphomathOperationPr
     d->progressionPresenter = new medIntParameterPresenter(d->process->progression());
 
     connect(d->process, &medAbstractMorphomathOperationProcess::finished,
-            this, &medAbstractMorphomathOperationProcessPresenter::_importOutput);
+            this, &medAbstractMorphomathOperationProcessPresenter::_importOutput,
+            Qt::QueuedConnection);
 }
 
 medAbstractMorphomathOperationProcessPresenter::~medAbstractMorphomathOperationProcessPresenter()
@@ -89,7 +90,8 @@ medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildV
 
 
     connect(this, SIGNAL(_outputImported(medAbstractData*)),
-            outputContainer, SLOT(addData(medAbstractData*)));
+            outputContainer, SLOT(addData(medAbstractData*)),
+            Qt::QueuedConnection);
 
     return splitter;
 }

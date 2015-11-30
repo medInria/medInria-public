@@ -75,6 +75,14 @@ set(EP_PREFIX_thirdparts
   )
 
 ## #############################################################################
+## medInria dirs.
+## #############################################################################
+set(medInria_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
+set(medInria_BINARY_DIR ${CMAKE_BINARY_DIR}/medInria-build)
+set(medInria_STAMP_DIR ${CMAKE_BINARY_DIR}/medInria-stamp)
+
+
+## #############################################################################
 ## Add modules
 ## #############################################################################
 

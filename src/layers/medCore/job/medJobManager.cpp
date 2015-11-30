@@ -81,11 +81,10 @@ void medJobManager::startJobInThread(medAbstractJob *job)
     QThreadPool::globalInstance()->start(new medJobRunner(job));
 }
 
-medJobRunner::medJobRunner(medAbstractJob *parent)
-    : QObject(parent)
+medJobRunner::medJobRunner(medAbstractJob *job)
+    : QObject(NULL)
 {
-//    setAutoDelete(false);
-    m_job = parent;
+    m_job = job;
 }
 
 void medJobRunner::run()

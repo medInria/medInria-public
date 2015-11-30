@@ -39,7 +39,9 @@ medViewContainerSplitter::~medViewContainerSplitter()
     // There is no  'takeItem()' or 'removeWidget()' or wathever methode to remove a widget from a QSplitter.
     // this is used to remove the ownership of the container, If the parent splitter end up with no child it will be deleted.
     // see medViewContainerSplitter::~medViewContainerSplitter() and medViewContainerSplitter::checkIfStillDeserveToLive()
-    this->setParent(NULL);
+
+    // Apparently this is not needed with Qt5 anymore.
+//    this->setParent(NULL);
 }
 
 medViewContainer * medViewContainerSplitter::splitHorizontally(medViewContainer *sender)
