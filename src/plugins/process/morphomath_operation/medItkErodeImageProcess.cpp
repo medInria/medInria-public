@@ -136,7 +136,7 @@ medAbstractJob::medJobExitStatus medItkErodeImageProcess::_run()
         medAbstractImageData *out= dynamic_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        return medAbstractJob::MED_JOB_EXIT_SUCCES;
+        return medAbstractJob::MED_JOB_EXIT_SUCCESS;
     }
     return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }

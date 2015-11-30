@@ -25,6 +25,7 @@ namespace pluginManager
             if(realpath.isEmpty())
                 break;
             medCore::arithmeticalOperation::initialize(realpath, verbose);
+            medCore::dwiMasking::initialize(realpath, verbose);
             medCore::morphomathOperation::initialize(realpath, verbose);
             medCore::maskImage::initialize(realpath, verbose);
         }
@@ -94,6 +95,34 @@ namespace arithmeticalOperation
         {
             return _private::factory;
         }
+    }
+}
+
+// DWI masking
+
+namespace dwiMasking
+{
+    namespace _private
+    {
+        medAbstractDWIMaskingProcessPluginManager manager;
+        medAbstractDWIMaskingProcessPluginFactory factory;
+    }
+
+    medAbstractDWIMaskingProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    void initialize(const QString& path, bool verbose)
+    {
+        if(verbose)
+            pluginManager().setVerboseLoading(verbose);
+        pluginManager().initialize(path);
+    }
+
+    medAbstractDWIMaskingProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
     }
 }
 

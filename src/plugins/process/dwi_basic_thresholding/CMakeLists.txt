@@ -11,7 +11,14 @@
 #
 ################################################################################
 
-set(TARGET_NAME medCore)
+set(TARGET_NAME medItkDWIBasicThresholdingProcessPlugin)
+
+## #############################################################################
+## Resolve dependencies
+## #############################################################################
+
+find_package(ITK)
+include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -19,13 +26,6 @@ set(TARGET_NAME medCore)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  process
-  process/arithmetic_operation
-  process/diffusion_processes
-  process/morphomath_operation
-  process/mask_image
-  parameter
-  job
   )
 
 list_header_directories_to_include(${TARGET_NAME}
@@ -36,6 +36,7 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
+
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
@@ -43,31 +44,28 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
   )
-
+# PRIVATE because plugins are not supposed to be used somewhere else
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  medCoreLegacy
+  ITKCommon
   Qt5::Core
-  dtkCoreSupport
-  dtkGuiSupport
+  dtkCore
   dtkLog
-  dtkComposer
+  medCore
   )
 
 ## #############################################################################
-## install
+## Install rules
 ## #############################################################################
 
-set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
+set_plugin_install_rules(${TARGET_NAME})

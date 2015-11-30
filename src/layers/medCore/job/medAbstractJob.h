@@ -31,7 +31,7 @@ public:
     {
         MED_JOB_EXIT_FAILURE,
         MED_JOB_EXIT_CANCELLED,
-        MED_JOB_EXIT_SUCCES
+        MED_JOB_EXIT_SUCCESS
     };
     Q_ENUMS(medJobExitStatus)
 

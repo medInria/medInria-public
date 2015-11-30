@@ -28,6 +28,7 @@
 #include <medAbstractClosingImageProcess.h>
 
 #include <medAbstractMaskImageProcess.h>
+#include <medAbstractDWIMaskingProcess.h>
 
 #include <medCoreExport.h>
 
@@ -60,6 +61,13 @@ namespace medCore
         {
             MEDCORE_EXPORT medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
         }
+    }
+
+    namespace dwiMasking
+    {
+        MEDCORE_EXPORT medAbstractDWIMaskingProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+        MEDCORE_EXPORT medAbstractDWIMaskingProcessPluginFactory& pluginFactory(void);
     }
 
     namespace morphomathOperation
