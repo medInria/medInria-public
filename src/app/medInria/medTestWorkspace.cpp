@@ -20,14 +20,16 @@
 #include <medProcessPresenterFactory.h>
 #include <medAbstractOpeningImageProcess.h>
 #include <medAbstractOpeningImageProcessPresenter.h>
+#include <medAbstractMaskImageProcess.h>
+#include <medAbstractMaskImageProcessPresenter.h>
 
 #include <medToolBox.h>
 
 class medTestWorkspacePrivate
 {
 public:
-  medAbstractOpeningImageProcess *process;
-  medAbstractOpeningImageProcessPresenter *presenter;
+  medAbstractMaskImageProcess *process;
+  medAbstractMaskImageProcessPresenter *presenter;
 
 };
 
@@ -36,12 +38,12 @@ medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy 
     d->presenter = NULL;
     d->process = NULL;
 
-    QStringList openingImagePlugins = medCore::morphomathOperation::openingImage::pluginFactory().keys();
-    if(!openingImagePlugins.isEmpty())
+    QStringList plugins = medCore::maskImage::pluginFactory().keys();
+    if(!plugins.isEmpty())
     {
-        QString key = openingImagePlugins.first();
-        d->process = medCore::morphomathOperation::openingImage::pluginFactory().create(key);
-        d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(d->process);
+        QString key = plugins.first();
+        d->process = medCore::maskImage::pluginFactory().create(key);
+        d->presenter = medWidgets::maskImage::presenterFactory().create(d->process);
 
         medToolBox* tb = new medToolBox;
         tb->addWidget(d->presenter->buildToolBoxWidget());

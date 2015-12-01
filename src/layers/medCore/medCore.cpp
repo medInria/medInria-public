@@ -26,6 +26,7 @@ namespace pluginManager
                 break;
             medCore::arithmeticalOperation::initialize(realpath, verbose);
             medCore::morphomathOperation::initialize(realpath, verbose);
+            medCore::maskImage::initialize(realpath, verbose);
         }
     }
 }
@@ -44,8 +45,7 @@ namespace arithmeticalOperation
     }
     void initialize(const QString& path, bool verbose)
     {
-        if(verbose)
-            pluginManager().setVerboseLoading(verbose);
+        pluginManager().setVerboseLoading(verbose);
         pluginManager().initialize(path);
     }
 
@@ -112,8 +112,7 @@ namespace morphomathOperation
     }
     void initialize(const QString& path, bool verbose)
     {
-        if(verbose)
-            pluginManager().setVerboseLoading(verbose);
+        pluginManager().setVerboseLoading(verbose);
         pluginManager().initialize(path);
     }
 
@@ -165,6 +164,34 @@ namespace morphomathOperation
     }
 }
 
+namespace maskImage
+{
+    namespace _private
+    {
+        medAbstractMaskImageProcessPluginManager manager;
+    }
+
+    medAbstractMaskImageProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    namespace _private
+    {
+        medAbstractMaskImageProcessPluginFactory factory;
+    }
+
+    medAbstractMaskImageProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+
+    void initialize(const QString& path, bool verbose)
+    {
+        pluginManager().setVerboseLoading(verbose);
+        pluginManager().initialize(path);
+    }
+}
 
 }// end of medProcessLayer
 

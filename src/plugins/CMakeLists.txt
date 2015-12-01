@@ -53,6 +53,7 @@ set(PLUGIN_LIST
   legacy/medVtkView                                                      ON
   process/arithmetic_operation                                           ON
   process/morphomath_operation                                           ON
+  process/mask_image                                                     ON
   )
 
 ## #############################################################################

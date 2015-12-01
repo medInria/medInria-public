@@ -42,5 +42,19 @@ namespace morphomathOperation
         }
     }
 }
+
+namespace maskImage
+{
+    namespace _private
+    {
+        medAbstractMaskImageProcessPresenterFactory factory;
+    }
+
+    medAbstractMaskImageProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
 }
 

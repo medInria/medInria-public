@@ -22,6 +22,7 @@ list_source_files(${TARGET_NAME}
   process
   process/arithmetic_operation
   process/morphomath_operation
+  process/mask_image
   parameter
   job
   )
