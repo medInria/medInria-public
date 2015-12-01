@@ -44,7 +44,7 @@ class MEDCORE_EXPORT medAbstractDatabaseImporter : public medJobItem
 
 public:
     medAbstractDatabaseImporter (const QString& file, const QUuid &uuid, bool indexWithoutImporting = false);
-    medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid);
+    medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid, bool indexWithoutImporting = false);
 
     ~medAbstractDatabaseImporter ( void );
 
