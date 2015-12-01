@@ -4,6 +4,8 @@
 #include <medAbstractMorphomathOperationProcessPresenter.h>
 #include <medAbstractOpeningImageProcessPresenter.h>
 #include <medAbstractMaskImageProcessPresenter.h>
+#include <medAbstractDWIMaskingProcessPresenter.h>
+#include <medAbstractDiffusionModelEstimationProcessPresenter.h>
 
 #include <medWidgetsExport.h>
 
@@ -39,6 +41,16 @@ namespace medWidgets
     namespace maskImage
     {
         MEDWIDGETS_EXPORT medAbstractMaskImageProcessPresenterFactory& presenterFactory();
+    }
+
+    namespace dwiMasking
+    {
+        MEDWIDGETS_EXPORT medAbstractDWIMaskingProcessPresenterFactory& presenterFactory();
+    }
+
+    namespace diffusionModelEstimation
+    {
+        MEDWIDGETS_EXPORT medAbstractDiffusionModelEstimationProcessPresenterFactory& presenterFactory();
     }
 }
 

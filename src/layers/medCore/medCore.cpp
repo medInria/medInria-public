@@ -99,7 +99,6 @@ namespace arithmeticalOperation
 }
 
 // DWI masking
-
 namespace dwiMasking
 {
     namespace _private
@@ -121,6 +120,33 @@ namespace dwiMasking
     }
 
     medAbstractDWIMaskingProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+}
+
+// Diffusion model estimation
+namespace diffusionModelEstimation
+{
+    namespace _private
+    {
+        medAbstractDiffusionModelEstimationProcessPluginManager manager;
+        medAbstractDiffusionModelEstimationProcessPluginFactory factory;
+    }
+
+    medAbstractDiffusionModelEstimationProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    void initialize(const QString& path, bool verbose)
+    {
+        if(verbose)
+            pluginManager().setVerboseLoading(verbose);
+        pluginManager().initialize(path);
+    }
+
+    medAbstractDiffusionModelEstimationProcessPluginFactory& pluginFactory(void)
     {
         return _private::factory;
     }

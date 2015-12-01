@@ -13,13 +13,16 @@
 
 #include <medAbstractDiffusionModelEstimationProcess.h>
 #include <medAbstractImageData.h>
+#include <medAbstractDiffusionModelImageData.h>
+
+#include <medStringParameter.h>
 
 class medAbstractDiffusionModelEstimationProcessPrivate
 {
 public:
     medAbstractImageData *input;
     medAbstractImageData *mask;
-    medAbstractImageData *output;
+    medAbstractDiffusionModelImageData *output;
 };
 
 medAbstractDiffusionModelEstimationProcess::medAbstractDiffusionModelEstimationProcess(QObject *parent)
@@ -60,15 +63,12 @@ medAbstractImageData* medAbstractDiffusionModelEstimationProcess::mask() const
     return d->mask;
 }
 
-medAbstractImageData* medAbstractDiffusionModelEstimationProcess::output() const
+medAbstractDiffusionModelImageData* medAbstractDiffusionModelEstimationProcess::output() const
 {
     return d->output;
 }
 
-void medAbstractDiffusionModelEstimationProcess::setOutput(medAbstractImageData *data)
+void medAbstractDiffusionModelEstimationProcess::setOutput(medAbstractDiffusionModelImageData *data)
 {
-    if (data->Dimension() != 4)
-        return;
-
     d->output = data;
 }

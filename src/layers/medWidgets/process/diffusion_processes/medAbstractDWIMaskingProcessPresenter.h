@@ -15,6 +15,7 @@
 
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractDWIMaskingProcess.h>
+#include <medProcessPresenterFactory.h>
 
 #include <medWidgetsExport.h>
 
@@ -47,3 +48,4 @@ signals:
     void _outputImported(medAbstractData *);
 };
 
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDWIMaskingProcess, MEDWIDGETS_EXPORT)

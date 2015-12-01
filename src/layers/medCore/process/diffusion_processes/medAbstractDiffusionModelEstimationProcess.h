@@ -20,6 +20,7 @@
 #include <medCoreExport.h>
 
 class medAbstractImageData;
+class medAbstractDiffusionModelImageData;
 
 class medAbstractDiffusionModelEstimationProcessPrivate;
 class MEDCORE_EXPORT medAbstractDiffusionModelEstimationProcess : public medAbstractProcess
@@ -36,10 +37,10 @@ public:
     void setMask(medAbstractImageData* mask);
     medAbstractImageData* mask() const;
 
-    medAbstractImageData* output() const;
+    medAbstractDiffusionModelImageData* output() const;
 
 protected:
-    void setOutput(medAbstractImageData* data);
+    void setOutput(medAbstractDiffusionModelImageData* data);
 
 private:
     const QScopedPointer<medAbstractDiffusionModelEstimationProcessPrivate> d;
@@ -47,3 +48,4 @@ private:
 
 DTK_DECLARE_PLUGIN        (medAbstractDiffusionModelEstimationProcess, MEDCORE_EXPORT)
 DTK_DECLARE_PLUGIN_MANAGER(medAbstractDiffusionModelEstimationProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractDiffusionModelEstimationProcess, MEDCORE_EXPORT)

@@ -115,7 +115,7 @@ void medAbstractMaskImageProcessPresenter::_setMaskFromContainer(medAbstractData
 
 void medAbstractMaskImageProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {
-    if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_SUCCES)
+    if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_SUCCESS)
     {
         medDataManager::instance()->importData(d->process->output());
         emit _outputImported(d->process->output());

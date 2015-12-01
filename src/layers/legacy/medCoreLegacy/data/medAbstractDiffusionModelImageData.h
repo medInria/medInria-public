@@ -19,6 +19,8 @@
 
 class MEDCORELEGACY_EXPORT medAbstractDiffusionModelImageData : public medAbstractImageData
 {
+    Q_OBJECT
+
 public:
     medAbstractDiffusionModelImageData();
 
@@ -26,3 +28,6 @@ public:
 
     virtual const QString PixelMeaning() const;
 };
+
+Q_DECLARE_METATYPE(medAbstractDiffusionModelImageData)
+Q_DECLARE_METATYPE(medAbstractDiffusionModelImageData*)
