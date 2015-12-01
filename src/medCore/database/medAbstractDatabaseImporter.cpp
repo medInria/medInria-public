@@ -56,12 +56,12 @@ medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, 
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+medAbstractDatabaseImporter::medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid, bool indexWithoutImporting) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
 {
     d->isCancelled = false;
     d->data = medData;
     d->file = QString("");
-    d->indexWithoutImporting = false;
+    d->indexWithoutImporting = indexWithoutImporting;
     d->uuid = uuid;
 }
 
