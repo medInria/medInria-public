@@ -19,6 +19,7 @@
 #include <QLabel>
 
 #include <medAbstractImageData.h>
+#include <medAbstractDiffusionModelImageData.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
 #include <medDataManager.h>

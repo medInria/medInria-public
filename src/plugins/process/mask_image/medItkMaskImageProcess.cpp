@@ -203,7 +203,7 @@ medAbstractJob::medJobExitStatus medItkMaskImageProcess::_run()
         out->setMetaData("SeriesDescription", this->input()->metadata("SeriesDescription") + "--masked");
         out->setData(filter->GetOutput());
         this->setOutput(out);
-        return medAbstractJob::MED_JOB_EXIT_SUCCES;
+        return medAbstractJob::MED_JOB_EXIT_SUCCESS;
     }
     return medAbstractJob::MED_JOB_EXIT_FAILURE;
 }

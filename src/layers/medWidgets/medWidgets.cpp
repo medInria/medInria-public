@@ -56,5 +56,31 @@ namespace maskImage
     }
 }
 
+namespace dwiMasking
+{
+    namespace _private
+    {
+        medAbstractDWIMaskingProcessPresenterFactory factory;
+    }
+
+    medAbstractDWIMaskingProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
+namespace diffusionModelEstimation
+{
+    namespace _private
+    {
+        medAbstractDiffusionModelEstimationProcessPresenterFactory factory;
+    }
+
+    medAbstractDiffusionModelEstimationProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
 }
 
