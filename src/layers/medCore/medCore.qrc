@@ -8,5 +8,6 @@
         <file>process/morphomath_operation/medAbstractDilateImageProcess.json</file>
         <file>process/morphomath_operation/medAbstractErodeImageProcess.json</file>
         <file>process/morphomath_operation/medAbstractOpeningImageProcess.json</file>
+        <file>process/mask_image/medAbstractMaskImageProcess.json</file>
     </qresource>
 </RCC>

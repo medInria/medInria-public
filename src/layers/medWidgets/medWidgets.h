@@ -3,6 +3,7 @@
 #include <medProcessPresenterFactory.h>
 #include <medAbstractMorphomathOperationProcessPresenter.h>
 #include <medAbstractOpeningImageProcessPresenter.h>
+#include <medAbstractMaskImageProcessPresenter.h>
 
 #include <medWidgetsExport.h>
 
@@ -33,6 +34,11 @@ namespace medWidgets
 //        {
 //            MEDCORE_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
 //        }
+    }
+
+    namespace maskImage
+    {
+        MEDWIDGETS_EXPORT medAbstractMaskImageProcessPresenterFactory& presenterFactory();
     }
 }
 

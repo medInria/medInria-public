@@ -1,0 +1,67 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <medAbstractMaskImageProcess.h>
+
+#include <medAbstractImageData.h>
+
+class medAbstractMaskImageProcessPrivate
+{
+public:
+    medAbstractImageData *input;
+    medAbstractImageData *mask;
+    medAbstractImageData *output;
+};
+
+medAbstractMaskImageProcess::medAbstractMaskImageProcess(QObject *parent)
+    : medAbstractProcess(parent), d(new medAbstractMaskImageProcessPrivate)
+{
+    d->input = NULL;
+    d->output = NULL;
+    d->mask = NULL;
+}
+
+medAbstractMaskImageProcess::~medAbstractMaskImageProcess()
+{
+
+}
+
+void medAbstractMaskImageProcess::setInput(medAbstractImageData *data)
+{
+    d->input = data;
+}
+
+medAbstractImageData* medAbstractMaskImageProcess::input() const
+{
+    return d->input;
+}
+
+void medAbstractMaskImageProcess::setMask(medAbstractImageData *data)
+{
+    d->mask = data;
+}
+
+medAbstractImageData* medAbstractMaskImageProcess::mask() const
+{
+    return d->mask;
+}
+
+medAbstractImageData* medAbstractMaskImageProcess::output() const
+{
+    return d->output;
+}
+
+void medAbstractMaskImageProcess::setOutput(medAbstractImageData *data)
+{
+    d->output = data;
+}
