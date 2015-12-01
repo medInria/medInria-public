@@ -86,6 +86,7 @@ include(list_source_files)
 include(list_header_directories_to_include)
 include(set_exe_install_rules)
 include(set_lib_install_rules)
+include(set_lib_properties_variables)
 include(set_plugin_install_rules)
 include(set_plugin_install_rules_legacy)
 
@@ -150,22 +151,12 @@ endif()
 # Setup Configuration files
 ################################################################################
 
+set_lib_properties_variables(medCoreLegacy medLog medRegistration medCore medImageIO medWidgets)
+
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
   configure_file( ## Build tree configure file
     ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
     ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    @ONLY IMMEDIATE
-    )
-endif()
-
-################################################################################
-# Setup use file
-################################################################################
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
-  configure_file( ## Common use file
-    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in
-    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Use.cmake
     @ONLY IMMEDIATE
     )
 endif()
