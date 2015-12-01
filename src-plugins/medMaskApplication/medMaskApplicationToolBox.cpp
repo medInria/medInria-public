@@ -76,7 +76,7 @@ medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medFilte
     d->backgroundSpinBox->setMaximum(5000);
     d->backgroundSpinBox->setValue(0);
     QHBoxLayout* backgroundLayout = new QHBoxLayout;
-    backgroundLayout->addWidget(new QLabel("Background Value:"));
+    backgroundLayout->addWidget(new QLabel("Mask background value:"));
     backgroundLayout->addWidget(d->backgroundSpinBox);
     bundlingLayout->addLayout(backgroundLayout);
 
