@@ -6,7 +6,6 @@
 
 #include <medAbstractData.h>
 #include <medIntParameter.h>
-#include <medDoubleParameter.h>
 #include <medDataIndex.h>
 #include <medViewEventFilter.h>
 #include <medImageMaskAnnotationData.h>
@@ -110,7 +109,6 @@ public slots:
     void setLabel(int newVal);
     void setLabelColor();
 
-    void synchronizeWandSpinBoxesAndSliders(void);
     void updateMagicWandComputation();
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view);
@@ -146,8 +144,6 @@ protected:
 
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
 
-    void updateFromGuiItems();
-
     void showButtons( bool value);
 
     void generateLabelColorMap(unsigned int numLabels);
@@ -180,7 +176,7 @@ private:
     // wandradius = (max - min) * sliderPerc / 2.0
     QPushButton *m_magicWandButton;
     QFormLayout * magicWandLayout;
-    medDoubleParameter *m_wandUpperThresholdSlider, *m_wandLowerThresholdSlider;
+    medIntParameter *m_wandUpperThresholdSlider, *m_wandLowerThresholdSlider;
     QPushButton * m_removeSeedButton;
     QShortcut *removeSeed_shortcut;
     QCheckBox *m_wand3DCheckbox, *m_wand3DRealTime;
@@ -188,10 +184,7 @@ private:
     QTime wandTimer;
 
     bool seedPlanted;
-    bool initiateRegionGrowth;
     QVector3D m_seed;
-    double m_wandRadius, m_wandUpperThreshold, m_wandLowerThreshold;
-    //
 
     // Common objects
     QPushButton *m_interpolateButton;
@@ -199,11 +192,6 @@ private:
     QSpinBox *m_strokeLabelSpinBox;
     QLabel *m_colorLabel;
     QShortcut *undo_shortcut, *redo_shortcut, *copy_shortcut, *paste_shortcut;
-    unsigned int m_strokeLabel;
-    //
-
-    double m_MinValueImage;
-    double m_MaxValueImage;
 
     QPushButton *m_applyButton;
 

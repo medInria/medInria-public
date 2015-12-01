@@ -239,10 +239,6 @@ private :
 
 AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     medSegmentationAbstractToolBox( parent),
-    m_MinValueImage(0),
-    m_MaxValueImage(500),
-    m_strokeRadius(4),
-    m_strokeLabel(1),
     m_paintState(PaintState::None)
 {
     QWidget *displayWidget = new QWidget(this);
@@ -276,7 +272,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     QHBoxLayout * brushSizeLayout = new QHBoxLayout();
     m_brushSizeSlider = new medIntParameter("Brush Radius (mm)");
     m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
-    m_brushSizeSlider->setValue(this->m_strokeRadius);
+    m_brushSizeSlider->setValue(4);
     m_brushSizeSlider->setRange(1, 10);
     m_brushSizeSlider->getSlider()->setPageStep(1);
     m_brushSizeSlider->getSlider()->setOrientation(Qt::Horizontal);
@@ -298,7 +294,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     layout->addLayout( brushSizeLayout );
 
     // Magic wand's widgets
-    m_wandUpperThresholdSlider = new medDoubleParameter("Upper Threshold", this);
+    m_wandUpperThresholdSlider = new medIntParameter("Upper Threshold", this);
     m_wandUpperThresholdSlider->setObjectName("Upper Threshold");
     m_wandUpperThresholdSlider->setToolTip(tr("Changes the upper threshold."));
     m_wandUpperThresholdSlider->setValue(0);
@@ -307,7 +303,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_wandUpperThresholdSlider->getSlider()->setOrientation(Qt::Horizontal);
     m_wandUpperThresholdSlider->hide();
 
-    m_wandLowerThresholdSlider = new medDoubleParameter("Lower Threshold", this);
+    m_wandLowerThresholdSlider = new medIntParameter("Lower Threshold", this);
     m_wandLowerThresholdSlider->setObjectName("Lower Threshold");
     m_wandLowerThresholdSlider->setToolTip(tr("Changes the lower threshold."));
     m_wandLowerThresholdSlider->setValue(0);
@@ -316,14 +312,9 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_wandLowerThresholdSlider->getSlider()->setOrientation(Qt::Horizontal);
     m_wandLowerThresholdSlider->hide();
 
-    connect(m_wandUpperThresholdSlider->getSlider(),
-            SIGNAL(valueChanged(int)),this,SLOT(synchronizeWandSpinBoxesAndSliders()));
-    connect(m_wandLowerThresholdSlider->getSlider(),
-            SIGNAL(valueChanged(int)),this,SLOT(synchronizeWandSpinBoxesAndSliders()));
-    connect(m_wandUpperThresholdSlider->getSpinBox(),
-            SIGNAL(editingFinished()),this,SLOT(synchronizeWandSpinBoxesAndSliders()));
-    connect(m_wandLowerThresholdSlider->getSpinBox(),
-            SIGNAL(editingFinished()),this,SLOT(synchronizeWandSpinBoxesAndSliders()));
+    // Sliders connects are in updateMagicWandComputationSpeed() and depend on realTime parameter
+    connect(m_wandUpperThresholdSlider->getSpinBox(),SIGNAL(editingFinished()),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
+    connect(m_wandLowerThresholdSlider->getSpinBox(),SIGNAL(editingFinished()),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
 
     wandTimer = QTime();
 
@@ -378,7 +369,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     m_strokeLabelSpinBox = new QSpinBox();
     m_strokeLabelSpinBox->setToolTip(tr("Changes the painted label."));
-    m_strokeLabelSpinBox->setValue(this->m_strokeLabel);
+    m_strokeLabelSpinBox->setValue(1);
     m_strokeLabelSpinBox->setMinimum(1);
     m_strokeLabelSpinBox->setMaximum(24);
     m_strokeLabelSpinBox->hide();
@@ -488,47 +479,8 @@ bool AlgorithmPaintToolBox::registered()
     return factory->registerToolBox<AlgorithmPaintToolBox> ();
 }
 
-void AlgorithmPaintToolBox::synchronizeWandSpinBoxesAndSliders()
-{
-    QObject * sender = QObject::sender();
-    int val;
-    if (sender == m_wandUpperThresholdSlider)
-    {
-        val = m_wandUpperThresholdSlider->value();
-        m_wandUpperThresholdSlider->getSpinBox()->blockSignals(true);
-        m_wandUpperThresholdSlider->getSpinBox()->setValue(val);
-        m_wandUpperThresholdSlider->getSpinBox()->blockSignals(false);
-    }
-    else if (sender == m_wandUpperThresholdSlider->getSpinBox())
-    {
-        val = m_wandUpperThresholdSlider->getSpinBox()->value();
-        m_wandUpperThresholdSlider->blockSignals(true);
-        m_wandUpperThresholdSlider->setValue(val);
-        m_wandUpperThresholdSlider->blockSignals(false);
-    }
-    else if (sender == m_wandLowerThresholdSlider)
-    {
-        m_wandLowerThresholdSlider->getSpinBox()->blockSignals(true);
-        m_wandLowerThresholdSlider->getSpinBox()->setValue(val);
-        m_wandLowerThresholdSlider->getSpinBox()->blockSignals(false);
-    }
-    else if (sender == m_wandLowerThresholdSlider->getSpinBox())
-    {
-        val = m_wandLowerThresholdSlider->getSpinBox()->value();
-        m_wandLowerThresholdSlider->blockSignals(true);
-        m_wandLowerThresholdSlider->setValue(val);
-        m_wandLowerThresholdSlider->blockSignals(false);
-    }
-
-   updateFromGuiItems();
-
-    //if (currentView && currentView->receiverWidget()) TODO : see if needed
-    //    currentView->receiverWidget()->setFocus(); // bring the focus back to the view.
-}
-
 void AlgorithmPaintToolBox::updateMagicWandComputation()
 {
-    synchronizeWandSpinBoxesAndSliders();
     if (seedPlanted)
     {
         if (m_wand3DCheckbox->isChecked() && wandTimer.elapsed()<600) // 1000/24 (24 images per second)
@@ -656,6 +608,7 @@ void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
     {
         connect(m_wandUpperThresholdSlider->getSlider(),SIGNAL(valueChanged(int)),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
         connect(m_wandLowerThresholdSlider->getSlider(),SIGNAL(valueChanged(int)),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
+
         disconnect(m_wandUpperThresholdSlider->getSlider(),SIGNAL(sliderReleased()),this,SLOT(updateMagicWandComputation()));
         disconnect(m_wandLowerThresholdSlider->getSlider(),SIGNAL(sliderReleased()),this,SLOT(updateMagicWandComputation()));
     }
@@ -663,6 +616,7 @@ void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
     {
         disconnect(m_wandUpperThresholdSlider->getSlider(),SIGNAL(valueChanged(int)),this,SLOT(updateMagicWandComputation()));
         disconnect(m_wandLowerThresholdSlider->getSlider(),SIGNAL(valueChanged(int)),this,SLOT(updateMagicWandComputation()));
+
         connect(m_wandUpperThresholdSlider->getSlider(),SIGNAL(sliderReleased()),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
         connect(m_wandLowerThresholdSlider->getSlider(),SIGNAL(sliderReleased()),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
     }
@@ -965,8 +919,6 @@ void AlgorithmPaintToolBox::updateWandRegion(medAbstractImageView * view, QVecto
 {
     setCurrentView(view);
 
-    this->updateFromGuiItems();
-
     if ( !m_imageData )
     {
         this->setData(view->layerData(0));
@@ -1019,7 +971,7 @@ AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
 {
     IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
 
-    MaskType::PixelType pxValue = m_strokeLabel;
+    MaskType::PixelType pxValue = m_strokeLabelSpinBox->value();
 
     if (!tmpPtr)
         return;
@@ -1031,8 +983,8 @@ AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
     if (!seedPlanted)
         setSeedPlanted(true,index,planeIndex,value);
 
-    ctiFilter->SetUpper( m_wandUpperThreshold );
-    ctiFilter->SetLower( m_wandLowerThreshold );
+    ctiFilter->SetUpper( m_wandUpperThresholdSlider->value() );
+    ctiFilter->SetLower( m_wandLowerThresholdSlider->value() );
 
     MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
     regionRequested.SetIndex(planeIndex, index[planeIndex]);
@@ -1154,11 +1106,13 @@ AlgorithmPaintToolBox::GenerateMinMaxValuesFromImage ()
     minMaxFilter->SetImage(tmpPtr);
     minMaxFilter->Compute();
 
-    m_MinValueImage = minMaxFilter->GetMinimum();
-    m_MaxValueImage = minMaxFilter->GetMaximum();
+    double m_MinValueImage = minMaxFilter->GetMinimum();
+    double m_MaxValueImage = minMaxFilter->GetMaximum();
 
     m_wandLowerThresholdSlider->setRange(m_MinValueImage, m_MaxValueImage);
     m_wandUpperThresholdSlider->setRange(m_MinValueImage, m_MaxValueImage);
+    m_wandLowerThresholdSlider->setValue(m_MinValueImage);
+    m_wandUpperThresholdSlider->setValue(m_MinValueImage);
 
     // Set step when click on slider
     m_wandLowerThresholdSlider->getSlider()->setPageStep((m_MaxValueImage-m_MinValueImage)/10);
@@ -1169,9 +1123,7 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
 {
     setCurrentView(currentView);
 
-    this->updateFromGuiItems();
-
-    const double radius = m_strokeRadius; // in image units.
+    const double radius = m_brushSizeSlider->value(); // in image units.
 
     if ( !m_imageData ) {
         this->setData(view->layerData(0));
@@ -1246,7 +1198,7 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     switch ( m_paintState )
     {
     case PaintState::Stroke :
-        pxValue = m_strokeLabel;
+        pxValue = m_strokeLabelSpinBox->value();
         break;
     default:
         pxValue = MaskPixelValues::Unset;
@@ -1287,14 +1239,6 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     }
 
     m_maskAnnotationData->invokeModified();
-}
-
-void AlgorithmPaintToolBox::updateFromGuiItems()
-{
-    this->m_strokeRadius = m_brushSizeSlider->value();
-    this->m_strokeLabel = m_strokeLabelSpinBox->value();
-    this->m_wandLowerThreshold = m_wandLowerThresholdSlider->getSpinBox()->value();
-    this->m_wandUpperThreshold = m_wandUpperThresholdSlider->getSpinBox()->value();
 }
 
 void AlgorithmPaintToolBox::showButtons( bool value )
@@ -1891,7 +1835,7 @@ void AlgorithmPaintToolBox::interpolate()
     bool isInside;
     char planeIndex = AlgorithmPaintToolBox::computePlaneIndex(vector,index3D,isInside);
 
-    unsigned char label = this->m_strokeLabel;
+    unsigned char label = m_strokeLabelSpinBox->value();
 
     MaskType::RegionType inputRegion = m_itkMask->GetLargestPossibleRegion();
     MaskType::SizeType   size      = inputRegion.GetSize();
@@ -2038,7 +1982,7 @@ Mask2dFloatType::Pointer AlgorithmPaintToolBox::computeDistanceMap(Mask2dType::P
     typedef itk::InvertIntensityImageFilter<Mask2dType,Mask2dType> invertFilterType;
     invertFilterType::Pointer invertFilter = invertFilterType::New();
 
-    invertFilter->SetMaximum(this->m_strokeLabel);
+    invertFilter->SetMaximum(m_strokeLabelSpinBox->value());
     invertFilter->SetInput(img);
     invertFilter->Update();
 
@@ -2066,7 +2010,7 @@ void AlgorithmPaintToolBox::computeCentroid(Mask2dIterator itmask,unsigned int *
 
     while(!itmask.IsAtEnd())
     {
-        if (itmask.Get()==this->m_strokeLabel)
+        if (itmask.Get()==m_strokeLabelSpinBox->value())
         {
             coord[0] += itmask.GetIndex()[0];
             coord[1] += itmask.GetIndex()[1];
@@ -2107,13 +2051,13 @@ Mask2dType::Pointer AlgorithmPaintToolBox::translateImageByVec(Mask2dType::Point
 
     while(!it1.IsAtEnd())
     {
-        if (it1.Get()==this->m_strokeLabel)
+        if (it1.Get()==m_strokeLabelSpinBox->value())
         {
             ind = it1.GetIndex();
             ind[0]=ind[0]+floor(vec[0]+0.5);
             ind[1]=ind[1]+floor(vec[1]+0.5);
             it2.SetIndex(ind);
-            it2.Set(this->m_strokeLabel);
+            it2.Set(m_strokeLabelSpinBox->value());
         }
      ++it1;
     }
@@ -2164,7 +2108,7 @@ void AlgorithmPaintToolBox::computeIntermediateSlice(Mask2dFloatType::Pointer di
             other[1]=other[1]+floor(vec[1]+0.5);
             other[2]=j;
             itmask.SetIndex(other);
-            itmask.Set(this->m_strokeLabel);
+            itmask.Set(m_strokeLabelSpinBox->value());
             itmask.SetIndex(start);
         }
 
