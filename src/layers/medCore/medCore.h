@@ -27,6 +27,8 @@
 #include <medAbstractOpeningImageProcess.h>
 #include <medAbstractClosingImageProcess.h>
 
+#include <medAbstractMaskImageProcess.h>
+
 #include <medCoreExport.h>
 
 
@@ -81,5 +83,12 @@ namespace medCore
         {
             MEDCORE_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
         }
+    }
+
+    namespace maskImage
+    {
+        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+        MEDCORE_EXPORT medAbstractMaskImageProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT medAbstractMaskImageProcessPluginFactory& pluginFactory(void);
     }
 }
