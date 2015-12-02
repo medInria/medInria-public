@@ -122,6 +122,7 @@ target_link_libraries(${TARGET_NAME}
   medWidgets
   medCoreLegacy
   medPacs
+  medCommandLineInterface
   )
 
 ## #############################################################################
