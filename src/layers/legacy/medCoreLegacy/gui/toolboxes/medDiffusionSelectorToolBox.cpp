@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include <medDiffusionSelectorToolBox.h>
+
 #include <medAbstractDataFactory.h>
 #include <medAbstractDiffusionProcess.h>
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
@@ -26,7 +28,6 @@
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 
-#include "medDiffusionSelectorToolBox.h"
 #include "medDiffusionAbstractToolBox.h"
 
 class medDiffusionSelectorToolBoxPrivate

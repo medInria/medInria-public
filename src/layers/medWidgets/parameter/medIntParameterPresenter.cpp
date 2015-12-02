@@ -70,7 +70,6 @@ QWidget* medIntParameterPresenter::buildWidget()
 QSpinBox* medIntParameterPresenter::buildSpinBox()
 {
     QSpinBox *spinBox = new QSpinBox;
-    spinBox->setValue(d->parameter->value());
     connect(spinBox, SIGNAL(valueChanged(int)),
             d->parameter, SLOT(setValue(int)));
     connect(d->parameter, &medIntParameter::valueChanged,
@@ -80,6 +79,7 @@ QSpinBox* medIntParameterPresenter::buildSpinBox()
     this->_connectWidget(spinBox);
 
     spinBox->setRange(d->parameter->minimum(), d->parameter->maximum());
+    spinBox->setValue(d->parameter->value());
     spinBox->setSingleStep(d->singleStep);
     connect(d->parameter, &medIntParameter::rangeChanged,
             spinBox, &QSpinBox::setRange);

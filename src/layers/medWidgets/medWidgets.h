@@ -6,6 +6,8 @@
 #include <medAbstractMaskImageProcessPresenter.h>
 #include <medAbstractDWIMaskingProcessPresenter.h>
 #include <medAbstractDiffusionModelEstimationProcessPresenter.h>
+#include <medAbstractDiffusionScalarMapsProcessPresenter.h>
+#include <medAbstractTractographyProcessPresenter.h>
 
 #include <medWidgetsExport.h>
 
@@ -51,6 +53,16 @@ namespace medWidgets
     namespace diffusionModelEstimation
     {
         MEDWIDGETS_EXPORT medAbstractDiffusionModelEstimationProcessPresenterFactory& presenterFactory();
+    }
+
+    namespace diffusionScalarMaps
+    {
+        MEDWIDGETS_EXPORT medAbstractDiffusionScalarMapsProcessPresenterFactory& presenterFactory();
+    }
+
+    namespace tractography
+    {
+        MEDWIDGETS_EXPORT medAbstractTractographyProcessPresenterFactory& presenterFactory();
     }
 }
 

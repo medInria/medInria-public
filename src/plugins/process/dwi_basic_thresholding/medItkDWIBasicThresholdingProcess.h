@@ -37,6 +37,9 @@ public:
     virtual QString caption() const;
     virtual QString description() const;
 
+    medIntParameter *b0VolumeNumberParameter() const;
+    medIntParameter *thresholdValueParameter() const;
+
 private:
     template<class inputType> medAbstractJob::medJobExitStatus _run();
 

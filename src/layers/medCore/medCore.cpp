@@ -24,8 +24,12 @@ namespace pluginManager
         {
             if(realpath.isEmpty())
                 break;
+
             medCore::arithmeticalOperation::initialize(realpath, verbose);
             medCore::dwiMasking::initialize(realpath, verbose);
+            medCore::diffusionModelEstimation::initialize(realpath, verbose);
+            medCore::diffusionScalarMaps::initialize(realpath, verbose);
+            medCore::tractography::initialize(realpath, verbose);
             medCore::morphomathOperation::initialize(realpath, verbose);
             medCore::maskImage::initialize(realpath, verbose);
         }
@@ -147,6 +151,60 @@ namespace diffusionModelEstimation
     }
 
     medAbstractDiffusionModelEstimationProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+}
+
+// Diffusion scalar maps
+namespace diffusionScalarMaps
+{
+    namespace _private
+    {
+        medAbstractDiffusionScalarMapsProcessPluginManager manager;
+        medAbstractDiffusionScalarMapsProcessPluginFactory factory;
+    }
+
+    medAbstractDiffusionScalarMapsProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    void initialize(const QString& path, bool verbose)
+    {
+        if(verbose)
+            pluginManager().setVerboseLoading(verbose);
+        pluginManager().initialize(path);
+    }
+
+    medAbstractDiffusionScalarMapsProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+}
+
+// Tractography
+namespace tractography
+{
+    namespace _private
+    {
+        medAbstractTractographyProcessPluginManager manager;
+        medAbstractTractographyProcessPluginFactory factory;
+    }
+
+    medAbstractTractographyProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    void initialize(const QString& path, bool verbose)
+    {
+        if(verbose)
+            pluginManager().setVerboseLoading(verbose);
+        pluginManager().initialize(path);
+    }
+
+    medAbstractTractographyProcessPluginFactory& pluginFactory(void)
     {
         return _private::factory;
     }
