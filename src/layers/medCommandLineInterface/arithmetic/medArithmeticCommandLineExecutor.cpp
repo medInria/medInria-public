@@ -23,8 +23,6 @@ medArithmeticCommandLineExecutor::~medArithmeticCommandLineExecutor()
 
 void medArithmeticCommandLineExecutor::init()
 {
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
-
     QString rhsText,lhsText;
 
     QCommandLineOption rhsOption (QStringList() << "r" << "rhs" , "right operand <file>.", "file"     );
@@ -35,11 +33,7 @@ void medArithmeticCommandLineExecutor::init()
     m_parser.addOption(rhsOption);
     m_parser.addOption(outputOption);
 
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
-
     m_parser.process(*(QCoreApplication::instance()));
-
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
 
     if(m_parser.isSet("l"))
         lhsText=m_parser.value("l");
@@ -49,8 +43,6 @@ void medArithmeticCommandLineExecutor::init()
         d->outputText=m_parser.value("o");
     if(m_parser.isSet("p"))
         d->pluginName=m_parser.value("p");
-
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
     
     d->process=this->getProcess(d->pluginName);
     if (!d->process)
@@ -77,8 +69,6 @@ void medArithmeticCommandLineExecutor::init()
 
 void medArithmeticCommandLineExecutor::run()
 {
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
-
     if(d->process==NULL)
     {
         dtkWarn()<<"no process set";
@@ -86,13 +76,10 @@ void medArithmeticCommandLineExecutor::run()
     }
 
     medAbstractJob::medJobExitStatus out= d->process->run();
-    qDebug()<<"the output is: "<<out;
 
     if(!d->process->output())
-        qDebug()<<"process output is NULL";
+        dtkWarn()<<"process output is NULL";
     bool written=medDataReaderWriter::write(d->outputText,d->process->output());
     if(!written)
-        qDebug()<<"failed to write "<<d->outputText;
-     qDebug()<<Q_FUNC_INFO<<__LINE__;
-
+        dtkWarn()<<"failed to write "<<d->outputText;
 }

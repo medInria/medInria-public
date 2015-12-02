@@ -23,8 +23,6 @@ medMorphomathCommandLineExecutor::~medMorphomathCommandLineExecutor()
 
 void medMorphomathCommandLineExecutor::init()
 {
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
-
     QString inputText,radiusText;
 
     QCommandLineOption inputOption (QStringList() << "i" << "input" , "Read input data from <file>.", "file"     );
@@ -36,11 +34,7 @@ void medMorphomathCommandLineExecutor::init()
     m_parser.addOption(outputOption);
     m_parser.addOption(radiusOption);
 
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
-
     m_parser.process(*(QCoreApplication::instance()));
-
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
 
     if(m_parser.isSet("i"))
         inputText=m_parser.value("i");
@@ -50,8 +44,6 @@ void medMorphomathCommandLineExecutor::init()
         radiusText=m_parser.value("r");
     if(m_parser.isSet("p"))
         d->pluginName=m_parser.value("p");
-
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
     
     d->process=this->getProcess(d->pluginName);
     if (!d->process)
@@ -81,8 +73,6 @@ void medMorphomathCommandLineExecutor::init()
 
 void medMorphomathCommandLineExecutor::run()
 {
-    qDebug()<<Q_FUNC_INFO<<__LINE__;
-
     if(d->process==NULL)
     {
         dtkWarn()<<"no process set";
@@ -90,13 +80,13 @@ void medMorphomathCommandLineExecutor::run()
     }
 
     medAbstractJob::medJobExitStatus out= d->process->run();
-    qDebug()<<"the output is: "<<out;
+    if(out==medAbstractJob::MED_JOB_EXIT_FAILURE)
+        dtkWarn()<<"job failed";
 
     if(!d->process->output())
-        qDebug()<<"process output is NULL";
+        dtkWarn()<<"process output is NULL";
     bool written=medDataReaderWriter::write(d->outputText,d->process->output());
     if(!written)
-        qDebug()<<"failed to write "<<d->outputText;
-     qDebug()<<Q_FUNC_INFO<<__LINE__;
+        dtkWarn()<<"failed to write "<<d->outputText;
 
 }

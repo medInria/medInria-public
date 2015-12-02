@@ -59,7 +59,7 @@ medCommandLineExecutorFactory::~medCommandLineExecutorFactory(void)
 void medCommandLineExecutorFactory::record(const QString& key, medCommandLineExecutor* widget)
 {
     if (this->executors.contains(key)) {
-        qDebug() << Q_FUNC_INFO << "Factory already contains key" << key << ". Nothing is done";
+        dtkWarn() << Q_FUNC_INFO << "Factory already contains key" << key << ". Nothing is done";
         return;
     }
 
