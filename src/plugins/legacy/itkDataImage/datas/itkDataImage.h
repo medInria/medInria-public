@@ -71,7 +71,7 @@ public:
         typedef typename PrivateMember::ImageType ImageType;
         typename ImageType::Pointer image = dynamic_cast<ImageType*>(static_cast<itk::Object*>(data));
         if (image.IsNull()) {
-            qDebug() << "Cannot cast data to correct data type";
+            dtkDebug() << "Cannot cast data to correct data type";
             return;
         }
         d->image = image;

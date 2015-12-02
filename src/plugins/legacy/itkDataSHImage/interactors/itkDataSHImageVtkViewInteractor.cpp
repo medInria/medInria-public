@@ -221,7 +221,7 @@ void itkDataSHImageVtkViewInteractor::setInputData(medAbstractData *data)
         d->setVTKFilter<itk::VectorImage<double,3> >(data,d->filterDouble);
     else
     {
-        qDebug() << "Unrecognized SH data type: " << identifier;
+        dtkDebug() << "Unrecognized SH data type: " << identifier;
         return;
     }
 

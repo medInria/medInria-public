@@ -88,7 +88,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
-        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+        dtkWarn() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
         return false;
     }
     else
@@ -124,7 +124,7 @@ bool medAbstractLayeredView::initialiseNavigators()
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
-        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
+        dtkWarn() << "Unable to find any primary navigator for: " << this->identifier();
         return false;
 
     }
@@ -300,13 +300,13 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
 {
     if(!data)
     {
-        qWarning() << "Attempt to add a NULL data to the view: " << this;
+        dtkWarn() << "Attempt to add a NULL data to the view: " << this;
         return;
     }
 
     if ( this->contains(data))
     {
-        qDebug() << "Attempt to add twice the same data to the view: " << this;
+        dtkDebug() << "Attempt to add twice the same data to the view: " << this;
         return;
     }
 
@@ -330,7 +330,7 @@ medAbstractData * medAbstractLayeredView::layerData(unsigned int layer) const
 {
     if (layer >= (unsigned int)d->layersDataList.size())
     {
-        qWarning() << "Unable to retrieve data at layer:" <<layer << "from: "<< this->description();
+        dtkWarn() << "Unable to retrieve data at layer:" <<layer << "from: "<< this->description();
         return NULL;
     }
     return d->layersDataList[layer];

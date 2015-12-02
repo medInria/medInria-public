@@ -46,8 +46,8 @@ private:
     using dtkAbstractProcess::setInput;
 };
 
-//ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersProcessBase& process);
-//ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersProcessBase *process);
+//ITKFILTERSPLUGIN_EXPORT dtkDebug operator<<(dtkDebug debug, const itkFiltersProcessBase& process);
+//ITKFILTERSPLUGIN_EXPORT dtkDebug operator<<(dtkDebug debug,       itkFiltersProcessBase *process);
 
 
 

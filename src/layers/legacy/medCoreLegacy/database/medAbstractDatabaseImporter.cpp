@@ -206,7 +206,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         if ( !medData )
         {
-            qWarning() << "Reader was unable to read: " << fileInfo.filePath();
+            dtkWarn() << "Reader was unable to read: " << fileInfo.filePath();
             continue;
         }
 
@@ -312,7 +312,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         return;
     }
     else
-        qDebug() << "Image map contains " << imagesGroupedByVolume.size() << " files";
+        dtkDebug() << "Image map contains " << imagesGroupedByVolume.size() << " files";
 
     int imagesCount = imagesGroupedByVolume.count(); // used only to calculate progress
     int currentImageIndex = 0; // used only to calculate progress
@@ -331,7 +331,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         patientID = itPat.value();
         QString seriesID = itSer.value();
 
-        //qDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
+        //dtkDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
 
         dtkSmartPointer<medAbstractData> imagemedData;
 
@@ -354,7 +354,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         }
         else
         {
-            qWarning() << "Could not repopulate data!";
+            dtkWarn() << "Could not repopulate data!";
             emit showError (tr ( "Could not read data: " ) + filesPaths[0], 5000 );
             emit dataImported(medDataIndex(), d->uuid);
             emit failure(this);
@@ -367,7 +367,7 @@ void medAbstractDatabaseImporter::importFile ( void )
             QFileInfo fileInfo ( medStorage::dataLocation() + aggregatedFileName );
             if ( !fileInfo.dir().exists() && !medStorage::mkpath ( fileInfo.dir().path() ) )
             {
-                qDebug() << "Cannot create directory: " << fileInfo.dir().path();
+                dtkDebug() << "Cannot create directory: " << fileInfo.dir().path();
                 continue;
             }
 
@@ -456,7 +456,7 @@ void medAbstractDatabaseImporter::importData()
         {
             if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
             {
-                qWarning() << "Unable to create directory for images";
+                dtkWarn() << "Unable to create directory for images";
                 emit failure ( this );
                 emit dataImported(medDataIndex(), d->uuid);
                 return ;
@@ -473,8 +473,8 @@ void medAbstractDatabaseImporter::importData()
         {
             // when creating empty patients or studies, we need to continue to populate the database
 
-            qWarning() << "Unable to write image " + imageFileName;
-            qWarning() << "Either there is nothing to write or a problem occured when writing.";
+            dtkWarn() << "Unable to write image " + imageFileName;
+            dtkWarn() << "Either there is nothing to write or a problem occured when writing.";
         }
         else
         {
@@ -518,7 +518,7 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
 {
     if ( !medData )
     {
-        qWarning() << "data invalid";
+        dtkWarn() << "data invalid";
         return;
     }
 
@@ -652,7 +652,7 @@ QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* m
     QStringList thumbPaths;
 
     if ( !medStorage::mkpath ( medStorage::dataLocation() + pathToStoreThumbnails ) )
-        qDebug() << "Cannot create directory: " << pathToStoreThumbnails;
+        dtkDebug() << "Cannot create directory: " << pathToStoreThumbnails;
 
     for ( int i=0; i < thumbnails.count(); i++ )
     {
@@ -696,7 +696,7 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
         }
     }
 
-    qWarning() << "No suitable reader found!";
+    dtkWarn() << "No suitable reader found!";
     return NULL;
 }
 
@@ -787,7 +787,7 @@ medAbstractData* medAbstractDatabaseImporter::tryReadImages ( const QStringList&
     else
     {
         // we take the first one for debugging just for simplicity
-        qWarning() << "No suitable reader found for file: " << filesPaths[0] << ". Unable to import!";
+        dtkWarn() << "No suitable reader found for file: " << filesPaths[0] << ". Unable to import!";
     }
 
     return medData;
@@ -941,7 +941,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 {
     if ( !medData )
     {
-        qWarning() << "data invalid";
+        dtkWarn() << "data invalid";
         return "invalid";
     }
 

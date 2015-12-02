@@ -15,6 +15,8 @@
 
 #include <QSettings>
 
+#include <dtkLog>
+
 class medSettingsManagerPrivate
 {
 public:
@@ -78,7 +80,7 @@ QVariant medSettingsManager::value( const QString & section, const QString & key
     // write default value so we can share it
     if (!valuePresent)
     {
-        qDebug() << "writing default value for section: " << section << " key: " << key << "value: " << defaultValue;
+        dtkDebug() << "writing default value for section: " << section << " key: " << key << "value: " << defaultValue;
         setValue(section, key, result);
     }
 

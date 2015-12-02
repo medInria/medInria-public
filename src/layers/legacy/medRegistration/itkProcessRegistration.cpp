@@ -122,7 +122,7 @@ template <typename PixelType>
        else
        {
            QString pixel_type =  typeid(PixelType).name();
-           qDebug()<< "Error: The pixel type " + pixel_type + " is not supported yet."  ;
+           dtkDebug()<< "Error: The pixel type " + pixel_type + " is not supported yet."  ;
            return;
        }
     if ( dimensions == 3 ){
@@ -174,7 +174,7 @@ template <typename PixelType>
             }
             catch(itk::ExceptionObject &ex)
             {
-                qDebug() << "Extraction failed";
+                dtkDebug() << "Extraction failed";
                 return ;
             }
             fixedImage = extractFilter->GetOutput();
@@ -203,7 +203,7 @@ template <typename PixelType>
             }
             catch(itk::ExceptionObject &ex)
             {
-                qDebug() << "Extraction failed";
+                dtkDebug() << "Extraction failed";
                 return ;
             }
             movingImages[i] = extractFilter->GetOutput();
@@ -274,7 +274,7 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         d->dimensions = 4;
     }
     else{
-        qDebug() << "Unable to handle the number of dimensions " \
+        dtkDebug() << "Unable to handle the number of dimensions " \
                 << "for an image of description: "<< data->identifier();
     }
 
@@ -345,7 +345,7 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
     }
     catch(itk::ExceptionObject& e)
     {
-        qDebug() << e.what();
+        dtkDebug() << e.what();
         res = false; // In this case, we've failed
     }
 
@@ -416,7 +416,7 @@ bool itkProcessRegistration::write(const QStringList& files)
 {
     if (files.count()!=2)
     {
-        qDebug() << "can't write, the list doesn't have 2 items";
+        dtkDebug() << "can't write, the list doesn't have 2 items";
         return false;
     }
 
@@ -444,7 +444,7 @@ bool itkProcessRegistration::write(const QString& file)
 {
     if (output() == NULL)
     {
-        qDebug() << "the registration method hasn't been run yet.";
+        dtkDebug() << "the registration method hasn't been run yet.";
         return false;
     }
 
@@ -454,18 +454,18 @@ bool itkProcessRegistration::write(const QString& file)
     for (int i=0; i<writers.size(); i++)
     {
         dtkAbstractDataWriter *dataWriter = medAbstractDataFactory::instance()->writer(writers[i]);
-        qDebug() << "trying " << dataWriter->identifier();
+        dtkDebug() << "trying " << dataWriter->identifier();
 
         if (! dataWriter->handled().contains(out->identifier()))
         {
-          qDebug() << "failed with " << dataWriter->identifier();
+          dtkDebug() << "failed with " << dataWriter->identifier();
           continue;
         }
 
-        qDebug() << "success with " << dataWriter->identifier();
+        dtkDebug() << "success with " << dataWriter->identifier();
         dataWriter->setData (out);
 
-        qDebug() << "trying to write in file : "<<file;
+        dtkDebug() << "trying to write in file : "<<file;
 
         if (dataWriter->canWrite( file )) {
             if (dataWriter->write( file )) {

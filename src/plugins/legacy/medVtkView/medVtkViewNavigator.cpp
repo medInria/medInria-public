@@ -458,7 +458,7 @@ void medVtkViewNavigator::setCamera(QHash<QString,QVariant> cameraOptions)
 {
     if(cameraOptions.count() != 4)
     {
-        qWarning() << "Camera options are incorrect.";
+        dtkWarn() << "Camera options are incorrect.";
         return;
     }
 

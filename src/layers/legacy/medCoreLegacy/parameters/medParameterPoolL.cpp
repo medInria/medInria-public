@@ -15,7 +15,7 @@
 
 #include <QMultiHash>
 #include <QHashIterator>
-#include <QDebug>
+#include <dtkLog>
 
 #include <medAbstractParameterL.h>
 #include <medCompositeParameterL.h>

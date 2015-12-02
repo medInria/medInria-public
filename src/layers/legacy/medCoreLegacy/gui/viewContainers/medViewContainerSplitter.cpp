@@ -13,7 +13,7 @@
 
 #include <medViewContainerSplitter.h>
 
-#include <QDebug>
+#include <dtkLog>
 #include <QUuid>
 
 #include <medAbstractData.h>

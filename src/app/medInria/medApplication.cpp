@@ -77,7 +77,7 @@ medApplication::medApplication(int & argc, char**argv) :
     d->mainWindow = NULL;
 
     this->setApplicationName("medInria");
-    qDebug() << "Version:" << MEDINRIA_VERSION;
+    dtkDebug() << "Version:" << MEDINRIA_VERSION;
     this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("inria");
     this->setOrganizationDomain("fr");
@@ -161,7 +161,7 @@ void medApplication::initialize()
 
     //  Setting up database connection
     if ( ! medDatabaseController::instance()->createConnection())
-        qDebug() << "Unable to create a connection to the database";
+        dtkDebug() << "Unable to create a connection to the database";
 
     medDataManager::initialize();
 

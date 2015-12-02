@@ -285,7 +285,7 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
         }
     } else
     {
-        qDebug() << "Unrecognized tensor data type: " << identifier;
+        dtkDebug() << "Unrecognized tensor data type: " << identifier;
     }
 
     d->actorProperty = itkDataTensorImageVtkViewInteractorPrivate::PropertySmartPointer::New();

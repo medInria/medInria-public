@@ -75,7 +75,7 @@ int itkFiltersAddProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFilters, update : " << id;
+    dtkDebug() << "itkFilters, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {
@@ -119,7 +119,7 @@ int itkFiltersAddProcess::update ( void )
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
+        dtkDebug() << "Error : pixel type not yet implemented ("
         << id
         << ")";
         return -1;

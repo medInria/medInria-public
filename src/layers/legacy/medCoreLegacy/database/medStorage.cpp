@@ -17,6 +17,9 @@
 #include <QtCore/QDir>
 
 #include <QtGui/QDesktopServices>
+
+#include <dtkLog>
+
 #include <medSettingsManager.h>
 
 QString medStorage::m_dataLocation = NULL;
@@ -119,7 +122,7 @@ bool medStorage::createDestination(QStringList sourceList, QStringList& destList
     bool res = true;
 
     if (!QDir(destDir).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty()) {
-        qWarning() << "Directory not empty: " << destDir;
+        dtkWarn() << "Directory not empty: " << destDir;
         return false;
     }
 
@@ -134,7 +137,7 @@ bool medStorage::createDestination(QStringList sourceList, QStringList& destList
         QDir fileInfo(completeFile.path());
 
         if (!fileInfo.exists() && !medStorage::mkpath (fileInfo.path())) {
-            qWarning() << "Cannot create directory: " << fileInfo.path();
+            dtkWarn() << "Cannot create directory: " << fileInfo.path();
             res = false;
         }
 
@@ -153,7 +156,7 @@ bool medStorage::copyFiles(QStringList sourceList, QStringList destList)
     for (int i = 0; i < sourceList.count(); i++) {
         // coping
         if (!QFile::copy(sourceList.at(i), destList.at(i))) {
-            qWarning() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
+            dtkWarn() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
             return false;
         }
     }

@@ -14,7 +14,7 @@
 #include <medStringListParameterL.h>
 
 #include <QComboBox>
-#include <QDebug>
+#include <dtkLog>
 
 
 class medStringListParameterLPrivate

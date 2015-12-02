@@ -179,7 +179,7 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
           SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVectorUChar3", data, d->view->layer(data))))
     {
-        qDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
+        dtkDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
         return;
     }
 
@@ -541,7 +541,7 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> va
 {
     if(values.size() != 2 )
     {
-        qWarning() << "Window/Level parameters are incorrect";
+        dtkWarn() << "Window/Level parameters are incorrect";
         return;
     }
 

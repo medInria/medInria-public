@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QtGui>
-#include <QDebug>
+#include <dtkLog>
 #include <QListWidget>
 
 #include <medCoreLegacyExport.h>

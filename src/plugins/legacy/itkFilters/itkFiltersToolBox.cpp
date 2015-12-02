@@ -78,7 +78,7 @@ public:
 
 itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
 {
-    qDebug() << "itkFiltersToolBox";
+    dtkDebug() << "itkFiltersToolBox";
     //Filters selection combobox
     d->filters = new QComboBox;
     QStringList filtersList;
@@ -307,7 +307,7 @@ medAbstractData* itkFiltersToolBox::processOutput()
 
 void itkFiltersToolBox::clear()
 {
-    qDebug() << "Clear itk filters toolbox";
+    dtkDebug() << "Clear itk filters toolbox";
 
     d->dataTypeValue->setText ( "Unknown" );
     d->addFilterValue->setMaximum ( 100.0 );
@@ -563,7 +563,7 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else
         {
-            qWarning() << "Error : pixel type not yet implemented ("
+            dtkWarn() << "Error : pixel type not yet implemented ("
             << identifier
             << ")";
         }
@@ -583,7 +583,7 @@ void itkFiltersToolBox::setupItkAddProcess()
 
 void itkFiltersToolBox::setupItkSubtractProcess()
 {
-    qDebug() << "Subtract parameter (run) : " << d->subtractFilterValue->value();
+    dtkDebug() << "Subtract parameter (run) : " << d->subtractFilterValue->value();
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkSubtractProcess" );
     
     if (!d->process)

@@ -19,10 +19,11 @@
  * border: ${pixel}px solid $color;
  */
 
-#include <QDebug>
 #include <QHash>
 #include <QRegExp>
 #include <QTextStream>
+
+#include <dtkLog>
 
 inline void deref(int index, QString & s, const QRegExp & regex, const QHash<QString, QString> & vars, int lineCount) {
     QString varName = regex.cap(1).isEmpty() ? regex.cap(2) : regex.cap(1);
@@ -30,7 +31,7 @@ inline void deref(int index, QString & s, const QRegExp & regex, const QHash<QSt
         s.replace(index, regex.matchedLength(), vars[varName]);
     } else {
         s.replace(index, regex.matchedLength(), "");
-        qWarning("Unknown variable name line %d: %s", lineCount, qPrintable(varName));
+        dtkWarn() << "Unknown variable name line " << lineCount << " :" << varName;
     }
 }
 

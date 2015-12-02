@@ -587,7 +587,7 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
                 this->setStyleSheet("medViewContainer {border: 1px solid #0080FF}");
                 break;
             default:
-                qDebug("Unsupported DropArea value");
+                dtkDebug("Unsupported DropArea value");
         }
     }
 
@@ -655,7 +655,7 @@ void medViewContainer::addData(medAbstractData *data)
 
         if(!view)
         {
-            qWarning() << "medViewContainer: Unable to create a medVtkView";
+            dtkWarn() << "medViewContainer: Unable to create a medVtkView";
             return;
         }
         this->setView(view);

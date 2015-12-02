@@ -72,7 +72,7 @@ void itkDataSHImageDouble3::setData(void *data)
         d->shs = shs;
     }
     else
-      qDebug() << "Cannot cast pointer to correct SH double type";
+      dtkDebug() << "Cannot cast pointer to correct SH double type";
 }
 
 int itkDataSHImageDouble3::xDimension()

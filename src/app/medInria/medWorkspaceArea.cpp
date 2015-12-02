@@ -215,7 +215,7 @@ void medWorkspaceArea::setupWorkspace(const QString &id)
         d->workspaces.insert(id, workspace);
     else
     {
-        qWarning()<< "Workspace " << id << " couldn't be created";
+        dtkWarn()<< "Workspace " << id << " couldn't be created";
         return;
     }
     workspace->setupTabbedViewContainer();
@@ -243,7 +243,7 @@ void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* st
 {
     if(!stack )
     {
-        qWarning() << "No stack to switch to";
+        dtkWarn() << "No stack to switch to";
         return;
     }
 

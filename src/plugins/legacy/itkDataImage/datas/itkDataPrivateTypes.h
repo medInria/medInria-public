@@ -63,7 +63,7 @@ public:
     int minRangeValue() {
         computeRange();
         if (!range_computed)
-            qDebug() << "Cannot compute range";
+            dtkDebug() << "Cannot compute range";
         return range_min;
     }
 

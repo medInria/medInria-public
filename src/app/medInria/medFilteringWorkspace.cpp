@@ -109,7 +109,7 @@ void medFilteringWorkspace::changeToolBoxInput()
     medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
     if(!layeredView)
     {
-        qWarning() << "Non layered view are not supported in filtering workspace yet.";
+        dtkWarn() << "Non layered view are not supported in filtering workspace yet.";
         d->filteringToolBox->clear();
         return;
     }
@@ -128,7 +128,7 @@ void medFilteringWorkspace::onProcessSuccess()
     if ( !d->filterOutput )
         return;
 
-    qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
+    dtkDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
 
     medAbstractData *inputData(d->filteringToolBox->data());
 
