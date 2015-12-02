@@ -59,14 +59,14 @@ void vtkDataMesh4D::setData(void *data)
   vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast( (vtkObject*) data );
   if (!sequence)
   {
-    qDebug() << "Cannot cast data to correct data type";
+    dtkDebug() << "Cannot cast data to correct data type";
     return;
   }
 
   if ( (sequence->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH) &&
        (sequence->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH) )
   {
-    qDebug() << "Cannot cast data to correct data type";
+    dtkDebug() << "Cannot cast data to correct data type";
     return;
   }
 

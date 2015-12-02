@@ -149,8 +149,8 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
             d->imageData->addMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
                                                                            (double)d->sequence->GetMaxTime()));
 
-            qDebug() << "SequenceDuration" << d->sequence->GetMaxTime();
-            qDebug() << "SequenceFrameRate" <<(double)d->sequence->GetNumberOfMetaDataSets() / (double)d->sequence->GetMaxTime();
+            dtkDebug() << "SequenceDuration" << d->sequence->GetMaxTime();
+            dtkDebug() << "SequenceFrameRate" <<(double)d->sequence->GetNumberOfMetaDataSets() / (double)d->sequence->GetMaxTime();
 
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);

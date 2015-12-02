@@ -16,7 +16,7 @@
 #include <QtSql/QtSql>
 
 #include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkLog/dtkLog.h>
+#include <dtkLog>
 
 #include <medDatabaseController.h>
 #include <medDatabaseItem.h>
@@ -662,7 +662,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             medAbstractDatabaseItem *parent = item->parent();
             if(!parent)
             {
-                qWarning() << "A problem occured while updating the serie " << dataIndex.asString();
+                dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
             }
             else
             {
@@ -715,7 +715,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
                 stItem = static_cast<medAbstractDatabaseItem *>(stIndex.internalPointer());
                 if(!stItem)
                 {
-                    qWarning() << "A problem occured while updating the serie " << dataIndex.asString();
+                    dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
                 }
             }
 
@@ -770,7 +770,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
             if(!parent)
             {
-                qWarning() << "A problem occured while updating the serie " << dataIndex.asString();
+                dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
             }
             else
             {
@@ -825,7 +825,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
                 ptItem = static_cast<medAbstractDatabaseItem *>(ptIndex.internalPointer());
                 if(!ptItem)
                 {
-                    qWarning() << "A problem occured while updating the serie " << dataIndex.asString();
+                    dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
                 }
             }
             if(ptItem)
@@ -868,7 +868,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             medAbstractDatabaseItem *parent = item->parent();
             if(!parent)
             {
-                qWarning() << "A problem occured while updating the serie " << dataIndex.asString();
+                dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
             }
             else
             {

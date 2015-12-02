@@ -285,8 +285,8 @@ void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         table->triggerVertexChanged();
     }
     // this->updateValue();
-    // qDebug() << "[" << (long int) this << "] value: " << d->value;
-    // qDebug() << "[" << (long int) this << "] coord: " << this->pos();
+    // dtkDebug() << "[" << (long int) this << "] value: " << d->value;
+    // dtkDebug() << "[" << (long int) this << "] coord: " << this->pos();
 }
 
 void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -541,7 +541,7 @@ void medClutEditorTable::deleteSelection()
             ++nSelected;
 
     if ( d->vertices.count() - nSelected < 2 ) {
-        qDebug() << "Need at least two nodes, but only "
+        dtkDebug() << "Need at least two nodes, but only "
                  << ( d->vertices.count() - nSelected ) << " nodes"
                  << " would be left after deletion!  Not deleting any node.";
         return;
@@ -601,7 +601,7 @@ void medClutEditorTable::setColorOfSelection()
 //         emit vertexRemoved();
 //     }
 //     else
-//         qDebug() << "Need at least two nodes, but only "
+//         dtkDebug() << "Need at least two nodes, but only "
 //                  << ( d->vertices.count() - 1 ) << " nodes"
 //                  << " would be left after deletion!  Not deleting any node.";
 // }
@@ -694,7 +694,7 @@ void medClutEditorTable::setTransferFunction( QList<double> &scalars,
     int size = qMin( scalars.count(), colors.count() );
 
     if ( size < 2 ) {
-        qDebug() << "medClutEditorTable::setTransferFunction: Transfer function"
+        dtkDebug() << "medClutEditorTable::setTransferFunction: Transfer function"
                  << " has less than two nodes.  Can't use it.";
         return;
     }
@@ -705,7 +705,7 @@ void medClutEditorTable::setTransferFunction( QList<double> &scalars,
         QPointF value( scalars.at( i ), colors.at( i ).alphaF() );
         QPointF coord = scene->valueToCoordinate( value );
 
-        // qDebug() << "value: " << value << ", coord: " << coord;
+        // dtkDebug() << "value: " << value << ", coord: " << coord;
         d->vertices <<
             new medClutEditorVertex( value, coord, colors.at( i ), this );
     }
@@ -754,7 +754,7 @@ void medClutEditorTable::simplifyTransferFunction()
     }
 
     if ( !foundThreshold ) {
-        qDebug() << "Select at least one vertex (exept the first or last one)"
+        dtkDebug() << "Select at least one vertex (exept the first or last one)"
                  << " which is too similar to its neighbors.";
         return;
     }
@@ -895,7 +895,7 @@ void medClutEditorTable::triggerVertexChanged()
 //     case Qt::Key_X: this->scene()->removeItem(this); break;
 //     default: break;
 //     }
-//     qDebug() << event->key();
+//     dtkDebug() << event->key();
 // }
 
 
@@ -1157,9 +1157,9 @@ QPointF medClutEditorScene::valueToCoordinate( QPointF value )
         coord.setY( d->topMargin + area.height() - area.height() * value.y() );
     }
 
-    // qDebug() << "range: (" << d->rangeMin << ", " << d->rangeMax << ")";
-    // qDebug() << "value: (" << value.x()   << ", " << value.y()   << ")";
-    // qDebug() << "coord: (" << coord.x()   << ", " << coord.y()   << ")";
+    // dtkDebug() << "range: (" << d->rangeMin << ", " << d->rangeMax << ")";
+    // dtkDebug() << "value: (" << value.x()   << ", " << value.y()   << ")";
+    // dtkDebug() << "coord: (" << coord.x()   << ", " << coord.y()   << ")";
 
     return coord;
 }
@@ -1758,7 +1758,7 @@ void medClutEditor::onSaveTableAction(void)
                 file->close();
             }
             else {
-                qDebug() << "can'open file " << fileName;
+                dtkDebug() << "can'open file " << fileName;
             }
             delete file;
         }

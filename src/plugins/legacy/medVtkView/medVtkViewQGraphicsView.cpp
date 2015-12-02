@@ -16,7 +16,7 @@
 
 #include <QVTKGraphicsItem.h>
 #include <QGraphicsView>
-#include <QDebug>
+#include <dtkLog>
 
 class medVtkViewQGraphicsViewPrivate
 {

@@ -76,7 +76,7 @@ int itkFiltersGaussianProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFilters, update : " << id;
+    dtkDebug() << "itkFilters, update : " << id;
 
     try
     {
@@ -122,7 +122,7 @@ int itkFiltersGaussianProcess::update ( void )
         }
         else
         {
-            qDebug() << "Error : pixel type not yet implemented ("
+            dtkDebug() << "Error : pixel type not yet implemented ("
             << id
             << ")";
             return -1;

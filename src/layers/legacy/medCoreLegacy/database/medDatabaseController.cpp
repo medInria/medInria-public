@@ -39,7 +39,7 @@
 namespace {
     inline bool execQuery( QSqlQuery & query, const char *file, int line ) {
         if ( ! query.exec() ) {
-            qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+            dtkDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             return false;
         }
         return true;
@@ -175,12 +175,12 @@ bool medDatabaseController::createConnection(void)
     this->m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
 
     if (!m_database.open()) {
-        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: Unable to establish a database connection." << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << "Cannot open database: Unable to establish a database connection." << DTK_NO_COLOR;
         return false;
     }
     else
     {
-        qDebug() << "Database opened at: " << m_database.databaseName();
+        dtkDebug() << "Database opened at: " << m_database.databaseName();
         d->isConnected = true;
     }
 
@@ -192,10 +192,10 @@ bool medDatabaseController::createConnection(void)
     // optimize speed of sqlite db
     QSqlQuery query(m_database);
     if ( !query.exec( QLatin1String( "PRAGMA synchronous = 0" ) ) ) {
-        qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
+        dtkDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
     }
     if ( !query.exec( QLatin1String( "PRAGMA journal_mode=wal" ) ) ) {
-        qDebug() << "Could not set sqlite write-ahead-log journal mode";
+        dtkDebug() << "Could not set sqlite write-ahead-log journal mode";
     }
 
 
@@ -227,7 +227,7 @@ medDataIndex medDatabaseController::indexForPatient (const QString &patientName)
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
         patientId = query.value(0);
@@ -246,7 +246,7 @@ medDataIndex medDatabaseController::indexForStudy(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -270,7 +270,7 @@ medDataIndex medDatabaseController::indexForStudy(const QString &patientName, co
     query.bindValue(":name", studyName);
 
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
         studyId = query.value(0);
@@ -291,7 +291,7 @@ medDataIndex medDatabaseController::indexForSeries(int id)
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         studyId = query.value(0);
@@ -299,7 +299,7 @@ medDataIndex medDatabaseController::indexForSeries(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -323,7 +323,7 @@ medDataIndex medDatabaseController::indexForSeries(const QString &patientName, c
     query.bindValue(":name", seriesName);
 
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
         QVariant seriesId = query.value(0);
@@ -345,7 +345,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT series FROM image WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         seriesId = query.value(0);
@@ -353,7 +353,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         studyId = query.value(0);
@@ -361,7 +361,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -385,7 +385,7 @@ medDataIndex medDatabaseController::indexForImage(const QString &patientName, co
     query.bindValue(":name", imageName);
 
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
         QVariant imageId = query.value(0);
@@ -562,9 +562,9 @@ bool medDatabaseController::moveDatabase( QString newLocation)
     }
 
     if (res)
-        qDebug() << "copying database: success";
+        dtkDebug() << "copying database: success";
     else
-        qDebug() << "copying database: failure";
+        dtkDebug() << "copying database: failure";
 
 
     // only switch to the new location if copying succeeded
@@ -584,22 +584,22 @@ bool medDatabaseController::moveDatabase( QString newLocation)
         // restart if necessary
         if (needsRestart)
         {
-            qDebug() << "Restarting connection...";
+            dtkDebug() << "Restarting connection...";
             this->createConnection();
         }
 
         // now delete the old archive
         if(medStorage::removeDir(oldLocation))
-            qDebug() << "deleting old database: success";
+            dtkDebug() << "deleting old database: success";
         else
-            qDebug() << "deleting old database: failure";
+            dtkDebug() << "deleting old database: failure";
 
     }
 
     if (res)
-        qDebug() << "relocating database successful";
+        dtkDebug() << "relocating database successful";
     else
-        qDebug() << "relocating database failed";
+        dtkDebug() << "relocating database failed";
     return res;
 }
 
@@ -848,7 +848,7 @@ QList<medDataIndex> medDatabaseController::studies( const medDataIndex& index ) 
 
     if ( !index.isValidForPatient() )
     {
-        qWarning() << "invalid index passed";
+        dtkWarn() << "invalid index passed";
         return ret;
     }
 
@@ -872,7 +872,7 @@ QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) co
 
     if ( !index.isValidForStudy() )
     {
-        qWarning() << "invalid index passed";
+        dtkWarn() << "invalid index passed";
         return ret;
     }
 
@@ -896,7 +896,7 @@ QList<medDataIndex> medDatabaseController::images( const medDataIndex& index) co
 
     if ( !index.isValidForSeries() )
     {
-        qWarning() << "invalid index passed";
+        dtkWarn() << "invalid index passed";
         return ret;
     }
 
@@ -980,7 +980,7 @@ bool medDatabaseController::contains(const medDataIndex &index) const
             query.bindValue(":imID", imageId);
 
         if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+            dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         if(query.first())
             return true;
 
@@ -1009,5 +1009,5 @@ medAbstractData* medDatabaseController::retrieve(const medDataIndex &index) cons
 
 void medDatabaseController::removeAll()
 {
-    qWarning()<< "Attempt to remove all item from PERSISTENT dataBase";
+    dtkWarn()<< "Attempt to remove all item from PERSISTENT dataBase";
 }

@@ -34,7 +34,7 @@ namespace
     {
         if ( ! query.exec() )
         {
-            qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+            dtkDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             return false;
         }
         return true;

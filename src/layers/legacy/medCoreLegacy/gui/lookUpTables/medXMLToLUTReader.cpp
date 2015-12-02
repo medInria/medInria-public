@@ -16,6 +16,8 @@
 #include <QXmlStreamReader>
 #include <QStringList>
 
+#include <dtkLog>
+
 class medXMLToLUTReaderPrivate{
 public:
     QXmlStreamReader xml;
@@ -99,7 +101,7 @@ void medXMLToLUTReaderPrivate::readNode(medClutEditorTable & table)
      QString node = xml.readElementText();
      QStringList sl = node.split(';');
      if (sl.count() != 6){
-         qDebug() << "node not compliant with 6 coordinates scheme";
+         dtkDebug() << "node not compliant with 6 coordinates scheme";
          return;
      }
      // table.addVertex(new medClutEditorVertex(sl.at(0).toDouble(),

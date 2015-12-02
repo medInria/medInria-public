@@ -78,7 +78,7 @@ bool vtkDataMesh4DReader::read (const QString& path) {
 
     this->setProgress (50);
 
-    qDebug() << "Can read with: " << this->identifier();
+    dtkDebug() << "Can read with: " << this->identifier();
 
     if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
 

@@ -91,7 +91,7 @@ bool itkDataTensorImageWriterBase::write(const QString& path)
         }
 
         else {
-            qWarning() << "Unrecognized pixel type";
+            dtkWarn() << "Unrecognized pixel type";
             return false;
         }
     }
@@ -155,7 +155,7 @@ bool itkDataTensorImageWriterBase::write(const QString& path, PixelType dummyArg
         myWriter->Write();
     }
     catch(itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return false;
     }
 

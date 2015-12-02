@@ -260,7 +260,7 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
     }
     catch(itk::ExceptionObject &e)
     {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return false;
     }
 
@@ -281,7 +281,7 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
 
         if (d->io->GetPixelType() != itk::ImageIOBase::SCALAR)
         {
-            qDebug() << "Unsupported pixel type";
+            dtkDebug() << "Unsupported pixel type";
             return false;
         }
 
@@ -328,13 +328,13 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
                 imagetypestring << "Double";
             break;
         default:
-            qDebug() << "Unrecognized component type:\t " << d->io->GetComponentType();
+            dtkDebug() << "Unrecognized component type:\t " << d->io->GetComponentType();
             return false;
         }
 
         imagetypestring << imagedimension;
         if (imagedimension == 4)
-            qDebug() << "image type given :\t" << imagetypestring.str().c_str();
+            dtkDebug() << "image type given :\t" << imagetypestring.str().c_str();
 
         medData = medAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str());
         if (medData)
@@ -425,7 +425,7 @@ bool itkGDCMDataImageReader::read (const QStringList &paths)
     FileListMapType map = this->sort(filenames);
 
     if (!map.size()) {
-        qDebug() << "No image can be build from file list (empty map)";
+        dtkDebug() << "No image can be build from file list (empty map)";
         return false;
     }
 
@@ -471,11 +471,11 @@ bool itkGDCMDataImageReader::read (const QStringList &paths)
                  */
                 Read4DImage<short>(medData,d->io,map);
             } else {
-                qDebug() << "Unhandled medData type : " << medData->identifier();
+                dtkDebug() << "Unhandled medData type : " << medData->identifier();
                 return false;
             }
         } catch (itk::ExceptionObject &e) {
-            qDebug() << e.GetDescription();
+            dtkDebug() << e.GetDescription();
             return false;
         }
 
@@ -531,7 +531,7 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
     gdcm::Scanner::ValuesType orientations = this->m_Scanner.GetValues(orientationtag);
     if (orientations.size() != 1)
     {
-        qDebug() <<"More than one Orientation in filenames (or no Orientation)";
+        dtkDebug() <<"More than one Orientation in filenames (or no Orientation)";
         return ret;
     }
 
@@ -539,7 +539,7 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
     gdcm::Scanner::TagToValue::const_iterator firstit = t2v.find(orientationtag);
     if ((*firstit).first != orientationtag)
     {
-        qDebug() <<"Could not find any orientation information in the header of the reference file";
+        dtkDebug() <<"Could not find any orientation information in the header of the reference file";
         return ret;
     }
 
@@ -602,7 +602,7 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
         }
         else
         {
-            qDebug() << "The file "
+            dtkDebug() << "The file "
                      << filename
                      <<" does not appear in the scanner mappings, skipping. ";
         }
@@ -610,7 +610,7 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
 
     if ((filelist.size() % sorted.size()) != 0)
     {
-        qDebug() << "There appears to be inconsistent file list sizes\n "
+        dtkDebug() << "There appears to be inconsistent file list sizes\n "
                  << "Scanner outputs "<<sorted.size()<<" different image positions\n "
                  << "within a total list of "<<filelist.size()<<" files.\n"
                  << "no sorting will be performed\n";

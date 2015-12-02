@@ -67,7 +67,7 @@ bool vtkDataMeshReader::read(const QString& path) {
     readInformation(path);
     setProgress(50);
 
-    qDebug() << "Can read with: " << identifier();
+    dtkDebug() << "Can read with: " << identifier();
 
     if (medAbstractData * medData = dynamic_cast<medAbstractData*>(data()))
     {
@@ -85,7 +85,7 @@ bool vtkDataMeshReader::read(const QString& path) {
         }
         else
         {
-            qDebug() << "Loading the vtkDataMesh failed, it's neither a surface or volume mesh !";
+            dtkDebug() << "Loading the vtkDataMesh failed, it's neither a surface or volume mesh !";
             return false;
         }
 
@@ -94,7 +94,7 @@ bool vtkDataMeshReader::read(const QString& path) {
             dataSet->Read(path.toLocal8Bit().constData());
         } catch (...)
         {
-            qDebug() << "Loading the vtkDataMesh failed, error while parsing !";
+            dtkDebug() << "Loading the vtkDataMesh failed, error while parsing !";
             return false;
         }
 

@@ -48,7 +48,7 @@ medSegmentationPlugin::~medSegmentationPlugin()
 bool medSegmentationPlugin::initialize()
 {
     if(!medAnnotationInteractor::registered())
-        qDebug() << "Unable to register medAnnotationInteractor";
+        dtkDebug() << "Unable to register medAnnotationInteractor";
     return medAlgorithmInitializer::initialize();
 }
 

@@ -102,12 +102,12 @@ bool itkDataImageWriterBase::write(const QString& path)
               write_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               write_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {
-            qWarning() << "Unrecognized pixel type";
+            dtkWarn() << "Unrecognized pixel type";
             return false;
         }
 
     } catch(itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return false;
     }
 

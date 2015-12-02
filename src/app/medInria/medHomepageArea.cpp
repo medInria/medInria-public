@@ -336,7 +336,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->stackedWidget->setMaximumWidth(stackedWidgetWidth);
     //TODO: this is ugly, find a way to use the right policy here...
     d->stackedWidget->resize(stackedWidgetWidth,stackedWidgetHeight);
-//    qDebug()<< d->stackedWidget->maximumSize();
+//    dtkDebug()<< d->stackedWidget->maximumSize();
 
     //Update the animations as well
     d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );

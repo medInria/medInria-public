@@ -257,7 +257,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::studies( const medDataIn
 
     if ( !index.isValidForPatient() )
     {
-        qWarning() << "invalid index passed";
+        dtkWarn() << "invalid index passed";
         return ret;
     }
 
@@ -284,7 +284,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::series( const medDataInd
 
     if ( !index.isValidForStudy() )
     {
-        qWarning() << "invalid index passed";
+        dtkWarn() << "invalid index passed";
         return ret;
     }
 
@@ -312,7 +312,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::images( const medDataInd
 
     if ( !index.isValidForSeries() )
     {
-        qWarning() << "invalid index passed";
+        dtkWarn() << "invalid index passed";
         return ret;
     }
 

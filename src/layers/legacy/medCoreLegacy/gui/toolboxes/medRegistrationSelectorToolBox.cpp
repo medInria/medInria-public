@@ -93,7 +93,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
         if(!tb)
-            qWarning() << "Unable to instantiate" << details->name << "toolbox";
+            dtkWarn() << "Unable to instantiate" << details->name << "toolbox";
         else
         {
             tb->header()->hide();
@@ -185,7 +185,7 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
 
     if(!toolbox) {
-        qWarning() << "Unable to instantiate" << id << "toolbox";
+        dtkWarn() << "Unable to instantiate" << id << "toolbox";
         return;
     }
 

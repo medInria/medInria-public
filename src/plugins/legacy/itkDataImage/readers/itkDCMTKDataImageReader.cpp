@@ -279,7 +279,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         d->io->ReadImageInformation();
     }
     catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return false;
     }
 
@@ -326,7 +326,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 imagetypestring << "Double";
                 break;
             default:
-                qDebug() << "Unrecognized component type: " << d->io->GetComponentType();
+                dtkDebug() << "Unrecognized component type: " << d->io->GetComponentType();
                 return false;
             }
 
@@ -347,12 +347,12 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 break;
 
             default:
-                qDebug() << "Unrecognized component type";
+                dtkDebug() << "Unrecognized component type";
                 return false;
             }
         }
         else {
-            qDebug() << "Unsupported pixel type";
+            dtkDebug() << "Unsupported pixel type";
             return false;
         }
     }
@@ -461,7 +461,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 
     }
     else {
-      qDebug() << "Unsupported pixel type";
+      dtkDebug() << "Unsupported pixel type";
       return false;
     }
     
@@ -511,11 +511,11 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
             else if (medData->identifier()=="itkDataImageShort4")  { ReadImage<short,4>(medData,d->io,paths);                        }
             else if (medData->identifier()=="itkDataImageChar4")   { ReadImage<char,4>(medData,d->io,paths);                         }
             else {
-                qWarning() << "Unrecognized pixel type";
+                dtkWarn() << "Unrecognized pixel type";
                 return false;
             }
         } catch (itk::ExceptionObject &e) {
-            qDebug() << e.GetDescription();
+            dtkDebug() << e.GetDescription();
             return false;
         }
 

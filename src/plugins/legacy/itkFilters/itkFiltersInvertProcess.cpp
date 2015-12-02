@@ -61,7 +61,7 @@ int itkFiltersInvertProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFilters, update : " << id;
+    dtkDebug() << "itkFilters, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {
@@ -97,17 +97,17 @@ int itkFiltersInvertProcess::update ( void )
     }
     else if ( id == "itkDataImageFloat3" )
     {
-        qDebug() << "Error : Invert image filter does not suport floating pixel values";
+        dtkDebug() << "Error : Invert image filter does not suport floating pixel values";
         return -1;
     }
     else if ( id == "itkDataImageDouble3" )
     {
-        qDebug() << "Error : Invert image filter does not suport floating pixel values";
+        dtkDebug() << "Error : Invert image filter does not suport floating pixel values";
         return -1;
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
+        dtkDebug() << "Error : pixel type not yet implemented ("
         << id
         << ")";
         return -1;

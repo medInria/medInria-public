@@ -160,10 +160,10 @@ void medToolBox::switchMinimize()
 */
 void medToolBox::show()
 {
-    //JGG qDebug()<<"show TB:" << header()->title();
+    //JGG dtkDebug()<<"show TB:" << header()->title();
     if(d->validDataTypes.isEmpty() || d->isContextVisible)
     {
-        //JGG qDebug()<<"actually showing in TB";
+        //JGG dtkDebug()<<"actually showing in TB";
         QWidget::show();
     }
 }
@@ -244,7 +244,7 @@ void medToolBox::setAboutPluginButton(dtkPlugin *plugin)
     }
     else
     {
-        qWarning() << "no aboutButton found for toolbox" << d->header->title();
+        dtkWarn() << "no aboutButton found for toolbox" << d->header->title();
     }
 }
 
@@ -256,7 +256,7 @@ void medToolBox::onAboutButtonClicked()
 {
     if(d->plugin)
     {
-        qDebug() << "about plugin" << d->plugin->name();
+        dtkDebug() << "about plugin" << d->plugin->name();
 
         QDialog * dial = new QDialog(this);
         QString windowTitle = tr("medInria: about ");
@@ -284,6 +284,6 @@ void medToolBox::onAboutButtonClicked()
     }
     else
     {
-        qWarning() << "No plugin set for toolbox" << d->header->title();
+        dtkWarn() << "No plugin set for toolbox" << d->header->title();
     }
 }

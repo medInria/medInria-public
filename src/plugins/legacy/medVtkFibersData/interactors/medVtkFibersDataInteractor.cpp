@@ -568,7 +568,7 @@ void medVtkFibersDataInteractor::setRenderingMode(RenderingMode mode)
             d->manager->SetRenderingModeToTubes();
             break;
         default:
-            qDebug() << "medVtkFibersDataInteractor: unknown rendering mode";
+            dtkDebug() << "medVtkFibersDataInteractor: unknown rendering mode";
     }
     d->view->render();
 }
@@ -633,7 +633,7 @@ void medVtkFibersDataInteractor::setBoxBooleanOperation(BooleanOperation op)
             break;
 
         default:
-            qDebug() << "medVtkFibersDataInteractor: Unknown boolean operations";
+            dtkDebug() << "medVtkFibersDataInteractor: Unknown boolean operations";
     }
 
     d->manager->GetVOILimiter()->Modified();
@@ -745,7 +745,7 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
         }
         catch(itk::ExceptionObject &e)
         {
-            qDebug() << e.GetDescription();
+            dtkDebug() << e.GetDescription();
             return;
         }
 

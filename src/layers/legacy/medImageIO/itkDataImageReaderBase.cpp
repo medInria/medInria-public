@@ -58,7 +58,7 @@ bool itkDataImageReaderBase::canRead (const QString& path)
            this->io->ReadImageInformation();
         }
         catch (itk::ExceptionObject &e) {
-           qDebug() << e.GetDescription();
+           dtkDebug() << e.GetDescription();
            return false;
         }
 
@@ -92,7 +92,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
     }
     catch (itk::ExceptionObject &e)
     {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return false;
     }
 
@@ -104,7 +104,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         const int  dim  = this->io->GetNumberOfDimensions();
         if (!(dim>0 && dim<=4))
         {
-            qDebug() << "Unrecognized component type";
+            dtkDebug() << "Unrecognized component type";
             return false;
         }
         const char cdim = '0'+((dim<=3) ? 3 : 4);
@@ -153,7 +153,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 break;
 
             default:
-                qDebug() << "Unrecognized component type";
+                dtkDebug() << "Unrecognized component type";
                 return false;
         }
     }
@@ -168,7 +168,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 break;
 
             default:
-                qDebug() << "Unrecognized component type";
+                dtkDebug() << "Unrecognized component type";
                 return false;
         }
     }
@@ -187,7 +187,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorDouble3");
                 break;
             default:
-                qDebug() << "Unrecognized component type";
+                dtkDebug() << "Unrecognized component type";
                 return false;
         }
     }
@@ -202,13 +202,13 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             break;
 
         default:
-            qDebug() << "Unrecognized component type";
+            dtkDebug() << "Unrecognized component type";
             return false;
         }
     }
     else
     {
-        qDebug() << "Unsupported pixel type";
+        dtkDebug() << "Unsupported pixel type";
         return false;
     }
 
@@ -303,13 +303,13 @@ bool itkDataImageReaderBase::read(const QString& path)
               read_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               read_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {
-            qWarning() << "Unrecognized pixel type";
+            dtkWarn() << "Unrecognized pixel type";
             return false;
         }
     }
     catch (itk::ExceptionObject &e)
     {
-        qWarning() << e.GetDescription();
+        dtkWarn() << e.GetDescription();
         return false;
     }
 

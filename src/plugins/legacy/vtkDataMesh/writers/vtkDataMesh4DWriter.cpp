@@ -57,7 +57,7 @@ bool vtkDataMesh4DWriter::write(const QString& path)
   if (!this->data())
     return false;
 
-  qDebug() << "Can write with: " << this->identifier();
+  dtkDebug() << "Can write with: " << this->identifier();
 
   medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 

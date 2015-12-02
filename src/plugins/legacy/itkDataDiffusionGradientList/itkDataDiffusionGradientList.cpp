@@ -104,6 +104,6 @@ bool itkDataDiffusionGradientList::read (const QString& filename)
 
 bool itkDataDiffusionGradientList::write (const QString& file)
 {
-    qDebug() << "itkDataDiffusionGradientList::write() not implemented yet.";
+    dtkDebug() << "itkDataDiffusionGradientList::write() not implemented yet.";
     return false;
 }

@@ -94,7 +94,7 @@ QStringList medPluginManager::handlers(const QString& category)
 */
 void medPluginManager::onPluginLoaded(const QString& name)
 {
-    qDebug() << " Loading plugin : " << name;
+    dtkDebug() << " Loading plugin : " << name;
 
     dtkPlugin *plug = plugin(name);
 
@@ -136,8 +136,8 @@ medPluginManager *medPluginManager::s_instance = NULL;
 
 void medPluginManager::onLoadError(const QString &errorMessage)
 {
-    qDebug() << "add error message to pluginManager:";
-    qDebug() << "\t" << errorMessage;
+    dtkDebug() << "add error message to pluginManager:";
+    dtkDebug() << "\t" << errorMessage;
     d->loadErrors << errorMessage;
 }
 
