@@ -128,7 +128,7 @@ medAbstractJob::medJobExitStatus medItkSubtractImageProcess::_run()
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
-        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input1()->identifier()));
+        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
         out->setData(filter->GetOutput());
         this->setOutput(out);
         return medAbstractJob::MED_JOB_EXIT_SUCCES;
