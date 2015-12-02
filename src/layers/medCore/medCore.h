@@ -30,6 +30,8 @@
 #include <medAbstractMaskImageProcess.h>
 #include <medAbstractDWIMaskingProcess.h>
 #include <medAbstractDiffusionModelEstimationProcess.h>
+#include <medAbstractDiffusionScalarMapsProcess.h>
+#include <medAbstractTractographyProcess.h>
 
 #include <medCoreExport.h>
 
@@ -76,6 +78,20 @@ namespace medCore
         MEDCORE_EXPORT medAbstractDiffusionModelEstimationProcessPluginManager& pluginManager(void);
         MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
         MEDCORE_EXPORT medAbstractDiffusionModelEstimationProcessPluginFactory& pluginFactory(void);
+    }
+
+    namespace diffusionScalarMaps
+    {
+        MEDCORE_EXPORT medAbstractDiffusionScalarMapsProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+        MEDCORE_EXPORT medAbstractDiffusionScalarMapsProcessPluginFactory& pluginFactory(void);
+    }
+
+    namespace tractography
+    {
+        MEDCORE_EXPORT medAbstractTractographyProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+        MEDCORE_EXPORT medAbstractTractographyProcessPluginFactory& pluginFactory(void);
     }
 
     namespace morphomathOperation

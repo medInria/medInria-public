@@ -18,19 +18,16 @@
 #include <medCore.h>
 #include <medWidgets.h>
 #include <medProcessPresenterFactory.h>
-#include <medAbstractOpeningImageProcess.h>
-#include <medAbstractOpeningImageProcessPresenter.h>
-#include <medAbstractMaskImageProcess.h>
-#include <medAbstractMaskImageProcessPresenter.h>
+#include <medAbstractTractographyProcess.h>
+#include <medAbstractTractographyProcessPresenter.h>
 
 #include <medToolBox.h>
 
 class medTestWorkspacePrivate
 {
 public:
-  medAbstractMaskImageProcess *process;
-  medAbstractMaskImageProcessPresenter *presenter;
-
+  medAbstractTractographyProcess *process;
+  medAbstractTractographyProcessPresenter *presenter;
 };
 
 medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medTestWorkspacePrivate)
@@ -38,12 +35,12 @@ medTestWorkspace::medTestWorkspace(QWidget *parent): medAbstractWorkspaceLegacy 
     d->presenter = NULL;
     d->process = NULL;
 
-    QStringList plugins = medCore::maskImage::pluginFactory().keys();
+    QStringList plugins = medCore::tractography::pluginFactory().keys();
     if(!plugins.isEmpty())
     {
         QString key = plugins.first();
-        d->process = medCore::maskImage::pluginFactory().create(key);
-        d->presenter = medWidgets::maskImage::presenterFactory().create(d->process);
+        d->process = medCore::tractography::pluginFactory().create(key);
+        d->presenter = medWidgets::tractography::presenterFactory().create(d->process);
 
         medToolBox* tb = new medToolBox;
         tb->addWidget(d->presenter->buildToolBoxWidget());

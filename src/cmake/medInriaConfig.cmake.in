@@ -33,6 +33,10 @@ add_library(medImageIO SHARED IMPORTED)
 find_library(medImageIO_LIBRARY NAMES medImageIO PATHS @medImageIO_LIBRARY_DIR@)
 set_target_properties(medImageIO PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medImageIO_INCLUDE_DIRS@" IMPORTED_LOCATION ${medImageIO_LIBRARY})
 
+add_library(medVtkInria SHARED IMPORTED)
+find_library(medVtkInria_LIBRARY NAMES medVtkInria PATHS @medVtkInria_LIBRARY_DIR@)
+set_target_properties(medVtkInria PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkInria_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkInria_LIBRARY})
+
 add_library(medWidgets SHARED IMPORTED)
 find_library(medWidgets_LIBRARY NAMES medWidgets PATHS @medWidgets_LIBRARY_DIR@)
 set_target_properties(medWidgets PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medWidgets_INCLUDE_DIRS@" IMPORTED_LOCATION ${medWidgets_LIBRARY})

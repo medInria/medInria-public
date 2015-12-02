@@ -15,8 +15,6 @@
 #include <medAbstractImageData.h>
 #include <medAbstractDiffusionModelImageData.h>
 
-#include <medStringParameter.h>
-
 class medAbstractDiffusionModelEstimationProcessPrivate
 {
 public:

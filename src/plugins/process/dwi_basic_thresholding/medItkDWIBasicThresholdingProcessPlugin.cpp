@@ -14,12 +14,16 @@
 #include <medItkDWIBasicThresholdingProcessPlugin.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
 #include <medItkDWIBasicThresholdingProcess.h>
+#include <medItkDWIBasicThresholdingProcessPresenter.h>
 
 void medItkDWIBasicThresholdingProcessPlugin::initialize(void)
 {
-    medCore::dwiMasking::pluginFactory().record(medItkDWIBasicThresholdingProcess::staticMetaObject.className()
-                                                                     , medItkDWIBasicThresholdingProcessCreator);
+    medCore::dwiMasking::pluginFactory().record(medItkDWIBasicThresholdingProcess::staticMetaObject.className(),
+                                                medItkDWIBasicThresholdingProcessCreator);
+    medWidgets::dwiMasking::presenterFactory().record(medItkDWIBasicThresholdingProcess::staticMetaObject.className(),
+                                                      medItkDWIBasicThresholdingProcessPresenterCreator);
 }
 
 void medItkDWIBasicThresholdingProcessPlugin::uninitialize(void)
@@ -27,3 +31,4 @@ void medItkDWIBasicThresholdingProcessPlugin::uninitialize(void)
 }
 
 DTK_DEFINE_PLUGIN(medItkDWIBasicThresholdingProcess)
+DTK_DEFINE_PLUGIN(medItkDWIBasicThresholdingProcessPresenter)

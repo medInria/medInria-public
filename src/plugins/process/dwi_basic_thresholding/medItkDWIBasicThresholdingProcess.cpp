@@ -26,7 +26,6 @@
 
 medItkDWIBasicThresholdingProcess::medItkDWIBasicThresholdingProcess(QObject *parent)
     : medAbstractDWIMaskingProcess(parent)
-
 {
     m_extractfilter = 0;
     m_thresholdfilter = 0;
@@ -39,12 +38,24 @@ medItkDWIBasicThresholdingProcess::medItkDWIBasicThresholdingProcess(QObject *pa
     m_thresholdValue = new medIntParameter("threshold_value", this);
     m_thresholdValue->setCaption("Lower threshold value");
     m_thresholdValue->setDescription("Lower threshold value");
+    m_thresholdValue->setRange(0,5000);
     m_thresholdValue->setValue(100);
 }
 
 medItkDWIBasicThresholdingProcess::~medItkDWIBasicThresholdingProcess()
 {
 }
+
+medIntParameter *medItkDWIBasicThresholdingProcess::b0VolumeNumberParameter() const
+{
+    return m_b0VolumeNumber;
+}
+
+medIntParameter *medItkDWIBasicThresholdingProcess::thresholdValueParameter() const
+{
+    return m_thresholdValue;
+}
+
 
 void medItkDWIBasicThresholdingProcess::setInput(medAbstractImageData* data)
 {
