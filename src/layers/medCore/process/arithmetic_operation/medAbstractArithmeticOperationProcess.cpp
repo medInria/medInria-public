@@ -14,7 +14,7 @@
 #include <medAbstractArithmeticOperationProcess.h>
 
 #include <medAbstractImageData.h>
-
+#include <medMetaDataKeys.h>
 
 class medAbstractArithmeticOperationProcessPrivate
 {
@@ -60,6 +60,22 @@ medAbstractImageData* medAbstractArithmeticOperationProcess::input2() const
 void medAbstractArithmeticOperationProcess::setOutput(medAbstractImageData *data)
 {
     d->output = data;
+
+    QString newSeriesDescription = d->input1->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " arithmetic";
+
+    if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+        d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+    foreach ( QString metaData, d->input1->metaDataList() )
+    {
+        if (!d->output->hasMetaData(metaData))
+            d->output->addMetaData ( metaData, d->input1->metaDataValues ( metaData ) );
+    }
+
+    foreach ( QString property, d->input1->propertyList() )
+        d->output->addProperty ( property,d->input1->propertyValues ( property ) );
+
 }
 
 medAbstractImageData* medAbstractArithmeticOperationProcess::output() const

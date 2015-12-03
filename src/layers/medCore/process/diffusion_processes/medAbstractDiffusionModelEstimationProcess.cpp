@@ -14,6 +14,7 @@
 #include <medAbstractDiffusionModelEstimationProcess.h>
 #include <medAbstractImageData.h>
 #include <medAbstractDiffusionModelImageData.h>
+#include <medMetaDataKeys.h>
 
 class medAbstractDiffusionModelEstimationProcessPrivate
 {
@@ -69,4 +70,19 @@ medAbstractDiffusionModelImageData* medAbstractDiffusionModelEstimationProcess::
 void medAbstractDiffusionModelEstimationProcess::setOutput(medAbstractDiffusionModelImageData *data)
 {
     d->output = data;
+
+    QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " models";
+
+    if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+        d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+    foreach ( QString metaData, d->input->metaDataList() )
+    {
+        if (!d->output->hasMetaData(metaData))
+            d->output->addMetaData ( metaData, d->input->metaDataValues ( metaData ) );
+    }
+
+    foreach ( QString property, d->input->propertyList() )
+        d->output->addProperty ( property,d->input->propertyValues ( property ) );
 }
