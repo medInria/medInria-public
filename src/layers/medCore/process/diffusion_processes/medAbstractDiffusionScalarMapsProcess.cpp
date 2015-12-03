@@ -11,61 +11,50 @@
 
 =========================================================================*/
 
-#include <medAbstractDWIMaskingProcess.h>
-
+#include <medAbstractDiffusionScalarMapsProcess.h>
 #include <medAbstractImageData.h>
+#include <medAbstractDiffusionModelImageData.h>
 #include <medMetaDataKeys.h>
 
-class medAbstractDWIMaskingProcessPrivate
+class medAbstractDiffusionScalarMapsProcessPrivate
 {
 public:
-    medAbstractImageData *input;
+    medAbstractDiffusionModelImageData *input;
     medAbstractImageData *output;
 };
 
-medAbstractDWIMaskingProcess::medAbstractDWIMaskingProcess(QObject *parent)
-    : medAbstractProcess(parent), d(new medAbstractDWIMaskingProcessPrivate)
+medAbstractDiffusionScalarMapsProcess::medAbstractDiffusionScalarMapsProcess(QObject *parent)
+    : medAbstractProcess(parent), d(new medAbstractDiffusionScalarMapsProcessPrivate)
 {
     d->input = NULL;
     d->output = NULL;
 }
 
-medAbstractDWIMaskingProcess::~medAbstractDWIMaskingProcess()
+medAbstractDiffusionScalarMapsProcess::~medAbstractDiffusionScalarMapsProcess()
 {
-
 }
 
-void medAbstractDWIMaskingProcess::setInput(medAbstractImageData *data)
+void medAbstractDiffusionScalarMapsProcess::setInput(medAbstractDiffusionModelImageData *data)
 {
-    if (!data)
-        return;
-
-    if (data->Dimension() != 4)
-        return;
-
     d->input = data;
 }
 
-medAbstractImageData* medAbstractDWIMaskingProcess::input() const
+medAbstractDiffusionModelImageData* medAbstractDiffusionScalarMapsProcess::input() const
 {
     return d->input;
 }
 
-medAbstractImageData* medAbstractDWIMaskingProcess::output() const
+medAbstractImageData* medAbstractDiffusionScalarMapsProcess::output() const
 {
     return d->output;
 }
 
-void medAbstractDWIMaskingProcess::setOutput(medAbstractImageData *data)
+void medAbstractDiffusionScalarMapsProcess::setOutput(medAbstractImageData *data)
 {
-    if (data->Dimension() != 3)
-        return;
-
     d->output = data;
 
-
     QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " DWI mask";
+    newSeriesDescription += " scalar map";
 
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );

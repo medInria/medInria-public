@@ -14,85 +14,95 @@
 #include <medDiffusionSelectorToolBox.h>
 
 #include <medAbstractDataFactory.h>
-#include <medAbstractDiffusionProcess.h>
-#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-
 #include <medAbstractImageData.h>
-#include <medPluginManager.h>
+#include <medAbstractFibersData.h>
+#include <medAbstractDiffusionModelImageData.h>
 
-#include <medDropSite.h>
 #include <medDataManager.h>
-#include <medToolBoxTab.h>
-#include <medToolBoxFactory.h>
-#include <medToolBoxHeader.h>
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 
-#include "medDiffusionAbstractToolBox.h"
+#include <medCore.h>
+#include <medWidgets.h>
+#include <medAbstractDiffusionModelEstimationProcess.h>
+#include <medAbstractDiffusionScalarMapsProcess.h>
+#include <medAbstractTractographyProcess.h>
+#include <medAbstractDiffusionModelEstimationProcessPresenter.h>
+#include <medAbstractDiffusionScalarMapsProcessPresenter.h>
+#include <medAbstractTractographyProcessPresenter.h>
 
 class medDiffusionSelectorToolBoxPrivate
 {
 public:
-
-    QHash<QString, medDiffusionAbstractToolBox*> toolBoxes;
-    medDiffusionAbstractToolBox *currentToolBox;
-
     medDiffusionSelectorToolBox::SelectorType selectorType;
 
     QLabel *gradientFileLabel;
     QPushButton *browseButton;
 
-    QPushButton *runButton;
-    QPushButton *cancelButton;
+    medAbstractProcess *currentProcess;
+    medAbstractProcessPresenter *currentProcessPresenter;
 
     QComboBox *methodCombo;
     QVBoxLayout *mainLayout;
 
-    //QLabel *inputLabel;
     QComboBox *chooseInput;
-    //TODO smartPointing have to be managed only in abstract processes -rde
     QMap <QString, dtkSmartPointer <medAbstractImageData> > inputsMap;
+
+    QWidget *currentToolBox;
+
+    dtkSmartPointer <medAbstractData> processOutput;
 };
 
 medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, SelectorType type) : medToolBox(parent), d(new medDiffusionSelectorToolBoxPrivate)
 {
+    d->currentProcess = 0;
+    d->currentProcessPresenter = 0;
     d->currentToolBox = 0;
+    d->processOutput = 0;
     d->selectorType = type;
 
     // /////////////////////////////////////////////////////////////////
     // main page
     // /////////////////////////////////////////////////////////////////
     QWidget *mainPage = new QWidget(this);
-
     QString labelTitle;
-    QString toolboxCategory;
-    QString runButtonText;
 
-    switch (type)
+    d->methodCombo = new QComboBox(mainPage);
+    // --- Setting up custom toolboxes list ---
+    d->methodCombo->addItem( tr( "Choose..." ) );
+
+    switch(d->selectorType)
     {
         case Estimation:
             labelTitle = tr("Estimation algorithm:");
-            toolboxCategory = "diffusion-estimation";
-            runButtonText = tr("Estimate model");
+            foreach(QString pluginKey, medCore::diffusionModelEstimation::pluginFactory().keys())
+            {
+                medAbstractProcess *process = medCore::diffusionModelEstimation::pluginFactory().create(pluginKey);
+                d->methodCombo->addItem(process->caption(),pluginKey);
+            }
             break;
 
         case ScalarMaps:
             labelTitle = tr("Scalar maps:");
-            toolboxCategory = "diffusion-scalar-maps";
-            runButtonText = "";
+            foreach(QString pluginKey, medCore::diffusionScalarMaps::pluginFactory().keys())
+            {
+                medAbstractProcess *process = medCore::diffusionScalarMaps::pluginFactory().create(pluginKey);
+                d->methodCombo->addItem(process->caption(),pluginKey);
+            }
             break;
 
         case Tractography:
         default:
             labelTitle = tr("Tractography algorithm:");
-            toolboxCategory = "diffusion-tractography";
-            runButtonText = tr("Track fibers");
+            foreach(QString pluginKey, medCore::tractography::pluginFactory().keys())
+            {
+                medAbstractProcess *process = medCore::tractography::pluginFactory().create(pluginKey);
+                d->methodCombo->addItem(process->caption(),pluginKey);
+            }
             break;
     }
 
     QLabel *methodLabel = new QLabel(labelTitle, mainPage);
-    d->methodCombo = new QComboBox(mainPage);
-
     QHBoxLayout *methodLayout = new QHBoxLayout;
     methodLayout->addWidget(methodLabel);
     methodLayout->addWidget(d->methodCombo);
@@ -100,21 +110,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     d->mainLayout = new QVBoxLayout(mainPage);
     d->mainLayout->addLayout(methodLayout);
 
-    // --- Setting up custom toolboxes list ---
-    d->methodCombo->addItem( tr( "Choose..." ) );
-    medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
-    int i=1;
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory(toolboxCategory))
-    {
-        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
-        d->methodCombo->addItem(details->name, toolbox);
-        d->methodCombo->setItemData(i,
-                                  details->description,
-                                  Qt::ToolTipRole);
-        i++;
-    }
-
-    connect(d->methodCombo, SIGNAL(activated(int)), this, SLOT(chooseToolBox(int)));
+    connect(d->methodCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(chooseProcess(int)));
 
     QHBoxLayout *inputLayout = new QHBoxLayout;
     QLabel *inputDescriptionLabel = new QLabel(mainPage);
@@ -125,12 +121,11 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     d->chooseInput->addItem(tr("Please drop an image"));
 	d->chooseInput->setToolTip(tr("Browse available images for processing"));
     d->chooseInput->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
+    connect(d->chooseInput,SIGNAL(currentIndexChanged(int)),this,SLOT(updateCurrentProcessInput(int)));
     inputLayout->addWidget(d->chooseInput);
     d->mainLayout->addLayout(inputLayout);
 
     d->browseButton = 0;
-    d->runButton = 0;
-    d->cancelButton = 0;
 
     if (d->selectorType == Estimation)
     {
@@ -153,21 +148,6 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
         d->mainLayout->addLayout(gradientFileLayout);
     }
 
-    if (d->selectorType != ScalarMaps)
-    {
-        d->runButton = new QPushButton(runButtonText, mainPage);
-        d->runButton->setEnabled(false);
-        d->mainLayout->addWidget(d->runButton);
-
-        connect(d->runButton,SIGNAL(clicked()),this,SLOT(createProcess()));
-
-        d->cancelButton = new QPushButton(tr("Cancel"),mainPage);
-        d->cancelButton->hide();
-        d->mainLayout->addWidget(d->cancelButton);
-
-        connect(d->cancelButton,SIGNAL(clicked()),this,SIGNAL(processCancelled()));
-    }
-
     this->addWidget(mainPage);
     this->setEnabled(false);
 }
@@ -178,81 +158,169 @@ medDiffusionSelectorToolBox::~medDiffusionSelectorToolBox(void)
     d = NULL;
 }
 
-void medDiffusionSelectorToolBox::chooseToolBox(int id)
+void medDiffusionSelectorToolBox::chooseProcess(int id)
 {
-    medDiffusionAbstractToolBox *toolbox = NULL;
-    //get identifier for toolbox.
-    QString identifier = d->methodCombo->itemData(id).toString();
-    if (d->toolBoxes.contains (identifier))
-        toolbox = d->toolBoxes[identifier];
-    else
-    {
-        medToolBox* tb = medToolBoxFactory::instance()->createToolBox(identifier, this);
-        toolbox = qobject_cast<medDiffusionAbstractToolBox*>(tb);
-
-        if (toolbox)
-        {
-            toolbox->header()->hide();
-            d->toolBoxes[identifier] = toolbox;
-
-            if (d->selectorType == ScalarMaps)
-            {
-                medDiffusionScalarMapsAbstractToolBox *scalarToolBox = qobject_cast <medDiffusionScalarMapsAbstractToolBox *> (toolbox);
-                connect(scalarToolBox,SIGNAL(processStartRequested()),this,SLOT(createProcess()));
-            }
-        }
-    }
-
-    if(!toolbox)
-    {
-        if (d->currentToolBox)
-        {
-            d->currentToolBox->hide();
-            d->mainLayout->removeWidget ( d->currentToolBox );
-            d->currentToolBox = 0;
-            this->setAboutPluginVisibility(false);
-
-            if (d->selectorType != ScalarMaps)
-                d->runButton->setEnabled(false);
-        }
-
+    if (id == 0)
         return;
+
+    QString identifier = d->methodCombo->itemData(id).toString();
+    QString inputId = d->chooseInput->itemData(d->chooseInput->currentIndex()).toString();
+
+    switch(d->selectorType)
+    {
+        case Estimation:
+        {
+            medAbstractDiffusionModelEstimationProcess *process = medCore::diffusionModelEstimation::pluginFactory().create(identifier);
+            d->currentProcess = process;
+
+            if (d->inputsMap[inputId])
+                process->setInput(d->inputsMap[inputId]);
+
+            connect(process,SIGNAL(finished(medJobExitStatus)),this,SIGNAL(jobFinished(medJobExitStatus)));
+            connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
+
+            d->currentProcessPresenter = medWidgets::diffusionModelEstimation::presenterFactory().create(process);
+            break;
+        }
+
+        case ScalarMaps:
+        {
+            medAbstractDiffusionScalarMapsProcess *process = medCore::diffusionScalarMaps::pluginFactory().create(identifier);
+            d->currentProcess = process;
+
+            if (d->inputsMap[inputId])
+            {
+                medAbstractDiffusionModelImageData *image = qobject_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
+                process->setInput(image);
+            }
+
+            connect(process,SIGNAL(finished(medJobExitStatus)),this,SIGNAL(jobFinished(medJobExitStatus)));
+            connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
+
+            d->currentProcessPresenter = medWidgets::diffusionScalarMaps::presenterFactory().create(process);
+            break;
+        }
+
+        case Tractography:
+        default:
+        {
+            medAbstractTractographyProcess *process = medCore::tractography::pluginFactory().create(identifier);
+            d->currentProcess = process;
+
+            if (d->inputsMap[inputId])
+            {
+                medAbstractDiffusionModelImageData *image = qobject_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
+                process->setInput(image);
+            }
+
+            connect(process,SIGNAL(finished(medJobExitStatus)),this,SIGNAL(jobFinished(medJobExitStatus)));
+            connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
+
+            d->currentProcessPresenter = medWidgets::tractography::presenterFactory().create(process);
+            break;
+        }
     }
 
     //get rid of old toolBox
-    if (d->currentToolBox) {
+    if (d->currentToolBox)
+    {
         d->currentToolBox->hide();
         d->mainLayout->removeWidget ( d->currentToolBox );
         d->currentToolBox = 0;
     }
 
-    //set the aboutPlugin button.
-    //get the plugin from the custom toolbox,
-    //since the custom shares the same header as this.
-    dtkPlugin* plugin = toolbox->plugin();
-    this->setAboutPluginButton(plugin);
-    this->setAboutPluginVisibility(true);
+    d->currentToolBox = d->currentProcessPresenter->buildToolBoxWidget();
+    d->mainLayout->addWidget(d->currentToolBox);
+}
 
-    toolbox->show();
-    d->mainLayout->addWidget ( toolbox );
+medAbstractData *medDiffusionSelectorToolBox::processOutput()
+{
+    if (!d->currentProcess)
+        return 0;
 
-    d->currentToolBox = toolbox;
+    switch(d->selectorType)
+    {
+        case Estimation:
+        {
+            medAbstractDiffusionModelEstimationProcess *process = qobject_cast <medAbstractDiffusionModelEstimationProcess *> (d->currentProcess);
+            d->processOutput = process->output();
+            break;
+        }
 
-    if (d->selectorType != ScalarMaps)
-        d->runButton->setEnabled(true);
+        case ScalarMaps:
+        {
+            medAbstractDiffusionScalarMapsProcess *process = qobject_cast <medAbstractDiffusionScalarMapsProcess *> (d->currentProcess);
+            d->processOutput = process->output();
+            break;
+        }
+
+        case Tractography:
+        default:
+        {
+            medAbstractTractographyProcess *process = qobject_cast <medAbstractTractographyProcess *> (d->currentProcess);
+            d->processOutput = process->output();
+            break;
+        }
+    }
+
+    return d->processOutput;
+}
+
+void medDiffusionSelectorToolBox::updateCurrentProcessInput(int index)
+{
+    if (!d->currentProcess)
+        return;
+
+    QString inputId = d->chooseInput->itemData(index).toString();
+    
+    switch(d->selectorType)
+    {
+        case Estimation:
+        {
+            medAbstractDiffusionModelEstimationProcess *process = qobject_cast <medAbstractDiffusionModelEstimationProcess *> (d->currentProcess);
+            medAbstractImageData *image = qobject_cast <medAbstractImageData *> (d->inputsMap[inputId]);
+
+            process->setInput(image);
+            break;
+        }
+
+        case ScalarMaps:
+        {
+            medAbstractDiffusionScalarMapsProcess *process = qobject_cast <medAbstractDiffusionScalarMapsProcess *> (d->currentProcess);
+            medAbstractDiffusionModelImageData *image = qobject_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
+            process->setInput(image);
+            break;
+        }
+
+        case Tractography:
+        default:
+        {
+            medAbstractTractographyProcess *process = qobject_cast <medAbstractTractographyProcess *> (d->currentProcess);
+            medAbstractDiffusionModelImageData *image = qobject_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
+            process->setInput(image);
+            break;
+        }
+    }    
 }
 
 void medDiffusionSelectorToolBox::addInputImage(medAbstractImageData *data)
 {
     if (!data)
         return;
-
-    this->setEnabled(true);
     
     QUuid dataId = QUuid::createUuid();
     if ((d->chooseInput->count() == 1)&&(d->chooseInput->itemData(0) == QVariant()))
         d->chooseInput->removeItem(0);
     
+    bool dataUsable = (qobject_cast <medAbstractDiffusionModelImageData *> (data) != 0);
+    if (d->selectorType == Estimation)
+        dataUsable = !dataUsable;
+
+    if (!dataUsable)
+        return;
+
+    this->setEnabled(true);
+
     d->inputsMap[dataId.toString()] = data;
     d->chooseInput->addItem(data->metadata(medMetaDataKeys::SeriesDescription.key()),dataId.toString());
     d->chooseInput->setToolTip(data->metadata(medMetaDataKeys::SeriesDescription.key()));
@@ -401,82 +469,13 @@ void medDiffusionSelectorToolBox::setInputGradientFile()
     }
 }
 
-void medDiffusionSelectorToolBox::createProcess()
-{
-    QString inputId = d->chooseInput->itemData(d->chooseInput->currentIndex()).toString();
-    medAbstractImageData *input = d->inputsMap[inputId];
-    
-    if (!input)
-        return;
-
-    if ((d->selectorType == Estimation) && (!input->hasMetaData("DiffusionGradientList")))
-    {
-        medMessageController::instance()->showError("No diffusion gradient data provided for estimation",3000);
-        return;
-    }
-
-    QString processText;
-
-    switch (d->selectorType)
-    {
-        case Estimation:
-            processText = tr("Model estimation");
-            break;
-
-        case ScalarMaps:
-            processText = tr("Scalar map computation");
-            break;
-
-        case Tractography:
-        default:
-            processText = tr("Fiber tracking");
-            break;
-    }
-
-    if (d->runButton)
-    {
-        d->runButton->hide();
-        d->cancelButton->show();
-    }
-
-    QString processName = d->currentToolBox->processName();
-    emit processRequested(processName, processText);
-}
-
-void medDiffusionSelectorToolBox::setProcessParameters(medAbstractDiffusionProcess *process)
-{
-    QString inputId = d->chooseInput->itemData(d->chooseInput->currentIndex()).toString();
-    medAbstractImageData *input = d->inputsMap[inputId];
-    
-    process->setInputImage(input);
-    d->currentToolBox->setProcessParameters(process);
-}
-
-void medDiffusionSelectorToolBox::resetButtons()
-{
-    if (d->runButton)
-    {
-        d->cancelButton->hide();
-        d->runButton->show();
-    }
-}
-
 void medDiffusionSelectorToolBox::clear(void)
 {
-    foreach (medDiffusionAbstractToolBox *tb, d->toolBoxes)
-        tb->deleteLater();
-
-    d->toolBoxes.clear();
-
     d->currentToolBox = 0;
 
     d->methodCombo->blockSignals (true);
     d->methodCombo->setCurrentIndex (0);
     d->methodCombo->blockSignals (false);
-    this->setAboutPluginVisibility(false);
 
     this->clearInputs();
-
-    if (d->selectorType != ScalarMaps)
-        d->runButton->setEnabled(false);
 }

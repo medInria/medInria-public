@@ -38,6 +38,9 @@ medAbstractDiffusionModelEstimationProcess::~medAbstractDiffusionModelEstimation
 
 void medAbstractDiffusionModelEstimationProcess::setInput(medAbstractImageData *data)
 {
+    if (!data)
+        return;
+
     if (data->Dimension() != 4)
         return;
 

@@ -25,6 +25,7 @@ list_source_files(${TARGET_NAME}
   process/morphomath_operation
   process/mask_image
   parameter
+  toolboxes
   )
 
 list_header_directories_to_include(${TARGET_NAME}

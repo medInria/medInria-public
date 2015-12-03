@@ -1,0 +1,9 @@
+{
+          "title" : "Model estimation from DWI",
+           "kind" : "process",
+           "type" : "medAbstractDiffusionModelEstimationProcess",
+           "tags" : ["dwi","model","estimation"],
+    "description" : "<p>Compute diffusion models from DWI.</p>",
+         "inputs" : ["dwiImage"],
+        "outputs" : ["modelImage"]
+}

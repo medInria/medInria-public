@@ -13,10 +13,6 @@
 
 #include "medDiffusionWorkspace.h"
 
-#include <dtkCoreSupport/dtkSmartPointer.h>
-#include <medAbstractDiffusionProcess.h>
-#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-
 #include <medAbstractLayeredView.h>
 #include <medAbstractImageData.h>
 #include <medAbstractDiffusionModelImageData.h>
@@ -25,17 +21,12 @@
 #include <medViewContainer.h>
 #include <medViewContainerManager.h>
 #include <medTabbedViewContainers.h>
-#include <medToolBox.h>
-#include <medToolBoxFactory.h>
 
-#include <medRunnableProcess.h>
-#include <medJobManagerL.h>
-#include <medMessageController.h>
+#include <medToolBoxFactory.h>
 
 class medDiffusionWorkspacePrivate
 {
 public:
-
     medToolBox *fiberBundlingToolBox;
     QPointer<medViewContainer> diffusionContainer;
 
@@ -43,7 +34,6 @@ public:
     medDiffusionSelectorToolBox *diffusionScalarMapsToolBox;
     medDiffusionSelectorToolBox *diffusionTractographyToolBox;
 
-    dtkSmartPointer <medAbstractDiffusionProcess> currentProcess;
     bool processRunning;
 };
 
@@ -58,43 +48,29 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorks
     d->diffusionEstimationToolBox = new medDiffusionSelectorToolBox(parent,medDiffusionSelectorToolBox::Estimation);
     d->diffusionEstimationToolBox->setTitle("Model Estimation");
 
-    connect(d->diffusionEstimationToolBox, SIGNAL(addToolBox(medToolBox *)),
-            this, SLOT(addToolBox(medToolBox *)));
-    connect(d->diffusionEstimationToolBox, SIGNAL(removeToolBox(medToolBox *)),
-            this, SLOT(removeToolBox(medToolBox *)));
+    connect(d->diffusionEstimationToolBox,SIGNAL(jobRunning(bool)),this,SLOT(updateRunningFlags(bool)));
+    connect(d->diffusionEstimationToolBox,SIGNAL(jobFinished(medAbstractJob::medJobExitStatus)),this,SLOT(getEstimationOutput(medAbstractJob::medJobExitStatus)));
 
     // -- Scalar maps toolbox --
     d->diffusionScalarMapsToolBox = new medDiffusionSelectorToolBox(parent,medDiffusionSelectorToolBox::ScalarMaps);
     d->diffusionScalarMapsToolBox->setTitle("Diffusion Scalar Maps");
 
-    connect(d->diffusionScalarMapsToolBox, SIGNAL(addToolBox(medToolBox *)),
-            this, SLOT(addToolBox(medToolBox *)));
-    connect(d->diffusionScalarMapsToolBox, SIGNAL(removeToolBox(medToolBox *)),
-            this, SLOT(removeToolBox(medToolBox *)));
+    connect(d->diffusionScalarMapsToolBox,SIGNAL(jobRunning(bool)),this,SLOT(updateRunningFlags(bool)));
+    connect(d->diffusionScalarMapsToolBox,SIGNAL(jobFinished(medAbstractJob::medJobExitStatus)),this,SLOT(getScalarMapsOutput(medAbstractJob::medJobExitStatus)));
 
     // -- Tractography toolbox --
     d->diffusionTractographyToolBox = new medDiffusionSelectorToolBox(parent,medDiffusionSelectorToolBox::Tractography);
     d->diffusionTractographyToolBox->setTitle("Tractography");
 
-    connect(d->diffusionTractographyToolBox, SIGNAL(addToolBox(medToolBox *)),
-            this, SLOT(addToolBox(medToolBox *)));
-    connect(d->diffusionTractographyToolBox, SIGNAL(removeToolBox(medToolBox *)),
-            this, SLOT(removeToolBox(medToolBox *)));
+    connect(d->diffusionTractographyToolBox,SIGNAL(jobRunning(bool)),this,SLOT(updateRunningFlags(bool)));
+    connect(d->diffusionTractographyToolBox,SIGNAL(jobFinished(medAbstractJob::medJobExitStatus)),this,SLOT(getTractographyOutput(medAbstractJob::medJobExitStatus)));
 
     // -- View toolboxes --
-
     QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
     foreach(QString toolbox, toolboxNames)
     {
        addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
     }
-
-    connect(d->diffusionEstimationToolBox, SIGNAL(processRequested(QString, QString)), this, SLOT(runProcess(QString, QString)));
-    connect(d->diffusionScalarMapsToolBox, SIGNAL(processRequested(QString, QString)), this, SLOT(runProcess(QString, QString)));
-    connect(d->diffusionTractographyToolBox, SIGNAL(processRequested(QString, QString)), this, SLOT(runProcess(QString, QString)));
-
-    connect(d->diffusionEstimationToolBox, SIGNAL(processCancelled()), this, SLOT(cancelProcess()));
-    connect(d->diffusionTractographyToolBox, SIGNAL(processCancelled()), this, SLOT(cancelProcess()));
 
     this->addToolBox( d->diffusionEstimationToolBox );
     this->addToolBox( d->diffusionScalarMapsToolBox );
@@ -125,67 +101,53 @@ void medDiffusionWorkspace::setupTabbedViewContainer()
     }
 }
 
-void medDiffusionWorkspace::runProcess(QString processName, QString category)
+void medDiffusionWorkspace::getEstimationOutput(medAbstractJob::medJobExitStatus status)
 {
-    if (d->processRunning)
+    if (status != medAbstractJob::MED_JOB_EXIT_SUCCESS)
         return;
 
-    medRunnableProcess *runProcess = new medRunnableProcess;
-
-    medDiffusionSelectorToolBox * originToolbox = dynamic_cast <medDiffusionSelectorToolBox *> (this->sender());
-
-    if (!originToolbox)
-        return;
-
-    d->currentProcess = dynamic_cast <medAbstractDiffusionProcess *> (dtkAbstractProcessFactory::instance()->create(processName));
-    originToolbox->setProcessParameters(d->currentProcess);
-
-    runProcess->setProcess(d->currentProcess);
-
-    d->processRunning = true;
-    this->tabbedViewContainers()->setEnabled(false);
-
-    medJobManagerL::instance()->registerJobItem(runProcess);
-    connect(runProcess, SIGNAL(success(QObject*)), this, SLOT(getOutput()));
-    connect(runProcess, SIGNAL(failure(QObject*)), this, SLOT(resetRunningFlags()));
-
-    medMessageProgress *messageProgress = medMessageController::instance()->showProgress(category);
-
-    messageProgress->setProgress(0);
-    connect(runProcess, SIGNAL(progressed(int)), messageProgress, SLOT(setProgress(int)));
-    connect(runProcess, SIGNAL(success(QObject*)), messageProgress, SLOT(success()));
-    connect(runProcess, SIGNAL(failure(QObject*)), messageProgress, SLOT(failure()));
-
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
-}
-
-void medDiffusionWorkspace::cancelProcess()
-{
-    d->currentProcess->cancel();
-    this->resetRunningFlags();
-}
-
-void medDiffusionWorkspace::getOutput()
-{
-    this->tabbedViewContainers()->setEnabled(true);
-    medAbstractData *outputData = dynamic_cast<medAbstractData*>(d->currentProcess->output());
+    medAbstractData *outputData = d->diffusionEstimationToolBox->processOutput();
 
     if (!outputData)
         return;
 
     d->diffusionContainer->addData(outputData);
-    medDataManager::instance()->importData(outputData);
-
-    this->resetRunningFlags();
 }
 
-void medDiffusionWorkspace::resetRunningFlags()
+void medDiffusionWorkspace::getScalarMapsOutput(medAbstractJob::medJobExitStatus status)
 {
-    d->processRunning = false;
-    this->tabbedViewContainers()->setEnabled(true);
+    if (status != medAbstractJob::MED_JOB_EXIT_SUCCESS)
+        return;
 
-    d->diffusionEstimationToolBox->resetButtons();
-    d->diffusionTractographyToolBox->resetButtons();
+    medAbstractData *outputData = d->diffusionScalarMapsToolBox->processOutput();
+
+    if (!outputData)
+        return;
+
+    d->diffusionContainer->addData(outputData);
+}
+
+void medDiffusionWorkspace::getTractographyOutput(medAbstractJob::medJobExitStatus status)
+{
+    if (status != medAbstractJob::MED_JOB_EXIT_SUCCESS)
+        return;
+
+    medAbstractData *outputData = d->diffusionTractographyToolBox->processOutput();
+
+    if (!outputData)
+        return;
+
+    d->diffusionContainer->addData(outputData);
+}
+
+void medDiffusionWorkspace::updateRunningFlags(bool running)
+{
+    d->processRunning = running;
+    this->tabbedViewContainers()->setEnabled(!running);
+
+    d->diffusionEstimationToolBox->setEnabled(!running);
+    d->diffusionScalarMapsToolBox->setEnabled(!running);
+    d->diffusionTractographyToolBox->setEnabled(!running);
 }
 
 void medDiffusionWorkspace::changeCurrentContainer()
@@ -253,10 +215,5 @@ void medDiffusionWorkspace::resetToolBoxesInputs()
 
 bool medDiffusionWorkspace::isUsable()
 {
-    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    bool workspaceUsable = (tbFactory->toolBoxesFromCategory("diffusion-estimation").size()!=0)||
-                           (tbFactory->toolBoxesFromCategory("diffusion-scalar-maps").size()!=0)||
-                           (tbFactory->toolBoxesFromCategory("diffusion-tractography").size()!=0);
-
-    return workspaceUsable;
+    return true;
 }

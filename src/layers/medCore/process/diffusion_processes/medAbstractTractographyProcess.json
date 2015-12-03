@@ -1,0 +1,9 @@
+{
+          "title" : "Tractography",
+           "kind" : "process",
+           "type" : "medAbstractTractographyProcess",
+           "tags" : ["dwi","model","tractography"],
+    "description" : "<p>Compute fiber tracts from diffusion model images.</p>",
+         "inputs" : ["modelImage"],
+        "outputs" : ["fibers"]
+}
