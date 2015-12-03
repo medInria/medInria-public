@@ -51,7 +51,7 @@ medJobManager::~medJobManager()
     {
         dtkDebug() << "Orphan job still living at the end of the app detected:"
                  << job->caption() << job;
-        delete job;
+        job->deleteLater();
     }
 }
 

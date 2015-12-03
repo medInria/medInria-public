@@ -29,7 +29,8 @@ public:
      medToolBoxBody(QWidget *parent = 0);
     ~medToolBoxBody();
 
-    void addWidget(QWidget *widget);
+     void addWidget(QWidget *widget);
+     void removeWidget(QWidget *widget);
 
     void setTabWidget(medToolBoxTab * tab);
     void clear();
