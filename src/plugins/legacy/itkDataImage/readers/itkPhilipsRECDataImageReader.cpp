@@ -165,7 +165,7 @@ bool itkPhilipsRECDataImageReader::read(const QString& path)
     }
     else
     {
-        qWarning() << "Unrecognized type for Philips Rec: "
+        dtkWarn() << "Unrecognized type for Philips Rec: "
                       << type;
         return false;
     }
@@ -207,7 +207,7 @@ itkPhilipsRECDataImageReader::FloatImageType::PointType itkPhilipsRECDataImageRe
 
     if (!this->io->GetFileName())
     {
-        qWarning() << "io doesn't have a filename, call readInformation first";
+        dtkWarn() << "io doesn't have a filename, call readInformation first";
         return nullorigin;
     }
 
@@ -220,7 +220,7 @@ itkPhilipsRECDataImageReader::FloatImageType::PointType itkPhilipsRECDataImageRe
     bool valid = itk::ExposeMetaData<OffCentreType>(PARheader, "PAR_OffCentreMidSlice", offcenter);
     if (!valid)
     {
-        qWarning() << "cannot find off-center information in PAR header, no correction";
+        dtkWarn() << "cannot find off-center information in PAR header, no correction";
         return nullorigin;
     }
 
@@ -263,7 +263,7 @@ itkPhilipsRECDataImageReader::ExtractPARRECImageOrientation ()
     eyedir.SetIdentity();
     if (!this->io->GetFileName())
     {
-        qWarning() << "io doesn't have a filename, call readInformation first";
+        dtkWarn() << "io doesn't have a filename, call readInformation first";
         return eyedir;
     }
 
@@ -277,14 +277,14 @@ itkPhilipsRECDataImageReader::ExtractPARRECImageOrientation ()
     bool valid = itk::ExposeMetaData<AngulationType>(PARheader, "PAR_AngulationMidSlice", angulation);
     if (!valid)
     {
-        qWarning() <<"cannot find angulation in PAR header, no correction";
+        dtkWarn() <<"cannot find angulation in PAR header, no correction";
         return eyedir;
     }
 
     valid = itk::ExposeMetaData<int>(PARheader, "PAR_SliceOrientation", sliceorientation);
     if (!valid)
     {
-        qWarning() << "cannot find slice orientation in PAR header, no correction";
+        dtkWarn() << "cannot find slice orientation in PAR header, no correction";
         return eyedir;
     }
 
@@ -391,7 +391,7 @@ itkPhilipsRECDataImageReader::ExtractPARRECImageOrientation ()
 //    VectorListType gradients;
 //    if (!this->io->GetFileName())
 //    {
-//        qWarning() << "io doesn't have a filename, call readInformation first.";
+//        dtkWarn() << "io doesn't have a filename, call readInformation first.";
 //        return gradients;
 //    }
 
@@ -405,7 +405,7 @@ itkPhilipsRECDataImageReader::ExtractPARRECImageOrientation ()
 //    bool valid = itk::ExposeMetaData<GradientDirectionContainerType::Pointer>(PARheader, "PAR_GradientDirectionValues", parrecgradients);
 //    if (!valid)
 //    {
-//        qWarning() <<"cannot find gradient information in PAR header...";
+//        dtkWarn() <<"cannot find gradient information in PAR header...";
 //        return gradients;
 //    }
 

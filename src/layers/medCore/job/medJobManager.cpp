@@ -49,7 +49,7 @@ medJobManager::~medJobManager()
     // just in case some unparented job are still living.
     for(medAbstractJob* job : d->jobs)
     {
-        qDebug() << "Orphan job still living at the end of the app detected:"
+        dtkDebug() << "Orphan job still living at the end of the app detected:"
                  << job->caption() << job;
         delete job;
     }

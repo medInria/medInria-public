@@ -158,7 +158,7 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->movingContainer->view());
     if(!movingView)
     {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
+        dtkWarn() << "Non layered view are not suported yet in registration workspace.";
         return;
     }
 
@@ -217,7 +217,7 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     medAbstractLayeredView* fixedView  = dynamic_cast<medAbstractLayeredView*>(d->fixedContainer->view());
     if(!fixedView)
     {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
+        dtkWarn() << "Non layered view are not suported yet in registration workspace.";
         return;
     }
 
@@ -279,7 +279,7 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
     medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->movingContainer->view());
     if(!movingView)
     {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
+        dtkWarn() << "Non layered view are not suported yet in registration workspace.";
         return;
     }
 
@@ -287,7 +287,7 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
     medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     if(!fuseView)
     {
-        qWarning() << "Non layered view are not suported yet in registration workspace.";
+        dtkWarn() << "Non layered view are not suported yet in registration workspace.";
         return;
     }
 

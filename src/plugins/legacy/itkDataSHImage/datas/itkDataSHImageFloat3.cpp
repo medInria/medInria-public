@@ -73,7 +73,7 @@ void itkDataSHImageFloat3::setData(void *data)
         d->shs = shs;
     }
     else
-      qDebug() << "Cannot cast pointer to correct SH float type";
+      dtkDebug() << "Cannot cast pointer to correct SH float type";
 }
 
 int itkDataSHImageFloat3::xDimension()

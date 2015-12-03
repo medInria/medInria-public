@@ -73,5 +73,5 @@ medCompositeParameterL* medAbstractImageViewInteractor::windowLevelParameter()
 */
 void medAbstractImageViewInteractor::setCurrentTime(double time)
 {
-    qDebug() << "No implementation of setCurrentTime(const double &time) for" << this->identifier();
+    dtkDebug() << "No implementation of setCurrentTime(const double &time) for" << this->identifier();
 }

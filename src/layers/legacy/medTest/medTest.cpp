@@ -24,7 +24,7 @@ namespace medTest
         value = qgetenv (var.toLatin1().constData()).constData();
         if (value.isEmpty()) {
             return false;
-            qDebug() << var + " is not defined";
+            dtkDebug() << var + " is not defined";
         }
         return true;
     }

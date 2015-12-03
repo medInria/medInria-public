@@ -60,14 +60,14 @@ void vtkDataMesh::setData(void *data)
   vtkMetaDataSet * mesh = vtkMetaDataSet::SafeDownCast( (vtkObject*) data );
   if (!mesh)
   {
-    qDebug() << "Cannot cast data to correct data type";
+    dtkDebug() << "Cannot cast data to correct data type";
     return;
   }
 
   if ( (mesh->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH) &&
        (mesh->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH) )
   {
-    qDebug() << "Cannot cast data to correct data type";
+    dtkDebug() << "Cannot cast data to correct data type";
     return;
   }
 

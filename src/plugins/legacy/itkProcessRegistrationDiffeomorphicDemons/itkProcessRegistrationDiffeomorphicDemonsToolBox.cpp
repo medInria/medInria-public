@@ -182,7 +182,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
             dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
     if (!process_Registration)
     {
-        qWarning() << "registration process doesn't exist" ;
+        dtkWarn() << "registration process doesn't exist" ;
         return;
     }
     process_Registration->setDisplacementFieldStandardDeviation(
@@ -199,7 +199,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     }
     catch ( std::exception & )
     {
-        qDebug() << "wrong iteration format";
+        dtkDebug() << "wrong iteration format";
         return;
     }
 

@@ -97,13 +97,13 @@ void medAbstractView::addData(medAbstractData *data)
 {
     if(!data)
     {
-        qWarning() << "Attempt to add a NULL data to the view: " << this;
+        dtkWarn() << "Attempt to add a NULL data to the view: " << this;
         return;
     }
 
     if(data == d->data)
     {
-        qDebug() << "Attempt to set twice the same data to the view: " << this;
+        dtkDebug() << "Attempt to set twice the same data to the view: " << this;
         return;
     }
 
@@ -142,7 +142,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
-        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+        dtkWarn() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
         return false;
     }
     else
@@ -177,7 +177,7 @@ bool medAbstractView::initialiseNavigators()
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
-        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
+        dtkWarn() << "Unable to find any primary navigator for: " << this->identifier();
         return false;
     }
     else
@@ -315,7 +315,7 @@ void medAbstractView::setUpViewForThumbnail()
     if(!primaryInteractor)
     {
         QString msg = "Unable to find any current primary interactor for view "  + this->identifier();
-        qWarning() << msg;
+        dtkWarn() << msg;
     }
 
     else

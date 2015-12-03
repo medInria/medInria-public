@@ -67,7 +67,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
     query.bindValue ( ":birthdate", birthDate );
 
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
         patientID = query.value ( 0 ).toString();
@@ -100,7 +100,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
     query.bindValue ( ":birthdate", birthDate );
 
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
     {
@@ -116,7 +116,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
         query.bindValue ( ":studyUid", studyUid );
 
         if ( !query.exec() )
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+            dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
         if ( query.first() )
         {
@@ -143,7 +143,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
             query.bindValue ( ":columns", columns );
 
             if ( !query.exec() )
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if ( query.first() )
             {
@@ -156,7 +156,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
                 query.bindValue ( ":name", imageName );
 
                 if ( !query.exec() )
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                    dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
                 if ( query.first() )
                 {
@@ -213,7 +213,7 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QS
     query.bindValue ( ":birthdate", birthDate );
 
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
     {
@@ -270,7 +270,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     query.bindValue ( ":studyUid", studyUid );
 
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
     {
@@ -335,7 +335,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         return seriesDbId;
 
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
     {
@@ -396,7 +396,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         query.bindValue ( ":report",         report );
 
         if ( !query.exec() )
-          qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+          dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
         seriesDbId = query.lastInsertId().toInt();
     }
@@ -426,11 +426,11 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
             query.bindValue ( ":name", fileInfo.fileName() + QString().setNum ( i ) );
 
             if ( !query.exec() )
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if ( query.first() )
             {
-                ; //qDebug() << "Image" << file << "already in database";
+                ; //dtkDebug() << "Image" << file << "already in database";
             }
             else
             {
@@ -449,7 +449,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
                 query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 
                 if ( !query.exec() )
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                    dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             }
         }
     }
@@ -464,11 +464,11 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
             query.bindValue ( ":name", fileInfo.fileName() );
 
             if ( !query.exec() )
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if ( query.first() )
             {
-                ; //qDebug() << "Image" << file << "already in database";
+                ; //dtkDebug() << "Image" << file << "already in database";
             }
             else
             {
@@ -490,7 +490,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
                     query.bindValue ( ":thumbnail", "" );
 
                 if ( !query.exec() )
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                    dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             }
         }
     }
@@ -512,7 +512,7 @@ QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
     query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'" );
 
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     QStringList seriesNames;
     while (query.next())

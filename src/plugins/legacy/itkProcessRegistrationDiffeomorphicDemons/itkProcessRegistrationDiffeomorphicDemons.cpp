@@ -175,8 +175,8 @@ template <typename PixelType>
     // Print method parameters
     QString methodParameters = proc->getTitleAndParameters();
     
-    qDebug() << "METHOD PARAMETERS";
-    qDebug() << methodParameters;
+    dtkDebug() << "METHOD PARAMETERS";
+    dtkDebug() << methodParameters;
 
     // Run the registration
     time_t t1 = clock();
@@ -185,12 +185,12 @@ template <typename PixelType>
     }
     catch( std::exception & err )
     {
-        qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
+        dtkDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
         return 1;
     }
     time_t t2 = clock();
 
-    qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
+    dtkDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
     emit proc->progressed(80);
     
@@ -208,12 +208,12 @@ template <typename PixelType>
         resampler->Update();
     }
     catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return 1;
     }
 
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    qDebug() << "Resampled? ";
+    dtkDebug() << "Resampled? ";
     result->DisconnectPipeline();
     
     if (proc->output())
@@ -227,13 +227,13 @@ int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::Im
     if(fixedImage().IsNull() || movingImages().isEmpty()
             || movingImages()[0].IsNull())
     {
-        qWarning() << "Either the fixed image or the moving image is Null";
+        dtkWarn() << "Either the fixed image or the moving image is Null";
         return 1;
     }
 
     if (imgType != itkProcessRegistration::FLOAT)
     {
-        qWarning() << "the imageType should be float, and it's :"<<imgType;
+        dtkWarn() << "the imageType should be float, and it's :"<<imgType;
         return 1;
     }
 

@@ -171,7 +171,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
-        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+        dtkWarn() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
         return false;
     }
     else
@@ -208,7 +208,7 @@ bool medAbstractImageView::initialiseNavigators()
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
-        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
+        dtkWarn() << "Unable to find any primary navigator for: " << this->identifier();
         return false;
     }
     else

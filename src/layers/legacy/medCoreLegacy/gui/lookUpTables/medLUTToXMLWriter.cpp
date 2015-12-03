@@ -16,6 +16,8 @@
 #include <QXmlStreamWriter>
 #include <QStringList>
 
+#include <dtkLog>
+
 class medLUTToXMLWriterPrivate{
 public:
     QXmlStreamWriter xml;
@@ -56,8 +58,8 @@ bool medLUTToXMLWriter::writeFile(QIODevice *device)
 void medLUTToXMLWriterPrivate::writeTable(const medClutEditorTable & table){
     xml.writeStartElement("table");
     xml.writeAttribute("title", table.title());
-    qDebug()<< table.title();
-    qDebug()<< "size: " << table.vertices().count();
+    dtkDebug()<< table.title();
+    dtkDebug()<< "size: " << table.vertices().count();
     foreach (const medClutEditorVertex * vertex, table.vertices())
         writeNode(*vertex);
     xml.writeEndElement();
@@ -67,9 +69,9 @@ void medLUTToXMLWriterPrivate::writeNode(const medClutEditorVertex & vertex)
 {
     QString node;
     //position
-    qDebug()<< "vertex: "<< (long int )&vertex;
-    qDebug() << "node:" << vertex.pos();
-    qDebug() << "color" <<vertex.color();
+    dtkDebug()<< "vertex: "<< (long int )&vertex;
+    dtkDebug() << "node:" << vertex.pos();
+    dtkDebug() << "color" <<vertex.color();
     node.sprintf("%.4f;%.4f;%d;%d;%d;%d",vertex.pos().x(),
                  vertex.pos().y(),
                  vertex.color().red(),

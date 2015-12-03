@@ -13,8 +13,7 @@
 
 #include <QtGui>
 #include <QtOpenGL>
-#include <QtDebug>
-#include <qdebug.h>
+
 #include <medMainWindow.h>
 #include <medApplication.h>
 #include <medSplashScreen.h>
@@ -173,10 +172,11 @@ int main(int argc,char* argv[])
         }
     }
     // END OF DATABASE INITIALISATION
-//    dtkLogger::instance().setLevel("trace");
-//    dtkLogger::instance().attachConsole();
+    dtkLogger::instance().setLevel("trace");
+    dtkLogger::instance().attachConsole();
     medPluginManager::instance()->setVerboseLoading(true);
     medPluginManager::instance()->initialize();
+
 
     //Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
     medMainWindow *mainwindow = new medMainWindow;

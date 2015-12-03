@@ -93,7 +93,7 @@ bool itkDataSHImageWriterBase::write(const QString& path)
 		}
 
 		else {
-			qWarning() << "Unrecognized pixel type";
+			dtkWarn() << "Unrecognized pixel type";
 			return false;
 		}
 	}
@@ -117,7 +117,7 @@ bool itkDataSHImageWriterBase::write(const QString& path, PixelType dummyArgumen
         myWriter->Write();
     }
     catch(itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return false;
     }
 

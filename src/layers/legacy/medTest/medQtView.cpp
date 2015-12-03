@@ -46,35 +46,35 @@ medQtView::~medQtView()
 
 medAbstractLayeredViewInteractor * medQtView::primaryInteractor(medAbstractData* data)
 {
-    qDebug()<< "primaryInteractor(medAbstractData* data)";
+    dtkDebug()<< "primaryInteractor(medAbstractData* data)";
     return 0;
 }
  QList<medAbstractInteractor *> medQtView::extraInteractors(medAbstractData* data)
 {
-    qDebug()<< "extraInteractor(medAbstractData* data)";
+    dtkDebug()<< "extraInteractor(medAbstractData* data)";
     return QList<medAbstractInteractor *>();
 }
  medAbstractLayeredViewInteractor * medQtView::primaryInteractor(unsigned int layer)
 {
-    qDebug()<< "primaryInteractor(unsigned int layer)";
+    dtkDebug()<< "primaryInteractor(unsigned int layer)";
     return 0;
 }
 
  QList<medAbstractInteractor *> medQtView::extraInteractors(unsigned int layer)
 {
-    qDebug()<< "extraInteractor(unsigned int layer)";
+    dtkDebug()<< "extraInteractor(unsigned int layer)";
     return QList<medAbstractInteractor *>();
 }
 
  medAbstractLayeredViewNavigator * medQtView::primaryNavigator()
 {
-    qDebug()<< "primaryNavigator()";
+    dtkDebug()<< "primaryNavigator()";
     return 0;
 }
 
  QList<medAbstractNavigator *> medQtView::extraNavigators()
 {
-    qDebug()<< "extraNavigator()";
+    dtkDebug()<< "extraNavigator()";
     return QList<medAbstractNavigator *>();
 }
 
@@ -137,12 +137,12 @@ QString medQtView::description( void ) const
 
 void medQtView::reset()
 {
-    qDebug() << "reset()";
+    dtkDebug() << "reset()";
 }
 
 void medQtView::render()
 {
-    qDebug() << "render";
+    dtkDebug() << "render";
 }
 
 QImage medQtView::buildThumbnail(const QSize &size)

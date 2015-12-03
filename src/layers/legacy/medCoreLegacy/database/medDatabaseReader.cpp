@@ -24,7 +24,7 @@
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
 #include <medAbstractData.h>
 #include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkLog/dtkLog.h>
+#include <dtkLog>
 
 class medDatabaseReaderPrivate
 {
@@ -63,7 +63,7 @@ medAbstractData* medDatabaseReader::run()
     query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
     query.bindValue ( ":id", patientDbId );
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
     {
         patientName = query.value ( 0 ).toString();
@@ -75,7 +75,7 @@ medAbstractData* medDatabaseReader::run()
     query.prepare ( "SELECT name, uid, studyId FROM study WHERE id = :id" );
     query.bindValue ( ":id", studyDbId );
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
     {
         studyName = query.value ( 0 ).toString();
@@ -90,7 +90,7 @@ medAbstractData* medDatabaseReader::run()
 
     query.bindValue ( ":id", seriesDbId );
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
     {
         seriesName = query.value ( 0 ).toString();
@@ -117,7 +117,7 @@ medAbstractData* medDatabaseReader::run()
     query.prepare ( "SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series" );
     query.bindValue ( ":series", seriesDbId );
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     // now we might have both indexed and imported images in the same series
     // so we will get the full path for indexed images and, for the imported
@@ -166,7 +166,7 @@ medAbstractData* medDatabaseReader::run()
         seriesQuery.prepare ( "SELECT thumbnail FROM series WHERE id = :id" );
         seriesQuery.bindValue ( ":id", seriesDbId );
         if (!seriesQuery.exec())
-            qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
+            dtkDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
 
         if(seriesQuery.first())
         {
@@ -177,7 +177,7 @@ medAbstractData* medDatabaseReader::run()
         }
         else
         {
-            qWarning() << "Thumbnailpath not found";
+            dtkWarn() << "Thumbnailpath not found";
         }
 
         medMetaDataKeys::PatientID.add ( medData, patientId );
@@ -239,7 +239,7 @@ QString medDatabaseReader::getFilePath()
     query.bindValue ( ":series", seriesDbId );
 
     if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     // indexed files have an empty string in 'instance_path' column
     // and imported files have the relative path of the (aggregated) file

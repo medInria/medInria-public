@@ -56,7 +56,7 @@ public:
 
 itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
 {
-    qDebug() << "itkMorphologicalFiltersToolBox";
+    dtkDebug() << "itkMorphologicalFiltersToolBox";
     //Filters selection combobox
     d->filters = new QComboBox;
     QStringList filtersList;
@@ -148,7 +148,7 @@ medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
 
 void itkMorphologicalFiltersToolBox::clear()
 {
-    qDebug() << "Clear itk morphological filters toolbox";
+    dtkDebug() << "Clear itk morphological filters toolbox";
 
     d->dataTypeValue->setText ( "Unknown" );
     
@@ -204,7 +204,7 @@ void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
         }
         else
         {
-            qWarning() << "Error : pixel type not yet implemented ("
+            dtkWarn() << "Error : pixel type not yet implemented ("
             << identifier
             << ")";
         }

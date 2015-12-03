@@ -69,7 +69,7 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 
     foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins())
     {
-        qDebug()<< "factory creates dataSource:" << dataSourceName;
+        dtkDebug()<< "factory creates dataSource:" << dataSourceName;
         medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, 0);
         d->dataSources.push_back(dataSource);
         connectDataSource(dataSource);
@@ -120,7 +120,7 @@ void medDataSourceManager::importData(medAbstractData *data)
 
     if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
     {
-        qDebug() << "Cannot create directory: " << fileInfo.dir().path();
+        dtkDebug() << "Cannot create directory: " << fileInfo.dir().path();
         return;
     }
 

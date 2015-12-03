@@ -54,7 +54,7 @@ public:
 void medPacsWidgetPrivate::run(void)
 {
     if(!this->server) {
-        qWarning() << "DICOM server could not be started! pacsmodule not loaded?";
+        dtkWarn() << "DICOM server could not be started! pacsmodule not loaded?";
         return;
     }
     QDir tmp = QDir::temp();
@@ -98,7 +98,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     d->echo = NULL;
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
     if (!d->server) {
-        qWarning() << "Unable to find a valid implementation of the store scp service.";
+        dtkWarn() << "Unable to find a valid implementation of the store scp service.";
         return;
     }
 
@@ -214,7 +214,7 @@ void medPacsWidget::search(QString query)
             }
         }
     }else {
-        qDebug() << "findScu: cannot create instance, maybe module was not loaded?";
+        dtkDebug() << "findScu: cannot create instance, maybe module was not loaded?";
     }
 }
 
@@ -419,7 +419,7 @@ void medPacsWidget::onEchoRequest()
                 response.push_back(false);
 
         } else {
-            qDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
+            dtkDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
         }
     }
 

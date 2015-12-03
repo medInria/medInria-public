@@ -65,7 +65,7 @@ bool itkDataTensorImageReaderBase::canRead (const QString &path)
             this->io->ReadImageInformation();
         }
         catch (itk::ExceptionObject &e) {
-            qDebug() << e.GetDescription();
+            dtkDebug() << e.GetDescription();
             return false;
         }
 
@@ -95,7 +95,7 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
         this->io->ReadImageInformation();
     }
     catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
 	return false;
     }
     
@@ -118,7 +118,7 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
 		break;
 		  
 	    default:
-	        qDebug() << "Unsupported component type";
+	        dtkDebug() << "Unsupported component type";
 		return false;
 	}
     }
@@ -144,7 +144,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	
     this->readInformation ( path );
 	
-    qDebug() << "Read with: " << this->identifier();
+    dtkDebug() << "Read with: " << this->identifier();
 
     if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
       
@@ -169,7 +169,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 		reader->Update();
 	      }
 	      catch (itk::ExceptionObject &e) {
-		qDebug() << e.GetDescription();
+		dtkDebug() << e.GetDescription();
 		return false;
 	      }
 	      image = reader->GetOutput(); 
@@ -186,7 +186,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	        tensors->Allocate();
 	    }
 	    catch (itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
+	        dtkDebug() << e.GetDescription();
 		return false;
 	    }
 
@@ -232,7 +232,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 		reader->Update();
 	      }
 	      catch (itk::ExceptionObject &e) {
-		qDebug() << e.GetDescription();
+		dtkDebug() << e.GetDescription();
 		return false;
 	      }
 	      image = reader->GetOutput(); 
@@ -249,7 +249,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	        tensors->Allocate();
 	    }
 	    catch (itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
+	        dtkDebug() << e.GetDescription();
 		return false;
 	    }
 
@@ -276,7 +276,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	    medData->setData (tensors);
 	  }
 	  else {
-	      qDebug() << "Unsupported number of components";
+	      dtkDebug() << "Unsupported number of components";
 	      return false;
 	  } 
 	}
@@ -302,7 +302,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 		reader->Update();
 	      }
 	      catch (itk::ExceptionObject &e) {
-		qDebug() << e.GetDescription();
+		dtkDebug() << e.GetDescription();
 		return false;
 	      }
 	      image = reader->GetOutput(); 
@@ -319,7 +319,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	        tensors->Allocate();
 	    }
 	    catch (itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
+	        dtkDebug() << e.GetDescription();
 		return false;
 	    }
 
@@ -364,7 +364,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 		reader->Update();
 	      }
 	      catch (itk::ExceptionObject &e) {
-		qDebug() << e.GetDescription();
+		dtkDebug() << e.GetDescription();
 		return false;
 	      }
 	      image = reader->GetOutput(); 
@@ -381,7 +381,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	        tensors->Allocate();
 	    }
 	    catch (itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
+	        dtkDebug() << e.GetDescription();
 		return false;
 	    }
 
@@ -408,17 +408,17 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	    medData->setData (tensors);
 	  }
 	  else {
-	      qDebug() << "Unsupported number of components";
+	      dtkDebug() << "Unsupported number of components";
 	      return false;
 	  } 
 	}
 	else {
-	  qDebug() << "Unsupported data type";
+	  dtkDebug() << "Unsupported data type";
 	  return false;
 	}
     }
     else {
-      qDebug() << "No data set or could not create one";
+      dtkDebug() << "No data set or could not create one";
       return false;
     }
 

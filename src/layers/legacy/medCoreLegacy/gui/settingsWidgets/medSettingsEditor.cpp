@@ -264,7 +264,7 @@ bool medSettingsEditor::save()
         {
             if (!setting->validate())
             {
-                qDebug()<<"validation of tabname"<< setting->tabName() <<
+                dtkDebug()<<"validation of tabname"<< setting->tabName() <<
                     "failed";
                 QString error = tr("Error in validation of tabname ");
                 error.append(setting->tabName());

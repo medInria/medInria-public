@@ -16,6 +16,8 @@
 #include <QtCore>
 #include <QtGui>
 
+#include <dtkLog>
+
 #include <medJobItemL.h>
 #include <medMessageController.h>
 
@@ -80,7 +82,7 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
         emit(shown());
 
     if (d->bars.contains (sender)) {
-        qWarning () << "progression stack already has a label assigned to process " << sender << ", not assigning a new one";
+        dtkWarn () << "progression stack already has a label assigned to process " << sender << ", not assigning a new one";
 	return;
     }
 
@@ -164,7 +166,7 @@ void medProgressionStack::removeItem(){
     }
     catch (...)
     {
-        qWarning() << "exception caught while removing item from progression stack";
+        dtkWarn() << "exception caught while removing item from progression stack";
     }
 
 }

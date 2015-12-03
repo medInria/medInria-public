@@ -32,7 +32,7 @@
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (const QString& file, const QUuid& uuid )
 : medAbstractDatabaseImporter(file, uuid, true)
 {
-    qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
+    dtkDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (const QStrin
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (medAbstractData* medData, const QUuid &uuid )
 : medAbstractDatabaseImporter(medData, uuid)
 {
-    qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
+    dtkDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
     if ( databaseIndex.isValid() )
     {
-        qDebug() << "Patient exists in the database, I reuse his Id";
+        dtkDebug() << "Patient exists in the database, I reuse his Id";
         patientDbId = databaseIndex.patientId();
     }
     else
@@ -167,7 +167,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
         if ( databaseIndex.isValid() )
         {
-            qDebug() << "Study exists in the database, I reuse its Id";
+            dtkDebug() << "Study exists in the database, I reuse its Id";
             studyDbId = databaseIndex.studyId();
         }
         else

@@ -43,7 +43,7 @@ medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *pa
     d->view = dynamic_cast<medAbstractImageView *>(parent);
     if(!d->view)
     {
-        qWarning() << "Derived type of medAbstractImageViewNavigator should always be parented \
+        dtkWarn() << "Derived type of medAbstractImageViewNavigator should always be parented \
                       with derived type of medAbstractImageView.";
         return;
     }

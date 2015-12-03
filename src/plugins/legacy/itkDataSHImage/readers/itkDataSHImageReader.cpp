@@ -82,7 +82,7 @@ bool itkDataSHImageReader::canRead (const QString &path)
             imageIO->ReadImageInformation();
         }
         catch (itk::ExceptionObject &e) {
-            qDebug() << e.GetDescription();
+            dtkDebug() << e.GetDescription();
             return false;
         }
         if (imageIO->GetNumberOfComponents/*PerPixel*/() != 15 && imageIO->GetNumberOfComponents/*PerPixel*/() != 28)
@@ -111,7 +111,7 @@ bool itkDataSHImageReader::readInformation (const QString &path)
         imageIO->ReadImageInformation();
     }
     catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
+        dtkDebug() << e.GetDescription();
         return false;
     }
     
@@ -120,7 +120,7 @@ bool itkDataSHImageReader::readInformation (const QString &path)
     if (!medData) {
 
         switch (imageIO->GetComponentType()) {
-        //            qDebug() << imageIO->GetPixelTypeAsString() << imageIO->GetComponentTypeAsString();
+        //            dtkDebug() << imageIO->GetPixelTypeAsString() << imageIO->GetComponentTypeAsString();
 
         case itk::ImageIOBase::FLOAT:
             medData = medAbstractDataFactory::instance()->create ("itkDataSHImageFloat3");
@@ -135,7 +135,7 @@ bool itkDataSHImageReader::readInformation (const QString &path)
 			break;
 
 	    default:
-	        qDebug() << "Unsupported component type";
+	        dtkDebug() << "Unsupported component type";
 			return false ;
 		}
     }
@@ -157,7 +157,7 @@ bool itkDataSHImageReader::read (const QString &path)
 {
     this->readInformation ( path );
 	
-    qDebug() << "Read with: " << this->description();
+    dtkDebug() << "Read with: " << this->description();
 
     if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
 
@@ -174,7 +174,7 @@ bool itkDataSHImageReader::read (const QString &path)
                 reader->Update();
             }
             catch (itk::ExceptionObject &e) {
-                qDebug() << e.GetDescription();
+                dtkDebug() << e.GetDescription();
                 return false;
             }
             image = reader->GetOutput();
@@ -193,7 +193,7 @@ bool itkDataSHImageReader::read (const QString &path)
                 reader->Update();
             }
             catch (itk::ExceptionObject &e) {
-                qDebug() << e.GetDescription();
+                dtkDebug() << e.GetDescription();
                 return false;
             }
             image = reader->GetOutput();
@@ -201,12 +201,12 @@ bool itkDataSHImageReader::read (const QString &path)
 
         }
         else {
-            qDebug() << "Unsupported data type";
+            dtkDebug() << "Unsupported data type";
             return false;
         }
     }
     else {
-        qDebug() << "No data set or could not create one";
+        dtkDebug() << "No data set or could not create one";
         return false;
     }
 

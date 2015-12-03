@@ -76,7 +76,7 @@ void itkDataTensorImageFloat3::setData(void *data)
         d->tensors = tensors;
     }
     else
-      qDebug() << "Cannot cast pointer to correct tensor type";
+      dtkDebug() << "Cannot cast pointer to correct tensor type";
 }
 
 int itkDataTensorImageFloat3::xDimension()

@@ -16,7 +16,7 @@
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QLabel>
-#include <QDebug>
+#include <dtkLog>
 
 #include <cmath>
 
@@ -119,7 +119,7 @@ void medDoubleParameterL::setSingleStep(double step)
 {
     if(step <= 0)
     {
-        qWarning() << "Attempt to set a step <= 0 to medDoubleParameterL";
+        dtkWarn() << "Attempt to set a step <= 0 to medDoubleParameterL";
         return;
     }
 

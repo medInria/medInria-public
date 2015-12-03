@@ -13,7 +13,7 @@
 
 #include <medDataManager.h>
 
-#include <QDebug>
+#include <dtkLog>
 
 #include <medAbstractDataFactory.h>
 #include <medDatabaseController.h>
@@ -39,7 +39,7 @@ public:
         nonPersDbController = medDatabaseNonPersistentController::instance();
 
         if( ! dbController || ! nonPersDbController) {
-            qCritical() << "One of the DB controllers could not be created !";
+            dtkFatal() << "One of the DB controllers could not be created !";
         }
     }
 
@@ -100,7 +100,7 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
 
     if(dataObjRef) {
         // we found an existing instance of that object
-        qDebug()<<"medDataManager we found an existing instance of that object" <<dataObjRef->count();
+        dtkDebug()<<"medDataManager we found an existing instance of that object" <<dataObjRef->count();
         return dataObjRef;
     }
 
@@ -248,7 +248,7 @@ QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, co
     }
 
     if(dbc->dataSourceId() != toPatient.dataSourceId()) {
-        qWarning() << "medDataManager: Moving data accross controllers is not supported.";
+        dtkWarn() << "medDataManager: Moving data accross controllers is not supported.";
     } else {
         newIndexList = dbc->moveStudy(indexStudy,toPatient);
     }
@@ -268,7 +268,7 @@ medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const med
     medDataIndex newIndex;
 
     if(dbc->dataSourceId() != toStudy.dataSourceId()) {
-        qWarning() << "medDataManager: Moving data accross controllers is not supported.";
+        dtkWarn() << "medDataManager: Moving data accross controllers is not supported.";
     } else {
         newIndex = dbc->moveSerie(indexSerie,toStudy);
     }
@@ -306,7 +306,7 @@ void medDataManager::garbageCollect()
         it.next();
         medAbstractData *data = it.value();
         if(data->count() <= 1) {
-            qDebug()<<"medDataManager garbage collected " << data->dataIndex();
+            dtkDebug()<<"medDataManager garbage collected " << data->dataIndex();
             it.remove();
         }
     }
