@@ -33,7 +33,7 @@ public:
         MED_JOB_EXIT_CANCELLED,
         MED_JOB_EXIT_SUCCES
     };
-    Q_ENUM(medJobExitStatus)
+    Q_ENUMS(medJobExitStatus)
 
 
     medAbstractJob(QObject *parent = NULL);

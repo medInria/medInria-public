@@ -27,7 +27,7 @@ GPUInfo gpuModel()
         // glGetString requires a valid OpenGL context, the easiest way is to
         // create a bogus QGLWidget and force a render.
         QGLWidget glw;
-        glw.updateGL();
+        glw.makeCurrent();
         gpu.renderer = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
         gpu.version = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
         gpu.vendor = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
