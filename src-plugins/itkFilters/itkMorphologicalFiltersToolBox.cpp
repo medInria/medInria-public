@@ -69,7 +69,9 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->filters->addItems ( filtersList );
 
     QLabel * dataTypeLabel = new QLabel ( tr ( "Data type :" ) );
+    dataTypeLabel->setObjectName("dataTypeLabel");
     d->dataTypeValue = new QLabel ( tr ( "Unknown" ) );
+    d->dataTypeValue->setObjectName("dataTypeValue");
 
     QHBoxLayout * dataTypeLayout = new QHBoxLayout;
     dataTypeLayout->addWidget ( dataTypeLabel );
