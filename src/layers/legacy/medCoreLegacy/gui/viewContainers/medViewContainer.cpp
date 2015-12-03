@@ -587,7 +587,7 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
                 this->setStyleSheet("medViewContainer {border: 1px solid #0080FF}");
                 break;
             default:
-                dtkDebug("Unsupported DropArea value");
+                dtkDebug() << ("Unsupported DropArea value");
         }
     }
 
