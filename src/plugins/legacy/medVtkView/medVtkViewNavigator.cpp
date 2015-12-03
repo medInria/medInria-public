@@ -15,6 +15,7 @@
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
+#include <vtkImageActor.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
@@ -611,6 +612,7 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
         cam["Camera Focal"] = QVariant(focal);
         cam["Parallel Scale"] = QVariant(ps);
 
+
         if(d->parent->cameraParameter())
             d->parent->cameraParameter()->setValues(cam);
     }
@@ -631,6 +633,19 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
         break;
     }
 
+    // hack - if we have transitioned to 3d view, and do not have any image data, grab it from 2d and make it invisible.
+    // This is to fix poor performance in vtk 6.2 and a crash in 6.3 caused by a lack of extent data for the renderer
+    if (d->currentView == d->view3d && (!d->currentView->GetInput()))
+    {
+        vtkImageData* data = d->view2d->GetInput();
+        if (data)
+        {
+            d->view3d->GetActorX()->SetOpacity(0.0);
+            d->view3d->GetActorY()->SetOpacity(0.0);
+            d->view3d->GetActorZ()->SetOpacity(0.0);
+            d->currentView->SetInput(data);
+        }
+    }
     d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->SetTimeIndex(timeIndex);
