@@ -1,0 +1,9 @@
+{
+          "title" : "DWI image mask computation",
+           "kind" : "process",
+           "type" : "medAbstractDWIMaskingProcess",
+           "tags" : ["mask","dwi","segmentation"],
+    "description" : "<p>Compute brain or image mask from DWI.</p>",
+         "inputs" : ["dwiImage"],
+        "outputs" : ["scalarImage"]
+}

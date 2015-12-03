@@ -1,0 +1,9 @@
+{
+          "title" : "Diffusion scalar maps computation",
+           "kind" : "process",
+           "type" : "medAbstractDiffusionScalarMapsProcess",
+           "tags" : ["dwi","model","scalar maps"],
+    "description" : "<p>Compute diffusion models scalar maps.</p>",
+         "inputs" : ["modelImage"],
+        "outputs" : ["scalarImage"]
+}
