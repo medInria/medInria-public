@@ -49,7 +49,7 @@
 #include <medMainWindow.h>
 
 #include <medStyleSheetParser.h>
-#include <medTestWorkspace.h>
+#include <medGenericWorkspace.h>
 
 #include <medCore.h>
 #include <medAbstractArithmeticOperationProcess.h>
@@ -172,7 +172,7 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
-    viewerWSpaceFactory->registerWorkspace<medTestWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medGenericWorkspace>();
 
     //Register settingsWidgets
     medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();

@@ -200,7 +200,6 @@ medAbstractJob::medJobExitStatus medItkMaskImageProcess::_run()
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
         medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
-        out->setMetaData("SeriesDescription", this->input()->metadata("SeriesDescription") + "--masked");
         out->setData(filter->GetOutput());
         this->setOutput(out);
         return medAbstractJob::MED_JOB_EXIT_SUCCESS;

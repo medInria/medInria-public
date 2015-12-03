@@ -14,6 +14,7 @@
 #include <medAbstractDWIMaskingProcess.h>
 
 #include <medAbstractImageData.h>
+#include <medMetaDataKeys.h>
 
 class medAbstractDWIMaskingProcessPrivate
 {
@@ -58,4 +59,20 @@ void medAbstractDWIMaskingProcess::setOutput(medAbstractImageData *data)
         return;
 
     d->output = data;
+
+
+    QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " DWI mask";
+
+    if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+        d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+    foreach ( QString metaData, d->input->metaDataList() )
+    {
+        if (!d->output->hasMetaData(metaData))
+            d->output->addMetaData ( metaData, d->input->metaDataValues ( metaData ) );
+    }
+
+    foreach ( QString property, d->input->propertyList() )
+        d->output->addProperty ( property,d->input->propertyValues ( property ) );
 }
