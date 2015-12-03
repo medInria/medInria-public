@@ -11,8 +11,6 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 2.8.9)
-
 project(medUtilities)
 
 ## #############################################################################
@@ -30,12 +28,8 @@ endif()
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if (APPLE OR WIN32)
-    find_package(Boost REQUIRED)
-endif()
-
-find_package(OpenGL REQUIRED)
-
+find_package(dtk REQUIRED)
+include(${dtk_USE_FILE})
 
 ## #############################################################################
 ## List sources
@@ -55,16 +49,15 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIR}
-  ${medCore_INCLUDE_DIRS}
-  ${medVtkInria_INCLUDE_DIRS}
-  )
+${medVtkInria_INCLUDE_DIRS}
+${medCore_INCLUDE_DIRS})
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_CFILES})
+add_library(${PROJECT_NAME} SHARED
+${${PROJECT_NAME}_CFILES})
 
 ## #############################################################################
 ## Link
@@ -115,11 +108,3 @@ target_link_libraries(${PROJECT_NAME}
 set_lib_install_rules(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
   )
-
-## #############################################################################
-## Build tests
-## #############################################################################
-
-if(MEDINRIA_BUILD_TESTS)
-  add_subdirectory(tests)
-endif()
