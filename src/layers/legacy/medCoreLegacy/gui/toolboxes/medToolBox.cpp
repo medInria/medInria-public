@@ -92,6 +92,16 @@ void medToolBox::addWidget(QWidget *widget)
 }
 
 /**
+ * @brief Removes a widget from the toolbox.
+ *
+ * @param widget
+*/
+void medToolBox::removeWidget(QWidget *widget)
+{
+    d->body->removeWidget(widget);
+}
+
+/**
  * @brief Sets the toolbox's title.
  *
  * @param title

@@ -62,6 +62,11 @@ void medToolBoxBody::addWidget(QWidget *widget)
     widget->setParent(this);
 }
 
+void medToolBoxBody::removeWidget(QWidget *widget)
+{
+    d->layout->removeWidget(widget);
+}
+
 void medToolBoxBody::setTabWidget(medToolBoxTab * tab)
 {
     if (!d->widgets.empty()|| !tab)
