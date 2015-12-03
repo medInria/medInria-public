@@ -82,6 +82,10 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
             d->segmentationToolBox, SIGNAL(inputChanged()));
+
+    medToolBox* scarTbx = medToolBoxFactory::instance()->createToolBox("scarAnalysisToolBox", parent);
+    scarTbx->setWorkspace(this);
+    addToolBox(scarTbx);
 }
 
 void medSegmentationWorkspace::setupViewContainerStack()
