@@ -1,19 +1,15 @@
 #pragma once
 
-#include <medSegmentationAbstractToolBox.h>
-
 #include <mscAlgorithmPaintPluginExport.h>
 
 #include <medAbstractData.h>
-#include <medIntParameter.h>
-#include <medDataIndex.h>
-#include <medViewEventFilter.h>
+#include <medDoubleParameter.h>
 #include <medImageMaskAnnotationData.h>
+#include <medIntParameter.h>
+#include <medSegmentationAbstractToolBox.h>
+#include <medViewEventFilter.h>
 
 #include <QVector3D>
-#include <QTextEdit>
-
-#include <vector>
 
 #include <itkImage.h>
 #include <itkImageRegionIterator.h>
@@ -176,7 +172,7 @@ private:
     // wandradius = (max - min) * sliderPerc / 2.0
     QPushButton *m_magicWandButton;
     QFormLayout * magicWandLayout;
-    medIntParameter *m_wandUpperThresholdSlider, *m_wandLowerThresholdSlider;
+    medDoubleParameter *m_wandUpperThresholdSlider, *m_wandLowerThresholdSlider;
     QPushButton * m_removeSeedButton;
     QShortcut *removeSeed_shortcut;
     QCheckBox *m_wand3DCheckbox, *m_wand3DRealTime;
