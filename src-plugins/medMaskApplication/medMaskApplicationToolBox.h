@@ -57,22 +57,10 @@ protected slots:
      * Clears the toolbox. Removes any bundle in the fiber bundle treeview,
      * any ROI previously loaded (if any), etc.
      */
-    virtual void clear();
+    virtual void clearMask();
 
     /** Slot called when external ROI image finishes being imported. */
     virtual void importMask(const medDataIndex &index);
-
-    virtual void importImage(const medDataIndex &index);
-
-
-    /**
-     * Sets the image passed as parameter as the @medDropSite image.
-     */
-    void setMask(const QImage& thumbnail);
-    void setImage(const QImage& thumbnail);
-
-    virtual void clearMask();
-    virtual void clearImage();
 
 private:
     medMaskApplicationToolBoxPrivate *d;

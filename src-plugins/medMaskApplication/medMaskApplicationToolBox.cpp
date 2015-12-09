@@ -33,7 +33,6 @@
 #include <medProgressionStack.h>
 #include <medPluginManager.h>
 #include <medDataManager.h>
-#include <medAbstractDbController.h>
 #include <medMetaDataKeys.h>
 #include <medDropSite.h>
 
@@ -44,59 +43,42 @@ public:
     dtkSmartPointer <medMaskApplication> process;
     medProgressionStack * progression_stack;
     medDropSite *maskDropSite;
-    medDropSite *imageDropSite;
     QDoubleSpinBox* backgroundSpinBox;
 
-    dtkSmartPointer<medAbstractData> data;
     dtkSmartPointer<medAbstractData> mask;
 };
 
 medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
-    
+
+    this->setTitle("Mask Application");
+    this->addWidget(widget);
+
+    QVBoxLayout *bundlingLayout = new QVBoxLayout(widget);
+    bundlingLayout->setAlignment(Qt::AlignCenter);
+
     d->maskDropSite = new medDropSite(widget);
     d->maskDropSite->setToolTip(tr("Drop the binary mask"));
     d->maskDropSite->setText(tr("Drop the mask"));
     d->maskDropSite->setCanAutomaticallyChangeAppereance(false);
-
-    d->imageDropSite = new medDropSite(widget);
-    d->imageDropSite->setToolTip(tr("Drop the image"));
-    d->imageDropSite->setText(tr("Drop the image"));
-    d->imageDropSite->setCanAutomaticallyChangeAppereance(true);
+    connect (d->maskDropSite,   SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importMask(const medDataIndex&)));
+    bundlingLayout->addWidget(d->maskDropSite);
 
     QPushButton *clearMaskButton = new QPushButton("Clear mask", widget);
     clearMaskButton->setToolTip(tr("Clear previously loaded mask."));
-    QPushButton *clearImageButton = new QPushButton("Clear Image", widget);
-    clearImageButton->setToolTip(tr("Clear previously loaded image."));
+    clearMaskButton->setFixedWidth(d->maskDropSite->sizeHint().width());
+    connect (clearMaskButton, SIGNAL(clicked()), this, SLOT(clearMask()));
+    bundlingLayout->addWidget(clearMaskButton);
 
     d->backgroundSpinBox = new QDoubleSpinBox;
     d->backgroundSpinBox->setMinimum(-5000);
     d->backgroundSpinBox->setMaximum(5000);
     d->backgroundSpinBox->setValue(0);
     QHBoxLayout* backgroundLayout = new QHBoxLayout;
-    backgroundLayout->addWidget(new QLabel("Mask Background Value:"));
+    backgroundLayout->addWidget(new QLabel("Mask background value:"));
     backgroundLayout->addWidget(d->backgroundSpinBox);
-
-    QVBoxLayout *roiButtonLayout = new QVBoxLayout;
-    roiButtonLayout->addWidget(d->maskDropSite);
-    roiButtonLayout->addWidget (clearMaskButton);
-    roiButtonLayout->addWidget(d->imageDropSite);
-    roiButtonLayout->addWidget (clearImageButton);
-    roiButtonLayout->addLayout(backgroundLayout);
-    roiButtonLayout->setAlignment(Qt::AlignCenter);
-
-    QVBoxLayout *bundlingLayout = new QVBoxLayout(widget);
-    bundlingLayout->addLayout(roiButtonLayout);
-
-    connect (d->maskDropSite,   SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importMask(const medDataIndex&)));
-    connect (d->imageDropSite,  SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importImage(const medDataIndex&)));
-    connect (clearMaskButton,   SIGNAL(clicked()),                          this, SLOT(clearMask()));
-    connect (clearImageButton,  SIGNAL(clicked()),                          this, SLOT(clearImage()));
-
-
-    this->setTitle("Mask Application");
-    this->addWidget(widget);
+    bundlingLayout->addLayout(backgroundLayout);
 
     QPushButton *runButton = new QPushButton(tr("Run"), this);
     
@@ -141,116 +123,39 @@ medAbstractData* medMaskApplicationToolBox::processOutput()
 
 void medMaskApplicationToolBox::run()
 {
-    if (!d->process)
+    if (d->mask && this->parentToolBox()->data())
     {
-        return;
-    }
-    if (!d->maskDropSite->pixmap() || !d->imageDropSite->pixmap())
-    {
-        return;
-    }
+        if(!d->process)
+        {
+            d->process= new medMaskApplication;
+        }
+        d->process->setInput(d->mask, 0);
+        d->process->setInput(this->parentToolBox()->data(), 1);
+        d->process->setParameter(d->backgroundSpinBox->value(), 0);
 
-    d->process->setParameter(d->backgroundSpinBox->value(), 0);
+        medRunnableProcess *runProcess = new medRunnableProcess;
+        runProcess->setProcess (d->process);
 
-    medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess (d->process);
-    
-    d->progression_stack->addJobItem(runProcess, "Progress:");
-    
-    d->progression_stack->disableCancel(runProcess);
-    
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
-    
-    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progression_stack, SLOT(setActive(QObject*,bool)));
-    
-    medJobManager::instance()->registerJobItem(runProcess);
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+        d->progression_stack->addJobItem(runProcess, "Progress:");
+
+        d->progression_stack->disableCancel(runProcess);
+
+        connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
+        connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
+        connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
+
+        connect (runProcess, SIGNAL(activate(QObject*,bool)),
+                 d->progression_stack, SLOT(setActive(QObject*,bool)));
+
+        medJobManager::instance()->registerJobItem(runProcess);
+        QThreadPool::globalInstance()->start(runProcess);
+    }
 }
 
 void medMaskApplicationToolBox::importMask(const medDataIndex& index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
-    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
-    {
-        // first try to get it from controller
-        QPixmap thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            d->maskDropSite->setPixmap(thumbImage);
-            shouldSkipLoading = true;
-        }
-    }
-    if (!shouldSkipLoading)
-    {
-        QImageReader reader(thumbpath);
-        d->maskDropSite->setPixmap(QPixmap::fromImage(reader.read()));
-    }
-
-    if(!d->process)
-    {
-        d->process= new medMaskApplication;
-    }
-
-    d->mask = data;
-    if (!d->process)
-    {
-        return;
-    }
-    d->process->setInput(data, 0);
-}
-
-void medMaskApplicationToolBox::importImage(const medDataIndex& index)
-{
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
-    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
-    {
-        // first try to get it from controller
-        QPixmap thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            d->imageDropSite->setPixmap(thumbImage);
-            shouldSkipLoading = true;
-        }
-    }
-    if (!shouldSkipLoading)
-    {
-        QImageReader reader(thumbpath);
-        d->imageDropSite->setPixmap(QPixmap::fromImage(reader.read()));
-    }
-
-    if (!data)
-    {
-        return;
-    }
-    if(!d->process)
-    {
-        d->process= new medMaskApplication;
-    }
-    d->data = data;
-    
-    if (!d->process)
-    {
-        return;
-    }
-    d->process->setInput(data, 1);
-
+    d->mask = medDataManager::instance()->retrieveData(index);
+    d->maskDropSite->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->maskDropSite->sizeHint()));
 }
 
 void medMaskApplicationToolBox::clearMask(void)
@@ -261,32 +166,5 @@ void medMaskApplicationToolBox::clearMask(void)
     {
         d->process->clearInput(0);
     }
-}
-
-void medMaskApplicationToolBox::clearImage(void)
-{
-    d->imageDropSite->clear();
-    d->imageDropSite->setText(tr("Drop the image"));
-    if (d->process)
-    {
-        d->process->clearInput(1);
-    }
-}
-
-void medMaskApplicationToolBox::clear(void)
-{
-    // clear ROIs and related GUI elements
-    clearMask();
-
-    d->data = 0;
-}
-
-void medMaskApplicationToolBox::setMask(const QImage& thumbnail)
-{
-    d->maskDropSite->setPixmap(QPixmap::fromImage(thumbnail));
-}
-
-void medMaskApplicationToolBox::setImage(const QImage& thumbnail)
-{
-    d->imageDropSite->setPixmap(QPixmap::fromImage(thumbnail));
+    d->mask = 0;
 }
