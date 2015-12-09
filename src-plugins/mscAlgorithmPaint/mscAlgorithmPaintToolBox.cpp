@@ -301,6 +301,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_wandUpperThresholdSlider->setRange(0, 10000);
     m_wandUpperThresholdSlider->getSlider()->setPageStep(1000);
     m_wandUpperThresholdSlider->getSlider()->setOrientation(Qt::Horizontal);
+    m_wandUpperThresholdSlider->getSpinBox()->setKeyboardTracking(false); //prevents undesired emissions of valueChanged()
     m_wandUpperThresholdSlider->hide();
 
     m_wandLowerThresholdSlider = new medIntParameter("Lower Threshold", this);
@@ -310,11 +311,12 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_wandLowerThresholdSlider->setRange(0, 10000);
     m_wandLowerThresholdSlider->getSlider()->setPageStep(1000);
     m_wandLowerThresholdSlider->getSlider()->setOrientation(Qt::Horizontal);
+    m_wandLowerThresholdSlider->getSpinBox()->setKeyboardTracking(false);
     m_wandLowerThresholdSlider->hide();
 
     // Sliders connects are in updateMagicWandComputationSpeed() and depend on realTime parameter
-    connect(m_wandUpperThresholdSlider->getSpinBox(),SIGNAL(editingFinished()),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
-    connect(m_wandLowerThresholdSlider->getSpinBox(),SIGNAL(editingFinished()),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
+    connect(m_wandUpperThresholdSlider->getSpinBox(),SIGNAL(valueChanged(int)),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
+    connect(m_wandLowerThresholdSlider->getSpinBox(),SIGNAL(valueChanged(int)),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
 
     wandTimer = QTime();
 
