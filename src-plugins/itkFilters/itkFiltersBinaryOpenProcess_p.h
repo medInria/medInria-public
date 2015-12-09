@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,27 +15,27 @@
 
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
-#include <itkGrayscaleMorphologicalClosingImageFilter.h>
+#include <itkBinaryMorphologicalOpeningImageFilter.h>
 #include <itkCommand.h>
 #include <itkImage.h>
 #include <itkMinimumMaximumImageFilter.h>
 
 #include <medMetaDataKeys.h>
 
-class itkFiltersCloseProcess;
+class itkFiltersBinaryOpenProcess;
 
-class itkFiltersCloseProcessPrivate : public itkMorphologicalFiltersProcessBasePrivate
+class itkFiltersBinaryOpenProcessPrivate : public itkMorphologicalFiltersProcessBasePrivate
 {
 public:
-    itkFiltersCloseProcessPrivate(itkFiltersCloseProcess *q = 0) : itkMorphologicalFiltersProcessBasePrivate(q) {}
-    itkFiltersCloseProcessPrivate(const itkFiltersCloseProcessPrivate& other) : itkMorphologicalFiltersProcessBasePrivate(other) {}
+    itkFiltersBinaryOpenProcessPrivate(itkFiltersBinaryOpenProcess *q = 0) : itkMorphologicalFiltersProcessBasePrivate(q) {}
+    itkFiltersBinaryOpenProcessPrivate(const itkFiltersBinaryOpenProcessPrivate& other) : itkMorphologicalFiltersProcessBasePrivate(other) {}
 
-    virtual ~itkFiltersCloseProcessPrivate(void) {}
+    virtual ~itkFiltersBinaryOpenProcessPrivate(void) {}
 
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        
+
         if(!isRadiusInPixels)
         {
             convertMmInPixels<ImageType>();
@@ -48,32 +48,39 @@ public:
         elementRadius[2] = radius[2];
         StructuringElementType ball = StructuringElementType::Ball(elementRadius);
 
-        typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  CloseType;
-        typename CloseType::Pointer closeFilter = CloseType::New();
-        closeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        closeFilter->SetKernel ( ball );
-        
+        typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
+        typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+        imageCalculatorFilter->SetInput( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        imageCalculatorFilter->Update();
+
+        typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
+        typename FilterType::Pointer Filter = FilterType::New();
+        Filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        Filter->SetKernel ( ball );
+        Filter->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+        Filter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkMorphologicalFiltersProcessBasePrivate::eventCallback );
-        
-        closeFilter->AddObserver ( itk::ProgressEvent(), callback );
-        
-        closeFilter->Update();
-        output->setData ( closeFilter->GetOutput() );
+
+        Filter->AddObserver ( itk::ProgressEvent(), callback );
+
+        Filter->Update();
+        output->setData ( Filter->GetOutput() );
 
         // Add description on output data
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
 
         if (isRadiusInPixels)
-            newSeriesDescription += " Close filter\n("+ QString::number(radius[0])+", "+
+            newSeriesDescription += " Bin.Open filter\n("+ QString::number(radius[0])+", "+
             QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
         else
-            newSeriesDescription += " Close filter\n("+ QString::number(radiusMm[0])+", "+
+            newSeriesDescription += " Bin.Open filter\n("+ QString::number(radiusMm[0])+", "+
             QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
-        
+
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
-DTK_IMPLEMENT_PRIVATE(itkFiltersCloseProcess, itkMorphologicalFiltersProcessBase)
+DTK_IMPLEMENT_PRIVATE(itkFiltersBinaryOpenProcess, itkMorphologicalFiltersProcessBase)

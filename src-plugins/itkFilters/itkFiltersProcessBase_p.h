@@ -15,7 +15,7 @@
 
 #include <medAbstractProcess.h>
 #include <medAbstractImageData.h>
-#include <dtkLog/dtkLog.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkFiltersPluginExport.h>
 
@@ -44,14 +44,14 @@ public:
     template <class PixelType> void setupFilter() {}
     virtual void setFilterDescription() {}
     
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData) {
+    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
         itkFiltersProcessBasePrivate * source = reinterpret_cast<itkFiltersProcessBasePrivate *> ( clientData );
         itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
     
         if ( !source ) { dtkWarn() << "Source is null"; }
     
         source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-        
     }
 };
 

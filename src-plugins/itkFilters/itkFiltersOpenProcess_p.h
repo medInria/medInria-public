@@ -13,46 +13,49 @@
 
 #pragma once
 
-#include <medAbstractData.h>
+#include <itkMorphologicalFiltersProcessBase_p.h>
 
-#include <itkFiltersProcessBase_p.h>
+#include <itkGrayscaleMorphologicalOpeningImageFilter.h>
+#include <itkCommand.h>
+#include <itkImage.h>
+#include <itkMinimumMaximumImageFilter.h>
 
 #include <medMetaDataKeys.h>
 
-#include <itkImage.h>
-#include <itkCommand.h>
-#include <itkGrayscaleMorphologicalOpeningImageFilter.h>
-#include <itkBinaryBallStructuringElement.h>
-
 class itkFiltersOpenProcess;
 
-class itkFiltersOpenProcessPrivate : public itkFiltersProcessBasePrivate
+class itkFiltersOpenProcessPrivate : public itkMorphologicalFiltersProcessBasePrivate
 {
 public:
-    itkFiltersOpenProcessPrivate(itkFiltersOpenProcess *q = 0) : itkFiltersProcessBasePrivate(q) {}
-    itkFiltersOpenProcessPrivate(const itkFiltersOpenProcessPrivate& other) : itkFiltersProcessBasePrivate(other) {}
+    itkFiltersOpenProcessPrivate(itkFiltersOpenProcess *q = 0) : itkMorphologicalFiltersProcessBasePrivate(q) {}
+    itkFiltersOpenProcessPrivate(const itkFiltersOpenProcessPrivate& other) : itkMorphologicalFiltersProcessBasePrivate(other) {}
 
     virtual ~itkFiltersOpenProcessPrivate(void) {}
-    
-    int radius;
 
     template <class PixelType> void update ( void )
     {        
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::BinaryBallStructuringElement < PixelType, 3> StructuringElementType;
+        
+        if(!isRadiusInPixels)
+        {
+            convertMmInPixels<ImageType>();
+        }
+
+        typedef itk::FlatStructuringElement < 3> StructuringElementType;
+        StructuringElementType::RadiusType elementRadius;
+        elementRadius[0] = radius[0];
+        elementRadius[1] = radius[1];
+        elementRadius[2] = radius[2];
+        StructuringElementType ball = StructuringElementType::Ball(elementRadius);
+
         typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  OpenType;
         typename OpenType::Pointer openFilter = OpenType::New();
-        
-        StructuringElementType ball;
-        ball.SetRadius(radius);
-        ball.CreateStructuringElement();
-
         openFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         openFilter->SetKernel ( ball );
         
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
+        callback->SetCallback ( itkMorphologicalFiltersProcessBasePrivate::eventCallback );
         
         openFilter->AddObserver ( itk::ProgressEvent(), callback );
         
@@ -60,10 +63,17 @@ public:
         output->setData ( openFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " Open filter (" + QString::number(radius) + ")";
+
+        // Add description on output data
+        if (isRadiusInPixels)
+            newSeriesDescription += " Open filter\n("+ QString::number(radius[0])+", "+
+            QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
+        else
+            newSeriesDescription += " Open filter\n("+ QString::number(radiusMm[0])+", "+
+            QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
-DTK_IMPLEMENT_PRIVATE(itkFiltersOpenProcess, itkFiltersProcessBase)
+DTK_IMPLEMENT_PRIVATE(itkFiltersOpenProcess, itkMorphologicalFiltersProcessBase)

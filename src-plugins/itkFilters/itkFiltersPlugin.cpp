@@ -31,6 +31,8 @@
 #include <itkFiltersOpenProcess.h>
 #include <itkFiltersToolBox.h>
 #include <itkMorphologicalFiltersToolBox.h>
+#include <itkFiltersBinaryCloseProcess.h>
+#include <itkFiltersBinaryOpenProcess.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -53,7 +55,6 @@ itkFiltersPlugin::~itkFiltersPlugin()
 
 bool itkFiltersPlugin::initialize()
 {
-//    if ( !itkFilters::registered() )                 { dtkWarn() << "Unable to register itkFilters type";                         }
     if ( !itkFiltersAddProcess::registered() )       { dtkWarn() << "Unable to register itkFilters add process type";             }
     if ( !itkFiltersSubtractProcess::registered() )  { dtkWarn() << "Unable to register itkFilters subtract process type";        }
     if ( !itkFiltersMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
@@ -71,7 +72,9 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
     if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
     if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
-    if ( !itkMorphologicalFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";                      }
+    if ( !itkMorphologicalFiltersToolBox::registered() ) { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";}
+    if ( !itkFiltersBinaryCloseProcess::registered() )   { dtkWarn() << "Unable to register itkFiltersBinaryCloseProcess type";}
+    if ( !itkFiltersBinaryOpenProcess::registered() )   { dtkWarn() << "Unable to register itkFiltersBinaryOpenProcess type";}
 
     return true;
 }
@@ -141,7 +144,9 @@ QStringList itkFiltersPlugin::types() const
                          << "itkDilateProcess"
                          << "itkErodeProcess"
                          << "itkCloseProcess"
-                         << "itkOpenProcess";
+                         << "itkOpenProcess"
+                         << "itkBinaryCloseProcess"
+                         << "itkBinaryOpenProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )

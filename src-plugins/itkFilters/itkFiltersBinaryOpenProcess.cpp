@@ -4,50 +4,50 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <itkFiltersCloseProcess.h>
-#include <itkFiltersCloseProcess_p.h>
+#include <itkFiltersBinaryOpenProcess.h>
+#include <itkFiltersBinaryOpenProcess_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersCloseProcess::itkFiltersCloseProcess(itkFiltersCloseProcess *parent) 
-    : itkMorphologicalFiltersProcessBase(*new itkFiltersCloseProcessPrivate(this), parent)
+itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenProcess *parent)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersBinaryOpenProcessPrivate(this), parent)
 {
-    DTK_D(itkFiltersCloseProcess);
-    
+    DTK_D(itkFiltersBinaryOpenProcess);
+
     d->filter = this;
-    d->description = tr("ITK Close filter");
+    d->description = tr("ITK Binary Open filter");
 }
 
-itkFiltersCloseProcess::itkFiltersCloseProcess(const itkFiltersCloseProcess& other) 
-    : itkMorphologicalFiltersProcessBase(*new itkFiltersCloseProcessPrivate(*other.d_func()), other)
+itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersBinaryOpenProcessPrivate(*other.d_func()), other)
 {
 }
 
-itkFiltersCloseProcess::~itkFiltersCloseProcess( void )
+itkFiltersBinaryOpenProcess::~itkFiltersBinaryOpenProcess( void )
 {
 }
 
-bool itkFiltersCloseProcess::registered( void )
+bool itkFiltersBinaryOpenProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkCloseProcess", createitkFiltersCloseProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("itkFiltersBinaryOpenProcess", createitkFiltersBinaryOpenProcess);
 }
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersCloseProcess::update ( void )
+int itkFiltersBinaryOpenProcess::update()
 {
-    DTK_D(itkFiltersCloseProcess);
+    DTK_D(itkFiltersBinaryOpenProcess);
 
-    if ( d->input )
+    if (d->input)
     {
         QString id = d->input->identifier();
 
@@ -104,10 +104,10 @@ int itkFiltersCloseProcess::update ( void )
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess * createitkFiltersCloseProcess ( void )
+dtkAbstractProcess *createitkFiltersBinaryOpenProcess ( void )
 {
-    return new itkFiltersCloseProcess;
+    return new itkFiltersBinaryOpenProcess;
 }

@@ -4,50 +4,50 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <itkFiltersCloseProcess.h>
-#include <itkFiltersCloseProcess_p.h>
+#include <itkFiltersBinaryCloseProcess.h>
+#include <itkFiltersBinaryCloseProcess_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersCloseProcess::itkFiltersCloseProcess(itkFiltersCloseProcess *parent) 
-    : itkMorphologicalFiltersProcessBase(*new itkFiltersCloseProcessPrivate(this), parent)
+itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(itkFiltersBinaryCloseProcess *parent)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersBinaryCloseProcessPrivate(this), parent)
 {
-    DTK_D(itkFiltersCloseProcess);
-    
+    DTK_D(itkFiltersBinaryCloseProcess);
+
     d->filter = this;
-    d->description = tr("ITK Close filter");
+    d->description = tr("ITK Binary Close filter");
 }
 
-itkFiltersCloseProcess::itkFiltersCloseProcess(const itkFiltersCloseProcess& other) 
-    : itkMorphologicalFiltersProcessBase(*new itkFiltersCloseProcessPrivate(*other.d_func()), other)
+itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersBinaryCloseProcessPrivate(*other.d_func()), other)
 {
 }
 
-itkFiltersCloseProcess::~itkFiltersCloseProcess( void )
+itkFiltersBinaryCloseProcess::~itkFiltersBinaryCloseProcess( void )
 {
 }
 
-bool itkFiltersCloseProcess::registered( void )
+bool itkFiltersBinaryCloseProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkCloseProcess", createitkFiltersCloseProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("itkFiltersBinaryCloseProcess", createitkFiltersBinaryCloseProcess);
 }
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersCloseProcess::update ( void )
+int itkFiltersBinaryCloseProcess::update()
 {
-    DTK_D(itkFiltersCloseProcess);
+    DTK_D(itkFiltersBinaryCloseProcess);
 
-    if ( d->input )
+    if (d->input)
     {
         QString id = d->input->identifier();
 
@@ -104,10 +104,10 @@ int itkFiltersCloseProcess::update ( void )
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess * createitkFiltersCloseProcess ( void )
+dtkAbstractProcess *createitkFiltersBinaryCloseProcess ( void )
 {
-    return new itkFiltersCloseProcess;
+    return new itkFiltersBinaryCloseProcess;
 }

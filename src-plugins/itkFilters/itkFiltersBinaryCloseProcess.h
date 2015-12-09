@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,25 +18,25 @@
 
 #include <itkFiltersPluginExport.h>
 
-class itkFiltersErodeProcessPrivate;
+class itkFiltersBinaryCloseProcessPrivate;
 class medAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkMorphologicalFiltersProcessBase
+class ITKFILTERSPLUGIN_EXPORT itkFiltersBinaryCloseProcess : public itkMorphologicalFiltersProcessBase
 {
     Q_OBJECT
-    
+
 public:
-    itkFiltersErodeProcess(itkFiltersErodeProcess * parent = 0);
-    itkFiltersErodeProcess(const itkFiltersErodeProcess& other);
-    virtual ~itkFiltersErodeProcess(void);
+    itkFiltersBinaryCloseProcess(itkFiltersBinaryCloseProcess * parent = 0);
+    itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other);
+    virtual ~itkFiltersBinaryCloseProcess(void);
 
     static bool registered ( void );
-    
+
 public slots:
     int update ( void );
 
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersErodeProcess)
+    DTK_DECLARE_PRIVATE(itkFiltersBinaryCloseProcess)
 };
 
-dtkAbstractProcess * createitkFiltersErodeProcess(void);
+dtkAbstractProcess * createitkFiltersBinaryCloseProcess(void);

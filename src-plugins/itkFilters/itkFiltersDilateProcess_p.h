@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 
-#include <itkFiltersProcessBase_p.h>
+#include <itkMorphologicalFiltersProcessBase_p.h>
 
 #include <medMetaDataKeys.h>
 
@@ -28,18 +28,13 @@
 
 class itkFiltersDilateProcess;
 
-class itkFiltersDilateProcessPrivate : public itkFiltersProcessBasePrivate
+class itkFiltersDilateProcessPrivate : public itkMorphologicalFiltersProcessBasePrivate
 {
 public:
-    itkFiltersDilateProcessPrivate(itkFiltersDilateProcess *q = 0) : itkFiltersProcessBasePrivate(q) {}
-    itkFiltersDilateProcessPrivate(const itkFiltersDilateProcessPrivate& other) : itkFiltersProcessBasePrivate(other) {}
+    itkFiltersDilateProcessPrivate(itkFiltersDilateProcess *q = 0) : itkMorphologicalFiltersProcessBasePrivate(q) {}
+    itkFiltersDilateProcessPrivate(const itkFiltersDilateProcessPrivate& other) : itkMorphologicalFiltersProcessBasePrivate(other) {}
 
     virtual ~itkFiltersDilateProcessPrivate(void) {}
-        
-    int radius[3];
-    double radiusMm[3];
-    bool isRadiusInPixels;
-    int radiusInPixels;
 
     template <class PixelType> void update ( void )
     {
@@ -72,10 +67,9 @@ public:
 
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
+        callback->SetCallback ( itkMorphologicalFiltersProcessBasePrivate::eventCallback );
 
         dilateFilter->AddObserver ( itk::ProgressEvent(), callback );
-
         dilateFilter->Update();
         output->setData ( dilateFilter->GetOutput() );
 
@@ -90,16 +84,6 @@ public:
 
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
-    
-    template <class ImageType> void convertMmInPixels ( void )
-    {
-        ImageType *image = dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) );
-        for (int i=0; i<image->GetSpacing().Size(); i++)
-        {
-            radius[i] = floor((radius[i]/image->GetSpacing()[i])+0.5); //rounding
-            radiusMm[i] = radius[i] * image->GetSpacing()[i];
-        }
-    }
 };
 
-DTK_IMPLEMENT_PRIVATE(itkFiltersDilateProcess, itkFiltersProcessBase)
+DTK_IMPLEMENT_PRIVATE(itkFiltersDilateProcess, itkMorphologicalFiltersProcessBase)
