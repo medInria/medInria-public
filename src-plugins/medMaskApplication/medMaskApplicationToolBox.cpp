@@ -68,7 +68,7 @@ medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medFilte
     QPushButton *clearMaskButton = new QPushButton("Clear mask", widget);
     clearMaskButton->setToolTip(tr("Clear previously loaded mask."));
     clearMaskButton->setFixedWidth(d->maskDropSite->sizeHint().width());
-    connect (clearMaskButton,   SIGNAL(clicked()), this, SLOT(clearMask()));
+    connect (clearMaskButton, SIGNAL(clicked()), this, SLOT(clearMask()));
     bundlingLayout->addWidget(clearMaskButton);
 
     d->backgroundSpinBox = new QDoubleSpinBox;
@@ -148,7 +148,7 @@ void medMaskApplicationToolBox::run()
                  d->progression_stack, SLOT(setActive(QObject*,bool)));
 
         medJobManager::instance()->registerJobItem(runProcess);
-        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+        QThreadPool::globalInstance()->start(runProcess);
     }
 }
 
