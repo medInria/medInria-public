@@ -72,5 +72,5 @@ void medBoolParameterPresenter::_connectButton(QAbstractButton *button)
     connect(button, &QAbstractButton::toggled,
             d->parameter, &medBoolParameter::setValue);
     connect(d->parameter, &medBoolParameter::valueChanged,
-            button, &QAbstractButton::toggle);
+            button, &QAbstractButton::setChecked);
 }
