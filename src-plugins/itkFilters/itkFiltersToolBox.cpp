@@ -182,14 +182,17 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     d->shrinkFilterWidget = new QWidget;
     d->shrink0Value = new QSpinBox;
     d->shrink0Value->setValue ( 1 );
+    d->shrink0Value->setMinimum ( 1 );
     d->shrink0Value->setMaximum ( 10 );
 
     d->shrink1Value = new QSpinBox;
     d->shrink1Value->setValue ( 1 );
+    d->shrink1Value->setMinimum ( 1 );
     d->shrink1Value->setMaximum ( 10 );
 
     d->shrink2Value = new QSpinBox;
     d->shrink2Value->setValue ( 1 );
+    d->shrink2Value->setMinimum ( 1 );
     d->shrink2Value->setMaximum ( 10 );
 
     QLabel * shrinkFilterLabel = new QLabel ( tr ( "Shrink factors (X,Y,Z):" ) );
