@@ -44,7 +44,7 @@ class MEDCORELEGACY_EXPORT medAbstractDatabaseImporter : public medJobItemL
 
 public:
     medAbstractDatabaseImporter (const QString& file, const QUuid &uuid, bool indexWithoutImporting = false);
-    medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid);
+    medAbstractDatabaseImporter ( medAbstractData* medData, const QUuid& uuid, bool indexWithoutImporting = false);
 
     ~medAbstractDatabaseImporter ( void );
 
