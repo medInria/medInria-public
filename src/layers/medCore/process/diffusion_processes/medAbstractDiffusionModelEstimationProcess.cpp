@@ -20,15 +20,16 @@ class medAbstractDiffusionModelEstimationProcessPrivate
 {
 public:
     medAbstractImageData *input;
-    medAbstractImageData *mask;
     medAbstractDiffusionModelImageData *output;
+
+    medAbstractDiffusionModelEstimationProcess::VectorType bvalues;
+    medAbstractDiffusionModelEstimationProcess::GradientsVectorType gradients;
 };
 
 medAbstractDiffusionModelEstimationProcess::medAbstractDiffusionModelEstimationProcess(QObject *parent)
     : medAbstractProcess(parent), d(new medAbstractDiffusionModelEstimationProcessPrivate)
 {
     d->input = NULL;
-    d->mask = NULL;
     d->output = NULL;
 }
 
@@ -47,27 +48,59 @@ void medAbstractDiffusionModelEstimationProcess::setInput(medAbstractImageData *
     d->input = data;
 }
 
+void medAbstractDiffusionModelEstimationProcess::setGradients(QString fileName, bool gradsInImageCoords)
+{
+    medDiffusionGradientReader grReader;
+    grReader.readGradients(fileName);
+
+    d->gradients = grReader.gradients();
+
+    if (!gradsInImageCoords)
+    {
+        medAbstractImageData::MatrixType orientationMatrix;
+        orientationMatrix = d->input->orientationMatrix();
+
+        VectorType grad(3,0);
+        for (unsigned int i = 0;i < d->gradients.size();++i)
+        {
+            for (unsigned int j = 0;j < 3;++j)
+            {
+                grad[j] = 0;
+                for (unsigned int k = 0;k < 3;++k)
+                    grad[j] += orientationMatrix[k][j] * d->gradients[i][k];
+            }
+
+            d->gradients[i] = grad;
+        }
+    }
+}
+
+void medAbstractDiffusionModelEstimationProcess::setBValues(QString fileName)
+{
+    medDiffusionGradientReader grReader;
+    grReader.readBValues(fileName);
+
+    d->bvalues = grReader.bvalues();
+}
+
 medAbstractImageData* medAbstractDiffusionModelEstimationProcess::input() const
 {
     return d->input;
 }
 
-void medAbstractDiffusionModelEstimationProcess::setMask(medAbstractImageData *mask)
-{
-    if (mask->Dimension() != 3)
-        return;
-
-    d->mask = mask;
-}
-
-medAbstractImageData* medAbstractDiffusionModelEstimationProcess::mask() const
-{
-    return d->mask;
-}
-
 medAbstractDiffusionModelImageData* medAbstractDiffusionModelEstimationProcess::output() const
 {
     return d->output;
+}
+
+medAbstractDiffusionModelEstimationProcess::VectorType medAbstractDiffusionModelEstimationProcess::bvalues() const
+{
+    return d->bvalues;
+}
+
+medAbstractDiffusionModelEstimationProcess::GradientsVectorType medAbstractDiffusionModelEstimationProcess::gradients() const
+{
+    return d->gradients;
 }
 
 void medAbstractDiffusionModelEstimationProcess::setOutput(medAbstractDiffusionModelImageData *data)

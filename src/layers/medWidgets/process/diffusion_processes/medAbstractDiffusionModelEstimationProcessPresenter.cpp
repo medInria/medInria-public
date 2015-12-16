@@ -17,6 +17,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QFileDialog>
+#include <QCheckBox>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDiffusionModelImageData.h>
@@ -29,6 +31,8 @@ class medAbstractDiffusionModelEstimationProcessPresenterPrivate
 {
 public:
     medAbstractDiffusionModelEstimationProcess *process;
+    QLabel *gradientFileLabel;
+    QLabel *bvaluesFileLabel;
 };
 
 medAbstractDiffusionModelEstimationProcessPresenter::medAbstractDiffusionModelEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent)
@@ -51,6 +55,44 @@ QWidget *medAbstractDiffusionModelEstimationProcessPresenter::buildToolBoxWidget
     QVBoxLayout *tbLayout = new QVBoxLayout;
     tbWidget->setLayout(tbLayout);
 
+    // Gradients
+    QHBoxLayout *gradientFileLayout = new QHBoxLayout;
+    QLabel *gradientDescriptionLabel = new QLabel(tbWidget);
+    gradientDescriptionLabel->setText(tr("Gradient file:"));
+    gradientFileLayout->addWidget(gradientDescriptionLabel);
+
+    d->gradientFileLabel = new QLabel(tbWidget);
+    d->gradientFileLabel->setText("None");
+    d->gradientFileLabel->setAlignment(Qt::AlignRight);
+    d->gradientFileLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
+    gradientFileLayout->addWidget(d->gradientFileLabel);
+
+    QPushButton *browseButton = new QPushButton("...",tbWidget);
+    browseButton->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+    connect(browseButton, SIGNAL(clicked()), this, SLOT(setInputGradientFile()));
+    gradientFileLayout->addWidget(browseButton);
+
+    tbLayout->addLayout(gradientFileLayout);
+
+    // B-values
+    QHBoxLayout *bvaluesFileLayout = new QHBoxLayout;
+    QLabel *bvaluesDescriptionLabel = new QLabel(tbWidget);
+    bvaluesDescriptionLabel->setText(tr("B-values file:"));
+    bvaluesFileLayout->addWidget(bvaluesDescriptionLabel);
+
+    d->bvaluesFileLabel = new QLabel(tbWidget);
+    d->bvaluesFileLabel->setText("None");
+    d->bvaluesFileLabel->setAlignment(Qt::AlignRight);
+    d->bvaluesFileLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
+    bvaluesFileLayout->addWidget(d->bvaluesFileLabel);
+
+    QPushButton *browseBValuesButton = new QPushButton("...",tbWidget);
+    browseBValuesButton->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+    connect(browseBValuesButton, SIGNAL(clicked()), this, SLOT(setInputBValuesFile()));
+    bvaluesFileLayout->addWidget(browseBValuesButton);
+
+    tbLayout->addLayout(bvaluesFileLayout);
+
     tbLayout->addWidget(this->buildRunButton());
     tbLayout->addWidget(this->buildCancelButton());
 
@@ -63,23 +105,13 @@ medViewContainerSplitter *medAbstractDiffusionModelEstimationProcessPresenter::b
     medViewContainer *inputContainer = new medViewContainer;
     splitter->addViewContainer(inputContainer);
 
-    medViewContainer * maskContainer = inputContainer->splitVertically();
-
     inputContainer->setDefaultWidget(new QLabel("Input DWI"));
     inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer->setUserSplittable(false);
     inputContainer->setMultiLayered(true);
 
-    maskContainer->setDefaultWidget(new QLabel("Mask"));
-    maskContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-    maskContainer->setUserSplittable(false);
-    maskContainer->setMultiLayered(false);
-
     connect(inputContainer, &medViewContainer::dataAdded,
             this, &medAbstractDiffusionModelEstimationProcessPresenter::_setInputFromContainer);
-
-    connect(maskContainer, &medViewContainer::dataAdded,
-            this, &medAbstractDiffusionModelEstimationProcessPresenter::_setMaskFromContainer);
 
     connect(this, SIGNAL(_outputImported(medAbstractData*)),
             inputContainer, SLOT(addData(medAbstractData*)),
@@ -93,11 +125,6 @@ void medAbstractDiffusionModelEstimationProcessPresenter::_setInputFromContainer
     d->process->setInput(qobject_cast<medAbstractImageData *>(data));
 }
 
-void medAbstractDiffusionModelEstimationProcessPresenter::_setMaskFromContainer(medAbstractData *data)
-{
-    d->process->setMask(qobject_cast<medAbstractImageData *>(data));
-}
-
 void medAbstractDiffusionModelEstimationProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {
     if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_SUCCESS)
@@ -105,4 +132,76 @@ void medAbstractDiffusionModelEstimationProcessPresenter::_importOutput(medAbstr
         medDataManager::instance()->importData(d->process->output());
         emit _outputImported(d->process->output());
     }
+}
+
+void medAbstractDiffusionModelEstimationProcessPresenter::setInputGradientFile()
+{
+    if (!d->process->input())
+    {
+        dtkWarn() << "Select an input DWI first";
+        return;
+    }
+
+    QFileDialog *gradientFileDialog = new QFileDialog(0, tr("Choose a gradient file"));
+    gradientFileDialog->setOption(QFileDialog::DontUseNativeDialog);
+    gradientFileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+
+    QCheckBox* gradientsInImageCoordinatesCheckBox = new QCheckBox(gradientFileDialog);
+    gradientsInImageCoordinatesCheckBox->setChecked(true);
+    gradientsInImageCoordinatesCheckBox->setToolTip(tr("Uncheck this box if your gradients are in world coordinates."));
+
+    QLayout* layout = gradientFileDialog->layout();
+    QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
+
+    // nasty hack to hide the filter list
+    QWidget * filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
+    QWidget * filtersList = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
+    filtersLabel->hide(); filtersList->hide();
+
+    if (gridbox)
+    {
+        gridbox->addWidget(new QLabel("Gradients in image coordinates?", gradientFileDialog), gridbox->rowCount()-1, 0);
+        gridbox->addWidget(gradientsInImageCoordinatesCheckBox, gridbox->rowCount()-1, 1);
+    }
+
+    gradientFileDialog->setLayout(gridbox);
+
+    QString fileName;
+    bool gradientsInImageCoordinates = false;
+    if ( gradientFileDialog->exec() )
+    {
+        fileName = gradientFileDialog->selectedFiles().first();
+        gradientsInImageCoordinates = gradientsInImageCoordinatesCheckBox->isChecked();
+    }
+
+    delete gradientFileDialog;
+
+    if (fileName.isEmpty())
+        return;
+
+    d->process->setGradients(fileName,gradientsInImageCoordinates);
+
+    d->gradientFileLabel->setText(fileName);
+    d->gradientFileLabel->setToolTip(fileName);
+}
+
+
+void medAbstractDiffusionModelEstimationProcessPresenter::setInputBValuesFile()
+{
+    QFileDialog *bvaluesFileDialog = new QFileDialog(0, tr("Choose a b-values file"));
+    bvaluesFileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+
+    QString fileName;
+    if ( bvaluesFileDialog->exec() )
+        fileName = bvaluesFileDialog->selectedFiles().first();
+
+    delete bvaluesFileDialog;
+
+    if (fileName.isEmpty())
+        return;
+
+    d->process->setBValues(fileName);
+
+    d->bvaluesFileLabel->setText(fileName);
+    d->bvaluesFileLabel->setToolTip(fileName);
 }

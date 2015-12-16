@@ -44,7 +44,9 @@ private slots:
     void _importOutput(medAbstractJob::medJobExitStatus jobExitStatus);
 
     void _setInputFromContainer(medAbstractData *data);
-    void _setMaskFromContainer(medAbstractData *mask);
+
+    void setInputGradientFile();
+    void setInputBValuesFile();
 
 signals:
     void _outputImported(medAbstractData *);
