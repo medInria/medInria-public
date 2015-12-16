@@ -18,6 +18,7 @@
 #include <dtkCore>
 
 #include <medCoreExport.h>
+#include <medDiffusionGradientReader.h>
 
 class medAbstractImageData;
 class medAbstractDiffusionModelImageData;
@@ -34,10 +35,16 @@ public:
     void setInput(medAbstractImageData* data);
     medAbstractImageData* input() const;
 
-    void setMask(medAbstractImageData* mask);
-    medAbstractImageData* mask() const;
+    void setGradients(QString fileName, bool gradsInImageCoords = true);
+    void setBValues(QString fileName);
 
     medAbstractDiffusionModelImageData* output() const;
+
+    typedef medDiffusionGradientReader::VectorType VectorType;
+    typedef medDiffusionGradientReader::GradientsVectorType GradientsVectorType;
+
+    VectorType bvalues() const;
+    GradientsVectorType gradients() const;
 
 protected:
     void setOutput(medAbstractDiffusionModelImageData* data);

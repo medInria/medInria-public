@@ -46,16 +46,12 @@ public:
 
 public slots:
     void clear();
-    void setInputGradientFile();
     void chooseProcess(int id);
     void updateCurrentProcessInput(int index);
 
 signals:
     void jobFinished(medAbstractJob::medJobExitStatus);
     void jobRunning(bool);
-
-protected:
-    void checkInputGradientDirections();
 
 private:
     medDiffusionSelectorToolBoxPrivate *d;
