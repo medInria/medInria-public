@@ -14,6 +14,7 @@
 #include <QtGui>
 #include <QtCore>
 #include <QtSql>
+#include <QCryptographicHash>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
@@ -29,7 +30,16 @@
 #include <medAbstractDatabaseItem.h>
 
 #include <medSettingsManager.h>
-#include <medGlobal.h>
+
+
+QString anonymise(const QString name) {
+    QByteArray r = QCryptographicHash::hash(name.toUtf8(),QCryptographicHash::Md4).toHex().toUpper();
+    r.resize(10);
+    return QString(r);
+}
+
+
+
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseModelPrivate

@@ -40,6 +40,7 @@ PURPOSE.
 #include <medVtkViewObserver.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
+#include <medDatabaseModel.h>
 #include <medDataListParameter.h>
 #include <medToolBox.h>
 #include <medMetaDataKeys.h>
@@ -47,7 +48,6 @@ PURPOSE.
 #include <medParameterPoolManager.h>
 #include <medSettingsManager.h>
 #include <medClutEditorToolBox/medClutEditorToolBox.h>
-#include <medGlobal.h>
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
