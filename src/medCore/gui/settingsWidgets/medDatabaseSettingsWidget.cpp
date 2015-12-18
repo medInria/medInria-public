@@ -32,12 +32,13 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
         d(new medDatabaseSettingsWidgetPrivate())
 {
     setTabName("Database");
+    QString anonymousTooltip = tr("Hide patient name in the software, data stays untouched");
 
     d->dbPath = new QLineEdit(this);
     d->selectDirectoryButton = new QPushButton(tr("Select directory..."), this);
     d->selectDirectoryButton->setToolTip("Change the database directory or create a new database by selecting an empty directory");
     d->anonymousDb = new QCheckBox(this);
-    d->anonymousDb->setToolTip(tr("Hide patient name in GUI"));
+    d->anonymousDb->setToolTip(anonymousTooltip);
 
     QWidget* databaseLocation = new QWidget(this);
     QHBoxLayout* dbLayout = new QHBoxLayout;
@@ -49,10 +50,13 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
     databaseLocation->setContentsMargins(0,-8,0,0);
 
+    QLabel* anonymousLabel = new QLabel(tr("Anonymous database:"));
+    anonymousLabel->setToolTip(anonymousTooltip);
+
     QFormLayout* formLayout = new QFormLayout(this);
     formLayout->addRow(tr("Database location:"), databaseLocation);
     formLayout->addRow(new QLabel("* The changes will only be effective after saving and restarting the application."));
-    formLayout->addRow(tr("Anonymous database:"),d->anonymousDb);
+    formLayout->addRow(anonymousLabel,d->anonymousDb);
 }
 
 void medDatabaseSettingsWidget::selectDirectory()
