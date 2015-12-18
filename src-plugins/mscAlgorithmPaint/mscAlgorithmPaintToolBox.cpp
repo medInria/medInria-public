@@ -498,6 +498,8 @@ void AlgorithmPaintToolBox::updateMagicWandComputation()
 
 void AlgorithmPaintToolBox::activateStroke()
 {
+    m_wandInfo->hide();
+
     if ( this->m_strokeButton->isChecked() )
     {
         deactivateCustomedCursor(); // Deactivate painting cursor
