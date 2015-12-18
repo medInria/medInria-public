@@ -53,7 +53,6 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
     formLayout->addRow(tr("Database location:"), databaseLocation);
     formLayout->addRow(new QLabel("* The changes will only be effective after saving and restarting the application."));
     formLayout->addRow(tr("Anonymous database:"),d->anonymousDb);
- //   connect(d->anonymousDb, SIGNAL(clicked()), this, SLOT(anonymousDb()));
 }
 
 void medDatabaseSettingsWidget::selectDirectory()
