@@ -192,6 +192,7 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
 
     toolbox->setRegistrationToolBox(this);
+    toolbox->setWorkspace(getWorkspace());
     d->currentToolBox = toolbox;
     d->currentToolBox->show();
     d->currentToolBox->header()->hide();

@@ -48,6 +48,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     // -- Registration toolbox --
 
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
+    d->registrationToolBox->setWorkspace(this);
     this->addToolBox(d->registrationToolBox);
 
     d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
