@@ -32,7 +32,7 @@ public:
   QWidget* parent;
   QVBoxLayout* customContainerLayout;
 
-  QComboBox* type;
+  medComboBox* type;
   QPushButton* import;
   QPushButton* reset;
   QPushButton* load;
@@ -108,7 +108,7 @@ void medCompositeDataSetImporterSelectorToolBox::initialize()
     QHBoxLayout * topLayout = new QHBoxLayout();
     topLayout->addStretch(0);
 
-    d->type = new QComboBox(mainwidget);
+    d->type = new medComboBox(mainwidget);
     d->type->addItem(tr("Select data type"));
     d->type->setToolTip(tr("Choose a type of composite data set to import"));
 

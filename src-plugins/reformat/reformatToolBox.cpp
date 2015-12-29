@@ -24,7 +24,7 @@ class reformatToolBoxPrivate
 {
 public:
     QPushButton *b_startReformat, *b_stopReformat, *b_saveImage, *b_reset;
-    QComboBox *bySpacingOrDimension;
+    medComboBox *bySpacingOrDimension;
     QLabel *spacingXLab, *spacingYLab, *spacingZLab, *help0;
     QDoubleSpinBox *spacingX, *spacingY, *spacingZ;
     medAbstractLayeredView * currentView;
@@ -55,7 +55,7 @@ reformatToolBox::reformatToolBox (QWidget *parent) : medSegmentationAbstractTool
     // User can choose pixel or millimeter resample
     QHBoxLayout * resampleLayout = new QHBoxLayout();
     QLabel* bySpacingOrDimensionLabel = new QLabel("Select your resample parameter:", reformatToolBoxBody);
-    d->bySpacingOrDimension = new QComboBox(reformatToolBoxBody);
+    d->bySpacingOrDimension = new medComboBox(reformatToolBoxBody);
     d->bySpacingOrDimension->setObjectName("bySpacingOrDimension");
     d->bySpacingOrDimension->addItem("Spacing");
     d->bySpacingOrDimension->addItem("Dimension");

@@ -76,7 +76,7 @@ public:
     QDoubleSpinBox * intensityOutputMinimumValue;
     QDoubleSpinBox * intensityOutputMaximumValue;
 
-    QComboBox * filters;
+    medComboBox * filters;
     dtkSmartPointer <itkFiltersProcessBase> process;
     
     medProgressionStack * progressionStack;
@@ -86,7 +86,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 {
     qDebug() << "itkFiltersToolBox";
     //Filters selection combobox
-    d->filters = new QComboBox(this);
+    d->filters = new medComboBox(this);
     d->filters->setObjectName("Add Constant to Image");
     QStringList filtersList;
     filtersList << "Add Constant to Image" 

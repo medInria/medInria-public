@@ -40,8 +40,8 @@ class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
 public:
 
     medProgressionStack * progressionStack;
-    QComboBox * updateRuleBox;
-    QComboBox * gradientTypeBox;
+    medComboBox * updateRuleBox;
+    medComboBox * gradientTypeBox;
     QDoubleSpinBox * maxStepLengthBox;
     QDoubleSpinBox * disFieldStdDevBox;
     QDoubleSpinBox * updateFieldStdDevBox;
@@ -91,7 +91,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
                 "Standard deviation of the Gaussian smoothing of "
                 "the displacement field (voxel units). Setting it below 0.1 "
                 "means no smoothing will be performed (default 1.5)."));
-    d->updateRuleBox = new QComboBox(this);
+    d->updateRuleBox = new medComboBox(this);
     QStringList updateRules;
     updateRules<< tr("Diffeomorphic") << tr ("Additive") << tr("Compositive");
     d->updateRuleBox->addItems(updateRules);
@@ -100,7 +100,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     d->updateRuleBox->setItemData(1,"s <- s + u",Qt::ToolTipRole);
     d->updateRuleBox->setItemData(2,"s <- s o (Id+u)",Qt::ToolTipRole);
 
-    d->gradientTypeBox = new QComboBox(this);
+    d->gradientTypeBox = new medComboBox(this);
     d->gradientTypeBox->setToolTip(tr(
                 "Type of gradient used for computing the demons force."));
     QStringList gradientTypes;

@@ -50,8 +50,8 @@ public:
     medDoubleSliderSpinboxPair * minRange;
     medDoubleSliderSpinboxPair * maxRange;
     QStringList listOfAttributes;
-    QComboBox * attributeBox;
-    QComboBox * lutBox;
+    medComboBox * attributeBox;
+    medComboBox * lutBox;
     QStringList luts;
     QHash<medAbstractView*,vtkLookupTable*>* viewAndLut;
     QHash<medAbstractView*,int> * attributeChosen;
@@ -70,14 +70,14 @@ medToolBox(parent), d(new medClutToolBoxPrivate)
     
     QHBoxLayout * layoutAttribute = new QHBoxLayout();
     QLabel * labelAttribute = new QLabel("Attributes : ");
-    d->attributeBox = new QComboBox(this);
+    d->attributeBox = new medComboBox(this);
     d->attributeBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     connect(d->attributeBox, SIGNAL(activated (int)), this, SLOT(changeAttribute(int)));
 
 
     //QHBoxLayout * layoutLut = new QHBoxLayout();
     //QLabel * labelLut = new QLabel("Lut : ");
-    d->lutBox = new QComboBox(this);
+    d->lutBox = new medComboBox(this);
     d->lutBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     connect(d->lutBox, SIGNAL(activated (int)), this, SLOT(changeLut(int)));
     // get all luts

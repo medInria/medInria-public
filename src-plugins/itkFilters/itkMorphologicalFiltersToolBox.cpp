@@ -48,7 +48,7 @@ public:
     QSpinBox * kernelSize;
     QRadioButton *mmButton, *pixelButton;
     
-    QComboBox * filters;
+    medComboBox * filters;
     dtkSmartPointer <itkMorphologicalFiltersProcessBase> process;
     
     medProgressionStack * progressionStack;
@@ -57,7 +57,7 @@ public:
 itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
 {
     //Filters selection combobox
-    d->filters = new QComboBox;
+    d->filters = new medComboBox;
     d->filters->setObjectName("Dilate");
     QStringList filtersList;
     filtersList << "Dilate "
