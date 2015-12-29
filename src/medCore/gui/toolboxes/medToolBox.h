@@ -15,6 +15,7 @@
 
 #include <medCoreExport.h>
 #include <medAbstractWorkspace.h>
+#include <medComboBox.h>
 
 #include <QtGui>
 #include <QDomDocument>
