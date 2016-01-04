@@ -35,7 +35,7 @@ public:
 
 
 protected:
-    void regsiterParameter(medAbstractParameter *parameter);
+    void registerParameter(medAbstractParameter *parameter);
 
 private:
     const QScopedPointer<medAbstractProcessPrivate> d;

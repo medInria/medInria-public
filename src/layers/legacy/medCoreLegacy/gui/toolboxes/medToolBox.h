@@ -43,6 +43,7 @@ public:
     virtual ~medToolBox();
 
     void addWidget(QWidget *widget);
+    void removeWidget(QWidget *widget);
     void setTabWidget (medToolBoxTab* tab);
     void setTitle(const QString& title);
     void setTitleOffset(const QPoint & titleOffset);

@@ -18,6 +18,7 @@
 
 #include <medAbstractWorkspaceLegacy.h>
 #include <medDiffusionSelectorToolBox.h>
+#include <medAbstractJob.h>
 
 class medAbstractData;
 class medDiffusionWorkspacePrivate;
@@ -37,11 +38,11 @@ public:
     void setupTabbedViewContainer();
     
 public slots:
+    void getEstimationOutput(medAbstractJob::medJobExitStatus status);
+    void getScalarMapsOutput(medAbstractJob::medJobExitStatus status);
+    void getTractographyOutput(medAbstractJob::medJobExitStatus status);
 
-    void runProcess(QString processName, QString category);
-    void getOutput();
-    void cancelProcess();
-    void resetRunningFlags();
+    void updateRunningFlags(bool running);
     
     //Handle new data in central view, connect them to toolboxes
     void resetToolBoxesInputs();

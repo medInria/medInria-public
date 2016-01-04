@@ -9,5 +9,9 @@
         <file>process/morphomath_operation/medAbstractErodeImageProcess.json</file>
         <file>process/morphomath_operation/medAbstractOpeningImageProcess.json</file>
         <file>process/mask_image/medAbstractMaskImageProcess.json</file>
-    </qresource>
+        <file>process/diffusion_processes/medAbstractDiffusionModelEstimationProcess.json</file>
+        <file>process/diffusion_processes/medAbstractDWIMaskingProcess.json</file>
+        <file>process/diffusion_processes/medAbstractDiffusionScalarMapsProcess.json</file>
+        <file>process/diffusion_processes/medAbstractTractographyProcess.json</file>
+   </qresource>
 </RCC>

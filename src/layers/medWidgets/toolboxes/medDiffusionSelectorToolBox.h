@@ -14,16 +14,18 @@
 #pragma once
 
 #include <medToolBox.h>
-#include <medAbstractImageData.h>
+#include <medWidgetsExport.h>
+#include <medAbstractJob.h>
 
-#include <medCoreLegacyExport.h>
+class medAbstractDiffusionModelEstimationProcess;
+class medAbstractDiffusionScalarMapsProcess;
+class medAbstractTractographyProcess;
 
-class medAbstractDiffusionProcess;
 class medAbstractImageData;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
 
-class MEDCORELEGACY_EXPORT medDiffusionSelectorToolBox : public medToolBox
+class MEDWIDGETS_EXPORT medDiffusionSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 public:
@@ -40,23 +42,16 @@ public:
     void addInputImage(medAbstractImageData *data);
     void clearInputs();
 
-    void setProcessParameters(medAbstractDiffusionProcess *process);
+    medAbstractData *processOutput();
 
 public slots:
     void clear();
-
-    void setInputGradientFile();
-    void createProcess();
-
-    void chooseToolBox(int id);
-    void resetButtons();
+    void chooseProcess(int id);
+    void updateCurrentProcessInput(int index);
 
 signals:
-    void processRequested(QString, QString);
-    void processCancelled();
-
-protected:
-    void checkInputGradientDirections();
+    void jobFinished(medAbstractJob::medJobExitStatus);
+    void jobRunning(bool);
 
 private:
     medDiffusionSelectorToolBoxPrivate *d;

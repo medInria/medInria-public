@@ -23,7 +23,6 @@ namespace pluginManager
         {
             if(realpath.isEmpty())
                 break;
-//        medWidgets::morphomathOperation::initialize(realpath, verbose);
         }
     }
 }
@@ -51,6 +50,58 @@ namespace maskImage
     }
 
     medAbstractMaskImageProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
+namespace dwiMasking
+{
+    namespace _private
+    {
+        medAbstractDWIMaskingProcessPresenterFactory factory;
+    }
+
+    medAbstractDWIMaskingProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
+namespace diffusionModelEstimation
+{
+    namespace _private
+    {
+        medAbstractDiffusionModelEstimationProcessPresenterFactory factory;
+    }
+
+    medAbstractDiffusionModelEstimationProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
+namespace diffusionScalarMaps
+{
+    namespace _private
+    {
+        medAbstractDiffusionScalarMapsProcessPresenterFactory factory;
+    }
+
+    medAbstractDiffusionScalarMapsProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
+namespace tractography
+{
+    namespace _private
+    {
+        medAbstractTractographyProcessPresenterFactory factory;
+    }
+
+    medAbstractTractographyProcessPresenterFactory& presenterFactory()
     {
         return _private::factory;
     }

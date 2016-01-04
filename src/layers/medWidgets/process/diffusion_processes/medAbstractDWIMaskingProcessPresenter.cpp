@@ -1,0 +1,100 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <medAbstractDWIMaskingProcessPresenter.h>
+
+#include <QWidget>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QLabel>
+
+#include <medViewContainerSplitter.h>
+#include <medViewContainer.h>
+#include <medDataManager.h>
+#include <medAbstractImageData.h>
+
+class medAbstractDWIMaskingProcessPresenterPrivate
+{
+public:
+    medAbstractDWIMaskingProcess *process;
+};
+
+medAbstractDWIMaskingProcessPresenter::medAbstractDWIMaskingProcessPresenter(medAbstractDWIMaskingProcess *parent)
+    : medAbstractProcessPresenter(parent), d(new medAbstractDWIMaskingProcessPresenterPrivate)
+{
+    d->process = parent;
+
+    connect(d->process, &medAbstractDWIMaskingProcess::finished,
+            this, &medAbstractDWIMaskingProcessPresenter::_importOutput);
+}
+
+medAbstractDWIMaskingProcessPresenter::~medAbstractDWIMaskingProcessPresenter()
+{
+}
+
+QWidget *medAbstractDWIMaskingProcessPresenter::buildToolBoxWidget()
+{
+    QWidget *tbWidget = new QWidget;
+    QVBoxLayout *tbLayout = new QVBoxLayout;
+    tbWidget->setLayout(tbLayout);
+
+    tbLayout->addWidget(this->buildRunButton());
+    tbLayout->addWidget(this->buildCancelButton());
+
+    return tbWidget;
+}
+
+medViewContainerSplitter *medAbstractDWIMaskingProcessPresenter::buildViewContainerSplitter()
+{
+    medViewContainerSplitter* splitter = new medViewContainerSplitter;
+    medViewContainer *inputContainer = new medViewContainer;
+    splitter->addViewContainer(inputContainer);
+
+    medViewContainer * outputContainer = inputContainer->splitVertically();
+
+    inputContainer->setDefaultWidget(new QLabel("Input DWI"));
+    inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+    inputContainer->setUserSplittable(false);
+    inputContainer->setMultiLayered(false);
+
+    outputContainer->setDefaultWidget(new QLabel("Output mask"));
+    outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+    outputContainer->setUserSplittable(false);
+    outputContainer->setMultiLayered(false);
+    outputContainer->setUserOpenable(false);
+
+    connect(inputContainer, &medViewContainer::dataAdded,
+            this, &medAbstractDWIMaskingProcessPresenter::_setInputFromContainer);
+
+    connect(this, SIGNAL(_outputImported(medAbstractData*)),
+            outputContainer, SLOT(addData(medAbstractData*)),
+            Qt::QueuedConnection);
+
+    return splitter;
+}
+
+
+void medAbstractDWIMaskingProcessPresenter::_setInputFromContainer(medAbstractData *data)
+{
+    d->process->setInput(qobject_cast<medAbstractImageData *>(data));
+}
+
+
+void medAbstractDWIMaskingProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
+{
+    if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_SUCCESS)
+    {
+        medDataManager::instance()->importData(d->process->output());
+        emit _outputImported(d->process->output());
+    }
+}
