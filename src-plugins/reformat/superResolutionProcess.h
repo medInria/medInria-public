@@ -15,6 +15,7 @@
 #pragma once
 
 #include <dtkCore/dtkSmartPointer.h>
+#include <itkImage.h>
 #include <medAbstractProcess.h>
 #include <medAbstractData.h>
 #include "reformatPluginExport.h"
@@ -44,9 +45,10 @@ public slots:
     medAbstractData *output(void);
 
 private:
+    typedef itk::Image <unsigned char, 3> MaskType;
 
-    bool castToUChar3(dtkSmartPointer<medAbstractData> image);
-    template <typename IMAGE> bool cast(dtkSmartPointer<medAbstractData> image);
+    MaskType* castToUChar3(dtkSmartPointer<medAbstractData> image);
+    template <typename IMAGE> MaskType* cast(dtkSmartPointer<medAbstractData> image);
     superResolutionProcessPrivate *d;
 };
 

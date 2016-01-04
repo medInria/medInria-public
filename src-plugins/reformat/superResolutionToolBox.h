@@ -15,7 +15,6 @@
 #pragma once
 
 #include <medSegmentationAbstractToolBox.h>
-//#include <medFilteringAbstractToolBox.h>
 #include <reformatPluginExport.h>
 #include "superResolutionProcess.h"
 #include <medDataManager.h>

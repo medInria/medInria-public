@@ -465,7 +465,7 @@ void shapeBasedInterpolation::setInput(MaskType::Pointer input)
 }
 
 // return output
-shapeBasedInterpolation::MaskType::Pointer shapeBasedInterpolation::output()
+MaskType::Pointer shapeBasedInterpolation::output()
 {
     return d->output;
 }

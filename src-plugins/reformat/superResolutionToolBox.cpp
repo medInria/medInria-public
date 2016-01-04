@@ -36,8 +36,12 @@
 class superResolutionToolBoxPrivate
 {
 public:
-    QPushButton                * run;
-    QVector<dtkSmartPointer<medAbstractData> >   inputs;
+    QPushButton * run;
+    dtkSmartPointer<medAbstractData> inputVol0;
+    dtkSmartPointer<medAbstractData> inputVol1;
+    dtkSmartPointer<medAbstractData> inputMask0;
+    dtkSmartPointer<medAbstractData> inputMask1;
+
     dtkSmartPointer <medAbstractProcess> process;
 
     medAbstractData * output;
@@ -138,25 +142,27 @@ void superResolutionToolBox::onRoiImportedDo(const medDataIndex& index, int inpu
     case 0:
     {
         d->dropOrOpenRoi0->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi0->sizeHint()));
+        d->inputMask0 = data;
         break;
     }
     case 1:
     {
         d->dropOrOpenRoi1->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi1->sizeHint()));
+        d->inputMask1 = data;
         break;
     }
     case 2:
     {
         d->dropOrOpenRoi2->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi2->sizeHint()));
+        d->inputVol0 = data;
         break;
     }
     case 3:
     {
         d->dropOrOpenRoi3->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi3->sizeHint()));
+        d->inputVol1 = data;
     }
     }
-
-    d->inputs.push_back(data);
 }
 
 // Sets the image passed as parameter as the @medDropSite image.
@@ -197,37 +203,34 @@ void superResolutionToolBox::setWorkspace(medAbstractWorkspace * workspace)
 
 void superResolutionToolBox::runProcessRequest()
 {
-    if ( d->inputs.count() == 4 )
+    if ( d->inputVol0 && d->inputVol1 && d->inputMask0 && d->inputMask1)
     {
-        if ( d->inputs[0] && d->inputs[1] && d->inputs[2] && d->inputs[3])
-        {
-            // Wait Cursor
-            this->setCursor(Qt::WaitCursor);
-            QApplication::processEvents();
+        // Wait Cursor
+        this->setCursor(Qt::WaitCursor);
+        QApplication::processEvents();
 
-            d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("superResolutionProcess");
-            d->process->setInput(d->inputs[0],0);
-            d->process->setInput(d->inputs[1],1);
-            d->process->setInput(d->inputs[2],2);
-            d->process->setInput(d->inputs[3],3);
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("superResolutionProcess");
+        d->process->setInput(d->inputVol0, 0);
+        d->process->setInput(d->inputVol1, 1);
+        d->process->setInput(d->inputMask0,2);
+        d->process->setInput(d->inputMask1,3);
 
-            medRunnableProcess *runProcess = new medRunnableProcess;
-            runProcess->setProcess (d->process);
-            d->progression_stack->addJobItem(runProcess, "Progress:");
-            d->progression_stack->disableCancel(runProcess);
+        medRunnableProcess *runProcess = new medRunnableProcess;
+        runProcess->setProcess (d->process);
+        d->progression_stack->addJobItem(runProcess, "Progress:");
+        d->progression_stack->disableCancel(runProcess);
 
-            connect (runProcess, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
-            connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (setOutput()));          //after success of process, get output
-            connect (runProcess, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
-            connect (runProcess, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
-            connect (runProcess, SIGNAL (activate(QObject*,bool)), d->progression_stack, SLOT(setActive(QObject*,bool)));
+        connect (runProcess, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
+        connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (setOutput()));          //after success of process, get output
+        connect (runProcess, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
+        connect (runProcess, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
+        connect (runProcess, SIGNAL (activate(QObject*,bool)), d->progression_stack, SLOT(setActive(QObject*,bool)));
 
-            medJobManager::instance()->registerJobItem(runProcess);
-            QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+        medJobManager::instance()->registerJobItem(runProcess);
+        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 
-            // Arrow Cursor
-            this->setCursor(Qt::ArrowCursor);
-        }
+        // Arrow Cursor
+        this->setCursor(Qt::ArrowCursor);
     }
 }
 
@@ -264,5 +267,8 @@ void superResolutionToolBox::onClearRoiButtonClicked(void)
     d->dropOrOpenRoi3->clear();
     d->dropOrOpenRoi3->setText(tr("Drop 2nd volume"));
 
-    d->inputs.clear();
+    d->inputVol0 = 0;
+    d->inputVol1 = 0;
+    d->inputMask0 = 0;
+    d->inputMask1 = 0;
 }

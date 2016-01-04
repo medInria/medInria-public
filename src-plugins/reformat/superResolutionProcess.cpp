@@ -29,10 +29,10 @@
 class superResolutionProcessPrivate
 {
 public:
-    dtkSmartPointer<medAbstractData> input0;
-    dtkSmartPointer<medAbstractData> input1;
-    dtkSmartPointer<medAbstractData> input2;
-    dtkSmartPointer<medAbstractData> input3;
+    dtkSmartPointer<medAbstractData> inputVol0;
+    dtkSmartPointer<medAbstractData> inputVol1;
+    dtkSmartPointer<medAbstractData> inputMask0;
+    dtkSmartPointer<medAbstractData> inputMask1;
 
     dtkSmartPointer<medAbstractData> output;
 
@@ -45,10 +45,10 @@ public:
 // /////////////////////////////////////////////////////////////////
 superResolutionProcess::superResolutionProcess(void) : medAbstractProcess(), d(new superResolutionProcessPrivate())
 {
-    d->input0 = NULL;
-    d->input1 = NULL;
-    d->input2 = NULL;
-    d->input3 = NULL;
+    d->inputVol0  = NULL;
+    d->inputVol1  = NULL;
+    d->inputMask0 = NULL;
+    d->inputMask1 = NULL;
 
     d->output = NULL;
 }
@@ -75,36 +75,53 @@ void superResolutionProcess::setInput( medAbstractData *data, int channel )
     // Fill variables with input data
     switch (channel)
     {
-        case 0:
-            d->input0 = data;
-        case 1:
-            d->input1 = data;
-        case 2:
-            d->input2 = data;
-        case 3:
-            d->input3 = data;
+    case 0:
+    {
+        d->inputVol0 = data;
+        break;
+    }
+    case 1:
+    {
+        d->inputVol1 = data;
+        break;
+    }
+    case 2:
+    {
+        d->inputMask0 = data;
+        break;
+    }
+    case 3:
+    {
+        d->inputMask1 = data;
+        break;
+    }
     }
 }
 
 // Method to actually start the filter
 int superResolutionProcess::update ( void )
 {
-    if ( d->input0 && d->input1 && d->input2 && d->input3 )
+    if ( d->inputVol0 && d->inputVol1 && d->inputMask0 && d->inputMask1 )
     {
         // cast to unsigned char and set input in shapeBasedInterpolationFilter
-        bool res0 = castToUChar3(d->input0);
-        bool res1 = castToUChar3(d->input1);
-        bool res2 = castToUChar3(d->input2);
-        bool res3 = castToUChar3(d->input3);
+        MaskType* res0 = castToUChar3(d->inputVol0);
+        MaskType* res1 = castToUChar3(d->inputVol1);
+        MaskType* res2 = castToUChar3(d->inputMask0);
+        MaskType* res3 = castToUChar3(d->inputMask1);
 
-        if ( res0 == DTK_SUCCEED && res1 == DTK_SUCCEED && res2 == DTK_SUCCEED && res3 == DTK_SUCCEED )
+        if ( res0 && res1 && res2 && res3 )
         {
+            d->shapeBasedInterpolationFilter.setInput(res0);
+            d->shapeBasedInterpolationFilter.setInput(res1);
+            d->shapeBasedInterpolationFilter.setInput(res2);
+            d->shapeBasedInterpolationFilter.setInput(res3);
+
             connect(&d->shapeBasedInterpolationFilter , SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
             d->shapeBasedInterpolationFilter.run();
 
             d->output = medAbstractDataFactory::instance()->create ("itkDataImageUChar3");
             d->output->setData(d->shapeBasedInterpolationFilter.output()); // update output data
-            medUtilities::setDerivedMetaData(d->output, d->input0, "super resolution");
+            medUtilities::setDerivedMetaData(d->output, d->inputVol0, "superResolution");
 
             return DTK_SUCCEED;
         }
@@ -112,7 +129,7 @@ int superResolutionProcess::update ( void )
     return DTK_FAILURE;
 }
 
-bool superResolutionProcess::castToUChar3(dtkSmartPointer<medAbstractData> image)
+MaskType* superResolutionProcess::castToUChar3(dtkSmartPointer<medAbstractData> image)
 {
     QString id = image->identifier();
 
@@ -162,11 +179,11 @@ bool superResolutionProcess::castToUChar3(dtkSmartPointer<medAbstractData> image
         << id
         << ")";
     }
-    return DTK_FAILURE;
+    return NULL;
 }
 
 template <typename IMAGE>
-bool
+MaskType*
 superResolutionProcess::cast(dtkSmartPointer<medAbstractData> image)
 {
     IMAGE* tmpPtr = dynamic_cast<IMAGE*> ((itk::Object*)(image->data()));
@@ -181,9 +198,9 @@ superResolutionProcess::cast(dtkSmartPointer<medAbstractData> image)
 
         d->shapeBasedInterpolationFilter.setInput(castFilter->GetOutput());
 
-        return DTK_SUCCEED;
+        return castFilter->GetOutput();
     }
-    return DTK_FAILURE;
+    return NULL;
 }
 
 // The output will be available through here
