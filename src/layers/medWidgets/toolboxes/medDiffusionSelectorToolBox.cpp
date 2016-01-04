@@ -43,7 +43,7 @@ public:
     QVBoxLayout *mainLayout;
 
     QComboBox *chooseInput;
-    QMap <QString, dtkSmartPointer <medAbstractImageData> > inputsMap;
+    QMap <QString, medAbstractImageData *> inputsMap;
 
     QWidget *currentToolBox;
 
@@ -150,7 +150,7 @@ void medDiffusionSelectorToolBox::chooseProcess(int id)
             if (d->inputsMap[inputId])
                 process->setInput(d->inputsMap[inputId]);
 
-            connect(process,SIGNAL(finished(medJobExitStatus)),this,SIGNAL(jobFinished(medJobExitStatus)));
+            connect(process, &medAbstractJob::finished, this, &medDiffusionSelectorToolBox::jobFinished);
             connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
 
             d->currentProcessPresenter = medWidgets::diffusionModelEstimation::presenterFactory().create(process);
@@ -164,11 +164,11 @@ void medDiffusionSelectorToolBox::chooseProcess(int id)
 
             if (d->inputsMap[inputId])
             {
-                medAbstractDiffusionModelImageData *image = qobject_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
+                medAbstractDiffusionModelImageData *image = dynamic_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
                 process->setInput(image);
             }
 
-            connect(process,SIGNAL(finished(medJobExitStatus)),this,SIGNAL(jobFinished(medJobExitStatus)));
+            connect(process, &medAbstractJob::finished, this, &medDiffusionSelectorToolBox::jobFinished);
             connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
 
             d->currentProcessPresenter = medWidgets::diffusionScalarMaps::presenterFactory().create(process);
@@ -183,11 +183,11 @@ void medDiffusionSelectorToolBox::chooseProcess(int id)
 
             if (d->inputsMap[inputId])
             {
-                medAbstractDiffusionModelImageData *image = qobject_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
+                medAbstractDiffusionModelImageData *image = dynamic_cast <medAbstractDiffusionModelImageData *> (d->inputsMap[inputId]);
                 process->setInput(image);
             }
 
-            connect(process,SIGNAL(finished(medJobExitStatus)),this,SIGNAL(jobFinished(medJobExitStatus)));
+            connect(process, &medAbstractJob::finished, this, &medDiffusionSelectorToolBox::jobFinished);
             connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
 
             d->currentProcessPresenter = medWidgets::tractography::presenterFactory().create(process);
@@ -253,7 +253,6 @@ void medDiffusionSelectorToolBox::updateCurrentProcessInput(int index)
         {
             medAbstractDiffusionModelEstimationProcess *process = qobject_cast <medAbstractDiffusionModelEstimationProcess *> (d->currentProcess);
             medAbstractImageData *image = qobject_cast <medAbstractImageData *> (d->inputsMap[inputId]);
-
             process->setInput(image);
             break;
         }
