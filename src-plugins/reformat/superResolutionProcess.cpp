@@ -196,8 +196,6 @@ superResolutionProcess::cast(dtkSmartPointer<medAbstractData> image)
         castFilter->SetInput(dynamic_cast<IMAGE*>((itk::Object*)(tmpPtr)));
         castFilter->Update();
 
-        d->shapeBasedInterpolationFilter.setInput(castFilter->GetOutput());
-
         return castFilter->GetOutput();
     }
     return NULL;
