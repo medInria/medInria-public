@@ -28,8 +28,6 @@
 // Create volumes needed to compute final output
 void shapeBasedInterpolationPrivate::createEmptyVolumes(int inputNumber)
 {
-    cout<<"shapeBasedInterpolationPrivate::createEmptyVolumes"<<endl;
-
     // Get meta data from input.
     this->inputSpacing.push_back(this->input[inputNumber]->GetSpacing());
     this->inputSize.push_back(   this->input[inputNumber]->GetLargestPossibleRegion().GetSize());
@@ -79,8 +77,6 @@ void shapeBasedInterpolationPrivate::createEmptyVolumes(int inputNumber)
 // Compute shape based interpolation volumes && interpolate MRI volumes
 void shapeBasedInterpolationPrivate::computeShapeBasedInterpolation(int inputNumber)
 {
-    cout<<"shapeBasedInterpolationPrivate::computeShapeBasedInterpolation"<<endl;
-
     itk::MultiThreader::SetGlobalDefaultNumberOfThreads(8);
 
     int sizeZ = this->inputSize[inputNumber][2];
@@ -347,8 +343,6 @@ void shapeBasedInterpolationPrivate::computeGradientMap(int inputNumber)
 // Create empty final output, and fill it
 void shapeBasedInterpolationPrivate::createFinalSeq()
 {
-    cout<<"shapeBasedInterpolationPrivate::createFinalSeq"<<endl;
-
     // -- Create output volume and fill with 0
     this->output = MaskType::New();
 
