@@ -28,8 +28,10 @@ public:
     }
     
     void wheelEvent(QWheelEvent *e)
-	{
-    	if(hasFocus())
-        	QComboBox::wheelEvent(e);
-	}
+    {
+        if(hasFocus())
+        {
+            QComboBox::wheelEvent(e);
+        }
+    }
 };
