@@ -53,7 +53,7 @@ class MEDCORE_EXPORT medAbstractWorkspace : public QObject
 public:
 
     medAbstractWorkspace(QWidget *parent=0);
-    ~medAbstractWorkspace();
+    virtual ~medAbstractWorkspace();
 
     virtual QString identifier() const = 0;
     virtual QString name() const = 0;
