@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medAbstractParameter.h>
-
+#include <medSlider.h>
 #include <medCoreExport.h>
 
 class QWidget;
@@ -33,7 +33,7 @@ public:
 
     void setRange(int min, int max);
     QSpinBox* getSpinBox();
-    QSlider* getSlider();
+    medSlider* getSlider();
 
     virtual QWidget* getWidget();
 

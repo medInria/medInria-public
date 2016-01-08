@@ -14,7 +14,7 @@
 #include <medIntParameter.h>
 
 #include <QSpinBox>
-#include <QSlider>
+#include <medSlider.h>
 
 class medIntParameterPrivate
 {
@@ -23,7 +23,7 @@ public:
     int max;
 
     QSpinBox *spinBox;
-    QSlider *slider;
+    medSlider *slider;
 
     ~medIntParameterPrivate()
     {
@@ -66,7 +66,6 @@ void medIntParameter::setValue(int value)
     this->blockInternWidgetsSignals(true);
     this->updateInternWigets();
     this->blockInternWidgetsSignals(false);
-
     emit valueChanged(m_value);
 }
 
@@ -91,11 +90,11 @@ void medIntParameter::setRange(int min, int max)
         d->slider->setRange(min, max);
 }
 
-QSlider* medIntParameter::getSlider()
+medSlider* medIntParameter::getSlider()
 {
     if(!d->slider)
     {
-        d->slider = new QSlider;
+        d->slider = new medSlider;
         d->slider->setRange(d->min, d->max);
         d->slider->setValue(m_value);
 

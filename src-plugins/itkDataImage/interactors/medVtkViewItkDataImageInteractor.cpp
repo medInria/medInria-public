@@ -136,6 +136,7 @@ QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::linkableParameter
 {
     QList<medAbstractParameter*> params;
     params.append(d->lutParam);
+    params.append(d->slicingParameter);
     params.append(d->presetParam);
     params.append(this->visibilityParameter());
     params.append(this->windowLevelParameter());
