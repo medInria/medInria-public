@@ -49,7 +49,7 @@ class iterativeClosestPointToolBoxPrivate
 public:
     
     medAbstractLayeredView * currentView;
-    QComboBox * layerSource, * layerTarget;
+    medComboBox * layerSource, * layerTarget;
     QDoubleSpinBox * ScaleFactor,* MaxMeanDistance;
     QSpinBox * MaxNumIterations, * MaxNumLandmarks;
     QCheckBox * bStartByMatchingCentroids,*bRididBody,*bCheckMeanDistance;
@@ -67,14 +67,14 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     this->setTitle("Mesh Registration");
       
     // Parameters'widgets
-    d->layerSource = new QComboBox;
+    d->layerSource = new medComboBox;
     d->layerSource->addItem("Select the layer", 0);
     QLabel * layerSource_Label = new QLabel("Layer number for source mesh");
     QHBoxLayout * layerSource_layout = new QHBoxLayout;
     layerSource_layout->addWidget(layerSource_Label);
     layerSource_layout->addWidget(d->layerSource);
     
-    d->layerTarget = new QComboBox;
+    d->layerTarget = new medComboBox;
     d->layerTarget->addItem("Select the layer", 0);
     QLabel * layerTarget_Label = new QLabel("Layer number for target mesh");
     QHBoxLayout * layerTarget_layout = new QHBoxLayout;

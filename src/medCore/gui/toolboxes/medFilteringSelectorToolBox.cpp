@@ -29,7 +29,7 @@ class medFilteringSelectorToolBoxPrivate
 {
 public:
 
-    QComboBox    *chooseFilter;
+    medComboBox    *chooseFilter;
     medAbstractData *inputData;
     QHash<QString, medFilteringAbstractToolBox*> toolBoxes;
     QVBoxLayout *filterLayout;
@@ -42,7 +42,7 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
     d ( new medFilteringSelectorToolBoxPrivate )
 {
 
-    d->chooseFilter = new QComboBox;
+    d->chooseFilter = new medComboBox;
     d->chooseFilter->addItem ( tr ( "Choose filter" ) );
 	d->chooseFilter->setToolTip(tr("Browse through the list of available filters"));
 

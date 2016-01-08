@@ -10,14 +10,14 @@
 
 #include <medStringListParameter.h>
 
-#include <QComboBox>
+#include <medComboBox.h>
 #include <QDebug>
 
 
 class medStringListParameterPrivate
 {
 public:
-    QComboBox* comboBox;
+    medComboBox* comboBox;
     QStringList items;
     QHash <QString, QIcon> iconForItem;
 
@@ -84,7 +84,7 @@ QComboBox* medStringListParameter::getComboBox()
 {
     if(!d->comboBox)
     {
-        d->comboBox = new QComboBox;
+        d->comboBox = new medComboBox;
         foreach(QString item, d->items)
             d->comboBox->addItem(d->iconForItem.value(item), item);
 

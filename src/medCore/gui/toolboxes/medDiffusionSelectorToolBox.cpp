@@ -44,11 +44,11 @@ public:
     QPushButton *runButton;
     QPushButton *cancelButton;
 
-    QComboBox *methodCombo;
+    medComboBox *methodCombo;
     QVBoxLayout *mainLayout;
 
     //QLabel *inputLabel;
-    QComboBox *chooseInput;
+    medComboBox *chooseInput;
     //TODO smartPointing have to be managed only in abstract processes -rde
     QMap <QString, dtkSmartPointer <medAbstractImageData> > inputsMap;
 };
@@ -90,7 +90,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     }
 
     QLabel *methodLabel = new QLabel(labelTitle, mainPage);
-    d->methodCombo = new QComboBox(mainPage);
+    d->methodCombo = new medComboBox(mainPage);
 
     QHBoxLayout *methodLayout = new QHBoxLayout;
     methodLayout->addWidget(methodLabel);
@@ -120,7 +120,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     inputDescriptionLabel->setText(tr("Input image:"));
     inputLayout->addWidget(inputDescriptionLabel);
     
-    d->chooseInput = new QComboBox(mainPage);
+    d->chooseInput = new medComboBox(mainPage);
     d->chooseInput->addItem(tr("Please drop an image"));
 	d->chooseInput->setToolTip(tr("Browse available images for processing"));
     d->chooseInput->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);

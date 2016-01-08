@@ -25,7 +25,7 @@
 class medSegmentationSelectorToolBoxPrivate
 {
 public:
-    QComboBox *chooseSegmentationComboBox;
+    medComboBox *chooseSegmentationComboBox;
     medSegmentationAbstractToolBox * currentSegmentationToolBox;
     QHash<QString, medSegmentationAbstractToolBox*> segmentationToolBoxes;
     QVBoxLayout *mainLayout;
@@ -38,7 +38,7 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent) 
     d->currentSegmentationToolBox = NULL;
 
 
-    d->chooseSegmentationComboBox = new QComboBox;
+    d->chooseSegmentationComboBox = new medComboBox;
     //TODO algorithm is not the best IMO - RDE
     d->chooseSegmentationComboBox->addItem("Choose algorithm");
     d->chooseSegmentationComboBox->setToolTip(tr("Browse through the list of available segmentation algorithm"));
