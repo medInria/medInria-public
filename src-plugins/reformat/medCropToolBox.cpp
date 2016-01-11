@@ -434,10 +434,10 @@ void medCropToolBoxPrivate::generateOutput()
 
     outputData.clear();
 
-    for (int layer = 0; layer < view->layersCount(); layer++)
+    for (unsigned int layer = 0; layer < view->layersCount(); layer++)
     {
         medAbstractData* imageData = view->layerData(layer);
-        medAbstractData* output;
+        medAbstractData* output = NULL;
 
         QStringList imageTypes;
         imageTypes << "itkDataImageChar3" << "itkDataImageUChar3" << "itkDataImageShort3" << "itkDataImageUShort3" << "itkDataImageInt3";
