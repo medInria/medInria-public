@@ -129,6 +129,12 @@ QString medAbstractDatabaseImporter::callerUuid()
 **/
 void medAbstractDatabaseImporter::internalRun ( void )
 {
+    if(!QDir(medStorage::dataLocation()).exists())
+    {
+        emit showError ( tr ( "Your database path does not exist" ), 5000 );
+        emit failure(this);
+        return;
+    }
     if(!d->file.isEmpty())
         importFile();
     else if ( d->data )
