@@ -32,7 +32,7 @@ public slots:
     void read();
 
 private slots:
-    void selectDbDirectory();
+    void selectDirectory();
 
 protected:
     bool validate();

@@ -540,65 +540,25 @@ void medDatabaseController::createImageTable(void)
 */
 bool medDatabaseController::moveDatabase( QString newLocation)
 {
-    bool res = true;
-
-    QString oldLocation = medStorage::dataLocation();
-
-    // if there's no existing db in the new location
-    if(QDir(newLocation).entryInfoList(QStringList("db")).isEmpty()) 
+    // close connection if necessary
+    bool needsRestart = false;
+    if (this->isConnected())
     {
-        // now copy all the images and thumbnails
-        QStringList sourceList;
-        medStorage::recurseAddDir(QDir(oldLocation), sourceList);
-
-        // create destination filelist
-        QStringList destList;
-
-        if (!medStorage::createDestination(sourceList,destList,oldLocation, newLocation))
-        {
-            res = false;
-        }
-        else
-        {
-            // now copy
-            if (!medStorage::copyFiles(sourceList, destList))
-                res = false;
-        }
+        this->closeConnection();
+        needsRestart = true;
     }
 
-    if (res)
-        qDebug() << "copying database: success";
-    else
-        qDebug() << "copying database: failure";
+    // now update the datastorage path and make sure to reconnect
+    medStorage::setDataLocation(newLocation);
 
-
-    // only switch to the new location if copying succeeded
-    if( res )
+    // restart if necessary
+    if (needsRestart)
     {
-        // close connection if necessary
-        bool needsRestart = false;
-        if (this->isConnected())
-        {
-            this->closeConnection();
-            needsRestart = true;
-        }
-
-        // now update the datastorage path and make sure to reconnect
-        medStorage::setDataLocation(newLocation);
-
-        // restart if necessary
-        if (needsRestart)
-        {
-            qDebug() << "Restarting connection...";
-            this->createConnection();
-        }
+        qDebug() << "Restarting connection...";
+        this->createConnection();
     }
 
-    if (res)
-        qDebug() << "relocating database successful";
-    else
-        qDebug() << "relocating database failed";
-    return res;
+    return true;
 }
 
 /**

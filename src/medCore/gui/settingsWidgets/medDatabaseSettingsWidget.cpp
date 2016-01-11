@@ -23,7 +23,7 @@ class medDatabaseSettingsWidgetPrivate {
 
 public:
   QLineEdit* dbPath;
-  QPushButton* btChooseDir;
+  QPushButton *selectDirectoryButton;
 };
 
 medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
@@ -33,29 +33,31 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
     setTabName("Database");
 
     d->dbPath = new QLineEdit(this);
-    d->btChooseDir = new QPushButton(tr("Select directory..."), this);
+    d->selectDirectoryButton = new QPushButton(tr("Select directory..."), this);
+    d->selectDirectoryButton->setToolTip("Change the database directory or create a new database by selecting an empty directory");
 
     QWidget* databaseLocation = new QWidget(this);
     QHBoxLayout* dbLayout = new QHBoxLayout;
     dbLayout->addWidget(d->dbPath);
-    dbLayout->addWidget(d->btChooseDir);
+    dbLayout->addWidget(d->selectDirectoryButton);
     databaseLocation->setLayout(dbLayout);
 
-    connect(d->btChooseDir, SIGNAL(clicked()), this, SLOT(selectDbDirectory()));
+    connect(d->selectDirectoryButton, SIGNAL(clicked()), this, SLOT(selectDirectory()));
 
     databaseLocation->setContentsMargins(0,-8,0,0);
 
     QFormLayout* formLayout = new QFormLayout(this);
     formLayout->addRow(tr("Database location:"), databaseLocation);
-    formLayout->addRow(new QLabel("* The changes will only be effective after a restart of the software."));
+    formLayout->addRow(new QLabel("* The changes will only be effective after saving and restarting the application."));
 }
 
-void medDatabaseSettingsWidget::selectDbDirectory()
+void medDatabaseSettingsWidget::selectDirectory()
 {
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    QFileDialog dialog(this, tr("Select the database directory"));
+    QDir defaultPath = QDir(medStorage::dataLocation());
+    defaultPath.cdUp();
+    dialog.setDirectory(defaultPath);
 
-     QString path;
      if (dialog.exec())
      {
          QString path = dialog.selectedFiles().first();
