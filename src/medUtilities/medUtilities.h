@@ -1,11 +1,12 @@
 #pragma once
 
 #include <QHash>
+#include <medUtilitiesExport.h>
 
 class medAbstractData;
 class medAbstractView;
 
-class medUtilities
+class MEDUTILITIES_EXPORT medUtilities
 {
 public:
     static void setDerivedMetaData(medAbstractData* derived, medAbstractData* original,
