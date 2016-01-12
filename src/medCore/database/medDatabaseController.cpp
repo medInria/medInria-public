@@ -547,22 +547,15 @@ void medDatabaseController::createImageTable(void)
 bool medDatabaseController::moveDatabase( QString newLocation)
 {
     // close connection if necessary
-    bool needsRestart = false;
     if (this->isConnected())
     {
         this->closeConnection();
-        needsRestart = true;
     }
-
     // now update the datastorage path and make sure to reconnect
     medStorage::setDataLocation(newLocation);
 
-    // restart if necessary
-    if (needsRestart)
-    {
-        qDebug() << "Restarting connection...";
-        this->createConnection();
-    }
+    qDebug() << "Restarting connection...";
+    this->createConnection();
 
     return true;
 }
