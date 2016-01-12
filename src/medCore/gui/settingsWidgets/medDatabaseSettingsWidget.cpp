@@ -66,7 +66,7 @@ void medDatabaseSettingsWidget::selectDirectory()
         if (!QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty() && QDir(path).entryInfoList(QStringList("db")).isEmpty())
         {
             QMessageBox::information( this, tr("Database location not valid"),
-                                      tr("The directory selected is not valid:\nEither it doesn't point to an existing medInria database directory \nOR your new directory is not empty. \nPlease choose another one."));
+                                      tr("The directory selected is not valid:\nEither it doesn't point to an existing MUSIC database directory \nOR your new directory is not empty. \nPlease choose another one."));
         }
         else
         {
