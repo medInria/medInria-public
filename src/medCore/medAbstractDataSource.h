@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -42,21 +42,24 @@ public:
     */
     virtual QWidget *mainViewWidget() = 0;
 
+    virtual QWidget *compactViewWidget() {return NULL;}
+    virtual QWidget *previewWidget() {return NULL;}
+
     /**
     * Returns the source selector widget
     * A widget that let's the user choose between different data locations
     */
-    virtual QWidget *sourceSelectorWidget() = 0;
+    virtual QWidget *sourceSelectorWidget() {return NULL;}
 
     /** Returns the tab name for the plugin using the data source*/
     virtual QString tabName() = 0;
 
     /** Returns all ToolBoxes owned by the source data plugin*/
     virtual QList<medToolBox*> getToolBoxes() = 0;
-	
-	/** Returns a short description of the data source */
-	virtual QString description() const = 0;
-	
+
+    /** Returns a short description of the data source */
+    virtual QString description() const = 0;
+
 signals:
     /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for importing*/
     void dataToImportReceived(QString pathToData);
