@@ -53,24 +53,26 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
 void medDatabaseSettingsWidget::selectDirectory()
 {
-    QFileDialog dialog(this, tr("Select the database directory"));
     QDir defaultPath = QDir(medStorage::dataLocation());
     defaultPath.cdUp();
-    dialog.setDirectory(defaultPath);
 
-     if (dialog.exec())
-     {
-         QString path = dialog.selectedFiles().first();
-         if (!QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty() && QDir(path).entryInfoList(QStringList("db")).isEmpty())
-         {
-             QMessageBox::information( this, tr("Database location not valid"), 
-                 tr("The directory selected is not valid:\nEither it doesn't point to an existing medInria database directory \nOR your new directory is not empty. \nPlease choose another one."));
-         }
-         else
-         {
-             d->dbPath->setText(path);
-         }
-     }
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select the database directory"),
+                                                     QDir(defaultPath).absolutePath(),
+                                                     QFileDialog::ShowDirsOnly
+                                                     | QFileDialog::DontResolveSymlinks);
+
+    if(path != "") //the user hasn't clicked on Cancel
+    {
+        if (!QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty() && QDir(path).entryInfoList(QStringList("db")).isEmpty())
+        {
+            QMessageBox::information( this, tr("Database location not valid"),
+                                      tr("The directory selected is not valid:\nEither it doesn't point to an existing medInria database directory \nOR your new directory is not empty. \nPlease choose another one."));
+        }
+        else
+        {
+            d->dbPath->setText(path);
+        }
+    }
 }
 
 /**
