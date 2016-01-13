@@ -137,9 +137,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                                           "<br/><br/>"
                                           "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria."
                                           "<br/><br/>"
-                                          " <font color = 'red'><b>MUSIC (expires on ")
+                                          " <font color = 'red'><b>MUSIC expires on ")
                         + expiryDate.toString("d MMMM yyyy")
-                        + ")</b></font>");
+                        + ".</b></font>");
 
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
