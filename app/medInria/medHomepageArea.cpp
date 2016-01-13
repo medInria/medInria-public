@@ -128,13 +128,19 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medLogo = medLogo.scaled(350, 150, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     medInriaLabel->setPixmap ( medLogo );
 
+    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     QTextEdit * textEdit = new QTextEdit(this);
     textEdit->setHtml ( QString::fromUtf8("<b>MUSIC</b> is a software developed in collaboration with "
                                           "the IHU LIRYC in order to propose functionalities "
                                           "dedicated to cardiac interventional planning and "
                                           "guidance, based on the medInria software platform."
                                           "<br/><br/>"
-                                          "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria." ));
+                                          "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria."
+                                          "<br/><br/>"
+                                          " <font color = 'red'><b>MUSIC (expires on ")
+                        + expiryDate.toString("d MMMM yyyy")
+                        + ")</b></font>");
+
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight(300);

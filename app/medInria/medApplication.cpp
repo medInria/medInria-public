@@ -75,10 +75,10 @@ medApplication::medApplication(int & argc, char**argv) :
     }
     d->mainWindow = NULL;
 
-    this->setApplicationName("MUSIC (expires on " + expiryDate.toString("MMMM d yyyy") + ")");
+    this->setApplicationName("MUSIC");            /*Beware, change database path*/
     qDebug() << "Version:" << MEDINRIA_VERSION;
     this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database name*/
+    this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":music_logo_small.png"));
 
