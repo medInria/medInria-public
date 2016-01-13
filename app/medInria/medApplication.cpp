@@ -63,19 +63,19 @@ medApplication::medApplication(int & argc, char**argv) :
         QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
-    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addMonths(2);
+    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     qDebug() << MEDINRIA_BUILD_DATE << expiryDate;
-    //if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
-    //{
-    //    QMessageBox msg;
-    //    msg.setText("This copy of MUSIC has expired, please contact "
-    //    "maxime.sermesant@inria.fr for more information.");
-    //    msg.exec();
-    //    ::exit(1);
-    //}
+    if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
+    {
+        QMessageBox msg;
+        msg.setText("This copy of MUSIC has expired, please contact "
+        "maxime.sermesant@inria.fr for more information.");
+        msg.exec();
+        ::exit(1);
+    }
     d->mainWindow = NULL;
 
-    this->setApplicationName("MUSIC");
+    this->setApplicationName("MUSIC (expires on " + expiryDate.toString("MMMM d yyyy") + ")");
     qDebug() << "Version:" << MEDINRIA_VERSION;
     this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database name*/
