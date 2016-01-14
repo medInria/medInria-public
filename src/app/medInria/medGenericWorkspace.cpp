@@ -29,6 +29,8 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 
+#include <QDebug>
+
 class medGenericWorkspacePrivate
 {
 public:
@@ -60,6 +62,7 @@ medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceL
     d->processTypeComboBox->addItem("Diffusion model estimation");
     d->processTypeComboBox->addItem("Diffusion scalar maps");
     d->processTypeComboBox->addItem("Tractography");
+    d->processTypeComboBox->addItem("Gaussian filter");
     processTypeWidget->setLayout(processTypeLayout);
 
     connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),
@@ -83,7 +86,7 @@ medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceL
 //        d->presenter = medWidgets::tractography::presenterFactory().create(d->process);
 
     d->workspaceToolBox = new medToolBox;
-    //tb->addWidget(d->presenter->buildToolBoxWidget());
+    //d->workspaceToolBox->addWidget(d->presenter->buildToolBoxWidget());
     d->workspaceToolBox->setTitle("Process controller");
     d->workspaceToolBox->addWidget(processTypeWidget);
     d->workspaceToolBox->addWidget(processWidget);
@@ -118,7 +121,7 @@ void medGenericWorkspace::setProcessType(int index)
                 if (process)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
             }
-
+;
             break;
         }
 
@@ -175,12 +178,25 @@ void medGenericWorkspace::setProcessType(int index)
         }
 
         case Tractography:
-        default:
         {
             QStringList plugins = medCore::tractography::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
                 medAbstractProcess *process = medCore::tractography::pluginFactory().create(pluginKey);
+                if (process)
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+            }
+
+            break;
+        }
+
+        case GaussianFilter:
+        default:
+        {
+            QStringList plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
                 if (process)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
             }
@@ -248,7 +264,6 @@ void medGenericWorkspace::setProcessSelection(int index)
         }
 
         case Tractography:
-        default:
         {
             medAbstractTractographyProcess *process = medCore::tractography::pluginFactory().create(pluginKey);
             d->process = process;
@@ -256,7 +271,18 @@ void medGenericWorkspace::setProcessSelection(int index)
 
             break;
         }
+
+        case GaussianFilter:
+        default:
+        {
+            medAbstractGaussianFilterProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
+            d->process = process;
+            d->presenter = medWidgets::singleFilterOperation::gaussianFilter::presenterFactory().create(process);
+
+            break;
+        }
     }
+
 
     d->workspaceToolBox->removeWidget(d->currentProcessToolBox);
     d->currentProcessToolBox = d->presenter->buildToolBoxWidget();

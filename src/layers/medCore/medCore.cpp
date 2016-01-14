@@ -32,6 +32,7 @@ namespace pluginManager
             medCore::tractography::initialize(realpath, verbose);
             medCore::morphomathOperation::initialize(realpath, verbose);
             medCore::maskImage::initialize(realpath, verbose);
+            medCore::singleFilterOperation::initialize(realpath, verbose);
         }
     }
 }
@@ -96,6 +97,38 @@ namespace arithmeticalOperation
         }
 
         medAbstractDivideImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+}
+
+// single filter
+namespace singleFilterOperation
+{
+    namespace _private
+    {
+        medAbstractSingleFilterOperationProcessPluginManager manager;
+    }
+
+    medAbstractSingleFilterOperationProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+    void initialize(const QString& path, bool verbose)
+    {
+        pluginManager().setVerboseLoading(verbose);
+        pluginManager().initialize(path);
+    }
+
+    namespace gaussianFilter
+    {
+        namespace _private
+        {
+            medAbstractGaussianFilterProcessPluginFactory factory;
+        }
+
+        medAbstractGaussianFilterProcessPluginFactory& pluginFactory(void)
         {
             return _private::factory;
         }

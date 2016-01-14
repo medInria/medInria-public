@@ -13,29 +13,28 @@
 
 #pragma once
 
-#include <medAbstractOpeningImageProcess.h>
+#include <medAbstractGaussianFilterProcess.h>
 
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
 
 #include <medIntParameter.h>
 
-#include <medItkMorphomathOperationProcessPluginExport.h>
+#include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKMORPHOMATHOPERATIONPROCESSPLUGIN_EXPORT medItkOpeningImageProcess: public medAbstractOpeningImageProcess
+class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkGaussianProcess: public medAbstractGaussianFilterProcess
 {
     Q_OBJECT
 public:
     static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
     {
-        medAbstractOpeningImageProcess * source = reinterpret_cast<medAbstractOpeningImageProcess *>(clientData);
+        medItkGaussianProcess * source = reinterpret_cast<medItkGaussianProcess *>(clientData);
         itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
         source->progression()->setValue(processObject->GetProgress() * 100);
     }
 
-
-    medItkOpeningImageProcess(QObject* parent = NULL);
-    ~medItkOpeningImageProcess();
+    medItkGaussianProcess(QObject* parent = NULL);
+    ~medItkGaussianProcess();
 
     virtual medAbstractJob::medJobExitStatus run();
     virtual void cancel();
@@ -44,13 +43,13 @@ public:
     virtual QString description() const;
 
 private:
-    template <class inputType> medAbstractJob::medJobExitStatus _run();
+    template<class inputType> medAbstractJob::medJobExitStatus _run();
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
 };
 
-inline medAbstractOpeningImageProcess* medItkOpeningImageProcessCreator()
+inline medAbstractSingleFilterOperationProcess* medItkGaussianProcessCreator()
 {
-    return new medItkOpeningImageProcess();
+    return new medItkGaussianProcess();
 }
