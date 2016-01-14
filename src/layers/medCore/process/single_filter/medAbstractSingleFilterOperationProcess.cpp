@@ -23,6 +23,7 @@ class medAbstractSingleFilterOperationProcessPrivate
 public:
     medAbstractImageData *input;
     medAbstractImageData *output;
+    medDoubleParameter* sigma;
 };
 
 medAbstractSingleFilterOperationProcess::medAbstractSingleFilterOperationProcess(QObject *parent): medAbstractProcess(parent),
@@ -30,6 +31,11 @@ medAbstractSingleFilterOperationProcess::medAbstractSingleFilterOperationProcess
 {
     d->input = NULL;
     d->output = NULL;
+
+    d->sigma = new medDoubleParameter("sigma", this);
+    d->sigma->setCaption("Kernel radius");
+    d->sigma->setDescription("Set the radius in all directions of the kernel used as structuring element");
+    d->sigma->setValue(1);
 }
 
 medAbstractSingleFilterOperationProcess::~medAbstractSingleFilterOperationProcess()
@@ -66,6 +72,11 @@ void medAbstractSingleFilterOperationProcess::setOutput(medAbstractImageData *da
     foreach ( QString property, d->input->propertyList() )
         d->output->addProperty ( property,d->input->propertyValues ( property ) );
 
+}
+
+medDoubleParameter* medAbstractSingleFilterOperationProcess::sigma() const
+{
+    return d->sigma;
 }
 
 medAbstractImageData* medAbstractSingleFilterOperationProcess::output() const

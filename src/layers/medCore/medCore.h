@@ -22,16 +22,7 @@
 #include <medAbstractDivideImageProcess.h>
 
 #include <medAbstractSingleFilterOperationProcess.h>
-#include <medAbstractAddFilterProcess.h>
-#include <medAbstractDivideFilterProcess.h>
 #include <medAbstractGaussianFilterProcess.h>
-#include <medAbstractInvertFilterProcess.h>
-#include <medAbstractMedianFilterProcess.h>
-#include <medAbstractMultiplyFilterProcess.h>
-#include <medAbstractNormalizeFilterProcess.h>
-#include <medAbstractShrinkFilterProcess.h>
-#include <medAbstractSubtractFilterProcess.h>
-#include <medAbstractWindowingFilterProcess.h>
 
 #include <medAbstractMorphomathOperationProcess.h>
 #include <medAbstractErodeImageProcess.h>
@@ -55,10 +46,9 @@ namespace medCore
         MEDCORE_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
     }
 
-    namespace arithmeticOperation
+    namespace arithmeticalOperation
     {
         MEDCORE_EXPORT medAbstractArithmeticOperationProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT medAbstractArithmeticOperationProcessPluginFactory& pluginFactory(void);
         MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
         namespace addImage
@@ -84,54 +74,9 @@ namespace medCore
         MEDCORE_EXPORT medAbstractSingleFilterOperationProcessPluginManager& pluginManager(void);
         MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
-        namespace addFilter
-        {
-            MEDCORE_EXPORT medAbstractAddFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace divideFilter
-        {
-            MEDCORE_EXPORT medAbstractDivideFilterProcessPluginFactory& pluginFactory(void);
-        }
-
         namespace gaussianFilter
         {
             MEDCORE_EXPORT medAbstractGaussianFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace invertFilter
-        {
-            MEDCORE_EXPORT medAbstractInvertFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace medianFilter
-        {
-            MEDCORE_EXPORT medAbstractMedianFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace multiplyFilter
-        {
-            MEDCORE_EXPORT medAbstractMultiplyFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace normalizeFilter
-        {
-            MEDCORE_EXPORT medAbstractNormalizeFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace shrinkFilter
-        {
-            MEDCORE_EXPORT medAbstractShrinkFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace subtractFilter
-        {
-            MEDCORE_EXPORT medAbstractSubtractFilterProcessPluginFactory& pluginFactory(void);
-        }
-
-        namespace windowingFilter
-        {
-            MEDCORE_EXPORT medAbstractWindowingFilterProcessPluginFactory& pluginFactory(void);
         }
     }
 
@@ -166,7 +111,6 @@ namespace medCore
     namespace morphomathOperation
     {
         MEDCORE_EXPORT medAbstractMorphomathOperationProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT medAbstractMorphomathOperationProcessPluginFactory& pluginFactory(void);
         MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
         namespace erodeImage

@@ -34,12 +34,14 @@ class medAbstractSingleFilterOperationProcessPresenterPrivate
 public:
     medAbstractSingleFilterOperationProcess *process;
     medIntParameterPresenter *progressionPresenter;
+    medDoubleParameterPresenter *sigmaPresenter;
 };
 
 medAbstractSingleFilterOperationProcessPresenter::medAbstractSingleFilterOperationProcessPresenter(medAbstractSingleFilterOperationProcess *parent)
     : medAbstractProcessPresenter(parent), d(new medAbstractSingleFilterOperationProcessPresenterPrivate)
 {
     d->process = parent;
+    d->sigmaPresenter = new medDoubleParameterPresenter(d->process->sigma());
     d->progressionPresenter = new medIntParameterPresenter(d->process->progression());
 
     connect(d->process, &medAbstractSingleFilterOperationProcess::finished,
@@ -57,6 +59,7 @@ QWidget *medAbstractSingleFilterOperationProcessPresenter::buildToolBoxWidget()
     QVBoxLayout *tbLayout = new QVBoxLayout;
     tbWidget->setLayout(tbLayout);
 
+    tbLayout->addWidget(d->sigmaPresenter->buildWidget());
     tbLayout->addWidget(this->buildRunButton());
     tbLayout->addWidget(d->progressionPresenter->buildProgressBar());
     tbLayout->addWidget(this->buildCancelButton());
