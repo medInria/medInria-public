@@ -59,6 +59,7 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     }
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);
+    writer->UseCompressionOn();
     writer->SetFileName(path.toAscii().constData());
     writer->SetInput(image);
     writer->Update();
