@@ -21,6 +21,9 @@
 #include <medAbstractMultiplyImageProcess.h>
 #include <medAbstractDivideImageProcess.h>
 
+#include <medAbstractSingleFilterOperationProcess.h>
+#include <medAbstractGaussianFilterProcess.h>
+
 #include <medAbstractMorphomathOperationProcess.h>
 #include <medAbstractErodeImageProcess.h>
 #include <medAbstractDilateImageProcess.h>
@@ -63,6 +66,17 @@ namespace medCore
         namespace divideImage
         {
             MEDCORE_EXPORT medAbstractDivideImageProcessPluginFactory& pluginFactory(void);
+        }
+    }
+
+    namespace singleFilterOperation
+    {
+        MEDCORE_EXPORT medAbstractSingleFilterOperationProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+
+        namespace gaussianFilter
+        {
+            MEDCORE_EXPORT medAbstractGaussianFilterProcessPluginFactory& pluginFactory(void);
         }
     }
 

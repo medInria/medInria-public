@@ -9,6 +9,9 @@
 #include <medAbstractDiffusionScalarMapsProcessPresenter.h>
 #include <medAbstractTractographyProcessPresenter.h>
 
+#include <medAbstractSingleFilterOperationProcessPresenter.h>
+#include <medAbstractGaussianFilterProcessPresenter.h>
+
 #include <medWidgetsExport.h>
 
 namespace medWidgets
@@ -38,6 +41,14 @@ namespace medWidgets
 //        {
 //            MEDCORE_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
 //        }
+    }
+
+    namespace singleFilterOperation
+    {
+        namespace gaussianFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractGaussianFilterProcessPresenterFactory& presenterFactory();
+        }
     }
 
     namespace maskImage
