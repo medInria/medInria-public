@@ -25,6 +25,9 @@
 #include <medOpeningImageProcessNode.h>
 #include <medClosingImageProcessNode.h>
 
+#include <medReaderNodeBase.h>
+#include <medWriterNodeBase.h>
+
 medComposerFactoryExtension::medComposerFactoryExtension(void) : dtkComposerNodeFactoryExtension()
 {
 
@@ -54,4 +57,9 @@ void medComposerFactoryExtension::extend(dtkComposerNodeFactory *factory)
                     dtkComposerNodeCreator<medOpeningImageProcessNode>);
     factory->record(":/process/morphomath_operation/medAbstractClosingImageProcess.json",
                     dtkComposerNodeCreator<medClosingImageProcessNode>);
+    factory->record(":/process/medGenericReaderNode.json", dtkComposerNodeCreator< medGenericReaderNode>);
+    factory->record(":/process/medImageReaderNode.json"  , dtkComposerNodeCreator< medImageReaderNode  >);
+    factory->record(":/process/medMeshReaderNode.json"   , dtkComposerNodeCreator< medMeshReaderNode   >);
+    factory->record(":/process/medGenericWriterNode.json"   , dtkComposerNodeCreator< medWriterNodeBase   >);
+
 }

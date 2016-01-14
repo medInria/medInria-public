@@ -41,7 +41,8 @@ public:
         DWIMasking,
         DiffusionModelEstimation,
         DiffusionScalarMaps,
-        Tractography
+        Tractography,
+        GaussianFilter
     };
 
 public slots:

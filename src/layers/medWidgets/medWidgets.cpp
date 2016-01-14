@@ -107,5 +107,22 @@ namespace tractography
     }
 }
 
+namespace singleFilterOperation
+{
+    namespace gaussianFilter
+    {
+        namespace _private
+        {
+            medAbstractGaussianFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractGaussianFilterProcessPresenterFactory& presenterFactory()
+        {
+            qDebug() << "GIEF!";
+            return _private::factory;
+        }
+    }
 }
+
+} // end of medWidgets
 
