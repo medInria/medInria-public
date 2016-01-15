@@ -168,6 +168,12 @@ const QSqlDatabase& medDatabaseController::database(void) const
 
 bool medDatabaseController::createConnection(void)
 {
+    if(!QDir(medStorage::dataLocation()).exists())
+    {
+        qDebug()<<"Database path does not exist: "<<medStorage::dataLocation();
+        return false;
+    }
+
     medStorage::mkpath(medStorage::dataLocation() + "/");
 
     if (this->m_database.databaseName().isEmpty())
@@ -540,67 +546,18 @@ void medDatabaseController::createImageTable(void)
 */
 bool medDatabaseController::moveDatabase( QString newLocation)
 {
-    bool res = true;
-
-    QString oldLocation = medStorage::dataLocation();
-
-    // now copy all the images and thumbnails
-    QStringList sourceList;
-    medStorage::recurseAddDir(QDir(oldLocation), sourceList);
-
-    // create destination filelist
-    QStringList destList;
-    if (!medStorage::createDestination(sourceList,destList,oldLocation, newLocation))
+    // close connection if necessary
+    if (this->isConnected())
     {
-        res = false;
+        this->closeConnection();
     }
-    else
-    {
-        // now copy
-        if (!medStorage::copyFiles(sourceList, destList))
-            res = false;
-    }
+    // now update the datastorage path and make sure to reconnect
+    medStorage::setDataLocation(newLocation);
 
-    if (res)
-        qDebug() << "copying database: success";
-    else
-        qDebug() << "copying database: failure";
+    qDebug() << "Restarting connection...";
+    this->createConnection();
 
-
-    // only switch to the new location if copying succeeded
-    if( res )
-    {
-        // close connection if necessary
-        bool needsRestart = false;
-        if (this->isConnected())
-        {
-            this->closeConnection();
-            needsRestart = true;
-        }
-
-        // now update the datastorage path and make sure to reconnect
-        medStorage::setDataLocation(newLocation);
-
-        // restart if necessary
-        if (needsRestart)
-        {
-            qDebug() << "Restarting connection...";
-            this->createConnection();
-        }
-
-        // now delete the old archive
-        if(medStorage::removeDir(oldLocation))
-            qDebug() << "deleting old database: success";
-        else
-            qDebug() << "deleting old database: failure";
-
-    }
-
-    if (res)
-        qDebug() << "relocating database successful";
-    else
-        qDebug() << "relocating database failed";
-    return res;
+    return true;
 }
 
 /**
