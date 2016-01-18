@@ -22,6 +22,7 @@
 #include <medItkErodeImageProcess.h>
 
 #include <medItkOpeningImageProcessPresenter.h>
+#include <medItkClosingImageProcessPresenter.h>
 
 void medItkMorphomathOperationProcessPlugin::initialize(void)
 {
@@ -37,6 +38,9 @@ void medItkMorphomathOperationProcessPlugin::initialize(void)
     medWidgets::morphomathOperation::openingImage::presenterFactory().record(medItkOpeningImageProcess::staticMetaObject.className()
                                                                              , medItkOpeningImageProcessPresenterCreator);
 
+    medWidgets::morphomathOperation::closingImage::presenterFactory().record(medItkClosingImageProcess::staticMetaObject.className()
+                                                                             , medItkClosingImageProcessPresenterCreator);
+
 
 }
 
@@ -49,3 +53,4 @@ DTK_DEFINE_PLUGIN(medItkClosingImageProcess)
 DTK_DEFINE_PLUGIN(medItkDilateImageProcess)
 DTK_DEFINE_PLUGIN(medItkErodeImageProcess)
 DTK_DEFINE_PLUGIN(medItkOpeningImageProcessPresenter)
+DTK_DEFINE_PLUGIN(medItkClosingImageProcessPresenter)

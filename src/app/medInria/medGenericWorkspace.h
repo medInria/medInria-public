@@ -42,7 +42,7 @@ public:
         DiffusionModelEstimation,
         DiffusionScalarMaps,
         Tractography,
-        GaussianFilter
+        SingleFilter
     };
 
 public slots:
