@@ -42,18 +42,12 @@ public:
 
     medToolBox *workspaceToolBox;
     QWidget *currentProcessToolBox;
-
-    std::vector<HackySolution> *vectorOfHacks;
 };
-
-
-
 
 medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medGenericWorkspacePrivate)
 {
     d->presenter = NULL;
     d->process = NULL;
-    d->vectorOfHacks = new std::vector<HackySolution>();
 
     QWidget *processTypeWidget = new QWidget;
     QLabel *processTypeLabel = new QLabel("Process Type", processTypeWidget);
@@ -226,10 +220,9 @@ void medGenericWorkspace::setProcessSelection(int index)
     {
         case MorphoMath:
         {
-
-            medAbstractOpeningImageProcess *process = medCore::morphomathOperation::openingImage::pluginFactory().create(pluginKey);
+            medAbstractMorphomathOperationProcess *process = medCore::morphomathOperation::pluginFactory().create(pluginKey);
             d->process = process;
-            d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(process);
+            d->presenter = medWidgets::morphomathOperation::presenterFactory().create(process);
 
             break;
         }

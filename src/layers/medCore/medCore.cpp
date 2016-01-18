@@ -250,6 +250,12 @@ namespace morphomathOperation
     namespace _private
     {
         medAbstractMorphomathOperationProcessPluginManager manager;
+        medAbstractMorphomathOperationProcessPluginFactory factory;
+    }
+
+    medAbstractMorphomathOperationProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
     }
 
     medAbstractMorphomathOperationProcessPluginManager& pluginManager(void)
@@ -261,6 +267,8 @@ namespace morphomathOperation
         pluginManager().setVerboseLoading(verbose);
         pluginManager().initialize(path);
     }
+
+
 
     namespace erodeImage
     {
