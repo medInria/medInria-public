@@ -197,7 +197,16 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
 
 void medDatabaseView::updateContextMenu(const QPoint& point)
 {
-    QModelIndex index = this->indexAt(point);
+    // If we have selected multiple rows, we'll only permit *remove* for now, as that was what was requested in Issue 198
+    // Further options can be added, based upon discussion - MJB 08/01/15
+    if (this->selectionModel()->selectedRows().count() > 1)
+    {
+        d->contextMenu->clear();
+        d->contextMenu->addAction(d->removeAction);
+    }
+    else // single row behaviour
+    {
+        QModelIndex index = this->indexAt(point);
 
     d->contextMenu->clear();
     d->contextMenu->addAction(d->addPatientAction);
@@ -308,16 +317,29 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
         emit noPatientOrSeriesSelected();
         return;
     }
+
+    // If we're already holding down CTRL or SHIFT, change behaviour to not open but rather just select, so we can select multiple elements
+    Qt::KeyboardModifiers activeKeyboardModifiers = QApplication::keyboardModifiers();
+
+    if (activeKeyboardModifiers & (Qt::ControlModifier | Qt::ShiftModifier))
+    {
+        QVector<medDataIndex> test;
+        for (int i = 0; i < selected.size(); i++)
+        {
+            QModelIndex index = selected.indexes()[i];
+            medAbstractDatabaseItem* item = getItemFromIndex(index);
+
+            if (item)
+                test.push_back(item->dataIndex());
+
+        }
+        emit multipleEntriesSelected(test);
+        return;
+    }
         
     // so far we only allow single selection
     QModelIndex index = selected.indexes()[0];
-
-    medAbstractDatabaseItem *item = NULL;
-
-    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+    medAbstractDatabaseItem *item = getItemFromIndex(index);
 
     if (!item)
         return;
@@ -339,35 +361,48 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
         this->setExpanded(index, true);
         emit patientClicked(item->dataIndex());
     }
+
+}
+
+medAbstractDatabaseItem* medDatabaseView::getItemFromIndex(const QModelIndex& index)
+{
+    medAbstractDatabaseItem *item = NULL;
+
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+
+
+    return item;
 }
 
 /** Removes the currently selected item. */
 void medDatabaseView::onRemoveSelectedItemRequested( void )
 {
-    int reply = QMessageBox::question(this, tr("Remove item"),
+    const QString dialogueTitle = this->selectionModel()->selectedRows().count() > 1 ? tr("Remove items") : tr("Remove item");
+
+    int reply = QMessageBox::question(this, dialogueTitle,
             tr("Are you sure you want to continue?\n""This cannot be undone."),
             QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
 
     if( reply == QMessageBox::Yes )
     {
-        QModelIndexList indexes = this->selectedIndexes();
-        if(!indexes.count())
-            return;
-
-        QModelIndex index = indexes.at(0);
-
-        medAbstractDatabaseItem *item = NULL;
-
-        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
-            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-
-        if (item)
+        foreach(const QModelIndex& index, this->selectionModel()->selectedRows())
         {
-            // Copy the data index, because the data item may cease to be valid.
-            medDataIndex index = item->dataIndex();
-            medDataManager::instance()->removeData(index);
+            medAbstractDatabaseItem *item = NULL;
+            if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+                item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+
+            if (item)
+            {
+                // Copy the data index, because the data item may cease to be valid.
+                medDataIndex index = item->dataIndex();
+                medDataManager::instance()->removeData(index);
+            }
         }
     }
+
 }
 
 /** Saves the currently selected item. */

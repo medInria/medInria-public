@@ -223,6 +223,11 @@ void medActionsToolBox::noPatientOrSeriesSelected()
     updateButtons("None");
 }
 
+void medActionsToolBox::multipleEntriesSelected(const QVector<medDataIndex> &selectedIndexes)
+{
+    updateButtons("Multiple Select");
+}
+
 /**
 * Slot to call when items representing files and/or folders have been selected.
 * The appropriate buttons will appear in the toolbox.
@@ -320,4 +325,6 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions.insert("Files & Folders", "Index");
     d->itemToActions.insert("Files & Folders", "Load");
     d->itemToActions.insert("Files & Folders", "View");
+
+    d->itemToActions.insert("Multiple Select", "Remove");
 }
