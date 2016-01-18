@@ -40,7 +40,21 @@ namespace morphomathOperation
             return _private::factory;
         }
     }
+    namespace closingImage
+    {
+        namespace _private
+        {
+            medAbstractClosingImageProcessPresenterFactory factory;
+        }
+
+        medAbstractClosingImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
 }
+
+
 
 namespace maskImage
 {
@@ -118,7 +132,6 @@ namespace singleFilterOperation
 
         medAbstractGaussianFilterProcessPresenterFactory& presenterFactory()
         {
-            qDebug() << "GIEF!";
             return _private::factory;
         }
     }
