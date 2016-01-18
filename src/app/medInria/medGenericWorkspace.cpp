@@ -114,10 +114,10 @@ void medGenericWorkspace::setProcessType(int index)
     {
         case MorphoMath:
         {
-            QStringList plugins = medCore::morphomathOperation::openingImage::pluginFactory().keys();
+            QStringList plugins = medCore::morphomathOperation::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
-                medAbstractProcess *process = medCore::morphomathOperation::openingImage::pluginFactory().create(pluginKey);
+                medAbstractProcess *process = medCore::morphomathOperation::pluginFactory().create(pluginKey);
                 if (process)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
             }
@@ -220,9 +220,9 @@ void medGenericWorkspace::setProcessSelection(int index)
     {
         case MorphoMath:
         {
-            medAbstractOpeningImageProcess *process = medCore::morphomathOperation::openingImage::pluginFactory().create(pluginKey);
+            medAbstractMorphomathOperationProcess *process = medCore::morphomathOperation::pluginFactory().create(pluginKey);
             d->process = process;
-            d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(process);
+            d->presenter = medWidgets::morphomathOperation::presenterFactory().create(process);
 
             break;
         }
