@@ -63,6 +63,8 @@ public:
     virtual QList<medAbstractNavigator*> navigators();
     virtual QList<medAbstractInteractor*> interactors();
 
+    virtual void open(medAbstractData * data) = 0;
+
     medDoubleParameter* zoomParameter();
     medAbstractVector2DParameter* panParameter();
 

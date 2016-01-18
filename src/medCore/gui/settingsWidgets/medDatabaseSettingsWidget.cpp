@@ -69,12 +69,6 @@ void medDatabaseSettingsWidget::selectDbDirectory()
      }
 }
 
-/**
- * @brief Performs the validation of each control inside the widget.
- *
- * @param void
- * @return true is the validation is successful, false otherwise.
-*/
 bool medDatabaseSettingsWidget::validate()
 {
     return true;

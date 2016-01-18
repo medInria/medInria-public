@@ -47,6 +47,7 @@ public:
     QList<medAbstractView*> viewsInTab(int index = 0);
     QList<medViewContainer*> containersInTab(int index = 0);
 
+    void open(medAbstractData * data, bool newTab = false);
     medAbstractWorkspace * owningWorkspace() const;
 
 public slots:

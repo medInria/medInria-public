@@ -27,13 +27,13 @@ class MEDCORE_EXPORT medDropSite : public QLabel
 
 public:
      medDropSite(QWidget *parent = 0);
-    ~medDropSite();
-
-    QSize sizeHint() const;
+    virtual ~medDropSite();
 
     void setCanAutomaticallyChangeAppereance(bool can);
 
-public:
+    void setAcceptedTypes(const QStringList & types);
+    QStringList acceptedTypes() const;
+
     medDataIndex index() const;
 
 public slots:
@@ -55,7 +55,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-    void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent* event);
     
 private:

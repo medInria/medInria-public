@@ -66,6 +66,11 @@ medAbstractLayeredView::~medAbstractLayeredView()
     delete d;
 }
 
+void medAbstractLayeredView::open(medAbstractData *data)
+{
+    this->addLayer(data);
+}
+
 void medAbstractLayeredView::removeInteractors(medAbstractData *data)
 {
     medAbstractLayeredViewInteractor* pInteractor = d->primaryInteractorsHash.take(data);

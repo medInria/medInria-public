@@ -29,11 +29,13 @@ public:
 medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent), d(new medToolBoxContainerPrivate)
 {
     d->container = new QFrame(this);
+    d->container->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
     d->container->setObjectName("medToolBoxContainer");
     d->layout = new QVBoxLayout(d->container);
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(0);
     d->layout->setSizeConstraint(QLayout::SetMinimumSize);
+
 
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
@@ -93,4 +95,16 @@ void medToolBoxContainer::clear()
 QList<medToolBox*> medToolBoxContainer::toolBoxes(void) const
 {
     return d->toolboxes;
+}
+
+
+void medToolBoxContainer::showEvent(QShowEvent *e)
+{
+    int minWidth = 0;
+    foreach(medToolBox * tb, d->toolboxes) {
+        if (tb->sizeHint().width()+20 > minWidth)
+            minWidth = tb->sizeHint().width() + 20; // hack for aboutplugin icons and spacing
+    }
+    qDebug() << minWidth;
+    setMinimumWidth(minWidth);
 }

@@ -38,6 +38,8 @@ public:
     medAbstractLayeredView(QObject * parent = 0);
     virtual ~medAbstractLayeredView();
 
+    virtual void open(medAbstractData * data);
+
     virtual void addLayer(medAbstractData *data);
     virtual void removeData(medAbstractData *data);
     void removeLayer(unsigned int layer);

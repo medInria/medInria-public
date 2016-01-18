@@ -630,7 +630,6 @@ QProgressBar::chunk
     background-color: $PROGRESS_BAR_COLOR;
 }
 
-
 /*******************************************************************************
      QStatusBar
  *******************************************************************************/
@@ -865,14 +864,15 @@ QGroupBox::title
     subcontrol-position: top center;
     color: $GROUP_BOX_COLOR;
     font-size: $GROUP_BOX_FONTSIZE;
+    margin-top: -5px;
 }
 
-QGroupBox::indicator::checked
+.QGroupBox::indicator::checked
 {
     image: url(:/pixmaps/checkbox-checked.png);
 }
 
-QGroupBox::indicator::unchecked
+.QGroupBox::indicator::unchecked
 {
     image: url(:/pixmaps/checkbox.png);
 }

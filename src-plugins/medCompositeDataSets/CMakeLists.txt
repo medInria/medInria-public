@@ -89,8 +89,6 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   medGui
 )
-#not useful if plugin in the medInria-plugins directory
-dtk_build_doc(medCompositeDataSetsPlugin)
 
 #add_executable(test test.C)
 #target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkLog dtkZip medCore)
