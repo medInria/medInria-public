@@ -28,6 +28,16 @@ namespace pluginManager
 }
 namespace morphomathOperation
 {
+    namespace _private
+    {
+        medAbstractMorphomathOperationProcessPresenterFactory factory;
+    }
+
+    medAbstractMorphomathOperationProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+
     namespace openingImage
     {
         namespace _private

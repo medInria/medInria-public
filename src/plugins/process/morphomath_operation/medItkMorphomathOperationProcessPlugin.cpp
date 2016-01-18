@@ -21,25 +21,33 @@
 #include <medItkDilateImageProcess.h>
 #include <medItkErodeImageProcess.h>
 
+#include <medAbstractMorphomathOperationProcessPresenter.h>
+
 #include <medItkOpeningImageProcessPresenter.h>
 #include <medItkClosingImageProcessPresenter.h>
 
 void medItkMorphomathOperationProcessPlugin::initialize(void)
 {
-    medCore::morphomathOperation::openingImage::pluginFactory().record(medItkOpeningImageProcess::staticMetaObject.className()
+    medCore::morphomathOperation::pluginFactory().record(medItkOpeningImageProcess::staticMetaObject.className()
                                                                      , medItkOpeningImageProcessCreator);
-    medCore::morphomathOperation::closingImage::pluginFactory().record(medItkClosingImageProcess::staticMetaObject.className()
+    medCore::morphomathOperation::pluginFactory().record(medItkClosingImageProcess::staticMetaObject.className()
                                                                           , medItkClosingImageProcessCreator);
-    medCore::morphomathOperation::dilateImage::pluginFactory().record(medItkDilateImageProcess::staticMetaObject.className()
+    medCore::morphomathOperation::pluginFactory().record(medItkDilateImageProcess::staticMetaObject.className()
                                                                           , medItkDilateImageProcessCreator);
-    medCore::morphomathOperation::erodeImage::pluginFactory().record(medItkErodeImageProcess::staticMetaObject.className()
+    medCore::morphomathOperation::pluginFactory().record(medItkErodeImageProcess::staticMetaObject.className()
                                                                         , medItkErodeImageProcessCreator);
 
-    medWidgets::morphomathOperation::openingImage::presenterFactory().record(medItkOpeningImageProcess::staticMetaObject.className()
+    medWidgets::morphomathOperation::presenterFactory().record(medItkOpeningImageProcess::staticMetaObject.className()
                                                                              , medItkOpeningImageProcessPresenterCreator);
 
-    medWidgets::morphomathOperation::closingImage::presenterFactory().record(medItkClosingImageProcess::staticMetaObject.className()
+    medWidgets::morphomathOperation::presenterFactory().record(medItkClosingImageProcess::staticMetaObject.className()
                                                                              , medItkClosingImageProcessPresenterCreator);
+
+    medWidgets::morphomathOperation::presenterFactory().record(medItkDilateImageProcess::staticMetaObject.className()
+                                                                             , medAbstractMorphomathOperationProcessPresenterCreator);
+
+    medWidgets::morphomathOperation::presenterFactory().record(medItkErodeImageProcess::staticMetaObject.className()
+                                                                             , medAbstractMorphomathOperationProcessPresenterCreator);
 
 
 }

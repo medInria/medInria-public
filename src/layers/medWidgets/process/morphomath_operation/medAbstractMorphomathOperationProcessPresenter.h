@@ -14,6 +14,7 @@
 #pragma once
 
 #include <medAbstractProcessPresenter.h>
+#include <medProcessPresenterFactory.h>
 #include <medAbstractMorphomathOperationProcess.h>
 
 #include <medWidgetsExport.h>
@@ -36,6 +37,8 @@ public:
     virtual QWidget *buildToolBoxWidget();
     virtual medViewContainerSplitter *buildViewContainerSplitter();
 
+    virtual medAbstractMorphomathOperationProcess* process() const;
+
     const QScopedPointer<medAbstractMorphomathOperationProcessPresenterPrivate> d;
 
 private slots:
@@ -46,4 +49,5 @@ private slots:
 signals:
     void _outputImported(medAbstractData *);
 };
-
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractMorphomathOperationProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_CREATOR(medAbstractMorphomathOperationProcess, medAbstractMorphomathOperationProcess)
