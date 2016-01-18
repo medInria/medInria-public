@@ -3,6 +3,7 @@
 #include <medProcessPresenterFactory.h>
 #include <medAbstractMorphomathOperationProcessPresenter.h>
 #include <medAbstractOpeningImageProcessPresenter.h>
+#include <medAbstractClosingImageProcessPresenter.h>
 #include <medAbstractMaskImageProcessPresenter.h>
 #include <medAbstractDWIMaskingProcessPresenter.h>
 #include <medAbstractDiffusionModelEstimationProcessPresenter.h>
@@ -37,11 +38,12 @@ namespace medWidgets
         {
             MEDWIDGETS_EXPORT medAbstractOpeningImageProcessPresenterFactory& presenterFactory();
         }
-//        namespace closingImage
-//        {
-//            MEDWIDGETS_EXPORT medAbstractClosingImageProcessPresenterFactory& presenterFactory();
-//        }
+        namespace closingImage
+        {
+            MEDWIDGETS_EXPORT medAbstractClosingImageProcessPresenterFactory& presenterFactory();
+        }
     }
+
 
     namespace singleFilterOperation
     {

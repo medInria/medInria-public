@@ -68,7 +68,7 @@ medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceL
     d->processTypeComboBox->addItem("Diffusion model estimation");
     d->processTypeComboBox->addItem("Diffusion scalar maps");
     d->processTypeComboBox->addItem("Tractography");
-    d->processTypeComboBox->addItem("Gaussian filter");
+    d->processTypeComboBox->addItem("Single Filter");
     processTypeWidget->setLayout(processTypeLayout);
 
     connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),
@@ -196,7 +196,7 @@ void medGenericWorkspace::setProcessType(int index)
             break;
         }
 
-        case GaussianFilter:
+        case SingleFilter:
         default:
         {
             QStringList plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
@@ -279,7 +279,7 @@ void medGenericWorkspace::setProcessSelection(int index)
             break;
         }
 
-        case GaussianFilter:
+        case SingleFilter:
         default:
         {
             medAbstractGaussianFilterProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
