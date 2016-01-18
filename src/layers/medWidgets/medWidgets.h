@@ -23,6 +23,7 @@ namespace medWidgets
     }
     namespace morphomathOperation
     {
+        MEDWIDGETS_EXPORT medAbstractMorphomathOperationProcessPresenterFactory& presenterFactory();
 //        MEDWIDGETS_EXPORT medAbstractMorphomathOperationProcessPluginManager& pluginManager(void);
 //        MEDWIDGETS_EXPORT void initialize(const QString& path, bool verbose = true);
 

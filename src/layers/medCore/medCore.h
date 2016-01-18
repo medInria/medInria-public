@@ -111,6 +111,7 @@ namespace medCore
     namespace morphomathOperation
     {
         MEDCORE_EXPORT medAbstractMorphomathOperationProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT medAbstractMorphomathOperationProcessPluginFactory& pluginFactory(void);
         MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
         namespace erodeImage
