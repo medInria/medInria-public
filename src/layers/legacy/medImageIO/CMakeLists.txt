@@ -88,6 +88,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOStimulate
   ITKIOMRC
   ITKIOTIFF
+  ${ITKIOPhilipsREC_LIBRARIES}
   ${DCMTK_LIBRARIES}
   )
 
