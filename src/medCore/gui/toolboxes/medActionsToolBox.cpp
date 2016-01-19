@@ -282,6 +282,7 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions = QMultiMap<QString, QString>();
 
     d->itemToActions.insert("Patient", "Remove");
+    d->itemToActions.insert("Patient", "Export");
     d->itemToActions.insert("Patient", "New Patient");
     d->itemToActions.insert("Patient", "New Study");
     d->itemToActions.insert("Patient", "Edit");
