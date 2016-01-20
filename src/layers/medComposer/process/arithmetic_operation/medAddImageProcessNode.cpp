@@ -17,7 +17,7 @@
 
 medAddImageProcessNode::medAddImageProcessNode()
 {
-    this->setFactory(medCore::arithmeticalOperation::addImage::pluginFactory());
+    this->setFactory(medCore::arithmeticOperation::addImage::pluginFactory());
 }
 
 
