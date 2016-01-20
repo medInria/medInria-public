@@ -17,7 +17,7 @@
 
 medSubtractImageProcessNode::medSubtractImageProcessNode()
 {
-    this->setFactory(medCore::arithmeticalOperation::subtractImage::pluginFactory());
+    this->setFactory(medCore::arithmeticOperation::subtractImage::pluginFactory());
 }
 
 

@@ -63,6 +63,7 @@ medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceL
     d->processTypeComboBox->addItem("Diffusion scalar maps");
     d->processTypeComboBox->addItem("Tractography");
     d->processTypeComboBox->addItem("Single Filter");
+    d->processTypeComboBox->addItem("Arithmetic");
     processTypeWidget->setLayout(processTypeLayout);
 
     connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),
@@ -191,12 +192,24 @@ void medGenericWorkspace::setProcessType(int index)
         }
 
         case SingleFilter:
-        default:
         {
             QStringList plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
+                if (process)
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+            }
+
+            break;
+        }
+        case Arithmetic:
+        default:
+        {
+            QStringList plugins = medCore::arithmeticOperation::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::arithmeticOperation::pluginFactory().create(pluginKey);
                 if (process)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
             }
@@ -273,11 +286,19 @@ void medGenericWorkspace::setProcessSelection(int index)
         }
 
         case SingleFilter:
-        default:
         {
             medAbstractGaussianFilterProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
             d->process = process;
             d->presenter = medWidgets::singleFilterOperation::gaussianFilter::presenterFactory().create(process);
+
+            break;
+        }
+        case Arithmetic:
+        default:
+        {
+            medAbstractArithmeticOperationProcess *process = medCore::arithmeticOperation::pluginFactory().create(pluginKey);
+            d->process = process;
+            d->presenter = medWidgets::arithmeticOperation::presenterFactory().create(process);
 
             break;
         }

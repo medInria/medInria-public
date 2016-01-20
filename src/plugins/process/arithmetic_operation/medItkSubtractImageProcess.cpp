@@ -38,7 +38,7 @@ medItkSubtractImageProcess::~medItkSubtractImageProcess()
 
 QString medItkSubtractImageProcess::caption() const
 {
-    return "Itk add images process";
+    return "Itk subtract images process";
 }
 
 QString medItkSubtractImageProcess::description() const
@@ -128,7 +128,7 @@ medAbstractJob::medJobExitStatus medItkSubtractImageProcess::_run()
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
-        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
+        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input1()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
         return medAbstractJob::MED_JOB_EXIT_SUCCESS;

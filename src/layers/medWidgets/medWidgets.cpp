@@ -64,6 +64,19 @@ namespace morphomathOperation
     }
 }
 
+namespace arithmeticOperation
+{
+    namespace _private
+    {
+        medAbstractArithmeticOperationProcessPresenterFactory factory;
+    }
+
+    medAbstractArithmeticOperationProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
 
 
 namespace maskImage
