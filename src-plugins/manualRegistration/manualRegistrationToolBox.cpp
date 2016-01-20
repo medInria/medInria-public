@@ -33,6 +33,7 @@ PURPOSE.
 #include <medCompositeParameter.h>
 #include <medMessageController.h>
 #include <medUtilities.h>
+#include <medRegistrationSelectorToolBox.h>
 
 class manualRegistrationToolBoxPrivate
 {
@@ -70,17 +71,14 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container : 0",widget);
 
     d->b_computeRegistration = new QPushButton("Compute Registration",widget);
-    d->b_computeRegistration->hide();
     connect(d->b_computeRegistration,SIGNAL(clicked()),this,SLOT(computeRegistration()));
     d->b_computeRegistration->setObjectName("computeRegistrationButton");
 
     d->b_reset = new QPushButton("Reset",widget);
-    d->b_reset->hide();
     d->b_reset->setObjectName("resetButton");
     connect(d->b_reset,SIGNAL(clicked()),this,SLOT(reset()));
 
     d->b_save = new QPushButton("Save",widget);
-    d->b_save->hide();
     d->b_save->setObjectName("saveButton");
     connect(d->b_save,SIGNAL(clicked()),this,SLOT(save()));
 
@@ -109,6 +107,8 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->bottomContainer = 0;
     d->controller      = 0;
     d->output          = 0;
+
+    displayButtons(false);
 }
 
 manualRegistrationToolBox::~manualRegistrationToolBox()
@@ -118,8 +118,6 @@ manualRegistrationToolBox::~manualRegistrationToolBox()
     d->leftContainer   = 0;
     d->rightContainer  = 0;
     d->bottomContainer = 0;
-//    if (d->controller)
-//        d->controller->Delete();
     d->controller      = 0;
     d->output          = 0;
 
@@ -190,93 +188,26 @@ void manualRegistrationToolBox::startManualRegistration()
         return;
     }
     medTabbedViewContainers * tabContainers = getWorkspace()->stackedViewContainers();
-    d->b_startManualRegistration->setText("Stop Manual Registration");
     d->regOn = true;
 
     if(this->parentToolBox()) //parentTbx only set in medRegistrationSelectorToolBox::changeCurrentToolBox
     {
+        dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
+        dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
+
+        if (!fixedData || !movingData)
+        {
+            d->regOn = false;
+            return;
+        }
+
         d->leftContainer = tabContainers->containersInTab(0).at(0);
         d->rightContainer = tabContainers->containersInTab(0).at(1);
         d->bottomContainer  = tabContainers->containersInTab(1).at(0);
     }
-    else
+    else // not in Reg. workspace
     {
-        if (d->currentView && getWorkspace())
-        {
-            if (d->currentView->layersCount()<2)
-            {
-                return;
-            }
-
-            medCompositeParameter * windowingParameter0 = qobject_cast<medAbstractImageView*>(d->currentView)->windowLevelParameter(0);
-            QHash<QString, QVariant> windowing0;
-            windowing0.insert("Level", windowingParameter0->value("Level"));
-            windowing0.insert("Window", windowingParameter0->value("Window"));
-
-            medCompositeParameter * windowingParameter1 = qobject_cast<medAbstractImageView*>(d->currentView)->windowLevelParameter(1);
-            QHash<QString, QVariant> windowing1;
-            windowing1.insert("Level", windowingParameter1->value("Level"));
-            windowing1.insert("Window", windowingParameter1->value("Window"));
-
-            tabContainers->setAcceptDrops(false);
-
-            // deselect container before going to reformat mode, otherwise problem !
-            foreach(QUuid u,tabContainers->containersSelected())
-                foreach(medViewContainer * cont,tabContainers->containersInTab(tabContainers->currentIndex()))
-                    if (u == cont->uuid())
-                        cont->setSelected(false);
-
-            d->leftContainer = tabContainers->insertContainerInTab(0,"ManualRegistration");
-            tabContainers->setCurrentIndex(0);
-            d->leftContainer->addData(d->currentView->layerData(0));//
-            qobject_cast<medAbstractImageView*>(d->leftContainer->view())->windowLevelParameter(0)->setValues(windowing0);
-            d->bottomContainer = d->leftContainer->splitHorizontally();
-            d->bottomContainer->addData(d->currentView->layerData(0));
-            qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(0)->setValues(windowing0);
-            d->bottomContainer->addData(d->currentView->layerData(1));
-            qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(1)->setValues(windowing1);
-            tabContainers->containersInTab(0);
-            d->rightContainer = d->leftContainer->splitVertically();
-            d->rightContainer->addData(d->currentView->layerData(1));
-            qobject_cast<medAbstractImageView*>(d->rightContainer->view())->windowLevelParameter(0)->setValues(windowing1);
-
-            //The Fuse view is the view where you see you the 2 volumes which should be registered.
-            //By setting one volume's LUT to "Hot Metal", we more easily can differentiate both volumes
-            //and then evaluate the registration.
-            QList<medAbstractInteractor*> interactors =
-                    qobject_cast<medAbstractImageView*>(d->rightContainer->view())->layerInteractors(0);
-            for(int i=0; i<interactors.size(); i++)
-            {
-                if (interactors[i]->identifier() == "medVtkViewItkDataImageInteractor")
-                {
-                    QList<medAbstractParameter*> parameters = interactors[i]->linkableParameters();
-                    for(int j = 0;j<parameters.size();j++)
-                        if (parameters[j]->name()=="Lut")
-                            qobject_cast<medStringListParameter*>(parameters[j])->setValue("Hot Metal");
-                }
-            }
-
-            tabContainers->lockTabs();
-
-            d->viewGroup->addImpactedView(d->rightContainer->view());
-            d->viewGroup->addImpactedView(d->leftContainer->view());
-            d->viewGroup->addImpactedView(d->bottomContainer->view());
-            d->viewGroup->setLinkAllParameters(true);
-            d->viewGroup->removeParameter("Position");
-            d->viewGroup->removeParameter("DataList");
-
-            d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(0));
-            d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view()), d->currentView->layerData(0));
-            d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(1));
-            d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view()), d->currentView->layerData(1));
-
-            d->leftContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-            d->rightContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-            d->bottomContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-            d->currentView = 0; // we dont need it anymore.
-
-            synchroniseMovingFuseView();
-        }
+        constructContainers(tabContainers);
     }
 
     d->controller = manualRegistrationLandmarkController::New();
@@ -292,9 +223,8 @@ void manualRegistrationToolBox::startManualRegistration()
     interactorcollection->Delete();
     d->controller->SetEnabled(1);
 
-    d->b_reset->show();
-    d->b_computeRegistration->show();
-    d->b_save->show();
+    displayButtons(true);
+    d->b_startManualRegistration->setText("Stop Manual Registration");
 }
 
 void manualRegistrationToolBox::stopManualRegistration()
@@ -304,16 +234,14 @@ void manualRegistrationToolBox::stopManualRegistration()
     d->controller->Delete();
     d->controller      = 0;
     d->output          = 0;
-    d->b_reset->hide();
-    d->b_computeRegistration->hide();
-    d->b_save->hide();
+    d->leftContainer   = 0;
+    d->rightContainer  = 0;
+    d->bottomContainer = 0;
+    displayButtons(false);
 
     if(!this->parentToolBox())
     {
         medTabbedViewContainers * tabContainers = getWorkspace()->stackedViewContainers();
-        d->leftContainer   = 0;
-        d->rightContainer  = 0;
-        d->bottomContainer = 0;
         tabContainers->setCurrentIndex(0);
         tabContainers->closeCurrentTab();
     }
@@ -321,6 +249,11 @@ void manualRegistrationToolBox::stopManualRegistration()
 
 void manualRegistrationToolBox::synchroniseMovingFuseView()
 {
+    if(this->parentToolBox()) //no need in Reg. workspace
+    {
+       return;
+    }
+
     // This method will resynchronise the lut and window level
     medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
     medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
@@ -377,7 +310,10 @@ void manualRegistrationToolBox::computeRegistration()
 
     medAbstractData * newOutput = d->controller->GetOutput();
 
-    if(!newOutput) return;
+    if(!newOutput)
+    {
+        return;
+    }
 
     d->output = newOutput;
 
@@ -385,10 +321,8 @@ void manualRegistrationToolBox::computeRegistration()
 
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->removeLayer(1);
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
-    if(!this->parentToolBox())
-    {
-        synchroniseMovingFuseView();
-    }
+    synchroniseMovingFuseView();
+
 }
 
 void manualRegistrationToolBox::reset()
@@ -409,6 +343,103 @@ void manualRegistrationToolBox::save()
         medDataManager::instance()->importData(d->output, false);
     }
 }
+
+void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * tabContainers)
+{
+    if (d->currentView && getWorkspace())
+    {
+        if (d->currentView->layersCount()<2)
+        {
+            return;
+        }
+
+        medCompositeParameter * windowingParameter0 = qobject_cast<medAbstractImageView*>(d->currentView)->windowLevelParameter(0);
+        QHash<QString, QVariant> windowing0;
+        windowing0.insert("Level", windowingParameter0->value("Level"));
+        windowing0.insert("Window", windowingParameter0->value("Window"));
+
+        medCompositeParameter * windowingParameter1 = qobject_cast<medAbstractImageView*>(d->currentView)->windowLevelParameter(1);
+        QHash<QString, QVariant> windowing1;
+        windowing1.insert("Level", windowingParameter1->value("Level"));
+        windowing1.insert("Window", windowingParameter1->value("Window"));
+
+        tabContainers->setAcceptDrops(false);
+
+        // deselect container before going to reformat mode, otherwise problem !
+        foreach(QUuid u,tabContainers->containersSelected())
+            foreach(medViewContainer * cont,tabContainers->containersInTab(tabContainers->currentIndex()))
+                if (u == cont->uuid())
+                    cont->setSelected(false);
+
+        d->leftContainer = tabContainers->insertContainerInTab(0,"ManualRegistration");
+        tabContainers->setCurrentIndex(0);
+        d->leftContainer->addData(d->currentView->layerData(0));//
+        qobject_cast<medAbstractImageView*>(d->leftContainer->view())->windowLevelParameter(0)->setValues(windowing0);
+        d->bottomContainer = d->leftContainer->splitHorizontally();
+        d->bottomContainer->addData(d->currentView->layerData(0));
+        qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(0)->setValues(windowing0);
+        d->bottomContainer->addData(d->currentView->layerData(1));
+        qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(1)->setValues(windowing1);
+        tabContainers->containersInTab(0);
+        d->rightContainer = d->leftContainer->splitVertically();
+        d->rightContainer->addData(d->currentView->layerData(1));
+        qobject_cast<medAbstractImageView*>(d->rightContainer->view())->windowLevelParameter(0)->setValues(windowing1);
+
+        //The Fuse view is the view where you see you the 2 volumes which should be registered.
+        //By setting one volume's LUT to "Hot Metal", we more easily can differentiate both volumes
+        //and then evaluate the registration.
+        QList<medAbstractInteractor*> interactors =
+                qobject_cast<medAbstractImageView*>(d->rightContainer->view())->layerInteractors(0);
+        for(int i=0; i<interactors.size(); i++)
+        {
+            if (interactors[i]->identifier() == "medVtkViewItkDataImageInteractor")
+            {
+                QList<medAbstractParameter*> parameters = interactors[i]->linkableParameters();
+                for(int j = 0;j<parameters.size();j++)
+                    if (parameters[j]->name()=="Lut")
+                        qobject_cast<medStringListParameter*>(parameters[j])->setValue("Hot Metal");
+            }
+        }
+
+        tabContainers->lockTabs();
+
+        d->viewGroup->addImpactedView(d->rightContainer->view());
+        d->viewGroup->addImpactedView(d->leftContainer->view());
+        d->viewGroup->addImpactedView(d->bottomContainer->view());
+        d->viewGroup->setLinkAllParameters(true);
+        d->viewGroup->removeParameter("Position");
+        d->viewGroup->removeParameter("DataList");
+
+        d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(0));
+        d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view()), d->currentView->layerData(0));
+        d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(1));
+        d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view()), d->currentView->layerData(1));
+
+        d->leftContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+        d->rightContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+        d->bottomContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+        d->currentView = 0; // we dont need it anymore.
+
+        synchroniseMovingFuseView();
+    }
+}
+
+void manualRegistrationToolBox::displayButtons(bool show)
+{
+    if(show)
+    {
+        d->b_reset->show();
+        d->b_computeRegistration->show();
+        d->b_save->show();
+    }
+    else
+    {
+        d->b_reset->hide();
+        d->b_computeRegistration->hide();
+        d->b_save->hide();
+    }
+}
+
 
 void manualRegistrationToolBox::updateLabels(int left,int right)
 {
