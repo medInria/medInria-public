@@ -36,3 +36,6 @@ public:
 private:
     const QScopedPointer<medAbstractSingleFilterOperationDoubleProcessPrivate> d;
 };
+
+DTK_DECLARE_PLUGIN        (medAbstractSingleFilterOperationDoubleProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_MANAGER(medAbstractSingleFilterOperationDoubleProcess, MEDCORE_EXPORT)

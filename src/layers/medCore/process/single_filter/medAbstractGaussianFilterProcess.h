@@ -13,17 +13,17 @@
 
 #pragma once
 
-#include <medAbstractSingleFilterOperationProcess.h>
+#include <medAbstractSingleFilterOperationDoubleProcess.h>
 
 #include <dtkCore>
 
 #include <medCoreExport.h>
 
-class MEDCORE_EXPORT medAbstractGaussianFilterProcess: public medAbstractSingleFilterOperationProcess
+class MEDCORE_EXPORT medAbstractGaussianFilterProcess: public medAbstractSingleFilterOperationDoubleProcess
 {
     Q_OBJECT
 public:
-    medAbstractGaussianFilterProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent) {}
+    medAbstractGaussianFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractGaussianFilterProcess, MEDCORE_EXPORT)

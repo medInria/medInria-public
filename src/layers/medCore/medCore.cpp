@@ -25,7 +25,7 @@ namespace pluginManager
             if(realpath.isEmpty())
                 break;
 
-            medCore::arithmeticalOperation::initialize(realpath, verbose);
+            medCore::arithmeticOperation::initialize(realpath, verbose);
             medCore::dwiMasking::initialize(realpath, verbose);
             medCore::diffusionModelEstimation::initialize(realpath, verbose);
             medCore::diffusionScalarMaps::initialize(realpath, verbose);
@@ -37,18 +37,25 @@ namespace pluginManager
     }
 }
 
-// arithmetic
-namespace arithmeticalOperation
+// arithimetic
+namespace arithmeticOperation
 {
     namespace _private
     {
         medAbstractArithmeticOperationProcessPluginManager manager;
+        medAbstractArithmeticOperationProcessPluginFactory factory;
     }
 
     medAbstractArithmeticOperationProcessPluginManager& pluginManager(void)
     {
         return _private::manager;
     }
+
+    medAbstractArithmeticOperationProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+
     void initialize(const QString& path, bool verbose)
     {
         pluginManager().setVerboseLoading(verbose);

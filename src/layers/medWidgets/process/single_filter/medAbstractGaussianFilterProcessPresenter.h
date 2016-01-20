@@ -13,18 +13,18 @@
 
 #pragma once
 
-#include <medAbstractSingleFilterOperationProcessPresenter.h>
+#include <medAbstractSingleFilterOperationDoubleProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
 #include <medAbstractGaussianFilterProcess.h>
 
 #include <medWidgetsExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractGaussianFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
+class MEDWIDGETS_EXPORT medAbstractGaussianFilterProcessPresenter: public medAbstractSingleFilterOperationDoubleProcessPresenter
 {
     Q_OBJECT
 public:
-    medAbstractGaussianFilterProcessPresenter(medAbstractSingleFilterOperationProcess *parent)
-        : medAbstractSingleFilterOperationProcessPresenter(parent)
+    medAbstractGaussianFilterProcessPresenter(medAbstractSingleFilterOperationDoubleProcess *parent)
+        : medAbstractSingleFilterOperationDoubleProcessPresenter(parent)
     {}
     virtual medAbstractGaussianFilterProcess* process() const = 0;
 };
