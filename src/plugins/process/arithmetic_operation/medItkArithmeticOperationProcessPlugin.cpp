@@ -19,16 +19,28 @@
 #include <medItkMultiplyImageProcess.h>
 #include <medItkDivideImageProcess.h>
 
+#include <medWidgets.h>
+#include <medAbstractArithmeticOperationProcessPresenter.h>
+
 void medItkArithmeticOperationProcessPlugin::initialize(void)
 {
-    medCore::arithmeticalOperation::addImage::pluginFactory().record(medItkAddImageProcess::staticMetaObject.className()
+    medCore::arithmeticOperation::pluginFactory().record(medItkAddImageProcess::staticMetaObject.className()
                                                                      , medItkAddImageProcessCreator);
-    medCore::arithmeticalOperation::subtractImage::pluginFactory().record(medItkSubtractImageProcess::staticMetaObject.className()
+    medCore::arithmeticOperation::pluginFactory().record(medItkSubtractImageProcess::staticMetaObject.className()
                                                                           , medItkSubtractImageProcessCreator);
-    medCore::arithmeticalOperation::multiplyImage::pluginFactory().record(medItkMultiplyImageProcess::staticMetaObject.className()
+    medCore::arithmeticOperation::pluginFactory().record(medItkMultiplyImageProcess::staticMetaObject.className()
                                                                           , medItkMultiplyImageProcessCreator);
-    medCore::arithmeticalOperation::divideImage::pluginFactory().record(medItkDivideImageProcess::staticMetaObject.className()
+    medCore::arithmeticOperation::pluginFactory().record(medItkDivideImageProcess::staticMetaObject.className()
                                                                         , medItkDivideImageProcessCreator);
+
+    medWidgets::arithmeticOperation::presenterFactory().record(medItkAddImageProcess::staticMetaObject.className()
+                                                               , medAbstractArithmeticOperationProcessPresenterCreator);
+    medWidgets::arithmeticOperation::presenterFactory().record(medItkSubtractImageProcess::staticMetaObject.className()
+                                                               , medAbstractArithmeticOperationProcessPresenterCreator);
+    medWidgets::arithmeticOperation::presenterFactory().record(medItkMultiplyImageProcess::staticMetaObject.className()
+                                                               , medAbstractArithmeticOperationProcessPresenterCreator);
+    medWidgets::arithmeticOperation::presenterFactory().record(medItkDivideImageProcess::staticMetaObject.className()
+                                                               , medAbstractArithmeticOperationProcessPresenterCreator);
 }
 
 void medItkArithmeticOperationProcessPlugin::uninitialize(void)

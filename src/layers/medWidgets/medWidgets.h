@@ -2,6 +2,7 @@
 
 #include <medProcessPresenterFactory.h>
 #include <medAbstractMorphomathOperationProcessPresenter.h>
+#include <medAbstractArithmeticOperationProcessPresenter.h>
 #include <medAbstractOpeningImageProcessPresenter.h>
 #include <medAbstractClosingImageProcessPresenter.h>
 #include <medAbstractMaskImageProcessPresenter.h>
@@ -43,6 +44,11 @@ namespace medWidgets
         {
             MEDWIDGETS_EXPORT medAbstractClosingImageProcessPresenterFactory& presenterFactory();
         }
+    }
+
+    namespace arithmeticOperation
+    {
+        MEDWIDGETS_EXPORT medAbstractArithmeticOperationProcessPresenterFactory& presenterFactory();
     }
 
 

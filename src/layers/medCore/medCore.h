@@ -46,9 +46,10 @@ namespace medCore
         MEDCORE_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
     }
 
-    namespace arithmeticalOperation
+    namespace arithmeticOperation
     {
         MEDCORE_EXPORT medAbstractArithmeticOperationProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT medAbstractArithmeticOperationProcessPluginFactory& pluginFactory(void);
         MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
         namespace addImage

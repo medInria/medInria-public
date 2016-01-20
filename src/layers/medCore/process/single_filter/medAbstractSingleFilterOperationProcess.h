@@ -36,8 +36,6 @@ public:
 
     medAbstractImageData* output() const;
 
-    virtual medDoubleParameter* sigma() const;
-
 protected:
     void setOutput(medAbstractImageData* data);
 

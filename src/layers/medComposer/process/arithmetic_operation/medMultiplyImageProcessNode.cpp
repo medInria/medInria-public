@@ -17,7 +17,7 @@
 
 medMultiplyImageProcessNode::medMultiplyImageProcessNode()
 {
-    this->setFactory(medCore::arithmeticalOperation::multiplyImage::pluginFactory());
+    this->setFactory(medCore::arithmeticOperation::multiplyImage::pluginFactory());
 }
 
 

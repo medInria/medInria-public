@@ -47,3 +47,4 @@ private:
 
 DTK_DECLARE_PLUGIN        (medAbstractArithmeticOperationProcess, MEDCORE_EXPORT)
 DTK_DECLARE_PLUGIN_MANAGER(medAbstractArithmeticOperationProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractArithmeticOperationProcess, MEDCORE_EXPORT)
