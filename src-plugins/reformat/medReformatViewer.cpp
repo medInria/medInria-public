@@ -223,6 +223,7 @@ medReformatViewer::medReformatViewer(medAbstractView * view,QWidget * parent): m
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceThicknessChangedEvent, cbk);
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResetCursorEvent, cbk);
         riw[i]->GetInteractorStyle()->AddObserver(vtkCommand::WindowLevelEvent, cbk);
+        riw[i]->GetInteractorStyle()->AddObserver(vtkCommand::MouseMoveEvent, cbk);
 
         // Make them all share the same color map.
         riw[i]->SetLookupTable(riw[2]->GetLookupTable());
