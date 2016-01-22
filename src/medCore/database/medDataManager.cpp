@@ -142,7 +142,7 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     Q_D(medDataManager);
     QUuid uuid = QUuid::createUuid();
     medAbstractDbController * controller = persistent ?  d->dbController : d->nonPersDbController;
-    controller->importPath(dataPath, uuid, indexWithoutCopying);
+    controller->importPath(dataPath.toUtf8(), uuid, indexWithoutCopying);
     return uuid;
 }
 /** @brief return writers able to handle the data *Memory management is the responsability of the caller*
@@ -222,7 +222,7 @@ void medDataManager::exportData(medAbstractData* data)
 
     if ( exportDialog->exec() ) {
         QString chosenFormat = typesHandled->itemData(typesHandled->currentIndex()).toString();
-        this->exportDataToPath(data, exportDialog->selectedFiles().first(), chosenFormat);
+        this->exportDataToPath(data, exportDialog->selectedFiles().first().toUtf8(), chosenFormat);
     }
 
     qDeleteAll(possibleWriters);
