@@ -37,7 +37,7 @@ medItkMedianProcess::~medItkMedianProcess()
 
 QString medItkMedianProcess::caption() const
 {
-    return "Median Filter process";
+    return "Gaussian Filter process";
 }
 
 QString medItkMedianProcess::description() const

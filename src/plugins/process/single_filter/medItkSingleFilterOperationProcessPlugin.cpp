@@ -27,10 +27,13 @@ void medItkSingleFilterOperationProcessPlugin::initialize(void)
 
     medWidgets::singleFilterOperation::gaussianFilter::presenterFactory().record(medItkGaussianProcess::staticMetaObject.className(),
                                                       medItkGaussianProcessPresenterCreator);
+
+}
+
 void medItkSingleFilterOperationProcessPlugin::uninitialize(void)
 {
 
 }
-DTK_DEFINE_PLUGIN(medItkGaussianProcess)
+DTK_DEFINE_PLUGIN(medItkSingleFilterPlugin)
 
 

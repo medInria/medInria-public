@@ -26,7 +26,7 @@
 
 
 medItkWindowingProcess::medItkWindowingProcess(QObject *parent)
-    : medAbstractWindowingFilterProcess(parent)
+    : medAbstractWindowingProcess(parent)
 
 {
     m_filter = NULL;
@@ -39,7 +39,7 @@ medItkWindowingProcess::~medItkWindowingProcess()
 
 QString medItkWindowingProcess::caption() const
 {
-    return "Windowing Filter process";
+    return "Gaussian Filter process";
 }
 
 QString medItkWindowingProcess::description() const

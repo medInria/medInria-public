@@ -22,7 +22,16 @@
 #include <medAbstractDivideImageProcess.h>
 
 #include <medAbstractSingleFilterOperationProcess.h>
+#include <medAbstractAddFilterProcess.h>
+#include <medAbstractDivideFilterProcess.h>
 #include <medAbstractGaussianFilterProcess.h>
+#include <medAbstractInvertFilterProcess.h>
+#include <medAbstractMedianFilterProcess.h>
+#include <medAbstractMultiplyFilterProcess.h>
+#include <medAbstractNormalizeFilterProcess.h>
+#include <medAbstractShrinkProcess.h>
+#include <medAbstractSubtractFilterProcess.h>
+#include <medAbstractWindowingProcess.h>
 
 #include <medAbstractMorphomathOperationProcess.h>
 #include <medAbstractErodeImageProcess.h>
@@ -75,9 +84,54 @@ namespace medCore
         MEDCORE_EXPORT medAbstractSingleFilterOperationProcessPluginManager& pluginManager(void);
         MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
 
+        namespace addFilter
+        {
+            MEDCORE_EXPORT medAbstractAddFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace divideFilter
+        {
+            MEDCORE_EXPORT medAbstractDivideFilterProcessPluginFactory& pluginFactory(void);
+        }
+
         namespace gaussianFilter
         {
             MEDCORE_EXPORT medAbstractGaussianFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace invertFilter
+        {
+            MEDCORE_EXPORT medAbstractInvertFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace medianFilter
+        {
+            MEDCORE_EXPORT medAbstractMedianFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace multiplyFilter
+        {
+            MEDCORE_EXPORT medAbstractMultiplyFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace normalizeFilter
+        {
+            MEDCORE_EXPORT medAbstractNormalizeFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace shrinkFilter
+        {
+            MEDCORE_EXPORT medAbstractShrinkProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace subtractFilter
+        {
+            MEDCORE_EXPORT medAbstractSubtractFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace windowingFilter
+        {
+            MEDCORE_EXPORT medAbstractWindowingProcessPluginFactory& pluginFactory(void);
         }
     }
 
