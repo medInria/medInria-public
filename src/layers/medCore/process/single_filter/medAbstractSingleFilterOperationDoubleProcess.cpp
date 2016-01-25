@@ -28,8 +28,8 @@ medAbstractSingleFilterOperationDoubleProcess::medAbstractSingleFilterOperationD
     d(new medAbstractSingleFilterOperationDoubleProcessPrivate)
 {
     d->sigma = new medDoubleParameter("sigma", this);
-    d->sigma->setCaption("Kernel radius");
-    d->sigma->setDescription("Set the radius in all directions of the kernel used as structuring element");
+    d->sigma->setCaption("CHANGE ME");
+    d->sigma->setDescription("CHANGE ME");
     d->sigma->setValue(1);
 }
 

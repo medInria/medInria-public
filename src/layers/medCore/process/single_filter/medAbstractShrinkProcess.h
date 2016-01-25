@@ -20,19 +20,23 @@
 #include <medCoreExport.h>
 
 class medAbstractImageData;
-class medDoubleParameter;
+class medIntParameter;
 
-class medAbstractSingleFilterOperationDoubleProcessPrivate;
-class MEDCORE_EXPORT  medAbstractSingleFilterOperationDoubleProcess : public medAbstractSingleFilterOperationProcess
+class medAbstractShrinkProcessPrivate;
+class MEDCORE_EXPORT  medAbstractShrinkProcess : public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
 
 public:
-    medAbstractSingleFilterOperationDoubleProcess(QObject *parent = NULL);
-    virtual ~medAbstractSingleFilterOperationDoubleProcess();
+    medAbstractShrinkProcess(QObject *parent = NULL);
+    virtual ~medAbstractShrinkProcess();
 
-    virtual medDoubleParameter* sigma() const;
+    virtual medIntParameter* shrinkFactor1();
+    virtual medIntParameter* shrinkFactor2();
+    virtual medIntParameter* shrinkFactor3();
 
 private:
-    const QScopedPointer<medAbstractSingleFilterOperationDoubleProcessPrivate> d;
+    const QScopedPointer<medAbstractShrinkProcessPrivate> d;
 };
+
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractShrinkProcess, MEDCORE_EXPORT)
