@@ -128,6 +128,32 @@ namespace singleFilterOperation
         pluginManager().initialize(path);
     }
 
+    namespace addFilter
+    {
+        namespace _private
+        {
+            medAbstractAddFilterProcessPluginFactory factory;
+        }
+
+        medAbstractAddFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace divideFilter
+    {
+        namespace _private
+        {
+            medAbstractDivideFilterProcessPluginFactory factory;
+        }
+
+        medAbstractDivideFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
     namespace gaussianFilter
     {
         namespace _private
@@ -136,6 +162,97 @@ namespace singleFilterOperation
         }
 
         medAbstractGaussianFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace invertFilter
+    {
+        namespace _private
+        {
+            medAbstractInvertFilterProcessPluginFactory factory;
+        }
+
+        medAbstractInvertFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace medianFilter
+    {
+        namespace _private
+        {
+            medAbstractMedianFilterProcessPluginFactory factory;
+        }
+
+        medAbstractMedianFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace multiplyFilter
+    {
+        namespace _private
+        {
+            medAbstractMultiplyFilterProcessPluginFactory factory;
+        }
+
+        medAbstractMultiplyFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace normalizeFilter
+    {
+        namespace _private
+        {
+            medAbstractNormalizeFilterProcessPluginFactory factory;
+        }
+
+        medAbstractNormalizeFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace shrinkFilter
+    {
+        namespace _private
+        {
+            medAbstractShrinkProcessPluginFactory factory;
+        }
+
+        medAbstractShrinkProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace subtractFilter
+    {
+        namespace _private
+        {
+            medAbstractSubtractFilterProcessPluginFactory factory;
+        }
+
+        medAbstractSubtractFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace windowingFilter
+    {
+        namespace _private
+        {
+            medAbstractWindowingProcessPluginFactory factory;
+        }
+
+        medAbstractWindowingProcessPluginFactory& pluginFactory(void)
         {
             return _private::factory;
         }
