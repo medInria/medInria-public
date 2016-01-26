@@ -146,6 +146,33 @@ namespace tractography
 
 namespace singleFilterOperation
 {
+
+    namespace addFilter
+    {
+        namespace _private
+        {
+            medAbstractAddFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractAddFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace divideFilter
+    {
+        namespace _private
+        {
+            medAbstractDivideFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractDivideFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
     namespace gaussianFilter
     {
         namespace _private
@@ -154,6 +181,84 @@ namespace singleFilterOperation
         }
 
         medAbstractGaussianFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace invertFilter
+    {
+        namespace _private
+        {
+            medAbstractInvertFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractInvertFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace medianFilter
+    {
+        namespace _private
+        {
+            medAbstractMedianFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractMedianFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace multiplyFilter
+    {
+        namespace _private
+        {
+            medAbstractMultiplyFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractMultiplyFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace normalizeFilter
+    {
+        namespace _private
+        {
+            medAbstractNormalizeFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractNormalizeFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace shrinkFilter
+    {
+        namespace _private
+        {
+            medAbstractShrinkFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractShrinkFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace windowingFilter
+    {
+        namespace _private
+        {
+            medAbstractWindowingFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractWindowingFilterProcessPresenterFactory& presenterFactory()
         {
             return _private::factory;
         }

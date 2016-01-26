@@ -12,7 +12,17 @@
 #include <medAbstractTractographyProcessPresenter.h>
 
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
+#include <medAbstractAddFilterProcessPresenter.h>
+#include <medAbstractDivideFilterProcessPresenter.h>
 #include <medAbstractGaussianFilterProcessPresenter.h>
+#include <medAbstractInvertFilterProcessPresenter.h>
+#include <medAbstractMedianFilterProcessPresenter.h>
+#include <medAbstractMultiplyFilterProcessPresenter.h>
+#include <medAbstractNormalizeFilterProcessPresenter.h>
+#include <medAbstractShrinkFilterProcessPresenter.h>
+#include <medAbstractSubtractFilterProcessPresenter.h>
+#include <medAbstractWindowingFilterProcessPresenter.h>
+
 
 #include <medWidgetsExport.h>
 
@@ -54,10 +64,48 @@ namespace medWidgets
 
     namespace singleFilterOperation
     {
+
+        namespace addFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractAddFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace divideFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractDivideFilterProcessPresenterFactory& presenterFactory();
+        }
         namespace gaussianFilter
         {
             MEDWIDGETS_EXPORT medAbstractGaussianFilterProcessPresenterFactory& presenterFactory();
         }
+        namespace invertFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractInvertFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace medianFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractMedianFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace multiplyFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractMultiplyFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace normalizeFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractNormalizeFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace shrinkFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractShrinkFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace subtractFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractSubtractFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace windowingFilter
+        {
+            MEDWIDGETS_EXPORT medAbstractWindowingFilterProcessPresenterFactory& presenterFactory();
+        }
+
     }
 
     namespace maskImage

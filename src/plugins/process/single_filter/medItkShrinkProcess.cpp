@@ -24,7 +24,7 @@
 
 
 medItkShrinkProcess::medItkShrinkProcess(QObject *parent)
-    : medAbstractShrinkProcess(parent)
+    : medAbstractShrinkFilterProcess(parent)
 
 {
     m_filter = NULL;

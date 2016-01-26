@@ -23,7 +23,7 @@ class MEDWIDGETS_EXPORT medAbstractGaussianFilterProcessPresenter: public medAbs
 {
     Q_OBJECT
 public:
-    medAbstractGaussianFilterProcessPresenter(medAbstractSingleFilterOperationDoubleProcess *parent)
+    medAbstractGaussianFilterProcessPresenter(medAbstractGaussianFilterProcess *parent)
         : medAbstractSingleFilterOperationDoubleProcessPresenter(parent)
     {}
     virtual medAbstractGaussianFilterProcess* process() const = 0;
