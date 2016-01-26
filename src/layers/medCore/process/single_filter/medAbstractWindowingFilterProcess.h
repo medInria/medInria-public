@@ -22,14 +22,14 @@
 class medAbstractImageData;
 class medDoubleParameter;
 
-class medAbstractWindowingProcessPrivate;
-class MEDCORE_EXPORT  medAbstractWindowingProcess : public medAbstractSingleFilterOperationProcess
+class medAbstractWindowingFilterProcessPrivate;
+class MEDCORE_EXPORT  medAbstractWindowingFilterProcess : public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
 
 public:
-    medAbstractWindowingProcess(QObject *parent = NULL);
-    virtual ~medAbstractWindowingProcess();
+    medAbstractWindowingFilterProcess(QObject *parent = NULL);
+    virtual ~medAbstractWindowingFilterProcess();
 
     virtual medDoubleParameter* minimumIntensityValue();
     virtual medDoubleParameter* maximumIntensityValue();
@@ -38,7 +38,7 @@ public:
 
 
 private:
-    const QScopedPointer<medAbstractWindowingProcessPrivate> d;
+    const QScopedPointer<medAbstractWindowingFilterProcessPrivate> d;
 };
 
-DTK_DECLARE_PLUGIN_FACTORY(medAbstractWindowingProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractWindowingFilterProcess, MEDCORE_EXPORT)

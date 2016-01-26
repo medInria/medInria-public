@@ -26,7 +26,7 @@
 
 
 medItkWindowingProcess::medItkWindowingProcess(QObject *parent)
-    : medAbstractWindowingProcess(parent)
+    : medAbstractWindowingFilterProcess(parent)
 
 {
     m_filter = NULL;

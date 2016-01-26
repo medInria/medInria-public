@@ -29,9 +29,9 @@
 #include <medAbstractMedianFilterProcess.h>
 #include <medAbstractMultiplyFilterProcess.h>
 #include <medAbstractNormalizeFilterProcess.h>
-#include <medAbstractShrinkProcess.h>
+#include <medAbstractShrinkFilterProcess.h>
 #include <medAbstractSubtractFilterProcess.h>
-#include <medAbstractWindowingProcess.h>
+#include <medAbstractWindowingFilterProcess.h>
 
 #include <medAbstractMorphomathOperationProcess.h>
 #include <medAbstractErodeImageProcess.h>
@@ -121,7 +121,7 @@ namespace medCore
 
         namespace shrinkFilter
         {
-            MEDCORE_EXPORT medAbstractShrinkProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT medAbstractShrinkFilterProcessPluginFactory& pluginFactory(void);
         }
 
         namespace subtractFilter
@@ -131,7 +131,7 @@ namespace medCore
 
         namespace windowingFilter
         {
-            MEDCORE_EXPORT medAbstractWindowingProcessPluginFactory& pluginFactory(void);
+            MEDCORE_EXPORT medAbstractWindowingFilterProcessPluginFactory& pluginFactory(void);
         }
     }
 

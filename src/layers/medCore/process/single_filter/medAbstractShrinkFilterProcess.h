@@ -22,21 +22,21 @@
 class medAbstractImageData;
 class medIntParameter;
 
-class medAbstractShrinkProcessPrivate;
-class MEDCORE_EXPORT  medAbstractShrinkProcess : public medAbstractSingleFilterOperationProcess
+class medAbstractShrinkFilterProcessPrivate;
+class MEDCORE_EXPORT  medAbstractShrinkFilterProcess : public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
 
 public:
-    medAbstractShrinkProcess(QObject *parent = NULL);
-    virtual ~medAbstractShrinkProcess();
+    medAbstractShrinkFilterProcess(QObject *parent = NULL);
+    virtual ~medAbstractShrinkFilterProcess();
 
     virtual medIntParameter* shrinkFactor1();
     virtual medIntParameter* shrinkFactor2();
     virtual medIntParameter* shrinkFactor3();
 
 private:
-    const QScopedPointer<medAbstractShrinkProcessPrivate> d;
+    const QScopedPointer<medAbstractShrinkFilterProcessPrivate> d;
 };
 
-DTK_DECLARE_PLUGIN_FACTORY(medAbstractShrinkProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractShrinkFilterProcess, MEDCORE_EXPORT)

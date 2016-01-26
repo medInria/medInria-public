@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractShrinkProcess.h>
+#include <medAbstractShrinkFilterProcess.h>
 
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
@@ -22,7 +22,7 @@
 
 #include <medIntParameter.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkShrinkProcess: public medAbstractShrinkProcess
+class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkShrinkProcess: public medAbstractShrinkFilterProcess
 {
     Q_OBJECT
 public:

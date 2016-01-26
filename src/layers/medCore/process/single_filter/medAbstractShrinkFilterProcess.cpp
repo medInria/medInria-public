@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include <medAbstractShrinkProcess.h>
+#include <medAbstractShrinkFilterProcess.h>
 
 #include <medAbstractImageData.h>
 #include <medMetaDataKeys.h>
 
 #include <medIntParameter.h>
 
-class medAbstractShrinkProcessPrivate
+class medAbstractShrinkFilterProcessPrivate
 {
 public:
     medIntParameter* shrinkFactor1;
@@ -26,30 +26,30 @@ public:
     medIntParameter* shrinkFactor3;
 };
 
-medAbstractShrinkProcess::medAbstractShrinkProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent),
-    d(new medAbstractShrinkProcessPrivate)
+medAbstractShrinkFilterProcess::medAbstractShrinkFilterProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent),
+    d(new medAbstractShrinkFilterProcessPrivate)
 {
     d->shrinkFactor1 = new medIntParameter("shrinkFactor1", this);
     d->shrinkFactor2 = new medIntParameter("shrinkFactor2", this);
     d->shrinkFactor3 = new medIntParameter("shrinkFactor3", this);
 }
 
-medAbstractShrinkProcess::~medAbstractShrinkProcess()
+medAbstractShrinkFilterProcess::~medAbstractShrinkFilterProcess()
 {
 
 }
 
-medIntParameter* medAbstractShrinkProcess::shrinkFactor1()
+medIntParameter* medAbstractShrinkFilterProcess::shrinkFactor1()
 {
     return d->shrinkFactor1;
 }
 
-medIntParameter* medAbstractShrinkProcess::shrinkFactor2()
+medIntParameter* medAbstractShrinkFilterProcess::shrinkFactor2()
 {
     return d->shrinkFactor2;
 }
 
-medIntParameter* medAbstractShrinkProcess::shrinkFactor3()
+medIntParameter* medAbstractShrinkFilterProcess::shrinkFactor3()
 {
     return d->shrinkFactor3;
 }
