@@ -39,7 +39,7 @@ medItkWindowingProcess::~medItkWindowingProcess()
 
 QString medItkWindowingProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Windowing Filter process";
 }
 
 QString medItkWindowingProcess::description() const

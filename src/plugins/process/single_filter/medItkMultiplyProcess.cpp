@@ -41,7 +41,7 @@ medItkMultiplyProcess::~medItkMultiplyProcess()
 
 QString medItkMultiplyProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Multiply Filter process";
 }
 
 QString medItkMultiplyProcess::description() const
