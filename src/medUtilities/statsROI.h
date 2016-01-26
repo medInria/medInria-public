@@ -16,8 +16,9 @@
 #include <medAbstractData.h>
 #include <itkImage.h>
 #include <dtkCore/dtkSmartPointer.h>
+#include <medUtilitiesExport.h>
 
-class statsROI
+class MEDUTILITIES_EXPORT statsROI
 {
 public:
     dtkSmartPointer <medAbstractData> input0; //data
