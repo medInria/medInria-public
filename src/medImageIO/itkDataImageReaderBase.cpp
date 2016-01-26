@@ -242,18 +242,40 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     TReader->SetImageIO(this->io);
     TReader->SetFileName(path.toAscii().constData());
     TReader->SetUseStreaming(true);
+    TReader->Update();
+
     typename Image::Pointer im = TReader->GetOutput();
     medData->setData(im);
 
-    //  Recover the pixel meaning from the intent_name.
-
     const itk::MetaDataDictionary dict = im->GetMetaDataDictionary();
+
+    //  Recover the pixel meaning from the intent_name.
     std::string PixMeaning;
     if (itk::ExposeMetaData(dict,"intent_name",PixMeaning))
         medData->addMetaData(medAbstractImageData::PixelMeaningMetaData,QString(PixMeaning.c_str()));
 
-    TReader->Update();
-
+    // Add meta data to the medAbstractData volume
+    std::string key;
+    if (itk::ExposeMetaData(dict, medMetaDataKeys::PatientName.key().toStdString(), key))
+    {
+        medData->setMetaData(medMetaDataKeys::PatientName.key(), QString(key.c_str()));
+    }
+    if (itk::ExposeMetaData(dict, medMetaDataKeys::PatientID.key().toStdString(), key))
+    {
+        medData->setMetaData(medMetaDataKeys::PatientID.key(), QString(key.c_str()));
+    }
+    if (itk::ExposeMetaData(dict, medMetaDataKeys::StudyDescription.key().toStdString(), key))
+    {
+        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), QString(key.c_str()));
+    }
+    if (itk::ExposeMetaData(dict, medMetaDataKeys::BirthDate.key().toStdString(), key))
+    {
+        medData->setMetaData(medMetaDataKeys::BirthDate.key(), QString(key.c_str()));
+    }
+    if (itk::ExposeMetaData(dict, "MED_MODALITY", key))
+    {
+        medData->setMetaData(medMetaDataKeys::Modality.key(), QString(key.c_str()));
+    }
     return true;
 }
 

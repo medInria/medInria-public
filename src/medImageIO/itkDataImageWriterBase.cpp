@@ -18,6 +18,7 @@
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractImageData.h>
+#include <medMetaDataKeys.h>
 
 #include <itkImage.h>
 #include <itkImageFileWriter.h>
@@ -53,10 +54,26 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     typename Image::Pointer image = dynamic_cast<Image*>((itk::Object*)(this->data()->output()));
     if (image.IsNull())
         return false;
-    if (medData->hasMetaData(medAbstractImageData::PixelMeaningMetaData)) {
-        itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
+
+    itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
+
+    if (medData->hasMetaData(medAbstractImageData::PixelMeaningMetaData))
+    {
         itk::EncapsulateMetaData(dict,"intent_name",medData->metadata(medAbstractImageData::PixelMeaningMetaData));
     }
+
+    // Add meta data to the output volume
+    itk::EncapsulateMetaData(dict, medMetaDataKeys::PatientName.key().toStdString().c_str(),
+                             medData->metadata(medMetaDataKeys::PatientName.key()).toStdString());
+    itk::EncapsulateMetaData(dict, medMetaDataKeys::PatientID.key().toStdString().c_str(),
+                             medData->metadata(medMetaDataKeys::PatientID.key()).toStdString());
+    itk::EncapsulateMetaData(dict, medMetaDataKeys::StudyDescription.key().toStdString().c_str(),
+                             medData->metadata(medMetaDataKeys::StudyDescription.key()).toStdString());
+    itk::EncapsulateMetaData(dict, medMetaDataKeys::BirthDate.key().toStdString().c_str(),
+                             medData->metadata(medMetaDataKeys::BirthDate.key()).toStdString());
+    itk::EncapsulateMetaData(dict, "MED_MODALITY",
+                             medData->metadata(medMetaDataKeys::Modality.key()).toStdString());
+
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);
     writer->UseCompressionOn();
