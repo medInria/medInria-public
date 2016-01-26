@@ -41,7 +41,7 @@ medItkAddProcess::~medItkAddProcess()
 
 QString medItkAddProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Add Filter process";
 }
 
 QString medItkAddProcess::description() const
