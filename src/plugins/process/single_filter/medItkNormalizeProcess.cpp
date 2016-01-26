@@ -37,7 +37,7 @@ medItkNormalizeProcess::~medItkNormalizeProcess()
 
 QString medItkNormalizeProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Normalize Filter process";
 }
 
 QString medItkNormalizeProcess::description() const

@@ -41,7 +41,7 @@ medItkDivideProcess::~medItkDivideProcess()
 
 QString medItkDivideProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Divide Filter process";
 }
 
 QString medItkDivideProcess::description() const
