@@ -41,7 +41,7 @@ medItkSubtractProcess::~medItkSubtractProcess()
 
 QString medItkSubtractProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Subtract Filter process";
 }
 
 QString medItkSubtractProcess::description() const

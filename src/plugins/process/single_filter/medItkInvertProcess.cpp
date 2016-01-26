@@ -37,7 +37,7 @@ medItkInvertProcess::~medItkInvertProcess()
 
 QString medItkInvertProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Invert Filter process";
 }
 
 QString medItkInvertProcess::description() const

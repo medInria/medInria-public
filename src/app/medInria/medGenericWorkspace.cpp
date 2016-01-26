@@ -322,12 +322,149 @@ void medGenericWorkspace::setProcessType(int index)
                 }
             }
 
+
+            plugins = medCore::singleFilterOperation::divideFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::divideFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.divideFactory = &medCore::singleFilterOperation::divideFilter::pluginFactory();
+                    aSolution.divideFactoryPresenter = &medWidgets::singleFilterOperation::divideFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
             plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
                 if (process)
+                {
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.gaussianFactory = &medCore::singleFilterOperation::gaussianFilter::pluginFactory();
+                    aSolution.gaussianFactoryPresenter = &medWidgets::singleFilterOperation::gaussianFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::invertFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::invertFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.invertFactory = &medCore::singleFilterOperation::invertFilter::pluginFactory();
+                    aSolution.invertFactoryPresenter = &medWidgets::singleFilterOperation::invertFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::medianFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::medianFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.medianFactory = &medCore::singleFilterOperation::medianFilter::pluginFactory();
+                    aSolution.medianFactoryPresenter = &medWidgets::singleFilterOperation::medianFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::multiplyFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::multiplyFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.multiplyFactory = &medCore::singleFilterOperation::multiplyFilter::pluginFactory();
+                    aSolution.multiplyFactoryPresenter = &medWidgets::singleFilterOperation::multiplyFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::normalizeFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::normalizeFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.normalizeFactory = &medCore::singleFilterOperation::normalizeFilter::pluginFactory();
+                    aSolution.normalizeFactoryPresenter = &medWidgets::singleFilterOperation::normalizeFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::shrinkFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::shrinkFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.shrinkFactory = &medCore::singleFilterOperation::shrinkFilter::pluginFactory();
+                    aSolution.shrinkFactoryPresenter = &medWidgets::singleFilterOperation::shrinkFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::subtractFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::subtractFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.subtractFactory = &medCore::singleFilterOperation::subtractFilter::pluginFactory();
+                    aSolution.subtractFactoryPresenter = &medWidgets::singleFilterOperation::subtractFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::windowingFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::windowingFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.windowingFactory = &medCore::singleFilterOperation::windowingFilter::pluginFactory();
+                    aSolution.windowingFactoryPresenter = &medWidgets::singleFilterOperation::windowingFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
             }
 
             break;
@@ -420,7 +557,7 @@ void medGenericWorkspace::setProcessSelection(int index)
 //            d->process = process;
 //            d->presenter = medWidgets::singleFilterOperation::gaussianFilter::presenterFactory().create(process);
 
-            for (int i = 0; i < d->vectorOfHacks->size(); i++)
+            for (size_t i = 0; i < d->vectorOfHacks->size(); i++)
             {
                 if (d->vectorOfHacks->at(i).pluginKey == pluginKey)
                 {
