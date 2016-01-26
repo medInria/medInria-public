@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medAbstractWindowingProcess.h>
+#include <medAbstractWindowingFilterProcess.h>
 
 #include <medAbstractImageData.h>
 #include <medMetaDataKeys.h>
@@ -19,7 +19,7 @@
 #include <medDoubleParameter.h>
 
 
-class medAbstractWindowingProcessPrivate
+class medAbstractWindowingFilterProcessPrivate
 {
 public:
     medDoubleParameter* minimumIntensityValue;
@@ -29,8 +29,8 @@ public:
 
 };
 
-medAbstractWindowingProcess::medAbstractWindowingProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent),
-    d(new medAbstractWindowingProcessPrivate)
+medAbstractWindowingFilterProcess::medAbstractWindowingFilterProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent),
+    d(new medAbstractWindowingFilterProcessPrivate)
 {
     d->minimumIntensityValue = new medDoubleParameter("minimumIntensityValue", this);
     d->maximumIntensityValue = new medDoubleParameter("maximumIntensityValue", this);
@@ -38,27 +38,27 @@ medAbstractWindowingProcess::medAbstractWindowingProcess(QObject *parent): medAb
     d->maximumOutputIntensityValue = new medDoubleParameter("maximumOutputIntensityValue", this);
 }
 
-medAbstractWindowingProcess::~medAbstractWindowingProcess()
+medAbstractWindowingFilterProcess::~medAbstractWindowingFilterProcess()
 {
 
 }
 
-medDoubleParameter* medAbstractWindowingProcess::minimumIntensityValue()
+medDoubleParameter* medAbstractWindowingFilterProcess::minimumIntensityValue()
 {
     return d->minimumIntensityValue;
 }
 
-medDoubleParameter* medAbstractWindowingProcess::maximumIntensityValue()
+medDoubleParameter* medAbstractWindowingFilterProcess::maximumIntensityValue()
 {
     return d->maximumIntensityValue;
 }
 
-medDoubleParameter* medAbstractWindowingProcess::minimumOutputIntensityValue()
+medDoubleParameter* medAbstractWindowingFilterProcess::minimumOutputIntensityValue()
 {
     return d->minimumOutputIntensityValue;
 }
 
-medDoubleParameter* medAbstractWindowingProcess::maximumOutputIntensityValue()
+medDoubleParameter* medAbstractWindowingFilterProcess::maximumOutputIntensityValue()
 {
     return d->maximumOutputIntensityValue;
 }

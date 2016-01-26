@@ -223,10 +223,10 @@ namespace singleFilterOperation
     {
         namespace _private
         {
-            medAbstractShrinkProcessPluginFactory factory;
+            medAbstractShrinkFilterProcessPluginFactory factory;
         }
 
-        medAbstractShrinkProcessPluginFactory& pluginFactory(void)
+        medAbstractShrinkFilterProcessPluginFactory& pluginFactory(void)
         {
             return _private::factory;
         }
@@ -249,10 +249,10 @@ namespace singleFilterOperation
     {
         namespace _private
         {
-            medAbstractWindowingProcessPluginFactory factory;
+            medAbstractWindowingFilterProcessPluginFactory factory;
         }
 
-        medAbstractWindowingProcessPluginFactory& pluginFactory(void)
+        medAbstractWindowingFilterProcessPluginFactory& pluginFactory(void)
         {
             return _private::factory;
         }

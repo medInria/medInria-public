@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractWindowingProcess.h>
+#include <medAbstractWindowingFilterProcess.h>
 
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
@@ -22,7 +22,7 @@
 
 #include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkWindowingProcess: public medAbstractWindowingProcess
+class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkWindowingProcess: public medAbstractWindowingFilterProcess
 {
     Q_OBJECT
 public:
