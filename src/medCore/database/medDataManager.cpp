@@ -24,7 +24,6 @@
 #include <medPluginManager.h>
 #include <medGlobalDefs.h>
 
-
 /* THESE CLASSES NEED TO BE THREAD-SAFE, don't forget to lock the mutex in the
  * methods below that access state.
  */
