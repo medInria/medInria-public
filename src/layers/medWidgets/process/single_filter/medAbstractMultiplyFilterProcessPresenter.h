@@ -15,18 +15,18 @@
 
 #include <medAbstractSingleFilterOperationDoubleProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medAbstractGaussianFilterProcess.h>
+#include <medAbstractMultiplyFilterProcess.h>
 
 #include <medWidgetsExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractGaussianFilterProcessPresenter: public medAbstractSingleFilterOperationDoubleProcessPresenter
+class MEDWIDGETS_EXPORT medAbstractMultiplyFilterProcessPresenter: public medAbstractSingleFilterOperationDoubleProcessPresenter
 {
     Q_OBJECT
 public:
-    medAbstractGaussianFilterProcessPresenter(medAbstractGaussianFilterProcess *parent)
+    medAbstractMultiplyFilterProcessPresenter(medAbstractMultiplyFilterProcess *parent)
         : medAbstractSingleFilterOperationDoubleProcessPresenter(parent)
     {}
-    virtual medAbstractGaussianFilterProcess* process() const = 0;
+    virtual medAbstractMultiplyFilterProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractGaussianFilterProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractMultiplyFilterProcess, MEDWIDGETS_EXPORT)
