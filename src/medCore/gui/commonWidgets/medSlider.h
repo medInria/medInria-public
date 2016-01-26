@@ -30,6 +30,10 @@ public slots:
     {
         ticksList.removeAll(position);
     }
+    void removeAllTicks()
+    {
+        ticksList.clear();
+    }
 
 protected:
     void paintEvent(QPaintEvent *ev) {
@@ -38,7 +42,7 @@ protected:
 
         QPainter painter(this);
         painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-        for(unsigned int i = 0; i<ticksList.size(); i++)
+        for(int i = 0; i<ticksList.size(); i++)
         {
             int position = QStyle::sliderPositionFromValue(minimum(),
                                                            maximum(),
