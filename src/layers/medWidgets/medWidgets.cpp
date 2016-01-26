@@ -251,6 +251,19 @@ namespace singleFilterOperation
         }
     }
 
+    namespace subtractFilter
+    {
+        namespace _private
+        {
+            medAbstractSubtractFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractSubtractFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
     namespace windowingFilter
     {
         namespace _private

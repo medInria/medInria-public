@@ -31,6 +31,112 @@
 
 #include <QDebug>
 
+struct HackySolution
+{
+
+    // fun times
+    medAbstractAddFilterProcessPluginFactory* addFactory;
+    medAbstractDivideFilterProcessPluginFactory* divideFactory;
+    medAbstractGaussianFilterProcessPluginFactory* gaussianFactory;
+    medAbstractInvertFilterProcessPluginFactory* invertFactory;
+    medAbstractMedianFilterProcessPluginFactory* medianFactory;
+    medAbstractMultiplyFilterProcessPluginFactory* multiplyFactory;
+    medAbstractNormalizeFilterProcessPluginFactory* normalizeFactory;
+    medAbstractShrinkFilterProcessPluginFactory* shrinkFactory;
+    medAbstractSubtractFilterProcessPluginFactory* subtractFactory;
+    medAbstractWindowingFilterProcessPluginFactory* windowingFactory;
+
+
+    medAbstractAddFilterProcessPresenterFactory* addFactoryPresenter;
+    medAbstractDivideFilterProcessPresenterFactory* divideFactoryPresenter;
+    medAbstractGaussianFilterProcessPresenterFactory* gaussianFactoryPresenter;
+    medAbstractInvertFilterProcessPresenterFactory* invertFactoryPresenter;
+    medAbstractMedianFilterProcessPresenterFactory* medianFactoryPresenter;
+    medAbstractMultiplyFilterProcessPresenterFactory* multiplyFactoryPresenter;
+    medAbstractNormalizeFilterProcessPresenterFactory* normalizeFactoryPresenter;
+    medAbstractShrinkFilterProcessPresenterFactory* shrinkFactoryPresenter;
+    medAbstractSubtractFilterProcessPresenterFactory* subtractFactoryPresenter;
+    medAbstractWindowingFilterProcessPresenterFactory* windowingFactoryPresenter;
+
+    QString pluginKey;
+    medAbstractProcess* myProcess;
+
+    HackySolution()
+    {
+        // yeah yeah I know
+        memset(this, 0, 20*sizeof(void*));
+        myProcess = 0;
+    }
+
+    medAbstractProcess* getProcess()
+    {
+        if (addFactory)
+            myProcess = addFactory->create(pluginKey);
+
+        else if(divideFactory)
+            myProcess = divideFactory->create(pluginKey);
+
+        else if(gaussianFactory)
+            myProcess = gaussianFactory->create(pluginKey);
+
+        else if(invertFactory)
+            myProcess = invertFactory->create(pluginKey);
+
+        else if(medianFactory)
+            myProcess = medianFactory->create(pluginKey);
+
+        else if(multiplyFactory)
+            myProcess = multiplyFactory->create(pluginKey);
+
+        else if(normalizeFactory)
+            myProcess = normalizeFactory->create(pluginKey);
+
+        else if(shrinkFactory)
+            myProcess = shrinkFactory->create(pluginKey);
+
+        else if(subtractFactory)
+            myProcess = subtractFactory->create(pluginKey);
+
+        else if(windowingFactory)
+            myProcess = windowingFactory->create(pluginKey);
+
+        return myProcess;
+    }
+
+    medAbstractProcessPresenter* getPresenter()
+    {
+        if (addFactoryPresenter)
+            return addFactoryPresenter->create(myProcess);
+
+        else if(divideFactoryPresenter)
+            return divideFactoryPresenter->create(myProcess);
+
+        else if(gaussianFactoryPresenter)
+            return gaussianFactoryPresenter->create(myProcess);
+
+        else if(invertFactoryPresenter)
+            return invertFactoryPresenter->create(myProcess);
+
+        else if(medianFactoryPresenter)
+            return medianFactoryPresenter->create(myProcess);
+
+        else if(multiplyFactoryPresenter)
+            return multiplyFactoryPresenter->create(myProcess);
+
+        else if(normalizeFactoryPresenter)
+            return normalizeFactoryPresenter->create(myProcess);
+
+        else if(shrinkFactoryPresenter)
+            return shrinkFactoryPresenter->create(myProcess);
+
+        else if(subtractFactoryPresenter)
+            return subtractFactoryPresenter->create(myProcess);
+
+        else if(windowingFactoryPresenter)
+            return windowingFactoryPresenter->create(myProcess);
+    }
+};
+
 class medGenericWorkspacePrivate
 {
 public:
@@ -42,12 +148,18 @@ public:
 
     medToolBox *workspaceToolBox;
     QWidget *currentProcessToolBox;
+
+    std::vector<HackySolution> *vectorOfHacks;
 };
+
+
+
 
 medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medGenericWorkspacePrivate)
 {
     d->presenter = NULL;
     d->process = NULL;
+    d->vectorOfHacks = new std::vector<HackySolution>();
 
     QWidget *processTypeWidget = new QWidget;
     QLabel *processTypeLabel = new QLabel("Process Type", processTypeWidget);
@@ -193,7 +305,24 @@ void medGenericWorkspace::setProcessType(int index)
 
         case SingleFilter:
         {
-            QStringList plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
+
+            QStringList plugins = medCore::singleFilterOperation::addFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::addFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.addFactory = &medCore::singleFilterOperation::addFilter::pluginFactory();
+                    aSolution.addFactoryPresenter = &medWidgets::singleFilterOperation::addFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
@@ -287,9 +416,19 @@ void medGenericWorkspace::setProcessSelection(int index)
 
         case SingleFilter:
         {
-            medAbstractGaussianFilterProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
-            d->process = process;
-            d->presenter = medWidgets::singleFilterOperation::gaussianFilter::presenterFactory().create(process);
+//            medAbstractGaussianFilterProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
+//            d->process = process;
+//            d->presenter = medWidgets::singleFilterOperation::gaussianFilter::presenterFactory().create(process);
+
+            for (int i = 0; i < d->vectorOfHacks->size(); i++)
+            {
+                if (d->vectorOfHacks->at(i).pluginKey == pluginKey)
+                {
+                    d->process = d->vectorOfHacks->at(i).getProcess();
+                    d->presenter = d->vectorOfHacks->at(i).getPresenter();
+                    break;
+                }
+            }
 
             break;
         }
