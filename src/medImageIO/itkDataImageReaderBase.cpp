@@ -255,28 +255,64 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
         medData->addMetaData(medAbstractImageData::PixelMeaningMetaData,QString(PixMeaning.c_str()));
 
     // Add meta data to the medAbstractData volume
-    std::string key;
-    if (itk::ExposeMetaData(dict, medMetaDataKeys::PatientName.key().toStdString(), key))
+    QStringList keyList = metaDataKeysToCopyForDerivedData();
+    std::string value;
+    foreach(QString key, keyList)
     {
-        medData->setMetaData(medMetaDataKeys::PatientName.key(), QString(key.c_str()));
+        if (itk::ExposeMetaData(dict, key.toStdString(), value))
+        {
+            medData->setMetaData(key, QString(value.c_str()));
+        }
     }
-    if (itk::ExposeMetaData(dict, medMetaDataKeys::PatientID.key().toStdString(), key))
+
+    if (itk::ExposeMetaData(dict, "MED_MODALITY", value))
     {
-        medData->setMetaData(medMetaDataKeys::PatientID.key(), QString(key.c_str()));
+        medData->setMetaData(medMetaDataKeys::Modality.key(), QString(value.c_str()));
     }
-    if (itk::ExposeMetaData(dict, medMetaDataKeys::StudyDescription.key().toStdString(), key))
+    if (itk::ExposeMetaData(dict, "MED_ORIENTATION", value))
     {
-        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), QString(key.c_str()));
-    }
-    if (itk::ExposeMetaData(dict, medMetaDataKeys::BirthDate.key().toStdString(), key))
-    {
-        medData->setMetaData(medMetaDataKeys::BirthDate.key(), QString(key.c_str()));
-    }
-    if (itk::ExposeMetaData(dict, "MED_MODALITY", key))
-    {
-        medData->setMetaData(medMetaDataKeys::Modality.key(), QString(key.c_str()));
+        medData->setMetaData(medMetaDataKeys::Orientation.key(), QString(value.c_str()));
     }
     return true;
+}
+
+QStringList itkDataImageReaderBase::metaDataKeysToCopyForDerivedData()
+{
+    QStringList keys;
+
+    keys << medMetaDataKeys::PatientID.key()
+         << medMetaDataKeys::PatientName.key()
+         << medMetaDataKeys::Age.key()
+         << medMetaDataKeys::BirthDate.key()
+         << medMetaDataKeys::Gender.key()
+         << medMetaDataKeys::Description.key()
+         << medMetaDataKeys::StudyID.key()
+         << medMetaDataKeys::StudyDicomID.key()
+         << medMetaDataKeys::StudyDescription.key()
+         << medMetaDataKeys::Institution.key()
+         << medMetaDataKeys::Referee.key()
+         << medMetaDataKeys::StudyDate.key()
+         << medMetaDataKeys::StudyTime.key()
+         << medMetaDataKeys::Performer.key()
+         << medMetaDataKeys::Report.key()
+         << medMetaDataKeys::Protocol.key()
+         << medMetaDataKeys::Origin.key()
+         << medMetaDataKeys::AcquisitionDate.key()
+         << medMetaDataKeys::AcquisitionTime.key()
+         << medMetaDataKeys::Columns.key()
+         << medMetaDataKeys::Rows.key()
+         << medMetaDataKeys::Dimensions.key()
+         << medMetaDataKeys::NumberOfDimensions.key()
+         << medMetaDataKeys::SliceThickness.key()
+         << medMetaDataKeys::Spacing.key() //ok
+         << medMetaDataKeys::XSpacing.key()
+         << medMetaDataKeys::YSpacing.key()
+         << medMetaDataKeys::ZSpacing.key()
+         << medMetaDataKeys::NumberOfComponents.key()
+         << medMetaDataKeys::ComponentType.key()
+         << medMetaDataKeys::PixelType.key();
+
+    return keys;
 }
 
 bool itkDataImageReaderBase::read(const QString& path)
