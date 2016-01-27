@@ -304,7 +304,7 @@ QStringList itkDataImageReaderBase::metaDataKeysToCopyForDerivedData()
          << medMetaDataKeys::Dimensions.key()
          << medMetaDataKeys::NumberOfDimensions.key()
          << medMetaDataKeys::SliceThickness.key()
-         << medMetaDataKeys::Spacing.key() //ok
+         << medMetaDataKeys::Spacing.key()
          << medMetaDataKeys::XSpacing.key()
          << medMetaDataKeys::YSpacing.key()
          << medMetaDataKeys::ZSpacing.key()

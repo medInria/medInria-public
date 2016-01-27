@@ -16,6 +16,7 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 
 #include <medImageIOExport.h>
+
 #include <itkImageIOBase.h>
 
 class MEDIMAGEIO_EXPORT itkDataImageWriterBase: public dtkAbstractDataWriter {
