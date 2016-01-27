@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
-
+ 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,49 +15,133 @@
 
 #include <medCoreExport.h>
 
-#include <QSqlDatabase>
+#include <QtCore>
+#include <QtSql>
 
-#include <medAbstractDatabaseImporter.h>
+#include <medAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
+
+#include <medJobItem.h>
 #include <medDataIndex.h>
 
+class medDatabaseImporterPrivate;
 class medAbstractData;
+class medAbstractDbController;
 
 /**
 * @class medDatabaseImporter
-* @brief Threaded importing/indexing of files or directories into medInria database.
+* @brief Base class for database importers.
 * @medDatabaseImporter is in charge of importing (or indexing, any word will be used
-* hereafter) items into medInria database.
-* It is designed to run as a thread, to know how use it check the documentation
+* hereafter) items into medInria databases.
+* It is designed to run as a thread, to know how to use it, check the documentation
 * of @medJobItem.
-* Images can be imported, that means that are not only indexed but also copied in
-* medInria database (and as a result they can end up being aggregated by volume)
-* or they can be just indexed (by indicating so using the parameters in the constructor)
+* It defines a set of usefuls method (populateMissingMetadata, getSuitableReader,...) and implements a default run() method.
+* To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary.
+* For example, see @medDatabaseImporter and @medDatabaseNonPersistentReader
 **/
-class MEDCORE_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
+class MEDCORE_EXPORT medDatabaseImporter : public medJobItem
 {
     Q_OBJECT
 
 public:
-    medDatabaseImporter ( const QString& file, const QUuid& uuid, bool indexWithoutImporting = false);
-    medDatabaseImporter ( medAbstractData* medData, const QUuid& callerUuid );
+    medDatabaseImporter (const QString& file, const QUuid &uuid, medAbstractDbController* controller, bool indexWithoutImporting = false);
+    medDatabaseImporter ( medAbstractData* medData, const QUuid& uuid, medAbstractDbController* controller);
+
     ~medDatabaseImporter ( void );
 
 
-private:
+signals:
+    /**
+     * This signal is emitted after a successful import/index.
+     * @param addedIndex - the @medDataIndex that was successfully added
+     */
+    void dataImported ( const medDataIndex& index );
 
-    QString ensureUniqueSeriesName ( const QString seriesName );
+    /**
+     * This signal is emitted after a successful import/index.
+     * @param addedIndex - the @medDataIndex that was successfully added
+     * @param callerUuid - the caller Uuid. If the caller Uuid has not been specified,
+     * the addedSignal(const medDataIndex& addedIndex) is emitted instead.
+     */
+    void dataImported ( const medDataIndex& index, const QUuid& uuid );
 
-    bool checkIfExists ( medAbstractData* medData, QString imageName );
+public slots:
+    void onCancel ( QObject* );
 
-    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
 
+protected:
+    virtual void internalRun ( void ) ;
+
+    QString file ( void );   
+    bool isCancelled ( void );   
+    bool indexWithoutImporting ( void );  
+    QMap<int, QString> volumeIdToImageFile ( void );    
+    QString callerUuid ( void );
+    medDataIndex index(void) const;
+
+    void populateMissingMetadata ( medAbstractData* medData, const QString seriesDescription );
+    void addAdditionalMetaData ( medAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths );
+
+    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader ( QStringList filename );
+    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter ( QString filename, medAbstractData* medData );
+
+    QStringList getAllFilesToBeProcessed ( QString fileOrDirectory );
+
+    medAbstractData *tryReadImages ( const QStringList& filesPath,const bool readOnlyImageInformation );
+    bool tryWriteImage ( QString filePath, medAbstractData* medData );
+
+    QString determineFutureImageFileName ( const medAbstractData* medData, int volumeNumber );
+    QString determineFutureImageExtensionByDataType ( const medAbstractData* medData );
+
+    QString generateUniqueVolumeId ( const medAbstractData* medData );
+    QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
+
+    void importData();
+    void importFile();
+
+
+    /**
+    * Finds if parameter @seriesName is already being used in the database
+    * if is not, it returns @seriesName unchanged
+    * otherwise, it returns an unused new series name (created by adding a suffix)
+    * @param seriesName - the series name
+    * @return newSeriesName - a new, unused, series name
+    **/
+    virtual QString ensureUniqueSeriesName ( const QString seriesName );
+
+    /**
+    * Checks if the image which was used to create the medData object
+    * passed as parameter already exists in the database
+    * @param medData - a @medAbstractData object created from the original image
+    * @param imageName - the name of the image we are looking for
+    * @return true if already exists, false otherwise
+    **/
+    virtual bool checkIfExists ( medAbstractData* medData, QString imageName );
+
+    /**
+     * Retrieves patientID. Checks if patient is already in the database
+     * if so, returns his Id, otherwise creates a new guid
+     */
+    virtual QString getPatientID(QString patientName, QString birthDate);
+
+    /**
+    * Populates database tables and generates thumbnails.
+    * @param medData - a @medAbstractData object created from the original image
+    * @param pathToStoreThumbnails - path where the thumbnails will be stored
+    * @return medDataIndex the new medDataIndex associated with this imported series.
+    **/
+    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
     int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
     int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );
     int getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyId );
 
     void createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesId, QStringList thumbPaths );
 
-    QString getPatientID(QString patientName, QString birthDate);
+
+
+
+    medDatabaseImporterPrivate *d;
+
 
 };
 

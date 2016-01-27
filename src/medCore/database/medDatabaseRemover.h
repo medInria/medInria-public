@@ -21,6 +21,7 @@
 #include <medCoreExport.h>
 
 class medDatabaseRemoverPrivate;
+class medDatabaseController;
 
 /**
  * @class medDatabaseRemover
@@ -31,7 +32,7 @@ class MEDCORE_EXPORT medDatabaseRemover : public medJobItem
     Q_OBJECT;
 
 public:
-     medDatabaseRemover(const medDataIndex &index);
+     medDatabaseRemover(const medDataIndex &index, medDatabaseController* inputDbController);
     ~medDatabaseRemover();
 
 

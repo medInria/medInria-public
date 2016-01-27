@@ -45,13 +45,13 @@ class medDatabaseRemoverPrivate
 {
 public:
     medDataIndex index;
+    bool isCancelled;
     QSqlDatabase db;
+    medDatabaseController* dbController;
     static const QString T_PATIENT;
     static const QString T_STUDY;
     static const QString T_SERIES;
-    static const QString T_IMAGE;
-
-    bool isCancelled;
+    static const QString T_IMAGE;    
 };
 
 const QString medDatabaseRemoverPrivate::T_PATIENT = "patient";
@@ -59,10 +59,11 @@ const QString medDatabaseRemoverPrivate::T_STUDY = "study";
 const QString medDatabaseRemoverPrivate::T_SERIES = "series";
 const QString medDatabaseRemoverPrivate::T_IMAGE = "image";
 
-medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobItem(), d ( new medDatabaseRemoverPrivate )
+medDatabaseRemover::medDatabaseRemover (const medDataIndex &index_ , medDatabaseController *inputDbController) : medJobItem(), d ( new medDatabaseRemoverPrivate )
 {
     d->index = index_;
-    d->db = medDatabaseController::instance()->database();
+    d->dbController = inputDbController;
+    d->db = inputDbController->database();
     d->isCancelled = false;
 }
 
@@ -317,8 +318,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
     if( removeTableRow ( d->T_PATIENT, patientDbId ) )
         emit removed(medDataIndex(1, patientDbId, -1, -1, -1));
 
-    medDatabaseController * dbi = medDatabaseController::instance();
-    QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientId ) );
+    QDir patientDir ( medStorage::dataLocation() + "/" + d->dbController->stringForPath ( patientId ) );
     
     if ( patientDir.exists() )
         patientDir.rmdir ( patientDir.path() ); // only removes if empty

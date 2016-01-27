@@ -153,6 +153,43 @@ medAbstractData *medDatabaseNonPersistentItem::data(void)
     return d->data;
 }
 
+void medDatabaseNonPersistentItem::setOrientation(const QString& iOrientation)
+{
+    d->orientation = iOrientation;
+}
+
+void medDatabaseNonPersistentItem::setSeriesNumber(const QString& iSeriesNumber)
+{
+    d->seriesNumber = iSeriesNumber;
+}
+
+
+void medDatabaseNonPersistentItem::setSequenceName(const QString& iSequenceName)
+{
+    d->sequenceName = iSequenceName;
+}
+
+
+void medDatabaseNonPersistentItem::setSliceThickness(const QString& iSliceThickness)
+{
+    d->sliceThickness = iSliceThickness;
+}
+
+void medDatabaseNonPersistentItem::setRows(const QString& iRows)
+{
+    d->rows = iRows;
+}
+
+void medDatabaseNonPersistentItem::setColumns(const QString& iColumns)
+{
+    d->columns = iColumns;
+}
+
+void medDatabaseNonPersistentItem::setData(medAbstractData *iData)
+{
+    d->data = iData;
+}
+
 
 bool medDatabaseNonPersistentItem::Match(medAbstractData *medData)
 {

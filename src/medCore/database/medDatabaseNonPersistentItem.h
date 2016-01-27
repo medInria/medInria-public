@@ -66,16 +66,18 @@ public:
     void setSeriesId(const QString& );
     void setSeriesUid(const QString& );
     void setThumb(const QImage& );
+    void setOrientation(const QString& );
+    void setSeriesNumber(const QString& );
+    void setSequenceName(const QString& );
+    void setSliceThickness(const QString& );
+    void setRows(const QString& );
+    void setColumns(const QString& );
 
     void setIndex(const medDataIndex& );
 
     void setData(medAbstractData* );
 
     bool Match(medAbstractData *);
-
-private:
-    friend class medDatabaseNonPersistentControllerImpl;
-    friend class medDatabaseNonPersistentImporter;
 
 private:
     medDatabaseNonPersistentItemPrivate *d;

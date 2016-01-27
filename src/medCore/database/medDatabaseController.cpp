@@ -30,10 +30,11 @@
 
 #include <medDataManager.h>
 
-#include <medDatabaseImporter.h>
 #include <medDatabaseExporter.h>
 #include <medDatabaseReader.h>
 #include <medDatabaseRemover.h>
+
+#include <QSqlError>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace {
@@ -396,51 +397,6 @@ medDataIndex medDatabaseController::indexForImage(const QString &patientName, co
     return medDataIndex();
 }
 
-/**
-* Import data into the db read from file
-* @param const QString & file The file containing the data
-* @param bool indexWithoutCopying true if the file must only be indexed by its current path,
-* false if the file will be imported (copied or converted to the internal storage format)
-*/
-void medDatabaseController::importPath(const QString& file, const QUuid &importUuid, bool indexWithoutCopying)
-{
-    QFileInfo info(file);
-    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),importUuid, indexWithoutCopying);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
- 
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-    
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
-}
-
-/**
-* Import data into the db read from memory
-* @param medAbstractData * data dataObject
-*/
-void medDatabaseController::importData( medAbstractData *data, const QUuid & importUuid)
-{    
-    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-  
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
-}
-
 void medDatabaseController::showOpeningError(QObject *sender)
 {
     medMessageController::instance()->showError("Opening item failed.", 3000);
@@ -450,7 +406,7 @@ void medDatabaseController::createPatientTable(void)
 {
     QSqlQuery query(this->database());
     query.exec(
-            "CREATE TABLE patient ("
+            "CREATE TABLE IF NOT EXISTS patient ("
             " id       INTEGER PRIMARY KEY,"
             " name        TEXT,"
             " thumbnail   TEXT,"
@@ -466,7 +422,7 @@ void medDatabaseController::createStudyTable(void)
     QSqlQuery query(this->database());
 
     query.exec(
-            "CREATE TABLE study ("
+            "CREATE TABLE IF NOT EXISTS study ("
             " id        INTEGER      PRIMARY KEY,"
             " patient   INTEGER," // FOREIGN KEY
             " name         TEXT,"
@@ -481,7 +437,7 @@ void medDatabaseController::createSeriesTable(void)
 {
     QSqlQuery query(this->database());
     query.exec(
-            "CREATE TABLE series ("
+            "CREATE TABLE IF NOT EXISTS series ("
             " id       INTEGER      PRIMARY KEY,"
             " study    INTEGER," // FOREIGN KEY
             " size     INTEGER,"
@@ -520,7 +476,7 @@ void medDatabaseController::createImageTable(void)
 
     QSqlQuery query(this->database());
     query.exec(
-            "CREATE TABLE image ("
+            "CREATE TABLE IF NOT EXISTS image ("
             " id         INTEGER      PRIMARY KEY,"
             " series     INTEGER," // FOREIGN KEY
             " name          TEXT,"
@@ -626,7 +582,7 @@ medDatabaseController::~medDatabaseController()
 /** override base class */
 void medDatabaseController::remove( const medDataIndex& index )
 {
-    medDatabaseRemover *remover = new medDatabaseRemover(index);
+    medDatabaseRemover *remover = new medDatabaseRemover(index, this);
     medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
 
     connect(remover, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
@@ -992,7 +948,7 @@ bool medDatabaseController::contains(const medDataIndex &index) const
 
 medAbstractData* medDatabaseController::retrieve(const medDataIndex &index) const
 {
-    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index, this));
     medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
 
     connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));

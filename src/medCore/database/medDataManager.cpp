@@ -16,6 +16,7 @@
 #include <QDebug>
 
 #include <medAbstractDataFactory.h>
+#include <medDatabaseImporter.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseExporter.h>
@@ -41,6 +42,9 @@ public:
         if( ! dbController || ! nonPersDbController) {
             qCritical() << "One of the DB controllers could not be created !";
         }
+
+        if (dbController && !dbController->createConnection())
+            qDebug() << "Unable to create a connection to the database";
     }
 
     void cleanupTracker()
@@ -65,8 +69,8 @@ public:
     medDataManager * const q_ptr;
     QMutex mutex;
     QHash<medDataIndex, dtkSmartPointer<medAbstractData> > loadedDataObjectTracker;
-    medAbstractDbController * dbController;
-    medAbstractDbController * nonPersDbController;
+    medDatabaseController * dbController;
+    medDatabaseNonPersistentController * nonPersDbController;
     QTimer timer;
     QHash<QUuid, medDataIndex> makePersistentJobs;
 };
@@ -120,6 +124,24 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     return NULL;
 }
 
+void medDataManager::runImporter(medDatabaseImporter* medDatabaseImporter, const QString& messageText)
+{
+    Q_D(medDataManager);
+
+    medMessageProgress *message = medMessageController::instance()->showProgress(messageText);
+
+    connect(medDatabaseImporter, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    connect(medDatabaseImporter, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
+
+    connect(medDatabaseImporter, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(medDatabaseImporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(medDatabaseImporter, SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+
+    medJobManager::instance()->registerJobItem(medDatabaseImporter);
+    QThreadPool::globalInstance()->start(medDatabaseImporter);
+}
+
 
 QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 {
@@ -128,24 +150,56 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 
     Q_D(medDataManager);
     QUuid uuid = QUuid::createUuid();
-    medAbstractDbController * controller = persistent ?  d->dbController : d->nonPersDbController;
-    controller->importData(data, uuid);
+
+    medAbstractDbController * const controller = persistent ?  static_cast<medAbstractDbController*>(d->dbController) : static_cast<medAbstractDbController*>(d->nonPersDbController);
+    const QString messageText = persistent ? "Saving database item" : tr("Opening file item");
+
+    medDatabaseImporter *importer = new medDatabaseImporter(data, uuid, controller);
+    this->runImporter(importer, messageText);
+
     return uuid;
 }
 
 
 QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent)
 {
+
     if ( ! QFile::exists(dataPath))
         return QUuid();
 
     Q_D(medDataManager);
+
     QUuid uuid = QUuid::createUuid();
-    medAbstractDbController * controller = persistent ?  d->dbController : d->nonPersDbController;
-    controller->importPath(dataPath, uuid, indexWithoutCopying);
+    QFileInfo info(dataPath);
+
+    medAbstractDbController * const controller = persistent ?  static_cast<medAbstractDbController*>(d->dbController) : static_cast<medAbstractDbController*>(d->nonPersDbController);
+    const QString messageText = persistent ? "Importing " + info.fileName() : "Importing data item";
+
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), uuid, controller, indexWithoutCopying);
+    this->runImporter(importer, messageText);
     return uuid;
 }
 
+bool medDataManager::isEmpty(DatabaseType inputDataSource)
+{
+    Q_D(medDataManager);
+    bool res = false;
+
+    switch(inputDataSource)
+    {
+        case NonPersistent:
+            res = d->nonPersDbController->availableItems().isEmpty();
+            break;
+        case Persistent:
+            res = d->dbController->patients().isEmpty();
+            break;
+        case AllDatabases:
+            res = (d->dbController->patients().isEmpty() && d->nonPersDbController->availableItems().isEmpty());
+            break;
+    }
+
+    return res;
+}
 
 void medDataManager::exportData(medAbstractData* data)
 {
@@ -344,6 +398,21 @@ QUuid medDataManager::makePersistent(medAbstractData* data)
     }
 
     return jobUuid;
+}
+
+bool medDataManager::moveDatabase(const QString& inputNewLocation, DatabaseType inputDataSource)
+{
+    Q_D(medDataManager);
+    bool res = false;
+    switch(inputDataSource)
+    {
+        case NonPersistent:
+            break;
+        case AllDatabases:
+        case Persistent:
+            res = d->dbController->moveDatabase(inputNewLocation);
+    }
+    return res;
 }
 
 

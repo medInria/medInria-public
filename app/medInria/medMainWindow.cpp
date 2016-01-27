@@ -29,9 +29,6 @@
 #include <medSaveModifiedDialog.h>
 #include <medEmptyDbWarning.h>
 
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseController.h>
-
 #include <medJobManager.h>
 
 #include <medWorkspaceFactory.h>
@@ -540,14 +537,11 @@ void medMainWindow::switchToWorkspaceArea()
                 QVariant(true)).toBool();
     if ( showWarning )
     {
-        QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-        QList<medDataIndex> patients = medDatabaseController::instance()->patients();
-        if( indexes.isEmpty() )
-            if( patients.isEmpty())
-            {
-                medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
-                msgBox->exec();
-            }
+        if(medDataManager::instance()->isEmpty(medDataManager::AllDatabases))
+        {
+            medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
+            msgBox->exec();
+        }
     }
 }
 
@@ -637,9 +631,7 @@ void medMainWindow::hideShortcutAccess()
 
 int medMainWindow::saveModified( void )
 {
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-
-    if(indexes.isEmpty())
+    if(medDataManager::instance()->isEmpty(medDataManager::NonPersistent))
         return QDialog::Accepted;
 
     medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
