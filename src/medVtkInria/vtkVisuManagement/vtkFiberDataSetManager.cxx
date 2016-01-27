@@ -289,7 +289,7 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	  {
 	    fiberMapper->LightingOn();
 	    fiberMapper->ShadowingOn();
-	    fiberMapper->SetInput (bundle);
+        fiberMapper->SetInputData (bundle);
 	  }
 	  else
 
@@ -299,9 +299,9 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	    tubeFilter->SetNumberOfSides (4);
 	    tubeFilter->UseDefaultNormalOff();
 	    tubeFilter->CappingOn();
-	    tubeFilter->SetInput ( bundle );
+        tubeFilter->SetInputData ( bundle );
 	    
-	    mapper->SetInput ( tubeFilter->GetOutput() );
+        mapper->SetInputConnection ( tubeFilter->GetOutputPort() );
 	  }
 	  break;
 	  
@@ -310,21 +310,21 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	  {
 	    fiberMapper->LightingOn();
 	    fiberMapper->ShadowingOff();
-	    fiberMapper->SetInput (bundle);
+        fiberMapper->SetInputData (bundle);
 	  }
 	  else
 	  {
 	    vtkRibbonFilter *ribbonFilter = d->FiberBundlePipelineList[name]->RibbonFilter;
 	    ribbonFilter->SetWidth ( this->GetRadius() );
-	    ribbonFilter->SetInput ( bundle );
+        ribbonFilter->SetInputData ( bundle );
 	    
-	    mapper->SetInput ( ribbonFilter->GetOutput() );
+        mapper->SetInputConnection ( ribbonFilter->GetOutputPort() );
 	  }
 	  break;
 	  
 	case RENDER_IS_POLYLINES:	  
 	default:
-	  mapper->SetInput( bundle );
+      mapper->SetInputData( bundle );
 	  break;
     }
   }

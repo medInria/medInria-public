@@ -85,10 +85,6 @@ target_link_libraries(${PROJECT_NAME}
   ITKCommon
   medCore
   medVtkInria
-  vtkCommon
-  vtkRendering
-  vtkVolumeRendering
-  QVTK
   )
 
 

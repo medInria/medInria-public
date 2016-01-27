@@ -21,11 +21,7 @@ project(medVtkInria)
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
-if (NOT VTK_USE_GLSL_SHADERS )
-    message(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON 
-to use the HWShading library. This option is only available with VTK>=5.1."
-    )
-endif()
+
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -137,37 +133,41 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 
 target_link_libraries(${PROJECT_NAME}  
   ${OPENGL_LIBRARIES}
-  vtkCommon
-  vtkFiltering 
-  vtkRendering
-  vtkWidgets
-  vtkCommon
-  vtkFiltering 
-  vtkRendering
-  vtkWidgets
-  vtkHybrid
-  vtkImaging
-  vtkVolumeRendering
-  vtkGraphics
-  vtkIO
-  ITKVTK
-  ITKCommon
-  ITKIOPhilipsREC # ITK4 IO libs
+  ITKIOImageBase
   ITKIOBMP
-  ITKIOBioRad
-  ITKIOHDF5
-  ITKIOGDCM
-  ITKIOGIPL
-  ITKIOGE
-  ITKIOJPEG
   ITKIOLSM
+  ITKIOJPEG
+  ITKIOPNG
+  ITKIOVTK
+  ITKIOGDCM
+  ITKIOGE
+  ITKNrrdIO
+  ITKIONRRD
   ITKIOMeta
   ITKIONIFTI
-  ITKIONRRD
-  ITKIOPNG
+  ITKIOGIPL
+  ITKIOHDF5
+  ITKIOBioRad
   ITKIOStimulate
-  ITKIOVTK
+  ${ITKIOPhilipsREC_LIBRARIES}
   ITKIOMRC
+  ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
+  vtkCommonCore
+  vtkIOCore
+  vtkIOLegacy
+  vtkIOXML
+  vtkRenderingCore
+  vtkRenderingOpenGL
+  vtkRenderingVolumeOpenGL
+  vtkRenderingVolumeOpenGLNew
+  vtkRenderingFreeTypeOpenGL
+  vtkRenderingContextOpenGL
+  vtkInteractionWidgets
+  vtkInteractionStyle
+  vtkFiltersExtraction
+  vtkImagingStencil
+  vtkFiltersGeometry
+  vtksys
   )
 
 

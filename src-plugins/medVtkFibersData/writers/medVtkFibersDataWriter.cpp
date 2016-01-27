@@ -56,11 +56,12 @@ bool medVtkFibersDataWriter::write(const QString& path)
   if (!dataset)
       return false;
 
-  dataset->Update();
+  //TODO GPR: to check
+  //dataset->Update();
   
   vtkXMLFiberDataSetWriter *writer = vtkXMLFiberDataSetWriter::New();
   writer->SetFileName ( path.toAscii().constData() );
-  writer->SetInput ( dataset );
+  writer->SetInputData ( dataset );
   writer->SetDataModeToBinary();
   writer->Write();
 

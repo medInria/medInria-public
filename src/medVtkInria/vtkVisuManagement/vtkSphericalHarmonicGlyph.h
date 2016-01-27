@@ -36,7 +36,7 @@ public:
 
     /** Specify the geometry to copy to each point. Old style. See SetSourceConnection.*/
 
-    void SetSource(vtkPolyData* source) { this->SetInput(1,source); }
+    void SetSource(vtkPolyData* source) { this->SetInputData(1,source); }
     vtkPolyData *GetSource();
 
     /** Specify the Spherical Harmonic Source that the glyph needs to draw a deform

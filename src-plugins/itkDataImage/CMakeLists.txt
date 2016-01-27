@@ -113,30 +113,29 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  ITKIOBioRad
+  ITKIOImageBase
   ITKIOBMP
-  ITKIOGDCM
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOJPEG
   ITKIOLSM
+  ITKIOJPEG
+  ITKIOPNG
+  ITKIOVTK
+  ITKIOGDCM
+  ITKIOGE
+  ITKNrrdIO
+  ITKIONRRD
   ITKIOMeta
   ITKIONIFTI
-  ITKIONRRD
-  ITKIOPhilipsREC
-  ITKIOPNG
+  ITKIOGIPL
+  ITKIOHDF5
+  ITKIOBioRad
   ITKIOStimulate
-  ITKIOVTK
+  ITKIOMRC
   ITKStatistics
   ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
   medCore
   medImageIO
   medLog
   medVtkInria
-  QVTK
-  vtkCommon
-  vtkRendering
-  vtkVolumeRendering
   )
 
 # needed because of link  with medImageIO

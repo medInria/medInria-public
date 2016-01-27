@@ -394,7 +394,7 @@ int vtkDataManagerReader::RequestInformation(
   this->Superclass::RequestInformation(request, inputVector, outputVector);
   vtkInformation* info = outputVector->GetInformationObject(0);
   info->Set(
-    vtkStreamingDemandDrivenPipeline::MAXIMUM_NUMBER_OF_PIECES(), -1);
+    vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES(), -1);
 
   return 1;
 }

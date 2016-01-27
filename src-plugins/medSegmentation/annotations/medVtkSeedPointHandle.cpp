@@ -31,7 +31,7 @@ medVtkSeedPointHandle::medVtkSeedPointHandle()
 {
     this->PolyData = vtkSmartPointer<vtkPolyData>::New();
     this->Mapper2D = vtkSmartPointer<vtkPolyDataMapper2D>::New();
-    this->Mapper2D->SetInput(this->PolyData);
+    this->Mapper2D->SetInputData(this->PolyData);
 
     this->SetHandle( PolyData );
     this->SizeInDisplayUnits = 10;
@@ -73,7 +73,7 @@ void medVtkSeedPointHandle::BuildPolyData()
   //radius *= / this->HandleSize;
 
   // Generate circle
-  double len = vtkMath::DoubleTwoPi()*this->SizeInDisplayUnits;
+  double len = 2.0*vtkMath::Pi()*this->SizeInDisplayUnits;
   int num = len / 8;
   num = std::min( num , 64 );
   num = std::max( num , 1 );
@@ -83,7 +83,7 @@ void medVtkSeedPointHandle::BuildPolyData()
   lines->InsertNextCell(num + 1);
 
   for ( int i(0); i<num; ++i ) {
-      double theta = i * (double)( vtkMath::DoubleTwoPi() / num );
+      double theta = i * (double)( 2.0*vtkMath::Pi() / num );
       pts->SetPoint(i, radius *  std::cos(theta), radius * std::sin(theta), 0. );
       lines->InsertCellPoint(i);
   }
