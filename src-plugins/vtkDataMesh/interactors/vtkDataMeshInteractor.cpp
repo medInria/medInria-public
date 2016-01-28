@@ -271,6 +271,22 @@ void vtkDataMeshInteractor::setOpacity(double value)
 {
     d->actorProperty->SetOpacity(value);
     this->opacityParameter()->setValue(value);
+
+    if (!d->metaDataSet->GetLookupTable())
+    {
+        vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
+        lut->SetRange(0, 2000); // image intensity range
+        lut->SetNumberOfColors(1);
+        lut->SetAlpha(value);
+        lut->Build();
+
+        d->metaDataSet->SetLookupTable(lut);
+    }
+    else
+    {
+        d->metaDataSet->GetLookupTable()->SetAlpha(value);
+    }
+
     d->view->render();
 }
 
