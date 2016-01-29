@@ -1,20 +1,15 @@
 #pragma once
 
-#include <medSegmentationAbstractToolBox.h>
-
 #include <mscAlgorithmPaintPluginExport.h>
 
 #include <medAbstractData.h>
-#include <medIntParameter.h>
 #include <medDoubleParameter.h>
-#include <medDataIndex.h>
-#include <medViewEventFilter.h>
 #include <medImageMaskAnnotationData.h>
+#include <medIntParameter.h>
+#include <medSegmentationAbstractToolBox.h>
+#include <medViewEventFilter.h>
 
 #include <QVector3D>
-#include <QTextEdit>
-
-#include <vector>
 
 #include <itkImage.h>
 #include <itkImageRegionIterator.h>
@@ -110,7 +105,6 @@ public slots:
     void setLabel(int newVal);
     void setLabelColor();
 
-    void synchronizeWandSpinBoxesAndSliders(void);
     void updateMagicWandComputation();
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view);
@@ -145,8 +139,6 @@ protected:
     void updateTableRow(int row);
 
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
-
-    void updateFromGuiItems();
 
     void showButtons( bool value);
 
@@ -188,10 +180,7 @@ private:
     QTime wandTimer;
 
     bool seedPlanted;
-    bool initiateRegionGrowth;
     QVector3D m_seed;
-    double m_wandRadius, m_wandUpperThreshold, m_wandLowerThreshold;
-    //
 
     // Common objects
     QPushButton *m_interpolateButton;
@@ -199,11 +188,6 @@ private:
     QSpinBox *m_strokeLabelSpinBox;
     QLabel *m_colorLabel;
     QShortcut *undo_shortcut, *redo_shortcut, *copy_shortcut, *paste_shortcut;
-    unsigned int m_strokeLabel;
-    //
-
-    double m_MinValueImage;
-    double m_MaxValueImage;
 
     QPushButton *m_applyButton;
 
