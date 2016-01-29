@@ -144,19 +144,6 @@ public:
       QSlider::setSingleStep(1);
       };
 
-protected:
-  void paintEvent(QPaintEvent *ev) {
-      QSlider::paintEvent(ev);
-    int position = QStyle::sliderPositionFromValue(minimum(),
-                                                   maximum(),
-                                                   5,
-                                                   width());
-    QPainter painter(this);
-    painter.drawLine(position, 0, position, height());
-    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-
-  }
-
 private:
     double min;              
     double max;              
