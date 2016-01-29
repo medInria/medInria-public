@@ -471,13 +471,14 @@ void medAbstractLayeredView::write(QString& path)
         // we use allWriters as the list of keys to make sure we traverse possibleWriters
         // in the order specified by the writers priorities.
         foreach(QString type, allWriters) {
-            if (!possibleWriters.contains(type))
-                continue;
-            QStringList extensionList = possibleWriters[type]->supportedFileExtensions();
-            if(!extensionList.isEmpty())
+            if (possibleWriters.contains(type))
             {
-                fileExtension = extensionList.first();
-                break;
+                QStringList extensionList = possibleWriters[type]->supportedFileExtensions();
+                if(!extensionList.isEmpty())
+                {
+                    fileExtension = extensionList.first();
+                    break;
+                }
             }
         }
         //3.releasing allocated memory
