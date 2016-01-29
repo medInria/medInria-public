@@ -14,8 +14,8 @@
 #pragma once
 
 #include <medAbstractParameter.h>
-#include <medSlider.h>
 #include <medCoreExport.h>
+#include <medSlider.h>
 
 class QWidget;
 class QSpinBox;

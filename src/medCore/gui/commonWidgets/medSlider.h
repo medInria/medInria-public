@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <QtGui>
 #include <medCoreExport.h>
+#include <QtGui>
 
 
 class medSlider : public QSlider{

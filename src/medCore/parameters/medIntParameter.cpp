@@ -12,9 +12,8 @@
 =========================================================================*/
 
 #include <medIntParameter.h>
-
-#include <QSpinBox>
 #include <medSlider.h>
+#include <QSpinBox>
 
 class medIntParameterPrivate
 {
