@@ -36,15 +36,15 @@
 class superResolutionToolBoxPrivate
 {
 public:
-    medAbstractView * currentView;
+    QPushButton * run;
+    dtkSmartPointer<medAbstractData> inputVol0;
+    dtkSmartPointer<medAbstractData> inputVol1;
+    dtkSmartPointer<medAbstractData> inputMask0;
+    dtkSmartPointer<medAbstractData> inputMask1;
 
-    QPushButton                * run;
-    QVector<medAbstractData *>   inputs;
-    superResolutionProcess     * process;
+    dtkSmartPointer <medAbstractProcess> process;
 
     medAbstractData * output;
-
-    dtkSmartPointer<medAbstractProcess> threshold;
 
     medDropSite *dropOrOpenRoi0;
     medDropSite *dropOrOpenRoi1;
@@ -58,8 +58,6 @@ public:
 superResolutionToolBox::superResolutionToolBox (QWidget *parent) : medSegmentationAbstractToolBox (parent), d(new superResolutionToolBoxPrivate)
 {
     this->setTitle("Super Resolution");
-    //this->setAboutPluginVisibility(true); //information icon in toolbox
-    //this->setAboutPluginButton(this->plugin());
 
     // Global widget
     QWidget *superResolutionToolBoxBody = new QWidget(this);
@@ -73,11 +71,13 @@ superResolutionToolBox::superResolutionToolBox (QWidget *parent) : medSegmentati
     d->dropOrOpenRoi0->setToolTip(tr("Drop 1st binary mask"));
     d->dropOrOpenRoi0->setText(tr("Drop 1st mask"));
     d->dropOrOpenRoi0->setCanAutomaticallyChangeAppereance(false);
+    dropBoxLayout0->addWidget(d->dropOrOpenRoi0);
 
     d->dropOrOpenRoi1 = new medDropSite(superResolutionToolBoxBody);
     d->dropOrOpenRoi1->setToolTip(tr("Drop 2nd binary mask"));
     d->dropOrOpenRoi1->setText(tr("Drop 2nd mask"));
     d->dropOrOpenRoi1->setCanAutomaticallyChangeAppereance(false);
+    dropBoxLayout0->addWidget(d->dropOrOpenRoi1);
 
     // Drop box for volumes
     QHBoxLayout *dropBoxLayout1 = new QHBoxLayout(superResolutionToolBoxBody);
@@ -86,17 +86,14 @@ superResolutionToolBox::superResolutionToolBox (QWidget *parent) : medSegmentati
     d->dropOrOpenRoi2->setToolTip(tr("Drop anatomic volume"));
     d->dropOrOpenRoi2->setText(tr("Drop 1st volume"));
     d->dropOrOpenRoi2->setCanAutomaticallyChangeAppereance(false);
+    dropBoxLayout1->addWidget(d->dropOrOpenRoi2);
 
     d->dropOrOpenRoi3 = new medDropSite(superResolutionToolBoxBody);
     d->dropOrOpenRoi3->setToolTip(tr("Drop 2nd anatomic volume"));
     d->dropOrOpenRoi3->setText(tr("Drop 2nd volume"));
     d->dropOrOpenRoi3->setCanAutomaticallyChangeAppereance(false);
-
-
-    dropBoxLayout0->addWidget(d->dropOrOpenRoi0);
-    dropBoxLayout0->addWidget(d->dropOrOpenRoi1);
-    dropBoxLayout1->addWidget(d->dropOrOpenRoi2);
     dropBoxLayout1->addWidget(d->dropOrOpenRoi3);
+
     superResolutionToolBoxLayout->addLayout(dropBoxLayout0);
     superResolutionToolBoxLayout->addLayout(dropBoxLayout1);
 
@@ -122,12 +119,12 @@ superResolutionToolBox::superResolutionToolBox (QWidget *parent) : medSegmentati
 
     // Handle
     connect (d->dropOrOpenRoi0, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(onVol0Imported(const medDataIndex&)));
-    //connect (d->dropOrOpenRoi0, SIGNAL(clicked()),                          this, SLOT(onDropSiteClicked()));
     connect (d->dropOrOpenRoi1, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(onVol1Imported(const medDataIndex&)));
-    //connect (d->dropOrOpenRoi1, SIGNAL(clicked()),                          this, SLOT(onDropSiteClicked()));
     connect (d->dropOrOpenRoi2, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(onVol2Imported(const medDataIndex&)));
     connect (d->dropOrOpenRoi3, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(onVol3Imported(const medDataIndex&)));
     connect (clearRoiButton,    SIGNAL(clicked()),                          this, SLOT(onClearRoiButtonClicked()));
+
+    d->output = 0;
 }
 
 /* Slot called when external ROI image finishes being imported. */
@@ -140,71 +137,32 @@ void superResolutionToolBox::onRoiImportedDo(const medDataIndex& index, int inpu
 {
     medAbstractData * data = medDataManager::instance()->retrieveData(index);
 
-    // we accept only ROIs (itkDataImageUChar3)
-    if (!data){return;}
-
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
-    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
+    switch (inputNumber)
     {
-        // first try to get it from controller
-        QPixmap thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            switch (inputNumber)
-            {
-                case 0: {
-                    d->dropOrOpenRoi0->setPixmap(thumbImage);
-                    break;
-                }
-                case 1: {
-                    d->dropOrOpenRoi1->setPixmap(thumbImage);
-                    break;
-                }
-                case 2:
-                {
-                    d->dropOrOpenRoi2->setPixmap(thumbImage);
-                    break;
-                }
-                case 3:
-                {
-                    d->dropOrOpenRoi3->setPixmap(thumbImage);
-                }
-           }
-            shouldSkipLoading = true;
-        }
+    case 0:
+    {
+        d->dropOrOpenRoi0->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi0->sizeHint()));
+        d->inputMask0 = data;
+        break;
     }
-    if (!shouldSkipLoading) {
-
-        QImageReader reader(thumbpath);
-
-        switch (inputNumber)
-        {
-            case 0: {
-                d->dropOrOpenRoi0->setPixmap(QPixmap::fromImage(reader.read()));
-                break;
-            }
-            case 1: {
-                d->dropOrOpenRoi1->setPixmap(QPixmap::fromImage(reader.read()));
-                break;
-            }
-            case 2:
-            {
-                d->dropOrOpenRoi2->setPixmap(QPixmap::fromImage(reader.read()));
-                break;
-            }
-            case 3:
-            {
-                d->dropOrOpenRoi3->setPixmap(QPixmap::fromImage(reader.read()));
-            }
-       }
+    case 1:
+    {
+        d->dropOrOpenRoi1->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi1->sizeHint()));
+        d->inputMask1 = data;
+        break;
     }
-
-    d->inputs.push_back(data);
+    case 2:
+    {
+        d->dropOrOpenRoi2->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi2->sizeHint()));
+        d->inputVol0 = data;
+        break;
+    }
+    case 3:
+    {
+        d->dropOrOpenRoi3->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi3->sizeHint()));
+        d->inputVol1 = data;
+    }
+    }
 }
 
 // Sets the image passed as parameter as the @medDropSite image.
@@ -241,98 +199,51 @@ void superResolutionToolBox::setWorkspace(medAbstractWorkspace * workspace)
     d->workspace = workspace;
     medTabbedViewContainers * containers = workspace->stackedViewContainers();
     QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
-    updateView();
 }
 
-// Instantiate the superResolutionProcess using the instance of the dtkAbstractProcessFactory.
 void superResolutionToolBox::runProcessRequest()
 {
-    if ( d->inputs.count() != 4 ) return;
+    if ( d->inputVol0 && d->inputVol1 && d->inputMask0 && d->inputMask1)
+    {
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("superResolutionProcess");
+        d->process->setInput(d->inputVol0, 0);
+        d->process->setInput(d->inputVol1, 1);
+        d->process->setInput(d->inputMask0,2);
+        d->process->setInput(d->inputMask1,3);
 
-    if ( !d->inputs[0] || !d->inputs[1] || !d->inputs[2] || !d->inputs[3])
-        return;
+        medRunnableProcess *runProcess = new medRunnableProcess;
+        runProcess->setProcess (d->process);
+        d->progression_stack->addJobItem(runProcess, "Progress:");
+        d->progression_stack->disableCancel(runProcess);
 
-    // Wait Cursor
-    this->setCursor(Qt::WaitCursor);
-    QApplication::processEvents();
+        connect (runProcess, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
+        connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (setOutput()));          //after success of process, get output
+        connect (runProcess, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
+        connect (runProcess, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
+        connect (runProcess, SIGNAL (activate(QObject*,bool)), d->progression_stack, SLOT(setActive(QObject*,bool)));
 
-    d->process = new superResolutionProcess;
-    d->process->setInput(d->inputs[0],0);
-    d->process->setInput(d->inputs[1],1);
-    d->process->setInput(d->inputs[2],2);
-    d->process->setInput(d->inputs[3],3);
-
-    medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess (d->process);
-    d->progression_stack->addJobItem(runProcess, "Progress:");
-    d->progression_stack->disableCancel(runProcess);
-
-    connect (runProcess, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (setOutput()));          //after success of process, get output
-    connect (runProcess, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (activate(QObject*,bool)), d->progression_stack, SLOT(setActive(QObject*,bool)));
-
-    medJobManager::instance()->registerJobItem(runProcess);
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
-
-    // Arrow Cursor
-    this->setCursor(Qt::ArrowCursor);
+        medJobManager::instance()->registerJobItem(runProcess);
+        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+    }
 }
 
 medAbstractData* superResolutionToolBox::processOutput()
 {
-    if(!d->output)
-        return NULL;
-
     return d->output;
 }
 
 // Open the process output using the current view container of the workspace
 void superResolutionToolBox::setOutput()
 {
-    if(!d->process)
-        return;
-
     d->output = d->process->output();
 
-    if ( !d->output )
-        return;
+    if ( d->output )
+    {
+        medDataManager::instance()->importData(d->output, false);
 
-    medUtilities::setDerivedMetaData(d->output, d->inputs[0], "super resolution");
-    medDataManager::instance()->importData(d->output, false);
-
-    medTabbedViewContainers * containers = d->workspace->stackedViewContainers();
-    containers->containersInTab(containers->currentIndex()).at(0)->addData(d->output); // TODO : find a solution for this. verify if it creates new container or add as a layer
-
-    // Create binary of output
-    /*d->threshold = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkThresholdingProcess" );
-    if (!d->threshold)
-        return;
-    d->threshold->setInput(d->output);
-    d->threshold->setParameter(2, 0); //thresholdValue
-    d->threshold->setParameter(0.0, 1); //outsideValue
-    d->threshold->setParameter(0.0, 2); //comparisonOperator (0 : <)
-    d->threshold->update();
-
-    d->threshold->setInput(d->threshold->output());
-    d->threshold->setParameter(2, 0); //thresholdValue
-    d->threshold->setParameter(1.0, 1); //outsideValue
-    d->threshold->setParameter(1.0, 2); //comparisonOperator (0 : >)
-    d->threshold->update();
-
-    if (!d->threshold->output())
-        return;
-
-    // Display binary data in container
-    medAbstractData * thresholdedImage = d->threshold->output();
-    //thresholdedImage->copyMetaDataFrom(d->inputs[0]);
-    setOutputMetadata(d->inputs[0], thresholdedImage);
-    thresholdedImage->setMetaData ( medMetaDataKeys::SeriesDescription.key(), "SuperResolutionBinary" );
-    medDataManager::instance()->importData(thresholdedImage, false); //save in database
-
-    medViewContainerSplitter *splitter = dynamic_cast<medViewContainerSplitter*>(containers->widget(0));
-    splitter->split(splitter->containers()[0])->addData(thresholdedImage);*/
+        medTabbedViewContainers * containers = d->workspace->stackedViewContainers();
+        containers->containersInTab(containers->currentIndex()).at(0)->addData(d->output);
+    }
 }
 
 void superResolutionToolBox::onClearRoiButtonClicked(void)
@@ -349,26 +260,8 @@ void superResolutionToolBox::onClearRoiButtonClicked(void)
     d->dropOrOpenRoi3->clear();
     d->dropOrOpenRoi3->setText(tr("Drop 2nd volume"));
 
-    d->inputs.clear();
-}
-
-// Save current container when clicked
-void superResolutionToolBox::updateView()
-{
-    medTabbedViewContainers * containers = d->workspace->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
-    medAbstractView *view=NULL;
-    for(int i=0;i<containersInTabSelected.length();i++)
-    {
-        if (containersInTabSelected[i]->isSelected())
-        {
-            view = containersInTabSelected[i]->view();
-            break;
-        }
-    }
-
-    if (!view)
-        return;
-
-    d->currentView = view;
+    d->inputVol0 = 0;
+    d->inputVol1 = 0;
+    d->inputMask0 = 0;
+    d->inputMask1 = 0;
 }

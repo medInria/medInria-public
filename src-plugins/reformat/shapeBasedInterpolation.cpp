@@ -20,8 +20,6 @@
 #include <itkBinaryDilateImageFilter.h>
 #include <itkBinaryErodeImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
-
-//#include <itkGradientMagnitudeImageFilter.h>
 #include <itkDerivativeImageFilter.h>
 #include <itkNormalizeImageFilter.h>
 #include <itkSignedMaurerDistanceMapImageFilter.h>
@@ -30,8 +28,6 @@
 // Create volumes needed to compute final output
 void shapeBasedInterpolationPrivate::createEmptyVolumes(int inputNumber)
 {
-    cout<<"shapeBasedInterpolationPrivate::createEmptyVolumes"<<endl;
-
     // Get meta data from input.
     this->inputSpacing.push_back(this->input[inputNumber]->GetSpacing());
     this->inputSize.push_back(   this->input[inputNumber]->GetLargestPossibleRegion().GetSize());
@@ -81,8 +77,6 @@ void shapeBasedInterpolationPrivate::createEmptyVolumes(int inputNumber)
 // Compute shape based interpolation volumes && interpolate MRI volumes
 void shapeBasedInterpolationPrivate::computeShapeBasedInterpolation(int inputNumber)
 {
-    cout<<"shapeBasedInterpolationPrivate::computeShapeBasedInterpolation"<<endl;
-
     itk::MultiThreader::SetGlobalDefaultNumberOfThreads(8);
 
     int sizeZ = this->inputSize[inputNumber][2];
@@ -312,8 +306,6 @@ void shapeBasedInterpolationPrivate::computeIntermediateMRISlice(Mask2dType::Poi
 // Compute Distance Map, Gradient & Normalization on a 3D volume
 void shapeBasedInterpolationPrivate::computeGradientMap(int inputNumber)
 {
-    cout<<"shapeBasedInterpolationPrivate::computeGradientMap"<<endl;
-
     // A'->A'3d and B'->B'3d doing 3D-distance maps on volumes A' and B'
     typedef itk::SignedMaurerDistanceMapImageFilter < MaskType, MaskFloatType > DistanceMap3DType;
     DistanceMap3DType::Pointer distanceMap3DFilter = DistanceMap3DType::New();
@@ -351,8 +343,6 @@ void shapeBasedInterpolationPrivate::computeGradientMap(int inputNumber)
 // Create empty final output, and fill it
 void shapeBasedInterpolationPrivate::createFinalSeq()
 {
-    cout<<"shapeBasedInterpolationPrivate::createFinalSeq"<<endl;
-
     // -- Create output volume and fill with 0
     this->output = MaskType::New();
 
@@ -460,19 +450,16 @@ shapeBasedInterpolation::~shapeBasedInterpolation()
     d = NULL;
 }
 
-void shapeBasedInterpolation::setInput(MaskType::Pointer input0, MaskType::Pointer input1, MaskType::Pointer input2, MaskType::Pointer input3)
+void shapeBasedInterpolation::pushInput(MaskType::Pointer input)
 {
-    if (!input0 || !input1 || !input2 || !input3)
-        return;
-
-    d->input.push_back(input0);
-    d->input.push_back(input1);
-    d->input.push_back(input2);
-    d->input.push_back(input3);
+    if (input)
+    {
+        d->input.push_back(input);
+    }
 }
 
 // return output
-shapeBasedInterpolation::MaskType::Pointer shapeBasedInterpolation::output()
+MaskType::Pointer shapeBasedInterpolation::output()
 {
     return d->output;
 }

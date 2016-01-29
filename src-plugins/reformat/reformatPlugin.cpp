@@ -71,6 +71,10 @@ bool reformatPlugin::initialize()
     {
         dtkWarn() << "Unable to register reformat process";
     }
+    if (!superResolutionProcess::registered())
+    {
+        dtkWarn() << "Unable to register superResolution process";
+    }
     return true;
 }
 

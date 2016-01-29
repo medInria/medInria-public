@@ -14,11 +14,11 @@
 
 #pragma once
 
+#include <dtkCore/dtkSmartPointer.h>
+#include <itkImage.h>
 #include <medAbstractProcess.h>
 #include <medAbstractData.h>
 #include "reformatPluginExport.h"
-//#include <medToolBox.h>
-//#include <itkImage.h>
 
 class superResolutionProcessPrivate;
 
@@ -37,17 +37,18 @@ public slots:
 
     //! Input data to the plugin is set through here
     void setInput(medAbstractData *data, int channel);
+
     //! Method to actually start the filter
     int update(void);
 
     //! The output will be available through here
     medAbstractData *output(void);
 
-    medAbstractData* castToUChar3(medAbstractData* image);
-
 private:
-    template <class ImageType> void runButton();
-    template <typename IMAGE> medAbstractData* cast(medAbstractData* image);
+    typedef itk::Image <unsigned char, 3> MaskType;
+
+    MaskType::Pointer medAbstractDataToITK(dtkSmartPointer<medAbstractData> image);
+    template <typename IMAGE> MaskType::Pointer medAbstractDataToITK(dtkSmartPointer<medAbstractData> image);
     superResolutionProcessPrivate *d;
 };
 
