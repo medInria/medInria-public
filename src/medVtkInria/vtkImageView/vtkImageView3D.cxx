@@ -819,7 +819,6 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
     }
     this->GetImage3DDisplayForLayer(layer)->SetVisibility(visibility);
   }
-  this->InternalUpdate();
 }
 
 //----------------------------------------------------------------------------
