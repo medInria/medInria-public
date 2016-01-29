@@ -205,10 +205,6 @@ void superResolutionToolBox::runProcessRequest()
 {
     if ( d->inputVol0 && d->inputVol1 && d->inputMask0 && d->inputMask1)
     {
-        // Wait Cursor
-        this->setCursor(Qt::WaitCursor);
-        QApplication::processEvents();
-
         d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("superResolutionProcess");
         d->process->setInput(d->inputVol0, 0);
         d->process->setInput(d->inputVol1, 1);
@@ -228,9 +224,6 @@ void superResolutionToolBox::runProcessRequest()
 
         medJobManager::instance()->registerJobItem(runProcess);
         QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
-
-        // Arrow Cursor
-        this->setCursor(Qt::ArrowCursor);
     }
 }
 
