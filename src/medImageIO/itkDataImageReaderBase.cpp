@@ -255,7 +255,7 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
         medData->addMetaData(medAbstractImageData::PixelMeaningMetaData,QString(PixMeaning.c_str()));
 
     // Add meta data to the medAbstractData volume
-    QStringList keyList = metaDataKeysToCopyForDerivedData();
+    QStringList keyList = metaDataKeysToCopy();
     std::string value;
     foreach(QString key, keyList)
     {
@@ -276,7 +276,7 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     return true;
 }
 
-QStringList itkDataImageReaderBase::metaDataKeysToCopyForDerivedData()
+QStringList itkDataImageReaderBase::metaDataKeysToCopy()
 {
     QStringList keys;
 

@@ -63,7 +63,7 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     }
 
     // Add meta data to the output volume
-    QStringList keyList = metaDataKeysToCopyForDerivedData();
+    QStringList keyList = metaDataKeysToCopy();
     foreach(QString key, keyList)
     {
         itk::EncapsulateMetaData(dict, key.toStdString().c_str(),
@@ -85,7 +85,7 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     return true;
 }
 
-QStringList itkDataImageWriterBase::metaDataKeysToCopyForDerivedData()
+QStringList itkDataImageWriterBase::metaDataKeysToCopy()
 {
     QStringList keys;
 
