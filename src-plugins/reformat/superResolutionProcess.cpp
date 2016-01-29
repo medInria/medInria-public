@@ -103,11 +103,11 @@ int superResolutionProcess::update ( void )
 {
     if ( d->inputVol0 && d->inputVol1 && d->inputMask0 && d->inputMask1 )
     {
-        // cast to unsigned char and set input in shapeBasedInterpolationFilter
-        MaskType* res0 = castToUChar3(d->inputVol0);
-        MaskType* res1 = castToUChar3(d->inputVol1);
-        MaskType* res2 = castToUChar3(d->inputMask0);
-        MaskType* res3 = castToUChar3(d->inputMask1);
+        // extract itk volume from medAbstractData
+        MaskType::Pointer res0 = medAbstractDataToITK(d->inputVol0);
+        MaskType::Pointer res1 = medAbstractDataToITK(d->inputVol1);
+        MaskType::Pointer res2 = medAbstractDataToITK(d->inputMask0);
+        MaskType::Pointer res3 = medAbstractDataToITK(d->inputMask1);
 
         if ( res0 && res1 && res2 && res3 )
         {
@@ -129,49 +129,49 @@ int superResolutionProcess::update ( void )
     return DTK_FAILURE;
 }
 
-MaskType* superResolutionProcess::castToUChar3(dtkSmartPointer<medAbstractData> image)
+MaskType::Pointer superResolutionProcess::medAbstractDataToITK(dtkSmartPointer<medAbstractData> image)
 {
     QString id = image->identifier();
 
     if ( id == "itkDataImageChar3" )
     {
-        return cast< itk::Image <char,3> >(image);
+        return medAbstractDataToITK< itk::Image <char,3> >(image);
     }
     else if ( id == "itkDataImageUChar3" )
     {
-        return cast< itk::Image <unsigned char,3> >(image);
+        return medAbstractDataToITK< itk::Image <unsigned char,3> >(image);
     }
     else if ( id == "itkDataImageShort3" )
     {
-        return cast< itk::Image <short,3> >(image);
+        return medAbstractDataToITK< itk::Image <short,3> >(image);
     }
     else if ( id == "itkDataImageUShort3" )
     {
-        return cast< itk::Image <unsigned short,3> >(image);
+        return medAbstractDataToITK< itk::Image <unsigned short,3> >(image);
     }
     else if ( id == "itkDataImageInt3" )
     {
-        return cast< itk::Image <int,3> >(image);
+        return medAbstractDataToITK< itk::Image <int,3> >(image);
     }
     else if ( id == "itkDataImageUInt3" )
     {
-        return cast< itk::Image <unsigned int,3> >(image);
+        return medAbstractDataToITK< itk::Image <unsigned int,3> >(image);
     }
     else if ( id == "itkDataImageLong3" )
     {
-        return cast< itk::Image <long,3> >(image);
+        return medAbstractDataToITK< itk::Image <long,3> >(image);
     }
     else if ( id== "itkDataImageULong3" )
     {
-        return cast< itk::Image <unsigned long,3> >(image);
+        return medAbstractDataToITK< itk::Image <unsigned long,3> >(image);
     }
     else if ( id == "itkDataImageFloat3" )
     {
-        return cast< itk::Image <float,3> >(image);
+        return medAbstractDataToITK< itk::Image <float,3> >(image);
     }
     else if ( id == "itkDataImageDouble3" )
     {
-        return cast< itk::Image <double,3> >(image);
+        return medAbstractDataToITK< itk::Image <double,3> >(image);
     }
     else
     {
@@ -183,8 +183,8 @@ MaskType* superResolutionProcess::castToUChar3(dtkSmartPointer<medAbstractData> 
 }
 
 template <typename IMAGE>
-MaskType*
-superResolutionProcess::cast(dtkSmartPointer<medAbstractData> image)
+MaskType::Pointer
+superResolutionProcess::medAbstractDataToITK(dtkSmartPointer<medAbstractData> image)
 {
     IMAGE* tmpPtr = dynamic_cast<IMAGE*> ((itk::Object*)(image->data()));
 
@@ -193,7 +193,7 @@ superResolutionProcess::cast(dtkSmartPointer<medAbstractData> image)
         typedef itk::CastImageFilter <IMAGE, MaskType> CastFilter;
         typename CastFilter::Pointer castFilter = CastFilter::New();
 
-        castFilter->SetInput(dynamic_cast<IMAGE*>((itk::Object*)(tmpPtr)));
+        castFilter->SetInput(tmpPtr);
         castFilter->Update();
 
         return castFilter->GetOutput();

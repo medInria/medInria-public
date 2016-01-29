@@ -47,8 +47,8 @@ public slots:
 private:
     typedef itk::Image <unsigned char, 3> MaskType;
 
-    MaskType* castToUChar3(dtkSmartPointer<medAbstractData> image);
-    template <typename IMAGE> MaskType* cast(dtkSmartPointer<medAbstractData> image);
+    MaskType::Pointer medAbstractDataToITK(dtkSmartPointer<medAbstractData> image);
+    template <typename IMAGE> MaskType::Pointer medAbstractDataToITK(dtkSmartPointer<medAbstractData> image);
     superResolutionProcessPrivate *d;
 };
 
