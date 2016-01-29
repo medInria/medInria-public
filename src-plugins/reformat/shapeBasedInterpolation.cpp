@@ -450,7 +450,7 @@ shapeBasedInterpolation::~shapeBasedInterpolation()
     d = NULL;
 }
 
-void shapeBasedInterpolation::setInput(MaskType::Pointer input)
+void shapeBasedInterpolation::pushInput(MaskType::Pointer input)
 {
     if (input)
     {

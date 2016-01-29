@@ -111,10 +111,10 @@ int superResolutionProcess::update ( void )
 
         if ( res0 && res1 && res2 && res3 )
         {
-            d->shapeBasedInterpolationFilter.setInput(res0);
-            d->shapeBasedInterpolationFilter.setInput(res1);
-            d->shapeBasedInterpolationFilter.setInput(res2);
-            d->shapeBasedInterpolationFilter.setInput(res3);
+            d->shapeBasedInterpolationFilter.pushInput(res0);
+            d->shapeBasedInterpolationFilter.pushInput(res1);
+            d->shapeBasedInterpolationFilter.pushInput(res2);
+            d->shapeBasedInterpolationFilter.pushInput(res3);
 
             connect(&d->shapeBasedInterpolationFilter , SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
             d->shapeBasedInterpolationFilter.run();
