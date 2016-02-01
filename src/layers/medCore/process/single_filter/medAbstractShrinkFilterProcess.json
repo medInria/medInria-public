@@ -1,0 +1,9 @@
+{
+          "title" : "Shrink filter",
+           "kind" : "process",
+           "type" : "medAbstractShrinkFilterProcess",
+           "tags" : ["shrink","filter", "operation"],
+    "description" : "<p>Shrink filter</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

@@ -1,0 +1,9 @@
+{
+          "title" : "Add filter",
+           "kind" : "process",
+           "type" : "medAbstractAddFilterProcess",
+           "tags" : ["plus","add", "addition", "filter", "operation"],
+    "description" : "<p>Add constant to image</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

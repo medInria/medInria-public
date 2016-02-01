@@ -1,0 +1,9 @@
+{
+          "title" : "Windowing filter",
+           "kind" : "process",
+           "type" : "medAbstractWindowingFilterProcess",
+           "tags" : ["windowing","level", "filter", "operation"],
+    "description" : "<p>Windowing level filter</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}
