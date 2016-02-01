@@ -17,5 +17,15 @@
         <file>process/diffusion_processes/medAbstractDWIMaskingProcess.json</file>
         <file>process/diffusion_processes/medAbstractDiffusionScalarMapsProcess.json</file>
         <file>process/diffusion_processes/medAbstractTractographyProcess.json</file>
+        <file>process/single_filter/medAbstractWindowingFilterProcess.json</file>
+        <file>process/single_filter/medAbstractSubtractFilterProcess.json</file>
+        <file>process/single_filter/medAbstractShrinkFilterProcess.json</file>
+        <file>process/single_filter/medAbstractNormalizeFilterProcess.json</file>
+        <file>process/single_filter/medAbstractMultiplyFilterProcess.json</file>
+        <file>process/single_filter/medAbstractMedianFilterProcess.json</file>
+        <file>process/single_filter/medAbstractInvertFilterProcess.json</file>
+        <file>process/single_filter/medAbstractGaussianFilterProcess.json</file>
+        <file>process/single_filter/medAbstractDivideFilterProcess.json</file>
+        <file>process/single_filter/medAbstractAddFilterProcess.json</file>
     </qresource>
 </RCC>

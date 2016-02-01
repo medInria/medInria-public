@@ -1,0 +1,9 @@
+{
+          "title" : "Multiply Filter",
+           "kind" : "process",
+           "type" : "medAbstractMultiplyFilterProcess",
+           "tags" : ["multiply","filter", "operation"],
+    "description" : "<p>Multiply image by constant</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

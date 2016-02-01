@@ -31,6 +31,7 @@ list_source_files(${TARGET_NAME}
   process
   process/arithmetic_operation
   process/morphomath_operation
+  process/single_filter
   )
 
 list_header_directories_to_include(${TARGET_NAME}
