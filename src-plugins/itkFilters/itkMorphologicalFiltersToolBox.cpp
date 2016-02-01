@@ -93,6 +93,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->mmButton->setChecked(true);
 
     d->pixelButton = new QRadioButton(tr("pixels"), this);
+    d->pixelButton->setObjectName("pixels");
     d->pixelButton->setToolTip(tr("If \"pixels\" is selected, the dimensions of the structuring element will be calculated in pixels."));
 
     morphoFilterLayout->addWidget ( morphoFilterLabel );
