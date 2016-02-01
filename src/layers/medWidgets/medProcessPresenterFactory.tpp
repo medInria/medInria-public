@@ -18,7 +18,7 @@
 #include <dtkLog>
 
 template<typename ProcessType, typename PresenterType>
-PresenterType * medProcessPresenterFactory<ProcessType, PresenterType>::create(ProcessType *process) const
+PresenterType * medProcessPresenterFactory<ProcessType, PresenterType>::create(medAbstractProcess *process) const
 {
     PresenterType *presenter = NULL;
     if(process != NULL)

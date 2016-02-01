@@ -15,14 +15,15 @@
 
 #include <QStringList>
 #include <QHash>
+#include <medAbstractProcess.h>
 
 template <typename ProcessType, typename PresenterType> class medProcessPresenterFactory
 {
 public:
-    typedef PresenterType *(*creator) (ProcessType *);
+    typedef PresenterType *(*creator) (medAbstractProcess *);
 
 public:
-    PresenterType *create(ProcessType *process) const;
+    PresenterType *create(medAbstractProcess *process) const;
 
 public:
 public:
@@ -46,7 +47,7 @@ private:
 // MED_DECLARE_PROCESS_PRESENTER_CREATOR
 // ///////////////////////////////////////////////////////////////////
 #define MED_DECLARE_PROCESS_PRESENTER_CREATOR(ProcessAbstractType, ProcessType) \
-inline ProcessAbstractType##Presenter* ProcessType##PresenterCreator(ProcessAbstractType* abstractProcess) \
+inline ProcessAbstractType##Presenter* ProcessType##PresenterCreator(medAbstractProcess* abstractProcess) \
 { \
     ProcessAbstractType##Presenter *presenter = NULL; \
     if(ProcessType *process = qobject_cast<ProcessType *>(abstractProcess)) \
