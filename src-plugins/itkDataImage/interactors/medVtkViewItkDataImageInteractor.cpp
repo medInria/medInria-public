@@ -467,6 +467,15 @@ QString medVtkViewItkDataImageInteractor::preset() const
   return d->presetParam->value();
 }
 
+void medVtkViewItkDataImageInteractor::setMinIntensity(double min)
+{
+    d->minIntensityParameter->setValue(min);
+}
+
+void medVtkViewItkDataImageInteractor::setMaxIntensity(double max)
+{
+    d->maxIntensityParameter->setValue(max);
+}
 
 QWidget* medVtkViewItkDataImageInteractor::buildToolBarWidget()
 {
@@ -705,14 +714,18 @@ void medVtkViewItkDataImageInteractor::enableWIndowLevel(bool enable)
 
 void medVtkViewItkDataImageInteractor::restoreParameters(QHash<QString,QString> parameters)
 {
-	if(parameters.contains("Opacity"))
-		setOpacity(medDoubleParameter::fromString(parameters["Opacity"]));
-	if(parameters.contains("Visibility"))
-		setVisibility(medBoolParameter::fromString(parameters["Visibility"]));
-	if(parameters.contains("Preset"))
-		setPreset(medStringListParameter::fromString(parameters["Preset"]));
+    if(parameters.contains("Opacity"))
+        setOpacity(medDoubleParameter::fromString(parameters["Opacity"]));
+    if(parameters.contains("Visibility"))
+        setVisibility(medBoolParameter::fromString(parameters["Visibility"]));
+    if(parameters.contains("Preset"))
+        setPreset(medStringListParameter::fromString(parameters["Preset"]));
     if(parameters.contains("Lut"))
-		setLut(medStringListParameter::fromString(parameters["Lut"]));
+        setLut(medStringListParameter::fromString(parameters["Lut"]));
+    if(parameters.contains("Max Intensity"))
+        setMaxIntensity(medDoubleParameter::fromString(parameters["Max Intensity"]));
+    if(parameters.contains("Min Intensity"))
+        setMinIntensity(medDoubleParameter::fromString(parameters["Min Intensity"]));
 }
 
 QString medVtkViewItkDataImageInteractor::name() const

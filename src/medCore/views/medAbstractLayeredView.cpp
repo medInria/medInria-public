@@ -463,17 +463,22 @@ void medAbstractLayeredView::write(QString& path)
 
         //getting a working file extension
         //1. find suitable writers
+        QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
         QHash<QString, dtkAbstractDataWriter*> possibleWriters=medDataManager::instance()->getPossibleWriters(layerData(i));
-
 
         //2. use these writers to get a suitable file extension
         QString fileExtension;
-        foreach(QString key,possibleWriters.keys())
-        {
-            if(!possibleWriters[key]->supportedFileExtensions().isEmpty())
+        // we use allWriters as the list of keys to make sure we traverse possibleWriters
+        // in the order specified by the writers priorities.
+        foreach(QString type, allWriters) {
+            if (possibleWriters.contains(type))
             {
-                fileExtension=possibleWriters[key]->supportedFileExtensions()[0];
-                break;
+                QStringList extensionList = possibleWriters[type]->supportedFileExtensions();
+                if(!extensionList.isEmpty())
+                {
+                    fileExtension = extensionList.first();
+                    break;
+                }
             }
         }
         //3.releasing allocated memory
