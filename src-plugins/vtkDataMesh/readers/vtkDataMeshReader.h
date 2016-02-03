@@ -14,7 +14,10 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractDataReader.h>
+#include <medAbstractData.h>
 #include <vtkDataMeshPluginExport.h>
+#include <vtkFieldData.h>
+#include <vtkSmartPointer.h>
 
 class vtkDataSetReader;
 
@@ -50,6 +53,9 @@ public slots:
 private:
 
     static const char ID[];
+    QStringList metaDataKeysToCopy();
+    void parseHeaderVtk(QString header, medAbstractData* medData);
+    void parseHeaderVtp(vtkSmartPointer<vtkFieldData> field, medAbstractData *medData);
 };
 
 
