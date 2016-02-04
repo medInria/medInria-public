@@ -105,6 +105,9 @@ void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
 
     QString generatedSOPInstanceID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
     data->setMetaData(medMetaDataKeys::SOPInstanceUID.key(), generatedSOPInstanceID);
+    
+    QString generatedSeriesDicomID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+    data->setMetaData(medMetaDataKeys::SeriesDicomID.key(), generatedSeriesDicomID);
 }
 
 void medUtilities::querySeriesDescription(medAbstractData* data)
