@@ -18,8 +18,6 @@
 #include <medWorkspaceFactory.h>
 #include <medToolBoxFactory.h>
 #include <medTabbedViewContainers.h>
-#include <reformatToolBox.h>
-#include <superResolutionToolBox.h>
 
 // /////////////////////////////////////////////////////////////////
 // reformatWorkspacePrivate
@@ -38,7 +36,7 @@ public:
 reformatWorkspace::reformatWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new reformatWorkspacePrivate)
 {
     // -- View toolboxes --
-    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("reformat");
     if(toolboxNames.contains("medViewPropertiesToolBox"))
     {
         // we want the medViewPropertiesToolBox to be the first "view" toolbox
@@ -56,25 +54,10 @@ reformatWorkspace::reformatWorkspace(QWidget *parent) : medAbstractWorkspace(par
         {
             medToolBox* toolBox = medToolBoxFactory::instance()->createToolBox(toolbox, parent);
             addToolBox(toolBox);
+            toolBox->setWorkspace(this);
             toolBox->switchMinimize();
         }
     }
-
-    reformatToolBox * reformatTb = new reformatToolBox();
-    reformatTb->setWorkspace(this);
-    addToolBox(reformatTb);
-    reformatTb->switchMinimize();
-
-    medSegmentationAbstractToolBox * cropTb =
-            qobject_cast<medSegmentationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox("medCropToolBox"));
-    cropTb->setWorkspace(this);
-    addToolBox(cropTb);
-    cropTb->switchMinimize();
-    
-    superResolutionToolBox * superResolutionTb = new superResolutionToolBox();
-    superResolutionTb->setWorkspace(this);
-    addToolBox(superResolutionTb);
-    superResolutionTb->switchMinimize();
 }
 
 reformatWorkspace::~reformatWorkspace()
