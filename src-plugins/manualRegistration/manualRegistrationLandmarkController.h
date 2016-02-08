@@ -44,6 +44,9 @@ public:
     vtkGetObjectMacro (ViewFixed, medAbstractLayeredView);
     vtkGetObjectMacro (ViewFuse, medAbstractLayeredView);
     vtkGetObjectMacro (Output, medAbstractData);
+
+    QList<manualRegistrationLandmark*> * getPoints_Moving();
+    QList<manualRegistrationLandmark*> * getPoints_Fixed();
     
     void SetTbx(manualRegistrationToolBox*);
     void SetViewMoving(medAbstractLayeredView*);

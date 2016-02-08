@@ -21,6 +21,7 @@ PURPOSE.
 #include <medPluginManager.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
+#include <manualRegistration.h>
 #include <manualRegistrationLandmarkController.h>
 #include <medVtkViewBackend.h>
 #include <vtkCollection.h>
@@ -308,7 +309,16 @@ void manualRegistrationToolBox::computeRegistration()
     if (d->controller->Update() == EXIT_FAILURE)
         return;
 
-    medAbstractData * newOutput = d->controller->GetOutput();
+    manualRegistration * process = new manualRegistration();
+    process->SetFixedLandmarks(d->controller->getPoints_Fixed());
+    process->SetMovingLandmarks(d->controller->getPoints_Moving());
+    process->setFixedInput(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view())->layerData(0));
+    process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
+    process->update(itkProcessRegistration::FLOAT);
+
+    this->parentToolBox()->setProcess(process);
+
+    medAbstractData * newOutput = process->output();
 
     if(!newOutput)
     {
@@ -322,7 +332,6 @@ void manualRegistrationToolBox::computeRegistration()
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->removeLayer(1);
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
     synchroniseMovingFuseView();
-
 }
 
 void manualRegistrationToolBox::reset()

@@ -267,18 +267,17 @@ int manualRegistrationLandmarkController::Update()
         return EXIT_FAILURE;
     }
 
-    manualRegistration * process = new manualRegistration();
-    process->SetFixedLandmarks(Points_Fixed);
-    process->SetMovingLandmarks(Points_Moving);
-    process->setFixedInput(ViewFixed->layerData(0));
-    process->setMovingInput(ViewMoving->layerData(0));
-    process->update(itkProcessRegistration::FLOAT);
-
-    Output = process->output();
-    Output->copyMetaDataFrom(ViewMoving->layerData(0));
-    delete process;
-
     return EXIT_SUCCESS;
+}
+
+QList<manualRegistrationLandmark*> * manualRegistrationLandmarkController::getPoints_Moving()
+{
+    return Points_Moving;
+}
+
+QList<manualRegistrationLandmark*> * manualRegistrationLandmarkController::getPoints_Fixed()
+{
+    return Points_Fixed;
 }
 
 void manualRegistrationLandmarkController::Reset()
