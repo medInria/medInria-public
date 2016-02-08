@@ -17,7 +17,6 @@
 #include <medCropToolBox.h>
 #include <reformatToolBox.h>
 #include <resampleProcess.h>
-#include <superResolutionToolBox.h>
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -59,10 +58,6 @@ bool reformatPlugin::initialize()
     {
         dtkWarn() << "Unable to register reformatToolBox type";
     }
-    if (!superResolutionToolBox::registered())
-    {
-        dtkWarn() << "Unable to register superResolutionToolBox type";
-    }
     if (!medCropToolBox::registered())
     {
         dtkWarn() << "Unable to register medCropToolBox type";
@@ -70,10 +65,6 @@ bool reformatPlugin::initialize()
     if (!resampleProcess::registered())
     {
         dtkWarn() << "Unable to register reformat process";
-    }
-    if (!superResolutionProcess::registered())
-    {
-        dtkWarn() << "Unable to register superResolution process";
     }
     return true;
 }
