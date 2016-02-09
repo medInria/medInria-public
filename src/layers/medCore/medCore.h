@@ -55,6 +55,13 @@ namespace medCore
         MEDCORE_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
     }
 
+    namespace generic
+    {
+        MEDCORE_EXPORT medAbstractProcessPluginManager& pluginManager(void);
+        MEDCORE_EXPORT medAbstractProcessPluginFactory& pluginFactory(void);
+        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+    }
+
     namespace arithmeticOperation
     {
         MEDCORE_EXPORT medAbstractArithmeticOperationProcessPluginManager& pluginManager(void);

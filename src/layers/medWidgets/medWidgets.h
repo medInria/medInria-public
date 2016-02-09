@@ -32,6 +32,12 @@ namespace medWidgets
     {
         MEDWIDGETS_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
     }
+
+    namespace generic
+    {
+        MEDWIDGETS_EXPORT medAbstractProcessPresenterFactory& presenterFactory();
+    }
+
     namespace morphomathOperation
     {
         MEDWIDGETS_EXPORT medAbstractMorphomathOperationProcessPresenterFactory& presenterFactory();

@@ -38,19 +38,23 @@ public:
         QString category;
         medWorkspaceCreator creator;
         medWorkspaceIsUsable isUsable;
+        bool isActive;
         Details(QString id_,
                 QString name_,
                 QString description_,
                 QString category_,
                 medWorkspaceCreator creator_,
-                medWorkspaceIsUsable isUsable_ = NULL)
+                medWorkspaceIsUsable isUsable_ = NULL,
+                bool isActive_ = true)
             : identifier(id_)
             , name(name_)
             , description(description_)
             , category(category_)
             , creator(creator_)
             , isUsable(isUsable_)
+            , isActive(isActive_)
         {}
+
     };
 
 public:
@@ -74,7 +78,7 @@ public:
      * @param description short description (Potentially localised).
      */
     template <typename workspaceType>
-    bool registerWorkspace(){
+    bool registerWorkspace(bool isActive = true){
         //we must keep the templated part in the .h file for library users
         medWorkspaceCreator creator = create<workspaceType>;
         return registerWorkspace(workspaceType::staticIdentifier(),
@@ -82,12 +86,13 @@ public:
                                  workspaceType::staticDescription(),
                                  workspaceType::staticCategory(),
                                  creator,
-                                 workspaceType::isUsable);
+                                 workspaceType::isUsable,
+                                 isActive);
     }
 
 
     QHash<QString, medWorkspaceFactory::Details *> workspaceDetails() const;
-    QList<medWorkspaceFactory::Details *> workspaceDetailsSortedByName() const;
+    QList<medWorkspaceFactory::Details *> workspaceDetailsSortedByName(bool activeOnly = false) const;
     medWorkspaceFactory::Details * workspaceDetailsFromId(QString identifier) const;
 
     bool isUsable(QString identifier) const;
@@ -117,7 +122,7 @@ protected:
                            QString description,
                            QString category,
                            medWorkspaceCreator creator,
-                           medWorkspaceIsUsable isUsable=NULL);
+                           medWorkspaceIsUsable isUsable=NULL, bool isActive=true);
 
      medWorkspaceFactory();
     virtual ~medWorkspaceFactory();

@@ -352,7 +352,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 void medHomepageArea::initPage()
 {
     //Initialization of the navigation widget with available workspaces
-    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
 
     QVBoxLayout * workspaceButtonsLayoutBasic = new QVBoxLayout;
     workspaceButtonsLayoutBasic->setSpacing ( 10 );

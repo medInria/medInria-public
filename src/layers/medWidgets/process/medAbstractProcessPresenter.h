@@ -18,6 +18,8 @@
 #include <medWidgetsExport.h>
 #include <medAbstractProcess.h>
 
+#include <medProcessPresenterFactory.h>
+
 class QWidget;
 class QPushButton;
 class medViewContainerSplitter;
@@ -45,4 +47,4 @@ protected slots:
 private:
     const QScopedPointer<medAbstractProcessPresenterPrivate> d;
 };
-
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractProcess, MEDWIDGETS_EXPORT)
