@@ -26,6 +26,20 @@ namespace pluginManager
         }
     }
 }
+
+namespace generic
+{
+    namespace _private
+    {
+        medAbstractProcessPresenterFactory factory;
+    }
+
+    medAbstractProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
 namespace morphomathOperation
 {
     namespace _private

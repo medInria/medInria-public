@@ -24,6 +24,7 @@ class medStartupSettingsWidgetPrivate {
 public:
   QWidget* parent;
   QCheckBox* startInFullScreen;
+  QCheckBox* genericWorkspaceEnabled;
   QComboBox* defaultStartingArea;
 
   medStartupSettingsWidgetPrivate();
@@ -47,7 +48,10 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     d->startInFullScreen = new QCheckBox(this);
     d->startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
 
-    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
+    d->genericWorkspaceEnabled = new QCheckBox(this);
+    d->genericWorkspaceEnabled->setToolTip(tr("Enable generic workspace?"));
+
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
 
     d->defaultStartingArea = new QComboBox(this);
     d->defaultStartingArea->addItem(tr("Homepage"));
@@ -57,6 +61,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
 
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Fullscreen"),d->startInFullScreen);
+    layout->addRow(tr("Generic workspace enabled"),d->genericWorkspaceEnabled);
     layout->addRow(tr("Starting area"), d->defaultStartingArea);
     this->setLayout(layout);
 }
@@ -76,7 +81,7 @@ void medStartupSettingsWidget::read()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
     d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
-
+    d->genericWorkspaceEnabled->setChecked(mnger->value("startup", "genericWorkspace", false).toBool());
     //if nothing is configured then Browser is the default area
     int index = mnger->value("startup", "default_starting_area", 0).toInt();
 
@@ -95,5 +100,6 @@ bool medStartupSettingsWidget::write()
     mnger->setValue("startup","fullscreen", d->startInFullScreen->isChecked());
     mnger->setValue("startup","default_starting_area",
                     d->defaultStartingArea->currentIndex());
+    mnger->setValue("startup", "genericWorkspace", d->genericWorkspaceEnabled->isChecked());
     return true;
 }

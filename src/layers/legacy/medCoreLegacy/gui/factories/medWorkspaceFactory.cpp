@@ -37,11 +37,12 @@ bool medWorkspaceFactory::registerWorkspace(QString identifier,
                                             QString description,
                                             QString category,
                                             medWorkspaceCreator creator,
-                                            medWorkspaceIsUsable isUsable)
+                                            medWorkspaceIsUsable isUsable,
+                                            bool isActive)
 {
     if(!d->creators.contains(identifier))
     {
-        medWorkspaceFactory::Details* holder = new medWorkspaceFactory::Details(identifier, name, description, category, creator, isUsable);
+        medWorkspaceFactory::Details* holder = new medWorkspaceFactory::Details(identifier, name, description, category, creator, isUsable, isActive);
         d->creators.insert(identifier, holder);
         return true;
     }
@@ -82,10 +83,29 @@ bool wsDetailsSortByName(const medWorkspaceFactory::Details* a, const medWorkspa
     return a->name < b->name;
 }
 
-QList<medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetailsSortedByName() const
+QList<medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetailsSortedByName(bool activeOnly) const
 {
     QHash<QString,medWorkspaceFactory::Details*> details = this->workspaceDetails();
-    QList<medWorkspaceFactory::Details*> detailsList = details.values();
+    QHash<QString, medWorkspaceFactory::Details*> filteredDetails;
+
+    if (activeOnly)
+    {
+        QHash<QString, medWorkspaceFactory::Details*>::iterator iter = details.begin();
+
+        while (iter != details.end())
+        {
+            QString& identifier = (*iter)->identifier;
+            medWorkspaceFactory::Details* details = (*iter);
+            if ((*iter)->isActive)
+                filteredDetails.insert(identifier, details);
+
+            ++iter;
+        }
+    }
+    else
+        filteredDetails = details;
+
+    QList<medWorkspaceFactory::Details*> detailsList = filteredDetails.values();
     qSort(detailsList.begin(),detailsList.end(), wsDetailsSortByName);
     return detailsList;
 }

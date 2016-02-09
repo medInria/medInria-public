@@ -59,6 +59,8 @@
 //#include <medGuiLayer.h>
 //#include <medAbstractArea.h>
 
+#include <medSettingsManager.h>
+
 class medApplicationPrivate
 {
 public:
@@ -172,7 +174,10 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
-    //viewerWSpaceFactory->registerWorkspace<medGenericWorkspace>();
+
+    bool genericWorkpace = medSettingsManager::instance()->value("startup", "genericWorkspace", false).toBool();
+
+    viewerWSpaceFactory->registerWorkspace<medGenericWorkspace>(genericWorkpace);
 
     //Register settingsWidgets
     medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();

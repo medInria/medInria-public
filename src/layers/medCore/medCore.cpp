@@ -37,6 +37,26 @@ namespace pluginManager
     }
 }
 
+// generic
+namespace generic
+{
+    namespace _private
+    {
+        medAbstractProcessPluginManager manager;
+        medAbstractProcessPluginFactory factory;
+    }
+
+    medAbstractProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    medAbstractProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+}
+
 // arithimetic
 namespace arithmeticOperation
 {
