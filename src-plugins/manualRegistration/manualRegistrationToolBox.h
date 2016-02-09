@@ -47,6 +47,7 @@ protected slots:
     void update(medAbstractData *){}
     void synchroniseMovingFuseView();
     void save();
+    void saveTransformation();
 
 public slots:
     void startManualRegistration();

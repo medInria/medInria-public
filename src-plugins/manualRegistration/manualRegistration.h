@@ -83,7 +83,6 @@ public:
     void SetFixedLandmarks(QList<manualRegistrationLandmark*>  * fixedLandmarks);
     void SetMovingLandmarks(QList<manualRegistrationLandmark*>  * movingLandmarks);
 
-protected :
     /**
      * @brief Writes the transformation, in this case the displacement field,
      * in a file.

@@ -43,6 +43,7 @@ public:
     QPushButton * b_computeRegistration;
     QPushButton * b_reset;
     QPushButton * b_save;
+    QPushButton * b_saveTransformation;
     medAbstractLayeredView * currentView;
     medViewContainer * leftContainer;
     medViewContainer * rightContainer;
@@ -55,6 +56,7 @@ public:
     medViewParameterGroup* viewGroup;
     medLayerParameterGroup* layerGroup1,*layerGroup2;
 
+    dtkSmartPointer<manualRegistration> process;
     dtkSmartPointer<medAbstractData> output;
 };
 
@@ -82,6 +84,12 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->b_save = new QPushButton("Save",widget);
     d->b_save->setObjectName("saveButton");
     connect(d->b_save,SIGNAL(clicked()),this,SLOT(save()));
+    d->b_save->setDisabled(true);
+
+    d->b_saveTransformation = new QPushButton("Save Transformation",widget);
+    d->b_saveTransformation->setToolTip(tr("Save the transformation in a tfm or txt file"));
+    connect(d->b_saveTransformation,SIGNAL(clicked()),this,SLOT(saveTransformation()));
+    d->b_saveTransformation->setDisabled(true);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(d->b_startManualRegistration);
@@ -90,6 +98,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     mainLayout->addWidget(d->b_computeRegistration);
     mainLayout->addWidget(d->b_reset);
     mainLayout->addWidget(d->b_save);
+    mainLayout->addWidget(d->b_saveTransformation);
     widget->setLayout(mainLayout);
     this->addWidget(widget);
 
@@ -107,6 +116,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->rightContainer  = 0;
     d->bottomContainer = 0;
     d->controller      = 0;
+    d->process         = 0;
     d->output          = 0;
 
     displayButtons(false);
@@ -120,6 +130,7 @@ manualRegistrationToolBox::~manualRegistrationToolBox()
     d->rightContainer  = 0;
     d->bottomContainer = 0;
     d->controller      = 0;
+    d->process         = 0;
     d->output          = 0;
 
     delete d;
@@ -309,16 +320,16 @@ void manualRegistrationToolBox::computeRegistration()
     if (d->controller->Update() == EXIT_FAILURE)
         return;
 
-    manualRegistration * process = new manualRegistration();
-    process->SetFixedLandmarks(d->controller->getPoints_Fixed());
-    process->SetMovingLandmarks(d->controller->getPoints_Moving());
-    process->setFixedInput(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view())->layerData(0));
-    process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
-    process->update(itkProcessRegistration::FLOAT);
+    d->process = new manualRegistration();
+    d->process->SetFixedLandmarks(d->controller->getPoints_Fixed());
+    d->process->SetMovingLandmarks(d->controller->getPoints_Moving());
+    d->process->setFixedInput(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view())->layerData(0));
+    d->process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
+    d->process->update(itkProcessRegistration::FLOAT);
 
-    this->parentToolBox()->setProcess(process);
+    this->parentToolBox()->setProcess(d->process);
 
-    medAbstractData * newOutput = process->output();
+    medAbstractData * newOutput = d->process->output();
 
     if(!newOutput)
     {
@@ -332,6 +343,9 @@ void manualRegistrationToolBox::computeRegistration()
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->removeLayer(1);
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
     synchroniseMovingFuseView();
+
+    d->b_save->setDisabled(false);
+    d->b_saveTransformation->setDisabled(false);
 }
 
 void manualRegistrationToolBox::reset()
@@ -343,6 +357,8 @@ void manualRegistrationToolBox::reset()
     viewFuse->removeLayer(1);
     viewFuse->addLayer(viewMoving->layerData(0));
     synchroniseMovingFuseView();
+    d->b_save->setDisabled(true);
+    d->b_saveTransformation->setDisabled(true);
 }
 
 void manualRegistrationToolBox::save()
@@ -352,6 +368,18 @@ void manualRegistrationToolBox::save()
         medDataManager::instance()->importData(d->output, false);
     }
 }
+
+void manualRegistrationToolBox::saveTransformation()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save transformation in tfm (default) or txt."),
+                               "/home/transformation.tfm",
+                               tr("Text files (*.tfm *.txt)"));
+    if(fileName != "")
+    {
+        d->process->writeTransform(fileName);
+    }
+}
+
 
 void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * tabContainers)
 {
@@ -440,12 +468,14 @@ void manualRegistrationToolBox::displayButtons(bool show)
         d->b_reset->show();
         d->b_computeRegistration->show();
         d->b_save->show();
+        d->b_saveTransformation->show();
     }
     else
     {
         d->b_reset->hide();
         d->b_computeRegistration->hide();
         d->b_save->hide();
+        d->b_saveTransformation->hide();
     }
 }
 
