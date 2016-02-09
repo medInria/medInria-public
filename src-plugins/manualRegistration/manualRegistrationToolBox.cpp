@@ -81,7 +81,8 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->b_reset->setObjectName("resetButton");
     connect(d->b_reset,SIGNAL(clicked()),this,SLOT(reset()));
 
-    d->b_save = new QPushButton("Save",widget);
+    d->b_save = new QPushButton("Save Image",widget);
+    d->b_save->setToolTip(tr("Save registered image"));
     d->b_save->setObjectName("saveButton");
     connect(d->b_save,SIGNAL(clicked()),this,SLOT(save()));
     d->b_save->setDisabled(true);
@@ -327,7 +328,10 @@ void manualRegistrationToolBox::computeRegistration()
     d->process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
     d->process->update(itkProcessRegistration::FLOAT);
 
-    this->parentToolBox()->setProcess(d->process);
+    if(this->parentToolBox()) //if in Registration Workspace
+    {
+        this->parentToolBox()->setProcess(d->process);
+    }
 
     medAbstractData * newOutput = d->process->output();
 
