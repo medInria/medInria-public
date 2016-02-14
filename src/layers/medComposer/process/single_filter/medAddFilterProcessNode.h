@@ -23,6 +23,12 @@ class MEDCOMPOSER_EXPORT medAddFilterProcessNode : public medSingleFilterOperati
 {
 public:
      medAddFilterProcessNode();
+     bool prepareInput(void);
+
+     virtual QWidget *editor(void);
+
+private:
+    const QScopedPointer<medAddFilterProcessNodePrivate> d;
 };
 
 

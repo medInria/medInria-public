@@ -44,23 +44,44 @@ medSingleFilterOperationProcessNode<T>::~medSingleFilterOperationProcessNode(voi
 }
 
 template <typename T>
-void medSingleFilterOperationProcessNode<T>::run(void)
+bool medSingleFilterOperationProcessNode<T>::prepareInput(void)
 {
     if (d->input1.isEmpty())
     {
         dtkDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
-        return;
+        return false;
     }
     else
     {
-        medAbstractSingleFilterOperationProcess* filter = this->object();
+
         if(this->object())
         {
+            medAbstractSingleFilterOperationProcess* const filter = this->object();
             filter->setInput(d->input1.data());
-            filter->run();
-            d->output.setData(filter->output());
-            dtkDebug()<<"filtering done";
         }
     }
+
+    return true;
+}
+
+template <typename T>
+void medSingleFilterOperationProcessNode<T>::prepareOutput(void)
+{
+    medAbstractSingleFilterOperationProcess* const filter = this->object();
+    d->output.setData(filter->output());
+}
+
+template <typename T>
+void medSingleFilterOperationProcessNode<T>::run(void)
+{
+    medAbstractSingleFilterOperationProcess* const filter = this->object();
+
+    if (!filter || !this->prepareInput())
+        return;
+
+    filter->run();
+    this->prepareOutput();
+
+    dtkDebug()<<"filtering done";
 }
 

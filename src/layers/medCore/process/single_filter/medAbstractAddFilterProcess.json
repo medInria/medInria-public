@@ -4,6 +4,6 @@
            "type" : "medAbstractAddFilterProcess",
            "tags" : ["plus","add", "addition", "filter", "operation"],
     "description" : "<p>Add constant to image</p>",
-         "inputs" : ["scalarImage"],
+         "inputs" : ["scalarImage", "double"],
         "outputs" : ["scalarImage"]
 }
