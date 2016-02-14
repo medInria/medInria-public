@@ -14,10 +14,18 @@
 #include <medDivideFilterProcessNode.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
 
 medDivideFilterProcessNode::medDivideFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::divideFilter::pluginFactory());
 }
 
-
+QWidget* medDivideFilterProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::divideFilter::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}

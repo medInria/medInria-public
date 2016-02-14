@@ -12,23 +12,18 @@
 =========================================================================*/
 #pragma once
 
-#include <medSingleFilterOperationProcessNode.h>
+#include <medSingleFilterDoubleOperationProcessNode.h>
 #include <medAbstractAddFilterProcess.h>
 
 #include <medComposerExport.h>
 
-class medAddFilterProcessNodePrivate;
 
-class MEDCOMPOSER_EXPORT medAddFilterProcessNode : public medSingleFilterOperationProcessNode<medAbstractAddFilterProcess>
+class MEDCOMPOSER_EXPORT medAddFilterProcessNode : public medSingleFilterDoubleOperationProcessNode<medAbstractAddFilterProcess>
 {
 public:
      medAddFilterProcessNode();
-     bool prepareInput(void);
 
      virtual QWidget *editor(void);
-
-private:
-    const QScopedPointer<medAddFilterProcessNodePrivate> d;
 };
 
 

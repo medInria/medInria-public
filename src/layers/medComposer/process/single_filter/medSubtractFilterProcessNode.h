@@ -12,17 +12,19 @@
 =========================================================================*/
 #pragma once
 
-#include <medSingleFilterOperationProcessNode.h>
+#include <medSingleFilterDoubleOperationProcessNode.h>
 #include <medAbstractSubtractFilterProcess.h>
 
 #include <medComposerExport.h>
 
 class medSubtractFilterProcessNodePrivate;
 
-class MEDCOMPOSER_EXPORT medSubtractFilterProcessNode : public medSingleFilterOperationProcessNode<medAbstractSubtractFilterProcess>
+class MEDCOMPOSER_EXPORT medSubtractFilterProcessNode : public medSingleFilterDoubleOperationProcessNode<medAbstractSubtractFilterProcess>
 {
 public:
      medSubtractFilterProcessNode();
+
+     virtual QWidget *editor(void);
 };
 
 

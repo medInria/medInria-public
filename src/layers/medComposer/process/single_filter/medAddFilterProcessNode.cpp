@@ -20,45 +20,17 @@
 
 #include <QCheckBox>
 
-class medAddFilterProcessNodePrivate
-{
-public:
-    dtkComposerTransmitterReceiver<double> sigma;
-};
 
-medAddFilterProcessNode::medAddFilterProcessNode() : d(new medAddFilterProcessNodePrivate())
+medAddFilterProcessNode::medAddFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::addFilter::pluginFactory());
-
-    this->appendReceiver(&d->sigma);
 }
 
-bool medAddFilterProcessNode::prepareInput(void)
-{
-    bool status = medSingleFilterOperationProcessNode<medAbstractAddFilterProcess>::prepareInput();
-
-    if (status)
-    {
-        if(!d->sigma.isEmpty())
-        {
-
-            if(this->object())
-            {
-                medAbstractAddFilterProcess* const filter = this->object();
-                filter->sigma()->setValue(d->sigma.data());
-            }
-        }
-    }
-
-    return status;
-}
-
-
-QWidget *medAddFilterProcessNode::editor(void)
+QWidget* medAddFilterProcessNode::editor()
 {
     medAbstractProcess* process = this->object();
     if (!process)
         return NULL;
-    medAbstractAddFilterProcessPresenter* presenter = medWidgets::singleFilterOperation::addFilter::presenterFactory().create(process);
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::addFilter::presenterFactory().create(process);
     return presenter->buildToolBoxWidget();
 }

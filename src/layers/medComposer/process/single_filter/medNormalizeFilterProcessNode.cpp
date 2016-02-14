@@ -14,10 +14,18 @@
 #include <medNormalizeFilterProcessNode.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
 
 medNormalizeFilterProcessNode::medNormalizeFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::normalizeFilter::pluginFactory());
 }
 
-
+QWidget* medNormalizeFilterProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::normalizeFilter::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}
