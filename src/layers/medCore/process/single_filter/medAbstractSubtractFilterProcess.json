@@ -4,6 +4,6 @@
            "type" : "medAbstractSubtractFilterProcess",
            "tags" : ["subtract","minus", "filter","operation"],
     "description" : "<p>Subtract constant from image</p>",
-         "inputs" : ["scalarImage"],
+         "inputs" : ["scalarImage", "double"],
         "outputs" : ["scalarImage"]
 }

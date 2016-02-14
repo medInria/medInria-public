@@ -12,7 +12,7 @@
 =========================================================================*/
 #pragma once
 
-#include <medSingleFilterOperationProcessNode.h>
+#include <medSingleFilterDoubleOperationProcessNode.h>
 #include <medAbstractGaussianFilterProcess.h>
 
 #include <medComposerExport.h>
@@ -23,6 +23,8 @@ class MEDCOMPOSER_EXPORT medGaussianFilterProcessNode : public medSingleFilterOp
 {
 public:
      medGaussianFilterProcessNode();
+
+     virtual QWidget *editor(void);
 };
 
 

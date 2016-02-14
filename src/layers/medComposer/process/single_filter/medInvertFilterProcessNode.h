@@ -23,6 +23,8 @@ class MEDCOMPOSER_EXPORT medInvertFilterProcessNode : public medSingleFilterOper
 {
 public:
      medInvertFilterProcessNode();
+
+     virtual QWidget *editor(void);
 };
 
 

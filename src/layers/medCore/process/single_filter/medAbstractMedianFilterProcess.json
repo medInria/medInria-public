@@ -4,6 +4,6 @@
            "type" : "medAbstractMedianFilterProcess",
            "tags" : ["median","filter", "operation"],
     "description" : "<p>Median Filter</p>",
-         "inputs" : ["scalarImage"],
+         "inputs" : ["scalarImage", "double"],
         "outputs" : ["scalarImage"]
 }

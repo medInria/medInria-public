@@ -14,10 +14,18 @@
 #include <medWindowingFilterProcessNode.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
 
 medWindowingFilterProcessNode::medWindowingFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::windowingFilter::pluginFactory());
 }
 
-
+QWidget* medWindowingFilterProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::windowingFilter::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}

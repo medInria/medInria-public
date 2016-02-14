@@ -14,10 +14,18 @@
 #include <medSubtractFilterProcessNode.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
 
 medSubtractFilterProcessNode::medSubtractFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::subtractFilter::pluginFactory());
 }
 
-
+QWidget* medSubtractFilterProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::subtractFilter::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}

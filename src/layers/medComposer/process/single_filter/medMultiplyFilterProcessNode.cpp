@@ -14,10 +14,19 @@
 #include <medMultiplyFilterProcessNode.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
+
 
 medMultiplyFilterProcessNode::medMultiplyFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::multiplyFilter::pluginFactory());
 }
 
-
+QWidget* medMultiplyFilterProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::multiplyFilter::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}

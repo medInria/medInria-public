@@ -14,10 +14,19 @@
 #include <medInvertFilterProcessNode.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
 
 medInvertFilterProcessNode::medInvertFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::invertFilter::pluginFactory());
 }
 
+QWidget* medInvertFilterProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::invertFilter::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}
 

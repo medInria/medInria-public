@@ -4,6 +4,6 @@
            "type" : "medAbstractMultiplyFilterProcess",
            "tags" : ["multiply","filter", "operation"],
     "description" : "<p>Multiply image by constant</p>",
-         "inputs" : ["scalarImage"],
+         "inputs" : ["scalarImage", "double"],
         "outputs" : ["scalarImage"]
 }

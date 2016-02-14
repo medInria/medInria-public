@@ -23,6 +23,8 @@ class MEDCOMPOSER_EXPORT medNormalizeFilterProcessNode : public medSingleFilterO
 {
 public:
      medNormalizeFilterProcessNode();
+
+     virtual QWidget *editor(void);
 };
 
 

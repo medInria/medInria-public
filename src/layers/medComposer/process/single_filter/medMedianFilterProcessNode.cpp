@@ -14,10 +14,19 @@
 #include <medMedianFilterProcessNode.h>
 
 #include <medCore.h>
+#include <medWidgets.h>
 
 medMedianFilterProcessNode::medMedianFilterProcessNode()
 {
     this->setFactory(medCore::singleFilterOperation::medianFilter::pluginFactory());
 }
 
+QWidget* medMedianFilterProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::medianFilter::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}
 
