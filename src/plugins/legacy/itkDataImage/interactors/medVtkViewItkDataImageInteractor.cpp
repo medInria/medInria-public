@@ -207,7 +207,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
 {
     if (data->identifier() != type)
     {
-        qDebug() << type << " Type is wrong?";
         return false;
     }
 
@@ -218,7 +217,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
         return true;
     }
 
-    qDebug() << "type is right, why do we fail";
     return false;
 }
 

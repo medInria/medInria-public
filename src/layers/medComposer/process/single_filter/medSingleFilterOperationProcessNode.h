@@ -30,6 +30,8 @@ public:
 
 public:
     void run(void);
+    virtual bool prepareInput(void);
+    virtual void prepareOutput(void);
 
 private:
     const QScopedPointer<medSingleFilterOperationProcessNodePrivate> d;
