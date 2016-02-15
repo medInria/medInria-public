@@ -691,7 +691,7 @@ double* vtkMetaDataSet::GetCurrentScalarRange()
   double* val = new double[2];
   val[0] = VTK_DOUBLE_MAX;
   val[1] = VTK_DOUBLE_MIN;
-  
+
   if (this->GetCurrentScalarArray())
   {
     double nullValue = this->GetScalarNullValue(this->GetCurrentScalarArray()->GetName());
@@ -715,6 +715,9 @@ double* vtkMetaDataSet::GetCurrentScalarRange()
         }
     }
   }
+
+  else if (this->GetDataSet() && ( val[0] == VTK_DOUBLE_MAX ) )
+      val = this->GetDataSet()->GetScalarRange();
 
     // if all values are null values, or if we don't have a current scalar array
     if ( val[0] == VTK_DOUBLE_MAX || val[1] == VTK_DOUBLE_MIN )
