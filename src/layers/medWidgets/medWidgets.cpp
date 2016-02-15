@@ -26,8 +26,32 @@ namespace pluginManager
         }
     }
 }
+
+namespace generic
+{
+    namespace _private
+    {
+        medAbstractProcessPresenterFactory factory;
+    }
+
+    medAbstractProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
 namespace morphomathOperation
 {
+    namespace _private
+    {
+        medAbstractMorphomathOperationProcessPresenterFactory factory;
+    }
+
+    medAbstractMorphomathOperationProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+
     namespace openingImage
     {
         namespace _private
@@ -40,7 +64,34 @@ namespace morphomathOperation
             return _private::factory;
         }
     }
+    namespace closingImage
+    {
+        namespace _private
+        {
+            medAbstractClosingImageProcessPresenterFactory factory;
+        }
+
+        medAbstractClosingImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
 }
+
+namespace arithmeticOperation
+{
+    namespace _private
+    {
+        medAbstractArithmeticOperationProcessPresenterFactory factory;
+    }
+
+    medAbstractArithmeticOperationProcessPresenterFactory& presenterFactory()
+    {
+        return _private::factory;
+    }
+}
+
+
 
 namespace maskImage
 {
@@ -107,5 +158,139 @@ namespace tractography
     }
 }
 
+namespace singleFilterOperation
+{
+
+    namespace addFilter
+    {
+        namespace _private
+        {
+            medAbstractAddFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractAddFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace divideFilter
+    {
+        namespace _private
+        {
+            medAbstractDivideFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractDivideFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace gaussianFilter
+    {
+        namespace _private
+        {
+            medAbstractGaussianFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractGaussianFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace invertFilter
+    {
+        namespace _private
+        {
+            medAbstractInvertFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractInvertFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace medianFilter
+    {
+        namespace _private
+        {
+            medAbstractMedianFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractMedianFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace multiplyFilter
+    {
+        namespace _private
+        {
+            medAbstractMultiplyFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractMultiplyFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace normalizeFilter
+    {
+        namespace _private
+        {
+            medAbstractNormalizeFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractNormalizeFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace shrinkFilter
+    {
+        namespace _private
+        {
+            medAbstractShrinkFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractShrinkFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace subtractFilter
+    {
+        namespace _private
+        {
+            medAbstractSubtractFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractSubtractFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace windowingFilter
+    {
+        namespace _private
+        {
+            medAbstractWindowingFilterProcessPresenterFactory factory;
+        }
+
+        medAbstractWindowingFilterProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
 }
+
+} // end of medWidgets
 

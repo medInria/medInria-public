@@ -206,7 +206,9 @@ template <typename IMAGE>
 bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstractData* data, int layer)
 {
     if (data->identifier() != type)
+    {
         return false;
+    }
 
     if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
     {
@@ -214,6 +216,7 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
         d->view3d->SetITKInput(image, layer);
         return true;
     }
+
     return false;
 }
 

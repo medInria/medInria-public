@@ -25,6 +25,7 @@ list_source_files(${TARGET_NAME}
   process/diffusion_processes
   process/morphomath_operation
   process/mask_image
+  process/single_filter
   parameter
   job
   )

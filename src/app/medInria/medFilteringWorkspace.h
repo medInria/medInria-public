@@ -17,9 +17,6 @@
 #include <medAbstractWorkspaceLegacy.h>
 
 class medFilteringWorkspacePrivate;
-class medViewContainerStack;
-class medAbstractData;
-class dtkAbstractView;
 
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
@@ -38,22 +35,16 @@ public:
 
     void setupTabbedViewContainer ();
 
-    virtual void open(const medDataIndex &index);
+    enum ProcessTypes
+    {
+        MorphoMath = 1,
+        SingleFilter,
+        Arithmetic
+    };
 
-signals:
-
-    /**
-     * @brief signal emitted to refresh the output view with the data resulting from a successful filtering process
-     *
-     * This is a connection between the medFilteringSelectorToolBox and the medFilteringViewContainer which displays input/output images
-     *
-     */
-    void outputDataChanged ( medAbstractData * );
-
-protected slots:
-
-    void changeToolBoxInput();
-    void onProcessSuccess();
+public slots:
+    void setProcessType(int index);
+    void setProcessSelection(int index);
 
 private:
     medFilteringWorkspacePrivate *d;

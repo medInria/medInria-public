@@ -110,3 +110,8 @@ void medAbstractMorphomathOperationProcessPresenter::_importOutput(medAbstractJo
         emit _outputImported(d->process->output());
     }
 }
+
+medAbstractMorphomathOperationProcess* medAbstractMorphomathOperationProcessPresenter::process() const
+{
+    return d->process;
+}

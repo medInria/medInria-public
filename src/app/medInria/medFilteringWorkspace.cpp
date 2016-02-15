@@ -14,44 +14,184 @@
 #include <medFilteringWorkspace.h>
 
 
-#include <medDatabaseNonPersistentController.h>
-#include <medMetaDataKeys.h>
-#include <medStorage.h>
-#include <medFilteringSelectorToolBox.h>
-#include <medToolBoxFactory.h>
-#include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medFilteringAbstractToolBox.h>
-#include <medAbstractData.h>
-#include <medDataManager.h>
-#include <medAbstractView.h>
-#include <medAbstractLayeredView.h>
-#include <medViewParameterGroupL.h>
-#include <medLayerParameterGroupL.h>
+
+#include <medCore.h>
+#include <medWidgets.h>
+#include <medProcessPresenterFactory.h>
+#include <medAbstractProcess.h>
+#include <medAbstractProcessPresenter.h>
+
+#include <medAbstractOpeningImageProcess.h>
+#include <medJobManager.h>
+
+#include <medToolBox.h>
+#include <QLabel>
+#include <QComboBox>
+#include <QHBoxLayout>
+
+#include <QDebug>
+
+struct HackySolution
+{
+
+    // fun times
+    medAbstractAddFilterProcessPluginFactory* addFactory;
+    medAbstractDivideFilterProcessPluginFactory* divideFactory;
+    medAbstractGaussianFilterProcessPluginFactory* gaussianFactory;
+    medAbstractInvertFilterProcessPluginFactory* invertFactory;
+    medAbstractMedianFilterProcessPluginFactory* medianFactory;
+    medAbstractMultiplyFilterProcessPluginFactory* multiplyFactory;
+    medAbstractNormalizeFilterProcessPluginFactory* normalizeFactory;
+    medAbstractShrinkFilterProcessPluginFactory* shrinkFactory;
+    medAbstractSubtractFilterProcessPluginFactory* subtractFactory;
+    medAbstractWindowingFilterProcessPluginFactory* windowingFactory;
+
+
+    medAbstractAddFilterProcessPresenterFactory* addFactoryPresenter;
+    medAbstractDivideFilterProcessPresenterFactory* divideFactoryPresenter;
+    medAbstractGaussianFilterProcessPresenterFactory* gaussianFactoryPresenter;
+    medAbstractInvertFilterProcessPresenterFactory* invertFactoryPresenter;
+    medAbstractMedianFilterProcessPresenterFactory* medianFactoryPresenter;
+    medAbstractMultiplyFilterProcessPresenterFactory* multiplyFactoryPresenter;
+    medAbstractNormalizeFilterProcessPresenterFactory* normalizeFactoryPresenter;
+    medAbstractShrinkFilterProcessPresenterFactory* shrinkFactoryPresenter;
+    medAbstractSubtractFilterProcessPresenterFactory* subtractFactoryPresenter;
+    medAbstractWindowingFilterProcessPresenterFactory* windowingFactoryPresenter;
+
+    QString pluginKey;
+    medAbstractProcess* myProcess;
+
+    HackySolution()
+    {
+        // yeah yeah I know
+        memset(this, 0, 20*sizeof(void*));
+        myProcess = 0;
+    }
+
+    medAbstractProcess* getProcess()
+    {
+        if (addFactory)
+            myProcess = addFactory->create(pluginKey);
+
+        else if(divideFactory)
+            myProcess = divideFactory->create(pluginKey);
+
+        else if(gaussianFactory)
+            myProcess = gaussianFactory->create(pluginKey);
+
+        else if(invertFactory)
+            myProcess = invertFactory->create(pluginKey);
+
+        else if(medianFactory)
+            myProcess = medianFactory->create(pluginKey);
+
+        else if(multiplyFactory)
+            myProcess = multiplyFactory->create(pluginKey);
+
+        else if(normalizeFactory)
+            myProcess = normalizeFactory->create(pluginKey);
+
+        else if(shrinkFactory)
+            myProcess = shrinkFactory->create(pluginKey);
+
+        else if(subtractFactory)
+            myProcess = subtractFactory->create(pluginKey);
+
+        else if(windowingFactory)
+            myProcess = windowingFactory->create(pluginKey);
+
+        return myProcess;
+    }
+
+    medAbstractProcessPresenter* getPresenter()
+    {
+        if (addFactoryPresenter)
+            return addFactoryPresenter->create(myProcess);
+
+        else if(divideFactoryPresenter)
+            return divideFactoryPresenter->create(myProcess);
+
+        else if(gaussianFactoryPresenter)
+            return gaussianFactoryPresenter->create(myProcess);
+
+        else if(invertFactoryPresenter)
+            return invertFactoryPresenter->create(myProcess);
+
+        else if(medianFactoryPresenter)
+            return medianFactoryPresenter->create(myProcess);
+
+        else if(multiplyFactoryPresenter)
+            return multiplyFactoryPresenter->create(myProcess);
+
+        else if(normalizeFactoryPresenter)
+            return normalizeFactoryPresenter->create(myProcess);
+
+        else if(shrinkFactoryPresenter)
+            return shrinkFactoryPresenter->create(myProcess);
+
+        else if(subtractFactoryPresenter)
+            return subtractFactoryPresenter->create(myProcess);
+
+        else if(windowingFactoryPresenter)
+            return windowingFactoryPresenter->create(myProcess);
+    }
+};
 
 class medFilteringWorkspacePrivate
 {
 public:
-    QPointer<medFilteringSelectorToolBox> filteringToolBox;
-    medViewContainer *inputContainer;
-    medViewContainer *outputContainer;
+    medAbstractProcess *process;
+    medAbstractProcessPresenter *presenter;
 
+    QComboBox *processTypeComboBox;
+    QComboBox *processSelectorComboBox;
 
-    medAbstractData *filterOutput;
+    medToolBox *workspaceToolBox;
+    QWidget *currentProcessToolBox;
+
+    std::vector<HackySolution> *vectorOfHacks;
 };
 
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medFilteringWorkspacePrivate)
 {
-    d->filteringToolBox = new medFilteringSelectorToolBox(parent);
-    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
-    this->addToolBox(d->filteringToolBox);
 
-    medViewParameterGroupL *viewGroup1 = new medViewParameterGroupL("View Group 1", this, this->identifier());
-    viewGroup1->setLinkAllParameters(true);
-    viewGroup1->removeParameter("DataList");
+    d->presenter = NULL;
+    d->process = NULL;
+    d->vectorOfHacks = new std::vector<HackySolution>();
 
-    medLayerParameterGroupL *layerGroup1 = new medLayerParameterGroupL("Layer Group 1", this,  this->identifier());
-    layerGroup1->setLinkAllParameters(true);
+
+    QWidget *processTypeWidget = new QWidget;
+    QLabel *processTypeLabel = new QLabel("Process Type", processTypeWidget);
+    QHBoxLayout *processTypeLayout = new QHBoxLayout;
+    processTypeLayout->addWidget(processTypeLabel);
+    d->processTypeComboBox = new QComboBox;
+    processTypeLayout->addWidget(d->processTypeComboBox);
+    d->processTypeComboBox->addItem("None selected");
+    d->processTypeComboBox->addItem("Mathematical morphology");
+    d->processTypeComboBox->addItem("Single Filter");
+    d->processTypeComboBox->addItem("Arithmetic");
+    processTypeWidget->setLayout(processTypeLayout);
+
+    connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),
+            this,SLOT(setProcessType(int)));
+
+    QWidget *processWidget = new QWidget;
+    QLabel *processLabel = new QLabel("Process", processWidget);
+    QHBoxLayout *processLayout = new QHBoxLayout;
+    processLayout->addWidget(processLabel);
+    d->processSelectorComboBox = new QComboBox;
+    processLayout->addWidget(d->processSelectorComboBox);
+    processWidget->setLayout(processLayout);
+
+    connect(d->processSelectorComboBox, SIGNAL(currentIndexChanged(int)),
+            this,SLOT(setProcessSelection(int)));
+
+    d->workspaceToolBox = new medToolBox;
+    d->workspaceToolBox->setTitle("Process controller");
+    d->workspaceToolBox->addWidget(processTypeWidget);
+    d->workspaceToolBox->addWidget(processWidget);
+    this->addToolBox(d->workspaceToolBox);
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -60,110 +200,278 @@ medFilteringWorkspace::~medFilteringWorkspace()
     d = NULL;
 }
 
-/**
- * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
- */
 void medFilteringWorkspace::setupTabbedViewContainer()
 {
-    if ( !this->tabbedViewContainers()->count() )
-    {
-        d->inputContainer = this->tabbedViewContainers()->addContainerInTab(this->name());
-        QLabel *inputLabel = new QLabel("INPUT");
-        inputLabel->setAlignment(Qt::AlignCenter);
-        d->inputContainer->setDefaultWidget(inputLabel);
 
-        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->inputContainer->setUserSplittable(false);
-        d->inputContainer->setMultiLayered(false);
-
-        d->outputContainer = d->inputContainer->splitVertically();
-        QLabel *outputLabel = new QLabel("OUTPUT");
-        outputLabel->setAlignment(Qt::AlignCenter);
-        d->outputContainer->setDefaultWidget(outputLabel);
-        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->outputContainer->setUserSplittable(false);
-        d->outputContainer->setMultiLayered(false);
-        d->outputContainer->setUserOpenable(false);
-
-        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
-        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
-
-        this->tabbedViewContainers()->lockTabs();
-        this->tabbedViewContainers()->hideTabBar();
-        d->inputContainer->setSelected(true);
-        d->outputContainer->setSelected(false);
-    }
 }
 
-void medFilteringWorkspace::changeToolBoxInput()
+void medFilteringWorkspace::setProcessType(int index)
 {
-    if(d->filteringToolBox.isNull())
+    if (index == 0)
         return;
 
-    if(!d->inputContainer->view())
+    ProcessTypes tProc = (ProcessTypes)index;
+
+    d->processSelectorComboBox->blockSignals(true);
+    d->processSelectorComboBox->clear();
+    d->processSelectorComboBox->addItem("None selected");
+
+    switch (tProc)
     {
-        d->filteringToolBox->clear();
-        return;
+        case MorphoMath:
+        {
+            QStringList plugins = medCore::morphomathOperation::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::morphomathOperation::pluginFactory().create(pluginKey);
+                if (process)
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+            }
+;
+            break;
+        }
+
+        case SingleFilter:
+        {
+
+            QStringList plugins = medCore::singleFilterOperation::addFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::addFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.addFactory = &medCore::singleFilterOperation::addFilter::pluginFactory();
+                    aSolution.addFactoryPresenter = &medWidgets::singleFilterOperation::addFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+
+            plugins = medCore::singleFilterOperation::divideFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::divideFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.divideFactory = &medCore::singleFilterOperation::divideFilter::pluginFactory();
+                    aSolution.divideFactoryPresenter = &medWidgets::singleFilterOperation::divideFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.gaussianFactory = &medCore::singleFilterOperation::gaussianFilter::pluginFactory();
+                    aSolution.gaussianFactoryPresenter = &medWidgets::singleFilterOperation::gaussianFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::invertFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::invertFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.invertFactory = &medCore::singleFilterOperation::invertFilter::pluginFactory();
+                    aSolution.invertFactoryPresenter = &medWidgets::singleFilterOperation::invertFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::medianFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::medianFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.medianFactory = &medCore::singleFilterOperation::medianFilter::pluginFactory();
+                    aSolution.medianFactoryPresenter = &medWidgets::singleFilterOperation::medianFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::multiplyFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::multiplyFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.multiplyFactory = &medCore::singleFilterOperation::multiplyFilter::pluginFactory();
+                    aSolution.multiplyFactoryPresenter = &medWidgets::singleFilterOperation::multiplyFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::normalizeFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::normalizeFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.normalizeFactory = &medCore::singleFilterOperation::normalizeFilter::pluginFactory();
+                    aSolution.normalizeFactoryPresenter = &medWidgets::singleFilterOperation::normalizeFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::shrinkFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::shrinkFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.shrinkFactory = &medCore::singleFilterOperation::shrinkFilter::pluginFactory();
+                    aSolution.shrinkFactoryPresenter = &medWidgets::singleFilterOperation::shrinkFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::subtractFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::subtractFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.subtractFactory = &medCore::singleFilterOperation::subtractFilter::pluginFactory();
+                    aSolution.subtractFactoryPresenter = &medWidgets::singleFilterOperation::subtractFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::windowingFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::windowingFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    HackySolution aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.windowingFactory = &medCore::singleFilterOperation::windowingFilter::pluginFactory();
+                    aSolution.windowingFactoryPresenter = &medWidgets::singleFilterOperation::windowingFilter::presenterFactory();
+
+                    d->vectorOfHacks->push_back(aSolution);
+                }
+            }
+
+            break;
+        }
+        case Arithmetic:
+        default:
+        {
+            QStringList plugins = medCore::arithmeticOperation::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::arithmeticOperation::pluginFactory().create(pluginKey);
+                if (process)
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+            }
+
+            break;
+        }
     }
 
-    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
-    if(!layeredView)
-    {
-        dtkWarn() << "Non layered view are not supported in filtering workspace yet.";
-        d->filteringToolBox->clear();
-        return;
-    }
-    d->filteringToolBox->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
+    d->processSelectorComboBox->blockSignals(false);
 }
 
-/**
- * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
- */
-void medFilteringWorkspace::onProcessSuccess()
+void medFilteringWorkspace::setProcessSelection(int index)
 {
-    if(d->filteringToolBox.isNull())
+    if (index == 0)
         return;
 
-    d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
-    if ( !d->filterOutput )
-        return;
+    ProcessTypes tProc = (ProcessTypes)d->processTypeComboBox->currentIndex();
+    QString pluginKey = d->processSelectorComboBox->itemData(index).toString();
 
-    dtkDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
+    switch (tProc)
+    {
+        case MorphoMath:
+        {
+            medAbstractMorphomathOperationProcess *process = medCore::morphomathOperation::pluginFactory().create(pluginKey);
+            d->process = process;
+            d->presenter = medWidgets::morphomathOperation::presenterFactory().create(process);
 
-    medAbstractData *inputData(d->filteringToolBox->data());
+            break;
+        }
 
-    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-      {
-        QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " filtered";
-        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-      }
+        case SingleFilter:
+        {
+            for (size_t i = 0; i < d->vectorOfHacks->size(); i++)
+            {
+                if (d->vectorOfHacks->at(i).pluginKey == pluginKey)
+                {
+                    d->process = d->vectorOfHacks->at(i).getProcess();
+                    d->presenter = d->vectorOfHacks->at(i).getPresenter();
+                    break;
+                }
+            }
 
-    foreach ( QString metaData, inputData->metaDataList() )
-      if (!d->filterOutput->hasMetaData(metaData))
-        d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
+            break;
+        }
+        case Arithmetic:
+        default:
+        {
+            medAbstractArithmeticOperationProcess *process = medCore::arithmeticOperation::pluginFactory().create(pluginKey);
+            d->process = process;
+            d->presenter = medWidgets::arithmeticOperation::presenterFactory().create(process);
 
-    foreach ( QString property, inputData->propertyList() )
-      d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
+            break;
+        }
+    }
 
-    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    medDataManager::instance()->importData(d->filterOutput);
+    d->workspaceToolBox->removeWidget(d->currentProcessToolBox);
+    d->currentProcessToolBox = d->presenter->buildToolBoxWidget();
+    d->workspaceToolBox->addWidget(d->currentProcessToolBox);
+    d->workspaceToolBox->setTitle(d->process->caption());
 
-    d->outputContainer->addData(d->filterOutput);
+    if (this->tabbedViewContainers()->currentWidget() == 0)
+        this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->currentIndex(), d->presenter->buildViewContainerSplitter());
+    else
+        this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->count(), d->presenter->buildViewContainerSplitter());
 }
 
 bool medFilteringWorkspace::isUsable()
 {
-    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("filtering").size()!=0);
-}
-
-void medFilteringWorkspace::open(const medDataIndex &index)
-{
-    if(!index.isValidForSeries() || !d->inputContainer->isSelected())
-        return;
-
-    d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
+    return true;
 }

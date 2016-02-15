@@ -1,0 +1,9 @@
+{
+          "title" : "Subtract filter",
+           "kind" : "process",
+           "type" : "medAbstractSubtractFilterProcess",
+           "tags" : ["subtract","minus", "filter","operation"],
+    "description" : "<p>Subtract constant from image</p>",
+         "inputs" : ["scalarImage", "double"],
+        "outputs" : ["scalarImage"]
+}

@@ -38,7 +38,7 @@ medItkDivideImageProcess::~medItkDivideImageProcess()
 
 QString medItkDivideImageProcess::caption() const
 {
-    return "Itk add images process";
+    return "Itk divide images process";
 }
 
 QString medItkDivideImageProcess::description() const
@@ -129,7 +129,7 @@ medAbstractJob::medJobExitStatus medItkDivideImageProcess::_run()
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
 
-        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
+        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input1()->identifier()));
         out->setData(filter->GetOutput());
         this->setOutput(out);
         return medAbstractJob::MED_JOB_EXIT_SUCCESS;

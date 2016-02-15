@@ -29,6 +29,8 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 
+#include <QDebug>
+
 class medGenericWorkspacePrivate
 {
 public:
@@ -54,12 +56,7 @@ medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceL
     d->processTypeComboBox = new QComboBox;
     processTypeLayout->addWidget(d->processTypeComboBox);
     d->processTypeComboBox->addItem("None selected");
-    d->processTypeComboBox->addItem("Mathematical morphology");
-    d->processTypeComboBox->addItem("Image masking");
-    d->processTypeComboBox->addItem("DWI mask computation");
-    d->processTypeComboBox->addItem("Diffusion model estimation");
-    d->processTypeComboBox->addItem("Diffusion scalar maps");
-    d->processTypeComboBox->addItem("Tractography");
+    d->processTypeComboBox->addItem("Generic processes");
     processTypeWidget->setLayout(processTypeLayout);
 
     connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),
@@ -83,7 +80,7 @@ medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceL
 //        d->presenter = medWidgets::tractography::presenterFactory().create(d->process);
 
     d->workspaceToolBox = new medToolBox;
-    //tb->addWidget(d->presenter->buildToolBoxWidget());
+    //d->workspaceToolBox->addWidget(d->presenter->buildToolBoxWidget());
     d->workspaceToolBox->setTitle("Process controller");
     d->workspaceToolBox->addWidget(processTypeWidget);
     d->workspaceToolBox->addWidget(processWidget);
@@ -109,78 +106,13 @@ void medGenericWorkspace::setProcessType(int index)
 
     switch (tProc)
     {
-        case MorphoMath:
-        {
-            QStringList plugins = medCore::morphomathOperation::openingImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::morphomathOperation::openingImage::pluginFactory().create(pluginKey);
-                if (process)
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-            }
-
-            break;
-        }
-
-        case MaskImage:
-        {
-            QStringList plugins = medCore::maskImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::maskImage::pluginFactory().create(pluginKey);
-                if (process)
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-            }
-
-            break;
-        }
-
-        case DWIMasking:
-        {
-            QStringList plugins = medCore::dwiMasking::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::dwiMasking::pluginFactory().create(pluginKey);
-                if (process)
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-            }
-
-            break;
-        }
-
-        case DiffusionModelEstimation:
-        {
-            QStringList plugins = medCore::diffusionModelEstimation::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::diffusionModelEstimation::pluginFactory().create(pluginKey);
-                if (process)
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-            }
-
-            break;
-        }
-
-        case DiffusionScalarMaps:
-        {
-            QStringList plugins = medCore::diffusionScalarMaps::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::diffusionScalarMaps::pluginFactory().create(pluginKey);
-                if (process)
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-            }
-
-            break;
-        }
-
-        case Tractography:
+        case Generic:
         default:
         {
-            QStringList plugins = medCore::tractography::pluginFactory().keys();
+            QStringList plugins = medCore::generic::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
-                medAbstractProcess *process = medCore::tractography::pluginFactory().create(pluginKey);
+                medAbstractProcess *process = medCore::generic::pluginFactory().create(pluginKey);
                 if (process)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
             }
@@ -202,61 +134,16 @@ void medGenericWorkspace::setProcessSelection(int index)
 
     switch (tProc)
     {
-        case MorphoMath:
+        case Generic:
         {
-            medAbstractOpeningImageProcess *process = medCore::morphomathOperation::openingImage::pluginFactory().create(pluginKey);
+            medAbstractProcess *process = medCore::generic::pluginFactory().create(pluginKey);
             d->process = process;
-            d->presenter = medWidgets::morphomathOperation::openingImage::presenterFactory().create(process);
-
-            break;
-        }
-
-        case MaskImage:
-        {
-            medAbstractMaskImageProcess *process = medCore::maskImage::pluginFactory().create(pluginKey);
-            d->process = process;
-            d->presenter = medWidgets::maskImage::presenterFactory().create(process);
-
-            break;
-        }
-
-        case DWIMasking:
-        {
-            medAbstractDWIMaskingProcess *process = medCore::dwiMasking::pluginFactory().create(pluginKey);
-            d->process = process;
-            d->presenter = medWidgets::dwiMasking::presenterFactory().create(process);
-
-            break;
-        }
-
-        case DiffusionModelEstimation:
-        {
-            medAbstractDiffusionModelEstimationProcess *process = medCore::diffusionModelEstimation::pluginFactory().create(pluginKey);
-            d->process = process;
-            d->presenter = medWidgets::diffusionModelEstimation::presenterFactory().create(process);
-
-            break;
-        }
-
-        case DiffusionScalarMaps:
-        {
-            medAbstractDiffusionScalarMapsProcess *process = medCore::diffusionScalarMaps::pluginFactory().create(pluginKey);
-            d->process = process;
-            d->presenter = medWidgets::diffusionScalarMaps::presenterFactory().create(process);
-
-            break;
-        }
-
-        case Tractography:
-        default:
-        {
-            medAbstractTractographyProcess *process = medCore::tractography::pluginFactory().create(pluginKey);
-            d->process = process;
-            d->presenter = medWidgets::tractography::presenterFactory().create(process);
+            d->presenter = medWidgets::generic::presenterFactory().create(process);
 
             break;
         }
     }
+
 
     d->workspaceToolBox->removeWidget(d->currentProcessToolBox);
     d->currentProcessToolBox = d->presenter->buildToolBoxWidget();

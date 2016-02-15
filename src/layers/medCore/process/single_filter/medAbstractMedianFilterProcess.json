@@ -1,0 +1,9 @@
+{
+          "title" : "Median Filter",
+           "kind" : "process",
+           "type" : "medAbstractMedianFilterProcess",
+           "tags" : ["median","filter", "operation"],
+    "description" : "<p>Median Filter</p>",
+         "inputs" : ["scalarImage", "double"],
+        "outputs" : ["scalarImage"]
+}

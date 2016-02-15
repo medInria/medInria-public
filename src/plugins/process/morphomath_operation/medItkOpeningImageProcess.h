@@ -22,8 +22,6 @@
 
 #include <medItkMorphomathOperationProcessPluginExport.h>
 
-class medItkOpeningImageProcessPrivate;
-
 class MEDITKMORPHOMATHOPERATIONPROCESSPLUGIN_EXPORT medItkOpeningImageProcess: public medAbstractOpeningImageProcess
 {
     Q_OBJECT

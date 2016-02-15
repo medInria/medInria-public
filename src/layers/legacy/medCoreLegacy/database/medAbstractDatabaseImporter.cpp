@@ -652,7 +652,9 @@ QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* m
     QStringList thumbPaths;
 
     if ( !medStorage::mkpath ( medStorage::dataLocation() + pathToStoreThumbnails ) )
+    {
         dtkDebug() << "Cannot create directory: " << pathToStoreThumbnails;
+    }
 
     for ( int i=0; i < thumbnails.count(); i++ )
     {

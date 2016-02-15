@@ -55,6 +55,7 @@ set(PLUGIN_LIST
   process/dwi_basic_thresholding                                         ON
   process/morphomath_operation                                           ON
   process/mask_image                                                     ON
+  process/single_filter                                                  ON
   )
 
 ## #############################################################################

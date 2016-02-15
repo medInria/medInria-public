@@ -36,12 +36,7 @@ public:
 
     enum ProcessTypes
     {
-        MorphoMath = 1,
-        MaskImage,
-        DWIMasking,
-        DiffusionModelEstimation,
-        DiffusionScalarMaps,
-        Tractography
+        Generic
     };
 
 public slots:

@@ -187,6 +187,7 @@ int main(int argc,char* argv[])
 
     bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
 
+
     const bool hasFullScreenArg   = application.arguments().contains("--fullscreen");
     const bool hasNoFullScreenArg = application.arguments().contains("--no-fullscreen");
     const bool hasWallArg         = application.arguments().contains("--wall");

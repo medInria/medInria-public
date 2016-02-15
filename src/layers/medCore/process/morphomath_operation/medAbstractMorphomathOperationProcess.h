@@ -46,3 +46,4 @@ private:
 
 DTK_DECLARE_PLUGIN        (medAbstractMorphomathOperationProcess, MEDCORE_EXPORT)
 DTK_DECLARE_PLUGIN_MANAGER(medAbstractMorphomathOperationProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractMorphomathOperationProcess, MEDCORE_EXPORT)

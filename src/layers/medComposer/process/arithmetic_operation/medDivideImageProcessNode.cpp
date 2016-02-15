@@ -17,7 +17,7 @@
 
 medDivideImageProcessNode::medDivideImageProcessNode()
 {
-    this->setFactory(medCore::arithmeticalOperation::divideImage::pluginFactory());
+    this->setFactory(medCore::arithmeticOperation::divideImage::pluginFactory());
 }
 
 

@@ -25,29 +25,57 @@ namespace pluginManager
             if(realpath.isEmpty())
                 break;
 
-            medCore::arithmeticalOperation::initialize(realpath, verbose);
+            medCore::arithmeticOperation::initialize(realpath, verbose);
             medCore::dwiMasking::initialize(realpath, verbose);
             medCore::diffusionModelEstimation::initialize(realpath, verbose);
             medCore::diffusionScalarMaps::initialize(realpath, verbose);
             medCore::tractography::initialize(realpath, verbose);
             medCore::morphomathOperation::initialize(realpath, verbose);
             medCore::maskImage::initialize(realpath, verbose);
+            medCore::singleFilterOperation::initialize(realpath, verbose);
         }
     }
 }
 
-// artithmetic
-namespace arithmeticalOperation
+// generic
+namespace generic
+{
+    namespace _private
+    {
+        medAbstractProcessPluginManager manager;
+        medAbstractProcessPluginFactory factory;
+    }
+
+    medAbstractProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+
+    medAbstractProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+}
+
+// arithimetic
+namespace arithmeticOperation
 {
     namespace _private
     {
         medAbstractArithmeticOperationProcessPluginManager manager;
+        medAbstractArithmeticOperationProcessPluginFactory factory;
     }
 
     medAbstractArithmeticOperationProcessPluginManager& pluginManager(void)
     {
         return _private::manager;
     }
+
+    medAbstractArithmeticOperationProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
+    }
+
     void initialize(const QString& path, bool verbose)
     {
         pluginManager().setVerboseLoading(verbose);
@@ -96,6 +124,155 @@ namespace arithmeticalOperation
         }
 
         medAbstractDivideImageProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+}
+
+// single filter
+namespace singleFilterOperation
+{
+    namespace _private
+    {
+        medAbstractSingleFilterOperationProcessPluginManager manager;
+    }
+
+    medAbstractSingleFilterOperationProcessPluginManager& pluginManager(void)
+    {
+        return _private::manager;
+    }
+    void initialize(const QString& path, bool verbose)
+    {
+        pluginManager().setVerboseLoading(verbose);
+        pluginManager().initialize(path);
+    }
+
+    namespace addFilter
+    {
+        namespace _private
+        {
+            medAbstractAddFilterProcessPluginFactory factory;
+        }
+
+        medAbstractAddFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace divideFilter
+    {
+        namespace _private
+        {
+            medAbstractDivideFilterProcessPluginFactory factory;
+        }
+
+        medAbstractDivideFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace gaussianFilter
+    {
+        namespace _private
+        {
+            medAbstractGaussianFilterProcessPluginFactory factory;
+        }
+
+        medAbstractGaussianFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace invertFilter
+    {
+        namespace _private
+        {
+            medAbstractInvertFilterProcessPluginFactory factory;
+        }
+
+        medAbstractInvertFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace medianFilter
+    {
+        namespace _private
+        {
+            medAbstractMedianFilterProcessPluginFactory factory;
+        }
+
+        medAbstractMedianFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace multiplyFilter
+    {
+        namespace _private
+        {
+            medAbstractMultiplyFilterProcessPluginFactory factory;
+        }
+
+        medAbstractMultiplyFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace normalizeFilter
+    {
+        namespace _private
+        {
+            medAbstractNormalizeFilterProcessPluginFactory factory;
+        }
+
+        medAbstractNormalizeFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace shrinkFilter
+    {
+        namespace _private
+        {
+            medAbstractShrinkFilterProcessPluginFactory factory;
+        }
+
+        medAbstractShrinkFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace subtractFilter
+    {
+        namespace _private
+        {
+            medAbstractSubtractFilterProcessPluginFactory factory;
+        }
+
+        medAbstractSubtractFilterProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace windowingFilter
+    {
+        namespace _private
+        {
+            medAbstractWindowingFilterProcessPluginFactory factory;
+        }
+
+        medAbstractWindowingFilterProcessPluginFactory& pluginFactory(void)
         {
             return _private::factory;
         }
@@ -217,6 +394,12 @@ namespace morphomathOperation
     namespace _private
     {
         medAbstractMorphomathOperationProcessPluginManager manager;
+        medAbstractMorphomathOperationProcessPluginFactory factory;
+    }
+
+    medAbstractMorphomathOperationProcessPluginFactory& pluginFactory(void)
+    {
+        return _private::factory;
     }
 
     medAbstractMorphomathOperationProcessPluginManager& pluginManager(void)
@@ -228,6 +411,8 @@ namespace morphomathOperation
         pluginManager().setVerboseLoading(verbose);
         pluginManager().initialize(path);
     }
+
+
 
     namespace erodeImage
     {
