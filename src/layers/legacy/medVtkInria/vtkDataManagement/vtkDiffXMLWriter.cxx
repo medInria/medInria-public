@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 #include <vtksys/SystemTools.hxx>
-#include <vtksys/ios/sstream>
 #include "vtkSmartPointer.h"
 #include "vtkDataManager.h"
 #include "vtkMetaDataSetSequence.h"

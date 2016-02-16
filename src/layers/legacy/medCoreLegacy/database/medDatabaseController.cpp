@@ -227,7 +227,9 @@ medDataIndex medDatabaseController::indexForPatient (const QString &patientName)
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first()) {
         patientId = query.value(0);
@@ -246,7 +248,9 @@ medDataIndex medDatabaseController::indexForStudy(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first())
         patientId = query.value(0);
@@ -270,7 +274,9 @@ medDataIndex medDatabaseController::indexForStudy(const QString &patientName, co
     query.bindValue(":name", studyName);
 
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first()) {
         studyId = query.value(0);
@@ -291,7 +297,9 @@ medDataIndex medDatabaseController::indexForSeries(int id)
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first())
         studyId = query.value(0);
@@ -299,7 +307,9 @@ medDataIndex medDatabaseController::indexForSeries(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first())
         patientId = query.value(0);
@@ -323,7 +333,9 @@ medDataIndex medDatabaseController::indexForSeries(const QString &patientName, c
     query.bindValue(":name", seriesName);
 
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first()) {
         QVariant seriesId = query.value(0);
@@ -345,7 +357,9 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT series FROM image WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first())
         seriesId = query.value(0);
@@ -353,7 +367,9 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first())
         studyId = query.value(0);
@@ -361,7 +377,9 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first())
         patientId = query.value(0);
@@ -385,7 +403,9 @@ medDataIndex medDatabaseController::indexForImage(const QString &patientName, co
     query.bindValue(":name", imageName);
 
     if(!query.exec())
+    {
         dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
 
     if(query.first()) {
         QVariant imageId = query.value(0);
@@ -980,7 +1000,10 @@ bool medDatabaseController::contains(const medDataIndex &index) const
             query.bindValue(":imID", imageId);
 
         if(!query.exec())
+        {
             dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        }
+
         if(query.first())
             return true;
 
