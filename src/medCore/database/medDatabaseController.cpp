@@ -168,12 +168,6 @@ const QSqlDatabase& medDatabaseController::database(void) const
 
 bool medDatabaseController::createConnection(void)
 {
-    if(!QDir(medStorage::dataLocation()).exists())
-    {
-        qDebug()<<"Database path does not exist: "<<medStorage::dataLocation();
-        return false;
-    }
-
     medStorage::mkpath(medStorage::dataLocation() + "/");
 
     if (this->m_database.databaseName().isEmpty())
