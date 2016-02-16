@@ -334,7 +334,9 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
 
         imagetypestring << imagedimension;
         if (imagedimension == 4)
+        {
             dtkDebug() << "image type given :\t" << imagetypestring.str().c_str();
+        }
 
         medData = medAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str());
         if (medData)

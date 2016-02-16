@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}aabadie/qtdcm.git)
+set(git_url ${GITHUB_PREFIX}qtdcm/qtdcm.git)
 set(git_tag qt5.5_support) 
 
 ## #############################################################################

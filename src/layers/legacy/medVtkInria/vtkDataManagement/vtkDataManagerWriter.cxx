@@ -46,7 +46,6 @@
 #include "vtkXMLWriter.h"
 
 #include <vtksys/SystemTools.hxx>
-#include <vtksys/ios/sstream>
 #include "vtkSmartPointer.h"
 #include <string>
 #include "vtkDataManager.h"
@@ -614,7 +613,7 @@ std::string vtkDataManagerWriterInternals::CreatePieceFileName(int index1, int i
   }
   
   std::string fname;
-  vtksys_ios::ostringstream fn_with_warning_C4701;
+  std::ostringstream fn_with_warning_C4701;
   fn_with_warning_C4701
     << this->FilePrefix.c_str() << "/"
     << this->FilePrefix.c_str() << "_" << index1 << "_" << index2 << "."
