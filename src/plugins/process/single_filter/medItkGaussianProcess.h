@@ -49,7 +49,7 @@ private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
 };
 
-inline medAbstractSingleFilterOperationProcess* medItkGaussianProcessCreator()
+inline medAbstractGaussianFilterProcess* medItkGaussianProcessCreator()
 {
     return new medItkGaussianProcess();
 }

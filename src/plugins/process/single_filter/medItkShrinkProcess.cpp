@@ -106,9 +106,9 @@ medAbstractJob::medJobExitStatus medItkShrinkProcess::_run()
 
     unsigned int shrinkFactors[3];
 
-    shrinkFactors[0] = this->shrinkFactor1();
-    shrinkFactors[1] = this->shrinkFactor2();
-    shrinkFactors[2] = this->shrinkFactor3();
+    shrinkFactors[0] = this->shrinkFactor1()->value();
+    shrinkFactors[1] = this->shrinkFactor2()->value();
+    shrinkFactors[2] = this->shrinkFactor3()->value();
 
     if(in1.IsNotNull())
     {

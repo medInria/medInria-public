@@ -42,14 +42,30 @@ namespace generic
 
 namespace morphomathOperation
 {
-    namespace _private
+    namespace erodeImage
     {
-        medAbstractMorphomathOperationProcessPresenterFactory factory;
+        namespace _private
+        {
+            medAbstractErodeImageProcessPresenterFactory factory;
+        }
+
+        medAbstractErodeImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
     }
 
-    medAbstractMorphomathOperationProcessPresenterFactory& presenterFactory()
+    namespace dilateImage
     {
-        return _private::factory;
+        namespace _private
+        {
+            medAbstractDilateImageProcessPresenterFactory factory;
+        }
+
+        medAbstractDilateImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
     }
 
     namespace openingImage
@@ -64,6 +80,7 @@ namespace morphomathOperation
             return _private::factory;
         }
     }
+
     namespace closingImage
     {
         namespace _private
@@ -80,18 +97,58 @@ namespace morphomathOperation
 
 namespace arithmeticOperation
 {
-    namespace _private
+    namespace addImage
     {
-        medAbstractArithmeticOperationProcessPresenterFactory factory;
+        namespace _private
+        {
+            medAbstractAddImageProcessPresenterFactory factory;
+        }
+
+        medAbstractAddImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
     }
 
-    medAbstractArithmeticOperationProcessPresenterFactory& presenterFactory()
+    namespace subtractImage
     {
-        return _private::factory;
+        namespace _private
+        {
+            medAbstractSubtractImageProcessPresenterFactory factory;
+        }
+
+        medAbstractSubtractImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace multiplyImage
+    {
+        namespace _private
+        {
+            medAbstractMultiplyImageProcessPresenterFactory factory;
+        }
+
+        medAbstractMultiplyImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace divideImage
+    {
+        namespace _private
+        {
+            medAbstractDivideImageProcessPresenterFactory factory;
+        }
+
+        medAbstractDivideImageProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
     }
 }
-
-
 
 namespace maskImage
 {

@@ -22,7 +22,7 @@
 
 #include <medItkArithmeticOperationProcessPluginExport.h>
 
-class MEDITKARITHMETICOPERATIONPROCESSPLUGINS_EXPORTS medItkSubtractImageProcess: public medAbstractSubtractImageProcess
+class MEDITKARITHMETICOPERATIONPROCESSPLUGINS_EXPORT medItkSubtractImageProcess: public medAbstractSubtractImageProcess
 {
     Q_OBJECT
 public:

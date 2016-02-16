@@ -48,7 +48,7 @@ private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
 };
 
-inline medAbstractSingleFilterOperationProcess* medItkMultiplyProcessCreator()
+inline medAbstractMultiplyFilterProcess* medItkMultiplyProcessCreator()
 {
     return new medItkMultiplyProcess();
 }

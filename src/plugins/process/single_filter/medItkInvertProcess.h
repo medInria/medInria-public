@@ -49,7 +49,7 @@ private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
 };
 
-inline medAbstractSingleFilterOperationProcess* medItkInvertProcessCreator()
+inline medAbstractInvertFilterProcess* medItkInvertProcessCreator()
 {
     return new medItkInvertProcess();
 }

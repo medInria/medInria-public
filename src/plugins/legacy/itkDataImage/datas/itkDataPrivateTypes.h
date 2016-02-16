@@ -63,7 +63,10 @@ public:
     int minRangeValue() {
         computeRange();
         if (!range_computed)
+        {
             dtkDebug() << "Cannot compute range";
+        }
+
         return range_min;
     }
 

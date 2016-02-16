@@ -49,7 +49,7 @@ private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
 };
 
-inline medAbstractSingleFilterOperationProcess* medItkNormalizeProcessCreator()
+inline medAbstractNormalizeFilterProcess* medItkNormalizeProcessCreator()
 {
     return new medItkNormalizeProcess();
 }
