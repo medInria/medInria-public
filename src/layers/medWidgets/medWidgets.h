@@ -1,10 +1,17 @@
 #pragma once
 
 #include <medProcessPresenterFactory.h>
-#include <medAbstractMorphomathOperationProcessPresenter.h>
-#include <medAbstractArithmeticOperationProcessPresenter.h>
+
 #include <medAbstractOpeningImageProcessPresenter.h>
 #include <medAbstractClosingImageProcessPresenter.h>
+#include <medAbstractDilateImageProcessPresenter.h>
+#include <medAbstractErodeImageProcessPresenter.h>
+
+#include <medAbstractAddImageProcessPresenter.h>
+#include <medAbstractSubtractImageProcessPresenter.h>
+#include <medAbstractMultiplyImageProcessPresenter.h>
+#include <medAbstractDivideImageProcessPresenter.h>
+
 #include <medAbstractMaskImageProcessPresenter.h>
 #include <medAbstractDWIMaskingProcessPresenter.h>
 #include <medAbstractDiffusionModelEstimationProcessPresenter.h>
@@ -40,18 +47,14 @@ namespace medWidgets
 
     namespace morphomathOperation
     {
-        MEDWIDGETS_EXPORT medAbstractMorphomathOperationProcessPresenterFactory& presenterFactory();
-//        MEDWIDGETS_EXPORT medAbstractMorphomathOperationProcessPluginManager& pluginManager(void);
-//        MEDWIDGETS_EXPORT void initialize(const QString& path, bool verbose = true);
-
-//        namespace erodeImage
-//        {
-//            MEDCORE_EXPORT medAbstractErodeImageProcessPluginFactory& pluginFactory(void);
-//        }
-//        namespace dilateImage
-//        {
-//            MEDCORE_EXPORT medAbstractDilateImageProcessPluginFactory& pluginFactory(void);
-//        }
+        namespace erodeImage
+        {
+            MEDWIDGETS_EXPORT medAbstractErodeImageProcessPresenterFactory& presenterFactory();
+        }
+        namespace dilateImage
+        {
+            MEDWIDGETS_EXPORT medAbstractDilateImageProcessPresenterFactory& presenterFactory();
+        }
         namespace openingImage
         {
             MEDWIDGETS_EXPORT medAbstractOpeningImageProcessPresenterFactory& presenterFactory();
@@ -64,13 +67,30 @@ namespace medWidgets
 
     namespace arithmeticOperation
     {
-        MEDWIDGETS_EXPORT medAbstractArithmeticOperationProcessPresenterFactory& presenterFactory();
+        namespace addImage
+        {
+            MEDWIDGETS_EXPORT medAbstractAddImageProcessPresenterFactory& presenterFactory();
+        }
+
+        namespace subtractImage
+        {
+            MEDWIDGETS_EXPORT medAbstractSubtractImageProcessPresenterFactory& presenterFactory();
+        }
+
+        namespace multiplyImage
+        {
+            MEDWIDGETS_EXPORT medAbstractMultiplyImageProcessPresenterFactory& presenterFactory();
+        }
+
+        namespace divideImage
+        {
+            MEDWIDGETS_EXPORT medAbstractDivideImageProcessPresenterFactory& presenterFactory();
+        }
     }
 
 
     namespace singleFilterOperation
     {
-
         namespace addFilter
         {
             MEDWIDGETS_EXPORT medAbstractAddFilterProcessPresenterFactory& presenterFactory();
@@ -111,7 +131,6 @@ namespace medWidgets
         {
             MEDWIDGETS_EXPORT medAbstractWindowingFilterProcessPresenterFactory& presenterFactory();
         }
-
     }
 
     namespace maskImage
