@@ -52,7 +52,7 @@ void medAbstractSingleFilterOperationProcess::setOutput(medAbstractImageData *da
     d->output = data;
 
     QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " single filter";
+    newSeriesDescription += " " + this->outputNameAddon();
 
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );

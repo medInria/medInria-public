@@ -38,6 +38,7 @@ public:
 
 protected:
     void setOutput(medAbstractFibersData* data);
+    virtual QString outputNameAddon() const {return "fibers";}
 
 private:
     const QScopedPointer<medAbstractTractographyProcessPrivate> d;

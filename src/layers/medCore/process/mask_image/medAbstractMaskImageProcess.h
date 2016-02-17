@@ -41,6 +41,7 @@ public:
 
 protected:
     void setOutput(medAbstractImageData* data);
+    virtual QString outputNameAddon() const {return "masked";}
 
 private:
     const QScopedPointer<medAbstractMaskImageProcessPrivate> d;

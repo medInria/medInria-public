@@ -32,6 +32,7 @@
 #include <medAbstractShrinkFilterProcess.h>
 #include <medAbstractSubtractFilterProcess.h>
 #include <medAbstractWindowingFilterProcess.h>
+#include <medAbstractImageDenoisingProcess.h>
 
 #include <medAbstractMorphomathOperationProcess.h>
 #include <medAbstractErodeImageProcess.h>
@@ -139,6 +140,11 @@ namespace medCore
         namespace windowingFilter
         {
             MEDCORE_EXPORT medAbstractWindowingFilterProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace imageDenoising
+        {
+            MEDCORE_EXPORT medAbstractImageDenoisingProcessPluginFactory& pluginFactory(void);
         }
     }
 

@@ -36,6 +36,7 @@ public:
 
 protected:
     void setOutput(medAbstractImageData* data);
+    virtual QString outputNameAddon() const {return "DWI mask";}
 
 private:
     const QScopedPointer<medAbstractDWIMaskingProcessPrivate> d;

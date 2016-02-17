@@ -29,7 +29,7 @@
 #include <medAbstractShrinkFilterProcessPresenter.h>
 #include <medAbstractSubtractFilterProcessPresenter.h>
 #include <medAbstractWindowingFilterProcessPresenter.h>
-
+#include <medAbstractImageDenoisingProcessPresenter.h>
 
 #include <medWidgetsExport.h>
 
@@ -130,6 +130,10 @@ namespace medWidgets
         namespace windowingFilter
         {
             MEDWIDGETS_EXPORT medAbstractWindowingFilterProcessPresenterFactory& presenterFactory();
+        }
+        namespace imageDenoising
+        {
+            MEDWIDGETS_EXPORT medAbstractImageDenoisingProcessPresenterFactory& presenterFactory();
         }
     }
 

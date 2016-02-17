@@ -40,6 +40,7 @@ public:
 
 protected:
     void setOutput(medAbstractImageData* data);
+    virtual QString outputNameAddon() const {return "arithmetic";}
 
 private:
     const QScopedPointer<medAbstractArithmeticOperationProcessPrivate> d;

@@ -19,14 +19,14 @@
 
 #include <medCoreExport.h>
 
-class MEDCORE_EXPORT medAbstractInvertFilterProcess: public medAbstractSingleFilterOperationProcess
+class MEDCORE_EXPORT medAbstractImageDenoisingProcess: public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
 public:
-    medAbstractInvertFilterProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent) {}
+    medAbstractImageDenoisingProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent) {}
 
 protected:
-    virtual QString outputNameAddon() const {return "invert filter";}
+    virtual QString outputNameAddon() const {return "denoised";}
 };
 
-DTK_DECLARE_PLUGIN_FACTORY(medAbstractInvertFilterProcess, MEDCORE_EXPORT)
+DTK_DECLARE_PLUGIN_FACTORY(medAbstractImageDenoisingProcess, MEDCORE_EXPORT)

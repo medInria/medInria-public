@@ -24,6 +24,9 @@ class MEDCORE_EXPORT medAbstractSubtractImageProcess: public medAbstractArithmet
     Q_OBJECT
 public:
      medAbstractSubtractImageProcess(QObject *parent): medAbstractArithmeticOperationProcess(parent) {}
+
+protected:
+    virtual QString outputNameAddon() const {return "subtract image";}
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractSubtractImageProcess, MEDCORE_EXPORT)

@@ -36,6 +36,8 @@ public:
     virtual medDoubleParameter* minimumOutputIntensityValue();
     virtual medDoubleParameter* maximumOutputIntensityValue();
 
+protected:
+    virtual QString outputNameAddon() const {return "windowing filter";}
 
 private:
     const QScopedPointer<medAbstractWindowingFilterProcessPrivate> d;

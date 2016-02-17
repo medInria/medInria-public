@@ -35,6 +35,9 @@ public:
     virtual medIntParameter* shrinkFactor2();
     virtual medIntParameter* shrinkFactor3();
 
+protected:
+    virtual QString outputNameAddon() const {return "shrink filter";}
+
 private:
     const QScopedPointer<medAbstractShrinkFilterProcessPrivate> d;
 };

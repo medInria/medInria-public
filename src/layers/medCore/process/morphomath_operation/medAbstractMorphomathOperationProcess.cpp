@@ -63,7 +63,7 @@ void medAbstractMorphomathOperationProcess::setOutput(medAbstractImageData *data
     d->output = data;
 
     QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " morpho";
+    newSeriesDescription += " " + this->outputNameAddon();
 
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );

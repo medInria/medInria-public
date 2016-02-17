@@ -38,6 +38,7 @@ public:
 
 protected:
     void setOutput(medAbstractImageData* data);
+    virtual QString outputNameAddon() const {return "scalar map";}
 
 private:
     const QScopedPointer<medAbstractDiffusionScalarMapsProcessPrivate> d;

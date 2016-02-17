@@ -24,6 +24,9 @@ class MEDCORE_EXPORT medAbstractNormalizeFilterProcess: public medAbstractSingle
     Q_OBJECT
 public:
     medAbstractNormalizeFilterProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent) {}
+
+protected:
+    virtual QString outputNameAddon() const {return "normalize filter";}
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractNormalizeFilterProcess, MEDCORE_EXPORT)

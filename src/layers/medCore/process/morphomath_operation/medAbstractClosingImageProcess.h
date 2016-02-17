@@ -24,6 +24,9 @@ class MEDCORE_EXPORT medAbstractClosingImageProcess: public medAbstractMorphomat
     Q_OBJECT
 public:
     medAbstractClosingImageProcess(QObject *parent): medAbstractMorphomathOperationProcess(parent) {}
+
+protected:
+    virtual QString outputNameAddon() const {return "closing";}
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractClosingImageProcess, MEDCORE_EXPORT)

@@ -24,6 +24,9 @@ class MEDCORE_EXPORT medAbstractDivideImageProcess: public medAbstractArithmetic
     Q_OBJECT
 public:
     medAbstractDivideImageProcess(QObject *parent): medAbstractArithmeticOperationProcess(parent) {}
+
+protected:
+    virtual QString outputNameAddon() const {return "divide image";}
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractDivideImageProcess, MEDCORE_EXPORT)

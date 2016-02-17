@@ -277,6 +277,19 @@ namespace singleFilterOperation
             return _private::factory;
         }
     }
+
+    namespace imageDenoising
+    {
+        namespace _private
+        {
+            medAbstractImageDenoisingProcessPluginFactory factory;
+        }
+
+        medAbstractImageDenoisingProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
 }
 
 // DWI masking
