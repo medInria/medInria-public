@@ -176,6 +176,7 @@ void vtkDataMeshInteractor::setInputData(medAbstractData *data)
 void vtkDataMeshInteractor::setupParameters()
 {
     d->parameters << this->opacityParameter();
+    this->setOpacity(1.0);
 
     if(!(d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
          d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
@@ -239,7 +240,37 @@ void vtkDataMeshInteractor::setupParameters()
         d->colorParam->addItem(color, medStringListParameter::createIconFromColor(color));
 
     connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
-    d->colorParam->setValue("#FFFFFF");
+    if (!d->metaDataSet->GetActor(0))
+    {
+        d->colorParam->setValue("#FFFFFF");
+    }
+    else
+    {
+        // color and opacity defined in xml readers
+        double * color = d->metaDataSet->GetActor(0)->GetProperty()->GetColor();
+
+        int final_colors[3];
+        final_colors[0] = int(color[0]*255.0);
+        final_colors[1] = int(color[1]*255.0);
+        final_colors[2] = int(color[2]*255.0);
+
+        // decimal to hex color
+        QString colorHex;
+        colorHex += QString("#");
+        for (int i=0; i<3; i++)
+        {
+            // Add a "0" to the hex number to follow "RRGGBBAA"
+            if (final_colors[i] < 15)
+            {
+                colorHex += QString("0");
+            }
+            colorHex += QString::number(final_colors[i], 16).toUpper();
+        }
+        this->setColor(colorHex);
+
+        this->setOpacity(d->metaDataSet->GetActor(0)->GetProperty()->GetOpacity());
+    }
+
     d->parameters << d->colorParam;
 
     d->renderingParam = new medStringListParameter("Rendering", this);
@@ -271,22 +302,6 @@ void vtkDataMeshInteractor::setOpacity(double value)
 {
     d->actorProperty->SetOpacity(value);
     this->opacityParameter()->setValue(value);
-
-    if (!d->metaDataSet->GetLookupTable())
-    {
-        vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
-        lut->SetRange(0, 2000); // image intensity range
-        lut->SetNumberOfColors(1);
-        lut->SetAlpha(value);
-        lut->Build();
-
-        d->metaDataSet->SetLookupTable(lut);
-    }
-    else
-    {
-        d->metaDataSet->GetLookupTable()->SetAlpha(value);
-    }
-
     d->view->render();
 }
 
