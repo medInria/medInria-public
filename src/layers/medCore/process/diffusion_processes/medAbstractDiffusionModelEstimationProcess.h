@@ -48,6 +48,7 @@ public:
 
 protected:
     void setOutput(medAbstractDiffusionModelImageData* data);
+    virtual QString outputNameAddon() const {return "models";}
 
 private:
     const QScopedPointer<medAbstractDiffusionModelEstimationProcessPrivate> d;

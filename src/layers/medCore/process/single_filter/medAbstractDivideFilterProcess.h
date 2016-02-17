@@ -24,6 +24,9 @@ class MEDCORE_EXPORT medAbstractDivideFilterProcess: public medAbstractSingleFil
     Q_OBJECT
 public:
     medAbstractDivideFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
+
+protected:
+    virtual QString outputNameAddon() const {return "divide filter";}
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractDivideFilterProcess, MEDCORE_EXPORT)

@@ -65,7 +65,7 @@ void medAbstractDWIMaskingProcess::setOutput(medAbstractImageData *data)
 
 
     QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " DWI mask";
+    newSeriesDescription += " " + this->outputNameAddon();
 
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );

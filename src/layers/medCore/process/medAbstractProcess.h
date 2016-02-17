@@ -38,6 +38,9 @@ public:
 protected:
     void registerParameter(medAbstractParameter *parameter);
 
+    //! Utility function to add a process description to outputs
+    virtual QString outputNameAddon() const {return "processed";}
+
 private:
     const QScopedPointer<medAbstractProcessPrivate> d;
 };

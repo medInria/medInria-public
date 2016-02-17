@@ -38,6 +38,7 @@ public:
 
 protected:
     void setOutput(medAbstractImageData* data);
+    virtual QString outputNameAddon() const {return "single filter";}
 
 private:
     const QScopedPointer<medAbstractSingleFilterOperationProcessPrivate> d;

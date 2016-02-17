@@ -347,6 +347,20 @@ namespace singleFilterOperation
             return _private::factory;
         }
     }
+
+
+    namespace imageDenoising
+    {
+        namespace _private
+        {
+            medAbstractImageDenoisingProcessPresenterFactory factory;
+        }
+
+        medAbstractImageDenoisingProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
 }
 
 } // end of medWidgets

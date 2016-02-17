@@ -39,6 +39,7 @@ public:
 
 protected:
     void setOutput(medAbstractImageData* data);
+    virtual QString outputNameAddon() const {return "morpho";}
 
 private:
     const QScopedPointer<medAbstractMorphomathOperationProcessPrivate> d;

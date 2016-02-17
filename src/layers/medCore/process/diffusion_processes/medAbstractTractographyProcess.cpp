@@ -54,7 +54,7 @@ void medAbstractTractographyProcess::setOutput(medAbstractFibersData *data)
     d->output = data;
 
     QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " fibers";
+    newSeriesDescription += " " + this->outputNameAddon();
 
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );

@@ -24,6 +24,9 @@ class MEDCORE_EXPORT medAbstractMultiplyImageProcess: public medAbstractArithmet
     Q_OBJECT
 public:
     medAbstractMultiplyImageProcess(QObject *parent): medAbstractArithmeticOperationProcess(parent) {}
+
+protected:
+    virtual QString outputNameAddon() const {return "multiply image";}
 };
 
 DTK_DECLARE_OBJECT        (medAbstractMultiplyImageProcess*)
