@@ -13,10 +13,9 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractProcess_p.h>
+#include <medAbstractProcess.h>
 #include <medAbstractImageData.h>
-#include <dtkLog/dtkLog.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkFiltersPluginExport.h>
 
@@ -25,11 +24,11 @@
 
 class itkFiltersProcessBase;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBasePrivate : public dtkAbstractProcessPrivate
+class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBasePrivate : public medAbstractProcessPrivate
 {
 public:
-    itkFiltersProcessBasePrivate(itkFiltersProcessBase *q = 0) : dtkAbstractProcessPrivate(q) {}
-    itkFiltersProcessBasePrivate(const itkFiltersProcessBasePrivate& other) : dtkAbstractProcessPrivate(other) {}
+    itkFiltersProcessBasePrivate(itkFiltersProcessBase *q = 0) : medAbstractProcessPrivate(q) {}
+    itkFiltersProcessBasePrivate(const itkFiltersProcessBasePrivate& other) : medAbstractProcessPrivate(other) {}
 
     virtual ~itkFiltersProcessBasePrivate(void) {}
     
@@ -45,17 +44,17 @@ public:
     template <class PixelType> void setupFilter() {}
     virtual void setFilterDescription() {}
     
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData) {
+    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData)
+    {
         itkFiltersProcessBasePrivate * source = reinterpret_cast<itkFiltersProcessBasePrivate *> ( clientData );
         itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
     
         if ( !source ) { dtkWarn() << "Source is null"; }
     
         source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-        
     }
 };
 
-DTK_IMPLEMENT_PRIVATE(itkFiltersProcessBase, dtkAbstractProcess)
+DTK_IMPLEMENT_PRIVATE(itkFiltersProcessBase, medAbstractProcess);
 
 

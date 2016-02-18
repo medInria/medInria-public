@@ -1487,3 +1487,8 @@ void medVtkFibersDataInteractor::updateSlicingParam()
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
 }
+
+QString medVtkFibersDataInteractor::name() const
+{
+    return "medVtkFibersDataInteractor";
+}

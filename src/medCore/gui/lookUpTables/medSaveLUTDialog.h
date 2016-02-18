@@ -12,11 +12,11 @@
 =========================================================================*/
 
 #pragma once
-
+#include "medCoreExport.h"
 #include <QInputDialog>
 #include <QWidget>
 
-class medSaveLUTDialog : public QInputDialog
+class MEDCORE_EXPORT medSaveLUTDialog : public QInputDialog
 {
     Q_OBJECT
 public:

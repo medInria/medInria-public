@@ -63,14 +63,24 @@ medApplication::medApplication(int & argc, char**argv) :
         QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
+    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
+    qDebug() << MEDINRIA_BUILD_DATE << expiryDate;
+    if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
+    {
+        QMessageBox msg;
+        msg.setText("This copy of MUSIC has expired, please contact "
+        "maxime.sermesant@inria.fr for more information.");
+        msg.exec();
+        ::exit(1);
+    }
     d->mainWindow = NULL;
 
-    this->setApplicationName("medInria");
+    this->setApplicationName("MUSIC");            /*Beware, change database path*/
     qDebug() << "Version:" << MEDINRIA_VERSION;
     this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("inria");
+    this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
-    this->setWindowIcon(QIcon(":/medInria.ico"));
+    this->setWindowIcon(QIcon(":music_logo_small.png"));
 
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
     this->setStyleSheet(parser.result());
@@ -165,7 +175,7 @@ void medApplication::initialize()
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>();
-    viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
+    //viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
 

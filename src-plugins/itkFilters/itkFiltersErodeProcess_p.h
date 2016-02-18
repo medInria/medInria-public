@@ -11,12 +11,11 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSERODEPROCESS_P_H
-#define ITKFILTERSERODEPROCESS_P_H
+#pragma once
 
 #include <medAbstractData.h>
 
-#include <itkFiltersProcessBase_p.h>
+#include <itkMorphologicalFiltersProcessBase_p.h>
 
 #include <medMetaDataKeys.h>
 
@@ -27,45 +26,54 @@
 
 class itkFiltersErodeProcess;
 
-class itkFiltersErodeProcessPrivate : public itkFiltersProcessBasePrivate
+class itkFiltersErodeProcessPrivate : public itkMorphologicalFiltersProcessBasePrivate
 {
 public:
-    itkFiltersErodeProcessPrivate(itkFiltersErodeProcess *q = 0) : itkFiltersProcessBasePrivate(q) {}
-    itkFiltersErodeProcessPrivate(const itkFiltersErodeProcessPrivate& other) : itkFiltersProcessBasePrivate(other) {}
+    itkFiltersErodeProcessPrivate(itkFiltersErodeProcess *q = 0) : itkMorphologicalFiltersProcessBasePrivate(q) {}
+    itkFiltersErodeProcessPrivate(const itkFiltersErodeProcessPrivate& other) : itkMorphologicalFiltersProcessBasePrivate(other) {}
 
     virtual ~itkFiltersErodeProcessPrivate(void) {}
-    
-    int radius;
 
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::BinaryBallStructuringElement < PixelType, 3> StructuringElementType;
+        
+        if(!isRadiusInPixels)
+            convertMmInPixels<ImageType>();
+
+        typedef itk::FlatStructuringElement < 3> StructuringElementType;
+        StructuringElementType::RadiusType elementRadius;
+        elementRadius[0] = radius[0];
+        elementRadius[1] = radius[1];
+        elementRadius[2] = radius[2];
+        
         typedef itk::GrayscaleErodeImageFilter< ImageType, ImageType,StructuringElementType >  ErodeType;
         typename ErodeType::Pointer erodeFilter = ErodeType::New();
         
-        StructuringElementType ball;
-        ball.SetRadius(radius);
-        ball.CreateStructuringElement();
+        StructuringElementType ball = StructuringElementType::Ball(elementRadius);
 
         erodeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         erodeFilter->SetKernel ( ball );
         
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
+        callback->SetCallback ( itkMorphologicalFiltersProcessBasePrivate::eventCallback );
         
         erodeFilter->AddObserver ( itk::ProgressEvent(), callback );
         erodeFilter->Update();
         output->setData ( erodeFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " Erode filter (" + QString::number(radius) + ")";
+
+        if (isRadiusInPixels)
+            newSeriesDescription += " Erode filter\n("+ QString::number(radius[0])+", "+ 
+            QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
+        else
+            newSeriesDescription += " Erode filter\n("+ QString::number(radiusMm[0])+", "+ 
+            QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
-DTK_IMPLEMENT_PRIVATE(itkFiltersErodeProcess, itkFiltersProcessBase)
-
-#endif // ITKFILTERSERODEPROCESS_P_H
+DTK_IMPLEMENT_PRIVATE(itkFiltersErodeProcess, itkMorphologicalFiltersProcessBase)

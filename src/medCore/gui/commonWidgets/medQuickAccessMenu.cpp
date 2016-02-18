@@ -356,7 +356,13 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
         buttonsList.push_back(button);
+        if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
+        {
+            button->setDisabled(true);
+            button->setToolTip("No useful plugin has been found for this workspace.");
+        }
     }
+
     workspaceButtonsLayout->addStretch();
     this->setMinimumHeight ( 20 + 40 * ( 2 + workspaceDetails.size() ) );
     this->setLayout(workspaceButtonsLayout);

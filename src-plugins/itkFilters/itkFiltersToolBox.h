@@ -32,10 +32,6 @@ public:
     medAbstractData* processOutput();
     dtkPlugin* plugin();
 
-signals:
-    void success();
-    void failure();
-
 public slots:
 
     void onFiltersActivated(int index);
@@ -56,6 +52,8 @@ private:
     void setupItkNormalizeProcess();
     void setupItkShrinkProcess();
     void setupItkWindowingProcess();
+    void setupItkThresholdingProcess();
+    void setupItkComponentSizeThresholdProcess();
     
     itkFiltersToolBoxPrivate *d;
 };

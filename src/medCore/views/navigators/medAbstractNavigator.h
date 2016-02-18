@@ -13,10 +13,14 @@
 
 #pragma once
 
+#include <QDomDocument>
+
+
 #include <dtkCore/dtkAbstractViewNavigator.h>
 
 #include <medCoreExport.h>
 #include <medImageViewEnum.h>
+#include <medAbstractParameter.h>
 
 class medAbstractView;
 class medAbstractParameter;
@@ -34,22 +38,33 @@ public:
 
 public:
     virtual QString description() const = 0;
+    virtual QString name() const;
+    virtual QString version() const;
 
     QWidget* toolBoxWidget();
     QWidget* toolBarWidget();
 
     virtual QList<medAbstractParameter*> linkableParameters() = 0;
     virtual QList<medBoolParameter*> mouseInteractionParameters() = 0;
+    
+    virtual void toXMLNode(QDomDocument* doc,QDomElement* currentNode);
+    void fromXMLNode(QDomElement* element);
+	
+	
+
 
 protected:
     virtual QWidget* buildToolBoxWidget() = 0;
     virtual QWidget* buildToolBarWidget() = 0;
+    virtual void restoreParameters(QHash<QString,QString> parameters);
+
 
 private slots:
 
 
 private:
     medAbstractNavigatorPrivate *d;
+
 
 /*=========================================================================
                         NOT IMPLEMENTED HERE ON PURPOSE

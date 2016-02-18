@@ -47,6 +47,11 @@ QStringList itkMetaDataImageWriter::handled() const {
     return s_handled();
 }
 
+QStringList itkMetaDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".mhd";
+}
+
 bool itkMetaDataImageWriter::registered() {
     return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }

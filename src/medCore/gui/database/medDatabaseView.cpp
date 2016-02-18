@@ -106,6 +106,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->setAlternatingRowColors(true);
     this->setAnimated(false);
     this->setSortingEnabled(true);
+    this->sortByColumn(0, Qt::AscendingOrder);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
@@ -228,6 +229,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
         {
             d->contextMenu->addAction(d->editAction);
             d->editAction->setIcon(QIcon(":icons/page_edit.png"));
+            d->contextMenu->addAction(d->exportAction);
             d->contextMenu->addAction(d->removeAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
                 d->contextMenu->addAction(d->saveAction);
@@ -237,6 +239,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
             d->contextMenu->addAction(d->addStudyAction);
             d->contextMenu->addAction(d->editAction);
             d->editAction->setIcon(QIcon(":icons/user_edit.png"));
+            d->contextMenu->addAction(d->exportAction);
             d->contextMenu->addAction(d->removeAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
                 d->contextMenu->addAction(d->saveAction);
@@ -281,6 +284,7 @@ void medDatabaseView::onViewSelectedItemRequested(void)
     }
 }
 
+
 /** Exports the currently selected item. */
 void medDatabaseView::onExportSelectedItemRequested(void)
 {
@@ -298,7 +302,30 @@ void medDatabaseView::onExportSelectedItemRequested(void)
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if(item)
-        emit exportData(item->dataIndex());
+    {
+        if(item->dataIndex().isValidForSeries())
+        {
+            emit exportData(item->dataIndex());
+        }
+
+        else if(item->dataIndex().isValidForStudy())
+        {
+            for (unsigned int i = 0; i<item->childCount(); i++)
+                emit exportData(item->child(i)->dataIndex());
+        }
+
+        if(item->dataIndex().isValidForPatient())
+        {
+            for (unsigned int i = 0; i<item->childCount(); i++)
+            {
+                medAbstractDatabaseItem *study = item->child(i);
+                for (unsigned int j = 0; j<study->childCount(); j++)
+                {
+                    emit exportData(study->child(j)->dataIndex());
+                }
+            }
+        }
+    }
 }
 
 void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)

@@ -88,7 +88,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
-    aboutButton->setToolTip(tr("About medInria"));
+    aboutButton->setToolTip(tr("About MUSIC"));
     aboutButton->setFocusPolicy ( Qt::NoFocus );
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -110,7 +110,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
-    settingsButton->setToolTip(tr("Configure medInria"));
+    settingsButton->setToolTip(tr("Configure MUSIC"));
     settingsButton->setFocusPolicy ( Qt::NoFocus );
     settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -120,34 +120,35 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
     userButtonsLayout->insertWidget ( 3, helpButton );
-    //no need to set the layout the userWidget is the parent of the layout already.
-//    d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medInriaLabel = new QLabel ( this );
-    QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );
+    QPixmap medLogo( ":music_logo.png" );
+    medLogo = medLogo.scaled(350, 150, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     medInriaLabel->setPixmap ( medLogo );
-//     QLabel * textLabel = new QLabel;
 
+    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
-                           "processing and visualisation software, "
-                           "and it is <b>free</b>. Through an intuitive user "
-                           "interface, <b>medInria</b> offers from standard "
-                           "to cutting-edge processing functionalities for "
-                           "your medical images such as 2D/3D/4D image "
-                           "visualisation, image registration, or diffusion "
-                           "MR processing and tractography." ));
+    textEdit->setHtml ( QString::fromUtf8("<b>MUSIC</b> is a software developed in collaboration with "
+                                          "the IHU LIRYC in order to propose functionalities "
+                                          "dedicated to cardiac interventional planning and "
+                                          "guidance, based on the medInria software platform."
+                                          "<br/><br/>"
+                                          "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria."
+                                          "<br/><br/>"
+                                          " <font color = 'red'><b>This MUSIC copy will expire on ")
+                        + QLocale(QLocale::English).toString(expiryDate, "d MMMM yyyy")
+                        + ".</b></font>");
+
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
-    textEdit->setMaximumHeight ( 200 );
+    textEdit->setMaximumHeight(300);
+    textEdit->setMinimumHeight(250);
     infoLayout->insertWidget ( 0,medInriaLabel );
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
 
-    //no need to set the layout, the infoWidget is the parent of the layout already.
-//    d->infoWidget->setLayout ( infoLayout );
     d->infoWidget->setMaximumHeight ( medInriaLabel->height() + textEdit->height() );
 
     //About widget
@@ -159,11 +160,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel2->setPixmap ( medLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
-    
-    QString aboutText = QString(tr("<br/><br/>"
-                      "medInria %1 is a medical imaging platform developed at "
-                      "Inria<br/><br/>"
-                      "<center>Inria, Copyright 2013</center>"))
+
+    QString aboutText = QString::fromUtf8("MUSIC is the cardiac imaging platform based on medInria (%1) developed at "
+                      "Inria and IHU LIRYC.<br/>"
+                      "<center>Copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria</center>")
                       .arg(qApp->applicationVersion());
     
 #ifdef MEDINRIA_HAS_REVISIONS
@@ -181,10 +181,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
     QFile license ( ":LICENSE.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
-    QString licenseContent = license.readAll();
-    license.close();
-    aboutLicenseTextEdit->setText ( licenseContent );
+    QTextStream licenseContent(&license);
+    licenseContent.setCodec("UTF-8");
+    aboutLicenseTextEdit->setText ( licenseContent.readAll() );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
+    license.close();
 
     QTextEdit * releaseNotesTextEdit = new QTextEdit(this);
     QFile releaseNotes ( ":RELEASE_NOTES.txt" );
@@ -206,10 +207,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButtonLayout->addWidget ( hideAboutButton );
     aboutButtonLayout->addStretch();
 
-    d->aboutTabWidget->addTab ( aboutTextEdit, tr("About") );
+    d->aboutTabWidget->addTab ( aboutTextEdit,          tr("About") );
     d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, tr("Authors") );
-    d->aboutTabWidget->addTab ( releaseNotesTextEdit, tr("Release Notes") );
-    d->aboutTabWidget->addTab ( aboutLicenseTextEdit, tr("License") );
+    d->aboutTabWidget->addTab ( releaseNotesTextEdit,   tr("Release Notes") );
+    d->aboutTabWidget->addTab ( aboutLicenseTextEdit,   tr("License") );
 
     aboutLayout->addWidget ( medInriaLabel2 );
     aboutLayout->addWidget ( d->aboutTabWidget );
@@ -239,7 +240,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginLayout->addLayout(pluginHideButtonLayout);
 
 
-    //Create the setttings widget.
+    //Create the settings widget.
     d->settingsWidget = new QWidget(this);
     d->settingsWidget->setObjectName("settingsWidget");
     QVBoxLayout * settingsLayout = new QVBoxLayout(d->settingsWidget);

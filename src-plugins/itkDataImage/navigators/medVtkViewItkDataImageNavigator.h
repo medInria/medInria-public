@@ -27,6 +27,9 @@ public:
 
 public:
     virtual QString  identifier() const;
+    virtual QString name() const;
+    virtual QString version() const;
+
     static QString  s_identifier();
     static bool registered();
     virtual QStringList handled(void) const;
@@ -44,6 +47,8 @@ public slots:
 protected:
     virtual QWidget * buildToolBoxWidget();
     virtual QWidget * buildToolBarWidget();
+
+    virtual void restoreParameters(QHash<QString, QString> parameters);
 
 private:
     medVtkViewItkDataImageNavigatorPrivate *d;

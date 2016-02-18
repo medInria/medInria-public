@@ -30,6 +30,7 @@ public:
     virtual ~medVtkViewItkDataImageInteractor();
 
     virtual QString description() const;
+    virtual QString name() const;
     virtual QString identifier() const;
     static bool registered();
 
@@ -42,6 +43,8 @@ public:
     virtual QString lut() const;
     virtual QString preset() const;
     virtual QStringList handled() const;
+    
+    virtual void restoreParameters(QHash<QString,QString> parameters);
 
 public slots:
     virtual void setOpacity (double opacity);
@@ -50,7 +53,6 @@ public slots:
     virtual void setLut(QString lut);
     void setWindowLevel(QHash<QString, QVariant>);
     void enableWIndowLevel(bool enable);
-
     void setVisibility(bool);
 
     virtual void removeData();
@@ -69,6 +71,9 @@ private:
 
     template <typename IMAGE>
     bool SetViewInput(const char* type, medAbstractData* data, int layer);
+
+    void setMaxIntensity(double max);
+    void setMinIntensity(double min);
 
 private slots:
     void updateSlicingParam();

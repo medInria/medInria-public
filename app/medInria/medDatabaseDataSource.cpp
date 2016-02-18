@@ -43,8 +43,8 @@ public:
 
     QList<medToolBox*> toolBoxes;
     medDatabaseSearchPanel *searchPanel;
+    medDatabaseSearchPanel *compactSearchPanel;
     medActionsToolBox* actionsToolBox;
-
 };
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
@@ -91,6 +91,7 @@ QWidget* medDatabaseDataSource::mainViewWidget()
             connect(d->actionsToolBox, SIGNAL(editClicked()), d->largeView, SLOT(onEditRequested()));
 
             connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
+            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->actionsToolBox, SLOT(studySelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
         }
@@ -104,14 +105,19 @@ QWidget* medDatabaseDataSource::compactViewWidget()
 {
     if(d->compactWidget.isNull())
     {
-        d->compactWidget = new medDatabaseCompactWidget;
+        d->compactWidget = new medDatabaseCompactWidget();
+
+        d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
+        d->compactSearchPanel->setColumnNames(d->model->columnNames());
+        connect(d->compactSearchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(compactFilter(const QString &, int)),
+                Qt::UniqueConnection);
+
         d->compactView = new medDatabaseView(d->compactWidget);
         d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         d->compactView->setModel(d->compactProxy);
         d->compactPreview = new medDatabasePreview(d->compactWidget);
 
-        d->compactWidget->setViewAndPreview(d->compactView, d->compactPreview);
-
+        d->compactWidget->setSearchPanelViewAndPreview(d->compactSearchPanel, d->compactView, d->compactPreview);
 
         for(int i =1; i<12; ++i)
             d->compactView->hideColumn(i);
@@ -123,8 +129,8 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), d->compactView , SIGNAL(open(medDataIndex)));
         connect(d->compactView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
         connect(d->compactView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
-
     }
+
     return d->compactWidget;
 }
 
@@ -149,7 +155,8 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
         d->searchPanel->setColumnNames(d->model->columnNames());
         d->toolBoxes.push_back(d->searchPanel);
 
-        connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)));
+        connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)),
+                Qt::UniqueConnection);
 
         if( !d->largeView.isNull())
         {
@@ -162,6 +169,7 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
             connect(d->actionsToolBox, SIGNAL(editClicked()), d->largeView, SLOT(onEditRequested()));
 
             connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
+            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->actionsToolBox, SLOT(studySelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
             connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
         }
@@ -171,13 +179,19 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
 
 QString medDatabaseDataSource::description(void) const
 {
-    return tr("Browse the medInria Database");
+    return tr("Browse the MUSIC Database");
 }
 
 void medDatabaseDataSource::onFilter( const QString &text, int column )
 {
     // adding or overriding filter on column
     d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
+}
+
+void medDatabaseDataSource::compactFilter( const QString &text, int column )
+{
+    // adding or overriding filter on column
+    d->compactProxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
 
 void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index, QUuid)

@@ -23,19 +23,17 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersDilateProcessPrivate(this), parent)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersDilateProcessPrivate(this), parent)
 {
     DTK_D(itkFiltersDilateProcess);
     
     d->filter = this;
-    d->output = NULL;
-    d->radius = 5;
     d->description = tr("ITK Dilate filter");
 }
 
 
 itkFiltersDilateProcess::itkFiltersDilateProcess(const itkFiltersDilateProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersDilateProcessPrivate(*other.d_func()), other)
+    : itkMorphologicalFiltersProcessBase(*new itkFiltersDilateProcessPrivate(*other.d_func()), other)
 {
 }
 
@@ -52,16 +50,6 @@ bool itkFiltersDilateProcess::registered( void )
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkDilateProcess", createitkFiltersDilateProcess);
 }
 
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersDilateProcess::setParameter(double data, int channel)
-{
-    if (channel != 0)
-        return;
-    
-    DTK_D(itkFiltersDilateProcess);
-    d->radius = data;
-}
 
 //-------------------------------------------------------------------------------------------
 
@@ -74,7 +62,7 @@ int itkFiltersDilateProcess::update ( void )
 
     QString id = d->input->identifier();
 
-    qDebug() << "itkFilters, update : " << id;
+    qDebug() << "itkFiltersDilateProcess, update : " << id;
 
     if ( id == "itkDataImageChar3" )
     {

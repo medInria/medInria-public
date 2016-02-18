@@ -14,14 +14,14 @@
 #pragma once
 
 #include <medAbstractData.h>
-#include <itkFiltersProcessBase.h>
+#include <itkMorphologicalFiltersProcessBase.h>
 
 #include <itkFiltersPluginExport.h>
 
 class itkFiltersErodeProcessPrivate;
 class medAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkFiltersProcessBase
+class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkMorphologicalFiltersProcessBase
 {
     Q_OBJECT
     
@@ -33,8 +33,6 @@ public:
     static bool registered ( void );
     
 public slots:
-
-    void setParameter ( double  data, int channel );
     int update ( void );
 
 private:

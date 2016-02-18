@@ -142,10 +142,31 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     Q_D(medDataManager);
     QUuid uuid = QUuid::createUuid();
     medAbstractDbController * controller = persistent ?  d->dbController : d->nonPersDbController;
-    controller->importPath(dataPath, uuid, indexWithoutCopying);
+    controller->importPath(dataPath.toUtf8(), uuid, indexWithoutCopying);
     return uuid;
 }
+/** @brief return writers able to handle the data *Memory management is the responsability of the caller*
 
+*/
+QHash<QString, dtkAbstractDataWriter*> medDataManager::getPossibleWriters(medAbstractData* data)
+{
+    Q_D(medDataManager);
+    QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
+    QHash<QString, dtkAbstractDataWriter*> possibleWriters;
+
+    foreach(QString writerType, allWriters)
+    {
+        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
+        if (writer->handled().contains(data->identifier()))
+            possibleWriters[writerType] = writer;
+        else
+            delete writer;
+    }
+    if (possibleWriters.isEmpty())
+        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
+
+    return possibleWriters;
+}
 
 void medDataManager::exportData(medAbstractData* data)
 {
@@ -153,22 +174,8 @@ void medDataManager::exportData(medAbstractData* data)
         return;
 
     Q_D(medDataManager);
-
     QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
-    QHash<QString, dtkAbstractDataWriter*> possibleWriters;
-
-    foreach(QString writerType, allWriters) {
-        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
-        if (writer->handled().contains(data->identifier()))
-            possibleWriters[writerType] = writer;
-        else
-            delete writer;
-    }
-
-    if (possibleWriters.isEmpty()) {
-        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
-        return;
-    }
+    QHash<QString, dtkAbstractDataWriter*> possibleWriters=getPossibleWriters(data);
 
     QFileDialog * exportDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
     exportDialog->setOption(QFileDialog::DontUseNativeDialog);
@@ -215,7 +222,7 @@ void medDataManager::exportData(medAbstractData* data)
 
     if ( exportDialog->exec() ) {
         QString chosenFormat = typesHandled->itemData(typesHandled->currentIndex()).toString();
-        this->exportDataToPath(data, exportDialog->selectedFiles().first(), chosenFormat);
+        this->exportDataToPath(data, exportDialog->selectedFiles().first().toUtf8(), chosenFormat);
     }
 
     qDeleteAll(possibleWriters);

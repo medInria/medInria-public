@@ -105,3 +105,13 @@ void medToolBoxBody::setOrientation(Qt::Orientation orientation)
       wid->show();
     }
 }
+
+void medToolBoxBody::hideEvent ( QHideEvent * event )
+{
+    emit minimized();
+}
+
+void medToolBoxBody::showEvent ( QShowEvent * event )
+{
+    emit maximized();
+}

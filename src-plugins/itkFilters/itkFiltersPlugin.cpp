@@ -23,12 +23,16 @@
 #include <itkFiltersInvertProcess.h>
 #include <itkFiltersShrinkProcess.h>
 #include <itkFiltersWindowingProcess.h>
+#include <itkFiltersThresholdingProcess.h>
+#include <itkFiltersComponentSizeThresholdProcess.h>
 #include <itkFiltersDilateProcess.h>
 #include <itkFiltersErodeProcess.h>
 #include <itkFiltersCloseProcess.h>
 #include <itkFiltersOpenProcess.h>
 #include <itkFiltersToolBox.h>
 #include <itkMorphologicalFiltersToolBox.h>
+#include <itkFiltersBinaryCloseProcess.h>
+#include <itkFiltersBinaryOpenProcess.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -51,7 +55,6 @@ itkFiltersPlugin::~itkFiltersPlugin()
 
 bool itkFiltersPlugin::initialize()
 {
-//    if ( !itkFilters::registered() )                 { dtkWarn() << "Unable to register itkFilters type";                         }
     if ( !itkFiltersAddProcess::registered() )       { dtkWarn() << "Unable to register itkFilters add process type";             }
     if ( !itkFiltersSubtractProcess::registered() )  { dtkWarn() << "Unable to register itkFilters subtract process type";        }
     if ( !itkFiltersMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
@@ -61,13 +64,17 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersNormalizeProcess::registered() ) { dtkWarn() << "Unable to register itkFilters normalize filter process type";}
     if ( !itkFiltersWindowingProcess::registered() ) { dtkWarn() << "Unable to register itkFilters windowing filter process type";}
     if ( !itkFiltersInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type";   }
+    if ( !itkFiltersThresholdingProcess::registered() )    { dtkWarn() << "Unable to register itkFilters thresholding filter process type";   }
+    if ( !itkFiltersComponentSizeThresholdProcess::registered() )    { dtkWarn() << "Unable to register itkFilters component size thresholding filter process type";   }
     if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type";   }
     if ( !itkFiltersDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
     if ( !itkFiltersErodeProcess::registered() )     { dtkWarn() << "Unable to register itkFilters erode filter process type";    }
     if ( !itkFiltersCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
     if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
     if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
-    if ( !itkMorphologicalFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";                      }
+    if ( !itkMorphologicalFiltersToolBox::registered() ) { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";}
+    if ( !itkFiltersBinaryCloseProcess::registered() )   { dtkWarn() << "Unable to register itkFiltersBinaryCloseProcess type";}
+    if ( !itkFiltersBinaryOpenProcess::registered() )   { dtkWarn() << "Unable to register itkFiltersBinaryOpenProcess type";}
 
     return true;
 }
@@ -137,7 +144,9 @@ QStringList itkFiltersPlugin::types() const
                          << "itkDilateProcess"
                          << "itkErodeProcess"
                          << "itkCloseProcess"
-                         << "itkOpenProcess";
+                         << "itkOpenProcess"
+                         << "itkBinaryCloseProcess"
+                         << "itkBinaryOpenProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )

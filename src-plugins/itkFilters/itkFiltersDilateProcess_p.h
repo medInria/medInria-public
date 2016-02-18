@@ -15,56 +15,75 @@
 
 #include <medAbstractData.h>
 
-#include <itkFiltersProcessBase_p.h>
+#include <itkMorphologicalFiltersProcessBase_p.h>
 
 #include <medMetaDataKeys.h>
 
 #include <itkImage.h>
 #include <itkCommand.h>
-#include <itkGrayscaleDilateImageFilter.h>
+#include <itkBinaryDilateImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
 
 class itkFiltersDilateProcess;
 
-class itkFiltersDilateProcessPrivate : public itkFiltersProcessBasePrivate
+class itkFiltersDilateProcessPrivate : public itkMorphologicalFiltersProcessBasePrivate
 {
 public:
-    itkFiltersDilateProcessPrivate(itkFiltersDilateProcess *q = 0) : itkFiltersProcessBasePrivate(q) {}
-    itkFiltersDilateProcessPrivate(const itkFiltersDilateProcessPrivate& other) : itkFiltersProcessBasePrivate(other) {}
+    itkFiltersDilateProcessPrivate(itkFiltersDilateProcess *q = 0) : itkMorphologicalFiltersProcessBasePrivate(q) {}
+    itkFiltersDilateProcessPrivate(const itkFiltersDilateProcessPrivate& other) : itkMorphologicalFiltersProcessBasePrivate(other) {}
 
     virtual ~itkFiltersDilateProcessPrivate(void) {}
-    
-    int radius;
 
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::BinaryBallStructuringElement < PixelType, 3> StructuringElementType;
-        typedef itk::GrayscaleDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateType;
+
+        if(!isRadiusInPixels)
+            convertMmInPixels<ImageType>();
+
+        typedef itk::FlatStructuringElement < 3> StructuringElementType;
+        StructuringElementType::RadiusType elementRadius;
+        elementRadius[0] = radius[0];
+        elementRadius[1] = radius[1];
+        elementRadius[2] = radius[2];
+
+        typedef itk::BinaryDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateType;
         typename DilateType::Pointer dilateFilter = DilateType::New();
-        
-        StructuringElementType ball;
-        ball.SetRadius(radius);
-        ball.CreateStructuringElement();
+
+        StructuringElementType ball = StructuringElementType::Ball(elementRadius);
 
         dilateFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         dilateFilter->SetKernel ( ball );
-        
+
+        typedef itk::MinimumMaximumImageCalculator <ImageType> ImageCalculatorFilterType;
+        typename ImageCalculatorFilterType::Pointer imageCalculatorFilter
+                = ImageCalculatorFilterType::New ();
+        imageCalculatorFilter->SetImage(dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ));
+        imageCalculatorFilter->ComputeMaximum();
+
+        dilateFilter->SetDilateValue(imageCalculatorFilter->GetMaximum());
+
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
-        callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
-        
+        callback->SetCallback ( itkMorphologicalFiltersProcessBasePrivate::eventCallback );
+
         dilateFilter->AddObserver ( itk::ProgressEvent(), callback );
-        
         dilateFilter->Update();
         output->setData ( dilateFilter->GetOutput() );
-        
+
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " Dilate filter (" + QString::number(radius) + ")";
-        
+
+        if (isRadiusInPixels)
+            newSeriesDescription += " Dilate filter\n("+ QString::number(radius[0])+", "+ 
+            QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
+        else
+            newSeriesDescription += " Dilate filter\n("+ QString::number(radiusMm[0])+", "+ 
+            QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
+
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
-DTK_IMPLEMENT_PRIVATE(itkFiltersDilateProcess, itkFiltersProcessBase)
+DTK_IMPLEMENT_PRIVATE(itkFiltersDilateProcess, itkMorphologicalFiltersProcessBase)

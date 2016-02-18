@@ -38,7 +38,7 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (const QStrin
 //-----------------------------------------------------------------------------------------------------------
 
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (medAbstractData* medData, const QUuid &uuid )
-: medAbstractDatabaseImporter(medData, uuid)
+: medAbstractDatabaseImporter(medData, uuid, true)
 {
     qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }

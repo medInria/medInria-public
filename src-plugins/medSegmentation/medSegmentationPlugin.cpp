@@ -64,11 +64,18 @@ QString medSegmentationPlugin::name() const
 
 QString medSegmentationPlugin::description() const
 {
-    return tr("Segmentation plugin\n<br/>"
+    return tr("Segmentation plugin<br/>"
               "Manual painting of regions: inside, and outside."
               "<br/> Exports masks with three values: inside (1), outside (2)"
               "and other (0). You may leave out the outside colour "
-              "for simple binary masks.");
+              "for simple binary masks.<br/>"
+              "Ctrl+z         Undo <br/>"
+              "Ctrl+y         Redo <br/>"
+              "Ctrl+c         Copy <br/>"
+              "Ctrl+v         Paste<br/>"
+              "Ctrl+Backspace Remove seed<br/>"
+              "Ctrl+Up        Add brush size<br/>"
+              "Ctrl+Down      Reduce brush size");
 }
 
 QString medSegmentationPlugin::version() const

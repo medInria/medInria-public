@@ -25,7 +25,7 @@
 class medSegmentationSelectorToolBoxPrivate
 {
 public:
-    QComboBox *chooseSegmentationComboBox;
+    medComboBox *chooseSegmentationComboBox;
     medSegmentationAbstractToolBox * currentSegmentationToolBox;
     QHash<QString, medSegmentationAbstractToolBox*> segmentationToolBoxes;
     QVBoxLayout *mainLayout;
@@ -38,7 +38,7 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent) 
     d->currentSegmentationToolBox = NULL;
 
 
-    d->chooseSegmentationComboBox = new QComboBox;
+    d->chooseSegmentationComboBox = new medComboBox;
     //TODO algorithm is not the best IMO - RDE
     d->chooseSegmentationComboBox->addItem("Choose algorithm");
     d->chooseSegmentationComboBox->setToolTip(tr("Browse through the list of available segmentation algorithm"));
@@ -92,6 +92,9 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
         toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
         if (toolbox)
         {
+            medAbstractWorkspace* workspace = getWorkspace();
+            if(workspace)
+                toolbox->setWorkspace(workspace);
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             d->segmentationToolBoxes[identifier] = toolbox;
             connect(toolbox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
@@ -102,6 +105,24 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
 
     if(d->currentSegmentationToolBox)
     {
+        // Remove interactor on previous tlbx
+        if (d->currentSegmentationToolBox->findChild<QPushButton*>("closedPolygonButton"))
+        {
+            d->currentSegmentationToolBox->findChild<QPushButton*>("closedPolygonButton")->setChecked(false);
+        }
+        else if (d->currentSegmentationToolBox->findChild<QPushButton*>("paintButton"))
+        {
+            if (d->currentSegmentationToolBox->findChild<QPushButton*>("paintButton")->isChecked())
+            {
+                d->currentSegmentationToolBox->findChild<QPushButton*>("paintButton")->click();
+            }
+            if (d->currentSegmentationToolBox->findChild<QPushButton*>("Magic Wand")->isChecked())
+            {
+                d->currentSegmentationToolBox->findChild<QPushButton*>("Magic Wand")->click();
+            }
+        }
+
+        // Remove previous tlbx from current tlbx
         d->currentSegmentationToolBox->hide();
         d->mainLayout->removeWidget(d->currentSegmentationToolBox);
         d->currentSegmentationToolBox = NULL;

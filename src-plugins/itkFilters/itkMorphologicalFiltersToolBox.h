@@ -43,12 +43,7 @@ public slots:
 
     void run();
 
-private:
-    void setupItkDilateProcess();
-    void setupItkErodeProcess();
-    void setupItkCloseProcess();
-    void setupItkOpenProcess();
-    
+private:  
     itkMorphologicalFiltersToolBoxPrivate *d;
 };
 

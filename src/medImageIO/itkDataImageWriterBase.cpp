@@ -18,6 +18,7 @@
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractImageData.h>
+#include <medMetaDataKeys.h>
 
 #include <itkImage.h>
 #include <itkImageFileWriter.h>
@@ -53,10 +54,27 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     typename Image::Pointer image = dynamic_cast<Image*>((itk::Object*)(this->data()->output()));
     if (image.IsNull())
         return false;
-    if (medData->hasMetaData(medAbstractImageData::PixelMeaningMetaData)) {
-        itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
+
+    itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
+
+    if (medData->hasMetaData(medAbstractImageData::PixelMeaningMetaData))
+    {
         itk::EncapsulateMetaData(dict,"intent_name",medData->metadata(medAbstractImageData::PixelMeaningMetaData));
     }
+
+    // Add meta data to the output volume
+    QStringList keyList = metaDataKeysToCopy();
+    foreach(QString key, keyList)
+    {
+        itk::EncapsulateMetaData(dict, key.toStdString().c_str(),
+                                 medData->metadata(key).toStdString());
+    }
+
+    itk::EncapsulateMetaData(dict, "MED_MODALITY",
+                             medData->metadata(medMetaDataKeys::Modality.key()).toStdString());
+    itk::EncapsulateMetaData(dict, "MED_ORIENTATION",
+                             medData->metadata(medMetaDataKeys::Orientation.key()).toStdString());
+
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);
     writer->UseCompressionOn();
@@ -65,6 +83,45 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     writer->Update();
 
     return true;
+}
+
+QStringList itkDataImageWriterBase::metaDataKeysToCopy()
+{
+    QStringList keys;
+
+    keys << medMetaDataKeys::PatientID.key()
+         << medMetaDataKeys::PatientName.key()
+         << medMetaDataKeys::Age.key()
+         << medMetaDataKeys::BirthDate.key()
+         << medMetaDataKeys::Gender.key()
+         << medMetaDataKeys::Description.key()
+         << medMetaDataKeys::StudyID.key()
+         << medMetaDataKeys::StudyDicomID.key()
+         << medMetaDataKeys::StudyDescription.key()
+         << medMetaDataKeys::Institution.key()
+         << medMetaDataKeys::Referee.key()
+         << medMetaDataKeys::StudyDate.key()
+         << medMetaDataKeys::StudyTime.key()
+         << medMetaDataKeys::Performer.key()
+         << medMetaDataKeys::Report.key()
+         << medMetaDataKeys::Protocol.key()
+         << medMetaDataKeys::Origin.key()
+         << medMetaDataKeys::AcquisitionDate.key()
+         << medMetaDataKeys::AcquisitionTime.key()
+         << medMetaDataKeys::Columns.key()
+         << medMetaDataKeys::Rows.key()
+         << medMetaDataKeys::Dimensions.key()
+         << medMetaDataKeys::NumberOfDimensions.key()
+         << medMetaDataKeys::SliceThickness.key()
+         << medMetaDataKeys::Spacing.key()
+         << medMetaDataKeys::XSpacing.key()
+         << medMetaDataKeys::YSpacing.key()
+         << medMetaDataKeys::ZSpacing.key()
+         << medMetaDataKeys::NumberOfComponents.key()
+         << medMetaDataKeys::ComponentType.key()
+         << medMetaDataKeys::PixelType.key();
+
+    return keys;
 }
 
 bool itkDataImageWriterBase::write(const QString& path)

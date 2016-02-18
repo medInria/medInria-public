@@ -45,7 +45,7 @@ class medRegistrationSelectorToolBoxPrivate
 public:
     QPushButton * saveTransButton;
 
-    QComboBox *toolboxes;
+    medComboBox *toolboxes;
 
     QVBoxLayout *toolBoxLayout;
 
@@ -81,7 +81,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
     // --- Setting up custom toolboxes list ---
 
-    d->toolboxes = new QComboBox(this);
+    d->toolboxes = new medComboBox(this);
     d->toolboxes->addItem(tr("Choose algorithm"));
     d->toolboxes->setToolTip(
                 tr( "Choose the registration algorithm"
@@ -192,6 +192,7 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
 
     toolbox->setRegistrationToolBox(this);
+    toolbox->setWorkspace(getWorkspace());
     d->currentToolBox = toolbox;
     d->currentToolBox->show();
     d->currentToolBox->header()->hide();

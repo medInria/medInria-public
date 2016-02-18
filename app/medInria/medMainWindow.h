@@ -16,6 +16,13 @@
 #include <QtGui/QMainWindow>
 #include <QUuid>
 #include <QUrl>
+#include <QFileInfo>
+
+#include <medViewContainerManager.h>
+#include <medViewContainer.h>
+#include <medViewFactory.h>
+#include <medAbstractView.h>
+
 class medDataIndex;
 class medMainWindowPrivate;
 
@@ -56,7 +63,7 @@ public slots:
      * @brief Switches from the Fullscreen mode to the normal mode.
      *
      */
-    void toggleFullScreen();
+    void toggleFullScreen() { setFullScreen(!isFullScreen()); }
     void switchToArea(const AreaType areaIndex);
 
     void open(const medDataIndex & index);
@@ -67,6 +74,8 @@ public slots:
 private slots:
 
     void showWorkspace(QString workspace);
+    void saveScene();
+    void loadScene();
     void captureScreenshot();
 
     void switchToBrowserArea();

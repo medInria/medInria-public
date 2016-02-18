@@ -422,6 +422,11 @@ void medAnnotationInteractor::enableWindowLevelInteraction()
     }
 }
 
+QString medAnnotationInteractor::name () const
+{
+    return "medAnnotationInteractor";
+}
+
 ////////////////////////////
 // msegAnnIntHelper
 ////////////////////////////

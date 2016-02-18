@@ -685,3 +685,46 @@ void medVtkViewNavigator::enableMeasuring(bool enable)
         d->view2d->ShowDistanceWidgetOff();
     }
 }
+
+void medVtkViewNavigator::restoreParameters(QHash<QString,QString> parameters)
+{
+	if(parameters.contains("Axes"))
+		d->showAxesParameter->setValue(medBoolParameter::fromString(parameters["Axes"]));
+	if(parameters.contains("Ruler"))
+		d->showRulerParameter->setValue(medBoolParameter::fromString(parameters["Ruler"]));
+	if(parameters.contains("Annotations"))
+		d->showAnnotationParameter->setValue(medBoolParameter::fromString(parameters["Annotations"]));
+	if(parameters.contains("Scalar Bar"))
+		d->showScalarBarParameter->setValue(medBoolParameter::fromString(parameters["Scalar Bar"]));
+	if(parameters.contains("Pan"))
+		setPan(medVector2DParameter::fromString(parameters["Pan"]));
+	if(parameters.contains("Position"))
+		setCameraPosition(medVector3DParameter::fromString(parameters["Position"]));
+    if(parameters.contains("axial") && medBoolParameter::fromString(parameters["axial"]))
+        setAxial(true);
+    if(parameters.contains("coronal") && medBoolParameter::fromString(parameters["coronal"]))
+        setCoronal(true);
+    if(parameters.contains("sagittal") && medBoolParameter::fromString(parameters["sagittal"]))
+        setSagittal(true);
+    if(parameters.contains("3d") && medBoolParameter::fromString(parameters["3d"]))
+        d->o3dParameter->setValue(true);
+
+    QHash<QString,QVariant> cameraOptions;
+    if(parameters.contains("Camera Up") && parameters.contains("Camera Focal")
+       && parameters.contains("Parallel Scale") && parameters.contains("Camera Position"))
+    {
+        cameraOptions["Camera Up"]=QVariant(medVector3DParameter::fromString(parameters["Camera Up"]));
+        cameraOptions["Camera Focal"]=QVariant(medVector3DParameter::fromString(parameters["Camera Focal"]));
+        cameraOptions["Parallel Scale"]=QVariant(medDoubleParameter::fromString(parameters["Parallel Scale"]));
+        cameraOptions["Camera Position"]=QVariant(medVector3DParameter::fromString(parameters["Camera Position"]));
+
+    }
+
+    setCamera(cameraOptions);
+
+}
+
+QString medVtkViewNavigator::name() const
+{
+    return "medVtkViewNavigator";
+}

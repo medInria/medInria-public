@@ -14,8 +14,12 @@
 #pragma once
 
 #include <medCoreExport.h>
+#include <medAbstractWorkspace.h>
+#include <medComboBox.h>
 
 #include <QtGui>
+#include <QDomDocument>
+#include <QDomElement>
 
 class dtkAbstractView;
 class medAbstractData;
@@ -49,6 +53,9 @@ public:
     medToolBoxHeader *header() const;
     medToolBoxBody   *body()   const;
 
+    virtual void setWorkspace(medAbstractWorkspace* workspace);
+    medAbstractWorkspace* getWorkspace();
+
     void setAboutPluginVisibility(bool enable);
     bool aboutPluginVisibility();
 
@@ -58,6 +65,8 @@ public:
     virtual QString name() const {return QString();}
     virtual QString description() const {return QString();}
     virtual QStringList categories() const {return QStringList();}
+    
+    virtual void toXMLNode(QDomDocument* doc, QDomElement* currentNode);
 
 signals:
     /**
@@ -89,6 +98,7 @@ signals:
     */
     void failure();
 
+
 public slots:
     virtual void clear();
     void switchMinimize();
@@ -96,6 +106,8 @@ public slots:
     const QStringList ValidDataTypes();
     void addValidDataType(const QString & dataType);
     void show();
+    //Behaviour when you hide/minimize your toolbox
+    virtual void behaveWithBodyVisibility(){}
 
 protected slots:
     void onAboutButtonClicked();

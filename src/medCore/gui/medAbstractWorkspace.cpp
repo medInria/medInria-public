@@ -59,6 +59,7 @@ public:
 
     QList<medToolBox*> toolBoxes;
     medToolBox *selectionToolBox;
+    medToolBox *layersToolBox;
     medToolBox *layerListToolBox;
     medToolBox *interactorToolBox;
     medToolBox *navigatorToolBox;
@@ -100,16 +101,19 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->navigatorToolBox->hide();
     d->selectionToolBox->addWidget(d->navigatorToolBox);
 
+    d->layersToolBox = new medToolBox;
+    d->layersToolBox->setTitle("Layer settings");
+    d->layersToolBox->hide();
+
     d->layerListToolBox = new medToolBox;
-    d->layerListToolBox->setTitle("Layer settings");
-    d->layerListToolBox->hide();
-    d->selectionToolBox->addWidget(d->layerListToolBox);
+    d->layerListToolBox->header()->hide();
+    d->layersToolBox->addWidget(d->layerListToolBox);
 
     d->interactorToolBox = new medToolBox;
-    d->interactorToolBox->setTitle("Interactors");
     d->interactorToolBox->header()->hide();
-    d->interactorToolBox->hide();
-    d->selectionToolBox->addWidget(d->interactorToolBox);
+    d->layersToolBox->addWidget(d->interactorToolBox);
+
+    d->selectionToolBox->addWidget(d->layersToolBox);
 
     d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -295,20 +299,8 @@ void medAbstractWorkspace::updateLayersToolBox()
         medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(container->view());
         if(layeredView)
         {
-            if(d->layerListWidget->count() != 0)
-            {
-                // add an empty widget to separate layers from different views
-                QListWidgetItem * item = new QListWidgetItem;
-                item->setSizeHint(QSize(10, 10));
-                item->setFlags(Qt::NoItemFlags);
-                d->layerListWidget->addItem(item);
-            }
-
             for(int layer = layeredView->layersCount() - 1; layer >= 0; --layer)
             {
-                if(layer < 0)
-                    break;
-
                 medAbstractData *data = layeredView->layerData(layer);
                 if(!data)
                     continue;
@@ -319,7 +311,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
 
                 QHBoxLayout* layout = new QHBoxLayout(layerWidget);
-                layout->setContentsMargins(0,0,10,0);
+                layout->setContentsMargins(0,0,5,0);
 
                 medBoolParameter* visibilityParam = dynamic_cast<medBoolParameter*>(layeredView->visibilityParameter(layer));
                 QPushButton* thumbnailButton = visibilityParam->getPushButton();
@@ -328,7 +320,7 @@ void medAbstractWorkspace::updateLayersToolBox()
                 QFontMetrics fm(myFont);
                 //TODO: could be nice to elide according to current width (update when resize)
                 QString text = fm.elidedText(name, Qt::ElideRight, 100);
-                QLabel *layerName = new QLabel("<font color='Black'>"+text+"</font>", layerWidget);
+                QLabel *layerName = new QLabel("<font color=#ED6639>"+text+"</font>", layerWidget);
                 layerName->setToolTip(name);
 
                 layout->addWidget(thumbnailButton);
@@ -387,13 +379,18 @@ void medAbstractWorkspace::updateLayersToolBox()
                 d->layerListWidget->blockSignals(false);
 
             }
+            // add the layer widgets
+            if (layeredView->layersCount() > 0)
+            {
+                d->layersToolBox->show();
+                d->layerListToolBox->addWidget(d->layerListWidget);
+
+                // resize layerListWidget to number of item
+                d->layerListWidget->setFixedHeight(d->layerListWidget->sizeHintForRow(0) * d->layerListWidget->count() + 2 * d->layerListWidget->frameWidth());
+                d->layerListWidget->show();
+            }
         }
     }
-    // add the layer widgets
-    d->layerListToolBox->show();
-    d->layerListToolBox->addWidget(d->layerListWidget);
-
-    d->layerListWidget->show();
 
     this->updateInteractorsToolBox();
 }
@@ -455,7 +452,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
     QList<QString> interactorsIdentifier;
     QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
     medViewContainer *container = containerMng->container(containerUuid);
-    container->highlight("#FF8844");
+    container->highlight("#FF8844"); //container contour color
 
     medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
@@ -489,10 +486,14 @@ void medAbstractWorkspace::updateInteractorsToolBox()
         if(!interactorsIdentifier.contains(interactorIdentifier))
         {
             interactorsIdentifier << interactorIdentifier;
-            QGroupBox *groupBox = new QGroupBox;
-            QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
 
+            QGroupBox *groupBox = new QGroupBox;
+            groupBox->setStyleSheet("QGroupBox::title { border: 0px ; border-radius: 0px; padding: 0px 0px 0px 0px; margin = 0px 0px 0px 0px } \
+                                    QGroupBox { border: 0px ; border-radius: 0px; padding: 0px 0px 0px 0px;} ");
+
+            QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
             groupBoxLayout->setContentsMargins(0,0,0,0);
+
             QWidget *intercatorWidget = interactor->toolBoxWidget();
             if(intercatorWidget)
             {
@@ -599,6 +600,8 @@ QWidget* medAbstractWorkspace::buildViewLinkMenu()
 {
     QWidget *linkWidget = new QWidget;
     QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+    linkLayout->setContentsMargins(80, 5, 5, 5);
+    linkLayout->setSpacing(0);
 
     d->viewLinkMenu = new medLinkMenu(linkWidget);
     connect(d->viewLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
@@ -704,6 +707,8 @@ QWidget* medAbstractWorkspace::buildLayerLinkMenu(QList<QListWidgetItem*> select
 
     QWidget *linkWidget = new QWidget;
     QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+    linkLayout->setContentsMargins(80, 5, 5, 5);
+    linkLayout->setSpacing(0);
 
     d->layerLinkMenu = new medLinkMenu(linkWidget);
     connect(d->layerLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addLayerstoGroup(QString)));

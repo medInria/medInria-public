@@ -39,6 +39,7 @@
 #include <medPoolIndicator.h>
 #include <medLayoutChooser.h>
 
+
 class medViewContainerPrivate
 {
 public:
@@ -72,6 +73,7 @@ public:
     QAction* vSplitAction;
     QAction* hSplitAction;
     QPushButton* closeContainerButton;
+    QPushButton* histogramButton;
 
     QAction* maximizedAction;
 
@@ -133,12 +135,22 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->vSplitAction->setToolTip(tr("Split vertically"));
     d->vSplitAction->setIconVisibleInMenu(true);
     connect(d->vSplitAction, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()));
-
     d->hSplitAction = new QAction(tr("H split"), d->toolBarMenu);
     d->hSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_horizontal.png"));
     d->hSplitAction->setToolTip(tr("Split horizontally"));
     d->hSplitAction->setIconVisibleInMenu(true);
     connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()));
+
+    // hack for histogram
+    d->histogramButton = new QPushButton(this);
+    d->histogramButton->setText("Hist");
+    d->histogramButton->setCheckable(true);
+    d->histogramButton->setChecked(false);
+    //d->histogramButton->setIcon(QIcon(":/medGui/pixmaps/.png"));
+    d->histogramButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->histogramButton->setFocusPolicy(Qt::NoFocus);
+    connect(d->histogramButton, SIGNAL(toggled(bool)), this, SIGNAL(requestHistogram(bool)));
+    //
 
     // make it a parameter to get synch between state of the container and the maximized button.
     d->maximizedAction = new QAction(tr("Maximized"), d->toolBarMenu);
@@ -200,6 +212,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     containerToolbarLayout->setContentsMargins(2, 0, 2, 0);
     containerToolbarLayout->setSpacing(2);
     containerToolbarLayout->addWidget(d->poolIndicator);
+    containerToolbarLayout->addWidget(d->histogramButton, 0, Qt::AlignRight);
     containerToolbarLayout->addWidget(d->menuButton);
     containerToolbarLayout->addWidget(d->closeContainerButton);
 
@@ -270,7 +283,7 @@ void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
     {
         d->mainLayout->removeWidget(d->defaultWidget);
         delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0/*, Qt::AlignCenter*/); //otherwise defaultWidget doesn't use all the available space
     }
     d->defaultWidget = defaultWidget;
 }
@@ -415,6 +428,11 @@ void medViewContainer::setView(medAbstractView *view)
             connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()));
             connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
         }
+
+        if (medAbstractImageView * ImageView = dynamic_cast<medAbstractImageView*>(view)) // hack for histogram
+            connect(this,SIGNAL(requestHistogram(bool)),ImageView,SLOT(showHistogram(bool)));
+        else
+            d->histogramButton->hide();
 
         if (medAbstractImageView* imageView = dynamic_cast <medAbstractImageView*> (view))
         {

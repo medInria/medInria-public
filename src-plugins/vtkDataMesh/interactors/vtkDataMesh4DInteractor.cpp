@@ -113,3 +113,8 @@ void vtkDataMesh4DInteractor::setCurrentTime (double time)
     d->sequence->UpdateToTime(time);
 }
 
+
+QString vtkDataMesh4DInteractor::name() const
+{
+    return "vtkDataMesh4DInteractor";
+}

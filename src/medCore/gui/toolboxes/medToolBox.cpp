@@ -36,6 +36,7 @@ public:
     bool isContextVisible;
     bool aboutPluginVisibility;
     dtkPlugin* plugin;
+    medAbstractWorkspace* workspace;
 
 public:
     QVBoxLayout *layout;
@@ -59,6 +60,8 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->layout->addWidget(d->body);
     d->isMinimized = false;
     connect(d->header,SIGNAL(triggered()),this,SLOT(switchMinimize()));
+    connect(d->body, SIGNAL(minimized()), this, SLOT(behaveWithBodyVisibility()));
+    connect(d->body, SIGNAL(maximized()), this, SLOT(behaveWithBodyVisibility()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
@@ -287,3 +290,21 @@ void medToolBox::onAboutButtonClicked()
         qWarning() << "No plugin set for toolbox" << d->header->title();
     }
 }
+
+medAbstractWorkspace* medToolBox::getWorkspace()
+{
+    return d->workspace;
+}
+
+void medToolBox::setWorkspace(medAbstractWorkspace* workspace)
+{
+    d->workspace = workspace;
+}
+
+void medToolBox::toXMLNode(QDomDocument* doc, QDomElement* currentNode)
+{
+	QDomElement elmt=doc->createElement("description");
+	elmt.appendChild(doc->createTextNode(description()));
+	currentNode->appendChild(elmt);
+}
+

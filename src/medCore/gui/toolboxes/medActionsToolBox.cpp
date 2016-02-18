@@ -202,6 +202,19 @@ void medActionsToolBox::patientSelected(const medDataIndex& index)
 }
 
 /**
+* Slot to call when an item representing a study has been selected.
+* The appropriate buttons will appear in the toolbox.
+* @param index – the medDataIndex of the db item
+**/
+void medActionsToolBox::studySelected(const medDataIndex& index)
+{
+    if( !(medDataManager::instance()->controllerForDataSource(index.dataSourceId())->isPersistent()) )
+        updateButtons("Unsaved Study");
+    else
+        updateButtons("Study");
+}
+
+/**
 * Slot to call when an item representing a series has been selected.
 * The appropriate buttons will appear in the toolbox.
 * @param index – the medDataIndex of the db item
@@ -282,6 +295,7 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions = QMultiMap<QString, QString>();
 
     d->itemToActions.insert("Patient", "Remove");
+    d->itemToActions.insert("Patient", "Export");
     d->itemToActions.insert("Patient", "New Patient");
     d->itemToActions.insert("Patient", "New Study");
     d->itemToActions.insert("Patient", "Edit");
@@ -291,6 +305,16 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions.insert("Unsaved Patient", "New Patient");
     d->itemToActions.insert("Unsaved Patient", "New Study");
     d->itemToActions.insert("Unsaved Patient", "Edit");
+
+    d->itemToActions.insert("Study", "Remove");
+    d->itemToActions.insert("Study", "Export");
+    d->itemToActions.insert("Study", "New Patient");
+    d->itemToActions.insert("Study", "Edit");
+
+    d->itemToActions.insert("Unsaved Study", "Remove");
+    d->itemToActions.insert("Unsaved Study", "Save");
+    d->itemToActions.insert("Unsaved Study", "New Patient");
+    d->itemToActions.insert("Unsaved Study", "Edit");
 
     d->itemToActions.insert("Series", "View");
     d->itemToActions.insert("Series", "Export");

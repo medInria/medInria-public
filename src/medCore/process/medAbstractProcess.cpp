@@ -12,9 +12,15 @@
 =========================================================================*/
 
 #include <medAbstractProcess.h>
+#include <dtkCore/dtkAbstractObject.h>
 
-medAbstractProcess::medAbstractProcess(medAbstractProcess * parent)
+medAbstractProcess::medAbstractProcess(medAbstractProcess * parent) : dtkAbstractProcess(*new medAbstractProcessPrivate(this), parent)
 {
+}
+
+medAbstractProcess::medAbstractProcess(const medAbstractProcess& other) : dtkAbstractProcess(*new medAbstractProcessPrivate(*other.d_func()), other)
+{
+    
 }
 
 medAbstractProcess::~medAbstractProcess()

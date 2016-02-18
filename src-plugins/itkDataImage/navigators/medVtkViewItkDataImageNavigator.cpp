@@ -120,7 +120,7 @@ QStringList medVtkViewItkDataImageNavigator::handled(void) const
 
 QString medVtkViewItkDataImageNavigator::description() const
 {
-    return "Navigator to interact with itk images in a medVtkView";
+    return "Navigator to interact with itk image";
 }
 
 QList<medAbstractParameter*> medVtkViewItkDataImageNavigator::linkableParameters()
@@ -268,10 +268,20 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
 
 QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
 {
+    // Build layout for Data orientation (not-mesh) parameters
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+
     foreach(medAbstractParameter *parameter, d->parameters)
-        layout->addRow(parameter->getLabel(), parameter->getWidget());
+    {
+        if (parameter->getWidget() && parameter->getLabel())
+        {
+            layout->addRow(parameter->getLabel(), parameter->getWidget());
+        }
+    }
+
     toolBoxWidget->hide();
     return toolBoxWidget;
 }
@@ -283,7 +293,25 @@ QWidget *medVtkViewItkDataImageNavigator::buildToolBarWidget()
     return toolBarWidget;
 }
 
+QString medVtkViewItkDataImageNavigator::name() const
+{
+    return "medVtkViewItkDataImageNavigator";
+}
 
+QString medVtkViewItkDataImageNavigator::version() const
+{
+    return "0.0.1";
+}
 
+void medVtkViewItkDataImageNavigator::restoreParameters(QHash<QString, QString> parameters)
+{
+    qDebug()<<parameters;
+    if(parameters.contains("3D Mode"))
+        setMode3D(parameters["3D Mode"]);
+    if(parameters.contains("Cropping"))
+        enableCropping(medBoolParameter::fromString(parameters["Cropping"]));
+    if(parameters.contains("Renderer"))
+        setRenderer(parameters["Renderer"]);
 
+}
 

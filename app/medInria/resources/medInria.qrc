@@ -3,6 +3,8 @@
         <file>../../../LICENSE.txt</file>
         <file>../../../RELEASE_NOTES.txt</file>
         <file>medInria.ico</file>
+        <file>music_logo.png</file>
+        <file>music_logo_small.png</file>
         <file>icons/AxialIcon.png</file>
         <file>icons/CoronalIcon.png</file>
         <file>icons/SagittalIcon.png</file>
@@ -10,6 +12,9 @@
         <file>icons/about.png</file>
         <file>icons/quit.png</file>
         <file>icons/cog.png</file>
+        <file>icons/import.svg</file>
+        <file>icons/saveScene.png</file>
+        <file>icons/saveScene_grey.png</file>
         <file>icons/camera.png</file>
         <file>icons/camera_grey.png</file>
         <file>icons/cropping.png</file>

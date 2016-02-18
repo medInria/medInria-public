@@ -29,6 +29,8 @@ public:
 
     virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
+    virtual medAbstractData* getOutput(){return NULL;}
+
 protected:
     medRegistrationSelectorToolBox *parentToolBox();
 

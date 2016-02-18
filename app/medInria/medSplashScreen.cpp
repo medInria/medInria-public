@@ -91,11 +91,10 @@ void medSplashScreen::finish(QWidget *mainWin)
 ////////////////////////////////////////////////////////////////////////////
 void medSplashScreen::paintEvent(QPaintEvent* pe)
 {
-    QRect aTextRect(rect());
-    aTextRect.setRect(aTextRect.x() + 5, aTextRect.y() + 5, aTextRect.width() - 10, aTextRect.height() - 10);
+    QPoint aTextPos(rect().width()*0.25, rect().height()*0.85);
 
     QPainter aPainter(this);
     aPainter.drawPixmap(rect(), d->pixmap);
     aPainter.setPen(d->color);
-    aPainter.drawText(aTextRect, d->alignment, d->message);
+    aPainter.drawText(aTextPos, d->message);
 }

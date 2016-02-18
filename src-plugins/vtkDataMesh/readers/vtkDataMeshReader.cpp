@@ -99,6 +99,12 @@ bool vtkDataMeshReader::read(const QString& path) {
         }
 
         medData->setData(dataSet);
+        std::string patientName, patientID;
+
+        if (dataSet->GetMetaData("PatientName", patientName))
+            medData->setMetaData("PatientName", QString::fromStdString(patientName));
+        if (dataSet->GetMetaData("PatientID", patientID))
+            medData->setMetaData("PatientID", QString::fromStdString(patientID));
     }
 
     setProgress(100);

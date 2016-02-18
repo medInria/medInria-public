@@ -139,6 +139,7 @@ void medDoubleParameter::setDecimals(unsigned int decimals)
         d->spinBox->setDecimals(decimals);
 }
 
+
 QDoubleSpinBox* medDoubleParameter::getSpinBox()
 {
     if(!d->spinBox)

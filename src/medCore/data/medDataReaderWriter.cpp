@@ -60,7 +60,7 @@ medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,cons
 
     for (int i=0;i<writers.size();++i) {
         dwriter = medAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
-        if (dwriter->handled().contains(data->identifier()) && dwriter->canWrite(path)) {
+        if (dwriter->handled().contains(data->identifier()) /*&& dwriter->canWrite(path)*/) {
             dwriter->enableDeferredDeletion(false);
             return dwriter;
         }
