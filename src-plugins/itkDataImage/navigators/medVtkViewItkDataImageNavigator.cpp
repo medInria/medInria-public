@@ -272,7 +272,7 @@ QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
+    layout->setSpacing(5);
 
     foreach(medAbstractParameter *parameter, d->parameters)
     {

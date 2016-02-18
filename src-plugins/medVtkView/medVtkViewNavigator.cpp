@@ -378,12 +378,14 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
     showOptionsLayout->addWidget(d->showRulerParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showAnnotationParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showScalarBarParameter->getCheckBox());
+    showOptionsLayout->setContentsMargins(0, 0, 0, 0);
 
     QVBoxLayout* layout = new QVBoxLayout(toolBoxWidget);
     layout->addWidget(d->orientationParameter->getLabel());
     layout->addWidget(d->orientationParameter->getPushButtonGroup());
     layout->addWidget(d->showOptionsWidget);
     layout->addWidget(this->timeLineParameter()->getWidget());
+    layout->setContentsMargins(0, 0, 0, 0);
 
     return toolBoxWidget;
 }
