@@ -13,6 +13,6 @@
 
 cmake_minimum_required(VERSION 3.2)
 
-project(MEDINRIA_SUPERBUILD VERSION 3.0.0.0)
+project(MEDINRIA_SUPERBUILD VERSION 3.0)
 
 add_subdirectory(superbuild)
