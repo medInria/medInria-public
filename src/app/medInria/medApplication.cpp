@@ -192,8 +192,19 @@ void medApplication::initialize()
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType<medSeedPointAnnotationData>();
 
-
     // process layer:
     QString pluginsPath = getenv("MEDINRIA_PLUGINS_DIR");
-    medCore::pluginManager::initialize(pluginsPath);
+    QString defaultPath;
+    QDir plugins_dir;
+#ifdef Q_WS_MAC
+    plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
+#else
+    plugins_dir = qApp->applicationDirPath() + "/../plugins";
+#endif
+    defaultPath = plugins_dir.absolutePath();
+
+    if ( !pluginsPath.isEmpty() )
+        medCore::pluginManager::initialize(pluginsPath);
+    else
+        medCore::pluginManager::initialize(defaultPath);
 }
