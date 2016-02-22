@@ -135,9 +135,8 @@ int main(int argc,char* argv[])
     if (runningMedInria)
         return 0;
 
-    if (show_splash) {
-        QObject::connect(medPluginManager::instance(),SIGNAL(loadError(const QString&)),
-                         &application,SLOT(redirectMessageToSplash(const QString&)) );
+    if (show_splash)
+    {
         QObject::connect(medPluginManager::instance(),SIGNAL(loaded(QString)),
                          &application,SLOT(redirectMessageToSplash(QString)) );
         QObject::connect(&application,SIGNAL(showMessage(const QString&)),
