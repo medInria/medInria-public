@@ -163,7 +163,9 @@ void medApplication::initialize()
 
     //  Setting up database connection
     if ( ! medDatabaseController::instance()->createConnection())
+    {
         dtkDebug() << "Unable to create a connection to the database";
+    }
 
     medDataManager::initialize();
 
