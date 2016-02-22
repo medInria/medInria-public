@@ -45,7 +45,7 @@ void medPluginManager::initialize()
 {
     dtkPluginManager::initialize();
 
-    emit allPluginsLoaded();;
+    emit allPluginsLoaded();
 }
 
 /**
@@ -70,7 +70,29 @@ void medPluginManager::uninitialize()
 */
 void medPluginManager::readSettings(void)
 {
-    setPath(QString(getenv("MEDINRIA_PLUGINS_DIR_LEGACY")));
+    QDir plugins_dir;
+    QString defaultPath;
+#ifdef Q_WS_MAC
+    plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
+#else
+    plugins_dir = qApp->applicationDirPath() + "/../plugins";
+#endif
+    defaultPath = plugins_dir.absolutePath();
+
+    const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGINS_DIR_LEGACY";
+    QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
+
+    if ( !pluginVarArray.isEmpty() )
+        setPath( QString(pluginVarArray.constData()));
+    else
+        setPath(defaultPath);
+
+    if(path().isEmpty())
+    {
+        qWarning() << "Your config does not seem to be set correctly.";
+        qWarning() << "Please set plugins.path.";
+        qWarning() << "Default directory would be: " << defaultPath;
+    }
 }
 
 /**

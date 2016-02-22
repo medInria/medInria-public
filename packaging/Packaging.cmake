@@ -53,15 +53,15 @@ if (WIN32)
 endif()
 
 if (APPLE)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/packaging/apple/ApplePackaging.cmake)
+    include(${CMAKE_SOURCE_DIR}/packaging/apple/ApplePackaging.cmake)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    include(${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux/LinuxPackaging.cmake)
+    include(${CMAKE_SOURCE_DIR}/packaging/linux/LinuxPackaging.cmake)
 endif()
 
 if (UNIX)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/packaging/unix/Launchers.cmake)
+    include(${CMAKE_SOURCE_DIR}/packaging/unix/Launchers.cmake)
 endif()
 
 # Include cpack modules

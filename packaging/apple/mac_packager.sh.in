@@ -14,7 +14,7 @@
 
 # The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
-cd @medInria_DIR@/bin
+cd @medInria_BINARY_DIR@/bin
 
 \rm -fr TmpInstall
 mkdir TmpInstall
@@ -22,7 +22,7 @@ cp -r medInria.app TmpInstall
 
 cd TmpInstall
 
-@QT_BINARY_DIR@/macdeployqt medInria.app
+@Qt5_DIR@/../../../bin/macdeployqt medInria.app
 
 #Run sub-packagers
 injectDirs=''
@@ -35,26 +35,6 @@ done
 
 cd medInria.app/Contents
 
-mkdir -p PlugIns/sqldrivers PlugIns/imageformats
-
-cp -p @QT_PLUGINS_DIR@/sqldrivers/libqsqlite.dylib PlugIns/sqldrivers/libqsqlite.dylib
-cp -p @QT_PLUGINS_DIR@/imageformats/libqsvg.dylib PlugIns/imageformats/libqsvg.dylib
-
-for f in PlugIns/{sqldrivers/libqsqlite,imageformats/libqsvg}.dylib
-do
-	#Qt stuff (should hopefully be there already)
-	for j in $( otool -L $f | sed "1d" | grep -E .framework | grep -i -E 'Qt|phonon' | cut -d " " -f 1 ); do
-		#Depending on Qt SDK, paths may be relative or not
-		#tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
-		if [ "`echo $j | grep executable_path`" == "" ]; then
-			install_name_tool -change $j @executable_path/../Frameworks/$j $f
-		fi
-    done
-done
-
-# Remove useless plugins
-\rm -fr PlugIns/{accessible,bearer,codecs,graphicssystems}
-
 #Run fancy packaging apple script
 
 \cp -f @medInria_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @PROJECT_BINARY_DIR@/MedinriaPackage.sparseimage.gz
@@ -62,10 +42,11 @@ cd @PROJECT_BINARY_DIR@
 gunzip -f MedinriaPackage.sparseimage.gz
 
 devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
-diskutil rename "medInria base" "medInria @medInria-superProject_VERSION@"
-\cp -rf @medInria_DIR@/bin/TmpInstall/medInria.app /Volumes/"medInria @medInria-superProject_VERSION@"/
+diskutil rename "medInria base" "medInria @MEDINRIA_SUPERBUILD_VERSION@"
+\cp -rf @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app /Volumes/"medInria @MEDINRIA_SUPERBUILD_VERSION@"/
 
 sync
 hdiutil detach $devName
-hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@medInria-superProject_VERSION@.dmg" 1>/dev/null 2>/dev/null
-\rm -fr MedinriaPackage.sparseimage @medInria_DIR@/bin/TmpInstall
+\rm -f "medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg"
+hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg" 1>/dev/null 2>/dev/null
+\rm -fr MedinriaPackage.sparseimage @medInria_BINARY_DIR@/bin/TmpInstall
