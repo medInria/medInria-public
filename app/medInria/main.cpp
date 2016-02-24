@@ -76,6 +76,7 @@ int main(int argc,char* argv[]) {
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
         qDebug() << "Usage: medInria [--fullscreen|--no-fullscreen] [--stereo] "

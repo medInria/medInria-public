@@ -142,7 +142,7 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     Q_D(medDataManager);
     QUuid uuid = QUuid::createUuid();
     medAbstractDbController * controller = persistent ?  d->dbController : d->nonPersDbController;
-    controller->importPath(dataPath.toUtf8(), uuid, indexWithoutCopying);
+    controller->importPath(dataPath, uuid, indexWithoutCopying);
     return uuid;
 }
 /** @brief return writers able to handle the data *Memory management is the responsability of the caller*
