@@ -45,7 +45,7 @@ class itkMorphologicalFiltersToolBoxPrivate
 public:
     QLabel * dataTypeValue;
 
-    QSpinBox * kernelSize;
+    QDoubleSpinBox * kernelSize;
     QRadioButton *mmButton, *pixelButton;
     
     medComboBox * filters;
@@ -80,7 +80,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     // We use the same widget for all the morphological filters
     QWidget *filterWidget = new QWidget(this);
-    d->kernelSize = new QSpinBox;
+    d->kernelSize = new QDoubleSpinBox;
     d->kernelSize->setMaximum ( 10 );
     d->kernelSize->setValue ( 1 );
     d->kernelSize->setObjectName("kernelSize");

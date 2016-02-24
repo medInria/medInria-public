@@ -34,9 +34,7 @@ itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorpho
     d->radiusMm[1] = 0;
     d->radiusMm[2] = 0;
 
-    d->isRadiusInPixels = false;
-    d->radiusInPixels = 0;
-    
+    d->isRadiusInPixels = false;    
     d->description = "";
 }
 
@@ -56,8 +54,6 @@ void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)
     if (channel <= 1)
     {
         DTK_D(itkMorphologicalFiltersProcessBase);
-
-        d->radiusInPixels = data;
 
         d->radius[0] = data;
         d->radius[1] = data;
