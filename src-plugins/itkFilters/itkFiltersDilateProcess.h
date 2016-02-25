@@ -18,7 +18,7 @@
 
 #include <itkFiltersPluginExport.h>
 
-class itkFiltersDilateProcessPrivate;
+class itkMorphologicalFiltersProcessBasePrivate;
 class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersDilateProcess : public itkMorphologicalFiltersProcessBase
@@ -31,12 +31,6 @@ public:
     virtual ~itkFiltersDilateProcess(void);
 
     static bool registered ( void );
-    
-public slots:
-    int update ( void );
-
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersDilateProcess)
 };
 
 dtkAbstractProcess * createitkFiltersDilateProcess(void);
