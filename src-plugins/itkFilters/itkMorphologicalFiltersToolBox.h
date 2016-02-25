@@ -40,7 +40,7 @@ public slots:
 
     void clear();
     void update(medAbstractData *data);
-
+    void roundSpinBox(bool param);
     void run();
 
 private:  
