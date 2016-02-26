@@ -97,6 +97,7 @@ public:
         filter->SetKernel ( ball );
 
         filter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+        filter->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
 
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
