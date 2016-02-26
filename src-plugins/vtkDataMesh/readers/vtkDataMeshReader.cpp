@@ -99,7 +99,6 @@ bool vtkDataMeshReader::read(const QString& path) {
             // Extract data and header from the file
             QString header;
             vtkSmartPointer<vtkPolyDataReader> reader = vtkPolyDataReader::New();
-            reader->SetFileName(path.toUtf8().constData());
             try
             {
                 reader->SetFileName(path.toLocal8Bit().constData());
