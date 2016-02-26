@@ -123,7 +123,7 @@ $WIDGET_COLOR                       = $GREY11;
 
 $TOOLTIP_COLOR                      = $GREY04;
 
-$DISABLE_COLOR                      = $DARKGRAY; /*Text of disabled widgets*/
+$DISABLE_COLOR                      = $GREY00; /*Text of disabled widgets*/
 
 $GRIDLINE_COLOR                     = $GREY09;
 
@@ -768,19 +768,20 @@ QPushButton, QPushButton:flat, QToolButton
 
 QPushButton:hover, QToolButton:hover
 {
-    background-color: $PUSH_BUTTON_HOVER_BACKGROUND;
+    background-color: $PUSH_BUTTON_HOVER_BACKGROUND; /*mouse over button*/
 }
 
 QPushButton:pressed, QToolButton:pressed
 {
-    background-color: $PUSH_BUTTON_PRESSED_BACKGROUND;
+    background-color: $PUSH_BUTTON_PRESSED_BACKGROUND; /*button pressed and not released*/
 }
 
 QPushButton:checked, QToolButton:checked
 {
+    /*clicked - checked button*/
     background-color: $PUSH_BUTTON_CHECKED_BACKGROUND;
+    color: $HIGHLIGHT_COLOR
 }
-
 
 QPushButton::menu-indicator
 {
