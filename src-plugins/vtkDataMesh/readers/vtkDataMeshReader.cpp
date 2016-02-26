@@ -190,7 +190,6 @@ void vtkDataMeshReader::parseHeaderVtk(QString header, medAbstractData* medData)
 
         if (cartoList.count() == 4)
         {
-            std::cout<<"vtkDataMeshReader::parseHeaderVtk CARTO OK"<<std::endl;
             medData->setMetaData(medMetaDataKeys::PatientName.key(), cartoList.at(1)+QString("^")+cartoList.at(2));
             medData->setMetaData(medMetaDataKeys::PatientID.key(),   cartoList.at(3));
         }
