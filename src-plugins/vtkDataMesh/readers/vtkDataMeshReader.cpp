@@ -173,12 +173,26 @@ void vtkDataMeshReader::parseHeaderVtk(QString header, medAbstractData* medData)
 {
     QStringList list = header.split("\t");
 
-    QStringList keyList = metaDataKeysToCopy();
-    foreach(QString key, keyList)
+    if (list.count() > 1) // Regular VTK from MUSIC
     {
-        if (list.contains(key))
+        QStringList keyList = metaDataKeysToCopy();
+        foreach(QString key, keyList)
         {
-            medData->setMetaData(key, list.at(list.indexOf(key)+1));
+            if (list.contains(key))
+            {
+                medData->setMetaData(key, list.at(list.indexOf(key)+1));
+            }
+        }
+    }
+    else // Carto VTK
+    {
+        QStringList cartoList = header.split(" ");
+
+        if (cartoList.count() == 4)
+        {
+            std::cout<<"vtkDataMeshReader::parseHeaderVtk CARTO OK"<<std::endl;
+            medData->setMetaData(medMetaDataKeys::PatientName.key(), cartoList.at(1)+QString("^")+cartoList.at(2));
+            medData->setMetaData(medMetaDataKeys::PatientID.key(),   cartoList.at(3));
         }
     }
 }
