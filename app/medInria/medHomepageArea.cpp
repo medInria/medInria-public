@@ -489,7 +489,7 @@ void medHomepageArea::onShowInfo()
 
 void medHomepageArea::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+    QDesktopServices::openUrl(QUrl("https://www-sop.inria.fr/asclepios/software/MUSIC/MUSIC_User_Manual.pdf"));
 }
 
 void medHomepageArea::onShowSettings()
