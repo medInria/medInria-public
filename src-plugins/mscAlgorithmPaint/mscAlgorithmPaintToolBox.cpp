@@ -399,6 +399,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     m_applyButton = new QPushButton( tr("Save") );
     m_applyButton->setToolTip(tr("Save result to the Database"));
+    m_applyButton->setObjectName("saveButton");
     m_applyButton->setDisabled(true);
 
     m_clearMaskButton = new QPushButton( tr("Clear Mask") );
