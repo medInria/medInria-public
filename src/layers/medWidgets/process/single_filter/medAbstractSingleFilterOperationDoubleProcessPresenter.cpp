@@ -32,13 +32,13 @@
 class medAbstractSingleFilterOperationDoubleProcessPresenterPrivate
 {
 public:
-    medDoubleParameterPresenter *sigmaPresenter;
+    medDoubleParameterPresenter *parameterPresenter;
 };
 
 medAbstractSingleFilterOperationDoubleProcessPresenter::medAbstractSingleFilterOperationDoubleProcessPresenter(medAbstractSingleFilterOperationDoubleProcess *parent)
     : medAbstractSingleFilterOperationProcessPresenter(parent), d(new medAbstractSingleFilterOperationDoubleProcessPresenterPrivate)
 {
-    d->sigmaPresenter = new medDoubleParameterPresenter(parent->sigma());
+    d->parameterPresenter = new medDoubleParameterPresenter(parent->doubleParameter());
 }
 
 medAbstractSingleFilterOperationDoubleProcessPresenter::~medAbstractSingleFilterOperationDoubleProcessPresenter()
@@ -49,8 +49,7 @@ QWidget *medAbstractSingleFilterOperationDoubleProcessPresenter::buildToolBoxWid
 {
     QWidget* tbWidget = medAbstractSingleFilterOperationProcessPresenter::buildToolBoxWidget();
 
-    tbWidget->layout()->addWidget(d->sigmaPresenter->buildWidget());
-
+    tbWidget->layout()->addWidget(d->parameterPresenter->buildWidget());
 
     return tbWidget;
 }

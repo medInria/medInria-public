@@ -21,16 +21,16 @@
 class medAbstractSingleFilterOperationDoubleProcessPrivate
 {
 public:
-    medDoubleParameter* sigma;
+    medDoubleParameter* doubleParameter;
 };
 
 medAbstractSingleFilterOperationDoubleProcess::medAbstractSingleFilterOperationDoubleProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent),
     d(new medAbstractSingleFilterOperationDoubleProcessPrivate)
 {
-    d->sigma = new medDoubleParameter("sigma", this);
-    d->sigma->setCaption("CHANGE ME");
-    d->sigma->setDescription("CHANGE ME");
-    d->sigma->setValue(1);
+    d->doubleParameter = new medDoubleParameter("sigma", this);
+    d->doubleParameter->setCaption("CHANGE ME");
+    d->doubleParameter->setDescription("CHANGE ME");
+    d->doubleParameter->setValue(1);
 }
 
 medAbstractSingleFilterOperationDoubleProcess::~medAbstractSingleFilterOperationDoubleProcess()
@@ -38,8 +38,8 @@ medAbstractSingleFilterOperationDoubleProcess::~medAbstractSingleFilterOperation
 
 }
 
-medDoubleParameter* medAbstractSingleFilterOperationDoubleProcess::sigma() const
+medDoubleParameter* medAbstractSingleFilterOperationDoubleProcess::doubleParameter() const
 {
-    return d->sigma;
+    return d->doubleParameter;
 }
 

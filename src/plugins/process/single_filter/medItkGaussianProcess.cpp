@@ -21,7 +21,7 @@
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
-
+#include <medDoubleParameter.h>
 
 medItkGaussianProcess::medItkGaussianProcess(QObject *parent)
     : medAbstractGaussianFilterProcess(parent)
@@ -111,6 +111,7 @@ medAbstractJob::medJobExitStatus medItkGaussianProcess::_run()
         m_filter = filter;
 
         filter->SetInput(in1);
+        filter->SetSigma(this->doubleParameter()->value());
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
         callback->SetClientData((void*)this);

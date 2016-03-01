@@ -108,7 +108,7 @@ medAbstractJob::medJobExitStatus medItkDivideProcess::_run()
 
     typename ImageType::Pointer in1 = dynamic_cast<ImageType *>((itk::Object*)(this->input()->data()));
 
-    double factor = this->sigma()->value();
+    double factor = this->doubleParameter()->value();
 
     if(in1.IsNotNull())
     {

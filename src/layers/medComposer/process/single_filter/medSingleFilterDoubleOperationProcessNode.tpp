@@ -29,14 +29,14 @@
 class medSingleFilterDoubleOperationProcessNodePrivate
 {
 public:
-    dtkComposerTransmitterReceiver<double> sigma;
+    dtkComposerTransmitterReceiver<double> doubleParameter;
 };
 
 template <typename T>
 medSingleFilterDoubleOperationProcessNode<T>::medSingleFilterDoubleOperationProcessNode(void)
     : medSingleFilterOperationProcessNode<T>(), d(new medSingleFilterDoubleOperationProcessNodePrivate())
 {
-    this->appendReceiver(&d->sigma);
+    this->appendReceiver(&d->doubleParameter);
 }
 
 template <typename T>
@@ -51,13 +51,13 @@ bool medSingleFilterDoubleOperationProcessNode<T>::prepareInput(void)
 
     if (status)
     {
-        if(!d->sigma.isEmpty())
+        if(!d->doubleParameter.isEmpty())
         {
 
             if(this->object())
             {
                 medAbstractSingleFilterOperationDoubleProcess* const filter = this->object();
-                filter->sigma()->setValue(d->sigma.data());
+                filter->doubleParameter()->setValue(d->doubleParameter.data());
             }
         }
     }
