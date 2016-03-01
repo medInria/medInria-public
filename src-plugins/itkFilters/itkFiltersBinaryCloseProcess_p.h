@@ -18,6 +18,7 @@
 #include <itkBinaryMorphologicalClosingImageFilter.h>
 #include <itkCommand.h>
 #include <itkImage.h>
+#include <itkBinaryBallStructuringElement.h>
 #include <itkMinimumMaximumImageFilter.h>
 
 #include <medMetaDataKeys.h>

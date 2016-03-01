@@ -84,6 +84,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOGIPL
   ITKIOHDF5
   ITKIOBioRad
+  ${ITKIOPhilipsREC_LIBRARIES}
   ITKIOStimulate
   ITKStatistics
   ITKIOTransformBase
