@@ -33,10 +33,9 @@ public:
 
     virtual ~itkMorphologicalFiltersProcessBasePrivate(void) {}
 
-    int radius[3];
+    double radius[3];
     double radiusMm[3];
     bool isRadiusInPixels;
-    int radiusInPixels;
 	
     template <class ImageType> void convertMmInPixels ( void )
     {
@@ -47,7 +46,6 @@ public:
             radiusMm[i] = radius[i] * image->GetSpacing()[i];
         }
     }
-
 };
 
 DTK_IMPLEMENT_PRIVATE(itkMorphologicalFiltersProcessBase, itkFiltersProcessBase);

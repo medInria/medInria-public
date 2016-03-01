@@ -45,7 +45,7 @@ class itkMorphologicalFiltersToolBoxPrivate
 public:
     QLabel * dataTypeValue;
 
-    QSpinBox * kernelSize;
+    QDoubleSpinBox * kernelSize;
     QRadioButton *mmButton, *pixelButton;
     
     medComboBox * filters;
@@ -80,7 +80,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     // We use the same widget for all the morphological filters
     QWidget *filterWidget = new QWidget(this);
-    d->kernelSize = new QSpinBox;
+    d->kernelSize = new QDoubleSpinBox;
     d->kernelSize->setMaximum ( 10 );
     d->kernelSize->setValue ( 1 );
     d->kernelSize->setObjectName("kernelSize");
@@ -95,6 +95,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->pixelButton = new QRadioButton(tr("pixels"), this);
     d->pixelButton->setObjectName("pixels");
     d->pixelButton->setToolTip(tr("If \"pixels\" is selected, the dimensions of the structuring element will be calculated in pixels."));
+    connect(d->pixelButton, SIGNAL(toggled(bool)), this, SLOT(roundSpinBox(bool)));
 
     morphoFilterLayout->addWidget ( morphoFilterLabel );
     morphoFilterLayout->addWidget ( d->kernelSize );
@@ -150,7 +151,6 @@ bool itkMorphologicalFiltersToolBox::registered()
     medToolBoxFactory* factory = medToolBoxFactory::instance();
     return factory->registerToolBox<itkMorphologicalFiltersToolBox> ();
 }
-
 
 medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
 {
@@ -270,6 +270,20 @@ void itkMorphologicalFiltersToolBox::run ( void )
         }
     }
 }
+
+
+void itkMorphologicalFiltersToolBox::roundSpinBox(bool param)
+{
+    if(param)
+    {
+        d->kernelSize->setDecimals(0);
+    }
+    else
+    {
+        d->kernelSize->setDecimals(2);
+    }
+}
+
 
 dtkPlugin* itkMorphologicalFiltersToolBox::plugin()
 {

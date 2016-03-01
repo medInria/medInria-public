@@ -43,7 +43,7 @@ public:
 
         typedef itk::FlatStructuringElement < 3> StructuringElementType;
         StructuringElementType::RadiusType elementRadius;
-        elementRadius[0] = radius[0];
+        elementRadius[0] = radius[0]; //radius (double) is truncated
         elementRadius[1] = radius[1];
         elementRadius[2] = radius[2];
         StructuringElementType ball = StructuringElementType::Ball(elementRadius);
@@ -66,8 +66,8 @@ public:
 
         // Add description on output data
         if (isRadiusInPixels)
-            newSeriesDescription += " Open filter\n("+ QString::number(radius[0])+", "+
-            QString::number(radius[1])+", "+ QString::number(radius[2])+" pixels)";
+            newSeriesDescription += " Open filter\n("+ QString::number(floor(radius[0]))+", "+
+            QString::number(floor(radius[1]))+", "+ QString::number(floor(radius[2]))+" pixels)";
         else
             newSeriesDescription += " Open filter\n("+ QString::number(radiusMm[0])+", "+
             QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
