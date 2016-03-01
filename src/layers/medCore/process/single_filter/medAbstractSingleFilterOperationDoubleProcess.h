@@ -31,7 +31,7 @@ public:
     medAbstractSingleFilterOperationDoubleProcess(QObject *parent = NULL);
     virtual ~medAbstractSingleFilterOperationDoubleProcess();
 
-    virtual medDoubleParameter* sigma() const;
+    virtual medDoubleParameter* doubleParameter() const;
 
 private:
     const QScopedPointer<medAbstractSingleFilterOperationDoubleProcessPrivate> d;
