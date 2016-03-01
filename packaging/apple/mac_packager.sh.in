@@ -22,7 +22,7 @@ cp -r medInria.app TmpInstall
 
 cd TmpInstall
 
-@Qt5_DIR@/../../../bin/macdeployqt medInria.app
+@Qt5_DIR@/../../../bin/macdeployqt medInria.app -appstore-compliant
 
 #Run sub-packagers
 injectDirs=''
@@ -34,6 +34,9 @@ done
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
 cd medInria.app/Contents
+
+cp -p @Qt5_DIR@/../../../plugins/imageformats/libqsvg.dylib PlugIns/imageformats/
+cp -r @Qt5_DIR@/../../QtSvg.framework Frameworks
 
 #Run fancy packaging apple script
 
@@ -47,6 +50,5 @@ diskutil rename "medInria base" "medInria @MEDINRIA_SUPERBUILD_VERSION@"
 
 sync
 hdiutil detach $devName
-\rm -f "medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg"
 hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg" 1>/dev/null 2>/dev/null
 \rm -fr MedinriaPackage.sparseimage @medInria_BINARY_DIR@/bin/TmpInstall
