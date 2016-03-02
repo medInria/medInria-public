@@ -1520,6 +1520,8 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
 
 void AlgorithmPaintToolBox::onViewClosed()
 {
+    clearMask();
+
     medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
     if (m_undoStacks->value(viewClosed))
     {
