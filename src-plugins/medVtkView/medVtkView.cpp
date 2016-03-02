@@ -40,6 +40,7 @@ PURPOSE.
 #include <medVtkViewObserver.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
+#include <medDatabaseModel.h>
 #include <medDataListParameter.h>
 #include <medToolBox.h>
 #include <medMetaDataKeys.h>
@@ -423,7 +424,9 @@ void medVtkView::displayDataInfo(uint layer)
     {
         if ( data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
         {
-            const QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+            QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+            if(medSettingsManager::instance()->value("database", "anonymous", false).toBool())
+                patientName = anonymise(patientName);
             d->view2d->SetPatientName ( patientName.toAscii().constData() );
             d->view3d->SetPatientName ( patientName.toAscii().constData() );
         }

@@ -22,6 +22,8 @@ class medAbstractDatabaseItem;
 class medDatabaseModelPrivate;
 class medDataIndex;
 
+QString anonymise(const QString name);
+
 class MEDCORE_EXPORT medDatabaseModel : public QAbstractItemModel
 {
     Q_OBJECT
