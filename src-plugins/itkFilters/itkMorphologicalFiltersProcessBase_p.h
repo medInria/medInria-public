@@ -85,14 +85,14 @@ public:
         typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  OpenFilterType;
         typename FilterType::Pointer filter;
 
-        if(description == "ITK Dilate filter")
+        if(description == "Dilate filter")
         {
             filter = DilateFilterType::New();
             dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
             dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
         }
 
-        else if(description == "ITK Erode filter")
+        else if(description == "Erode filter")
         {
             filter = ErodeFilterType::New();
             dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());

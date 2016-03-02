@@ -27,7 +27,7 @@ itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent
     DTK_D(itkMorphologicalFiltersProcessBase);
     
     d->filter = this;
-    d->description = tr("ITK Dilate filter");
+    d->description = tr("Dilate filter");
 }
 
 

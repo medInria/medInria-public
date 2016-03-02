@@ -27,7 +27,7 @@ itkFiltersErodeProcess::itkFiltersErodeProcess(itkFiltersErodeProcess *parent)
     DTK_D(itkMorphologicalFiltersProcessBase);
 
     d->filter = this;
-    d->description = tr("ITK Erode filter");
+    d->description = tr("Erode filter");
 }
 
 
