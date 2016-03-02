@@ -24,7 +24,9 @@
 
 #include <itkBinaryDilateImageFilter.h>
 #include <itkBinaryErodeImageFilter.h>
-#include <itkBinaryMorphologyImageFilter.h>
+#include <itkBinaryMorphologicalClosingImageFilter.h>
+#include <itkBinaryMorphologicalOpeningImageFilter.h>
+#include <itkKernelImageFilter.h>
 #include <itkCommand.h>
 #include <itkImage.h>
 #include <itkMinimumMaximumImageFilter.h>
@@ -54,7 +56,7 @@ public:
         }
     }
 
-    //only called if not defined in subclasses (e.g. dilate/erodeFilter)
+
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
@@ -76,16 +78,39 @@ public:
         imageCalculatorFilter->SetInput( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         imageCalculatorFilter->Update();
 
-        typedef itk::BinaryMorphologyImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
+        typedef itk::KernelImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
         typedef itk::BinaryDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateFilterType;
         typedef itk::BinaryErodeImageFilter< ImageType, ImageType,StructuringElementType >  ErodeFilterType;
+        typedef itk::BinaryMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  CloseFilterType;
+        typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  OpenFilterType;
         typename FilterType::Pointer filter;
 
         if(description == "ITK Dilate filter")
+        {
             filter = DilateFilterType::New();
+            dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+            dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+        }
 
         else if(description == "ITK Erode filter")
+        {
             filter = ErodeFilterType::New();
+            dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+            dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+        }
+
+        else if(description == "Close filter")
+        {
+            filter = CloseFilterType::New();
+            dynamic_cast<CloseFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+        }
+
+        else if(description == "Open filter")
+        {
+            filter = OpenFilterType::New();
+            dynamic_cast<OpenFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+            dynamic_cast<OpenFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+        }
 
         else
         {
@@ -95,9 +120,6 @@ public:
 
         filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         filter->SetKernel ( ball );
-
-        filter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
-        filter->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
 
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
