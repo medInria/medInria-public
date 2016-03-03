@@ -162,6 +162,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOGDCM
   ITKIOGIPL
   ITKIOGE
+  ITKIOImageBase
   ITKIOJPEG
   ITKIOLSM
   ITKIOMeta
