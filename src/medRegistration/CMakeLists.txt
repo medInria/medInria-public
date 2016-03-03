@@ -87,6 +87,7 @@ target_link_libraries(${PROJECT_NAME}
   ${ITKIOPhilipsREC_LIBRARIES}
   ITKIOStimulate
   ITKStatistics
+  ITKIOTIFF
   ITKIOTransformBase
   ITKIOTransformHDF5
   ITKIOTransformMatlab

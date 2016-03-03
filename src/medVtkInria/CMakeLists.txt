@@ -170,6 +170,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIONRRD
   ITKIOPNG
   ITKIOStimulate
+  ITKIOTIFF
   ITKIOVTK
   ITKIOMRC
   )
