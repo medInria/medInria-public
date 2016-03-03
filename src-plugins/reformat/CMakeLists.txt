@@ -82,6 +82,7 @@ target_link_libraries(${PROJECT_NAME}
   medVtkInria
   QVTK
   ITKCommon
+  ITKIOTransformBase
   medUtilities
   )
 
