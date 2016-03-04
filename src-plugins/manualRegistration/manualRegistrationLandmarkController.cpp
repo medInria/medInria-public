@@ -253,21 +253,21 @@ void manualRegistrationLandmarkController::SetEnabled (unsigned int arg)
     }
 }
 
-int manualRegistrationLandmarkController::Update()
+int manualRegistrationLandmarkController::checkLandmarks()
 {
     if (Points_Fixed->size()!=Points_Moving->size())
     {
         medMessageController::instance()->showError("The number of landmarks is not the same on both views",3000);
-        return EXIT_FAILURE;
+        return DTK_FAILURE;
     }
 
     if (!Points_Fixed->size())
     {
         medMessageController::instance()->showError("You didn't put any landmark !",3000);
-        return EXIT_FAILURE;
+        return DTK_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+    return DTK_SUCCEED;
 }
 
 QList<manualRegistrationLandmark*> * manualRegistrationLandmarkController::getPoints_Moving()

@@ -58,6 +58,7 @@ public slots:
 private:
     void displayButtons(bool);
     void constructContainers(medTabbedViewContainers *);
+    void disableSaveButtons(bool);
     manualRegistrationToolBoxPrivate *d;
 };
 

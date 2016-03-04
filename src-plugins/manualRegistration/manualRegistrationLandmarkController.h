@@ -58,7 +58,7 @@ public:
     void AddPoint(manualRegistrationLandmark * landmark,unsigned int i);
     void ClearUselessLandmarks();
     void RequestDeletion(manualRegistrationLandmark * landmark);
-    int Update();
+    int checkLandmarks();
     void Reset();
 
 private:

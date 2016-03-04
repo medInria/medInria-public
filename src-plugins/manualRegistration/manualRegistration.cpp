@@ -238,7 +238,6 @@ QString manualRegistration::getTitleAndParameters()
 bool manualRegistration::writeTransform(const QString& file)
 {
     typedef float PixelType;
-    typedef double TransformScalarType;
 
     typedef itk::Image< PixelType, 3 > RegImageType;
 
@@ -246,7 +245,7 @@ bool manualRegistration::writeTransform(const QString& file)
         rpi::writeLinearTransformation<TransformScalarType,
                 RegImageType::ImageDimension>(
                     d->transform,
-                    file.toStdString());
+                    file.toLocal8Bit().constData());
     }
     catch (std::exception& ex)
     {

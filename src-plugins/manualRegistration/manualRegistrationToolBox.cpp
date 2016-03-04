@@ -85,12 +85,11 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->b_save->setToolTip(tr("Save registered image"));
     d->b_save->setObjectName("saveButton");
     connect(d->b_save,SIGNAL(clicked()),this,SLOT(save()));
-    d->b_save->setDisabled(true);
 
     d->b_saveTransformation = new QPushButton("Save Transformation",widget);
+    d->b_saveTransformation->setObjectName("Save Transformation");
     d->b_saveTransformation->setToolTip(tr("Save the transformation in a tfm or txt file"));
     connect(d->b_saveTransformation,SIGNAL(clicked()),this,SLOT(saveTransformation()));
-    d->b_saveTransformation->setDisabled(true);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(d->b_startManualRegistration);
@@ -120,6 +119,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->process         = 0;
     d->output          = 0;
 
+    disableSaveButtons(true);
     displayButtons(false);
 }
 
@@ -318,7 +318,7 @@ void manualRegistrationToolBox::computeRegistration()
     if (!d->controller)
         return;
 
-    if (d->controller->Update() == EXIT_FAILURE)
+    if (d->controller->checkLandmarks() == DTK_FAILURE)
         return;
 
     d->process = new manualRegistration();
@@ -348,8 +348,7 @@ void manualRegistrationToolBox::computeRegistration()
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
     synchroniseMovingFuseView();
 
-    d->b_save->setDisabled(false);
-    d->b_saveTransformation->setDisabled(false);
+    disableSaveButtons(false);
 }
 
 void manualRegistrationToolBox::reset()
@@ -361,8 +360,7 @@ void manualRegistrationToolBox::reset()
     viewFuse->removeLayer(1);
     viewFuse->addLayer(viewMoving->layerData(0));
     synchroniseMovingFuseView();
-    d->b_save->setDisabled(true);
-    d->b_saveTransformation->setDisabled(true);
+    disableSaveButtons(true);
 }
 
 void manualRegistrationToolBox::save()
@@ -463,6 +461,12 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
 
         synchroniseMovingFuseView();
     }
+}
+
+void manualRegistrationToolBox::disableSaveButtons(bool param)
+{
+    d->b_save->setDisabled(param);
+    d->b_saveTransformation->setDisabled(param);
 }
 
 void manualRegistrationToolBox::displayButtons(bool show)
