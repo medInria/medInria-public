@@ -238,11 +238,19 @@ void manualRegistrationToolBox::startManualRegistration()
 
     displayButtons(true);
     d->b_startManualRegistration->setText("Stop Manual Registration");
+
+    connect(d->rightContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
+    connect(d->leftContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
 }
 
 void manualRegistrationToolBox::stopManualRegistration()
 {
+    disconnect(d->rightContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
+    disconnect(d->leftContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
+
     d->b_startManualRegistration->setText("Start Manual Registration");
+    reset();
+    d->controller->SetEnabled(0);
     d->regOn           = false;
     d->controller->Delete();
     d->controller      = 0;
@@ -358,7 +366,10 @@ void manualRegistrationToolBox::reset()
     medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
     medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
     viewFuse->removeLayer(1);
-    viewFuse->addLayer(viewMoving->layerData(0));
+    if(viewMoving) //not the case if called by viewMoving closed() signal
+    {
+        viewFuse->addLayer(viewMoving->layerData(0));
+    }
     synchroniseMovingFuseView();
     disableSaveButtons(true);
 }
