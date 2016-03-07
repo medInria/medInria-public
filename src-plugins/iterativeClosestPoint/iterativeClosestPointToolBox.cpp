@@ -53,7 +53,7 @@ public:
     QDoubleSpinBox * ScaleFactor,* MaxMeanDistance;
     QSpinBox * MaxNumIterations, * MaxNumLandmarks;
     QCheckBox * bStartByMatchingCentroids,*bCheckMeanDistance;
-    QComboBox* bRididBody;
+    QComboBox* bTransformationComboBox;
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
@@ -87,11 +87,12 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     QLabel * transformation_Label = new QLabel("Transformation");
     transformation_layout->addWidget(transformation_Label);
 
-    d->bRididBody = new QComboBox(widget);
-    d->bRididBody->addItem("Affine");
-    d->bRididBody->addItem("Rigid body");
-    d->bRididBody->setCurrentIndex(1);
-    transformation_layout->addWidget(d->bRididBody);
+    d->bTransformationComboBox = new QComboBox(widget);
+    d->bTransformationComboBox->addItem("Rigid body");
+    d->bTransformationComboBox->addItem("Similarity");
+    d->bTransformationComboBox->addItem("Affine");
+    d->bTransformationComboBox->setCurrentIndex(0);
+    transformation_layout->addWidget(d->bTransformationComboBox);
 
     // Mean Distance
     d->bCheckMeanDistance = new QCheckBox(widget);
@@ -190,7 +191,7 @@ void iterativeClosestPointToolBox::run()
     process_Registration->setInput(targetData, 1);
           
     process_Registration->setParameter((double)d->bStartByMatchingCentroids->isChecked(),0);
-    process_Registration->setParameter((double)d->bRididBody->currentIndex(),1);
+    process_Registration->setParameter((double)d->bTransformationComboBox->currentIndex(),1);
     process_Registration->setParameter((double)d->bCheckMeanDistance->isChecked(),2);
     process_Registration->setParameter(d->MaxMeanDistance->value(),3);
     process_Registration->setParameter((double)d->MaxNumIterations->value(),4);
