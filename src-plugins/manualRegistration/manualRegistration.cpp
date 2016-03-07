@@ -13,25 +13,19 @@
 
 #include <manualRegistration.h>
 
+#include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-
-// /////////////////////////////////////////////////////////////////
-//
-// /////////////////////////////////////////////////////////////////
-
-#include <itkImageRegistrationMethod.h>
-
-#include <itkImage.h>
-#include <itkResampleImageFilter.h>
-#include <itkLandmarkBasedTransformInitializer.h>
-#include <time.h>
-#include <itkPoint.h>
-#include <vector>
 #include <iostream>
-#include <vtkPointHandleRepresentation2D.h>
+#include <itkImage.h>
+#include <itkImageRegistrationMethod.h>
+#include <itkLandmarkBasedTransformInitializer.h>
+#include <itkPoint.h>
+#include <itkResampleImageFilter.h>
 #include <rpiCommonTools.hxx>
+#include <time.h>
+#include <vector>
+#include <vtkPointHandleRepresentation2D.h>
 
 
 
@@ -249,7 +243,7 @@ bool manualRegistration::writeTransform(const QString& file)
     }
     catch (std::exception& ex)
     {
-        std::cout<<ex.what();
+        std::cout<<ex.what()<<std::endl;
         return false;
     }
 

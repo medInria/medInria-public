@@ -43,7 +43,7 @@ public:
     QPushButton * b_computeRegistration;
     QPushButton * b_reset;
     QPushButton * b_save;
-    QPushButton * b_saveTransformation;
+    QPushButton * b_exportTransformation;
     medAbstractLayeredView * currentView;
     medViewContainer * leftContainer;
     medViewContainer * rightContainer;
@@ -86,10 +86,10 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->b_save->setObjectName("saveButton");
     connect(d->b_save,SIGNAL(clicked()),this,SLOT(save()));
 
-    d->b_saveTransformation = new QPushButton("Save Transformation",widget);
-    d->b_saveTransformation->setObjectName("Save Transformation");
-    d->b_saveTransformation->setToolTip(tr("Save the transformation in a tfm or txt file"));
-    connect(d->b_saveTransformation,SIGNAL(clicked()),this,SLOT(saveTransformation()));
+    d->b_exportTransformation = new QPushButton("Export Transformation",widget);
+    d->b_exportTransformation->setObjectName("Export Transformation");
+    d->b_exportTransformation->setToolTip(tr("Export the transformation in a tfm or txt file"));
+    connect(d->b_exportTransformation,SIGNAL(clicked()),this,SLOT(exportTransformation()));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(d->b_startManualRegistration);
@@ -98,7 +98,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     mainLayout->addWidget(d->b_computeRegistration);
     mainLayout->addWidget(d->b_reset);
     mainLayout->addWidget(d->b_save);
-    mainLayout->addWidget(d->b_saveTransformation);
+    mainLayout->addWidget(d->b_exportTransformation);
     widget->setLayout(mainLayout);
     this->addWidget(widget);
 
@@ -382,7 +382,7 @@ void manualRegistrationToolBox::save()
     }
 }
 
-void manualRegistrationToolBox::saveTransformation()
+void manualRegistrationToolBox::exportTransformation()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save transformation in tfm (default) or txt."),
                                "/home/transformation.tfm",
@@ -477,7 +477,7 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
 void manualRegistrationToolBox::disableSaveButtons(bool param)
 {
     d->b_save->setDisabled(param);
-    d->b_saveTransformation->setDisabled(param);
+    d->b_exportTransformation->setDisabled(param);
 }
 
 void manualRegistrationToolBox::displayButtons(bool show)
@@ -487,14 +487,14 @@ void manualRegistrationToolBox::displayButtons(bool show)
         d->b_reset->show();
         d->b_computeRegistration->show();
         d->b_save->show();
-        d->b_saveTransformation->show();
+        d->b_exportTransformation->show();
     }
     else
     {
         d->b_reset->hide();
         d->b_computeRegistration->hide();
         d->b_save->hide();
-        d->b_saveTransformation->hide();
+        d->b_exportTransformation->hide();
     }
 }
 

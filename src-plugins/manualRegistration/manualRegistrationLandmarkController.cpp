@@ -282,16 +282,22 @@ QList<manualRegistrationLandmark*> * manualRegistrationLandmarkController::getPo
 
 void manualRegistrationLandmarkController::Reset()
 {
-    for(int i=0;i<Points_Fixed->size();i++)
+    if(ViewFixed)
     {
-        Points_Fixed->at(i)->RemoveAllObservers();
-        Points_Fixed->at(i)->Delete();
+        for(int i=0;i<Points_Fixed->size();i++)
+        {
+            Points_Fixed->at(i)->RemoveAllObservers();
+            Points_Fixed->at(i)->Delete();
+        }
     }
 
-    for(int i=0;i<Points_Moving->size();i++)
+    if(ViewMoving)
     {
-        Points_Moving->at(i)->RemoveAllObservers();
-        Points_Moving->at(i)->Delete();
+        for(int i=0;i<Points_Moving->size();i++)
+        {
+            Points_Moving->at(i)->RemoveAllObservers();
+            Points_Moving->at(i)->Delete();
+        }
     }
 
     Points_Fixed->clear();
