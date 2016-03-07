@@ -120,7 +120,20 @@ void vtkICPFilter::Update()
     //Similarity (VTK_LANDMARK_SIMILARITY): rotation, translation and isotropic scaling.
     //Affine (VTK_LANDMARK_AFFINE): collinearity is preserved. Ratios of distances along a line are preserved.
     //The default is similarity.
-    this->ICPTransform->GetLandmarkTransform()->SetMode(this->bTransformation);
+    switch (this->bTransformation)
+    {
+    case 0:
+        this->ICPTransform->GetLandmarkTransform()->SetMode(VTK_LANDMARK_RIGIDBODY);
+        break;
+    case 1:
+        this->ICPTransform->GetLandmarkTransform()->SetMode(VTK_LANDMARK_SIMILARITY);
+        break;
+    case 2:
+        this->ICPTransform->GetLandmarkTransform()->SetMode(VTK_LANDMARK_AFFINE);
+        break;
+    default:
+        break;
+    }
 
     //icp->Modified(); //is this necessary?
     this->ICPTransform->Update();
