@@ -74,7 +74,7 @@ bool vtkDataMeshWriter::write(const QString& path)
   QFileInfo pathfile(path);
   QString extension = pathfile.completeSuffix();
 
-  if (extension.compare("vtk") == 0) // VTK files
+  if (extension == "vtk") // VTK files
   {
       QString header = getHeaderVtk();
 
@@ -92,7 +92,7 @@ bool vtkDataMeshWriter::write(const QString& path)
           return false;
       }
   }
-  else // VTP files
+  else if (extension == "vtp") // VTP files
   {
       addHeaderVtpToMesh(mesh);
 
@@ -104,6 +104,21 @@ bool vtkDataMeshWriter::write(const QString& path)
         writer->SetInputData(mesh->GetDataSet());
       #endif
         writer->Write();
+  }
+  else if ((extension == "mesh") || (extension == "obj")) // MESH or OBJ files
+  {
+      try
+      {
+          mesh->Write(path.toLocal8Bit().constData());
+      } catch (...)
+      {
+          qDebug() << "vtkDataMeshWriter::write -> writing the vtkDataMesh failed.";
+          return false;
+      }
+  }
+  else
+  {
+      return false;
   }
 
   return true;

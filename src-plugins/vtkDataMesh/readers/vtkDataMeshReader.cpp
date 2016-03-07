@@ -94,7 +94,7 @@ bool vtkDataMeshReader::read(const QString& path) {
         QFileInfo pathfile(path);
         QString extension = pathfile.completeSuffix();
 
-        if (extension.compare("vtk") == 0) // VTK files
+        if (extension == "vtk") // VTK files
         {
             // Extract data and header from the file
             QString header;
@@ -118,7 +118,7 @@ bool vtkDataMeshReader::read(const QString& path) {
             // Parse header and save metadata in medData
             parseHeaderVtk(header, medData);
         }
-        else // VTP files
+        else if (extension == "vtp") // VTP files
         {
             dataSet->Read(path.toLocal8Bit().constData());
             medData->setData(dataSet);
@@ -132,6 +132,21 @@ bool vtkDataMeshReader::read(const QString& path) {
             {
                 parseHeaderVtp(reader->GetOutput()->GetFieldData(), medData);
             }
+        }
+        else if ((extension == "mesh") || (extension == "obj")) // MESH or OBJ files
+        {
+            try
+            {
+                dataSet->Read(path.toLocal8Bit().constData());
+            } catch (...)
+            {
+                qDebug() << "vtkDataMeshReader::read -> loading the vtkDataMesh failed, error while parsing !";
+                return false;
+            }
+        }
+        else
+        {
+            return false;
         }
     }
 
