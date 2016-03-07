@@ -118,7 +118,7 @@ void iterativeClosestPointProcess::setParameter ( double data, int channel )
             d->bStartByMatchingCentroids = (data>0) ? true : false;
             break;
         case 1:
-            d->bTransformation = (data>0) ? true : false;
+            d->bTransformation = (int)data;
             break;
         case 2:
             d->bCheckMeanDistance = (data>0) ? true : false;
