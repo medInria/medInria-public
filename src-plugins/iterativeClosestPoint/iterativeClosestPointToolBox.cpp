@@ -52,20 +52,16 @@ public:
     medComboBox * layerSource, * layerTarget;
     QDoubleSpinBox * ScaleFactor,* MaxMeanDistance;
     QSpinBox * MaxNumIterations, * MaxNumLandmarks;
-    QCheckBox * bStartByMatchingCentroids,*bRididBody,*bCheckMeanDistance;
+    QCheckBox * bStartByMatchingCentroids,*bCheckMeanDistance;
+    QComboBox* bTransformationComboBox;
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
 {
+    this->setTitle("Iterative Closest Point");
+
     QWidget *widget = new QWidget(this);
 
-    medToolBoxTab * layoutToolBoxTab = new medToolBoxTab(this);
-    layoutToolBoxTab->addTab(widget, tr("ICP"));
-
-    QPushButton *runButton = new QPushButton(tr("Run"), this);
-    
-    this->setTitle("Mesh Registration");
-      
     // Parameters'widgets
     d->layerSource = new medComboBox;
     d->layerSource->addItem("Select the layer", 0);
@@ -85,10 +81,20 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     d->bStartByMatchingCentroids->setText("StartByMatchingCentroids");
     d->bStartByMatchingCentroids->setChecked(true);
     
-    d->bRididBody = new QCheckBox(widget);
-    d->bRididBody->setText("RigidBody");
-    d->bRididBody->setChecked(true);
-    
+    // Choice between Affine or Rigid body transformation
+    QHBoxLayout * transformation_layout = new QHBoxLayout;
+
+    QLabel * transformation_Label = new QLabel("Transformation");
+    transformation_layout->addWidget(transformation_Label);
+
+    d->bTransformationComboBox = new QComboBox(widget);
+    d->bTransformationComboBox->addItem("Rigid body");
+    d->bTransformationComboBox->addItem("Similarity");
+    d->bTransformationComboBox->addItem("Affine");
+    d->bTransformationComboBox->setCurrentIndex(0);
+    transformation_layout->addWidget(d->bTransformationComboBox);
+
+    // Mean Distance
     d->bCheckMeanDistance = new QCheckBox(widget);
     d->bCheckMeanDistance->setText("CheckMeanDistance");
 
@@ -123,12 +129,16 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     MaxNumLandmarks_layout->addWidget(MaxNumLandmarks_Label);
     MaxNumLandmarks_layout->addWidget(d->MaxNumLandmarks);
 
+    // Run button
+    QPushButton *runButton = new QPushButton(tr("Run"), widget);
+    connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
+
     QVBoxLayout * parameters_layout = new QVBoxLayout;
     widget->setLayout(parameters_layout);
     parameters_layout->addLayout(layerSource_layout);
     parameters_layout->addLayout(layerTarget_layout);
     parameters_layout->addWidget(d->bStartByMatchingCentroids);
-    parameters_layout->addWidget(d->bRididBody);
+    parameters_layout->addLayout(transformation_layout);
     parameters_layout->addWidget(d->bCheckMeanDistance);
     parameters_layout->addLayout(ScaleFactor_layout);
     parameters_layout->addLayout(MaxMeanDistance_layout);
@@ -136,9 +146,8 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     parameters_layout->addLayout(MaxNumLandmarks_layout);
     parameters_layout->addWidget(runButton);
 
-    this->setTabWidget(layoutToolBoxTab);
-    
-    connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
+    widget->setLayout(parameters_layout);
+    this->addWidget(widget);
 }
 
 iterativeClosestPointToolBox::~iterativeClosestPointToolBox()
@@ -174,7 +183,7 @@ void iterativeClosestPointToolBox::run()
     iterativeClosestPointProcess *process_Registration = dynamic_cast<iterativeClosestPointProcess *>(process.data());
     if (!process_Registration)
     {
-        qWarning() << "registration process doesn't exist" ;
+        qWarning() << "iterativeClosestPointProcess process doesn't exist" ;
         return;
     }
     
@@ -182,7 +191,7 @@ void iterativeClosestPointToolBox::run()
     process_Registration->setInput(targetData, 1);
           
     process_Registration->setParameter((double)d->bStartByMatchingCentroids->isChecked(),0);
-    process_Registration->setParameter((double)d->bRididBody->isChecked(),1);
+    process_Registration->setParameter((double)d->bTransformationComboBox->currentIndex(),1);
     process_Registration->setParameter((double)d->bCheckMeanDistance->isChecked(),2);
     process_Registration->setParameter(d->MaxMeanDistance->value(),3);
     process_Registration->setParameter((double)d->MaxNumIterations->value(),4);

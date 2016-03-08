@@ -46,7 +46,7 @@ public:
     dtkSmartPointer <medAbstractData> output;
     
     int bStartByMatchingCentroids;
-    int bRigidBody;
+    int bTransformation;
     int bCheckMeanDistance;
 
     double ScaleFactor;
@@ -65,14 +65,14 @@ iterativeClosestPointProcess::iterativeClosestPointProcess() : dtkAbstractProces
     d->inputTarget = 0;
     d->output = 0;
 
-	d->bStartByMatchingCentroids=1;
-	d->bRigidBody=0;
-	d->bCheckMeanDistance=0;
-	
-	d->ScaleFactor=1;
-	d->MaxNumIterations=100;
+    d->bStartByMatchingCentroids=1;
+    d->bTransformation=0;
+    d->bCheckMeanDistance=0;
+
+    d->ScaleFactor=1;
+    d->MaxNumIterations=100;
     d->MaxNumLandmarks=1000;
-	d->MaxMeanDistance=1;
+    d->MaxMeanDistance=1;
 }
 
 iterativeClosestPointProcess::~iterativeClosestPointProcess()
@@ -118,7 +118,7 @@ void iterativeClosestPointProcess::setParameter ( double data, int channel )
             d->bStartByMatchingCentroids = (data>0) ? true : false;
             break;
         case 1:
-            d->bRigidBody = (data>0) ? true : false;
+            d->bTransformation = (int)data;
             break;
         case 2:
             d->bCheckMeanDistance = (data>0) ? true : false;
@@ -141,7 +141,7 @@ void iterativeClosestPointProcess::setParameter ( double data, int channel )
 int iterativeClosestPointProcess::update()
 {
     if ( !d->inputSource || !d->inputTarget )
-        return -1;
+        return DTK_FAILURE;
     
     // Wait Cursor
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -156,7 +156,7 @@ int iterativeClosestPointProcess::update()
     ICPFilter->SetTarget(static_cast<vtkPolyData*>(target_dataset->GetDataSet()));
 
     ICPFilter->SetbStartByMatchingCentroids(d->bStartByMatchingCentroids);
-    ICPFilter->SetbRigidBody(d->bRigidBody);
+    ICPFilter->SetbTransformation(d->bTransformation);
     ICPFilter->SetbCheckMeanDistance(d->bCheckMeanDistance);
     ICPFilter->SetScaleFactor(d->ScaleFactor);
     ICPFilter->SetMaxNumIterations(d->MaxNumIterations);
@@ -179,7 +179,7 @@ int iterativeClosestPointProcess::update()
     QApplication::restoreOverrideCursor();
     QApplication::processEvents();
 
-    return EXIT_SUCCESS;
+    return DTK_SUCCEED;
 }
 
 

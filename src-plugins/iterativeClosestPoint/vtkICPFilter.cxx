@@ -22,7 +22,7 @@ vtkICPFilter::vtkICPFilter()
     this->Target=NULL;
 
     this->bStartByMatchingCentroids=1;
-    this->bRigidBody=1;
+    this->bTransformation=0;
     this->bCheckMeanDistance=0;
 
     this->ScaleFactor=10;
@@ -115,9 +115,25 @@ void vtkICPFilter::Update()
     //icp->SetMaximumMeanDistance(accuracy); //the test distance for convergence
     this->ICPTransform->SetMaximumMeanDistance(this->MaxMeanDistance);
 
-    //if you don't do this, it defaults to similarity transform (translation, rotation, and isotropic scaling)
-    if(this->bRigidBody)
-        this->ICPTransform->GetLandmarkTransform()->SetModeToRigidBody();
+    //Set the number of degrees of freedom to constrain the solution to.
+    //Rigidbody (VTK_LANDMARK_RIGIDBODY): rotation and translation only.
+    //Similarity (VTK_LANDMARK_SIMILARITY): rotation, translation and isotropic scaling.
+    //Affine (VTK_LANDMARK_AFFINE): collinearity is preserved. Ratios of distances along a line are preserved.
+    //The default is similarity.
+    switch (this->bTransformation)
+    {
+    case 0:
+        this->ICPTransform->GetLandmarkTransform()->SetMode(VTK_LANDMARK_RIGIDBODY);
+        break;
+    case 1:
+        this->ICPTransform->GetLandmarkTransform()->SetMode(VTK_LANDMARK_SIMILARITY);
+        break;
+    case 2:
+        this->ICPTransform->GetLandmarkTransform()->SetMode(VTK_LANDMARK_AFFINE);
+        break;
+    default:
+        break;
+    }
 
     //icp->Modified(); //is this necessary?
     this->ICPTransform->Update();
