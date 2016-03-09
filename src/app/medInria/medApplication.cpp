@@ -112,13 +112,17 @@ bool medApplication::event(QEvent *event)
 {
     switch (event->type())
     {
-    // Handle file system open requests, but only if the main window has been created and set
-    case QEvent::FileOpen:
-        if (!d->mainWindow)
-            d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
-        return true;
-    default:
-        return QtSingleApplication::event(event);
+        // Handle file system open requests, but only if the main window has been created and set
+        case QEvent::FileOpen:
+            dtkDebug() << "File open event" << event;
+            if (d->mainWindow)
+                emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
+            else
+                d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
+
+            return true;
+        default:
+            return QtSingleApplication::event(event);
     }
 }
 
