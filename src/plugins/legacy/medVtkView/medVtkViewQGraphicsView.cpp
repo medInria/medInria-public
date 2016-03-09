@@ -86,3 +86,15 @@ void medVtkViewQGraphicsView::mousePressEvent(QMouseEvent *event)
     QGraphicsView::mousePressEvent(event);
     QWidget::mousePressEvent(event);
 }
+
+void medVtkViewQGraphicsView::mouseMoveEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseMoveEvent(event);
+    QWidget::mouseMoveEvent(event);
+}
+
+void medVtkViewQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseReleaseEvent(event);
+    QWidget::mouseReleaseEvent(event);
+}
