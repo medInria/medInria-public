@@ -119,9 +119,10 @@ int itkFiltersAddProcess::update ( void )
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
-        << id
-        << ")";
+        qDebug() << description()
+                 <<", Error : pixel type not yet implemented ("
+                 << id
+                 << ")";
         return -1;
     }
 

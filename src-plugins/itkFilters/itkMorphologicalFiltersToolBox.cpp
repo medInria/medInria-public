@@ -172,53 +172,54 @@ void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
         this->clear();
     else
     {
-        QString identifier = data->identifier();
+        QString id = data->identifier();
 
-        if ( identifier == "itkDataImageChar3" )
+        if ( id == "itkDataImageChar3" )
         {
             d->dataTypeValue->setText ( "Char" );
         }
-        else if ( identifier == "itkDataImageUChar3" )
+        else if ( id == "itkDataImageUChar3" )
         {
             d->dataTypeValue->setText ( "Unsigned char" );
         }
-        else if ( identifier == "itkDataImageShort3" )
+        else if ( id == "itkDataImageShort3" )
         {
             d->dataTypeValue->setText ( "Short" );
         }
-        else if ( identifier == "itkDataImageUShort3" )
+        else if ( id == "itkDataImageUShort3" )
         {
             d->dataTypeValue->setText ( "Unsigned short" );
         }
-        else if ( identifier == "itkDataImageInt3" )
+        else if ( id == "itkDataImageInt3" )
         {
             d->dataTypeValue->setText ( "Int" );
         }
-        else if ( identifier == "itkDataImageUInt3" )
+        else if ( id == "itkDataImageUInt3" )
         {
             d->dataTypeValue->setText ( "Unsigned int" );
         }
-        else if ( identifier == "itkDataImageLong3" )
+        else if ( id == "itkDataImageLong3" )
         {
             d->dataTypeValue->setText ( "Long" );
         }
-        else if ( identifier== "itkDataImageULong3" )
+        else if ( id== "itkDataImageULong3" )
         {
             d->dataTypeValue->setText ( "Unsigned long" );
         }
-        else if ( identifier == "itkDataImageFloat3" )
+        else if ( id == "itkDataImageFloat3" )
         {
             d->dataTypeValue->setText ( "Float" );
         }
-        else if ( identifier == "itkDataImageDouble3" )
+        else if ( id == "itkDataImageDouble3" )
         {
             d->dataTypeValue->setText ( "Double" );
         }
         else
         {
-            qWarning() << "Error : pixel type not yet implemented ("
-            << identifier
-            << ")";
+            qDebug() << description()
+                     <<", Error : pixel type not yet implemented ("
+                     << id
+                     << ")";
         }
     }
 }
