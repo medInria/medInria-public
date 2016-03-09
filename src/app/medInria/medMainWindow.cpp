@@ -136,7 +136,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea->setObjectName("medHomePageArea");
 
     //Composer
-    d->composerArea=new medComposerArea(this);
+    d->composerArea = new medComposerArea(this);
     d->composerArea->setObjectName("medComposerArea");
 
     //  Stack

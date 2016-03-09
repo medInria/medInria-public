@@ -80,7 +80,6 @@ public:
     QAction *composition_save_action;
     QAction *composition_saveas_action;
     QAction *composition_insert_action;
-    QAction *composition_quit_action;
 
     QMenu *edit_menu;
     QAction *undo_action;

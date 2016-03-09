@@ -13,6 +13,7 @@
 
 #include "medComposerArea.h"
 #include "medComposerArea_p.h"
+#include <medMainWindow.h>
 
 #include <dtkComposer/dtkComposer.h>
 #include <dtkComposer/dtkComposerNode.h>
@@ -106,16 +107,11 @@ void medComposerAreaPrivate::setModified(bool modified)
 // medComposerArea
 // /////////////////////////////////////////////////////////////////
 
-medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new medComposerAreaPrivate)
+medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medComposerAreaPrivate)
 {
-    setWindowFlags(Qt::Widget);
     d->q = this;
     d->wl = 0;
     d->wr = 0;
-
-    // --
-
-    this->readSettings();
 
     // -- Elements
 
@@ -186,9 +182,6 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
     d->composition_insert_action = new QAction("Insert", this);
     d->composition_insert_action->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_I);
 
-    d->composition_quit_action = new QAction("Quit", this);
-    d->composition_quit_action->setShortcut(QKeySequence::Quit);
-
     d->undo_action = d->composer->stack()->createUndoAction(this);
     d->undo_action->setShortcut(QKeySequence::Undo);
 
@@ -212,7 +205,10 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
 
     // -- Toolbar
 
-    QToolBar *mainToolBar = this->addToolBar(tr("Main"));
+    QToolBar *mainToolBar = new QToolBar(tr("Main"),this);
+    QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->addWidget(mainToolBar);
+
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mainToolBar->setIconSize(QSize(32, 32));
 
@@ -278,9 +274,8 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
     mainToolBar->addWidget(new dtkSpacer(this));
     mainToolBar->addWidget(buttons);
 
-    // -- Menus
-
-    QMenuBar *menu_bar = this->menuBar();
+    medMainWindow *mainWindow = qobject_cast <medMainWindow *> (parent);
+    QMenuBar *menu_bar = mainWindow->menuBar();
 
     d->recent_compositions_menu = new dtkRecentFilesMenu("Open recent...", this);
 
@@ -291,8 +286,6 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
     d->composition_menu->addAction(d->composition_saveas_action);
     d->composition_menu->addSeparator();
     d->composition_menu->addAction(d->composition_insert_action);
-    d->composition_menu->addSeparator();
-    d->composition_menu->addAction(d->composition_quit_action);
 
     d->edit_menu = menu_bar->addMenu("Edit");
     d->edit_menu->addAction(d->composer->view()->searchAction());
@@ -357,15 +350,12 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
     connect(d->debug_button, SIGNAL(pressed()), this, SLOT(switchToDebug()));
     connect(d->view_button, SIGNAL(pressed()), this, SLOT(switchToView()));
 
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
-
     connect(d->composer, SIGNAL(modified(bool)), d, SLOT(setModified(bool)));
 
     connect(d->composition_open_action, SIGNAL(triggered()), this, SLOT(compositionOpen()));
     connect(d->composition_save_action, SIGNAL(triggered()), this, SLOT(compositionSave()));
     connect(d->composition_saveas_action, SIGNAL(triggered()), this, SLOT(compositionSaveAs()));
     connect(d->composition_insert_action, SIGNAL(triggered()), this, SLOT(compositionInsert()));
-    connect(d->composition_quit_action, SIGNAL(triggered()), qApp, SLOT(quit()));
 
     connect(d->recent_compositions_menu, SIGNAL(recentFileTriggered(const QString&)), this, SLOT(compositionOpen(const QString&)));
     connect(d->composer->scene(),SIGNAL(selectedNode(dtkComposerSceneNode*)), d->nodes, SLOT(onShowNodeDocumentation(dtkComposerSceneNode*)));
@@ -400,11 +390,8 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
     d->inner->setStretchFactor(2,5);
     d->inner->setStretchFactor(3,1);
 
-
-
     left->setMaximumWidth(300);
     right->setMaximumWidth(300);
-
 
     QHBoxLayout *b_layout = new QHBoxLayout;
     b_layout->setContentsMargins(0, 0, 0, 0);
@@ -419,39 +406,15 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
     central->addWidget(d->inner);
     central->addWidget(bottom);
 
-    this->setCentralWidget(central);
-    this->setStyleSheet(dtkReadFile(":dtkVisualProgramming/dtkVisualProgramming.qss"));
-    this->setUnifiedTitleAndToolBarOnMac(true);
+    vLayout->addWidget(central);
+    this->setLayout(vLayout);
 
     d->setCurrentFile("");
-
-    //FIXME
-    //dtkNotify(QString("Discovered %1 plugins").arg(dtkPluginManager::instance()->plugins().count()), 5000);
 }
 
 medComposerArea::~medComposerArea(void)
 {
     delete d;
-}
-
-void medComposerArea::readSettings(void)
-{
-    QSettings settings("inria", "dtk");
-    settings.beginGroup("VisualProgramming");
-    QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
-    QSize size = settings.value("size", QSize(600, 400)).toSize();
-    move(pos);
-    resize(size);
-    settings.endGroup();
-}
-
-void medComposerArea::writeSettings(void)
-{
-    QSettings settings("inria", "dtk");
-    settings.beginGroup("VisualProgramming");
-    settings.setValue("pos", pos());
-    settings.setValue("size", size());
-    settings.endGroup();
 }
 
 bool medComposerArea::compositionOpen(void)
@@ -737,21 +700,7 @@ void medComposerArea::showControls(void)
     d->controls->show();
 }
 
-void medComposerArea::closeEvent(QCloseEvent *event)
-{
-    if (d->maySave()) {
-         writeSettings();
-         d->closing = true;
-         event->accept();
-     } else {
-         event->ignore();
-     }
-}
-
 void medComposerArea::onComposerNodeFlagged(dtkComposerSceneNode *node)
 {
     dtkComposerViewController::instance()->insert(node);
 }
-
-//
-// medComposerArea.cpp ends here

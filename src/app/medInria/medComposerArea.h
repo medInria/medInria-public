@@ -21,16 +21,13 @@ class dtkComposerSceneNode;
 
 class medComposerAreaPrivate;
 
-class medComposerArea : public QMainWindow
+class medComposerArea : public QWidget
 {
     Q_OBJECT
 
 public:
      medComposerArea(QWidget *parent = 0);
     ~medComposerArea(void);
-
-    void readSettings(void);
-    void writeSettings(void);
 
 public slots:
     bool compositionOpen(void);
@@ -52,9 +49,6 @@ protected slots:
 
 protected slots:
     void onComposerNodeFlagged(dtkComposerSceneNode *);
-
-protected:
-    void closeEvent(QCloseEvent *event);
 
 private:
     medComposerAreaPrivate *d;
