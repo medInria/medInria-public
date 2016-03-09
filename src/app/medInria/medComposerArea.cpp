@@ -155,9 +155,8 @@ medComposerArea::medComposerArea(QWidget *parent) : QMainWindow(parent), d(new m
 
     d->graph = new dtkComposerGraphView(this);
     d->graph->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
-    d->graph->setScene(d->composer->graph());
+    d->graph->setGraph(d->composer->graph());
     d->graph->setVisible(false);
-    d->graph->setBackgroundBrush(QBrush(QPixmap(":dtkVisualProgramming/pixmaps/dtkComposerGraphView-bg.png")));
 
     d->log_view = new dtkWidgetsLogView(this);
     d->log_view->setVisible(false);
