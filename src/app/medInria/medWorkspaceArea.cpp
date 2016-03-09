@@ -124,7 +124,7 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    return QPixmap::grabWidget(this->currentWorkspace()->tabbedViewContainers()->currentWidget());
+    return this->currentWorkspace()->tabbedViewContainers()->currentWidget()->grab();
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
