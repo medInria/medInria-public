@@ -20,39 +20,18 @@
 class medSlider : public QSlider{
     Q_OBJECT
 
+public:
+    medSlider();
+    ~medSlider();
+
 public slots:
-    void addTick(int position)
-    {
-        if(!ticksList.contains(position))
-            ticksList.append(position);
-    }
-    void removeTick(int position)
-    {
-        ticksList.removeAll(position);
-    }
-    void removeAllTicks()
-    {
-        ticksList.clear();
-    }
+    void addTick(int position);
+    void removeTick(int position);
+    void removeAllTicks();
 
 protected:
-    void paintEvent(QPaintEvent *ev) {
+    void paintEvent(QPaintEvent *ev);
 
-        QSlider::paintEvent(ev);
-
-        QPainter painter(this);
-        painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-        for(int i = 0; i<ticksList.size(); i++)
-        {
-            int position = QStyle::sliderPositionFromValue(minimum(),
-                                                           maximum(),
-                                                           ticksList.at(i),
-                                                           width());
-
-            painter.drawLine(position, 0, position, height());
-        }
-
-    }
 private:
     QList<int> ticksList;
 };
