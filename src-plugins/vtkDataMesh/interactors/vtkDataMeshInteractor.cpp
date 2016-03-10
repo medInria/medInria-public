@@ -256,13 +256,13 @@ void vtkDataMeshInteractor::setupParameters()
 
         // decimal to hex color
         QString colorHex;
-        colorHex += QString("#");
+        colorHex += "#";
         for (int i=0; i<3; i++)
         {
             // Add a "0" to the hex number to follow "RRGGBBAA"
             if (final_colors[i] < 15)
             {
-                colorHex += QString("0");
+                colorHex += "0";
             }
             colorHex += QString::number(final_colors[i], 16).toUpper();
         }
