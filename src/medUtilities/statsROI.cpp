@@ -51,7 +51,7 @@ public:
     // Run the Stats process
     template <class ImageType> int runStats()
     {
-        int res = false;
+        int res = DTK_FAILURE;
 
         if (composite->chooseFct == statsROI::MEANVARIANCE) // DEFAULT: Compute Mean and Variance
         {
@@ -155,7 +155,7 @@ public:
         composite->computedOutput.push_back(mean);
         composite->computedOutput.push_back(stdev);
 
-        return true;
+        return DTK_SUCCEED;
     }
 
     template <class ImageType> int runVolumeML()
@@ -186,7 +186,7 @@ public:
 
         composite->computedOutput.push_back(volumeInMm3/1000.);
 
-        return true;
+        return DTK_SUCCEED;
     }
 
     template <class ImageType> int runMinMax()
@@ -203,7 +203,7 @@ public:
         composite->computedOutput.push_back(imageCalculatorFilter->GetMinimum());
         composite->computedOutput.push_back(imageCalculatorFilter->GetMaximum());
 
-        return true;
+        return DTK_SUCCEED;
     }
 
 private:
@@ -249,7 +249,7 @@ void statsROI::setParameter(statsParameter fct)
 // Convert medAbstractData to ITK volume
 int statsROI::update()
 {
-    int res = false;
+    int res = DTK_FAILURE;
     statsROIInternal internalHandler(this);
 
     if (this->input0)
