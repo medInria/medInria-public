@@ -19,7 +19,7 @@
 #include <vector>
 
 #if defined __APPLE__
-#include <ext/hash_map>
+#include <unordered_map>
 #else
 #include <hash_map>
 #endif
