@@ -169,7 +169,7 @@ void medMaskApplication::clearInput (int channel)
 
 int medMaskApplication::update()
 {
-    int res = EXIT_FAILURE;
+    int res = DTK_FAILURE;
 
     if ( !d->input ) return res;
 
@@ -229,7 +229,7 @@ int medMaskApplication::update()
 template <typename IMAGE>
 int medMaskApplication::updateMaskType()
 {
-    int res = EXIT_FAILURE;
+    int res = DTK_FAILURE;
 
     if ( !d->mask ) return res;
 
@@ -281,7 +281,6 @@ int medMaskApplication::updateMaskType()
                  <<", Error : pixel type not yet implemented ("
                  << id
                  << ")";
-        return EXIT_FAILURE;
     }
     return res;
 }
