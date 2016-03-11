@@ -27,9 +27,10 @@ public:
     itkMorphologicalFiltersProcessBase(itkMorphologicalFiltersProcessBase * parent = 0);
     itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other);
     virtual ~itkMorphologicalFiltersProcessBase(void);
-    
-public:
     void setParameter(double data, int channel);
+
+public slots:
+    int update ( void );
     
 private:
     DTK_DECLARE_PRIVATE(itkMorphologicalFiltersProcessBase)
