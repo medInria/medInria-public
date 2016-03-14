@@ -136,9 +136,10 @@ int itkXorOperator::update()
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
-        << id
-        << ")";
+        qDebug() << description()
+                 <<", Error : pixel type not yet implemented ("
+                 << id
+                 << ")";
     }
     return res;
 }
@@ -196,9 +197,10 @@ template <class ImageType> int itkXorOperator::run()
     }
     else
     {
-        qDebug() << "Error : pixel type not yet implemented ("
-        << id
-        << ")";
+        qDebug() << description()
+                 <<", Error : pixel type not yet implemented ("
+                 << id
+                 << ")";
     }
     return res;
 }

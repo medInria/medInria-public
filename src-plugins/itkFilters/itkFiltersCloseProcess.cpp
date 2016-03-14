@@ -93,7 +93,8 @@ int itkFiltersCloseProcess::update ( void )
         }
         else
         {
-            qDebug() << "Error : pixel type not yet implemented ("
+            qDebug() << description()
+                     <<", Error : pixel type not yet implemented ("
                      << id
                      << ")";
             return DTK_FAILURE;
