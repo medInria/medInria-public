@@ -13,7 +13,6 @@
 
 #include <medSegmentationPlugin.h>
 
-#include <medAlgorithmInitializer.h>
 #include <medAnnotationInteractor.h>
 
 #include <dtkLog/dtkLog.h>
@@ -49,7 +48,7 @@ bool medSegmentationPlugin::initialize()
 {
     if(!medAnnotationInteractor::registered())
         qDebug() << "Unable to register medAnnotationInteractor";
-    return medAlgorithmInitializer::initialize();
+    return true;
 }
 
 bool medSegmentationPlugin::uninitialize()
