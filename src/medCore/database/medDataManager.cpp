@@ -398,7 +398,7 @@ QPixmap medDataManager::thumbnail(const medDataIndex & index)
         pix = dbc->thumbnail(index);
     }
 
-    return pix.isNull() ? QPixmap(":/medGui/pixmaps/default_thumbnail.png") : pix;
+    return pix.isNull() ? QPixmap(":/pixmaps/default_thumbnail.png") : pix;
 }
 
 void medDataManager::setWriterPriorities()
