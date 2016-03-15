@@ -7,7 +7,6 @@
 #include <medImageMaskAnnotationData.h>
 #include <medIntParameter.h>
 #include <medSegmentationAbstractToolBox.h>
-#include <medViewEventFilter.h>
 
 #include <QVector3D>
 
@@ -152,9 +151,6 @@ protected:
 
     void copySliceFromMask3D(itk::Image<unsigned char,2>::Pointer copy,const char planeIndex,const char * direction,const unsigned int slice);
     void pasteSliceToMask3D(itk::Image<unsigned char,2>::Pointer image2D,const char planeIndex,const char * direction,const unsigned int slice);
-
-signals:
-    void installEventFilterRequest(medViewEventFilter *filter);
 
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;

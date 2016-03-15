@@ -15,6 +15,7 @@
 
 #include <medToolBox.h>
 #include <medCoreExport.h>
+#include <medViewEventFilter.h>
 
 class medAbstractData;
 class medSegmentationSelectorToolBox;
@@ -32,6 +33,9 @@ public:
     virtual dtkPlugin* plugin() = 0;
 
     virtual medAbstractData *processOutput() = 0;
+
+signals:
+    void installEventFilterRequest(medViewEventFilter *filter);
 
 protected:
     medSegmentationSelectorToolBox *segmentationToolBox();
