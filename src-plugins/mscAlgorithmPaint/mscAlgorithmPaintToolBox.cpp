@@ -1313,7 +1313,7 @@ void AlgorithmPaintToolBox::updateMouseInteraction() //Apply the current interac
 dtkPlugin* AlgorithmPaintToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "medSegmentationPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "mscAlgorithmPaint" );
     return plugin;
 }
 
