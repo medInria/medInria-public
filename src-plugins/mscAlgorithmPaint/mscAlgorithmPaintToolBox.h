@@ -7,8 +7,7 @@
 #include <medImageMaskAnnotationData.h>
 #include <medIntParameter.h>
 #include <medSegmentationAbstractToolBox.h>
-
-#include <QVector3D>
+#include <medViewEventFilter.h>
 
 #include <itkImage.h>
 #include <itkImageRegionIterator.h>
@@ -69,10 +68,10 @@ public:
     void setSeedPlanted(bool,MaskType::IndexType,unsigned int,double);
     void setSeed(QVector3D);
 
-    inline void setCurrentIdSlice(unsigned int id){currentIdSlice = id;};
-    inline unsigned int getCurrentIdSlice(){return currentIdSlice;};
-    inline void setCurrentPlaneIndex(unsigned int index){currentPlaneIndex = index;};
-    inline unsigned int getCurrentPlaneIndex(){return currentPlaneIndex;};
+    inline void setCurrentIdSlice(unsigned int id){currentIdSlice = id;}
+    inline unsigned int getCurrentIdSlice(){return currentIdSlice;}
+    inline void setCurrentPlaneIndex(unsigned int index){currentPlaneIndex = index;}
+    inline unsigned int getCurrentPlaneIndex(){return currentPlaneIndex;}
     void setParameter(int channel, int value);
     void setCurrentView(medAbstractImageView* view);
 
@@ -151,6 +150,12 @@ protected:
 
     void copySliceFromMask3D(itk::Image<unsigned char,2>::Pointer copy,const char planeIndex,const char * direction,const unsigned int slice);
     void pasteSliceToMask3D(itk::Image<unsigned char,2>::Pointer image2D,const char planeIndex,const char * direction,const unsigned int slice);
+
+signals:
+    void installEventFilterRequest(medViewEventFilter *filter);
+
+protected slots:
+    void addViewEventFilter(medViewEventFilter * filter );
 
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;

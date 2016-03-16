@@ -1,13 +1,18 @@
 #include <mscAlgorithmPaintToolBox.h>
 
-#include <medAbstractData.h>
+#include <itkConnectedThresholdImageFilter.h>
+#include <itkDanielssonDistanceMapImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkImageLinearIteratorWithIndex.h>
+#include <itkImageSliceIteratorWithIndex.h>
+#include <itkInvertIntensityImageFilter.h>
+#include <itkMinimumMaximumImageCalculator.h>
+#include <itkSubtractImageFilter.h>
+
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
-#include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medImageMaskAnnotationData.h>
-#include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medSegmentationSelectorToolBox.h>
@@ -15,34 +20,9 @@
 #include <medToolBoxFactory.h>
 #include <medUtilities.h>
 #include <medViewContainer.h>
-#include <medVtkViewBackend.h>
-
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkLog/dtkLog.h>
-#include <dtkCore/dtkGlobal.h>
+#include <medViewContainerManager.h>
 
 #include <vnl/vnl_cross.h>
-#include <vnl/vnl_vector.h>
-
-#include <itkImageRegionIterator.h>
-#include <itkConnectedThresholdImageFilter.h>
-#include <itkMinimumMaximumImageCalculator.h>
-#include <itkDanielssonDistanceMapImageFilter.h>
-#include <itkExtractImageFilter.h>
-
-#include <itkInvertIntensityImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkImageSliceIteratorWithIndex.h>
-#include <itkConstSliceIterator.h>
-#include <itkImageLinearIteratorWithIndex.h>
-
-#include <QtCore>
-#include <QColorDialog>
-
-#include <algorithm>
-#include <set>
-
-#include <limits>
 
 namespace msc
 {
@@ -458,6 +438,9 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     connect(reduceBrushSize_shortcut,SIGNAL(activated()),this,SLOT(reduceBrushSize()));
 
     maskHasBeenSaved = false;
+
+    connect(this, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
+            this, SLOT(addViewEventFilter(medViewEventFilter*)));
 }
 
 AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
@@ -2125,6 +2108,17 @@ void AlgorithmPaintToolBox::computeIntermediateSlice(Mask2dFloatType::Pointer di
         ++iti1;
         ++ito;
         ++itmask;
+    }
+}
+
+void AlgorithmPaintToolBox::addViewEventFilter( medViewEventFilter * filter)
+{
+    foreach(QUuid uuid, this->getWorkspace()->stackedViewContainers()->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        if(!container)
+            return;
+        filter->installOnView(container->view());
     }
 }
 
