@@ -2116,9 +2116,10 @@ void AlgorithmPaintToolBox::addViewEventFilter( medViewEventFilter * filter)
     foreach(QUuid uuid, this->getWorkspace()->stackedViewContainers()->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
-        if(!container)
-            return;
-        filter->installOnView(container->view());
+        if(container)
+        {
+            filter->installOnView(container->view());
+        }
     }
 }
 
