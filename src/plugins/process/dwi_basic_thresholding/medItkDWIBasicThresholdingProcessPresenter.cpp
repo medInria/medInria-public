@@ -53,8 +53,11 @@ QWidget *medItkDWIBasicThresholdingProcessPresenter::buildToolBoxWidget()
     thrLayout->addWidget(m_thresholdPresenter->buildWidget());
     tbLayout->addLayout(thrLayout);
 
-    tbLayout->addWidget(this->buildRunButton());
-    tbLayout->addWidget(this->buildCancelButton());
+    if (this->useRunControls())
+    {
+        tbLayout->addWidget(this->buildRunButton());
+        tbLayout->addWidget(this->buildCancelButton());
+    }
 
     return tbWidget;
 }

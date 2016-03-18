@@ -27,6 +27,7 @@ class medAbstractDWIMaskingProcessPresenterPrivate
 {
 public:
     medAbstractDWIMaskingProcess *process;
+    bool useRunControls;
 };
 
 medAbstractDWIMaskingProcessPresenter::medAbstractDWIMaskingProcessPresenter(medAbstractDWIMaskingProcess *parent)
@@ -42,14 +43,28 @@ medAbstractDWIMaskingProcessPresenter::~medAbstractDWIMaskingProcessPresenter()
 {
 }
 
+
+void medAbstractDWIMaskingProcessPresenter::setUseRunControls(bool useRun)
+{
+    d->useRunControls = useRun;
+}
+
+bool medAbstractDWIMaskingProcessPresenter::useRunControls()
+{
+    return d->useRunControls;
+}
+
 QWidget *medAbstractDWIMaskingProcessPresenter::buildToolBoxWidget()
 {
     QWidget *tbWidget = new QWidget;
     QVBoxLayout *tbLayout = new QVBoxLayout;
     tbWidget->setLayout(tbLayout);
 
-    tbLayout->addWidget(this->buildRunButton());
-    tbLayout->addWidget(this->buildCancelButton());
+    if (d->useRunControls)
+    {
+        tbLayout->addWidget(this->buildRunButton());
+        tbLayout->addWidget(this->buildCancelButton());
+    }
 
     return tbWidget;
 }

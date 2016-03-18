@@ -24,10 +24,10 @@
 
 #include <medCore.h>
 #include <medWidgets.h>
-#include <medAbstractDiffusionModelEstimationProcess.h>
+#include <medDiffusionModelEstimationMetaProcess.h>
 #include <medAbstractDiffusionScalarMapsProcess.h>
 #include <medAbstractTractographyProcess.h>
-#include <medAbstractDiffusionModelEstimationProcessPresenter.h>
+#include <medDiffusionModelEstimationMetaProcessPresenter.h>
 #include <medAbstractDiffusionScalarMapsProcessPresenter.h>
 #include <medAbstractTractographyProcessPresenter.h>
 
@@ -56,6 +56,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     d->currentProcessPresenter = 0;
     d->currentToolBox = 0;
     d->processOutput = 0;
+    d->methodCombo = 0;
     d->selectorType = type;
 
     // /////////////////////////////////////////////////////////////////
@@ -64,20 +65,44 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     QWidget *mainPage = new QWidget(this);
     QString labelTitle;
 
-    d->methodCombo = new QComboBox(mainPage);
-    // --- Setting up custom toolboxes list ---
-    d->methodCombo->addItem( tr( "Choose..." ) );
+    if (d->selectorType != Estimation)
+    {
+        d->methodCombo = new QComboBox(mainPage);
+        // --- Setting up custom toolboxes list ---
+        d->methodCombo->addItem( tr( "Choose..." ) );
+    }
+
+    d->mainLayout = new QVBoxLayout(mainPage);
+    QHBoxLayout *inputLayout = new QHBoxLayout;
+    QLabel *inputDescriptionLabel = new QLabel(mainPage);
+    inputDescriptionLabel->setText(tr("Input image:"));
+    inputLayout->addWidget(inputDescriptionLabel);
+
+    d->chooseInput = new QComboBox(mainPage);
+    d->chooseInput->addItem(tr("Please drop an image"));
+    d->chooseInput->setToolTip(tr("Browse available images for processing"));
+    d->chooseInput->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
+    connect(d->chooseInput,SIGNAL(currentIndexChanged(int)),this,SLOT(updateCurrentProcessInput(int)));
+    inputLayout->addWidget(d->chooseInput);
+    d->mainLayout->addLayout(inputLayout);
 
     switch(d->selectorType)
     {
         case Estimation:
-            labelTitle = tr("Estimation algorithm:");
-            foreach(QString pluginKey, medCore::diffusionModelEstimation::pluginFactory().keys())
-            {
-                medAbstractProcess *process = medCore::diffusionModelEstimation::pluginFactory().create(pluginKey);
-                d->methodCombo->addItem(process->caption(),pluginKey);
-            }
+        {
+            medDiffusionModelEstimationMetaProcess *process = new medDiffusionModelEstimationMetaProcess();
+            d->currentProcess = process;
+
+            connect(process, &medAbstractJob::finished, this, &medDiffusionSelectorToolBox::jobFinished);
+            connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
+
+            medDiffusionModelEstimationMetaProcessPresenter *processPresenter = new medDiffusionModelEstimationMetaProcessPresenter(process);
+            d->currentProcessPresenter = processPresenter;
+            d->currentToolBox = d->currentProcessPresenter->buildToolBoxWidget();
+            if (d->currentToolBox)
+                d->mainLayout->addWidget(d->currentToolBox);
             break;
+        }
 
         case ScalarMaps:
             labelTitle = tr("Scalar maps:");
@@ -100,27 +125,17 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     }
 
     QLabel *methodLabel = new QLabel(labelTitle, mainPage);
-    QHBoxLayout *methodLayout = new QHBoxLayout;
-    methodLayout->addWidget(methodLabel);
-    methodLayout->addWidget(d->methodCombo);
 
-    d->mainLayout = new QVBoxLayout(mainPage);
-    d->mainLayout->addLayout(methodLayout);
+    if (d->methodCombo)
+    {
+        QHBoxLayout *methodLayout = new QHBoxLayout;
+        methodLayout->addWidget(methodLabel);
 
-    connect(d->methodCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(chooseProcess(int)));
+        methodLayout->addWidget(d->methodCombo);
+        connect(d->methodCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(chooseProcess(int)));
 
-    QHBoxLayout *inputLayout = new QHBoxLayout;
-    QLabel *inputDescriptionLabel = new QLabel(mainPage);
-    inputDescriptionLabel->setText(tr("Input image:"));
-    inputLayout->addWidget(inputDescriptionLabel);
-    
-    d->chooseInput = new QComboBox(mainPage);
-    d->chooseInput->addItem(tr("Please drop an image"));
-	d->chooseInput->setToolTip(tr("Browse available images for processing"));
-    d->chooseInput->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
-    connect(d->chooseInput,SIGNAL(currentIndexChanged(int)),this,SLOT(updateCurrentProcessInput(int)));
-    inputLayout->addWidget(d->chooseInput);
-    d->mainLayout->addLayout(inputLayout);
+        d->mainLayout->addLayout(methodLayout);
+    }
 
     this->addWidget(mainPage);
     this->setEnabled(false);
@@ -144,16 +159,7 @@ void medDiffusionSelectorToolBox::chooseProcess(int id)
     {
         case Estimation:
         {
-            medAbstractDiffusionModelEstimationProcess *process = medCore::diffusionModelEstimation::pluginFactory().create(identifier);
-            d->currentProcess = process;
-
-            if (d->inputsMap[inputId])
-                process->setInput(d->inputsMap[inputId]);
-
-            connect(process, &medAbstractJob::finished, this, &medDiffusionSelectorToolBox::jobFinished);
-            connect(process,SIGNAL(running(bool)),this,SIGNAL(jobRunning(bool)));
-
-            d->currentProcessPresenter = medWidgets::diffusionModelEstimation::presenterFactory().create(process);
+            dtkWarn() << "Should not be here anymore: processes for estimation are handled inside the meta process";
             break;
         }
 
@@ -216,7 +222,7 @@ medAbstractData *medDiffusionSelectorToolBox::processOutput()
     {
         case Estimation:
         {
-            medAbstractDiffusionModelEstimationProcess *process = qobject_cast <medAbstractDiffusionModelEstimationProcess *> (d->currentProcess);
+            medDiffusionModelEstimationMetaProcess *process = qobject_cast <medDiffusionModelEstimationMetaProcess *> (d->currentProcess);
             d->processOutput = process->output();
             break;
         }
@@ -246,12 +252,12 @@ void medDiffusionSelectorToolBox::updateCurrentProcessInput(int index)
         return;
 
     QString inputId = d->chooseInput->itemData(index).toString();
-    
+
     switch(d->selectorType)
     {
         case Estimation:
         {
-            medAbstractDiffusionModelEstimationProcess *process = qobject_cast <medAbstractDiffusionModelEstimationProcess *> (d->currentProcess);
+            medDiffusionModelEstimationMetaProcess *process = qobject_cast <medDiffusionModelEstimationMetaProcess *> (d->currentProcess);
             medAbstractImageData *image = qobject_cast <medAbstractImageData *> (d->inputsMap[inputId]);
             process->setInput(image);
             break;

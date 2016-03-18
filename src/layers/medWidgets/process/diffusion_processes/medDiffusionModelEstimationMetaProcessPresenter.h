@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medAbstractProcessPresenter.h>
-#include <medAbstractDiffusionModelEstimationProcess.h>
+#include <medDiffusionModelEstimationMetaProcess.h>
 #include <medProcessPresenterFactory.h>
 
 #include <medWidgetsExport.h>
@@ -25,22 +25,21 @@ class QPushButton;
 class medViewContainerSplitter;
 class medAbstractData;
 
-class medAbstractDiffusionModelEstimationProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractDiffusionModelEstimationProcessPresenter : public medAbstractProcessPresenter
+class medDiffusionModelEstimationMetaProcessPresenterPrivate;
+class MEDWIDGETS_EXPORT medDiffusionModelEstimationMetaProcessPresenter : public medAbstractProcessPresenter
 {
     Q_OBJECT
 
 public:
-    medAbstractDiffusionModelEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent = NULL);
-    virtual ~medAbstractDiffusionModelEstimationProcessPresenter();
+    medDiffusionModelEstimationMetaProcessPresenter(medDiffusionModelEstimationMetaProcess *parent = NULL);
+    virtual ~medDiffusionModelEstimationMetaProcessPresenter();
 
     virtual QWidget *buildToolBoxWidget();
     virtual medViewContainerSplitter *buildViewContainerSplitter();
 
-    void setUseRunControls(bool useRun);
-    bool useRunControls();
+    virtual medDiffusionModelEstimationMetaProcess *process() const;
 
-    const QScopedPointer<medAbstractDiffusionModelEstimationProcessPresenterPrivate> d;
+    const QScopedPointer<medDiffusionModelEstimationMetaProcessPresenterPrivate> d;
 
 private slots:
     // TODO RDE - have to be moved later.
@@ -48,11 +47,9 @@ private slots:
 
     void _setInputFromContainer(medAbstractData *data);
 
-    void setInputGradientFile();
-    void setInputBValuesFile();
+    void chooseDWIMaskingPlugin(int processIndex);
+    void chooseEstimationPlugin(int processIndex);
 
 signals:
     void _outputImported(medAbstractData *);
 };
-
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDiffusionModelEstimationProcess, MEDWIDGETS_EXPORT)

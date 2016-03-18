@@ -34,6 +34,9 @@ public:
     medAbstractDWIMaskingProcessPresenter(medAbstractDWIMaskingProcess *parent = NULL);
     virtual ~medAbstractDWIMaskingProcessPresenter();
 
+    void setUseRunControls(bool useRun);
+    bool useRunControls();
+
     virtual QWidget *buildToolBoxWidget();
     virtual medViewContainerSplitter *buildViewContainerSplitter();
 

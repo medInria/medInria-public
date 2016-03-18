@@ -71,10 +71,6 @@ medViewContainerSplitter *medAbstractArithmeticOperationProcessPresenter::buildV
     medViewContainer * outputContainer = inputContainer1->splitVertically();
     medViewContainer* inputContainer2 = inputContainer1->splitHorizontally();
 
-
-
-
-
     inputContainer1->setDefaultWidget(new QLabel("INPUT 1"));
     inputContainer1->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer1->setUserSplittable(false);
@@ -84,8 +80,6 @@ medViewContainerSplitter *medAbstractArithmeticOperationProcessPresenter::buildV
     inputContainer2->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer2->setUserSplittable(false);
     inputContainer2->setMultiLayered(false);
-
-
 
     outputContainer->setDefaultWidget(new QLabel("OUTPUT"));
     outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
@@ -107,7 +101,6 @@ medViewContainerSplitter *medAbstractArithmeticOperationProcessPresenter::buildV
     return splitter;
 }
 
-
 void medAbstractArithmeticOperationProcessPresenter::_setInput1FromContainer(medAbstractData *data)
 {
     d->process->setInput1(qobject_cast<medAbstractImageData *>(data));
@@ -117,7 +110,6 @@ void medAbstractArithmeticOperationProcessPresenter::_setInput2FromContainer(med
 {
     d->process->setInput2(qobject_cast<medAbstractImageData *>(data));
 }
-
 
 void medAbstractArithmeticOperationProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {
