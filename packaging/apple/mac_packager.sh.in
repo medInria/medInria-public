@@ -33,11 +33,6 @@ done
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
-cd medInria.app/Contents
-
-cp -p @Qt5_DIR@/../../../plugins/imageformats/libqsvg.dylib PlugIns/imageformats/
-cp -r @Qt5_DIR@/../../QtSvg.framework Frameworks
-
 #Run fancy packaging apple script
 
 \cp -f @medInria_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @PROJECT_BINARY_DIR@/MedinriaPackage.sparseimage.gz
