@@ -24,6 +24,9 @@ public:
 
     medAbstractDiffusionModelEstimationProcess::VectorType bvalues;
     medAbstractDiffusionModelEstimationProcess::GradientsVectorType gradients;
+
+    QString gradientsFileName;
+    bool gradientsInImageCoordinates;
 };
 
 medAbstractDiffusionModelEstimationProcess::medAbstractDiffusionModelEstimationProcess(QObject *parent)
@@ -50,12 +53,19 @@ void medAbstractDiffusionModelEstimationProcess::setInput(medAbstractImageData *
 
 void medAbstractDiffusionModelEstimationProcess::setGradients(QString fileName, bool gradsInImageCoords)
 {
+    d->gradientsFileName = fileName;
+    d->gradientsInImageCoordinates = gradsInImageCoords;
+}
+
+void medAbstractDiffusionModelEstimationProcess::extractGradientsFromInformation()
+{
+    // Requires input to be here
     medDiffusionGradientReader grReader;
-    grReader.readGradients(fileName);
+    grReader.readGradients(d->gradientsFileName);
 
     d->gradients = grReader.gradients();
 
-    if (!gradsInImageCoords)
+    if (!d->gradientsInImageCoordinates)
     {
         medAbstractImageData::MatrixType orientationMatrix;
         orientationMatrix = d->input->orientationMatrix();

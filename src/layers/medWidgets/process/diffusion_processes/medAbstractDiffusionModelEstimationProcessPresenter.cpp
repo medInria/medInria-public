@@ -33,12 +33,15 @@ public:
     medAbstractDiffusionModelEstimationProcess *process;
     QLabel *gradientFileLabel;
     QLabel *bvaluesFileLabel;
+    bool gradientsInImageCoordinates;
+    bool useRunControls;
 };
 
 medAbstractDiffusionModelEstimationProcessPresenter::medAbstractDiffusionModelEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent)
     : medAbstractProcessPresenter(parent), d(new medAbstractDiffusionModelEstimationProcessPresenterPrivate)
 {
     d->process = parent;
+    d->useRunControls = true;
 
     connect(d->process, &medAbstractDiffusionModelEstimationProcess::finished,
             this, &medAbstractDiffusionModelEstimationProcessPresenter::_importOutput,
@@ -47,6 +50,16 @@ medAbstractDiffusionModelEstimationProcessPresenter::medAbstractDiffusionModelEs
 
 medAbstractDiffusionModelEstimationProcessPresenter::~medAbstractDiffusionModelEstimationProcessPresenter()
 {
+}
+
+void medAbstractDiffusionModelEstimationProcessPresenter::setUseRunControls(bool useRun)
+{
+    d->useRunControls = useRun;
+}
+
+bool medAbstractDiffusionModelEstimationProcessPresenter::useRunControls()
+{
+    return d->useRunControls;
 }
 
 QWidget *medAbstractDiffusionModelEstimationProcessPresenter::buildToolBoxWidget()
@@ -93,8 +106,11 @@ QWidget *medAbstractDiffusionModelEstimationProcessPresenter::buildToolBoxWidget
 
     tbLayout->addLayout(bvaluesFileLayout);
 
-    tbLayout->addWidget(this->buildRunButton());
-    tbLayout->addWidget(this->buildCancelButton());
+    if (d->useRunControls)
+    {
+        tbLayout->addWidget(this->buildRunButton());
+        tbLayout->addWidget(this->buildCancelButton());
+    }
 
     return tbWidget;
 }
@@ -136,12 +152,6 @@ void medAbstractDiffusionModelEstimationProcessPresenter::_importOutput(medAbstr
 
 void medAbstractDiffusionModelEstimationProcessPresenter::setInputGradientFile()
 {
-    if (!d->process->input())
-    {
-        dtkWarn() << "Select an input DWI first";
-        return;
-    }
-
     QFileDialog *gradientFileDialog = new QFileDialog(0, tr("Choose a gradient file"));
     gradientFileDialog->setOption(QFileDialog::DontUseNativeDialog);
     gradientFileDialog->setAcceptMode(QFileDialog::AcceptOpen);

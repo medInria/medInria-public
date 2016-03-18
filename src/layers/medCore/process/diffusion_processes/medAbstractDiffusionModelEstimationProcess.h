@@ -47,6 +47,9 @@ public:
     GradientsVectorType gradients() const;
 
 protected:
+    //! Required as it needs the input to be set, mandatory in run method to access gradients
+    void extractGradientsFromInformation();
+
     void setOutput(medAbstractDiffusionModelImageData* data);
     virtual QString outputNameAddon() const {return "models";}
 

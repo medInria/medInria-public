@@ -66,7 +66,7 @@ void medItkDWIBasicThresholdingProcess::setInput(medAbstractImageData* data)
 
 QString medItkDWIBasicThresholdingProcess::caption() const
 {
-    return "Itk DWI basic thresholding process";
+    return "DWI basic thresholding";
 }
 
 QString medItkDWIBasicThresholdingProcess::description() const
