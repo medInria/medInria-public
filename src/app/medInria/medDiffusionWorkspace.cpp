@@ -145,7 +145,10 @@ void medDiffusionWorkspace::updateRunningFlags(bool running)
     d->processRunning = running;
     this->tabbedViewContainers()->setEnabled(!running);
 
-    d->diffusionEstimationToolBox->setEnabled(!running);
+    QObject* senderToolbox = sender();
+    if (senderToolbox != d->diffusionEstimationToolBox)
+        d->diffusionEstimationToolBox->setEnabled(!running);
+
     d->diffusionScalarMapsToolBox->setEnabled(!running);
     d->diffusionTractographyToolBox->setEnabled(!running);
 }
