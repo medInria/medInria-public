@@ -1243,6 +1243,8 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
         // Update Mouse Interaction ToolBox
         view->setCurrentLayer(0);
         getWorkspace()->updateMouseInteractionToolBox();
+
+        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clearMask()), Qt::UniqueConnection);
     }
 
     m_maskAnnotationData->invokeModified();
