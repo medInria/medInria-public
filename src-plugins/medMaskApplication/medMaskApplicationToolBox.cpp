@@ -153,7 +153,7 @@ void medMaskApplicationToolBox::run()
     }
     else
     {
-        medMessageController::instance()->showError(tr("Mask Application needs a volume and a mask"),3000);
+        medMessageController::instance()->showError(tr("Drop a volume in the view and a mask in the drop area"),3000);
     }
 }
 

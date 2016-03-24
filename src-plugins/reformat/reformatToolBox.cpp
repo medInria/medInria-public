@@ -192,7 +192,7 @@ void reformatToolBox::startReformat()
     }
     else
     {
-        medMessageController::instance()->showError(tr("Reformat needs a volume"),3000);
+        medMessageController::instance()->showError(tr("Drop a volume in the view"),3000);
     }
 }
 
