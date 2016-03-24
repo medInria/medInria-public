@@ -190,6 +190,10 @@ void reformatToolBox::startReformat()
         d->workspace->stackedViewContainers()->removeTab(1);
         updateView();
     }
+    else
+    {
+        medMessageController::instance()->showError(tr("Reformat needs a volume"),3000);
+    }
 }
 
 void reformatToolBox::stopReformat()

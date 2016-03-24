@@ -35,6 +35,7 @@
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medDropSite.h>
+#include <medMessageController.h>
 
 class medMaskApplicationToolBoxPrivate
 {
@@ -149,6 +150,10 @@ void medMaskApplicationToolBox::run()
 
         medJobManager::instance()->registerJobItem(runProcess);
         QThreadPool::globalInstance()->start(runProcess);
+    }
+    else
+    {
+        medMessageController::instance()->showError(tr("Mask Application needs a volume and a mask"),3000);
     }
 }
 
