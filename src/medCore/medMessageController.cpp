@@ -33,7 +33,7 @@ medMessage::medMessage( QWidget *parent,
     info = new QLabel(this);
     info->setText(text);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    QHBoxLayout *layout = new QHBoxLayout();
     layout->setAlignment(Qt::AlignLeft);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(5);
@@ -95,7 +95,7 @@ medMessageError::medMessageError(
         medMessage(parent, text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/exclamation.png"));
-    this->setFixedWidth(350);
+    this->setFixedWidth(500);
 }
 
 medMessageError::~medMessageError(void)
