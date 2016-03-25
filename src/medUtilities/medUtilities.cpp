@@ -145,7 +145,7 @@ void medUtilities::applyInverseOrientationMatrix(medAbstractView* view, double* 
     std::copy(homogeneousVector, homogeneousVector + 3, outPoint);
 }
 
-void medUtilities::switchToVolumeRendering(medAbstractView *view)
+void medUtilities::switchTo3D(medAbstractView *view, QString mode3D)
 {
     if (view)
     {
@@ -176,7 +176,7 @@ void medUtilities::switchToVolumeRendering(medAbstractView *view)
                 break;
             }
         }
-        mode3DParam->setValue("VR");
+        mode3DParam->setValue(mode3D);
         renderer3DParam->setValue("Ray Cast");
     }
 }
