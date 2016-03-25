@@ -151,10 +151,6 @@ protected:
     void copySliceFromMask3D(itk::Image<unsigned char,2>::Pointer copy,const char planeIndex,const char * direction,const unsigned int slice);
     void pasteSliceToMask3D(itk::Image<unsigned char,2>::Pointer image2D,const char planeIndex,const char * direction,const unsigned int slice);
 
-signals:
-    void installEventFilterRequest(medViewEventFilter *filter);
-
-protected slots:
     void addViewEventFilter(medViewEventFilter * filter );
 
 private:

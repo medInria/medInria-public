@@ -438,9 +438,6 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     connect(reduceBrushSize_shortcut,SIGNAL(activated()),this,SLOT(reduceBrushSize()));
 
     maskHasBeenSaved = false;
-
-    connect(this, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
-            this, SLOT(addViewEventFilter(medViewEventFilter*)));
 }
 
 AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
@@ -496,7 +493,7 @@ void AlgorithmPaintToolBox::activateStroke()
     updateButtons();
     this->m_magicWandButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this) );
-    emit installEventFilterRequest(m_viewFilter);
+    addViewEventFilter(m_viewFilter);
     addBrushSize_shortcut->setEnabled(true);
     reduceBrushSize_shortcut->setEnabled(true);
 
@@ -569,7 +566,7 @@ void AlgorithmPaintToolBox::activateMagicWand()
     updateButtons();
     this->m_strokeButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this) );
-    emit installEventFilterRequest(m_viewFilter);
+    addViewEventFilter(m_viewFilter);
     deactivateCustomedCursor();
 }
 
@@ -1289,7 +1286,7 @@ void AlgorithmPaintToolBox::updateMouseInteraction() //Apply the current interac
     if (m_paintState != PaintState::None)
     {
         m_viewFilter = ( new ClickAndMoveEventFilter(this) );
-        emit installEventFilterRequest(m_viewFilter);
+        addViewEventFilter(m_viewFilter);
     }
 }
 
