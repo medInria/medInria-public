@@ -251,10 +251,6 @@ void reformatToolBox::updateView()
     }
 }
 
-void reformatToolBox::actOnContainerChange(const QString & name)
-{
-}
-
 void reformatToolBox::displayInfoOnCurrentView()
 {
     vtkImageView2D * view2d = static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D;
