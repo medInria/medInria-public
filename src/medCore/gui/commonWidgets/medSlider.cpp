@@ -13,19 +13,12 @@
 
 #include "medSlider.h"
 
-
-medSlider::medSlider() : QSlider()
-{
-}
-
-medSlider::~medSlider()
-{
-}
-
 void medSlider::addTick(int position)
 {
     if(!ticksList.contains(position))
+    {
         ticksList.append(position);
+    }
 }
 
 void medSlider::removeTick(int position)

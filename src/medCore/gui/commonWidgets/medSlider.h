@@ -22,8 +22,8 @@ class medSlider : public QSlider
     Q_OBJECT
 
 public:
-    medSlider();
-    ~medSlider();
+    medSlider(){}
+    ~medSlider(){}
 
 public slots:
     void addTick(int position);
