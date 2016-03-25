@@ -26,11 +26,9 @@
 #include <medAbstractView.h>
 #include <medDataManager.h>
 #include <medDropSite.h>
-//<<<<<<< HEAD
-#include <medMessageController.h>
-/*=======
 #include <medFilteringSelectorToolBox.h>
 #include <medJobManager.h>
+#include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
@@ -38,7 +36,6 @@
 #include <medTimeLineParameter.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
->>>>>>> [medMaskApplication] allow extraction of 4d volumes*/
 
 class medMaskApplicationToolBoxPrivate
 {
