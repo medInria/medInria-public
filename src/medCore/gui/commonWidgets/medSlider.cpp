@@ -38,7 +38,8 @@ void medSlider::removeAllTicks()
     ticksList.clear();
 }
 
-void medSlider::paintEvent(QPaintEvent *ev) {
+void medSlider::paintEvent(QPaintEvent *ev)
+{
 
     QSlider::paintEvent(ev);
 

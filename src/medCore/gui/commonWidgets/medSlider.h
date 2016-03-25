@@ -17,7 +17,8 @@
 #include <QtGui>
 
 
-class medSlider : public QSlider{
+class medSlider : public QSlider
+{
     Q_OBJECT
 
 public:
