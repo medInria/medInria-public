@@ -27,10 +27,12 @@ void medSlider::addTick(int position)
     if(!ticksList.contains(position))
         ticksList.append(position);
 }
+
 void medSlider::removeTick(int position)
 {
     ticksList.removeAll(position);
 }
+
 void medSlider::removeAllTicks()
 {
     ticksList.clear();
