@@ -140,7 +140,7 @@ bool vtkDataMeshReader::read(const QString& path) {
                 dataSet->Read(path.toLocal8Bit().constData());
             } catch (...)
             {
-                qDebug() << "vtkDataMeshReader::read -> loading the vtkDataMesh failed, error while parsing !";
+                qDebug() << "vtkDataMeshReader::read -> loading the vtkDataMesh failed";
                 return false;
             }
         }
