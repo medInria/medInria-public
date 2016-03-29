@@ -126,31 +126,6 @@ void medMaskApplicationToolBox::run()
 {
     if (d->mask && this->parentToolBox()->data())
     {
-        // check for 4d volumes
-        medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();
-        QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
-        medAbstractView *view=NULL;
-        for(int i=0;i<containersInTabSelected.length();i++)
-        {
-            if (containersInTabSelected[i]->isSelected())
-            {
-                view = containersInTabSelected[i]->view();
-                break;
-            }
-        }
-        int frame = 0;
-        if (view)
-        {
-            medAbstractImageView * medView = dynamic_cast<medAbstractImageView *> (view);
-            medTimeLineParameter * timeLine = medView->timeLineParameter();
-            if (timeLine)
-            {
-                // get the current frame
-                frame = timeLine->frame();
-            }
-        }
-
-
         if(!d->process)
         {
             d->process= new medMaskApplication;
@@ -158,7 +133,6 @@ void medMaskApplicationToolBox::run()
         d->process->setInput(d->mask, 0);
         d->process->setInput(this->parentToolBox()->data(), 1);
         d->process->setParameter(d->backgroundSpinBox->value(), 0);
-        d->process->setParameter((double)frame, 1);
 
         medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);

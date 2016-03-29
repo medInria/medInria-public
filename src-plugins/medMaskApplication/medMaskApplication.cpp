@@ -24,7 +24,6 @@
 #include <medMetaDataKeys.h>
 #include <medUtilities.h>
 
-#include <itkExtractImageFilter.h>
 #include <itkMaskImageFilter.h>
 #include <itkMinimumMaximumImageCalculator.h>
 
@@ -39,22 +38,11 @@ public:
     dtkSmartPointer <medAbstractData> input;
     dtkSmartPointer <medAbstractData> output;
     double maskBackgroundValue;
-    int frame;
 
     template <class ImagePixelType, class MaskPixelType> int update()
     {
         if (input->data() && mask->data())
         {
-            // Extract 3d from 4d volumes thanks to the frame number
-            if (input->identifier().contains("4"))
-            {
-                extract4dto3d<ImagePixelType>(0, input->identifier());
-            }
-            if (mask->identifier().contains("4"))
-            {
-                extract4dto3d<MaskPixelType>(1, mask->identifier());
-            }
-
             typedef itk::Image<ImagePixelType, 3 > ImageType;
             typedef itk::Image<MaskPixelType,  3 > MaskType;
 
@@ -96,58 +84,6 @@ public:
         }
         return DTK_FAILURE;
     }
-
-    template <class MaskPixelType> void extract4dto3d(int dataNumber, QString identifier)
-    {
-        typedef itk::Image <MaskPixelType, 3> Mask3dType;
-        typedef itk::Image <MaskPixelType, 4> Mask4dType;
-
-        typename Mask4dType::Pointer mask4dInput;
-        if (!dataNumber)
-            mask4dInput = dynamic_cast<Mask4dType *>  ( ( itk::Object* ) ( input->data() )) ;
-        else
-            mask4dInput = dynamic_cast<Mask4dType *>  ( ( itk::Object* ) ( mask->data() )) ;
-
-        // 3d start
-        typename Mask4dType::IndexType desiredStart;
-        desiredStart.Fill(0);
-        desiredStart[3] = frame;
-
-        // 3d size
-        typename Mask4dType::SizeType desiredSize = mask4dInput->GetLargestPossibleRegion().GetSize();
-        desiredSize[3] = 0;
-
-        typename Mask4dType::RegionType desiredRegion(desiredStart, desiredSize);
-
-        typedef itk::ExtractImageFilter < Mask4dType, Mask3dType > MaskExtract3DType;
-        typename MaskExtract3DType::Pointer extractMask = MaskExtract3DType::New();
-        extractMask->SetExtractionRegion(desiredRegion);
-        extractMask->SetInput(mask4dInput);
-        extractMask->SetDirectionCollapseToIdentity();
-        extractMask->Update();
-
-        // Create a new 3d identifier
-        QString newId = identifier;
-        newId.remove("4");
-        newId.append("3");
-
-        // Needed to keep metadata
-        dtkSmartPointer <medAbstractData> extractOutput = medAbstractDataFactory::instance()->createSmartPointer ( newId );
-        extractOutput->setData(extractMask->GetOutput());
-
-        if (!dataNumber)
-        {
-            medUtilities::setDerivedMetaData(extractOutput, input, "");
-            input = extractOutput;
-            medUtilities::setDerivedMetaData(input, extractOutput, "");
-        }
-        else
-        {
-            medUtilities::setDerivedMetaData(extractOutput, mask, "");
-            mask = extractOutput;
-            medUtilities::setDerivedMetaData(mask, extractOutput, "");
-        }
-    }
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -160,8 +96,6 @@ medMaskApplication::medMaskApplication() : medAbstractProcess(), d(new medMaskAp
     d->mask   = NULL;
     d->output = NULL;
     d->maskBackgroundValue = 0;
-    d->frame = 0;
-
 }
 
 medMaskApplication::~medMaskApplication()
@@ -195,11 +129,6 @@ void medMaskApplication::setInput ( medAbstractData *data, int channel)
         QString identifier = data->identifier();
         if (!identifier.isEmpty())
         {
-            if (identifier.contains("4"))
-            {
-                identifier.remove("4");
-                identifier.append("3");
-            }
             d->output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
         }
         else
@@ -212,13 +141,9 @@ void medMaskApplication::setInput ( medAbstractData *data, int channel)
 
 void medMaskApplication::setParameter ( double data, int channel)
 {
-    if(channel == 0)
+    if(!channel)
     {
         d->maskBackgroundValue = data;
-    }
-    else if (channel == 1)
-    {
-        d->frame = (int)data;
     }
 }
 
@@ -244,43 +169,43 @@ int medMaskApplication::update()
     {
         QString id = d->input->identifier();
 
-        if ( id.contains("itkDataImageChar") )
+        if ( id == "itkDataImageChar3" )
         {
             res = updateMaskType<char>();
         }
-        else if ( id.contains("itkDataImageUChar") )
+        else if ( id == "itkDataImageUChar3" )
         {
             res = updateMaskType<unsigned char>();
         }
-        else if ( id.contains("itkDataImageShort") )
+        else if ( id == "itkDataImageShort3" )
         {
             res = updateMaskType<short>();
         }
-        else if ( id.contains("itkDataImageUShort") )
+        else if ( id == "itkDataImageUShort3" )
         {
             res = updateMaskType<unsigned short>();
         }
-        else if ( id.contains("itkDataImageInt") )
+        else if ( id == "itkDataImageInt3" )
         {
             res = updateMaskType<int>();
         }
-        else if ( id.contains("itkDataImageUInt") )
+        else if ( id == "itkDataImageUInt3" )
         {
             res = updateMaskType<unsigned int>();
         }
-        else if ( id.contains("itkDataImageLong") )
+        else if ( id == "itkDataImageLong3" )
         {
             res = updateMaskType<long>();
         }
-        else if ( id.contains("itkDataImageULong") )
+        else if ( id== "itkDataImageULong3" )
         {
             res = updateMaskType<unsigned long>();
         }
-        else if ( id.contains("itkDataImageFloat") )
+        else if ( id == "itkDataImageFloat3" )
         {
             res = updateMaskType<float>();
         }
-        else if ( id.contains("itkDataImageDouble") )
+        else if ( id == "itkDataImageDouble3" )
         {
             res = updateMaskType<double>();
         }
@@ -304,43 +229,43 @@ int medMaskApplication::updateMaskType()
     {
         QString id = d->mask->identifier();
 
-        if ( id.contains("itkDataImageChar") )
+        if ( id == "itkDataImageChar3" )
         {
             res = d->update<IMAGE, char>();
         }
-        else if ( id.contains("itkDataImageUChar") )
+        else if ( id == "itkDataImageUChar3" )
         {
             res = d->update<IMAGE, unsigned char>();
         }
-        else if ( id.contains("itkDataImageShort") )
+        else if ( id == "itkDataImageShort3" )
         {
             res = d->update<IMAGE, short>();
         }
-        else if ( id.contains("itkDataImageUShort") )
+        else if ( id == "itkDataImageUShort3" )
         {
             res = d->update<IMAGE, unsigned short>();
         }
-        else if ( id.contains("itkDataImageInt") )
+        else if ( id == "itkDataImageInt3" )
         {
             res = d->update<IMAGE, int>();
         }
-        else if ( id.contains("itkDataImageUInt") )
+        else if ( id == "itkDataImageUInt3" )
         {
             res = d->update<IMAGE, unsigned int>();
         }
-        else if ( id.contains("itkDataImageLong") )
+        else if ( id == "itkDataImageLong3" )
         {
             res = d->update<IMAGE, long>();
         }
-        else if ( id.contains("itkDataImageULong") )
+        else if ( id== "itkDataImageULong3" )
         {
             res = d->update<IMAGE, unsigned long>();
         }
-        else if ( id.contains("itkDataImageFloat") )
+        else if ( id == "itkDataImageFloat3" )
         {
             res = d->update<IMAGE, float>();
         }
-        else if ( id.contains("itkDataImageDouble") )
+        else if ( id == "itkDataImageDouble3" )
         {
             res = d->update<IMAGE, double>();
         }
