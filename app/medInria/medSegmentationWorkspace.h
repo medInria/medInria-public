@@ -15,10 +15,6 @@
 
 #include <medAbstractWorkspace.h>
 
-
-class medAbstractView;
-class medViewEventFilter;
-
 class medSegmentationWorkspacePrivate;
 class medSegmentationSelectorToolBox;
 
@@ -45,10 +41,7 @@ public:
     medSegmentationSelectorToolBox * segmentationToobox();
 
 protected slots:
-    void addViewEventFilter(medViewEventFilter * filter );
-
     void onSuccess();
-
 
 private:
     medSegmentationWorkspacePrivate *d;

@@ -1,13 +1,18 @@
 #include <mscAlgorithmPaintToolBox.h>
 
-#include <medAbstractData.h>
+#include <itkConnectedThresholdImageFilter.h>
+#include <itkDanielssonDistanceMapImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkImageLinearIteratorWithIndex.h>
+#include <itkImageSliceIteratorWithIndex.h>
+#include <itkInvertIntensityImageFilter.h>
+#include <itkMinimumMaximumImageCalculator.h>
+#include <itkSubtractImageFilter.h>
+
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
-#include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medImageMaskAnnotationData.h>
-#include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medSegmentationSelectorToolBox.h>
@@ -15,34 +20,9 @@
 #include <medToolBoxFactory.h>
 #include <medUtilities.h>
 #include <medViewContainer.h>
-#include <medVtkViewBackend.h>
-
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkLog/dtkLog.h>
-#include <dtkCore/dtkGlobal.h>
+#include <medViewContainerManager.h>
 
 #include <vnl/vnl_cross.h>
-#include <vnl/vnl_vector.h>
-
-#include <itkImageRegionIterator.h>
-#include <itkConnectedThresholdImageFilter.h>
-#include <itkMinimumMaximumImageCalculator.h>
-#include <itkDanielssonDistanceMapImageFilter.h>
-#include <itkExtractImageFilter.h>
-
-#include <itkInvertIntensityImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkImageSliceIteratorWithIndex.h>
-#include <itkConstSliceIterator.h>
-#include <itkImageLinearIteratorWithIndex.h>
-
-#include <QtCore>
-#include <QColorDialog>
-
-#include <algorithm>
-#include <set>
-
-#include <limits>
 
 namespace msc
 {
@@ -513,7 +493,7 @@ void AlgorithmPaintToolBox::activateStroke()
     updateButtons();
     this->m_magicWandButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this) );
-    emit installEventFilterRequest(m_viewFilter);
+    addViewEventFilter(m_viewFilter);
     addBrushSize_shortcut->setEnabled(true);
     reduceBrushSize_shortcut->setEnabled(true);
 
@@ -586,7 +566,7 @@ void AlgorithmPaintToolBox::activateMagicWand()
     updateButtons();
     this->m_strokeButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this) );
-    emit installEventFilterRequest(m_viewFilter);
+    addViewEventFilter(m_viewFilter);
     deactivateCustomedCursor();
 }
 
@@ -1308,7 +1288,7 @@ void AlgorithmPaintToolBox::updateMouseInteraction() //Apply the current interac
     if (m_paintState != PaintState::None)
     {
         m_viewFilter = ( new ClickAndMoveEventFilter(this) );
-        emit installEventFilterRequest(m_viewFilter);
+        addViewEventFilter(m_viewFilter);
     }
 }
 
@@ -2127,6 +2107,18 @@ void AlgorithmPaintToolBox::computeIntermediateSlice(Mask2dFloatType::Pointer di
         ++iti1;
         ++ito;
         ++itmask;
+    }
+}
+
+void AlgorithmPaintToolBox::addViewEventFilter( medViewEventFilter * filter)
+{
+    foreach(QUuid uuid, this->getWorkspace()->stackedViewContainers()->containersSelected())
+    {
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        if(container)
+        {
+            filter->installOnView(container->view());
+        }
     }
 }
 
