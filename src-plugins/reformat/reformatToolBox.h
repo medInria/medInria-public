@@ -8,9 +8,9 @@ class reformatToolBoxPrivate;
 
 class REFORMATPLUGIN_EXPORT reformatToolBox : public medSegmentationAbstractToolBox
 {
-    Q_OBJECT;
+    Q_OBJECT
 
-    MED_TOOLBOX_INTERFACE("reformatToolBox","used to reformat an image", << "reformat");
+    MED_TOOLBOX_INTERFACE("reformatToolBox","used to reformat an image", << "reformat")
         
 public:
     reformatToolBox(QWidget *parentToolBox = 0);
@@ -28,7 +28,6 @@ public slots:
     void startReformat();
     void stopReformat();
     void updateView();
-    void actOnContainerChange(const QString&);
     void displayInfoOnCurrentView();
     void saveReformatedImage();
     void generateReformatedImage();
