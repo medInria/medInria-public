@@ -78,7 +78,7 @@ medMessageInfo::medMessageInfo(
         medMessage(parent,text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/information.png"));
-    this->setFixedWidth(200);
+    this->setFixedWidth(500);
 }
 
 medMessageInfo::~medMessageInfo(void)
