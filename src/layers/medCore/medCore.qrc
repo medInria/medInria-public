@@ -25,5 +25,9 @@
         <file>process/single_filter/medAbstractAddFilterProcess.json</file>
         <file>process/single_filter/medAbstractImageDenoisingProcess.json</file>
         <file>process/single_filter/medAbstractSymmetryPlaneAlignmentProcess.json</file>
+        <file>process/medGenericReaderNode.json</file>
+        <file>process/medGenericWriterNode.json</file>
+        <file>process/medImageReaderNode.json</file>
+        <file>process/medMeshReaderNode.json</file>
     </qresource>
 </RCC>
