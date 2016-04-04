@@ -44,6 +44,9 @@ public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;
 
+signals:
+  void showError(QString, uint);
+
 private:
     using dtkAbstractProcess::onCanceled;
     using dtkAbstractProcess::read;

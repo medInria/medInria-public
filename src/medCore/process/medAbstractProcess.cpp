@@ -17,11 +17,12 @@
 
 medAbstractProcess::medAbstractProcess(medAbstractProcess * parent) : dtkAbstractProcess(*new medAbstractProcessPrivate(this), parent)
 {
+    connect(this, SIGNAL(showError(QString, uint)), medMessageController::instance(), SLOT(showError(QString,uint)));
 }
 
 medAbstractProcess::medAbstractProcess(const medAbstractProcess& other) : dtkAbstractProcess(*new medAbstractProcessPrivate(*other.d_func()), other)
 {
-    
+    connect(this, SIGNAL(showError(QString, uint)), medMessageController::instance(), SLOT(showError(QString,uint)));
 }
 
 medAbstractProcess::~medAbstractProcess()
@@ -40,7 +41,7 @@ void medAbstractProcess::displayVolumeError(QString id)
         error = "Pixel type not yet implemented (" + id + ")";
     }
     qDebug() << description() + ": " + error;
-    medMessageController::instance()->showError(error, 3000);
+    emit showError(error, 3000);
 }
 
 int medAbstractProcess::isMeshTypeError(QString id)
@@ -49,7 +50,7 @@ int medAbstractProcess::isMeshTypeError(QString id)
     {
         QString error = "This toolbox is designed to be used with meshes";
         qDebug() << description() + ": " + error;
-        medMessageController::instance()->showError(error, 3000);
+        emit showError(error, 3000);
 
         return DTK_FAILURE;
     }
