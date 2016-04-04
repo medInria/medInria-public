@@ -29,6 +29,7 @@
 #include <medAbstractMedianFilterProcess.h>
 #include <medAbstractMultiplyFilterProcess.h>
 #include <medAbstractNormalizeFilterProcess.h>
+#include <medAbstractSymmetryPlaneAlignmentProcess.h>
 #include <medAbstractShrinkFilterProcess.h>
 #include <medAbstractSubtractFilterProcess.h>
 #include <medAbstractWindowingFilterProcess.h>
@@ -145,6 +146,11 @@ namespace medCore
         namespace imageDenoising
         {
             MEDCORE_EXPORT medAbstractImageDenoisingProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace symmetryAlignment
+        {
+            MEDCORE_EXPORT medAbstractSymmetryPlaneAlignmentProcessPluginFactory& pluginFactory(void);
         }
     }
 

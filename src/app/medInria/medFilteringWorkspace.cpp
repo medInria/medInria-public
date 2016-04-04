@@ -45,6 +45,7 @@ struct SingleFiltersGathering
     medAbstractSubtractFilterProcessPluginFactory* subtractFactory;
     medAbstractWindowingFilterProcessPluginFactory* windowingFactory;
     medAbstractImageDenoisingProcessPluginFactory* denoisingFactory;
+    medAbstractSymmetryPlaneAlignmentProcessPluginFactory* symmetryFactory;
 
     medAbstractAddFilterProcessPresenterFactory* addFactoryPresenter;
     medAbstractDivideFilterProcessPresenterFactory* divideFactoryPresenter;
@@ -57,6 +58,7 @@ struct SingleFiltersGathering
     medAbstractSubtractFilterProcessPresenterFactory* subtractFactoryPresenter;
     medAbstractWindowingFilterProcessPresenterFactory* windowingFactoryPresenter;
     medAbstractImageDenoisingProcessPresenterFactory* denoisingFactoryPresenter;
+    medAbstractSymmetryPlaneAlignmentProcessPresenterFactory* symmetryFactoryPresenter;
 
     QString pluginKey;
     medAbstractProcess* myProcess;
@@ -74,6 +76,7 @@ struct SingleFiltersGathering
         subtractFactory = 0;
         windowingFactory = 0;
         denoisingFactory = 0;
+        symmetryFactory = 0;
 
         addFactoryPresenter = 0;
         divideFactoryPresenter = 0;
@@ -86,6 +89,7 @@ struct SingleFiltersGathering
         subtractFactoryPresenter = 0;
         windowingFactoryPresenter = 0;
         denoisingFactoryPresenter = 0;
+        symmetryFactoryPresenter = 0;
 
         myProcess = 0;
     }
@@ -125,6 +129,9 @@ struct SingleFiltersGathering
         else if(denoisingFactory)
             myProcess = denoisingFactory->create(pluginKey);
 
+        else if(symmetryFactory)
+            myProcess = symmetryFactory->create(pluginKey);
+
         return myProcess;
     }
 
@@ -162,6 +169,9 @@ struct SingleFiltersGathering
 
         else if(denoisingFactoryPresenter)
             return denoisingFactoryPresenter->create(myProcess);
+
+        else if(symmetryFactoryPresenter)
+            return symmetryFactoryPresenter->create(myProcess);
 
         return 0;
     }
@@ -624,6 +634,22 @@ void medFilteringWorkspace::setProcessType(int index)
                     aSolution.pluginKey = pluginKey;
                     aSolution.denoisingFactory = &medCore::singleFilterOperation::imageDenoising::pluginFactory();
                     aSolution.denoisingFactoryPresenter = &medWidgets::singleFilterOperation::imageDenoising::presenterFactory();
+
+                    d->singleFiltersVector.push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::symmetryAlignment::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::symmetryAlignment::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    SingleFiltersGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.symmetryFactory = &medCore::singleFilterOperation::symmetryAlignment::pluginFactory();
+                    aSolution.symmetryFactoryPresenter = &medWidgets::singleFilterOperation::symmetryAlignment::presenterFactory();
 
                     d->singleFiltersVector.push_back(aSolution);
                 }

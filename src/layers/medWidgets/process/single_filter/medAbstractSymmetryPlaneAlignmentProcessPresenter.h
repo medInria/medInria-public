@@ -15,18 +15,18 @@
 
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medAbstractNormalizeFilterProcess.h>
+#include <medAbstractSymmetryPlaneAlignmentProcess.h>
 
 #include <medWidgetsExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractNormalizeFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
+class MEDWIDGETS_EXPORT medAbstractSymmetryPlaneAlignmentProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 public:
-    medAbstractNormalizeFilterProcessPresenter(medAbstractNormalizeFilterProcess *parent)
+    medAbstractSymmetryPlaneAlignmentProcessPresenter(medAbstractSymmetryPlaneAlignmentProcess *parent)
         : medAbstractSingleFilterOperationProcessPresenter(parent)
     {}
-    virtual medAbstractNormalizeFilterProcess* process() const = 0;
+    virtual medAbstractSymmetryPlaneAlignmentProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractNormalizeFilterProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractSymmetryPlaneAlignmentProcess, MEDWIDGETS_EXPORT)

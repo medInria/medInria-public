@@ -348,7 +348,6 @@ namespace singleFilterOperation
         }
     }
 
-
     namespace imageDenoising
     {
         namespace _private
@@ -357,6 +356,19 @@ namespace singleFilterOperation
         }
 
         medAbstractImageDenoisingProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
+    namespace symmetryAlignment
+    {
+        namespace _private
+        {
+            medAbstractSymmetryPlaneAlignmentProcessPresenterFactory factory;
+        }
+
+        medAbstractSymmetryPlaneAlignmentProcessPresenterFactory& presenterFactory()
         {
             return _private::factory;
         }

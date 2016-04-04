@@ -27,5 +27,6 @@
         <file>process/single_filter/medAbstractGaussianFilterProcess.json</file>
         <file>process/single_filter/medAbstractDivideFilterProcess.json</file>
         <file>process/single_filter/medAbstractAddFilterProcess.json</file>
+        <file>process/single_filter/medAbstractSymmetryPlaneAlignmentProcess.json</file>
     </qresource>
 </RCC>

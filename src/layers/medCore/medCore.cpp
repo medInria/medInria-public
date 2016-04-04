@@ -290,6 +290,19 @@ namespace singleFilterOperation
             return _private::factory;
         }
     }
+
+    namespace symmetryAlignment
+    {
+        namespace _private
+        {
+            medAbstractSymmetryPlaneAlignmentProcessPluginFactory factory;
+        }
+
+        medAbstractSymmetryPlaneAlignmentProcessPluginFactory& pluginFactory(void)
+        {
+            return _private::factory;
+        }
+    }
 }
 
 // DWI masking
