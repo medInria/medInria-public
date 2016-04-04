@@ -14,6 +14,7 @@
 #include <QtGui>
 #include <QtCore>
 #include <QtSql>
+#include <QCryptographicHash>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
@@ -27,6 +28,18 @@
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractDatabaseItem.h>
+
+#include <medSettingsManager.h>
+
+
+QString anonymise(const QString name)
+{
+    QByteArray r = QCryptographicHash::hash(name.toUtf8(),QCryptographicHash::Md4).toHex().toUpper();
+    r.resize(10);
+    return QString(r);
+}
+
+
 
 
 // /////////////////////////////////////////////////////////////////
@@ -207,6 +220,9 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
 
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
+    if(medSettingsManager::instance()->value("database", "anonymous", false).toBool())
+        if(index.column() == 0 && !item->dataIndex().isValidForStudy() && !item->dataIndex().isValidForSeries())
+            return QVariant(anonymise(item->data(0).toString()));
     return item->data(index.column());
 }
 

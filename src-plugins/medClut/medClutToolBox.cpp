@@ -44,7 +44,6 @@
 class medClutToolBoxPrivate
 {
 public:
-    medAbstractWorkspace *workspace;
     medAbstractLayeredView *view;
     QPushButton * export_B;
     medDoubleSliderSpinboxPair * minRange;
@@ -123,14 +122,9 @@ medClutToolBox::~medClutToolBox(void)
     d = NULL;
 }
 
-medAbstractWorkspace* medClutToolBox::getWorkspace()
-{
-    return d->workspace;
-}
-
 void medClutToolBox::setWorkspace(medAbstractWorkspace* workspace)
 {
-    d->workspace = workspace;
+    medToolBox::setWorkspace(workspace);
     medTabbedViewContainers * containers = workspace->stackedViewContainers();
 
     QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));

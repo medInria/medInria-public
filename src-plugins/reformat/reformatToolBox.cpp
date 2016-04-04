@@ -28,7 +28,6 @@ public:
     QLabel *spacingXLab, *spacingYLab, *spacingZLab, *help0;
     QDoubleSpinBox *spacingX, *spacingY, *spacingZ;
     medAbstractLayeredView * currentView;
-    medAbstractWorkspace * workspace;
     medReformatViewer * reformatViewer;
     dtkSmartPointer<medAbstractData> reformatedImage;
     QWidget* reformatOptions;
@@ -153,7 +152,7 @@ dtkPlugin* reformatToolBox::plugin()
 
 void reformatToolBox::startReformat()
 {
-    if (d->currentView && d->workspace)
+    if (d->currentView && getWorkspace())
     {
         d->help0->hide();
         d->reformatOptions->show();
@@ -161,21 +160,21 @@ void reformatToolBox::startReformat()
 
         if (!d->currentView->layersCount()) return;
 
-        d->reformatViewer = new medReformatViewer(d->currentView,d->workspace->stackedViewContainers());
+        d->reformatViewer = new medReformatViewer(d->currentView,getWorkspace()->stackedViewContainers());
         d->reformatViewer->setToolBox(this);
-        d->workspace->stackedViewContainers()->setAcceptDrops(false);
+        getWorkspace()->stackedViewContainers()->setAcceptDrops(false);
         connect(d->reformatViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
-        medViewContainer * container = d->workspace->stackedViewContainers()->insertContainerInTab(0,"Reformat");
-        d->workspace->stackedViewContainers()->setCurrentIndex(0);
+        medViewContainer * container = getWorkspace()->stackedViewContainers()->insertContainerInTab(0,"Reformat");
+        getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
         container->setDefaultWidget(d->reformatViewer->viewWidget());
-        d->workspace->stackedViewContainers()->lockTabs();
+        getWorkspace()->stackedViewContainers()->lockTabs();
 
         connect(d->spacingX,SIGNAL(valueChanged(double)),d->reformatViewer,SLOT(thickSlabChanged(double)));
         connect(d->spacingY,SIGNAL(valueChanged(double)),d->reformatViewer,SLOT(thickSlabChanged(double)));
         connect(d->spacingZ,SIGNAL(valueChanged(double)),d->reformatViewer,SLOT(thickSlabChanged(double)));
         connect(d->b_saveImage,SIGNAL(clicked()),d->reformatViewer,SLOT(saveImage()));
 
-        QList<medToolBox*> toolBoxes = d->workspace->toolBoxes();
+        QList<medToolBox*> toolBoxes = getWorkspace()->toolBoxes();
         for (int i = 0; i < toolBoxes.length(); i++)
         {
             if (toolBoxes[i] != this)
@@ -186,30 +185,34 @@ void reformatToolBox::startReformat()
         d->reformatedImage = 0;
 
         // close the initial tab which is not needed anymore
-        d->workspace->stackedViewContainers()->unlockTabs();
-        d->workspace->stackedViewContainers()->removeTab(1);
+        getWorkspace()->stackedViewContainers()->unlockTabs();
+        getWorkspace()->stackedViewContainers()->removeTab(1);
         updateView();
+    }
+    else
+    {
+        medMessageController::instance()->showError(tr("Drop a volume in the view"),3000);
     }
 }
 
 void reformatToolBox::stopReformat()
 {
-    if (d->workspace)
+    if (getWorkspace())
     {
         d->help0->show();
         d->reformatOptions->hide();
         d->b_startReformat->show();
 
-        d->workspace->stackedViewContainers()->unlockTabs();
-        d->workspace->stackedViewContainers()->removeTab(0);
-        d->workspace->stackedViewContainers()->insertContainerInTab(0, d->workspace->name());
-        d->workspace->stackedViewContainers()->setCurrentIndex(0);
+        getWorkspace()->stackedViewContainers()->unlockTabs();
+        getWorkspace()->stackedViewContainers()->removeTab(0);
+        getWorkspace()->stackedViewContainers()->insertContainerInTab(0, getWorkspace()->name());
+        getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
         processOutput();
         disconnect(d->reformatViewer);
         delete d->reformatViewer;
 
         d->reformatViewer = 0;
-        QList<medToolBox*> toolBoxes = d->workspace->toolBoxes();
+        QList<medToolBox*> toolBoxes = getWorkspace()->toolBoxes();
         for (int i = 0; i < toolBoxes.length(); i++)
         {
             toolBoxes[i]->show();
@@ -220,8 +223,8 @@ void reformatToolBox::stopReformat()
 
 void reformatToolBox::setWorkspace(medAbstractWorkspace * workspace)
 {
-    d->workspace = workspace;
-    //connect(d->workspace->stackedViewContainers(),SIGNAL(currentChanged(const QString&)),this,SLOT(actOnContainerChange(const QString&)));
+    medToolBox::setWorkspace(workspace);
+
     medTabbedViewContainers * containers = workspace->stackedViewContainers();
     QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
     updateView();
@@ -229,7 +232,7 @@ void reformatToolBox::setWorkspace(medAbstractWorkspace * workspace)
 
 void reformatToolBox::updateView()
 {
-    medTabbedViewContainers * containers = d->workspace->stackedViewContainers();
+    medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();
     QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
     medAbstractView *view=NULL;
     for(int i=0;i<containersInTabSelected.length();i++)
@@ -250,16 +253,6 @@ void reformatToolBox::updateView()
             displayInfoOnCurrentView();
         }
     }
-}
-
-void reformatToolBox::actOnContainerChange(const QString & name)
-{
-//    if (!qobject_cast<reformatWorkspace*>(d->workspace))
-//        return;
-//    if (name == "Reformat")
-//        qobject_cast<reformatWorkspace*>(d->workspace)->showViewPropertiesToolBox(false);
-//    else
-//        qobject_cast<reformatWorkspace*>(d->workspace)->showViewPropertiesToolBox(true);
 }
 
 void reformatToolBox::displayInfoOnCurrentView()

@@ -49,7 +49,7 @@ QStringList itkMetaDataImageWriter::handled() const {
 
 QStringList itkMetaDataImageWriter::supportedFileExtensions() const
 {
-    return QStringList() << ".mhd";
+    return QStringList() << ".mha" << ".mhd";
 }
 
 bool itkMetaDataImageWriter::registered() {

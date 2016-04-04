@@ -97,9 +97,6 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
                 toolbox->setWorkspace(workspace);
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             d->segmentationToolBoxes[identifier] = toolbox;
-            connect(toolbox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
-                    this, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
-                    Qt::UniqueConnection);
         }
     }
 

@@ -13,16 +13,22 @@
 
 #pragma once
 
-//! Register all algorithms with factory.
-class medAlgorithmInitializer {
-public:
-    medAlgorithmInitializer();
-    virtual ~medAlgorithmInitializer();
+#include <medCoreExport.h>
+#include <QtGui>
 
-    static bool initialize();
-    static bool initializeProcesses();
-    static bool initializeWidgets();
+
+class medSlider : public QSlider
+{
+    Q_OBJECT
+
+public slots:
+    void addTick(int position);
+    void removeTick(int position);
+    void removeAllTicks();
+
+protected:
+    void paintEvent(QPaintEvent *ev);
+
+private:
+    QList<int> ticksList;
 };
-
-
-

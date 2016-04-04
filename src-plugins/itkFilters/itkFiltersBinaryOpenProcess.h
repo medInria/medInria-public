@@ -18,7 +18,7 @@
 
 #include <itkFiltersPluginExport.h>
 
-class itkFiltersBinaryOpenProcessPrivate;
+class itkMorphologicalFiltersProcessBasePrivate;
 class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersBinaryOpenProcess : public itkMorphologicalFiltersProcessBase
@@ -31,12 +31,6 @@ public:
     virtual ~itkFiltersBinaryOpenProcess(void);
 
     static bool registered ( void );
-
-public slots:
-    int update ( void );
-
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersBinaryOpenProcess)
 };
 
 dtkAbstractProcess * createitkFiltersBinaryOpenProcess(void);

@@ -31,7 +31,6 @@ public:
      medSegmentationAbstractToolBox* currentToolBox();
 
 signals:
-     void installEventFilterRequest(medViewEventFilter *filter);
      void inputChanged();
 
 public slots:

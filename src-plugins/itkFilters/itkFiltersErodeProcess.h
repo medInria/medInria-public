@@ -18,7 +18,7 @@
 
 #include <itkFiltersPluginExport.h>
 
-class itkFiltersErodeProcessPrivate;
+class itkMorphologicalFiltersProcessBasePrivate;
 class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkMorphologicalFiltersProcessBase
@@ -31,12 +31,6 @@ public:
     virtual ~itkFiltersErodeProcess(void);
 
     static bool registered ( void );
-    
-public slots:
-    int update ( void );
-
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersErodeProcess)
 };
 
 dtkAbstractProcess * createitkFiltersErodeProcess(void);

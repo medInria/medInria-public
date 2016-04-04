@@ -79,7 +79,7 @@ int main(int argc,char* argv[]) {
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
-        qDebug() << "Usage: medInria [--fullscreen|--no-fullscreen] [--stereo] "
+        qDebug() << "Usage: MUSIC [--fullscreen|--no-fullscreen] [--stereo] "
         #ifdef ACTIVATE_WALL_OPTION
         "[--wall] [--tracker=URL] "
         #endif

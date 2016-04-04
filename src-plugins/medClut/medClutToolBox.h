@@ -37,7 +37,6 @@ public:
     /**
     Whenever the view is changed, update method is triggered.
     */
-    medAbstractWorkspace* getWorkspace();
     void setWorkspace(medAbstractWorkspace* workspace);
 
     static bool registered();

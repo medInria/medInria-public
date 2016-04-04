@@ -34,7 +34,7 @@ public:
 
     //void SetStartByMatchingCentroids(const int start) {this->bStartByMatchingCentroids = start;}
     vtkSetMacro(bStartByMatchingCentroids, int);
-    vtkSetMacro(bRigidBody, int);
+    vtkSetMacro(bTransformation, int);
     vtkSetMacro(bCheckMeanDistance, int);
 
     vtkSetMacro(ScaleFactor, double);
@@ -63,7 +63,7 @@ private:
     vtkPolyData* Source;
     vtkPolyData* Target;
     int bStartByMatchingCentroids;
-    int bRigidBody;
+    int bTransformation;
 
     int bCheckMeanDistance;
     double ScaleFactor;

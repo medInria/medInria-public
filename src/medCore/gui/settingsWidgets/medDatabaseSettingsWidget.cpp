@@ -24,6 +24,7 @@ class medDatabaseSettingsWidgetPrivate {
 public:
   QLineEdit* dbPath;
   QPushButton *selectDirectoryButton;
+  QCheckBox* anonymousDb;
 };
 
 medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
@@ -31,10 +32,13 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
         d(new medDatabaseSettingsWidgetPrivate())
 {
     setTabName("Database");
+    QString anonymousTooltip = tr("Hide patient name in the software, data stays untouched");
 
     d->dbPath = new QLineEdit(this);
     d->selectDirectoryButton = new QPushButton(tr("Select directory..."), this);
     d->selectDirectoryButton->setToolTip("Change the database directory or create a new database by selecting an empty directory");
+    d->anonymousDb = new QCheckBox(this);
+    d->anonymousDb->setToolTip(anonymousTooltip);
 
     QWidget* databaseLocation = new QWidget(this);
     QHBoxLayout* dbLayout = new QHBoxLayout;
@@ -46,9 +50,13 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
     databaseLocation->setContentsMargins(0,-8,0,0);
 
+    QLabel* anonymousLabel = new QLabel(tr("Anonymous database:"));
+    anonymousLabel->setToolTip(anonymousTooltip);
+
     QFormLayout* formLayout = new QFormLayout(this);
     formLayout->addRow(tr("Database location:"), databaseLocation);
-    formLayout->addRow(new QLabel("* The changes will only be effective after saving and restarting the application."));
+    formLayout->addRow(anonymousLabel,d->anonymousDb);
+    formLayout->addRow(new QLabel("(The changes will only be effective after saving and restarting the application.)"));
 }
 
 void medDatabaseSettingsWidget::selectDirectory()
@@ -90,11 +98,14 @@ void medDatabaseSettingsWidget::read()
 {
     // we always show the datalocation here, the medStorage class takes care of retrieving the correct one
     d->dbPath->setText(medStorage::dataLocation());
+    medSettingsManager * manager = medSettingsManager::instance();
+    d->anonymousDb->setChecked(manager->value("database","anonymous").toBool());
 }
 
 bool medDatabaseSettingsWidget::write()
 {
-    medSettingsManager * mnger = medSettingsManager::instance();
-    mnger->setValue(this->identifier(),"new_database_location", d->dbPath->text());
+    medSettingsManager * manager = medSettingsManager::instance();
+    manager->setValue(this->identifier(),"new_database_location", d->dbPath->text());
+    manager->setValue("database","anonymous",d->anonymousDb->isChecked());
     return true;
 }
