@@ -23,7 +23,7 @@ class medAbstractImageData;
 class medIntParameter;
 
 class medAbstractShrinkFilterProcessPrivate;
-class MEDCORE_EXPORT  medAbstractShrinkFilterProcess : public medAbstractSingleFilterOperationProcess
+class MEDCORE_EXPORT medAbstractShrinkFilterProcess : public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
 

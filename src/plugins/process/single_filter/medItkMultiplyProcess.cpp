@@ -41,12 +41,12 @@ medItkMultiplyProcess::~medItkMultiplyProcess()
 
 QString medItkMultiplyProcess::caption() const
 {
-    return "Multiply Filter process";
+    return "Multiply by constant";
 }
 
 QString medItkMultiplyProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK MultiplyImageFilter to multiply an image by a constant.";
 }
 
 medAbstractJob::medJobExitStatus medItkMultiplyProcess::run()

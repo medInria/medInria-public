@@ -37,12 +37,12 @@ medItkNormalizeProcess::~medItkNormalizeProcess()
 
 QString medItkNormalizeProcess::caption() const
 {
-    return "Normalize Filter process";
+    return "ITK intensity normalization";
 }
 
 QString medItkNormalizeProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK NormalizeImageFilter to normalize image intensities in [0,1]";
 }
 
 medAbstractJob::medJobExitStatus medItkNormalizeProcess::run()

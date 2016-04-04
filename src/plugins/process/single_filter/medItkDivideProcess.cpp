@@ -41,12 +41,12 @@ medItkDivideProcess::~medItkDivideProcess()
 
 QString medItkDivideProcess::caption() const
 {
-    return "Divide Filter process";
+    return "Divide by constant";
 }
 
 QString medItkDivideProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK DivideImageFilter to divide an image by a constant.";
 }
 
 medAbstractJob::medJobExitStatus medItkDivideProcess::run()

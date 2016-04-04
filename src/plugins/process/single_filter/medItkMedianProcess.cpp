@@ -16,7 +16,7 @@
 #include <dtkLog>
 
 #include <itkImage.h>
-#include <itkSmoothingRecursiveGaussianImageFilter.h>
+#include <itkMedianImageFilter.h>
 #include <itkCommand.h>
 
 #include <medAbstractImageData.h>
@@ -37,12 +37,12 @@ medItkMedianProcess::~medItkMedianProcess()
 
 QString medItkMedianProcess::caption() const
 {
-    return "Median Filter process";
+    return "Median filtering";
 }
 
 QString medItkMedianProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK MedianImageFilter on an image.";
 }
 
 medAbstractJob::medJobExitStatus medItkMedianProcess::run()
@@ -106,11 +106,12 @@ medAbstractJob::medJobExitStatus medItkMedianProcess::_run()
 
     if(in1.IsNotNull())
     {
-        typedef itk::SmoothingRecursiveGaussianImageFilter<ImageType, ImageType> FilterType;
+        typedef itk::MedianImageFilter<ImageType, ImageType> FilterType;
         typename FilterType::Pointer filter = FilterType::New();
         m_filter = filter;
 
         filter->SetInput(in1);
+        filter->SetRadius(this->radius()->value());
 
         itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
         callback->SetClientData((void*)this);

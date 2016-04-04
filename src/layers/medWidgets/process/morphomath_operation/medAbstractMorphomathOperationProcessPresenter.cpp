@@ -18,6 +18,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QProgressBar>
+#include <QFormLayout>
 
 #include <medIntParameter.h>
 #include <medIntParameterPresenter.h>
@@ -57,10 +58,13 @@ QWidget *medAbstractMorphomathOperationProcessPresenter::buildToolBoxWidget()
     QVBoxLayout *tbLayout = new QVBoxLayout;
     tbWidget->setLayout(tbLayout);
 
-    tbLayout->addWidget(d->kernelRadiusPresenter->buildWidget());
+    QFormLayout *paramsLayout = new QFormLayout;
+    paramsLayout->addRow(d->kernelRadiusPresenter->parameter()->caption(),d->kernelRadiusPresenter->buildWidget());
+    tbLayout->addLayout(paramsLayout);
+
     tbLayout->addWidget(this->buildRunButton());
-    tbLayout->addWidget(d->progressionPresenter->buildProgressBar());
     tbLayout->addWidget(this->buildCancelButton());
+    tbLayout->addWidget(d->progressionPresenter->buildProgressBar());
 
     return tbWidget;
 }

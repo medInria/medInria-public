@@ -40,6 +40,7 @@ public:
     void setUseRunControls(bool useRun);
     bool useRunControls();
 
+private:
     const QScopedPointer<medAbstractDiffusionModelEstimationProcessPresenterPrivate> d;
 
 private slots:

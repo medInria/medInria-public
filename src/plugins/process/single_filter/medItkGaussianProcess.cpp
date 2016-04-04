@@ -37,12 +37,12 @@ medItkGaussianProcess::~medItkGaussianProcess()
 
 QString medItkGaussianProcess::caption() const
 {
-    return "Gaussian Filter process";
+    return "Gaussian filtering";
 }
 
 QString medItkGaussianProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK SmoothingRecursiveGaussianImageFilter to smooth an image by a Gaussian distribution.";
 }
 
 medAbstractJob::medJobExitStatus medItkGaussianProcess::run()

@@ -15,6 +15,7 @@
 #include <medAbstractImageData.h>
 #include <medAbstractDiffusionModelImageData.h>
 #include <medMetaDataKeys.h>
+#include <medBoolParameter.h>
 
 class medAbstractDiffusionModelEstimationProcessPrivate
 {
@@ -26,7 +27,7 @@ public:
     medAbstractDiffusionModelEstimationProcess::GradientsVectorType gradients;
 
     QString gradientsFileName;
-    bool gradientsInImageCoordinates;
+    medBoolParameter *gradientsInImageCoordinates;
 };
 
 medAbstractDiffusionModelEstimationProcess::medAbstractDiffusionModelEstimationProcess(QObject *parent)
@@ -34,6 +35,11 @@ medAbstractDiffusionModelEstimationProcess::medAbstractDiffusionModelEstimationP
 {
     d->input = NULL;
     d->output = NULL;
+
+    d->gradientsInImageCoordinates = new medBoolParameter("grad_coords",this);
+    d->gradientsInImageCoordinates->setCaption("Gradients in image coordinates");
+    d->gradientsInImageCoordinates->setDescription("Are gradients in provided file in line with image coordinates?");
+    d->gradientsInImageCoordinates->setValue(true);
 }
 
 medAbstractDiffusionModelEstimationProcess::~medAbstractDiffusionModelEstimationProcess()
@@ -51,10 +57,9 @@ void medAbstractDiffusionModelEstimationProcess::setInput(medAbstractImageData *
     d->input = data;
 }
 
-void medAbstractDiffusionModelEstimationProcess::setGradients(QString fileName, bool gradsInImageCoords)
+void medAbstractDiffusionModelEstimationProcess::setGradients(QString fileName)
 {
     d->gradientsFileName = fileName;
-    d->gradientsInImageCoordinates = gradsInImageCoords;
 }
 
 void medAbstractDiffusionModelEstimationProcess::extractGradientsFromInformation()
@@ -65,7 +70,7 @@ void medAbstractDiffusionModelEstimationProcess::extractGradientsFromInformation
 
     d->gradients = grReader.gradients();
 
-    if (!d->gradientsInImageCoordinates)
+    if (!d->gradientsInImageCoordinates->value())
     {
         medAbstractImageData::MatrixType orientationMatrix;
         orientationMatrix = d->input->orientationMatrix();
@@ -111,6 +116,11 @@ medAbstractDiffusionModelEstimationProcess::VectorType medAbstractDiffusionModel
 medAbstractDiffusionModelEstimationProcess::GradientsVectorType medAbstractDiffusionModelEstimationProcess::gradients() const
 {
     return d->gradients;
+}
+
+medBoolParameter *medAbstractDiffusionModelEstimationProcess::gradientsInImageCoordinates() const
+{
+    return d->gradientsInImageCoordinates;
 }
 
 void medAbstractDiffusionModelEstimationProcess::setOutput(medAbstractDiffusionModelImageData *data)

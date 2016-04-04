@@ -37,12 +37,12 @@ medItkAddImageProcess::~medItkAddImageProcess()
 
 QString medItkAddImageProcess::caption() const
 {
-    return "Itk add images process";
+    return "Add images (ITK)";
 }
 
 QString medItkAddImageProcess::description() const
 {
-    return "Use itk::AddImageFilter to perform the addition of tow images.";
+    return "Use ITK AddImageFilter to perform the addition of two images.";
 }
 
 medAbstractJob::medJobExitStatus medItkAddImageProcess::run()

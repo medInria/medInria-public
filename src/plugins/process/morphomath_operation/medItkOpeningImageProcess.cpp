@@ -40,12 +40,12 @@ medItkOpeningImageProcess::~medItkOpeningImageProcess()
 
 QString medItkOpeningImageProcess::caption() const
 {
-    return "Itk opening image process";
+    return "Image opening (ITK)";
 }
 
 QString medItkOpeningImageProcess::description() const
 {
-    return "Use itk::GrayscaleMorphologicalOpeningImageFilter to perform an opening on an image.";
+    return "Use ITK GrayscaleMorphologicalOpeningImageFilter to perform an opening on an image.";
 }
 medAbstractJob::medJobExitStatus medItkOpeningImageProcess::run()
 {

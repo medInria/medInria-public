@@ -41,12 +41,12 @@ medItkAddProcess::~medItkAddProcess()
 
 QString medItkAddProcess::caption() const
 {
-    return "Add Filter process";
+    return "Add constant";
 }
 
 QString medItkAddProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK AddImageFilter to add a constant to an image";
 }
 
 medAbstractJob::medJobExitStatus medItkAddProcess::run()

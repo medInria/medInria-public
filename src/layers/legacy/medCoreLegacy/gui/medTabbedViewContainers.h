@@ -54,7 +54,7 @@ public slots:
     medViewContainer* addContainerInTab();
     medViewContainer* addContainerInTab(const QString &name);
     medViewContainer* insertContainerInTab(int index, const QString &name);
-    // TODO mutualize all of this sh**
+    // TODO mutualize all of this
     void setSplitter(int index, medViewContainerSplitter* splitter);
 
     void closeCurrentTab();

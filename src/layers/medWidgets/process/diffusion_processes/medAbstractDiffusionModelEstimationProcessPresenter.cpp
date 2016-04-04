@@ -19,8 +19,10 @@
 #include <QLabel>
 #include <QFileDialog>
 #include <QCheckBox>
+#include <QFormLayout>
 
 #include <medAbstractImageData.h>
+#include <medBoolParameterPresenter.h>
 #include <medAbstractDiffusionModelImageData.h>
 #include <medViewContainerSplitter.h>
 #include <medViewContainer.h>
@@ -33,8 +35,9 @@ public:
     medAbstractDiffusionModelEstimationProcess *process;
     QLabel *gradientFileLabel;
     QLabel *bvaluesFileLabel;
-    bool gradientsInImageCoordinates;
     bool useRunControls;
+
+    medBoolParameterPresenter *gradientsInImageCoordinates;
 };
 
 medAbstractDiffusionModelEstimationProcessPresenter::medAbstractDiffusionModelEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent)
@@ -42,6 +45,7 @@ medAbstractDiffusionModelEstimationProcessPresenter::medAbstractDiffusionModelEs
 {
     d->process = parent;
     d->useRunControls = true;
+    d->gradientsInImageCoordinates = new medBoolParameterPresenter (d->process->gradientsInImageCoordinates());
 
     connect(d->process, &medAbstractDiffusionModelEstimationProcess::finished,
             this, &medAbstractDiffusionModelEstimationProcessPresenter::_importOutput,
@@ -86,6 +90,7 @@ QWidget *medAbstractDiffusionModelEstimationProcessPresenter::buildToolBoxWidget
     gradientFileLayout->addWidget(browseButton);
 
     tbLayout->addLayout(gradientFileLayout);
+    tbLayout->addWidget(d->gradientsInImageCoordinates->buildWidget());
 
     // B-values
     QHBoxLayout *bvaluesFileLayout = new QHBoxLayout;
@@ -153,43 +158,18 @@ void medAbstractDiffusionModelEstimationProcessPresenter::_importOutput(medAbstr
 void medAbstractDiffusionModelEstimationProcessPresenter::setInputGradientFile()
 {
     QFileDialog *gradientFileDialog = new QFileDialog(0, tr("Choose a gradient file"));
-    gradientFileDialog->setOption(QFileDialog::DontUseNativeDialog);
     gradientFileDialog->setAcceptMode(QFileDialog::AcceptOpen);
 
-    QCheckBox* gradientsInImageCoordinatesCheckBox = new QCheckBox(gradientFileDialog);
-    gradientsInImageCoordinatesCheckBox->setChecked(true);
-    gradientsInImageCoordinatesCheckBox->setToolTip(tr("Uncheck this box if your gradients are in world coordinates."));
-
-    QLayout* layout = gradientFileDialog->layout();
-    QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
-
-    // nasty hack to hide the filter list
-    QWidget * filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
-    QWidget * filtersList = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
-    filtersLabel->hide(); filtersList->hide();
-
-    if (gridbox)
-    {
-        gridbox->addWidget(new QLabel("Gradients in image coordinates?", gradientFileDialog), gridbox->rowCount()-1, 0);
-        gridbox->addWidget(gradientsInImageCoordinatesCheckBox, gridbox->rowCount()-1, 1);
-    }
-
-    gradientFileDialog->setLayout(gridbox);
-
     QString fileName;
-    bool gradientsInImageCoordinates = false;
-    if ( gradientFileDialog->exec() )
-    {
+    if (gradientFileDialog->exec())
         fileName = gradientFileDialog->selectedFiles().first();
-        gradientsInImageCoordinates = gradientsInImageCoordinatesCheckBox->isChecked();
-    }
 
     delete gradientFileDialog;
 
     if (fileName.isEmpty())
         return;
 
-    d->process->setGradients(fileName,gradientsInImageCoordinates);
+    d->process->setGradients(fileName);
 
     d->gradientFileLabel->setText(fileName);
     d->gradientFileLabel->setToolTip(fileName);
@@ -202,7 +182,7 @@ void medAbstractDiffusionModelEstimationProcessPresenter::setInputBValuesFile()
     bvaluesFileDialog->setAcceptMode(QFileDialog::AcceptOpen);
 
     QString fileName;
-    if ( bvaluesFileDialog->exec() )
+    if (bvaluesFileDialog->exec())
         fileName = bvaluesFileDialog->selectedFiles().first();
 
     delete bvaluesFileDialog;

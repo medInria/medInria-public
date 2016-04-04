@@ -36,15 +36,14 @@ medItkErodeImageProcess::~medItkErodeImageProcess()
 
 }
 
-
 QString medItkErodeImageProcess::caption() const
 {
-    return "Itk erode image process";
+    return "Image erosion (ITK)";
 }
 
 QString medItkErodeImageProcess::description() const
 {
-    return "Use itk::GrayscaleErodeImageFilter to perform an erosion on an image.";
+    return "Use ITK GrayscaleErodeImageFilter to perform an erosion on an image.";
 }
 medAbstractJob::medJobExitStatus medItkErodeImageProcess::run()
 {

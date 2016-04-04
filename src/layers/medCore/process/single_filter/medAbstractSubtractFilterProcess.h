@@ -26,7 +26,7 @@ public:
     medAbstractSubtractFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
 
 protected:
-    virtual QString outputNameAddon() const {return "subtract filter";}
+    virtual QString outputNameAddon() const {return "subtract constant";}
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractSubtractFilterProcess, MEDCORE_EXPORT)

@@ -21,6 +21,7 @@
 #include <medDiffusionGradientReader.h>
 
 class medAbstractImageData;
+class medBoolParameter;
 class medAbstractDiffusionModelImageData;
 
 class medAbstractDiffusionModelEstimationProcessPrivate;
@@ -35,7 +36,7 @@ public:
     void setInput(medAbstractImageData* data);
     medAbstractImageData* input() const;
 
-    void setGradients(QString fileName, bool gradsInImageCoords = true);
+    void setGradients(QString fileName);
     void setBValues(QString fileName);
 
     medAbstractDiffusionModelImageData* output() const;
@@ -45,6 +46,7 @@ public:
 
     VectorType bvalues() const;
     GradientsVectorType gradients() const;
+    medBoolParameter *gradientsInImageCoordinates() const;
 
 protected:
     //! Required as it needs the input to be set, mandatory in run method to access gradients

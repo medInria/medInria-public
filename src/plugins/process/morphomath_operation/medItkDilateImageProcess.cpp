@@ -37,15 +37,14 @@ medItkDilateImageProcess::~medItkDilateImageProcess()
 
 }
 
-
 QString medItkDilateImageProcess::caption() const
 {
-    return "Itk dilate image process";
+    return "Image dilation (ITK)";
 }
 
 QString medItkDilateImageProcess::description() const
 {
-    return "Use itk::GrayscaleDilateImageFilter to perform a dilatation of an image.";
+    return "Use ITK GrayscaleDilateImageFilter to perform a dilatation of an image.";
 }
 medAbstractJob::medJobExitStatus medItkDilateImageProcess::run()
 {

@@ -13,20 +13,24 @@
 
 #pragma once
 
-#include <medAbstractSingleFilterOperationDoubleProcessPresenter.h>
+#include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
 #include <medAbstractMedianFilterProcess.h>
 
 #include <medWidgetsExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractMedianFilterProcessPresenter: public medAbstractSingleFilterOperationDoubleProcessPresenter
+class medAbstractMedianFilterProcessPresenterPrivate;
+class MEDWIDGETS_EXPORT medAbstractMedianFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 public:
-    medAbstractMedianFilterProcessPresenter(medAbstractMedianFilterProcess *parent)
-        : medAbstractSingleFilterOperationDoubleProcessPresenter(parent)
-    {}
+    medAbstractMedianFilterProcessPresenter(medAbstractMedianFilterProcess *parent);
+    virtual ~medAbstractMedianFilterProcessPresenter();
+    virtual QWidget* buildToolBoxWidget();
     virtual medAbstractMedianFilterProcess* process() const = 0;
+
+private:
+    const QScopedPointer<medAbstractMedianFilterProcessPresenterPrivate> d;
 };
 
 MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractMedianFilterProcess, MEDWIDGETS_EXPORT)

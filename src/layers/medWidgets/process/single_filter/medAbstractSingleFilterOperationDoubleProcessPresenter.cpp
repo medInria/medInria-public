@@ -18,6 +18,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QProgressBar>
+#include <QFormLayout>
 
 #include <medIntParameter.h>
 #include <medIntParameterPresenter.h>
@@ -47,9 +48,17 @@ medAbstractSingleFilterOperationDoubleProcessPresenter::~medAbstractSingleFilter
 
 QWidget *medAbstractSingleFilterOperationDoubleProcessPresenter::buildToolBoxWidget()
 {
-    QWidget* tbWidget = medAbstractSingleFilterOperationProcessPresenter::buildToolBoxWidget();
+    QWidget *tbWidget = new QWidget;
+    QVBoxLayout *tbLayout = new QVBoxLayout;
+    tbWidget->setLayout(tbLayout);
 
-    tbWidget->layout()->addWidget(d->parameterPresenter->buildWidget());
+    QFormLayout *paramsLayout = new QFormLayout;
+    paramsLayout->addRow(d->parameterPresenter->parameter()->caption(),d->parameterPresenter->buildWidget());
+
+    tbLayout->addLayout(paramsLayout);
+    tbLayout->addWidget(this->buildRunButton());
+    tbLayout->addWidget(this->buildCancelButton());
+    tbLayout->addWidget(this->progressionPresenter()->buildProgressBar());
 
     return tbWidget;
 }

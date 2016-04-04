@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractSingleFilterOperationDoubleProcessPresenter.h>
+#include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
 #include <medAbstractShrinkFilterProcess.h>
 
@@ -29,7 +29,8 @@ public:
     virtual QWidget* buildToolBoxWidget();
     virtual medAbstractShrinkFilterProcess* process() const = 0;
 
-        const QScopedPointer<medAbstractShrinkFilterProcessPresenterPrivate> d;
+private:
+    const QScopedPointer<medAbstractShrinkFilterProcessPresenterPrivate> d;
 };
 
 MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractShrinkFilterProcess, MEDWIDGETS_EXPORT)

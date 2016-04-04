@@ -34,28 +34,18 @@
 struct SingleFiltersGathering
 {
     // fun times
-    medAbstractAddFilterProcessPluginFactory* addFactory;
-    medAbstractDivideFilterProcessPluginFactory* divideFactory;
     medAbstractGaussianFilterProcessPluginFactory* gaussianFactory;
-    medAbstractInvertFilterProcessPluginFactory* invertFactory;
     medAbstractMedianFilterProcessPluginFactory* medianFactory;
-    medAbstractMultiplyFilterProcessPluginFactory* multiplyFactory;
     medAbstractNormalizeFilterProcessPluginFactory* normalizeFactory;
     medAbstractShrinkFilterProcessPluginFactory* shrinkFactory;
-    medAbstractSubtractFilterProcessPluginFactory* subtractFactory;
     medAbstractWindowingFilterProcessPluginFactory* windowingFactory;
     medAbstractImageDenoisingProcessPluginFactory* denoisingFactory;
     medAbstractSymmetryPlaneAlignmentProcessPluginFactory* symmetryFactory;
 
-    medAbstractAddFilterProcessPresenterFactory* addFactoryPresenter;
-    medAbstractDivideFilterProcessPresenterFactory* divideFactoryPresenter;
     medAbstractGaussianFilterProcessPresenterFactory* gaussianFactoryPresenter;
-    medAbstractInvertFilterProcessPresenterFactory* invertFactoryPresenter;
     medAbstractMedianFilterProcessPresenterFactory* medianFactoryPresenter;
-    medAbstractMultiplyFilterProcessPresenterFactory* multiplyFactoryPresenter;
     medAbstractNormalizeFilterProcessPresenterFactory* normalizeFactoryPresenter;
     medAbstractShrinkFilterProcessPresenterFactory* shrinkFactoryPresenter;
-    medAbstractSubtractFilterProcessPresenterFactory* subtractFactoryPresenter;
     medAbstractWindowingFilterProcessPresenterFactory* windowingFactoryPresenter;
     medAbstractImageDenoisingProcessPresenterFactory* denoisingFactoryPresenter;
     medAbstractSymmetryPlaneAlignmentProcessPresenterFactory* symmetryFactoryPresenter;
@@ -65,28 +55,18 @@ struct SingleFiltersGathering
 
     SingleFiltersGathering()
     {
-        addFactory = 0;
-        divideFactory = 0;
         gaussianFactory = 0;
-        invertFactory = 0;
         medianFactory = 0;
-        multiplyFactory = 0;
         normalizeFactory = 0;
         shrinkFactory = 0;
-        subtractFactory = 0;
         windowingFactory = 0;
         denoisingFactory = 0;
         symmetryFactory = 0;
 
-        addFactoryPresenter = 0;
-        divideFactoryPresenter = 0;
         gaussianFactoryPresenter = 0;
-        invertFactoryPresenter = 0;
         medianFactoryPresenter = 0;
-        multiplyFactoryPresenter = 0;
         normalizeFactoryPresenter = 0;
         shrinkFactoryPresenter = 0;
-        subtractFactoryPresenter = 0;
         windowingFactoryPresenter = 0;
         denoisingFactoryPresenter = 0;
         symmetryFactoryPresenter = 0;
@@ -96,32 +76,17 @@ struct SingleFiltersGathering
 
     medAbstractProcess* getProcess()
     {
-        if (addFactory)
-            myProcess = addFactory->create(pluginKey);
-
-        else if(divideFactory)
-            myProcess = divideFactory->create(pluginKey);
-
-        else if(gaussianFactory)
+        if(gaussianFactory)
             myProcess = gaussianFactory->create(pluginKey);
-
-        else if(invertFactory)
-            myProcess = invertFactory->create(pluginKey);
 
         else if(medianFactory)
             myProcess = medianFactory->create(pluginKey);
-
-        else if(multiplyFactory)
-            myProcess = multiplyFactory->create(pluginKey);
 
         else if(normalizeFactory)
             myProcess = normalizeFactory->create(pluginKey);
 
         else if(shrinkFactory)
             myProcess = shrinkFactory->create(pluginKey);
-
-        else if(subtractFactory)
-            myProcess = subtractFactory->create(pluginKey);
 
         else if(windowingFactory)
             myProcess = windowingFactory->create(pluginKey);
@@ -137,32 +102,17 @@ struct SingleFiltersGathering
 
     medAbstractProcessPresenter* getPresenter()
     {
-        if (addFactoryPresenter)
-            return addFactoryPresenter->create(myProcess);
-
-        else if(divideFactoryPresenter)
-            return divideFactoryPresenter->create(myProcess);
-
-        else if(gaussianFactoryPresenter)
+        if(gaussianFactoryPresenter)
             return gaussianFactoryPresenter->create(myProcess);
-
-        else if(invertFactoryPresenter)
-            return invertFactoryPresenter->create(myProcess);
 
         else if(medianFactoryPresenter)
             return medianFactoryPresenter->create(myProcess);
-
-        else if(multiplyFactoryPresenter)
-            return multiplyFactoryPresenter->create(myProcess);
 
         else if(normalizeFactoryPresenter)
             return normalizeFactoryPresenter->create(myProcess);
 
         else if(shrinkFactoryPresenter)
             return shrinkFactoryPresenter->create(myProcess);
-
-        else if(subtractFactoryPresenter)
-            return subtractFactoryPresenter->create(myProcess);
 
         else if(windowingFactoryPresenter)
             return windowingFactoryPresenter->create(myProcess);
@@ -245,16 +195,26 @@ struct MorphomathGathering
 
 struct ArithmeticGathering
 {
-    // fun times
-    medAbstractAddImageProcessPluginFactory* addFactory;
-    medAbstractSubtractImageProcessPluginFactory* subtractFactory;
-    medAbstractMultiplyImageProcessPluginFactory* multiplyFactory;
-    medAbstractDivideImageProcessPluginFactory* divideFactory;
+    // Image arithmetic stuff
+    medAbstractAddFilterProcessPluginFactory* addFactory;
+    medAbstractSubtractFilterProcessPluginFactory* subtractFactory;
+    medAbstractMultiplyFilterProcessPluginFactory* multiplyFactory;
+    medAbstractDivideFilterProcessPluginFactory* divideFactory;
+    medAbstractAddImageProcessPluginFactory* addImageFactory;
+    medAbstractSubtractImageProcessPluginFactory* subtractImageFactory;
+    medAbstractMultiplyImageProcessPluginFactory* multiplyImageFactory;
+    medAbstractDivideImageProcessPluginFactory* divideImageFactory;
+    medAbstractInvertFilterProcessPluginFactory* invertFactory;
 
-    medAbstractAddImageProcessPresenterFactory* addFactoryPresenter;
-    medAbstractSubtractImageProcessPresenterFactory* subtractFactoryPresenter;
-    medAbstractMultiplyImageProcessPresenterFactory* multiplyFactoryPresenter;
-    medAbstractDivideImageProcessPresenterFactory* divideFactoryPresenter;
+    medAbstractAddFilterProcessPresenterFactory* addFactoryPresenter;
+    medAbstractSubtractFilterProcessPresenterFactory* subtractFactoryPresenter;
+    medAbstractMultiplyFilterProcessPresenterFactory* multiplyFactoryPresenter;
+    medAbstractDivideFilterProcessPresenterFactory* divideFactoryPresenter;
+    medAbstractAddImageProcessPresenterFactory* addImageFactoryPresenter;
+    medAbstractSubtractImageProcessPresenterFactory* subtractImageFactoryPresenter;
+    medAbstractMultiplyImageProcessPresenterFactory* multiplyImageFactoryPresenter;
+    medAbstractDivideImageProcessPresenterFactory* divideImageFactoryPresenter;
+    medAbstractInvertFilterProcessPresenterFactory* invertFactoryPresenter;
 
     QString pluginKey;
     medAbstractProcess* myProcess;
@@ -265,11 +225,21 @@ struct ArithmeticGathering
         subtractFactory = 0;
         multiplyFactory = 0;
         divideFactory = 0;
+        addImageFactory = 0;
+        subtractImageFactory = 0;
+        multiplyImageFactory = 0;
+        divideImageFactory = 0;
+        invertFactory = 0;
 
         addFactoryPresenter = 0;
         subtractFactoryPresenter = 0;
         multiplyFactoryPresenter = 0;
         divideFactoryPresenter = 0;
+        addImageFactoryPresenter = 0;
+        subtractImageFactoryPresenter = 0;
+        multiplyImageFactoryPresenter = 0;
+        divideImageFactoryPresenter = 0;
+        invertFactoryPresenter = 0;
 
         myProcess = 0;
     }
@@ -288,6 +258,21 @@ struct ArithmeticGathering
         else if(divideFactory)
             myProcess = divideFactory->create(pluginKey);
 
+        if (addImageFactory)
+            myProcess = addImageFactory->create(pluginKey);
+
+        else if(subtractImageFactory)
+            myProcess = subtractImageFactory->create(pluginKey);
+
+        else if(multiplyImageFactory)
+            myProcess = multiplyImageFactory->create(pluginKey);
+
+        else if(divideImageFactory)
+            myProcess = divideImageFactory->create(pluginKey);
+
+        else if(invertFactory)
+            myProcess = invertFactory->create(pluginKey);
+
         return myProcess;
     }
 
@@ -304,6 +289,21 @@ struct ArithmeticGathering
 
         else if(divideFactoryPresenter)
             return divideFactoryPresenter->create(myProcess);
+
+        if (addImageFactoryPresenter)
+            return addImageFactoryPresenter->create(myProcess);
+
+        else if(subtractImageFactoryPresenter)
+            return subtractImageFactoryPresenter->create(myProcess);
+
+        else if(multiplyImageFactoryPresenter)
+            return multiplyImageFactoryPresenter->create(myProcess);
+
+        else if(divideImageFactoryPresenter)
+            return divideImageFactoryPresenter->create(myProcess);
+
+        else if(invertFactoryPresenter)
+            return invertFactoryPresenter->create(myProcess);
 
         return 0;
     }
@@ -340,8 +340,8 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
     processTypeLayout->addWidget(d->processTypeComboBox);
     d->processTypeComboBox->addItem("None selected");
     d->processTypeComboBox->addItem("Mathematical morphology");
-    d->processTypeComboBox->addItem("Single Filter");
-    d->processTypeComboBox->addItem("Arithmetic");
+    d->processTypeComboBox->addItem("Image filters");
+    d->processTypeComboBox->addItem("Image arithmetic");
     processTypeWidget->setLayout(processTypeLayout);
 
     connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),
@@ -373,7 +373,7 @@ medFilteringWorkspace::~medFilteringWorkspace()
 
 void medFilteringWorkspace::setupTabbedViewContainer()
 {
-
+    this->tabbedViewContainers()->cornerWidget()->hide();
 }
 
 void medFilteringWorkspace::setProcessType(int index)
@@ -463,39 +463,7 @@ void medFilteringWorkspace::setProcessType(int index)
 
         case SingleFilter:
         {
-            QStringList plugins = medCore::singleFilterOperation::addFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::singleFilterOperation::addFilter::pluginFactory().create(pluginKey);
-                if (process)
-                {
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-                    SingleFiltersGathering aSolution;
-                    aSolution.pluginKey = pluginKey;
-                    aSolution.addFactory = &medCore::singleFilterOperation::addFilter::pluginFactory();
-                    aSolution.addFactoryPresenter = &medWidgets::singleFilterOperation::addFilter::presenterFactory();
-
-                    d->singleFiltersVector.push_back(aSolution);
-                }
-            }
-
-            plugins = medCore::singleFilterOperation::divideFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::singleFilterOperation::divideFilter::pluginFactory().create(pluginKey);
-                if (process)
-                {
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-                    SingleFiltersGathering aSolution;
-                    aSolution.pluginKey = pluginKey;
-                    aSolution.divideFactory = &medCore::singleFilterOperation::divideFilter::pluginFactory();
-                    aSolution.divideFactoryPresenter = &medWidgets::singleFilterOperation::divideFilter::presenterFactory();
-
-                    d->singleFiltersVector.push_back(aSolution);
-                }
-            }
-
-            plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
+            QStringList plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
@@ -506,22 +474,6 @@ void medFilteringWorkspace::setProcessType(int index)
                     aSolution.pluginKey = pluginKey;
                     aSolution.gaussianFactory = &medCore::singleFilterOperation::gaussianFilter::pluginFactory();
                     aSolution.gaussianFactoryPresenter = &medWidgets::singleFilterOperation::gaussianFilter::presenterFactory();
-
-                    d->singleFiltersVector.push_back(aSolution);
-                }
-            }
-
-            plugins = medCore::singleFilterOperation::invertFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::singleFilterOperation::invertFilter::pluginFactory().create(pluginKey);
-                if (process)
-                {
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-                    SingleFiltersGathering aSolution;
-                    aSolution.pluginKey = pluginKey;
-                    aSolution.invertFactory = &medCore::singleFilterOperation::invertFilter::pluginFactory();
-                    aSolution.invertFactoryPresenter = &medWidgets::singleFilterOperation::invertFilter::presenterFactory();
 
                     d->singleFiltersVector.push_back(aSolution);
                 }
@@ -538,22 +490,6 @@ void medFilteringWorkspace::setProcessType(int index)
                     aSolution.pluginKey = pluginKey;
                     aSolution.medianFactory = &medCore::singleFilterOperation::medianFilter::pluginFactory();
                     aSolution.medianFactoryPresenter = &medWidgets::singleFilterOperation::medianFilter::presenterFactory();
-
-                    d->singleFiltersVector.push_back(aSolution);
-                }
-            }
-
-            plugins = medCore::singleFilterOperation::multiplyFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::singleFilterOperation::multiplyFilter::pluginFactory().create(pluginKey);
-                if (process)
-                {
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-                    SingleFiltersGathering aSolution;
-                    aSolution.pluginKey = pluginKey;
-                    aSolution.multiplyFactory = &medCore::singleFilterOperation::multiplyFilter::pluginFactory();
-                    aSolution.multiplyFactoryPresenter = &medWidgets::singleFilterOperation::multiplyFilter::presenterFactory();
 
                     d->singleFiltersVector.push_back(aSolution);
                 }
@@ -586,22 +522,6 @@ void medFilteringWorkspace::setProcessType(int index)
                     aSolution.pluginKey = pluginKey;
                     aSolution.shrinkFactory = &medCore::singleFilterOperation::shrinkFilter::pluginFactory();
                     aSolution.shrinkFactoryPresenter = &medWidgets::singleFilterOperation::shrinkFilter::presenterFactory();
-
-                    d->singleFiltersVector.push_back(aSolution);
-                }
-            }
-
-            plugins = medCore::singleFilterOperation::subtractFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
-            {
-                medAbstractProcess *process = medCore::singleFilterOperation::subtractFilter::pluginFactory().create(pluginKey);
-                if (process)
-                {
-                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
-                    SingleFiltersGathering aSolution;
-                    aSolution.pluginKey = pluginKey;
-                    aSolution.subtractFactory = &medCore::singleFilterOperation::subtractFilter::pluginFactory();
-                    aSolution.subtractFactoryPresenter = &medWidgets::singleFilterOperation::subtractFilter::presenterFactory();
 
                     d->singleFiltersVector.push_back(aSolution);
                 }
@@ -661,7 +581,71 @@ void medFilteringWorkspace::setProcessType(int index)
         case Arithmetic:
         default:
         {
-            QStringList plugins = medCore::arithmeticOperation::addImage::pluginFactory().keys();
+            QStringList plugins = medCore::singleFilterOperation::addFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::addFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    ArithmeticGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.addFactory = &medCore::singleFilterOperation::addFilter::pluginFactory();
+                    aSolution.addFactoryPresenter = &medWidgets::singleFilterOperation::addFilter::presenterFactory();
+
+                    d->arithmeticsVector.push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::subtractFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::subtractFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    ArithmeticGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.subtractFactory = &medCore::singleFilterOperation::subtractFilter::pluginFactory();
+                    aSolution.subtractFactoryPresenter = &medWidgets::singleFilterOperation::subtractFilter::presenterFactory();
+
+                    d->arithmeticsVector.push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::multiplyFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::multiplyFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    ArithmeticGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.multiplyFactory = &medCore::singleFilterOperation::multiplyFilter::pluginFactory();
+                    aSolution.multiplyFactoryPresenter = &medWidgets::singleFilterOperation::multiplyFilter::presenterFactory();
+
+                    d->arithmeticsVector.push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::divideFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::divideFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    ArithmeticGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.divideFactory = &medCore::singleFilterOperation::divideFilter::pluginFactory();
+                    aSolution.divideFactoryPresenter = &medWidgets::singleFilterOperation::divideFilter::presenterFactory();
+
+                    d->arithmeticsVector.push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::arithmeticOperation::addImage::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
                 medAbstractProcess *process = medCore::arithmeticOperation::addImage::pluginFactory().create(pluginKey);
@@ -670,8 +654,8 @@ void medFilteringWorkspace::setProcessType(int index)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
                     ArithmeticGathering aSolution;
                     aSolution.pluginKey = pluginKey;
-                    aSolution.addFactory = &medCore::arithmeticOperation::addImage::pluginFactory();
-                    aSolution.addFactoryPresenter = &medWidgets::arithmeticOperation::addImage::presenterFactory();
+                    aSolution.addImageFactory = &medCore::arithmeticOperation::addImage::pluginFactory();
+                    aSolution.addImageFactoryPresenter = &medWidgets::arithmeticOperation::addImage::presenterFactory();
 
                     d->arithmeticsVector.push_back(aSolution);
                 }
@@ -686,8 +670,8 @@ void medFilteringWorkspace::setProcessType(int index)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
                     ArithmeticGathering aSolution;
                     aSolution.pluginKey = pluginKey;
-                    aSolution.subtractFactory = &medCore::arithmeticOperation::subtractImage::pluginFactory();
-                    aSolution.subtractFactoryPresenter = &medWidgets::arithmeticOperation::subtractImage::presenterFactory();
+                    aSolution.subtractImageFactory = &medCore::arithmeticOperation::subtractImage::pluginFactory();
+                    aSolution.subtractImageFactoryPresenter = &medWidgets::arithmeticOperation::subtractImage::presenterFactory();
 
                     d->arithmeticsVector.push_back(aSolution);
                 }
@@ -702,8 +686,8 @@ void medFilteringWorkspace::setProcessType(int index)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
                     ArithmeticGathering aSolution;
                     aSolution.pluginKey = pluginKey;
-                    aSolution.multiplyFactory = &medCore::arithmeticOperation::multiplyImage::pluginFactory();
-                    aSolution.multiplyFactoryPresenter = &medWidgets::arithmeticOperation::multiplyImage::presenterFactory();
+                    aSolution.multiplyImageFactory = &medCore::arithmeticOperation::multiplyImage::pluginFactory();
+                    aSolution.multiplyImageFactoryPresenter = &medWidgets::arithmeticOperation::multiplyImage::presenterFactory();
 
                     d->arithmeticsVector.push_back(aSolution);
                 }
@@ -718,8 +702,24 @@ void medFilteringWorkspace::setProcessType(int index)
                     d->processSelectorComboBox->addItem(process->caption(),pluginKey);
                     ArithmeticGathering aSolution;
                     aSolution.pluginKey = pluginKey;
-                    aSolution.divideFactory = &medCore::arithmeticOperation::divideImage::pluginFactory();
-                    aSolution.divideFactoryPresenter = &medWidgets::arithmeticOperation::divideImage::presenterFactory();
+                    aSolution.divideImageFactory = &medCore::arithmeticOperation::divideImage::pluginFactory();
+                    aSolution.divideImageFactoryPresenter = &medWidgets::arithmeticOperation::divideImage::presenterFactory();
+
+                    d->arithmeticsVector.push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::singleFilterOperation::invertFilter::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::invertFilter::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    ArithmeticGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.invertFactory = &medCore::singleFilterOperation::invertFilter::pluginFactory();
+                    aSolution.invertFactoryPresenter = &medWidgets::singleFilterOperation::invertFilter::presenterFactory();
 
                     d->arithmeticsVector.push_back(aSolution);
                 }

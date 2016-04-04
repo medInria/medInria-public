@@ -12,19 +12,23 @@
 =========================================================================*/
 #pragma once
 
-#include <medSingleFilterOperationProcessNode.h>
-#include <medAbstractMedianFilterProcess.h>
+#include <dtkComposer>
+
+#include <medAbstractDWIMaskingProcess.h>
 
 #include <medComposerExport.h>
 
-class medMedianFilterProcessNodePrivate;
+class medDWIMaskingProcessNodePrivate;
 
-class MEDCOMPOSER_EXPORT medMedianFilterProcessNode : public medSingleFilterOperationProcessNode<medAbstractMedianFilterProcess>
+class MEDCOMPOSER_EXPORT medDWIMaskingProcessNode : public dtkComposerNodeObject <medAbstractDWIMaskingProcess>
 {
 public:
-     medMedianFilterProcessNode();
+     medDWIMaskingProcessNode();
+    ~medDWIMaskingProcessNode();
 
-     virtual QWidget *editor(void);
+public:
+    void run();
+
+private:
+    const QScopedPointer<medDWIMaskingProcessNodePrivate> d;
 };
-
-

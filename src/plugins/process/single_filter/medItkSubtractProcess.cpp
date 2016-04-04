@@ -18,7 +18,7 @@
 #include <dtkLog>
 
 #include <itkImage.h>
-#include <itkDivideImageFilter.h>
+#include <itkSubtractImageFilter.h>
 #include <itkCommand.h>
 
 #include <medAbstractImageData.h>
@@ -41,12 +41,12 @@ medItkSubtractProcess::~medItkSubtractProcess()
 
 QString medItkSubtractProcess::caption() const
 {
-    return "Subtract Filter process";
+    return "Subtract constant";
 }
 
 QString medItkSubtractProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK SubtractImageFilter to subtract a constant to an image.";
 }
 
 medAbstractJob::medJobExitStatus medItkSubtractProcess::run()
@@ -112,7 +112,7 @@ medAbstractJob::medJobExitStatus medItkSubtractProcess::_run()
 
     if(in1.IsNotNull())
     {
-        typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  FilterType;
+        typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType > FilterType;
         typename FilterType::Pointer filter = FilterType::New();
         m_filter = filter;
 

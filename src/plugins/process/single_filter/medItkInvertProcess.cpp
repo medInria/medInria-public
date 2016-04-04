@@ -37,12 +37,12 @@ medItkInvertProcess::~medItkInvertProcess()
 
 QString medItkInvertProcess::caption() const
 {
-    return "Invert Filter process";
+    return "Invert image";
 }
 
 QString medItkInvertProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK InvertIntensityImageFilter to invert image intensities.";
 }
 
 medAbstractJob::medJobExitStatus medItkInvertProcess::run()

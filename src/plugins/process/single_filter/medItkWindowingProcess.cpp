@@ -39,12 +39,12 @@ medItkWindowingProcess::~medItkWindowingProcess()
 
 QString medItkWindowingProcess::caption() const
 {
-    return "Windowing Filter process";
+    return "Image windowing";
 }
 
 QString medItkWindowingProcess::description() const
 {
-    return "Use Gaussian Filter to introduce gaussian distribution to an image";
+    return "Use ITK IntensityWindowingImageFilter to apply a window to image intensities.";
 }
 
 medAbstractJob::medJobExitStatus medItkWindowingProcess::run()
@@ -144,9 +144,8 @@ medAbstractJob::medJobExitStatus medItkWindowingProcess::_run()
         this->setOutput(out);
         return medAbstractJob::MED_JOB_EXIT_SUCCESS;
     }
+
     return medAbstractJob::MED_JOB_EXIT_FAILURE;
-
-
 }
 
 void medItkWindowingProcess::cancel()

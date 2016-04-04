@@ -51,6 +51,11 @@ medAbstractSingleFilterOperationProcessPresenter::~medAbstractSingleFilterOperat
 {
 }
 
+medIntParameterPresenter *medAbstractSingleFilterOperationProcessPresenter::progressionPresenter()
+{
+    return d->progressionPresenter;
+}
+
 QWidget *medAbstractSingleFilterOperationProcessPresenter::buildToolBoxWidget()
 {
     QWidget *tbWidget = new QWidget;
@@ -58,8 +63,8 @@ QWidget *medAbstractSingleFilterOperationProcessPresenter::buildToolBoxWidget()
     tbWidget->setLayout(tbLayout);
 
     tbLayout->addWidget(this->buildRunButton());
-    tbLayout->addWidget(d->progressionPresenter->buildProgressBar());
     tbLayout->addWidget(this->buildCancelButton());
+    tbLayout->addWidget(d->progressionPresenter->buildProgressBar());
 
     return tbWidget;
 }

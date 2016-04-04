@@ -37,12 +37,12 @@ medItkShrinkProcess::~medItkShrinkProcess()
 
 QString medItkShrinkProcess::caption() const
 {
-    return "Shrink Filter process";
+    return "Shrink image";
 }
 
 QString medItkShrinkProcess::description() const
 {
-    return "Use Shrink Process to shrink the image";
+    return "Use ITK ShrinkImageFilter to shrink the image.";
 }
 
 medAbstractJob::medJobExitStatus medItkShrinkProcess::run()

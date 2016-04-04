@@ -40,12 +40,12 @@ medItkMaskImageProcess::~medItkMaskImageProcess()
 
 QString medItkMaskImageProcess::caption() const
 {
-    return "Itk Mask image process";
+    return "Mask image";
 }
 
 QString medItkMaskImageProcess::description() const
 {
-    return "Use itk::GrayscaleMorphologicalMaskImageFilter to perform an Mask on an image.";
+    return "Use ITK MaskImageFilter to apply a mask to an image.";
 }
 medAbstractJob::medJobExitStatus medItkMaskImageProcess::run()
 {

@@ -9,10 +9,6 @@
         <file>process/morphomath_operation/medAbstractErodeImageProcess.json</file>
         <file>process/morphomath_operation/medAbstractOpeningImageProcess.json</file>
         <file>process/mask_image/medAbstractMaskImageProcess.json</file>
-        <file>process/medMeshReaderNode.json</file>
-        <file>process/medImageReaderNode.json</file>
-        <file>process/medGenericReaderNode.json</file>
-        <file>process/medGenericWriterNode.json</file>
         <file>process/diffusion_processes/medAbstractDiffusionModelEstimationProcess.json</file>
         <file>process/diffusion_processes/medAbstractDWIMaskingProcess.json</file>
         <file>process/diffusion_processes/medAbstractDiffusionScalarMapsProcess.json</file>
@@ -27,6 +23,7 @@
         <file>process/single_filter/medAbstractGaussianFilterProcess.json</file>
         <file>process/single_filter/medAbstractDivideFilterProcess.json</file>
         <file>process/single_filter/medAbstractAddFilterProcess.json</file>
+        <file>process/single_filter/medAbstractImageDenoisingProcess.json</file>
         <file>process/single_filter/medAbstractSymmetryPlaneAlignmentProcess.json</file>
     </qresource>
 </RCC>

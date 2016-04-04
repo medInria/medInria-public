@@ -40,12 +40,12 @@ medItkClosingImageProcess::~medItkClosingImageProcess()
 
 QString medItkClosingImageProcess::caption() const
 {
-    return "Itk closing image process";
+    return "Image closing (ITK)";
 }
 
 QString medItkClosingImageProcess::description() const
 {
-    return "Use itk::GrayscaleMorphologicalClosingImageFilter to perform a closing of an image.";
+    return "Use ITK GrayscaleMorphologicalClosingImageFilter to perform a closing of an image.";
 }
 medAbstractJob::medJobExitStatus medItkClosingImageProcess::run()
 {

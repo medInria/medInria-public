@@ -38,12 +38,12 @@ medItkSubtractImageProcess::~medItkSubtractImageProcess()
 
 QString medItkSubtractImageProcess::caption() const
 {
-    return "Itk subtract images process";
+    return "Subtract images (ITK)";
 }
 
 QString medItkSubtractImageProcess::description() const
 {
-    return "Use itk::SubtractImageFilter to perform the addition of tow images.";
+    return "Use ITK SubtractImageFilter to perform the subtraction of two images.";
 }
 
 medAbstractJob::medJobExitStatus medItkSubtractImageProcess::run()

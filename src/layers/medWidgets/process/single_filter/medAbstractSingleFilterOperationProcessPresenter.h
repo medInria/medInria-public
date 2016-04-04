@@ -23,6 +23,7 @@ class QPushButton;
 
 class medViewContainerSplitter;
 class medAbstractData;
+class medIntParameterPresenter;
 
 class medAbstractSingleFilterOperationProcessPresenterPrivate;
 class MEDWIDGETS_EXPORT medAbstractSingleFilterOperationProcessPresenter : public medAbstractProcessPresenter
@@ -36,6 +37,8 @@ public:
     virtual QWidget *buildToolBoxWidget();
     virtual medViewContainerSplitter *buildViewContainerSplitter();
 
+    medIntParameterPresenter *progressionPresenter();
+private:
     const QScopedPointer<medAbstractSingleFilterOperationProcessPresenterPrivate> d;
 
 private slots:

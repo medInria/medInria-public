@@ -38,12 +38,12 @@ medItkMultiplyImageProcess::~medItkMultiplyImageProcess()
 
 QString medItkMultiplyImageProcess::caption() const
 {
-    return "Itk multiply images process";
+    return "Multiply images (ITK)";
 }
 
 QString medItkMultiplyImageProcess::description() const
 {
-    return "Use itk::MultiplyImageFilter to perform the addition of tow images.";
+    return "Use ITK MultiplyImageFilter to perform the multiplication of two images.";
 }
 
 medAbstractJob::medJobExitStatus medItkMultiplyImageProcess::run()

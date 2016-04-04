@@ -38,12 +38,12 @@ medItkDivideImageProcess::~medItkDivideImageProcess()
 
 QString medItkDivideImageProcess::caption() const
 {
-    return "Itk divide images process";
+    return "Divide images (ITK)";
 }
 
 QString medItkDivideImageProcess::description() const
 {
-    return "Use itk::DivideImageFilter to perform the addition of tow images.";
+    return "Use ITK DivideImageFilter to perform the division of two images.";
 }
 
 medAbstractJob::medJobExitStatus medItkDivideImageProcess::run()

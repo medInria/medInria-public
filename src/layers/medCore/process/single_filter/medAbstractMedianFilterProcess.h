@@ -13,20 +13,31 @@
 
 #pragma once
 
-#include <medAbstractSingleFilterOperationDoubleProcess.h>
+#include <medAbstractSingleFilterOperationProcess.h>
 
 #include <dtkCore>
 
 #include <medCoreExport.h>
 
-class MEDCORE_EXPORT medAbstractMedianFilterProcess: public medAbstractSingleFilterOperationDoubleProcess
+class medAbstractImageData;
+class medIntParameter;
+
+class medAbstractMedianFilterProcessPrivate;
+class MEDCORE_EXPORT medAbstractMedianFilterProcess: public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
+
 public:
-    medAbstractMedianFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
+    medAbstractMedianFilterProcess(QObject *parent = NULL);
+    virtual ~medAbstractMedianFilterProcess();
+
+    medIntParameter *radius();
 
 protected:
     virtual QString outputNameAddon() const {return "median filter";}
+
+private:
+    const QScopedPointer<medAbstractMedianFilterProcessPrivate> d;
 };
 
 DTK_DECLARE_PLUGIN_FACTORY(medAbstractMedianFilterProcess, MEDCORE_EXPORT)
