@@ -26,6 +26,7 @@
 #include <itkBinaryErodeImageFilter.h>
 #include <itkBinaryMorphologicalClosingImageFilter.h>
 #include <itkBinaryMorphologicalOpeningImageFilter.h>
+#include <itkFlatStructuringElement.h>
 #include <itkKernelImageFilter.h>
 #include <itkCommand.h>
 #include <itkImage.h>
