@@ -41,7 +41,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}qtdcm/qtdcm.git)
-set(git_tag qt5.5_support) 
+set(git_tag master) 
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
