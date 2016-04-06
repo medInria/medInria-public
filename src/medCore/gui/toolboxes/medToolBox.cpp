@@ -65,8 +65,6 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     connect(d->body, SIGNAL(maximized()), this, SLOT(behaveWithBodyVisibility()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-    connect(this, SIGNAL(displayError(int)), this, SLOT(handleDisplayError(int)));
 }
 
 medToolBox::~medToolBox(void)

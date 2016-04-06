@@ -68,6 +68,15 @@ public:
     
     virtual void toXMLNode(QDomDocument* doc, QDomElement* currentNode);
 
+    //! Handle volume errors: pixel type
+    void displayPixelTypeError();
+
+    //! Handle volume errors: dimension
+    void displayDataDimensionError();
+
+    //! Handle mesh errors: data type
+    void displayMeshTypeError();
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.
@@ -98,13 +107,6 @@ signals:
     */
     void failure();
 
-    /**
-     * @brief Emitted when an action from the toolbox failed and we want to display specific user messages.
-     *
-     * Typically used when a dtkProcess returned.
-    */
-    void displayError(int);
-
 public slots:
     virtual void clear();
     void switchMinimize();
@@ -117,15 +119,6 @@ public slots:
 
     //! Switch between errors
     void handleDisplayError(int);
-
-    //! Handle volume errors: pixel type
-    void displayPixelTypeError();
-
-    //! Handle volume errors: dimension
-    void displayDataDimensionError();
-
-    //! Handle mesh errors: data type
-    void displayMeshTypeError();
 
 protected slots:
     void onAboutButtonClicked();
