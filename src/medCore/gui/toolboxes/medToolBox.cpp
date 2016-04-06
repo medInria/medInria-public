@@ -328,20 +328,20 @@ void medToolBox::handleDisplayError(int error)
 void medToolBox::displayPixelTypeError()
 {
     QString error = "Pixel type not yet implemented";
-    qDebug() << description() + ": " + error;
+    qDebug() << name() + ": " + error;
     medMessageController::instance()->showError(error,3000);
 }
 
 void medToolBox::displayDataDimensionError()
 {
     QString error = "This toolbox is designed to be used with 3D volumes";
-    qDebug() << description() + ": " + error;
+    qDebug() << name() + ": " + error;
     medMessageController::instance()->showError(error,3000);
 }
 
 void medToolBox::displayMeshTypeError()
 {
     QString error = "This toolbox is designed to be used with meshes";
-    qDebug() << description() + ": " + error;
+    qDebug() << name() + ": " + error;
     medMessageController::instance()->showError(error,3000);
 }
