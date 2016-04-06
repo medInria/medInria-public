@@ -30,6 +30,13 @@ class medToolBoxBody;
 class medToolBoxHeader;
 class dtkPlugin;
 
+typedef enum {
+    UNDEFINED=0, //! Miscellanous
+    PIXELTYPE,   //! Pixel type not yet implemented
+    DIMENSION,   //! Not a 3D volume
+    MESHTYPE,    //! Not a mesh
+} DATAERROR;
+
 /**
  * @brief Toolbox that includes a title bar and a widget container.
  *
@@ -108,6 +115,15 @@ public slots:
     void show();
     //Behaviour when you hide/minimize your toolbox
     virtual void behaveWithBodyVisibility(){}
+
+    //! Handle volume errors: pixel type
+    void displayPixelTypeError();
+
+    //! Handle volume errors: dimension
+    void displayDataDimensionError();
+
+    //! Handle mesh errors: data type
+    void displayMeshTypeError();
 
 protected slots:
     void onAboutButtonClicked();

@@ -34,18 +34,9 @@ public:
     virtual ~medAbstractProcess();
     virtual void setInput ( medAbstractData *data, int channel = 0 ){}
 
-    //! Handle volume errors: dimension, pixel type
-   void displayVolumeError(QString id);
-
-   //! Handle mesh errors: data type
-  int isMeshTypeError(QString id);
-
 public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;
-
-signals:
-  void showError(QString, uint);
 
 private:
     using dtkAbstractProcess::onCanceled;

@@ -20,6 +20,7 @@
 #include <medToolBoxBody.h>
 #include <medToolBoxTab.h>
 #include <medButton.h>
+#include <medMessageController.h>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkPlugin>
@@ -308,3 +309,23 @@ void medToolBox::toXMLNode(QDomDocument* doc, QDomElement* currentNode)
 	currentNode->appendChild(elmt);
 }
 
+void medToolBox::displayPixelTypeError()
+{
+    QString error = "Pixel type not yet implemented";
+    qDebug() << description() + ": " + error;
+    medMessageController::instance()->showError(error,3000);
+}
+
+void medToolBox::displayDataDimensionError()
+{
+    QString error = "This toolbox is designed to be used with 3D volumes";
+    qDebug() << description() + ": " + error;
+    medMessageController::instance()->showError(error,3000);
+}
+
+void medToolBox::displayMeshTypeError()
+{
+    QString error = "This toolbox is designed to be used with meshes";
+    qDebug() << description() + ": " + error;
+    medMessageController::instance()->showError(error,3000);
+}
