@@ -65,6 +65,8 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     connect(d->body, SIGNAL(maximized()), this, SLOT(behaveWithBodyVisibility()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    connect(this, SIGNAL(displayError(int)), this, SLOT(handleDisplayError(int)));
 }
 
 medToolBox::~medToolBox(void)
@@ -307,6 +309,22 @@ void medToolBox::toXMLNode(QDomDocument* doc, QDomElement* currentNode)
 	QDomElement elmt=doc->createElement("description");
 	elmt.appendChild(doc->createTextNode(description()));
 	currentNode->appendChild(elmt);
+}
+
+void medToolBox::handleDisplayError(int error)
+{
+    switch (error)
+    {
+    case 2:
+        displayPixelTypeError();
+        break;
+    case 3:
+        displayDataDimensionError();
+        break;
+    case 4:
+        displayMeshTypeError();
+        break;
+    }
 }
 
 void medToolBox::displayPixelTypeError()

@@ -30,13 +30,6 @@ class medToolBoxBody;
 class medToolBoxHeader;
 class dtkPlugin;
 
-typedef enum {
-    UNDEFINED=0, //! Miscellanous
-    PIXELTYPE,   //! Pixel type not yet implemented
-    DIMENSION,   //! Not a 3D volume
-    MESHTYPE,    //! Not a mesh
-} DATAERROR;
-
 /**
  * @brief Toolbox that includes a title bar and a widget container.
  *
@@ -105,6 +98,12 @@ signals:
     */
     void failure();
 
+    /**
+     * @brief Emitted when an action from the toolbox failed and we want to display specific user messages.
+     *
+     * Typically used when a dtkProcess returned.
+    */
+    void displayError(int);
 
 public slots:
     virtual void clear();
@@ -115,6 +114,9 @@ public slots:
     void show();
     //Behaviour when you hide/minimize your toolbox
     virtual void behaveWithBodyVisibility(){}
+
+    //! Switch between errors
+    void handleDisplayError(int);
 
     //! Handle volume errors: pixel type
     void displayPixelTypeError();
