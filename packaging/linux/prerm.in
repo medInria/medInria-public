@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+[ -h /usr/share/applications/medInria.desktop ] && rm -f /usr/share/applications/medInria.desktop
+[ -h /usr/bin/medInria ]  && rm -f /usr/bin/medInria

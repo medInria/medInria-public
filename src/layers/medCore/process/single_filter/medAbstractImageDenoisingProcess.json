@@ -1,0 +1,9 @@
+{
+          "title" : "Image denoising filter",
+           "kind" : "process",
+           "type" : "medAbstractImageDenoisingProcess",
+           "tags" : ["image","denoising", "filter"],
+    "description" : "<p>Removes noise from an image</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

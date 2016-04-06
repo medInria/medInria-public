@@ -1,0 +1,45 @@
+################################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+################################################################################
+
+set(medInria_VERSION @medInria_VERSION@)
+
+add_library(medCore SHARED IMPORTED)
+find_library(medCore_LIBRARY NAMES medCore PATHS @medCore_LIBRARY_DIR@)
+set_target_properties(medCore PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medCore_INCLUDE_DIRS@" IMPORTED_LOCATION ${medCore_LIBRARY})
+
+add_library(medCoreLegacy SHARED IMPORTED)
+find_library(medCoreLegacy_LIBRARY NAMES medCoreLegacy PATHS @medCoreLegacy_LIBRARY_DIR@)
+set_target_properties(medCoreLegacy PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medCoreLegacy_INCLUDE_DIRS@" IMPORTED_LOCATION ${medCoreLegacy_LIBRARY})
+
+add_library(medLog SHARED IMPORTED)
+find_library(medLog_LIBRARY NAMES medLog PATHS @medLog_LIBRARY_DIR@)
+set_target_properties(medLog PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medLog_INCLUDE_DIRS@" IMPORTED_LOCATION ${medLog_LIBRARY})
+
+add_library(medRegistration SHARED IMPORTED)
+find_library(medRegistration_LIBRARY NAMES medRegistration PATHS @medRegistration_LIBRARY_DIR@)
+set_target_properties(medRegistration PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medRegistration_INCLUDE_DIRS@" IMPORTED_LOCATION ${medRegistration_LIBRARY})
+
+add_library(medImageIO SHARED IMPORTED)
+find_library(medImageIO_LIBRARY NAMES medImageIO PATHS @medImageIO_LIBRARY_DIR@)
+set_target_properties(medImageIO PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medImageIO_INCLUDE_DIRS@" IMPORTED_LOCATION ${medImageIO_LIBRARY})
+
+add_library(medVtkInria SHARED IMPORTED)
+find_library(medVtkInria_LIBRARY NAMES medVtkInria PATHS @medVtkInria_LIBRARY_DIR@)
+set_target_properties(medVtkInria PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkInria_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkInria_LIBRARY})
+
+add_library(medWidgets SHARED IMPORTED)
+find_library(medWidgets_LIBRARY NAMES medWidgets PATHS @medWidgets_LIBRARY_DIR@)
+set_target_properties(medWidgets PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medWidgets_INCLUDE_DIRS@" IMPORTED_LOCATION ${medWidgets_LIBRARY})
+
+set(medInria_CMAKE_DIR @medInria_CMAKE_DIR@)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${medInria_CMAKE_DIR}")
