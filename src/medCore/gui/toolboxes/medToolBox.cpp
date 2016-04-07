@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
-
+#include <medAbstractProcess.h>
 #include <medAbstractView.h>
 
 #include <medToolBox.h>
@@ -313,13 +313,13 @@ void medToolBox::handleDisplayError(int error)
 {
     switch (error)
     {
-    case 2:
+    case medAbstractProcess::PIXEL_TYPE:
         displayPixelTypeError();
         break;
-    case 3:
+    case medAbstractProcess::DIMENSION:
         displayDataDimensionError();
         break;
-    case 4:
+    case medAbstractProcess::MESH_TYPE:
         displayMeshTypeError();
         break;
     }

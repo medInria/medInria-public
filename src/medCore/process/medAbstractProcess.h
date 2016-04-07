@@ -21,17 +21,6 @@
 
 class medAbstractProcessPrivate;
 
-namespace DATAERROR
-{
-enum DATAERROR
-{
-    PIXELTYPE = 2, //! Pixel type not yet implemented
-    DIMENSION = 3, //! Not a 3D volume
-    MESHTYPE  = 4, //! Not a mesh
-    UNDEFINED = 5, //! Miscellanous
-};
-}
-
 /**
  * Extending dtkAbstractProcess class to hold more specific information
  */
@@ -44,6 +33,14 @@ public:
     medAbstractProcess(const medAbstractProcess& other);
     virtual ~medAbstractProcess();
     virtual void setInput ( medAbstractData *data, int channel = 0 ){}
+
+    enum DataError
+    {
+        PIXEL_TYPE = 2, //! Pixel type not yet implemented
+        DIMENSION,      //! Not a 3D volume
+        MESH_TYPE,      //! Not a mesh
+        UNDEFINED,      //! Miscellanous
+    };
 
 public slots:
     virtual medAbstractData *output() = 0;

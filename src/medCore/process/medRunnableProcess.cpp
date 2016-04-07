@@ -56,12 +56,14 @@ void medRunnableProcess::internalRun()
     {
         int res = d->process->update();
 
-        if (res == 0)
+        if (res == DTK_SUCCEED)
+        {
             emit success (this);
+        }
         else
         {
             emit failure (this);
-            emit displayError(res);
+            emit failure (res); // Can be connected to medToolBox::handleDisplayError(int error)
         }
     }
 }
