@@ -14,13 +14,12 @@
 #include <medAbstractData.h>
 #include <medAbstractProcess.h>
 #include <medAbstractView.h>
-
+#include <medButton.h>
+#include <medMessageController.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medToolBoxBody.h>
 #include <medToolBoxTab.h>
-#include <medButton.h>
-#include <medMessageController.h>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkPlugin>
