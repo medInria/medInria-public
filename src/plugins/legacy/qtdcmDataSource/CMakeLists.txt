@@ -58,7 +58,7 @@ list_header_directories_to_include(${PROJECT_NAME}
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
-  ${QTDCM_INCLUDE_DIR}
+  ${QTDCM_INCLUDE_DIRS}
   ${QTDCM_DIR}
   )
 
