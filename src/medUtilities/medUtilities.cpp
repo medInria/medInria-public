@@ -191,9 +191,6 @@ void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
         case MSR:
             mode3DParam->setValue("MSR");
             break;
-        default:
-            qDebug()<<"medUtilities: wrong 3d mode";
-            break;
         }
 
         renderer3DParam->setValue("Ray Cast");
