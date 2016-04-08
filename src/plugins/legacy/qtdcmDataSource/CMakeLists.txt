@@ -39,8 +39,6 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(DCMTK REQUIRED NO_MODULE)
 
 find_package(QtDCM REQUIRED)
-include(${QTDCM_USE_FILE})
-
 
 ## #############################################################################
 ## List Sources
