@@ -325,6 +325,7 @@ void medToolBox::handleDisplayError(int error)
         displayMessageError("This toolbox is designed to be used with meshes");
         break;
     default:
+        displayMessageError("This action failed (undefined error)");
         break;
     }
 }
