@@ -68,14 +68,8 @@ public:
     
     virtual void toXMLNode(QDomDocument* doc, QDomElement* currentNode);
 
-    //! Handle volume errors: pixel type
-    void displayPixelTypeError();
-
-    //! Handle volume errors: dimension
-    void displayDataDimensionError();
-
-    //! Handle mesh errors: data type
-    void displayMeshTypeError();
+    //! Display a qDebug and a medMessageController
+    void displayMessageError(QString error);
 
 signals:
     /**

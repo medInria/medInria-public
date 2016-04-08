@@ -37,7 +37,8 @@ public:
     enum DataError
     {
         PIXEL_TYPE = 2, //! Pixel type not yet implemented
-        DIMENSION,      //! Not a 3D volume
+        DIMENSION_3D,   //! Not a 3D volume
+        DIMENSION_4D,   //! Not a 4D volume
         MESH_TYPE,      //! Not a mesh
         UNDEFINED,      //! Miscellanous
     };
