@@ -34,6 +34,15 @@ public:
     virtual ~medAbstractProcess();
     virtual void setInput ( medAbstractData *data, int channel = 0 ){}
 
+    enum DataError
+    {
+        PIXEL_TYPE = 2, //! Pixel type not yet implemented
+        DIMENSION_3D,   //! Not a 3D volume
+        DIMENSION_4D,   //! Not a 4D volume
+        MESH_TYPE,      //! Not a mesh
+        UNDEFINED,      //! Miscellanous
+    };
+
 public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;

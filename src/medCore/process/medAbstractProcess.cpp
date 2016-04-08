@@ -20,7 +20,7 @@ medAbstractProcess::medAbstractProcess(medAbstractProcess * parent) : dtkAbstrac
 
 medAbstractProcess::medAbstractProcess(const medAbstractProcess& other) : dtkAbstractProcess(*new medAbstractProcessPrivate(*other.d_func()), other)
 {
-    
+
 }
 
 medAbstractProcess::~medAbstractProcess()

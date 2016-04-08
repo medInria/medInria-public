@@ -68,6 +68,9 @@ public:
     
     virtual void toXMLNode(QDomDocument* doc, QDomElement* currentNode);
 
+    //! Display a qDebug and a medMessageController
+    void displayMessageError(QString error);
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.
@@ -98,7 +101,6 @@ signals:
     */
     void failure();
 
-
 public slots:
     virtual void clear();
     void switchMinimize();
@@ -108,6 +110,9 @@ public slots:
     void show();
     //Behaviour when you hide/minimize your toolbox
     virtual void behaveWithBodyVisibility(){}
+
+    //! Switch between errors
+    void handleDisplayError(int);
 
 protected slots:
     void onAboutButtonClicked();

@@ -52,11 +52,19 @@ dtkAbstractProcess * medRunnableProcess::getProcess()
 
 void medRunnableProcess::internalRun()
 {
-    if (d->process) {
-        if (d->process->update() == 0)
+    if (d->process)
+    {
+        int res = d->process->update();
+
+        if (res == DTK_SUCCEED)
+        {
             emit success (this);
+        }
         else
+        {
             emit failure (this);
+            emit failure (res); // Can be connected to medToolBox::handleDisplayError(int error)
+        }
     }
 }
 

@@ -59,6 +59,7 @@ signals:
     void cancelled (QObject* sender);
     void showError (const QString& message, unsigned int timeout);
     void activate(QObject* sender,bool active);
+    void failure(int error);
 
     /**
     * This signal is emitted when the process cannot be cancelled anymore.

@@ -12,14 +12,14 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
-
+#include <medAbstractProcess.h>
 #include <medAbstractView.h>
-
+#include <medButton.h>
+#include <medMessageController.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medToolBoxBody.h>
 #include <medToolBoxTab.h>
-#include <medButton.h>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkPlugin>
@@ -308,3 +308,30 @@ void medToolBox::toXMLNode(QDomDocument* doc, QDomElement* currentNode)
 	currentNode->appendChild(elmt);
 }
 
+void medToolBox::handleDisplayError(int error)
+{
+    switch (error)
+    {
+    case medAbstractProcess::PIXEL_TYPE:   //! Handle volume errors: pixel type
+        displayMessageError("Pixel type not yet implemented");
+        break;
+    case medAbstractProcess::DIMENSION_3D: //! Handle volume errors: dimension
+        displayMessageError("This toolbox is designed to be used with 3D volumes");
+        break;
+    case medAbstractProcess::DIMENSION_4D: //! Handle volume errors: dimension
+        displayMessageError("This toolbox is designed to be used with 4D volumes");
+        break;
+    case medAbstractProcess::MESH_TYPE:    //! Handle mesh errors: data type
+        displayMessageError("This toolbox is designed to be used with meshes");
+        break;
+    default:
+        displayMessageError("This action failed (undefined error)");
+        break;
+    }
+}
+
+void medToolBox::displayMessageError(QString error)
+{
+    qDebug() << name() + ": " + error;
+    medMessageController::instance()->showError(error,3000);
+}

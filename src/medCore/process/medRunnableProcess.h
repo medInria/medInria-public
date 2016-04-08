@@ -38,7 +38,6 @@ public:
      medRunnableProcess();
     ~medRunnableProcess();
 
-
     void setProcess (dtkAbstractProcess *proc);
     dtkAbstractProcess * getProcess();
 
