@@ -145,7 +145,7 @@ void medUtilities::applyInverseOrientationMatrix(medAbstractView* view, double* 
     std::copy(homogeneousVector, homogeneousVector + 3, outPoint);
 }
 
-void medUtilities::switchTo3D(medAbstractView *view, QString mode3D)
+void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
 {
     if (view)
     {
@@ -176,7 +176,26 @@ void medUtilities::switchTo3D(medAbstractView *view, QString mode3D)
                 break;
             }
         }
-        mode3DParam->setValue(mode3D);
+
+        switch(mode3D)
+        {
+        case VR:
+            mode3DParam->setValue("VR");
+            break;
+        case MIP_MAXIMUM:
+            mode3DParam->setValue("MIP - Maximum");
+            break;
+        case MIP_MINIMUM:
+            mode3DParam->setValue("MIP - Minimum");
+            break;
+        case MSR:
+            mode3DParam->setValue("MSR");
+            break;
+        default:
+            qDebug()<<"medUtilities: wrong 3d mode";
+            break;
+        }
+
         renderer3DParam->setValue("Ray Cast");
     }
 }
