@@ -38,7 +38,7 @@ if (USE_SYSTEM_${ep})
   #  provide path of project needeed for Asclepios and visages plugins 
   file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
     "find_package(${ep} REQUIRED
-      PATHS ${${ep}_DIR}
+      PATHS \"${${ep}_DIR}\"
       NO_CMAKE_BUILDS_PATH
       )\n"
     )
@@ -52,14 +52,24 @@ else()
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  if (${required_for_plugins})  
-    file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
+  if (${required_for_plugins})
+    if (DEFINED ${ep}_BINARY_DIR)
+      file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
       "find_package(${ep} REQUIRED
-        PATHS \"${EP_PREFIX_thirdparts}/src/${ep}-build\" 
+        PATHS \"${${ep}_BINARY_DIR}\" 
         PATH_SUFFIXES install build
         NO_CMAKE_BUILDS_PATH
         )\n"
       )
+    else()
+      file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
+        "find_package(${ep} REQUIRED
+          PATHS \"${EP_PREFIX_thirdparts}/src/${ep}-build\" 
+          PATH_SUFFIXES install build
+          NO_CMAKE_BUILDS_PATH
+          )\n"
+        )
+    endif()
   endif()
 
 

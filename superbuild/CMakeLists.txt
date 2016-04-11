@@ -97,6 +97,10 @@ set(GET_REVISIONS_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/get_revisions
   )
 
+option(USE_GITHUB_SSH 
+  "Use by default Git SSH addresses, requires public key set on github" OFF
+  )
+
 # Add CMAKE_MODULE_PATH to superProjectConfig.cmake, usefull for 
 # Asclepios and visages plugins
 set(${PROJECT_NAME}_CONFIG_FILE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
@@ -108,6 +112,11 @@ file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
     set(USE_GITHUB_SSH ${USE_GITHUB_SSH})\n"
   )
     
+# Add Qt dir
+file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
+  "set(Qt5_DIR ${Qt5_DIR})\n\n"
+  )
+
 # Add path of the get_revisions module to superProjectConfig.cmake
 file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
   "set(GET_REVISIONS_MODULE_PATH 
@@ -119,10 +128,6 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/projects_modules
   ${CMAKE_SOURCE_DIR}/packaging
   ${CMAKE_MODULE_PATH}
-  )
-
-option(USE_GITHUB_SSH 
-  "Use by default Git SSH addresses, requires public key set on github" OFF
   )
 
 set(PRIVATE_PLUGINS_DIRS "" CACHE PATH "Folders containing private plugins, separated by ';'")
