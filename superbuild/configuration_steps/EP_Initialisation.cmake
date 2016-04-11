@@ -55,7 +55,7 @@ else()
   if (${required_for_plugins})  
     file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
       "find_package(${ep} REQUIRED
-        PATHS \"${CMAKE_BINARY_DIR}/${ep}\" 
+        PATHS \"${EP_PREFIX_thirdparts}/src/${ep}-build\" 
         PATH_SUFFIXES install build
         NO_CMAKE_BUILDS_PATH
         )\n"
