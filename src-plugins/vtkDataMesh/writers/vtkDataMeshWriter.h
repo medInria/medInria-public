@@ -16,6 +16,8 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 
 #include <vtkDataMeshPluginExport.h>
+#include <vtkMetaDataSet.h>
+
 class vtkDataSetWriter;
 
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataWriter
@@ -43,6 +45,9 @@ public slots:
 
 private:
     static const char ID[];
+    QStringList metaDataKeysToCopy();
+    QString getHeaderVtk();
+    void addHeaderVtpToMesh(vtkMetaDataSet *mesh);
 };
 
 

@@ -13,13 +13,17 @@
 
 #include <vtkDataMeshReader.h>
 
-#include <vtkErrorCode.h>
-
-#include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
+#include <medMetaDataKeys.h>
 
+#include <vtkErrorCode.h>
+#include <vtkFieldData.h>
 #include <vtkMetaVolumeMesh.h>
 #include <vtkMetaSurfaceMesh.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataReader.h>
+#include <vtkStringArray.h>
+#include <vtkXMLPolyDataReader.h>
 
 const char vtkDataMeshReader::ID[] = "vtkDataMeshReader";
 
@@ -51,7 +55,6 @@ bool vtkDataMeshReader::canRead(const QStringList& paths){
 bool vtkDataMeshReader::readInformation(const QString& path) {
     medAbstractData *medData = medAbstractDataFactory::instance()->create("vtkDataMesh");
     this->setData(medData);
-    medData->addMetaData("FilePath", QStringList() << path); // useful ?
     
     return true;
 }
@@ -66,8 +69,6 @@ bool vtkDataMeshReader::read(const QString& path) {
     setProgress(0);
     readInformation(path);
     setProgress(50);
-
-    qDebug() << "Can read with: " << identifier();
 
     if (medAbstractData * medData = dynamic_cast<medAbstractData*>(data()))
     {
@@ -89,26 +90,137 @@ bool vtkDataMeshReader::read(const QString& path) {
             return false;
         }
 
-        try
+        // Get the extension of the filename
+        QFileInfo pathfile(path);
+        QString extension = pathfile.completeSuffix();
+
+        if (extension == "vtk") // VTK files
+        {
+            // Extract data and header from the file
+            QString header;
+            vtkSmartPointer<vtkPolyDataReader> reader = vtkPolyDataReader::New();
+            try
+            {
+                reader->SetFileName(path.toLocal8Bit().constData());
+                reader->Update();
+
+                header = reader->GetHeader();
+                dataSet->Read(path.toLocal8Bit().constData());
+            }
+            catch (vtkErrorCode::ErrorIds error)
+            {
+                qDebug() << "vtkDataMeshReader: " << vtkErrorCode::GetStringFromErrorCode(error);
+                return false;
+            }
+
+            medData->setData(dataSet);
+
+            // Parse header and save metadata in medData
+            parseHeaderVtk(header, medData);
+        }
+        else if (extension == "vtp") // VTP files
         {
             dataSet->Read(path.toLocal8Bit().constData());
-        } catch (...)
+            medData->setData(dataSet);
+
+            // Extract field data from the xml file
+            vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+            reader->SetFileName(path.toLocal8Bit().constData());
+            reader->Update();
+
+            if (reader->GetOutput()->GetFieldData())
+            {
+                parseHeaderVtp(reader->GetOutput()->GetFieldData(), medData);
+            }
+        }
+        else if ((extension == "mesh") || (extension == "obj")) // MESH or OBJ files
         {
-            qDebug() << "Loading the vtkDataMesh failed, error while parsing !";
+            try
+            {
+                dataSet->Read(path.toLocal8Bit().constData());
+            } catch (...)
+            {
+                qDebug() << "vtkDataMeshReader::read -> loading the vtkDataMesh failed";
+                return false;
+            }
+        }
+        else
+        {
             return false;
         }
-
-        medData->setData(dataSet);
-        std::string patientName, patientID;
-
-        if (dataSet->GetMetaData("PatientName", patientName))
-            medData->setMetaData("PatientName", QString::fromStdString(patientName));
-        if (dataSet->GetMetaData("PatientID", patientID))
-            medData->setMetaData("PatientID", QString::fromStdString(patientID));
     }
 
     setProgress(100);
     return true;
+}
+
+QStringList vtkDataMeshReader::metaDataKeysToCopy()
+{
+    QStringList keys;
+
+    keys << medMetaDataKeys::PatientID.key()
+         << medMetaDataKeys::PatientName.key()
+         << medMetaDataKeys::Age.key()
+         << medMetaDataKeys::BirthDate.key()
+         << medMetaDataKeys::Gender.key()
+         << medMetaDataKeys::Description.key()
+         << medMetaDataKeys::StudyID.key()
+         << medMetaDataKeys::StudyDicomID.key()
+         << medMetaDataKeys::StudyDescription.key()
+         << medMetaDataKeys::Institution.key()
+         << medMetaDataKeys::Referee.key()
+         << medMetaDataKeys::StudyDate.key()
+         << medMetaDataKeys::StudyTime.key()
+         << medMetaDataKeys::Performer.key()
+         << medMetaDataKeys::Report.key()
+         << medMetaDataKeys::Protocol.key()
+         << medMetaDataKeys::Origin.key()
+         << medMetaDataKeys::AcquisitionDate.key()
+         << medMetaDataKeys::AcquisitionTime.key()
+         << medMetaDataKeys::Modality.key()
+         << medMetaDataKeys::Orientation.key();
+
+    return keys;
+}
+
+void vtkDataMeshReader::parseHeaderVtk(QString header, medAbstractData* medData)
+{
+    QStringList list = header.split("\t");
+
+    if (list.count() > 1) // Regular VTK from MUSIC
+    {
+        QStringList keyList = metaDataKeysToCopy();
+        foreach(QString key, keyList)
+        {
+            if (list.contains(key))
+            {
+                medData->setMetaData(key, list.at(list.indexOf(key)+1));
+            }
+        }
+    }
+    else // Carto VTK
+    {
+        QStringList cartoList = header.split(" ");
+
+        if (cartoList.count() == 4)
+        {
+            medData->setMetaData(medMetaDataKeys::PatientName.key(), cartoList.at(1)+QString("^")+cartoList.at(2));
+            medData->setMetaData(medMetaDataKeys::PatientID.key(),   cartoList.at(3));
+        }
+    }
+}
+
+void vtkDataMeshReader::parseHeaderVtp(vtkSmartPointer<vtkFieldData> field, medAbstractData* medData)
+{
+    QStringList keyList = metaDataKeysToCopy();
+    foreach(QString key, keyList)
+    {
+        if (field->HasArray(key.toStdString().c_str()))
+        {
+            vtkAbstractArray* subArr = field->GetAbstractArray(key.toStdString().c_str());
+            medData->setMetaData(key, QString(subArr->GetVariantValue(0).ToString()));
+        }
+    }
 }
 
 bool vtkDataMeshReader::read(const QStringList& paths) {
