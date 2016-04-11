@@ -15,8 +15,6 @@
 
 class QVTKFrame : public QFrame
 {
-    Q_OBJECT
-
 public:
     QVTKFrame(QWidget * parent):QFrame(parent)
     {
