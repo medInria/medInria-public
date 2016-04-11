@@ -44,6 +44,9 @@ public:
     vtkGetObjectMacro (ViewFixed, medAbstractLayeredView);
     vtkGetObjectMacro (ViewFuse, medAbstractLayeredView);
     vtkGetObjectMacro (Output, medAbstractData);
+
+    QList<manualRegistrationLandmark*> * getPoints_Moving();
+    QList<manualRegistrationLandmark*> * getPoints_Fixed();
     
     void SetTbx(manualRegistrationToolBox*);
     void SetViewMoving(medAbstractLayeredView*);
@@ -55,7 +58,7 @@ public:
     void AddPoint(manualRegistrationLandmark * landmark,unsigned int i);
     void ClearUselessLandmarks();
     void RequestDeletion(manualRegistrationLandmark * landmark);
-    int Update();
+    int checkLandmarks();
     void Reset();
 
 private:

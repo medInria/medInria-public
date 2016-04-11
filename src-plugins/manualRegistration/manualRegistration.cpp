@@ -13,24 +13,25 @@
 
 #include <manualRegistration.h>
 
+#include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-
-// /////////////////////////////////////////////////////////////////
-//
-// /////////////////////////////////////////////////////////////////
-
-#include <itkImageRegistrationMethod.h>
-
-#include <itkImage.h>
-#include <itkResampleImageFilter.h>
-#include <itkLandmarkBasedTransformInitializer.h>
-#include <time.h>
-#include <itkPoint.h>
-#include <vector>
 #include <iostream>
+#include <itkImage.h>
+#include <itkImageRegistrationMethod.h>
+#include <itkLandmarkBasedTransformInitializer.h>
+#include <itkPoint.h>
+#include <itkResampleImageFilter.h>
+#include <rpiCommonTools.hxx>
+#include <time.h>
+#include <vector>
 #include <vtkPointHandleRepresentation2D.h>
+
+
+
+typedef double TransformScalarType;
+typedef itk::VersorRigid3DTransform<TransformScalarType> TransformType;
+
 
 // /////////////////////////////////////////////////////////////////
 // manualRegistrationDiffeomorphicDemonsPrivate
@@ -47,6 +48,7 @@ public:
     void * registrationMethod ;
     QList<manualRegistrationLandmark*> * FixedLandmarks;
     QList<manualRegistrationLandmark*> * MovingLandmarks;
+    TransformType::Pointer transform;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -101,9 +103,6 @@ int manualRegistrationPrivate::update()
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
 
-    typedef double TransformScalarType;
-    typedef itk::VersorRigid3DTransform<TransformScalarType> TransformType;
-
     typedef itk::LandmarkBasedTransformInitializer< TransformType, FixedImageType, MovingImageType > RegistrationType;
 
     typename RegistrationType::Pointer registration = RegistrationType::New();
@@ -136,7 +135,7 @@ int manualRegistrationPrivate::update()
     registration->SetFixedLandmarks(containerFixed);
     registration->SetMovingLandmarks(containerMoving);
 
-    TransformType::Pointer transform = TransformType::New();
+    transform = TransformType::New();
     transform->SetIdentity();
     registration->SetTransform(transform);
 
@@ -232,28 +231,22 @@ QString manualRegistration::getTitleAndParameters()
 
 bool manualRegistration::writeTransform(const QString& file)
 {
-    //typedef float PixelType;
-    //typedef double TransformScalarType;
-    //typedef itk::Image< PixelType, 3 > RegImageType;
-    ////normaly should use long switch cases, but here we know we work with float3 data.
-    //if (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
-    //        static_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod))
-    //{
-    //    try{
-    //        rpi::writeDisplacementFieldTransformation<TransformScalarType, RegImageType::ImageDimension>(
-    //                    registration->GetTransformation(),
-    //                    file.toStdString());
-    //    }
-    //    catch (std::exception)
-    //    {
-    //        return false;
-    //    }
-    //    return true;
-    //}
-    //else
-    //{
-    //    return false;
-    //}
+    typedef float PixelType;
+
+    typedef itk::Image< PixelType, 3 > RegImageType;
+
+    try{
+        rpi::writeLinearTransformation<TransformScalarType,
+                RegImageType::ImageDimension>(
+                    d->transform,
+                    file.toLocal8Bit().constData());
+    }
+    catch (std::exception& ex)
+    {
+        std::cout<<ex.what()<<std::endl;
+        return false;
+    }
+
     return true;
 }
 

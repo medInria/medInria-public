@@ -21,6 +21,7 @@ PURPOSE.
 #include <medPluginManager.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
+#include <manualRegistration.h>
 #include <manualRegistrationLandmarkController.h>
 #include <medVtkViewBackend.h>
 #include <vtkCollection.h>
@@ -42,6 +43,7 @@ public:
     QPushButton * b_computeRegistration;
     QPushButton * b_reset;
     QPushButton * b_save;
+    QPushButton * b_exportTransformation;
     medAbstractLayeredView * currentView;
     medViewContainer * leftContainer;
     medViewContainer * rightContainer;
@@ -54,6 +56,7 @@ public:
     medViewParameterGroup* viewGroup;
     medLayerParameterGroup* layerGroup1,*layerGroup2;
 
+    dtkSmartPointer<manualRegistration> process;
     dtkSmartPointer<medAbstractData> output;
 };
 
@@ -78,9 +81,15 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->b_reset->setObjectName("resetButton");
     connect(d->b_reset,SIGNAL(clicked()),this,SLOT(reset()));
 
-    d->b_save = new QPushButton("Save",widget);
+    d->b_save = new QPushButton("Save Image",widget);
+    d->b_save->setToolTip(tr("Save registered image"));
     d->b_save->setObjectName("saveButton");
     connect(d->b_save,SIGNAL(clicked()),this,SLOT(save()));
+
+    d->b_exportTransformation = new QPushButton("Export Transformation",widget);
+    d->b_exportTransformation->setObjectName("Export Transformation");
+    d->b_exportTransformation->setToolTip(tr("Export the transformation in a tfm or txt file"));
+    connect(d->b_exportTransformation,SIGNAL(clicked()),this,SLOT(exportTransformation()));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(d->b_startManualRegistration);
@@ -89,6 +98,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     mainLayout->addWidget(d->b_computeRegistration);
     mainLayout->addWidget(d->b_reset);
     mainLayout->addWidget(d->b_save);
+    mainLayout->addWidget(d->b_exportTransformation);
     widget->setLayout(mainLayout);
     this->addWidget(widget);
 
@@ -106,8 +116,10 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->rightContainer  = 0;
     d->bottomContainer = 0;
     d->controller      = 0;
+    d->process         = 0;
     d->output          = 0;
 
+    disableSaveButtons(true);
     displayButtons(false);
 }
 
@@ -119,6 +131,7 @@ manualRegistrationToolBox::~manualRegistrationToolBox()
     d->rightContainer  = 0;
     d->bottomContainer = 0;
     d->controller      = 0;
+    d->process         = 0;
     d->output          = 0;
 
     delete d;
@@ -225,11 +238,19 @@ void manualRegistrationToolBox::startManualRegistration()
 
     displayButtons(true);
     d->b_startManualRegistration->setText("Stop Manual Registration");
+
+    connect(d->rightContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
+    connect(d->leftContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
 }
 
 void manualRegistrationToolBox::stopManualRegistration()
 {
+    disconnect(d->rightContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
+    disconnect(d->leftContainer->view(),SIGNAL(closed()),this,SLOT(stopManualRegistration()));
+
     d->b_startManualRegistration->setText("Start Manual Registration");
+    reset();
+    d->controller->SetEnabled(0);
     d->regOn           = false;
     d->controller->Delete();
     d->controller      = 0;
@@ -305,10 +326,22 @@ void manualRegistrationToolBox::computeRegistration()
     if (!d->controller)
         return;
 
-    if (d->controller->Update() == EXIT_FAILURE)
+    if (d->controller->checkLandmarks() == DTK_FAILURE)
         return;
 
-    medAbstractData * newOutput = d->controller->GetOutput();
+    d->process = new manualRegistration();
+    d->process->SetFixedLandmarks(d->controller->getPoints_Fixed());
+    d->process->SetMovingLandmarks(d->controller->getPoints_Moving());
+    d->process->setFixedInput(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view())->layerData(0));
+    d->process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
+    d->process->update(itkProcessRegistration::FLOAT);
+
+    if(this->parentToolBox()) //if in Registration Workspace
+    {
+        this->parentToolBox()->setProcess(d->process);
+    }
+
+    medAbstractData * newOutput = d->process->output();
 
     if(!newOutput)
     {
@@ -323,6 +356,7 @@ void manualRegistrationToolBox::computeRegistration()
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
     synchroniseMovingFuseView();
 
+    disableSaveButtons(false);
 }
 
 void manualRegistrationToolBox::reset()
@@ -332,8 +366,12 @@ void manualRegistrationToolBox::reset()
     medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
     medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
     viewFuse->removeLayer(1);
-    viewFuse->addLayer(viewMoving->layerData(0));
+    if(viewMoving) //not the case if called by viewMoving closed() signal
+    {
+        viewFuse->addLayer(viewMoving->layerData(0));
+    }
     synchroniseMovingFuseView();
+    disableSaveButtons(true);
 }
 
 void manualRegistrationToolBox::save()
@@ -343,6 +381,18 @@ void manualRegistrationToolBox::save()
         medDataManager::instance()->importData(d->output, false);
     }
 }
+
+void manualRegistrationToolBox::exportTransformation()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save transformation in tfm (default) or txt."),
+                               "/home/transformation.tfm",
+                               tr("Text files (*.tfm *.txt)"));
+    if(fileName != "")
+    {
+        d->process->writeTransform(fileName);
+    }
+}
+
 
 void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * tabContainers)
 {
@@ -424,6 +474,12 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
     }
 }
 
+void manualRegistrationToolBox::disableSaveButtons(bool param)
+{
+    d->b_save->setDisabled(param);
+    d->b_exportTransformation->setDisabled(param);
+}
+
 void manualRegistrationToolBox::displayButtons(bool show)
 {
     if(show)
@@ -431,12 +487,14 @@ void manualRegistrationToolBox::displayButtons(bool show)
         d->b_reset->show();
         d->b_computeRegistration->show();
         d->b_save->show();
+        d->b_exportTransformation->show();
     }
     else
     {
         d->b_reset->hide();
         d->b_computeRegistration->hide();
         d->b_save->hide();
+        d->b_exportTransformation->hide();
     }
 }
 

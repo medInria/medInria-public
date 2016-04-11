@@ -47,6 +47,7 @@ protected slots:
     void update(medAbstractData *){}
     void synchroniseMovingFuseView();
     void save();
+    void exportTransformation();
 
 public slots:
     void startManualRegistration();
@@ -57,6 +58,7 @@ public slots:
 private:
     void displayButtons(bool);
     void constructContainers(medTabbedViewContainers *);
+    void disableSaveButtons(bool);
     manualRegistrationToolBoxPrivate *d;
 };
 

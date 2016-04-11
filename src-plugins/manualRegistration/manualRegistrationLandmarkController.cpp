@@ -253,46 +253,51 @@ void manualRegistrationLandmarkController::SetEnabled (unsigned int arg)
     }
 }
 
-int manualRegistrationLandmarkController::Update()
+int manualRegistrationLandmarkController::checkLandmarks()
 {
     if (Points_Fixed->size()!=Points_Moving->size())
     {
         medMessageController::instance()->showError("The number of landmarks is not the same on both views",3000);
-        return EXIT_FAILURE;
+        return DTK_FAILURE;
     }
 
     if (!Points_Fixed->size())
     {
         medMessageController::instance()->showError("You didn't put any landmark !",3000);
-        return EXIT_FAILURE;
+        return DTK_FAILURE;
     }
 
-    manualRegistration * process = new manualRegistration();
-    process->SetFixedLandmarks(Points_Fixed);
-    process->SetMovingLandmarks(Points_Moving);
-    process->setFixedInput(ViewFixed->layerData(0));
-    process->setMovingInput(ViewMoving->layerData(0));
-    process->update(itkProcessRegistration::FLOAT);
+    return DTK_SUCCEED;
+}
 
-    Output = process->output();
-    Output->copyMetaDataFrom(ViewMoving->layerData(0));
-    delete process;
+QList<manualRegistrationLandmark*> * manualRegistrationLandmarkController::getPoints_Moving()
+{
+    return Points_Moving;
+}
 
-    return EXIT_SUCCESS;
+QList<manualRegistrationLandmark*> * manualRegistrationLandmarkController::getPoints_Fixed()
+{
+    return Points_Fixed;
 }
 
 void manualRegistrationLandmarkController::Reset()
 {
-    for(int i=0;i<Points_Fixed->size();i++)
+    if(ViewFixed)
     {
-        Points_Fixed->at(i)->RemoveAllObservers();
-        Points_Fixed->at(i)->Delete();
+        for(int i=0;i<Points_Fixed->size();i++)
+        {
+            Points_Fixed->at(i)->RemoveAllObservers();
+            Points_Fixed->at(i)->Delete();
+        }
     }
 
-    for(int i=0;i<Points_Moving->size();i++)
+    if(ViewMoving)
     {
-        Points_Moving->at(i)->RemoveAllObservers();
-        Points_Moving->at(i)->Delete();
+        for(int i=0;i<Points_Moving->size();i++)
+        {
+            Points_Moving->at(i)->RemoveAllObservers();
+            Points_Moving->at(i)->Delete();
+        }
     }
 
     Points_Fixed->clear();
