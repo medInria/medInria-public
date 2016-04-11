@@ -80,7 +80,7 @@ endif()
 ## add library
 ## #############################################################################
 
-link_directories(${QTDCM_LIBRARY_DIRS})
+link_directories(${QTDCM_LIBRARY_DIR})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
@@ -100,7 +100,7 @@ endif()
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${QTDCM_LIBS}
+  ${QTDCM_LIBRARIES}
   ${DCMTK_LIBRARIES}
   ${WIN_LINK_LIBRARIES}
   dtkCore

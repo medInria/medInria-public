@@ -168,7 +168,7 @@ void qtdcmDataSource::initWidgets()
         QtDcmManager::instance()->setPreviewWidget ( d->serieToolBox->getPreviewWidget() );
         QtDcmManager::instance()->setImportWidget ( d->serieToolBox->getImportWidget() );
         QtDcmManager::instance()->setSerieInfoWidget ( d->serieToolBox->getSerieInfoWidget() );
-        QtDcmManager::instance()->useConverter ( false );
+        QtDcmManager::instance()->setUseExternalConverter ( false );
 
         d->mainWidget->layout()->setContentsMargins(0,0,0,0);
 

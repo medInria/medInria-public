@@ -126,6 +126,7 @@ option(USE_GITHUB_SSH
   )
 
 set(PRIVATE_PLUGINS_DIRS "" CACHE PATH "Folders containing private plugins, separated by ';'")
+set(PRIVATE_PLUGINS_LEGACY_DIRS "" CACHE PATH "Folders containing legacy private plugins, separated by ';'")
 
 ## #############################################################################
 ## Add Targets
