@@ -34,10 +34,6 @@ class MEDCLUTPLUGIN_EXPORT medClutToolBox : public medToolBox
 public:
      medClutToolBox(QWidget *parent = 0);
     ~medClutToolBox();
-    /**
-    Whenever the view is changed, update method is triggered.
-    */
-    void setWorkspace(medAbstractWorkspace* workspace);
 
     static bool registered();
 

@@ -17,7 +17,6 @@ public:
     ~resliceToolBox();
     static bool registered();
     dtkPlugin* plugin();
-    void setWorkspace(medAbstractWorkspace * workspace);
     medAbstractData *processOutput();
     void changeButtonValue(QString buttonName, double value);
 

@@ -54,8 +54,11 @@ reformatWorkspace::reformatWorkspace(QWidget *parent) : medAbstractWorkspace(par
         {
             medToolBox* toolBox = medToolBoxFactory::instance()->createToolBox(toolbox, parent);
             addToolBox(toolBox);
-            toolBox->setWorkspace(this);
             toolBox->switchMinimize();
+
+            toolBox->setWorkspace(this);
+            connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()), toolBox,
+                    SLOT(updateView()), Qt::UniqueConnection);
         }
     }
 }
