@@ -184,15 +184,6 @@ void manualRegistrationToolBox::updateView()
 
 }
 
-//void manualRegistrationToolBox::setWorkspace(medAbstractWorkspace* workspace)
-//{
-//    medToolBox::setWorkspace(workspace);
-//    medTabbedViewContainers * containers = workspace->stackedViewContainers();
-
-//    QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
-//    updateView();
-//}
-
 void manualRegistrationToolBox::startManualRegistration()
 {
     if(d->regOn)
