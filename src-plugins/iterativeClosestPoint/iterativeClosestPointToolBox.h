@@ -29,7 +29,7 @@ public:
     
 public:
     static bool registered();
-    void setWorkspace(medAbstractWorkspace*);
+    //void setWorkspace(medAbstractWorkspace*);
     void addLayer(unsigned int layer);
     
 public slots:

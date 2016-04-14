@@ -40,7 +40,6 @@ medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */
 medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
     d->segmentationToolBox = new medSegmentationSelectorToolBox(parent);
-    d->segmentationToolBox->setWorkspace(this);
 
     connect(d->segmentationToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
 

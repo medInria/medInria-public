@@ -39,7 +39,7 @@ public:
     static bool registered();
     dtkPlugin * plugin();
 
-    void setWorkspace(medAbstractWorkspace* workspace);
+    //void setWorkspace(medAbstractWorkspace* workspace);
     void updateLabels(int left,int right);
 
 protected slots:

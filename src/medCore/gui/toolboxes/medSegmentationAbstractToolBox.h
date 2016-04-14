@@ -26,12 +26,17 @@ class MEDCORE_EXPORT medSegmentationAbstractToolBox : public medToolBox
     Q_OBJECT
 
 public:
-             medSegmentationAbstractToolBox(QWidget *parent = 0);
+    medSegmentationAbstractToolBox(QWidget *parent = 0);
     virtual ~medSegmentationAbstractToolBox();
 
     virtual dtkPlugin* plugin() = 0;
 
     virtual medAbstractData *processOutput() = 0;
+
+public slots:
+
+    //! Launched when the view is updated
+    virtual void updateView() = 0;
 
 protected:
     medSegmentationSelectorToolBox *segmentationToolBox();

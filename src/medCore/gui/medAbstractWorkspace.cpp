@@ -137,6 +137,7 @@ medAbstractWorkspace::~medAbstractWorkspace(void)
 
 void medAbstractWorkspace::addToolBox(medToolBox *toolbox)
 {
+    toolbox->setWorkspace(this);
     d->toolBoxes.append(toolbox);
 }
 

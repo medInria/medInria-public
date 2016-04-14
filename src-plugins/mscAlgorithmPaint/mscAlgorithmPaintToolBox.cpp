@@ -621,16 +621,6 @@ void AlgorithmPaintToolBox::import()
     maskHasBeenSaved = true;
 }
 
-void AlgorithmPaintToolBox::setWorkspace(medAbstractWorkspace* workspace)
-{
-    medSegmentationAbstractToolBox::setWorkspace(workspace);
-    medTabbedViewContainers * containers = workspace->stackedViewContainers();
-
-    connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()),Qt::UniqueConnection);
-
-    updateView();
-}
-
 void AlgorithmPaintToolBox::updateView()
 {
     medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();

@@ -240,14 +240,14 @@ void iterativeClosestPointToolBox::updateView()
     }
 }
 
-void iterativeClosestPointToolBox::setWorkspace(medAbstractWorkspace* workspace)
-{
-    medToolBox::setWorkspace(workspace);
-    medTabbedViewContainers * containers = workspace->stackedViewContainers();
+//void iterativeClosestPointToolBox::setWorkspace(medAbstractWorkspace* workspace)
+//{
+//    medToolBox::setWorkspace(workspace);
+//    medTabbedViewContainers * containers = workspace->stackedViewContainers();
 
-    QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
-    updateView();
-}
+//    QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
+//    updateView();
+//}
 
 void iterativeClosestPointToolBox::resetComboBoxes()
 {
