@@ -53,7 +53,7 @@ public:
     QDoubleSpinBox * ScaleFactor,* MaxMeanDistance;
     QSpinBox * MaxNumIterations, * MaxNumLandmarks;
     QCheckBox * bStartByMatchingCentroids,*bCheckMeanDistance;
-    QComboBox* bTransformationComboBox;
+    medComboBox* bTransformationComboBox;
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
@@ -87,7 +87,7 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     QLabel * transformation_Label = new QLabel("Transformation");
     transformation_layout->addWidget(transformation_Label);
 
-    d->bTransformationComboBox = new QComboBox(widget);
+    d->bTransformationComboBox = new medComboBox(widget);
     d->bTransformationComboBox->addItem("Rigid body");
     d->bTransformationComboBox->addItem("Similarity");
     d->bTransformationComboBox->addItem("Affine");
