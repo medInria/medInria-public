@@ -13,46 +13,20 @@
 
 #pragma once
 
-#include <medAbstractProcess.h>
+#include "medBinaryOperatorBase.h"
 #include "medBinaryOperationPluginExport.h"
-#include <medAbstractData.h>
 
-#include "itkImage.h"
 
 class itkAndOperatorPrivate;
 
-class MEDBINARYOPERATIONPLUGIN_EXPORT itkAndOperator : public medAbstractProcess
+class MEDBINARYOPERATIONPLUGIN_EXPORT itkAndOperator : public medBinaryOperatorBase
 {
     Q_OBJECT
     
 public:
-    itkAndOperator();
-    virtual ~itkAndOperator();
     
     virtual QString description() const;
-    
-    static bool registered();
-
-    template <class ImageType> int run();
-    template <class ImageType, class ImageType2> int runProcess();
-
-public slots:
-    
-    //! Input data to the plugin is set through here
-    void setInput(medAbstractData *data, int channel);
-    
-    //! Parameters are set through here, channel allows to handle multiple parameters
-    void setParameter(double  data, int channel);
-    
-    //! Method to actually start the filter
-    int update();
-    
-    //! The output will be available through here
-    medAbstractData *output();
-    
-    
-private:
-    itkAndOperatorPrivate *d;
+    static bool registered();   
 };
 
 dtkAbstractProcess *createitkAndOperator();
