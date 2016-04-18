@@ -28,7 +28,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *ev);
-    void mousePressEvent ( QMouseEvent * event );
+    void mousePressEvent(QMouseEvent *event);
 
 private:
     QList<int> ticksList;
