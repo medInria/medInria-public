@@ -49,7 +49,7 @@ void medSlider::paintEvent(QPaintEvent *ev)
     }
 }
 
-void medSlider::mousePressEvent ( QMouseEvent * event )
+void medSlider::mousePressEvent(QMouseEvent *event)
 {
     QSlider::mousePressEvent(event);
     setValue(QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()));
