@@ -14,8 +14,6 @@
 #include <medAbstractProcess.h>
 
 #include <QMap>
-#include <QThreadPool>
-#include <QPushButton>
 
 #include <medAbstractParameter.h>
 
