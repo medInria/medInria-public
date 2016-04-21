@@ -1,4 +1,4 @@
-#include "reformatToolBox.h"
+#include "resliceToolBox.h"
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -11,7 +11,7 @@
 
 #include <medDataManager.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <medReformatViewer.h>
+#include <medResliceViewer.h>
 #include <medAbstractLayeredView.h>
 #include <medTabbedViewContainers.h>
 #include <QGroupBox>
@@ -20,41 +20,41 @@
 #include <vtkImageData.h>
 #include <medSliderSpinboxPair.h>
 
-class reformatToolBoxPrivate
+class resliceToolBoxPrivate
 {
 public:
-    QPushButton *b_startReformat, *b_stopReformat, *b_saveImage, *b_reset;
+    QPushButton *b_startReslice, *b_stopReslice, *b_saveImage, *b_reset;
     medComboBox *bySpacingOrDimension;
     QLabel *spacingXLab, *spacingYLab, *spacingZLab, *help0;
     QDoubleSpinBox *spacingX, *spacingY, *spacingZ;
     medAbstractLayeredView * currentView;
-    medReformatViewer * reformatViewer;
+    medResliceViewer * resliceViewer;
     dtkSmartPointer<medAbstractData> reformatedImage;
     QWidget* reformatOptions;
 };
 
-reformatToolBox::reformatToolBox (QWidget *parent) : medSegmentationAbstractToolBox (parent), d(new reformatToolBoxPrivate)
+resliceToolBox::resliceToolBox (QWidget *parent) : medSegmentationAbstractToolBox (parent), d(new resliceToolBoxPrivate)
 {
-    this->setTitle("Reformat/Resample");
+    this->setTitle("Reslice");
     this->setAboutPluginVisibility(false);
     this->setAboutPluginButton(this->plugin());
 
     // Fill the toolBox
-    QWidget *reformatToolBoxBody = new QWidget(this);
-    d->b_startReformat = new QPushButton("Start Reformat/Resample", reformatToolBoxBody);
-    d->b_startReformat->setCheckable(false);
-    d->b_startReformat->setObjectName("startReformatButton");
-    d->b_stopReformat = new QPushButton("Stop Reformat/Resample", reformatToolBoxBody);
-    d->b_stopReformat->setCheckable(false);
-    d->b_stopReformat->setObjectName("stopReformatButton");
-    d->b_saveImage = new QPushButton("Save Image", reformatToolBoxBody);
+    QWidget *resliceToolBoxBody = new QWidget(this);
+    d->b_startReslice = new QPushButton("Start Reslice", resliceToolBoxBody);
+    d->b_startReslice->setCheckable(false);
+    d->b_startReslice->setObjectName("startReformatButton");
+    d->b_stopReslice = new QPushButton("Stop Reslice", resliceToolBoxBody);
+    d->b_stopReslice->setCheckable(false);
+    d->b_stopReslice->setObjectName("stopReformatButton");
+    d->b_saveImage = new QPushButton("Save Image", resliceToolBoxBody);
     d->b_saveImage->setCheckable(false);
     d->b_saveImage->setObjectName("saveImageButton");
 
     // User can choose pixel or millimeter resample
     QHBoxLayout * resampleLayout = new QHBoxLayout();
-    QLabel* bySpacingOrDimensionLabel = new QLabel("Select your resample parameter:", reformatToolBoxBody);
-    d->bySpacingOrDimension = new medComboBox(reformatToolBoxBody);
+    QLabel* bySpacingOrDimensionLabel = new QLabel("Select your resample parameter:", resliceToolBoxBody);
+    d->bySpacingOrDimension = new medComboBox(resliceToolBoxBody);
     d->bySpacingOrDimension->setObjectName("bySpacingOrDimension");
     d->bySpacingOrDimension->addItem("Spacing");
     d->bySpacingOrDimension->addItem("Dimension");
@@ -63,10 +63,10 @@ reformatToolBox::reformatToolBox (QWidget *parent) : medSegmentationAbstractTool
     connect(d->bySpacingOrDimension, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(switchSpacingAndDimension(const QString&)));
 
     // Spinboxes of resample values
-    QWidget * spinBoxes = new QWidget(reformatToolBoxBody);
-    QVBoxLayout * spacingSpinBoxLayout = new QVBoxLayout(reformatToolBoxBody);
+    QWidget * spinBoxes = new QWidget(resliceToolBoxBody);
+    QVBoxLayout * spacingSpinBoxLayout = new QVBoxLayout(resliceToolBoxBody);
     d->spacingXLab = new QLabel("X : ");
-    d->spacingX = new QDoubleSpinBox(reformatToolBoxBody);
+    d->spacingX = new QDoubleSpinBox(resliceToolBoxBody);
     d->spacingX->setAccessibleName("SpacingX");
     d->spacingX->setObjectName("SpacingX");
     d->spacingX->setRange(0,100);
@@ -75,7 +75,7 @@ reformatToolBox::reformatToolBox (QWidget *parent) : medSegmentationAbstractTool
     spacingSpinBoxLayout->addWidget(d->spacingXLab);
     spacingSpinBoxLayout->addWidget(d->spacingX);
     d->spacingYLab = new QLabel("Y : ");
-    d->spacingY = new QDoubleSpinBox(reformatToolBoxBody);
+    d->spacingY = new QDoubleSpinBox(resliceToolBoxBody);
     d->spacingY->setAccessibleName("SpacingY");
     d->spacingY->setObjectName("SpacingY");
     d->spacingY->setRange(0,100);
@@ -84,7 +84,7 @@ reformatToolBox::reformatToolBox (QWidget *parent) : medSegmentationAbstractTool
     spacingSpinBoxLayout->addWidget(d->spacingYLab);
     spacingSpinBoxLayout->addWidget(d->spacingY);
     d->spacingZLab = new QLabel("Z : ");
-    d->spacingZ = new QDoubleSpinBox(reformatToolBoxBody);
+    d->spacingZ = new QDoubleSpinBox(resliceToolBoxBody);
     d->spacingZ->setAccessibleName("SpacingZ");
     d->spacingZ->setObjectName("SpacingZ");
     d->spacingZ->setRange(0,100);
@@ -94,85 +94,85 @@ reformatToolBox::reformatToolBox (QWidget *parent) : medSegmentationAbstractTool
     spacingSpinBoxLayout->addWidget(d->spacingZ);
     spinBoxes->setLayout(spacingSpinBoxLayout);
 
-    QVBoxLayout *reformatToolBoxLayout =  new QVBoxLayout(reformatToolBoxBody);
-    d->help0 = new QLabel("Open a data volume and launch:",reformatToolBoxBody);
+    QVBoxLayout *resliceToolBoxLayout =  new QVBoxLayout(resliceToolBoxBody);
+    d->help0 = new QLabel("Open a data volume and launch:",resliceToolBoxBody);
     d->help0->setObjectName("help0");
-    reformatToolBoxLayout->addWidget(d->help0);
+    resliceToolBoxLayout->addWidget(d->help0);
 
-    QLabel * help1 = new QLabel("To reset axes in a view press 'o'",reformatToolBoxBody);
-    QLabel * help2 = new QLabel("To change the windowing left click on a 2D view",reformatToolBoxBody);
-    QLabel * help3 = new QLabel("To reset windowing in a view press 'r'",reformatToolBoxBody);
+    QLabel * help1 = new QLabel("To reset axes in a view press 'o'",resliceToolBoxBody);
+    QLabel * help2 = new QLabel("To change the windowing left click on a 2D view",resliceToolBoxBody);
+    QLabel * help3 = new QLabel("To reset windowing in a view press 'r'",resliceToolBoxBody);
 
-    reformatToolBoxLayout->addWidget(d->b_startReformat);
+    resliceToolBoxLayout->addWidget(d->b_startReslice);
 
-    d->reformatOptions = new QWidget(reformatToolBoxBody);
+    d->reformatOptions = new QWidget(resliceToolBoxBody);
     QVBoxLayout* reformatOptionsLayout = new QVBoxLayout(d->reformatOptions);
     d->reformatOptions->setLayout(reformatOptionsLayout);
     d->reformatOptions->hide();
 
-    reformatToolBoxLayout->addWidget(d->reformatOptions);
+    resliceToolBoxLayout->addWidget(d->reformatOptions);
     reformatOptionsLayout->addWidget(help1);
     reformatOptionsLayout->addWidget(help2);
     reformatOptionsLayout->addWidget(help3);
     reformatOptionsLayout->addLayout(resampleLayout);
     reformatOptionsLayout->addWidget(spinBoxes);
     reformatOptionsLayout->addWidget(d->b_saveImage);
-    reformatOptionsLayout->addWidget(d->b_stopReformat);
-    reformatToolBoxBody->setLayout(reformatToolBoxLayout);
-    this->addWidget(reformatToolBoxBody);
+    reformatOptionsLayout->addWidget(d->b_stopReslice);
+    resliceToolBoxBody->setLayout(resliceToolBoxLayout);
+    this->addWidget(resliceToolBoxBody);
 
     // Connections
-    connect(d->b_startReformat,SIGNAL(clicked()),this,SLOT(startReformat()));
-    connect(d->b_stopReformat,SIGNAL(clicked()),this,SLOT(stopReformat()));
+    connect(d->b_startReslice,SIGNAL(clicked()),this,SLOT(startReformat()));
+    connect(d->b_stopReslice,SIGNAL(clicked()),this,SLOT(stopReformat()));
 
-    d->reformatViewer  = 0;
+    d->resliceViewer  = 0;
     d->currentView     = 0;
 }
-reformatToolBox::~reformatToolBox()
+resliceToolBox::~resliceToolBox()
 {
-    delete d->reformatViewer;
-    d->reformatViewer = NULL;
+    delete d->resliceViewer;
+    d->resliceViewer = NULL;
     d->currentView = 0;
 
     delete d;
     d = NULL;
 }
 
-bool reformatToolBox::registered()
+bool resliceToolBox::registered()
 {
-    return medToolBoxFactory::instance()->registerToolBox<reformatToolBox>();
+    return medToolBoxFactory::instance()->registerToolBox<resliceToolBox>();
 }
 
-dtkPlugin* reformatToolBox::plugin()
+dtkPlugin* resliceToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "reformatPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "reslicePlugin" );
     return plugin;
 }
 
-void reformatToolBox::startReformat()
+void resliceToolBox::startReformat()
 {
     if (d->currentView && getWorkspace())
     {
         d->help0->hide();
         d->reformatOptions->show();
-        d->b_startReformat->hide();
+        d->b_startReslice->hide();
 
         if (!d->currentView->layersCount()) return;
 
-        d->reformatViewer = new medReformatViewer(d->currentView,getWorkspace()->stackedViewContainers());
-        d->reformatViewer->setToolBox(this);
+        d->resliceViewer = new medResliceViewer(d->currentView,getWorkspace()->stackedViewContainers());
+        d->resliceViewer->setToolBox(this);
         getWorkspace()->stackedViewContainers()->setAcceptDrops(false);
-        connect(d->reformatViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
-        medViewContainer * container = getWorkspace()->stackedViewContainers()->insertContainerInTab(0,"Reformat");
+        connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
+        medViewContainer * container = getWorkspace()->stackedViewContainers()->insertContainerInTab(0,"Reslice");
         getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
-        container->setDefaultWidget(d->reformatViewer->viewWidget());
+        container->setDefaultWidget(d->resliceViewer->viewWidget());
         getWorkspace()->stackedViewContainers()->lockTabs();
 
-        connect(d->spacingX,SIGNAL(valueChanged(double)),d->reformatViewer,SLOT(thickSlabChanged(double)));
-        connect(d->spacingY,SIGNAL(valueChanged(double)),d->reformatViewer,SLOT(thickSlabChanged(double)));
-        connect(d->spacingZ,SIGNAL(valueChanged(double)),d->reformatViewer,SLOT(thickSlabChanged(double)));
-        connect(d->b_saveImage,SIGNAL(clicked()),d->reformatViewer,SLOT(saveImage()));
+        connect(d->spacingX,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
+        connect(d->spacingY,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
+        connect(d->spacingZ,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
+        connect(d->b_saveImage,SIGNAL(clicked()),d->resliceViewer,SLOT(saveImage()));
 
         QList<medToolBox*> toolBoxes = getWorkspace()->toolBoxes();
         for (int i = 0; i < toolBoxes.length(); i++)
@@ -195,23 +195,23 @@ void reformatToolBox::startReformat()
     }
 }
 
-void reformatToolBox::stopReformat()
+void resliceToolBox::stopReformat()
 {
     if (getWorkspace())
     {
         d->help0->show();
         d->reformatOptions->hide();
-        d->b_startReformat->show();
+        d->b_startReslice->show();
 
         getWorkspace()->stackedViewContainers()->unlockTabs();
         getWorkspace()->stackedViewContainers()->removeTab(0);
         getWorkspace()->stackedViewContainers()->insertContainerInTab(0, getWorkspace()->name());
         getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
         processOutput();
-        disconnect(d->reformatViewer);
-        delete d->reformatViewer;
+        disconnect(d->resliceViewer);
+        delete d->resliceViewer;
 
-        d->reformatViewer = 0;
+        d->resliceViewer = 0;
         QList<medToolBox*> toolBoxes = getWorkspace()->toolBoxes();
         for (int i = 0; i < toolBoxes.length(); i++)
         {
@@ -221,7 +221,7 @@ void reformatToolBox::stopReformat()
     }
 }
 
-void reformatToolBox::setWorkspace(medAbstractWorkspace * workspace)
+void resliceToolBox::setWorkspace(medAbstractWorkspace * workspace)
 {
     medToolBox::setWorkspace(workspace);
 
@@ -230,7 +230,7 @@ void reformatToolBox::setWorkspace(medAbstractWorkspace * workspace)
     updateView();
 }
 
-void reformatToolBox::updateView()
+void resliceToolBox::updateView()
 {
     medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();
     QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
@@ -255,7 +255,7 @@ void reformatToolBox::updateView()
     }
 }
 
-void reformatToolBox::displayInfoOnCurrentView()
+void resliceToolBox::displayInfoOnCurrentView()
 {
     vtkImageView2D * view2d = static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D;
 
@@ -273,10 +273,9 @@ void reformatToolBox::displayInfoOnCurrentView()
         d->spacingY->setValue(dimension[1]);
         d->spacingZ->setValue(dimension[2]);
     }
-
 }
 
-void reformatToolBox::saveReformatedImage()
+void resliceToolBox::saveReformatedImage()
 {
     generateReformatedImage();
     if (d->reformatedImage && d->reformatedImage->data())
@@ -285,12 +284,12 @@ void reformatToolBox::saveReformatedImage()
     }
 }
 
-void reformatToolBox::generateReformatedImage()
+void resliceToolBox::generateReformatedImage()
 {
-    d->reformatedImage = d->reformatViewer->getOutput();
+    d->reformatedImage = d->resliceViewer->getOutput();
 }
 
-void reformatToolBox::switchSpacingAndDimension(const QString & value)
+void resliceToolBox::switchSpacingAndDimension(const QString & value)
 {
     if (value == "Spacing")
     {
@@ -319,7 +318,7 @@ void reformatToolBox::switchSpacingAndDimension(const QString & value)
     displayInfoOnCurrentView();
 }
 
-medAbstractData *reformatToolBox::processOutput()
+medAbstractData *resliceToolBox::processOutput()
 {
     if (!d->reformatedImage)
     {
@@ -328,7 +327,7 @@ medAbstractData *reformatToolBox::processOutput()
     return d->reformatedImage;
 }
 
-void reformatToolBox::changeButtonValue(QString buttonName, double value)
+void resliceToolBox::changeButtonValue(QString buttonName, double value)
 {
     if (buttonName == "SpacingX")
     {

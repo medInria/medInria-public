@@ -22,8 +22,8 @@ class reformatWorkspacePrivate;
 class REFORMATPLUGIN_EXPORT reformatWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
-    MED_WORKSPACE_INTERFACE("Reformat/Resample",
-                            "Reformat/Resample workspace.",
+    MED_WORKSPACE_INTERFACE("Reformat",
+                            "Reformat workspace.",
                             "Methodology")
     
 public:

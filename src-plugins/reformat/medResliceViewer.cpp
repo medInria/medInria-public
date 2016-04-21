@@ -1,6 +1,7 @@
-#include "medReformatViewer.h"
+#include "medResliceViewer.h"
 #include "resampleProcess.h"
 
+#include <itkVTKImageToImageFilter.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractLayeredView.h>
 #include <medSliderSpinboxPair.h>
@@ -99,10 +100,10 @@ public:
 
     medResliceCursorCallback() {}
 
-    medReformatViewer* reformatViewer;
+    medResliceViewer* reformatViewer;
 };
 
-medReformatViewer::medReformatViewer(medAbstractView * view,QWidget * parent): medAbstractView(parent)
+medResliceViewer::medResliceViewer(medAbstractView * view,QWidget * parent): medAbstractView(parent)
 {
     int * imageDims;
     vtkImageView3D * view3d;
@@ -252,7 +253,7 @@ medReformatViewer::medReformatViewer(medAbstractView * view,QWidget * parent): m
     this->initialiseNavigators();
 }
 
-medReformatViewer::~medReformatViewer()
+medResliceViewer::~medResliceViewer()
 {
     for (int i = 0; i < 3; i++)
     {
@@ -262,12 +263,12 @@ medReformatViewer::~medReformatViewer()
     vtkViewData = 0;
 }
 
-void medReformatViewer::setToolBox(reformatToolBox *tlbx)
+void medResliceViewer::setToolBox(resliceToolBox *tlbx)
 {
     reformaTlbx = tlbx;
 }
 
-void medReformatViewer::thickMode(int val)
+void medResliceViewer::thickMode(int val)
 {
     for (int i = 0; i < 3; i++)
     {
@@ -278,13 +279,13 @@ void medReformatViewer::thickMode(int val)
     }
 }
 
-void medReformatViewer::blendMode(int val)
+void medResliceViewer::blendMode(int val)
 {
     if (val)
         SetBlendModeToMinIP();
 }
 
-void medReformatViewer::SetBlendMode(int m)
+void medResliceViewer::SetBlendMode(int m)
 {
     for (int i = 0; i < 3; i++)
     {
@@ -296,27 +297,27 @@ void medReformatViewer::SetBlendMode(int m)
     }
 }
 
-void medReformatViewer::SetBlendModeToMaxIP()
+void medResliceViewer::SetBlendModeToMaxIP()
 {
     this->SetBlendMode(VTK_IMAGE_SLAB_MAX);
 }
 
-void medReformatViewer::SetBlendModeToMinIP()
+void medResliceViewer::SetBlendModeToMinIP()
 {
     this->SetBlendMode(VTK_IMAGE_SLAB_MIN);
 }
 
-void medReformatViewer::SetBlendModeToMeanIP()
+void medResliceViewer::SetBlendModeToMeanIP()
 {
     this->SetBlendMode(VTK_IMAGE_SLAB_MEAN);
 }
 
-void medReformatViewer::reset()
+void medResliceViewer::reset()
 {
     resetViews();
 }
 
-void medReformatViewer::resetViews()
+void medResliceViewer::resetViews()
 {
     for (int i = 0; i < 3; i++)
     {
@@ -328,7 +329,7 @@ void medReformatViewer::resetViews()
     riw[2]->GetRenderer()->GetActiveCamera()->SetViewUp(0, -1, 0);
 }
 
-void medReformatViewer::render()
+void medResliceViewer::render()
 {
     for (int i = 0; i < 3; i++)
     {
@@ -337,7 +338,7 @@ void medReformatViewer::render()
     }
 }
 
-void medReformatViewer::saveImage()
+void medResliceViewer::saveImage()
 {
     vtkSmartPointer<vtkMatrix4x4> resliceMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
     calculateResliceMatrix(resliceMatrix);
@@ -394,7 +395,7 @@ void medReformatViewer::saveImage()
     emit imageReformatedGenerated();
 }
 
-void medReformatViewer::thickSlabChanged(double val)
+void medResliceViewer::thickSlabChanged(double val)
 {
     QDoubleSpinBox * spinBoxSender = qobject_cast<QDoubleSpinBox*>(QObject::sender());
 
@@ -433,7 +434,7 @@ void medReformatViewer::thickSlabChanged(double val)
     }
 }
 
-void medReformatViewer::extentChanged(int val)
+void medResliceViewer::extentChanged(int val)
 {
     medSliderSpinboxPair * pairSender = qobject_cast<medSliderSpinboxPair*>(QObject::sender());
 
@@ -450,7 +451,7 @@ void medReformatViewer::extentChanged(int val)
     }
 }
 
-bool medReformatViewer::eventFilter(QObject * object,QEvent * event)
+bool medResliceViewer::eventFilter(QObject * object,QEvent * event)
 {
     if (!qobject_cast<QVTKWidget*>(object))
         return true;
@@ -487,21 +488,21 @@ bool medReformatViewer::eventFilter(QObject * object,QEvent * event)
     return false;
 }
 
-vtkResliceImageViewer* medReformatViewer::getResliceImageViewer(int i)
+vtkResliceImageViewer* medResliceViewer::getResliceImageViewer(int i)
 {
     Q_ASSERT(0 <= i <= 3);
 
     return riw[i];
 }
 
-vtkImagePlaneWidget* medReformatViewer::getImagePlaneWidget(int i)
+vtkImagePlaneWidget* medResliceViewer::getImagePlaneWidget(int i)
 {
     Q_ASSERT(0 <= i <= 3);
 
     return planeWidget[i];
 }
 
-dtkSmartPointer<medAbstractData> medReformatViewer::getOutput()
+dtkSmartPointer<medAbstractData> medResliceViewer::getOutput()
 {
     if (!outputData)
     {
@@ -512,7 +513,7 @@ dtkSmartPointer<medAbstractData> medReformatViewer::getOutput()
     return outputData;
 }
 
-void medReformatViewer::applyRadiologicalConvention()
+void medResliceViewer::applyRadiologicalConvention()
 {
     double normal[3];
 
@@ -530,7 +531,7 @@ void medReformatViewer::applyRadiologicalConvention()
     getImagePlaneWidget(0)->GetInteractor()->GetRenderWindow()->Render();
 }
 
-void medReformatViewer::calculateResliceMatrix(vtkMatrix4x4* result)
+void medResliceViewer::calculateResliceMatrix(vtkMatrix4x4* result)
 {
     double resliceX[3], resliceY[3], resliceZ[3], resliceOrigin[3], outputOrigin[3];
     double *outputX, *outputY, *outputZ;
@@ -580,7 +581,7 @@ void medReformatViewer::calculateResliceMatrix(vtkMatrix4x4* result)
     adjustResliceMatrixToViewUp(result);
 }
 
-void medReformatViewer::adjustResliceMatrixToViewUp(vtkMatrix4x4* resliceMatrix)
+void medResliceViewer::adjustResliceMatrixToViewUp(vtkMatrix4x4* resliceMatrix)
 {
     double dotX, dotY, X[3], Y[3], viewUp[3];
 
@@ -627,7 +628,7 @@ void medReformatViewer::adjustResliceMatrixToViewUp(vtkMatrix4x4* resliceMatrix)
     }
 }
 
-void medReformatViewer::updatePlaneNormals()
+void medResliceViewer::updatePlaneNormals()
 {
     for (int i = 0; i < 3; i++)
     {
@@ -637,7 +638,7 @@ void medReformatViewer::updatePlaneNormals()
 }
 
 // The two fixed planes must be moved so that they stay orthogonal to the moving plane
-void medReformatViewer::ensureOrthogonalPlanes()
+void medResliceViewer::ensureOrthogonalPlanes()
 {
     int movingPlaneIndex = findMovingPlaneIndex();
     vtkPlane* movingPlane = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(movingPlaneIndex);
@@ -650,7 +651,7 @@ void medReformatViewer::ensureOrthogonalPlanes()
 }
 
 // The plane who's normal has changed the most is the currently moving plane.
-int medReformatViewer::findMovingPlaneIndex()
+int medResliceViewer::findMovingPlaneIndex()
 {
     int movingPlaneIndex = 0;
     double maxNormalDifference = -1;
@@ -674,7 +675,7 @@ int medReformatViewer::findMovingPlaneIndex()
     return movingPlaneIndex;
 }
 
-void medReformatViewer::makePlaneOrthogonalToOtherPlanes(vtkPlane* targetPlane, vtkPlane* plane1, vtkPlane* plane2)
+void medResliceViewer::makePlaneOrthogonalToOtherPlanes(vtkPlane* targetPlane, vtkPlane* plane1, vtkPlane* plane2)
 {
     double idealNormal[3];
 
@@ -693,7 +694,7 @@ void medReformatViewer::makePlaneOrthogonalToOtherPlanes(vtkPlane* targetPlane, 
 }
 
 template <typename DATA_TYPE>
-void medReformatViewer::generateOutput(vtkImageReslice* reslicer, QString destType)
+void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destType)
 {
     typedef itk::Image<DATA_TYPE, 3> ImageType;
 
@@ -721,7 +722,7 @@ void medReformatViewer::generateOutput(vtkImageReslice* reslicer, QString destTy
     outputData->setData(outputImage);
 }
 
-void medReformatViewer::applyResamplingPix()
+void medResliceViewer::applyResamplingPix()
 {
     resampleProcess* resamplePr = new resampleProcess();
     resamplePr->setInput(outputData);
@@ -735,7 +736,7 @@ void medReformatViewer::applyResamplingPix()
 }
 
 template <typename DATA_TYPE>
-void medReformatViewer::compensateForRadiologicalView(itk::Image<DATA_TYPE, 3>* outputImage)
+void medResliceViewer::compensateForRadiologicalView(itk::Image<DATA_TYPE, 3>* outputImage)
 {
     vtkSmartPointer<vtkMatrix4x4> transformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
     mscTransform::getTransform(*outputImage, *transformMatrix);
@@ -759,7 +760,7 @@ void medReformatViewer::compensateForRadiologicalView(itk::Image<DATA_TYPE, 3>* 
  * 5. Apply the initial transformation (the one it had before the reslice)
 */
 template <typename DATA_TYPE>
-void medReformatViewer::correctOutputTransform(itk::Image<DATA_TYPE, 3>* outputImage, vtkMatrix4x4* resliceMatrix)
+void medResliceViewer::correctOutputTransform(itk::Image<DATA_TYPE, 3>* outputImage, vtkMatrix4x4* resliceMatrix)
 {
     typedef itk::Image<DATA_TYPE, 3> ImageType;
     typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
@@ -786,7 +787,7 @@ void medReformatViewer::correctOutputTransform(itk::Image<DATA_TYPE, 3>* outputI
 }
 
 template <typename DATA_TYPE>
-void medReformatViewer::getImageCenterInLocalSpace(itk::Image<DATA_TYPE, 3>* image, double center[3])
+void medResliceViewer::getImageCenterInLocalSpace(itk::Image<DATA_TYPE, 3>* image, double center[3])
 {
     typedef itk::Image<DATA_TYPE, 3> ImageType;
     typename ImageType::SizeType size;
@@ -801,7 +802,7 @@ void medReformatViewer::getImageCenterInLocalSpace(itk::Image<DATA_TYPE, 3>* ima
     }
 }
 
-vtkSmartPointer<vtkMatrix4x4> medReformatViewer::getResliceRotationMatrix(vtkMatrix4x4* resliceMatrix)
+vtkSmartPointer<vtkMatrix4x4> medResliceViewer::getResliceRotationMatrix(vtkMatrix4x4* resliceMatrix)
 {
     vtkSmartPointer<vtkMatrix4x4> resliceRotationMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
 
@@ -814,32 +815,32 @@ vtkSmartPointer<vtkMatrix4x4> medReformatViewer::getResliceRotationMatrix(vtkMat
     return resliceRotationMatrix;
 }
 
-QString medReformatViewer::description() const
+QString medResliceViewer::description() const
 {
     return QString("");
 }
 
-medViewBackend * medReformatViewer::backend() const
+medViewBackend * medResliceViewer::backend() const
 {
     return NULL;
 }
 
-QWidget* medReformatViewer::navigatorWidget()
+QWidget* medResliceViewer::navigatorWidget()
 {
     return NULL;
 }
 
-QWidget *medReformatViewer::viewWidget()
+QWidget *medResliceViewer::viewWidget()
 {
     return viewBody;
 }
 
-QWidget *medReformatViewer::mouseInteractionWidget()
+QWidget *medResliceViewer::mouseInteractionWidget()
 {
     return NULL;
 }
 
-QImage medReformatViewer::buildThumbnail(const QSize &size)
+QImage medResliceViewer::buildThumbnail(const QSize &size)
 {
     return QImage();
 }

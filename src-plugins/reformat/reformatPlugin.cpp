@@ -15,7 +15,7 @@
 #include "reformatPlugin.h"
 
 #include <medCropToolBox.h>
-#include <reformatToolBox.h>
+#include <resliceToolBox.h>
 #include <resampleProcess.h>
 #include <dtkLog/dtkLog.h>
 
@@ -54,9 +54,9 @@ bool reformatPlugin::initialize()
     {
         dtkWarn() << "Unable to register reformatWorkspace type";
     }
-    if (!reformatToolBox::registered())
+    if (!resliceToolBox::registered())
     {
-        dtkWarn() << "Unable to register reformatToolBox type";
+        dtkWarn() << "Unable to register resliceToolBox type";
     }
     if (!medCropToolBox::registered())
     {
@@ -64,7 +64,7 @@ bool reformatPlugin::initialize()
     }
     if (!resampleProcess::registered())
     {
-        dtkWarn() << "Unable to register reformat process";
+        dtkWarn() << "Unable to register resample process";
     }
     return true;
 }

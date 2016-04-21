@@ -1,21 +1,17 @@
 #pragma once
 
 #include <dtkCore/dtkSmartPointer.h>
-#include "reformatToolBox.h"
-
 #include <itkImage.h>
-#include <itkVTKImageToImageFilter.h>
 #include <medAbstractView.h>
-#include <medAbstractData.h>
 #include <medViewContainer.h>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QVTKWidget.h>
+#include <resliceToolBox.h>
 #include <vtkImageData.h>
 #include <vtkImagePlaneWidget.h>
 #include <vtkResliceImageViewer.h>
 #include <vtkSmartPointer.h>
-
 
 class QVTKFrame : public QFrame
 {
@@ -45,7 +41,7 @@ private:
 
 class medResliceCursorCallback;
 
-class medReformatViewer : public medAbstractView
+class medResliceViewer : public medAbstractView
 {
 
     friend class medResliceCursorCallback;
@@ -54,9 +50,9 @@ class medReformatViewer : public medAbstractView
 
 public:
 
-    medReformatViewer(medAbstractView * view,QWidget *parent =0);
-    ~medReformatViewer();
-    void setToolBox(reformatToolBox *);
+    medResliceViewer(medAbstractView * view,QWidget *parent =0);
+    ~medResliceViewer();
+    void setToolBox(resliceToolBox *);
 
     virtual QString description() const;
 
@@ -87,7 +83,7 @@ public slots:
     vtkImagePlaneWidget* getImagePlaneWidget(int i);
     dtkSmartPointer<medAbstractData> getOutput();
 
-    virtual void update(){};
+    virtual void update(){}
 
 signals:
     void imageReformatedGenerated();
@@ -105,7 +101,7 @@ protected:
     vtkSmartPointer<vtkImageData> vtkViewData;
     dtkSmartPointer<medAbstractData> outputData;
     int fromSlice,toSlice;
-    reformatToolBox * reformaTlbx;
+    resliceToolBox * reformaTlbx;
 
     void applyRadiologicalConvention();
     void calculateResliceMatrix(vtkMatrix4x4* result);

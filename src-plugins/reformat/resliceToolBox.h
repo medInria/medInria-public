@@ -4,17 +4,17 @@
 #include <medAbstractWorkspace.h>
 #include "reformatPluginExport.h"
 
-class reformatToolBoxPrivate;
+class resliceToolBoxPrivate;
 
-class REFORMATPLUGIN_EXPORT reformatToolBox : public medSegmentationAbstractToolBox
+class REFORMATPLUGIN_EXPORT resliceToolBox : public medSegmentationAbstractToolBox
 {
     Q_OBJECT
 
-    MED_TOOLBOX_INTERFACE("reformatToolBox","used to reformat an image", << "reformat")
+    MED_TOOLBOX_INTERFACE("resliceToolBox","used to reslice an image", << "reformat")
         
 public:
-    reformatToolBox(QWidget *parentToolBox = 0);
-    ~reformatToolBox();
+    resliceToolBox(QWidget *parentToolBox = 0);
+    ~resliceToolBox();
     static bool registered();
     dtkPlugin* plugin();
     void setWorkspace(medAbstractWorkspace * workspace);
@@ -22,7 +22,7 @@ public:
     void changeButtonValue(QString buttonName, double value);
 
 private:
-    reformatToolBoxPrivate *d;
+    resliceToolBoxPrivate *d;
 
 public slots:
     void startReformat();
