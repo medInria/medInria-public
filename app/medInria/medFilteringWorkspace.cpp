@@ -44,7 +44,6 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
 {
     d->filteringToolBox = new medFilteringSelectorToolBox(parent);
     connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
-    d->filteringToolBox->setWorkspace(this);
     this->addToolBox(d->filteringToolBox);
 
     medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());

@@ -211,10 +211,7 @@ int medMaskApplication::update()
         }
         else
         {
-            qDebug() << description()
-                     <<", Error : pixel type not yet implemented ("
-                    << id
-                    << ")";
+            res = medAbstractProcess::PIXEL_TYPE;
         }
     }
     return res;
@@ -271,10 +268,7 @@ int medMaskApplication::updateMaskType()
         }
         else
         {
-            qDebug() << description()
-                     <<", Error : pixel type not yet implemented ("
-                    << id
-                    << ")";
+            res = medAbstractProcess::PIXEL_TYPE;
         }
     }
     return res;
