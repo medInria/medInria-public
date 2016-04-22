@@ -8,7 +8,6 @@
 #include <medUtilities.h>
 
 #include <itkCastImageFilter.h>
-#include <itkInPlaceImageFilter.h>
 #include <itkAndImageFilter.h>
 #include <itkOrImageFilter.h>
 #include <itkXorImageFilter.h>
@@ -194,13 +193,12 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     {
         imageB = dynamic_cast< ImageTypeOutput*>((itk::Object*)(m_inputB->data()));
     }
-
-    if (!imageA || !imageB)
-    {
-        qDebug()<<"Problems appear during the cast to ITK image type";
-        return DTK_FAILURE;
-    }
     
+    if (imageA->GetLargestPossibleRegion().GetSize() != imageB->GetLargestPossibleRegion().GetSize())
+    {
+        return medAbstractProcess::DATA_SIZE;
+    }
+
     typedef itk::InPlaceImageFilter< ImageTypeOutput, ImageTypeOutput >  FilterType;
     typename FilterType::Pointer filter;
     
@@ -224,7 +222,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
     else
     {
-        qDebug()<<"Wrong binary operator";
+        qDebug()<<__FILE__<<":"<<__LINE__<<", Wrong binary operator:"<<description();
         return DTK_FAILURE;
     }
 

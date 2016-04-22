@@ -330,6 +330,9 @@ void medToolBox::handleDisplayError(int error)
     case medAbstractProcess::MESH_TYPE:    //! Handle mesh errors: data type
         displayMessageError("This toolbox is designed to be used with meshes");
         break;
+    case medAbstractProcess::DATA_SIZE:    //! Handle volume errors: size
+        displayMessageError("Inputs must be the same size");
+        break;
     default:
         displayMessageError("This action failed (undefined error)");
         break;
