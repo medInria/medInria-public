@@ -159,8 +159,6 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     {
         return DTK_FAILURE;
     }
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
 
     typedef itk::Image<unsigned char, 3> ImageTypeOutput;
     ImageTypeOutput::Pointer imageA;
@@ -237,8 +235,6 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     {
         std::cerr << "ExceptionObject caught in "<< metaObject()->className() << std::endl;
         std::cerr << err << std::endl;
-        QApplication::restoreOverrideCursor();
-        QApplication::processEvents();
         return DTK_FAILURE;
     }
 
@@ -246,9 +242,6 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
     QString derivedDescription = description() + " " + m_inputB->metadata(medMetaDataKeys::SeriesDescription.key());
     medUtilities::setDerivedMetaData(m_output, m_inputA, derivedDescription);
-
-    QApplication::restoreOverrideCursor();
-    QApplication::processEvents();
 
     return DTK_SUCCEED;
 }        
