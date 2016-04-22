@@ -37,6 +37,7 @@ void itkNotOperator::setInput (medAbstractData *data, int channel)
     if (channel == 0)
     {
         m_inputA = data;
+
         if ( data )
         {
             QString identifier = data->identifier();
@@ -114,15 +115,6 @@ template <class ImageType> int itkNotOperator::run()
     }
     typename ImageType::Pointer image = dynamic_cast<ImageType  *> ( ( itk::Object* ) ( m_inputA->data() )) ;
 
-    if (!image)
-    {
-        qDebug()<<"Problems appear during the cast to ITK image type";
-        return DTK_FAILURE;
-    }
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
-
     typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
     typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
     imageCalculatorFilter->SetInput(image);
@@ -136,9 +128,6 @@ template <class ImageType> int itkNotOperator::run()
     notFilter->Update();
 
     m_output->setData(notFilter->GetOutput());
-
-    QApplication::restoreOverrideCursor();
-    QApplication::processEvents();
 
     if (!m_output)
     {
