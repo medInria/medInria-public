@@ -35,8 +35,7 @@ public:
 
 public slots:
 
-    //! Launched when the view is updated
-    virtual void updateView() = 0;
+    void updateView(){}
 
 protected:
     medSegmentationSelectorToolBox *segmentationToolBox();

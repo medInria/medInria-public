@@ -89,11 +89,7 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
         toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
         if (toolbox)
         {
-            // Define how to react when the view is updated
             toolbox->setWorkspace(getWorkspace());
-            connect(this->getWorkspace()->stackedViewContainers(), SIGNAL(containersSelectedChanged()), toolbox,
-                    SLOT(updateView()), Qt::UniqueConnection);
-
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
 
             d->segmentationToolBoxes[identifier] = toolbox;

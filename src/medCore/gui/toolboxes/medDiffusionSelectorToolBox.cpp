@@ -193,6 +193,7 @@ void medDiffusionSelectorToolBox::chooseToolBox(int id)
         {
             toolbox->header()->hide();
             d->toolBoxes[identifier] = toolbox;
+            toolbox->setWorkspace(getWorkspace());
 
             if (d->selectorType == ScalarMaps)
             {
