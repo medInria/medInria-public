@@ -16,9 +16,6 @@
 #include <dtkCore/dtkSmartPointer.h>
 #include <medAbstractProcess.h>
 #include "medBinaryOperationPluginExport.h"
-#include <medAbstractData.h>
-
-#include "itkImage.h"
 
 class medBinaryOperatorBasePrivate;
 

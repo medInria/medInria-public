@@ -15,7 +15,7 @@
 
 #include "medBinaryOperatorBase.h"
 #include "medBinaryOperationPluginExport.h"
-#include <medAbstractData.h>
+
 
 class itkNotOperatorPrivate;
 

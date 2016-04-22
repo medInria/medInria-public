@@ -15,12 +15,13 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
+#include <itkBinaryNotImageFilter.h>
+#include <itkMinimumMaximumImageFilter.h>
+
 #include <medAbstractDataFactory.h>
 #include <medAttachedData.h>
 #include <medUtilities.h>
 
-#include <itkBinaryNotImageFilter.h>
-#include <itkMinimumMaximumImageFilter.h>
 
 bool itkNotOperator::registered()
 {

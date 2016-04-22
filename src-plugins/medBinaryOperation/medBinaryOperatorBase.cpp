@@ -3,14 +3,14 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <medMetaDataKeys.h>
-#include <medAbstractDataFactory.h>
-#include <medUtilities.h>
-
 #include <itkCastImageFilter.h>
 #include <itkAndImageFilter.h>
 #include <itkOrImageFilter.h>
 #include <itkXorImageFilter.h>
+
+#include <medAbstractDataFactory.h>
+#include <medMetaDataKeys.h>
+#include <medUtilities.h>
 
 
 medBinaryOperatorBase::medBinaryOperatorBase() : medAbstractProcess()
