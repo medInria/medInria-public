@@ -68,7 +68,7 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
     d->filterLayout->addWidget ( d->chooseFilter );
     displayWidget->setLayout(d->filterLayout);
 
-    this->setTitle (tr("Filtering View"));
+    this->setTitle (tr("Filtering"));
     this->addWidget(displayWidget);
 
     d->inputData = NULL;

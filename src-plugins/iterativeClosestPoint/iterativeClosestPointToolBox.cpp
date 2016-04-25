@@ -28,6 +28,7 @@
 #include <medAbstractImageData.h>
 #include <medAbstractData.h>
 #include <medAbstractWorkspace.h>
+#include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
@@ -54,12 +55,12 @@ public:
     QSpinBox * MaxNumIterations, * MaxNumLandmarks;
     QCheckBox * bStartByMatchingCentroids,*bCheckMeanDistance;
     medComboBox* bTransformationComboBox;
+
+    medAbstractData* output;
 };
 
-iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
+iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medMeshingAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
 {
-    this->setTitle("Iterative Closest Point");
-
     QWidget *widget = new QWidget(this);
 
     // Parameters'widgets
@@ -200,13 +201,13 @@ void iterativeClosestPointToolBox::run()
     
     process_Registration->update();
     
-    medAbstractData* data = process_Registration->output();
-    medUtilities::setDerivedMetaData(data, sourceData, "ICP");
+    d->output = process_Registration->output();
+    medUtilities::setDerivedMetaData(d->output, sourceData, "ICP");
     
-    d->currentView->insertLayer(d->layerSource->currentIndex() - 1, data);
+    d->currentView->insertLayer(d->layerSource->currentIndex() - 1, d->output);
     d->currentView->removeData(sourceData);
 
-    medDataManager::instance()->importData(data, false);
+    medDataManager::instance()->importData(d->output, false);
 }
 
 void iterativeClosestPointToolBox::updateView()
@@ -259,4 +260,16 @@ void iterativeClosestPointToolBox::addLayer(unsigned int layer)
         d->layerSource->addItem(name);
         d->layerTarget->addItem(name);
     }
+}
+
+medAbstractData* iterativeClosestPointToolBox::processOutput()
+{
+    return d->output;
+}
+
+dtkPlugin* iterativeClosestPointToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "iterativeClosestPointPlugin" );
+    return plugin;
 }
