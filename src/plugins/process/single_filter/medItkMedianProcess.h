@@ -22,7 +22,7 @@
 
 #include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkMedianProcess: public medAbstractMedianFilterProcess
+class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkMedianProcess: public medAbstractMedianFilterProcess
 {
     Q_OBJECT
 public:

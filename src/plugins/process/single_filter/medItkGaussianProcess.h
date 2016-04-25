@@ -22,7 +22,7 @@
 
 #include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkGaussianProcess: public medAbstractGaussianFilterProcess
+class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkGaussianProcess: public medAbstractGaussianFilterProcess
 {
     Q_OBJECT
 public:

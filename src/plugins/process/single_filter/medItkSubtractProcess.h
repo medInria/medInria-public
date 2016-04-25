@@ -21,7 +21,7 @@
 #include <medIntParameter.h>
 #include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkSubtractProcess: public medAbstractSubtractFilterProcess
+class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkSubtractProcess: public medAbstractSubtractFilterProcess
 {
     Q_OBJECT
 public:

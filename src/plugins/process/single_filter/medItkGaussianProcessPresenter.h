@@ -18,7 +18,7 @@
 
 #include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkGaussianProcessPresenter: public medAbstractGaussianFilterProcessPresenter
+class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkGaussianProcessPresenter: public medAbstractGaussianFilterProcessPresenter
 {
     Q_OBJECT
 public:

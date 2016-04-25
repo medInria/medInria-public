@@ -24,7 +24,6 @@ find_package(Qt5 REQUIRED COMPONENTS
   Sql                                                                                                                                                                                                                                       
   Widgets                                                                                                                                                                                                                                       
   Xml
-  Declarative
   Test
   Quick
   )
@@ -165,4 +164,4 @@ include(ConfigureExternalProjects)
 ## Package
 ## #############################################################################
 
-include(Packaging)
+#include(Packaging)

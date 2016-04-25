@@ -22,7 +22,7 @@
 
 #include <medIntParameter.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkShrinkProcess: public medAbstractShrinkFilterProcess
+class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkShrinkProcess: public medAbstractShrinkFilterProcess
 {
     Q_OBJECT
 public:

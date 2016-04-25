@@ -18,7 +18,7 @@
 
 #include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkShrinkProcessPresenter: public medAbstractShrinkFilterProcessPresenter
+class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkShrinkProcessPresenter: public medAbstractShrinkFilterProcessPresenter
 {
     Q_OBJECT
 public:

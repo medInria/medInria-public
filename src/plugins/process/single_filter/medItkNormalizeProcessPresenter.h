@@ -18,7 +18,7 @@
 
 #include <medItkSingleFilterOperationProcessPluginExport.h>
 
-class MEDITKSINGLEFILTEROPERATIONPROCESSPLUGINS_EXPORTS medItkNormalizeProcessPresenter: public medAbstractNormalizeFilterProcessPresenter
+class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkNormalizeProcessPresenter: public medAbstractNormalizeFilterProcessPresenter
 {
     Q_OBJECT
 public:
