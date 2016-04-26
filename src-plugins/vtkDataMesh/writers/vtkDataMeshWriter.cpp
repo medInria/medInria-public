@@ -70,117 +70,34 @@ bool vtkDataMeshWriter::write(const QString& path)
   if (!mesh)
     return false;
 
-  // Get the extension of the filename
-  QFileInfo pathfile(path);
-  QString extension = pathfile.completeSuffix();
+  addMetaDataAsFieldData(mesh);
 
-  if (extension == "vtk") // VTK files
+  try
   {
-      QString header = getHeaderVtk();
-
-      vtkSmartPointer<vtkPolyDataWriter> writer = vtkPolyDataWriter::New();
-      writer->SetFileName(path.toUtf8().constData());
-      try
-      {
-          writer->SetInput(mesh->GetDataSet());
-          writer->SetHeader(header.toAscii().constData());
-          writer->Write();
-      }
-      catch (vtkErrorCode::ErrorIds error)
-      {
-          qDebug() << "vtkDataMeshWriter: " << vtkErrorCode::GetStringFromErrorCode(error);
-          return false;
-      }
+      mesh->Write(path.toLocal8Bit().constData());
   }
-  else if (extension == "vtp") // VTP files
+  catch (...)
   {
-      addHeaderVtpToMesh(mesh);
-
-      vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-        writer->SetFileName(path.toUtf8().constData());
-      #if VTK_MAJOR_VERSION <= 5
-        writer->SetInput(mesh->GetDataSet());
-      #else
-        writer->SetInputData(mesh->GetDataSet());
-      #endif
-        writer->Write();
-  }
-  else if ((extension == "mesh") || (extension == "obj")) // MESH or OBJ files
-  {
-      try
-      {
-          mesh->Write(path.toLocal8Bit().constData());
-      } catch (...)
-      {
-          qDebug() << "vtkDataMeshWriter::write -> writing the vtkDataMesh failed.";
-          return false;
-      }
-  }
-  else
-  {
+      qDebug() << metaObject()->className() << ": error writing to " << path;
       return false;
   }
 
   return true;
 }
 
-QStringList vtkDataMeshWriter::metaDataKeysToCopy()
+void vtkDataMeshWriter::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)
 {
-    QStringList keys;
-
-    keys << medMetaDataKeys::PatientID.key()
-         << medMetaDataKeys::PatientName.key()
-         << medMetaDataKeys::Age.key()
-         << medMetaDataKeys::BirthDate.key()
-         << medMetaDataKeys::Gender.key()
-         << medMetaDataKeys::Description.key()
-         << medMetaDataKeys::StudyID.key()
-         << medMetaDataKeys::StudyDicomID.key()
-         << medMetaDataKeys::StudyDescription.key()
-         << medMetaDataKeys::Institution.key()
-         << medMetaDataKeys::Referee.key()
-         << medMetaDataKeys::StudyDate.key()
-         << medMetaDataKeys::StudyTime.key()
-         << medMetaDataKeys::Performer.key()
-         << medMetaDataKeys::Report.key()
-         << medMetaDataKeys::Protocol.key()
-         << medMetaDataKeys::Origin.key()
-         << medMetaDataKeys::AcquisitionDate.key()
-         << medMetaDataKeys::AcquisitionTime.key()
-         << medMetaDataKeys::Modality.key()
-         << medMetaDataKeys::Orientation.key();
-
-    return keys;
-}
-
-QString vtkDataMeshWriter::getHeaderVtk()
-{
-    // Create a header line with metadata
-    QStringList keyList = metaDataKeysToCopy();
-
-    QString header = QString("");
-    foreach(QString key, keyList)
+    foreach (QString key, data()->metaDataList())
     {
-        if (data()->metadata(key).toStdString().compare("") != 0)
+        vtkSmartPointer<vtkStringArray> metaDataArray = vtkSmartPointer<vtkStringArray>::New();
+        metaDataArray->SetName((QString("medMetaData::") + key).toStdString().c_str());
+
+        foreach (QString value, data()->metaDataValues(key))
         {
-            header += key + QString("\t") + data()->metadata(key) + QString("\t");
+            metaDataArray->InsertNextValue(value.toStdString().c_str());
         }
-    }
-    return header;
-}
 
-void vtkDataMeshWriter::addHeaderVtpToMesh(vtkMetaDataSet* mesh)
-{
-    // Add FieldData tag to the xml file
-    QStringList keyList = metaDataKeysToCopy();
-
-    foreach(QString key, keyList)
-    {
-        vtkSmartPointer<vtkStringArray> appendData = vtkSmartPointer<vtkStringArray>::New();
-        appendData->SetName(key.toStdString().c_str());
-        appendData->InsertNextValue(data()->metadata(key).toStdString().c_str());
-
-        mesh->GetDataSet()->GetFieldData()->AddArray(appendData);
+        dataSet->GetDataSet()->GetFieldData()->AddArray(metaDataArray);
     }
 }
 QString vtkDataMeshWriter::description() const
