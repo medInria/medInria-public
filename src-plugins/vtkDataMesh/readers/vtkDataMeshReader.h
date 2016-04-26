@@ -55,9 +55,9 @@ private:
 
     static const char ID[];
     bool extractMetaData(QString path, vtkMetaDataSet* dataSet);
-    bool extractCartoMetaData(vtkMetaDataSet* dataSet);
     bool extractMetaDataFromFieldData(vtkMetaDataSet* dataSet);
     bool extractMetaDataFromHeader(QString path, vtkMetaDataSet* dataSet);
+    bool extractCartoMetaData(vtkMetaDataSet* dataSet);
 };
 
 

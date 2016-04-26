@@ -122,25 +122,8 @@ bool vtkDataMeshReader::read(const QString& path) {
 
 bool vtkDataMeshReader::extractMetaData(QString path, vtkMetaDataSet* dataSet)
 {
-    if (extractCartoMetaData(dataSet) || extractMetaDataFromHeader(path, dataSet) || extractMetaDataFromFieldData(dataSet))
+    if (extractMetaDataFromFieldData(dataSet) || extractMetaDataFromHeader(path, dataSet) || extractCartoMetaData(dataSet))
     {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-// For CARTO files the patient name and ID is stored in the header and retrieved by vtkMetaSurfaceMesh::ReadVtkFile
-bool vtkDataMeshReader::extractCartoMetaData(vtkMetaDataSet* dataSet)
-{
-    std::string patientName, patientID;
-
-    if (dataSet->GetMetaData("PatientName", patientName) && dataSet->GetMetaData("PatientID", patientID))
-    {
-        data()->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromStdString(patientName));
-        data()->setMetaData(medMetaDataKeys::PatientID.key(), QString::fromStdString(patientID));
         return true;
     }
     else
@@ -185,12 +168,29 @@ bool vtkDataMeshReader::extractMetaDataFromHeader(QString path, vtkMetaDataSet* 
     header = reader->GetHeader();
     QStringList headerElements = header.split("\t");
 
-    for (int i = 0; i < headerElements.count(); i += 2)
+    for (int i = 0; i < headerElements.count() - 1; i += 2)
     {
         data()->setMetaData(headerElements.at(i), headerElements.at(i + 1));
     }
 
     return headerElements.count() >= 2;
+}
+
+// For CARTO files the patient name and ID is stored in the header and retrieved by vtkMetaSurfaceMesh::ReadVtkFile
+bool vtkDataMeshReader::extractCartoMetaData(vtkMetaDataSet* dataSet)
+{
+    std::string patientName, patientID;
+
+    if (dataSet->GetMetaData("PatientName", patientName) && dataSet->GetMetaData("PatientID", patientID))
+    {
+        data()->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromStdString(patientName));
+        data()->setMetaData(medMetaDataKeys::PatientID.key(), QString::fromStdString(patientID));
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool vtkDataMeshReader::read(const QStringList& paths) {
