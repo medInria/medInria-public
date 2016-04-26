@@ -2,8 +2,8 @@
           "title" : "Model estimation from DWI",
            "kind" : "process",
            "type" : "medAbstractDiffusionModelEstimationProcess",
-           "tags" : ["dwi","model","estimation"],
+           "tags" : ["diffusion","dwi","model","estimation"],
     "description" : "<p>Compute diffusion models from DWI.</p>",
-         "inputs" : ["dwiImage"],
+         "inputs" : ["dwiImage","gradients","gradients in image coordinates","b-values"],
         "outputs" : ["modelImage"]
 }

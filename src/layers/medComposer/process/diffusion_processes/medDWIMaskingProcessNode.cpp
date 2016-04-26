@@ -16,6 +16,7 @@
 #include <dtkLog>
 
 #include <medAbstractImageData.h>
+#include <medCore.h>
 
 class medDWIMaskingProcessNodePrivate
 {
@@ -29,6 +30,7 @@ medDWIMaskingProcessNode::medDWIMaskingProcessNode()
 {
     this->appendReceiver(&d->input);
     this->appendEmitter (&d->output);
+    this->setFactory(medCore::dwiMasking::pluginFactory());
 }
 
 medDWIMaskingProcessNode::~medDWIMaskingProcessNode()

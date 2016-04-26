@@ -37,7 +37,11 @@
 #include <medWindowingFilterProcessNode.h>
 #include <medImageDenoisingProcessNode.h>
 
+#include <medMaskImageProcessNode.h>
+
 #include <medDiffusionModelEstimationProcessNode.h>
+#include <medDiffusionScalarMapsProcessNode.h>
+#include <medTractographyProcessNode.h>
 #include <medDWIMaskingProcessNode.h>
 
 #include <medReaderNodeBase.h>
@@ -96,14 +100,20 @@ void medComposerFactoryExtension::extend(dtkComposerNodeFactory *factory)
     factory->record(":/process/single_filter/medAbstractImageDenoisingProcess.json",
                     dtkComposerNodeCreator<medImageDenoisingProcessNode>);
 
+    factory->record(":/process/mask_image/medAbstractMaskImageProcess.json",
+                    dtkComposerNodeCreator<medMaskImageProcessNode>);
+
     factory->record(":/process/diffusion_processes/medAbstractDiffusionModelEstimationProcess.json",
                     dtkComposerNodeCreator<medDiffusionModelEstimationProcessNode>);
+    factory->record(":/process/diffusion_processes/medAbstractDiffusionScalarMapsProcess.json",
+                    dtkComposerNodeCreator<medDiffusionScalarMapsProcessNode>);
     factory->record(":/process/diffusion_processes/medAbstractDWIMaskingProcess.json",
                     dtkComposerNodeCreator<medDWIMaskingProcessNode>);
+    factory->record(":/process/diffusion_processes/medAbstractTractographyProcess.json",
+                    dtkComposerNodeCreator<medTractographyProcessNode>);
 
     factory->record(":/process/medGenericReaderNode.json", dtkComposerNodeCreator<medGenericReaderNode>);
     factory->record(":/process/medImageReaderNode.json", dtkComposerNodeCreator<medImageReaderNode>);
     factory->record(":/process/medMeshReaderNode.json", dtkComposerNodeCreator<medMeshReaderNode>);
     factory->record(":/process/medGenericWriterNode.json", dtkComposerNodeCreator<medWriterNodeBase>);
-
 }

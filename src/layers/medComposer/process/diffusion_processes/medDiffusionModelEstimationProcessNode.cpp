@@ -17,6 +17,7 @@
 
 #include <medAbstractDiffusionModelImageData.h>
 #include <medBoolParameter.h>
+#include <medCore.h>
 
 class medDiffusionModelEstimationProcessNodePrivate
 {
@@ -38,6 +39,7 @@ medDiffusionModelEstimationProcessNode::medDiffusionModelEstimationProcessNode()
     this->appendReceiver(&d->bvalues);
 
     this->appendEmitter(&d->output);
+    this->setFactory(medCore::diffusionModelEstimation::pluginFactory());
 }
 
 medDiffusionModelEstimationProcessNode::~medDiffusionModelEstimationProcessNode()

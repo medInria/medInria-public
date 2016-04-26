@@ -4,6 +4,6 @@
            "type" : "medAbstractMaskImageProcess",
            "tags" : ["mask","segmentation"],
     "description" : "<p>Mask an image with a mask.</p>",
-         "inputs" : ["scalarImage"],
+         "inputs" : ["scalarImage","maskImage"],
         "outputs" : ["scalarImage"]
 }
