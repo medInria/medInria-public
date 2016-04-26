@@ -33,10 +33,6 @@ public:
 
     virtual medAbstractData *processOutput() = 0;
 
-public slots:
-
-    void updateView(){}
-
 protected:
     medSegmentationSelectorToolBox *segmentationToolBox();
 

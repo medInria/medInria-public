@@ -143,6 +143,7 @@ void medAbstractWorkspace::addToolBox(medToolBox *toolbox)
 
 void medAbstractWorkspace::removeToolBox(medToolBox *toolbox)
 {
+    toolbox->setWorkspace(NULL);
     d->toolBoxes.removeOne(toolbox);
 }
 

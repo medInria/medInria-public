@@ -35,7 +35,6 @@ signals:
 
 public slots:
     void changeCurrentToolBox(int index);
-    void updateView(){}
 
 private:
     medSegmentationSelectorToolBoxPrivate *d;
