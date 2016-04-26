@@ -4,6 +4,7 @@ REM This .bat sets the environment variables medInria_PLUGIN_PATH and PATH and l
 REM Usage : medInria-dev.bat
 @echo off
 set PATH=%PATH%;@dtk_DIR@/bin/%1;@ITK_DIR@/bin/%1;@TTK_DIR@/bin/%1;@VTK_DIR@/bin/%1;@QtDCM_DIR@/bin/%1;@medInria_DIR@/bin/%1;@QT_BINARY_DIR@
-set MEDINRIA_PLUGIN_PATH=@medInria_DIR@/plugins/%1:@DEV_PLUGINS_DIRS@
+set MEDINRIA_PLUGINS_DIR=@medInria_DIR@/plugins/%1:@DEV_PLUGINS_DIRS@
+set MEDINRIA_PLUGINS_DIR_LEGACY=@medInria_DIR@/plugins_legacy/%1:@DEV_PLUGINS_DIRS@
 
 devenv.exe @medInria_DIR@/ALL_BUILD.vcxproj

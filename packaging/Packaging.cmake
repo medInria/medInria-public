@@ -49,7 +49,7 @@ set(CPACK_SOURCE_ZIP OFF)
 if (WIN32)
     set(WIN_PACK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows)
     include(${WIN_PACK_DIR}/WindowsLaunchers.cmake)
-    include(${WIN_PACK_DIR}/WindowsPackaging.cmake)
+#    include(${WIN_PACK_DIR}/WindowsPackaging.cmake)
 endif()
 
 if (APPLE)
