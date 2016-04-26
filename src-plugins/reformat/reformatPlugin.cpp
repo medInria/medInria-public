@@ -11,10 +11,9 @@
 
 =========================================================================*/
 
-#include "reformatWorkspace.h"
-#include "reformatPlugin.h"
-
 #include <medCropToolBox.h>
+#include "medReformatWorkspace.h"
+#include "reformatPlugin.h"
 #include <resliceToolBox.h>
 #include <resampleProcess.h>
 #include <dtkLog/dtkLog.h>
@@ -50,9 +49,9 @@ reformatPlugin::~reformatPlugin()
 
 bool reformatPlugin::initialize()
 {
-    if(!reformatWorkspace::registered())
+    if(!medReformatWorkspace::registered())
     {
-        dtkWarn() << "Unable to register reformatWorkspace type";
+        dtkWarn() << "Unable to register medReformatWorkspace type";
     }
     if (!resliceToolBox::registered())
     {

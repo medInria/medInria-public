@@ -17,17 +17,17 @@
 #include <medCoreExport.h>
 
 class medAbstractData;
-class medMeshingSelectorToolBox;
-class medMeshingAbstractToolBoxPrivate;
+class medReformatSelectorToolBox;
+class medReformatAbstractToolBoxPrivate;
 
-//! Base class for custom Meshing algorithms
-class MEDCORE_EXPORT medMeshingAbstractToolBox : public medToolBox
+//! Base class for custom Reformat algorithms
+class MEDCORE_EXPORT medReformatAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-    medMeshingAbstractToolBox(QWidget *parent = 0);
-    virtual ~medMeshingAbstractToolBox();
+    medReformatAbstractToolBox(QWidget *parent = 0);
+    virtual ~medReformatAbstractToolBox();
 
     virtual dtkPlugin* plugin() = 0;
 
@@ -38,10 +38,10 @@ public slots:
     void updateView(){}
 
 protected:
-    medMeshingSelectorToolBox *selectorToolBox();
+    medReformatSelectorToolBox *ReformatToolBox();
 
 private:
-    medMeshingAbstractToolBoxPrivate *d;
+    medReformatAbstractToolBoxPrivate *d;
 };
 
 

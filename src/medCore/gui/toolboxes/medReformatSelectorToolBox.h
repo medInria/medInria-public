@@ -16,32 +16,29 @@
 #include <medToolBox.h>
 #include <medCoreExport.h>
 
-class medAbstractData;
-class medMeshingSelectorToolBox;
-class medMeshingAbstractToolBoxPrivate;
+class medViewEventFilter;
+class medReformatAbstractToolBox;
 
-//! Base class for custom Meshing algorithms
-class MEDCORE_EXPORT medMeshingAbstractToolBox : public medToolBox
+class medReformatSelectorToolBoxPrivate;
+class MEDCORE_EXPORT medReformatSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-    medMeshingAbstractToolBox(QWidget *parent = 0);
-    virtual ~medMeshingAbstractToolBox();
+     medReformatSelectorToolBox(QWidget *parent = 0);
+    ~medReformatSelectorToolBox();
 
-    virtual dtkPlugin* plugin() = 0;
+     medReformatAbstractToolBox* currentToolBox();
 
-    virtual medAbstractData *processOutput() = 0;
+signals:
+     void inputChanged();
 
 public slots:
-
+    void changeCurrentToolBox(int index);
     void updateView(){}
 
-protected:
-    medMeshingSelectorToolBox *selectorToolBox();
-
 private:
-    medMeshingAbstractToolBoxPrivate *d;
+    medReformatSelectorToolBoxPrivate *d;
 };
 
 

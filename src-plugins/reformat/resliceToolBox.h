@@ -1,16 +1,16 @@
 #pragma once
 
-#include <medSegmentationAbstractToolBox.h>
 #include <medAbstractWorkspace.h>
+#include <medReformatAbstractToolBox.h>
 #include "reformatPluginExport.h"
 
 class resliceToolBoxPrivate;
 
-class REFORMATPLUGIN_EXPORT resliceToolBox : public medSegmentationAbstractToolBox
+class REFORMATPLUGIN_EXPORT resliceToolBox : public medReformatAbstractToolBox
 {
     Q_OBJECT
 
-    MED_TOOLBOX_INTERFACE("resliceToolBox","used to reslice an image", << "reformat")
+    MED_TOOLBOX_INTERFACE("Reslice","used to reslice an image", << "reformat")
         
 public:
     resliceToolBox(QWidget *parentToolBox = 0);

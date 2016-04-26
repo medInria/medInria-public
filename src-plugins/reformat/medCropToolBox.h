@@ -1,15 +1,15 @@
 #pragma once
 
-#include <medSegmentationAbstractToolBox.h>
 #include <medAbstractWorkspace.h>
+#include <medReformatAbstractToolBox.h>
 #include <reformatPluginExport.h>
 
 class medCropToolBoxPrivate;
 
-class REFORMATPLUGIN_EXPORT medCropToolBox : public medSegmentationAbstractToolBox
+class REFORMATPLUGIN_EXPORT medCropToolBox : public medReformatAbstractToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("medCropToolBox", "Image cropping",<<"reformat")
+    MED_TOOLBOX_INTERFACE("Cropping", "Image cropping",<<"reformat")
 
 public:
     static bool registered();

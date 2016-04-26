@@ -24,7 +24,7 @@ class medMeshingSelectorToolBoxPrivate
 public:
     medComboBox *chooseMeshingComboBox;
     medMeshingAbstractToolBox * currentMeshingToolBox;
-    QHash<QString, medMeshingAbstractToolBox*> MeshingToolBoxes;
+    QHash<QString, medMeshingAbstractToolBox*> meshingToolBoxes;
     QVBoxLayout *mainLayout;
 };
 
@@ -80,9 +80,9 @@ void medMeshingSelectorToolBox::changeCurrentToolBox(int index)
     //get identifier for toolbox.
     QString identifier = d->chooseMeshingComboBox->itemData(index).toString();
 
-    if (d->MeshingToolBoxes.contains (identifier))
+    if (d->meshingToolBoxes.contains (identifier))
     {
-        toolbox = d->MeshingToolBoxes[identifier];
+        toolbox = d->meshingToolBoxes[identifier];
     }
     else
     {
@@ -93,7 +93,7 @@ void medMeshingSelectorToolBox::changeCurrentToolBox(int index)
             toolbox->setWorkspace(getWorkspace());
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
 
-            d->MeshingToolBoxes[identifier] = toolbox;
+            d->meshingToolBoxes[identifier] = toolbox;
         }
     }
 

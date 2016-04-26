@@ -14,12 +14,12 @@
 #pragma once
 
 #include <medAbstractWorkspace.h>
-
 #include "reformatPluginExport.h"
 
-class reformatWorkspacePrivate;
+class medReformatSelectorToolBox;
+class medReformatWorkspacePrivate;
     
-class REFORMATPLUGIN_EXPORT reformatWorkspace : public medAbstractWorkspace
+class REFORMATPLUGIN_EXPORT medReformatWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Reformat",
@@ -27,16 +27,20 @@ class REFORMATPLUGIN_EXPORT reformatWorkspace : public medAbstractWorkspace
                             "Methodology")
     
 public:
-    reformatWorkspace(QWidget *parent = 0);
-    virtual ~reformatWorkspace();
-    
-    virtual void setupViewContainerStack();
+    medReformatWorkspace(QWidget *parent = NULL);
+    virtual ~medReformatWorkspace();
 
     static bool isUsable();
     static bool registered();
 
-    void showViewPropertiesToolBox(bool val);
-        
+    //! Implement abstract method in base class.
+    void setupViewContainerStack();
+
+    medReformatSelectorToolBox * selectorToolBox();
+
+protected slots:
+    void onSuccess();
+
 private:
-    reformatWorkspacePrivate *d;
+    medReformatWorkspacePrivate *d;
 };

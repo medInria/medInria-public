@@ -17,13 +17,13 @@
 class medMeshingAbstractToolBoxPrivate
 {
 public:
-    medMeshingSelectorToolBox * meshingToolBox;
+    medMeshingSelectorToolBox * selectorToolBox;
 };
 
 //! Parent should be a medMeshingSelectorToolBox
 medMeshingAbstractToolBox::medMeshingAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medMeshingAbstractToolBoxPrivate)
 {
-    d->meshingToolBox = qobject_cast<medMeshingSelectorToolBox*>(parent);
+    d->selectorToolBox = qobject_cast<medMeshingSelectorToolBox*>(parent);
 }
 
 medMeshingAbstractToolBox::~medMeshingAbstractToolBox(void)
@@ -32,8 +32,8 @@ medMeshingAbstractToolBox::~medMeshingAbstractToolBox(void)
     d = NULL;
 }
 
-//! Get the meshingToolbox (usually one instance)
-medMeshingSelectorToolBox *medMeshingAbstractToolBox::meshingToolBox(void)
+//! Get the selectorToolBox (usually one instance)
+medMeshingSelectorToolBox *medMeshingAbstractToolBox::selectorToolBox(void)
 {
-    return d->meshingToolBox;
+    return d->selectorToolBox;
 }
