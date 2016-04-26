@@ -23,7 +23,6 @@
 #include <vtkPolyData.h>
 #include <vtkPolyDataReader.h>
 #include <vtkStringArray.h>
-#include <vtkXMLPolyDataReader.h>
 
 const char vtkDataMeshReader::ID[] = "vtkDataMeshReader";
 
