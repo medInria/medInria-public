@@ -17,6 +17,7 @@
 
 #include <medAbstractImageData.h>
 #include <medCore.h>
+#include <medWidgets.h>
 
 class medMaskImageProcessNodePrivate
 {
@@ -58,3 +59,11 @@ void medMaskImageProcessNode::run()
     }
 }
 
+QWidget* medMaskImageProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::maskImage::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}

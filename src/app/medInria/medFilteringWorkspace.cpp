@@ -40,6 +40,7 @@ struct SingleFiltersGathering
     medAbstractShrinkFilterProcessPluginFactory* shrinkFactory;
     medAbstractWindowingFilterProcessPluginFactory* windowingFactory;
     medAbstractImageDenoisingProcessPluginFactory* denoisingFactory;
+    medAbstractRelaxometryEstimationProcessPluginFactory* relaxometryFactory;
     medAbstractSymmetryPlaneAlignmentProcessPluginFactory* symmetryFactory;
 
     medAbstractGaussianFilterProcessPresenterFactory* gaussianFactoryPresenter;
@@ -48,6 +49,7 @@ struct SingleFiltersGathering
     medAbstractShrinkFilterProcessPresenterFactory* shrinkFactoryPresenter;
     medAbstractWindowingFilterProcessPresenterFactory* windowingFactoryPresenter;
     medAbstractImageDenoisingProcessPresenterFactory* denoisingFactoryPresenter;
+    medAbstractRelaxometryEstimationProcessPresenterFactory* relaxometryFactoryPresenter;
     medAbstractSymmetryPlaneAlignmentProcessPresenterFactory* symmetryFactoryPresenter;
 
     QString pluginKey;
@@ -61,6 +63,7 @@ struct SingleFiltersGathering
         shrinkFactory = 0;
         windowingFactory = 0;
         denoisingFactory = 0;
+        relaxometryFactory = 0;
         symmetryFactory = 0;
 
         gaussianFactoryPresenter = 0;
@@ -69,6 +72,7 @@ struct SingleFiltersGathering
         shrinkFactoryPresenter = 0;
         windowingFactoryPresenter = 0;
         denoisingFactoryPresenter = 0;
+        relaxometryFactoryPresenter = 0;
         symmetryFactoryPresenter = 0;
 
         myProcess = 0;
@@ -93,6 +97,9 @@ struct SingleFiltersGathering
 
         else if(denoisingFactory)
             myProcess = denoisingFactory->create(pluginKey);
+
+        else if(relaxometryFactory)
+            myProcess = relaxometryFactory->create(pluginKey);
 
         else if(symmetryFactory)
             myProcess = symmetryFactory->create(pluginKey);
@@ -119,6 +126,9 @@ struct SingleFiltersGathering
 
         else if(denoisingFactoryPresenter)
             return denoisingFactoryPresenter->create(myProcess);
+
+        else if(relaxometryFactoryPresenter)
+            return relaxometryFactoryPresenter->create(myProcess);
 
         else if(symmetryFactoryPresenter)
             return symmetryFactoryPresenter->create(myProcess);
@@ -205,6 +215,7 @@ struct ArithmeticGathering
     medAbstractMultiplyImageProcessPluginFactory* multiplyImageFactory;
     medAbstractDivideImageProcessPluginFactory* divideImageFactory;
     medAbstractInvertFilterProcessPluginFactory* invertFactory;
+    medAbstractMaskImageProcessPluginFactory* maskFactory;
 
     medAbstractAddFilterProcessPresenterFactory* addFactoryPresenter;
     medAbstractSubtractFilterProcessPresenterFactory* subtractFactoryPresenter;
@@ -215,6 +226,7 @@ struct ArithmeticGathering
     medAbstractMultiplyImageProcessPresenterFactory* multiplyImageFactoryPresenter;
     medAbstractDivideImageProcessPresenterFactory* divideImageFactoryPresenter;
     medAbstractInvertFilterProcessPresenterFactory* invertFactoryPresenter;
+    medAbstractMaskImageProcessPresenterFactory* maskFactoryPresenter;
 
     QString pluginKey;
     medAbstractProcess* myProcess;
@@ -230,6 +242,7 @@ struct ArithmeticGathering
         multiplyImageFactory = 0;
         divideImageFactory = 0;
         invertFactory = 0;
+        maskFactory = 0;
 
         addFactoryPresenter = 0;
         subtractFactoryPresenter = 0;
@@ -240,6 +253,7 @@ struct ArithmeticGathering
         multiplyImageFactoryPresenter = 0;
         divideImageFactoryPresenter = 0;
         invertFactoryPresenter = 0;
+        maskFactoryPresenter = 0;
 
         myProcess = 0;
     }
@@ -273,6 +287,9 @@ struct ArithmeticGathering
         else if(invertFactory)
             myProcess = invertFactory->create(pluginKey);
 
+        else if(maskFactory)
+            myProcess = maskFactory->create(pluginKey);
+
         return myProcess;
     }
 
@@ -304,6 +321,9 @@ struct ArithmeticGathering
 
         else if(invertFactoryPresenter)
             return invertFactoryPresenter->create(myProcess);
+
+        else if(maskFactoryPresenter)
+            return maskFactoryPresenter->create(myProcess);
 
         return 0;
     }
@@ -559,6 +579,22 @@ void medFilteringWorkspace::setProcessType(int index)
                 }
             }
 
+            plugins = medCore::singleFilterOperation::relaxometryEstimation::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::singleFilterOperation::relaxometryEstimation::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    SingleFiltersGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.relaxometryFactory = &medCore::singleFilterOperation::relaxometryEstimation::pluginFactory();
+                    aSolution.relaxometryFactoryPresenter = &medWidgets::singleFilterOperation::relaxometryEstimation::presenterFactory();
+
+                    d->singleFiltersVector.push_back(aSolution);
+                }
+            }
+
             plugins = medCore::singleFilterOperation::symmetryAlignment::pluginFactory().keys();
             foreach(QString pluginKey, plugins)
             {
@@ -720,6 +756,22 @@ void medFilteringWorkspace::setProcessType(int index)
                     aSolution.pluginKey = pluginKey;
                     aSolution.invertFactory = &medCore::singleFilterOperation::invertFilter::pluginFactory();
                     aSolution.invertFactoryPresenter = &medWidgets::singleFilterOperation::invertFilter::presenterFactory();
+
+                    d->arithmeticsVector.push_back(aSolution);
+                }
+            }
+
+            plugins = medCore::maskImage::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+                medAbstractProcess *process = medCore::maskImage::pluginFactory().create(pluginKey);
+                if (process)
+                {
+                    d->processSelectorComboBox->addItem(process->caption(),pluginKey);
+                    ArithmeticGathering aSolution;
+                    aSolution.pluginKey = pluginKey;
+                    aSolution.maskFactory = &medCore::maskImage::pluginFactory();
+                    aSolution.maskFactoryPresenter = &medWidgets::maskImage::presenterFactory();
 
                     d->arithmeticsVector.push_back(aSolution);
                 }

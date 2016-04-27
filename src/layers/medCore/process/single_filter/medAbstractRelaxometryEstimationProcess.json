@@ -1,0 +1,9 @@
+{
+          "title" : "Relaxometry map estimation filter",
+           "kind" : "process",
+           "type" : "medAbstractRelaxometryEstimationProcess",
+           "tags" : ["relaxometry","estimation", "filter"],
+    "description" : "<p>Computes relaxometry maps from a 4D image</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

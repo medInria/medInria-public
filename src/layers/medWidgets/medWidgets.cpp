@@ -361,6 +361,19 @@ namespace singleFilterOperation
         }
     }
 
+    namespace relaxometryEstimation
+    {
+        namespace _private
+        {
+            medAbstractRelaxometryEstimationProcessPresenterFactory factory;
+        }
+
+        medAbstractRelaxometryEstimationProcessPresenterFactory& presenterFactory()
+        {
+            return _private::factory;
+        }
+    }
+
     namespace symmetryAlignment
     {
         namespace _private

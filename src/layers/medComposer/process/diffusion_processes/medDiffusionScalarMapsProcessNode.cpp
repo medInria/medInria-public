@@ -17,6 +17,7 @@
 
 #include <medAbstractDiffusionModelImageData.h>
 #include <medCore.h>
+#include <medWidgets.h>
 
 class medDiffusionScalarMapsProcessNodePrivate
 {
@@ -54,3 +55,11 @@ void medDiffusionScalarMapsProcessNode::run()
     }
 }
 
+QWidget* medDiffusionScalarMapsProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::diffusionScalarMaps::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}

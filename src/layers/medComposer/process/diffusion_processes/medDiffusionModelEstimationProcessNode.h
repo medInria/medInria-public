@@ -28,6 +28,7 @@ public:
 
 public:
     void run();
+    virtual QWidget* editor();
 
 private:
     const QScopedPointer<medDiffusionModelEstimationProcessNodePrivate> d;

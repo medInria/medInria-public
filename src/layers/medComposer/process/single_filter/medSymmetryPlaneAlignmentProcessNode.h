@@ -12,24 +12,19 @@
 =========================================================================*/
 #pragma once
 
-#include <dtkComposer>
-
-#include <medAbstractTractographyProcess.h>
+#include <medSingleFilterDoubleOperationProcessNode.h>
+#include <medAbstractSymmetryPlaneAlignmentProcess.h>
 
 #include <medComposerExport.h>
 
-class medTractographyProcessNodePrivate;
+class medSymmetryPlaneAlignmentProcessNodePrivate;
 
-class MEDCOMPOSER_EXPORT medTractographyProcessNode : public dtkComposerNodeObject <medAbstractTractographyProcess>
+class MEDCOMPOSER_EXPORT medSymmetryPlaneAlignmentProcessNode : public medSingleFilterOperationProcessNode <medAbstractSymmetryPlaneAlignmentProcess>
 {
 public:
-     medTractographyProcessNode();
-    ~medTractographyProcessNode();
+     medSymmetryPlaneAlignmentProcessNode();
 
-public:
-    void run();
-    virtual QWidget* editor();
-
-private:
-    const QScopedPointer<medTractographyProcessNodePrivate> d;
+     virtual QWidget *editor(void);
 };
+
+

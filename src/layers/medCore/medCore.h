@@ -34,6 +34,7 @@
 #include <medAbstractSubtractFilterProcess.h>
 #include <medAbstractWindowingFilterProcess.h>
 #include <medAbstractImageDenoisingProcess.h>
+#include <medAbstractRelaxometryEstimationProcess.h>
 
 #include <medAbstractMorphomathOperationProcess.h>
 #include <medAbstractErodeImageProcess.h>
@@ -146,6 +147,11 @@ namespace medCore
         namespace imageDenoising
         {
             MEDCORE_EXPORT medAbstractImageDenoisingProcessPluginFactory& pluginFactory(void);
+        }
+
+        namespace relaxometryEstimation
+        {
+            MEDCORE_EXPORT medAbstractRelaxometryEstimationProcessPluginFactory& pluginFactory(void);
         }
 
         namespace symmetryAlignment

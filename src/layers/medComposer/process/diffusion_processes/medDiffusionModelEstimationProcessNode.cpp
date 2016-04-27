@@ -18,6 +18,7 @@
 #include <medAbstractDiffusionModelImageData.h>
 #include <medBoolParameter.h>
 #include <medCore.h>
+#include <medWidgets.h>
 
 class medDiffusionModelEstimationProcessNodePrivate
 {
@@ -67,3 +68,11 @@ void medDiffusionModelEstimationProcessNode::run()
     }
 }
 
+QWidget* medDiffusionModelEstimationProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::diffusionModelEstimation::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}

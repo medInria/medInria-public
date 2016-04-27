@@ -30,6 +30,7 @@
 #include <medAbstractSubtractFilterProcessPresenter.h>
 #include <medAbstractWindowingFilterProcessPresenter.h>
 #include <medAbstractImageDenoisingProcessPresenter.h>
+#include <medAbstractRelaxometryEstimationProcessPresenter.h>
 #include <medAbstractSymmetryPlaneAlignmentProcessPresenter.h>
 
 #include <medWidgetsExport.h>
@@ -135,6 +136,10 @@ namespace medWidgets
         namespace imageDenoising
         {
             MEDWIDGETS_EXPORT medAbstractImageDenoisingProcessPresenterFactory& presenterFactory();
+        }
+        namespace relaxometryEstimation
+        {
+            MEDWIDGETS_EXPORT medAbstractRelaxometryEstimationProcessPresenterFactory& presenterFactory();
         }
         namespace symmetryAlignment
         {

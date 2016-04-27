@@ -18,6 +18,7 @@
 #include <medAbstractDiffusionModelImageData.h>
 #include <medAbstractFibersData.h>
 #include <medCore.h>
+#include <medWidgets.h>
 
 class medTractographyProcessNodePrivate
 {
@@ -56,3 +57,11 @@ void medTractographyProcessNode::run()
     }
 }
 
+QWidget* medTractographyProcessNode::editor()
+{
+    medAbstractProcess* process = this->object();
+    if (!process)
+        return NULL;
+    medAbstractProcessPresenter* presenter = medWidgets::tractography::presenterFactory().create(process);
+    return presenter->buildToolBoxWidget();
+}
