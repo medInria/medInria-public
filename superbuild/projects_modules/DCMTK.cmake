@@ -75,6 +75,7 @@ set(cmake_args
   -DDCMTK_WITH_WRAP=OFF
   -DDCMTK_WITH_ICONV=OFF
   -DBUILD_APPS=OFF
+  -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS=OFF
   )
 
 ## #############################################################################
