@@ -25,7 +25,7 @@ class MEDCORE_EXPORT medFilteringAbstractToolBox : public medToolBox
     Q_OBJECT
 
 public:
-             medFilteringAbstractToolBox(QWidget *parentToolBox = 0);
+    medFilteringAbstractToolBox(QWidget *parentToolBox = 0);
     virtual ~medFilteringAbstractToolBox();
     void setFilteringToolBox(medFilteringSelectorToolBox *toolbox);
     virtual medAbstractData* processOutput() = 0;

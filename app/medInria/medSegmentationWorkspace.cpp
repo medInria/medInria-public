@@ -55,23 +55,10 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 		this->addToolBox(d->roiManagementToolBox);
 	}
 
-    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
-    viewGroup1->setLinkAllParameters(true);
-    viewGroup1->removeParameter("DataList");
-
-    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
-    layerGroup1->setLinkAllParameters(true);
+    setInitialGroups();
 
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
             d->segmentationToolBox, SIGNAL(inputChanged()));
-}
-
-void medSegmentationWorkspace::setupViewContainerStack()
-{
-    if (!stackedViewContainers()->count()) {
-        this->stackedViewContainers()->addContainerInTab(this->name());
-    }
-    this->stackedViewContainers()->unlockTabs();
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)
@@ -84,7 +71,6 @@ medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 {
     return d->segmentationToolBox;
 }
-
 
 bool medSegmentationWorkspace::isUsable()
 {

@@ -23,8 +23,8 @@ class MEDCORE_EXPORT medDiffusionAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-    medDiffusionAbstractToolBox(QWidget *parentToolBox = 0);
-    virtual ~medDiffusionAbstractToolBox();
+    medDiffusionAbstractToolBox(QWidget *parentToolBox = 0){}
+    virtual ~medDiffusionAbstractToolBox(){}
 
     /**
      * @brief Returns the plugin this custom Toolbox comes from.
@@ -42,8 +42,8 @@ class MEDCORE_EXPORT medDiffusionScalarMapsAbstractToolBox : public medDiffusion
 {
     Q_OBJECT
 public:
-    medDiffusionScalarMapsAbstractToolBox(QWidget *parentToolBox = 0);
-    virtual ~medDiffusionScalarMapsAbstractToolBox();
+    medDiffusionScalarMapsAbstractToolBox(QWidget *parentToolBox = 0){}
+    virtual ~medDiffusionScalarMapsAbstractToolBox(){}
     
 signals:
     void processStartRequested();

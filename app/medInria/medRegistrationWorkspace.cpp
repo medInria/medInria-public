@@ -45,31 +45,15 @@ public:
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
-    // -- Registration toolbox --
-
     d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
     d->registrationToolBox->setWorkspace(this);
     this->addToolBox(d->registrationToolBox);
 
-    d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
-    d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this, this->identifier());
-    d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
+    setInitialGroups();
 
-    d->viewGroup->setLinkAllParameters(true);
-    d->viewGroup->removeParameter("DataList");
-    d->viewGroup->removeParameter("Position");
-
-    d->fixedLayerGroup->setLinkAllParameters(true);
-    d->fixedLayerGroup->removeParameter("Slicing");
-
-    d->movingLayerGroup->setLinkAllParameters(true);
-    d->movingLayerGroup->removeParameter("Slicing");
-
-//    this->setUserLayerPoolable(false);
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
     connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
     connect(d->registrationToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));
-
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -80,7 +64,6 @@ medRegistrationWorkspace::~medRegistrationWorkspace(void)
 
 void medRegistrationWorkspace::setupViewContainerStack()
 {
-
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
@@ -124,6 +107,23 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->fixedContainer->setSelected(true);
         d->movingContainer->setSelected(false);
     }
+}
+
+void medRegistrationWorkspace::setInitialGroups()
+{
+    d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
+    d->fixedLayerGroup =  new medLayerParameterGroup("Fixed Group", this, this->identifier());
+    d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
+
+    d->viewGroup->setLinkAllParameters(true);
+    d->viewGroup->removeParameter("DataList");
+    d->viewGroup->removeParameter("Position");
+
+    d->fixedLayerGroup->setLinkAllParameters(true);
+    d->fixedLayerGroup->removeParameter("Slicing");
+
+    d->movingLayerGroup->setLinkAllParameters(true);
+    d->movingLayerGroup->removeParameter("Slicing");
 }
 
 bool medRegistrationWorkspace::isUsable()

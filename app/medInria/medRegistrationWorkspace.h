@@ -34,6 +34,7 @@ public:
 
     static bool isUsable();
     void setupViewContainerStack ();
+    void setInitialGroups();
 
 protected slots:
     void updateFromFixedContainer();

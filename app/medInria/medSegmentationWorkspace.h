@@ -35,9 +35,6 @@ public:
 
     static bool isUsable();
 
-    //! Implement abstract method in base class.
-    void setupViewContainerStack();
-
     medSegmentationSelectorToolBox * segmentationToobox();
 
 protected slots:

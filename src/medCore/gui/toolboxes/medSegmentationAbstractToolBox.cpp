@@ -17,13 +17,13 @@
 class medSegmentationAbstractToolBoxPrivate
 {
 public:
-    medSegmentationSelectorToolBox * segmentationToolBox;
+    medSegmentationSelectorToolBox * selectorToolBox;
 };
 
 //! Parent should be a medSegmentationSelectorToolBox
 medSegmentationAbstractToolBox::medSegmentationAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medSegmentationAbstractToolBoxPrivate)
 {
-    d->segmentationToolBox = qobject_cast<medSegmentationSelectorToolBox*>(parent);
+    d->selectorToolBox = qobject_cast<medSegmentationSelectorToolBox*>(parent);
 }
 
 medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
@@ -35,5 +35,5 @@ medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
 //! Get the segmentationToolbox (usually one instance)
 medSegmentationSelectorToolBox *medSegmentationAbstractToolBox::segmentationToolBox(void)
 {
-    return d->segmentationToolBox;
+    return d->selectorToolBox;
 }

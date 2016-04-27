@@ -27,10 +27,8 @@ class medVisualizationWorkspace : public medAbstractWorkspace
                             "Workspace to visualise images, meshes and other data types.",
                             "Basic")
 public:
-     medVisualizationWorkspace(QWidget *parent = 0);
+     medVisualizationWorkspace(QWidget *parent = 0){}
     ~medVisualizationWorkspace();
-
-    virtual void setupViewContainerStack();
 
     static bool isUsable();
 

@@ -38,7 +38,7 @@ public slots:
     void updateView(){}
 
 protected:
-    medReformatSelectorToolBox *ReformatToolBox();
+    medReformatSelectorToolBox *selectorToolBox();
 
 private:
     medReformatAbstractToolBoxPrivate *d;

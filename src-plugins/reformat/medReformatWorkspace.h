@@ -33,9 +33,6 @@ public:
     static bool isUsable();
     static bool registered();
 
-    //! Implement abstract method in base class.
-    void setupViewContainerStack();
-
     medReformatSelectorToolBox * selectorToolBox();
 
 protected slots:

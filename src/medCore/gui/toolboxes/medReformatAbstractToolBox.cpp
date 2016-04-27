@@ -17,13 +17,13 @@
 class medReformatAbstractToolBoxPrivate
 {
 public:
-    medReformatSelectorToolBox * reformatToolBox;
+    medReformatSelectorToolBox * selectorToolBox;
 };
 
 //! Parent should be a medReformatSelectorToolBox
 medReformatAbstractToolBox::medReformatAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medReformatAbstractToolBoxPrivate)
 {
-    d->reformatToolBox = qobject_cast<medReformatSelectorToolBox*>(parent);
+    d->selectorToolBox = qobject_cast<medReformatSelectorToolBox*>(parent);
 }
 
 medReformatAbstractToolBox::~medReformatAbstractToolBox(void)
@@ -33,7 +33,7 @@ medReformatAbstractToolBox::~medReformatAbstractToolBox(void)
 }
 
 //! Get the ReformatToolbox (usually one instance)
-medReformatSelectorToolBox *medReformatAbstractToolBox::ReformatToolBox(void)
+medReformatSelectorToolBox *medReformatAbstractToolBox::selectorToolBox(void)
 {
-    return d->reformatToolBox;
+    return d->selectorToolBox;
 }
