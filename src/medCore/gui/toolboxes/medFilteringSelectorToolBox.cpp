@@ -119,6 +119,7 @@ void medFilteringSelectorToolBox::changeCurrentToolBox(const QString &identifier
         toolbox = qobject_cast<medFilteringAbstractToolBox *>(tb);
         if(toolbox)
         {
+            toolbox->setWorkspace(getWorkspace());
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             d->toolBoxes[identifier] = toolbox;
         }

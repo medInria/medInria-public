@@ -138,14 +138,6 @@ dtkPlugin* medCropToolBox::plugin()
     return medPluginManager::instance()->plugin("reformatPlugin");
 }
 
-void medCropToolBox::setWorkspace(medAbstractWorkspace* workspace)
-{
-    medToolBox::setWorkspace(workspace);
-    medTabbedViewContainers* containers = workspace->stackedViewContainers();
-    connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
-    updateView();
-}
-
 medAbstractData* medCropToolBox::processOutput()
 {
     if (d->view)

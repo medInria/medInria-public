@@ -221,15 +221,6 @@ void resliceToolBox::stopReformat()
     }
 }
 
-void resliceToolBox::setWorkspace(medAbstractWorkspace * workspace)
-{
-    medToolBox::setWorkspace(workspace);
-
-    medTabbedViewContainers * containers = workspace->stackedViewContainers();
-    QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
-    updateView();
-}
-
 void resliceToolBox::updateView()
 {
     medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();

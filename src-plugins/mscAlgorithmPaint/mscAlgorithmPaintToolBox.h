@@ -59,7 +59,6 @@ public:
     ~AlgorithmPaintToolBox();
 
     static bool registered();
-    void setWorkspace(medAbstractWorkspace* workspace);
 
     inline void setPaintState( PaintState::E value){m_paintState = value;}
     inline PaintState::E paintState(){return m_paintState;}

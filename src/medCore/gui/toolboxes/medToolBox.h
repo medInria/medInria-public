@@ -114,6 +114,8 @@ public slots:
     //! Switch between errors
     void handleDisplayError(int);
 
+    virtual void updateView(){}
+
 protected slots:
     void onAboutButtonClicked();
     

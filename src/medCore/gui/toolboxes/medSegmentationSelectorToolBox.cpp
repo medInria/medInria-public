@@ -11,16 +11,13 @@
 
 =========================================================================*/
 
-#include <medSegmentationSelectorToolBox.h>
-
-#include <medToolBoxFactory.h>
-#include <medToolBoxTab.h>
 #include <medSegmentationAbstractToolBox.h>
+#include <medSegmentationSelectorToolBox.h>
+#include <medTabbedViewContainers.h>
+#include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
+#include <medToolBoxTab.h>
 #include <medViewEventFilter.h>
-
-#include <QtGui>
-
 
 class medSegmentationSelectorToolBoxPrivate
 {
@@ -92,10 +89,9 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
         toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
         if (toolbox)
         {
-            medAbstractWorkspace* workspace = getWorkspace();
-            if(workspace)
-                toolbox->setWorkspace(workspace);
+            toolbox->setWorkspace(getWorkspace());
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
+
             d->segmentationToolBoxes[identifier] = toolbox;
         }
     }

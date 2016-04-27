@@ -122,15 +122,6 @@ medClutToolBox::~medClutToolBox(void)
     d = NULL;
 }
 
-void medClutToolBox::setWorkspace(medAbstractWorkspace* workspace)
-{
-    medToolBox::setWorkspace(workspace);
-    medTabbedViewContainers * containers = workspace->stackedViewContainers();
-
-    QObject::connect(containers,SIGNAL(containersSelectedChanged()),this,SLOT(updateView()));
-    updateView();
-}
-
 void medClutToolBox::updateView()
 {
     medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();

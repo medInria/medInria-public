@@ -137,11 +137,13 @@ medAbstractWorkspace::~medAbstractWorkspace(void)
 
 void medAbstractWorkspace::addToolBox(medToolBox *toolbox)
 {
+    toolbox->setWorkspace(this);
     d->toolBoxes.append(toolbox);
 }
 
 void medAbstractWorkspace::removeToolBox(medToolBox *toolbox)
 {
+    toolbox->setWorkspace(NULL);
     d->toolBoxes.removeOne(toolbox);
 }
 

@@ -36,7 +36,6 @@ signals:
 public slots:
     void changeCurrentToolBox(int index);
 
-
 private:
     medSegmentationSelectorToolBoxPrivate *d;
 };

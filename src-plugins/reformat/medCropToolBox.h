@@ -21,7 +21,6 @@ public:
     virtual ~medCropToolBox();
 
     virtual dtkPlugin* plugin();
-    virtual void setWorkspace(medAbstractWorkspace* workspace);
     virtual medAbstractData* processOutput();
 
     void handleInteractionEvent();
