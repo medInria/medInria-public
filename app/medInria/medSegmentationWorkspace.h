@@ -16,7 +16,7 @@
 #include <medAbstractWorkspace.h>
 
 class medSegmentationWorkspacePrivate;
-class medSegmentationSelectorToolBox;
+class medSelectorToolBox;
 
 /**
  * class medSegmentationWorkspace
@@ -35,10 +35,11 @@ public:
 
     static bool isUsable();
 
-    medSegmentationSelectorToolBox * segmentationToobox();
+    medSelectorToolBox *segmentationToobox();
 
 protected slots:
     void onSuccess();
+    void onCurrentToolBoxChanged();
 
 private:
     medSegmentationWorkspacePrivate *d;

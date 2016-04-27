@@ -59,7 +59,7 @@ public:
     medAbstractData* output;
 };
 
-iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medMeshingAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
+iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
 {
     this->setTitle("Iterative Closest Point");
 
@@ -151,6 +151,8 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
 
     widget->setLayout(parameters_layout);
     this->addWidget(widget);
+
+    d->currentView = 0;
 }
 
 iterativeClosestPointToolBox::~iterativeClosestPointToolBox()

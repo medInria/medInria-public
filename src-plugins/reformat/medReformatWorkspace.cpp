@@ -11,8 +11,8 @@
 #include <medViewEventFilter.h>
 #include <medViewParameterGroup.h>
 #include <medDataManager.h>
-#include <medReformatAbstractToolBox.h>
-#include <medReformatSelectorToolBox.h>
+#include <medAbstractToolBox.h>
+#include <medSelectorToolBox.h>
 
 #include <stdexcept>
 
@@ -24,12 +24,12 @@ public:
        selectorToolBox(NULL)
     {}
 
-    medReformatSelectorToolBox* selectorToolBox;
+    medSelectorToolBox* selectorToolBox;
 };
 
 medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medReformatWorkspacePrivate)
 {
-    d->selectorToolBox = new medReformatSelectorToolBox(parent);
+    d->selectorToolBox = new medSelectorToolBox(parent, "reformat");
     connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
 
     // Always have a parent.
@@ -52,7 +52,7 @@ medReformatWorkspace::~medReformatWorkspace(void)
     d = NULL;
 }
 
-medReformatSelectorToolBox * medReformatWorkspace::selectorToolBox()
+medSelectorToolBox * medReformatWorkspace::selectorToolBox()
 {
     return d->selectorToolBox;
 }

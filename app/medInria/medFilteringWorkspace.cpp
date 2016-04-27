@@ -13,38 +13,37 @@
 
 #include <medFilteringWorkspace.h>
 
-
+#include <medAbstractData.h>
+#include <medAbstractLayeredView.h>
+#include <medAbstractToolBox.h>
+#include <medAbstractView.h>
 #include <medDatabaseNonPersistentController.h>
+#include <medDataManager.h>
+#include <medLayerParameterGroup.h>
 #include <medMetaDataKeys.h>
+#include <medSelectorToolBox.h>
 #include <medStorage.h>
-#include <medFilteringSelectorToolBox.h>
+#include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
-#include <medTabbedViewContainers.h>
-#include <medFilteringAbstractToolBox.h>
-#include <medAbstractData.h>
-#include <medDataManager.h>
-#include <medAbstractView.h>
-#include <medAbstractLayeredView.h>
 #include <medViewParameterGroup.h>
-#include <medLayerParameterGroup.h>
 
 class medFilteringWorkspacePrivate
 {
 public:
-    QPointer<medFilteringSelectorToolBox> filteringToolBox;
+    QPointer<medSelectorToolBox> selectorToolBox;
     medViewContainer *inputContainer;
     medViewContainer *outputContainer;
-
 
     medAbstractData *filterOutput;
 };
 
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medFilteringWorkspacePrivate)
 {
-    d->filteringToolBox = new medFilteringSelectorToolBox(parent);
-    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
-    this->addToolBox(d->filteringToolBox);
+    d->selectorToolBox = new medSelectorToolBox(parent, "filtering");
+    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onProcessSuccess()));
+
+    this->addToolBox(d->selectorToolBox);
 
     setInitialGroups();
 }
@@ -92,12 +91,12 @@ void medFilteringWorkspace::setupViewContainerStack()
 
 void medFilteringWorkspace::changeToolBoxInput()
 {
-    if(d->filteringToolBox.isNull())
+    if(d->selectorToolBox.isNull())
         return;
 
     if(!d->inputContainer->view())
     {
-        d->filteringToolBox->clear();
+        d->selectorToolBox->clear();
         return;
     }
 
@@ -105,10 +104,10 @@ void medFilteringWorkspace::changeToolBoxInput()
     if(!layeredView)
     {
         qWarning() << "Non layered view are not supported in filtering workspace yet.";
-        d->filteringToolBox->clear();
+        d->selectorToolBox->clear();
         return;
     }
-    d->filteringToolBox->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
+    d->selectorToolBox->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
 }
 
 /**
@@ -116,16 +115,14 @@ void medFilteringWorkspace::changeToolBoxInput()
  */
 void medFilteringWorkspace::onProcessSuccess()
 {
-    if(d->filteringToolBox.isNull())
+    if(d->selectorToolBox.isNull())
         return;
 
-    d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
+    d->filterOutput = d->selectorToolBox->currentToolBox()->processOutput();
     if ( !d->filterOutput )
         return;
 
-    qDebug() << "d->filterOutput->identifier()" << d->filterOutput->identifier();
-
-    medAbstractData *inputData(d->filteringToolBox->data());
+    medAbstractData *inputData(d->selectorToolBox->data());
 
     if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
       {

@@ -15,7 +15,7 @@
 #include <medDataManager.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
-#include <medSegmentationSelectorToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medUtilities.h>
@@ -218,7 +218,7 @@ private :
 };
 
 AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
-    medSegmentationAbstractToolBox( parent),
+    medAbstractToolBox( parent),
     m_paintState(PaintState::None)
 {
     QWidget *displayWidget = new QWidget(this);
@@ -395,9 +395,9 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clearMask()));
     connect (m_applyButton, SIGNAL(pressed()),this, SLOT(import()));
 
-    if (this->segmentationToolBox()) // empty in pipelines
+    if (this->selectorToolBox()) // empty in pipelines
     {
-        connect(this->segmentationToolBox(), SIGNAL(inputChanged()), this, SLOT(updateMouseInteraction()));
+        connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(updateMouseInteraction()));
     }
     connect (m_interpolateButton, SIGNAL(clicked()), this, SLOT(interpolate()));
 

@@ -23,12 +23,12 @@
 #include <medAbstractProcess.h>
 #include <medDataManager.h>
 #include <medDropSite.h>
-#include <medFilteringSelectorToolBox.h>
 #include <medJobManager.h>
 #include <medMetaDataKeys.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
+#include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 
 class medBinaryOperationToolBoxPrivate
@@ -47,7 +47,7 @@ public:
     QPushButton  *clearDropsiteButton;
 };
 
-medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medBinaryOperationToolBoxPrivate)
+medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new medBinaryOperationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     
@@ -177,7 +177,7 @@ void medBinaryOperationToolBox::run()
     {
         d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkXorOperator");
     }
-    d->process->setInput ( this->parentToolBox()->data(), 0 );
+    d->process->setInput ( this->selectorToolBox()->data(), 0 );
     d->process->setInput ( d->secondInput, 1 );
 
     medRunnableProcess *runProcess = new medRunnableProcess;

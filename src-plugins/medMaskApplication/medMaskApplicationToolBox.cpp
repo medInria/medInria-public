@@ -22,20 +22,18 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medAbstractImageView.h>
+#include <medAbstractImageData.h>
 #include <medAbstractView.h>
 #include <medDataManager.h>
 #include <medDropSite.h>
-#include <medFilteringSelectorToolBox.h>
 #include <medJobManager.h>
 #include <medMessageController.h>
+#include <medMetaDataKeys.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
-#include <medTabbedViewContainers.h>
-#include <medTimeLineParameter.h>
+#include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
-#include <medViewContainer.h>
 
 class medMaskApplicationToolBoxPrivate
 {
@@ -49,7 +47,7 @@ public:
     dtkSmartPointer<medAbstractData> mask;
 };
 
-medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
+medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -124,14 +122,14 @@ medAbstractData* medMaskApplicationToolBox::processOutput()
 
 void medMaskApplicationToolBox::run()
 {
-    if (d->mask && this->parentToolBox()->data())
+    if (d->mask && this->selectorToolBox()->data())
     {
         if(!d->process)
         {
             d->process= new medMaskApplication;
         }
         d->process->setInput(d->mask, 0);
-        d->process->setInput(this->parentToolBox()->data(), 1);
+        d->process->setInput(this->selectorToolBox()->data(), 1);
         d->process->setParameter(d->backgroundSpinBox->value(), 0);
 
         medRunnableProcess *runProcess = new medRunnableProcess;

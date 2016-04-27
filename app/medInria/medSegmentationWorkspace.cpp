@@ -13,10 +13,10 @@
 
 #include <medSegmentationWorkspace.h>
 
+#include <medAbstractToolBox.h>
 #include <medDataManager.h>
 #include <medLayerParameterGroup.h>
-#include <medSegmentationAbstractToolBox.h>
-#include <medSegmentationSelectorToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medViewParameterGroup.h>
@@ -28,10 +28,10 @@ class medSegmentationWorkspacePrivate
 public:
     // Give values to items without a constructor.
     medSegmentationWorkspacePrivate() :
-       segmentationToolBox(NULL)
+       selectorToolBox(NULL)
     {}
 
-    medSegmentationSelectorToolBox *segmentationToolBox;
+    medSelectorToolBox *selectorToolBox;
     medToolBox * roiManagementToolBox;
 };
 
@@ -39,15 +39,16 @@ public:
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
 medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
-    d->segmentationToolBox = new medSegmentationSelectorToolBox(parent);
+    d->selectorToolBox = new medSelectorToolBox(parent, "segmentation");
 
-    connect(d->segmentationToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
+    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
+    connect(d->selectorToolBox,SIGNAL(currentToolBoxChanged()),this,SLOT(onCurrentToolBoxChanged()));
 
     // Always have a parent.
     if (!parent)
         throw (std::runtime_error ("Must have a parent widget"));
     
-    this->addToolBox(d->segmentationToolBox);
+    this->addToolBox(d->selectorToolBox);
     if(medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox"))
 	{
 		d->roiManagementToolBox= medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox");
@@ -58,7 +59,7 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
     setInitialGroups();
 
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
-            d->segmentationToolBox, SIGNAL(inputChanged()));
+            d->selectorToolBox, SIGNAL(inputChanged()));
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)
@@ -67,9 +68,9 @@ medSegmentationWorkspace::~medSegmentationWorkspace(void)
     d = NULL;
 }
 
-medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
+medSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 {
-    return d->segmentationToolBox;
+    return d->selectorToolBox;
 }
 
 bool medSegmentationWorkspace::isUsable()
@@ -78,9 +79,30 @@ bool medSegmentationWorkspace::isUsable()
     return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
 }
 
-//TODO: not tested yet
 void medSegmentationWorkspace::onSuccess()
 {
-    medAbstractData * output = d->segmentationToolBox->currentToolBox()->processOutput();
+    medAbstractData * output = d->selectorToolBox->currentToolBox()->processOutput();
     medDataManager::instance()->importData(output);
+}
+
+void medSegmentationWorkspace::onCurrentToolBoxChanged()
+{
+    medAbstractToolBox* currentToolBox = d->selectorToolBox->currentToolBox();
+
+    // Remove interactor on previous tlbx
+    if (currentToolBox->findChild<QPushButton*>("closedPolygonButton"))
+    {
+        currentToolBox->findChild<QPushButton*>("closedPolygonButton")->setChecked(false);
+    }
+    else if (currentToolBox->findChild<QPushButton*>("paintButton"))
+    {
+        if (currentToolBox->findChild<QPushButton*>("paintButton")->isChecked())
+        {
+            currentToolBox->findChild<QPushButton*>("paintButton")->click();
+        }
+        if (currentToolBox->findChild<QPushButton*>("Magic Wand")->isChecked())
+        {
+            currentToolBox->findChild<QPushButton*>("Magic Wand")->click();
+        }
+    }
 }

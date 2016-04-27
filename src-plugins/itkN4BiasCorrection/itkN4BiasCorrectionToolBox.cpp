@@ -28,7 +28,7 @@
 #include <medAbstractImageData.h>
 
 #include <medToolBoxFactory.h>
-#include <medFilteringSelectorToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medProgressionStack.h>
 #include <medPluginManager.h>
 
@@ -47,7 +47,7 @@ public:
     QCheckBox * saveBiasCheckBox;
 };
 
-itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new itkN4BiasCorrectionToolBoxPrivate)
+itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new itkN4BiasCorrectionToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     
@@ -222,17 +222,15 @@ medAbstractData* itkN4BiasCorrectionToolBox::processOutput()
 
 void itkN4BiasCorrectionToolBox::run()
 {
-    if(!this->parentToolBox())
+    if(!this->selectorToolBox())
         return;
     
     d->process = new itkN4BiasCorrection();
     
-    if(!this->parentToolBox()->data())
+    if(!this->selectorToolBox()->data())
         return;
     
-    d->process->setInput(this->parentToolBox()->data());
-    //std::vector<int> meshResolution = this->extractValue(d->splineGridResolutionText->text());
-
+    d->process->setInput(this->selectorToolBox()->data());
 
     d->process->setParameter(d->splineDistanceSpinBox->value(), 0);
     d->process->setParameter(d->widthSpinBox->value(), 1);

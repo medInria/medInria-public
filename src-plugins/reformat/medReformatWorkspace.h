@@ -16,7 +16,7 @@
 #include <medAbstractWorkspace.h>
 #include "reformatPluginExport.h"
 
-class medReformatSelectorToolBox;
+class medSelectorToolBox;
 class medReformatWorkspacePrivate;
     
 class REFORMATPLUGIN_EXPORT medReformatWorkspace : public medAbstractWorkspace
@@ -33,7 +33,7 @@ public:
     static bool isUsable();
     static bool registered();
 
-    medReformatSelectorToolBox * selectorToolBox();
+    medSelectorToolBox *selectorToolBox();
 
 protected slots:
     void onSuccess();

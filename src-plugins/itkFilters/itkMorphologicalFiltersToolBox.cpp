@@ -15,11 +15,6 @@
 
 #include <limits>
 
-#include <medAbstractDataFactory.h>
-#include <medAbstractData.h>
-
-#include <medAbstractImageData.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -27,24 +22,24 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medRunnableProcess.h>
+#include <itkMorphologicalFiltersProcessBase.h>
+
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
+#include <medAbstractImageData.h>
+#include <medAbstractToolBox.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
-
-#include <medToolBoxFactory.h>
-#include <medFilteringSelectorToolBox.h>
-#include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
-
-#include <itkMorphologicalFiltersProcessBase.h>
+#include <medRunnableProcess.h>
+#include <medSelectorToolBox.h>
+#include <medToolBoxFactory.h>
 
 #include <QtGui>
 
 class itkMorphologicalFiltersToolBoxPrivate
 {
 public:
-    QLabel * dataTypeValue;
-
     QDoubleSpinBox * kernelSize;
     QRadioButton *mmButton, *pixelButton;
     
@@ -54,7 +49,7 @@ public:
     medProgressionStack * progressionStack;
 };
 
-itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
+itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
 {
     //Filters selection combobox
     d->filters = new medComboBox;
@@ -68,15 +63,6 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
                 << "Binary Open";
     
     d->filters->addItems ( filtersList );
-
-    QLabel * dataTypeLabel = new QLabel ( tr ( "Data type :" ) );
-    dataTypeLabel->setObjectName("dataTypeLabel");
-    d->dataTypeValue = new QLabel ( tr ( "Unknown" ) );
-    d->dataTypeValue->setObjectName("dataTypeValue");
-
-    QHBoxLayout * dataTypeLayout = new QHBoxLayout;
-    dataTypeLayout->addWidget ( dataTypeLabel );
-    dataTypeLayout->addWidget ( d->dataTypeValue );
 
     // We use the same widget for all the morphological filters
     QWidget *filterWidget = new QWidget(this);
@@ -117,7 +103,6 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
-    layout->addLayout ( dataTypeLayout );
     layout->addWidget ( filterWidget );
     layout->addWidget ( runButton );
     layout->addWidget ( d->progressionStack );
@@ -161,74 +146,11 @@ medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
     return d->process->output();
 }
 
-void itkMorphologicalFiltersToolBox::clear()
-{
-    d->dataTypeValue->setText ( "Unknown" );    
-}
-
-void itkMorphologicalFiltersToolBox::update(medAbstractData* data)
-{
-    if (!data)
-        this->clear();
-    else
-    {
-        QString id = data->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            d->dataTypeValue->setText ( "Char" );
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            d->dataTypeValue->setText ( "Unsigned char" );
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            d->dataTypeValue->setText ( "Short" );
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            d->dataTypeValue->setText ( "Unsigned short" );
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            d->dataTypeValue->setText ( "Int" );
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            d->dataTypeValue->setText ( "Unsigned int" );
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            d->dataTypeValue->setText ( "Long" );
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            d->dataTypeValue->setText ( "Unsigned long" );
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            d->dataTypeValue->setText ( "Float" );
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            d->dataTypeValue->setText ( "Double" );
-        }
-        else
-        {
-            qDebug() << description()
-                     <<", Error : pixel type not yet implemented ("
-                     << id
-                     << ")";
-        }
-    }
-}
-
 void itkMorphologicalFiltersToolBox::run ( void )
 {
-    if ( this->parentToolBox() )
+    if ( this->selectorToolBox() )
     {
-        if ( this->parentToolBox()->data() )
+        if ( this->selectorToolBox()->data() )
         {
             switch ( d->filters->currentIndex() )
             {
@@ -254,7 +176,7 @@ void itkMorphologicalFiltersToolBox::run ( void )
 
             if ( d->process )
             {
-                d->process->setInput ( this->parentToolBox()->data() );
+                d->process->setInput ( this->selectorToolBox()->data() );
                 d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
 
                 medRunnableProcess *runProcess = new medRunnableProcess;
@@ -272,7 +194,6 @@ void itkMorphologicalFiltersToolBox::run ( void )
     }
 }
 
-
 void itkMorphologicalFiltersToolBox::roundSpinBox(bool param)
 {
     if(param)
@@ -284,7 +205,6 @@ void itkMorphologicalFiltersToolBox::roundSpinBox(bool param)
         d->kernelSize->setDecimals(2);
     }
 }
-
 
 dtkPlugin* itkMorphologicalFiltersToolBox::plugin()
 {

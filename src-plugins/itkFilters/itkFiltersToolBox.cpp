@@ -15,11 +15,6 @@
 
 #include <limits>
 
-#include <medAbstractDataFactory.h>
-#include <medAbstractData.h>
-
-#include <medAbstractImageData.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -27,24 +22,24 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medRunnableProcess.h>
+#include <itkFiltersProcessBase.h>
+
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
+#include <medAbstractImageData.h>
+#include <medAbstractToolBox.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
-
-#include <medToolBoxFactory.h>
-#include <medFilteringSelectorToolBox.h>
-#include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
-
-#include <itkFiltersProcessBase.h>
+#include <medRunnableProcess.h>
+#include <medSelectorToolBox.h>
+#include <medToolBoxFactory.h>
 
 #include <QtGui>
 
 class itkFiltersToolBoxPrivate
 {
 public:
-    QLabel * dataTypeValue;
-
     QWidget * addFilterWidget;
     QWidget * subtractFilterWidget;
     QWidget * multiplyFilterWidget;
@@ -82,7 +77,7 @@ public:
     medProgressionStack * progressionStack;
 };
 
-itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
+itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
 {
     qDebug() << "itkFiltersToolBox";
     //Filters selection combobox
@@ -105,13 +100,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     d->filters->addItems ( filtersList );
 
     QObject::connect ( d->filters, SIGNAL ( currentIndexChanged ( int ) ), this, SLOT ( onFiltersActivated ( int ) ) );
-
-    QLabel * dataTypeLabel = new QLabel ( tr ( "Data type :" ) );
-    d->dataTypeValue = new QLabel ( tr ( "Unknown" ) );
-
-    QHBoxLayout * dataTypeLayout = new QHBoxLayout;
-    dataTypeLayout->addWidget ( dataTypeLabel );
-    dataTypeLayout->addWidget ( d->dataTypeValue );
 
     //Initialise filters widget (probably need to find a dynamic way of doing this, Factory ?)
     //Add filter widgets
@@ -311,7 +299,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
-    layout->addLayout ( dataTypeLayout );
     layout->addWidget ( d->addFilterWidget );
     layout->addWidget ( d->subtractFilterWidget );
     layout->addWidget ( d->multiplyFilterWidget );
@@ -370,9 +357,6 @@ medAbstractData* itkFiltersToolBox::processOutput()
 
 void itkFiltersToolBox::clear()
 {
-    qDebug() << "Clear itk filters toolbox";
-
-    d->dataTypeValue->setText ( "Unknown" );
     d->addFilterValue->setMaximum ( 100.0 );
     d->subtractFilterValue->setMaximum ( 100.0 );
 
@@ -400,11 +384,9 @@ void itkFiltersToolBox::update (medAbstractData *data )
     else
     {
         QString identifier = data->identifier();
-        qDebug() << "itkFiltersToolBox, update : " << identifier;
 
         if ( identifier == "itkDataImageChar3" )
         {
-            d->dataTypeValue->setText ( "Char" );
             d->addFilterValue->setMaximum ( std::numeric_limits<char>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<char>::max() );
 
@@ -428,7 +410,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageUChar3" )
         {
-            d->dataTypeValue->setText ( "Unsigned char" );
             d->addFilterValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 
@@ -451,7 +432,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageShort3" )
         {
-            d->dataTypeValue->setText ( "Short" );
             d->addFilterValue->setMaximum ( std::numeric_limits<short>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<short>::max() );
 
@@ -473,7 +453,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageUShort3" )
         {
-            d->dataTypeValue->setText ( "Unsigned short" );
             d->addFilterValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
 
@@ -495,7 +474,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageInt3" )
         {
-            d->dataTypeValue->setText ( "Int" );
             d->addFilterValue->setMaximum ( std::numeric_limits<int>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<int>::max() );
 
@@ -517,7 +495,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageUInt3" )
         {
-            d->dataTypeValue->setText ( "Unsigned int" );
             d->addFilterValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
 
@@ -539,7 +516,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageLong3" )
         {
-            d->dataTypeValue->setText ( "Long" );
             d->addFilterValue->setMaximum ( std::numeric_limits<long>::max() );
             d->subtractFilterValue->setValue ( std::numeric_limits<long>::max() );
 
@@ -561,7 +537,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier== "itkDataImageULong3" )
         {
-            d->dataTypeValue->setText ( "Unsigned long" );
             d->addFilterValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
 
@@ -583,7 +558,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageFloat3" )
         {
-            d->dataTypeValue->setText ( "Float" );
             d->addFilterValue->setMaximum ( std::numeric_limits<float>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<float>::max() );
 
@@ -605,7 +579,6 @@ void itkFiltersToolBox::update (medAbstractData *data )
         }
         else if ( identifier == "itkDataImageDouble3" )
         {
-            d->dataTypeValue->setText ( "Double" );
             d->addFilterValue->setMaximum ( std::numeric_limits<double>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<double>::max() );
 
@@ -641,7 +614,7 @@ void itkFiltersToolBox::setupItkAddProcess()
     if (!d->process)
         return;
 
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->addFilterValue->value(), 0 );
 }
 
@@ -653,7 +626,7 @@ void itkFiltersToolBox::setupItkSubtractProcess()
     if (!d->process)
         return;
 
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->subtractFilterValue->value(), 0 );
 }
 
@@ -664,7 +637,7 @@ void itkFiltersToolBox::setupItkMultiplyProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->multiplyFilterValue->value(), 0 );
 }
 
@@ -675,7 +648,7 @@ void itkFiltersToolBox::setupItkDivideProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->divideFilterValue->value(), 0 );
 }
 
@@ -686,7 +659,7 @@ void itkFiltersToolBox::setupItkGaussianProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->gaussianFilterValue->value(), 0);
 }
 
@@ -697,7 +670,7 @@ void itkFiltersToolBox::setupItkMedianProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
 }
 
 void itkFiltersToolBox::setupItkNormalizeProcess()
@@ -707,7 +680,7 @@ void itkFiltersToolBox::setupItkNormalizeProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
 }
 
 void itkFiltersToolBox::setupItkInvertProcess()
@@ -717,7 +690,7 @@ void itkFiltersToolBox::setupItkInvertProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
 }
 
 void itkFiltersToolBox::setupItkShrinkProcess()
@@ -727,7 +700,7 @@ void itkFiltersToolBox::setupItkShrinkProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( ( double ) d->shrink0Value->value(), 0 );
     d->process->setParameter ( ( double ) d->shrink1Value->value(), 1 );
     d->process->setParameter ( ( double ) d->shrink2Value->value(), 2 );
@@ -740,7 +713,7 @@ void itkFiltersToolBox::setupItkWindowingProcess()
     if (!d->process)
         return;
     
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->intensityMinimumValue->value(), 0);
     d->process->setParameter ( d->intensityMaximumValue->value(), 1);
     d->process->setParameter ( d->intensityOutputMinimumValue->value(), 2 );
@@ -752,7 +725,7 @@ void itkFiltersToolBox::setupItkThresholdingProcess()
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkThresholdingProcess" );
     if (!d->process)
         return;
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->thresholdFilterValue->value(), 0);
     d->process->setParameter ( (double)d->thresholdFilterValue2->value(), 1);
     d->process->setParameter ( (double)d->greaterButton->isChecked(), 2);
@@ -765,16 +738,16 @@ void itkFiltersToolBox::setupItkComponentSizeThresholdProcess()
     if (!d->process)
         return;
 
-    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->componentSizeThresholdFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::run ( void )
 {
-    if ( !this->parentToolBox() )
+    if ( !this->selectorToolBox() )
         return;
 
-    if ( !this->parentToolBox()->data() )
+    if ( !this->selectorToolBox()->data() )
         return;
 
 //    if (d->process) {

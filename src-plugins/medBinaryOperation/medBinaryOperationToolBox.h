@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <medFilteringAbstractToolBox.h>
+#include <medAbstractToolBox.h>
 #include "medBinaryOperationPluginExport.h"
 
 class medBinaryOperationToolBoxPrivate;
 
-class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationToolBox : public medFilteringAbstractToolBox
+class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationToolBox : public medAbstractToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("medBinaryOperationToolBox","Allow binary operations between masks (OR, AND, XOR, etc.)",<<"filtering")

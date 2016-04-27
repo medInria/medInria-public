@@ -97,7 +97,7 @@ bool medCropToolBox::registered()
 }
 
 medCropToolBox::medCropToolBox(QWidget* parent)
-    : medReformatAbstractToolBox(parent), applyButtonName("Apply"), saveButtonName("Save"), d(new medCropToolBoxPrivate())
+    : medAbstractToolBox(parent), applyButtonName("Apply"), saveButtonName("Save"), d(new medCropToolBoxPrivate())
 {
     setTitle(tr("Cropping"));
 

@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <medMeshingAbstractToolBox.h>
+#include <medAbstractToolBox.h>
 #include "iterativeClosestPointPluginExport.h"
 
 class iterativeClosestPointToolBoxPrivate;
 
-class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointToolBox : public medMeshingAbstractToolBox
+class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointToolBox : public medAbstractToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Iterative Closest Point","IterativeClosestPoint (Mesh)",<<"mesh")
