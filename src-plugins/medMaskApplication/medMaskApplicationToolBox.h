@@ -28,7 +28,7 @@ class medMaskApplicationToolBoxPrivate;
 class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medAbstractToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("medMaskApplicationToolBox","Apply a mask to an image",<<"filtering")
+    MED_TOOLBOX_INTERFACE("Mask Application","Apply a mask to an image",<<"filtering")
 
 public:
     medMaskApplicationToolBox(QWidget *parent = 0);

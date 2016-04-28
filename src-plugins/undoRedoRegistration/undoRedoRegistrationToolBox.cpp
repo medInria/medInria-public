@@ -78,10 +78,8 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
 
     addWidget(layoutSection);
 
-    this->setTitle(tr("Stack of transformations"));
     connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QString)),this,SLOT(addTransformationIntoList(int, QString)));
     connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
-
 }
 
 undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)

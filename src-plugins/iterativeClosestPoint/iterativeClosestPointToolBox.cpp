@@ -61,8 +61,6 @@ public:
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
 {
-    this->setTitle("Iterative Closest Point");
-
     QWidget *widget = new QWidget(this);
 
     // Parameters'widgets

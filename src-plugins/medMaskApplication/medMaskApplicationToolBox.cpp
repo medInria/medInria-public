@@ -50,8 +50,6 @@ public:
 medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
-
-    this->setTitle("Mask Application");
     this->addWidget(widget);
 
     QVBoxLayout *bundlingLayout = new QVBoxLayout(widget);

@@ -35,7 +35,6 @@ public:
 
 resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractToolBox (parent), d(new resliceToolBoxPrivate)
 {
-    this->setTitle("Reslice");
     this->setAboutPluginVisibility(false);
     this->setAboutPluginButton(this->plugin());
 

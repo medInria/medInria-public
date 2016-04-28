@@ -49,6 +49,8 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
         throw (std::runtime_error ("Must have a parent widget"));
     
     this->addToolBox(d->selectorToolBox);
+    d->selectorToolBox->setTitle(this->name()); // get workspace name
+
     if(medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox"))
 	{
 		d->roiManagementToolBox= medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox");

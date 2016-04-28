@@ -22,7 +22,7 @@ class undoRedoRegistrationToolBoxPrivate;
 class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationToolBox : public medRegistrationAbstractToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("undoRedoRegistration",
+    MED_TOOLBOX_INTERFACE("Stack of transformations",
                           "short tooltip description",
                           << "UndoRedoRegistration")
 public:

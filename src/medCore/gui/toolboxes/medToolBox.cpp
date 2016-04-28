@@ -45,8 +45,6 @@ public:
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
 {
-    //d->view = 0;
-
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
     d->isContextVisible = false;
@@ -65,6 +63,8 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     connect(d->body, SIGNAL(maximized()), this, SLOT(behaveWithBodyVisibility()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    this->setTitle(this->name());
 }
 
 medToolBox::~medToolBox(void)

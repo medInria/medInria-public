@@ -139,6 +139,7 @@ void medAbstractWorkspace::addToolBox(medToolBox *toolbox)
 {
     toolbox->setWorkspace(this);
     d->toolBoxes.append(toolbox);
+    toolbox->setTitle(toolbox->name());
 }
 
 void medAbstractWorkspace::removeToolBox(medToolBox *toolbox)

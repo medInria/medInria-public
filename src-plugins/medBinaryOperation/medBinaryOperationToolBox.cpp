@@ -93,7 +93,6 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medAbstr
     connect (d->notButton,     SIGNAL(toggled(bool)), this, SLOT(onNotButtonToggled(bool)));
 
     this->onXorButtonToggled(true);
-    this->setTitle("Binary Operation");
     this->addWidget(widget);
 
     QPushButton *runButton = new QPushButton(tr("Run"), this);

@@ -318,8 +318,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractToolBox ( 
     this->onFiltersActivated ( 0 );
     widget->setLayout ( layout );
 
-    // Main toolbox:
-    this->setTitle ( tr ( "ITK Basic Filters" ) );
     this->addWidget ( widget );
 
     // Add about plugin
@@ -329,7 +327,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractToolBox ( 
     setAboutPluginVisibility ( true );
 
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
-
 }
 
 itkFiltersToolBox::~itkFiltersToolBox()

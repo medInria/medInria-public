@@ -13,7 +13,6 @@
 
 #pragma once
 
-
 #include <QtCore>
 
 #include <medAbstractWorkspace.h>

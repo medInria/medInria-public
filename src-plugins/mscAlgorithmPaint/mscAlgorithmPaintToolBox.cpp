@@ -223,7 +223,6 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 {
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
-    this->setTitle(this->name());
 
     QVBoxLayout * layout = new QVBoxLayout(displayWidget);
 

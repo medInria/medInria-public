@@ -61,7 +61,6 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
     mainWidget->setLayout(d->mainLayout);
 
     this->addWidget(mainWidget);
-    this->setTitle("");
 }
 
 medSelectorToolBox::~medSelectorToolBox(void)

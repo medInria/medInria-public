@@ -132,8 +132,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
     this->addWidget(toolBoxWidget);
 
-
-    this->setTitle(tr("Registration"));
     d->currentToolBox = NULL;
 
     //Connect Message Controller:

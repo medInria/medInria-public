@@ -44,6 +44,7 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
     connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onProcessSuccess()));
 
     this->addToolBox(d->selectorToolBox);
+    d->selectorToolBox->setTitle("Filtering");
 
     setInitialGroups();
 }

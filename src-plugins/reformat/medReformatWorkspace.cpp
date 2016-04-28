@@ -39,6 +39,7 @@ medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medAbstractWorkspa
     }
 
     this->addToolBox(d->selectorToolBox);
+    d->selectorToolBox->setTitle(this->name()); // get workspace name
 
     setInitialGroups();
 

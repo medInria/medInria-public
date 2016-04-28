@@ -54,8 +54,6 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     QPushButton *runButton = new QPushButton(tr("Run"), this);
     runButton->setObjectName("runButton");
     
-    this->setTitle("N4 Bias Correction Process");
-    
     //QLabel * splineGridResolutionLabel = new QLabel("Spline Grid Resolution : "); //Note: not really needed
     //d->splineGridResolutionText = new QLineEdit;
     //d->splineGridResolutionText->setMaxLength(6);

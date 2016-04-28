@@ -110,8 +110,6 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     widget->setLayout ( layout );
 
-    // Main toolbox:
-    this->setTitle ( tr ( "ITK Morphological Filters" ) );
     this->addWidget ( widget );
 
     // Add about plugin

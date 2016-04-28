@@ -56,7 +56,6 @@ public:
 medClutToolBox::medClutToolBox(QWidget *parent) :
 medToolBox(parent), d(new medClutToolBoxPrivate)
 {
-    this->setTitle("Clut Editor ToolBox");
     QWidget * body = new QWidget(this);
     QVBoxLayout * layoutBody = new QVBoxLayout();
     body->setLayout(layoutBody);
