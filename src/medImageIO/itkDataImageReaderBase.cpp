@@ -279,10 +279,17 @@ void itkDataImageReaderBase::extractMetaData()
         }
         else
         {
-            metaDataKey = QString::fromStdString(key);
+            const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(key.c_str());
+            if (medKey)
+            {
+                metaDataKey = medKey->key();
+            }
         }
 
-        data()->setMetaData(metaDataKey, QString(value.c_str()));
+        if (!metaDataKey.isEmpty())
+        {
+            data()->setMetaData(metaDataKey, QString(value.c_str()));
+        }
     }
 }
 
