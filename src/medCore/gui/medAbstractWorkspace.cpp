@@ -524,14 +524,16 @@ void medAbstractWorkspace::removeLayer()
     int layer = item->data(Qt::UserRole).toInt();
 
     medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
-    if(!layerView)
-        return;
+    if(layerView)
+    {
+        layerView->removeLayer(layer);
 
-    layerView->removeLayer(layer);
-
-    this->updateLayersToolBox();
+        if (layerView->layersCount() == 0) // remove the view if no more layer
+        {
+            medViewContainerManager::instance()->container(containerUuid)->removeView();
+        }
+    }
 }
-
 
 void medAbstractWorkspace::buildTemporaryPool()
 {
