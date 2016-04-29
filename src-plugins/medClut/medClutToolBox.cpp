@@ -440,37 +440,35 @@ void medClutToolBox::exportMeshWithLUT()
 {
     vtkMetaSurfaceMesh * mesh = vtkMetaSurfaceMesh::New();
     mesh->SetDataSet(d->viewDataSet->value(d->view));
-    if (mesh)
+
+    dtkSmartPointer<medAbstractData> dataToExport = medAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
+    dataToExport->setData(mesh);
+
+    vtkPointSet * pointSet = vtkPointSet::SafeDownCast(mesh->GetDataSet());
+
+    if (pointSet)
     {
-        dtkSmartPointer<medAbstractData> dataToExport = medAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
-        dataToExport->setData(mesh);
+        vtkDataSetAttributes * attributes = NULL;
 
-        vtkPointSet * pointSet = vtkPointSet::SafeDownCast(mesh->GetDataSet());
+        if (pointSet->GetPointData() && pointSet->GetPointData()->HasArray(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)])))
+            attributes = pointSet->GetPointData();
+        else if (pointSet->GetCellData() && pointSet->GetCellData()->HasArray(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)])))
+            attributes = pointSet->GetCellData();
 
-        if (pointSet)
+        if (attributes)
         {
-            vtkDataSetAttributes * attributes = NULL;
+            attributes->SetActiveScalars(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)]));
+            mesh->SetCurrentActiveArray(attributes->GetArray(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)])));
 
-            if (pointSet->GetPointData() && pointSet->GetPointData()->HasArray(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)])))
-                attributes = pointSet->GetPointData();
-            else if (pointSet->GetCellData() && pointSet->GetCellData()->HasArray(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)])))
-                attributes = pointSet->GetCellData();
-
-            if (attributes)
+            vtkImageView3D * view3d = static_cast<medVtkViewBackend*>(d->view->backend())->view3D;
+            vtkActor * actor3d = static_cast<vtkActor*>(view3d->FindDataSetActor(d->viewDataSet->value(d->view)));
+            vtkMapper * mapper3d = actor3d->GetMapper();
+            vtkLookupTable * lut = static_cast<vtkLookupTable*>(mapper3d->GetLookupTable());
+            if (lut)
             {
-                attributes->SetActiveScalars(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)]));
-                mesh->SetCurrentActiveArray(attributes->GetArray(qPrintable(d->listOfAttributes[d->attributeChosen->value(d->view)])));
-
-                vtkImageView3D * view3d = static_cast<medVtkViewBackend*>(d->view->backend())->view3D;
-                vtkActor * actor3d = static_cast<vtkActor*>(view3d->FindDataSetActor(d->viewDataSet->value(d->view)));
-                vtkMapper * mapper3d = actor3d->GetMapper();
-                vtkLookupTable * lut = static_cast<vtkLookupTable*>(mapper3d->GetLookupTable());
-                if (lut)
-                {
-                    mesh->GetCurrentScalarArray()->SetLookupTable(lut);
-                }
-                medDataManager::instance()->exportData(dataToExport);
+                mesh->GetCurrentScalarArray()->SetLookupTable(lut);
             }
+            medDataManager::instance()->exportData(dataToExport);
         }
     }
 }
