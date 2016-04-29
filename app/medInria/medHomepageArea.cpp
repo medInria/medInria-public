@@ -443,10 +443,21 @@ void medHomepageArea::initPage()
     workspaceButtonsLayout->setColumnMinimumWidth(1,120);
     workspaceButtonsLayout->setColumnMinimumWidth(2,120);
     workspaceButtonsLayout->setColumnMinimumWidth(3,120);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutBasic,0,0);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutMethodology,0,1);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutClinical,0,2);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutOther,0,3);
+
+    // Hide a category if empty
+    QList<QVBoxLayout*> layoutList;
+    layoutList << workspaceButtonsLayoutBasic << workspaceButtonsLayoutMethodology
+               << workspaceButtonsLayoutClinical << workspaceButtonsLayoutOther;
+    int columnCount = 0;
+    foreach (QVBoxLayout* curLayout, layoutList)
+    {
+        if (!curLayout->isEmpty())
+        {
+            workspaceButtonsLayout->addLayout(curLayout,0,columnCount);
+            columnCount++;
+        }
+    }
+
     workspaceButtonsLayout->setSpacing(40);
     d->navigationWidget->setLayout ( workspaceButtonsLayout );
 }
