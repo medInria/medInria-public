@@ -17,7 +17,7 @@ medBinaryOperatorBase::medBinaryOperatorBase() : medAbstractProcess()
 {
     m_inputA = NULL;
     m_inputB = NULL;
-    m_output = NULL;
+    m_output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUChar3" );
 }
 
 medBinaryOperatorBase::~medBinaryOperatorBase()
@@ -36,7 +36,6 @@ void medBinaryOperatorBase::setInput ( medAbstractData *data, int channel)
 
     if ( channel == 1 )
     {        
-        m_output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUChar3" );
         m_inputB = data;
     }
 }
