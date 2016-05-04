@@ -45,7 +45,11 @@ public slots:
 
 private:
     static const char ID[];
+
+    QList<QString> metaDataFields;
+
     void addMetaDataAsFieldData(vtkMetaDataSet* dataSet);
+    void clearMetaDataFieldData(vtkMetaDataSet* dataSet);
 };
 
 

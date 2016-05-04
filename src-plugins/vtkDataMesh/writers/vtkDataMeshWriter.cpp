@@ -75,10 +75,12 @@ bool vtkDataMeshWriter::write(const QString& path)
   try
   {
       mesh->Write(path.toLocal8Bit().constData());
+      clearMetaDataFieldData(mesh);
   }
   catch (...)
   {
       qDebug() << metaObject()->className() << ": error writing to " << path;
+      clearMetaDataFieldData(mesh);
       return false;
   }
 
@@ -90,7 +92,8 @@ void vtkDataMeshWriter::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)
     foreach (QString key, data()->metaDataList())
     {
         vtkSmartPointer<vtkStringArray> metaDataArray = vtkSmartPointer<vtkStringArray>::New();
-        metaDataArray->SetName((QString("medMetaData::") + key).toStdString().c_str());
+        QString arrayName = QString("medMetaData::") + key;
+        metaDataArray->SetName(arrayName.toStdString().c_str());
 
         foreach (QString value, data()->metaDataValues(key))
         {
@@ -98,8 +101,24 @@ void vtkDataMeshWriter::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)
         }
 
         dataSet->GetDataSet()->GetFieldData()->AddArray(metaDataArray);
+        metaDataFields.append(arrayName);
     }
 }
+
+void vtkDataMeshWriter::clearMetaDataFieldData(vtkMetaDataSet* dataSet)
+{
+    vtkFieldData* fieldData = dataSet->GetDataSet()->GetFieldData();
+
+    foreach (QString arrayName, metaDataFields)
+    {
+        fieldData->RemoveArray(arrayName.toStdString().c_str());
+    }
+
+    vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
+    newFieldData->PassData(fieldData);
+    dataSet->GetDataSet()->SetFieldData(newFieldData);
+}
+
 QString vtkDataMeshWriter::description() const
 {
     return tr( "VTK Mesh Writer" );

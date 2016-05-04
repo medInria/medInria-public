@@ -135,6 +135,7 @@ bool vtkDataMeshReader::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)
 {
     bool foundMetaData = false;
     vtkFieldData* fieldData = dataSet->GetDataSet()->GetFieldData();
+    QList<QString> arraysToRemove;
 
     for (int i = 0; i < fieldData->GetNumberOfArrays(); i++)
     {
@@ -151,8 +152,19 @@ bool vtkDataMeshReader::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)
             {
                 data()->addMetaData(metaDataKey, QString(array->GetValue(j)));
             }
+
+            arraysToRemove.append(arrayName);
         }
     }
+
+    foreach (QString arrayName, arraysToRemove)
+    {
+        fieldData->RemoveArray(arrayName.toStdString().c_str());
+    }
+
+    vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
+    newFieldData->PassData(fieldData);
+    dataSet->GetDataSet()->SetFieldData(newFieldData);
 
     return foundMetaData;
 }
