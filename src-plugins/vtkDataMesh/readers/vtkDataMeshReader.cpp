@@ -98,9 +98,6 @@ bool vtkDataMeshReader::read(const QString& path) {
             {
                 qDebug() << metaObject()->className() << ": no metadata found in " << path;
             }
-
-            setProgress(100);
-            return true;
         }
         catch (vtkErrorCode::ErrorIds error)
         {
@@ -112,6 +109,9 @@ bool vtkDataMeshReader::read(const QString& path) {
             qDebug() << metaObject()->className() << ": error reading " << path;;
             return false;
         }
+
+        setProgress(100);
+        return true;
     }
     else
     {
