@@ -18,16 +18,16 @@
 
 class medAbstractData;
 class medSelectorToolBox;
-class medAbstractToolBoxPrivate;
+class medAbstractSelectableToolBoxPrivate;
 
-//! Base class for custom algorithms
-class MEDCORE_EXPORT medAbstractToolBox : public medToolBox
+//! Base class for custom toolboxes in combobox
+class MEDCORE_EXPORT medAbstractSelectableToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-    medAbstractToolBox(QWidget *parent = 0);
-    virtual ~medAbstractToolBox();
+    medAbstractSelectableToolBox(QWidget *parent = 0);
+    virtual ~medAbstractSelectableToolBox();
 
     virtual dtkPlugin* plugin() = 0;
 
@@ -45,7 +45,7 @@ protected:
     medSelectorToolBox *selectorToolBox();
 
 private:
-    medAbstractToolBoxPrivate *d;
+    medAbstractSelectableToolBoxPrivate *d;
 };
 
 

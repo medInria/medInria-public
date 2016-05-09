@@ -27,7 +27,7 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
@@ -77,7 +77,7 @@ public:
     medProgressionStack * progressionStack;
 };
 
-itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
+itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectableToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
 {
     qDebug() << "itkFiltersToolBox";
     //Filters selection combobox

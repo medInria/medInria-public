@@ -218,7 +218,7 @@ private :
 };
 
 AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
-    medAbstractToolBox( parent),
+    medAbstractSelectableToolBox( parent),
     m_paintState(PaintState::None)
 {
     QWidget *displayWidget = new QWidget(this);

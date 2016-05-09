@@ -13,7 +13,7 @@
 
 #include <medSegmentationWorkspace.h>
 
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medDataManager.h>
 #include <medLayerParameterGroup.h>
 #include <medSelectorToolBox.h>
@@ -89,7 +89,7 @@ void medSegmentationWorkspace::onSuccess()
 
 void medSegmentationWorkspace::onCurrentToolBoxChanged()
 {
-    medAbstractToolBox* currentToolBox = d->selectorToolBox->currentToolBox();
+    medAbstractSelectableToolBox* currentToolBox = d->selectorToolBox->currentToolBox();
 
     // Remove interactor on previous tlbx
     if (currentToolBox->findChild<QPushButton*>("closedPolygonButton"))

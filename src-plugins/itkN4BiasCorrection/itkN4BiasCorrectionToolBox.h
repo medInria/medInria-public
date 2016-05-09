@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 class itkN4BiasCorrectionToolBoxPrivate;
 
-class itkN4BiasCorrectionToolBox : public medAbstractToolBox
+class itkN4BiasCorrectionToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("N4 Bias Correction","N4 Bias Correction",<<"filtering")

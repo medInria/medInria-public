@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
@@ -21,8 +21,8 @@ class medSelectorToolBoxPrivate
 {
 public:
     medComboBox *chooseComboBox;
-    medAbstractToolBox * currentToolBox;
-    QHash<QString, medAbstractToolBox*> toolBoxes;
+    medAbstractSelectableToolBox * currentToolBox;
+    QHash<QString, medAbstractSelectableToolBox*> toolBoxes;
     QVBoxLayout *mainLayout;
 
     medAbstractData *inputData;
@@ -36,18 +36,16 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
 
     d->chooseComboBox = new medComboBox;
     d->chooseComboBox->addItem("Choose algorithm");
-    d->chooseComboBox->setToolTip(tr("Browse through the list of available algorithm"));
+    d->chooseComboBox->setToolTip(tr("Choose a toolbox"));
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
-    int i = 1; //account for the choose Filter item
+    int i = 1; // toolboxes positions
     foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(tlbxId))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolboxName);
 
         d->chooseComboBox->addItem(details->name, toolboxName);
-        d->chooseComboBox->setItemData(i,
-                                                   details->description,
-                                                   Qt::ToolTipRole);
+        d->chooseComboBox->setItemData(i, details->description, Qt::ToolTipRole);
         i++;
     }
 
@@ -72,7 +70,7 @@ medSelectorToolBox::~medSelectorToolBox(void)
 /**
  * @brief returns current selected toolbox
  */
-medAbstractToolBox* medSelectorToolBox::currentToolBox()
+medAbstractSelectableToolBox* medSelectorToolBox::currentToolBox()
 {
     return d->currentToolBox;
 }
@@ -89,7 +87,7 @@ void medSelectorToolBox::changeCurrentToolBox ( int index )
 
 void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
 {
-    medAbstractToolBox *toolbox = NULL;
+    medAbstractSelectableToolBox *toolbox = NULL;
 
     if (d->toolBoxes.contains (identifier))
     {
@@ -98,7 +96,7 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
     else
     {
         medToolBox* tb = medToolBoxFactory::instance()->createToolBox(identifier, this);
-        toolbox = qobject_cast<medAbstractToolBox*>(tb);
+        toolbox = qobject_cast<medAbstractSelectableToolBox*>(tb);
         if (toolbox)
         {
             toolbox->setWorkspace(getWorkspace());

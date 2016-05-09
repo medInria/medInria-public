@@ -27,7 +27,7 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
@@ -49,7 +49,7 @@ public:
     medProgressionStack * progressionStack;
 };
 
-itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medAbstractToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
+itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medAbstractSelectableToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
 {
     //Filters selection combobox
     d->filters = new medComboBox;

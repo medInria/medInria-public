@@ -6,7 +6,7 @@
 #include <medDoubleParameter.h>
 #include <medImageMaskAnnotationData.h>
 #include <medIntParameter.h>
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medViewEventFilter.h>
 
 #include <itkImage.h>
@@ -45,7 +45,7 @@ typedef itk::Image <float, 2>                      Mask2dFloatType;
 typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 
 //! Segmentation toolbox to allow manual painting of pixels
-class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractToolBox
+class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("MUSIC Paint segmentation", "Paint Tool",

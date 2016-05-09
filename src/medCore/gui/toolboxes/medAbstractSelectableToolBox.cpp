@@ -12,33 +12,33 @@
 =========================================================================*/
 
 #include <medSelectorToolBox.h>
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
-class medAbstractToolBoxPrivate
+class medAbstractSelectableToolBoxPrivate
 {
 public:
     medSelectorToolBox * selectorToolBox;
 };
 
 //! Parent should be a medSelectorToolBox
-medAbstractToolBox::medAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medAbstractToolBoxPrivate)
+medAbstractSelectableToolBox::medAbstractSelectableToolBox(QWidget *parent) : medToolBox(parent), d(new medAbstractSelectableToolBoxPrivate)
 {
     d->selectorToolBox = qobject_cast<medSelectorToolBox*>(parent);
 }
 
-medAbstractToolBox::~medAbstractToolBox(void)
+medAbstractSelectableToolBox::~medAbstractSelectableToolBox(void)
 {
     delete d;
     d = NULL;
 }
 
-void medAbstractToolBox::setSelectorToolBox(medSelectorToolBox *toolbox)
+void medAbstractSelectableToolBox::setSelectorToolBox(medSelectorToolBox *toolbox)
 {
     d->selectorToolBox = toolbox;
 }
 
 //! Get the selectorToolBox (usually one instance)
-medSelectorToolBox *medAbstractToolBox::selectorToolBox(void)
+medSelectorToolBox *medAbstractSelectableToolBox::selectorToolBox(void)
 {
     return d->selectorToolBox;
 }

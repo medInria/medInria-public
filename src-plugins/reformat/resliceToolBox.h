@@ -1,12 +1,12 @@
 #pragma once
 
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medAbstractWorkspace.h>
 #include "reformatPluginExport.h"
 
 class resliceToolBoxPrivate;
 
-class REFORMATPLUGIN_EXPORT resliceToolBox : public medAbstractToolBox
+class REFORMATPLUGIN_EXPORT resliceToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
 

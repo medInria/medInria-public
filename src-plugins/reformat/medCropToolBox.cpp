@@ -97,7 +97,7 @@ bool medCropToolBox::registered()
 }
 
 medCropToolBox::medCropToolBox(QWidget* parent)
-    : medAbstractToolBox(parent), applyButtonName("Apply"), saveButtonName("Save"), d(new medCropToolBoxPrivate())
+    : medAbstractSelectableToolBox(parent), applyButtonName("Apply"), saveButtonName("Save"), d(new medCropToolBoxPrivate())
 {
     d->borderWidget = vtkSmartPointer<vtkBorderWidget>::New();
     d->borderWidget->CreateDefaultRepresentation();

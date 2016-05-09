@@ -47,7 +47,7 @@ public:
     QCheckBox * saveBiasCheckBox;
 };
 
-itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new itkN4BiasCorrectionToolBoxPrivate)
+itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new itkN4BiasCorrectionToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     

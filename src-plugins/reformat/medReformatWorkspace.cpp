@@ -11,7 +11,7 @@
 #include <medViewEventFilter.h>
 #include <medViewParameterGroup.h>
 #include <medDataManager.h>
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medSelectorToolBox.h>
 
 #include <stdexcept>

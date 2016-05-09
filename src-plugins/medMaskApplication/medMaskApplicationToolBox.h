@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 #include "medMaskApplicationPluginExport.h"
 #include "medToolBox.h"
@@ -25,7 +25,7 @@
 
 class medMaskApplicationToolBoxPrivate;
 
-class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medAbstractToolBox
+class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Mask Application","Apply a mask to an image",<<"filtering")

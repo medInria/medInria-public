@@ -16,7 +16,7 @@
 #include <medToolBox.h>
 #include <medCoreExport.h>
 
-class medAbstractToolBox;
+class medAbstractSelectableToolBox;
 class medSelectorToolBoxPrivate;
 
 class MEDCORE_EXPORT medSelectorToolBox : public medToolBox
@@ -29,7 +29,7 @@ public:
 
     medAbstractData* data();
 
-    medAbstractToolBox* currentToolBox();
+    medAbstractSelectableToolBox* currentToolBox();
 
 signals:
     void inputChanged();
@@ -38,7 +38,6 @@ signals:
 public slots:
     virtual void changeCurrentToolBox(int index);
     virtual void changeCurrentToolBox(const QString &identifier);
-    void updateView(){}
     void clear();
     void onInputSelected(medAbstractData *data);
 

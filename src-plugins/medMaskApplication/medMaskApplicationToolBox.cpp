@@ -47,7 +47,7 @@ public:
     dtkSmartPointer<medAbstractData> mask;
 };
 
-medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
+medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     this->addWidget(widget);

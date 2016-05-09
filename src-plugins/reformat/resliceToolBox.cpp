@@ -33,7 +33,7 @@ public:
     QWidget* reformatOptions;
 };
 
-resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractToolBox (parent), d(new resliceToolBoxPrivate)
+resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox (parent), d(new resliceToolBoxPrivate)
 {
     this->setAboutPluginVisibility(false);
     this->setAboutPluginButton(this->plugin());

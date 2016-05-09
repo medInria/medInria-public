@@ -1,12 +1,12 @@
 #pragma once
 
 #include <medAbstractWorkspace.h>
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <reformatPluginExport.h>
 
 class medCropToolBoxPrivate;
 
-class REFORMATPLUGIN_EXPORT medCropToolBox : public medAbstractToolBox
+class REFORMATPLUGIN_EXPORT medCropToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Cropping", "Image cropping",<<"reformat")

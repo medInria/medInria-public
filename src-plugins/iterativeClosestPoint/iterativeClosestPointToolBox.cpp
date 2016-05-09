@@ -59,7 +59,7 @@ public:
     medAbstractData* output;
 };
 
-iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
+iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 

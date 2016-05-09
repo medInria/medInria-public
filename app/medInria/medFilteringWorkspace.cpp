@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractLayeredView.h>
-#include <medAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medAbstractView.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
