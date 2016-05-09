@@ -224,13 +224,8 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
     QString thumbnail;
     if ( query.next() )
     {
-        thumbnail = query.value ( 0 ).toString();
-
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
-        if (thumbnail == dbc->metaData(d->index,  medMetaDataKeys::ThumbnailPath.key()))
-        {
-            this->removeFile ( thumbnail );
-        }
+        thumbnail = query.value(0).toString();
+        removeThumbnailIfNeeded(query);
         QString path = query.value ( 1 ).toString();
 
         // if path is empty then it was an indexed series
@@ -281,17 +276,12 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
     query.prepare ( "SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :id " );
     query.bindValue ( ":id", studyDbId );
     EXEC_QUERY ( query );
-    QString thumbnail;
+
     if ( query.next() )
     {
-        thumbnail = query.value ( 0 ).toString();
-
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
-        if (thumbnail == dbc->metaData(d->index,  medMetaDataKeys::ThumbnailPath.key()))
-        {
-            this->removeFile ( thumbnail );
-        }
+        removeThumbnailIfNeeded(query);
     }
+
     if( removeTableRow ( d->T_STUDY, studyDbId ) )
         emit removed(medDataIndex(1, patientDbId, studyDbId, -1, -1));
 }
@@ -319,13 +309,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
     EXEC_QUERY ( query );
     if ( query.next() )
     {
-        QString thumbnail = query.value ( 0 ).toString();
-
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
-        if (thumbnail == dbc->metaData(d->index,  medMetaDataKeys::ThumbnailPath.key()))
-        {
-            this->removeFile ( thumbnail );
-        }
+        removeThumbnailIfNeeded(query);
         patientId = query.value ( 1 ).toString();
     }
     if( removeTableRow ( d->T_PATIENT, patientDbId ) )
@@ -354,6 +338,17 @@ void medDatabaseRemover::removeFile ( const QString & filename )
 {
     QFile file ( medStorage::dataLocation() + filename );
     file.remove();
+}
+
+void medDatabaseRemover::removeThumbnailIfNeeded(QSqlQuery query)
+{
+    QString thumbnail = query.value(0).toString();
+
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
+    if (thumbnail == dbc->metaData(d->index,  medMetaDataKeys::ThumbnailPath.key()))
+    {
+        this->removeFile ( thumbnail );
+    }
 }
 
 void medDatabaseRemover::onCancel ( QObject* )
