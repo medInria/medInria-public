@@ -173,39 +173,39 @@ medAbstractData* medDatabaseReader::run()
             seriesThumbnail = seriesQuery.value ( 0 );
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            medMetaDataKeys::SeriesThumbnail.add (medData, thumbPath);
+            medMetaDataKeys::SeriesThumbnail.set (medData, thumbPath);
         }
         else
         {
             qWarning() << "Thumbnailpath not found";
         }
 
-        medMetaDataKeys::PatientID.add ( medData, patientId );
-        medMetaDataKeys::PatientName.add ( medData, patientName );
-        medMetaDataKeys::BirthDate.add ( medData, birthdate );
-        medMetaDataKeys::Gender.add ( medData, gender );
-        medMetaDataKeys::StudyDescription.add ( medData, studyName );
-        medMetaDataKeys::StudyID.add ( medData, studyId );
-        medMetaDataKeys::StudyDicomID.add ( medData, studyUid );
-        medMetaDataKeys::SeriesDescription.add ( medData, seriesName );
-        medMetaDataKeys::SeriesID.add ( medData, seriesId );
-        medMetaDataKeys::SeriesDicomID.add ( medData, seriesUid );
-        medMetaDataKeys::Orientation.add ( medData, orientation );
-        medMetaDataKeys::Columns.add ( medData, columns );
-        medMetaDataKeys::Rows.add ( medData, rows );
-        medMetaDataKeys::AcquisitionDate.add ( medData, acquisitiondate );
-        medMetaDataKeys::Comments.add ( medData, comments );
-        medMetaDataKeys::Description.add ( medData, description );
-        medMetaDataKeys::ImportationDate.add ( medData, importationdate );
-        medMetaDataKeys::Modality.add ( medData, modality );
-        medMetaDataKeys::Protocol.add ( medData, protocol );
-        medMetaDataKeys::Referee.add ( medData, referee );
-        medMetaDataKeys::Institution.add ( medData, institution );
-        medMetaDataKeys::Report.add ( medData, report );
-        medMetaDataKeys::Status.add ( medData, status );
-        medMetaDataKeys::SequenceName.add ( medData, sequenceName );
-        medMetaDataKeys::SliceThickness.add ( medData, sliceThickness );
-        medMetaDataKeys::SeriesNumber.add(medData, seriesNumber);
+        medMetaDataKeys::PatientID.set ( medData, patientId );
+        medMetaDataKeys::PatientName.set ( medData, patientName );
+        medMetaDataKeys::BirthDate.set ( medData, birthdate );
+        medMetaDataKeys::Gender.set ( medData, gender );
+        medMetaDataKeys::StudyDescription.set ( medData, studyName );
+        medMetaDataKeys::StudyID.set ( medData, studyId );
+        medMetaDataKeys::StudyDicomID.set ( medData, studyUid );
+        medMetaDataKeys::SeriesDescription.set ( medData, seriesName );
+        medMetaDataKeys::SeriesID.set ( medData, seriesId );
+        medMetaDataKeys::SeriesDicomID.set ( medData, seriesUid );
+        medMetaDataKeys::Orientation.set ( medData, orientation );
+        medMetaDataKeys::Columns.set ( medData, columns );
+        medMetaDataKeys::Rows.set ( medData, rows );
+        medMetaDataKeys::AcquisitionDate.set ( medData, acquisitiondate );
+        medMetaDataKeys::Comments.set ( medData, comments );
+        medMetaDataKeys::Description.set ( medData, description );
+        medMetaDataKeys::ImportationDate.set ( medData, importationdate );
+        medMetaDataKeys::Modality.set ( medData, modality );
+        medMetaDataKeys::Protocol.set ( medData, protocol );
+        medMetaDataKeys::Referee.set ( medData, referee );
+        medMetaDataKeys::Institution.set ( medData, institution );
+        medMetaDataKeys::Report.set ( medData, report );
+        medMetaDataKeys::Status.set ( medData, status );
+        medMetaDataKeys::SequenceName.set ( medData, sequenceName );
+        medMetaDataKeys::SliceThickness.set ( medData, sliceThickness );
+        medMetaDataKeys::SeriesNumber.set(medData, seriesNumber);
 
         emit success ( this );
     }
