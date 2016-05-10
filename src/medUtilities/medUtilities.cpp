@@ -208,7 +208,7 @@ medAbstractData* medUtilities::changeMaxNumberOfMeshTriangles(medAbstractData *m
     {
         double decimateValue = 1.0 - (double)maxNumber/(double)initialNumber;
 
-        dtkSmartPointer<medAbstractProcess> process = dtkAbstractProcessFactory::instance()->createSmartPointer("decimateMeshProcess");
+        dtkSmartPointer<medAbstractProcess> process = dtkAbstractProcessFactory::instance()->createSmartPointer("medDecimateMeshProcess");
         process->setInput(mesh,0);
         process->setParameter(decimateValue,0);
         process->update();
