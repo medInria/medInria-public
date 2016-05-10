@@ -27,6 +27,7 @@
 #include <vtkXMLPolyDataWriter.h>
 
 const char vtkDataMeshWriter::ID[] = "vtkDataMeshWriter";
+const QString vtkDataMeshWriter::metaDataFieldPrefix = "medMetaData::";
 
 vtkDataMeshWriter::vtkDataMeshWriter()
 {
@@ -92,7 +93,7 @@ void vtkDataMeshWriter::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)
     foreach (QString key, data()->metaDataList())
     {
         vtkSmartPointer<vtkStringArray> metaDataArray = vtkSmartPointer<vtkStringArray>::New();
-        QString arrayName = QString("medMetaData::") + key;
+        QString arrayName = QString(metaDataFieldPrefix) + key;
         metaDataArray->SetName(arrayName.toStdString().c_str());
 
         foreach (QString value, data()->metaDataValues(key))
@@ -101,21 +102,24 @@ void vtkDataMeshWriter::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)
         }
 
         dataSet->GetDataSet()->GetFieldData()->AddArray(metaDataArray);
-        metaDataFields.append(arrayName);
     }
 }
 
 void vtkDataMeshWriter::clearMetaDataFieldData(vtkMetaDataSet* dataSet)
 {
     vtkFieldData* fieldData = dataSet->GetDataSet()->GetFieldData();
+    vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
 
-    foreach (QString arrayName, metaDataFields)
+    for (int i = 0; i < fieldData->GetNumberOfArrays(); i++)
     {
-        fieldData->RemoveArray(arrayName.toStdString().c_str());
+        QString arrayName = fieldData->GetArrayName(i);
+
+        if (!arrayName.startsWith(metaDataFieldPrefix))
+        {
+            newFieldData->AddArray(fieldData->GetAbstractArray(i));
+        }
     }
 
-    vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
-    newFieldData->PassData(fieldData);
     dataSet->GetDataSet()->SetFieldData(newFieldData);
 }
 

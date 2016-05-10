@@ -25,6 +25,8 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataWriter
     Q_OBJECT
 
 public:
+    static const QString metaDataFieldPrefix;
+
              vtkDataMeshWriter();
     virtual ~vtkDataMeshWriter();
 
@@ -45,8 +47,6 @@ public slots:
 
 private:
     static const char ID[];
-
-    QList<QString> metaDataFields;
 
     void addMetaDataAsFieldData(vtkMetaDataSet* dataSet);
     void clearMetaDataFieldData(vtkMetaDataSet* dataSet);

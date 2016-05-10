@@ -16,6 +16,7 @@
 #include <medAbstractDataFactory.h>
 #include <medMetaDataKeys.h>
 
+#include <vtkDataMeshWriter.h>
 #include <vtkErrorCode.h>
 #include <vtkFieldData.h>
 #include <vtkMetaVolumeMesh.h>
@@ -135,35 +136,29 @@ bool vtkDataMeshReader::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)
 {
     bool foundMetaData = false;
     vtkFieldData* fieldData = dataSet->GetDataSet()->GetFieldData();
-    QList<QString> arraysToRemove;
+    vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
 
     for (int i = 0; i < fieldData->GetNumberOfArrays(); i++)
     {
         QString arrayName = fieldData->GetArrayName(i);
-        QString prefix = "medMetaData::";
 
-        if (arrayName.startsWith(prefix))
+        if (arrayName.startsWith(vtkDataMeshWriter::metaDataFieldPrefix))
         {
             foundMetaData = true;
             vtkStringArray* array = static_cast<vtkStringArray*>(fieldData->GetAbstractArray(i));
-            QString metaDataKey = arrayName.remove(0, prefix.length());
+            QString metaDataKey = arrayName.remove(0, vtkDataMeshWriter::metaDataFieldPrefix.length());
 
             for (int j = 0; j < array->GetSize(); j++)
             {
                 data()->addMetaData(metaDataKey, QString(array->GetValue(j)));
             }
-
-            arraysToRemove.append(arrayName);
+        }
+        else
+        {
+            newFieldData->AddArray(fieldData->GetAbstractArray(i));
         }
     }
 
-    foreach (QString arrayName, arraysToRemove)
-    {
-        fieldData->RemoveArray(arrayName.toStdString().c_str());
-    }
-
-    vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
-    newFieldData->PassData(fieldData);
     dataSet->GetDataSet()->SetFieldData(newFieldData);
 
     return foundMetaData;
