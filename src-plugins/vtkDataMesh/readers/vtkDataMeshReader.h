@@ -20,6 +20,7 @@
 #include <vtkSmartPointer.h>
 
 class vtkDataSetReader;
+class vtkMetaDataSet;
 
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshReader: public dtkAbstractDataReader {
     Q_OBJECT
@@ -53,9 +54,10 @@ public slots:
 private:
 
     static const char ID[];
-    QStringList metaDataKeysToCopy();
-    void parseHeaderVtk(QString header, medAbstractData* medData);
-    void parseHeaderVtp(vtkSmartPointer<vtkFieldData> field, medAbstractData *medData);
+    bool extractMetaData(QString path, vtkMetaDataSet* dataSet);
+    bool extractMetaDataFromFieldData(vtkMetaDataSet* dataSet);
+    bool extractMetaDataFromHeader(QString path, vtkMetaDataSet* dataSet);
+    bool extractCartoMetaData(vtkMetaDataSet* dataSet);
 };
 
 

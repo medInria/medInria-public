@@ -247,72 +247,50 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     typename Image::Pointer im = TReader->GetOutput();
     medData->setData(im);
 
-    const itk::MetaDataDictionary dict = im->GetMetaDataDictionary();
+    extractMetaData();
 
-    //  Recover the pixel meaning from the intent_name.
-    std::string PixMeaning;
-    if (itk::ExposeMetaData(dict,"intent_name",PixMeaning))
-        medData->addMetaData(medAbstractImageData::PixelMeaningMetaData,QString(PixMeaning.c_str()));
-
-    // Add meta data to the medAbstractData volume
-    QStringList keyList = metaDataKeysToCopy();
-    std::string value;
-    foreach(QString key, keyList)
-    {
-        if (itk::ExposeMetaData(dict, key.toStdString(), value))
-        {
-            medData->setMetaData(key, QString(value.c_str()));
-        }
-    }
-
-    if (itk::ExposeMetaData(dict, "MED_MODALITY", value))
-    {
-        medData->setMetaData(medMetaDataKeys::Modality.key(), QString(value.c_str()));
-    }
-    if (itk::ExposeMetaData(dict, "MED_ORIENTATION", value))
-    {
-        medData->setMetaData(medMetaDataKeys::Orientation.key(), QString(value.c_str()));
-    }
     return true;
 }
 
-QStringList itkDataImageReaderBase::metaDataKeysToCopy()
+void itkDataImageReaderBase::extractMetaData()
 {
-    QStringList keys;
+    itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
+    itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
+    std::vector<std::string> keys = metaDataDictionary.GetKeys();
 
-    keys << medMetaDataKeys::PatientID.key()
-         << medMetaDataKeys::PatientName.key()
-         << medMetaDataKeys::Age.key()
-         << medMetaDataKeys::BirthDate.key()
-         << medMetaDataKeys::Gender.key()
-         << medMetaDataKeys::Description.key()
-         << medMetaDataKeys::StudyID.key()
-         << medMetaDataKeys::StudyDicomID.key()
-         << medMetaDataKeys::StudyDescription.key()
-         << medMetaDataKeys::Institution.key()
-         << medMetaDataKeys::Referee.key()
-         << medMetaDataKeys::StudyDate.key()
-         << medMetaDataKeys::StudyTime.key()
-         << medMetaDataKeys::Performer.key()
-         << medMetaDataKeys::Report.key()
-         << medMetaDataKeys::Protocol.key()
-         << medMetaDataKeys::Origin.key()
-         << medMetaDataKeys::AcquisitionDate.key()
-         << medMetaDataKeys::AcquisitionTime.key()
-         << medMetaDataKeys::Columns.key()
-         << medMetaDataKeys::Rows.key()
-         << medMetaDataKeys::Dimensions.key()
-         << medMetaDataKeys::NumberOfDimensions.key()
-         << medMetaDataKeys::SliceThickness.key()
-         << medMetaDataKeys::Spacing.key()
-         << medMetaDataKeys::XSpacing.key()
-         << medMetaDataKeys::YSpacing.key()
-         << medMetaDataKeys::ZSpacing.key()
-         << medMetaDataKeys::NumberOfComponents.key()
-         << medMetaDataKeys::ComponentType.key()
-         << medMetaDataKeys::PixelType.key();
+    for (int i = 0; i < keys.size(); i++)
+    {
+        std::string key = keys[i];
+        std::string value;
+        itk::ExposeMetaData(metaDataDictionary, key, value);
+        QString metaDataKey;
 
-    return keys;
+        if (key == "intent_name")
+        {
+            metaDataKey = medAbstractImageData::PixelMeaningMetaData;
+        }
+        else if (key == "MED_MODALITY")
+        {
+            metaDataKey = medMetaDataKeys::Modality.key();
+        }
+        else if (key == "MED_ORIENTATION")
+        {
+            metaDataKey = medMetaDataKeys::Orientation.key();
+        }
+        else
+        {
+            const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(key.c_str());
+            if (medKey)
+            {
+                metaDataKey = medKey->key();
+            }
+        }
+
+        if (!metaDataKey.isEmpty())
+        {
+            data()->setMetaData(metaDataKey, QString(value.c_str()));
+        }
+    }
 }
 
 bool itkDataImageReaderBase::read(const QString& path)
