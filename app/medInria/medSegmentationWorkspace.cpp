@@ -92,19 +92,16 @@ void medSegmentationWorkspace::onCurrentToolBoxChanged()
     medAbstractSelectableToolBox* currentToolBox = d->selectorToolBox->currentToolBox();
 
     // Remove interactor on previous tlbx
-    if (currentToolBox->findChild<QPushButton*>("closedPolygonButton"))
+    QList<QPushButton*> listButton;
+    listButton << currentToolBox->findChild<QPushButton*>("closedPolygonButton");
+    listButton << currentToolBox->findChild<QPushButton*>("paintButton");
+    listButton << currentToolBox->findChild<QPushButton*>("Magic Wand");
+
+    foreach (QPushButton* currentButton, listButton)
     {
-        currentToolBox->findChild<QPushButton*>("closedPolygonButton")->setChecked(false);
-    }
-    else if (currentToolBox->findChild<QPushButton*>("paintButton"))
-    {
-        if (currentToolBox->findChild<QPushButton*>("paintButton")->isChecked())
+        if (currentButton && currentButton->isChecked())
         {
-            currentToolBox->findChild<QPushButton*>("paintButton")->click();
-        }
-        if (currentToolBox->findChild<QPushButton*>("Magic Wand")->isChecked())
-        {
-            currentToolBox->findChild<QPushButton*>("Magic Wand")->click();
+            currentButton->setChecked(false);
         }
     }
 }

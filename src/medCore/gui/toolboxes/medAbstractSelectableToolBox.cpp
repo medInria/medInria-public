@@ -42,3 +42,9 @@ medSelectorToolBox *medAbstractSelectableToolBox::selectorToolBox(void)
 {
     return d->selectorToolBox;
 }
+
+void medAbstractSelectableToolBox::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event);
+    updateView();
+}

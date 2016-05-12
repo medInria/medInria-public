@@ -37,6 +37,9 @@ public:
 
     void setSelectorToolBox(medSelectorToolBox *toolbox);
 
+    //! Launched when scrolled in medSelectorToolBox
+    void showEvent(QShowEvent *event);
+
 public slots:
 
     void updateView(){}
