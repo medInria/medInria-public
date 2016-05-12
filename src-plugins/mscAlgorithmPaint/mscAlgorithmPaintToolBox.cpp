@@ -464,6 +464,12 @@ bool AlgorithmPaintToolBox::registered()
     return factory->registerToolBox<AlgorithmPaintToolBox> ();
 }
 
+void AlgorithmPaintToolBox::showEvent ( QShowEvent * event )
+{
+    Q_UNUSED(event);
+    updateView();
+}
+
 void AlgorithmPaintToolBox::updateMagicWandComputation()
 {
     if (seedPlanted)
@@ -573,19 +579,24 @@ void AlgorithmPaintToolBox::activateMagicWand()
 void AlgorithmPaintToolBox::behaveWithBodyVisibility()
 {
     if(!((QWidget*)sender())->isHidden())
-        return;
-    if ( this->m_strokeButton->isChecked() ) {
-        this->m_viewFilter->removeFromAllViews();
-        m_paintState = (PaintState::None);
-        updateButtons();
+    {
         return;
     }
-    if ( this->m_magicWandButton->isChecked() ) {
-        this->m_viewFilter->removeFromAllViews();
-        m_paintState = (PaintState::None);
-        newSeed(); // accept the current growth
-        updateButtons();
-        return;
+    else
+    {
+        if ( this->m_strokeButton->isChecked() )
+        {
+            this->m_viewFilter->removeFromAllViews();
+            m_paintState = (PaintState::None);
+            updateButtons();
+        }
+        else if ( this->m_magicWandButton->isChecked() )
+        {
+            this->m_viewFilter->removeFromAllViews();
+            m_paintState = (PaintState::None);
+            newSeed(); // accept the current growth
+            updateButtons();
+        }
     }
 }
 
