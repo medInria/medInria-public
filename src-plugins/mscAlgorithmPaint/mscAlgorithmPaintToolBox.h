@@ -154,8 +154,6 @@ protected:
 
 private:
 
-    void showEvent(QShowEvent * event);
-
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
     // Stroke's objects

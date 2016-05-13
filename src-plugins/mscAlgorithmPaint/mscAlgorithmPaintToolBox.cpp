@@ -463,12 +463,6 @@ bool AlgorithmPaintToolBox::registered()
     return factory->registerToolBox<AlgorithmPaintToolBox> ();
 }
 
-void AlgorithmPaintToolBox::showEvent ( QShowEvent * event )
-{
-    Q_UNUSED(event);
-    updateView();
-}
-
 void AlgorithmPaintToolBox::updateMagicWandComputation()
 {
     if (seedPlanted)
