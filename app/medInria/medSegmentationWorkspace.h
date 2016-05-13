@@ -39,7 +39,6 @@ public:
 
 protected slots:
     void onSuccess();
-    void onCurrentToolBoxChanged();
 
 private:
     medSegmentationWorkspacePrivate *d;

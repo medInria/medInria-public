@@ -571,17 +571,14 @@ void AlgorithmPaintToolBox::activateMagicWand()
 
 void AlgorithmPaintToolBox::behaveWithBodyVisibility()
 {
-    if(!((QWidget*)sender())->isHidden())
-    {
-        return;
-    }
-    else
+    if(!((QWidget*)sender())->isVisible())
     {
         if ( this->m_strokeButton->isChecked() )
         {
             this->m_viewFilter->removeFromAllViews();
             m_paintState = (PaintState::None);
             updateButtons();
+            m_strokeButton->setChecked(false);
         }
         else if ( this->m_magicWandButton->isChecked() )
         {
@@ -589,7 +586,9 @@ void AlgorithmPaintToolBox::behaveWithBodyVisibility()
             m_paintState = (PaintState::None);
             newSeed(); // accept the current growth
             updateButtons();
+            m_magicWandButton->setChecked(false);
         }
+        deactivateCustomedCursor();
     }
 }
 
@@ -1506,6 +1505,7 @@ void AlgorithmPaintToolBox::onViewClosed()
         m_undoStacks->remove(viewClosed);
         m_redoStacks->remove(viewClosed);
     }
+
     if(m_magicWandButton->isChecked())
         m_magicWandButton->setChecked(false);
 

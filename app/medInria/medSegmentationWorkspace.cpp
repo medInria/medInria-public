@@ -42,7 +42,6 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
     d->selectorToolBox = new medSelectorToolBox(parent, "segmentation");
 
     connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
-    connect(d->selectorToolBox,SIGNAL(currentToolBoxChanged()),this,SLOT(onCurrentToolBoxChanged()));
 
     // Always have a parent.
     if (!parent)
@@ -85,23 +84,4 @@ void medSegmentationWorkspace::onSuccess()
 {
     medAbstractData * output = d->selectorToolBox->currentToolBox()->processOutput();
     medDataManager::instance()->importData(output);
-}
-
-void medSegmentationWorkspace::onCurrentToolBoxChanged()
-{
-    medAbstractSelectableToolBox* currentToolBox = d->selectorToolBox->currentToolBox();
-
-    // Remove interactor on previous tlbx
-    QList<QPushButton*> listButton;
-    listButton << currentToolBox->findChild<QPushButton*>("closedPolygonButton");
-    listButton << currentToolBox->findChild<QPushButton*>("paintButton");
-    listButton << currentToolBox->findChild<QPushButton*>("Magic Wand");
-
-    foreach (QPushButton* currentButton, listButton)
-    {
-        if (currentButton && currentButton->isChecked())
-        {
-            currentButton->setChecked(false);
-        }
-    }
 }
