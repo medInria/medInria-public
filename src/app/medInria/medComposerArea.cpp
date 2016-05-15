@@ -21,7 +21,6 @@
 #include <dtkComposer/dtkComposerCompass.h>
 #include <dtkComposer/dtkComposerControls.h>
 #include <dtkComposer/dtkComposerEvaluator.h>
-#include <dtkComposer/dtkComposerFactory.h>
 #include <dtkComposer/dtkComposerNodeFactoryView.h>
 #include <dtkComposer/dtkComposerGraph.h>
 #include <dtkComposer/dtkComposerGraphView.h>
@@ -54,7 +53,7 @@
 #include <dtkWidgets/dtkNotification.h>
 #include <dtkWidgets/dtkNotificationDisplay.h>
 
-#include <medComposerFactoryExtension.h>
+#include <medComposerExtension.h>
 
 #include <QtCore>
 #include <QtWidgets>
@@ -126,7 +125,7 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
     d->composer->view()->setBackgroundBrush(QBrush(QPixmap(":dtkVisualProgramming/pixmaps/dtkComposerScene-bg.png")));
     d->composer->view()->setCacheMode(QGraphicsView::CacheBackground);
 
-    QScopedPointer<dtkComposerNodeFactoryExtension> extension(new medComposerFactoryExtension);
+    QScopedPointer<dtkComposerExtension> extension(new medComposerExtension);
     d->composer->factory()->extend(extension.data());
 
     d->controls = NULL;

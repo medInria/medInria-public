@@ -14,18 +14,19 @@
 #pragma once
 
 #include <dtkComposer/dtkComposerNodeFactory.h>
+#include <dtkComposer/dtkComposerExtension.h>
 
 #include <medComposerExport.h>
 
-class MEDCOMPOSER_EXPORT medComposerFactoryExtension : public dtkComposerNodeFactoryExtension
+class MEDCOMPOSER_EXPORT medComposerExtension : public dtkComposerExtension
 {
 public:
-     medComposerFactoryExtension(void);
-    ~medComposerFactoryExtension(void);
+     medComposerExtension(void);
+    ~medComposerExtension(void);
 
 public:
     void extend(dtkComposerNodeFactory *factory);
 };
 
 //
-// medComposerFactoryExtension.h ends here
+// medComposerExtension.h ends here

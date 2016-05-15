@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medComposerFactoryExtension.h>
+#include <medComposerExtension.h>
 
 //include nodes
 
@@ -47,17 +47,17 @@
 #include <medReaderNodeBase.h>
 #include <medWriterNodeBase.h>
 
-medComposerFactoryExtension::medComposerFactoryExtension(void) : dtkComposerNodeFactoryExtension()
+medComposerExtension::medComposerExtension(void) : dtkComposerExtension()
 {
 
 }
 
-medComposerFactoryExtension::~medComposerFactoryExtension(void)
+medComposerExtension::~medComposerExtension(void)
 {
 
 }
 
-void medComposerFactoryExtension::extend(dtkComposerNodeFactory *factory)
+void medComposerExtension::extend(dtkComposerNodeFactory *factory)
 {
     factory->record(":/process/arithmetic_operation/medAbstractAddImageProcess.json",
                     dtkComposerNodeCreator<medAddImageProcessNode>);
