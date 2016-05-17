@@ -28,11 +28,7 @@ macro(set_lib_properties_variables
 
 foreach(target_name ${ARGV})
     get_property(${target_name}_INCLUDE_DIRS TARGET ${target_name} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-    if (WIN32)
-        get_property(${target_name}_LIBRARY_DIR TARGET ${target_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
-    else()
-        get_property(${target_name}_LIBRARY_DIR TARGET ${target_name} PROPERTY LIBRARY_OUTPUT_DIRECTORY)
-    endif()
+    get_property(${target_name}_LIBRARY_DIR TARGET ${target_name} PROPERTY LIBRARY_OUTPUT_DIRECTORY)
 endforeach()
 
 endmacro()
