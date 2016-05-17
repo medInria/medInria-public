@@ -32,7 +32,6 @@ public:
     {}
 
     medSelectorToolBox *selectorToolBox;
-    medToolBox * roiManagementToolBox;
 };
 
 
@@ -40,18 +39,12 @@ medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent) :
 medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
     d->selectorToolBox = new medSelectorToolBox(parent, "segmentation");
-
     connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(importToolBoxOutput()));
 
     this->addToolBox(d->selectorToolBox);
     d->selectorToolBox->setTitle(this->name()); // get workspace name
 
-    if(medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox"))
-	{
-		d->roiManagementToolBox= medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox");
-		d->roiManagementToolBox->setWorkspace(this);
-		this->addToolBox(d->roiManagementToolBox);
-	}
+    setInitialGroups();
 
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
             d->selectorToolBox, SIGNAL(inputChanged()));
