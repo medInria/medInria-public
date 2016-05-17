@@ -50,26 +50,25 @@
 
 #include <medCoreExport.h>
 
-
 namespace medCore
 {
     namespace pluginManager
     {
-        MEDCORE_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
+        MEDCORE_EXPORT void initialize(const QString& path = QString());
     }
 
-    namespace generic
-    {
-        MEDCORE_EXPORT medAbstractProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT medAbstractProcessPluginFactory& pluginFactory(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
-    }
+    DTK_DECLARE_CONCEPT(medAbstractProcess,MEDCORE_EXPORT,generic)
+    DTK_DECLARE_CONCEPT(medAbstractDWIMaskingProcess,MEDCORE_EXPORT,dwiMasking)
+    DTK_DECLARE_CONCEPT(medAbstractDiffusionModelEstimationProcess,MEDCORE_EXPORT,diffusionModelEstimation)
+    DTK_DECLARE_CONCEPT(medAbstractDiffusionScalarMapsProcess,MEDCORE_EXPORT,diffusionScalarMaps)
+    DTK_DECLARE_CONCEPT(medAbstractTractographyProcess,MEDCORE_EXPORT,tractography)
+    DTK_DECLARE_CONCEPT(medAbstractMaskImageProcess,MEDCORE_EXPORT,maskImage)
 
     namespace arithmeticOperation
     {
         MEDCORE_EXPORT medAbstractArithmeticOperationProcessPluginManager& pluginManager(void);
         MEDCORE_EXPORT medAbstractArithmeticOperationProcessPluginFactory& pluginFactory(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+        MEDCORE_EXPORT void initialize(const QString& path);
 
         namespace addImage
         {
@@ -92,7 +91,7 @@ namespace medCore
     namespace singleFilterOperation
     {
         MEDCORE_EXPORT medAbstractSingleFilterOperationProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+        MEDCORE_EXPORT void initialize(const QString& path);
 
         namespace addFilter
         {
@@ -160,39 +159,11 @@ namespace medCore
         }
     }
 
-    namespace dwiMasking
-    {
-        MEDCORE_EXPORT medAbstractDWIMaskingProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
-        MEDCORE_EXPORT medAbstractDWIMaskingProcessPluginFactory& pluginFactory(void);
-    }
-
-    namespace diffusionModelEstimation
-    {
-        MEDCORE_EXPORT medAbstractDiffusionModelEstimationProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
-        MEDCORE_EXPORT medAbstractDiffusionModelEstimationProcessPluginFactory& pluginFactory(void);
-    }
-
-    namespace diffusionScalarMaps
-    {
-        MEDCORE_EXPORT medAbstractDiffusionScalarMapsProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
-        MEDCORE_EXPORT medAbstractDiffusionScalarMapsProcessPluginFactory& pluginFactory(void);
-    }
-
-    namespace tractography
-    {
-        MEDCORE_EXPORT medAbstractTractographyProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
-        MEDCORE_EXPORT medAbstractTractographyProcessPluginFactory& pluginFactory(void);
-    }
-
     namespace morphomathOperation
     {
         MEDCORE_EXPORT medAbstractMorphomathOperationProcessPluginManager& pluginManager(void);
         MEDCORE_EXPORT medAbstractMorphomathOperationProcessPluginFactory& pluginFactory(void);
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
+        MEDCORE_EXPORT void initialize(const QString& path);
 
         namespace erodeImage
         {
@@ -210,12 +181,5 @@ namespace medCore
         {
             MEDCORE_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
         }
-    }
-
-    namespace maskImage
-    {
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
-        MEDCORE_EXPORT medAbstractMaskImageProcessPluginManager& pluginManager(void);
-        MEDCORE_EXPORT medAbstractMaskImageProcessPluginFactory& pluginFactory(void);
     }
 }

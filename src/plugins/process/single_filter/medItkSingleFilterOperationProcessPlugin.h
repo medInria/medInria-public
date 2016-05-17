@@ -22,7 +22,7 @@ class MEDITKSINGLEFILTEROPERATIONPLUGIN_EXPORTS medItkSingleFilterOperationProce
     Q_OBJECT
 
     Q_INTERFACES(medAbstractSingleFilterOperationProcessPlugin)
-    Q_PLUGIN_METADATA(IID "fr.inria.medAbstractSingleFilterOperationProcessPlugin" FILE "medAbstractSingleFilterOperationProcessPlugin.json")
+    Q_PLUGIN_METADATA(IID "fr.inria.medAbstractSingleFilterOperationProcessPlugin" FILE "medItkSingleFilterOperationProcessPlugin.json")
 
 public:
      medItkSingleFilterOperationProcessPlugin() {}

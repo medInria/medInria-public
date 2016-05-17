@@ -18,44 +18,31 @@ namespace medCore
 
 namespace pluginManager
 {
-    void initialize(const QString& path, bool verbose)
+    void initialize(const QString& path)
     {
         for(QString const& realpath : path.split(';'))
         {
             if(realpath.isEmpty())
                 break;
 
-            medCore::arithmeticOperation::initialize(realpath, verbose);
-            medCore::dwiMasking::initialize(realpath, verbose);
-            medCore::diffusionModelEstimation::initialize(realpath, verbose);
-            medCore::diffusionScalarMaps::initialize(realpath, verbose);
-            medCore::tractography::initialize(realpath, verbose);
-            medCore::morphomathOperation::initialize(realpath, verbose);
-            medCore::maskImage::initialize(realpath, verbose);
-            medCore::singleFilterOperation::initialize(realpath, verbose);
+            medCore::arithmeticOperation::initialize(realpath);
+            medCore::dwiMasking::initialize(realpath);
+            medCore::diffusionModelEstimation::initialize(realpath);
+            medCore::diffusionScalarMaps::initialize(realpath);
+            medCore::tractography::initialize(realpath);
+            medCore::morphomathOperation::initialize(realpath);
+            medCore::maskImage::initialize(realpath);
+            medCore::singleFilterOperation::initialize(realpath);
         }
     }
 }
 
-// generic
-namespace generic
-{
-    namespace _private
-    {
-        medAbstractProcessPluginManager manager;
-        medAbstractProcessPluginFactory factory;
-    }
-
-    medAbstractProcessPluginManager& pluginManager(void)
-    {
-        return _private::manager;
-    }
-
-    medAbstractProcessPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
-}
+DTK_DEFINE_CONCEPT(medAbstractProcess,generic)
+DTK_DEFINE_CONCEPT(medAbstractDWIMaskingProcess,dwiMasking)
+DTK_DEFINE_CONCEPT(medAbstractDiffusionModelEstimationProcess,diffusionModelEstimation)
+DTK_DEFINE_CONCEPT(medAbstractDiffusionScalarMapsProcess,diffusionScalarMaps)
+DTK_DEFINE_CONCEPT(medAbstractTractographyProcess,tractography)
+DTK_DEFINE_CONCEPT(medAbstractMaskImageProcess,maskImage)
 
 // arithimetic
 namespace arithmeticOperation
@@ -76,9 +63,8 @@ namespace arithmeticOperation
         return _private::factory;
     }
 
-    void initialize(const QString& path, bool verbose)
+    void initialize(const QString& path)
     {
-        pluginManager().setVerboseLoading(verbose);
         pluginManager().initialize(path);
     }
 
@@ -142,9 +128,8 @@ namespace singleFilterOperation
     {
         return _private::manager;
     }
-    void initialize(const QString& path, bool verbose)
+    void initialize(const QString& path)
     {
-        pluginManager().setVerboseLoading(verbose);
         pluginManager().initialize(path);
     }
 
@@ -318,114 +303,6 @@ namespace singleFilterOperation
     }
 }
 
-// DWI masking
-namespace dwiMasking
-{
-    namespace _private
-    {
-        medAbstractDWIMaskingProcessPluginManager manager;
-        medAbstractDWIMaskingProcessPluginFactory factory;
-    }
-
-    medAbstractDWIMaskingProcessPluginManager& pluginManager(void)
-    {
-        return _private::manager;
-    }
-
-    void initialize(const QString& path, bool verbose)
-    {
-        if(verbose)
-            pluginManager().setVerboseLoading(verbose);
-        pluginManager().initialize(path);
-    }
-
-    medAbstractDWIMaskingProcessPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
-}
-
-// Diffusion model estimation
-namespace diffusionModelEstimation
-{
-    namespace _private
-    {
-        medAbstractDiffusionModelEstimationProcessPluginManager manager;
-        medAbstractDiffusionModelEstimationProcessPluginFactory factory;
-    }
-
-    medAbstractDiffusionModelEstimationProcessPluginManager& pluginManager(void)
-    {
-        return _private::manager;
-    }
-
-    void initialize(const QString& path, bool verbose)
-    {
-        if(verbose)
-            pluginManager().setVerboseLoading(verbose);
-        pluginManager().initialize(path);
-    }
-
-    medAbstractDiffusionModelEstimationProcessPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
-}
-
-// Diffusion scalar maps
-namespace diffusionScalarMaps
-{
-    namespace _private
-    {
-        medAbstractDiffusionScalarMapsProcessPluginManager manager;
-        medAbstractDiffusionScalarMapsProcessPluginFactory factory;
-    }
-
-    medAbstractDiffusionScalarMapsProcessPluginManager& pluginManager(void)
-    {
-        return _private::manager;
-    }
-
-    void initialize(const QString& path, bool verbose)
-    {
-        if(verbose)
-            pluginManager().setVerboseLoading(verbose);
-        pluginManager().initialize(path);
-    }
-
-    medAbstractDiffusionScalarMapsProcessPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
-}
-
-// Tractography
-namespace tractography
-{
-    namespace _private
-    {
-        medAbstractTractographyProcessPluginManager manager;
-        medAbstractTractographyProcessPluginFactory factory;
-    }
-
-    medAbstractTractographyProcessPluginManager& pluginManager(void)
-    {
-        return _private::manager;
-    }
-
-    void initialize(const QString& path, bool verbose)
-    {
-        if(verbose)
-            pluginManager().setVerboseLoading(verbose);
-        pluginManager().initialize(path);
-    }
-
-    medAbstractTractographyProcessPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
-}
-
 // morphomath
 namespace morphomathOperation
 {
@@ -445,13 +322,10 @@ namespace morphomathOperation
     {
         return _private::manager;
     }
-    void initialize(const QString& path, bool verbose)
+    void initialize(const QString& path)
     {
-        pluginManager().setVerboseLoading(verbose);
         pluginManager().initialize(path);
     }
-
-
 
     namespace erodeImage
     {
@@ -464,6 +338,7 @@ namespace morphomathOperation
             return _private::factory;
         }
     }
+
     namespace dilateImage
     {
         namespace _private
@@ -476,6 +351,7 @@ namespace morphomathOperation
             return _private::factory;
         }
     }
+
     namespace openingImage
     {
         namespace _private
@@ -488,6 +364,7 @@ namespace morphomathOperation
             return _private::factory;
         }
     }
+
     namespace closingImage
     {
         namespace _private
@@ -501,34 +378,5 @@ namespace morphomathOperation
     }
 }
 
-namespace maskImage
-{
-    namespace _private
-    {
-        medAbstractMaskImageProcessPluginManager manager;
-    }
-
-    medAbstractMaskImageProcessPluginManager& pluginManager(void)
-    {
-        return _private::manager;
-    }
-
-    namespace _private
-    {
-        medAbstractMaskImageProcessPluginFactory factory;
-    }
-
-    medAbstractMaskImageProcessPluginFactory& pluginFactory(void)
-    {
-        return _private::factory;
-    }
-
-    void initialize(const QString& path, bool verbose)
-    {
-        pluginManager().setVerboseLoading(verbose);
-        pluginManager().initialize(path);
-    }
-}
-
-}// end of medProcessLayer
+} // end of medCore
 

@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>medAbstractSingleFilterOperationProcessPlugin.json</file>
+        <file>medItkSingleFilterOperationProcessPlugin.json</file>
     </qresource>
 </RCC>
