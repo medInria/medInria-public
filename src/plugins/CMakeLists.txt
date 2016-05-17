@@ -45,7 +45,6 @@ set(PLUGIN_LIST
   legacy/itkDataDiffusionGradientList                                    ON
   legacy/itkDataTensorImage                                              ON
   legacy/medSegmentation                                                 ON
-  legacy/itkFilters                                                      ON
   legacy/qtdcmDataSource                                                 ON
   legacy/itkDataSHImage                                                  ON
   legacy/undoRedoRegistration                                            ON
