@@ -34,7 +34,7 @@ endif()
 
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${MSVC_ARCH}")
 
-set(ICON_PATH "${PROJECT_SOURCE_DIR}/medInria/app/medInria/resources/medInria.ico")
+set(ICON_PATH "${PROJECT_SOURCE_DIR}/src/app/medInria/resources/medInria.ico")
 
 # The icon to install the application.
 set(CPACK_NSIS_MUI_ICON ${ICON_PATH})
@@ -75,8 +75,20 @@ if (NOT PRIVATE_PLUGINS_DIRS STREQUAL "")
     endforeach()
 endif()
 
+if (NOT PRIVATE_PLUGINS_LEGACY_DIRS STREQUAL "")
+    foreach(pluginpath ${PRIVATE_PLUGINS_LEGACY_DIRS})
+        file(TO_CMAKE_PATH ${pluginpath} pluginpath)
+# Add an extra slash, otherwise we copy the folder, not its content
+        set(pluginpath "${pluginpath}/")
+    	message("Adding ${pluginpath} to the private plugins dirs...")
+        install(DIRECTORY ${pluginpath} DESTINATION plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    endforeach()
+endif()
+
 #${CMAKE_CFG_INTDIR}
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
+set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
+set(QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
 
 list(APPEND 
   libSearchDirs 
@@ -92,16 +104,20 @@ list(APPEND
   )
   
 set(PLUGINS "\${CMAKE_INSTALL_PREFIX}/plugins/")
+set(PLUGINS_LEGACY "\${CMAKE_INSTALL_PREFIX}/plugins_legacy/")
 
 install(CODE "
 file(INSTALL ${medInria_DIR}/bin/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/bin\)
-file(INSTALL ${medInria_DIR}/plugins/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins\)
+file(INSTALL ${medInria_DIR}/bin/plugins/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins\)
+file(INSTALL ${medInria_DIR}/bin/plugins_legacy/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy\)
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
 file(INSTALL \${PLUGINS} DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins )
-file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers\)
-file(INSTALL ${QT_BINARY_DIR}/QtSvg4.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
+file(INSTALL \${PLUGINS_LEGACY} DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy )
+file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers\)
+file(INSTALL ${QT_BINARY_DIR}/QtSvg.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
 file(GLOB_RECURSE PLUGINS
   \${CMAKE_INSTALL_PREFIX}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\)
 include(BundleUtilities)
 fixup_bundle(\"${APP}\"   \"\${PLUGINS}\"   \"${libSearchDirs}\")
+fixup_bundle(\"${APP}\"   \"\${PLUGINS_LEGACY}\"   \"${libSearchDirs}\")
 " COMPONENT Runtime)
