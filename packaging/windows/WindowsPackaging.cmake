@@ -111,13 +111,14 @@ file(INSTALL ${medInria_DIR}/bin/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/b
 file(INSTALL ${medInria_DIR}/bin/plugins/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins\)
 file(INSTALL ${medInria_DIR}/bin/plugins_legacy/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy\)
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
+file(INSTALL ${QT_PLUGINS_DIR}/platforms DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
 file(INSTALL \${PLUGINS} DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins )
 file(INSTALL \${PLUGINS_LEGACY} DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy )
 file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers\)
 file(INSTALL ${QT_BINARY_DIR}/Qt5Svg.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
 file(GLOB_RECURSE PLUGINS
-  \${CMAKE_INSTALL_PREFIX}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\)
+    \${CMAKE_INSTALL_PREFIX}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}
+    \${CMAKE_INSTALL_PREFIX}/plugins_legacy/*${CMAKE_SHARED_LIBRARY_SUFFIX}\)
 include(BundleUtilities)
 fixup_bundle(\"${APP}\"   \"\${PLUGINS}\"   \"${libSearchDirs}\")
-fixup_bundle(\"${APP}\"   \"\${PLUGINS_LEGACY}\"   \"${libSearchDirs}\")
 " COMPONENT Runtime)
