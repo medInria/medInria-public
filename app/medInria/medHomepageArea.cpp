@@ -456,6 +456,10 @@ void medHomepageArea::initPage()
             workspaceButtonsLayout->addLayout(curLayout,0,columnCount);
             columnCount++;
         }
+        else
+        {
+            delete curLayout;
+        }
     }
 
     workspaceButtonsLayout->setSpacing(40);
