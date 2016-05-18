@@ -11,26 +11,23 @@
 
 =========================================================================*/
 
-#include <QtGui>
-#include <QtCore>
-#include <QtSql>
 #include <QCryptographicHash>
+#include <QtCore>
+#include <QtGui>
+#include <QtSql>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
+#include <medAbstractDatabaseItem.h>
+#include <medAbstractDbController.h>
 #include <medDatabaseController.h>
 #include <medDatabaseItem.h>
+#include <medDataManager.h>
 #include <medDatabaseModel.h>
 #include <medDatabaseNonPersistentController.h>
-
-#include <medAbstractDbController.h>
-#include <medDataManager.h>
 #include <medMetaDataKeys.h>
-#include <medAbstractDatabaseItem.h>
-
 #include <medSettingsManager.h>
-
 
 QString anonymise(const QString name)
 {
@@ -38,9 +35,6 @@ QString anonymise(const QString name)
     r.resize(10);
     return QString(r);
 }
-
-
-
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseModelPrivate
@@ -73,7 +67,7 @@ public:
 
     QHash<medDataIndex, QModelIndex> medIndexMap;
 
-    enum { DataCount = 12 };
+    enum { DataCount = 13 };
 };
 
 medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
@@ -143,7 +137,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->seAttributes[i++] = medMetaDataKeys::Performer.key();
     d->seAttributes[i++] = medMetaDataKeys::Institution.key();
     d->seAttributes[i++] = medMetaDataKeys::Report.key();
-
+    d->seAttributes[i++] = medMetaDataKeys::ThumbnailPath.key();
 
     d->ptDefaultData =  d->data;
     d->ptDefaultData[0] = tr("[No Patient Name]");
@@ -192,10 +186,11 @@ bool medDatabaseModel::hasChildren ( const QModelIndex & parent ) const
 
 int medDatabaseModel::columnCount(const QModelIndex& parent) const
 {
+    //-1: do not take into account Thumbnail for columns display
     if (parent.isValid())
-        return static_cast<medAbstractDatabaseItem *>(parent.internalPointer())->columnCount();
+        return static_cast<medAbstractDatabaseItem *>(parent.internalPointer())->columnCount()-1;
     else
-        return d->root->columnCount();
+        return d->root->columnCount()-1;
 }
 
 int medDatabaseModel::columnIndex(const QString& title) const
@@ -672,7 +667,6 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             QModelIndex parentIndex = index.parent();
             medDataIndex stDataIndex(dataIndex);
             stDataIndex.setSeriesId(-1);
-            QModelIndex stIndex = d->medIndexMap.value(stDataIndex);
 
             medAbstractDatabaseItem *parent = item->parent();
             if(!parent)
