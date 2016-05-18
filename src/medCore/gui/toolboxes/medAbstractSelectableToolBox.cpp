@@ -38,7 +38,6 @@ void medAbstractSelectableToolBox::setSelectorToolBox(medSelectorToolBox *toolbo
     d->selectorToolBox = toolbox;
 }
 
-//! Get the selectorToolBox (usually one instance)
 medSelectorToolBox *medAbstractSelectableToolBox::selectorToolBox(void)
 {
     return d->selectorToolBox;

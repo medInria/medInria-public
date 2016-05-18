@@ -41,8 +41,6 @@ medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medAbstractWorkspa
     this->addToolBox(d->selectorToolBox);
     d->selectorToolBox->setTitle(this->name()); // get workspace name
 
-    setInitialGroups();
-
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
             d->selectorToolBox, SIGNAL(inputChanged()));
 }

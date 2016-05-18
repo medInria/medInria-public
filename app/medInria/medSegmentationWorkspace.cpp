@@ -57,8 +57,6 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 		this->addToolBox(d->roiManagementToolBox);
 	}
 
-    setInitialGroups();
-
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
             d->selectorToolBox, SIGNAL(inputChanged()));
 }

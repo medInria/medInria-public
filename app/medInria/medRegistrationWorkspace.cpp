@@ -50,8 +50,6 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     this->addToolBox(d->selectorToolBox);
     d->selectorToolBox->setTitle(this->name()); // get workspace name
 
-    setInitialGroups();
-
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
     connect(d->selectorToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
     connect(d->selectorToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));

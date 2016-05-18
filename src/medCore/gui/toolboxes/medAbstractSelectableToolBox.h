@@ -37,15 +37,17 @@ public:
 
     void setSelectorToolBox(medSelectorToolBox *toolbox);
 
-    //! Launched when scrolled in medSelectorToolBox
-    void showEvent(QShowEvent *event);
-    void hideEvent(QHideEvent *event);
-
 public slots:
 
     void updateView(){}
 
 protected:
+
+    //! Launched when scrolled in medSelectorToolBox
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
+
+    //! Get the selectorToolBox (usually one instance)
     medSelectorToolBox *selectorToolBox();
 
 private:

@@ -218,6 +218,7 @@ void medWorkspaceArea::setupWorkspace(const QString &id)
         return;
     }
     workspace->setupViewContainerStack();
+    workspace->setInitialGroups();
 }
 
 void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
