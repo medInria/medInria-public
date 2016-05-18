@@ -46,7 +46,6 @@ medSelectorToolBox *medAbstractSelectableToolBox::selectorToolBox(void)
 
 void medAbstractSelectableToolBox::showEvent(QShowEvent *event)
 {
-    qDebug()<<"medAbstractSelectableToolBox::showEvent";
     Q_UNUSED(event);
     updateView();
 
@@ -59,9 +58,11 @@ void medAbstractSelectableToolBox::showEvent(QShowEvent *event)
 
 void medAbstractSelectableToolBox::hideEvent(QHideEvent *event)
 {
-    qDebug()<<"medAbstractSelectableToolBox::hideEvent";
     Q_UNUSED(event);
 
-    disconnect(getWorkspace()->stackedViewContainers(), SIGNAL(containersSelectedChanged()), this,
-               SLOT(updateView()));
+    if (getWorkspace())
+    {
+        disconnect(getWorkspace()->stackedViewContainers(), SIGNAL(containersSelectedChanged()), this,
+                   SLOT(updateView()));
+    }
 }
