@@ -39,6 +39,7 @@ public:
 
     //! Launched when scrolled in medSelectorToolBox
     void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
 
 public slots:
 

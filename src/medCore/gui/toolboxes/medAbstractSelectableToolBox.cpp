@@ -11,8 +11,9 @@
 
 =========================================================================*/
 
-#include <medSelectorToolBox.h>
 #include <medAbstractSelectableToolBox.h>
+#include <medSelectorToolBox.h>
+#include <medTabbedViewContainers.h>
 
 class medAbstractSelectableToolBoxPrivate
 {
@@ -45,6 +46,22 @@ medSelectorToolBox *medAbstractSelectableToolBox::selectorToolBox(void)
 
 void medAbstractSelectableToolBox::showEvent(QShowEvent *event)
 {
+    qDebug()<<"medAbstractSelectableToolBox::showEvent";
     Q_UNUSED(event);
     updateView();
+
+    if (getWorkspace())
+    {
+        connect(getWorkspace()->stackedViewContainers(), SIGNAL(containersSelectedChanged()), this,
+                SLOT(updateView()), Qt::UniqueConnection);
+    }
+}
+
+void medAbstractSelectableToolBox::hideEvent(QHideEvent *event)
+{
+    qDebug()<<"medAbstractSelectableToolBox::hideEvent";
+    Q_UNUSED(event);
+
+    disconnect(getWorkspace()->stackedViewContainers(), SIGNAL(containersSelectedChanged()), this,
+               SLOT(updateView()));
 }

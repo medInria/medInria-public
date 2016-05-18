@@ -300,11 +300,6 @@ medAbstractWorkspace* medToolBox::getWorkspace()
 void medToolBox::setWorkspace(medAbstractWorkspace* workspace)
 {
     d->workspace = workspace;
-    if (workspace)
-    {
-        connect(workspace->stackedViewContainers(), SIGNAL(containersSelectedChanged()), this,
-                SLOT(updateView()), Qt::UniqueConnection);
-    }
 }
 
 void medToolBox::toXMLNode(QDomDocument* doc, QDomElement* currentNode)
