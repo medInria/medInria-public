@@ -106,10 +106,15 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->viewGroup->setLinkAllParameters(true);
     d->viewGroup->removeParameter("Position");
     d->viewGroup->removeParameter("DataList");
+
     d->layerGroup1 = new medLayerParameterGroup("Fixed", this);
-    d->layerGroup2 = new medLayerParameterGroup("Moving", this);
     d->layerGroup1->setLinkAllParameters(true);
+    d->layerGroup1->removeParameter("Slicing");
+
+    d->layerGroup2 = new medLayerParameterGroup("Moving", this);
     d->layerGroup2->setLinkAllParameters(true);
+    d->layerGroup2->removeParameter("Slicing");
+
 
     d->regOn           = false;
     d->currentView     = 0;
@@ -271,6 +276,7 @@ void manualRegistrationToolBox::synchroniseMovingFuseView()
     medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
     medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
 
+    d->layerGroup2->addImpactedlayer(viewFuse,viewFuse->layerData(1));
     // Synchronize Lut
     QList<medAbstractInteractor*> interactors = viewMoving->layerInteractors(0);
     QString lutCurrent;
@@ -443,6 +449,11 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
         }
 
         tabContainers->lockTabs();
+
+        d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(0));
+        d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view()), d->currentView->layerData(0));
+        d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(1));
+        d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view()), d->currentView->layerData(1));
 
         d->leftContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
         d->rightContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
