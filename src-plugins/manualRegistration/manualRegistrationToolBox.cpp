@@ -450,6 +450,13 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
 
         tabContainers->lockTabs();
 
+        d->viewGroup->addImpactedView(d->rightContainer->view());
+        d->viewGroup->addImpactedView(d->leftContainer->view());
+        d->viewGroup->addImpactedView(d->bottomContainer->view());
+        d->viewGroup->setLinkAllParameters(true);
+        d->viewGroup->removeParameter("Position");
+        d->viewGroup->removeParameter("DataList");
+
         d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(0));
         d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view()), d->currentView->layerData(0));
         d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(1));
