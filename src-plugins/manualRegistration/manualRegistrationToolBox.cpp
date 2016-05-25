@@ -105,6 +105,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->viewGroup = new medViewParameterGroup("ManualRegistration", this);
     d->viewGroup->setLinkAllParameters(true);
     d->viewGroup->removeParameter("Position");
+    d->viewGroup->removeParameter("DataList");
     d->layerGroup1 = new medLayerParameterGroup("Fixed", this);
     d->layerGroup2 = new medLayerParameterGroup("Moving", this);
     d->layerGroup1->setLinkAllParameters(true);
@@ -270,7 +271,6 @@ void manualRegistrationToolBox::synchroniseMovingFuseView()
     medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
     medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
 
-    d->layerGroup2->addImpactedlayer(viewFuse,viewFuse->layerData(1));
     // Synchronize Lut
     QList<medAbstractInteractor*> interactors = viewMoving->layerInteractors(0);
     QString lutCurrent;
@@ -443,18 +443,6 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
         }
 
         tabContainers->lockTabs();
-
-        d->viewGroup->addImpactedView(d->rightContainer->view());
-        d->viewGroup->addImpactedView(d->leftContainer->view());
-        d->viewGroup->addImpactedView(d->bottomContainer->view());
-        d->viewGroup->setLinkAllParameters(true);
-        d->viewGroup->removeParameter("Position");
-        d->viewGroup->removeParameter("DataList");
-
-        d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(0));
-        d->layerGroup1->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view()), d->currentView->layerData(0));
-        d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->bottomContainer->view()), d->currentView->layerData(1));
-        d->layerGroup2->addImpactedlayer(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view()), d->currentView->layerData(1));
 
         d->leftContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
         d->rightContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);

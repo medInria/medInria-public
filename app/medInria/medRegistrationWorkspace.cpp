@@ -60,11 +60,6 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     d->fixedLayerGroup->setLinkAllParameters(true);
     d->movingLayerGroup->setLinkAllParameters(true);
 
-    QList<medLayerParameterGroup*> layerGroups;
-    layerGroups.append(d->fixedLayerGroup);
-    layerGroups.append(d->movingLayerGroup);
-    this->setLayerGroups(layerGroups);
-
 //    this->setUserLayerPoolable(false);
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
     connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
@@ -172,21 +167,10 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     d->fuseContainer->addData(movingData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    if(movingData)
-    {
-        d->viewGroup->addImpactedView(movingView);
-        d->viewGroup->addImpactedView(fuseView);
-        d->viewGroup->removeParameter("DataList");
 
-        d->movingLayerGroup->addImpactedlayer(movingView, movingData);
-        d->movingLayerGroup->addImpactedlayer(fuseView, movingData);
-    }
     if (!d->registrationToolBox->setMovingData(movingData))
     {
         // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(movingView);
-        d->movingLayerGroup->removeImpactedlayer(movingView, movingData);
-        d->movingLayerGroup->removeImpactedlayer(fuseView, movingData);
         movingView->deleteLater();
     }
 }
@@ -230,22 +214,9 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     d->fuseContainer->addData(fixedData);
     fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
 
-    if(fixedData)
-    {
-        d->viewGroup->addImpactedView(fixedView);
-        d->viewGroup->addImpactedView(fuseView);
-        d->viewGroup->removeParameter("DataList");
-
-        d->fixedLayerGroup->addImpactedlayer(fixedView, fixedData);
-        d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
-    }
-
     if (!d->registrationToolBox->setFixedData(fixedData))
     {
         // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(fixedView);
-        d->fixedLayerGroup->removeImpactedlayer(fixedView, fixedData);
-        d->fixedLayerGroup->removeImpactedlayer(fuseView, fixedData);
         fixedView->deleteLater();
     }
 }
@@ -284,20 +255,12 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         return;
     }
 
-
     medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
     if(!fuseView)
     {
         qWarning() << "Non layered view are not suported yet in registration workspace.";
         return;
     }
-
-    d->viewGroup->addImpactedView(movingView);
-    d->viewGroup->addImpactedView(fuseView);
-    d->viewGroup->removeParameter("DataList");
-
-    d->movingLayerGroup->addImpactedlayer(movingView, output);
-    d->movingLayerGroup->addImpactedlayer(fuseView, output);
 
     connect(d->movingContainer,SIGNAL(viewContentChanged()),
             this, SLOT(updateFromMovingContainer()));
