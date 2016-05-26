@@ -105,10 +105,16 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->viewGroup = new medViewParameterGroup("ManualRegistration", this);
     d->viewGroup->setLinkAllParameters(true);
     d->viewGroup->removeParameter("Position");
+    d->viewGroup->removeParameter("DataList");
+
     d->layerGroup1 = new medLayerParameterGroup("Fixed", this);
-    d->layerGroup2 = new medLayerParameterGroup("Moving", this);
     d->layerGroup1->setLinkAllParameters(true);
+    d->layerGroup1->removeParameter("Slicing");
+
+    d->layerGroup2 = new medLayerParameterGroup("Moving", this);
     d->layerGroup2->setLinkAllParameters(true);
+    d->layerGroup2->removeParameter("Slicing");
+
 
     d->regOn           = false;
     d->currentView     = 0;

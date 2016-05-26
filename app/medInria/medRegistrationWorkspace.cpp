@@ -56,14 +56,14 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     d->movingLayerGroup = new medLayerParameterGroup("Moving Group", this, this->identifier());
 
     d->viewGroup->setLinkAllParameters(true);
+    d->viewGroup->removeParameter("DataList");
+    d->viewGroup->removeParameter("Position");
 
     d->fixedLayerGroup->setLinkAllParameters(true);
-    d->movingLayerGroup->setLinkAllParameters(true);
+    d->fixedLayerGroup->removeParameter("Slicing");
 
-    QList<medLayerParameterGroup*> layerGroups;
-    layerGroups.append(d->fixedLayerGroup);
-    layerGroups.append(d->movingLayerGroup);
-    this->setLayerGroups(layerGroups);
+    d->movingLayerGroup->setLinkAllParameters(true);
+    d->movingLayerGroup->removeParameter("Slicing");
 
 //    this->setUserLayerPoolable(false);
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
@@ -176,7 +176,6 @@ void medRegistrationWorkspace::updateFromMovingContainer()
     {
         d->viewGroup->addImpactedView(movingView);
         d->viewGroup->addImpactedView(fuseView);
-        d->viewGroup->removeParameter("DataList");
 
         d->movingLayerGroup->addImpactedlayer(movingView, movingData);
         d->movingLayerGroup->addImpactedlayer(fuseView, movingData);
@@ -234,7 +233,6 @@ void medRegistrationWorkspace::updateFromFixedContainer()
     {
         d->viewGroup->addImpactedView(fixedView);
         d->viewGroup->addImpactedView(fuseView);
-        d->viewGroup->removeParameter("DataList");
 
         d->fixedLayerGroup->addImpactedlayer(fixedView, fixedData);
         d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
@@ -294,7 +292,6 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
 
     d->viewGroup->addImpactedView(movingView);
     d->viewGroup->addImpactedView(fuseView);
-    d->viewGroup->removeParameter("DataList");
 
     d->movingLayerGroup->addImpactedlayer(movingView, output);
     d->movingLayerGroup->addImpactedlayer(fuseView, output);
