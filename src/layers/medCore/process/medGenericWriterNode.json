@@ -1,7 +1,7 @@
 {
           "title" : "Generic Writer",
            "kind" : "process",
-           "type" : "genericWriter",
+           "type" : "medGenericWriter",
            "tags" : ["writer","generic","testme"],
     "description" : "<h3>Writer generic writer</h3>
                      <p>Save a data to the given file</p>",

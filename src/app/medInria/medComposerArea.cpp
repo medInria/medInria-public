@@ -129,6 +129,15 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
 
     QScopedPointer<dtkComposerExtension> extension(new medComposerExtension);
     d->composer->factory()->extend(extension.data());
+    
+   dtkComposer::extension::initialize();
+
+    QStringList exts = dtkComposer::extension::pluginFactory().keys();
+    for(QString extKey : exts)
+    {
+        dtkComposerExtension* ext=dtkComposer::extension::pluginFactory().create(extKey);
+        d->composer->factory()->extend(ext);
+    }
 
     d->controls = NULL;
 
