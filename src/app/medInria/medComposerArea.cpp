@@ -124,6 +124,8 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
     d->composer = new dtkComposerWidget;
     d->composer->view()->setBackgroundBrush(QBrush(QPixmap(":dtkVisualProgramming/pixmaps/dtkComposerScene-bg.png")));
     d->composer->view()->setCacheMode(QGraphicsView::CacheBackground);
+    
+    dtkComposer::node::initialize();
 
     QScopedPointer<dtkComposerExtension> extension(new medComposerExtension);
     d->composer->factory()->extend(extension.data());
