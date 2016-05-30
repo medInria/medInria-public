@@ -302,6 +302,8 @@ void manualRegistrationLandmarkController::Reset()
 
     Points_Fixed->clear();
     Points_Moving->clear();
+
+    // Update the user label with the number of current landmarks
     Tbx->updateLabels(Points_Fixed->size(),Points_Moving->size());
 }
 

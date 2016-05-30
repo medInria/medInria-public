@@ -359,7 +359,10 @@ void manualRegistrationToolBox::computeRegistration()
 void manualRegistrationToolBox::reset()
 {
     if (d->controller)
-        d->controller->Reset();
+    {
+        d->controller->Reset(); // Delete every landmark on both view
+    }
+
     medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
     medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
     viewFuse->removeLayer(1);

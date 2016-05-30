@@ -99,7 +99,7 @@ manualRegistrationLandmark::~manualRegistrationLandmark()
     HandleWidget->RemoveAllObservers();
     HandleWidget->Delete();
     HandleWidget=0;
-    View->RemoveObserver(SeedCallback);
+
     SeedCallback = 0;
 }
 
