@@ -28,6 +28,10 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
         newSeriesDescription += " (" + derivationDescription + ")";
         derived->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
     }
+    else
+    {
+        derived->setMetaData(medMetaDataKeys::SeriesDescription.key(), original->metadata(medMetaDataKeys::SeriesDescription.key()));
+    }
 
     if (queryForDescription)
     {

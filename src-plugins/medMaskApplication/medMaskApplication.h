@@ -51,7 +51,6 @@ public slots:
     //! The output will be available through here
     medAbstractData *output();
     
-    
 private:
     medMaskApplicationPrivate *d;
 };

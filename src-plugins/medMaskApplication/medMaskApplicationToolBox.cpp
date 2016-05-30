@@ -22,20 +22,20 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkSmartPointer.h>
 
+#include <medAbstractImageView.h>
 #include <medAbstractView.h>
-#include <medRunnableProcess.h>
-#include <medJobManager.h>
-
-#include <medAbstractImageData.h>
-
-#include <medToolBoxFactory.h>
-#include <medFilteringSelectorToolBox.h>
-#include <medProgressionStack.h>
-#include <medPluginManager.h>
 #include <medDataManager.h>
-#include <medMetaDataKeys.h>
 #include <medDropSite.h>
+#include <medFilteringSelectorToolBox.h>
+#include <medJobManager.h>
 #include <medMessageController.h>
+#include <medPluginManager.h>
+#include <medProgressionStack.h>
+#include <medRunnableProcess.h>
+#include <medTabbedViewContainers.h>
+#include <medTimeLineParameter.h>
+#include <medToolBoxFactory.h>
+#include <medViewContainer.h>
 
 class medMaskApplicationToolBoxPrivate
 {
@@ -143,7 +143,8 @@ void medMaskApplicationToolBox::run()
 
         connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
         connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-        connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
+        connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
+        connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
 
         connect (runProcess, SIGNAL(activate(QObject*,bool)),
                  d->progression_stack, SLOT(setActive(QObject*,bool)));
