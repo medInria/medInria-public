@@ -90,13 +90,14 @@ unsigned int vtkMetaDataSetSequence::CanReadFile (const char* filename)
     images, and then split them into 3D volumes if the 4th dimension
     is greater than 1.
   */
+
   itk::ImageFileReader<vtkMetaImageData::FloatImage4DType>::Pointer reader4d 
     = itk::ImageFileReader<vtkMetaImageData::FloatImage4DType>::New();
   reader4d->SetFileName (filename);
   
   try
   {
-    reader4d->GenerateOutputInformation();
+    reader4d->Update();
   }
   catch (itk::ExceptionObject)
   {
@@ -137,7 +138,7 @@ void vtkMetaDataSetSequence::Read(const char* dirname)
       d_reader->SetFileName(dirname);
       try
       {
-	d_reader->GenerateOutputInformation();
+        d_reader->Update();
       }
       catch(itk::ExceptionObject &e)
       {

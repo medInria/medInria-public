@@ -72,7 +72,7 @@ void medPluginManager::readSettings(void)
 {
     QDir plugins_dir;
     QString defaultPath;
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
 #else
     plugins_dir = qApp->applicationDirPath() + "/../plugins_legacy";

@@ -199,7 +199,7 @@ void medApplication::initialize()
     QString pluginsPath = getenv("MEDINRIA_PLUGINS_DIR");
     QString defaultPath;
     QDir plugins_dir;
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
 #else
     plugins_dir = qApp->applicationDirPath() + "/../plugins";
