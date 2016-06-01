@@ -31,3 +31,10 @@ add_subdirectory(legacy/medImageIO)
 add_subdirectory(legacy/medRegistration)
 
 add_subdirectory(legacy/medVtkInria)
+
+find_package(dtkImaging QUIET)
+
+if(dtkImaging_FOUND)
+    message("loading dtkImaging")
+    add_subdirectory(medImagingCompatibility)
+endif(dtkImaging_FOUND)

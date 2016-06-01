@@ -1,0 +1,9 @@
+{
+          "title" : "To medImage converter",
+           "kind" : "process",
+           "type" : "medAbstractConverter",
+           "tags" : ["converter"],
+    "description" : "<p>Convert from dtkImage to medAbstractImageData</p>",
+         "inputs" : ["dtkImage"],
+        "outputs" : ["medImage"]
+}
