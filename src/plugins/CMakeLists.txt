@@ -56,6 +56,12 @@ set(PLUGIN_LIST
   process/mask_image                                                     ON
   process/single_filter                                                  ON
   )
+  
+  find_package(dtkImaging QUIET)
+  
+  if(dtkImaging_FOUND)
+    set(PLUGIN_LIST converter ON)
+  endif(dtkImaging_FOUND)
 
 ## #############################################################################
 ## process plugins
