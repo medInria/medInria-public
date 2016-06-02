@@ -31,8 +31,6 @@
 #include <itkFiltersOpenProcess.h>
 #include <itkFiltersToolBox.h>
 #include <itkMorphologicalFiltersToolBox.h>
-#include <itkFiltersBinaryCloseProcess.h>
-#include <itkFiltersBinaryOpenProcess.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -73,8 +71,6 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
     if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
     if ( !itkMorphologicalFiltersToolBox::registered() ) { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";}
-    if ( !itkFiltersBinaryCloseProcess::registered() )   { dtkWarn() << "Unable to register itkFiltersBinaryCloseProcess type";}
-    if ( !itkFiltersBinaryOpenProcess::registered() )   { dtkWarn() << "Unable to register itkFiltersBinaryOpenProcess type";}
 
     return true;
 }
@@ -144,9 +140,7 @@ QStringList itkFiltersPlugin::types() const
                          << "itkDilateProcess"
                          << "itkErodeProcess"
                          << "itkCloseProcess"
-                         << "itkOpenProcess"
-                         << "itkBinaryCloseProcess"
-                         << "itkBinaryOpenProcess";
+                         << "itkOpenProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )

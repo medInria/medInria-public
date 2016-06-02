@@ -58,9 +58,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     filtersList << "Dilate "
                 << "Erode "
                 << "Close "
-                << "Open "
-                << "Binary Close"
-                << "Binary Open";
+                << "Open ";
     
     d->filters->addItems ( filtersList );
 
@@ -163,12 +161,6 @@ void itkMorphologicalFiltersToolBox::run ( void )
                 break;
             case 3: // open filter
                 d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
-                break;
-            case 4: // binary close filter
-                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryCloseProcess" );
-                break;
-            case 5: // binary open filter
-                d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFiltersBinaryOpenProcess" );
                 break;
             }
 
