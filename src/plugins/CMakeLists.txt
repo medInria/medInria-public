@@ -55,8 +55,13 @@ set(PLUGIN_LIST
   process/morphomath_operation                                           ON
   process/mask_image                                                     ON
   process/single_filter                                                  ON
-  converter                                                              ON
   )
+  
+  find_package(dtkImaging QUIET)
+  
+  if(dtkImaging_FOUND)
+    set(PLUGIN_LIST converter ON)
+  endif(dtkImaging_FOUND)
 
 ## #############################################################################
 ## process plugins
