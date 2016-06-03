@@ -204,19 +204,16 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
         typedef itk::AndImageFilter <ImageTypeOutput, ImageTypeOutput, ImageTypeOutput> AndImageFilterType;
         filter = AndImageFilterType::New();
     }
-
     else if(description() == "OR")
     {
         typedef itk::OrImageFilter <ImageTypeOutput, ImageTypeOutput, ImageTypeOutput> OrImageFilterType;
         filter = OrImageFilterType::New();
     }
-
     else if(description() == "XOR")
     {
         typedef itk::XorImageFilter <ImageTypeOutput, ImageTypeOutput, ImageTypeOutput> XorImageFilterType;
         filter = XorImageFilterType::New();
     }
-
     else
     {
         qDebug()<<__FILE__<<":"<<__LINE__<<", Wrong binary operator:"<<description();
