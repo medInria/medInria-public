@@ -165,12 +165,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
     if (m_inputA->identifier() != "itkDataImageUChar3")
     {
-        typename ImageType::Pointer imA = dynamic_cast< ImageType*>((itk::Object*)(m_inputA->data()));
-        typedef itk::CastImageFilter< ImageType, ImageTypeOutput > CasterType;
-        typename CasterType::Pointer caster = CasterType::New();
-        caster->SetInput(imA);
-        caster->Update();
-        imageA = caster->GetOutput();
+        imageA = castToUChar3<ImageTypeOutput>(m_inputA);
     }
     else
     {
@@ -179,12 +174,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
     if (m_inputB->identifier() != "itkDataImageUChar3")
     {
-        typename ImageType2::Pointer imB = dynamic_cast< ImageType2*>((itk::Object*)(m_inputB->data()));
-        typedef itk::CastImageFilter< ImageType2, ImageTypeOutput > CasterType;
-        typename CasterType::Pointer caster = CasterType::New();
-        caster->SetInput(imB);
-        caster->Update();
-        imageB = caster->GetOutput();
+        imageB = castToUChar3<ImageTypeOutput>(m_inputB);
     }
     else
     {
@@ -240,7 +230,17 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     medUtilities::setDerivedMetaData(m_output, m_inputA, derivedDescription);
 
     return DTK_SUCCEED;
-}        
+}
+
+template <class ImageType> itk::Image<unsigned char, 3>::Pointer medBinaryOperatorBase::castToUChar3(medAbstractData* input)
+{
+    typedef itk::CastImageFilter< ImageType, itk::Image<unsigned char, 3> > CasterType;
+    typename CasterType::Pointer caster = CasterType::New();
+    caster->SetInput(dynamic_cast< ImageType*>((itk::Object*)(input->data())));
+    caster->Update();
+    typename itk::Image<unsigned char, 3>::Pointer output = caster->GetOutput();
+    return output;
+}
 
 medAbstractData * medBinaryOperatorBase::output()
 {
