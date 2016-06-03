@@ -32,12 +32,6 @@ medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medAbstractWorkspa
     d->selectorToolBox = new medSelectorToolBox(parent, "reformat");
     connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
 
-    // Always have a parent.
-    if (!parent)
-    {
-        throw (std::runtime_error ("Must have a parent widget"));
-    }
-
     this->addToolBox(d->selectorToolBox);
     d->selectorToolBox->setTitle(this->name()); // get workspace name
 

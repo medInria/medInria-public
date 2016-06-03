@@ -29,7 +29,7 @@ class medSegmentationWorkspace : public medAbstractWorkspace
                             "Workspace to extract structures from an image using segmentation.",
                             "Methodology")
 public:
-    medSegmentationWorkspace(QWidget * parent = NULL);
+    medSegmentationWorkspace(QWidget * parent);
 
     virtual ~medSegmentationWorkspace();
 

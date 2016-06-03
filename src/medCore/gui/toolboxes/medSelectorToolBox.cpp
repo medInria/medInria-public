@@ -150,11 +150,6 @@ medAbstractData* medSelectorToolBox::data()
 void medSelectorToolBox::onInputSelected(medAbstractData *data)
 {
     d->inputData = data;
-
-    if(d->currentToolBox)
-    {
-        d->currentToolBox->updateType(d->inputData);
-    }
 }
 
 /**
@@ -163,9 +158,4 @@ void medSelectorToolBox::onInputSelected(medAbstractData *data)
 void medSelectorToolBox::clear()
 {
     d->inputData = NULL;
-
-    if(d->currentToolBox)
-    {
-        d->currentToolBox->updateType(d->inputData);
-    }
 }

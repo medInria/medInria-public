@@ -33,8 +33,6 @@ public:
 
     virtual medAbstractData *processOutput() = 0;
 
-    virtual void updateType(medAbstractData *data){}
-
     void setSelectorToolBox(medSelectorToolBox *toolbox);
 
 public slots:
