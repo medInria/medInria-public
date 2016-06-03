@@ -82,8 +82,6 @@ public:
         typedef itk::KernelImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
         typename FilterType::Pointer filter;
 
-        std::cout<<"description: "<<description.toStdString()<<std::endl;
-
         if(description == "Dilate filter")
         {
             typedef itk::BinaryDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateFilterType;
