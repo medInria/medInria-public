@@ -523,7 +523,8 @@ void medCropToolBoxPrivate::replaceViewWithOutputData(medAbstractWorkspace& work
 {
     if (outputData.length() >= 0)
     {
-        medViewContainer* viewContainer = workspace.stackedViewContainers()->containersInTab(0).at(0);
+        medTabbedViewContainers* tabbedViewContainers = workspace.stackedViewContainers();
+        medViewContainer* viewContainer = tabbedViewContainers->containersInTab(tabbedViewContainers->currentIndex()).at(0);
 
         viewContainer->removeView();
         viewContainer->setMultiLayered(true);
