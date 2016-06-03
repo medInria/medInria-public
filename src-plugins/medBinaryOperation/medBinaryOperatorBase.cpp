@@ -217,7 +217,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     else
     {
         qDebug()<<__FILE__<<":"<<__LINE__<<", Wrong binary operator:"<<description();
-        return DTK_FAILURE;
+        assert(false);
     }
 
     filter->SetInput(0, imageA);
