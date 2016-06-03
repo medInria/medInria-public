@@ -30,7 +30,7 @@ public:
 medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medReformatWorkspacePrivate)
 {
     d->selectorToolBox = new medSelectorToolBox(parent, "reformat");
-    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
+    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(importToolBoxOutput()));
 
     this->addToolBox(d->selectorToolBox);
     d->selectorToolBox->setTitle(this->name()); // get workspace name
@@ -61,7 +61,7 @@ bool medReformatWorkspace::registered()
     return medWorkspaceFactory::instance()->registerWorkspace <medReformatWorkspace>();
 }
 
-void medReformatWorkspace::onSuccess()
+void medReformatWorkspace::importToolBoxOutput()
 {
     medAbstractData * output = d->selectorToolBox->currentToolBox()->processOutput();
     medDataManager::instance()->importData(output);

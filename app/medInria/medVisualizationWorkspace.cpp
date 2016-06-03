@@ -20,18 +20,7 @@
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
 
-class medVisualizationWorkspacePrivate
+bool medVisualizationWorkspace::isUsable()
 {
-public:
-
-};
-
-medVisualizationWorkspace::~medVisualizationWorkspace(void)
-{
-    delete d;
-    d = NULL;
-}
-
-bool medVisualizationWorkspace::isUsable(){
     return true; // for the time being, no test is defined.
 }

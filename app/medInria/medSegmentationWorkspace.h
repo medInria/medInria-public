@@ -38,7 +38,7 @@ public:
     medSelectorToolBox *segmentationToobox();
 
 protected slots:
-    void onSuccess();
+    void importToolBoxOutput();
 
 private:
     medSegmentationWorkspacePrivate *d;

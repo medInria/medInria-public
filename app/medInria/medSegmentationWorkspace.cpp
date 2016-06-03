@@ -41,7 +41,7 @@ medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
     d->selectorToolBox = new medSelectorToolBox(parent, "segmentation");
 
-    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onSuccess()));
+    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(importToolBoxOutput()));
 
     this->addToolBox(d->selectorToolBox);
     d->selectorToolBox->setTitle(this->name()); // get workspace name
@@ -74,7 +74,7 @@ bool medSegmentationWorkspace::isUsable()
     return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
 }
 
-void medSegmentationWorkspace::onSuccess()
+void medSegmentationWorkspace::importToolBoxOutput()
 {
     medAbstractData * output = d->selectorToolBox->currentToolBox()->processOutput();
     medDataManager::instance()->importData(output);

@@ -36,7 +36,7 @@ public:
     medSelectorToolBox *selectorToolBox();
 
 protected slots:
-    void onSuccess();
+    void importToolBoxOutput();
 
 private:
     medReformatWorkspacePrivate *d;
