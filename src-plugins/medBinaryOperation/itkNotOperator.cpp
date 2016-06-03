@@ -14,43 +14,14 @@
 #include "itkNotOperator.h"
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
-
-#include <medAbstractImageData.h>
-#include <medDataManager.h>
-#include <medAbstractDataFactory.h>
-#include <medAttachedData.h>
-#include <medUtilities.h>
 
 #include <itkBinaryNotImageFilter.h>
 #include <itkMinimumMaximumImageFilter.h>
 
-// /////////////////////////////////////////////////////////////////
-// itkNotOperatorPrivate
-// /////////////////////////////////////////////////////////////////
+#include <medAbstractDataFactory.h>
+#include <medAttachedData.h>
+#include <medUtilities.h>
 
-class itkNotOperatorPrivate
-{
-public:
-    dtkSmartPointer <medAbstractData> input;
-    dtkSmartPointer <medAbstractData> output;
-};
-
-// /////////////////////////////////////////////////////////////////
-// itkNotOperator
-// /////////////////////////////////////////////////////////////////
-
-itkNotOperator::itkNotOperator() : medAbstractProcess(), d(new itkNotOperatorPrivate)
-{
-    d->input  = NULL;
-    d->output = NULL;
-}
-
-itkNotOperator::~itkNotOperator()
-{
-    delete d;
-    d = NULL;
-}
 
 bool itkNotOperator::registered()
 {
@@ -59,39 +30,34 @@ bool itkNotOperator::registered()
 
 QString itkNotOperator::description() const
 {
-    return "itkNotOperator";
+    return "NOT";
 }
 
 void itkNotOperator::setInput (medAbstractData *data, int channel)
 {
     if (channel == 0)
     {
-        d->input = data;
+        m_inputA = data;
+
         if ( data )
         {
             QString identifier = data->identifier();
-            d->output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
+            m_output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
         }
         else
         {
-            d->output = NULL;
+            m_output = NULL;
         }
     }
-}    
-
-void itkNotOperator::setParameter ( double  data, int channel )
-{
-
 }
 
-// Convert medAbstractData to ITK volume
 int itkNotOperator::update()
 {
     int res = DTK_FAILURE;
 
-    if (d->input)
+    if (m_inputA)
     {
-        QString id = d->input->identifier();
+        QString id = m_inputA->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -135,32 +101,20 @@ int itkNotOperator::update()
         }
         else
         {
-            qDebug() << description()
-                     <<", Error : pixel type not yet implemented ("
-                     << id
-                     << ")";
+            res = medAbstractProcess::PIXEL_TYPE;
         }
     }
     return res;
 }
 
+
 template <class ImageType> int itkNotOperator::run()
 {
-    if ( !d->input->data() )
+    if ( !m_inputA->data() )
     {
         return DTK_FAILURE;
     }
-    typename ImageType::Pointer image = dynamic_cast<ImageType  *> ( ( itk::Object* ) ( d->input->data() )) ;
-
-    if (!image)
-    {
-        return DTK_FAILURE;
-    }
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
-
-#if ITK_VERSION_MAJOR >= 4
+    typename ImageType::Pointer image = dynamic_cast<ImageType  *> ( ( itk::Object* ) ( m_inputA->data() )) ;
 
     typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
     typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
@@ -174,26 +128,17 @@ template <class ImageType> int itkNotOperator::run()
     notFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     notFilter->Update();
 
-    d->output->setData(notFilter->GetOutput());
-#endif
+    m_output->setData(notFilter->GetOutput());
 
-    QApplication::restoreOverrideCursor();
-    QApplication::processEvents();
-
-    if (!d->output)
+    if (!m_output)
     {
         return DTK_FAILURE;
     }
 
-    medUtilities::setDerivedMetaData(d->output, d->input, "NOT");
+    medUtilities::setDerivedMetaData(m_output, m_inputA, "NOT");
 
     return DTK_SUCCEED;
 }        
-
-medAbstractData * itkNotOperator::output()
-{
-    return ( d->output );
-}
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

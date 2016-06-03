@@ -40,6 +40,7 @@ public:
         DIMENSION_3D,   //! Not a 3D volume
         DIMENSION_4D,   //! Not a 4D volume
         MESH_TYPE,      //! Not a mesh
+        DATA_SIZE,      //! Inputs must be the same size
         UNDEFINED,      //! Miscellanous
     };
 
