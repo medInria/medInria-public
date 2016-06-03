@@ -12,6 +12,16 @@
 #include <medMetaDataKeys.h>
 #include <medUtilities.h>
 
+template <class ImageType> itk::Image<unsigned char, 3>::Pointer castToUChar3(medAbstractData* input)
+{
+    typedef itk::CastImageFilter< ImageType, itk::Image<unsigned char, 3> > CasterType;
+    typename CasterType::Pointer caster = CasterType::New();
+    caster->SetInput(dynamic_cast< ImageType*>((itk::Object*)(input->data())));
+    caster->Update();
+    typename itk::Image<unsigned char, 3>::Pointer output = caster->GetOutput();
+    return output;
+}
+
 
 medBinaryOperatorBase::medBinaryOperatorBase() : medAbstractProcess()
 {
@@ -230,16 +240,6 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     medUtilities::setDerivedMetaData(m_output, m_inputA, derivedDescription);
 
     return DTK_SUCCEED;
-}
-
-template <class ImageType> itk::Image<unsigned char, 3>::Pointer medBinaryOperatorBase::castToUChar3(medAbstractData* input)
-{
-    typedef itk::CastImageFilter< ImageType, itk::Image<unsigned char, 3> > CasterType;
-    typename CasterType::Pointer caster = CasterType::New();
-    caster->SetInput(dynamic_cast< ImageType*>((itk::Object*)(input->data())));
-    caster->Update();
-    typename itk::Image<unsigned char, 3>::Pointer output = caster->GetOutput();
-    return output;
 }
 
 medAbstractData * medBinaryOperatorBase::output()

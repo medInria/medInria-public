@@ -16,7 +16,6 @@
 #include <dtkCore/dtkSmartPointer.h>
 #include <medAbstractProcess.h>
 #include "medBinaryOperationPluginExport.h"
-#include "itkImage.h"
 
 class medBinaryOperatorBasePrivate;
 
@@ -30,9 +29,6 @@ public:
 
     template <class ImageType> int run();
     template <class ImageType, class ImageType2> int runProcess();
-
-private:
-    template <class ImageType> itk::Image<unsigned char, 3>::Pointer castToUChar3(medAbstractData* input);
 
 public slots:
     
