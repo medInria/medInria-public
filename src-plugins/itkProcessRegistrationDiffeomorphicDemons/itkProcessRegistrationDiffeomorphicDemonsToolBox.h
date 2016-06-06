@@ -22,7 +22,7 @@ class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medRegistrationA
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Diffeomorphic Demons",
                           "Diffeomorphic demons registration using the ITK implementation",
-                          <<"registration")
+                          <<"Registration")
 public:
      itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parentToolBox = 0);
     ~itkProcessRegistrationDiffeomorphicDemonsToolBox();

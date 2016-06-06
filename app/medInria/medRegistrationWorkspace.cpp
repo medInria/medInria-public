@@ -82,7 +82,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
         d->movingContainer->setMultiLayered(false);
         d->movingContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
 
-
         d->fuseContainer = this->stackedViewContainers()->addContainerInTab(tr("Fuse"));
         QLabel *fuseLabel = new QLabel(tr("FUSE"));
         fuseLabel->setAlignment(Qt::AlignCenter);
@@ -128,7 +127,7 @@ void medRegistrationWorkspace::setInitialGroups()
 bool medRegistrationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("registration").size()!=0);
+    return (tbFactory->toolBoxesFromCategory("Registration").size()!=0);
 }
 
 void medRegistrationWorkspace::updateFromMovingContainer()

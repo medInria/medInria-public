@@ -102,7 +102,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
         }
     }
     int i=1;
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("Registration"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         d->toolboxes->addItem(details->name, toolbox);

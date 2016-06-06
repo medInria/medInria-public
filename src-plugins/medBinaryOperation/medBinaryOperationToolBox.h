@@ -21,7 +21,7 @@ class medBinaryOperationToolBoxPrivate;
 class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("Binary Operation","Allow binary operations between masks (OR, AND, XOR, etc.)",<<"filtering")
+    MED_TOOLBOX_INTERFACE("Binary Operation","Allow binary operations between masks (OR, AND, XOR, etc.)",<<"Filtering")
     
 public:
     medBinaryOperationToolBox(QWidget *parent = 0);

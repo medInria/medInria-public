@@ -14,17 +14,15 @@
 #pragma once
 
 #include <QtCore>
-#include <medAbstractWorkspace.h>
+#include <medSelectorWorkspace.h>
 
 class medFilteringWorkspacePrivate;
-class medViewContainerStack;
 class medAbstractData;
-class dtkAbstractView;
 
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medFilteringWorkspace : public medAbstractWorkspace
+class medFilteringWorkspace : public medSelectorWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Filtering",

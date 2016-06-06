@@ -10,7 +10,7 @@ class REFORMATPLUGIN_EXPORT resliceToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
 
-    MED_TOOLBOX_INTERFACE("Reslice","used to reslice an image", << "reformat")
+    MED_TOOLBOX_INTERFACE("Reslice","used to reslice an image", << "Reformat")
         
 public:
     resliceToolBox(QWidget *parentToolBox = 0);

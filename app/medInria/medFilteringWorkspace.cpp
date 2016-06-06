@@ -13,38 +13,26 @@
 
 #include <medFilteringWorkspace.h>
 
-#include <medAbstractData.h>
 #include <medAbstractLayeredView.h>
 #include <medAbstractSelectableToolBox.h>
-#include <medAbstractView.h>
-#include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
-#include <medLayerParameterGroup.h>
 #include <medMetaDataKeys.h>
 #include <medSelectorToolBox.h>
-#include <medStorage.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
-#include <medViewParameterGroup.h>
 
 class medFilteringWorkspacePrivate
 {
 public:
-    QPointer<medSelectorToolBox> selectorToolBox;
     medViewContainer *inputContainer;
     medViewContainer *outputContainer;
 
     medAbstractData *filterOutput;
 };
 
-medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medFilteringWorkspacePrivate)
+medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medSelectorWorkspace (parent, name()), d(new medFilteringWorkspacePrivate)
 {
-    d->selectorToolBox = new medSelectorToolBox(parent, "filtering");
-    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onProcessSuccess()));
-
-    this->addToolBox(d->selectorToolBox);
-    d->selectorToolBox->setTitle("Filtering");
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -90,23 +78,18 @@ void medFilteringWorkspace::setupViewContainerStack()
 
 void medFilteringWorkspace::changeToolBoxInput()
 {
-    if(d->selectorToolBox.isNull())
-        return;
-
-    if(!d->inputContainer->view())
+    if(selectorToolBox())
     {
-        d->selectorToolBox->clear();
-        return;
+        if(!d->inputContainer->view())
+        {
+            selectorToolBox()->clear();
+        }
+        else
+        {
+            medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
+            selectorToolBox()->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
+        }
     }
-
-    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
-    if(!layeredView)
-    {
-        qWarning() << "Non layered view are not supported in filtering workspace yet.";
-        d->selectorToolBox->clear();
-        return;
-    }
-    d->selectorToolBox->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
 }
 
 /**
@@ -114,41 +97,41 @@ void medFilteringWorkspace::changeToolBoxInput()
  */
 void medFilteringWorkspace::onProcessSuccess()
 {
-    if(d->selectorToolBox.isNull())
-        return;
+    if(selectorToolBox())
+    {
+        d->filterOutput = selectorToolBox()->currentToolBox()->processOutput();
+        if ( d->filterOutput )
+        {
+            medAbstractData *inputData(selectorToolBox()->data());
 
-    d->filterOutput = d->selectorToolBox->currentToolBox()->processOutput();
-    if ( !d->filterOutput )
-        return;
+            if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+            {
+                QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
+                newSeriesDescription += " filtered";
+                d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+            }
 
-    medAbstractData *inputData(d->selectorToolBox->data());
+            foreach ( QString metaData, inputData->metaDataList() )
+                if (!d->filterOutput->hasMetaData(metaData))
+                    d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
 
-    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-      {
-        QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " filtered";
-        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-      }
+            foreach ( QString property, inputData->propertyList() )
+                d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
 
-    foreach ( QString metaData, inputData->metaDataList() )
-      if (!d->filterOutput->hasMetaData(metaData))
-        d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
+            QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+            d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    foreach ( QString property, inputData->propertyList() )
-      d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
+            medDataManager::instance()->importData(d->filterOutput);
 
-    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
-
-    medDataManager::instance()->importData(d->filterOutput);
-
-    d->outputContainer->addData(d->filterOutput);
+            d->outputContainer->addData(d->filterOutput);
+        }
+    }
 }
 
 bool medFilteringWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("filtering").size()!=0);
+    return (tbFactory->toolBoxesFromCategory("Filtering").size()!=0);
 }
 
 void medFilteringWorkspace::open(const medDataIndex &index)

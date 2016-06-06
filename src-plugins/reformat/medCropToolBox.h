@@ -9,7 +9,7 @@ class medCropToolBoxPrivate;
 class REFORMATPLUGIN_EXPORT medCropToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("Cropping", "Image cropping",<<"reformat")
+    MED_TOOLBOX_INTERFACE("Cropping", "Image cropping",<<"Reformat")
 
 public:
     static bool registered();

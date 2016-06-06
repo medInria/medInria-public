@@ -49,7 +49,7 @@ class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelecta
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("MUSIC Paint segmentation", "Paint Tool",
-                          <<"segmentation")
+                          <<"Segmentation")
 public:
 
     typedef QPair<Mask2dType::Pointer,unsigned int> SlicePair;

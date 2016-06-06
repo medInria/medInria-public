@@ -1,59 +1,22 @@
 #include "medReformatWorkspace.h"
 
-#include <medLayerParameterGroup.h>
-#include <medViewContainer.h>
+#include <medAbstractSelectableToolBox.h>
+#include <medDataManager.h>
+#include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
-#include <medSettingsManager.h>
-#include <medToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
-#include <medViewContainerManager.h>
-#include <medViewEventFilter.h>
-#include <medViewParameterGroup.h>
-#include <medDataManager.h>
-#include <medAbstractSelectableToolBox.h>
-#include <medSelectorToolBox.h>
 
-#include <stdexcept>
-
-class medReformatWorkspacePrivate
+medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medSelectorWorkspace(parent, name())
 {
-public:
-    // Give values to items without a constructor.
-    medReformatWorkspacePrivate() :
-       selectorToolBox(NULL)
-    {}
-
-    medSelectorToolBox* selectorToolBox;
-};
-
-medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medReformatWorkspacePrivate)
-{
-    d->selectorToolBox = new medSelectorToolBox(parent, "reformat");
-    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(importToolBoxOutput()));
-
-    this->addToolBox(d->selectorToolBox);
-    d->selectorToolBox->setTitle(this->name()); // get workspace name
-
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
-            d->selectorToolBox, SIGNAL(inputChanged()));
-}
-
-medReformatWorkspace::~medReformatWorkspace(void)
-{
-    delete d;
-    d = NULL;
-}
-
-medSelectorToolBox * medReformatWorkspace::selectorToolBox()
-{
-    return d->selectorToolBox;
+            selectorToolBox(), SIGNAL(inputChanged()));
 }
 
 bool medReformatWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("reformat").size()!=0);
+    return (tbFactory->toolBoxesFromCategory("Reformat").size()!=0);
 }
 
 bool medReformatWorkspace::registered()
@@ -61,9 +24,9 @@ bool medReformatWorkspace::registered()
     return medWorkspaceFactory::instance()->registerWorkspace <medReformatWorkspace>();
 }
 
-void medReformatWorkspace::importToolBoxOutput()
+void medReformatWorkspace::onProcessSuccess()
 {
-    medAbstractData * output = d->selectorToolBox->currentToolBox()->processOutput();
+    medAbstractData * output = selectorToolBox()->currentToolBox()->processOutput();
     medDataManager::instance()->importData(output);
 }
 

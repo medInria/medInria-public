@@ -68,7 +68,7 @@ QStringList AlgorithmPaintPlugin::tags() const
 
 QStringList AlgorithmPaintPlugin::types() const
 {
-    return QStringList() << "segmentation";
+    return QStringList() << "Segmentation";
 }
 
 QStringList AlgorithmPaintPlugin::dependencies() const

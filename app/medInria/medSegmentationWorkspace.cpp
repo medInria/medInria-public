@@ -15,60 +15,25 @@
 
 #include <medAbstractSelectableToolBox.h>
 #include <medDataManager.h>
-#include <medLayerParameterGroup.h>
 #include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
-#include <medViewParameterGroup.h>
-
-#include <stdexcept>
-
-class medSegmentationWorkspacePrivate
-{
-public:
-    // Give values to items without a constructor.
-    medSegmentationWorkspacePrivate() :
-       selectorToolBox(NULL)
-    {}
-
-    medSelectorToolBox *selectorToolBox;
-};
-
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent) :
-medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
+medSelectorWorkspace(parent, name())
 {
-    d->selectorToolBox = new medSelectorToolBox(parent, "segmentation");
-    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(importToolBoxOutput()));
-
-    this->addToolBox(d->selectorToolBox);
-    d->selectorToolBox->setTitle(this->name()); // get workspace name
-
-    setInitialGroups();
-
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
-            d->selectorToolBox, SIGNAL(inputChanged()));
-}
-
-medSegmentationWorkspace::~medSegmentationWorkspace(void)
-{
-    delete d;
-    d = NULL;
-}
-
-medSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
-{
-    return d->selectorToolBox;
+            selectorToolBox(), SIGNAL(inputChanged()));
 }
 
 bool medSegmentationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
+    return (tbFactory->toolBoxesFromCategory("Segmentation").size()!=0);
 }
 
-void medSegmentationWorkspace::importToolBoxOutput()
+void medSegmentationWorkspace::onProcessSuccess()
 {
-    medAbstractData * output = d->selectorToolBox->currentToolBox()->processOutput();
+    medAbstractData* output = selectorToolBox()->currentToolBox()->processOutput();
     medDataManager::instance()->importData(output);
 }
