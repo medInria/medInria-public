@@ -86,8 +86,4 @@ endmacro()
 
 foreach (external_project ${external_projects})
     call(${external_project}_project)
-    
-    
 endforeach()
-
-

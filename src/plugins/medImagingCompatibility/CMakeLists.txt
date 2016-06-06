@@ -11,18 +11,18 @@
 #
 ################################################################################
 
-set(TARGET_NAME converterPlugin)
+set(TARGET_NAME medImagingCompatibilityPlugin)
+
 
 ## #############################################################################
-## Resolve dependencies
+## find requireds
 ## #############################################################################
 
-find_package(ITK)
-include(${ITK_USE_FILE})
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(dtkImaging REQUIRED)
 include_directories(${dtkImaging_INCLUDE_DIRS})
-
 
 ## #############################################################################
 ## List Sources
@@ -52,9 +52,8 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   )
-# PRIVATE beacause plugins are not supposed to be used somewhere else
 
 
 ## #############################################################################
@@ -62,19 +61,22 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ITKCommon
   Qt5::Core
-  dtkCore
-  dtkLog
+  Qt5::Gui
   medCore
-  medWidgets
+  dtkLog
+  dtkComposer
+  dtkCore
   dtkImaging
+  # Legacy
+  medCoreLegacy
   )
 
 
 ## #############################################################################
-## Install rules
+## install
 ## #############################################################################
 
-set_plugin_install_rules(${TARGET_NAME})
-
+set_plugin_install_rules(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )

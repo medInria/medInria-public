@@ -48,7 +48,7 @@
 #include <medAbstractDiffusionScalarMapsProcess.h>
 #include <medAbstractTractographyProcess.h>
 
-#include <medAbstractConverter.h>
+#include <medAbstractDataConverter.h>
 
 #include <medCoreExport.h>
 
@@ -65,6 +65,7 @@ namespace medCore
     DTK_DECLARE_CONCEPT(medAbstractDiffusionScalarMapsProcess,MEDCORE_EXPORT,diffusionScalarMaps)
     DTK_DECLARE_CONCEPT(medAbstractTractographyProcess,MEDCORE_EXPORT,tractography)
     DTK_DECLARE_CONCEPT(medAbstractMaskImageProcess,MEDCORE_EXPORT,maskImage)
+    DTK_DECLARE_CONCEPT(medAbstractDataConverter,MEDCORE_EXPORT,dataConverter)
 
     namespace arithmeticOperation
     {
@@ -184,11 +185,5 @@ namespace medCore
             MEDCORE_EXPORT medAbstractClosingImageProcessPluginFactory& pluginFactory(void);
         }
     }
-    
-    namespace converter
-    {
-        MEDCORE_EXPORT void initialize(const QString& path, bool verbose = true);
-        MEDCORE_EXPORT medAbstractConverterPluginManager& pluginManager(void);
-        MEDCORE_EXPORT medAbstractConverterPluginFactory& pluginFactory(void);
-    }
+
 }

@@ -56,12 +56,14 @@ set(PLUGIN_LIST
   process/mask_image                                                     ON
   process/single_filter                                                  ON
   )
-  
-  find_package(dtkImaging QUIET)
-  
-  if(dtkImaging_FOUND)
-    set(PLUGIN_LIST converter ON)
-  endif(dtkImaging_FOUND)
+
+  if(USE_DTKIMAGING)
+    set(PLUGIN_LIST
+      ${PLUGIN_LIST}
+      medITKImageDTKImageConverter ON
+      medImagingCompatibility ON
+      )    
+  endif()
 
 ## #############################################################################
 ## process plugins

@@ -44,6 +44,10 @@ find_package(Boost REQUIRED)
 #   * otherwise use download and compile locally the package as an external 
 #     module.
 
+option(USE_DTKIMAGING
+  "Use DTK imaging layer" OFF
+  )
+
 list(APPEND external_projects
   VTK 
   ITK 
@@ -52,8 +56,18 @@ list(APPEND external_projects
   DCMTK 
   QtDCM 
   dtk 
-  medInria
   )
+
+if (USE_DTKIMAGING)
+  list(APPEND external_projects
+      dtkImaging
+      medInria
+      )
+else()
+  list(APPEND external_projects
+      medInria
+      )
+endif()
 
 ## #############################################################################
 ## Setup build configuration

@@ -1,23 +1,9 @@
-// Version: $Id$
-//
-//
-
-// Commentary:
-//
-//
-
-// Change Log:
-//
-//
-
-// Code:
 #pragma once
 
 #include <QObject>
 
-
 class dtkImage;
-#include "itkImage.h"
+#include <itkImage.h>
 #include <dtkItkPixelTypeTrait.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -27,10 +13,10 @@ class dtkImage;
 template < typename Pixel, int dim > class dtkPixelClassDataExtractor
 {
 public:
-	static typename Pixel::PixelType* getData(typename itk::Image<typename dtkItkPixelTypeTrait<Pixel>::itkPixelType,dim>::Pointer image)
-	{
+    static typename Pixel::PixelType* getData(typename itk::Image<typename dtkItkPixelTypeTrait<Pixel>::itkPixelType,dim>::Pointer image)
+    {
         return (typename Pixel::PixelType*)(image->GetBufferPointer()->GetDataPointer());
-	}
+    }
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -40,10 +26,10 @@ public:
 template < typename Pixel, int dim > class dtkPixelRawDataExtractor
 {
 public:
-	static typename Pixel::PixelType* getData(typename itk::Image<typename dtkItkPixelTypeTrait<Pixel>::itkPixelType, dim>::Pointer image)
-	{
+    static typename Pixel::PixelType* getData(typename itk::Image<typename dtkItkPixelTypeTrait<Pixel>::itkPixelType, dim>::Pointer image)
+    {
         return (typename Pixel::PixelType*)(image->GetBufferPointer());
-	}
+    }
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -87,5 +73,3 @@ typedef itk::Image<typename dtkItkPixelTypeTrait< dtkScalarPixel<        double>
 // /////////////////////////////////////////////////////////////////
 
 #include "dtkItkImageConverter.tpp"
-
-//
