@@ -52,7 +52,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
 
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
     connect(d->selectorToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
-    connect(d->selectorToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));
+    connect(d->selectorToolBox, SIGNAL(destroyed()), this, SLOT(removeSelectorInternToolBox()));
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -301,7 +301,7 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
             this, SLOT(updateFromMovingContainer()));
 }
 
-void medRegistrationWorkspace::removeSlectorInternToolBox()
+void medRegistrationWorkspace::removeSelectorInternToolBox()
 {
     d->selectorToolBox = NULL;
 }

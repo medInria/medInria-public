@@ -63,20 +63,20 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
 {
     QWidget *widget = new QWidget(this);
 
+    QVBoxLayout * parameters_layout = new QVBoxLayout;
+
     // Parameters'widgets
     d->layerSource = new medComboBox;
     d->layerSource->addItem("Select the layer", 0);
-    QLabel * layerSource_Label = new QLabel("Layer number for source mesh");
-    QHBoxLayout * layerSource_layout = new QHBoxLayout;
-    layerSource_layout->addWidget(layerSource_Label);
-    layerSource_layout->addWidget(d->layerSource);
+    QLabel * layerSource_Label = new QLabel("Select the source mesh:");
+    parameters_layout->addWidget(layerSource_Label);
+    parameters_layout->addWidget(d->layerSource);
     
     d->layerTarget = new medComboBox;
     d->layerTarget->addItem("Select the layer", 0);
-    QLabel * layerTarget_Label = new QLabel("Layer number for target mesh");
-    QHBoxLayout * layerTarget_layout = new QHBoxLayout;
-    layerTarget_layout->addWidget(layerTarget_Label);
-    layerTarget_layout->addWidget(d->layerTarget);
+    QLabel * layerTarget_Label = new QLabel("Select the target mesh:");
+    parameters_layout->addWidget(layerTarget_Label);
+    parameters_layout->addWidget(d->layerTarget);
     
     d->bStartByMatchingCentroids = new QCheckBox(widget);
     d->bStartByMatchingCentroids->setText("StartByMatchingCentroids");
@@ -134,10 +134,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
-    QVBoxLayout * parameters_layout = new QVBoxLayout;
-    widget->setLayout(parameters_layout);
-    parameters_layout->addLayout(layerSource_layout);
-    parameters_layout->addLayout(layerTarget_layout);
     parameters_layout->addWidget(d->bStartByMatchingCentroids);
     parameters_layout->addLayout(transformation_layout);
     parameters_layout->addWidget(d->bCheckMeanDistance);

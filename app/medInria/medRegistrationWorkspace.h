@@ -42,7 +42,7 @@ protected slots:
     void updateFromRegistrationSuccess(medAbstractData *output);
 
 private slots:
-    void removeSlectorInternToolBox();
+    void removeSelectorInternToolBox();
 
 private:
     medRegistrationWorkspacePrivate *d;

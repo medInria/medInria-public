@@ -22,7 +22,7 @@ public:
        selectorToolBox(NULL)
     {}
 
-    medSelectorToolBox *selectorToolBox;
+    QPointer<medSelectorToolBox> selectorToolBox;
 };
 
 
@@ -43,7 +43,7 @@ medSelectorWorkspace::~medSelectorWorkspace(void)
     d = NULL;
 }
 
-medSelectorToolBox* medSelectorWorkspace::selectorToolBox()
+QPointer<medSelectorToolBox> medSelectorWorkspace::selectorToolBox()
 {
     return d->selectorToolBox;
 }

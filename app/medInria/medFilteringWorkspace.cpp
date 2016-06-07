@@ -78,9 +78,9 @@ void medFilteringWorkspace::setupViewContainerStack()
 
 void medFilteringWorkspace::changeToolBoxInput()
 {
-    if(selectorToolBox())
+    if(!selectorToolBox().isNull())
     {
-        if(!d->inputContainer->view())
+        if(!d->inputContainer->view() && (selectorToolBox()->data() != NULL))
         {
             selectorToolBox()->clear();
         }
@@ -97,7 +97,7 @@ void medFilteringWorkspace::changeToolBoxInput()
  */
 void medFilteringWorkspace::onProcessSuccess()
 {
-    if(selectorToolBox())
+    if(selectorToolBox()->data())
     {
         d->filterOutput = selectorToolBox()->currentToolBox()->processOutput();
         if ( d->filterOutput )

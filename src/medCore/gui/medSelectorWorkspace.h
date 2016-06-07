@@ -31,7 +31,7 @@ public:
 
     virtual ~medSelectorWorkspace();
 
-    medSelectorToolBox *selectorToolBox();
+    QPointer<medSelectorToolBox> selectorToolBox();
 
 protected slots:
     virtual void onProcessSuccess(){}
