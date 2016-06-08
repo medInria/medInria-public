@@ -78,9 +78,9 @@ void medFilteringWorkspace::setupViewContainerStack()
 
 void medFilteringWorkspace::changeToolBoxInput()
 {
-    if(!selectorToolBox().isNull())
+    if(!selectorToolBox().isNull()) //empty when users close the software
     {
-        if(!d->inputContainer->view() && (selectorToolBox()->data() != NULL))
+        if(!d->inputContainer->view())
         {
             selectorToolBox()->clear();
         }
@@ -112,11 +112,17 @@ void medFilteringWorkspace::onProcessSuccess()
             }
 
             foreach ( QString metaData, inputData->metaDataList() )
+            {
                 if (!d->filterOutput->hasMetaData(metaData))
+                {
                     d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
+                }
+            }
 
             foreach ( QString property, inputData->propertyList() )
+            {
                 d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
+            }
 
             QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
             d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
