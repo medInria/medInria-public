@@ -79,21 +79,20 @@ public:
 
 itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectableToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
 {
-    qDebug() << "itkFiltersToolBox";
     //Filters selection combobox
     d->filters = new medComboBox(this);
-    d->filters->setObjectName("Add Constant to Image");
+    d->filters->setObjectName("Add constant");
     QStringList filtersList;
-    filtersList << "Add Constant to Image" 
-                << "Substract Constant from Image" 
-                << "Multiply image by constant" 
-                << "Divide image by constant"
+    filtersList << "Add constant"
+                << "Subtract constant"
+                << "Multiply by constant"
+                << "Divide by constant"
                 << "Gaussian blur" 
-                << "Normalize image filter" 
-                << "Median filter" 
-                << "Invert intensity filter"
-                << "Shrink image filter" 
-                << "Intensity windowing filter"
+                << "Normalize image"
+                << "Median filter"
+                << "Invert intensity"
+                << "Shrink image"
+                << "Intensity windowing"
                 << "Threshold an image"
                 << "Remove isolated voxels/pixels";
     
@@ -114,7 +113,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     addFilterLayout->addStretch ( 1 );
     d->addFilterWidget->setLayout ( addFilterLayout );
 
-    //Substract filter widgets
+    //Subtract filter widgets
     d->subtractFilterWidget = new QWidget(this);
     d->subtractFilterValue = new QDoubleSpinBox;
     d->subtractFilterValue->setMaximum ( 1000000000 );
