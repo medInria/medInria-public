@@ -7,7 +7,7 @@
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 
-medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medSelectorWorkspace(parent, name())
+medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medSelectorWorkspace(parent, staticName())
 {
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
             selectorToolBox(), SIGNAL(inputChanged()));

@@ -31,7 +31,7 @@ public:
     medAbstractData *filterOutput;
 };
 
-medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medSelectorWorkspace (parent, name()), d(new medFilteringWorkspacePrivate)
+medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medSelectorWorkspace (parent, staticName()), d(new medFilteringWorkspacePrivate)
 {
 }
 

@@ -42,8 +42,8 @@ public slots:
 protected:
 
     //! Launched when scrolled in medSelectorToolBox
-    void showEvent(QShowEvent *event);
-    void hideEvent(QHideEvent *event);
+    virtual void showEvent(QShowEvent *event);
+    virtual void hideEvent(QHideEvent *event);
 
     //! Get the selectorToolBox (usually one instance)
     medSelectorToolBox *selectorToolBox();

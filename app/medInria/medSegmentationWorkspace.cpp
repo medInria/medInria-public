@@ -20,7 +20,7 @@
 #include <medToolBoxFactory.h>
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent) :
-medSelectorWorkspace(parent, name())
+medSelectorWorkspace(parent, staticName())
 {
     connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
             selectorToolBox(), SIGNAL(inputChanged()));
