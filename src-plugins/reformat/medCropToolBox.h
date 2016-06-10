@@ -31,8 +31,11 @@ public slots:
     void applyCrop();
     void saveCrop();
     void reactToOrientationChange();
-    void behaveWithBodyVisibility();
     void setEnable(bool enable);
+
+protected:
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
 
 private:
     medCropToolBoxPrivate* const d;

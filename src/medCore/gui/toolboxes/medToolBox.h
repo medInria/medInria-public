@@ -108,8 +108,6 @@ public slots:
     const QStringList ValidDataTypes();
     void addValidDataType(const QString & dataType);
     void show();
-    //Behaviour when you hide/minimize your toolbox
-    virtual void behaveWithBodyVisibility(){}
 
     //! Switch between errors
     void handleDisplayError(int);

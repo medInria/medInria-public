@@ -124,8 +124,6 @@ public slots:
 
     void interpolate();
 
-    void behaveWithBodyVisibility();
-
 protected:
     friend class ClickAndMoveEventFilter;
 
@@ -151,6 +149,8 @@ protected:
     void pasteSliceToMask3D(itk::Image<unsigned char,2>::Pointer image2D,const char planeIndex,const char * direction,const unsigned int slice);
 
     void addViewEventFilter(medViewEventFilter * filter );
+
+    void hideEvent(QHideEvent *event);
 
 private:
 
