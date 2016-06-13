@@ -175,7 +175,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
     if (m_inputA->identifier() != "itkDataImageUChar3")
     {
-        imageA = castToUChar3<ImageTypeOutput>(m_inputA);
+        imageA = castToUChar3<ImageType>(m_inputA);
     }
     else
     {
@@ -184,7 +184,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
     if (m_inputB->identifier() != "itkDataImageUChar3")
     {
-        imageB = castToUChar3<ImageTypeOutput>(m_inputB);
+        imageB = castToUChar3<ImageType2>(m_inputB);
     }
     else
     {
