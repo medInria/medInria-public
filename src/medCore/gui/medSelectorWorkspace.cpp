@@ -40,10 +40,10 @@ medSelectorWorkspace::medSelectorWorkspace(QWidget * parent, QString name, medSe
 {
     d->selectorToolBox = toolbox;
 
-    connect(selectorToolBox(),SIGNAL(success()),this,SLOT(onProcessSuccess()));
+    connect(toolbox,SIGNAL(success()),this,SLOT(onProcessSuccess()));
 
-    this->addToolBox(selectorToolBox());
-    selectorToolBox()->setTitle(name); // get workspace name
+    this->addToolBox(toolbox);
+    toolbox->setTitle(name); // get workspace name
 }
 
 medSelectorWorkspace::~medSelectorWorkspace(void)

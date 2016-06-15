@@ -45,8 +45,6 @@ class medRegistrationSelectorToolBoxPrivate
 public:
     QPushButton * saveTransButton;
 
-    medComboBox *toolboxes;
-
     QVBoxLayout *toolBoxLayout;
 
     medAbstractData *fixedData;
@@ -81,9 +79,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
 
     // --- Setting up custom toolboxes list ---
 
-    d->toolboxes = new medComboBox(this);
-    d->toolboxes->addItem(tr("Choose algorithm"));
-    d->toolboxes->setToolTip(
+    comboBox()->setToolTip(
                 tr( "Choose the registration algorithm"
                     " amongst the loaded plugins" ));
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
@@ -101,31 +97,12 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
             d->undoRedoToolBox->setRegistrationToolBox(this);
         }
     }
-    int i=1;
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("Registration"))
-    {
-        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
-        d->toolboxes->addItem(details->name, toolbox);
-        d->toolboxes->setItemData(i,
-                                  details->description,
-                                  Qt::ToolTipRole);
-        i++;
-    }
-
-    connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
     // ---
-    QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
-    layoutButtonGroup->addButton(d->saveTransButton);
-
-    QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
-    layoutButtonLayout->addWidget(d->saveTransButton);
-
 
     QWidget *toolBoxWidget =  new QWidget;
     d->toolBoxLayout = new QVBoxLayout(toolBoxWidget);
-    d->toolBoxLayout->addLayout(layoutButtonLayout);
-    d->toolBoxLayout->addWidget(d->toolboxes);
+    d->toolBoxLayout->addWidget(d->saveTransButton);
 
     if (d->undoRedoToolBox)
         this->addWidget(d->undoRedoToolBox);
@@ -140,13 +117,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
     connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
 //    connect(medJobManager::instance(),SIGNAL(jobRegistered(medJobItem*,QString)),this,SLOT(onJobAdded(medJobItem*,QString)));
-}
-
-medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
-{
-    delete d;
-
-    d = NULL;
 }
 
 //! Gets the fixedData.
@@ -178,7 +148,7 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     }
 
     //get identifier for toolbox.
-    QString id = d->toolboxes->itemData(index).toString();
+    QString id = comboBox()->itemData(index).toString();
 
     medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
 

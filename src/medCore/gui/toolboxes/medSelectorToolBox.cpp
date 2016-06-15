@@ -145,6 +145,13 @@ medAbstractData* medSelectorToolBox::data()
     return d->inputData;
 }
 
+
+medComboBox* medSelectorToolBox::comboBox()
+{
+    return d->chooseComboBox;
+}
+
+
 /**
  * @brief retrieve data from the selected input image index
  * @param index

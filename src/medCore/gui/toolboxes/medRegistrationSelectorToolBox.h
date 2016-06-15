@@ -29,7 +29,6 @@ class MEDCORE_EXPORT medRegistrationSelectorToolBox : public medSelectorToolBox
 
 public:
      medRegistrationSelectorToolBox(QWidget *parent, QString name);
-    ~medRegistrationSelectorToolBox();
 
     medAbstractData *fixedData();
     medAbstractData *movingData();
