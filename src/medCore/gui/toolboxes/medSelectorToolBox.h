@@ -38,7 +38,7 @@ signals:
 public slots:
     virtual void changeCurrentToolBox(int index);
     virtual void changeCurrentToolBox(const QString &identifier);
-    void clear();
+    virtual void clear();
     void onInputSelected(medAbstractData *data);
 
 private:

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medCoreExport.h>
 #include <medJobItem.h>
 
@@ -23,12 +23,12 @@ class medAbstractImageData;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
 
-class MEDCORE_EXPORT medRegistrationSelectorToolBox : public medToolBox
+class MEDCORE_EXPORT medRegistrationSelectorToolBox : public medSelectorToolBox
 {
     Q_OBJECT
 
 public:
-     medRegistrationSelectorToolBox(QWidget *parent = 0);
+     medRegistrationSelectorToolBox(QWidget *parent, QString name);
     ~medRegistrationSelectorToolBox();
 
     medAbstractData *fixedData();

@@ -62,7 +62,7 @@ public:
 
 };
 
-medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
+medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, QString name) : medSelectorToolBox(parent, name), d(new medRegistrationSelectorToolBoxPrivate)
 {
     d->fixedData  = NULL;
     d->movingData = NULL;

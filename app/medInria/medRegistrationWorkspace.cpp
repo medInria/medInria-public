@@ -30,10 +30,10 @@
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
 
+
 class medRegistrationWorkspacePrivate
 {
 public:
-    medRegistrationSelectorToolBox * selectorToolBox;
     medViewContainer *fixedContainer;
     medViewContainer *movingContainer;
     medViewContainer *fuseContainer;
@@ -43,23 +43,13 @@ public:
     medLayerParameterGroup *movingLayerGroup;
 };
 
-medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medRegistrationWorkspacePrivate)
+medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medSelectorWorkspace(parent, staticName(), new medRegistrationSelectorToolBox(parent, staticName())), d(new medRegistrationWorkspacePrivate)
 {
-    d->selectorToolBox = new medRegistrationSelectorToolBox(parent);
-    d->selectorToolBox->setWorkspace(this);
-    this->addToolBox(d->selectorToolBox);
-    d->selectorToolBox->setTitle(this->name()); // get workspace name
-
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
-    connect(d->selectorToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
-    connect(d->selectorToolBox, SIGNAL(destroyed()), this, SLOT(removeSelectorInternToolBox()));
+    connect(selectorToolBox(), SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
+    connect(selectorToolBox(), SIGNAL(destroyed()), this, SLOT(removeSelectorInternToolBox()));
 }
 
-medRegistrationWorkspace::~medRegistrationWorkspace(void)
-{
-    delete d;
-    d = NULL;
-}
 
 void medRegistrationWorkspace::setupViewContainerStack()
 {
@@ -132,25 +122,25 @@ bool medRegistrationWorkspace::isUsable()
 
 void medRegistrationWorkspace::updateFromMovingContainer()
 {
-    if(!d->selectorToolBox)
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+    if(!toolbox)
         return;
-
     if(!d->movingContainer->view())
     {
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
         if(fuseView)
         {
-            if(fuseView->layer(d->selectorToolBox->movingData()) == 0)
+            if(fuseView->layer(toolbox->movingData()) == 0)
             {
                 d->fuseContainer->removeView();
-                d->fuseContainer->addData(d->selectorToolBox->fixedData());
+                d->fuseContainer->addData(toolbox->fixedData());
             }
             else
                 fuseView->removeLayer(1);
 
         }
 
-        d->selectorToolBox->setMovingData(NULL);
+        toolbox->setMovingData(NULL);
         return;
     }
 
@@ -178,7 +168,7 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         d->movingLayerGroup->addImpactedlayer(movingView, movingData);
         d->movingLayerGroup->addImpactedlayer(fuseView, movingData);
     }
-    if (!d->selectorToolBox->setMovingData(movingData))
+    if (!toolbox->setMovingData(movingData))
     {
         // delete the view because something failed at some point
         d->viewGroup->removeImpactedView(movingView);
@@ -190,7 +180,8 @@ void medRegistrationWorkspace::updateFromMovingContainer()
 
 void medRegistrationWorkspace::updateFromFixedContainer()
 {
-    if(!d->selectorToolBox)
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+    if(!toolbox)
         return;
 
     if(!d->fixedContainer->view())
@@ -198,17 +189,17 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->fuseContainer->view());
         if(fuseView)
         {
-            if(fuseView->layer(d->selectorToolBox->fixedData()) == 0)
+            if(fuseView->layer(toolbox->fixedData()) == 0)
             {
                 d->fuseContainer->removeView();
-                d->fuseContainer->addData(d->selectorToolBox->movingData());
+                d->fuseContainer->addData(toolbox->movingData());
             }
             else
                 fuseView->removeLayer(1);
 
         }
 
-        d->selectorToolBox->setFixedData(NULL);
+        toolbox->setFixedData(NULL);
         return;
     }
 
@@ -236,7 +227,7 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
     }
 
-    if (!d->selectorToolBox->setFixedData(fixedData))
+    if (!toolbox->setFixedData(fixedData))
     {
         // delete the view because something failed at some point
         d->viewGroup->removeImpactedView(fixedView);
@@ -257,7 +248,7 @@ void medRegistrationWorkspace::updateUserLayerClosable(int tabIndex)
 
 void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *output)
 {
-    if(!d->selectorToolBox)
+    if(!selectorToolBox())
         return;
 
     //TODO disconnect because we dont want to change input of the undo redo process.
@@ -268,7 +259,7 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
     d->movingContainer->addData(output);
 
     d->fuseContainer->removeView();
-    d->fuseContainer->addData(d->selectorToolBox->fixedData());
+    d->fuseContainer->addData(dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->fixedData());
     d->fuseContainer->addData(output);
 
 
@@ -303,5 +294,5 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
 
 void medRegistrationWorkspace::removeSelectorInternToolBox()
 {
-    d->selectorToolBox = NULL;
+    setSelectorToolBox(NULL);
 }
