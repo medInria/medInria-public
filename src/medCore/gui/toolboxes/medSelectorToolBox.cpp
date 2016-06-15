@@ -69,17 +69,11 @@ medSelectorToolBox::~medSelectorToolBox(void)
     d = NULL;
 }
 
-/**
- * @brief returns current selected toolbox
- */
 medAbstractSelectableToolBox* medSelectorToolBox::currentToolBox()
 {
     return d->currentToolBox;
 }
 
-/**
- * @brief instantiates the right process toolbox according to its description
- */
 void medSelectorToolBox::changeCurrentToolBox ( int index )
 {
     // Get current toolbox identifier from combobox
@@ -137,9 +131,6 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
     }
 }
 
-/**
- * @brief returns input data
- */
 medAbstractData* medSelectorToolBox::data()
 {
     return d->inputData;
@@ -151,19 +142,11 @@ medComboBox* medSelectorToolBox::comboBox()
     return d->chooseComboBox;
 }
 
-
-/**
- * @brief retrieve data from the selected input image index
- * @param index
- */
 void medSelectorToolBox::onInputSelected(medAbstractData *data)
 {
     d->inputData = data;
 }
 
-/**
- * @brief clear input data and the current process toolbox
- */
 void medSelectorToolBox::clear()
 {
     d->inputData = NULL;
