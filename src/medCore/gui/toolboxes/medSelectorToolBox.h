@@ -27,9 +27,19 @@ public:
     medSelectorToolBox(QWidget *parent, QString tlbxId);
     ~medSelectorToolBox();
 
+    /**
+     * @brief returns input data
+     */
     medAbstractData* data();
 
+    /**
+     * @brief returns current selected toolbox
+     */
     medAbstractSelectableToolBox* currentToolBox();
+
+    /**
+     * @brief returns the comboBox
+     */
     medComboBox* comboBox();
 
 signals:
@@ -37,9 +47,22 @@ signals:
     void currentToolBoxChanged();
 
 public slots:
+
+    /**
+     * @brief instantiates the right process toolbox according to its description
+     */
     virtual void changeCurrentToolBox(int index);
     virtual void changeCurrentToolBox(const QString &identifier);
+
+    /**
+     * @brief clear input data and the current process toolbox
+     */
     virtual void clear();
+
+    /**
+     * @brief retrieve data from the selected input image index
+     * @param index
+     */
     void onInputSelected(medAbstractData *data);
 
 private:

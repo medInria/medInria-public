@@ -53,12 +53,15 @@ signals:
 
 public slots:
 
+    /**
+     * @brief instantiates the right process toolbox according to its description
+     */
     void changeCurrentToolBox(int index);
+
     void clear();
     void onSaveTrans();
     void handleOutput(typeOfOperation type=algorithm,QString algoName="");
     void enableSelectorToolBox(bool enable = true);
-    void onJobAdded(medJobItem* item, QString jobName);
 
 private:
     medRegistrationSelectorToolBoxPrivate *d;

@@ -116,7 +116,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
-//    connect(medJobManager::instance(),SIGNAL(jobRegistered(medJobItem*,QString)),this,SLOT(onJobAdded(medJobItem*,QString)));
 }
 
 //! Gets the fixedData.
@@ -378,14 +377,6 @@ void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
     this->setEnabled(enable);
 }
 
-void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobName){
-    if (d->process)
-        if (jobName == d->process->identifier()){
-            dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
-            if (proc==d->process)
-                enableSelectorToolBox(false);
-        }
-}
 bool medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
