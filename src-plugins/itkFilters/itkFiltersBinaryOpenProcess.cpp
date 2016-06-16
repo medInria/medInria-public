@@ -7,41 +7,41 @@
   PURPOSE.
 =========================================================================*/
 
-#include <itkFiltersCloseProcess.h>
+#include <itkFiltersBinaryOpenProcess.h>
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersCloseProcess::itkFiltersCloseProcess(itkFiltersCloseProcess *parent)
+itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenProcess *parent)
     : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
 {
     DTK_D(itkMorphologicalFiltersProcessBase);
 
     d->filter = this;
-    d->description = tr("Close filter");
+    d->description = tr("Binary Open filter");
 }
 
-itkFiltersCloseProcess::itkFiltersCloseProcess(const itkFiltersCloseProcess& other)
+itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other)
     : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
 {
 }
 
-itkFiltersCloseProcess::~itkFiltersCloseProcess( void )
+itkFiltersBinaryOpenProcess::~itkFiltersBinaryOpenProcess( void )
 {
 }
 
-bool itkFiltersCloseProcess::registered( void )
+bool itkFiltersBinaryOpenProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkCloseProcess", createitkFiltersCloseProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("itkBinaryOpenProcess", createitkFiltersBinaryOpenProcess);
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess *createitkFiltersCloseProcess ( void )
+dtkAbstractProcess *createitkFiltersBinaryOpenProcess ( void )
 {
-    return new itkFiltersCloseProcess;
+    return new itkFiltersBinaryOpenProcess;
 }

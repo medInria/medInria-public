@@ -24,6 +24,8 @@
 
 #include <itkBinaryDilateImageFilter.h>
 #include <itkBinaryErodeImageFilter.h>
+#include <itkBinaryMorphologicalClosingImageFilter.h>
+#include <itkBinaryMorphologicalOpeningImageFilter.h>
 #include <itkFlatStructuringElement.h>
 #include <itkGrayscaleMorphologicalClosingImageFilter.h>
 #include <itkGrayscaleMorphologicalOpeningImageFilter.h>
@@ -96,15 +98,28 @@ public:
             dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
             dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
         }
-        else if(description == "Close filter")
+        else if(description == "Grayscale Close filter")
         {
-            typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  CloseFilterType;
-            filter = CloseFilterType::New();
+            typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  GCloseFilterType;
+            filter = GCloseFilterType::New();
         }
-        else if(description == "Open filter")
+        else if(description == "Grayscale Open filter")
         {
-            typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  OpenFilterType;
-            filter = OpenFilterType::New();
+            typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  GOpenFilterType;
+            filter = GOpenFilterType::New();
+        }
+        else if(description == "Binary Close filter")
+        {
+            typedef itk::BinaryMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  BCloseFilterType;
+            filter = BCloseFilterType::New();
+            dynamic_cast<BCloseFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+        }
+        else if(description == "Binary Open filter")
+        {
+            typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  BOpenFilterType;
+            filter = BOpenFilterType::New();
+            dynamic_cast<BOpenFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+            dynamic_cast<BOpenFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
         }
         else
         {

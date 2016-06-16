@@ -7,41 +7,41 @@
   PURPOSE.
 =========================================================================*/
 
-#include <itkFiltersOpenProcess.h>
+#include <itkFiltersGrayscaleCloseProcess.h>
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersOpenProcess::itkFiltersOpenProcess(itkFiltersOpenProcess *parent)
+itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(itkFiltersGrayscaleCloseProcess *parent)
     : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
 {
     DTK_D(itkMorphologicalFiltersProcessBase);
 
     d->filter = this;
-    d->description = tr("Open filter");
+    d->description = tr("Grayscale Close filter");
 }
 
-itkFiltersOpenProcess::itkFiltersOpenProcess(const itkFiltersOpenProcess& other)
+itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(const itkFiltersGrayscaleCloseProcess& other)
     : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
 {
 }
 
-itkFiltersOpenProcess::~itkFiltersOpenProcess( void )
+itkFiltersGrayscaleCloseProcess::~itkFiltersGrayscaleCloseProcess( void )
 {
 }
 
-bool itkFiltersOpenProcess::registered( void )
+bool itkFiltersGrayscaleCloseProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkOpenProcess", createitkFiltersOpenProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("itkGrayscaleCloseProcess", createitkFiltersGrayscaleCloseProcess);
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess *createitkFiltersOpenProcess ( void )
+dtkAbstractProcess *createitkFiltersGrayscaleCloseProcess ( void )
 {
-    return new itkFiltersOpenProcess;
+    return new itkFiltersGrayscaleCloseProcess;
 }

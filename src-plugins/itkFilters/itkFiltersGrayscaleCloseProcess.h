@@ -17,16 +17,16 @@
 class itkMorphologicalFiltersProcessBasePrivate;
 class medAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersOpenProcess : public itkMorphologicalFiltersProcessBase
+class ITKFILTERSPLUGIN_EXPORT itkFiltersGrayscaleCloseProcess : public itkMorphologicalFiltersProcessBase
 {
     Q_OBJECT
 
 public:
-    itkFiltersOpenProcess(itkFiltersOpenProcess * parent = 0);
-    itkFiltersOpenProcess(const itkFiltersOpenProcess& other);
-    virtual ~itkFiltersOpenProcess(void);
+    itkFiltersGrayscaleCloseProcess(itkFiltersGrayscaleCloseProcess * parent = 0);
+    itkFiltersGrayscaleCloseProcess(const itkFiltersGrayscaleCloseProcess& other);
+    virtual ~itkFiltersGrayscaleCloseProcess(void);
 
     static bool registered ( void );
 };
 
-dtkAbstractProcess * createitkFiltersOpenProcess(void);
+dtkAbstractProcess * createitkFiltersGrayscaleCloseProcess(void);

@@ -27,8 +27,10 @@
 #include <itkFiltersComponentSizeThresholdProcess.h>
 #include <itkFiltersDilateProcess.h>
 #include <itkFiltersErodeProcess.h>
-#include <itkFiltersCloseProcess.h>
-#include <itkFiltersOpenProcess.h>
+#include <itkFiltersBinaryCloseProcess.h>
+#include <itkFiltersBinaryOpenProcess.h>
+#include <itkFiltersGrayscaleCloseProcess.h>
+#include <itkFiltersGrayscaleOpenProcess.h>
 #include <itkFiltersToolBox.h>
 #include <itkMorphologicalFiltersToolBox.h>
 
@@ -67,10 +69,12 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type";   }
     if ( !itkFiltersDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type";   }
     if ( !itkFiltersErodeProcess::registered() )     { dtkWarn() << "Unable to register itkFilters erode filter process type";    }
-    if ( !itkFiltersCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
-    if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
     if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
     if ( !itkMorphologicalFiltersToolBox::registered() ) { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";}
+    if ( !itkFiltersGrayscaleCloseProcess::registered() ){ dtkWarn() << "Unable to register itkFiltersGrayscaleCloseProcess type";    }
+    if ( !itkFiltersGrayscaleOpenProcess::registered() ) { dtkWarn() << "Unable to register itkFiltersGrayscaleOpenProcess type";     }
+    if ( !itkFiltersBinaryCloseProcess::registered() )   { dtkWarn() << "Unable to register itkFiltersBinaryCloseProcess type";}
+    if ( !itkFiltersBinaryOpenProcess::registered() )    { dtkWarn() << "Unable to register itkFiltersBinaryOpenProcess type";}
 
     return true;
 }
@@ -139,8 +143,10 @@ QStringList itkFiltersPlugin::types() const
                          << "itkWindowingProcess"
                          << "itkDilateProcess"
                          << "itkErodeProcess"
-                         << "itkCloseProcess"
-                         << "itkOpenProcess";
+                         << "itkBinaryCloseProcess"
+                         << "itkBinaryOpenProcess"
+                         << "itkGrayscaleCloseProcess"
+                         << "itkGrayscaleOpenProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )

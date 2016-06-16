@@ -17,16 +17,16 @@
 class itkMorphologicalFiltersProcessBasePrivate;
 class medAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersCloseProcess : public itkMorphologicalFiltersProcessBase
+class ITKFILTERSPLUGIN_EXPORT itkFiltersBinaryCloseProcess : public itkMorphologicalFiltersProcessBase
 {
     Q_OBJECT
 
 public:
-    itkFiltersCloseProcess(itkFiltersCloseProcess * parent = 0);
-    itkFiltersCloseProcess(const itkFiltersCloseProcess& other);
-    virtual ~itkFiltersCloseProcess(void);
+    itkFiltersBinaryCloseProcess(itkFiltersBinaryCloseProcess * parent = 0);
+    itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other);
+    virtual ~itkFiltersBinaryCloseProcess(void);
 
     static bool registered ( void );
 };
 
-dtkAbstractProcess * createitkFiltersCloseProcess(void);
+dtkAbstractProcess * createitkFiltersBinaryCloseProcess(void);
