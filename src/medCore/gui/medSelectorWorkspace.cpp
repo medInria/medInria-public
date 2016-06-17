@@ -22,7 +22,7 @@ public:
        selectorToolBox(NULL)
     {}
 
-    medSelectorToolBox* selectorToolBox;
+    QPointer<medSelectorToolBox> selectorToolBox;
 };
 
 

@@ -18,7 +18,7 @@
 class medAbstractSelectableToolBoxPrivate
 {
 public:
-    medSelectorToolBox * selectorToolBox;
+    QPointer<medSelectorToolBox> selectorToolBox;
 };
 
 //! Parent should be a medSelectorToolBox
