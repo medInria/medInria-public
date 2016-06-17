@@ -14,8 +14,6 @@
 #include <itkProcessRegistrationDiffeomorphicDemons.h>
 #include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
-#include <QtGui>
-
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
@@ -49,7 +47,7 @@ public:
     QLineEdit * iterationsBox;
 };
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
+itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -155,10 +153,19 @@ bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
             registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>();
 }
 
+dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "itkProcessRegistrationDiffeomorphicDemonsPlugin" );
+    return plugin;
+}
+
+
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 {
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
-    if(!this->parentToolBox())
+    if(!toolbox)
         return;
 
     medAbstractRegistrationProcess *process;
@@ -166,11 +173,11 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     if(!process)
         return;
 
-    this->parentToolBox()->setProcess(process);
+    toolbox->setProcess(process);
 
     //TODO smartPointing have to be managed only in abstract processes -rde
-    dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
-    dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
+    dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
+    dtkSmartPointer<medAbstractData> movingData(toolbox->movingData());
 
     if (!fixedData || !movingData)
         return;

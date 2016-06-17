@@ -41,8 +41,8 @@ public:
 
     QString getNameOfCurrentAlgorithm();
 
-    bool setFixedData(medAbstractData* data);
-    bool setMovingData(medAbstractData* data);
+    void setFixedData(medAbstractData* data);
+    void setMovingData(medAbstractData* data);
 
     enum typeOfOperation { algorithm, undo, redo, reset };
 

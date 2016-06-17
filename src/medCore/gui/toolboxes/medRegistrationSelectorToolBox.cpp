@@ -36,6 +36,7 @@
 #include <medToolBoxHeader.h>
 
 #include <medRegistrationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 
 #include <QtGui>
@@ -54,7 +55,7 @@ public:
     dtkSmartPointer <medAbstractRegistrationProcess> undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
-    medRegistrationAbstractToolBox * currentToolBox;
+    medAbstractSelectableToolBox * currentToolBox;
     QString nameOfCurrentAlgorithm;
     QString savePath;
 
@@ -95,6 +96,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
             tb->header()->hide();
             d->undoRedoToolBox = tb;
             d->undoRedoToolBox->setRegistrationToolBox(this);
+            d->undoRedoToolBox->setWorkspace(getWorkspace());
         }
     }
 
@@ -149,7 +151,7 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     //get identifier for toolbox.
     QString id = comboBox()->itemData(index).toString();
 
-    medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
+    medAbstractSelectableToolBox *toolbox = qobject_cast<medAbstractSelectableToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
 
     if(!toolbox) {
         qWarning() << "Unable to instantiate" << id << "toolbox";
@@ -158,7 +160,6 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 
     d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
 
-    toolbox->setRegistrationToolBox(this);
     toolbox->setWorkspace(getWorkspace());
     d->currentToolBox = toolbox;
     d->currentToolBox->show();
@@ -377,20 +378,22 @@ void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
     this->setEnabled(enable);
 }
 
-bool medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
+void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
-
-    return d->undoRedoProcess
-            && d->undoRedoProcess->setFixedInput(d->fixedData)
-            && d->undoRedoProcess->setMovingInput(d->movingData);
+    if(d->undoRedoProcess)
+    {
+        d->undoRedoProcess->setFixedInput(d->fixedData);
+        d->undoRedoProcess->setMovingInput(d->movingData);
+    }
 }
 
-bool medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
+void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
-
-    return d->undoRedoProcess
-            && d->undoRedoProcess->setFixedInput(d->fixedData)
-            && d->undoRedoProcess->setMovingInput(d->movingData);
+    if(d->undoRedoProcess)
+    {
+        d->undoRedoProcess->setFixedInput(d->fixedData);
+        d->undoRedoProcess->setMovingInput(d->movingData);
+    }
 }

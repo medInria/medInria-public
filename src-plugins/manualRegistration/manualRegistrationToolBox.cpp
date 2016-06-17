@@ -11,17 +11,14 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "manualRegistration.h"
+#include <manualRegistration.h>
 #include <manualRegistrationToolBox.h>
-
-#include <QtGui>
 
 #include <medAbstractImageView.h>
 #include <medToolBoxFactory.h>
 #include <medPluginManager.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <manualRegistration.h>
 #include <manualRegistrationLandmarkController.h>
 #include <medVtkViewBackend.h>
 #include <vtkCollection.h>
@@ -60,7 +57,7 @@ public:
     dtkSmartPointer<medAbstractData> output;
 };
 
-manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new manualRegistrationToolBoxPrivate)
+manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new manualRegistrationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -145,7 +142,7 @@ manualRegistrationToolBox::~manualRegistrationToolBox()
     d = NULL;
 }
 
-medAbstractData* manualRegistrationToolBox::getOutput()
+medAbstractData* manualRegistrationToolBox::processOutput()
 {
     if (!d->output)
     {
@@ -201,17 +198,17 @@ void manualRegistrationToolBox::startManualRegistration()
     medTabbedViewContainers * tabContainers = getWorkspace()->stackedViewContainers();
     d->regOn = true;
 
-    if(this->parentToolBox()) //parentTbx only set in medRegistrationSelectorToolBox::changeCurrentToolBox
-    {
-        dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
-        dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
+    if(toolbox)
+    {
+        dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
+        dtkSmartPointer<medAbstractData> movingData(toolbox->movingData());
         if (!fixedData || !movingData)
         {
             d->regOn = false;
             return;
         }
-
         d->leftContainer = tabContainers->containersInTab(0).at(0);
         d->rightContainer = tabContainers->containersInTab(0).at(1);
         d->bottomContainer  = tabContainers->containersInTab(1).at(0);
@@ -258,7 +255,7 @@ void manualRegistrationToolBox::stopManualRegistration()
     d->bottomContainer = 0;
     displayButtons(false);
 
-    if(!this->parentToolBox())
+    if(!selectorToolBox())
     {
         medTabbedViewContainers * tabContainers = getWorkspace()->stackedViewContainers();
         tabContainers->setCurrentIndex(0);
@@ -268,7 +265,7 @@ void manualRegistrationToolBox::stopManualRegistration()
 
 void manualRegistrationToolBox::synchroniseMovingFuseView()
 {
-    if(this->parentToolBox()) //no need in Reg. workspace
+    if(selectorToolBox()) //no need in Reg. workspace
     {
        return;
     }
@@ -334,9 +331,11 @@ void manualRegistrationToolBox::computeRegistration()
     d->process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
     d->process->update(itkProcessRegistration::FLOAT);
 
-    if(this->parentToolBox()) //if in Registration Workspace
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+
+    if(toolbox) //if in Registration Workspace
     {
-        this->parentToolBox()->setProcess(d->process);
+        toolbox->setProcess(d->process);
     }
 
     medAbstractData * newOutput = d->process->output();

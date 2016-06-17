@@ -21,7 +21,6 @@
 #include <medRegistrationSelectorToolBox.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medRegistrationSelectorToolBox.h>
 #include <medAbstractLayeredView.h>
 #include <medStringListParameter.h>
 
@@ -168,14 +167,8 @@ void medRegistrationWorkspace::updateFromMovingContainer()
         d->movingLayerGroup->addImpactedlayer(movingView, movingData);
         d->movingLayerGroup->addImpactedlayer(fuseView, movingData);
     }
-    if (!toolbox->setMovingData(movingData))
-    {
-        // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(movingView);
-        d->movingLayerGroup->removeImpactedlayer(movingView, movingData);
-        d->movingLayerGroup->removeImpactedlayer(fuseView, movingData);
-        movingView->deleteLater();
-    }
+
+    toolbox->setMovingData(movingData);
 }
 
 void medRegistrationWorkspace::updateFromFixedContainer()
@@ -227,14 +220,7 @@ void medRegistrationWorkspace::updateFromFixedContainer()
         d->fixedLayerGroup->addImpactedlayer(fuseView, fixedData);
     }
 
-    if (!toolbox->setFixedData(fixedData))
-    {
-        // delete the view because something failed at some point
-        d->viewGroup->removeImpactedView(fixedView);
-        d->fixedLayerGroup->removeImpactedlayer(fixedView, fixedData);
-        d->fixedLayerGroup->removeImpactedlayer(fuseView, fixedData);
-        fixedView->deleteLater();
-    }
+    toolbox->setFixedData(fixedData);
 }
 
 
