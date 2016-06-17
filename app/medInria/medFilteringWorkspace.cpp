@@ -78,7 +78,7 @@ void medFilteringWorkspace::setupViewContainerStack()
 
 void medFilteringWorkspace::changeToolBoxInput()
 {
-    if(!selectorToolBox()) //empty when users close the software
+    if(selectorToolBox()) //null when users close the software
     {
         if(!d->inputContainer->view())
         {
