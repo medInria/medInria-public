@@ -64,8 +64,6 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
 {
     QWidget *widget = new QWidget(this);
 
-    this->setTitle("Manual Registration");
-
     d->b_startManualRegistration = new QPushButton("Start Manual Registration",widget);
     connect(d->b_startManualRegistration,SIGNAL(clicked()),this,SLOT(startManualRegistration()));
     d->b_startManualRegistration->setObjectName("startManualRegistrationButton");

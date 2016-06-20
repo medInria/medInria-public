@@ -28,6 +28,7 @@
 #include <medAbstractImageData.h>
 #include <medAbstractData.h>
 #include <medAbstractWorkspace.h>
+#include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
@@ -54,28 +55,28 @@ public:
     QSpinBox * MaxNumIterations, * MaxNumLandmarks;
     QCheckBox * bStartByMatchingCentroids,*bCheckMeanDistance;
     medComboBox* bTransformationComboBox;
+
+    medAbstractData* output;
 };
 
-iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
+iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
 {
-    this->setTitle("Iterative Closest Point");
-
     QWidget *widget = new QWidget(this);
+
+    QVBoxLayout * parameters_layout = new QVBoxLayout;
 
     // Parameters'widgets
     d->layerSource = new medComboBox;
     d->layerSource->addItem("Select the layer", 0);
-    QLabel * layerSource_Label = new QLabel("Layer number for source mesh");
-    QHBoxLayout * layerSource_layout = new QHBoxLayout;
-    layerSource_layout->addWidget(layerSource_Label);
-    layerSource_layout->addWidget(d->layerSource);
+    QLabel * layerSource_Label = new QLabel("Select the source mesh:");
+    parameters_layout->addWidget(layerSource_Label);
+    parameters_layout->addWidget(d->layerSource);
     
     d->layerTarget = new medComboBox;
     d->layerTarget->addItem("Select the layer", 0);
-    QLabel * layerTarget_Label = new QLabel("Layer number for target mesh");
-    QHBoxLayout * layerTarget_layout = new QHBoxLayout;
-    layerTarget_layout->addWidget(layerTarget_Label);
-    layerTarget_layout->addWidget(d->layerTarget);
+    QLabel * layerTarget_Label = new QLabel("Select the target mesh:");
+    parameters_layout->addWidget(layerTarget_Label);
+    parameters_layout->addWidget(d->layerTarget);
     
     d->bStartByMatchingCentroids = new QCheckBox(widget);
     d->bStartByMatchingCentroids->setText("StartByMatchingCentroids");
@@ -133,10 +134,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
-    QVBoxLayout * parameters_layout = new QVBoxLayout;
-    widget->setLayout(parameters_layout);
-    parameters_layout->addLayout(layerSource_layout);
-    parameters_layout->addLayout(layerTarget_layout);
     parameters_layout->addWidget(d->bStartByMatchingCentroids);
     parameters_layout->addLayout(transformation_layout);
     parameters_layout->addWidget(d->bCheckMeanDistance);
@@ -148,6 +145,8 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
 
     widget->setLayout(parameters_layout);
     this->addWidget(widget);
+
+    d->currentView = 0;
 }
 
 iterativeClosestPointToolBox::~iterativeClosestPointToolBox()
@@ -200,13 +199,13 @@ void iterativeClosestPointToolBox::run()
     
     process_Registration->update();
     
-    medAbstractData* data = process_Registration->output();
-    medUtilities::setDerivedMetaData(data, sourceData, "ICP");
+    d->output = process_Registration->output();
+    medUtilities::setDerivedMetaData(d->output, sourceData, "ICP");
     
-    d->currentView->insertLayer(d->layerSource->currentIndex() - 1, data);
+    d->currentView->insertLayer(d->layerSource->currentIndex() - 1, d->output);
     d->currentView->removeData(sourceData);
 
-    medDataManager::instance()->importData(data, false);
+    medDataManager::instance()->importData(d->output, false);
 }
 
 void iterativeClosestPointToolBox::updateView()
@@ -259,4 +258,16 @@ void iterativeClosestPointToolBox::addLayer(unsigned int layer)
         d->layerSource->addItem(name);
         d->layerTarget->addItem(name);
     }
+}
+
+medAbstractData* iterativeClosestPointToolBox::processOutput()
+{
+    return d->output;
+}
+
+dtkPlugin* iterativeClosestPointToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "iterativeClosestPointPlugin" );
+    return plugin;
 }

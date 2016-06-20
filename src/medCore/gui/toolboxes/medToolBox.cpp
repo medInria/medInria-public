@@ -45,8 +45,6 @@ public:
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
 {
-    //d->view = 0;
-
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
     d->isContextVisible = false;
@@ -65,6 +63,8 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     connect(d->body, SIGNAL(maximized()), this, SLOT(behaveWithBodyVisibility()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    this->setTitle(this->name());
 }
 
 medToolBox::~medToolBox(void)
@@ -300,11 +300,6 @@ medAbstractWorkspace* medToolBox::getWorkspace()
 void medToolBox::setWorkspace(medAbstractWorkspace* workspace)
 {
     d->workspace = workspace;
-    if (workspace)
-    {
-        connect(workspace->stackedViewContainers(), SIGNAL(containersSelectedChanged()), this,
-                SLOT(updateView()), Qt::UniqueConnection);
-    }
 }
 
 void medToolBox::toXMLNode(QDomDocument* doc, QDomElement* currentNode)

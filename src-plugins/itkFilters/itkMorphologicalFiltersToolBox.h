@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medFilteringAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 class itkMorphologicalFiltersToolBoxPrivate;
 
-class itkMorphologicalFiltersToolBox : public medFilteringAbstractToolBox
+class itkMorphologicalFiltersToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("ITK Morphological Filters",
+    MED_TOOLBOX_INTERFACE("Morphological Filters",
                           "ITK morphological filters, processing examples",
-                          <<"filtering")
+                          <<"Filtering")
 public:
     itkMorphologicalFiltersToolBox(QWidget *parentToolBox = 0);
     ~itkMorphologicalFiltersToolBox();
@@ -38,8 +38,6 @@ signals:
 
 public slots:
 
-    void clear();
-    void update(medAbstractData *data);
     void roundSpinBox(bool param);
     void run();
 

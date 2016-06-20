@@ -66,7 +66,7 @@ public:
     bool isDatabaseVisible() const;
     void setToolBoxesVisibility(bool);
     bool areToolBoxesVisible() const;
-    virtual void setupViewContainerStack() = 0;
+    virtual void setupViewContainerStack();
     medTabbedViewContainers * stackedViewContainers() const;
 
     void setUserLayerPoolable(bool poolable);
@@ -75,6 +75,7 @@ public:
     bool isUserLayerPoolable() const;
     bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
+    virtual void setInitialGroups();
 
 public slots:
     virtual void clear();

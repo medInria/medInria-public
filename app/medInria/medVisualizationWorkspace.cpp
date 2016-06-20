@@ -20,36 +20,7 @@
 #include <medViewParameterGroup.h>
 #include <medLayerParameterGroup.h>
 
-class medVisualizationWorkspacePrivate
+bool medVisualizationWorkspace::isUsable()
 {
-public:
-
-};
-
-medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medVisualizationWorkspacePrivate)
-{
-    medViewParameterGroup *viewGroup1 = new medViewParameterGroup("View Group 1", this, this->identifier());
-    viewGroup1->setLinkAllParameters(true);
-    viewGroup1->removeParameter("DataList");
-
-    medLayerParameterGroup *layerGroup1 = new medLayerParameterGroup("Layer Group 1", this, this->identifier());
-    layerGroup1->setLinkAllParameters(true);
-}
-
-void medVisualizationWorkspace::setupViewContainerStack()
-{
-    if (!stackedViewContainers()->count()) {
-        this->stackedViewContainers()->addContainerInTab(this->name());
-    }
-    this->stackedViewContainers()->unlockTabs();
-}
-
-medVisualizationWorkspace::~medVisualizationWorkspace(void)
-{
-    delete d;
-    d = NULL;
-}
-
-bool medVisualizationWorkspace::isUsable(){
     return true; // for the time being, no test is defined.
 }

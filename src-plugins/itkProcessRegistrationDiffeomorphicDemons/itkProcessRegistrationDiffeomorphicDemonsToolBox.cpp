@@ -113,7 +113,6 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     d->useHistogramBox->setToolTip(tr(
                 "Use histogram matching before processing?"));
 
-    this->setTitle("Diffeomorphic Demons");
     layout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
     layout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
     layout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);

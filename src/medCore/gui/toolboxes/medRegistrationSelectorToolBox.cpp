@@ -102,7 +102,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
         }
     }
     int i=1;
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("Registration"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         d->toolboxes->addItem(details->name, toolbox);
@@ -132,8 +132,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
     this->addWidget(toolBoxWidget);
 
-
-    this->setTitle(tr("Registration"));
     d->currentToolBox = NULL;
 
     //Connect Message Controller:

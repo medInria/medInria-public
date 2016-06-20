@@ -33,9 +33,8 @@ public:
     QWidget* reformatOptions;
 };
 
-resliceToolBox::resliceToolBox (QWidget *parent) : medSegmentationAbstractToolBox (parent), d(new resliceToolBoxPrivate)
+resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox (parent), d(new resliceToolBoxPrivate)
 {
-    this->setTitle("Reslice");
     this->setAboutPluginVisibility(false);
     this->setAboutPluginButton(this->plugin());
 
@@ -174,14 +173,6 @@ void resliceToolBox::startReformat()
         connect(d->spacingZ,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
         connect(d->b_saveImage,SIGNAL(clicked()),d->resliceViewer,SLOT(saveImage()));
 
-        QList<medToolBox*> toolBoxes = getWorkspace()->toolBoxes();
-        for (int i = 0; i < toolBoxes.length(); i++)
-        {
-            if (toolBoxes[i] != this)
-            {
-                toolBoxes[i]->hide();
-            }
-        }
         d->reformatedImage = 0;
 
         // close the initial tab which is not needed anymore

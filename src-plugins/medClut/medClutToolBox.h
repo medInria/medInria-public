@@ -29,7 +29,7 @@ class medClutToolBoxPrivate;
 class MEDCLUTPLUGIN_EXPORT medClutToolBox : public medToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("medClutToolBox","Clut toolbox",<<"properties")
+    MED_TOOLBOX_INTERFACE("Clut Editor ToolBox","Clut toolbox",<<"properties")
 
 public:
      medClutToolBox(QWidget *parent = 0);

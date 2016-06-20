@@ -13,22 +13,23 @@
 
 #pragma once
 
-#include <medRegistrationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include "iterativeClosestPointPluginExport.h"
 
 class iterativeClosestPointToolBoxPrivate;
 
-class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointToolBox : public medRegistrationAbstractToolBox
+class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("iterativeClosestPointToolBox","IterativeClosestPoint (Mesh)",<<"mesh")
+    MED_TOOLBOX_INTERFACE("Iterative Closest Point","IterativeClosestPoint (Mesh)",<<"Meshing")
     
 public:
     iterativeClosestPointToolBox(QWidget *parent = 0);
     ~iterativeClosestPointToolBox();
-    
-public:
+
     static bool registered();
+    medAbstractData* processOutput();
+    dtkPlugin* plugin();
     void addLayer(unsigned int layer);
     
 public slots:

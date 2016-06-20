@@ -25,7 +25,7 @@
 //Forward declarations
 class medAbstractView;
 class medAbstractViewScene;
-class medSegmentationSelectorToolBox;
+class medSelectorToolBox;
 
 /** class medViewEventFilter
  * This class can be added as an EventFilter on a medAbstractView.
@@ -70,7 +70,7 @@ protected slots:
 private:
     static QString s_description();
 
-    medSegmentationSelectorToolBox * m_segmentationController;
+    medSelectorToolBox * m_segmentationController;
     QSet<medAbstractView *> m_views;
     typedef QHash<QObject *, medAbstractView *> FilterObjToViewType;
     FilterObjToViewType m_filterObjToView;

@@ -97,7 +97,7 @@ bool medCropToolBox::registered()
 }
 
 medCropToolBox::medCropToolBox(QWidget* parent)
-    : medSegmentationAbstractToolBox(parent), applyButtonName("Apply"), saveButtonName("Save"), d(new medCropToolBoxPrivate())
+    : medAbstractSelectableToolBox(parent), applyButtonName("Apply"), saveButtonName("Save"), d(new medCropToolBoxPrivate())
 {
     d->borderWidget = vtkSmartPointer<vtkBorderWidget>::New();
     d->borderWidget->CreateDefaultRepresentation();
@@ -109,7 +109,6 @@ medCropToolBox::medCropToolBox(QWidget* parent)
     d->saveButton = new QPushButton(saveButtonName, this);
     d->saveButton->setObjectName(saveButtonName);
 
-    setTitle(tr("Cropping"));
     QWidget* cropToolBoxBody = new QWidget(this);
     QVBoxLayout* cropToolBoxLayout = new QVBoxLayout(cropToolBoxBody);
     cropToolBoxBody->setLayout(cropToolBoxLayout);
@@ -199,11 +198,6 @@ void medCropToolBox::updateView()
         d->view = 0;
         d->view2D = 0;
         d->view3D = 0;
-        if (body()->isVisible())
-        {
-            switchMinimize();
-            behaveWithBodyVisibility();
-        }
     }
 }
 
@@ -213,10 +207,6 @@ void medCropToolBox::applyCrop()
     {
         d->generateOutput();
         d->replaceViewWithOutputData(*getWorkspace());
-
-        // replaceViewWithOutputData -> 'RemoveView' -> updateView() which minimizes the tlbx when there is no more data
-        switchMinimize(); // show the toolbox again
-        behaveWithBodyVisibility();
     }
 }
 

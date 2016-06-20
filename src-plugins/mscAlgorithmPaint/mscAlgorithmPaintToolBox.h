@@ -6,7 +6,7 @@
 #include <medDoubleParameter.h>
 #include <medImageMaskAnnotationData.h>
 #include <medIntParameter.h>
-#include <medSegmentationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medViewEventFilter.h>
 
 #include <itkImage.h>
@@ -45,11 +45,11 @@ typedef itk::Image <float, 2>                      Mask2dFloatType;
 typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 
 //! Segmentation toolbox to allow manual painting of pixels
-class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medSegmentationAbstractToolBox
+class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("MUSIC Paint segmentation", "Paint Tool",
-                          <<"segmentation")
+                          <<"Segmentation")
 public:
 
     typedef QPair<Mask2dType::Pointer,unsigned int> SlicePair;
@@ -153,8 +153,6 @@ protected:
     void addViewEventFilter(medViewEventFilter * filter );
 
 private:
-
-    void showEvent(QShowEvent * event);
 
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 

@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medFilteringAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 class itkFiltersToolBoxPrivate;
 
-class itkFiltersToolBox : public medFilteringAbstractToolBox
+class itkFiltersToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("ITK Basic Filters",
                           "ITK filters, processing examples",
-                          <<"filtering")
+                          <<"Filtering")
 public:
     itkFiltersToolBox(QWidget *parentToolBox = 0);
     ~itkFiltersToolBox();

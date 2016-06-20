@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,20 +13,31 @@
 
 #pragma once
 
-#include <QtCore>
-
 #include <medAbstractWorkspace.h>
 
-class medVisualizationWorkspace : public medAbstractWorkspace
+class medSelectorWorkspacePrivate;
+class medSelectorToolBox;
+
+/**
+ * class medSelectorWorkspace
+ * Defines the Selector workspace.
+ */
+class medSelectorWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
-    MED_WORKSPACE_INTERFACE("Visualization",
-                            "Workspace to visualise images, meshes and other data types.",
-                            "Basic")
-public:
-    medVisualizationWorkspace(QWidget *parent = 0): medAbstractWorkspace(parent){}
 
-    static bool isUsable();
+public:
+    medSelectorWorkspace(QWidget * parent, QString name);
+
+    virtual ~medSelectorWorkspace();
+
+    QPointer<medSelectorToolBox> selectorToolBox();
+
+protected slots:
+    virtual void onProcessSuccess(){}
+
+private:
+    medSelectorWorkspacePrivate *d;
 };
 
 

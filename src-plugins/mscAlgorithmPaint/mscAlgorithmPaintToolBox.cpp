@@ -15,7 +15,7 @@
 #include <medDataManager.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
-#include <medSegmentationSelectorToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medUtilities.h>
@@ -218,12 +218,11 @@ private :
 };
 
 AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
-    medSegmentationAbstractToolBox( parent),
+    medAbstractSelectableToolBox( parent),
     m_paintState(PaintState::None)
 {
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
-    this->setTitle(this->name());
 
     QVBoxLayout * layout = new QVBoxLayout(displayWidget);
 
@@ -395,9 +394,9 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clearMask()));
     connect (m_applyButton, SIGNAL(pressed()),this, SLOT(import()));
 
-    if (this->segmentationToolBox()) // empty in pipelines
+    if (this->selectorToolBox()) // empty in pipelines
     {
-        connect(this->segmentationToolBox(), SIGNAL(inputChanged()), this, SLOT(updateMouseInteraction()));
+        connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(updateMouseInteraction()));
     }
     connect (m_interpolateButton, SIGNAL(clicked()), this, SLOT(interpolate()));
 
@@ -462,12 +461,6 @@ bool AlgorithmPaintToolBox::registered()
 {
     medToolBoxFactory* factory = medToolBoxFactory::instance();
     return factory->registerToolBox<AlgorithmPaintToolBox> ();
-}
-
-void AlgorithmPaintToolBox::showEvent ( QShowEvent * event )
-{
-    Q_UNUSED(event);
-    updateView();
 }
 
 void AlgorithmPaintToolBox::updateMagicWandComputation()
@@ -578,17 +571,14 @@ void AlgorithmPaintToolBox::activateMagicWand()
 
 void AlgorithmPaintToolBox::behaveWithBodyVisibility()
 {
-    if(!((QWidget*)sender())->isHidden())
-    {
-        return;
-    }
-    else
+    if(!((QWidget*)sender())->isVisible())
     {
         if ( this->m_strokeButton->isChecked() )
         {
             this->m_viewFilter->removeFromAllViews();
             m_paintState = (PaintState::None);
             updateButtons();
+            m_strokeButton->setChecked(false);
         }
         else if ( this->m_magicWandButton->isChecked() )
         {
@@ -596,7 +586,9 @@ void AlgorithmPaintToolBox::behaveWithBodyVisibility()
             m_paintState = (PaintState::None);
             newSeed(); // accept the current growth
             updateButtons();
+            m_magicWandButton->setChecked(false);
         }
+        deactivateCustomedCursor();
     }
 }
 
@@ -1513,6 +1505,7 @@ void AlgorithmPaintToolBox::onViewClosed()
         m_undoStacks->remove(viewClosed);
         m_redoStacks->remove(viewClosed);
     }
+
     if(m_magicWandButton->isChecked())
         m_magicWandButton->setChecked(false);
 
