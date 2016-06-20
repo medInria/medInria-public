@@ -15,7 +15,7 @@
     #ifdef medComposerImagingExtension_EXPORTS
         #define MEDCOMPOSERIMAGINGEXTENSION_EXPORT __declspec(dllexport)
     #else
-        #define MEDCOMPOSER_EXPORTIMAGINGEXTENSION __declspec(dllimport)
+        #define MEDCOMPOSERIMAGINGEXTENSION_EXPORT __declspec(dllimport)
     #endif
 #else
     #define MEDCOMPOSERIMAGINGEXTENSION_EXPORT

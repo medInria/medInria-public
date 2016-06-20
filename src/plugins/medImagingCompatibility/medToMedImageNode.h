@@ -19,13 +19,15 @@
 #include <medAbstractDataConverter.h>
 #include <dtkImaging>
 
+#include <medComposerImagingExtensionExport.h>
+
 class medToMedImageNodePrivate;
 
 // ///////////////////////////////////////////////////////////////////
 //
 // ///////////////////////////////////////////////////////////////////
 
-class medToMedImageNode : public dtkComposerNodeObject<medAbstractDataConverter>
+class MEDCOMPOSERIMAGINGEXTENSION_EXPORT medToMedImageNode : public dtkComposerNodeObject<medAbstractDataConverter>
 {
 public:
      medToMedImageNode(void);

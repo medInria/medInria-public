@@ -17,7 +17,7 @@
 
 #include <QtCore>
 
-class medImagingCompatibilityExtensionPlugin : public dtkComposerExtensionPlugin
+class MEDCOMPOSERIMAGINGEXTENSION_EXPORT medImagingCompatibilityExtensionPlugin : public dtkComposerExtensionPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkComposerExtensionPlugin)
