@@ -62,7 +62,7 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
-  -DDTK_DIR:PATH=${dtk_DIR}
+  -Ddtk_DIR:PATH=${dtk_DIR}
   -DQt5_DIR=${Qt5_DIR}
   )
 
