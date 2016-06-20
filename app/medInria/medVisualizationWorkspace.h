@@ -17,9 +17,6 @@
 
 #include <medAbstractWorkspace.h>
 
-
-class medVisualizationWorkspacePrivate;
-
 class medVisualizationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
