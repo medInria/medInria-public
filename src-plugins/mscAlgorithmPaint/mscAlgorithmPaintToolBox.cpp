@@ -569,27 +569,25 @@ void AlgorithmPaintToolBox::activateMagicWand()
     deactivateCustomedCursor();
 }
 
-void AlgorithmPaintToolBox::behaveWithBodyVisibility()
+void AlgorithmPaintToolBox::hideEvent(QHideEvent *event)
 {
-    if(!((QWidget*)sender())->isVisible())
+    medAbstractSelectableToolBox::hideEvent(event);
+    if ( this->m_strokeButton->isChecked() )
     {
-        if ( this->m_strokeButton->isChecked() )
-        {
-            this->m_viewFilter->removeFromAllViews();
-            m_paintState = (PaintState::None);
-            updateButtons();
-            m_strokeButton->setChecked(false);
-        }
-        else if ( this->m_magicWandButton->isChecked() )
-        {
-            this->m_viewFilter->removeFromAllViews();
-            m_paintState = (PaintState::None);
-            newSeed(); // accept the current growth
-            updateButtons();
-            m_magicWandButton->setChecked(false);
-        }
-        deactivateCustomedCursor();
+        this->m_viewFilter->removeFromAllViews();
+        m_paintState = (PaintState::None);
+        updateButtons();
+        m_strokeButton->setChecked(false);
     }
+    else if ( this->m_magicWandButton->isChecked() )
+    {
+        this->m_viewFilter->removeFromAllViews();
+        m_paintState = (PaintState::None);
+        newSeed(); // accept the current growth
+        updateButtons();
+        m_magicWandButton->setChecked(false);
+    }
+    deactivateCustomedCursor();
 }
 
 void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()

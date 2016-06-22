@@ -120,7 +120,6 @@ medCropToolBox::medCropToolBox(QWidget* parent)
 
     d->cropCallback = vtkSmartPointer<medCropCallback>::New();
     d->cropCallback->toolBox = this;
-    behaveWithBodyVisibility();
 
     d->view = 0;
     d->view2D = 0;
@@ -226,9 +225,18 @@ void medCropToolBox::reactToOrientationChange()
     }
 }
 
-void medCropToolBox::behaveWithBodyVisibility()
+void medCropToolBox::showEvent(QShowEvent *event)
 {
-    setEnable(body()->isVisible());
+    medAbstractSelectableToolBox::showEvent(event);
+    setEnable(true);
+
+}
+
+void medCropToolBox::hideEvent(QHideEvent *event)
+{
+    medAbstractSelectableToolBox::hideEvent(event);
+    setEnable(false);
+
 }
 
 void medCropToolBox::setEnable(bool enable)
