@@ -28,7 +28,8 @@ class medRegistrationWorkspace : public medSelectorWorkspace
                             "Workspace to compute the spatial transformation between two images in order to register them.",
                             "Methodology")
 public:
-     medRegistrationWorkspace(QWidget *parent);
+    medRegistrationWorkspace(QWidget *parent);
+    ~medRegistrationWorkspace(void);
 
     static bool isUsable();
     void setupViewContainerStack ();
@@ -37,11 +38,9 @@ public:
 protected slots:
     void updateFromFixedContainer();
     void updateFromMovingContainer();
+    void updateFromContainers(int containerIndex);
     void updateUserLayerClosable(int tabIndex);
     void updateFromRegistrationSuccess(medAbstractData *output);
-
-private slots:
-    void removeSelectorInternToolBox();
 
 private:
     medRegistrationWorkspacePrivate *d;

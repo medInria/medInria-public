@@ -29,6 +29,7 @@ class MEDCORE_EXPORT medRegistrationSelectorToolBox : public medSelectorToolBox
 
 public:
      medRegistrationSelectorToolBox(QWidget *parent, QString name);
+     ~medRegistrationSelectorToolBox(void);
 
     medAbstractData *fixedData();
     medAbstractData *movingData();
@@ -64,6 +65,7 @@ public slots:
     void enableSelectorToolBox(bool enable = true);
 
 private:
+    void setUndoRedoProcessInputs();
     medRegistrationSelectorToolBoxPrivate *d;
 };
 

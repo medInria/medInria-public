@@ -79,10 +79,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
 
 
     // --- Setting up custom toolboxes list ---
-
-    comboBox()->setToolTip(
-                tr( "Choose the registration algorithm"
-                    " amongst the loaded plugins" ));
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
 
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration"))
@@ -120,6 +116,12 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
             medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
 }
 
+medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
+{
+    delete d;
+    d = NULL;
+}
+
 //! Gets the fixedData.
 medAbstractData *medRegistrationSelectorToolBox::fixedData(void)
 {
@@ -131,7 +133,6 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
 {
     return d->movingData;
 }
-
 
 /**
  * Sets up the toolbox chosen and remove the old one.
@@ -177,14 +178,13 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     }
 }
 
-
 //! Clears the toolbox.
 void medRegistrationSelectorToolBox::clear(void)
 {
-
-    //maybe clear the currentToolBox?
     if (d->currentToolBox)
+    {
         d->currentToolBox->clear();
+    }
 }
 
 //! Gets the process.
@@ -381,16 +381,17 @@ void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
 void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
-    if(d->undoRedoProcess)
-    {
-        d->undoRedoProcess->setFixedInput(d->fixedData);
-        d->undoRedoProcess->setMovingInput(d->movingData);
-    }
+    setUndoRedoProcessInputs();
 }
 
 void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
+    setUndoRedoProcessInputs();
+}
+
+void medRegistrationSelectorToolBox::setUndoRedoProcessInputs()
+{
     if(d->undoRedoProcess)
     {
         d->undoRedoProcess->setFixedInput(d->fixedData);

@@ -186,13 +186,15 @@ void undoRedoRegistrationToolBox::updatePositionArrow(int newStep){
     }
 }
 
-void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox){
+void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox)
+{
     medRegistrationAbstractToolBox::setRegistrationToolBox(toolbox);
     toolbox->setUndoRedoProcess(d->m_UndoRedo);
     connect(this->parentToolBox(),SIGNAL(success()),this,SLOT(onRegistrationSuccess()));
 }
 
-void undoRedoRegistrationToolBox::onRegistrationSuccess(){
+void undoRedoRegistrationToolBox::onRegistrationSuccess()
+{
     registrationFactory::instance()->addTransformation(static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTransform(),static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTitleAndParameters());
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
     d->m_UndoRedo->generateOutput(true,this->parentToolBox()->process());

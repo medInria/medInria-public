@@ -13,14 +13,8 @@
 
 #pragma once
 
-#include <medAbstractSelectableToolBox.h>
-
 #include <manualRegistrationPluginExport.h>
-
-#include <medDataManager.h>
-#include <medAbstractDataFactory.h>
-
-
+#include <medAbstractSelectableToolBox.h>
 
 class manualRegistrationToolBoxPrivate;
 

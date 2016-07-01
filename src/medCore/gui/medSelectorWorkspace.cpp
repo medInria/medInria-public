@@ -56,8 +56,3 @@ medSelectorToolBox* medSelectorWorkspace::selectorToolBox()
 {
     return d->selectorToolBox;
 }
-
- void medSelectorWorkspace::setSelectorToolBox(medSelectorToolBox* toolbox)
-{
-    d->selectorToolBox = toolbox;
-}
