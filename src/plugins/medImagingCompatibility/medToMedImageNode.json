@@ -1,7 +1,7 @@
 {
           "title" : "dtkImage To medImage converter",
            "kind" : "process",
-           "type" : "medAbstractDataConverter",
+           "type" : "medToMedImageNode",
            "tags" : ["converter"],
     "description" : "<p>Convert from dtkImage to medAbstractImageData</p>",
          "inputs" : ["dtkImage"],

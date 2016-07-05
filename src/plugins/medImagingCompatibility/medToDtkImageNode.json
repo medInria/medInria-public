@@ -1,7 +1,7 @@
 {
           "title" : "medInria to dtk Image converter",
            "kind" : "process",
-           "type" : "medAbstractDataConverter",
+           "type" : "medToDtkImageNode",
            "tags" : ["converter"],
     "description" : "<p>Convert from medAbstractImageData to dtkImage</p>",
          "inputs" : ["medImage"],
