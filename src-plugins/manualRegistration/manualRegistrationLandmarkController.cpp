@@ -292,8 +292,7 @@ void manualRegistrationLandmarkController::Reset()
     {
         for(int i=0;i<Points_Fixed->size();i++)
         {
-            Points_Fixed->at(i)->RemoveAllObservers();
-            Points_Fixed->at(i)->Delete();
+            RequestDeletion(Points_Fixed->at(i));
         }
     }
 
@@ -301,16 +300,12 @@ void manualRegistrationLandmarkController::Reset()
     {
         for(int i=0;i<Points_Moving->size();i++)
         {
-            Points_Moving->at(i)->RemoveAllObservers();
-            Points_Moving->at(i)->Delete();
+            RequestDeletion(Points_Moving->at(i));
         }
     }
 
     Points_Fixed->clear();
     Points_Moving->clear();
-
-    // Update the user label with the number of current landmarks
-    Tbx->updateLabels(Points_Fixed->size(),Points_Moving->size());
 }
 
 void manualRegistrationLandmarkController::ClearUselessLandmarks()
@@ -371,5 +366,7 @@ void manualRegistrationLandmarkController::RequestDeletion(manualRegistrationLan
         if (Points_Moving->size()>i && !Points_Moving->at(i)->GetToDelete())
             cptMoving++;
     }
+
+    // Update the user label with the number of current landmarks
     Tbx->updateLabels(cptFixed,cptMoving);
 }

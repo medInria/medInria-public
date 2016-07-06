@@ -130,13 +130,14 @@ void manualRegistrationLandmark::On()
 
 void manualRegistrationLandmark::ShowOrHide()
 {
-    if (!ToDelete)
+    if (!ToDelete && View)
     {
-        if (View->GetRenderWindow())
+        if (HandleWidget)
         {
-            if (HandleWidget->GetInteractor() && HandleWidget->GetRepresentation()->GetRenderer())
+            if (HandleWidget->GetInteractor() && HandleWidget->GetRepresentation())
             {
-                if (HandleWidget->GetInteractor()->GetRenderWindow())
+                if (HandleWidget->GetInteractor()->GetRenderWindow() &&
+                        HandleWidget->GetRepresentation()->GetRenderer())
                 {
                     if (Indices[View->GetSliceOrientation()]!=View->GetSlice())
                     {
