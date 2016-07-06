@@ -58,6 +58,8 @@ private:
     void displayButtons(bool);
     void constructContainers(medTabbedViewContainers *);
     void disableSaveButtons(bool);
+    void disableComputeButton(bool param);
+
     manualRegistrationToolBoxPrivate *d;
 };
 

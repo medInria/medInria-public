@@ -127,6 +127,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->output          = 0;
 
     disableSaveButtons(true);
+    disableComputeButton(true);
     displayButtons(false);
 }
 
@@ -359,20 +360,41 @@ void manualRegistrationToolBox::computeRegistration()
 
 void manualRegistrationToolBox::reset()
 {
+    medAbstractImageView * viewFuse   = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
+    medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
+    medAbstractImageView * viewFix    = qobject_cast<medAbstractImageView*>(d->leftContainer->view());
+
     if (d->controller)
     {
         d->controller->Reset(); // Delete every landmark on both view
+
+        // Refresh views except at closing
+        if (viewMoving)
+        {
+            d->rightContainer->view()->viewWidget()->update();
+        }
+
+        if (viewFix)
+        {
+            d->leftContainer->view()->viewWidget()->update();
+        }
     }
 
-    medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
-    medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
-    viewFuse->removeLayer(1);
+    if (viewFuse->layersCount() > 1)
+    {
+        viewFuse->removeLayer(1);
+    }
+
     if(viewMoving) //not the case if called by viewMoving closed() signal
     {
         viewFuse->addLayer(viewMoving->layerData(0));
     }
+
     synchroniseMovingFuseView();
+
+    // Disable Save/Transformation/Compute buttons
     disableSaveButtons(true);
+    disableComputeButton(true);
 }
 
 void manualRegistrationToolBox::save()
@@ -481,6 +503,11 @@ void manualRegistrationToolBox::disableSaveButtons(bool param)
     d->b_exportTransformation->setDisabled(param);
 }
 
+void manualRegistrationToolBox::disableComputeButton(bool param)
+{
+    d->b_computeRegistration->setDisabled(param);
+}
+
 void manualRegistrationToolBox::displayButtons(bool show)
 {
     if(show)
@@ -499,9 +526,13 @@ void manualRegistrationToolBox::displayButtons(bool show)
     }
 }
 
-
 void manualRegistrationToolBox::updateLabels(int left,int right)
 {
     d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container  : " + QString::number(left));
     d->numberOfLdInRightContainer->setText("Number of landmarks in right container : " + QString::number(right));
+
+    if ((left>0) || (right>0))
+    {
+        disableComputeButton(false);
+    }
 }

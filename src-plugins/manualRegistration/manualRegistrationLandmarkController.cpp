@@ -147,9 +147,15 @@ manualRegistrationLandmarkController::manualRegistrationLandmarkController()
 //----------------------------------------------------------------------------
 manualRegistrationLandmarkController::~manualRegistrationLandmarkController()
 {
+    delete Points_Moving;
+    delete Points_Fixed;
+
     this->Command->Delete();
+
     if (this->InteractorCollection)
+    {
         this->InteractorCollection->UnRegister(this);
+    }
 }
 
 void manualRegistrationLandmarkController::SetInteractorCollection (vtkCollection* arg)
