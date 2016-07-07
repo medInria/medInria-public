@@ -74,26 +74,29 @@ void itkDataImageWriterBase::encapsulateMetaData()
 
     foreach (QString metaDataKey, data()->metaDataList())
     {
-        std::string key;
+        if (medMetaDataKeys::Key::fromKeyName(metaDataKey.toStdString().c_str()))
+        {
+            std::string key;
 
-        if (metaDataKey == medAbstractImageData::PixelMeaningMetaData)
-        {
-            key = "intent_name";
-        }
-        else if (metaDataKey == medMetaDataKeys::Modality.key())
-        {
-            key = "MED_MODALITY";
-        }
-        else if (metaDataKey == medMetaDataKeys::Orientation.key())
-        {
-            key = "MED_ORIENTATION";
-        }
-        else
-        {
-            key = metaDataKey.toStdString().c_str();
-        }
+            if (metaDataKey == medAbstractImageData::PixelMeaningMetaData)
+            {
+                key = "intent_name";
+            }
+            else if (metaDataKey == medMetaDataKeys::Modality.key())
+            {
+                key = "MED_MODALITY";
+            }
+            else if (metaDataKey == medMetaDataKeys::Orientation.key())
+            {
+                key = "MED_ORIENTATION";
+            }
+            else
+            {
+                key = metaDataKey.toStdString().c_str();
+            }
 
-        itk::EncapsulateMetaData(metaDataDictionary, key, data()->metadata(metaDataKey).toStdString());
+            itk::EncapsulateMetaData(metaDataDictionary, key, data()->metadata(metaDataKey).toStdString());
+        }
     }
 }
 
