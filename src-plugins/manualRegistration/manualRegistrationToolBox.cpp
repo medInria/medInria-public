@@ -266,13 +266,14 @@ void manualRegistrationToolBox::stopManualRegistration()
 
 void manualRegistrationToolBox::synchroniseMovingFuseView()
 {
-    if(selectorToolBox()) // selectorToolBox does not exist in Pipelines
+    if(!selectorToolBox()) // selectorToolBox does not exist in Pipelines
     {
         // This method will resynchronise the lut and window level
         medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
         medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
 
         d->layerGroup2->addImpactedlayer(viewFuse,viewFuse->layerData(1));
+
         // Synchronize Lut
         QList<medAbstractInteractor*> interactors = viewMoving->layerInteractors(0);
         QString lutCurrent;
@@ -283,8 +284,12 @@ void manualRegistrationToolBox::synchroniseMovingFuseView()
             {
                 parameters = interactors[i]->linkableParameters();
                 for(int j = 0;j<parameters.size();j++)
+                {
                     if (parameters[j]->name()=="Lut")
+                    {
                         lutCurrent = qobject_cast<medStringListParameter*>(parameters[j])->value();
+                    }
+                }
             }
         }
 
@@ -296,8 +301,12 @@ void manualRegistrationToolBox::synchroniseMovingFuseView()
             {
                 QList<medAbstractParameter*> parameters = interactors[i]->linkableParameters();
                 for(int j = 0;j<parameters.size();j++)
+                {
                     if (parameters[j]->name()=="Lut")
+                    {
                         qobject_cast<medStringListParameter*>(parameters[j])->setValue(lutCurrent);
+                    }
+                }
             }
         }
 
@@ -424,12 +433,14 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
         tabContainers->setCurrentIndex(0);
         d->leftContainer->addData(d->currentView->layerData(0));//
         qobject_cast<medAbstractImageView*>(d->leftContainer->view())->windowLevelParameter(0)->setValues(windowing0);
+
         d->bottomContainer = d->leftContainer->splitHorizontally();
         d->bottomContainer->addData(d->currentView->layerData(0));
         qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(0)->setValues(windowing0);
         d->bottomContainer->addData(d->currentView->layerData(1));
         qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(1)->setValues(windowing1);
         tabContainers->containersInTab(0);
+
         d->rightContainer = d->leftContainer->splitVertically();
         d->rightContainer->addData(d->currentView->layerData(1));
         qobject_cast<medAbstractImageView*>(d->rightContainer->view())->windowLevelParameter(0)->setValues(windowing1);
@@ -445,8 +456,12 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
             {
                 QList<medAbstractParameter*> parameters = interactors[i]->linkableParameters();
                 for(int j = 0;j<parameters.size();j++)
+                {
                     if (parameters[j]->name()=="Lut")
+                    {
                         qobject_cast<medStringListParameter*>(parameters[j])->setValue("Hot Metal");
+                    }
+                }
             }
         }
 
