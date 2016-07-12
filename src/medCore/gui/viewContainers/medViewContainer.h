@@ -93,6 +93,8 @@ public slots:
     void unHighlight();
 
     void splitContainer(unsigned int numY, unsigned int numX);
+    QString saveScene();
+    void loadScene();
 
 signals:
     void maximized(QUuid uuid, bool maximized);
@@ -118,11 +120,12 @@ protected:
     void closeEvent(QCloseEvent * event);
 
     void recomputeStyleSheet();
+    void open(const QString & path);
 
 protected slots:
     void openFromSystem();
     void updateToolBar();
-    void dataReady(medDataIndex index, QUuid uuid);
+    void open_waitForImportedSignal(medDataIndex index, QUuid uuid);
 
 private slots:
     void removeInternView();
