@@ -74,8 +74,6 @@ public slots:
 private slots:
 
     void showWorkspace(QString workspace);
-    void saveScene();
-    void loadScene();
     void captureScreenshot();
 
     void switchToBrowserArea();
