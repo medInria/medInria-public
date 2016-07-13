@@ -13,15 +13,14 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
-
 #include "iterativeClosestPointPluginExport.h"
 
 #include <medAbstractData.h>
+#include <medAbstractProcess.h>
 
 class iterativeClosestPointProcessPrivate;
 
-class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointProcess : public dtkAbstractProcess
+class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointProcess : public medAbstractProcess
 {
     Q_OBJECT
     

@@ -16,23 +16,13 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <dtkCore/dtkAbstractProcess.h>
-
-#include <vtkMetaDataSet.h>
-#include <vtkMetaSurfaceMesh.h>
-
-#include <vtkSmartPointer.h>
-#include <vtkAlgorithmOutput.h>
-#include <vtkTransform.h>
-#include <vtkTransformPolyDataFilter.h>
-
-#include <medDataManager.h>
-#include <medMetaDataKeys.h>
 #include <medAbstractDataFactory.h>
-#include <medViewContainer.h>
-#include <medTabbedViewContainers.h>
+#include <medUtilities.h>
 
 #include <vtkICPFilter.h>
+#include <vtkMetaDataSet.h>
+#include <vtkMetaSurfaceMesh.h>
+#include <vtkSmartPointer.h>
 
 // /////////////////////////////////////////////////////////////////
 // iterativeClosestPointProcessPrivate
@@ -59,7 +49,7 @@ public:
 // iterativeClosestPointProcess
 // /////////////////////////////////////////////////////////////////
 
-iterativeClosestPointProcess::iterativeClosestPointProcess() : dtkAbstractProcess(), d(new iterativeClosestPointProcessPrivate)
+iterativeClosestPointProcess::iterativeClosestPointProcess() : medAbstractProcess(), d(new iterativeClosestPointProcessPrivate)
 {
     d->inputSource = 0;
     d->inputTarget = 0;
@@ -169,19 +159,16 @@ int iterativeClosestPointProcess::update()
 
     vtkMetaSurfaceMesh * output_mesh = vtkMetaSurfaceMesh::New();
     output_mesh->SetDataSet(output_polyData);
-    
-    QString patientName = d->inputSource->metadata ( medMetaDataKeys::PatientName.key() );
-    d->output->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
 
     d->output->setData(output_mesh);
-    
+    medUtilities::setDerivedMetaData(d->output, d->inputSource, "ICP");
+
     // Arrow Cursor
     QApplication::restoreOverrideCursor();
     QApplication::processEvents();
 
     return DTK_SUCCEED;
 }
-
 
 medAbstractData * iterativeClosestPointProcess::output()
 {
