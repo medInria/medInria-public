@@ -860,6 +860,17 @@ void medViewContainer::removeColorIndicator(QColor color)
     d->poolIndicator->removeColorIndicator(color);
 }
 
+/**
+ * @brief saves the scene in a XML file
+ * Saves views (all layers), and toolboxes parameters
+ * 	expected tree is as follow:
+ *  workingDir (user-defined)
+ * 		|-viewID0
+ * 			|-mapping.xml
+ * 			|-layerID01.xml
+ * 			|-layerID02.xml
+ * 			|-data_file (as saved by the dedicated writer)
+ */
 QString medViewContainer::saveScene()
 {
     QString dirPath = QFileDialog::getExistingDirectory(this, tr("Open Directory"),"/home",QFileDialog::ShowDirsOnly);
@@ -959,5 +970,4 @@ void medViewContainer::loadScene()
                 view->restoreState(&layerElement);
         }
     }
-    update();
 }
