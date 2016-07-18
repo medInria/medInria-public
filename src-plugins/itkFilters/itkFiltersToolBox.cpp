@@ -327,6 +327,11 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     setAboutPluginVisibility ( true );
 
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
+
+    if (this->selectorToolBox()) // empty in pipelines
+    {
+        connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(update()));
+    }
 }
 
 itkFiltersToolBox::~itkFiltersToolBox()
@@ -374,10 +379,13 @@ void itkFiltersToolBox::clear()
     d->intensityOutputMaximumValue->setValue ( 255 );
 }
 
-void itkFiltersToolBox::update (medAbstractData *data )
+void itkFiltersToolBox::update()
 {
+    medAbstractData *data = this->selectorToolBox()->data();
     if (!data)
+    {
         clear();
+    }
     else
     {
         QString identifier = data->identifier();

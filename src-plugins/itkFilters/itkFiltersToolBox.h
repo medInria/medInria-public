@@ -37,7 +37,7 @@ public slots:
     void onFiltersActivated(int index);
 
     void clear();
-    void update(medAbstractData *data);
+    void update();
 
     void run();
 
