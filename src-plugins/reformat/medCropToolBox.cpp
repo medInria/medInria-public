@@ -465,6 +465,8 @@ void medCropToolBoxPrivate::generateOutput()
         case 9:
             output = extractCroppedImage<double, 3>(imageData, "itkDataImageDouble3", minIndices, maxIndices);
             break;
+        default:
+            medMessageController::instance()->showError("Drop a 3D volume in the view",3000);
         }
 
         outputData.append(output);
