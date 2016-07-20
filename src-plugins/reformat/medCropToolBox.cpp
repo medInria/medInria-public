@@ -160,11 +160,13 @@ void medCropToolBox::updateView()
     medTabbedViewContainers * containers = getWorkspace()->stackedViewContainers();
     QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
     medAbstractLayeredView* view = NULL;
+    medViewContainer* currentContainer = NULL;
     for(int i=0;i<containersInTabSelected.length();i++)
     {
         if (containersInTabSelected[i]->isSelected())
         {
             view = qobject_cast<medAbstractLayeredView*>(containersInTabSelected[i]->view());
+            currentContainer = containersInTabSelected[i];
             break;
         }
     }
@@ -191,12 +193,16 @@ void medCropToolBox::updateView()
             d->view2D->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::CameraMoveEvent, d->cropCallback);
         }
         d->updateBorderWidgetIfVisible();
+
+        // do not allow to split the container
+        currentContainer->setUserSplittable(false);
     }
     else
     {
         d->view = 0;
         d->view2D = 0;
         d->view3D = 0;
+        currentContainer->setUserSplittable(true);
     }
 }
 
