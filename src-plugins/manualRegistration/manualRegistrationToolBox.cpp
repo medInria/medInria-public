@@ -68,8 +68,10 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     connect(d->b_startManualRegistration,SIGNAL(clicked()),this,SLOT(startManualRegistration()));
     d->b_startManualRegistration->setObjectName("startManualRegistrationButton");
 
-    d->numberOfLdInLeftContainer = new QLabel("Number of landmarks in left container : 0",widget);
-    d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container : 0",widget);
+    QLabel* explanation = new QLabel("To add a landmark: \n\tShift + left mouse button\n", widget);
+
+    d->numberOfLdInLeftContainer = new QLabel("Number of landmarks in left container: 0",widget);
+    d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container: 0",widget);
 
     d->b_computeRegistration = new QPushButton("Compute Registration",widget);
     connect(d->b_computeRegistration,SIGNAL(clicked()),this,SLOT(computeRegistration()));
@@ -91,6 +93,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(d->b_startManualRegistration);
+    mainLayout->addWidget(explanation);
     mainLayout->addWidget(d->numberOfLdInLeftContainer);
     mainLayout->addWidget(d->numberOfLdInRightContainer);
     mainLayout->addWidget(d->b_computeRegistration);
