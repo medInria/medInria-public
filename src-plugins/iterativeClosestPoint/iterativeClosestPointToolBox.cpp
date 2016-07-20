@@ -232,6 +232,10 @@ void iterativeClosestPointToolBox::updateView()
             this, SLOT(resetComboBoxes()),
             Qt::UniqueConnection);
     }
+    else
+    {
+        d->currentView = NULL;
+    }
 }
 
 void iterativeClosestPointToolBox::resetComboBoxes()
