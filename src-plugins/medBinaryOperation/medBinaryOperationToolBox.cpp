@@ -183,7 +183,7 @@ void medBinaryOperationToolBox::run()
     runProcess->setProcess (d->process);
     
     d->progression_stack->addJobItem(runProcess, "Progress:");
-    
+    d->progression_stack->setActive(runProcess,true);
     d->progression_stack->disableCancel(runProcess);
     
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
