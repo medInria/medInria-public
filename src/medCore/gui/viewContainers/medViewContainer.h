@@ -121,6 +121,8 @@ protected:
 
     void recomputeStyleSheet();
     void open(const QString & path);
+    void printInConsole(QString message);
+    void displayMessageError(QString message);
 
 protected slots:
     void openFromSystem();

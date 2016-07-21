@@ -882,44 +882,41 @@ QString medViewContainer::saveScene()
     QString subDirName;
 
     medAbstractLayeredView* layeredView=dynamic_cast<medAbstractLayeredView*>(view());
-    if (layeredView==0)
-    {
-        qDebug()<< Q_FUNC_INFO <<", dynamic_cast<medAbstractLayeredView*>(view()) failed";
-        medMessageController::instance()->showError("Scene saving failed", 5000);
-        return "";
-    }
-    else
+    if (layeredView)
     {
         subDirName="view"+QUuid::createUuid ().toString();
-        if(!workingDir.mkdir(subDirName))
+        if(workingDir.mkdir(subDirName))
         {
-            QString errorMessage = ", Failed to create new directory: " + subDirName;
-            qDebug()<< Q_FUNC_INFO  << errorMessage;
-            medMessageController::instance()->showError(errorMessage, 5000);
-        }
-        workingDir.cd(subDirName);
-        QString generatedPath=workingDir.canonicalPath()+"/mapping.xml";
-        QDomElement layeredViewInfo=doc.createElement("layeredView");
-        layeredViewInfo.setAttribute("path",subDirName+"/mapping.xml");
-        layeredViewInfo.setAttribute("id",layeredView->identifier());
-        root.appendChild(layeredViewInfo);
-        layeredView->write(generatedPath);
-        workingDir.cdUp();
-    }
-    QString generatedPath=workingDir.canonicalPath()+"/globalMapping.xml";
+            workingDir.cd(subDirName);
+            QString generatedPath=workingDir.canonicalPath()+"/mapping.xml";
+            QDomElement layeredViewInfo=doc.createElement("layeredView");
+            layeredViewInfo.setAttribute("path",subDirName+"/mapping.xml");
+            layeredViewInfo.setAttribute("id",layeredView->identifier());
+            root.appendChild(layeredViewInfo);
+            layeredView->write(generatedPath);
+            workingDir.cdUp();
 
-    QFile file(generatedPath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
-    {
-        return "";
+            QString generatedGlobalPath=workingDir.canonicalPath()+"/globalMapping.xml";
+
+            QFile file(generatedGlobalPath);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+            {
+                QTextStream out(&file);
+                out << doc.toString();
+                QString path = dirPath + "/" + subDirName;
+                return path;
+            }
+        }
+        else
+        {
+            displayMessageError("Failed to create new directory: " + subDirName);
+        }
     }
     else
     {
-        QTextStream out(&file);
-        out << doc.toString();
-        QString path = dirPath + "/" + subDirName;
-        return path;
+        displayMessageError("Scene saving failed");
     }
+    return "";
 }
 
 void medViewContainer::loadScene()
@@ -929,59 +926,76 @@ void medViewContainer::loadScene()
     QFile file(fileName);
     QFileInfo fileInfo(file);
     QDir workingDir=fileInfo.dir();
-    if(!file.open(QIODevice::ReadOnly))
+    if(file.open(QIODevice::ReadOnly))
     {
-         qDebug()<< Q_FUNC_INFO << ", failed to open file "<<fileName;
-         return;
+        QDomDocument doc("xml");
+        if(doc.setContent(&file))
+        {
+            //doc now contains the full XML tree
+            QDomNodeList viewsNodes=doc.elementsByTagName("layeredView");
+
+            for(int i=0;i<viewsNodes.size();i++)
+            {
+                QDomElement viewElement=viewsNodes.item(i).toElement();
+                if(viewElement.isNull())
+                {
+                    printInConsole("Failed to open a view, unable to find element");
+                    continue;
+                }
+                QString path=workingDir.canonicalPath()+"/"+viewElement.attribute("path");
+                if(!QFile::exists(path))
+                {
+                    printInConsole("Failed to open a view: path " + path + " does not exist");
+                    continue;
+                }
+                QFile mappingFile(path);
+                QFileInfo mappingFileInfo(mappingFile);
+                if(!mappingFile.open(QIODevice::ReadOnly ))
+                {
+                    printInConsole("Failed to open a view, unable to open mapping file");
+                    continue;
+                }
+                QDomDocument viewInfo("xml");
+                if(viewInfo.setContent(&mappingFile))
+                {
+                    QDomNodeList layersNodes=viewInfo.elementsByTagName("layer");
+
+                    for(int j=0;j<layersNodes.size();j++)
+                    {
+                        QDomElement layerElement=layersNodes.item(j).toElement();
+                        QString fileName=layerElement.attribute("filename");
+                        open(mappingFileInfo.dir().canonicalPath()+"/"+fileName);
+
+                        medAbstractView *view = this->view();
+                        if(view)
+                            view->restoreState(&layerElement);
+                    }
+                }
+                else
+                {
+                     displayMessageError("Failed to parse " + fileName);
+                     return;
+                }
+            }
+        }
+        else
+        {
+             displayMessageError("Failed to parse " + fileName);
+        }
     }
-    QDomDocument doc("xml");
-    if(!doc.setContent(&file))
+    else
     {
-         qDebug()<< Q_FUNC_INFO << ", failed to parse "<<fileName;
-         return;
+         displayMessageError("Failed to open file " + fileName);
     }
-    //doc now contains the full XML tree
-    QDomNodeList viewsNodes=doc.elementsByTagName("layeredView");
+}
 
-    for(int i=0;i<viewsNodes.size();i++)
-    {
+void medViewContainer::printInConsole(QString message)
+{
+    qDebug() << Q_FUNC_INFO << ": " << message;
+}
 
-        QDomElement viewElement=viewsNodes.item(i).toElement();
-        if(viewElement.isNull())
-        {
-            qDebug()<< Q_FUNC_INFO << ", failed to open a view: unable to find element";
-            continue;
-        }
-        QString path=workingDir.canonicalPath()+"/"+viewElement.attribute("path");
-        if(!QFile::exists(path))
-        {
-            qDebug()<< Q_FUNC_INFO << ", failed to open a view: path "<< path << " does not exist";
-            continue;
-        }
-        QFile mappingFile(path);
-        QFileInfo mappingFileInfo(mappingFile);
-        if(!mappingFile.open(QIODevice::ReadOnly ))
-        {
-            qDebug()<< Q_FUNC_INFO << ", failed to open a view: unable to open mapping file";
-            continue;
-        }
-        QDomDocument viewInfo("xml");
-        if(!viewInfo.setContent(&mappingFile))
-        {
-             qDebug()<< Q_FUNC_INFO << ", failed to parse "<<fileName;
-             return;
-        }
-        QDomNodeList layersNodes=viewInfo.elementsByTagName("layer");
-
-        for(int j=0;j<layersNodes.size();j++)
-        {
-            QDomElement layerElement=layersNodes.item(j).toElement();
-            QString fileName=layerElement.attribute("filename");
-            open(mappingFileInfo.dir().canonicalPath()+"/"+fileName);
-
-            medAbstractView *view = this->view();
-            if(view)
-                view->restoreState(&layerElement);
-        }
-    }
+void medViewContainer::displayMessageError(QString message)
+{
+    printInConsole(message);
+    medMessageController::instance()->showError(message,3000);
 }
