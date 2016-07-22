@@ -187,12 +187,12 @@ void iterativeClosestPointToolBox::run()
         }
         else
         {
-            medMessageController::instance()->showError(tr("Choose two meshs"),3000);
+            medMessageController::instance()->showError(tr("Choose two meshes"),3000);
         }
     }
     else
     {
-        medMessageController::instance()->showError(tr("Drop two meshs in the view"),3000);
+        medMessageController::instance()->showError(tr("Drop two meshes in the view"),3000);
     }
 }
 
