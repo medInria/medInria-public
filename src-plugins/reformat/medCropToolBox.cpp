@@ -467,6 +467,7 @@ void medCropToolBoxPrivate::generateOutput()
             break;
         default:
             medMessageController::instance()->showError("Drop a 3D volume in the view",3000);
+            qDebug()<<"medCropToolBoxPrivate::generateOutput id "<<imageData->identifier();
         }
 
         outputData.append(output);
