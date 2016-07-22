@@ -762,14 +762,15 @@ void medViewContainer::openFromSystem()
 
 void medViewContainer::open(const QString & path)
 {
-    QEventLoop loop;
     QUuid uuid = medDataManager::instance()->importPath(path, false);
     d->expectedUuids.append(uuid);
     connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
             this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
-    while( d->expectedUuids.contains(uuid)) {
-        loop.processEvents(QEventLoop::ExcludeUserInputEvents);
-    }
+
+    QEventLoop loop;
+    connect(this, SIGNAL(importFinished()), &loop, SLOT(quit()));
+    loop.exec();
+
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }
@@ -777,7 +778,8 @@ void medViewContainer::open(const QString & path)
 
 void medViewContainer::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
 {
-    if(d->expectedUuids.contains(uuid)) {
+    if(d->expectedUuids.contains(uuid))
+    {
         d->expectedUuids.removeAll(uuid);
         disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)),
                    this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
@@ -785,6 +787,7 @@ void medViewContainer::open_waitForImportedSignal(medDataIndex index, QUuid uuid
         {
             this->addData(index);
         }
+        emit importFinished();
     }
 }
 
@@ -906,6 +909,10 @@ QString medViewContainer::saveScene()
                 QString path = dirPath + "/" + subDirName;
                 return path;
             }
+            else
+            {
+                displayMessageError("Couldn't open: " + generatedGlobalPath);
+            }
         }
         else
         {
@@ -967,8 +974,7 @@ void medViewContainer::loadScene()
                         open(mappingFileInfo.dir().canonicalPath()+"/"+fileName);
 
                         medAbstractView *view = this->view();
-                        if(view)
-                            view->restoreState(&layerElement);
+                        view->restoreState(&layerElement);
                     }
                 }
                 else
