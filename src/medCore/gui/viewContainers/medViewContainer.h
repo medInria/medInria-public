@@ -93,6 +93,8 @@ public slots:
     void unHighlight();
 
     void splitContainer(unsigned int numY, unsigned int numX);
+    QString saveScene();
+    void loadScene();
 
 signals:
     void maximized(QUuid uuid, bool maximized);
@@ -107,6 +109,7 @@ signals:
     void viewContentChanged();
     void viewRemoved();
     void requestHistogram(bool); //  hack for histogram
+    void importFinished();
 
 
 protected:
@@ -118,11 +121,14 @@ protected:
     void closeEvent(QCloseEvent * event);
 
     void recomputeStyleSheet();
+    void open(const QString & path);
+    void printInConsole(QString message);
+    void displayMessageError(QString message);
 
 protected slots:
     void openFromSystem();
     void updateToolBar();
-    void dataReady(medDataIndex index, QUuid uuid);
+    void open_waitForImportedSignal(medDataIndex index, QUuid uuid);
 
 private slots:
     void removeInternView();

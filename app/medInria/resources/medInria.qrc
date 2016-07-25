@@ -101,6 +101,7 @@
         <file>icons/backward.png</file>
         <file>icons/forward.png</file>
         <file>icons/star.svg</file>
+        <file>icons/scene.png</file>
         <file>icons/user_add.png</file>
         <file>icons/user_edit.png</file>
         <file>medInria.qss</file>
