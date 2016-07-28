@@ -38,7 +38,8 @@ public slots:
     void onShowPlugin();
     void onShowHelp();
     void onShowInfo();
-    void showLogWindow();
+    void onShowLog();
+    void openLogDirectory();
 
 signals:
     /**
