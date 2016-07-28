@@ -125,6 +125,10 @@ int main(int argc,char* argv[]) {
     dtkLogger::instance().attachFile(dtkLogPath(&application));
     dtkLogger::instance().attachConsole();
 
+    qDebug() << "####################################";
+    qDebug() << "Version: "    << MEDINRIA_VERSION;
+    qDebug() << "Build Date: " << MEDINRIA_BUILD_DATE;
+
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));

@@ -64,7 +64,6 @@ medApplication::medApplication(int & argc, char**argv) :
         d(new medApplicationPrivate)
 {
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
-    qDebug() << MEDINRIA_BUILD_DATE << expiryDate;
     if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
     {
         QMessageBox msg;
@@ -76,7 +75,6 @@ medApplication::medApplication(int & argc, char**argv) :
     d->mainWindow = NULL;
 
     this->setApplicationName("MUSIC");            /*Beware, change database path*/
-    qDebug() << "Version:" << MEDINRIA_VERSION;
     this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
