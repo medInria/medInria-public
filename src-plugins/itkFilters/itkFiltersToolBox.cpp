@@ -143,6 +143,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->divideFilterValue = new QDoubleSpinBox;
     d->divideFilterValue->setValue ( 2.0 );
     d->divideFilterValue->setMaximum ( 1000000000 );
+    d->divideFilterValue->setMinimum(1);
     QLabel * divideFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * divideFilterLayout = new QHBoxLayout;
     divideFilterLayout->addWidget ( divideFilterLabel );
