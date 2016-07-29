@@ -116,7 +116,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     //  To avoid strange behaviours with the homepageshifter
     this->setMinimumHeight ( 600 );
-    this->setMinimumWidth ( 800 );
+    this->setMinimumWidth ( 950 );
 
     //  Setting up widgets
     d->settingsEditor = NULL;
@@ -492,9 +492,6 @@ void medMainWindow::switchToHomepageArea()
 
     d->screenshotButton->setEnabled(false);
     d->adjustSizeButton->setEnabled(false);
-
-    if (d->homepageArea->getAnimation())
-        d->homepageArea->getAnimation()->start();
 }
 
 void medMainWindow::switchToBrowserArea()
