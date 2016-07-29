@@ -30,7 +30,5 @@
         <file>process/medGenericWriterNode.json</file>
         <file>process/medImageReaderNode.json</file>
         <file>process/medMeshReaderNode.json</file>
-        <file>process/medToMedImageNode.json</file>
-        <file>process/medToDtkImageNode.json</file>
     </qresource>
 </RCC>

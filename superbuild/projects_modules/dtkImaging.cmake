@@ -1,4 +1,4 @@
-################################################################################
+##############################################################################
 #
 # medInria
 #
@@ -9,10 +9,10 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-################################################################################
+###############################################################################
 
-function(ITK_project)
-set(ep ITK)
+function(dtkImaging_project)
+set(ep dtkImaging)
 
 
 ## #############################################################################
@@ -20,18 +20,17 @@ set(ep ITK)
 ## #############################################################################
 
 list(APPEND ${ep}_dependencies 
-  VTK
+  dtk
   )
-  
-  
+
 ## #############################################################################
 ## Prepare the project
 ## ############################################################################# 
 
-EP_Initialisation(${ep} 
+EP_Initialisation(${ep}  
   USE_SYSTEM OFF 
   BUILD_SHARED_LIBS ON
-  REQUIRED_FOR_PLUGINS ON
+  REQUIRED_FOR_PLUGINS OFF
   )
 
 
@@ -41,8 +40,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v4.9.0)
+set(git_url ${GITHUB_PREFIX}d-tk/dtk-imaging.git)
+set(git_tag master)
 
 
 ## #############################################################################
@@ -50,33 +49,23 @@ set(git_tag v4.9.0)
 ## #############################################################################
 
 # set compilation flags
-if (UNIX)
-  set(${ep}_c_flags "${${ep}_c_flags} -w")
-  set(${ep}_cxx_flags "${${ep}_cxx_flags} -w -fpermissive")
+ if (UNIX)
+  set(${ep}_c_flags "${${ep}_c_flags} -Wall -Wno-inconsistent-missing-override")
+  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall -Wno-inconsistent-missing-override")
 endif()
 
 set(cmake_args
   ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_thirdparts}
-  -DCMAKE_C_FLAGS=${${ep}_c_flags}
-  -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
-  -DCMAKE_MACOSX_RPATH:BOOL=OFF
-  -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
-  -DBUILD_EXAMPLES:BOOL=OFF
-  -DBUILD_TESTING:BOOL=OFF
-  -DModule_ITKIOPhilipsREC:BOOL=ON
-  -DModule_ITKReview:BOOL=ON
-  -DModule_ITKVtkGlue:BOOL=ON
-  -DVTK_DIR:PATH=${VTK_DIR}
+  -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
+  -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}   
+  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
+  -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
+  -Ddtk_DIR:PATH=${dtk_DIR}
+  -DQt5_DIR=${Qt5_DIR}
   )
 
-## #############################################################################
-## Check if patch has to be applied
-## #############################################################################
-
-ep_GeneratePatchCommand(ITK ITK_PATCH_COMMAND ITK_Mac_Rpath.patch)
 
 ## #############################################################################
 ## Add external-project
@@ -86,7 +75,6 @@ ExternalProject_Add(${ep}
   PREFIX ${EP_PREFIX_thirdparts}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  PATCH_COMMAND ${ITK_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
@@ -99,9 +87,8 @@ ExternalProject_Add(${ep}
 ## Set variable to provide infos about the project
 ## #############################################################################
 
-ExternalProject_Get_Property(ITK binary_dir)
+ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
 
 
 endif() #NOT USE_SYSTEM_ep

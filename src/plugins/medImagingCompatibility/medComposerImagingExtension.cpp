@@ -27,6 +27,6 @@ medComposerImagingExtension::~medComposerImagingExtension(void)
 
 void medComposerImagingExtension::extend(dtkComposerNodeFactory *factory)
 {
-    factory->record(":/process/medToMedImageNode.json", dtkComposerNodeCreator<medToMedImageNode>);
-    factory->record(":/process/medToDtkImageNode.json", dtkComposerNodeCreator<medToDtkImageNode>);
+    factory->record(":/medToMedImageNode.json", dtkComposerNodeCreator<medToMedImageNode>);
+    factory->record(":/medToDtkImageNode.json", dtkComposerNodeCreator<medToDtkImageNode>);
 }

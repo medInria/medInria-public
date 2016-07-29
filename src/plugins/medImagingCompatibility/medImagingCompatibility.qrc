@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>medToDtkImageNode.json</file>
+        <file>medToMedImageNode.json</file>
+    </qresource>
+</RCC>

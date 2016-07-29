@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dtkPixelImpl.h"
-#include "itkRGBPixel.h"
-#include "itkRGBAPixel.h"
+#include <dtkPixelImpl.h>
+#include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
 
 template < typename PixelType> class dtkItkPixelTypeTrait;
 

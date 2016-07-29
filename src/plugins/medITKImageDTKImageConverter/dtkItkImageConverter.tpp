@@ -1,19 +1,5 @@
-// Version: $Id$
-//
-//
-
-// Commentary:
-//
-//
-
-// Change Log:
-//
-//
-
-// Code:
-
 #include <dtkImageData.h>
-#include "itkImportImageFilter.h"
+#include <itkImportImageFilter.h>
 
 #include <dtkImage.h>
 #include <dtkTemplatedImageData.h>
@@ -28,11 +14,6 @@
 
 template < typename Pixel, int dim> inline void dtkItkImageConverterHandler<Pixel, dim>::convertToNative(dtkImage *source, typename itk::Image<typename dtkItkPixelTypeTrait<Pixel>::itkPixelType, dim>::Pointer target)
 {
-    dtkDebug() << Q_FUNC_INFO << __LINE__;
-
-    dtkImageData *data = source->data();
-    dtkDebug() << Q_FUNC_INFO << __LINE__;
-
     typedef itk::Image<typename dtkItkPixelTypeTrait<Pixel>::itkPixelType, dim> ItkImageType;
     typedef itk::ImportImageFilter< typename dtkItkPixelTypeTrait<Pixel>::itkPixelType, dim > ImportFilterType;
     typename ImportFilterType::Pointer importFilter = ImportFilterType::New();
@@ -42,7 +23,8 @@ template < typename Pixel, int dim> inline void dtkItkImageConverterHandler<Pixe
     typename ImportFilterType::IndexType index;
     typename ImportFilterType::SizeType size;
     const dtkArray<qlonglong>& extent = source->extent();
-    for(int i = 0; i < dim; ++i) {
+    for(int i = 0; i < dim; ++i)
+    {
         index[i] = extent[2 * i];
         size[i] = (extent[2 * i + 1] - extent[2 * i] + 1);
     }
@@ -52,29 +34,28 @@ template < typename Pixel, int dim> inline void dtkItkImageConverterHandler<Pixe
     importFilter->SetRegion(region);
 
     double origin[dim];
-    for(int i = 0; i < dim; ++i) {
+    for(int i = 0; i < dim; ++i)
         origin[i] = source->origin()[i];
-    }
+
     importFilter->SetOrigin(origin);
 
     double spacing[dim];
-    for(int i = 0; i < dim; ++i) {
+    for(int i = 0; i < dim; ++i)
         spacing[i] = source->spacing()[i];
-    }
+
     importFilter->SetSpacing(spacing);
 
     typename ImportFilterType::DirectionType direction;
-    for(int i = 0; i < dim; ++i) {
-        for(int j = 0; j < dim; ++j) {
+    for(int i = 0; i < dim; ++i)
+        for(int j = 0; j < dim; ++j)
             direction(i,j) = source->transformMatrix()[i * dim + j];
-        }
-    }
+
     importFilter->SetDirection(direction);
 
     unsigned int numberOfValues = 1;
-    for(int i = 0; i < dim; ++i) {
+    for(int i = 0; i < dim; ++i)
         numberOfValues *= size[i];
-    }
+
     numberOfValues *= Pixel::PixelDim;
 
     dtkDebug() << source->rawData() << numberOfValues;
@@ -110,27 +91,24 @@ template < typename Pixel, int dim> void dtkItkImageConverterHandler<Pixel, dim>
 
     SizeType size = source->GetBufferedRegion().GetSize();
     IndexType index = source->GetBufferedRegion().GetIndex();
-    for(int i = 0; i < dim; ++i) {
+    for(int i = 0; i < dim; ++i)
+    {
         extent[i * 2]     = qlonglong(index[i]);
         extent[i * 2 + 1] = qlonglong(index[i] + size[i]) - 1;
     }
 
     PointType itkOrigin = source->GetOrigin();
-    for(int i = 0; i < itkOrigin.Size(); ++i) {
+    for(int i = 0; i < itkOrigin.Size(); ++i)
         origin[i] = itkOrigin[i];
-    }
 
     SpacingType itkSpacing = source->GetSpacing();
-    for(int i = 0; i < itkSpacing.Size(); ++i) {
+    for(int i = 0; i < itkSpacing.Size(); ++i)
         spacing[i] = itkSpacing[i];
-    }
 
     DirectionType itkDirection = source->GetDirection();
-    for(int i = 0; i < dim; ++i) {
-        for(int j = 0; j < dim; ++j) {
+    for(int i = 0; i < dim; ++i)
+        for(int j = 0; j < dim; ++j)
             direction[i * dim + j] = itkDirection(i, j);
-        }
-    }
 
     typedef typename std::conditional<std::is_class<typename dtkItkPixelTypeTrait<Pixel>::itkPixelType>::value, dtkPixelClassDataExtractor<Pixel, dim>, dtkPixelRawDataExtractor<Pixel,dim> >::type DataExtractor;
 
@@ -157,6 +135,3 @@ template < typename Pixel, int dim> void dtkItkImageConverter<Pixel,dim>::conver
 {
     dtkItkImageConverterHandler<Pixel,dim>::convertFromNative(source, target);
 }
-
-//
-// dtkFilterITK_p.h ends here

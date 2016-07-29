@@ -114,13 +114,6 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
 
     // -- Elements
 
-    // -- to be encupsulated within distributed layer
-
-    // d->distributor = new dtkDistributor(this);
-    // d->distributor->setVisible(false);
-
-    //
-
     d->composer = new dtkComposerWidget;
     d->composer->view()->setBackgroundBrush(QBrush(QPixmap(":dtkVisualProgramming/pixmaps/dtkComposerScene-bg.png")));
     d->composer->view()->setCacheMode(QGraphicsView::CacheBackground);
@@ -129,8 +122,21 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
 
     QScopedPointer<dtkComposerExtension> extension(new medComposerExtension);
     d->composer->factory()->extend(extension.data());
-    
-   dtkComposer::extension::initialize();
+
+    QString pluginsPath = getenv("MEDINRIA_PLUGINS_DIR");
+    QString defaultPath;
+    QDir plugins_dir;
+#ifdef Q_OS_MAC
+    plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
+#else
+    plugins_dir = qApp->applicationDirPath() + "/../plugins";
+#endif
+    defaultPath = plugins_dir.absolutePath();
+
+    if ( !pluginsPath.isEmpty() )
+        dtkComposer::extension::initialize(pluginsPath);
+    else
+        dtkComposer::extension::initialize(defaultPath);
 
     QStringList exts = dtkComposer::extension::pluginFactory().keys();
     for(QString extKey : exts)

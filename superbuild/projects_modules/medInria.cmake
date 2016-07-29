@@ -28,6 +28,12 @@ list(APPEND ${ep}_dependencies
   QtDCM
   RPI
   )
+
+if (USE_DTKIMAGING)
+  list(APPEND ${ep}_dependencies
+       dtkImaging
+       )
+endif()
   
 ## #############################################################################
 ## Prepare the project
@@ -65,6 +71,7 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
+  -DUSE_DTKIMAGING:BOOL=${USE_DTKIMAGING}
   -DDCMTK_DIR=${DCMTK_DIR}
   -Ddtk_DIR=${dtk_DIR}
   -DITK_DIR=${ITK_DIR}
@@ -82,7 +89,6 @@ set(cmake_args
   -DBUILD_LEGACY/ITKDATAIMAGE_PLUGIN=ON
   -DBUILD_LEGACY/ITKDATASHIMAGE_PLUGIN=ON
   -DBUILD_LEGACY/ITKDATATENSORIMAGE_PLUGIN=ON
-  -DBUILD_LEGACY/ITKFILTERS_PLUGIN=ON
   -DBUILD_LEGACY/ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONS_PLUGIN=ON
   -DBUILD_LEGACY/MEDSEGMENTATION_PLUGIN=ON
   -DBUILD_LEGACY/MEDVTKFIBERSDATA_PLUGIN=ON
@@ -94,6 +100,12 @@ set(cmake_args
   -DBUILD_PROCESS/MORPHOMATH_OPERATION_PLUGIN=ON
   )
   
+if (USE_DTKIMAGING)
+  set(cmake_args
+    ${cmake_args}
+    -DdtkImaging_DIR:PATH=${dtkImaging_DIR}
+    )
+endif()
   
 ## #############################################################################
 ## Add external-project
