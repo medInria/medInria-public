@@ -40,22 +40,22 @@ public:
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
         typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
-
+    
         gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         gaussianFilter->SetSigma( sigma );
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersGaussianProcessPrivate::eventCallback );
-
+    
         gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         gaussianFilter->Update();
         output->setData ( gaussianFilter->GetOutput() );
-
+        
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " gaussian filter (" + QString::number(sigma) + ")";
-
+    
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };

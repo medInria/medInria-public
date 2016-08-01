@@ -43,22 +43,23 @@ public:
         
         shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         shrinkFilter->SetShrinkFactors(shrinkFactors);
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersShrinkProcessPrivate::eventCallback );
-
+    
         shrinkFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         shrinkFilter->Update();
         output->setData ( shrinkFilter->GetOutput() );
-
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " shrink filter (" + QString::number(shrinkFactors[0]) + "," + QString::number(shrinkFactors[1]) + "," + QString::number(shrinkFactors[2]) + ")";
 
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+    
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersShrinkProcess, itkFiltersProcessBase)

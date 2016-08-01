@@ -43,22 +43,23 @@ public:
     
         subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         subtractFilter->SetConstant ( subtractValue );
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersSubtractProcessPrivate::eventCallback );
-
+    
         subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         subtractFilter->Update();
         output->setData ( subtractFilter->GetOutput() );
-
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " subtract filter (" + QString::number(subtractValue) + ")";
-
+    
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+    
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersSubtractProcess, itkFiltersProcessBase)

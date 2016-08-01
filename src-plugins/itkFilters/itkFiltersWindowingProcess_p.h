@@ -50,22 +50,23 @@ public:
         windowingFilter->SetWindowMaximum ( ( PixelType ) maximumIntensityValue );
         windowingFilter->SetOutputMinimum ( ( PixelType ) minimumOutputIntensityValue );
         windowingFilter->SetOutputMaximum ( ( PixelType ) maximumOutputIntensityValue );
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersWindowingProcessPrivate::eventCallback );
-
+    
         windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         windowingFilter->Update();
         output->setData ( windowingFilter->GetOutput() );
-
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " intensity filter";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersWindowingProcess, itkFiltersProcessBase)

@@ -40,22 +40,23 @@ public:
         typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
     
         normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersNormalizeProcessPrivate::eventCallback );
-
+    
         normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         normalizeFilter->Update();
         output->setData ( normalizeFilter->GetOutput() );
-
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " normalize filter";
-
+    
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+    
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersNormalizeProcess, itkFiltersProcessBase)

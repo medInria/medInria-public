@@ -40,22 +40,22 @@ public:
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  DivideFilterType;
         typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
-
+    
         divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         divideFilter->SetConstant ( divideFactor );
         
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersDivideProcessPrivate::eventCallback );
-
+    
         divideFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         divideFilter->Update();
         output->setData ( divideFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " divide filter (" + QString::number(divideFactor) + ")";
-
+    
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };

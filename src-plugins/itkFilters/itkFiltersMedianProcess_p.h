@@ -42,20 +42,20 @@ public:
         typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
     
         medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersMedianProcessPrivate::eventCallback );
-
+    
         medianFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         medianFilter->Update();
         output->setData ( medianFilter->GetOutput() );
-
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " median filter";
-
+        
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };

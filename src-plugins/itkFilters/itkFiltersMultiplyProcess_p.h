@@ -44,22 +44,23 @@ public:
     
         multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         multiplyFilter->SetConstant ( multiplyFactor );
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersMultiplyProcessPrivate::eventCallback );
-
+    
         multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         multiplyFilter->Update();
         output->setData ( multiplyFilter->GetOutput() );
-
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " multiply filter (" + QString::number(multiplyFactor) + ")";
-
+    
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersMultiplyProcess, itkFiltersProcessBase)

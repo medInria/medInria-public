@@ -43,20 +43,20 @@ public:
         typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
     
         invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-
+        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersInvertProcessPrivate::eventCallback );
-
+    
         invertFilter->AddObserver ( itk::ProgressEvent(), callback );
-
+    
         invertFilter->Update();
         output->setData ( invertFilter->GetOutput() );
-
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " invert filter";
-
+    
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
