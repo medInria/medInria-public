@@ -34,6 +34,7 @@
 #include <itkImage.h>
 #include <itkMinimumMaximumImageFilter.h>
 #include <itkProcessObject.h>
+#include <medUtilities.h>
 
 class itkMorphologicalFiltersProcessBase;
 
@@ -84,8 +85,12 @@ public:
         typedef itk::KernelImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
         typename FilterType::Pointer filter;
 
+        QString filenameDescription;
+
         if(description == "Dilate filter")
         {
+            filenameDescription = "dilated";
+
             typedef itk::BinaryDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateFilterType;
             filter = DilateFilterType::New();
             dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
@@ -93,6 +98,8 @@ public:
         }
         else if(description == "Erode filter")
         {
+            filenameDescription = "eroded";
+
             typedef itk::BinaryErodeImageFilter< ImageType, ImageType,StructuringElementType >  ErodeFilterType;
             filter = ErodeFilterType::New();
             dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
@@ -100,22 +107,30 @@ public:
         }
         else if(description == "Grayscale Close filter")
         {
+            filenameDescription = "grayscaleClosed";
+
             typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  GCloseFilterType;
             filter = GCloseFilterType::New();
         }
         else if(description == "Grayscale Open filter")
         {
+            filenameDescription = "grayscaleOpened";
+
             typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  GOpenFilterType;
             filter = GOpenFilterType::New();
         }
         else if(description == "Binary Close filter")
         {
+            filenameDescription = "binaryClosed";
+
             typedef itk::BinaryMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  BCloseFilterType;
             filter = BCloseFilterType::New();
             dynamic_cast<BCloseFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
         }
         else if(description == "Binary Open filter")
         {
+            filenameDescription = "binaryOpened";
+
             typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  BOpenFilterType;
             filter = BOpenFilterType::New();
             dynamic_cast<BOpenFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
@@ -140,16 +155,18 @@ public:
         output->setData ( filter->GetOutput() );
 
         // Add description on output data
-        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = filenameDescription + " ";
 
         if (isRadiusInPixels)
-            newSeriesDescription += description + "\n("+ QString::number(floor(radius[0]))+", "+
-            QString::number(floor(radius[1]))+", "+ QString::number(floor(radius[2]))+" pixels)";
+        {
+            newSeriesDescription += QString::number(floor(radius[0])) + " px";
+        }
         else
-            newSeriesDescription += description + "\n("+ QString::number(radiusMm[0])+", "+
-            QString::number(radiusMm[1])+", "+ QString::number(radiusMm[2])+" mm)";
+        {
+            newSeriesDescription += QString::number(float(radiusMm[0])) + " mm";
+        }
 
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
     }
 };
 
