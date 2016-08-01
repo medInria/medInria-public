@@ -74,64 +74,73 @@ int itkFiltersComponentSizeThresholdProcess::update ( void )
 {
     DTK_D(itkFiltersComponentSizeThresholdProcess);
     
-    if ( !d->input )
-        return -1;
+    if ( d->input )
+    {
+        QString id = d->input->identifier();
 
-    QString id = d->input->identifier();
-
-    qDebug() << "itkFiltersComponentSizeThresholdProcess, update : " << id;
-
-    if ( id == "itkDataImageChar3" )
-    {
-        d->update<char>();
+        if ( id == "itkDataImageChar3" )
+        {
+            return d->update<char>();
+        }
+        else if ( id == "itkDataImageUChar3" )
+        {
+            return d->update<unsigned char>();
+        }
+        else if ( id == "itkDataImageShort3" )
+        {
+            return d->update<short>();
+        }
+        else if ( id == "itkDataImageUShort3" )
+        {
+            return d->update<unsigned short>();
+        }
+        else if ( id == "itkDataImageInt3" )
+        {
+            return d->update<int>();
+        }
+        else if ( id == "itkDataImageUInt3" )
+        {
+            return d->update<unsigned int>();
+        }
+        else if ( id == "itkDataImageLong3" )
+        {
+            return d->update<long>();
+        }
+        else if ( id== "itkDataImageULong3" )
+        {
+            return d->update<unsigned long>();
+        }
+        else if ( id== "itkDataImageFloat3" )
+        {
+            if (d->castToUInt3<float>())
+            {
+                return d->update<unsigned int>();
+            }
+            else
+            {
+                return DTK_FAILURE;
+            }
+        }
+        else if ( id== "itkDataImageDouble3" )
+        {
+            if(d->castToUInt3<double>())
+            {
+                return d->update<unsigned int>();
+            }
+            else
+            {
+                return DTK_FAILURE;
+            }
+        }
+        else
+        {
+            qDebug() << description()
+                     <<", Error : pixel type not yet implemented ("
+                    << id
+                    << ")";
+        }
     }
-    else if ( id == "itkDataImageUChar3" )
-    {
-        d->update<unsigned char>();
-    }
-    else if ( id == "itkDataImageShort3" )
-    {
-        d->update<short>();
-    }
-    else if ( id == "itkDataImageUShort3" )
-    {
-        d->update<unsigned short>();
-    }
-    else if ( id == "itkDataImageInt3" )
-    {
-        d->update<int>();
-    }
-    else if ( id == "itkDataImageUInt3" )
-    {
-        d->update<unsigned int>();
-    }
-    else if ( id == "itkDataImageLong3" )
-    {
-        d->update<long>();
-    }
-    else if ( id== "itkDataImageULong3" )
-    {
-        d->update<unsigned long>();
-    }
-    else if ( id== "itkDataImageFloat3" )
-    {
-        d->castToUInt3<float>();
-        d->update<unsigned int>();
-    }
-    else if ( id== "itkDataImageDouble3" )
-    {
-        d->castToUInt3<double>();
-        d->update<unsigned int>();
-    }
-    else
-    {
-        qDebug() << "itkFiltersComponentSizeThresholdProcess Error : pixel type not yet implemented ("
-        << id
-        << ")";
-        return -1;
-    }
-
-    return EXIT_SUCCESS;
+    return medAbstractProcess::DIMENSION_3D;
 }
 
 

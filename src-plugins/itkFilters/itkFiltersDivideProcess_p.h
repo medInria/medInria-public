@@ -35,7 +35,7 @@ public:
     
     double divideFactor;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  DivideFilterType;
@@ -50,13 +50,24 @@ public:
     
         divideFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        divideFilter->Update();
+        try
+        {
+            divideFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in itkFiltersDivideProcess! " << err.GetDescription();
+            return DTK_FAILURE;
+        }
+
         output->setData ( divideFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " divide filter (" + QString::number(divideFactor) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        return DTK_SUCCEED;
     }
 };
 

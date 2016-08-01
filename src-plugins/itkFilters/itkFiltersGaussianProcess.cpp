@@ -71,71 +71,60 @@ int itkFiltersGaussianProcess::update ( void )
 {
     DTK_D(itkFiltersGaussianProcess);
     
-    if ( !d->input )
-        return -1;
-
-    QString id = d->input->identifier();
-
-    qDebug() << "itkFilters, update : " << id;
-
-    try
+    if ( d->input )
     {
+        QString id = d->input->identifier();
+
         if ( id == "itkDataImageChar3" )
         {
-            d->update<char>();
+            return d->update<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            d->update<unsigned char>();
+            return d->update<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            d->update<short>();
+            return d->update<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            d->update<unsigned short>();
+            return d->update<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            d->update<int>();
+            return d->update<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            d->update<unsigned int>();
+            return d->update<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            d->update<long>();
+            return d->update<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            d->update<unsigned long>();
+            return d->update<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            d->update<float>();
+            return d->update<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            d->update<double>();
+            return d->update<double>();
         }
         else
         {
             qDebug() << description()
                      <<", Error : pixel type not yet implemented ("
-                     << id
-                     << ")";
-            return -1;
+                    << id
+                    << ")";
         }
     }
-    catch (itk::ExceptionObject &e)
-    {
-        emit failure();
-        return EXIT_FAILURE;
-    }
     
-    return EXIT_SUCCESS;
+    return medAbstractProcess::DIMENSION_3D;
 }
 
 // /////////////////////////////////////////////////////////////////

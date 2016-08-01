@@ -38,32 +38,33 @@ public:
     
     double minimumSize;
 
-    template <class PixelType> void castToUInt3 ( void )
+    template <class PixelType> int castToUInt3 ( void )
     {
+        //we will later label the image so we don't care about precision.
+        typedef itk::Image< PixelType, 3 > InputImageType;
+        typedef itk::Image< unsigned int, 3 > OutputImageType;
+        typedef itk::CastImageFilter< InputImageType, OutputImageType > CastFilterType;
+
+        typename CastFilterType::Pointer  caster = CastFilterType::New();
+        typename InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(input->data()));
+        caster->SetInput(im);
         try
         {
-            //we will later label the image so we don't care about precision.
-            typedef itk::Image< PixelType, 3 > InputImageType;
-            typedef itk::Image< unsigned int, 3 > OutputImageType;
-            typedef itk::CastImageFilter< InputImageType, OutputImageType > CastFilterType;
-
-            typename CastFilterType::Pointer  caster = CastFilterType::New();
-            typename InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(input->data()));
-            caster->SetInput(im);
             caster->Update();
-            input = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
-            output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
-            input->setData(caster->GetOutput());
         }
         catch( itk::ExceptionObject & err )
         {
-            std::cerr << "ExceptionObject caught in sizeThresholdingProcess!" << std::endl;
-            std::cerr << err << std::endl;
+            qDebug() << "ExceptionObject caught in sizeThresholdingProcess::castToUInt3 !" << err.GetDescription();
+            return DTK_FAILURE;
         }
+        input = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
+        output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
+        input->setData(caster->GetOutput());
 
+        return DTK_SUCCEED;
     }
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         try
         {
@@ -104,12 +105,14 @@ public:
         }
         catch( itk::ExceptionObject & err )
         {
-            std::cerr << "ExceptionObject caught in sizeThresholdingProcess!" << std::endl;
-            std::cerr << err << std::endl;
+            qDebug() << "ExceptionObject caught in sizeThresholdingProcess!" << err.GetDescription();
+            return DTK_FAILURE;
         }
 
         QString newSeriesDescription = "connectedComponent " + QString::number(minimumSize);
         medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
+
+        return DTK_SUCCEED;
     }
 };
 

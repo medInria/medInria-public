@@ -35,7 +35,7 @@ public:
     
     double subtractValue;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  SubtractFilterType;
@@ -50,7 +50,16 @@ public:
     
         subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        subtractFilter->Update();
+        try
+        {
+            subtractFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in itkFiltersSubtractProcess! " << err.GetDescription();
+            return DTK_FAILURE;
+        }
+
         output->setData ( subtractFilter->GetOutput() );
         
         //Set output description metadata
@@ -58,8 +67,9 @@ public:
         newSeriesDescription += " subtract filter (" + QString::number(subtractValue) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-    }
-    
+
+        return DTK_SUCCEED;
+    }    
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersSubtractProcess, itkFiltersProcessBase)

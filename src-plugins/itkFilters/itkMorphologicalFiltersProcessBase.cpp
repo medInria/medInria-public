@@ -81,52 +81,51 @@ int itkMorphologicalFiltersProcessBase::update()
 
         if ( id == "itkDataImageChar3" )
         {
-            d->update<char>();
+            return d->update<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            d->update<unsigned char>();
+            return d->update<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            d->update<short>();
+            return d->update<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            d->update<unsigned short>();
+            return d->update<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            d->update<int>();
+            return d->update<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            d->update<unsigned int>();
+            return d->update<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            d->update<long>();
+            return d->update<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            d->update<unsigned long>();
+            return d->update<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            d->update<float>();
+            return d->update<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            d->update<double>();
+            return d->update<double>();
         }
         else
         {
-            qDebug() << "Error : pixel type not yet implemented ("
-                     << id
-                     << ")";
-            return DTK_FAILURE;
+            qDebug() << description()
+                     <<", Error : pixel type not yet implemented ("
+                    << id
+                    << ")";
         }
-        return DTK_SUCCEED;
     }
-    return DTK_FAILURE;
+    return medAbstractProcess::DIMENSION_3D;
 }

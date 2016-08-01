@@ -56,65 +56,56 @@ int itkFiltersInvertProcess::update ( void )
 {
     DTK_D(itkFiltersInvertProcess);
 
-    if ( !d->input )
-        return -1;
+    if ( d->input )
+    {
+        QString id = d->input->identifier();
 
-    QString id = d->input->identifier();
-
-    qDebug() << "itkFilters, update : " << id;
-
-    if ( id == "itkDataImageChar3" )
-    {
-        d->update<char>();
+        if ( id == "itkDataImageChar3" )
+        {
+            return d->update<char>();
+        }
+        else if ( id == "itkDataImageUChar3" )
+        {
+            return d->update<unsigned char>();
+        }
+        else if ( id == "itkDataImageShort3" )
+        {
+            return d->update<short>();
+        }
+        else if ( id == "itkDataImageUShort3" )
+        {
+            return d->update<unsigned short>();
+        }
+        else if ( id == "itkDataImageInt3" )
+        {
+            return d->update<int>();
+        }
+        else if ( id == "itkDataImageUInt3" )
+        {
+            return d->update<unsigned int>();
+        }
+        else if ( id == "itkDataImageLong3" )
+        {
+            return d->update<long>();
+        }
+        else if ( id== "itkDataImageULong3" )
+        {
+            return d->update<unsigned long>();
+        }
+        else if ( id == "itkDataImageFloat3" || "itkDataImageDouble3" )
+        {
+            qDebug() << "Error: Invert image filter does not suport floating pixel values";
+            return medAbstractProcess::PIXEL_TYPE;
+        }
+        else
+        {
+            qDebug() << description()
+                     <<", Error : pixel type not yet implemented ("
+                    << id
+                    << ")";
+        }
     }
-    else if ( id == "itkDataImageUChar3" )
-    {
-        d->update<unsigned char>();
-    }
-    else if ( id == "itkDataImageShort3" )
-    {
-        d->update<short>();
-    }
-    else if ( id == "itkDataImageUShort3" )
-    {
-        d->update<unsigned short>();
-    }
-    else if ( id == "itkDataImageInt3" )
-    {
-        d->update<int>();
-    }
-    else if ( id == "itkDataImageUInt3" )
-    {
-        d->update<unsigned int>();
-    }
-    else if ( id == "itkDataImageLong3" )
-    {
-        d->update<long>();
-    }
-    else if ( id== "itkDataImageULong3" )
-    {
-        d->update<unsigned long>();
-    }
-    else if ( id == "itkDataImageFloat3" )
-    {
-        qDebug() << "Error : Invert image filter does not suport floating pixel values";
-        return -1;
-    }
-    else if ( id == "itkDataImageDouble3" )
-    {
-        qDebug() << "Error : Invert image filter does not suport floating pixel values";
-        return -1;
-    }
-    else
-    {
-        qDebug() << description()
-                 <<", Error : pixel type not yet implemented ("
-                 << id
-                 << ")";
-        return -1;
-    }
-
-    return EXIT_SUCCESS;
+    return medAbstractProcess::DIMENSION_3D;
 }
 
 // /////////////////////////////////////////////////////////////////

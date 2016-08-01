@@ -35,7 +35,7 @@ public:
     
     double sigma;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
@@ -50,13 +50,24 @@ public:
     
         gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        gaussianFilter->Update();
+        try
+        {
+            gaussianFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in itkFiltersGaussianProcess! " << err.GetDescription();
+            return DTK_FAILURE;
+        }
+
         output->setData ( gaussianFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " gaussian filter (" + QString::number(sigma) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        return DTK_SUCCEED;
     }
 };
 

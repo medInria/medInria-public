@@ -35,7 +35,7 @@ public:
     
     double addValue;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {        
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::AddImageFilter<ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType> AddFilterType;
@@ -50,13 +50,24 @@ public:
         
         addFilter->AddObserver ( itk::ProgressEvent(), callback );
         
-        addFilter->Update();
+        try
+        {
+            addFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in itkFiltersAddProcess! " << err.GetDescription();
+            return DTK_FAILURE;
+        }
+
         output->setData ( addFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " add filter (" + QString::number(addValue) + ")";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        return DTK_SUCCEED;
     }
 };
 

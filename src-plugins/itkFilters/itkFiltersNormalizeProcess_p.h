@@ -33,7 +33,7 @@ public:
 
     virtual ~itkFiltersNormalizeProcessPrivate(void) {}
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::NormalizeImageFilter< ImageType, ImageType >  NormalizeFilterType;
@@ -47,7 +47,16 @@ public:
     
         normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        normalizeFilter->Update();
+        try
+        {
+            normalizeFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in itkFiltersNormalizeProcess! " << err.GetDescription();
+            return DTK_FAILURE;
+        }
+
         output->setData ( normalizeFilter->GetOutput() );
         
         //Set output description metadata
@@ -55,8 +64,9 @@ public:
         newSeriesDescription += " normalize filter";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-    }
-    
+
+        return DTK_SUCCEED;
+    }    
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersNormalizeProcess, itkFiltersProcessBase)

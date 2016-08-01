@@ -37,7 +37,7 @@ public:
     double minimumOutputIntensityValue;
     double maximumOutputIntensityValue;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  WindowingFilterType;
@@ -55,15 +55,25 @@ public:
     
         windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        windowingFilter->Update();
+        try
+        {
+            windowingFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in itkFiltersWindowingProcess! " << err.GetDescription();
+            return DTK_FAILURE;
+        }
+
         output->setData ( windowingFilter->GetOutput() );
         
         //Set output description metadata
         QString newSeriesDescription = "windowing " + QString::number(minimumIntensityValue)
                 + " " + QString::number(maximumIntensityValue);
         medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
-    }
 
+        return DTK_SUCCEED;
+    }
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersWindowingProcess, itkFiltersProcessBase)
