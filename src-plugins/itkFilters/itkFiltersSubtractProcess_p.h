@@ -41,31 +41,23 @@ public:
         typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  SubtractFilterType;
         typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
     
-        try
-        {
-            subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-            subtractFilter->SetConstant ( subtractValue );
+        subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        subtractFilter->SetConstant ( subtractValue );
 
-            callback = itk::CStyleCommand::New();
-            callback->SetClientData ( ( void * ) this );
-            callback->SetCallback ( itkFiltersSubtractProcessPrivate::eventCallback );
+        callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) this );
+        callback->SetCallback ( itkFiltersSubtractProcessPrivate::eventCallback );
 
-            subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
+        subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
 
-            subtractFilter->Update();
-            output->setData ( subtractFilter->GetOutput() );
+        subtractFilter->Update();
+        output->setData ( subtractFilter->GetOutput() );
 
-            //Set output description metadata
-            QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-            newSeriesDescription += " subtract filter (" + QString::number(subtractValue) + ")";
+        //Set output description metadata
+        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " subtract filter (" + QString::number(subtractValue) + ")";
 
-            output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            std::cerr << "ExceptionObject caught in itkFiltersSubtractProcess!" << std::endl;
-            std::cerr << err << std::endl;
-        }
+        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 

@@ -295,21 +295,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     logLayout->addWidget(openLogDirectoryButton);
     logLayout->addLayout(logHideButtonLayout);
 
-    //Set the position of the widgets
-    d->navigationWidget->setProperty ( "pos", QPoint ( 20 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 400 ,  this->height() - 90 ) );
-
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
     d->stackedWidget->setMinimumSize ( 400,300 );
-
-    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,
-                                                    this->height() / 5) );
-    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
-    if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
-        stackedWidgetHeight = d->stackedWidget->minimumHeight();
-    d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
-    d->stackedWidget->setMaximumWidth(this->width() / 2-50);
     d->stackedWidget->addWidget(d->infoWidget);
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
@@ -328,19 +316,23 @@ medHomepageArea::~medHomepageArea()
 
 void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
+    Q_UNUSED(event);
+
     //Recompute the widgets position when the window is resized
     d->navigationWidget->setProperty ( "pos", QPoint ( 20 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 400 ,  this->height() - 90 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() - 90 ) );
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
     if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
+    {
         stackedWidgetHeight = d->stackedWidget->minimumHeight();
+    }
     d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
 
     int stackedWidgetWidth =  this->width() / 2 - 50 ;
-
     d->stackedWidget->setMaximumWidth(stackedWidgetWidth);
+
     d->stackedWidget->resize(stackedWidgetWidth,stackedWidgetHeight);
 }
 

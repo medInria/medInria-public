@@ -42,31 +42,23 @@ public:
         typedef itk::MultiplyImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  MultiplyFilterType;
         typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
     
-        try
-        {
-            multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-            multiplyFilter->SetConstant ( multiplyFactor );
+        multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        multiplyFilter->SetConstant ( multiplyFactor );
 
-            callback = itk::CStyleCommand::New();
-            callback->SetClientData ( ( void * ) this );
-            callback->SetCallback ( itkFiltersMultiplyProcessPrivate::eventCallback );
+        callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) this );
+        callback->SetCallback ( itkFiltersMultiplyProcessPrivate::eventCallback );
 
-            multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
+        multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
 
-            multiplyFilter->Update();
-            output->setData ( multiplyFilter->GetOutput() );
+        multiplyFilter->Update();
+        output->setData ( multiplyFilter->GetOutput() );
 
-            //Set output description metadata
-            QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-            newSeriesDescription += " multiply filter (" + QString::number(multiplyFactor) + ")";
+        //Set output description metadata
+        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " multiply filter (" + QString::number(multiplyFactor) + ")";
 
-            output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            std::cerr << "ExceptionObject caught in itkFiltersMultiplyProcess!" << std::endl;
-            std::cerr << err << std::endl;
-        }
+        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 

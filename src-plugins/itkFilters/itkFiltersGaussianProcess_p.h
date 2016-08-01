@@ -41,30 +41,22 @@ public:
         typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
         typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
 
-        try
-        {
-            gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-            gaussianFilter->SetSigma( sigma );
+        gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        gaussianFilter->SetSigma( sigma );
 
-            callback = itk::CStyleCommand::New();
-            callback->SetClientData ( ( void * ) this );
-            callback->SetCallback ( itkFiltersGaussianProcessPrivate::eventCallback );
+        callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) this );
+        callback->SetCallback ( itkFiltersGaussianProcessPrivate::eventCallback );
 
-            gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
+        gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
 
-            gaussianFilter->Update();
-            output->setData ( gaussianFilter->GetOutput() );
+        gaussianFilter->Update();
+        output->setData ( gaussianFilter->GetOutput() );
 
-            QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-            newSeriesDescription += " gaussian filter (" + QString::number(sigma) + ")";
+        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " gaussian filter (" + QString::number(sigma) + ")";
 
-            output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            std::cerr << "ExceptionObject caught in itkFiltersGaussianProcess!" << std::endl;
-            std::cerr << err << std::endl;
-        }
+        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 

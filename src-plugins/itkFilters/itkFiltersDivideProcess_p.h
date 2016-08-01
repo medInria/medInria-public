@@ -40,31 +40,23 @@ public:
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  DivideFilterType;
         typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
-    
-        try
-        {
-            divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-            divideFilter->SetConstant ( divideFactor );
+
+        divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        divideFilter->SetConstant ( divideFactor );
         
-            callback = itk::CStyleCommand::New();
-            callback->SetClientData ( ( void * ) this );
-            callback->SetCallback ( itkFiltersDivideProcessPrivate::eventCallback );
-    
-            divideFilter->AddObserver ( itk::ProgressEvent(), callback );
-    
-            divideFilter->Update();
-            output->setData ( divideFilter->GetOutput() );
+        callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) this );
+        callback->SetCallback ( itkFiltersDivideProcessPrivate::eventCallback );
+
+        divideFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+        divideFilter->Update();
+        output->setData ( divideFilter->GetOutput() );
         
-            QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-            newSeriesDescription += " divide filter (" + QString::number(divideFactor) + ")";
-    
-            output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            std::cerr << "ExceptionObject caught in itkFiltersDivideProcess!" << std::endl;
-            std::cerr << err << std::endl;
-        }
+        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " divide filter (" + QString::number(divideFactor) + ")";
+
+        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };
 
