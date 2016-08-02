@@ -48,7 +48,7 @@ typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("MUSIC Paint segmentation", "Paint Tool",
+    MED_TOOLBOX_INTERFACE("Paint Segmentation", "Paint Tool",
                           <<"Segmentation")
 public:
 

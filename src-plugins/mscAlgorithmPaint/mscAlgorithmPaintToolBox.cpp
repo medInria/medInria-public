@@ -648,6 +648,8 @@ void AlgorithmPaintToolBox::updateView()
 
         // Update cursor if the orientation change
         connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
+
+        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clearMask()), Qt::UniqueConnection);
     }
 
     // Update cursor to new view
@@ -687,7 +689,8 @@ void AlgorithmPaintToolBox::setLabelColor()
 
 void AlgorithmPaintToolBox::clearMask()
 {
-    if ( m_maskData && m_itkMask ){
+    if ( m_maskData && m_itkMask )
+    {
         m_itkMask->FillBuffer( MaskPixelValues::Unset );
         m_itkMask->Modified();
         m_itkMask->GetPixelContainer()->Modified();
@@ -703,6 +706,7 @@ void AlgorithmPaintToolBox::clearMask()
         }
         m_applyButton->setDisabled(true);
     }
+    m_imageData = NULL;
 }
 
 void AlgorithmPaintToolBox::setData( medAbstractData *medData )
@@ -887,12 +891,14 @@ void AlgorithmPaintToolBox::updateWandRegion(medAbstractImageView * view, QVecto
 {
     setCurrentView(view);
 
-    if ( !m_imageData )
+    if ( !m_imageData && (m_maskAnnotationData!=view->layerData(0)))
     {
         this->setData(view->layerData(0));
     }
-    if (!m_imageData) {
-        dtkWarn() << "Could not set data";
+
+    if (!m_imageData)
+    {
+        displayMessageError("Could not set data");
         return;
     }
 
@@ -1204,8 +1210,6 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
         // Update Mouse Interaction ToolBox
         view->setCurrentLayer(0);
         getWorkspace()->updateMouseInteractionToolBox();
-
-        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clearMask()), Qt::UniqueConnection);
     }
 
     m_maskAnnotationData->invokeModified();
