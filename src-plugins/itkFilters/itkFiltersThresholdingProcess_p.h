@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <itkFiltersProcessBase_p.h>
-
-#include <medMetaDataKeys.h>
-
-#include <itkImage.h>
 #include <itkCommand.h>
+#include <itkFiltersProcessBase_p.h>
+#include <itkImage.h>
 #include <itkThresholdImageFilter.h>
+
+#include <medAbstractData.h>
+#include <medMetaDataKeys.h>
+#include <medUtilities.h>
 
 class itkFiltersThresholdingProcess;
 
@@ -65,12 +65,8 @@ public:
             std::cerr << err << std::endl;
         }
 
-        output->copyMetaDataFrom(input);
-
-        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " threshold (" + QString::number(threshold) + ")";
-
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        QString newSeriesDescription = "threshold " + QString::number(threshold);
+        medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
     }
 };
 
