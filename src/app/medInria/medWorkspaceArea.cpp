@@ -49,6 +49,7 @@
 
 #include <QtGui>
 #include <QtWidgets>
+#include <QImage>
 #include <QtOpenGL/QGLWidget>
 
 
@@ -124,7 +125,12 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    return this->currentWorkspace()->tabbedViewContainers()->currentWidget()->grab();
+    QSize imageSize = this->currentWorkspace()->tabbedViewContainers()->currentWidget()->size();
+    QImage img(imageSize,QImage::Format_ARGB32);
+    QPainter painter(&img);
+    this->currentWorkspace()->tabbedViewContainers()->currentWidget()->render(&painter);
+
+    return QPixmap::fromImage(img);
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)

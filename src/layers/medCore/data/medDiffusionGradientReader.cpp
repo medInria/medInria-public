@@ -72,8 +72,11 @@ void medDiffusionGradientReader::readBValues(QString bvaluesFileName)
 
 void medDiffusionGradientReader::readGradients(QString gradientFileName)
 {
-    if (gradientFileName.endsWith("bvec") || gradientFileName.endsWith("bvec"))
+    if (gradientFileName.endsWith("bvec") || gradientFileName.endsWith("bvecs"))
+    {
         this->readBVecFile(gradientFileName);
+        return;
+    }
 
     // Read as text file
     std::ifstream gradFile(gradientFileName.toStdString());
