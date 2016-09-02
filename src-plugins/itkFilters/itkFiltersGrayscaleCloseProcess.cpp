@@ -7,41 +7,41 @@
   PURPOSE.
 =========================================================================*/
 
-#include <itkFiltersBinaryOpenProcess.h>
+#include <itkFiltersGrayscaleCloseProcess.h>
 #include <itkMorphologicalFiltersProcessBase_p.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenProcess *parent)
+itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(itkFiltersGrayscaleCloseProcess *parent)
     : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
 {
     DTK_D(itkMorphologicalFiltersProcessBase);
 
     d->filter = this;
-    d->description = tr("Binary Open filter");
+    d->description = tr("Grayscale Close filter");
 }
 
-itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other)
+itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(const itkFiltersGrayscaleCloseProcess& other)
     : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
 {
 }
 
-itkFiltersBinaryOpenProcess::~itkFiltersBinaryOpenProcess( void )
+itkFiltersGrayscaleCloseProcess::~itkFiltersGrayscaleCloseProcess( void )
 {
 }
 
-bool itkFiltersBinaryOpenProcess::registered( void )
+bool itkFiltersGrayscaleCloseProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkBinaryOpenProcess", createitkFiltersBinaryOpenProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("itkGrayscaleCloseProcess", createitkFiltersGrayscaleCloseProcess);
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess *createitkFiltersBinaryOpenProcess ( void )
+dtkAbstractProcess *createitkFiltersGrayscaleCloseProcess ( void )
 {
-    return new itkFiltersBinaryOpenProcess;
+    return new itkFiltersGrayscaleCloseProcess;
 }

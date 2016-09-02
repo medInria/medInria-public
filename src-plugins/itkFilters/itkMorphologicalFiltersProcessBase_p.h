@@ -27,6 +27,8 @@
 #include <itkBinaryMorphologicalClosingImageFilter.h>
 #include <itkBinaryMorphologicalOpeningImageFilter.h>
 #include <itkFlatStructuringElement.h>
+#include <itkGrayscaleMorphologicalClosingImageFilter.h>
+#include <itkGrayscaleMorphologicalOpeningImageFilter.h>
 #include <itkKernelImageFilter.h>
 #include <itkCommand.h>
 #include <itkImage.h>
@@ -89,7 +91,6 @@ public:
             dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
             dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
         }
-
         else if(description == "Erode filter")
         {
             typedef itk::BinaryErodeImageFilter< ImageType, ImageType,StructuringElementType >  ErodeFilterType;
@@ -97,22 +98,29 @@ public:
             dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
             dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
         }
-
-        else if(description == "Close filter")
+        else if(description == "Grayscale Close filter")
         {
-            typedef itk::BinaryMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  CloseFilterType;
-            filter = CloseFilterType::New();
-            dynamic_cast<CloseFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+            typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  GCloseFilterType;
+            filter = GCloseFilterType::New();
         }
-
-        else if(description == "Open filter")
+        else if(description == "Grayscale Open filter")
         {
-            typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  OpenFilterType;
-            filter = OpenFilterType::New();
-            dynamic_cast<OpenFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
-            dynamic_cast<OpenFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+            typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  GOpenFilterType;
+            filter = GOpenFilterType::New();
         }
-
+        else if(description == "Binary Close filter")
+        {
+            typedef itk::BinaryMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  BCloseFilterType;
+            filter = BCloseFilterType::New();
+            dynamic_cast<BCloseFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+        }
+        else if(description == "Binary Open filter")
+        {
+            typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  BOpenFilterType;
+            filter = BOpenFilterType::New();
+            dynamic_cast<BOpenFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+            dynamic_cast<BOpenFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+        }
         else
         {
             qDebug()<<"Wrong morphological filter";

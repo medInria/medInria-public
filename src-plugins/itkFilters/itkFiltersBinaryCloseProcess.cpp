@@ -1,14 +1,10 @@
 /*=========================================================================
-
  medInria
-
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
-
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
-
 =========================================================================*/
 
 #include <itkFiltersBinaryCloseProcess.h>
@@ -24,7 +20,7 @@ itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(itkFiltersBinaryClose
     DTK_D(itkMorphologicalFiltersProcessBase);
 
     d->filter = this;
-    d->description = tr("Close filter");
+    d->description = tr("Binary Close filter");
 }
 
 itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other)
@@ -38,7 +34,7 @@ itkFiltersBinaryCloseProcess::~itkFiltersBinaryCloseProcess( void )
 
 bool itkFiltersBinaryCloseProcess::registered( void )
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkFiltersBinaryCloseProcess", createitkFiltersBinaryCloseProcess);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("itkBinaryCloseProcess", createitkFiltersBinaryCloseProcess);
 }
 
 // /////////////////////////////////////////////////////////////////
