@@ -14,36 +14,16 @@
 #include "iterativeClosestPointProcess.h"
 #include "iterativeClosestPointToolBox.h"
 
-#include <QtGui>
-
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
-
 #include <medAbstractLayeredView.h>
-#include <medRunnableProcess.h>
-#include <medJobManager.h>
-
-#include <medAbstractImageData.h>
-#include <medAbstractData.h>
-#include <medAbstractWorkspace.h>
-#include <medPluginManager.h>
-
-#include <medToolBoxFactory.h>
-#include <medRegistrationSelectorToolBox.h>
-#include <medProgressionStack.h>
-#include <medMetaDataKeys.h>
 #include <medDataManager.h>
-
-#include <vtkMetaDataSet.h>
-#include <medToolBoxTab.h>
-#include <medToolBoxFactory.h>
-#include <medToolBox.h>
-#include <medToolBoxBody.h>
-#include <medViewContainer.h>
+#include <medJobManager.h>
+#include <medMetaDataKeys.h>
+#include <medPluginManager.h>
+#include <medProgressionStack.h>
+#include <medRunnableProcess.h>
 #include <medTabbedViewContainers.h>
-#include <medUtilities.h>
+#include <medToolBoxFactory.h>
+#include <medViewContainer.h>
 
 class iterativeClosestPointToolBoxPrivate
 {
@@ -56,7 +36,8 @@ public:
     QCheckBox * bStartByMatchingCentroids,*bCheckMeanDistance;
     medComboBox* bTransformationComboBox;
 
-    medAbstractData* output;
+    dtkSmartPointer<iterativeClosestPointProcess> process;
+    medProgressionStack * progression_stack;
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
@@ -82,7 +63,7 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     d->bStartByMatchingCentroids->setText("StartByMatchingCentroids");
     d->bStartByMatchingCentroids->setChecked(true);
     
-    // Choice between Affine or Rigid body transformation
+    // Choice between transformations
     QHBoxLayout * transformation_layout = new QHBoxLayout;
 
     QLabel * transformation_Label = new QLabel("Transformation");
@@ -134,6 +115,11 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
+    // progression stack
+    d->progression_stack = new medProgressionStack(widget);
+    QHBoxLayout *progressStackLayout = new QHBoxLayout;
+    progressStackLayout->addWidget(d->progression_stack);
+
     parameters_layout->addWidget(d->bStartByMatchingCentroids);
     parameters_layout->addLayout(transformation_layout);
     parameters_layout->addWidget(d->bCheckMeanDistance);
@@ -142,6 +128,7 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     parameters_layout->addLayout(MaxNumIterations_layout);
     parameters_layout->addLayout(MaxNumLandmarks_layout);
     parameters_layout->addWidget(runButton);
+    parameters_layout->addLayout(progressStackLayout);
 
     widget->setLayout(parameters_layout);
     this->addWidget(widget);
@@ -152,7 +139,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
 iterativeClosestPointToolBox::~iterativeClosestPointToolBox()
 {
     delete d;
-    
     d = NULL;
 }
 
@@ -164,48 +150,57 @@ bool iterativeClosestPointToolBox::registered()
 
 void iterativeClosestPointToolBox::run()
 {
-    if (!d->currentView)
+    if (d->currentView)
     {
-        return;
+        medAbstractData *sourceData = d->currentView->layerData(d->layerSource->currentIndex()-1);
+        medAbstractData *targetData = d->currentView->layerData(d->layerTarget->currentIndex()-1);
+    
+        if (targetData && sourceData)
+        {
+            d->process = new iterativeClosestPointProcess();
+            d->process->setInput(sourceData,  0);
+            d->process->setInput(targetData, 1);
+
+            d->process->setParameter((double)d->bStartByMatchingCentroids->isChecked(),0);
+            d->process->setParameter((double)d->bTransformationComboBox->currentIndex(),1);
+            d->process->setParameter((double)d->bCheckMeanDistance->isChecked(),2);
+            d->process->setParameter(d->MaxMeanDistance->value(),3);
+            d->process->setParameter((double)d->MaxNumIterations->value(),4);
+            d->process->setParameter((double)d->MaxNumLandmarks->value(),5);
+            d->process->setParameter(d->ScaleFactor->value(),6);
+
+            // Progression stack
+            medRunnableProcess *runProcess = new medRunnableProcess;
+            runProcess->setProcess (d->process);
+            d->progression_stack->addJobItem(runProcess, "Progress:");
+            d->progression_stack->disableCancel(runProcess);
+
+            connect (runProcess, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
+            connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (displayOutput()));
+            connect (runProcess, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
+            connect (runProcess, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
+            connect (runProcess, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
+            connect (runProcess, SIGNAL (activate(QObject*,bool)), d->progression_stack, SLOT(setActive(QObject*,bool)));
+
+            medJobManager::instance()->registerJobItem(runProcess);
+            QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+        }
+        else
+        {
+            medMessageController::instance()->showError(tr("Choose two meshes"),3000);
+        }
     }
+    else
+    {
+        medMessageController::instance()->showError(tr("Drop two meshes in the view"),3000);
+    }
+}
 
-    dtkSmartPointer <dtkAbstractProcess> process = dtkAbstractProcessFactory::instance()->createSmartPointer("iterativeClosestPointProcess");
-
+void iterativeClosestPointToolBox::displayOutput()
+{
     medAbstractData *sourceData = d->currentView->layerData(d->layerSource->currentIndex()-1);
-    medAbstractData *targetData = d->currentView->layerData(d->layerTarget->currentIndex()-1);
-    
-    if (!targetData || !sourceData)
-    {
-        return;
-    }
-
-    iterativeClosestPointProcess *process_Registration = dynamic_cast<iterativeClosestPointProcess *>(process.data());
-    if (!process_Registration)
-    {
-        qWarning() << "iterativeClosestPointProcess process doesn't exist" ;
-        return;
-    }
-    
-    process_Registration->setInput(sourceData,  0);
-    process_Registration->setInput(targetData, 1);
-          
-    process_Registration->setParameter((double)d->bStartByMatchingCentroids->isChecked(),0);
-    process_Registration->setParameter((double)d->bTransformationComboBox->currentIndex(),1);
-    process_Registration->setParameter((double)d->bCheckMeanDistance->isChecked(),2);
-    process_Registration->setParameter(d->MaxMeanDistance->value(),3);
-    process_Registration->setParameter((double)d->MaxNumIterations->value(),4);
-    process_Registration->setParameter((double)d->MaxNumLandmarks->value(),5);
-    process_Registration->setParameter(d->ScaleFactor->value(),6);
-    
-    process_Registration->update();
-    
-    d->output = process_Registration->output();
-    medUtilities::setDerivedMetaData(d->output, sourceData, "ICP");
-    
-    d->currentView->insertLayer(d->layerSource->currentIndex() - 1, d->output);
+    d->currentView->insertLayer(d->layerSource->currentIndex() - 1, d->process->output());
     d->currentView->removeData(sourceData);
-
-    medDataManager::instance()->importData(d->output, false);
 }
 
 void iterativeClosestPointToolBox::updateView()
@@ -237,6 +232,10 @@ void iterativeClosestPointToolBox::updateView()
             this, SLOT(resetComboBoxes()),
             Qt::UniqueConnection);
     }
+    else
+    {
+        d->currentView = NULL;
+    }
 }
 
 void iterativeClosestPointToolBox::resetComboBoxes()
@@ -262,7 +261,11 @@ void iterativeClosestPointToolBox::addLayer(unsigned int layer)
 
 medAbstractData* iterativeClosestPointToolBox::processOutput()
 {
-    return d->output;
+    if(!d->process)
+    {
+        return NULL;
+    }
+    return d->process->output();
 }
 
 dtkPlugin* iterativeClosestPointToolBox::plugin()

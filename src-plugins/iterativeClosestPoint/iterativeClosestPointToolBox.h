@@ -37,6 +37,9 @@ public slots:
     virtual void updateView();
     void resetComboBoxes();
     
+protected slots:
+    void displayOutput();
+
 private:
     iterativeClosestPointToolBoxPrivate *d;
 };
