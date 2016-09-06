@@ -59,7 +59,9 @@ public:
         output->setData ( windowingFilter->GetOutput() );
         
         //Set output description metadata
-        medUtilities::setDerivedMetaData(output, input, "intensity");
+        QString newSeriesDescription = "windowing " + QString::number(minimumIntensityValue)
+                + " " + QString::number(maximumIntensityValue);
+        medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
     }
 
 };
