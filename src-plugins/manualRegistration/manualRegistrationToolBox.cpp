@@ -371,12 +371,12 @@ void manualRegistrationToolBox::reset()
         // Refresh views except at closing
         if (viewMoving)
         {
-            d->rightContainer->view()->viewWidget()->update();
+            viewMoving->viewWidget()->update();
         }
 
         if (viewFix)
         {
-            d->leftContainer->view()->viewWidget()->update();
+            viewFix->viewWidget()->update();
         }
     }
 
@@ -528,10 +528,10 @@ void manualRegistrationToolBox::displayButtons(bool show)
 
 void manualRegistrationToolBox::updateLabels(int left,int right)
 {
-    d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container  : " + QString::number(left));
-    d->numberOfLdInRightContainer->setText("Number of landmarks in right container : " + QString::number(right));
+    d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container: " + QString::number(left));
+    d->numberOfLdInRightContainer->setText("Number of landmarks in right container: " + QString::number(right));
 
-    if ((left>0) || (right>0))
+    if((left>0) && (left==right))
     {
         disableComputeButton(false);
     }

@@ -147,6 +147,7 @@ manualRegistrationLandmarkController::manualRegistrationLandmarkController()
 //----------------------------------------------------------------------------
 manualRegistrationLandmarkController::~manualRegistrationLandmarkController()
 {
+    this->Reset();
     delete Points_Moving;
     delete Points_Fixed;
 
