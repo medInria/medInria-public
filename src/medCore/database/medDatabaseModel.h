@@ -22,7 +22,7 @@ class medAbstractDatabaseItem;
 class medDatabaseModelPrivate;
 class medDataIndex;
 
-QString anonymise(const QString name);
+MEDCORE_EXPORT QString anonymise(const QString name);
 
 class MEDCORE_EXPORT medDatabaseModel : public QAbstractItemModel
 {

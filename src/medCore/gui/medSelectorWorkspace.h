@@ -14,6 +14,7 @@
 #pragma once
 
 #include <medAbstractWorkspace.h>
+#include <medCoreExport.h>
 
 class medSelectorWorkspacePrivate;
 class medSelectorToolBox;
@@ -22,7 +23,7 @@ class medSelectorToolBox;
  * class medSelectorWorkspace
  * Defines the Selector workspace.
  */
-class medSelectorWorkspace : public medAbstractWorkspace
+class MEDCORE_EXPORT medSelectorWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
 
