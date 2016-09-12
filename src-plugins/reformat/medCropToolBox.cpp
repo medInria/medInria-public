@@ -165,8 +165,8 @@ void medCropToolBox::updateView()
     {
         if (containersInTabSelected[i]->isSelected())
         {
-            view = qobject_cast<medAbstractLayeredView*>(containersInTabSelected[i]->view());
             currentContainer = containersInTabSelected[i];
+            view = qobject_cast<medAbstractLayeredView*>(currentContainer->view());
             break;
         }
     }
