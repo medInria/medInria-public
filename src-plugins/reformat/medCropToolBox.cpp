@@ -243,6 +243,18 @@ void medCropToolBox::hideEvent(QHideEvent *event)
     medAbstractSelectableToolBox::hideEvent(event);
     setEnable(false);
 
+    medTabbedViewContainers * containers = getWorkspace()->stackedViewContainers();
+    QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
+
+    for(int i=0;i<containersInTabSelected.length();i++)
+    {
+        if (containersInTabSelected[i]->isSelected())
+        {
+            // allow to split container in other toolboxes
+            containersInTabSelected[i]->setUserSplittable(true);
+            break;
+        }
+    }
 }
 
 void medCropToolBox::setEnable(bool enable)
