@@ -30,7 +30,7 @@ public:
 public:
     static bool registered();
     dtkPlugin* plugin();
-    medAbstractData* processOutput(){return NULL;}
+    medAbstractData* processOutput();
 
 public slots:
     void run();

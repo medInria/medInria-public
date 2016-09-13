@@ -72,6 +72,7 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
     d->useHistogramMatching = false;
     //set transform type for the exportation of the transformation to a file
     this->setProperty("transformType","nonRigid");
+    setOutput(NULL);
 }
 
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
@@ -237,7 +238,10 @@ int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::Im
         return 1;
     }
 
-    return d->update<float>();
+    int res = d->update<float>();
+    setOutput(d->proc->output());
+
+    return res;
 }
 
 itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::getTransform(){
