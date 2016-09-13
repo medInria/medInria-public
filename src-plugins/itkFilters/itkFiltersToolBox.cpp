@@ -197,16 +197,20 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     //Intensity windowing filter widget
     d->intensityFilterWidget = new QWidget(this);
     d->intensityMinimumValue = new QDoubleSpinBox;
-    d->intensityMinimumValue->setMaximum ( 255 );
+    d->intensityMinimumValue->setMaximum( 4096);
+    d->intensityMinimumValue->setMinimum(-4096);
     d->intensityMinimumValue->setValue ( 0 );
     d->intensityMaximumValue = new QDoubleSpinBox;
-    d->intensityMaximumValue->setMaximum ( 255 );
+    d->intensityMaximumValue->setMaximum( 4096);
+    d->intensityMaximumValue->setMinimum(-4096);
     d->intensityMaximumValue->setValue ( 255 );
     d->intensityOutputMinimumValue = new QDoubleSpinBox;
-    d->intensityOutputMinimumValue->setMaximum ( 255 );
+    d->intensityOutputMinimumValue->setMaximum( 4096);
+    d->intensityOutputMinimumValue->setMinimum(-4096);
     d->intensityOutputMinimumValue->setValue ( 0 );
     d->intensityOutputMaximumValue = new QDoubleSpinBox;
-    d->intensityOutputMaximumValue->setMaximum ( 255 );
+    d->intensityOutputMaximumValue->setMaximum( 4096);
+    d->intensityOutputMaximumValue->setMinimum(-4096);
     d->intensityOutputMaximumValue->setValue ( 255 );
 
     QLabel * intensityMinimumLabel = new QLabel ( tr ( "Minimum:" ) );
