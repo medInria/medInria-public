@@ -25,25 +25,21 @@ public:
     QPointer<medSelectorToolBox> selectorToolBox;
 };
 
-
-medSelectorWorkspace::medSelectorWorkspace(QWidget * parent, QString name) : medAbstractWorkspace(parent), d(new medSelectorWorkspacePrivate)
-{
-    d->selectorToolBox = new medSelectorToolBox(parent, name);
-
-    connect(selectorToolBox(),SIGNAL(success()),this,SLOT(onProcessSuccess()));
-
-    this->addToolBox(selectorToolBox());
-    selectorToolBox()->setTitle(name); // get workspace name
-}
-
 medSelectorWorkspace::medSelectorWorkspace(QWidget * parent, QString name, medSelectorToolBox* toolbox) : medAbstractWorkspace(parent), d(new medSelectorWorkspacePrivate)
 {
-    d->selectorToolBox = toolbox;
+    if(!toolbox)
+    {
+        d->selectorToolBox = new medSelectorToolBox(parent, name);
+    }
+    else
+    {
+        d->selectorToolBox = toolbox;
+    }
 
-    connect(toolbox,SIGNAL(success()),this,SLOT(onProcessSuccess()));
+    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onProcessSuccess()));
 
-    this->addToolBox(toolbox);
-    toolbox->setTitle(name); // get workspace name
+    this->addToolBox(d->selectorToolBox);
+    d->selectorToolBox->setTitle(name); // get workspace name
 }
 
 medSelectorWorkspace::~medSelectorWorkspace(void)

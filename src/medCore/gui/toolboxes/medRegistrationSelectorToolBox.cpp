@@ -141,40 +141,14 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
  */
 void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 {
-    //get rid of old toolBox
-    if (d->currentToolBox)
-    {
-        d->currentToolBox->hide();
-        d->toolBoxLayout->removeWidget(d->currentToolBox);
-        d->currentToolBox = NULL;
-    }
+    medSelectorToolBox::changeCurrentToolBox(index);
 
-    //get identifier for toolbox.
-    QString id = comboBox()->itemData(index).toString();
-
-    medAbstractSelectableToolBox *toolbox = qobject_cast<medAbstractSelectableToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
-
-    if(!toolbox) {
-        qWarning() << "Unable to instantiate" << id << "toolbox";
-        return;
-    }
-
-    d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
-
-    toolbox->setWorkspace(getWorkspace());
-    d->currentToolBox = toolbox;
-    d->currentToolBox->show();
-    d->currentToolBox->header()->hide();
-    d->toolBoxLayout->addWidget(d->currentToolBox);
-
-    connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
-    connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
-    connect (toolbox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
-    connect (toolbox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+    connect (d->currentToolBox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (d->currentToolBox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
     if (!d->undoRedoProcess && !d->undoRedoToolBox)
     {
-        connect(toolbox,SIGNAL(success()),this,SLOT(handleOutput()));
+        connect(d->currentToolBox,SIGNAL(success()),this,SLOT(handleOutput()));
     }
 }
 

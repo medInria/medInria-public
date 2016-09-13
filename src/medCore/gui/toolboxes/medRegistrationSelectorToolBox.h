@@ -29,7 +29,7 @@ class MEDCORE_EXPORT medRegistrationSelectorToolBox : public medSelectorToolBox
 
 public:
      medRegistrationSelectorToolBox(QWidget *parent, QString name);
-     ~medRegistrationSelectorToolBox(void);
+     ~medRegistrationSelectorToolBox();
 
     medAbstractData *fixedData();
     medAbstractData *movingData();
@@ -53,12 +53,7 @@ signals:
     void movingDataRegistered(medAbstractData *output);
 
 public slots:
-
-    /**
-     * @brief instantiates the right process toolbox according to its description
-     */
     void changeCurrentToolBox(int index);
-
     void clear();
     void onSaveTrans();
     void handleOutput(typeOfOperation type=algorithm,QString algoName="");
