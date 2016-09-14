@@ -29,7 +29,7 @@ class medRegistrationWorkspace : public medSelectorWorkspace
                             "Methodology")
 public:
     medRegistrationWorkspace(QWidget *parent);
-    ~medRegistrationWorkspace(void);
+    ~medRegistrationWorkspace();
 
     static bool isUsable();
     void setupViewContainerStack ();
