@@ -25,15 +25,16 @@
 class medRegistrationWorkspacePrivate
 {
 public:
-    QVector<medViewContainer*> containers; // fixed/moving/fuse
+    medViewContainer* containers[3]; // fixed/moving/fuse
     medViewParameterGroup *viewGroup;
-    QVector<medLayerParameterGroup*> layerGroups; // fixed/moving
+    medLayerParameterGroup* layerGroups[2]; // fixed/moving
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medSelectorWorkspace(parent, staticName(), new medRegistrationSelectorToolBox(parent, staticName())), d(new medRegistrationWorkspacePrivate)
 {
     connect(this->stackedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
-    connect(selectorToolBox(), SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
+    connect(dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox()), SIGNAL(movingDataRegistered(medAbstractData*)), 
+        this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -47,62 +48,62 @@ void medRegistrationWorkspace::setupViewContainerStack()
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
-        d->containers.push_back(this->stackedViewContainers()->addContainerInTab(tr("Compare")));
+        d->containers[Fixed] = this->stackedViewContainers()->addContainerInTab(tr("Compare"));
         QLabel *fixedLabel = new QLabel(tr("FIXED"));
         fixedLabel->setAlignment(Qt::AlignCenter);
-        d->containers[0]->setDefaultWidget(fixedLabel);
-        d->containers[0]->setMultiLayered(false);
-        d->containers[0]->setUserSplittable(false);
-        d->containers[0]->setClosingMode(medViewContainer::CLOSE_VIEW);
+        d->containers[Fixed]->setDefaultWidget(fixedLabel);
+        d->containers[Fixed]->setMultiLayered(false);
+        d->containers[Fixed]->setUserSplittable(false);
+        d->containers[Fixed]->setClosingMode(medViewContainer::CLOSE_VIEW);
 
-        d->containers.push_back(d->containers[0]->splitVertically());
+        d->containers[Moving] = d->containers[Fixed]->splitVertically();
         QLabel *movingLabel = new QLabel(tr("MOVING"));
         movingLabel->setAlignment(Qt::AlignCenter);
-        d->containers[1]->setDefaultWidget(movingLabel);
-        d->containers[1]->setUserSplittable(false);
-        d->containers[1]->setMultiLayered(false);
-        d->containers[1]->setClosingMode(medViewContainer::CLOSE_VIEW);
+        d->containers[Moving]->setDefaultWidget(movingLabel);
+        d->containers[Moving]->setUserSplittable(false);
+        d->containers[Moving]->setMultiLayered(false);
+        d->containers[Moving]->setClosingMode(medViewContainer::CLOSE_VIEW);
 
-        d->containers.push_back(stackedViewContainers()->addContainerInTab(tr("Fuse")));
+        d->containers[Fuse] = stackedViewContainers()->addContainerInTab(tr("Fuse"));
         QLabel *fuseLabel = new QLabel(tr("FUSE"));
         fuseLabel->setAlignment(Qt::AlignCenter);
-        d->containers[2]->setDefaultWidget(fuseLabel);
-        d->containers[2]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-        d->containers[2]->setUserSplittable(false);
-        d->containers[2]->setAcceptDrops(false);
+        d->containers[Fuse]->setDefaultWidget(fuseLabel);
+        d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+        d->containers[Fuse]->setUserSplittable(false);
+        d->containers[Fuse]->setAcceptDrops(false);
 
-        connect(d->containers[0], SIGNAL(viewContentChanged()),
+        connect(d->containers[Fixed], SIGNAL(viewContentChanged()),
                 this, SLOT(updateFromFixedContainer()));
-        connect(d->containers[1],SIGNAL(viewContentChanged()),
+        connect(d->containers[Moving],SIGNAL(viewContentChanged()),
                 this, SLOT(updateFromMovingContainer()));
 
-        connect(d->containers[0],SIGNAL(viewRemoved()),
+        connect(d->containers[Fixed],SIGNAL(viewRemoved()),
                 this, SLOT(updateFromFixedContainer()));
-        connect(d->containers[1],SIGNAL(viewRemoved()),
+        connect(d->containers[Moving],SIGNAL(viewRemoved()),
                 this, SLOT(updateFromMovingContainer()));
 
         this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->setCurrentIndex(0);
-        d->containers[0]->setSelected(true);
-        d->containers[1]->setSelected(false);
+        this->stackedViewContainers()->setCurrentIndex(Fixed);
+        d->containers[Fixed]->setSelected(true);
+        d->containers[Moving]->setSelected(false);
     }
 }
 
 void medRegistrationWorkspace::setInitialGroups()
 {
     d->viewGroup = new medViewParameterGroup("View Group 1", this, this->identifier());
-    d->layerGroups.push_back(new medLayerParameterGroup("Fixed Group", this, this->identifier()));
-    d->layerGroups.push_back(new medLayerParameterGroup("Moving Group", this, this->identifier()));
+    d->layerGroups[Fixed] = new medLayerParameterGroup("Fixed Group", this, this->identifier());
+    d->layerGroups[Moving] = new medLayerParameterGroup("Moving Group", this, this->identifier());
 
     d->viewGroup->setLinkAllParameters(true);
     d->viewGroup->removeParameter("DataList");
     d->viewGroup->removeParameter("Position");
 
-    d->layerGroups[0]->setLinkAllParameters(true);
-    d->layerGroups[0]->removeParameter("Slicing");
+    d->layerGroups[Fixed]->setLinkAllParameters(true);
+    d->layerGroups[Fixed]->removeParameter("Slicing");
 
-    d->layerGroups[1]->setLinkAllParameters(true);
-    d->layerGroups[1]->removeParameter("Slicing");
+    d->layerGroups[Moving]->setLinkAllParameters(true);
+    d->layerGroups[Moving]->removeParameter("Slicing");
 }
 
 bool medRegistrationWorkspace::isUsable()
@@ -113,15 +114,15 @@ bool medRegistrationWorkspace::isUsable()
 
 void medRegistrationWorkspace::updateFromFixedContainer()
 {
-    updateFromContainers(0);
+    updateFromContainer(Fixed);
 }
 
 void medRegistrationWorkspace::updateFromMovingContainer()
 {
-    updateFromContainers(1);
+    updateFromContainer(Moving);
 }
 
-void medRegistrationWorkspace::updateFromContainers(int containerIndex)
+void medRegistrationWorkspace::updateFromContainer(medRegistrationWorkspace::ContainerIndex containerIndex)
 {
     medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
@@ -129,16 +130,16 @@ void medRegistrationWorkspace::updateFromContainers(int containerIndex)
     {
         if(!d->containers[containerIndex]->view())
         {
-            medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[2]->view());
+            medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
             if(fuseView)
             {
-                medAbstractData* dataInView      = containerIndex==0? toolbox->fixedData() : toolbox->movingData();
-                medAbstractData* dataInOtherView = containerIndex==0? toolbox->movingData() : toolbox->fixedData();
+                medAbstractData* dataInView      = containerIndex==Fixed? toolbox->fixedData() : toolbox->movingData();
+                medAbstractData* dataInOtherView = containerIndex==Fixed? toolbox->movingData() : toolbox->fixedData();
 
                 if(fuseView->layer(dataInView) == 0)
                 {
-                    d->containers[2]->removeView();
-                    d->containers[2]->addData(dataInOtherView);
+                    d->containers[Fuse]->removeView();
+                    d->containers[Fuse]->addData(dataInOtherView);
                 }
                 else
                 {
@@ -146,7 +147,14 @@ void medRegistrationWorkspace::updateFromContainers(int containerIndex)
                 }
             }
 
-            containerIndex==0? toolbox->setFixedData(NULL) : toolbox->setMovingData(NULL);
+            if(containerIndex == Fixed)
+            {
+                toolbox->setFixedData(NULL);
+            }
+            else
+            {
+                toolbox->setMovingData(NULL);
+            }
         }
         else
         {
@@ -159,12 +167,12 @@ void medRegistrationWorkspace::updateFromContainers(int containerIndex)
 
             medAbstractData *currentData = currentView->layerData(currentView->currentLayer());
 
-            medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[2]->view());
+            medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
             if(fuseView)
                 fuseView->removeData(currentData);
 
-            d->containers[2]->addData(currentData);
-            fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[2]->view());
+            d->containers[Fuse]->addData(currentData);
+            fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
 
             if(currentData)
             {
@@ -175,7 +183,14 @@ void medRegistrationWorkspace::updateFromContainers(int containerIndex)
                 d->layerGroups[containerIndex]->addImpactedlayer(fuseView, currentData);
             }
 
-            containerIndex==0? toolbox->setFixedData(currentData) : toolbox->setMovingData(currentData);
+            if(containerIndex == Fixed)
+            {
+                toolbox->setFixedData(currentData);
+            }
+            else
+            {
+                toolbox->setMovingData(currentData);
+            }
         }
     }
 }
@@ -192,23 +207,23 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
 {
     if(selectorToolBox())
     {
-        d->containers[1]->disconnect(this);
-        d->containers[1]->removeView();
-        d->containers[1]->addData(output);
+        d->containers[Moving]->disconnect(this);
+        d->containers[Moving]->removeView();
+        d->containers[Moving]->addData(output);
 
-        d->containers[2]->removeView();
-        d->containers[2]->addData(dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->fixedData());
-        d->containers[2]->addData(output);
+        d->containers[Fuse]->removeView();
+        d->containers[Fuse]->addData(dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->fixedData());
+        d->containers[Fuse]->addData(output);
 
         // Relink the views...
-        medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->containers[1]->view());
+        medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Moving]->view());
         if(!movingView)
         {
             qWarning() << "Non layered view are not suported yet in registration workspace.";
             return;
         }
 
-        medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[2]->view());
+        medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
         if(!fuseView)
         {
             qWarning() << "Non layered view are not suported yet in registration workspace.";
@@ -218,13 +233,13 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         d->viewGroup->addImpactedView(movingView);
         d->viewGroup->addImpactedView(fuseView);
 
-        d->layerGroups[1]->addImpactedlayer(movingView, output);
-        d->layerGroups[1]->addImpactedlayer(fuseView, output);
+        d->layerGroups[Moving]->addImpactedlayer(movingView, output);
+        d->layerGroups[Moving]->addImpactedlayer(fuseView, output);
 
-        connect(d->containers[1],SIGNAL(viewContentChanged()),
+        connect(d->containers[Moving],SIGNAL(viewContentChanged()),
                 this, SLOT(updateFromMovingContainer()));
 
-        connect(d->containers[1],SIGNAL(viewRemoved()),
+        connect(d->containers[Moving],SIGNAL(viewRemoved()),
                 this, SLOT(updateFromMovingContainer()));
     }
 }

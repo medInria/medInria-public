@@ -55,7 +55,6 @@ public:
     dtkSmartPointer <medAbstractRegistrationProcess> undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
-    medAbstractSelectableToolBox * currentToolBox;
     QString nameOfCurrentAlgorithm;
     QString savePath;
 
@@ -107,8 +106,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
 
     this->addWidget(toolBoxWidget);
 
-    d->currentToolBox = NULL;
-
     //Connect Message Controller:
     connect(this,SIGNAL(showError(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
@@ -143,21 +140,21 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 {
     medSelectorToolBox::changeCurrentToolBox(index);
 
-    connect (d->currentToolBox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
-    connect (d->currentToolBox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+    connect (currentToolBox(), SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (currentToolBox(), SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
     if (!d->undoRedoProcess && !d->undoRedoToolBox)
     {
-        connect(d->currentToolBox,SIGNAL(success()),this,SLOT(handleOutput()));
+        connect(currentToolBox(), SIGNAL(success()), this, SLOT(handleOutput()));
     }
 }
 
 //! Clears the toolbox.
 void medRegistrationSelectorToolBox::clear(void)
 {
-    if (d->currentToolBox)
+    if (currentToolBox())
     {
-        d->currentToolBox->clear();
+        currentToolBox()->clear();
     }
 }
 

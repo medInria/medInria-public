@@ -27,6 +27,14 @@ class medRegistrationWorkspace : public medSelectorWorkspace
     MED_WORKSPACE_INTERFACE("Registration",
                             "Workspace to compute the spatial transformation between two images in order to register them.",
                             "Methodology")
+
+enum ContainerIndex
+{
+    Fixed = 0,
+    Moving,
+    Fuse
+};
+
 public:
     medRegistrationWorkspace(QWidget *parent);
     ~medRegistrationWorkspace();
@@ -38,7 +46,7 @@ public:
 protected slots:
     void updateFromFixedContainer();
     void updateFromMovingContainer();
-    void updateFromContainers(int containerIndex);
+    void updateFromContainer(enum ContainerIndex);
     void updateUserLayerClosable(int tabIndex);
     void updateFromRegistrationSuccess(medAbstractData *output);
 
