@@ -35,7 +35,7 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
     d->currentToolBox = NULL;
 
     d->chooseComboBox = new medComboBox;
-    d->chooseComboBox->addItem("Choose algorithm");
+    d->chooseComboBox->addItem("Choose a toolbox");
     d->chooseComboBox->setToolTip(tr("Choose a toolbox"));
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
