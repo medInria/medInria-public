@@ -74,14 +74,30 @@ public:
         
             connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
             connectedComponentFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in sizeThresholdingProcess, ConnectedComponentImageFilter!" << err.GetDescription();
+            return DTK_FAILURE;
+        }
 
+        try
+        {
             // RELABEL COMPONENTS according to their sizes (0:largest(background))
             typedef itk::RelabelComponentImageFilter<ImageType, ImageType> FilterType;
             typename FilterType::Pointer relabelFilter = FilterType::New();
             relabelFilter->SetInput(connectedComponentFilter->GetOutput());
             relabelFilter->SetMinimumObjectSize(minimumSize);
             relabelFilter->Update();
+        }
+        catch( itk::ExceptionObject & err )
+        {
+            qDebug() << "ExceptionObject caught in sizeThresholdingProcess, RelabelComponentImageFilter!" << err.GetDescription();
+            return DTK_FAILURE;
+        }
 
+        try
+        {
             // BINARY FILTER
             typedef itk::BinaryThresholdImageFilter <ImageType, ImageType>
             BinaryThresholdImageFilterType;
@@ -94,7 +110,6 @@ public:
             thresholdFilter->SetOutsideValue(1);
             thresholdFilter->Update();
 
-        
             callback = itk::CStyleCommand::New();
             callback->SetClientData ( ( void * ) this );
             callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
@@ -105,7 +120,7 @@ public:
         }
         catch( itk::ExceptionObject & err )
         {
-            qDebug() << "ExceptionObject caught in sizeThresholdingProcess!" << err.GetDescription();
+            qDebug() << "ExceptionObject caught in sizeThresholdingProcess BinaryThresholdImageFilter!" << err.GetDescription();
             return DTK_FAILURE;
         }
 
