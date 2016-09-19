@@ -159,11 +159,17 @@ public:
 
         if (isRadiusInPixels)
         {
-            newSeriesDescription += QString::number(floor(radius[0])) + " px";
+            newSeriesDescription += QString::number(floor(radius[0])) + "/" +
+                    QString::number(floor(radius[1])) + "/" +
+                    QString::number(floor(radius[2])) +
+                    " px";
         }
         else
         {
-            newSeriesDescription += QString::number(float(radiusMm[0])) + " mm";
+            newSeriesDescription += QString::number(float(radiusMm[0])) + "/" +
+                    QString::number(float(radiusMm[1])) + "/" +
+                    QString::number(float(radiusMm[2])) +
+                    " mm";
         }
 
         medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
