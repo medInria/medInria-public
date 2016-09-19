@@ -331,6 +331,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     if (this->selectorToolBox()) // empty in pipelines
     {
         connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(update()));
+        update();
     }
 }
 
