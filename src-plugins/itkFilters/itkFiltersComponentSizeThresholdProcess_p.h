@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -35,7 +35,7 @@ public:
     itkFiltersComponentSizeThresholdProcessPrivate(const itkFiltersComponentSizeThresholdProcessPrivate& other) : itkFiltersProcessBasePrivate(other) {}
 
     virtual ~itkFiltersComponentSizeThresholdProcessPrivate(void) {}
-    
+
     double minimumSize;
 
     template <class PixelType> int castToUInt3 ( void )
@@ -63,16 +63,16 @@ public:
 
         return DTK_SUCCEED;
     }
-    
+
     template <class PixelType> int update ( void )
     {
+        typedef itk::Image< PixelType, 3 > ImageType;
+        typedef itk::ConnectedComponentImageFilter <ImageType, ImageType> ConnectedComponentFilterType;
+        typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
+
+        connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         try
         {
-            typedef itk::Image< PixelType, 3 > ImageType;
-            typedef itk::ConnectedComponentImageFilter <ImageType, ImageType> ConnectedComponentFilterType;
-            typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
-        
-            connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
             connectedComponentFilter->Update();
         }
         catch( itk::ExceptionObject & err )
@@ -81,13 +81,13 @@ public:
             return DTK_FAILURE;
         }
 
+        // RELABEL COMPONENTS according to their sizes (0:largest(background))
+        typedef itk::RelabelComponentImageFilter<ImageType, ImageType> FilterType;
+        typename FilterType::Pointer relabelFilter = FilterType::New();
+        relabelFilter->SetInput(connectedComponentFilter->GetOutput());
+        relabelFilter->SetMinimumObjectSize(minimumSize);
         try
         {
-            // RELABEL COMPONENTS according to their sizes (0:largest(background))
-            typedef itk::RelabelComponentImageFilter<ImageType, ImageType> FilterType;
-            typename FilterType::Pointer relabelFilter = FilterType::New();
-            relabelFilter->SetInput(connectedComponentFilter->GetOutput());
-            relabelFilter->SetMinimumObjectSize(minimumSize);
             relabelFilter->Update();
         }
         catch( itk::ExceptionObject & err )
@@ -96,26 +96,26 @@ public:
             return DTK_FAILURE;
         }
 
+        // BINARY FILTER
+        typedef itk::BinaryThresholdImageFilter <ImageType, ImageType>
+                BinaryThresholdImageFilterType;
+
+        typename BinaryThresholdImageFilterType::Pointer thresholdFilter
+                = BinaryThresholdImageFilterType::New();
+        thresholdFilter->SetInput(relabelFilter->GetOutput());
+        thresholdFilter->SetUpperThreshold(0);
+        thresholdFilter->SetInsideValue(0);
+        thresholdFilter->SetOutsideValue(1);
         try
         {
-            // BINARY FILTER
-            typedef itk::BinaryThresholdImageFilter <ImageType, ImageType>
-            BinaryThresholdImageFilterType;
- 
-            typename BinaryThresholdImageFilterType::Pointer thresholdFilter
-            = BinaryThresholdImageFilterType::New();
-            thresholdFilter->SetInput(relabelFilter->GetOutput());
-            thresholdFilter->SetUpperThreshold(0);
-            thresholdFilter->SetInsideValue(0);
-            thresholdFilter->SetOutsideValue(1);
             thresholdFilter->Update();
 
             callback = itk::CStyleCommand::New();
             callback->SetClientData ( ( void * ) this );
             callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
-        
+
             connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
-        
+
             output->setData ( thresholdFilter->GetOutput() );
         }
         catch( itk::ExceptionObject & err )
@@ -132,5 +132,3 @@ public:
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersComponentSizeThresholdProcess, itkFiltersProcessBase)
-
-
