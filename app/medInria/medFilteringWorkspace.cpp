@@ -33,6 +33,8 @@ public:
 
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medSelectorWorkspace (parent, staticName()), d(new medFilteringWorkspacePrivate)
 {
+    connect(this->stackedViewContainers(), SIGNAL(containersSelectedChanged()),
+            selectorToolBox(), SIGNAL(inputChanged()));
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
