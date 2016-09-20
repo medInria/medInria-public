@@ -127,7 +127,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->output          = 0;
 
     disableSaveButtons(true);
-    disableComputeButton(true);
+    disableComputeResetButtons(true);
     displayButtons(false);
 }
 
@@ -392,9 +392,9 @@ void manualRegistrationToolBox::reset()
 
     synchroniseMovingFuseView();
 
-    // Disable Save/Transformation/Compute buttons
+    // Disable Save/Transformation/Compute/Reset buttons
     disableSaveButtons(true);
-    disableComputeButton(true);
+    disableComputeResetButtons(true);
 }
 
 void manualRegistrationToolBox::save()
@@ -503,9 +503,15 @@ void manualRegistrationToolBox::disableSaveButtons(bool param)
     d->b_exportTransformation->setDisabled(param);
 }
 
-void manualRegistrationToolBox::disableComputeButton(bool param)
+void manualRegistrationToolBox::disableComputeResetButtons(bool param)
 {
     d->b_computeRegistration->setDisabled(param);
+    disableResetButton(param);
+}
+
+void manualRegistrationToolBox::disableResetButton(bool param)
+{
+    d->b_reset->setDisabled(param);
 }
 
 void manualRegistrationToolBox::displayButtons(bool show)
@@ -531,8 +537,17 @@ void manualRegistrationToolBox::updateGUI(int left,int right)
     d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container: " + QString::number(left));
     d->numberOfLdInRightContainer->setText("Number of landmarks in right container: " + QString::number(right));
 
-    if((left>0) && (left==right))
+    if (left==right)
     {
-        disableComputeButton(false);
+        if(left>0)
+        {
+            disableComputeResetButtons(false);
+        }
+    }
+
+    if ((left>0) || (right>0))
+    {
+        // at least one landmark put
+        disableResetButton(false);
     }
 }
