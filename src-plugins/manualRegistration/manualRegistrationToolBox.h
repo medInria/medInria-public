@@ -39,7 +39,7 @@ public:
     static bool registered();
     dtkPlugin * plugin();
 
-    void updateLabels(int left,int right);
+    void updateGUI(int left,int right);
 
 protected slots:
     void updateView();    

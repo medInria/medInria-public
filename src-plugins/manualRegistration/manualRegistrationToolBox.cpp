@@ -526,7 +526,7 @@ void manualRegistrationToolBox::displayButtons(bool show)
     }
 }
 
-void manualRegistrationToolBox::updateLabels(int left,int right)
+void manualRegistrationToolBox::updateGUI(int left,int right)
 {
     d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container: " + QString::number(left));
     d->numberOfLdInRightContainer->setText("Number of landmarks in right container: " + QString::number(right));

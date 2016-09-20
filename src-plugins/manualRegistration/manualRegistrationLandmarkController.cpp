@@ -234,7 +234,7 @@ void manualRegistrationLandmarkController::AddPoint(manualRegistrationLandmark *
     if (!landmark->HasObserver (vtkCommand::DeleteEvent, this->Command) )
         landmark->AddObserver(vtkCommand::DeleteEvent, this->Command, 0);
 
-    Tbx->updateLabels(Points_Fixed->size(),Points_Moving->size());
+    Tbx->updateGUI(Points_Fixed->size(),Points_Moving->size());
 }
 
 ////----------------------------------------------------------------------------
@@ -369,5 +369,5 @@ void manualRegistrationLandmarkController::RequestDeletion(manualRegistrationLan
     }
 
     // Update the user label with the number of current landmarks
-    Tbx->updateLabels(cptFixed,cptMoving);
+    Tbx->updateGUI(cptFixed,cptMoving);
 }
