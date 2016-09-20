@@ -80,6 +80,28 @@ QList <QUuid> medTabbedViewContainers::containersSelected()
     return d->containerSelectedForTabIndex.value(this->currentIndex());
 }
 
+medViewContainer* medTabbedViewContainers::getFirstSelectedContainer()
+{
+    QList<QUuid> listUuid = containersSelected();
+    if (listUuid.count() > 0)
+    {
+        // only keep the first selected container
+        return medViewContainerManager::instance()->container(listUuid[0]);
+    }
+
+    return NULL;
+}
+
+medAbstractView* medTabbedViewContainers::getFirstSelectedContainerView()
+{
+    medViewContainer* currentFirstContainer = getFirstSelectedContainer();
+    if (currentFirstContainer)
+    {
+        return currentFirstContainer->view();
+    }
+    return NULL;
+}
+
 void medTabbedViewContainers::lockTabs()
 {
     this->setTabsClosable(false);

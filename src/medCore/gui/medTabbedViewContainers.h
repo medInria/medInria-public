@@ -49,6 +49,9 @@ public:
 
     medAbstractWorkspace * owningWorkspace() const;
 
+    medViewContainer* getFirstSelectedContainer();
+    medAbstractView*  getFirstSelectedContainerView();
+
 public slots:
     medViewContainer* addContainerInTab();
     medViewContainer* addContainerInTab(const QString &name);
