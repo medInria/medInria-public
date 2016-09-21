@@ -126,8 +126,8 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->process         = 0;
     d->output          = 0;
 
-    disableSaveButtons(true);
-    disableComputeResetButtons(true);
+    setDisableSaveButtons(true);
+    setDisableComputeResetButtons(true);
     displayButtons(false);
 }
 
@@ -355,7 +355,7 @@ void manualRegistrationToolBox::computeRegistration()
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
     synchroniseMovingFuseView();
 
-    disableSaveButtons(false);
+    setDisableSaveButtons(false);
 }
 
 void manualRegistrationToolBox::reset()
@@ -393,8 +393,8 @@ void manualRegistrationToolBox::reset()
     synchroniseMovingFuseView();
 
     // Disable Save/Transformation/Compute/Reset buttons
-    disableSaveButtons(true);
-    disableComputeResetButtons(true);
+    setDisableSaveButtons(true);
+    setDisableComputeResetButtons(true);
 }
 
 void manualRegistrationToolBox::save()
@@ -497,21 +497,21 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
     }
 }
 
-void manualRegistrationToolBox::disableSaveButtons(bool param)
+void manualRegistrationToolBox::setDisableSaveButtons(bool disable)
 {
-    d->b_save->setDisabled(param);
-    d->b_exportTransformation->setDisabled(param);
+    d->b_save->setDisabled(disable);
+    d->b_exportTransformation->setDisabled(disable);
 }
 
-void manualRegistrationToolBox::disableComputeResetButtons(bool param)
+void manualRegistrationToolBox::setDisableComputeResetButtons(bool disable)
 {
-    d->b_computeRegistration->setDisabled(param);
-    disableResetButton(param);
+    d->b_computeRegistration->setDisabled(disable);
+    setDisableResetButton(disable);
 }
 
-void manualRegistrationToolBox::disableResetButton(bool param)
+void manualRegistrationToolBox::setDisableResetButton(bool disable)
 {
-    d->b_reset->setDisabled(param);
+    d->b_reset->setDisabled(disable);
 }
 
 void manualRegistrationToolBox::displayButtons(bool show)
@@ -541,13 +541,13 @@ void manualRegistrationToolBox::updateGUI(int left,int right)
     {
         if(left>0)
         {
-            disableComputeResetButtons(false);
+            setDisableComputeResetButtons(false);
         }
     }
 
     if ((left>0) || (right>0))
     {
         // at least one landmark put
-        disableResetButton(false);
+        setDisableResetButton(false);
     }
 }
