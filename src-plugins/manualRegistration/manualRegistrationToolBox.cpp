@@ -169,26 +169,17 @@ dtkPlugin* manualRegistrationToolBox::plugin()
 
 void manualRegistrationToolBox::updateView()
 {
-    medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
-    medAbstractView *view=NULL;
-    for(int i=0;i<containersInTabSelected.length();i++)
+    medAbstractView *view = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
+
+    if (view)
     {
-        if (containersInTabSelected[i]->isSelected())
+        medAbstractLayeredView * v = qobject_cast<medAbstractLayeredView*>(view);
+
+        if (!d->regOn) // if the registration is activated we do not change the currentView.
         {
-            view = containersInTabSelected[i]->view();
-            break;
+            d->currentView=v;
         }
     }
-
-    medAbstractLayeredView * v = qobject_cast<medAbstractLayeredView*>(view);
-
-    if (!v)
-        return;
-
-    if (!d->regOn) // if the registration is activated we do not change the currentView.
-        d->currentView=v;
-
 }
 
 void manualRegistrationToolBox::startManualRegistration()

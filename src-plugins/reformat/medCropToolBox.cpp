@@ -157,19 +157,9 @@ void medCropToolBox::handleCameraMoveEvent()
 
 void medCropToolBox::updateView()
 {
-    medTabbedViewContainers * containers = getWorkspace()->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
-    medAbstractLayeredView* view = NULL;
-    medViewContainer* currentContainer = NULL;
-    for(int i=0;i<containersInTabSelected.length();i++)
-    {
-        if (containersInTabSelected[i]->isSelected())
-        {
-            currentContainer = containersInTabSelected[i];
-            view = qobject_cast<medAbstractLayeredView*>(currentContainer->view());
-            break;
-        }
-    }
+    medViewContainer* currentContainer = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainer();
+    medAbstractView *viewNotLayered = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
+    medAbstractLayeredView* view = qobject_cast<medAbstractLayeredView*>(viewNotLayered);
 
     if (view)
     {
@@ -243,18 +233,9 @@ void medCropToolBox::hideEvent(QHideEvent *event)
     medAbstractSelectableToolBox::hideEvent(event);
     setEnable(false);
 
-    medTabbedViewContainers * containers = getWorkspace()->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
-
-    for(int i=0;i<containersInTabSelected.length();i++)
-    {
-        if (containersInTabSelected[i]->isSelected())
-        {
-            // allow to split container in other toolboxes
-            containersInTabSelected[i]->setUserSplittable(true);
-            break;
-        }
-    }
+    // allow to split container in other toolboxes
+    medViewContainer* currentContainer = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainer();
+    currentContainer->setUserSplittable(true);
 }
 
 void medCropToolBox::setEnable(bool enable)

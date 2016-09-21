@@ -39,7 +39,6 @@
 
 #include <medToolBox.h>
 #include <medToolBoxContainer.h>
-#include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
 #include <medTabbedViewContainers.h>
 

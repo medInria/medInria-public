@@ -20,7 +20,6 @@
 #include <medSliderSpinboxPair.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
-#include <medViewContainer.h>
 #include <medVtkViewBackend.h>
 
 #include <vtkActor.h>
@@ -116,84 +115,70 @@ medClutToolBox::~medClutToolBox(void)
 
 void medClutToolBox::updateView()
 {
-    medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
-    medAbstractView *view=NULL;
-    for(int i=0;i<containersInTabSelected.length();i++)
+    medAbstractView *view = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
+
+    if(view)
     {
-        if (containersInTabSelected[i]->isSelected())
+        medAbstractLayeredView * medView = dynamic_cast<medAbstractLayeredView *> (view);
+
+        if (medView!=d->view)
         {
-            view = containersInTabSelected[i]->view();
-            break;
+            d->view = medView;
+
+            medAbstractData *data = d->view->layerData(0);
+            if (!data->identifier().contains( "vtkDataMesh" ))
+                return;
+
+            medAbstractMeshData * dataMesh = static_cast<medAbstractMeshData*>(data);
+            vtkMetaDataSet * mesh = static_cast<vtkMetaDataSet*>(dataMesh->mesh());
+
+            if (!mesh || (mesh->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
+                          mesh->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
+                return;
+
+            d->listOfAttributes.clear();
+            d->attributeBox->clear();
+
+            vtkImageView3D * view3d = static_cast<medVtkViewBackend*>(d->view->backend())->view3D;
+
+            if (view3d->GetDataSetCollection()->GetItem(0))
+            {
+                d->viewDataSet->insert(d->view,view3d->GetDataSetCollection()->GetItem(0));
+            }
+            else
+                return;
+
+            for (int i = 0; i < mesh->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
+            {
+                if (mesh->GetDataSet()->GetPointData()->GetArray(i)->GetNumberOfComponents() == 1)
+                {
+                    d->listOfAttributes << QString::fromUtf8(mesh->GetDataSet()->GetPointData()->GetArrayName(i));
+                    d->attributeBox->addItem("Point : "  + QString::fromUtf8(mesh->GetDataSet()->GetPointData()->GetArrayName(i)));
+                }
+            }
+
+            for (int i = 0;  i < mesh->GetDataSet()->GetCellData()->GetNumberOfArrays(); i++)
+            {
+                if (mesh->GetDataSet()->GetCellData()->GetArray(i)->GetNumberOfComponents() == 1)
+                    d->listOfAttributes << QString::fromUtf8(mesh->GetDataSet()->GetCellData()->GetArrayName(i));
+                d->attributeBox->addItem("Cell : "  + QString::fromUtf8(mesh->GetDataSet()->GetCellData()->GetArrayName(i)));
+            }
+            if (d->attributeChosen->contains(d->view))
+            {
+                d->attributeBox->setCurrentIndex(d->attributeChosen->value(d->view));
+                changeAttribute(d->attributeChosen->value(d->view));
+            }
+            else
+            {
+                changeAttribute(0);
+                d->attributeChosen->insert(d->view,0);
+            }
+
+            if (!d->viewAndLut->contains(d->view))
+                changeLut(d->lutBox->currentIndex());
+            // TODO : (connect) -> delete view from 3 hashes when closed.
         }
     }
-
-    if(!view)
-    {
-        return;
-    }
-
-    medAbstractLayeredView * medView = dynamic_cast<medAbstractLayeredView *> (view);
-    if ( !medView )
-        return;
-
-    if (medView==d->view)
-        return;
-
-    d->view = medView;
-
-    medAbstractData *data = d->view->layerData(0);
-    if (!data->identifier().contains( "vtkDataMesh" ))
-        return;
-    
-    medAbstractMeshData * dataMesh = static_cast<medAbstractMeshData*>(data);
-    vtkMetaDataSet * mesh = static_cast<vtkMetaDataSet*>(dataMesh->mesh());
-
-    if (!mesh || (mesh->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
-                         mesh->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
-         return;
-
-    d->listOfAttributes.clear();
-    d->attributeBox->clear();
-
-    vtkImageView3D * view3d = static_cast<medVtkViewBackend*>(d->view->backend())->view3D;
-
-    if (view3d->GetDataSetCollection()->GetItem(0))
-    {
-        d->viewDataSet->insert(d->view,view3d->GetDataSetCollection()->GetItem(0)); 
-    }
-    else
-        return;
-    
-    for (int i = 0; i < mesh->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
-    {
-        if (mesh->GetDataSet()->GetPointData()->GetArray(i)->GetNumberOfComponents() == 1)
-        {
-            d->listOfAttributes << QString::fromUtf8(mesh->GetDataSet()->GetPointData()->GetArrayName(i));
-            d->attributeBox->addItem("Point : "  + QString::fromUtf8(mesh->GetDataSet()->GetPointData()->GetArrayName(i)));
-        }
-    }
-
-    for (int i = 0;  i < mesh->GetDataSet()->GetCellData()->GetNumberOfArrays(); i++)
-    {
-        if (mesh->GetDataSet()->GetCellData()->GetArray(i)->GetNumberOfComponents() == 1)
-            d->listOfAttributes << QString::fromUtf8(mesh->GetDataSet()->GetCellData()->GetArrayName(i));
-            d->attributeBox->addItem("Cell : "  + QString::fromUtf8(mesh->GetDataSet()->GetCellData()->GetArrayName(i)));
-    }
-    if (d->attributeChosen->contains(d->view))
-    {
-        d->attributeBox->setCurrentIndex(d->attributeChosen->value(d->view));
-        changeAttribute(d->attributeChosen->value(d->view));
-    }
-    else
-    {
-        changeAttribute(0);
-        d->attributeChosen->insert(d->view,0);
-    }
-
-    if (!d->viewAndLut->contains(d->view))
-        changeLut(d->lutBox->currentIndex());
-    // TODO : (connect) -> delete view from 3 hashes when closed.
 }
 
 bool medClutToolBox::registered()
