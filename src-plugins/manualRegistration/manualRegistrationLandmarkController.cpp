@@ -147,9 +147,16 @@ manualRegistrationLandmarkController::manualRegistrationLandmarkController()
 //----------------------------------------------------------------------------
 manualRegistrationLandmarkController::~manualRegistrationLandmarkController()
 {
+    this->Reset();
+    delete Points_Moving;
+    delete Points_Fixed;
+
     this->Command->Delete();
+
     if (this->InteractorCollection)
+    {
         this->InteractorCollection->UnRegister(this);
+    }
 }
 
 void manualRegistrationLandmarkController::SetInteractorCollection (vtkCollection* arg)
@@ -227,7 +234,7 @@ void manualRegistrationLandmarkController::AddPoint(manualRegistrationLandmark *
     if (!landmark->HasObserver (vtkCommand::DeleteEvent, this->Command) )
         landmark->AddObserver(vtkCommand::DeleteEvent, this->Command, 0);
 
-    Tbx->updateLabels(Points_Fixed->size(),Points_Moving->size());
+    Tbx->updateGUI(Points_Fixed->size(),Points_Moving->size());
 }
 
 ////----------------------------------------------------------------------------
@@ -286,8 +293,7 @@ void manualRegistrationLandmarkController::Reset()
     {
         for(int i=0;i<Points_Fixed->size();i++)
         {
-            Points_Fixed->at(i)->RemoveAllObservers();
-            Points_Fixed->at(i)->Delete();
+            RequestDeletion(Points_Fixed->at(i));
         }
     }
 
@@ -295,16 +301,12 @@ void manualRegistrationLandmarkController::Reset()
     {
         for(int i=0;i<Points_Moving->size();i++)
         {
-            Points_Moving->at(i)->RemoveAllObservers();
-            Points_Moving->at(i)->Delete();
+            RequestDeletion(Points_Moving->at(i));
         }
     }
 
     Points_Fixed->clear();
     Points_Moving->clear();
-
-    // Update the user label with the number of current landmarks
-    Tbx->updateLabels(Points_Fixed->size(),Points_Moving->size());
 }
 
 void manualRegistrationLandmarkController::ClearUselessLandmarks()
@@ -365,5 +367,7 @@ void manualRegistrationLandmarkController::RequestDeletion(manualRegistrationLan
         if (Points_Moving->size()>i && !Points_Moving->at(i)->GetToDelete())
             cptMoving++;
     }
-    Tbx->updateLabels(cptFixed,cptMoving);
+
+    // Update the user label with the number of current landmarks
+    Tbx->updateGUI(cptFixed,cptMoving);
 }

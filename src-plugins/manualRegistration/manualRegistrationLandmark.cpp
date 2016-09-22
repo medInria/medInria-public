@@ -130,16 +130,27 @@ void manualRegistrationLandmark::On()
 
 void manualRegistrationLandmark::ShowOrHide()
 {
-    if (!View->GetRenderWindow() || ToDelete)
-        return;
-    if (HandleWidget->GetInteractor() && HandleWidget->GetRepresentation()->GetRenderer())
-        if (HandleWidget->GetInteractor()->GetRenderWindow())
+    if (!ToDelete && View)
+    {
+        if (HandleWidget)
         {
-            if (Indices[View->GetSliceOrientation()]!=View->GetSlice())
-                Off();
-            else
-                On();
+            if (HandleWidget->GetInteractor() && HandleWidget->GetRepresentation())
+            {
+                if (HandleWidget->GetInteractor()->GetRenderWindow() &&
+                        HandleWidget->GetRepresentation()->GetRenderer())
+                {
+                    if (Indices[View->GetSliceOrientation()]!=View->GetSlice())
+                    {
+                        Off();
+                    }
+                    else
+                    {
+                        On();
+                    }
+                }
+            }
         }
+    }
 }
 
 vtkPointHandleRepresentation2D * manualRegistrationLandmark::GetHandleRepresentation()

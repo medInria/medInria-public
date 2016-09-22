@@ -39,7 +39,7 @@ public:
     static bool registered();
     dtkPlugin * plugin();
 
-    void updateLabels(int left,int right);
+    void updateGUI(int left,int right);
 
 protected slots:
     void updateView();    
@@ -57,7 +57,10 @@ public slots:
 private:
     void displayButtons(bool);
     void constructContainers(medTabbedViewContainers *);
-    void disableSaveButtons(bool);
+    void setDisableSaveButtons(bool);
+    void setDisableComputeResetButtons(bool);
+    void setDisableResetButton(bool);
+
     manualRegistrationToolBoxPrivate *d;
 };
 

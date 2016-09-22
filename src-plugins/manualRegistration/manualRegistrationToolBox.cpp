@@ -126,7 +126,8 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegis
     d->process         = 0;
     d->output          = 0;
 
-    disableSaveButtons(true);
+    setDisableSaveButtons(true);
+    setDisableComputeResetButtons(true);
     displayButtons(false);
 }
 
@@ -354,25 +355,46 @@ void manualRegistrationToolBox::computeRegistration()
     qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
     synchroniseMovingFuseView();
 
-    disableSaveButtons(false);
+    setDisableSaveButtons(false);
 }
 
 void manualRegistrationToolBox::reset()
 {
+    medAbstractImageView * viewFuse   = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
+    medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
+    medAbstractImageView * viewFix    = qobject_cast<medAbstractImageView*>(d->leftContainer->view());
+
     if (d->controller)
     {
         d->controller->Reset(); // Delete every landmark on both view
+
+        // Refresh views except at closing
+        if (viewMoving)
+        {
+            viewMoving->viewWidget()->update();
+        }
+
+        if (viewFix)
+        {
+            viewFix->viewWidget()->update();
+        }
     }
 
-    medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
-    medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
-    viewFuse->removeLayer(1);
+    if (viewFuse->layersCount() > 1)
+    {
+        viewFuse->removeLayer(1);
+    }
+
     if(viewMoving) //not the case if called by viewMoving closed() signal
     {
         viewFuse->addLayer(viewMoving->layerData(0));
     }
+
     synchroniseMovingFuseView();
-    disableSaveButtons(true);
+
+    // Disable Save/Transformation/Compute/Reset buttons
+    setDisableSaveButtons(true);
+    setDisableComputeResetButtons(true);
 }
 
 void manualRegistrationToolBox::save()
@@ -475,10 +497,21 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
     }
 }
 
-void manualRegistrationToolBox::disableSaveButtons(bool param)
+void manualRegistrationToolBox::setDisableSaveButtons(bool disable)
 {
-    d->b_save->setDisabled(param);
-    d->b_exportTransformation->setDisabled(param);
+    d->b_save->setDisabled(disable);
+    d->b_exportTransformation->setDisabled(disable);
+}
+
+void manualRegistrationToolBox::setDisableComputeResetButtons(bool disable)
+{
+    d->b_computeRegistration->setDisabled(disable);
+    setDisableResetButton(disable);
+}
+
+void manualRegistrationToolBox::setDisableResetButton(bool disable)
+{
+    d->b_reset->setDisabled(disable);
 }
 
 void manualRegistrationToolBox::displayButtons(bool show)
@@ -499,9 +532,22 @@ void manualRegistrationToolBox::displayButtons(bool show)
     }
 }
 
-
-void manualRegistrationToolBox::updateLabels(int left,int right)
+void manualRegistrationToolBox::updateGUI(int left,int right)
 {
-    d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container  : " + QString::number(left));
-    d->numberOfLdInRightContainer->setText("Number of landmarks in right container : " + QString::number(right));
+    d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container: " + QString::number(left));
+    d->numberOfLdInRightContainer->setText("Number of landmarks in right container: " + QString::number(right));
+
+    if (left==right)
+    {
+        if(left>0)
+        {
+            setDisableComputeResetButtons(false);
+        }
+    }
+
+    if ((left>0) || (right>0))
+    {
+        // at least one landmark put
+        setDisableResetButton(false);
+    }
 }
