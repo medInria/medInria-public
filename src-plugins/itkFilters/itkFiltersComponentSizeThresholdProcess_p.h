@@ -16,15 +16,15 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
+#include "itkBinaryThresholdImageFilter.h"
+#include <itkConnectedComponentImageFilter.h>
+#include "itkCommand.h"
 #include "itkFiltersProcessBase_p.h"
+#include "itkImage.h"
+#include <itkRelabelComponentImageFilter.h>
 
 #include <medMetaDataKeys.h>
-
-#include "itkImage.h"
-#include "itkCommand.h"
-#include <itkConnectedComponentImageFilter.h>
-#include <itkRelabelComponentImageFilter.h>
-#include "itkBinaryThresholdImageFilter.h"
+#include <medUtilities.h>
 
 class itkFiltersComponentSizeThresholdProcess;
 
@@ -107,11 +107,9 @@ public:
             std::cerr << "ExceptionObject caught in sizeThresholdingProcess!" << std::endl;
             std::cerr << err << std::endl;
         }
-        
-        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " ConnectedComponent filter (" + QString::number(minimumSize) + ")";
 
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        QString newSeriesDescription = "connectedComponent " + QString::number(minimumSize);
+        medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
     }
 };
 

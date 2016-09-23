@@ -13,16 +13,14 @@
 
 #pragma once
 
-#include <medAbstractData.h>
-
-#include <itkFiltersProcessBase_p.h>
-
-#include <medMetaDataKeys.h>
-
-#include <itkImage.h>
 #include <itkCommand.h>
+#include <itkFiltersProcessBase_p.h>
+#include <itkImage.h>
 #include <itkIntensityWindowingImageFilter.h>
 
+#include <medAbstractData.h>
+#include <medMetaDataKeys.h>
+#include <medUtilities.h>
 
 class itkFiltersWindowingProcess;
 
@@ -61,10 +59,9 @@ public:
         output->setData ( windowingFilter->GetOutput() );
         
         //Set output description metadata
-        QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " intensity filter";
-        
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        QString newSeriesDescription = "windowing " + QString::number(minimumIntensityValue)
+                + " " + QString::number(maximumIntensityValue);
+        medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
     }
 
 };
