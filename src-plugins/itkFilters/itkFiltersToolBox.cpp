@@ -37,6 +37,8 @@
 
 #include <QtGui>
 
+#include <statsROI.h>
+
 class itkFiltersToolBoxPrivate
 {
 public:
@@ -197,17 +199,10 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     //Intensity windowing filter widget
     d->intensityFilterWidget = new QWidget(this);
     d->intensityMinimumValue = new QDoubleSpinBox;
-    d->intensityMinimumValue->setMaximum ( 255 );
-    d->intensityMinimumValue->setValue ( 0 );
     d->intensityMaximumValue = new QDoubleSpinBox;
-    d->intensityMaximumValue->setMaximum ( 255 );
-    d->intensityMaximumValue->setValue ( 255 );
     d->intensityOutputMinimumValue = new QDoubleSpinBox;
-    d->intensityOutputMinimumValue->setMaximum ( 255 );
-    d->intensityOutputMinimumValue->setValue ( 0 );
     d->intensityOutputMaximumValue = new QDoubleSpinBox;
-    d->intensityOutputMaximumValue->setMaximum ( 255 );
-    d->intensityOutputMaximumValue->setValue ( 255 );
+    clear();
 
     QLabel * intensityMinimumLabel = new QLabel ( tr ( "Minimum:" ) );
     QHBoxLayout * intensityMinimumLayout = new QHBoxLayout;
@@ -360,9 +355,6 @@ medAbstractData* itkFiltersToolBox::processOutput()
 
 void itkFiltersToolBox::clear()
 {
-    d->addFilterValue->setMaximum ( 100.0 );
-    d->subtractFilterValue->setMaximum ( 100.0 );
-
     d->intensityMinimumValue->setMinimum ( 0 );
     d->intensityMinimumValue->setMaximum ( 255 );
     d->intensityMinimumValue->setValue ( 0 );
@@ -398,43 +390,32 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<char>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<char>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<char>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<char>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<char>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<char>::max() );
-
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<char>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<char>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<char>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<char>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<char>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<char>::max() );
-
         }
         else if ( identifier == "itkDataImageUChar3" )
         {
             d->addFilterValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
             d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 
-
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned char>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned char>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned char>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned char>::max() );
         }
         else if ( identifier == "itkDataImageShort3" )
         {
@@ -443,19 +424,15 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<short>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<short>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<short>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<short>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<short>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<short>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<short>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<short>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<short>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<short>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<short>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<short>::max() );
         }
         else if ( identifier == "itkDataImageUShort3" )
         {
@@ -464,19 +441,15 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned short>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned short>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned short>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned short>::max() );
         }
         else if ( identifier == "itkDataImageInt3" )
         {
@@ -485,19 +458,15 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<int>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<int>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<int>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<int>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<int>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<int>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<int>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<int>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<int>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<int>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<int>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<int>::max() );
         }
         else if ( identifier == "itkDataImageUInt3" )
         {
@@ -506,40 +475,32 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned int>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned int>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned int>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned int>::max() );
         }
         else if ( identifier == "itkDataImageLong3" )
         {
             d->addFilterValue->setMaximum ( std::numeric_limits<long>::max() );
-            d->subtractFilterValue->setValue ( std::numeric_limits<long>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<long>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<long>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<long>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<long>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<long>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<long>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<long>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<long>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<long>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<long>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<long>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<long>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<long>::max() );
         }
         else if ( identifier== "itkDataImageULong3" )
         {
@@ -548,19 +509,15 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned long>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned long>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned long>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned long>::max() );
         }
         else if ( identifier == "itkDataImageFloat3" )
         {
@@ -569,19 +526,15 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<float>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<float>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<float>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<float>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<float>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<float>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<float>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<float>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<float>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<float>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<float>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<float>::max() );
         }
         else if ( identifier == "itkDataImageDouble3" )
         {
@@ -590,26 +543,42 @@ void itkFiltersToolBox::update()
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<double>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<double>::max() );
-            d->intensityMinimumValue->setValue ( std::numeric_limits<double>::min() );
 
             d->intensityMaximumValue->setMinimum ( std::numeric_limits<double>::min() );
             d->intensityMaximumValue->setMaximum ( std::numeric_limits<double>::max() );
-            d->intensityMaximumValue->setValue ( std::numeric_limits<double>::max() );
 
             d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<double>::min() );
             d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<double>::max() );
-            d->intensityOutputMinimumValue->setValue ( std::numeric_limits<double>::min() );
 
             d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<double>::min() );
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<double>::max() );
-            d->intensityOutputMaximumValue->setValue ( std::numeric_limits<double>::max() );
         }
         else
         {
-            qWarning() << "itkFiltersToolBox Error : pixel type not yet implemented ("
+            qWarning() << "itkFiltersToolBox Error: pixel type not yet implemented ("
             << identifier
             << ")";
+            clear();
+            return;
         }
+
+        // Get minimum and maximum of the data
+        statsROI statsProcess;
+        statsProcess.setInput(data, 0); //data
+        statsProcess.setParameter(statsROI::MINMAX);
+
+        double m_MinValueImage = 0.0;
+        double m_MaxValueImage = 255.0;
+
+        if(statsProcess.update() == DTK_SUCCEED)
+        {
+            m_MinValueImage = statsProcess.output().at(0);
+            m_MaxValueImage = statsProcess.output().at(1);
+        }
+        d->intensityMinimumValue->setValue(m_MinValueImage);
+        d->intensityMaximumValue->setValue(m_MaxValueImage);
+        d->intensityOutputMinimumValue->setValue(m_MinValueImage);
+        d->intensityOutputMaximumValue->setValue (m_MaxValueImage);
     }
 }
 
