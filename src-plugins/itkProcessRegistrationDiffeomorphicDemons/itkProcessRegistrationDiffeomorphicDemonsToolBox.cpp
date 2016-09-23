@@ -14,8 +14,6 @@
 #include <itkProcessRegistrationDiffeomorphicDemons.h>
 #include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
-#include <QtGui>
-
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
@@ -47,9 +45,10 @@ public:
     QDoubleSpinBox * updateFieldStdDevBox;
     QCheckBox * useHistogramBox;
     QLineEdit * iterationsBox;
+    medAbstractRegistrationProcess *process;
 };
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
+itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -155,22 +154,31 @@ bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
             registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>();
 }
 
+dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "itkProcessRegistrationDiffeomorphicDemonsPlugin" );
+    return plugin;
+}
+
+
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 {
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
-    if(!this->parentToolBox())
+    if(!toolbox)
         return;
 
-    medAbstractRegistrationProcess *process;
-    process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
-    if(!process)
+    
+    d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+    if(!d->process)
         return;
 
-    this->parentToolBox()->setProcess(process);
+    toolbox->setProcess(d->process);
 
     //TODO smartPointing have to be managed only in abstract processes -rde
-    dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
-    dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
+    dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
+    dtkSmartPointer<medAbstractData> movingData(toolbox->movingData());
 
     if (!fixedData || !movingData)
         return;
@@ -178,7 +186,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     // Many choices here
 
     itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
+            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(d->process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
@@ -207,7 +215,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 
     medRunnableProcess *runProcess = new medRunnableProcess;
 
-    runProcess->setProcess (process);
+    runProcess->setProcess (d->process);
 
     d->progressionStack->addJobItem(runProcess, tr("Progress:"));
     d->progressionStack->setActive(runProcess,true);
@@ -220,6 +228,24 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progressionStack, SLOT(setActive(QObject*,bool)));
 
-    medJobManager::instance()->registerJobItem(runProcess,process->identifier());
+    medJobManager::instance()->registerJobItem(runProcess,d->process->identifier());
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+}
+
+medAbstractData* itkProcessRegistrationDiffeomorphicDemonsToolBox::processOutput()
+{
+    // If called from pipelines, and run() not called before.
+    if(!d->process)
+    {
+        run();
+    }
+
+    if(d->process)
+    {
+        return d->process->output();
+    }
+    else
+    {
+        return NULL;
+    }
 }

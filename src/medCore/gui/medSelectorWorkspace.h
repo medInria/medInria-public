@@ -28,11 +28,11 @@ class MEDCORE_EXPORT medSelectorWorkspace : public medAbstractWorkspace
     Q_OBJECT
 
 public:
-    medSelectorWorkspace(QWidget * parent, QString name);
+    medSelectorWorkspace(QWidget * parent, QString name, medSelectorToolBox *selectorToolbox = NULL);
 
     virtual ~medSelectorWorkspace();
 
-    QPointer<medSelectorToolBox> selectorToolBox();
+    medSelectorToolBox *selectorToolBox();
 
 protected slots:
     virtual void onProcessSuccess(){}

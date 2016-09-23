@@ -13,19 +13,12 @@
 
 #pragma once
 
-#include <medRegistrationAbstractToolBox.h>
-
-#include "manualRegistrationPluginExport.h"
-#include "medToolBox.h"
-
-#include <medDataManager.h>
-#include <medAbstractDataFactory.h>
-
-
+#include <manualRegistrationPluginExport.h>
+#include <medAbstractSelectableToolBox.h>
 
 class manualRegistrationToolBoxPrivate;
 
-class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationToolBox : public medRegistrationAbstractToolBox
+class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Manual Registration","register two images manually",<<"Registration")
@@ -34,7 +27,7 @@ public:
     manualRegistrationToolBox(QWidget *parent = 0);
     ~manualRegistrationToolBox();
     
-    medAbstractData* getOutput();
+    medAbstractData* processOutput();
     
     static bool registered();
     dtkPlugin * plugin();
@@ -43,7 +36,6 @@ public:
 
 protected slots:
     void updateView();    
-    void update(medAbstractData *){}
     void synchroniseMovingFuseView();
     void save();
     void exportTransformation();

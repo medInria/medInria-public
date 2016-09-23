@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medRegistrationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate;
 
-class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medRegistrationAbstractToolBox
+class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Diffeomorphic Demons",
@@ -29,6 +29,8 @@ public:
 
 public:
     static bool registered();
+    dtkPlugin* plugin();
+    medAbstractData* processOutput();
 
 public slots:
     void run();

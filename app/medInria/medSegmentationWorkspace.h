@@ -15,7 +15,6 @@
 
 #include <medSelectorWorkspace.h>
 
-class medSelectorToolBox;
 
 /**
  * class medSegmentationWorkspace

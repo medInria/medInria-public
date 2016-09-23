@@ -11,30 +11,26 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "manualRegistration.h"
-#include <manualRegistrationToolBox.h>
-
-#include <QtGui>
-
-#include <medAbstractImageView.h>
-#include <medToolBoxFactory.h>
-#include <medPluginManager.h>
-#include <medViewContainer.h>
-#include <medTabbedViewContainers.h>
 #include <manualRegistration.h>
 #include <manualRegistrationLandmarkController.h>
-#include <medVtkViewBackend.h>
-#include <vtkCollection.h>
-#include <vtkRenderWindowInteractor.h>
-#include <medParameterGroupManager.h>
-#include <medViewParameterGroup.h>
-#include <medLayerParameterGroup.h>
-#include <medStringListParameter.h>
-#include <medAbstractImageViewInteractor.h>
+#include <manualRegistrationToolBox.h>
+
+#include <medAbstractImageView.h>
+#include <medAbstractLayeredView.h>
 #include <medCompositeParameter.h>
-#include <medMessageController.h>
-#include <medUtilities.h>
+#include <medDataManager.h>
+#include <medLayerParameterGroup.h>
+#include <medPluginManager.h>
 #include <medRegistrationSelectorToolBox.h>
+#include <medStringListParameter.h>
+#include <medTabbedViewContainers.h>
+#include <medToolBoxFactory.h>
+#include <medUtilities.h>
+#include <medViewContainer.h>
+#include <medViewParameterGroup.h>
+#include <medVtkViewBackend.h>
+
+#include <vtkRenderWindowInteractor.h>
 
 class manualRegistrationToolBoxPrivate
 {
@@ -60,7 +56,7 @@ public:
     dtkSmartPointer<medAbstractData> output;
 };
 
-manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new manualRegistrationToolBoxPrivate)
+manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new manualRegistrationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -146,7 +142,7 @@ manualRegistrationToolBox::~manualRegistrationToolBox()
     d = NULL;
 }
 
-medAbstractData* manualRegistrationToolBox::getOutput()
+medAbstractData* manualRegistrationToolBox::processOutput()
 {
     if (!d->output)
     {
@@ -202,10 +198,12 @@ void manualRegistrationToolBox::startManualRegistration()
     medTabbedViewContainers * tabContainers = getWorkspace()->stackedViewContainers();
     d->regOn = true;
 
-    if(this->parentToolBox()) //parentTbx only set in medRegistrationSelectorToolBox::changeCurrentToolBox
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+
+    if(toolbox)
     {
-        dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
-        dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
+        dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
+        dtkSmartPointer<medAbstractData> movingData(toolbox->movingData());
 
         if (!fixedData || !movingData)
         {
@@ -217,7 +215,7 @@ void manualRegistrationToolBox::startManualRegistration()
         d->rightContainer = tabContainers->containersInTab(0).at(1);
         d->bottomContainer  = tabContainers->containersInTab(1).at(0);
     }
-    else // not in Reg. workspace
+    else // not in Reg. workspace, used in Pipelines
     {
         constructContainers(tabContainers);
     }
@@ -259,7 +257,7 @@ void manualRegistrationToolBox::stopManualRegistration()
     d->bottomContainer = 0;
     displayButtons(false);
 
-    if(!this->parentToolBox())
+    if(!selectorToolBox())
     {
         medTabbedViewContainers * tabContainers = getWorkspace()->stackedViewContainers();
         tabContainers->setCurrentIndex(0);
@@ -269,55 +267,62 @@ void manualRegistrationToolBox::stopManualRegistration()
 
 void manualRegistrationToolBox::synchroniseMovingFuseView()
 {
-    if(this->parentToolBox()) //no need in Reg. workspace
+    if(!selectorToolBox()) // selectorToolBox does not exist in Pipelines
     {
-       return;
-    }
+        // This method will resynchronise the lut and window level
+        medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
+        medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
 
-    // This method will resynchronise the lut and window level
-    medAbstractImageView * viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
-    medAbstractImageView * viewFuse = qobject_cast<medAbstractImageView*>(d->bottomContainer->view());
+        d->layerGroup2->addImpactedlayer(viewFuse,viewFuse->layerData(1));
 
-    d->layerGroup2->addImpactedlayer(viewFuse,viewFuse->layerData(1));
-    // Synchronize Lut
-    QList<medAbstractInteractor*> interactors = viewMoving->layerInteractors(0);
-    QString lutCurrent;
-    QList<medAbstractParameter*> parameters;
-    for(int i = 0;i<interactors.size();i++)
-    {
-        if (interactors[i]->identifier() == "medVtkViewItkDataImageInteractor")
+        // Synchronize Lut
+        QList<medAbstractInteractor*> interactors = viewMoving->layerInteractors(0);
+        QString lutCurrent;
+        QList<medAbstractParameter*> parameters;
+        for(int i = 0;i<interactors.size();i++)
         {
-            parameters = interactors[i]->linkableParameters();
-            for(int j = 0;j<parameters.size();j++)
-                if (parameters[j]->name()=="Lut")
-                    lutCurrent = qobject_cast<medStringListParameter*>(parameters[j])->value();
+            if (interactors[i]->identifier() == "medVtkViewItkDataImageInteractor")
+            {
+                parameters = interactors[i]->linkableParameters();
+                for(int j = 0;j<parameters.size();j++)
+                {
+                    if (parameters[j]->name()=="Lut")
+                    {
+                        lutCurrent = qobject_cast<medStringListParameter*>(parameters[j])->value();
+                    }
+                }
+            }
         }
-    }
 
-    interactors = viewFuse->layerInteractors(1);
+        interactors = viewFuse->layerInteractors(1);
 
-    for(int i = 0;i<interactors.size();i++)
-    {
-        if (interactors[i]->identifier() == "medVtkViewItkDataImageInteractor")
+        for(int i = 0;i<interactors.size();i++)
         {
-            QList<medAbstractParameter*> parameters = interactors[i]->linkableParameters();
-            for(int j = 0;j<parameters.size();j++)
-                if (parameters[j]->name()=="Lut")
-                    qobject_cast<medStringListParameter*>(parameters[j])->setValue(lutCurrent);
+            if (interactors[i]->identifier() == "medVtkViewItkDataImageInteractor")
+            {
+                QList<medAbstractParameter*> parameters = interactors[i]->linkableParameters();
+                for(int j = 0;j<parameters.size();j++)
+                {
+                    if (parameters[j]->name()=="Lut")
+                    {
+                        qobject_cast<medStringListParameter*>(parameters[j])->setValue(lutCurrent);
+                    }
+                }
+            }
         }
-    }
 
-    // Synchronize Window/Level
-    medCompositeParameter * windowLevelParameter1 = viewMoving->windowLevelParameter(0);
-    medCompositeParameter * windowLevelParameter2 = viewFuse->windowLevelParameter(1);
-    QList<QVariant> windowLevel = windowLevelParameter1->values();
-    QHash<QString,QVariant> hash;
-    if (windowLevel.size()==2)
-    {
-        hash.insert("Level",windowLevel[0]);
-        hash.insert("Window",windowLevel[1]);
+        // Synchronize Window/Level
+        medCompositeParameter * windowLevelParameter1 = viewMoving->windowLevelParameter(0);
+        medCompositeParameter * windowLevelParameter2 = viewFuse->windowLevelParameter(1);
+        QList<QVariant> windowLevel = windowLevelParameter1->values();
+        QHash<QString,QVariant> hash;
+        if (windowLevel.size()==2)
+        {
+            hash.insert("Level",windowLevel[0]);
+            hash.insert("Window",windowLevel[1]);
+        }
+        windowLevelParameter2->setValues(hash);
     }
-    windowLevelParameter2->setValues(hash);
 }
 
 void manualRegistrationToolBox::computeRegistration()
@@ -335,9 +340,11 @@ void manualRegistrationToolBox::computeRegistration()
     d->process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
     d->process->update(itkProcessRegistration::FLOAT);
 
-    if(this->parentToolBox()) //if in Registration Workspace
+    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+
+    if(toolbox) // toolbox empty in Pipelines and not Registration workspace
     {
-        this->parentToolBox()->setProcess(d->process);
+        toolbox->setProcess(d->process);
     }
 
     medAbstractData * newOutput = d->process->output();
@@ -448,12 +455,14 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
         tabContainers->setCurrentIndex(0);
         d->leftContainer->addData(d->currentView->layerData(0));//
         qobject_cast<medAbstractImageView*>(d->leftContainer->view())->windowLevelParameter(0)->setValues(windowing0);
+
         d->bottomContainer = d->leftContainer->splitHorizontally();
         d->bottomContainer->addData(d->currentView->layerData(0));
         qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(0)->setValues(windowing0);
         d->bottomContainer->addData(d->currentView->layerData(1));
         qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->windowLevelParameter(1)->setValues(windowing1);
         tabContainers->containersInTab(0);
+
         d->rightContainer = d->leftContainer->splitVertically();
         d->rightContainer->addData(d->currentView->layerData(1));
         qobject_cast<medAbstractImageView*>(d->rightContainer->view())->windowLevelParameter(0)->setValues(windowing1);
@@ -469,8 +478,12 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
             {
                 QList<medAbstractParameter*> parameters = interactors[i]->linkableParameters();
                 for(int j = 0;j<parameters.size();j++)
+                {
                     if (parameters[j]->name()=="Lut")
+                    {
                         qobject_cast<medStringListParameter*>(parameters[j])->setValue("Hot Metal");
+                    }
+                }
             }
         }
 

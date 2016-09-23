@@ -36,6 +36,7 @@
 #include <medToolBoxHeader.h>
 
 #include <medRegistrationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 
 #include <QtGui>
@@ -44,8 +45,6 @@ class medRegistrationSelectorToolBoxPrivate
 {
 public:
     QPushButton * saveTransButton;
-
-    medComboBox *toolboxes;
 
     QVBoxLayout *toolBoxLayout;
 
@@ -56,13 +55,12 @@ public:
     dtkSmartPointer <medAbstractRegistrationProcess> undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
-    medRegistrationAbstractToolBox * currentToolBox;
     QString nameOfCurrentAlgorithm;
     QString savePath;
 
 };
 
-medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
+medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, QString name) : medSelectorToolBox(parent, name), d(new medRegistrationSelectorToolBoxPrivate)
 {
     d->fixedData  = NULL;
     d->movingData = NULL;
@@ -80,12 +78,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
 
     // --- Setting up custom toolboxes list ---
-
-    d->toolboxes = new medComboBox(this);
-    d->toolboxes->addItem(tr("Choose algorithm"));
-    d->toolboxes->setToolTip(
-                tr( "Choose the registration algorithm"
-                    " amongst the loaded plugins" ));
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
 
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration"))
@@ -99,53 +91,31 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             tb->header()->hide();
             d->undoRedoToolBox = tb;
             d->undoRedoToolBox->setRegistrationToolBox(this);
+            d->undoRedoToolBox->setWorkspace(getWorkspace());
         }
     }
-    int i=1;
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("Registration"))
-    {
-        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
-        d->toolboxes->addItem(details->name, toolbox);
-        d->toolboxes->setItemData(i,
-                                  details->description,
-                                  Qt::ToolTipRole);
-        i++;
-    }
-
-    connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
     // ---
-    QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
-    layoutButtonGroup->addButton(d->saveTransButton);
-
-    QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
-    layoutButtonLayout->addWidget(d->saveTransButton);
-
 
     QWidget *toolBoxWidget =  new QWidget;
     d->toolBoxLayout = new QVBoxLayout(toolBoxWidget);
-    d->toolBoxLayout->addLayout(layoutButtonLayout);
-    d->toolBoxLayout->addWidget(d->toolboxes);
+    d->toolBoxLayout->addWidget(d->saveTransButton);
 
     if (d->undoRedoToolBox)
         this->addWidget(d->undoRedoToolBox);
 
     this->addWidget(toolBoxWidget);
 
-    d->currentToolBox = NULL;
-
     //Connect Message Controller:
     connect(this,SIGNAL(showError(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
-//    connect(medJobManager::instance(),SIGNAL(jobRegistered(medJobItem*,QString)),this,SLOT(onJobAdded(medJobItem*,QString)));
 }
 
 medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
 {
     delete d;
-
     d = NULL;
 }
 
@@ -161,7 +131,6 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
     return d->movingData;
 }
 
-
 /**
  * Sets up the toolbox chosen and remove the old one.
  *
@@ -169,52 +138,24 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
  */
 void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 {
-    //get rid of old toolBox
-    if (d->currentToolBox)
-    {
-        d->currentToolBox->hide();
-        d->toolBoxLayout->removeWidget(d->currentToolBox);
-        d->currentToolBox = NULL;
-    }
+    medSelectorToolBox::changeCurrentToolBox(index);
 
-    //get identifier for toolbox.
-    QString id = d->toolboxes->itemData(index).toString();
-
-    medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
-
-    if(!toolbox) {
-        qWarning() << "Unable to instantiate" << id << "toolbox";
-        return;
-    }
-
-    d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
-
-    toolbox->setRegistrationToolBox(this);
-    toolbox->setWorkspace(getWorkspace());
-    d->currentToolBox = toolbox;
-    d->currentToolBox->show();
-    d->currentToolBox->header()->hide();
-    d->toolBoxLayout->addWidget(d->currentToolBox);
-
-    connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
-    connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
-    connect (toolbox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
-    connect (toolbox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+    connect (currentToolBox(), SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (currentToolBox(), SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
     if (!d->undoRedoProcess && !d->undoRedoToolBox)
     {
-        connect(toolbox,SIGNAL(success()),this,SLOT(handleOutput()));
+        connect(currentToolBox(), SIGNAL(success()), this, SLOT(handleOutput()));
     }
 }
-
 
 //! Clears the toolbox.
 void medRegistrationSelectorToolBox::clear(void)
 {
-
-    //maybe clear the currentToolBox?
-    if (d->currentToolBox)
-        d->currentToolBox->clear();
+    if (currentToolBox())
+    {
+        currentToolBox()->clear();
+    }
 }
 
 //! Gets the process.
@@ -408,28 +349,23 @@ void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
     this->setEnabled(enable);
 }
 
-void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobName){
-    if (d->process)
-        if (jobName == d->process->identifier()){
-            dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
-            if (proc==d->process)
-                enableSelectorToolBox(false);
-        }
-}
-bool medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
+void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
-
-    return d->undoRedoProcess
-            && d->undoRedoProcess->setFixedInput(d->fixedData)
-            && d->undoRedoProcess->setMovingInput(d->movingData);
+    setUndoRedoProcessInputs();
 }
 
-bool medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
+void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
+    setUndoRedoProcessInputs();
+}
 
-    return d->undoRedoProcess
-            && d->undoRedoProcess->setFixedInput(d->fixedData)
-            && d->undoRedoProcess->setMovingInput(d->movingData);
+void medRegistrationSelectorToolBox::setUndoRedoProcessInputs()
+{
+    if(d->undoRedoProcess)
+    {
+        d->undoRedoProcess->setFixedInput(d->fixedData);
+        d->undoRedoProcess->setMovingInput(d->movingData);
+    }
 }
