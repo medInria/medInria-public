@@ -97,7 +97,6 @@ public slots:
 
     void copyMetaDataToPaintedData();
     void import();
-    void clearMask();
 
     void setLabel(int newVal);
     void setLabelColor();
@@ -111,7 +110,11 @@ public slots:
     void undo();
     void redo();
     void addSliceToStack(medAbstractView * view,const unsigned char planeIndex,QList<int> listIdSlice);
-    void onViewClosed();
+
+    void closeView();
+    void onViewClosed(medAbstractView* viewClosed);
+    void clearMask();
+    void initializeToolbox();
 
     void newSeed();
     void removeSeed();
