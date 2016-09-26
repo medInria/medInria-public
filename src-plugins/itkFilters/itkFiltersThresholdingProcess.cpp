@@ -74,7 +74,7 @@ void itkFiltersThresholdingProcess::setParameter(double data, int channel)
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersThresholdingProcess::update ( void )
+int itkFiltersThresholdingProcess::tryUpdate()
 {
     DTK_D(itkFiltersThresholdingProcess);
     

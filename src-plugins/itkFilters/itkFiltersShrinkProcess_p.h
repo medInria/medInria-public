@@ -50,15 +50,7 @@ public:
     
         shrinkFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        try
-        {
-            shrinkFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersShrinkProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        shrinkFilter->Update();
 
         output->setData ( shrinkFilter->GetOutput() );
         

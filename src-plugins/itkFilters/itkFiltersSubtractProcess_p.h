@@ -49,16 +49,8 @@ public:
         callback->SetCallback ( itkFiltersSubtractProcessPrivate::eventCallback );
     
         subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
-    
-        try
-        {
-            subtractFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersSubtractProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+
+        subtractFilter->Update();
 
         output->setData ( subtractFilter->GetOutput() );
         

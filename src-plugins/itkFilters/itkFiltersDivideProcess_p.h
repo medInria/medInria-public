@@ -49,16 +49,8 @@ public:
         callback->SetCallback ( itkFiltersDivideProcessPrivate::eventCallback );
     
         divideFilter->AddObserver ( itk::ProgressEvent(), callback );
-    
-        try
-        {
-            divideFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersDivideProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+
+        divideFilter->Update();
 
         output->setData ( divideFilter->GetOutput() );
         

@@ -78,7 +78,7 @@ void itkFiltersShrinkProcess::setParameter(double data, int channel)
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersShrinkProcess::update ( void )
+int itkFiltersShrinkProcess::tryUpdate()
 {
     DTK_D(itkFiltersShrinkProcess);
     

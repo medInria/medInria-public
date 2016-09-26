@@ -65,7 +65,7 @@ void itkFiltersMultiplyProcess::setParameter(double data, int channel)
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersMultiplyProcess::update ( void )
+int itkFiltersMultiplyProcess::tryUpdate()
 {
     DTK_D(itkFiltersMultiplyProcess);
     

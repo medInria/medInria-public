@@ -71,15 +71,8 @@ public:
         typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
 
         connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        try
-        {
-            connectedComponentFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in sizeThresholdingProcess, ConnectedComponentImageFilter!" << err.GetDescription();
-            return DTK_FAILURE;
-        }
+
+        connectedComponentFilter->Update();
 
         // RELABEL COMPONENTS according to their sizes (0:largest(background))
         typedef itk::RelabelComponentImageFilter<ImageType, ImageType> FilterType;

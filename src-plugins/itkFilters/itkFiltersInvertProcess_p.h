@@ -49,16 +49,8 @@ public:
         callback->SetCallback ( itkFiltersInvertProcessPrivate::eventCallback );
     
         invertFilter->AddObserver ( itk::ProgressEvent(), callback );
-    
-        try
-        {
-            invertFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersInvertProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+
+        invertFilter->Update();
 
         output->setData ( invertFilter->GetOutput() );
         

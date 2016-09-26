@@ -67,7 +67,7 @@ void itkFiltersGaussianProcess::setParameter(double data, int channel)
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersGaussianProcess::update ( void )
+int itkFiltersGaussianProcess::tryUpdate()
 {
     DTK_D(itkFiltersGaussianProcess);
     

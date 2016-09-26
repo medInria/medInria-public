@@ -55,15 +55,7 @@ public:
     
         thresholdFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        try
-        {
-            thresholdFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersThresholdingProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        thresholdFilter->Update();
 
         output->setData ( thresholdFilter->GetOutput() );
 

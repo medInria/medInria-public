@@ -49,15 +49,7 @@ public:
     
         medianFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        try
-        {
-            medianFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersMedianProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        medianFilter->Update();
 
         output->setData ( medianFilter->GetOutput() );
         

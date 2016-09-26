@@ -47,15 +47,7 @@ public:
     
         normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        try
-        {
-            normalizeFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersNormalizeProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        normalizeFilter->Update();
 
         output->setData ( normalizeFilter->GetOutput() );
         

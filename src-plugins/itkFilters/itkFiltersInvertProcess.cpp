@@ -52,7 +52,7 @@ bool itkFiltersInvertProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersInvertProcess::update ( void )
+int itkFiltersInvertProcess::tryUpdate()
 {
     DTK_D(itkFiltersInvertProcess);
 

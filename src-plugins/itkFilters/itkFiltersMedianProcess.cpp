@@ -54,7 +54,7 @@ bool itkFiltersMedianProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersMedianProcess::update ( void )
+int itkFiltersMedianProcess::tryUpdate()
 {
     DTK_D(itkFiltersMedianProcess);
     

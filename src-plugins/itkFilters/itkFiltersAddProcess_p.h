@@ -50,15 +50,7 @@ public:
         
         addFilter->AddObserver ( itk::ProgressEvent(), callback );
         
-        try
-        {
-            addFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersAddProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        addFilter->Update();
 
         output->setData ( addFilter->GetOutput() );
         

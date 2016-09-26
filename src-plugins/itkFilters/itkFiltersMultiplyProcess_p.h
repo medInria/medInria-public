@@ -51,15 +51,7 @@ public:
     
         multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        try
-        {
-            multiplyFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersMultiplyProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        multiplyFilter->Update();
 
         output->setData ( multiplyFilter->GetOutput() );
         

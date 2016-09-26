@@ -55,15 +55,7 @@ public:
     
         windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        try
-        {
-            windowingFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersWindowingProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        windowingFilter->Update();
 
         output->setData ( windowingFilter->GetOutput() );
         

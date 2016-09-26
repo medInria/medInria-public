@@ -70,7 +70,7 @@ void itkFiltersComponentSizeThresholdProcess::setParameter(int data, int channel
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersComponentSizeThresholdProcess::update ( void )
+int itkFiltersComponentSizeThresholdProcess::tryUpdate()
 {
     DTK_D(itkFiltersComponentSizeThresholdProcess);
     

@@ -81,7 +81,7 @@ void itkFiltersWindowingProcess::setParameter(double data, int channel)
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersWindowingProcess::update ( void )
+int itkFiltersWindowingProcess::tryUpdate()
 {
     DTK_D(itkFiltersWindowingProcess);
     

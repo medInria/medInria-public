@@ -54,7 +54,7 @@ bool itkFiltersNormalizeProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersNormalizeProcess::update ( void )
+int itkFiltersNormalizeProcess::tryUpdate()
 {
     DTK_D(itkFiltersNormalizeProcess);
     

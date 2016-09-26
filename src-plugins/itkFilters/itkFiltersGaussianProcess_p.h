@@ -50,15 +50,7 @@ public:
     
         gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
     
-        try
-        {
-            gaussianFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in itkFiltersGaussianProcess! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        gaussianFilter->Update();
 
         output->setData ( gaussianFilter->GetOutput() );
         
