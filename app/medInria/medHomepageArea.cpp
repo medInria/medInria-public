@@ -23,6 +23,7 @@
 #include <medSettingsManager.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
+#include <dtkLog/dtkLogView.h>
 
 
 class medHomepageAreaPrivate
@@ -30,13 +31,10 @@ class medHomepageAreaPrivate
 public:
     QStackedWidget* stackedWidget;
     QWidget * navigationWidget;
-    QPropertyAnimation * navigationAnimation;
 
     QWidget * userWidget;
-    QPropertyAnimation * userAnimation;
 
     QWidget * infoWidget;
-    QPropertyAnimation * infoAnimation;
 
     QWidget * aboutWidget;
     QTabWidget * aboutTabWidget;
@@ -44,14 +42,13 @@ public:
     QWidget * settingsWidget;
     medSettingsEditor* settingsEditor;
 
-    QParallelAnimationGroup * animation;
+    QWidget* logWidget;
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
     //Setup navigation widget (with buttons for accessing available workspaces)
     d->navigationWidget = new QWidget ( this );
-    d->navigationWidget->setMinimumWidth ( 400 );
 
     //Setup the widget where the medInria general information are displayed
     d->infoWidget = new QWidget ( this );
@@ -59,16 +56,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
-    d->userWidget->setMinimumWidth ( 250 );
-    d->userWidget->setMaximumWidth ( 350 ); //TODO: find the right solution
-    d->userWidget->setMinimumHeight ( 40 );
 
     //Setup the about container widget (with a QTabWidget inside)
     d->aboutWidget = new QWidget ( this );
     d->aboutWidget->setMinimumSize(400,300);
-
     d->aboutWidget->hide();
-
 
     //User widget content with settings, about and help buttons
     QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
@@ -105,6 +97,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( pluginButton,SIGNAL ( clicked() ),this, SLOT ( onShowPlugin() ) );
 
+    medHomepageButton * logButton = new medHomepageButton ( this );
+    logButton->setText ( "Log" );
+    logButton->setMinimumHeight ( 30 );
+    logButton->setMaximumWidth ( 150 );
+    logButton->setMinimumWidth ( 150 );
+    logButton->setToolTip(tr("Display log window"));
+    logButton->setFocusPolicy ( Qt::NoFocus );
+    logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
+    logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( onShowLog() ) );
+
     medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
@@ -119,7 +122,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
-    userButtonsLayout->insertWidget ( 3, helpButton );
+    userButtonsLayout->insertWidget ( 3, logButton );
+    userButtonsLayout->insertWidget ( 4, helpButton );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
@@ -264,54 +268,44 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsLayout->addWidget(d->settingsEditor);
     settingsLayout->addLayout(settingsHideButtonLayout);
 
+    //Create the log widget.
+    d->logWidget = new QWidget(this);
+    QVBoxLayout * logLayout = new QVBoxLayout(d->logWidget);
+    QHBoxLayout * logHideButtonLayout = new QHBoxLayout();
+    QPushButton * hideLogButton = new QPushButton ( this );
+    hideLogButton->setText ( tr("Hide") );
+    hideLogButton->setFocusPolicy ( Qt::NoFocus );
+    hideLogButton->setToolTip( tr("Hide the Log section") );
+    QObject::connect ( hideLogButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
+    logHideButtonLayout->addStretch();
+    logHideButtonLayout->addWidget ( hideLogButton );
+    logHideButtonLayout->addStretch();
 
-    //Set the position of the widgets
-    d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
+    QLabel * medInriaLabel5 = new QLabel ( this );
+    medInriaLabel5->setPixmap ( medLogo );
+
+    dtkLogView* logView = new dtkLogView(d->logWidget);
+
+    QPushButton * openLogDirectoryButton = new QPushButton(tr("Open Log Directory"));
+    openLogDirectoryButton->setToolTip( tr("Show the log directory") );
+    connect(openLogDirectoryButton, SIGNAL(clicked()), this, SLOT(openLogDirectory()));
+
+    logLayout->addWidget(medInriaLabel5);
+    logLayout->addWidget(logView);
+    logLayout->addWidget(openLogDirectoryButton);
+    logLayout->addLayout(logHideButtonLayout);
 
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
     d->stackedWidget->setMinimumSize ( 400,300 );
-
-    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,
-                                                    this->height() / 5) );
-    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
-    if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
-        stackedWidgetHeight = d->stackedWidget->minimumHeight();
-    d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
-    d->stackedWidget->setMaximumWidth(this->width() / 2-50);
     d->stackedWidget->addWidget(d->infoWidget);
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
     d->stackedWidget->addWidget(d->settingsWidget);
+    d->stackedWidget->addWidget(d->logWidget);
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
     d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
-
-    //Setup homepage animations
-    d->animation = new QParallelAnimationGroup ( this );
-    d->navigationAnimation = new QPropertyAnimation ( d->navigationWidget, "pos" );
-    d->navigationAnimation->setDuration ( 750 );
-    d->navigationAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
-    d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 4 ) );
-
-    d->userAnimation = new QPropertyAnimation ( d->userWidget, "pos" );
-    d->userAnimation->setDuration ( 750 );
-    d->userAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->userAnimation->setStartValue ( QPoint ( this->width() + 250,  this->height() - 90 ) );
-    d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 90 ) );
-
-    d->infoAnimation = new QPropertyAnimation ( d->stackedWidget, "pos" );
-    d->infoAnimation->setDuration ( 750 );
-    d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->infoAnimation->setStartValue ( QPoint ( this->width() + 100 , this->height() / 5 ) );
-    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
-
-    d->animation->addAnimation ( d->navigationAnimation );
-    d->animation->addAnimation ( d->userAnimation );
-    d->animation->addAnimation ( d->infoAnimation );
-
 }
 
 medHomepageArea::~medHomepageArea()
@@ -323,32 +317,24 @@ medHomepageArea::~medHomepageArea()
 
 void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
+    Q_UNUSED(event);
+
     //Recompute the widgets position when the window is resized
-    d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
+    d->navigationWidget->setProperty ( "pos", QPoint ( 20 ,  this->height() / 4 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() - 90 ) );
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
     if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
+    {
         stackedWidgetHeight = d->stackedWidget->minimumHeight();
+    }
     d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
 
     int stackedWidgetWidth =  this->width() / 2 - 50 ;
-
     d->stackedWidget->setMaximumWidth(stackedWidgetWidth);
-    //TODO: this is ugly, find a way to use the right policy here...
+
     d->stackedWidget->resize(stackedWidgetWidth,stackedWidgetHeight);
-//    qDebug()<< d->stackedWidget->maximumSize();
-
-    //Update the animations as well
-    d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
-    d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 4 ) );
-
-    d->userAnimation->setStartValue ( QPoint ( this->width() + 50,  this->height() - 90 ) );
-    d->userAnimation->setEndValue ( QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-
-    d->infoAnimation->setStartValue ( QPoint ( this->width() , this->height() / 5 ) );
-    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 }
 
 void medHomepageArea::initPage()
@@ -467,11 +453,6 @@ void medHomepageArea::initPage()
     d->navigationWidget->setLayout ( workspaceButtonsLayout );
 }
 
-QParallelAnimationGroup* medHomepageArea::getAnimation()
-{
-    return d->animation;
-}
-
 void medHomepageArea::onShowBrowser()
 {
     emit showBrowser();
@@ -495,8 +476,6 @@ void medHomepageArea::onShowPlugin()
     d->pluginWidget->setFocus();
 }
 
-
-
 void medHomepageArea::onShowInfo()
 {
     d->stackedWidget->setCurrentWidget(d->infoWidget);
@@ -518,4 +497,14 @@ void medHomepageArea::onShowSettings()
     d->settingsWidget->setFocus();
 }
 
+void medHomepageArea::onShowLog()
+{
+    d->stackedWidget->setCurrentWidget(d->logWidget);
+    d->logWidget->setFocus();
+}
 
+void medHomepageArea::openLogDirectory()
+{
+    QString path = QFileInfo(dtkLogPath(qApp)).path();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
