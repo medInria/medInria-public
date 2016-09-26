@@ -71,7 +71,7 @@ void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)
 }
 
 //only called if not defined in subclasses (e.g. dilate/erodeFilter)
-int itkMorphologicalFiltersProcessBase::update()
+int itkMorphologicalFiltersProcessBase::tryUpdate()
 {
     DTK_D(itkMorphologicalFiltersProcessBase);
 
