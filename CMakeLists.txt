@@ -85,6 +85,12 @@ include(${QT_USE_FILE})
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+if (WIN32)
+    find_package(Boost REQUIRED)
+    include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+${Boost_INCLUDE_DIR})
+endif()
+
 
 ## #############################################################################
 ## Qt Automoc
