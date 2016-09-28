@@ -148,10 +148,16 @@ medAbstractDiffusionModelEstimationProcess *medDiffusionModelEstimationMetaProce
 medAbstractJob::medJobExitStatus medDiffusionModelEstimationMetaProcess::run()
 {
     if (!d->modelEstimator)
+    {
+        qDebug() << "Diffusion error: no model estimator";
         return medAbstractJob::MED_JOB_EXIT_FAILURE;
+    }
 
     if (d->dwiMaskCalculator && !d->dwiMaskApplyer)
+    {
+        qDebug() << "Diffusion error: no mask application process";
         return medAbstractJob::MED_JOB_EXIT_FAILURE;
+    }
 
     d->modelEstimator->setInput(d->input);
     medAbstractJob::medJobExitStatus returnValue;
@@ -183,7 +189,10 @@ medAbstractJob::medJobExitStatus medDiffusionModelEstimationMetaProcess::run()
             this,SLOT(updateModelEstimationProgression(int)));
     returnValue = d->modelEstimator->run();
     if (returnValue != medAbstractJob::MED_JOB_EXIT_SUCCESS)
+    {
+        qDebug() << "Diffusion error: model estimation fail";
         return returnValue;
+    }
 
     this->progression()->setValue(100);
     this->setOutput(d->modelEstimator->output());
