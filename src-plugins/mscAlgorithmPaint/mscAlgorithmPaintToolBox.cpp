@@ -624,17 +624,7 @@ void AlgorithmPaintToolBox::import()
 
 void AlgorithmPaintToolBox::updateView()
 {
-    medTabbedViewContainers * containers = this->getWorkspace()->stackedViewContainers();
-    QList<medViewContainer*> containersInTabSelected =  containers->containersInTab(containers->currentIndex());
-    medAbstractView *view=NULL;
-    for(int i=0;i<containersInTabSelected.length();i++)
-    {
-        if (containersInTabSelected[i]->isSelected())
-        {
-            view = containersInTabSelected[i]->view();
-            break;
-        }
-    }
+    medAbstractView *view = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
 
     if (view)
     {

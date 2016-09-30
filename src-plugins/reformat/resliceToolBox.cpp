@@ -1,24 +1,14 @@
 #include "resliceToolBox.h"
-#include <QWidget>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QMessageBox>
-#include <QStringList>
 
-#include <medToolBoxFactory.h>
-#include <medPluginManager.h>
 #include <medAbstractImageData.h>
-
-#include <medDataManager.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <medResliceViewer.h>
 #include <medAbstractLayeredView.h>
+#include <medDataManager.h>
+#include <medPluginManager.h>
+#include <medResliceViewer.h>
 #include <medTabbedViewContainers.h>
-#include <QGroupBox>
+#include <medToolBoxFactory.h>
+#include <medViewContainer.h>
 #include <medVtkViewBackend.h>
-#include <vtkImageView2D.h>
-#include <vtkImageData.h>
-#include <medSliderSpinboxPair.h>
 
 class resliceToolBoxPrivate
 {
@@ -214,7 +204,7 @@ void resliceToolBox::stopReformat()
 
 void resliceToolBox::updateView()
 {
-    medAbstractView *view = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
+    medAbstractView* view = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
 
     if (view && d->currentView!= view)
     {

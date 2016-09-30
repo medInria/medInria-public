@@ -3,7 +3,6 @@
 #include <dtkCore/dtkSmartPointer.h>
 #include <itkImage.h>
 #include <medAbstractView.h>
-#include <medViewContainer.h>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QVTKWidget.h>
