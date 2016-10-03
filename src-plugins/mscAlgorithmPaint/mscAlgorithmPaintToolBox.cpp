@@ -572,22 +572,7 @@ void AlgorithmPaintToolBox::activateMagicWand()
 void AlgorithmPaintToolBox::hideEvent(QHideEvent *event)
 {
     medAbstractSelectableToolBox::hideEvent(event);
-    if ( this->m_strokeButton->isChecked() )
-    {
-        this->m_viewFilter->removeFromAllViews();
-        m_paintState = (PaintState::None);
-        updateButtons();
-        m_strokeButton->setChecked(false);
-    }
-    else if ( this->m_magicWandButton->isChecked() )
-    {
-        this->m_viewFilter->removeFromAllViews();
-        m_paintState = (PaintState::None);
-        newSeed(); // accept the current growth
-        updateButtons();
-        m_magicWandButton->setChecked(false);
-    }
-    deactivateCustomedCursor();
+    resetToolbox();
 }
 
 void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
@@ -648,6 +633,8 @@ void AlgorithmPaintToolBox::updateView()
 
         // Update cursor if the orientation change
         connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
+
+        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(closeView()), Qt::UniqueConnection);
     }
 
     // Update cursor to new view
@@ -682,26 +669,6 @@ void AlgorithmPaintToolBox::setLabelColor()
         }
 
         this->setLabel(m_strokeLabelSpinBox->value());
-    }
-}
-
-void AlgorithmPaintToolBox::clearMask()
-{
-    if ( m_maskData && m_itkMask ){
-        m_itkMask->FillBuffer( MaskPixelValues::Unset );
-        m_itkMask->Modified();
-        m_itkMask->GetPixelContainer()->Modified();
-        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
-
-        m_maskAnnotationData->invokeModified();
-
-        if(maskHasBeenSaved)
-        {
-            m_imageData->removeAttachedData(m_maskAnnotationData);
-            maskHasBeenSaved = false;
-            setData(currentView->layerData(0));
-        }
-        m_applyButton->setDisabled(true);
     }
 }
 
@@ -887,12 +854,14 @@ void AlgorithmPaintToolBox::updateWandRegion(medAbstractImageView * view, QVecto
 {
     setCurrentView(view);
 
-    if ( !m_imageData )
+    if ( !m_imageData && (m_maskAnnotationData!=view->layerData(0)))
     {
         this->setData(view->layerData(0));
     }
-    if (!m_imageData) {
-        dtkWarn() << "Could not set data";
+
+    if (!m_imageData)
+    {
+        displayMessageError("Could not set data");
         return;
     }
 
@@ -1204,8 +1173,6 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
         // Update Mouse Interaction ToolBox
         view->setCurrentLayer(0);
         getWorkspace()->updateMouseInteractionToolBox();
-
-        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clearMask()), Qt::UniqueConnection);
     }
 
     m_maskAnnotationData->invokeModified();
@@ -1480,12 +1447,29 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
             m_redoStacks->value(view)->clear();
 }
 
+void AlgorithmPaintToolBox::closeView()
+{
+    // close every data in the view
+    medAbstractView* view = qobject_cast<medAbstractView*>(QObject::sender());
+    medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view);
 
-void AlgorithmPaintToolBox::onViewClosed()
+    if (layeredView->layersCount() > 0)
+    {
+        // remove a data, which will recursively call this closeView() function
+        // until there is no more data in the view
+        layeredView->removeLayer(0);
+    }
+    else
+    {
+        // clean the toolbox when there is no data left in the view
+        onViewClosed(view);
+    }
+}
+
+void AlgorithmPaintToolBox::onViewClosed(medAbstractView* viewClosed)
 {
     clearMask();
 
-    medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
     if (m_undoStacks->value(viewClosed))
     {
         m_undoStacks->value(viewClosed)->clear();
@@ -1494,19 +1478,56 @@ void AlgorithmPaintToolBox::onViewClosed()
         m_redoStacks->remove(viewClosed);
     }
 
-    if(m_magicWandButton->isChecked())
-        m_magicWandButton->setChecked(false);
-
-    if(m_strokeButton ->isChecked())
-        m_strokeButton->setChecked(false);
-
     showButtons(false);
+    resetToolbox();
 
     if (viewClosed==currentView)
     {
         currentView = NULL;
         m_itkMask = NULL;
     }
+}
+
+void AlgorithmPaintToolBox::clearMask()
+{
+    if ( m_maskData && m_itkMask )
+    {
+        m_itkMask->FillBuffer( MaskPixelValues::Unset );
+        m_itkMask->Modified();
+        m_itkMask->GetPixelContainer()->Modified();
+        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+
+        m_maskAnnotationData->invokeModified();
+
+        if(maskHasBeenSaved)
+        {
+            m_imageData->removeAttachedData(m_maskAnnotationData);
+            maskHasBeenSaved = false;
+            setData(currentView->layerData(0));
+        }
+        m_applyButton->setDisabled(true);
+    }
+    m_imageData = NULL;
+}
+
+void AlgorithmPaintToolBox::resetToolbox()
+{
+    if ( this->m_strokeButton->isChecked() )
+    {
+        this->m_viewFilter->removeFromAllViews();
+        m_paintState = (PaintState::None);
+        updateButtons();
+        m_strokeButton->setChecked(false);
+    }
+    else if ( this->m_magicWandButton->isChecked() )
+    {
+        this->m_viewFilter->removeFromAllViews();
+        m_paintState = (PaintState::None);
+        newSeed(); // accept the current growth
+        updateButtons();
+        m_magicWandButton->setChecked(false);
+    }
+    deactivateCustomedCursor();
 }
 
 void AlgorithmPaintToolBox::setCurrentView(medAbstractImageView * view)
@@ -1516,7 +1537,6 @@ void AlgorithmPaintToolBox::setCurrentView(medAbstractImageView * view)
     if (!m_undoStacks->contains(currentView)){
         m_redoStacks->insert(currentView,new QStack<PairListSlicePlaneId>());
         m_undoStacks->insert(currentView,new QStack<PairListSlicePlaneId>());
-        connect(view,SIGNAL(closed()),this,SLOT(onViewClosed()),Qt::UniqueConnection);
     }
 }
 

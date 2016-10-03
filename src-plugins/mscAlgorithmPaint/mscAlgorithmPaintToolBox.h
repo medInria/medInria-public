@@ -48,7 +48,7 @@ typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("MUSIC Paint segmentation", "Paint Tool",
+    MED_TOOLBOX_INTERFACE("Paint Segmentation", "Paint Tool",
                           <<"Segmentation")
 public:
 
@@ -97,7 +97,6 @@ public slots:
 
     void copyMetaDataToPaintedData();
     void import();
-    void clearMask();
 
     void setLabel(int newVal);
     void setLabelColor();
@@ -111,7 +110,11 @@ public slots:
     void undo();
     void redo();
     void addSliceToStack(medAbstractView * view,const unsigned char planeIndex,QList<int> listIdSlice);
-    void onViewClosed();
+
+    void closeView();
+    void onViewClosed(medAbstractView* viewClosed);
+    void clearMask();
+    void resetToolbox();
 
     void newSeed();
     void removeSeed();
