@@ -151,15 +151,7 @@ public:
 
         filter->AddObserver ( itk::ProgressEvent(), callback );
 
-        try
-        {
-            filter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in "<< description <<"! " << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        filter->Update();
 
         output->setData ( filter->GetOutput() );
 

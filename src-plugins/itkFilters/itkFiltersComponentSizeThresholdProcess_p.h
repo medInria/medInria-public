@@ -48,15 +48,8 @@ public:
         typename CastFilterType::Pointer  caster = CastFilterType::New();
         typename InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(input->data()));
         caster->SetInput(im);
-        try
-        {
-            caster->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in sizeThresholdingProcess::castToUInt3 !" << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        caster->Update();
+
         input = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
         output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
         input->setData(caster->GetOutput());
@@ -79,15 +72,7 @@ public:
         typename FilterType::Pointer relabelFilter = FilterType::New();
         relabelFilter->SetInput(connectedComponentFilter->GetOutput());
         relabelFilter->SetMinimumObjectSize(minimumSize);
-        try
-        {
-            relabelFilter->Update();
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in sizeThresholdingProcess, RelabelComponentImageFilter!" << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        relabelFilter->Update();
 
         // BINARY FILTER
         typedef itk::BinaryThresholdImageFilter <ImageType, ImageType>
@@ -99,23 +84,17 @@ public:
         thresholdFilter->SetUpperThreshold(0);
         thresholdFilter->SetInsideValue(0);
         thresholdFilter->SetOutsideValue(1);
-        try
-        {
-            thresholdFilter->Update();
 
-            callback = itk::CStyleCommand::New();
-            callback->SetClientData ( ( void * ) this );
-            callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
+        thresholdFilter->Update();
 
-            connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
+        callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) this );
+        callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
 
-            output->setData ( thresholdFilter->GetOutput() );
-        }
-        catch( itk::ExceptionObject & err )
-        {
-            qDebug() << "ExceptionObject caught in sizeThresholdingProcess BinaryThresholdImageFilter!" << err.GetDescription();
-            return DTK_FAILURE;
-        }
+        connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+        output->setData ( thresholdFilter->GetOutput() );
+
 
         QString newSeriesDescription = "connectedComponent " + QString::number(minimumSize);
         medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
