@@ -572,7 +572,7 @@ void AlgorithmPaintToolBox::activateMagicWand()
 void AlgorithmPaintToolBox::hideEvent(QHideEvent *event)
 {
     medAbstractSelectableToolBox::hideEvent(event);
-    initializeToolbox();
+    resetToolbox();
 }
 
 void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
@@ -1479,7 +1479,7 @@ void AlgorithmPaintToolBox::onViewClosed(medAbstractView* viewClosed)
     }
 
     showButtons(false);
-    initializeToolbox();
+    resetToolbox();
 
     if (viewClosed==currentView)
     {
@@ -1510,7 +1510,7 @@ void AlgorithmPaintToolBox::clearMask()
     m_imageData = NULL;
 }
 
-void AlgorithmPaintToolBox::initializeToolbox()
+void AlgorithmPaintToolBox::resetToolbox()
 {
     if ( this->m_strokeButton->isChecked() )
     {

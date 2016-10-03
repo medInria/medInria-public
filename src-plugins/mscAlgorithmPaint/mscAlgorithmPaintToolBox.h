@@ -114,7 +114,7 @@ public slots:
     void closeView();
     void onViewClosed(medAbstractView* viewClosed);
     void clearMask();
-    void initializeToolbox();
+    void resetToolbox();
 
     void newSeed();
     void removeSeed();
