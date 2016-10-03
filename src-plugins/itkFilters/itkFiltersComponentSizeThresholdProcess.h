@@ -35,7 +35,7 @@ public:
 public slots:
 
     void setParameter ( int  data, int channel );
-    int update ( void );
+    int tryUpdate();
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersComponentSizeThresholdProcess)

@@ -67,75 +67,63 @@ void itkFiltersGaussianProcess::setParameter(double data, int channel)
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersGaussianProcess::update ( void )
+int itkFiltersGaussianProcess::tryUpdate()
 {
     DTK_D(itkFiltersGaussianProcess);
     
-    if ( !d->input )
-        return -1;
+    int res = DTK_FAILURE;
 
-    QString id = d->input->identifier();
-
-    qDebug() << "itkFilters, update : " << id;
-
-    try
+    if ( d->input )
     {
+        QString id = d->input->identifier();
+
         if ( id == "itkDataImageChar3" )
         {
-            d->update<char>();
+            res = d->update<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            d->update<unsigned char>();
+            res = d->update<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            d->update<short>();
+            res = d->update<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            d->update<unsigned short>();
+            res = d->update<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            d->update<int>();
+            res = d->update<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            d->update<unsigned int>();
+            res = d->update<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            d->update<long>();
+            res = d->update<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            d->update<unsigned long>();
+            res = d->update<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            d->update<float>();
+            res = d->update<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            d->update<double>();
+            res = d->update<double>();
         }
         else
         {
-            qDebug() << description()
-                     <<", Error : pixel type not yet implemented ("
-                     << id
-                     << ")";
-            return -1;
+            res = medAbstractProcess::PIXEL_TYPE;
         }
     }
-    catch (itk::ExceptionObject &e)
-    {
-        emit failure();
-        return EXIT_FAILURE;
-    }
     
-    return EXIT_SUCCESS;
+    return res;
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -74,66 +74,63 @@ void itkFiltersThresholdingProcess::setParameter(double data, int channel)
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersThresholdingProcess::update ( void )
+int itkFiltersThresholdingProcess::tryUpdate()
 {
     DTK_D(itkFiltersThresholdingProcess);
     
-    if ( !d->input )
-        return -1;
+    int res = DTK_FAILURE;
 
-    QString id = d->input->identifier();
+    if ( d->input )
+    {
+        QString id = d->input->identifier();
 
-    qDebug() << "itkFiltersThresholdingProcess, update : " << id;
+        if ( id == "itkDataImageChar3" )
+        {
+            res = d->update<char>();
+        }
+        else if ( id == "itkDataImageUChar3" )
+        {
+            res = d->update<unsigned char>();
+        }
+        else if ( id == "itkDataImageShort3" )
+        {
+            res = d->update<short>();
+        }
+        else if ( id == "itkDataImageUShort3" )
+        {
+            res = d->update<unsigned short>();
+        }
+        else if ( id == "itkDataImageInt3" )
+        {
+            res = d->update<int>();
+        }
+        else if ( id == "itkDataImageUInt3" )
+        {
+            res = d->update<unsigned int>();
+        }
+        else if ( id == "itkDataImageLong3" )
+        {
+            res = d->update<long>();
+        }
+        else if ( id== "itkDataImageULong3" )
+        {
+            res = d->update<unsigned long>();
+        }
+        else if ( id == "itkDataImageFloat3" )
+        {
+            res = d->update<float>();
+        }
+        else if ( id == "itkDataImageDouble3" )
+        {
+            res = d->update<double>();
+        }
+        else
+        {
+            res = medAbstractProcess::PIXEL_TYPE;
+        }
+    }
 
-    if ( id == "itkDataImageChar3" )
-    {
-        d->update<char>();
-    }
-    else if ( id == "itkDataImageUChar3" )
-    {
-        d->update<unsigned char>();
-    }
-    else if ( id == "itkDataImageShort3" )
-    {
-        d->update<short>();
-    }
-    else if ( id == "itkDataImageUShort3" )
-    {
-        d->update<unsigned short>();
-    }
-    else if ( id == "itkDataImageInt3" )
-    {
-        d->update<int>();
-    }
-    else if ( id == "itkDataImageUInt3" )
-    {
-        d->update<unsigned int>();
-    }
-    else if ( id == "itkDataImageLong3" )
-    {
-        d->update<long>();
-    }
-    else if ( id== "itkDataImageULong3" )
-    {
-        d->update<unsigned long>();
-    }
-    else if ( id == "itkDataImageFloat3" )
-    {
-        d->update<float>();
-    }
-    else if ( id == "itkDataImageDouble3" )
-    {
-        d->update<double>();
-    }
-    else
-    {
-        qDebug() << "itkFiltersThresholdingProcess Error : pixel type not yet implemented ("
-        << id
-        << ")";
-        return -1;
-    }
-    
-    return EXIT_SUCCESS;
+    return res;
 }
 
 // /////////////////////////////////////////////////////////////////

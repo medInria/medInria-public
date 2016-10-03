@@ -35,7 +35,7 @@ public:
     
     double addValue;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::MedianImageFilter< ImageType, ImageType >  MedianFilterType;
@@ -50,6 +50,7 @@ public:
         medianFilter->AddObserver ( itk::ProgressEvent(), callback );
     
         medianFilter->Update();
+
         output->setData ( medianFilter->GetOutput() );
         
         //Set output description metadata
@@ -57,6 +58,8 @@ public:
         newSeriesDescription += " median filter";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        return DTK_SUCCEED;
     }
 };
 

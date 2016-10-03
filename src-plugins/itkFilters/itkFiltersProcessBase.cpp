@@ -80,3 +80,19 @@ medAbstractData * itkFiltersProcessBase::output ( void )
     return ( d->output );
 }
 
+int itkFiltersProcessBase::update()
+{
+    int res = DTK_FAILURE;
+
+    try
+    {
+        res = tryUpdate();
+    }
+    catch( itk::ExceptionObject & error )
+    {
+        qDebug() << "ExceptionObject caught in" << metaObject()->className() << "!";
+        qDebug() << error.GetDescription();
+    }
+
+    return res;
+}

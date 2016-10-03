@@ -61,7 +61,7 @@ public:
     }
 
 
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
 
@@ -139,7 +139,7 @@ public:
         else
         {
             qDebug()<<"Wrong morphological filter";
-            return;
+            return DTK_FAILURE;
         }
 
         filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
@@ -152,6 +152,7 @@ public:
         filter->AddObserver ( itk::ProgressEvent(), callback );
 
         filter->Update();
+
         output->setData ( filter->GetOutput() );
 
         // Add description on output data
@@ -173,6 +174,8 @@ public:
         }
 
         medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
+
+        return DTK_SUCCEED;
     }
 };
 

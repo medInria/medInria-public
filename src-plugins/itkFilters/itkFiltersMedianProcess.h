@@ -34,7 +34,7 @@ public:
     
 public slots:
 
-    int update ( void );
+    int tryUpdate();
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersMedianProcess)

@@ -28,7 +28,6 @@ public:
     itkFiltersProcessBase(const itkFiltersProcessBase& other);
     virtual ~itkFiltersProcessBase(void);
     
-public:
     itkFiltersProcessBase& operator = (const itkFiltersProcessBase& other);
 
     QString description ( void );
@@ -38,6 +37,9 @@ public:
     medAbstractData *output ( void );
     
     void emitProgress(int progress);
+
+    virtual int tryUpdate(){return DTK_FAILURE;}
+    int update();
     
 private:
     DTK_DECLARE_PRIVATE(itkFiltersProcessBase)

@@ -30,7 +30,7 @@ public:
     void setParameter(double data, int channel);
 
 public slots:
-    int update ( void );
+    int tryUpdate();
     
 private:
     DTK_DECLARE_PRIVATE(itkMorphologicalFiltersProcessBase)

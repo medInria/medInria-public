@@ -35,7 +35,7 @@ public:
     
     unsigned int shrinkFactors[3];
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::ShrinkImageFilter< ImageType, ImageType >  ShrinkFilterType;
@@ -51,6 +51,7 @@ public:
         shrinkFilter->AddObserver ( itk::ProgressEvent(), callback );
     
         shrinkFilter->Update();
+
         output->setData ( shrinkFilter->GetOutput() );
         
         //Set output description metadata
@@ -58,6 +59,8 @@ public:
         newSeriesDescription += " shrink filter (" + QString::number(shrinkFactors[0]) + "," + QString::number(shrinkFactors[1]) + "," + QString::number(shrinkFactors[2]) + ")";
 
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        return DTK_SUCCEED;
     }
     
 };

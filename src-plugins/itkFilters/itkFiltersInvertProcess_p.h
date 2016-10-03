@@ -36,7 +36,7 @@ public:
     
     double addValue;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::InvertIntensityImageFilter< ImageType, ImageType >  InvertFilterType;
@@ -49,8 +49,9 @@ public:
         callback->SetCallback ( itkFiltersInvertProcessPrivate::eventCallback );
     
         invertFilter->AddObserver ( itk::ProgressEvent(), callback );
-    
+
         invertFilter->Update();
+
         output->setData ( invertFilter->GetOutput() );
         
         //Set output description metadata
@@ -58,6 +59,8 @@ public:
         newSeriesDescription += " invert filter";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        return DTK_SUCCEED;
     }
 };
 

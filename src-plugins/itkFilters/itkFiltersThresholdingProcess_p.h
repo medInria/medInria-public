@@ -38,10 +38,8 @@ public:
     int outsideValue;
     bool comparisonOperator;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
-        try
-        {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::ThresholdImageFilter < ImageType>  ThresholdImageFilterType;
         typename ThresholdImageFilterType::Pointer thresholdFilter = ThresholdImageFilterType::New();
@@ -58,15 +56,13 @@ public:
         thresholdFilter->AddObserver ( itk::ProgressEvent(), callback );
     
         thresholdFilter->Update();
+
         output->setData ( thresholdFilter->GetOutput() );
-        }
-        catch (itk::ExceptionObject & err){
-            std::cerr << "ExceptionObject caught !" << std::endl;
-            std::cerr << err << std::endl;
-        }
 
         QString newSeriesDescription = "threshold " + QString::number(threshold);
         medUtilities::setDerivedMetaData(output, input, newSeriesDescription);
+
+        return DTK_SUCCEED;
     }
 };
 

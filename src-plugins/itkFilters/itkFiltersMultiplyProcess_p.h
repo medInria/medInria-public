@@ -36,7 +36,7 @@ public:
     
     double multiplyFactor;
     
-    template <class PixelType> void update ( void )
+    template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::MultiplyImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  MultiplyFilterType;
@@ -52,6 +52,7 @@ public:
         multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
     
         multiplyFilter->Update();
+
         output->setData ( multiplyFilter->GetOutput() );
         
         //Set output description metadata
@@ -59,6 +60,8 @@ public:
         newSeriesDescription += " multiply filter (" + QString::number(multiplyFactor) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+        return DTK_SUCCEED;
     }
 
 };
