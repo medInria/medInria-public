@@ -35,17 +35,16 @@
 #include <medAbstractDataFactory.h>
 #include <medSeedPointAnnotationData.h>
 
-#include <medSettingsWidgetFactory.h>
-#include <medSettingsWidget.h>
-#include <medStartupSettingsWidget.h>
-#include <medDatabaseSettingsWidget.h>
-
 #include <medDataManager.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
+#include <medDatabaseSettingsWidget.h>
 
 #include <medMainWindow.h>
-
+#include <medQtMessageHandler.h>
+#include <medSettingsWidget.h>
+#include <medSettingsWidgetFactory.h>
+#include <medStartupSettingsWidget.h>
 #include <medStyleSheetParser.h>
 
 class medApplicationPrivate
@@ -93,8 +92,12 @@ medApplication::medApplication(int & argc, char**argv) :
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
                      this,SLOT(redirectMessageToLog(QString)));
 
+    connect(&medQtMessageHandler::instance(), SIGNAL(newMsg(QtMsgType, const char*)),
+                    this,SLOT(receiveMsg(QtMsgType , const char*)));
+
     this->initialize();
 }
+
 
 medApplication::~medApplication(void)
 {
@@ -187,4 +190,23 @@ void medApplication::initialize()
     //TODO I did something... was it enough ? - Flo
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType<medSeedPointAnnotationData>();
+}
+
+void medApplication::receiveMsg(QtMsgType type, const char *msg)
+{
+    switch (type)
+    {
+    case QtDebugMsg:
+        dtkDebug()<<msg;
+        break;
+    case QtWarningMsg:
+        dtkWarn()<<msg;
+        break;
+    case QtCriticalMsg:
+        dtkError()<<msg;
+        break;
+    case QtFatalMsg:
+        dtkFatal()<<msg;
+        abort();
+    }
 }

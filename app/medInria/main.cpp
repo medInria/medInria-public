@@ -28,6 +28,7 @@
 #include <medPluginManager.h>
 #include <medDataIndex.h>
 #include <medDatabaseController.h>
+#include <medQtMessageHandler.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
@@ -69,25 +70,6 @@ void forceShow(medMainWindow& mainwindow )
 }
 
 
-void myMessageOutput(QtMsgType type, const char *msg)
-{
-    switch (type)
-    {
-    case QtDebugMsg:
-        dtkDebug()<<msg;
-        break;
-    case QtWarningMsg:
-        dtkWarn()<<msg;
-        break;
-    case QtCriticalMsg:
-        dtkError()<<msg;
-        break;
-    case QtFatalMsg:
-        dtkFatal()<<msg;
-        abort();
-    }
-}
-
 int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
@@ -114,7 +96,7 @@ int main(int argc,char* argv[]) {
     std::cerr.rdbuf(loggerErr.rdbuf());
 
     // Redirect Qt messages into dtkMsg
-    qInstallMsgHandler(myMessageOutput);
+    qInstallMsgHandler(medQtMessageHandler::msgHandler);
 
     // Copy dtkMsg into log file
     // TRACE >> DEBUG >> INFO >> WARN >> ERROR >> FATAL
@@ -125,9 +107,9 @@ int main(int argc,char* argv[]) {
     dtkLogger::instance().attachFile(dtkLogPath(&application));
     dtkLogger::instance().attachConsole();
 
-    qDebug() << "####################################";
-    qDebug() << "Version: "    << MEDINRIA_VERSION;
-    qDebug() << "Build Date: " << MEDINRIA_BUILD_DATE;
+    dtkDebug() << "####################################";
+    dtkDebug() << "Version: "    << MEDINRIA_VERSION;
+    dtkDebug() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");

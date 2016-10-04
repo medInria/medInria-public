@@ -37,6 +37,7 @@ public slots:
     void redirectMessageToSplash(const QString& message);
     void redirectMessageToLog(const QString & message);
     void redirectErrorMessageToLog(const QString & message);
+    void receiveMsg(QtMsgType type, const char *msg);
 
     void open(const medDataIndex & index);
     void open(QString path);
@@ -47,5 +48,4 @@ protected:
 private:
     medApplicationPrivate *d;
 };
-
 
