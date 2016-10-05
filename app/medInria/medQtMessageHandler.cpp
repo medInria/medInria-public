@@ -15,7 +15,7 @@ PURPOSE.
 
 medQtMessageHandler::medQtMessageHandler() : QObject()
 {
-    // important
+    // register the type in order to be recognized by the metaObject system of Qt (here as parameter of signal)
     qRegisterMetaType<QtMsgType>("QtMsgType");
 }
 

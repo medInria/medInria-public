@@ -11,41 +11,37 @@
 
 =========================================================================*/
 
-#include <medApplication.h>
-
-#include <locale.h>
-
-#include <QtGui>
-
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 
-#include <medPluginManager.h>
-
-#include <medWorkspaceFactory.h>
-#include <medAbstractWorkspace.h>
-#include <medFilteringWorkspace.h>
-#include <medDiffusionWorkspace.h>
-#include <medRegistrationWorkspace.h>
-#include <medVisualizationWorkspace.h>
-#include <medSegmentationWorkspace.h>
+#include <locale.h>
 
 #include <medAbstractDataFactory.h>
-#include <medSeedPointAnnotationData.h>
-
+#include <medAbstractWorkspace.h>
+#include <medApplication.h>
 #include <medDataManager.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseSettingsWidget.h>
-
+#include <medDiffusionWorkspace.h>
+#include <medFilteringWorkspace.h>
 #include <medMainWindow.h>
+#include <medPluginManager.h>
 #include <medQtMessageHandler.h>
+#include <medRegistrationWorkspace.h>
+#include <medSeedPointAnnotationData.h>
+#include <medSegmentationWorkspace.h>
 #include <medSettingsWidget.h>
 #include <medSettingsWidgetFactory.h>
 #include <medStartupSettingsWidget.h>
 #include <medStyleSheetParser.h>
+#include <medVisualizationWorkspace.h>
+#include <medWorkspaceFactory.h>
+
+#include <QtGui>
+
 
 class medApplicationPrivate
 {
@@ -92,7 +88,7 @@ medApplication::medApplication(int & argc, char**argv) :
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
                      this,SLOT(redirectMessageToLog(QString)));
 
-    connect(&medQtMessageHandler::instance(), SIGNAL(newMsg(QtMsgType, const char*)),
+    QObject::connect(&medQtMessageHandler::instance(), SIGNAL(newMsg(QtMsgType, const char*)),
                     this,SLOT(receiveMsg(QtMsgType , const char*)));
 
     this->initialize();
