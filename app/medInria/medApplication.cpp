@@ -88,8 +88,8 @@ medApplication::medApplication(int & argc, char**argv) :
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
                      this,SLOT(redirectMessageToLog(QString)));
 
-    QObject::connect(&medQtMessageHandler::instance(), SIGNAL(newMsg(QtMsgType, const char*)),
-                    this,SLOT(receiveMsg(QtMsgType , const char*)));
+    QObject::connect(&medQtMessageHandler::instance(), SIGNAL(newQtMsg(QtMsgType, const char*)),
+                    this,SLOT(receiveQtMsg(QtMsgType , const char*)));
 
     this->initialize();
 }
@@ -188,7 +188,7 @@ void medApplication::initialize()
     datafactory->registerDataType<medSeedPointAnnotationData>();
 }
 
-void medApplication::receiveMsg(QtMsgType type, const char *msg)
+void medApplication::receiveQtMsg(QtMsgType type, const char *msg)
 {
     switch (type)
     {
