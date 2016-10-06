@@ -16,8 +16,8 @@ PURPOSE.
 class medQtMessageHandler: public QObject
 {
     Q_OBJECT
-public :
     medQtMessageHandler();
+public :
     static medQtMessageHandler & instance();
     static void msgHandler(QtMsgType type, const char *msg);
 
