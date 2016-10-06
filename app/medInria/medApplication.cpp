@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include <medApplication.h>
+
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -20,7 +22,6 @@
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractWorkspace.h>
-#include <medApplication.h>
 #include <medDataManager.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
