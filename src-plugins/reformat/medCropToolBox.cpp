@@ -192,7 +192,6 @@ void medCropToolBox::updateView()
         d->view = 0;
         d->view2D = 0;
         d->view3D = 0;
-        currentContainer->setUserSplittable(true);
     }
 }
 
@@ -235,7 +234,10 @@ void medCropToolBox::hideEvent(QHideEvent *event)
 
     // allow to split container in other toolboxes
     medViewContainer* currentContainer = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainer();
-    currentContainer->setUserSplittable(true);
+    if (currentContainer)
+    {
+        currentContainer->setUserSplittable(true);
+    }
 }
 
 void medCropToolBox::setEnable(bool enable)
