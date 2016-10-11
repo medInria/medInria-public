@@ -668,10 +668,6 @@ void medMainWindow::availableSpaceOnStatusBar()
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
-    // Close boost::iostreams open in main.cpp for logs
-    logger.close();
-    loggerErr.close();
-
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )
     {
         int res = QMessageBox::information(this,
@@ -702,6 +698,11 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         return;
     }
     this->saveSettings();
+
+    // Close boost::iostreams open in main.cpp for logs
+    logger.close();
+    loggerErr.close();
+
     event->accept();
 }
 
