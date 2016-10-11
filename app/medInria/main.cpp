@@ -32,6 +32,11 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
+typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
+typedef boost::iostreams::stream<TeeDevice> TeeStream;
+TeeStream logger;
+TeeStream loggerErr;
+
 void forceShow(medMainWindow& mainwindow )
 {
     //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -80,19 +85,16 @@ int main(int argc,char* argv[]) {
     medApplication application(argc,argv);
 
     // Copy std::cout and std::cerr in log file
-    typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
-    typedef boost::iostreams::stream<TeeDevice> TeeStream;
-
     std::ofstream logFile(dtkLogPath(&application).toLocal8Bit().data(), std::ios::app);
 
     std::ostream tmp(std::cout.rdbuf());
     TeeDevice outputDevice(tmp, logFile);
-    TeeStream logger(outputDevice);
+    logger.open(outputDevice);
     std::cout.rdbuf(logger.rdbuf());
 
     std::ostream tmpErr(std::cerr.rdbuf());
     TeeDevice outputDeviceErr(tmpErr, logFile);
-    TeeStream loggerErr(outputDeviceErr);
+    loggerErr.open(outputDeviceErr);
     std::cerr.rdbuf(loggerErr.rdbuf());
 
     // Redirect Qt messages into dtkMsg
