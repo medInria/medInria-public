@@ -22,6 +22,6 @@ public :
     static void msgHandler(QtMsgType type, const char *msg);
 
 signals :
-    void newQtMsg(QtMsgType type, const char *msg);
+    void newQtMsg(QtMsgType type, const QString& message);
 
 };
