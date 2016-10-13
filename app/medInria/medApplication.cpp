@@ -49,6 +49,7 @@ class medApplicationPrivate
 public:
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
+    QThreadStorage<bool> logRecursionFlag;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -89,8 +90,8 @@ medApplication::medApplication(int & argc, char**argv) :
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
                      this,SLOT(redirectMessageToLog(QString)));
 
-    QObject::connect(&medQtMessageHandler::instance(), SIGNAL(newQtMsg(QtMsgType, const char*)),
-                    this,SLOT(receiveQtMsg(QtMsgType , const char*)));
+    QObject::connect(&medQtMessageHandler::instance(), SIGNAL(newQtMsg(QtMsgType, const QString&)),
+                    this,SLOT(receiveQtMsg(QtMsgType , const QString&)));
 
     this->initialize();
 }
@@ -189,21 +190,33 @@ void medApplication::initialize()
     datafactory->registerDataType<medSeedPointAnnotationData>();
 }
 
-void medApplication::receiveQtMsg(QtMsgType type, const char *msg)
+void medApplication::receiveQtMsg(QtMsgType type, const QString& message)
 {
-    switch (type)
+    if (!d->logRecursionFlag.hasLocalData())
     {
-    case QtDebugMsg:
-        dtkDebug()<<msg;
-        break;
-    case QtWarningMsg:
-        dtkWarn()<<msg;
-        break;
-    case QtCriticalMsg:
-        dtkError()<<msg;
-        break;
-    case QtFatalMsg:
-        dtkFatal()<<msg;
-        abort();
+        d->logRecursionFlag.setLocalData(false);
     }
+
+    if (!d->logRecursionFlag.localData())
+    {
+        d->logRecursionFlag.setLocalData(true);
+
+        switch (type)
+        {
+        case QtDebugMsg:
+            dtkDebug()<<message;
+            break;
+        case QtWarningMsg:
+            dtkWarn()<<message;
+            break;
+        case QtCriticalMsg:
+            dtkError()<<message;
+            break;
+        case QtFatalMsg:
+            dtkFatal()<<message;
+            abort();
+        }
+    }
+
+    d->logRecursionFlag.setLocalData(false);
 }

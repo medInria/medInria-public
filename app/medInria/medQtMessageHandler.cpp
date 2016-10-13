@@ -27,5 +27,5 @@ medQtMessageHandler &medQtMessageHandler::instance()
 
 void medQtMessageHandler::msgHandler(QtMsgType type, const char *msg)
 {
-    emit instance().newQtMsg(type, msg);
+    emit instance().newQtMsg(type, QString(msg));
 }
