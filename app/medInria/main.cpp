@@ -32,11 +32,6 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
-typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
-typedef boost::iostreams::stream<TeeDevice> TeeStream;
-TeeStream logger;
-TeeStream loggerErr;
-
 void forceShow(medMainWindow& mainwindow )
 {
     //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -87,13 +82,21 @@ int main(int argc,char* argv[]) {
     // Copy std::cout and std::cerr in log file
     std::ofstream logFile(dtkLogPath(&application).toLocal8Bit().data(), std::ios::app);
 
+    typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
+    typedef boost::iostreams::stream<TeeDevice> TeeStream;
+
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    std::streambuf* oldCerrBuffer = std::cerr.rdbuf();
+
     std::ostream tmp(std::cout.rdbuf());
     TeeDevice outputDevice(tmp, logFile);
+    TeeStream logger;
     logger.open(outputDevice);
     std::cout.rdbuf(logger.rdbuf());
 
     std::ostream tmpErr(std::cerr.rdbuf());
     TeeDevice outputDeviceErr(tmpErr, logFile);
+    TeeStream loggerErr;
     loggerErr.open(outputDeviceErr);
     std::cerr.rdbuf(loggerErr.rdbuf());
 
@@ -109,9 +112,9 @@ int main(int argc,char* argv[]) {
     dtkLogger::instance().attachFile(dtkLogPath(&application));
     dtkLogger::instance().attachConsole();
 
-    dtkDebug() << "####################################";
-    dtkDebug() << "Version: "    << MEDINRIA_VERSION;
-    dtkDebug() << "Build Date: " << MEDINRIA_BUILD_DATE;
+    dtkInfo() << "####################################";
+    dtkInfo() << "Version: "    << MEDINRIA_VERSION;
+    dtkInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");
@@ -274,10 +277,18 @@ int main(int argc,char* argv[]) {
 
     forceShow(*mainwindow);
 
+    dtkInfo() << "### Application is running...";
+
     //  Start main loop.
     const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();
+
+    // Close logs streams
+    logger.close();
+    loggerErr.close();
+    std::cout.rdbuf(oldCoutBuffer);
+    std::cerr.rdbuf(oldCerrBuffer);
 
     return status;
 }
