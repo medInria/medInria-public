@@ -80,10 +80,10 @@ int main(int argc,char* argv[]) {
     medApplication application(argc,argv);
 
     // Copy std::cout and std::cerr in log file
-    std::ofstream logFile(dtkLogPath(&application).toLocal8Bit().data(), std::ios::app);
-
     typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
     typedef boost::iostreams::stream<TeeDevice> TeeStream;
+
+    std::ofstream logFile(dtkLogPath(&application).toLocal8Bit().data(), std::ios::app);
 
     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
     std::streambuf* oldCerrBuffer = std::cerr.rdbuf();
