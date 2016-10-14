@@ -690,6 +690,10 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         return;
     }
     this->saveSettings();
+
+    dtkInfo() << "### Application is closing...";
+    dtkInfo() << "####################################";
+
     event->accept();
 }
 

@@ -85,14 +85,19 @@ int main(int argc,char* argv[]) {
 
     std::ofstream logFile(dtkLogPath(&application).toLocal8Bit().data(), std::ios::app);
 
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    std::streambuf* oldCerrBuffer = std::cerr.rdbuf();
+
     std::ostream tmp(std::cout.rdbuf());
     TeeDevice outputDevice(tmp, logFile);
-    TeeStream logger(outputDevice);
+    TeeStream logger;
+    logger.open(outputDevice);
     std::cout.rdbuf(logger.rdbuf());
 
     std::ostream tmpErr(std::cerr.rdbuf());
     TeeDevice outputDeviceErr(tmpErr, logFile);
-    TeeStream loggerErr(outputDeviceErr);
+    TeeStream loggerErr;
+    loggerErr.open(outputDeviceErr);
     std::cerr.rdbuf(loggerErr.rdbuf());
 
     // Redirect Qt messages into dtkMsg
@@ -107,9 +112,9 @@ int main(int argc,char* argv[]) {
     dtkLogger::instance().attachFile(dtkLogPath(&application));
     dtkLogger::instance().attachConsole();
 
-    dtkDebug() << "####################################";
-    dtkDebug() << "Version: "    << MEDINRIA_VERSION;
-    dtkDebug() << "Build Date: " << MEDINRIA_BUILD_DATE;
+    dtkInfo() << "####################################";
+    dtkInfo() << "Version: "    << MEDINRIA_VERSION;
+    dtkInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");
@@ -272,10 +277,18 @@ int main(int argc,char* argv[]) {
 
     forceShow(*mainwindow);
 
+    dtkInfo() << "### Application is running...";
+
     //  Start main loop.
     const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();
+
+    // Close logs streams
+    logger.close();
+    loggerErr.close();
+    std::cout.rdbuf(oldCoutBuffer);
+    std::cerr.rdbuf(oldCerrBuffer);
 
     return status;
 }
