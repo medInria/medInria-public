@@ -41,6 +41,8 @@
 #include <medAbstractWorkspace.h>
 #include <medVisualizationWorkspace.h>
 
+#include <medLogger.h>
+
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
 #else
@@ -660,6 +662,9 @@ void medMainWindow::availableSpaceOnStatusBar()
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
+    dtkInfo() << "### Application is closing...";
+    dtkInfo() << "####################################";
+
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )
     {
         int res = QMessageBox::information(this,
@@ -691,8 +696,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     }
     this->saveSettings();
 
-    dtkInfo() << "### Application is closing...";
-    dtkInfo() << "####################################";
+    medLogger::finalize();
 
     event->accept();
 }
