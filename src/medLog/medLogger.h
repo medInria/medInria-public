@@ -16,10 +16,11 @@ PURPOSE.
 #include <boost/iostreams/stream.hpp>
 
 #include <dtkLog/dtkLog.h>
+#include <medLogExport.h>
 
 #include <QtGui>
 
-class medLogger: public QObject
+class MEDLOG_EXPORT medLogger: public QObject
 {
     Q_OBJECT
 
@@ -41,7 +42,7 @@ public :
 
 private slots:
     void redirectQtMessage(QtMsgType type, const QString& message);
-    void redirectMessage(const QString & message);
+    void redirectMessage(const QString& message);
     void redirectErrorMessage(const QString& message);
 
 private:

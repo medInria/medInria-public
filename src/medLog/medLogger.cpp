@@ -1,8 +1,6 @@
 #include "medLogger.h"
 
-#include <dtkCore>
-#include <medApplication.h>
-#include <medPluginManager.h>
+#include <iostream>
 
 medLogger* medLogger::singleton;
 bool medLogger::logAccessFlag = false;
@@ -77,9 +75,6 @@ medLogger::medLogger()
     dtkLogger::instance().attachFile(dtkLogPath(qApp));
     dtkLogger::instance().attachConsole();
 
-    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString&)), this, SLOT(redirectErrorMessage(const QString&)));
-    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(const QString&)), this, SLOT(redirectMessage(const QString&)));
-    QObject::connect(medApplication::instance(), SIGNAL(messageReceived(const QString&)), this, SLOT(redirectMessage(QString)));
     QObject::connect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
 
     qInstallMsgHandler(qtMessageHandler);
