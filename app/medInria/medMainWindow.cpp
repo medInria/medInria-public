@@ -663,7 +663,6 @@ void medMainWindow::availableSpaceOnStatusBar()
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
     dtkInfo() << "### Application is closing...";
-    dtkInfo() << "####################################";
 
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )
     {

@@ -30,7 +30,6 @@
 #include <medLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
-#include <medQtMessageHandler.h>
 #include <medRegistrationWorkspace.h>
 #include <medSeedPointAnnotationData.h>
 #include <medSegmentationWorkspace.h>

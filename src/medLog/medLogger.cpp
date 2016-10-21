@@ -2,37 +2,55 @@
 
 #include <iostream>
 
-medLogger* medLogger::singleton;
-bool medLogger::logAccessFlag = false;
+typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
+typedef boost::iostreams::stream<TeeDevice> TeeStream;
+
+class medLoggerPrivate
+{
+public:
+    static medLogger* singleton;
+    static bool logAccessFlag;
+
+    std::ofstream logFile;
+    QList<std::ostream*> redirectedStreams;
+    QList<std::ostream*> redirectedStreamDummies;
+    QList<TeeStream*> teeStreams;
+    QList<std::streambuf*> previousStreamBuffers;
+
+    medLoggerPrivate() : logFile(dtkLogPath(qApp).toLocal8Bit().data(), std::ios::app) {}
+};
+
+medLogger* medLoggerPrivate::singleton = NULL;
+bool medLoggerPrivate::logAccessFlag = false;
 
 medLogger& medLogger::instance()
 {
-    return *singleton;
+    return *medLoggerPrivate::singleton;
 }
 
 void medLogger::initialize()
 {
-    singleton = new medLogger();
-    logAccessFlag = true;
+    medLoggerPrivate::singleton = new medLogger();
+    medLoggerPrivate::logAccessFlag = true;
 }
 
 void medLogger::finalize()
 {
-    logAccessFlag = false;
-    singleton->deleteLater();
-    singleton = NULL;
+    medLoggerPrivate::logAccessFlag = false;
+    medLoggerPrivate::singleton->deleteLater();
+    medLoggerPrivate::singleton = NULL;
 }
 
 void medLogger::qtMessageHandler(QtMsgType type, const char* message)
 {
-    emit singleton->newQtMessage(type, QString(message));
+    emit medLoggerPrivate::singleton->newQtMessage(type, QString(message));
 }
 
 void medLogger::redirectQtMessage(QtMsgType type, const QString& message)
 {
-    if (logAccessFlag)
+    if (d->logAccessFlag)
     {
-        logAccessFlag = false;
+        d->logAccessFlag = false;
 
         switch (type)
         {
@@ -50,7 +68,7 @@ void medLogger::redirectQtMessage(QtMsgType type, const QString& message)
             abort();
         }
 
-        logAccessFlag = true;
+        d->logAccessFlag = true;
     }
 }
 
@@ -64,8 +82,7 @@ void medLogger::redirectErrorMessage(const QString& message)
     dtkError() << message;
 }
 
-medLogger::medLogger()
-    : logFile(dtkLogPath(qApp).toLocal8Bit().data(), std::ios::app)
+medLogger::medLogger() : d(new medLoggerPrivate)
 {
     qRegisterMetaType<QtMsgType>("QtMsgType");
 
@@ -95,23 +112,23 @@ void medLogger::initializeTeeStreams()
 
 void medLogger::finalizeTeeStreams()
 {
-    for (int i = 0; i < redirectedStreams.length(); i++)
+    for (int i = 0; i < d->redirectedStreams.length(); i++)
     {
-        teeStreams.first()->flush();
-        teeStreams.first()->close();
-        delete teeStreams.takeFirst();
-        delete redirectedStreamDummies.takeFirst();
-        redirectedStreams.takeFirst()->rdbuf(previousStreamBuffers.takeFirst());
+        d->teeStreams.first()->flush();
+        d->teeStreams.first()->close();
+        delete d->teeStreams.takeFirst();
+        delete d->redirectedStreamDummies.takeFirst();
+        d->redirectedStreams.takeFirst()->rdbuf(d->previousStreamBuffers.takeFirst());
     }
 }
 
 void medLogger::createTeeStream(std::ostream* targetStream)
 {
-    redirectedStreams.append(targetStream);
-    previousStreamBuffers.append(targetStream->rdbuf());
-    redirectedStreamDummies.append(new std::ostream(targetStream->rdbuf()));
-    TeeDevice* teeDevice = new TeeDevice(*redirectedStreamDummies.last(), logFile);
-    teeStreams.append(new TeeStream(*teeDevice));
-    targetStream->rdbuf(teeStreams.last()->rdbuf());
+    d->redirectedStreams.append(targetStream);
+    d->previousStreamBuffers.append(targetStream->rdbuf());
+    d->redirectedStreamDummies.append(new std::ostream(targetStream->rdbuf()));
+    TeeDevice* teeDevice = new TeeDevice(*d->redirectedStreamDummies.last(), d->logFile);
+    d->teeStreams.append(new TeeStream(*teeDevice));
+    targetStream->rdbuf(d->teeStreams.last()->rdbuf());
 }
 

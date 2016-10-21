@@ -12,20 +12,22 @@ PURPOSE.
 =========================================================================*/
 
 #include <fstream>
+
+#ifndef Q_MOC_RUN
 #include <boost/iostreams/tee.hpp>
 #include <boost/iostreams/stream.hpp>
+#endif
 
 #include <dtkLog/dtkLog.h>
 #include <medLogExport.h>
 
 #include <QtGui>
 
+class medLoggerPrivate;
+
 class MEDLOG_EXPORT medLogger: public QObject
 {
     Q_OBJECT
-
-    typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
-    typedef boost::iostreams::stream<TeeDevice> TeeStream;
 
 signals :
     void newQtMessage(QtMsgType type, const QString& message);
@@ -46,14 +48,7 @@ private slots:
     void redirectErrorMessage(const QString& message);
 
 private:
-    static medLogger* singleton;
-    static bool logAccessFlag;
-
-    std::ofstream logFile;
-    QList<std::ostream*> redirectedStreams;
-    QList<std::ostream*> redirectedStreamDummies;
-    QList<TeeStream*> teeStreams;
-    QList<std::streambuf*> previousStreamBuffers;
+    medLoggerPrivate* const d;
 
     medLogger();
     ~medLogger();
