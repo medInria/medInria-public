@@ -697,7 +697,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 
     dtkInfo() << "####################################";
 
-    medLogger::finalize();
+    //medLogger::finalize();
 
     event->accept();
 }

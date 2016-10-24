@@ -122,7 +122,7 @@ void medApplication::initialize()
     this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
 
-    medLogger::initialize();
+    //medLogger::initialize();
 
     dtkInfo() << "####################################";
     dtkInfo() << "Version: "    << MEDINRIA_VERSION;
