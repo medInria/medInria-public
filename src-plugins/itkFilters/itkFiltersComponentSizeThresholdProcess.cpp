@@ -114,16 +114,16 @@ int itkFiltersComponentSizeThresholdProcess::tryUpdate()
         }
         else if ( id== "itkDataImageFloat3" )
         {
-            if (d->castToUInt3<float>())
+            if (d->castToUInt3<float>() == DTK_SUCCEED)
             {
                 res = d->update<unsigned int>();
             }
         }
         else if ( id== "itkDataImageDouble3" )
         {
-            if(d->castToUInt3<double>())
+            if(d->castToUInt3<double>() == DTK_SUCCEED)
             {
-                return d->update<unsigned int>();
+                res = d->update<unsigned int>();
             }
         }
         else
