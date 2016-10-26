@@ -11,9 +11,6 @@
 
 =========================================================================*/
 
-#include <boost/iostreams/tee.hpp>
-#include <boost/iostreams/stream.hpp>
-
 #include <QtGui>
 #include <QtOpenGL>
 #include <QtDebug>
@@ -22,13 +19,9 @@
 #include <medApplication.h>
 #include <medSplashScreen.h>
 
-#include <dtkCore>
-#include <dtkLog/dtkLog.h>
-
 #include <medPluginManager.h>
 #include <medDataIndex.h>
 #include <medDatabaseController.h>
-#include <medQtMessageHandler.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
@@ -78,43 +71,6 @@ int main(int argc,char* argv[]) {
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
     QApplication::setStyle("plastique");
     medApplication application(argc,argv);
-
-    // Copy std::cout and std::cerr in log file
-    typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
-    typedef boost::iostreams::stream<TeeDevice> TeeStream;
-
-    std::ofstream logFile(dtkLogPath(&application).toLocal8Bit().data(), std::ios::app);
-
-    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
-    std::streambuf* oldCerrBuffer = std::cerr.rdbuf();
-
-    std::ostream tmp(std::cout.rdbuf());
-    TeeDevice outputDevice(tmp, logFile);
-    TeeStream logger;
-    logger.open(outputDevice);
-    std::cout.rdbuf(logger.rdbuf());
-
-    std::ostream tmpErr(std::cerr.rdbuf());
-    TeeDevice outputDeviceErr(tmpErr, logFile);
-    TeeStream loggerErr;
-    loggerErr.open(outputDeviceErr);
-    std::cerr.rdbuf(loggerErr.rdbuf());
-
-    // Redirect Qt messages into dtkMsg
-    qInstallMsgHandler(medQtMessageHandler::msgHandler);
-
-    // Copy dtkMsg into log file
-    // TRACE >> DEBUG >> INFO >> WARN >> ERROR >> FATAL
-    // Note that these levels form a hierarchy.
-    // If dtk’s logging level is set to TRACE, all logs will be visible,
-    // unless set to WARN, only WARN, ERROR and FATAL log messages will be visible.
-    dtkLogger::instance().setLevel(dtkLog::Debug);
-    dtkLogger::instance().attachFile(dtkLogPath(&application));
-    dtkLogger::instance().attachConsole();
-
-    dtkInfo() << "####################################";
-    dtkInfo() << "Version: "    << MEDINRIA_VERSION;
-    dtkInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");
@@ -283,12 +239,6 @@ int main(int argc,char* argv[]) {
     const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();
-
-    // Close logs streams
-    logger.close();
-    loggerErr.close();
-    std::cout.rdbuf(oldCoutBuffer);
-    std::cerr.rdbuf(oldCerrBuffer);
 
     return status;
 }

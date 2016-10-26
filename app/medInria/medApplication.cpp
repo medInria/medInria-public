@@ -14,7 +14,6 @@
 #include <medApplication.h>
 
 #include <dtkCore/dtkGlobal.h>
-#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 
@@ -28,9 +27,9 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
+#include <medLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
-#include <medQtMessageHandler.h>
 #include <medRegistrationWorkspace.h>
 #include <medSeedPointAnnotationData.h>
 #include <medSegmentationWorkspace.h>
@@ -49,7 +48,6 @@ class medApplicationPrivate
 public:
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
-    QThreadStorage<bool> logRecursionFlag;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -60,39 +58,6 @@ medApplication::medApplication(int & argc, char**argv) :
         QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
-    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
-    if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
-    {
-        QMessageBox msg;
-        msg.setText("This copy of MUSIC has expired, please contact "
-        "maxime.sermesant@inria.fr for more information.");
-        msg.exec();
-        ::exit(1);
-    }
-    d->mainWindow = NULL;
-
-    this->setApplicationName("MUSIC");            /*Beware, change database path*/
-    this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
-    this->setOrganizationDomain("fr");
-    this->setWindowIcon(QIcon(":music_logo_small.png"));
-
-    medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
-    this->setStyleSheet(parser.result());
-
-    //  Redirect msgs to the logs
-
-    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
-                     this, SLOT(redirectErrorMessageToLog(const QString&)) );
-    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
-                     this, SLOT(redirectMessageToLog(QString)) );
-
-    QObject::connect(this,SIGNAL(messageReceived(const QString&)),
-                     this,SLOT(redirectMessageToLog(QString)));
-
-    QObject::connect(&medQtMessageHandler::instance(), SIGNAL(newQtMsg(QtMsgType, const QString&)),
-                    this,SLOT(receiveQtMsg(QtMsgType , const QString&)));
-
     this->initialize();
 }
 
@@ -135,16 +100,6 @@ void medApplication::setMainWindow(medMainWindow *mw)
     d->systemOpenInstructions.clear();
 }
 
-void medApplication::redirectMessageToLog(const QString &message)
-{
-    dtkTrace()<< message;
-}
-
-void medApplication::redirectErrorMessageToLog(const QString &message)
-{
-    dtkError()<< message;
-}
-
 void medApplication::redirectMessageToSplash(const QString &message)
 {
     emit showMessage(message);
@@ -162,6 +117,41 @@ void medApplication::open(QString path)
 
 void medApplication::initialize()
 {
+    this->setApplicationName("MUSIC");            /*Beware, change database path*/
+    this->setApplicationVersion(MEDINRIA_VERSION);
+    this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
+    this->setOrganizationDomain("fr");
+
+    //medLogger::initialize();
+
+    dtkInfo() << "####################################";
+    dtkInfo() << "Version: "    << MEDINRIA_VERSION;
+    dtkInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
+
+    //  Redirect msgs to the logs
+    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
+                     &medLogger::instance(), SLOT(redirectErrorMessage(const QString&)));
+    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(const QString&)),
+                     &medLogger::instance(), SLOT(redirectMessage(const QString&)));
+    QObject::connect(this, SIGNAL(messageReceived(const QString&)),
+                     &medLogger::instance(), SLOT(redirectMessage(const QString&)));
+
+    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
+    if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
+    {
+        QMessageBox msg;
+        msg.setText("This copy of MUSIC has expired, please contact "
+        "maxime.sermesant@inria.fr for more information.");
+        msg.exec();
+        ::exit(1);
+    }
+    d->mainWindow = NULL;
+
+    this->setWindowIcon(QIcon(":music_logo_small.png"));
+
+    medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
+    this->setStyleSheet(parser.result());
+
     qRegisterMetaType<QUuid>("QUuid");
 
     //  Setting up database connection
@@ -188,35 +178,4 @@ void medApplication::initialize()
     //TODO I did something... was it enough ? - Flo
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType<medSeedPointAnnotationData>();
-}
-
-void medApplication::receiveQtMsg(QtMsgType type, const QString& message)
-{
-    if (!d->logRecursionFlag.hasLocalData())
-    {
-        d->logRecursionFlag.setLocalData(false);
-    }
-
-    if (!d->logRecursionFlag.localData())
-    {
-        d->logRecursionFlag.setLocalData(true);
-
-        switch (type)
-        {
-        case QtDebugMsg:
-            dtkDebug()<<message;
-            break;
-        case QtWarningMsg:
-            dtkWarn()<<message;
-            break;
-        case QtCriticalMsg:
-            dtkError()<<message;
-            break;
-        case QtFatalMsg:
-            dtkFatal()<<message;
-            abort();
-        }
-    }
-
-    d->logRecursionFlag.setLocalData(false);
 }
