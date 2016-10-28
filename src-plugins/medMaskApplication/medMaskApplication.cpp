@@ -69,6 +69,17 @@ public:
                 imageCalculatorFilter->ComputeMinimum();
                 maskFilter->SetOutsideValue(std::min(double(imageCalculatorFilter->GetMinimum()), 0.0));
                 maskFilter->Update();
+
+                QString identifier = input->identifier();
+                if (!identifier.isEmpty())
+                {
+                    output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
+                }
+                else
+                {
+                    output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageChar3" );
+                }
+
                 output->setData(maskFilter->GetOutput());
             }
             catch( itk::ExceptionObject & err )
@@ -126,15 +137,6 @@ void medMaskApplication::setInput ( medAbstractData *data, int channel)
 
     if ( channel == 1 )
     {
-        QString identifier = data->identifier();
-        if (!identifier.isEmpty())
-        {
-            d->output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
-        }
-        else
-        {
-            d->output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageChar3" );
-        }
         d->input = data;
     }
 }
@@ -156,7 +158,6 @@ void medMaskApplication::clearInput (int channel)
 
     if ( channel == 1 )
     {
-        d->output = NULL;
         d->input = NULL;
     }
 }
@@ -277,7 +278,7 @@ int medMaskApplication::updateMaskType()
 
 medAbstractData * medMaskApplication::output()
 {
-    return ( d->output );
+    return d->output;
 }
 
 // /////////////////////////////////////////////////////////////////
