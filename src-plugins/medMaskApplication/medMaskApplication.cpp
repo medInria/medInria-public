@@ -158,6 +158,7 @@ void medMaskApplication::clearInput (int channel)
 
     if ( channel == 1 )
     {
+        d->output = NULL;
         d->input = NULL;
     }
 }
