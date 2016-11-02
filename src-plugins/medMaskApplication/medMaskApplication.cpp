@@ -71,15 +71,7 @@ public:
                 maskFilter->Update();
 
                 QString identifier = input->identifier();
-                if (!identifier.isEmpty())
-                {
-                    output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
-                }
-                else
-                {
-                    output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageChar3" );
-                }
-
+                output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
                 output->setData(maskFilter->GetOutput());
             }
             catch( itk::ExceptionObject & err )
