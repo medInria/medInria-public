@@ -156,7 +156,7 @@ void resliceToolBox::startReformat()
         medViewContainer * container = getWorkspace()->stackedViewContainers()->insertContainerInTab(0,"Reslice");
         getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
         container->setDefaultWidget(d->resliceViewer->viewWidget());
-        getWorkspace()->stackedViewContainers()->lockTabs();
+        connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
 
         connect(d->spacingX,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
         connect(d->spacingY,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
@@ -166,7 +166,6 @@ void resliceToolBox::startReformat()
         d->reformatedImage = 0;
 
         // close the initial tab which is not needed anymore
-        getWorkspace()->stackedViewContainers()->unlockTabs();
         getWorkspace()->stackedViewContainers()->removeTab(1);
         updateView();
     }
@@ -184,7 +183,6 @@ void resliceToolBox::stopReformat()
         d->reformatOptions->hide();
         d->b_startReslice->show();
 
-        getWorkspace()->stackedViewContainers()->unlockTabs();
         getWorkspace()->stackedViewContainers()->removeTab(0);
         getWorkspace()->stackedViewContainers()->insertContainerInTab(0, getWorkspace()->name());
         getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
