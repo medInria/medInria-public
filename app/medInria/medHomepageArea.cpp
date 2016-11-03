@@ -23,7 +23,7 @@
 #include <medSettingsManager.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
-#include <dtkLog/dtkLogView.h>
+//#include <dtkLog/dtkLogView.h>
 
 
 class medHomepageAreaPrivate
@@ -42,7 +42,7 @@ public:
     QWidget * settingsWidget;
     medSettingsEditor* settingsEditor;
 
-    QWidget* logWidget;
+//    QWidget* logWidget;
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
@@ -97,7 +97,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( pluginButton,SIGNAL ( clicked() ),this, SLOT ( onShowPlugin() ) );
 
-    medHomepageButton * logButton = new medHomepageButton ( this );
+    /*medHomepageButton * logButton = new medHomepageButton ( this );
     logButton->setText ( "Log" );
     logButton->setMinimumHeight ( 30 );
     logButton->setMaximumWidth ( 150 );
@@ -107,7 +107,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
     logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( onShowLog() ) );
-
+*/
     medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
@@ -122,8 +122,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
-    userButtonsLayout->insertWidget ( 3, logButton );
-    userButtonsLayout->insertWidget ( 4, helpButton );
+//    userButtonsLayout->insertWidget ( 3, logButton );
+    userButtonsLayout->insertWidget ( 3, helpButton );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
@@ -267,7 +267,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsLayout->addWidget(medInriaLabel4);
     settingsLayout->addWidget(d->settingsEditor);
     settingsLayout->addLayout(settingsHideButtonLayout);
-
+/*
     //Create the log widget.
     d->logWidget = new QWidget(this);
     QVBoxLayout * logLayout = new QVBoxLayout(d->logWidget);
@@ -295,7 +295,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     logLayout->addWidget(logView);
     logLayout->addWidget(openLogDirectoryButton);
     logLayout->addLayout(logHideButtonLayout);
-
+*/
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
     d->stackedWidget->setMinimumSize ( 400,300 );
@@ -303,7 +303,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
     d->stackedWidget->addWidget(d->settingsWidget);
-    d->stackedWidget->addWidget(d->logWidget);
+    //d->stackedWidget->addWidget(d->logWidget);
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
     d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 }
@@ -497,14 +497,14 @@ void medHomepageArea::onShowSettings()
     d->settingsWidget->setFocus();
 }
 
-void medHomepageArea::onShowLog()
-{
-    d->stackedWidget->setCurrentWidget(d->logWidget);
-    d->logWidget->setFocus();
-}
+//void medHomepageArea::onShowLog()
+//{
+//    d->stackedWidget->setCurrentWidget(d->logWidget);
+//    d->logWidget->setFocus();
+//}
 
-void medHomepageArea::openLogDirectory()
-{
-    QString path = QFileInfo(dtkLogPath(qApp)).path();
-    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
-}
+//void medHomepageArea::openLogDirectory()
+//{
+//    QString path = QFileInfo(dtkLogPath(qApp)).path();
+//    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+//}
