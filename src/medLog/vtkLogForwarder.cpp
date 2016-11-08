@@ -22,17 +22,17 @@ vtkStandardNewMacro(vtkLogForwarder);
 
 void vtkLogForwarder::DisplayErrorText( const char *txt )
 {
-    dtkError() << txt;
+    //dtkError() << txt;
 }
 
 void vtkLogForwarder::DisplayWarningText( const char *txt )
 {
-    dtkWarn() << txt;
+    //dtkWarn() << txt;
 }
 
 void vtkLogForwarder::DisplayDebugText( const char *txt )
 {
-    dtkDebug() << txt;
+    //dtkDebug() << txt;
 }
 
 void vtkLogForwarder::PrintSelf( ostream& os, vtkIndent indent )

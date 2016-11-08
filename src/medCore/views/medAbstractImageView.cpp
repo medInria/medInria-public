@@ -148,11 +148,6 @@ QList<medAbstractNavigator*> medAbstractImageView::extraNavigators()
 
 void medAbstractImageView::removeInteractors(medAbstractData *data)
 {
-    if (this->orientation() == medImageView::VIEW_ORIENTATION_3D)
-    {
-        this->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
-    }
-
     medAbstractLayeredViewInteractor* pInteractor = d->primaryInteractorsHash.take(data);
     pInteractor->removeData();
     delete pInteractor;
