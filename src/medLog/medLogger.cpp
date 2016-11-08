@@ -99,6 +99,8 @@ medLogger::medLogger() : d(new medLoggerPrivate)
 
 medLogger::~medLogger()
 {
+    QObject::disconnect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
+    qInstallMsgHandler(NULL);
     finalizeTeeStreams();
 }
 
@@ -110,9 +112,6 @@ void medLogger::initializeTeeStreams()
 
 void medLogger::finalizeTeeStreams()
 {
-    QObject::disconnect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
-    qInstallMsgHandler(NULL);
-
     for (int i = 0; i < d->redirectedStreams.length(); i++)
     {
         d->teeStreams.first()->flush();
