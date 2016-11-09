@@ -573,7 +573,12 @@ void AlgorithmPaintToolBox::activateMagicWand()
 void AlgorithmPaintToolBox::hideEvent(QHideEvent *event)
 {
     medAbstractSelectableToolBox::hideEvent(event);
-    resetToolbox();
+
+    // remove additionnal data set
+    if (currentView->layersCount() > 1)
+    {
+        currentView->removeLayer(1);
+    }
 }
 
 void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
@@ -634,7 +639,7 @@ void AlgorithmPaintToolBox::updateView()
         // Update cursor if the orientation change
         connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
 
-        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(closeView()), Qt::UniqueConnection);
+        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(initializeToolBox(unsigned int)), Qt::UniqueConnection);
     }
 
     // Update cursor to new view
@@ -1445,22 +1450,24 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
             m_redoStacks->value(view)->clear();
 }
 
-void AlgorithmPaintToolBox::closeView()
+void AlgorithmPaintToolBox::initializeToolBox(unsigned int layerRemoved)
 {
     // close every data in the view
     medAbstractView* view = qobject_cast<medAbstractView*>(QObject::sender());
     medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view);
 
+    // remove additionnal data set
+    if ((layerRemoved == 0) && (layeredView->layersCount() > 0))
+    {
+        layeredView->removeLayer(0);
+        return;
+    }
+
+    // initialize toolbox with original or no data set
+    onViewClosed(view);
     if (layeredView->layersCount() > 0)
     {
-        // remove a data, which will recursively call this closeView() function
-        // until there is no more data in the view
-        layeredView->removeLayer(0);
-    }
-    else
-    {
-        // clean the toolbox when there is no data left in the view
-        onViewClosed(view);
+        updateView();
     }
 }
 
