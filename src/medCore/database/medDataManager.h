@@ -22,7 +22,6 @@
 #include <medDataIndex.h>
 
 class medDataManagerPrivate;
-class dtkAbstractData;
 class medAbstractData;
 class medAbstractDbController;
 class dtkAbstractDataWriter;
@@ -44,7 +43,7 @@ public:
 
     void exportData(medAbstractData* data);
     void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
-    void exportDataToPath(QList<dtkAbstractData*> data, const QString& path, const QString& format = "");
+    void exportDataToPath(QList<medAbstractData *> data, const QString& path, const QString& format = "");
 
     QUuid makePersistent(medAbstractData* data);
 

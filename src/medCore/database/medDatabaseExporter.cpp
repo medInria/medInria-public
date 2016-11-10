@@ -22,7 +22,7 @@ class medDatabaseExporterPrivate
 {
 public:
     medAbstractData *data;
-    QList<dtkAbstractData*> dataList;
+    QList<medAbstractData*> dataList;
     QString          filename;
     QString          writer;
     bool saveMultipleData;
@@ -36,7 +36,7 @@ medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString &
     d->saveMultipleData = false;
 }
 
-medDatabaseExporter::medDatabaseExporter(QList<dtkAbstractData*> data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
+medDatabaseExporter::medDatabaseExporter(QList<medAbstractData*> data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
 {
     d->data     = NULL;
     d->dataList = data;

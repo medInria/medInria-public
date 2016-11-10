@@ -244,7 +244,7 @@ void medDataManager::exportDataToPath(medAbstractData *data, const QString & fil
     QThreadPool::globalInstance()->start(exporter);
 }
 
-void medDataManager::exportDataToPath(QList<dtkAbstractData*> data, const QString & filename, const QString & writer)
+void medDataManager::exportDataToPath(QList<medAbstractData*> data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
     QFileInfo info(filename);
