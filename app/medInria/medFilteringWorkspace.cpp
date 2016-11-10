@@ -48,34 +48,31 @@ medFilteringWorkspace::~medFilteringWorkspace()
  */
 void medFilteringWorkspace::setupViewContainerStack()
 {
-    if ( !this->stackedViewContainers()->count() )
-    {
-        d->inputContainer = this->stackedViewContainers()->addContainerInTab(this->name());
-        QLabel *inputLabel = new QLabel("INPUT");
-        inputLabel->setAlignment(Qt::AlignCenter);
-        d->inputContainer->setDefaultWidget(inputLabel);
+    medAbstractWorkspace::setupViewContainerStack();
 
-        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->inputContainer->setUserSplittable(false);
-        d->inputContainer->setMultiLayered(false);
+    d->inputContainer = this->stackedViewContainers()->containersInTab(0).at(0);
+    QLabel *inputLabel = new QLabel("INPUT");
+    inputLabel->setAlignment(Qt::AlignCenter);
+    d->inputContainer->setDefaultWidget(inputLabel);
 
-        d->outputContainer = d->inputContainer->splitVertically();
-        QLabel *outputLabel = new QLabel("OUTPUT");
-        outputLabel->setAlignment(Qt::AlignCenter);
-        d->outputContainer->setDefaultWidget(outputLabel);
-        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-        d->outputContainer->setUserSplittable(false);
-        d->outputContainer->setMultiLayered(false);
-        d->outputContainer->setUserOpenable(false);
+    d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+    d->inputContainer->setUserSplittable(false);
+    d->inputContainer->setMultiLayered(false);
 
-        connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
-        connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
+    d->outputContainer = d->inputContainer->splitVertically();
+    QLabel *outputLabel = new QLabel("OUTPUT");
+    outputLabel->setAlignment(Qt::AlignCenter);
+    d->outputContainer->setDefaultWidget(outputLabel);
+    d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+    d->outputContainer->setUserSplittable(false);
+    d->outputContainer->setMultiLayered(false);
+    d->outputContainer->setUserOpenable(false);
 
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->hideTabBar();
-        d->inputContainer->setSelected(true);
-        d->outputContainer->setSelected(false);
-    }
+    connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
+    connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
+
+    d->inputContainer->setSelected(true);
+    d->outputContainer->setSelected(false);
 }
 
 void medFilteringWorkspace::changeToolBoxInput()

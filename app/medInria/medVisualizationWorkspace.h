@@ -27,6 +27,8 @@ public:
     medVisualizationWorkspace(QWidget *parent = 0): medAbstractWorkspace(parent){}
 
     static bool isUsable();
+
+    void setupViewContainerStack();
 };
 
 
