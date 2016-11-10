@@ -46,6 +46,9 @@ public slots:
     void computeRegistration();
     void reset();
 
+protected:
+    void hideEvent(QHideEvent *event);
+
 private:
     void displayButtons(bool);
     void constructContainers(medTabbedViewContainers *);
