@@ -21,8 +21,10 @@ class medDatabaseExporterPrivate
 {
 public:
     medAbstractData *data;
+    QList<dtkAbstractData*> dataList;
     QString          filename;
     QString          writer;
+    bool saveMultipleData;
 };
 
 medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
@@ -30,6 +32,16 @@ medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString &
     d->data     = data;
     d->filename = filename;
     d->writer   = writer;
+    d->saveMultipleData = false;
+}
+
+medDatabaseExporter::medDatabaseExporter(QList<dtkAbstractData*> data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
+{
+    d->data     = NULL;
+    d->dataList = data;
+    d->filename = filename;
+    d->writer   = writer;
+    d->saveMultipleData = true;
 }
 
 medDatabaseExporter::~medDatabaseExporter(void)
@@ -47,7 +59,8 @@ medDatabaseExporter::~medDatabaseExporter(void)
 */
 void medDatabaseExporter::internalRun(void)
 {
-    if (!d->data)
+    if ((!d->saveMultipleData && !d->data) ||
+            (d->saveMultipleData && d->dataList.isEmpty()))
     {
         emit showError("Cannot export data", 3000);
         return;
@@ -59,7 +72,14 @@ void medDatabaseExporter::internalRun(void)
     }
 
     dtkAbstractDataWriter * dataWriter = medAbstractDataFactory::instance()->writer(d->writer);
-    dataWriter->setData(d->data);
+    if(!d->saveMultipleData)
+    {
+        dataWriter->setData(d->data);
+    }
+    else
+    {
+        dataWriter->setData(d->dataList);
+    }
 
 
     if ( ! dataWriter->canWrite(d->filename) || ! dataWriter->write(d->filename)) {

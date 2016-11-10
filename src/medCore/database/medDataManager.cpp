@@ -244,6 +244,20 @@ void medDataManager::exportDataToPath(medAbstractData *data, const QString & fil
     QThreadPool::globalInstance()->start(exporter);
 }
 
+void medDataManager::exportDataToPath(QList<dtkAbstractData*> data, const QString & filename, const QString & writer)
+{
+    medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
+    QFileInfo info(filename);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
+
+    connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(exporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+
+    medJobManager::instance()->registerJobItem(exporter);
+    QThreadPool::globalInstance()->start(exporter);
+}
+
 
 QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
