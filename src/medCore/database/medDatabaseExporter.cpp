@@ -16,6 +16,7 @@
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <medAbstractDataFactory.h>
+#include <medAbstractDataWriter.h>
 
 class medDatabaseExporterPrivate
 {
@@ -78,7 +79,17 @@ void medDatabaseExporter::internalRun(void)
     }
     else
     {
-        dataWriter->setData(d->dataList);
+        medAbstractDataWriter* medDataWriter;
+        try
+        {
+            medDataWriter = dynamic_cast<medAbstractDataWriter*>(dataWriter);
+        }
+        catch (const std::exception& e)
+        {
+            qDebug()<<"medDatabaseExporter::internalRun(void): "<< e.what();
+            return;
+        }
+        medDataWriter->setData(d->dataList);
     }
 
 
