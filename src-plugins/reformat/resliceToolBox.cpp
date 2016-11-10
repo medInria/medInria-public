@@ -186,6 +186,12 @@ void resliceToolBox::stopReformat()
         getWorkspace()->stackedViewContainers()->removeTab(0);
         getWorkspace()->stackedViewContainers()->insertContainerInTab(0, getWorkspace()->name());
         getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
+
+        if (d->currentView)
+        {
+            getWorkspace()->stackedViewContainers()->getFirstSelectedContainer()->addData(d->currentView->layerData(0));
+        }
+
         processOutput();
         disconnect(d->resliceViewer);
         delete d->resliceViewer;
@@ -196,8 +202,13 @@ void resliceToolBox::stopReformat()
         {
             toolBoxes[i]->show();
         }
-        d->currentView = NULL;
     }
+}
+
+void resliceToolBox::hideEvent(QHideEvent *event)
+{
+    medAbstractSelectableToolBox::hideEvent(event);
+    stopReformat();
 }
 
 void resliceToolBox::updateView()
@@ -246,7 +257,10 @@ void resliceToolBox::saveReformatedImage()
 
 void resliceToolBox::generateReformatedImage()
 {
-    d->reformatedImage = d->resliceViewer->getOutput();
+    if (d->resliceViewer)
+    {
+        d->reformatedImage = d->resliceViewer->getOutput();
+    }
 }
 
 void resliceToolBox::switchSpacingAndDimension(const QString & value)

@@ -31,4 +31,7 @@ public slots:
     void saveReformatedImage();
     void generateReformatedImage();
     void switchSpacingAndDimension(const QString &value);
+
+protected:
+    void hideEvent(QHideEvent *event);
 };
