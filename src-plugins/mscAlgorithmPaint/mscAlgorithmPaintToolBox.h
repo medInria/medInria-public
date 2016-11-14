@@ -111,9 +111,8 @@ public slots:
     void redo();
     void addSliceToStack(medAbstractView * view,const unsigned char planeIndex,QList<int> listIdSlice);
 
-    void initializeToolBox(unsigned int layerRemoved);
-    void onViewClosed(medAbstractView* viewClosed);
-    void clearMask();
+    void initializeToolBox();
+    void clearMask(medAbstractView *view);
     void resetToolbox();
 
     void newSeed();
