@@ -111,7 +111,7 @@ public slots:
     void redo();
     void addSliceToStack(medAbstractView * view,const unsigned char planeIndex,QList<int> listIdSlice);
 
-    void initializeToolBox();
+    void clearToolBox();
     void clearMask(medAbstractView *view);
     void resetToolbox();
 
@@ -153,6 +153,8 @@ protected:
     void addViewEventFilter(medViewEventFilter * filter );
 
     void hideEvent(QHideEvent *event);
+
+    void disableButtons(bool isToDisable);
 
 private:
 
