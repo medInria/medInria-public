@@ -23,6 +23,7 @@
 #include <itkImage.h>
 #include <itkCommand.h>
 #include <itkInvertIntensityImageFilter.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
 class itkFiltersInvertProcess;
 
@@ -41,6 +42,19 @@ public:
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::InvertIntensityImageFilter< ImageType, ImageType >  InvertFilterType;
         typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
+
+        // compute maximum intensity of image
+        typedef itk::MinimumMaximumImageCalculator< ImageType > MinMaxFilterType;
+        typename MinMaxFilterType::Pointer maxFilter = MinMaxFilterType::New();
+
+        maxFilter->SetImage( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        maxFilter->Compute();
+        PixelType maximum = maxFilter->GetMaximum();
+        PixelType minimum = maxFilter->GetMinimum();
+
+        invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+        invertFilter->SetMaximum(maximum + minimum);
+
     
         invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         
