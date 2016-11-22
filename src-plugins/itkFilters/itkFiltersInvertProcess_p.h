@@ -55,9 +55,6 @@ public:
         invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         invertFilter->SetMaximum(maximum + minimum);
 
-    
-        invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
         callback->SetCallback ( itkFiltersInvertProcessPrivate::eventCallback );
