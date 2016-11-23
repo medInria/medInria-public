@@ -221,6 +221,9 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     medAbstractSelectableToolBox( parent),
     m_paintState(PaintState::None)
 {
+    // instanciate the event filter only once
+    m_viewFilter = new ClickAndMoveEventFilter(this);
+
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
 
@@ -491,7 +494,6 @@ void AlgorithmPaintToolBox::activateStroke()
     setPaintState(PaintState::Stroke);
     updateButtons();
     this->m_magicWandButton->setChecked(false);
-    m_viewFilter = ( new ClickAndMoveEventFilter(this) );
     addViewEventFilter(m_viewFilter);
     addBrushSize_shortcut->setEnabled(true);
     reduceBrushSize_shortcut->setEnabled(true);
@@ -564,7 +566,6 @@ void AlgorithmPaintToolBox::activateMagicWand()
     setPaintState(PaintState::Wand);
     updateButtons();
     this->m_strokeButton->setChecked(false);
-    m_viewFilter = ( new ClickAndMoveEventFilter(this) );
     addViewEventFilter(m_viewFilter);
     deactivateCustomedCursor();
 }
@@ -615,7 +616,6 @@ void AlgorithmPaintToolBox::updateView()
     {
         setCurrentView(qobject_cast<medAbstractImageView*>(view));
     }
-
     updateMouseInteraction();
 
     // TODO : get rid of similar lines in mousePressEvent, we need this here otherwise we cannot use interpolate/copy/paste
@@ -1174,7 +1174,6 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
         view->setCurrentLayer(0);
         getWorkspace()->updateMouseInteractionToolBox();
     }
-
     m_maskAnnotationData->invokeModified();
 }
 
@@ -1235,7 +1234,6 @@ void AlgorithmPaintToolBox::updateMouseInteraction() //Apply the current interac
 {
     if (m_paintState != PaintState::None)
     {
-        m_viewFilter = ( new ClickAndMoveEventFilter(this) );
         addViewEventFilter(m_viewFilter);
     }
 }
@@ -1512,16 +1510,16 @@ void AlgorithmPaintToolBox::clearMask()
 
 void AlgorithmPaintToolBox::resetToolbox()
 {
+    this->m_viewFilter->removeFromAllViews();
+
     if ( this->m_strokeButton->isChecked() )
     {
-        this->m_viewFilter->removeFromAllViews();
         m_paintState = (PaintState::None);
         updateButtons();
         m_strokeButton->setChecked(false);
     }
     else if ( this->m_magicWandButton->isChecked() )
     {
-        this->m_viewFilter->removeFromAllViews();
         m_paintState = (PaintState::None);
         newSeed(); // accept the current growth
         updateButtons();
