@@ -629,6 +629,7 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->SetTimeIndex(timeIndex);
+    d->currentView->GlobalWarningDisplayOff();
     d->currentView->Render();
 
     d->orientation = orientation;
