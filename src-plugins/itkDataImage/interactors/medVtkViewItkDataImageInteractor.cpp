@@ -701,9 +701,8 @@ void medVtkViewItkDataImageInteractor::updateSlicingParam()
 
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
-    d->slicingParameter->blockSignals(false);
-
     d->slicingParameter->setValue(d->view2d->GetSlice());
+    d->slicingParameter->blockSignals(false);
 }
 
 void medVtkViewItkDataImageInteractor::enableWIndowLevel(bool enable)
