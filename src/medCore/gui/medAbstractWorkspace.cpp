@@ -185,7 +185,7 @@ void medAbstractWorkspace::setupViewContainerStack()
     {
         this->stackedViewContainers()->addContainerInTab(this->name());
     }
-    this->stackedViewContainers()->unlockTabs();
+    this->stackedViewContainers()->lockTabs();
 }
 
 void medAbstractWorkspace::setToolBoxesVisibility (bool value)

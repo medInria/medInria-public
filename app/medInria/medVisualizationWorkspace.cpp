@@ -24,3 +24,12 @@ bool medVisualizationWorkspace::isUsable()
 {
     return true; // for the time being, no test is defined.
 }
+
+void medVisualizationWorkspace::setupViewContainerStack()
+{
+    if (!stackedViewContainers()->count())
+    {
+        this->stackedViewContainers()->addContainerInTab(this->name());
+    }
+    this->stackedViewContainers()->unlockTabs();
+}
