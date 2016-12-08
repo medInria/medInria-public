@@ -2,6 +2,7 @@
 
 #include <QHash>
 #include <medUtilitiesExport.h>
+#include <dtkCore/dtkSmartPointer>
 
 class medAbstractData;
 class medAbstractView;
@@ -37,4 +38,8 @@ public:
     static void switchTo3D(medAbstractView *view, Mode3DType mode3D = VR); // Display mesh in 3D orientation
 
     static medAbstractData *changeMaxNumberOfMeshTriangles(medAbstractData *mesh, int value);
+
+    static double minimumValue(dtkSmartPointer<medAbstractData> data);
+    static double volume(dtkSmartPointer<medAbstractData> data);
+
 };

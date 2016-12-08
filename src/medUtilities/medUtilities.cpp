@@ -8,6 +8,7 @@
 #include <medMetaDataKeys.h>
 #include <medStringListParameter.h>
 #include <medVtkViewBackend.h>
+#include <statsROI.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkMatrix4x4.h>
@@ -220,4 +221,22 @@ medAbstractData* medUtilities::changeMaxNumberOfMeshTriangles(medAbstractData *m
         return process->output();
     }
     return mesh;
+}
+
+double medUtilities::minimumValue(dtkSmartPointer<medAbstractData> data)
+{
+    statsROI statsProcess;
+    statsProcess.setInput(data, 0);
+    statsProcess.setParameter(statsROI::MINMAX);
+    statsProcess.update();
+    return statsProcess.output().at(0);
+}
+
+double medUtilities::volume(dtkSmartPointer<medAbstractData> data)
+{
+    statsROI statsProcess;
+    statsProcess.setInput(data, 0);
+    statsProcess.setParameter(statsROI::VOLUMEML);
+    statsProcess.update();
+    return statsProcess.output().at(0);
 }
