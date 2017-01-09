@@ -160,7 +160,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
         }
     }
 
-    if (view2d)
+    if (view2d && ia)
     {
         int min, max, orientation;
         double position[3]={0.0, 0.0, 0.0};
@@ -182,6 +182,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
                                    ia_input->GetScalarType() == VTK_DOUBLE);
         }
     }
+
 
     // search for tokens, replace and then assign to TextMappers
     for (i = 0; i < 4; i++)
