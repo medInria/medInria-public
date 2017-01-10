@@ -35,12 +35,12 @@ public:
 
     void setSelectorToolBox(medSelectorToolBox *toolbox);
 
+    //! Called when scrolled in medSelectorToolBox
+    virtual void changeSelectedToolBoxEvent(){}
+
 public slots:
 
     void updateView(){}
-
-    //! Called when scrolled in medSelectorToolBox
-    virtual void changeSelectedToolBoxEvent(){}
 
 protected:
 
