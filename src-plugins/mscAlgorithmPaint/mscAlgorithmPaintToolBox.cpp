@@ -570,10 +570,8 @@ void AlgorithmPaintToolBox::activateMagicWand()
     deactivateCustomedCursor();
 }
 
-void AlgorithmPaintToolBox::hideEvent(QHideEvent *event)
+void AlgorithmPaintToolBox::changeSelectedToolBoxEvent()
 {
-    medAbstractSelectableToolBox::hideEvent(event);
-
     clearToolBox();
 }
 

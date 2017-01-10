@@ -152,7 +152,7 @@ protected:
 
     void addViewEventFilter(medViewEventFilter * filter );
 
-    void hideEvent(QHideEvent *event);
+    void changeSelectedToolBoxEvent();
 
     void disableButtons(bool isToDisable);
 
