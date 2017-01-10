@@ -47,7 +47,7 @@ public slots:
     void reset();
 
 protected:
-    void hideEvent(QHideEvent *event);
+    void changeSelectedToolBoxEvent();
 
 private:
     void displayButtons(bool);

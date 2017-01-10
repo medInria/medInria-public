@@ -224,12 +224,10 @@ void medCropToolBox::showEvent(QShowEvent *event)
 {
     medAbstractSelectableToolBox::showEvent(event);
     setEnable(true);
-
 }
 
-void medCropToolBox::hideEvent(QHideEvent *event)
+void medCropToolBox::changeSelectedToolBoxEvent()
 {
-    medAbstractSelectableToolBox::hideEvent(event);
     setEnable(false);
 
     // allow to split container in other toolboxes
