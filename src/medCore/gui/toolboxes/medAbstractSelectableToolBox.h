@@ -39,9 +39,12 @@ public slots:
 
     void updateView(){}
 
+    //! Called when scrolled in medSelectorToolBox
+    virtual void changeSelectedToolBoxEvent(){}
+
 protected:
 
-    //! Launched when scrolled in medSelectorToolBox
+    //! Called when toolbox is hidden (scroll in medSelectorToolBox, workspace changed, etc)
     virtual void showEvent(QShowEvent *event);
     virtual void hideEvent(QHideEvent *event);
 

@@ -105,6 +105,8 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
     {
         // Remove previous tlbx from current tlbx
         d->currentToolBox->hide();
+        d->currentToolBox->changeSelectedToolBoxEvent();
+
         d->mainLayout->removeWidget(d->currentToolBox);
         d->currentToolBox = NULL;
     }
