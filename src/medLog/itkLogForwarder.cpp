@@ -22,27 +22,27 @@ namespace itk {
 
 void LogForwarder::DisplayText( const char* t)
 {
-    //dtkDebug() << t;
+    dtkDebug() << t;
 }
 
 void LogForwarder::DisplayDebugText( const char *t )
 {
-    //dtkDebug() << t;
+    dtkDebug() << t;
 }
 
 void LogForwarder::DisplayGenericOutputText( const char *t )
 {
-    //dtkDebug() << t;
+    dtkDebug() << t;
 }
 
 void LogForwarder::DisplayWarningText( const char *t )
 {
-    //dtkWarn() << t;
+    dtkWarn() << t;
 }
 
 void LogForwarder::DisplayErrorText( const char *t )
 {
-    //dtkError() << t;
+    dtkError() << t;
 }
 
 LogForwarder::LogForwarder()
