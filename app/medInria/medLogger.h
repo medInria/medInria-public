@@ -61,4 +61,6 @@ private:
     void finalizeTeeStreams();
 
     void createTeeStream(std::ostream* targetStream);
+
+    void truncateLogFileIfHeavy();
 };

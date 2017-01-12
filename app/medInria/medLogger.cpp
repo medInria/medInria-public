@@ -88,6 +88,8 @@ medLogger::medLogger() : d(new medLoggerPrivate)
 
     initializeTeeStreams();
 
+    truncateLogFileIfHeavy();
+
     dtkLogger::instance().setLevel(logLevel);
     dtkLogger::instance().attachFile(dtkLogPath(qApp));
     dtkLogger::instance().attachConsole();
@@ -130,5 +132,35 @@ void medLogger::createTeeStream(std::ostream* targetStream)
     TeeDevice* teeDevice = new TeeDevice(*d->redirectedStreamDummies.last(), d->logFile);
     d->teeStreams.append(new TeeStream(*teeDevice));
     targetStream->rdbuf(d->teeStreams.last()->rdbuf());
+}
+
+void medLogger::truncateLogFileIfHeavy()
+{
+    // Test the size of the log file and cut if needed
+    qint64 filesize = QFileInfo(dtkLogPath(qApp)).size();
+
+    // Over 5Mo, the file is truncated from the beginning (old lines are discarded)
+    if (filesize > 5000000)
+    {
+        QString path = dtkLogPath(qApp);
+
+        std::ifstream fin;
+        fin.open(path.toUtf8());
+        std::ofstream temp;
+        temp.open(path.toUtf8()+"tmp");
+
+        fin.seekg(4000000); // file is going to lose 4Mo
+
+        std::string line;
+        while (getline(fin,line))
+        {
+            temp << line << std::endl;
+        }
+
+        temp.close();
+        fin.close();
+        std::remove(path.toUtf8());
+        std::rename(path.toUtf8()+"tmp",path.toUtf8());
+    }
 }
 
