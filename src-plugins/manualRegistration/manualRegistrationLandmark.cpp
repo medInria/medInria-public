@@ -61,17 +61,21 @@ public:
             Roi->SetIndices(ind);
             Roi->ShowOrHide();
 
-            
+            // Remove chosen landmark and related one on other view,
+            // cf. manualRegistrationLandmarkControllerCommand::Execute
             if (Roi->GetHandleWidget() && Roi->GetHandleWidget()->GetInteractor())
-                if (Roi->GetHandleWidget()->GetInteractor()->GetControlKey())
+            {
+                std::string keycode = Roi->GetHandleWidget()->GetInteractor()->GetKeySym();
+                if (keycode == "Delete")
                 {
                     Roi->InvokeEvent(vtkCommand::DeleteEvent);
-                    return;
                 }
+            }
         }
-        
-        if(event == vtkImageView2D::SliceChangedEvent)
+        else if(event == vtkImageView2D::SliceChangedEvent)
+        {
             Roi->ShowOrHide();
+        }
     }
 
     void setRoi(manualRegistrationLandmark *Roi)

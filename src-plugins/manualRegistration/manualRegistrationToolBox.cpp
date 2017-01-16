@@ -64,7 +64,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medAbstr
     connect(d->b_startManualRegistration,SIGNAL(clicked()),this,SLOT(startManualRegistration()));
     d->b_startManualRegistration->setObjectName("startManualRegistrationButton");
 
-    QLabel* explanation = new QLabel("To add a landmark: \n\tShift + left mouse button\n", widget);
+    QLabel* explanation = new QLabel("To add a landmark: \tShift + left mouse button\nTo remove a landmark duo: \tDelete + left mouse button", widget);
 
     d->numberOfLdInLeftContainer = new QLabel("Number of landmarks in left container: 0",widget);
     d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container: 0",widget);

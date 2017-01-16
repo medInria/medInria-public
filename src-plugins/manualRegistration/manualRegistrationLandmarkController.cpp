@@ -121,11 +121,12 @@ void manualRegistrationLandmarkControllerCommand::Execute ( vtkObject *caller, u
             this->Controller->AddPoint(landmark,1);
         }
     }
-
-    if (event == vtkCommand::DeleteEvent)
+    else if (event == vtkCommand::DeleteEvent)
     {
         manualRegistrationLandmark* landmark = manualRegistrationLandmark::SafeDownCast (caller);
         this->Controller->RequestDeletion(landmark);
+        this->Controller->GetViewFixed()->viewWidget()->update();
+        this->Controller->GetViewMoving()->viewWidget()->update();
     }
 }
 
