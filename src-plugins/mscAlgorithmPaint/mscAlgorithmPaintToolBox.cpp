@@ -394,7 +394,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     connect (m_strokeButton, SIGNAL(pressed()), this, SLOT(activateStroke ()));
     connect (m_magicWandButton, SIGNAL(pressed()),this,SLOT(activateMagicWand()));
-    connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clearToolBox()));
+    connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clear()));
     connect (m_applyButton, SIGNAL(pressed()),this, SLOT(import()));
 
     if (this->selectorToolBox()) // empty in pipelines
@@ -570,11 +570,6 @@ void AlgorithmPaintToolBox::activateMagicWand()
     deactivateCustomedCursor();
 }
 
-void AlgorithmPaintToolBox::changeSelectedToolBoxEvent()
-{
-    clearToolBox();
-}
-
 void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
 {
     if (m_wand3DRealTime->isChecked())
@@ -630,7 +625,7 @@ void AlgorithmPaintToolBox::updateView()
             // Update cursor if the orientation change
             connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
 
-            connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clearToolBox()), Qt::UniqueConnection);
+            connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clear()), Qt::UniqueConnection);
 
             // Update cursor to new view
             if ( this->m_strokeButton->isChecked() )
@@ -642,21 +637,21 @@ void AlgorithmPaintToolBox::updateView()
                 deactivateCustomedCursor(); // Deactivate painting cursor
             }
 
-            disableButtons(false);
+            setDisabled(false);
         }
     }
     else
     {
-        disableButtons(true);
+        setDisabled(true);
         currentView = NULL;
     }
 }
 
-void AlgorithmPaintToolBox::disableButtons(bool isToDisable)
+void AlgorithmPaintToolBox::setDisabled(bool disable)
 {
-    m_strokeButton->setDisabled(isToDisable);
-    m_magicWandButton->setDisabled(isToDisable);
-    m_interpolateButton->setDisabled(isToDisable);
+    m_strokeButton->setDisabled(disable);
+    m_magicWandButton->setDisabled(disable);
+    m_interpolateButton->setDisabled(disable);
 }
 
 void AlgorithmPaintToolBox::setLabel(int newVal)
@@ -1456,29 +1451,30 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
             m_redoStacks->value(view)->clear();
 }
 
-void AlgorithmPaintToolBox::clearToolBox()
+void AlgorithmPaintToolBox::clear()
 {
     if (currentView && (currentView->layersCount()>0))
     {
-        // remove each "no name" mask data in the view
+        // remove the "no name" mask data in the view
         for(int unsigned i=0; i<currentView->layersCount(); i++)
         {
             if (currentView->layerData(i)->identifier() == "medImageMaskAnnotationData")
             {
-                currentView->removeLayer(i); // call clearToolBox() again
+                currentView->removeLayer(i); // call clear() again
+                return;
             }
         }
-        clearMask(currentView);
+        clearMask();
         updateView();
     }
     else // if no more data set in list, this is called a last time
     {
-        clearMask(currentView);
+        clearMask();
         updateView();
     }
 }
 
-void AlgorithmPaintToolBox::clearMask(medAbstractView* view)
+void AlgorithmPaintToolBox::clearMask()
 {
     if ( m_maskData && m_itkMask )
     {
@@ -1503,12 +1499,12 @@ void AlgorithmPaintToolBox::clearMask(medAbstractView* view)
     }
     m_imageData = NULL;
 
-    if (m_undoStacks->value(view))
+    if (m_undoStacks->value(currentView))
     {
-        m_undoStacks->value(view)->clear();
-        m_redoStacks->value(view)->clear();
-        m_undoStacks->remove(view);
-        m_redoStacks->remove(view);
+        m_undoStacks->value(currentView)->clear();
+        m_redoStacks->value(currentView)->clear();
+        m_undoStacks->remove(currentView);
+        m_redoStacks->remove(currentView);
     }
 
     showButtons(false);
