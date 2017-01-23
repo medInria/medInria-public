@@ -79,17 +79,11 @@ void medDatabaseExporter::internalRun(void)
     }
     else
     {
-        medAbstractDataWriter* medDataWriter;
-        try
+        medAbstractDataWriter* medDataWriter = dynamic_cast<medAbstractDataWriter*>(dataWriter);
+        if(medDataWriter)
         {
-            medDataWriter = dynamic_cast<medAbstractDataWriter*>(dataWriter);
+            medDataWriter->setData(d->dataList);
         }
-        catch (const std::exception& e)
-        {
-            qDebug()<<"medDatabaseExporter::internalRun(void): "<< e.what();
-            return;
-        }
-        medDataWriter->setData(d->dataList);
     }
 
 
