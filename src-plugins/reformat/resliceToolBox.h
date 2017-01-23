@@ -33,5 +33,5 @@ public slots:
     void switchSpacingAndDimension(const QString &value);
 
 protected:
-    void changeSelectedToolBoxEvent();
+    virtual void clear();
 };

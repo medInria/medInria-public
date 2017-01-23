@@ -226,7 +226,7 @@ void medCropToolBox::showEvent(QShowEvent *event)
     setEnable(true);
 }
 
-void medCropToolBox::changeSelectedToolBoxEvent()
+void medCropToolBox::clear()
 {
     setEnable(false);
 

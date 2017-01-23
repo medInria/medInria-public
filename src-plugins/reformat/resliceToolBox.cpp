@@ -205,7 +205,7 @@ void resliceToolBox::stopReformat()
     }
 }
 
-void resliceToolBox::changeSelectedToolBoxEvent()
+void resliceToolBox::clear()
 {
     stopReformat();
 }

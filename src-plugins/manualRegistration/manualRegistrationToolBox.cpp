@@ -395,7 +395,7 @@ void manualRegistrationToolBox::reset()
     setDisableComputeResetButtons(true);
 }
 
-void manualRegistrationToolBox::changeSelectedToolBoxEvent()
+void manualRegistrationToolBox::clear()
 {
     if (d->regOn)
     {

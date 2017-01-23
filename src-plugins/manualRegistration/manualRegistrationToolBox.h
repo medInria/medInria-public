@@ -47,7 +47,7 @@ public slots:
     void reset();
 
 protected:
-    void changeSelectedToolBoxEvent();
+    virtual void clear();
 
 private:
     void displayButtons(bool);
