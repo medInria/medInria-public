@@ -80,10 +80,8 @@ void medDatabaseExporter::internalRun(void)
     else
     {
         medAbstractDataWriter* medDataWriter = dynamic_cast<medAbstractDataWriter*>(dataWriter);
-        if(medDataWriter)
-        {
-            medDataWriter->setData(d->dataList);
-        }
+        Q_ASSERT(medDataWriter != NULL);
+        medDataWriter->setData(d->dataList);
     }
 
 
