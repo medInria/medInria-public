@@ -66,7 +66,7 @@ public:
             if (Roi->GetHandleWidget() && Roi->GetHandleWidget()->GetInteractor())
             {
                 std::string keycode = Roi->GetHandleWidget()->GetInteractor()->GetKeySym();
-                if (keycode == "Delete")
+                if (keycode == "BackSpace")
                 {
                     Roi->InvokeEvent(vtkCommand::DeleteEvent);
                 }
