@@ -152,7 +152,7 @@ protected:
 
     void addViewEventFilter(medViewEventFilter * filter );
 
-    void setDisabled(bool disable);
+    void setButtonsDisabled(bool disable);
 
 private:
 

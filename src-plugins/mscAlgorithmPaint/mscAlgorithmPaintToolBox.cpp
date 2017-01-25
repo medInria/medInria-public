@@ -637,17 +637,17 @@ void AlgorithmPaintToolBox::updateView()
                 deactivateCustomedCursor(); // Deactivate painting cursor
             }
 
-            setDisabled(false);
+            setButtonsDisabled(false);
         }
     }
     else
     {
-        setDisabled(true);
+        setButtonsDisabled(true);
         currentView = NULL;
     }
 }
 
-void AlgorithmPaintToolBox::setDisabled(bool disable)
+void AlgorithmPaintToolBox::setButtonsDisabled(bool disable)
 {
     m_strokeButton->setDisabled(disable);
     m_magicWandButton->setDisabled(disable);
