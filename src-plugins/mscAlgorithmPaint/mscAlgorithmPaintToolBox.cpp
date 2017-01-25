@@ -1464,14 +1464,10 @@ void AlgorithmPaintToolBox::clear()
                 return;
             }
         }
-        clearMask();
-        updateView();
     }
-    else // if no more data set in list, this is called a last time
-    {
-        clearMask();
-        updateView();
-    }
+
+    clearMask();
+    updateView();
 }
 
 void AlgorithmPaintToolBox::clearMask()
