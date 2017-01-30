@@ -41,7 +41,7 @@ public slots:
 
 protected:
 
-    //! Launched when scrolled in medSelectorToolBox
+    //! Called when toolbox is hidden (scroll in medSelectorToolBox, workspace changed, etc)
     virtual void showEvent(QShowEvent *event);
     virtual void hideEvent(QHideEvent *event);
 
