@@ -20,9 +20,6 @@ template <unsigned DIM,typename T>
 class medAbstractTypedImageData: public medAbstractImageData {
 public:
 
-    medAbstractTypedImageData() { qDebug() << "constructing medAbstractDataTypeImage";}
-    virtual ~medAbstractTypedImageData() { qDebug() << "deleting medAbstractDataTypeImage";}
-
     virtual int                                Dimension() const { return DIM;       }
     virtual const medAbstractImageData::PixId& PixelType() const { return typeid(T); }
 

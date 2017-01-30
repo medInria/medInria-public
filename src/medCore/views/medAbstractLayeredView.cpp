@@ -309,7 +309,6 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
 
     if ( this->contains(data))
     {
-        qDebug() << "Attempt to add twice the same data to the view: " << this;
         return;
     }
 

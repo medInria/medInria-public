@@ -40,14 +40,12 @@ medAbstractData::medAbstractData( medAbstractData *parent )
     : dtkAbstractData(parent)
     , d(new medAbstractDataPrivate)
 {
-    qDebug() << "constructing medAbstractData: ";
     this->moveToThread(QApplication::instance()->thread());
 }
 
 
 medAbstractData::~medAbstractData( void )
 {
-    qDebug() << "deleting data with index " << d->index.asString();
     delete d;
     d = NULL;
 }
