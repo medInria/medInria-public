@@ -27,6 +27,7 @@ class MEDCORE_EXPORT medDatabaseExporter : public medJobItem
 
 public:
      medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer);
+     medDatabaseExporter(QList<medAbstractData *> data, const QString & filename, const QString & writer);
     ~medDatabaseExporter();
 
 protected:

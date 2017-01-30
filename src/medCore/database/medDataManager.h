@@ -19,12 +19,14 @@
 #include <QUuid>
 
 #include <medCoreExport.h>
+#include <medDatabaseExporter.h>
 #include <medDataIndex.h>
 
 class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
 class dtkAbstractDataWriter;
+
 
 class MEDCORE_EXPORT medDataManager : public QObject
 {
@@ -43,6 +45,7 @@ public:
 
     void exportData(medAbstractData* data);
     void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
+    void exportDataToPath(QList<medAbstractData *> dataList, const QString& path, const QString& format = "");
 
     QUuid makePersistent(medAbstractData* data);
 
@@ -83,6 +86,7 @@ private:
     virtual ~medDataManager();
 
     static medDataManager * s_instance;
+    void launchExporter(medDatabaseExporter* exporter, const QString & filename);
 
     Q_DECLARE_PRIVATE(medDataManager)
 };

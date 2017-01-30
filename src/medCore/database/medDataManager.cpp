@@ -18,7 +18,6 @@
 #include <medAbstractDataFactory.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medDatabaseExporter.h>
 #include <medMessageController.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
@@ -233,6 +232,17 @@ void medDataManager::exportData(medAbstractData* data)
 void medDataManager::exportDataToPath(medAbstractData *data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
+    launchExporter(exporter, filename);
+}
+
+void medDataManager::exportDataToPath(QList<medAbstractData*> dataList, const QString & filename, const QString & writer)
+{
+    medDatabaseExporter *exporter = new medDatabaseExporter (dataList, filename, writer);
+    launchExporter(exporter, filename);
+}
+
+void medDataManager::launchExporter(medDatabaseExporter* exporter, const QString & filename)
+{
     QFileInfo info(filename);
     medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
 
