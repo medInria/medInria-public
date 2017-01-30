@@ -1461,7 +1461,7 @@ void AlgorithmPaintToolBox::clear()
             if (currentView->layerData(i)->identifier() == "medImageMaskAnnotationData")
             {
                 currentView->removeLayer(i); // call clear() again
-                return;
+                break;
             }
         }
     }
