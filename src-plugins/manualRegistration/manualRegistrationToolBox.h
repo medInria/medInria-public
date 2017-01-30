@@ -47,7 +47,7 @@ public slots:
     void reset();
 
 protected:
-    void hideEvent(QHideEvent *event);
+    virtual void clear();
 
 private:
     void displayButtons(bool);

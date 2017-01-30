@@ -33,5 +33,5 @@ public slots:
     void switchSpacingAndDimension(const QString &value);
 
 protected:
-    void hideEvent(QHideEvent *event);
+    virtual void clear();
 };

@@ -35,7 +35,7 @@ public slots:
 
 protected:
     void showEvent(QShowEvent *event);
-    void hideEvent(QHideEvent *event);
+    virtual void clear();
 
 private:
     medCropToolBoxPrivate* const d;

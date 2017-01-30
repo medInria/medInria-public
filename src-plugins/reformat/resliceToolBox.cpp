@@ -205,9 +205,8 @@ void resliceToolBox::stopReformat()
     }
 }
 
-void resliceToolBox::hideEvent(QHideEvent *event)
+void resliceToolBox::clear()
 {
-    medAbstractSelectableToolBox::hideEvent(event);
     stopReformat();
 }
 

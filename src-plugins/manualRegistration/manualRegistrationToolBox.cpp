@@ -395,10 +395,8 @@ void manualRegistrationToolBox::reset()
     setDisableComputeResetButtons(true);
 }
 
-void manualRegistrationToolBox::hideEvent(QHideEvent *event)
+void manualRegistrationToolBox::clear()
 {
-    medAbstractSelectableToolBox::hideEvent(event);
-
     if (d->regOn)
     {
         d->b_startManualRegistration->click();
