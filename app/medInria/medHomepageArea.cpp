@@ -103,7 +103,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     logButton->setFocusPolicy ( Qt::NoFocus );
     logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
     logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( onShowLog() ) );
+    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( openLogDirectory() ) );
 
     medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
@@ -462,11 +462,6 @@ void medHomepageArea::onShowSettings()
     d->stackedWidget->setCurrentWidget(d->settingsWidget);
 
     d->settingsWidget->setFocus();
-}
-
-void medHomepageArea::onShowLog()
-{
-    openLogDirectory();
 }
 
 void medHomepageArea::openLogDirectory()
