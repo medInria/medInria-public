@@ -15,7 +15,11 @@ class MEDCORE_EXPORT medAbstractDataWriter : public dtkAbstractDataWriter
 
 public:
     using dtkAbstractDataWriter::setData;
-    virtual void setData(QList<medAbstractData*> data) {}
+    virtual void setData(QList<medAbstractData*> data);
+    QList<medAbstractData*> getDataList();
+
+protected:
+    QList<medAbstractData*> dataList;
 };
 
 
