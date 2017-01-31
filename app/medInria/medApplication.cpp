@@ -122,19 +122,19 @@ void medApplication::initialize()
     this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
 
-    //medLogger::initialize();
+    medLogger::initialize();
 
     dtkInfo() << "####################################";
     dtkInfo() << "Version: "    << MEDINRIA_VERSION;
     dtkInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
     //  Redirect msgs to the logs
-//    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
-//                     &medLogger::instance(), SLOT(redirectErrorMessage(const QString&)));
-//    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(const QString&)),
-//                     &medLogger::instance(), SLOT(redirectMessage(const QString&)));
-//    QObject::connect(this, SIGNAL(messageReceived(const QString&)),
-//                     &medLogger::instance(), SLOT(redirectMessage(const QString&)));
+    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
+                     &medLogger::instance(), SLOT(redirectErrorMessage(const QString&)));
+    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(const QString&)),
+                     &medLogger::instance(), SLOT(redirectMessage(const QString&)));
+    QObject::connect(this, SIGNAL(messageReceived(const QString&)),
+                     &medLogger::instance(), SLOT(redirectMessage(const QString&)));
 
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)

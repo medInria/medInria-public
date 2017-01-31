@@ -23,7 +23,6 @@
 #include <medSettingsManager.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
-//#include <dtkLog/dtkLogView.h>
 
 
 class medHomepageAreaPrivate
@@ -41,8 +40,6 @@ public:
     QWidget * pluginWidget;
     QWidget * settingsWidget;
     medSettingsEditor* settingsEditor;
-
-//    QWidget* logWidget;
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
@@ -97,17 +94,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( pluginButton,SIGNAL ( clicked() ),this, SLOT ( onShowPlugin() ) );
 
-    /*medHomepageButton * logButton = new medHomepageButton ( this );
+    medHomepageButton * logButton = new medHomepageButton ( this );
     logButton->setText ( "Log" );
     logButton->setMinimumHeight ( 30 );
     logButton->setMaximumWidth ( 150 );
     logButton->setMinimumWidth ( 150 );
-    logButton->setToolTip(tr("Display log window"));
+    logButton->setToolTip(tr("Open Log Directory"));
     logButton->setFocusPolicy ( Qt::NoFocus );
     logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
     logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( onShowLog() ) );
-*/
+    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( openLogDirectory() ) );
+
     medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
@@ -122,7 +119,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
-//    userButtonsLayout->insertWidget ( 3, logButton );
+    userButtonsLayout->insertWidget ( 3, logButton );
     userButtonsLayout->insertWidget ( 3, helpButton );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
@@ -244,7 +241,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginLayout->addWidget(pWid);
     pluginLayout->addLayout(pluginHideButtonLayout);
 
-
     //Create the settings widget.
     d->settingsWidget = new QWidget(this);
     d->settingsWidget->setObjectName("settingsWidget");
@@ -267,35 +263,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsLayout->addWidget(medInriaLabel4);
     settingsLayout->addWidget(d->settingsEditor);
     settingsLayout->addLayout(settingsHideButtonLayout);
-/*
-    //Create the log widget.
-    d->logWidget = new QWidget(this);
-    QVBoxLayout * logLayout = new QVBoxLayout(d->logWidget);
-    QHBoxLayout * logHideButtonLayout = new QHBoxLayout();
-    QPushButton * hideLogButton = new QPushButton ( this );
-    hideLogButton->setText ( tr("Hide") );
-    hideLogButton->setFocusPolicy ( Qt::NoFocus );
-    hideLogButton->setToolTip( tr("Hide the Log section") );
-    QObject::connect ( hideLogButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
-    logHideButtonLayout->addStretch();
-    logHideButtonLayout->addWidget ( hideLogButton );
-    logHideButtonLayout->addStretch();
-
-    QLabel * medInriaLabel5 = new QLabel ( this );
-    medInriaLabel5->setPixmap ( medLogo );
-
-    dtkLogView* logView = new dtkLogView(d->logWidget);
-
-    QPushButton * openLogDirectoryButton = new QPushButton(tr("Open Log Directory"));
-    openLogDirectoryButton->setToolTip( tr("Show the log directory") );
-    connect(openLogDirectoryButton, SIGNAL(clicked()), this, SLOT(openLogDirectory()));
-
-    logLayout->addWidget(medInriaLabel5);
-    logLayout->addWidget(logView);
-    logLayout->addWidget(openLogDirectoryButton);
-    logLayout->addLayout(logHideButtonLayout);
-*/
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
     d->stackedWidget->setMinimumSize ( 400,300 );
@@ -303,7 +271,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
     d->stackedWidget->addWidget(d->settingsWidget);
-    //d->stackedWidget->addWidget(d->logWidget);
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
     d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 }
@@ -497,14 +464,8 @@ void medHomepageArea::onShowSettings()
     d->settingsWidget->setFocus();
 }
 
-//void medHomepageArea::onShowLog()
-//{
-//    d->stackedWidget->setCurrentWidget(d->logWidget);
-//    d->logWidget->setFocus();
-//}
-
-//void medHomepageArea::openLogDirectory()
-//{
-//    QString path = QFileInfo(dtkLogPath(qApp)).path();
-//    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
-//}
+void medHomepageArea::openLogDirectory()
+{
+    QString path = QFileInfo(dtkLogPath(qApp)).path();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
