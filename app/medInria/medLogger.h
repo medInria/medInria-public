@@ -32,6 +32,11 @@ signals :
     void newQtMessage(QtMsgType type, const QString& message);
 
 public :
+
+    // TRACE >> DEBUG >> INFO >> WARN >> ERROR >> FATAL
+    // Note that these levels form a hierarchy.
+    // If dtk’s logging level is set to TRACE, all logs will be visible,
+    // unless set to WARN, only WARN, ERROR and FATAL log messages will be visible.
     static const dtkLog::Level logLevel = dtkLog::Debug;
 
     static medLogger& instance();
