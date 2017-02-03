@@ -394,7 +394,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     connect (m_strokeButton, SIGNAL(pressed()), this, SLOT(activateStroke ()));
     connect (m_magicWandButton, SIGNAL(pressed()),this,SLOT(activateMagicWand()));
-    connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clearMask()));
+    connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clear()));
     connect (m_applyButton, SIGNAL(pressed()),this, SLOT(import()));
 
     if (this->selectorToolBox()) // empty in pipelines
@@ -570,12 +570,6 @@ void AlgorithmPaintToolBox::activateMagicWand()
     deactivateCustomedCursor();
 }
 
-void AlgorithmPaintToolBox::hideEvent(QHideEvent *event)
-{
-    medAbstractSelectableToolBox::hideEvent(event);
-    resetToolbox();
-}
-
 void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
 {
     if (m_wand3DRealTime->isChecked())
@@ -615,37 +609,49 @@ void AlgorithmPaintToolBox::updateView()
     if (view)
     {
         setCurrentView(qobject_cast<medAbstractImageView*>(view));
-    }
-    updateMouseInteraction();
 
-    // TODO : get rid of similar lines in mousePressEvent, we need this here otherwise we cannot use interpolate/copy/paste
-    //                     //  on the view as long as the setData is not called for this view
-    if (currentView)
-    {
+        updateMouseInteraction();
+
         medAbstractData* data = currentView->layerData(0);
-        if(!data)
-            return;
-        medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
-        if(!existingMaskAnnData)
+
+        if(data)
         {
-            setData( data );
+            medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
+            if(!existingMaskAnnData)
+            {
+                setData( data );
+            }
+
+            // Update cursor if the orientation change
+            connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
+
+            connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clear()), Qt::UniqueConnection);
+
+            // Update cursor to new view
+            if ( this->m_strokeButton->isChecked() )
+            {
+                activateCustomedCursor(); // Add circular cursor for painting
+            }
+            else
+            {
+                deactivateCustomedCursor(); // Deactivate painting cursor
+            }
+
+            setButtonsDisabled(false);
         }
-
-        // Update cursor if the orientation change
-        connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
-
-        connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(closeView()), Qt::UniqueConnection);
-    }
-
-    // Update cursor to new view
-    if ( this->m_strokeButton->isChecked() )
-    {
-        activateCustomedCursor(); // Add circular cursor for painting
     }
     else
     {
-        deactivateCustomedCursor(); // Deactivate painting cursor
+        setButtonsDisabled(true);
+        currentView = NULL;
     }
+}
+
+void AlgorithmPaintToolBox::setButtonsDisabled(bool disable)
+{
+    m_strokeButton->setDisabled(disable);
+    m_magicWandButton->setDisabled(disable);
+    m_interpolateButton->setDisabled(disable);
 }
 
 void AlgorithmPaintToolBox::setLabel(int newVal)
@@ -1445,45 +1451,23 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
             m_redoStacks->value(view)->clear();
 }
 
-void AlgorithmPaintToolBox::closeView()
+void AlgorithmPaintToolBox::clear()
 {
-    // close every data in the view
-    medAbstractView* view = qobject_cast<medAbstractView*>(QObject::sender());
-    medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view);
-
-    if (layeredView->layersCount() > 0)
+    if (currentView && (currentView->layersCount()>0))
     {
-        // remove a data, which will recursively call this closeView() function
-        // until there is no more data in the view
-        layeredView->removeLayer(0);
+        // remove the "no name" mask data in the view
+        for(int unsigned i=0; i<currentView->layersCount(); i++)
+        {
+            if (currentView->layerData(i)->identifier() == "medImageMaskAnnotationData")
+            {
+                currentView->removeLayer(i); // call clear() again
+                break;
+            }
+        }
     }
-    else
-    {
-        // clean the toolbox when there is no data left in the view
-        onViewClosed(view);
-    }
-}
 
-void AlgorithmPaintToolBox::onViewClosed(medAbstractView* viewClosed)
-{
     clearMask();
-
-    if (m_undoStacks->value(viewClosed))
-    {
-        m_undoStacks->value(viewClosed)->clear();
-        m_redoStacks->value(viewClosed)->clear();
-        m_undoStacks->remove(viewClosed);
-        m_redoStacks->remove(viewClosed);
-    }
-
-    showButtons(false);
-    resetToolbox();
-
-    if (viewClosed==currentView)
-    {
-        currentView = NULL;
-        m_itkMask = NULL;
-    }
+    updateView();
 }
 
 void AlgorithmPaintToolBox::clearMask()
@@ -1501,11 +1485,26 @@ void AlgorithmPaintToolBox::clearMask()
         {
             m_imageData->removeAttachedData(m_maskAnnotationData);
             maskHasBeenSaved = false;
-            setData(currentView->layerData(0));
+
+            if (currentView && (currentView->layersCount()>0))
+            {
+                setData(currentView->layerData(0));
+            }
         }
         m_applyButton->setDisabled(true);
     }
     m_imageData = NULL;
+
+    if (m_undoStacks->value(currentView))
+    {
+        m_undoStacks->value(currentView)->clear();
+        m_redoStacks->value(currentView)->clear();
+        m_undoStacks->remove(currentView);
+        m_redoStacks->remove(currentView);
+    }
+
+    showButtons(false);
+    resetToolbox();
 }
 
 void AlgorithmPaintToolBox::resetToolbox()
