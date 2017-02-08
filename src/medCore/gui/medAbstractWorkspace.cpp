@@ -24,6 +24,7 @@
 #include <medTabbedViewContainers.h>
 #include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
+#include <medToolBoxBody.h>
 #include <medToolBoxHeader.h>
 #include <medAbstractInteractor.h>
 #include <medMetaDataKeys.h>
@@ -202,7 +203,9 @@ bool medAbstractWorkspace::areToolBoxesVisible() const
 void medAbstractWorkspace::clearWorkspaceToolBoxes()
 {
     foreach(medToolBox* tb,d->toolBoxes)
-        tb->clear();
+    {
+        tb->body()->clear();
+    }
 }
 
 void medAbstractWorkspace::addNewTab()
@@ -213,7 +216,7 @@ void medAbstractWorkspace::addNewTab()
 
 void medAbstractWorkspace::updateNavigatorsToolBox()
 {
-    d->navigatorToolBox->clear();
+    d->navigatorToolBox->body()->clear();
 
     medAbstractView* view = NULL;
     QList<QWidget*>  navigators;
@@ -257,7 +260,7 @@ void medAbstractWorkspace::updateNavigatorsToolBox()
 
 void medAbstractWorkspace::updateMouseInteractionToolBox()
 {
-    d->mouseInteractionToolBox->clear();
+    d->mouseInteractionToolBox->body()->clear();
 
     QList<QWidget*>  navigators;
     QStringList viewType;
@@ -287,7 +290,7 @@ void medAbstractWorkspace::updateMouseInteractionToolBox()
 
 void medAbstractWorkspace::updateLayersToolBox()
 {
-    d->layerListToolBox->clear();
+    d->layerListToolBox->body()->clear();
     d->containerForLayerWidgetsItem.clear();
     d->selectedLayers.clear();
     d->poolIndicators.clear();
@@ -437,7 +440,7 @@ void medAbstractWorkspace::updateInteractorsToolBox()
         containerMng->container(uuid)->highlight();
     }
     d->interactorToolBox->hide();
-    d->interactorToolBox->clear();
+    d->interactorToolBox->body()->clear();
 
     if(!d->layerListWidget)
         return;

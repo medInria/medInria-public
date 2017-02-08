@@ -102,7 +102,7 @@ signals:
     void failure();
 
 public slots:
-    virtual void clear();
+    virtual void clear(){}
     void switchMinimize();
     void setValidDataTypes(const QStringList & dataTypes);
     const QStringList ValidDataTypes();
