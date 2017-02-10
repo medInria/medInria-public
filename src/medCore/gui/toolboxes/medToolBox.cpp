@@ -134,18 +134,6 @@ medToolBoxBody *medToolBox::body(void) const
 }
 
 /**
- * @brief Clears the toolbox.
- *
- * Resets the parameters within the tolbox,
- * for instance when the current patient changed or the view.
- *
-*/
-void medToolBox::clear(void)
-{
-    d->body->clear();
-}
-
-/**
  * @brief Switches from a minimized state to an extended one and vice versa.
  *
 */
