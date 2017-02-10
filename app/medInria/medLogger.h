@@ -19,13 +19,12 @@ PURPOSE.
 #endif
 
 #include <dtkLog/dtkLog.h>
-#include <medLogExport.h>
 
 #include <QtGui>
 
 class medLoggerPrivate;
 
-class MEDLOG_EXPORT medLogger: public QObject
+class medLogger: public QObject
 {
     Q_OBJECT
 

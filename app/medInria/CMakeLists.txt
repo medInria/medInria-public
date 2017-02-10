@@ -116,7 +116,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkVr
   medCore
   medPacs
-  medLog
   )
 
 
