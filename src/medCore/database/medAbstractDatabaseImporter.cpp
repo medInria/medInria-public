@@ -288,6 +288,12 @@ void medAbstractDatabaseImporter::importFile ( void )
                 imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
             }
         }
+        else
+        {
+            QString error = QString(tr("Could not read empty file: ") + fileInfo.completeBaseName());
+            qWarning() << __FUNCTION__ << error;
+            emit showError(error, 5000);
+        }
     }
 
     // some checks to see if the user cancelled or something failed
