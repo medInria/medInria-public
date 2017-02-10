@@ -18,7 +18,7 @@ public:
     virtual void setData(QList<medAbstractData*> data);
     QList<medAbstractData*> getDataList();
 
-protected:
+private:
     QList<medAbstractData*> dataList;
 };
 
