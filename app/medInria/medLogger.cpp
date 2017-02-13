@@ -136,7 +136,6 @@ void medLogger::createTeeStream(std::ostream* targetStream)
 
 void medLogger::truncateLogFileIfHeavy()
 {
-    // Test the size of the log file and cut if needed
     qint64 filesize = QFileInfo(dtkLogPath(qApp)).size();
 
     // Over 5Mo, the file is truncated from the beginning (old lines are discarded)
@@ -149,7 +148,7 @@ void medLogger::truncateLogFileIfHeavy()
         std::ofstream temp;
         temp.open(path.toUtf8()+"tmp");
 
-        fin.seekg(4000000); // file is going to lose 4Mo
+        fin.seekg(filesize-1000000); // file is going to be cut to 1Mo
 
         std::string line;
         while (getline(fin,line))
