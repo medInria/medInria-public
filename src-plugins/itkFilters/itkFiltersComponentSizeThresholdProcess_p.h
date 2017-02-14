@@ -51,7 +51,6 @@ public:
         caster->Update();
 
         input = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
-        output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
         input->setData(caster->GetOutput());
 
         return DTK_SUCCEED;
@@ -60,24 +59,22 @@ public:
     template <class PixelType> int update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::ConnectedComponentImageFilter <ImageType, ImageType> ConnectedComponentFilterType;
+        typedef itk::Image< unsigned short, 3 > OutputImageType;
+
+        typedef itk::ConnectedComponentImageFilter <ImageType, OutputImageType> ConnectedComponentFilterType;
         typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
-
         connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-
         connectedComponentFilter->Update();
 
         // RELABEL COMPONENTS according to their sizes (0:largest(background))
-        typedef itk::RelabelComponentImageFilter<ImageType, ImageType> FilterType;
+        typedef itk::RelabelComponentImageFilter<OutputImageType, OutputImageType> FilterType;
         typename FilterType::Pointer relabelFilter = FilterType::New();
         relabelFilter->SetInput(connectedComponentFilter->GetOutput());
         relabelFilter->SetMinimumObjectSize(minimumSize);
         relabelFilter->Update();
 
         // BINARY FILTER
-        typedef itk::BinaryThresholdImageFilter <ImageType, ImageType>
-                BinaryThresholdImageFilterType;
-
+        typedef itk::BinaryThresholdImageFilter <OutputImageType, OutputImageType> BinaryThresholdImageFilterType;
         typename BinaryThresholdImageFilterType::Pointer thresholdFilter
                 = BinaryThresholdImageFilterType::New();
         thresholdFilter->SetInput(relabelFilter->GetOutput());
@@ -93,6 +90,7 @@ public:
 
         connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
 
+        output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUShort3" );
         output->setData ( thresholdFilter->GetOutput() );
 
 
