@@ -77,7 +77,7 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
 
     d->layout = new QVBoxLayout();
 
-    this->setTitle(tr("Filter Database"));
+    this->setTitle(tr("Database Filter"));
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->addLayout(vlayout);
