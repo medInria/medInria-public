@@ -117,7 +117,7 @@ QString itkProcessRegistrationDiffeomorphicDemons::identifier() const
 
 
 template <typename PixelType>
-        int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
+int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
@@ -125,16 +125,45 @@ template <typename PixelType>
     //unfortunately diffeomorphic demons only work with double or float types...
     // so we need to use a cast filter.
     typedef itk::Image< float, 3 > RegImageType;
+    typedef itk::CastImageFilter< FixedImageType, RegImageType > FixedCastFilterType;
+    typedef itk::CastImageFilter< MovingImageType, RegImageType > MovingCastFilterType;
+    typename FixedCastFilterType::Pointer fixedCastFilter = FixedCastFilterType::New();
+    fixedCastFilter->SetInput((FixedImageType*)proc->fixedImage().GetPointer());
+    fixedCastFilter->Update();
+    typename MovingCastFilterType::Pointer movingCastFilter = MovingCastFilterType::New();
+    movingCastFilter->SetInput((MovingImageType*)proc->movingImages()[0].GetPointer());
+    movingCastFilter->Update();
+
+    // Spacing needs to be the same in both dataset
     typedef double TransformScalarType;
+    typedef itk::ResampleImageFilter< RegImageType,RegImageType,TransformScalarType > ResampleFilterType;
+    typename ResampleFilterType::Pointer resamplingMoving = ResampleFilterType::New();
+    resamplingMoving->SetInput(movingCastFilter->GetOutput());
+    resamplingMoving->SetSize( fixedCastFilter->GetOutput()->GetLargestPossibleRegion().GetSize() );
+    resamplingMoving->SetOutputOrigin( fixedCastFilter->GetOutput()->GetOrigin() );
+    resamplingMoving->SetOutputSpacing( fixedCastFilter->GetOutput()->GetSpacing() );
+    resamplingMoving->SetOutputDirection( fixedCastFilter->GetOutput()->GetDirection() );
+    resamplingMoving->SetDefaultPixelValue( 0 );
+
+    try
+    {
+        resamplingMoving->Update();
+    }
+    catch (itk::ExceptionObject &e)
+    {
+        qDebug() << "ExceptionObject caught ! (startRegistration resample)" << e.GetDescription();
+        return DTK_FAILURE;
+    }
+
+    // Registration
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
                     TransformScalarType > RegistrationType;
     RegistrationType * registration = new RegistrationType;
 
     registrationMethod = registration;
 
-    registration->SetFixedImage((FixedImageType*)proc->fixedImage().GetPointer());
-    registration->SetMovingImage((MovingImageType*)proc->movingImages()[0].GetPointer());
-
+    registration->SetFixedImage(fixedCastFilter->GetOutput());
+    registration->SetMovingImage(resamplingMoving->GetOutput());
     registration->SetNumberOfIterations(iterations);
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
     registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviation);
@@ -194,31 +223,13 @@ template <typename PixelType>
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
     emit proc->progressed(80);
-    
-    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
-    typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
-    resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
-    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
-    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
-    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
-    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
-    resampler->SetDefaultPixelValue( 0 );
-
-    try {
-        resampler->Update();
-    }
-    catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        return 1;
-    }
-
-    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    qDebug() << "Resampled? ";
-    result->DisconnectPipeline();
-    
+       
     if (proc->output())
-        proc->output()->setData (result);
+    {
+        resamplingMoving->SetTransform(registration->GetTransformation());
+        resamplingMoving->Update();
+        proc->output()->setData (resamplingMoving->GetOutput());
+    }
         
     return 0;
 }
