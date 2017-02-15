@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mscAlgorithmPaintPluginExport.h>
+#include "mscAlgorithmPaintPluginExport.h"
 
 #include <medAbstractData.h>
 #include <medDoubleParameter.h>
@@ -221,6 +221,8 @@ private:
     QVector3D m_lastVup;
     QVector3D m_lastVpn;
     double m_sampleSpacing[2];
+
+    bool isMeshData; //to know if data is a mesh or not
 
     PaintState::E m_paintState;
 };

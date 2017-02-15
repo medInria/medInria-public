@@ -1,4 +1,4 @@
-#include <mscAlgorithmPaintToolBox.h>
+#include "mscAlgorithmPaintToolBox.h"
 
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkDanielssonDistanceMapImageFilter.h>
@@ -608,36 +608,60 @@ void AlgorithmPaintToolBox::updateView()
 
     if (view)
     {
-        setCurrentView(qobject_cast<medAbstractImageView*>(view));
-
+        medAbstractImageView * v = qobject_cast<medAbstractImageView*>(view);
+        if (v)
+        {
+            // AlgorithmPaintToolBox does not work with meshes
+            for (unsigned int i=0 ; i<v->layersCount() ; ++i)
+            {
+                medAbstractData *data = v->layerData(i);
+                if(!data || data->identifier().contains("vtkDataMesh"))
+                {
+                    qDebug()<<"AlgorithmPaintToolBox::updateView() do not use meshes in this toolbox.";
+                    setButtonsDisabled(true);
+                    isMeshData=true;
+                    return;
+                }
+                else
+                    isMeshData=false;
+            }
+            setButtonsDisabled(false);
+            currentView=v;
+        }
         updateMouseInteraction();
 
-        medAbstractData* data = currentView->layerData(0);
-
-        if(data)
+        if (!isMeshData)
         {
-            medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
-            if(!existingMaskAnnData)
+            if (currentView)
             {
-                setData( data );
+                medAbstractData* data = currentView->layerData(0);
+
+                if(data)
+                {
+                    medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
+                    if(!existingMaskAnnData)
+                    {
+                        setData( data );
+                    }
+
+                    // Update cursor if the orientation change
+                    connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
+
+                    connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clear()), Qt::UniqueConnection);
+
+                    // Update cursor to new view
+                    if ( this->m_strokeButton->isChecked() )
+                    {
+                        activateCustomedCursor(); // Add circular cursor for painting
+                    }
+                    else
+                    {
+                        deactivateCustomedCursor(); // Deactivate painting cursor
+                    }
+
+                    setButtonsDisabled(false);
+                }
             }
-
-            // Update cursor if the orientation change
-            connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
-
-            connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clear()), Qt::UniqueConnection);
-
-            // Update cursor to new view
-            if ( this->m_strokeButton->isChecked() )
-            {
-                activateCustomedCursor(); // Add circular cursor for painting
-            }
-            else
-            {
-                deactivateCustomedCursor(); // Deactivate painting cursor
-            }
-
-            setButtonsDisabled(false);
         }
     }
     else
@@ -1453,7 +1477,7 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
 
 void AlgorithmPaintToolBox::clear()
 {
-    if (currentView && (currentView->layersCount()>0))
+   if (currentView && (currentView->layersCount()>0))
     {
         // remove the "no name" mask data in the view
         for(int unsigned i=0; i<currentView->layersCount(); i++)
@@ -1524,7 +1548,9 @@ void AlgorithmPaintToolBox::resetToolbox()
         updateButtons();
         m_magicWandButton->setChecked(false);
     }
-    deactivateCustomedCursor();
+
+    if (!isMeshData)
+        deactivateCustomedCursor();
 }
 
 void AlgorithmPaintToolBox::setCurrentView(medAbstractImageView * view)
