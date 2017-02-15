@@ -123,8 +123,8 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
         d->currentToolBox->show();
         d->mainLayout->addWidget(d->currentToolBox);
 
-        connect(d->currentToolBox, SIGNAL(success()), this, SIGNAL(success()));
-        connect(d->currentToolBox, SIGNAL(failure()), this, SIGNAL(failure()));
+        connect(d->currentToolBox, SIGNAL(success()), this, SIGNAL(success()), Qt::UniqueConnection);
+        connect(d->currentToolBox, SIGNAL(failure()), this, SIGNAL(failure()), Qt::UniqueConnection);
 
         emit currentToolBoxChanged();
     }
