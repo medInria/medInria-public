@@ -30,13 +30,13 @@ public:
 
 EditCombo::EditCombo( QString txt, int clmn )
 {
-    this->label.setText(txt.left(7));
-    this->label.setToolTip(txt);
     this->column = clmn;
+
+    this->edit.setToolTip(txt);
+    this->edit.setPlaceholderText(txt);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(&edit);
-    layout->addWidget(&label);
     layout->setContentsMargins(0,0,0,0);
 
     connect(&edit, SIGNAL(textChanged(const QString &)), this, SLOT(onTextChanged(const QString &)));

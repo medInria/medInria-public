@@ -34,9 +34,7 @@ protected slots:
 
 private:
     QLineEdit edit;
-    QLabel label;
     int column;
-
 };
 
 class MEDCORE_EXPORT medDatabaseSearchPanel : public medToolBox
