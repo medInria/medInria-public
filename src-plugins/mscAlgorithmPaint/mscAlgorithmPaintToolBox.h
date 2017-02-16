@@ -222,8 +222,6 @@ private:
     QVector3D m_lastVpn;
     double m_sampleSpacing[2];
 
-    bool isMeshData; //to know if data is a mesh or not
-
     PaintState::E m_paintState;
 };
 

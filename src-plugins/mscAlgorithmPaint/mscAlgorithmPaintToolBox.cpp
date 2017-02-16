@@ -440,6 +440,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     connect(reduceBrushSize_shortcut,SIGNAL(activated()),this,SLOT(reduceBrushSize()));
 
     maskHasBeenSaved = false;
+
 }
 
 AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
@@ -604,6 +605,7 @@ void AlgorithmPaintToolBox::import()
 
 void AlgorithmPaintToolBox::updateView()
 {
+    setButtonsDisabled(true);
     medAbstractView *view = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
 
     if (view)
@@ -618,56 +620,35 @@ void AlgorithmPaintToolBox::updateView()
                 if(!data || data->identifier().contains("vtkDataMesh"))
                 {
                     qDebug()<<"AlgorithmPaintToolBox::updateView() do not use meshes in this toolbox.";
-                    setButtonsDisabled(true);
-                    isMeshData=true;
                     return;
                 }
-                else
-                    isMeshData=false;
             }
             setButtonsDisabled(false);
             currentView=v;
-        }
-        updateMouseInteraction();
+            updateMouseInteraction();
 
-        if (!isMeshData)
-        {
-            if (currentView)
+            medAbstractData* data = currentView->layerData(0);
+            medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
+            if(!existingMaskAnnData)
             {
-                medAbstractData* data = currentView->layerData(0);
+                setData( data );
+            }
 
-                if(data)
-                {
-                    medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
-                    if(!existingMaskAnnData)
-                    {
-                        setData( data );
-                    }
+            // Update cursor if the orientation change
+            connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
 
-                    // Update cursor if the orientation change
-                    connect(currentView, SIGNAL(orientationChanged()), this, SLOT(activateCustomedCursor()), Qt::UniqueConnection);
+            connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clear()), Qt::UniqueConnection);
 
-                    connect(currentView,SIGNAL(layerRemoved(unsigned int)),this,SLOT(clear()), Qt::UniqueConnection);
-
-                    // Update cursor to new view
-                    if ( this->m_strokeButton->isChecked() )
-                    {
-                        activateCustomedCursor(); // Add circular cursor for painting
-                    }
-                    else
-                    {
-                        deactivateCustomedCursor(); // Deactivate painting cursor
-                    }
-
-                    setButtonsDisabled(false);
-                }
+            // Update cursor to new view
+            if ( this->m_strokeButton->isChecked() )
+            {
+                activateCustomedCursor(); // Add circular cursor for painting
+            }
+            else
+            {
+                deactivateCustomedCursor(); // Deactivate painting cursor
             }
         }
-    }
-    else
-    {
-        setButtonsDisabled(true);
-        currentView = NULL;
     }
 }
 
@@ -676,6 +657,11 @@ void AlgorithmPaintToolBox::setButtonsDisabled(bool disable)
     m_strokeButton->setDisabled(disable);
     m_magicWandButton->setDisabled(disable);
     m_interpolateButton->setDisabled(disable);
+
+    if (disable)
+    {
+        currentView=NULL;
+    }
 }
 
 void AlgorithmPaintToolBox::setLabel(int newVal)
@@ -1549,7 +1535,6 @@ void AlgorithmPaintToolBox::resetToolbox()
         m_magicWandButton->setChecked(false);
     }
 
-    if (!isMeshData)
         deactivateCustomedCursor();
 }
 
