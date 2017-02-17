@@ -40,6 +40,7 @@ public:
         DIMENSION_3D,   //! Not a 3D volume
         DIMENSION_4D,   //! Not a 4D volume
         MESH_TYPE,      //! Not a mesh
+        NO_MESH,        //! Input can not be a mesh
         DATA_SIZE,      //! Inputs must be the same size
         UNDEFINED,      //! Miscellanous
     };
@@ -60,7 +61,7 @@ private:
     using dtkAbstractProcess::channelCount;
 
 private:
-    DTK_DECLARE_PRIVATE(medAbstractProcess);
+    DTK_DECLARE_PRIVATE(medAbstractProcess)
     medAbstractProcessPrivate* d;
 
 };
@@ -75,4 +76,4 @@ public:
     virtual ~medAbstractProcessPrivate(void) {}
 };
 
-DTK_IMPLEMENT_PRIVATE(medAbstractProcess, dtkAbstractProcess);
+DTK_IMPLEMENT_PRIVATE(medAbstractProcess, dtkAbstractProcess)

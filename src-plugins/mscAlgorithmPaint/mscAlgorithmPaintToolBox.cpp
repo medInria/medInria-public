@@ -12,6 +12,7 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
+#include <medAbstractProcess.h>
 #include <medDataManager.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
@@ -619,8 +620,8 @@ void AlgorithmPaintToolBox::updateView()
                 medAbstractData *data = v->layerData(i);
                 if(!data || data->identifier().contains("vtkDataMesh"))
                 {
-                    qDebug()<<"AlgorithmPaintToolBox::updateView() do not use meshes in this toolbox.";
-                    return;
+                    handleDisplayError(medAbstractProcess::NO_MESH);
+                    return ;
                 }
             }
             setButtonsDisabled(false);
