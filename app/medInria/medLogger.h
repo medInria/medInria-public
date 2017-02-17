@@ -61,4 +61,8 @@ private:
     void finalizeTeeStreams();
 
     void createTeeStream(std::ostream* targetStream);
+
+    /** Test the size of the log file and cut if needed
+     */
+    void truncateLogFileIfHeavy();
 };

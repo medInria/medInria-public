@@ -17,6 +17,9 @@ public:
     QList<TeeStream*> teeStreams;
     QList<std::streambuf*> previousStreamBuffers;
 
+    static const qint64 maxLogSize = 5000000;
+    static const qint64 minLogSize = 1000000;
+
     medLoggerPrivate() : logFile(dtkLogPath(qApp).toLocal8Bit().data(), std::ios::app) {}
 };
 
@@ -88,6 +91,8 @@ medLogger::medLogger() : d(new medLoggerPrivate)
 
     initializeTeeStreams();
 
+    truncateLogFileIfHeavy();
+
     dtkLogger::instance().setLevel(logLevel);
     dtkLogger::instance().attachFile(dtkLogPath(qApp));
     dtkLogger::instance().attachConsole();
@@ -130,5 +135,36 @@ void medLogger::createTeeStream(std::ostream* targetStream)
     TeeDevice* teeDevice = new TeeDevice(*d->redirectedStreamDummies.last(), d->logFile);
     d->teeStreams.append(new TeeStream(*teeDevice));
     targetStream->rdbuf(d->teeStreams.last()->rdbuf());
+}
+
+void medLogger::truncateLogFileIfHeavy()
+{
+    qint64 filesize = QFileInfo(dtkLogPath(qApp)).size();
+
+    // Over 5Mo, the file is truncated from the beginning (old lines are discarded)
+    if (filesize > d->maxLogSize)
+    {
+        QString path = dtkLogPath(qApp);
+
+        std::ifstream fin;
+        fin.open(path.toUtf8());
+        fin.seekg(filesize - d->minLogSize); // file is going to be cut to minLogSize size
+
+        std::string keptText;
+        std::string line;
+        while (getline(fin,line))
+        {
+            keptText += line;
+            keptText += "\n";
+        }
+
+        fin.close();
+        std::remove(path.toUtf8());
+
+        std::ofstream newLogFile;
+        newLogFile.open(path.toUtf8());
+        newLogFile << keptText;
+        newLogFile.close();
+    }
 }
 
