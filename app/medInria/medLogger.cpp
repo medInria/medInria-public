@@ -17,8 +17,8 @@ public:
     QList<TeeStream*> teeStreams;
     QList<std::streambuf*> previousStreamBuffers;
 
-    static const double maxLogSize = 5000000;
-    static const double minLogSize = 1000000;
+    static const qint64 maxLogSize = 5000000;
+    static const qint64 minLogSize = 1000000;
 
     medLoggerPrivate() : logFile(dtkLogPath(qApp).toLocal8Bit().data(), std::ios::app) {}
 };
@@ -148,7 +148,7 @@ void medLogger::truncateLogFileIfHeavy()
 
         std::ifstream fin;
         fin.open(path.toUtf8());
-        fin.seekg(filesize-d->minLogSize); // file is going to be cut to 1Mo
+        fin.seekg(filesize - d->minLogSize); // file is going to be cut to minLogSize size
 
         std::string keptText;
         std::string line;
