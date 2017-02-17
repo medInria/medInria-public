@@ -67,6 +67,7 @@ public:
         typename CastType::Pointer caster = CastType::New();
         caster->SetInput(inputImage);
         typename ImageType::Pointer image = caster->GetOutput();
+
         output = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageFloat3");
         biasField = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageFloat3");
 
@@ -106,7 +107,7 @@ public:
             }
             if( !maskLabel )
             {
-                return EXIT_FAILURE;
+                return DTK_FAILURE;
             }
             correcter->SetMaskLabel(maskLabel);
         }
@@ -315,12 +316,12 @@ public:
         catch( itk::ExceptionObject & err )
         {
             std::cout << "Exception caught: " << err << std::endl;
-            return EXIT_FAILURE;
+            return DTK_FAILURE;
         }
         catch( ... )
         {
             qDebug() << "Unknown Exception caught." << endl;
-            return EXIT_FAILURE;
+            return DTK_FAILURE;
         }
 
 
@@ -390,6 +391,7 @@ public:
         biasFieldCropper->SetDirectionCollapseToSubmatrix();
 
         biasFieldCropper->Update();
+
         output->setData ( cropper->GetOutput() );
         medUtilities::setDerivedMetaData(output, input, "N4-corrected");
 
@@ -400,7 +402,7 @@ public:
             medDataManager::instance()->importData(biasField, false);
         }
 
-        return EXIT_SUCCESS;
+        return DTK_SUCCEED;
     }
 };
 

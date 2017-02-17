@@ -38,16 +38,6 @@ void itkNotOperator::setInput (medAbstractData *data, int channel)
     if (channel == 0)
     {
         m_inputA = data;
-
-        if ( data )
-        {
-            QString identifier = data->identifier();
-            m_output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
-        }
-        else
-        {
-            m_output = NULL;
-        }
     }
 }
 
@@ -127,6 +117,9 @@ template <class ImageType> int itkNotOperator::run()
     notFilter->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
     notFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     notFilter->Update();
+
+    QString identifier = m_inputA->identifier();
+    m_output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
 
     m_output->setData(notFilter->GetOutput());
 

@@ -27,7 +27,7 @@ medBinaryOperatorBase::medBinaryOperatorBase() : medAbstractProcess()
 {
     m_inputA = NULL;
     m_inputB = NULL;
-    m_output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUChar3" );
+    m_output = NULL;
 }
 
 medBinaryOperatorBase::~medBinaryOperatorBase()
@@ -234,6 +234,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
         return DTK_FAILURE;
     }
 
+    m_output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUChar3" );
     m_output->setData(filter->GetOutput());
 
     QString derivedDescription = description() + " " + m_inputB->metadata(medMetaDataKeys::SeriesDescription.key());
@@ -244,5 +245,5 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
 medAbstractData * medBinaryOperatorBase::output()
 {
-    return ( m_output );
+    return m_output;
 }

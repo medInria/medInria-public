@@ -51,9 +51,9 @@ public:
 
 iterativeClosestPointProcess::iterativeClosestPointProcess() : medAbstractProcess(), d(new iterativeClosestPointProcessPrivate)
 {
-    d->inputSource = 0;
-    d->inputTarget = 0;
-    d->output = 0;
+    d->inputSource = NULL;
+    d->inputTarget = NULL;
+    d->output = NULL;
 
     d->bStartByMatchingCentroids=1;
     d->bTransformation=0;
@@ -95,11 +95,7 @@ void iterativeClosestPointProcess::setInput(medAbstractData *data, int channel)
     {
         d->inputTarget = data;
     }
-    
-    if (!d->output)
-        d->output = medAbstractDataFactory::instance()->createSmartPointer ( "vtkDataMesh" );
 }    
-
 
 void iterativeClosestPointProcess::setParameter ( double data, int channel )
 {
@@ -160,6 +156,7 @@ int iterativeClosestPointProcess::update()
     vtkMetaSurfaceMesh * output_mesh = vtkMetaSurfaceMesh::New();
     output_mesh->SetDataSet(output_polyData);
 
+    d->output = medAbstractDataFactory::instance()->createSmartPointer ( "vtkDataMesh" );
     d->output->setData(output_mesh);
     medUtilities::setDerivedMetaData(d->output, d->inputSource, "ICP");
 
@@ -172,7 +169,7 @@ int iterativeClosestPointProcess::update()
 
 medAbstractData * iterativeClosestPointProcess::output()
 {
-    return ( d->output );
+    return d->output;
 }
 
 // /////////////////////////////////////////////////////////////////
