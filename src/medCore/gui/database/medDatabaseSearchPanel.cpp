@@ -33,7 +33,7 @@ EditCombo::EditCombo( QString txt, int clmn )
     this->column = clmn;
 
     this->edit.setToolTip(txt);
-    this->edit.setPlaceholderText(txt);
+    this->edit.setPlaceholderText(QString("Search by ")+txt);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(&edit);
