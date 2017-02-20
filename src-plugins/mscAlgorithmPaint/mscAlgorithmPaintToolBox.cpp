@@ -441,7 +441,6 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     connect(reduceBrushSize_shortcut,SIGNAL(activated()),this,SLOT(reduceBrushSize()));
 
     maskHasBeenSaved = false;
-
 }
 
 AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
@@ -1536,7 +1535,7 @@ void AlgorithmPaintToolBox::resetToolbox()
         m_magicWandButton->setChecked(false);
     }
 
-        deactivateCustomedCursor();
+    deactivateCustomedCursor();
 }
 
 void AlgorithmPaintToolBox::setCurrentView(medAbstractImageView * view)
