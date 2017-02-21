@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mscAlgorithmPaintPluginExport.h>
+#include "mscAlgorithmPaintPluginExport.h"
 
 #include <medAbstractData.h>
 #include <medDoubleParameter.h>

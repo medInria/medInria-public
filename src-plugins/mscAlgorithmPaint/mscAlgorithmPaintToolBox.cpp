@@ -1,4 +1,4 @@
-#include <mscAlgorithmPaintToolBox.h>
+#include "mscAlgorithmPaintToolBox.h"
 
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkDanielssonDistanceMapImageFilter.h>
@@ -12,6 +12,7 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
+#include <medAbstractProcess.h>
 #include <medDataManager.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
@@ -604,18 +605,29 @@ void AlgorithmPaintToolBox::import()
 
 void AlgorithmPaintToolBox::updateView()
 {
+    setButtonsDisabled(true);
     medAbstractView *view = this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
 
     if (view)
     {
-        setCurrentView(qobject_cast<medAbstractImageView*>(view));
-
-        updateMouseInteraction();
-
-        medAbstractData* data = currentView->layerData(0);
-
-        if(data)
+        medAbstractImageView * v = qobject_cast<medAbstractImageView*>(view);
+        if (v)
         {
+            // AlgorithmPaintToolBox does not work with meshes
+            for (unsigned int i=0 ; i<v->layersCount() ; ++i)
+            {
+                medAbstractData *data = v->layerData(i);
+                if(!data || data->identifier().contains("vtkDataMesh"))
+                {
+                    handleDisplayError(medAbstractProcess::NO_MESH);
+                    return ;
+                }
+            }
+            setButtonsDisabled(false);
+            currentView=v;
+            updateMouseInteraction();
+
+            medAbstractData* data = currentView->layerData(0);
             medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
             if(!existingMaskAnnData)
             {
@@ -636,14 +648,7 @@ void AlgorithmPaintToolBox::updateView()
             {
                 deactivateCustomedCursor(); // Deactivate painting cursor
             }
-
-            setButtonsDisabled(false);
         }
-    }
-    else
-    {
-        setButtonsDisabled(true);
-        currentView = NULL;
     }
 }
 
@@ -652,6 +657,11 @@ void AlgorithmPaintToolBox::setButtonsDisabled(bool disable)
     m_strokeButton->setDisabled(disable);
     m_magicWandButton->setDisabled(disable);
     m_interpolateButton->setDisabled(disable);
+
+    if (disable)
+    {
+        currentView=NULL;
+    }
 }
 
 void AlgorithmPaintToolBox::setLabel(int newVal)
@@ -1453,7 +1463,7 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
 
 void AlgorithmPaintToolBox::clear()
 {
-    if (currentView && (currentView->layersCount()>0))
+   if (currentView && (currentView->layersCount()>0))
     {
         // remove the "no name" mask data in the view
         for(int unsigned i=0; i<currentView->layersCount(); i++)
@@ -1465,9 +1475,7 @@ void AlgorithmPaintToolBox::clear()
             }
         }
     }
-
     clearMask();
-    updateView();
 }
 
 void AlgorithmPaintToolBox::clearMask()
@@ -1524,6 +1532,7 @@ void AlgorithmPaintToolBox::resetToolbox()
         updateButtons();
         m_magicWandButton->setChecked(false);
     }
+
     deactivateCustomedCursor();
 }
 
