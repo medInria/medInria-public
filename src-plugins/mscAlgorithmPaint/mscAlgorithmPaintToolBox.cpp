@@ -1475,9 +1475,7 @@ void AlgorithmPaintToolBox::clear()
             }
         }
     }
-
     clearMask();
-    updateView();
 }
 
 void AlgorithmPaintToolBox::clearMask()
