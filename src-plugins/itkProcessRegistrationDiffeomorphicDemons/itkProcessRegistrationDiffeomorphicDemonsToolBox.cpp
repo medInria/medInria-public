@@ -14,23 +14,14 @@
 #include <itkProcessRegistrationDiffeomorphicDemons.h>
 #include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
-#include <medAbstractDataFactory.h>
-#include <medAbstractData.h>
-#include <medAbstractImageData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
-
-#include <medAbstractView.h>
-#include <medRunnableProcess.h>
 #include <medJobManager.h>
 #include <medPluginManager.h>
-
-#include <medToolBoxFactory.h>
-#include <medRegistrationSelectorToolBox.h>
 #include <medProgressionStack.h>
-
+#include <medRegistrationSelectorToolBox.h>
+#include <medRunnableProcess.h>
+#include <medToolBoxFactory.h>
 #include <rpiCommonTools.hxx>
 
 class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
@@ -52,16 +43,20 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
 {
     QWidget *widget = new QWidget(this);
 
-    QPushButton *runButton = new QPushButton(tr("Run"), this);
-    runButton->setToolTip(tr("Start Registration"));
+    QVBoxLayout* layout = new QVBoxLayout();
 
-    QFormLayout *layout = new QFormLayout(widget);
+    QLabel* explanation = new QLabel("Drop 2 datasets with same size, origin and spacing.\n");
+    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    explanation->setWordWrap(true);
+    layout->addWidget(explanation);
 
-    d->iterationsBox = new QLineEdit(this);
+    QFormLayout* formLayout = new QFormLayout();
+
+    d->iterationsBox = new QLineEdit();
     d->iterationsBox->setText("15x10x5");
     d->iterationsBox->setToolTip(tr("Each number of iteration per level must be separated by \"x\". From coarser to finest levels"));
 
-    d->maxStepLengthBox = new QDoubleSpinBox(this);
+    d->maxStepLengthBox = new QDoubleSpinBox();
     d->maxStepLengthBox->setMinimum(0);
     d->maxStepLengthBox->setMaximum(1000);
     d->maxStepLengthBox->setSingleStep(0.01);
@@ -71,7 +66,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
                 " Setting it to 0 implies no restrictions will be made"
                 " on the step length."));
 
-    d->updateFieldStdDevBox = new QDoubleSpinBox(this);
+    d->updateFieldStdDevBox = new QDoubleSpinBox();
     d->updateFieldStdDevBox->setMinimum(0);
     d->updateFieldStdDevBox->setMaximum(1000);
     d->updateFieldStdDevBox->setSingleStep(0.01);
@@ -81,7 +76,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
                 "of the update field (voxel units). Setting it below 0.1"
                 "means no smoothing will be performed (default 0.0)."));
 
-    d->disFieldStdDevBox = new QDoubleSpinBox(this);
+    d->disFieldStdDevBox = new QDoubleSpinBox();
     d->disFieldStdDevBox->setMinimum(0);
     d->disFieldStdDevBox->setMaximum(1000);
     d->disFieldStdDevBox->setSingleStep(0.01);
@@ -90,7 +85,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
                 "Standard deviation of the Gaussian smoothing of "
                 "the displacement field (voxel units). Setting it below 0.1 "
                 "means no smoothing will be performed (default 1.5)."));
-    d->updateRuleBox = new medComboBox(this);
+    d->updateRuleBox = new medComboBox();
     QStringList updateRules;
     updateRules<< tr("Diffeomorphic") << tr ("Additive") << tr("Compositive");
     d->updateRuleBox->addItems(updateRules);
@@ -99,7 +94,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     d->updateRuleBox->setItemData(1,"s <- s + u",Qt::ToolTipRole);
     d->updateRuleBox->setItemData(2,"s <- s o (Id+u)",Qt::ToolTipRole);
 
-    d->gradientTypeBox = new medComboBox(this);
+    d->gradientTypeBox = new medComboBox();
     d->gradientTypeBox->setToolTip(tr(
                 "Type of gradient used for computing the demons force."));
     QStringList gradientTypes;
@@ -107,29 +102,33 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
                  << tr("Warped Moving Image")
                  << tr("Mapped Moving Image");
     d->gradientTypeBox->addItems(gradientTypes);
-    d->useHistogramBox =  new QCheckBox(this);
+    d->useHistogramBox =  new QCheckBox();
     d->useHistogramBox->setChecked(false);
     d->useHistogramBox->setToolTip(tr(
                 "Use histogram matching before processing?"));
 
-    layout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
-    layout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
-    layout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);
-    layout->addRow(new QLabel(tr("Max. Update Step Length"),this),d->maxStepLengthBox);
-    layout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),
+    formLayout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
+    formLayout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
+    formLayout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);
+    formLayout->addRow(new QLabel(tr("Max. Update Step Length"),this),d->maxStepLengthBox);
+    formLayout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),
                    d->updateFieldStdDevBox);
-    layout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),
+    formLayout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),
                    d->disFieldStdDevBox);
-    layout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
+    formLayout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
+    layout->addLayout(formLayout);
+
+    // Run button
+    QPushButton *runButton = new QPushButton(tr("Run"));
+    runButton->setToolTip(tr("Start Registration"));
+    layout->addWidget(runButton);
 
     // progression stack
     d->progressionStack = new medProgressionStack(widget);
-//    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-//    progressStackLayout->addWidget(d->progressionStack);
+    layout->addWidget(d->progressionStack);
 
+    widget->setLayout(layout);
     this->addWidget(widget);
-    this->addWidget(runButton);
-    this->addWidget(d->progressionStack);
 
     //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
     medPluginManager* pm = medPluginManager::instance();

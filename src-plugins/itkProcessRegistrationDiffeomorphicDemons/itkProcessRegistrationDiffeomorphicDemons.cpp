@@ -4,34 +4,17 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <itkProcessRegistrationDiffeomorphicDemons.h>
-
-#include <medAbstractData.h>
-#include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-
-// /////////////////////////////////////////////////////////////////
-//
-// /////////////////////////////////////////////////////////////////
-
-#include <itkImageRegistrationMethod.h>
-
-#include <itkImage.h>
-#include <itkResampleImageFilter.h>
-
-#include <time.h>
-
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
+#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <itkProcessRegistrationDiffeomorphicDemons.h>
 #include <rpiCommonTools.hxx>
-#include <registrationFactory.h>
-
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsDiffeomorphicDemonsPrivate
@@ -134,28 +117,8 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
     movingCastFilter->SetInput((MovingImageType*)proc->movingImages()[0].GetPointer());
     movingCastFilter->Update();
 
-    // Spacing needs to be the same in both dataset
+
     typedef double TransformScalarType;
-    typedef itk::ResampleImageFilter< RegImageType,RegImageType,TransformScalarType > ResampleFilterType;
-    typename ResampleFilterType::Pointer resamplingMoving = ResampleFilterType::New();
-    resamplingMoving->SetInput(movingCastFilter->GetOutput());
-    resamplingMoving->SetSize( fixedCastFilter->GetOutput()->GetLargestPossibleRegion().GetSize() );
-    resamplingMoving->SetOutputOrigin( fixedCastFilter->GetOutput()->GetOrigin() );
-    resamplingMoving->SetOutputSpacing( fixedCastFilter->GetOutput()->GetSpacing() );
-    resamplingMoving->SetOutputDirection( fixedCastFilter->GetOutput()->GetDirection() );
-    resamplingMoving->SetDefaultPixelValue( 0 );
-
-    try
-    {
-        resamplingMoving->Update();
-    }
-    catch (itk::ExceptionObject &e)
-    {
-        qDebug() << "ExceptionObject caught ! (startRegistration resample)" << e.GetDescription();
-        return DTK_FAILURE;
-    }
-
-    // Registration
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
                     TransformScalarType > RegistrationType;
     RegistrationType * registration = new RegistrationType;
@@ -163,7 +126,8 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
     registrationMethod = registration;
 
     registration->SetFixedImage(fixedCastFilter->GetOutput());
-    registration->SetMovingImage(resamplingMoving->GetOutput());
+    registration->SetMovingImage(movingCastFilter->GetOutput());
+
     registration->SetNumberOfIterations(iterations);
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
     registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviation);
@@ -204,7 +168,7 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
 
     // Print method parameters
     QString methodParameters = proc->getTitleAndParameters();
-    
+
     qDebug() << "METHOD PARAMETERS";
     qDebug() << methodParameters;
 
@@ -216,22 +180,41 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
     catch( std::exception & err )
     {
         qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
-        return 1;
+        return DTK_FAILURE;
     }
     time_t t2 = clock();
 
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
     emit proc->progressed(80);
-       
-    if (proc->output())
+
+    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
+    typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
+    resampler->SetTransform(registration->GetTransformation());
+    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
+    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
+    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
+    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
+    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
+    resampler->SetDefaultPixelValue( 0 );
+
+    try
     {
-        resamplingMoving->SetTransform(registration->GetTransformation());
-        resamplingMoving->Update();
-        proc->output()->setData (resamplingMoving->GetOutput());
+        resampler->Update();
     }
-        
-    return 0;
+    catch (itk::ExceptionObject &e)
+    {
+        qDebug() << "ExceptionObject caught ! (startRegistration resample)" << e.GetDescription();
+        return DTK_FAILURE;
+    }
+
+    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
+    result->DisconnectPipeline();
+
+    if (proc->output())
+        proc->output()->setData (result);
+
+    return DTK_SUCCEED;
 }
 
 int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
@@ -395,4 +378,3 @@ dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons()
 {
     return new itkProcessRegistrationDiffeomorphicDemons;
 }
-
