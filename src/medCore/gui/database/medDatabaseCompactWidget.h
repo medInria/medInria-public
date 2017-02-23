@@ -39,6 +39,9 @@ public :
 protected:
     void resizeEvent(QResizeEvent *event);
 
+    void createLayout();
+    void createDatabaseToolBox();
+    void placeDatabaseWidgets();
 
 signals:
     void open(const medDataIndex& index);

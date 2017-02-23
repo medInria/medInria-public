@@ -225,7 +225,7 @@ QVariant medDatabaseModel::headerData(int section, Qt::Orientation orientation, 
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
-        return QString("Database");
+        return this->columnNames().at(section);
     }
     return QVariant();
 }

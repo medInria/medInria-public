@@ -231,7 +231,8 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
     d->label->setObjectName("previewLabel");
     d->label->setText("Nothing selected");
 
-    this->setMinimumSize(184, 184);
+    this->setMinimumSize(180, 180);
+    this->setMaximumSize(180, 180);
 
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
