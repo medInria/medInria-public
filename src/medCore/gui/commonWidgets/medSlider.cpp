@@ -21,6 +21,11 @@ void medSlider::addTick(int position)
     }
 }
 
+int medSlider::countTick()
+{
+   return ticksList.count();
+}
+
 void medSlider::removeTick(int position)
 {
     ticksList.removeAll(position);
