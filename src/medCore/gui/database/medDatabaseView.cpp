@@ -310,16 +310,16 @@ void medDatabaseView::onExportSelectedItemRequested(void)
 
         else if(item->dataIndex().isValidForStudy())
         {
-            for (unsigned int i = 0; i<item->childCount(); i++)
+            for (int i = 0; i<item->childCount(); i++)
                 emit exportData(item->child(i)->dataIndex());
         }
 
         if(item->dataIndex().isValidForPatient())
         {
-            for (unsigned int i = 0; i<item->childCount(); i++)
+            for (int i = 0; i<item->childCount(); i++)
             {
                 medAbstractDatabaseItem *study = item->child(i);
-                for (unsigned int j = 0; j<study->childCount(); j++)
+                for (int j = 0; j<study->childCount(); j++)
                 {
                     emit exportData(study->child(j)->dataIndex());
                 }

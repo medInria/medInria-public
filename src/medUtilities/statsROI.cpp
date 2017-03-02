@@ -165,11 +165,11 @@ public:
         typename ImageType::SizeType size = m_itkMask->GetLargestPossibleRegion().GetSize();
         typename ImageType::IndexType px;
         int nbPixInMask = 0;
-        for (int sl=0 ; sl<size[2] ; sl++)
+        for (unsigned int sl=0 ; sl<size[2] ; sl++)
         {
-            for (int y=0 ; y<size[1] ; y++)
+            for (unsigned int y=0 ; y<size[1] ; y++)
             {
-                for (int x=0 ; x<size[0] ; x++)
+                for (unsigned int x=0 ; x<size[0] ; x++)
                 {
                     px[0] = x;
                     px[1] = y;
