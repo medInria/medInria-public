@@ -221,18 +221,12 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QS
     }
     else
     {
-        QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
         QString birthdate      = medMetaDataKeys::BirthDate.getFirstValue(medData);
         QString gender         = medMetaDataKeys::Gender.getFirstValue(medData);
 
         query.prepare ( "INSERT INTO patient (name, thumbnail, birthdate, gender, patientId) VALUES (:name, :thumbnail, :birthdate, :gender, :patientId)" );
         query.bindValue ( ":name", patientName );
-
-        // actually, in the database preview, thumbnails are retrieved from the series and not from this field
-        // when this field is set, it can causes problems when moving studies or series and deleting a patient
-        //query.bindValue ( ":thumbnail", refThumbPath );
         query.bindValue ( ":thumbnail", QString("") );
-
         query.bindValue ( ":birthdate", birthdate );
         query.bindValue ( ":gender",    gender );
         query.bindValue ( ":patientId", patientId);

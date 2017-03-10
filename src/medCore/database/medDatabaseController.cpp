@@ -663,10 +663,9 @@ medDataIndex medDatabaseController::moveSerie( const medDataIndex& indexSerie, c
             newIndex.setStudyId(toStudy.studyId());
         }
     }
-    
-    emit metadataModified(indexSerie, medMetaDataKeys::PatientID.key(), QString::number(toStudy.patientId()));
-    emit metadataModified(indexSerie, medMetaDataKeys::StudyID.key(), QString::number(toStudy.studyId()));
-    emit metadataModified(newIndex);
+
+    emit metadataModified(indexSerie); // to signal the serie has been removed
+    emit metadataModified(newIndex);   // to signal the serie has been added
 
     return newIndex;
 }
@@ -816,7 +815,7 @@ QList<medDataIndex> medDatabaseController::studies( const medDataIndex& index ) 
     return ret;
 }
 
-/** Enumerate all series for given patient*/
+/** Enumerate all series for given study*/
 QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) const
 {
     QList<medDataIndex> ret;
@@ -840,7 +839,7 @@ QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) co
     return ret;
 }
 
-/** Enumerate all images for given patient*/
+/** Enumerate all images for given serie*/
 QList<medDataIndex> medDatabaseController::images( const medDataIndex& index) const
 {
     QList<medDataIndex> ret;
