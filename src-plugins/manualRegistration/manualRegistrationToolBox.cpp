@@ -466,6 +466,10 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers * ta
         d->rightContainer->addData(d->currentView->layerData(1));
         qobject_cast<medAbstractImageView*>(d->rightContainer->view())->windowLevelParameter(0)->setValues(windowing1);
 
+        d->leftContainer->setUserSplittable(false);
+        d->rightContainer->setUserSplittable(false);
+        d->bottomContainer->setUserSplittable(false);
+
         //The Fuse view is the view where you see you the 2 volumes which should be registered.
         //By setting one volume's LUT to "Hot Metal", we more easily can differentiate both volumes
         //and then evaluate the registration.
