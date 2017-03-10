@@ -716,7 +716,7 @@ QString medDatabaseController::metaData(const medDataIndex& index,const QString&
     }
 
     if ( ret.isNull() ){
-        dtkDebug() << "medDatabaseControllerImpl : Failed to get metadata " << key << " for index " << index.asString();
+        dtkDebug() << "medDatabaseControllerImpl: Failed to get metadata " << key << " for index " << index.asString();
     }
 
     if ( !ret.isEmpty() && isPath )
