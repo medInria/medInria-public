@@ -346,7 +346,7 @@ void medDatabaseRemover::removeThumbnailIfNeeded(QSqlQuery query)
 
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
 
-    if ((medStorage::dataLocation()+thumbnail) == dbc->metaData(d->index,  medMetaDataKeys::ThumbnailPath.key()))
+    if ((medStorage::dataLocation() + thumbnail) == dbc->metaData(d->index,  medMetaDataKeys::ThumbnailPath.key()))
     {
         this->removeFile ( thumbnail );
     }
