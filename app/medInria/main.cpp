@@ -67,6 +67,8 @@ int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+
     // this needs to be done before creating the QApplication object, as per the
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
     QApplication::setStyle("plastique");
@@ -75,7 +77,6 @@ int main(int argc,char* argv[]) {
     medSplashScreen splash(QPixmap(":music_logo.png"));
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
         qDebug() << "Usage: MUSIC [--fullscreen|--no-fullscreen] [--stereo] "
