@@ -450,7 +450,7 @@ AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
 medAbstractData* AlgorithmPaintToolBox::processOutput()
 {
     // Check if painted data on the volume
-    if (!m_undoStacks->value(currentView)->isEmpty())
+    if (!m_undoStacks->empty() && !m_undoStacks->value(currentView)->isEmpty())
     {
         copyMetaDataToPaintedData();
         return m_maskData; // return output data
