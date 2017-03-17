@@ -76,7 +76,6 @@ medDatabaseRemover::~medDatabaseRemover()
 
 void medDatabaseRemover::internalRun()
 {
-
     QSqlDatabase db( d->db );
     QSqlQuery ptQuery ( db );
 
@@ -221,40 +220,19 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
     query.bindValue ( ":series", seriesDbId );
     EXEC_QUERY ( query );
 
-    QString thumbnail;
     if ( query.next() )
     {
-        thumbnail = query.value(0).toString();
-        removeThumbnailIfNeeded(query);
-        QString path = query.value ( 1 ).toString();
+        QString path = query.value (1).toString();
 
         // if path is empty then it was an indexed series
         if ( !path.isNull() && !path.isEmpty() )
             this->removeDataFile ( medDataIndex::makeSeriesIndex ( d->index.dataSourceId(), patientDbId, studyDbId, seriesDbId ) , path );
+
+        removeThumbnailIfNeeded(query);
     }
 
     if( removeTableRow ( d->T_SERIES, seriesDbId ) )
         emit removed(medDataIndex(1, patientDbId, studyDbId, seriesDbId, -1));
-
-    // we want to remove the directory if empty
-    QFileInfo seriesFi ( medStorage::dataLocation() + thumbnail );
-    if ( seriesFi.dir().exists() )
-    {
-        bool res = seriesFi.dir().rmdir ( seriesFi.absolutePath() ); // only removes if empty
-
-        // the serie's directory has been deleted, let's check if the patient directory is empty
-        // this can happen after moving series
-        if(res)
-        {
-            QDir parentDir = seriesFi.dir();
-            res = parentDir.cdUp();
-
-            if ( res && parentDir.exists() )
-            {
-                res = seriesFi.dir().rmdir ( parentDir.absolutePath() ); // only removes if empty
-            }
-        }
-    }
 }
 
 bool medDatabaseRemover::isStudyEmpty ( int studyDbId )
@@ -275,11 +253,16 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
 
     query.prepare ( "SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :id " );
     query.bindValue ( ":id", studyDbId );
+
     EXEC_QUERY ( query );
 
     if ( query.next() )
     {
-        removeThumbnailIfNeeded(query);
+        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
+        if (dbc->metaData(d->index,  medMetaDataKeys::StudyID.key()).toInt() == studyDbId)
+        {
+            removeThumbnailIfNeeded(query);
+        }
     }
 
     if( removeTableRow ( d->T_STUDY, studyDbId ) )
@@ -314,12 +297,6 @@ void medDatabaseRemover::removePatient ( int patientDbId )
     }
     if( removeTableRow ( d->T_PATIENT, patientDbId ) )
         emit removed(medDataIndex(1, patientDbId, -1, -1, -1));
-
-    medDatabaseController * dbi = medDatabaseController::instance();
-    QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientId ) );
-    
-    if ( patientDir.exists() )
-        patientDir.rmdir ( patientDir.path() ); // only removes if empty
 }
 
 bool medDatabaseRemover::removeTableRow ( const QString &table, int id )
@@ -344,11 +321,26 @@ void medDatabaseRemover::removeThumbnailIfNeeded(QSqlQuery query)
 {
     QString thumbnail = query.value(0).toString();
 
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
+    this->removeFile ( thumbnail );
 
-    if ((medStorage::dataLocation() + thumbnail) == dbc->metaData(d->index,  medMetaDataKeys::ThumbnailPath.key()))
+    // we want to remove the directory if empty
+    QFileInfo seriesFi ( medStorage::dataLocation() + thumbnail );
+    if ( seriesFi.dir().exists() )
     {
-        this->removeFile ( thumbnail );
+        bool res = seriesFi.dir().rmdir ( seriesFi.absolutePath() ); // only removes if empty
+
+        // the serie's directory has been deleted, let's check if the patient directory is empty
+        // this can happen after moving series
+        if(res)
+        {
+            QDir parentDir = seriesFi.dir();
+            res = parentDir.cdUp();
+
+            if ( res && parentDir.exists() )
+            {
+                res = seriesFi.dir().rmdir ( parentDir.absolutePath() ); // only removes if empty
+            }
+        }
     }
 }
 
