@@ -21,7 +21,7 @@ void medSlider::addTick(int position)
     }
 }
 
-int medSlider::countTick()
+int medSlider::tickCount()
 {
    return ticksList.count();
 }

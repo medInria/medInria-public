@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medSlider : public QSlider
 
 public slots:
     void addTick(int position);
-    int countTick();
+    int tickCount();
     void removeTick(int position);
     void removeAllTicks();
 
