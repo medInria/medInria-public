@@ -59,7 +59,8 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     parameters_layout->addWidget(d->layerTarget);
     
     d->bStartByMatchingCentroids = new QCheckBox(widget);
-    d->bStartByMatchingCentroids->setText("StartByMatchingCentroids");
+    d->bStartByMatchingCentroids->setText("Start by matching centroids");
+    d->bStartByMatchingCentroids->setToolTip("Start the process by translating source centroid to target centroid");
     d->bStartByMatchingCentroids->setChecked(true);
     
     // Choice between transformations
@@ -77,10 +78,12 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
 
     // Mean Distance
     d->bCheckMeanDistance = new QCheckBox(widget);
-    d->bCheckMeanDistance->setText("CheckMeanDistance");
+    d->bCheckMeanDistance->setText("Check mean distance");
+    d->bCheckMeanDistance->setToolTip("Force the algorithm to check the mean distance between two iterations");
 
     d->ScaleFactor = new QDoubleSpinBox(widget);
     d->ScaleFactor->setValue(1.0);
+    d->ScaleFactor->setToolTip("Set a linear transformation according to this factor");
     QHBoxLayout * ScaleFactor_layout = new QHBoxLayout;
     QLabel * ScaleFactor_Label = new QLabel("Scale Factor");
     ScaleFactor_layout->addWidget(ScaleFactor_Label);
@@ -89,6 +92,7 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     d->MaxMeanDistance = new QDoubleSpinBox(widget);
     d->MaxMeanDistance->setDecimals(5);
     d->MaxMeanDistance->setValue(0.01);
+    d->MaxMeanDistance->setToolTip("Set the maximum mean distance between two iteration");
     QHBoxLayout * MaxMeanDistance_layout = new QHBoxLayout;
     QLabel * MaxMeanDistance_Label = new QLabel("Max Mean Distance");
     MaxMeanDistance_layout->addWidget(MaxMeanDistance_Label);
@@ -97,6 +101,7 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     d->MaxNumIterations = new QSpinBox(widget);
     d->MaxNumIterations->setMaximum(1000000);
     d->MaxNumIterations->setValue(50);
+    d->MaxNumIterations->setToolTip("Set the maximum number of iterations");
     QHBoxLayout * MaxNumIterations_layout = new QHBoxLayout;
     QLabel * MaxNumIterations_Label = new QLabel("Max Num Iterations");
     MaxNumIterations_layout->addWidget(MaxNumIterations_Label);
@@ -105,6 +110,7 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     d->MaxNumLandmarks = new QSpinBox(widget);
     d->MaxNumLandmarks->setMaximum(1000000);
     d->MaxNumLandmarks->setValue(200);
+    d->MaxNumLandmarks->setToolTip("Set the maximum number of landmarks");
     QHBoxLayout * MaxNumLandmarks_layout = new QHBoxLayout;
     QLabel * MaxNumLandmarks_Label = new QLabel("Max Num Landmarks");
     MaxNumLandmarks_layout->addWidget(MaxNumLandmarks_Label);
