@@ -131,12 +131,7 @@ protected:
     **/
     virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails ) = 0;
 
-
-
-
     medAbstractDatabaseImporterPrivate *d;
-
-
 };
 
 

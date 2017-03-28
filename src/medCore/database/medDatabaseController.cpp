@@ -373,6 +373,7 @@ medDataIndex medDatabaseController::indexForImage(const QString &patientName, co
                                                   const QString &seriesName,  const QString &imageName)
 {
     medDataIndex index = this->indexForSeries(patientName, studyName, seriesName);
+
     if (!index.isValid())
         return index;
 
