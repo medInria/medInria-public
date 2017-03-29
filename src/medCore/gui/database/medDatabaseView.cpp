@@ -559,13 +559,23 @@ void medDatabaseView::onEditRequested(void)
         QList<QVariant> attributes = item->attributes();
         QList<QVariant> values = item->values();
         QList<QString> labels;
-        
+
+        // The last attribute is ThumbnailPath. Users are not allowed to change it.
+        attributes.removeLast();
+        values.removeLast();
+
         foreach(QVariant attrib, attributes)
         {
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
+
             if(key)
+            {
                 labels << key->label();
-            else labels << "";
+            }
+            else
+            {
+                labels << "";
+            }
         }
         
         medDatabaseEditItemDialog editDialog(labels,values,this);
