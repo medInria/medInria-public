@@ -92,7 +92,7 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     d->MaxMeanDistance = new QDoubleSpinBox(widget);
     d->MaxMeanDistance->setDecimals(5);
     d->MaxMeanDistance->setValue(0.01);
-    d->MaxMeanDistance->setToolTip("Set the maximum mean distance between two iteration");
+    d->MaxMeanDistance->setToolTip("Set the maximum mean distance between two iterations");
     QHBoxLayout * MaxMeanDistance_layout = new QHBoxLayout;
     QLabel * MaxMeanDistance_Label = new QLabel("Max Mean Distance");
     MaxMeanDistance_layout->addWidget(MaxMeanDistance_Label);
