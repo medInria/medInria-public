@@ -52,9 +52,6 @@ double DCMTKImageIO::MAXIMUM_GAP = 999999;
 
 DCMTKImageIO::DCMTKImageIO()
 {
-    // Avoid to display log of each DICOM metadata not read by itkMetaImageIO
-    this->SetGlobalWarningDisplay(false);
-
     this->SetNumberOfDimensions(3);
     this->SetNumberOfComponents(1);
     this->SetPixelType(SCALAR);
