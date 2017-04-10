@@ -249,8 +249,8 @@ void medDataManager::launchExporter(medDatabaseExporter* exporter, const QString
     connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(exporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(exporter, SIGNAL(success(QObject *)), this, SIGNAL(dataExported()));
-    connect(exporter, SIGNAL(failure(QObject *)), this, SIGNAL(dataExported()));
+    connect(exporter, SIGNAL(success(QObject *)), this, SIGNAL(exportFinished()));
+    connect(exporter, SIGNAL(failure(QObject *)), this, SIGNAL(exportFinished()));
 
     medJobManager::instance()->registerJobItem(exporter);
     QThreadPool::globalInstance()->start(exporter);
