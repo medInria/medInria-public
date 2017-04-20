@@ -69,7 +69,6 @@ public:
     */
     static bool registered();
 
-public:
     /**
      * @brief Runs the process.
      *
@@ -91,6 +90,10 @@ public:
      * @return bool successful or not.
     */
     virtual bool writeTransform(const QString& file);
+
+    void setParameter(int data, int channel);
+
+    void displayMessageError(QString error);
 
 private:
     manualRegistrationPrivate *d;
