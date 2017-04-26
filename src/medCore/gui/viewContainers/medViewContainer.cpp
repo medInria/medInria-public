@@ -19,26 +19,25 @@
 #include <QUuid>
 #include <QFileDialog>
 
-#include <medViewContainerManager.h>
-#include <medAbstractView.h>
 #include <medAbstractImageView.h>
+#include <medAbstractData.h>
+#include <medAbstractView.h>
+#include <medAbstractInteractor.h>
+#include <medAbstractLayeredView.h>
 #include <medBoolParameter.h>
 #include <medDataIndex.h>
-#include <medAbstractData.h>
 #include <medDataManager.h>
-#include <medViewFactory.h>
-#include <medAbstractLayeredView.h>
+#include <medLayoutChooser.h>
+#include <medMetaDataKeys.h>
+#include <medPoolIndicator.h>
+#include <medSettingsManager.h>
+#include <medStringListParameter.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
-#include <medStringListParameter.h>
 #include <medTriggerParameter.h>
+#include <medViewContainerManager.h>
 #include <medViewContainerSplitter.h>
-#include <medDataManager.h>
-#include <medSettingsManager.h>
-#include <medAbstractInteractor.h>
-#include <medPoolIndicator.h>
-#include <medLayoutChooser.h>
-
+#include <medViewFactory.h>
 
 class medViewContainerPrivate
 {
@@ -896,6 +895,16 @@ QString medViewContainer::saveScene()
             layeredViewInfo.setAttribute("path",subDirName+"/mapping.xml");
             layeredViewInfo.setAttribute("id",layeredView->identifier());
             root.appendChild(layeredViewInfo);
+
+            // Patient informations
+            QDomElement patientInfo = doc.createElement("patient");
+            patientInfo.setAttribute("patientName", layeredView->layerData(0)->metadata(medMetaDataKeys::PatientName.key()));
+            patientInfo.setAttribute("patientID",   layeredView->layerData(0)->metadata(medMetaDataKeys::PatientID.key()));
+            patientInfo.setAttribute("birthDate",   layeredView->layerData(0)->metadata(medMetaDataKeys::BirthDate.key()));
+            patientInfo.setAttribute("gender",      layeredView->layerData(0)->metadata(medMetaDataKeys::Gender.key()));
+            patientInfo.setAttribute("studyDescription", "Scene");
+            root.appendChild(patientInfo);
+
             layeredView->write(generatedPath);
             workingDir.cdUp();
 
@@ -981,6 +990,35 @@ void medViewContainer::loadScene()
                 {
                      displayMessageError("Failed to parse " + fileName);
                      return;
+                }
+            }
+
+            // Get back informations about the patient
+            QDomNodeList informationNodes = doc.elementsByTagName("patient");
+            for(int i=0; i<informationNodes.size(); i++)
+            {
+                QDomElement infoElement = informationNodes.item(i).toElement();
+                if(infoElement.isNull())
+                {
+                    printInConsole("Failed to open a view, unable to find patient element");
+                    continue;
+                }
+                QString patientName      = infoElement.attribute("patientName");
+                QString patientID        = infoElement.attribute("patientID");
+                QString birthDate        = infoElement.attribute("birthDate");
+                QString gender           = infoElement.attribute("gender");
+                QString studyDescription = infoElement.attribute("studyDescription");
+
+                medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view());
+                for(unsigned i=0; i<layeredView->layersCount(); i++)
+                {
+                    medDataManager::instance()->removeData(layeredView->layerData(i)->dataIndex());
+                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::PatientName.key(),      patientName);
+                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::PatientID.key(),        patientID);
+                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::BirthDate.key(),        birthDate);
+                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::Gender.key(),           gender);
+                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDescription);
+                    medDataManager::instance()->importData(layeredView->layerData(i));
                 }
             }
         }
