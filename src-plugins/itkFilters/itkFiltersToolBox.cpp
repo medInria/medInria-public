@@ -165,6 +165,13 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->gaussianFilterWidget->setLayout ( gaussianFilterLayout );
 
     d->normalizeFilterWidget = new QWidget(this);
+    QLabel* normExplanation = new QLabel("Normalize an image by setting its mean to zero and variance to one.");
+    normExplanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    normExplanation->setWordWrap(true);
+    QHBoxLayout * normalizeFilterLayout = new QHBoxLayout;
+    normalizeFilterLayout->addWidget(normExplanation);
+    d->normalizeFilterWidget->setLayout(normalizeFilterLayout);
+
     d->medianFilterWidget = new QWidget(this);
     d->invertFilterWidget = new QWidget(this);
 
