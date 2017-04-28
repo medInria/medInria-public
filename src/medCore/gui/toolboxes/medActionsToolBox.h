@@ -61,6 +61,9 @@ signals:
     /** Emitted when the 'Edit' button is clicked. */   
     void editClicked();
 
+    /** Emitted when the 'Fuse' button is clicked. */
+    void fuseClicked();
+
 public slots:
 
     void patientSelected(const medDataIndex& index);

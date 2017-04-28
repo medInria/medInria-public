@@ -27,6 +27,7 @@
 #include <medFileSystemDataSource.h>
 #include <medDatabaseDataSource.h>
 #include <medPacsDataSource.h>
+#include <medAbstractProcess.h>
 
 #include <medApplication.h>
 
@@ -38,6 +39,10 @@ public:
     medDatabaseDataSource *dbSource;
     medFileSystemDataSource *fsSource;
     medPacsDataSource *pacsSource;
+
+    // Fuse
+    QList<medDataIndex> indexList;
+    int numberOfPaths;
 };
 
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
@@ -79,6 +84,8 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
             this, SLOT(openFromPath(QString)));
     connect(d->fsSource, SIGNAL(load(QString)),
             this, SLOT(loadFromPath(QString)));
+    connect(d->fsSource, SIGNAL(fuse(QStringList)),
+            this, SLOT(fuseFromPaths(QStringList)));
     connect(d->dbSource, SIGNAL(open(const medDataIndex&)),
             this, SLOT(openFromIndex(medDataIndex)));
 }
@@ -176,6 +183,80 @@ void medDataSourceManager::openFromIndex(medDataIndex index)
 void medDataSourceManager::loadFromPath(QString path)
 {
     medDataManager::instance()->importPath(path, false);
+}
+
+void medDataSourceManager::fuseFromPaths(QStringList paths)
+{
+    d->indexList.clear();
+    QList<QUuid> uuidList;
+    d->numberOfPaths = paths.count();
+
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
+            this, SLOT(dataImported(medDataIndex,QUuid)));
+
+    // Non persistent (temporary) loading
+    foreach(QString path, paths)
+    {
+        uuidList.append(medDataManager::instance()->importPath(path, false));
+    }
+
+    // Wait for the end of loadings
+    QEventLoop loop;
+    connect(this, SIGNAL(loadingsFinished()), &loop, SLOT(quit()));
+    loop.exec();
+
+    disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
+               this, SLOT(dataImported(medDataIndex,QUuid)));
+
+    dtkSmartPointer<medAbstractProcess> process =
+            dtkAbstractProcessFactory::instance()->createSmartPointer("msc::MergeVolumes");
+
+    if (process)
+    {
+        // Get back the successfully loaded medAbstractData and send them to the process
+        QList<medAbstractData*> loadedDataList;
+        foreach(medDataIndex dataIndex, d->indexList)
+        {
+            medAbstractData* data = medDataManager::instance()->retrieveData(dataIndex);
+            loadedDataList.append(data);
+            process->setInput(data);
+        }
+
+        // Fuse...
+        process->setParameter(1); // fuse parameter
+        process->update();
+
+        // Save fused data
+        if (process->output())
+        {
+            medDataManager::instance()->importData(process->output(), true);
+        }
+    }
+    else
+    {
+        QString warning = "The Fuse process hasn't been found.";
+        qDebug() << "medDataSourceManager::fuseFromPaths: " + warning;
+        medMessageController::instance()->showInfo(warning, 6000);
+    }
+
+    // Remove temporary non-persistent data
+    foreach(medDataIndex dataIndex, d->indexList)
+    {
+        medDataManager::instance()->removeData(dataIndex);
+    }
+}
+
+void medDataSourceManager::dataImported(const medDataIndex& index, QUuid uuid)
+{
+    Q_UNUSED(uuid);
+
+    d->indexList.append(index);
+
+    // This was the last loading
+    if (d->indexList.count() == d->numberOfPaths)
+    {
+        emit loadingsFinished();
+    }
 }
 
 void medDataSourceManager::destroy( void )
