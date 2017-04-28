@@ -99,7 +99,6 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
 
     if(dataObjRef) {
         // we found an existing instance of that object
-        qDebug()<<"medDataManager we found an existing instance of that object" <<dataObjRef->count();
         return dataObjRef;
     }
 

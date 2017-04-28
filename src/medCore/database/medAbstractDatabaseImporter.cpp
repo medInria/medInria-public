@@ -326,7 +326,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         return;
     }
     else
-        qDebug() << "Image map contains " << imagesGroupedByVolume.size() << " files";
+        qDebug() << "Chosen directory contains " << imagesGroupedByVolume.size() << " files";
 
     int imagesCount = imagesGroupedByVolume.count(); // used only to calculate progress
     int currentImageIndex = 0; // used only to calculate progress
