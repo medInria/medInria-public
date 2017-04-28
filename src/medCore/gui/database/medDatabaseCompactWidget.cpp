@@ -89,7 +89,6 @@ void medDatabaseCompactWidget::createLayout()
 
 void medDatabaseCompactWidget::createDatabaseToolBox()
 {
-    d->databaseToolBox = NULL;
     d->databaseToolBox = new medToolBox();
     d->databaseToolBox->setTitle("Database");
     d->databaseToolBox->addWidget(d->view);
