@@ -30,6 +30,7 @@ public:
     medDatabasePreview *preview;
     medDatabaseView *view;
     QVBoxLayout *layout;
+    medToolBox* databaseToolBox;
 };
 
 
@@ -37,10 +38,9 @@ medDatabaseCompactWidget::medDatabaseCompactWidget(QWidget *parent): d(new medDa
 {
     this->setContentsMargins(0,0,0,0);
 
-    d->layout = new QVBoxLayout(this);
-    this->setLayout(d->layout);
-    d->layout->setContentsMargins(0,0,0,0);
-    d->layout->setSpacing(0);
+    createLayout();
+
+    d->databaseToolBox = NULL;
 }
 
 
@@ -54,22 +54,15 @@ medDatabaseCompactWidget::~medDatabaseCompactWidget()
 void medDatabaseCompactWidget::resizeEvent(QResizeEvent *event)
 {
     delete d->layout;
-    d->layout = new QVBoxLayout(this);
-    d->layout->setContentsMargins(0,0,0,0);
-    d->layout->setSpacing(0);
 
-    this->setLayout(d->layout);
+    createLayout();
 
-    d->layout->addWidget(d->panel, 0);
-    d->layout->addWidget(d->view, 1);
-    d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
-    d->layout->addWidget(d->preview->label(), 0);
+    placeDatabaseWidgets();
 
     QWidget::resizeEvent(event);
 }
 
-void
-medDatabaseCompactWidget::setSearchPanelViewAndPreview(medDatabaseSearchPanel *panel, medDatabaseView *view,
+void medDatabaseCompactWidget::setSearchPanelViewAndPreview(medDatabaseSearchPanel *panel, medDatabaseView *view,
                                                        medDatabasePreview *preview)
 {
     d->panel = panel;
@@ -79,8 +72,35 @@ medDatabaseCompactWidget::setSearchPanelViewAndPreview(medDatabaseSearchPanel *p
             );
 
     d->preview = preview;
+
+    createDatabaseToolBox();
+
+    placeDatabaseWidgets();
+}
+
+void medDatabaseCompactWidget::createLayout()
+{
+    d->layout = new QVBoxLayout(this);
+    d->layout->setContentsMargins(0,0,0,0);
+    d->layout->setSpacing(0);
+
+    this->setLayout(d->layout);
+}
+
+void medDatabaseCompactWidget::createDatabaseToolBox()
+{
+    d->databaseToolBox = new medToolBox();
+    d->databaseToolBox->setTitle("Database");
+    d->databaseToolBox->addWidget(d->view);
+}
+
+void medDatabaseCompactWidget::placeDatabaseWidgets()
+{
     d->layout->addWidget(d->panel, 0);
-    d->layout->addWidget(d->view, 1);
-    d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
+    d->layout->addWidget(d->databaseToolBox, 1);
+    d->layout->addWidget(d->preview, 0, Qt::AlignCenter);
     d->layout->addWidget(d->preview->label(), 0);
+
+    int newH = this->height() - d->preview->height() - d->preview->label()->height() - d->panel->height() - 20;
+    d->view->setFixedHeight(newH);
 }
