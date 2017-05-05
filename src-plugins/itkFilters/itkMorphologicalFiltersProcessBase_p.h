@@ -26,6 +26,7 @@
 #include <itkBinaryErodeImageFilter.h>
 #include <itkBinaryMorphologicalClosingImageFilter.h>
 #include <itkBinaryMorphologicalOpeningImageFilter.h>
+#include <itkFiltersProcessBase.h>
 #include <itkFlatStructuringElement.h>
 #include <itkGrayscaleMorphologicalClosingImageFilter.h>
 #include <itkGrayscaleMorphologicalOpeningImageFilter.h>
@@ -49,6 +50,7 @@ public:
     double radius[3];
     double radiusMm[3];
     bool isRadiusInPixels;
+    itkMorphologicalFiltersProcessBase::KernelShape kernelShape;
 	
     template <class ImageType> void convertMmInPixels ( void )
     {
@@ -75,7 +77,23 @@ public:
         elementRadius[0] = radius[0]; //radius (double) is truncated
         elementRadius[1] = radius[1];
         elementRadius[2] = radius[2];
-        StructuringElementType ball = StructuringElementType::Ball(elementRadius);
+
+        StructuringElementType kernel;
+
+        switch (kernelShape)
+        {
+        case itkMorphologicalFiltersProcessBase::BallKernel:
+            kernel = StructuringElementType::Ball(elementRadius);
+            break;
+        case itkMorphologicalFiltersProcessBase::CrossKernel:
+            kernel = StructuringElementType::Cross(elementRadius);
+            break;
+        case itkMorphologicalFiltersProcessBase::BoxKernel:
+            kernel = StructuringElementType::Box(elementRadius);
+            break;
+        }
+
+        kernel.SetRadiusIsParametric(true);
 
         typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
         typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
@@ -143,7 +161,7 @@ public:
         }
 
         filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        filter->SetKernel ( ball );
+        filter->SetKernel ( kernel );
 
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );

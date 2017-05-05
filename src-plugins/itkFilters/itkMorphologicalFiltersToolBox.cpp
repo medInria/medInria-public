@@ -42,6 +42,7 @@ class itkMorphologicalFiltersToolBoxPrivate
 public:
     QDoubleSpinBox * kernelSize;
     QRadioButton *mmButton, *pixelButton;
+    QRadioButton *ballKernelButton, *crossKernelButton, *boxKernelButton;
     
     medComboBox * filters;
     dtkSmartPointer <itkMorphologicalFiltersProcessBase> process;
@@ -65,14 +66,14 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->filters->addItems ( filtersList );
 
     // We use the same widget for all the morphological filters
-    QWidget *filterWidget = new QWidget(this);
+    QWidget *kernelSizeWidget = new QWidget(this);
     d->kernelSize = new QDoubleSpinBox;
     d->kernelSize->setMaximum ( 10 );
     d->kernelSize->setValue ( 1 );
     d->kernelSize->setObjectName("kernelSize");
 
-    QLabel * morphoFilterLabel = new QLabel ( tr ( "Kernel radius:" ) );
-    QHBoxLayout * morphoFilterLayout = new QHBoxLayout;
+    QLabel * kernelSizeLabel = new QLabel ( tr ( "Kernel radius:" ) );
+    QHBoxLayout * kernelSizeLayout = new QHBoxLayout;
     d->mmButton = new QRadioButton(tr("mm"), this);
     d->mmButton->setObjectName("mm");
     d->mmButton->setToolTip(tr("If \"mm\" is selected, the dimensions of the structuring element will be calculated in mm."));
@@ -83,12 +84,30 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->pixelButton->setToolTip(tr("If \"pixels\" is selected, the dimensions of the structuring element will be calculated in pixels."));
     connect(d->pixelButton, SIGNAL(toggled(bool)), this, SLOT(roundSpinBox(bool)));
 
-    morphoFilterLayout->addWidget ( morphoFilterLabel );
-    morphoFilterLayout->addWidget ( d->kernelSize );
-    morphoFilterLayout->addWidget ( d->mmButton );
-    morphoFilterLayout->addWidget ( d->pixelButton );
-    morphoFilterLayout->addStretch ( 1 );
-    filterWidget->setLayout ( morphoFilterLayout );
+    kernelSizeLayout->addWidget ( kernelSizeLabel );
+    kernelSizeLayout->addWidget ( d->kernelSize );
+    kernelSizeLayout->addWidget ( d->mmButton );
+    kernelSizeLayout->addWidget ( d->pixelButton );
+    kernelSizeLayout->addStretch ( 1 );
+    kernelSizeWidget->setLayout ( kernelSizeLayout );
+
+    QWidget* kernelShapeWidget = new QWidget();
+    kernelShapeWidget->setLayout(new QHBoxLayout());
+
+    kernelShapeWidget->layout()->addWidget(new QLabel(tr("Kernel shape:")));
+
+    d->ballKernelButton = new QRadioButton(tr("ball"));
+    d->ballKernelButton->setObjectName("ballKernelButton");
+    d->ballKernelButton->setChecked(true);
+    kernelShapeWidget->layout()->addWidget(d->ballKernelButton);
+
+    d->boxKernelButton = new QRadioButton(tr("box"));
+    d->boxKernelButton->setObjectName("boxKernelButton");
+    kernelShapeWidget->layout()->addWidget(d->boxKernelButton);
+
+    d->crossKernelButton = new QRadioButton(tr("cross"));
+    d->crossKernelButton->setObjectName("crossKernelButton");
+    kernelShapeWidget->layout()->addWidget(d->crossKernelButton);
 
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
@@ -103,7 +122,8 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
-    layout->addWidget ( filterWidget );
+    layout->addWidget ( kernelSizeWidget );
+    layout->addWidget ( kernelShapeWidget );
     layout->addWidget ( runButton );
     layout->addWidget ( d->progressionStack );
     layout->addStretch ( 1 );
@@ -176,6 +196,19 @@ void itkMorphologicalFiltersToolBox::run ( void )
             {
                 d->process->setInput ( this->selectorToolBox()->data() );
                 d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
+
+                if (d->ballKernelButton->isChecked())
+                {
+                    d->process->setParameter(itkMorphologicalFiltersProcessBase::BallKernel);
+                }
+                else if (d->crossKernelButton->isChecked())
+                {
+                    d->process->setParameter(itkMorphologicalFiltersProcessBase::CrossKernel);
+                }
+                else if (d->boxKernelButton->isChecked())
+                {
+                    d->process->setParameter(itkMorphologicalFiltersProcessBase::BoxKernel);
+                }
 
                 medRunnableProcess *runProcess = new medRunnableProcess;
                 runProcess->setProcess ( d->process );
