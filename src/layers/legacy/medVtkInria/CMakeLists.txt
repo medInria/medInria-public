@@ -156,9 +156,16 @@ target_link_libraries(${TARGET_NAME}
   ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
   ITKVTK
   vtkCommonCore
+  vtkCommonSystem
+  vtkImagingColor
+  vtkImagingGeneral
+  vtkImagingHybrid
   vtkIOCore
+  vtkIOGeometry
+  vtkIOImage
   vtkIOLegacy
   vtkIOXML
+  vtkRenderingAnnotation
   vtkRenderingCore
   vtkRenderingOpenGL
   vtkRenderingVolumeOpenGL
@@ -168,6 +175,7 @@ target_link_libraries(${TARGET_NAME}
   vtkInteractionWidgets
   vtkInteractionStyle
   vtkFiltersExtraction
+  vtkFiltersModeling
   vtkImagingStencil
   vtkFiltersGeometry
   vtksys
