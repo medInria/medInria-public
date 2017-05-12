@@ -335,11 +335,9 @@ double vtkImageView2D::GetOpacity(int layer) const
 
 //----------------------------------------------------------------------------
 /** Override vtkObject - return the maximum mtime of this and any objects owned by this. */
-unsigned long vtkImageView2D::GetMTime()
+vtkMTimeType vtkImageView2D::GetMTime()
 {
-    typedef unsigned long MTimeType;
-
-    MTimeType mTime = Superclass::GetMTime();
+    vtkMTimeType mTime = Superclass::GetMTime();
 
     vtkObject * objectsToInclude[] = {
         this->Axes2DWidget,
@@ -355,7 +353,7 @@ unsigned long vtkImageView2D::GetMTime()
         for ( int i(0); i<numObjects; ++i ) {
             vtkObject * object = objectsToInclude[i];
             if (object) {
-                const MTimeType testMtime = object->GetMTime();
+                const vtkMTimeType testMtime = object->GetMTime();
                 if ( testMtime > mTime )
                     mTime = testMtime;
             }
@@ -365,7 +363,7 @@ unsigned long vtkImageView2D::GetMTime()
         for ( int i(0); i<numLayer; ++i ) {
             vtkObject * object = this->GetImage2DDisplayForLayer(i)->GetImageActor();
             if (object) {
-                const MTimeType testMtime = object->GetMTime();
+                const vtkMTimeType testMtime = object->GetMTime();
                 if ( testMtime > mTime )
                     mTime = testMtime;
             }

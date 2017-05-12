@@ -92,7 +92,7 @@ public:
     vtkTypeMacro (vtkImageView2D, vtkImageView);
     void PrintSelf(ostream& os, vtkIndent indent);
 
-    unsigned long GetMTime();
+    vtkMTimeType GetMTime();
 
     //BTX
     enum EventIds

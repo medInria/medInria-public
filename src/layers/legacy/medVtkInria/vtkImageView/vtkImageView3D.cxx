@@ -220,11 +220,9 @@ vtkImageView3D::~vtkImageView3D()
 
 //----------------------------------------------------------------------------
 /** Override vtkObject - return the maximum mtime of this and any objects owned by this. */
-unsigned long vtkImageView3D::GetMTime()
+vtkMTimeType vtkImageView3D::GetMTime()
 {
-  typedef unsigned long MTimeType;
-
-  MTimeType mTime = Superclass::GetMTime();
+  vtkMTimeType mTime = Superclass::GetMTime();
 
   vtkObject * objectsToInclude[] = {
     this->VolumeMapper,
@@ -244,7 +242,7 @@ unsigned long vtkImageView3D::GetMTime()
   for ( int i(0); i<numObjects; ++i ) {
     vtkObject * object = objectsToInclude[i];
     if (object) {
-      const MTimeType testMtime = object->GetMTime();
+      const vtkMTimeType testMtime = object->GetMTime();
       if ( testMtime > mTime )
     mTime = testMtime;
     }
@@ -254,7 +252,7 @@ unsigned long vtkImageView3D::GetMTime()
   vtkObject* item = this->ExtraPlaneCollection->GetNextProp3D();
   while(item)
   {
-    const MTimeType testMtime = item->GetMTime();
+    const vtkMTimeType testMtime = item->GetMTime();
     if ( testMtime > mTime )
       mTime = testMtime;
     item = this->ExtraPlaneCollection->GetNextProp3D();

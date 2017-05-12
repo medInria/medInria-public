@@ -265,11 +265,9 @@ vtkImageView::~vtkImageView()
 
 //----------------------------------------------------------------------------
 /** Override vtkObject - return the maximum mtime of this and any objects owned by this. */
-unsigned long vtkImageView::GetMTime()
+vtkMTimeType vtkImageView::GetMTime()
 {
-    typedef unsigned long MTimeType;
-
-    MTimeType mTime = Superclass::GetMTime();
+    vtkMTimeType mTime = Superclass::GetMTime();
 
     vtkObject * objectsToInclude[] = {
         // Renderer, RenderWindow,Interactor,
@@ -281,7 +279,7 @@ unsigned long vtkImageView::GetMTime()
     for ( int i(0); i<numObjects; ++i ) {
         vtkObject * object = objectsToInclude[i];
         if (object) {
-            const MTimeType testMtime = object->GetMTime();
+            const vtkMTimeType testMtime = object->GetMTime();
             if ( testMtime > mTime )
                 mTime = testMtime;
         }

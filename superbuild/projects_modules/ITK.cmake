@@ -73,12 +73,6 @@ set(cmake_args
   )
 
 ## #############################################################################
-## Check if patch has to be applied
-## #############################################################################
-
-ep_GeneratePatchCommand(ITK ITK_PATCH_COMMAND ITK_Mac_Rpath.patch)
-
-## #############################################################################
 ## Add external-project
 ## #############################################################################
 
@@ -86,7 +80,6 @@ ExternalProject_Add(${ep}
   PREFIX ${EP_PREFIX_thirdparts}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  PATCH_COMMAND ${ITK_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}

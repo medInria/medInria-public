@@ -106,7 +106,7 @@ void vtkBMIAShaderProgram::RemoveShaderUniform(vtkShaderUniform* uniform)
   this->Modified();
 }
 
-unsigned long int vtkBMIAShaderProgram::GetMTime()
+vtkMTimeType vtkBMIAShaderProgram::GetMTime()
 {
   unsigned long mTime = this-> vtkShaderBase::GetMTime();
   unsigned long time;

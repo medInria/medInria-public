@@ -143,7 +143,7 @@ public:
     void PrintSelf (ostream& os, vtkIndent indent);
 
 
-    unsigned long GetMTime();
+    vtkMTimeType GetMTime();
 
     /**
      List of events the image view is able to invoke.

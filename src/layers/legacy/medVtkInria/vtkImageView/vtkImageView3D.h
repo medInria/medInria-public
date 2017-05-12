@@ -60,7 +60,7 @@ public:
     static vtkImageView3D* New();
     vtkTypeMacro(vtkImageView3D, vtkImageView);
 
-    unsigned long GetMTime();
+    vtkMTimeType GetMTime();
 
     // Rendeing Modes available.
     // PLANAR_RENDERING will render every vtkImageActor instance added with Add2DPhantom()

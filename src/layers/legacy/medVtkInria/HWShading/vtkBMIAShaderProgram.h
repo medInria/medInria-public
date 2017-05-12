@@ -116,7 +116,7 @@ public:
   /**
    * Get the shader program's mtime plus consider its shader objects.
    */
-  unsigned long int GetMTime();
+  vtkMTimeType GetMTime();
 
   /**
    * Must be called after calling glUseShaderProgram. Applies all
