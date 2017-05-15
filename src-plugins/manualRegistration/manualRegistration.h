@@ -19,6 +19,11 @@
 
 class manualRegistrationPrivate;
 
+namespace TransformName
+{
+    enum Value {RIGID,AFFINE};
+}
+
 /**
  * @brief Registration process using diffeomorphic demons from itk.
  *
@@ -91,7 +96,7 @@ public:
     */
     virtual bool writeTransform(const QString& file);
 
-    void setParameter(int data, int channel);
+    void setParameter(int data);
 
     void displayMessageError(QString error);
 

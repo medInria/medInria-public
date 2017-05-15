@@ -77,8 +77,8 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medAbstr
     transformationLayout->addWidget(new QLabel("Transformation:"));
     d->transformType = new medComboBox(widget);
     d->transformType->setObjectName("transformType");
-    d->transformType->addItem("Rigid");
-    d->transformType->addItem("Affine");
+    d->transformType->addItem("Rigid",  TransformName::RIGID);
+    d->transformType->addItem("Affine", TransformName::AFFINE);
     transformationLayout->addWidget(d->transformType);
 
     // Action buttons
@@ -343,7 +343,7 @@ void manualRegistrationToolBox::computeRegistration()
     d->process->SetMovingLandmarks(d->controller->getPoints_Moving());
     d->process->setFixedInput(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view())->layerData(0));
     d->process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
-    d->process->setParameter(d->transformType->currentIndex(), 0);
+    d->process->setParameter(d->transformType->itemData(d->transformType->currentIndex()).toInt());
     d->process->update(itkProcessRegistration::FLOAT);
 
     medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
@@ -431,7 +431,7 @@ void manualRegistrationToolBox::exportTransformation()
                                tr("Text files (*.tfm *.txt)"));
     if(fileName != "")
     {
-        d->process->setParameter(d->transformType->currentIndex(), 0);
+        d->process->setParameter(d->transformType->itemData(d->transformType->currentIndex()).toInt());
         d->process->writeTransform(fileName);
     }
 }

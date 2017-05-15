@@ -21,8 +21,9 @@
 #include <vtkPointHandleRepresentation2D.h>
 
 typedef double TransformScalarType;
-typedef itk::VersorRigid3DTransform<TransformScalarType> TransformType_Rigid3D;
-typedef itk::AffineTransform<TransformScalarType>        TransformType_Affine;
+typedef itk::VersorRigid3DTransform<TransformScalarType>    TransformType_Rigid3D;
+typedef itk::AffineTransform<TransformScalarType>           TransformType_Affine;
+typedef itk::MatrixOffsetTransformBase<TransformScalarType> TransformType_Generic;
 
 // /////////////////////////////////////////////////////////////////
 // manualRegistrationDiffeomorphicDemonsPrivate
@@ -38,10 +39,8 @@ public:
     QList<manualRegistrationLandmark*> * FixedLandmarks;
     QList<manualRegistrationLandmark*> * MovingLandmarks;
 
-    // Transformation methods
-    TransformType_Rigid3D::Pointer transform_Rigid3D;
-    TransformType_Affine::Pointer  transform_Affine;
-    int transformTypeInt;
+    TransformType_Generic::Pointer  transform;
+    TransformName::Value transformTypeInt;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -154,9 +153,9 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     registration->SetFixedLandmarks(containerFixed);
     registration->SetMovingLandmarks(containerMoving);
 
-    typename TransformType::Pointer transform = TransformType::New();
-    transform->SetIdentity();
-    registration->SetTransform(transform);
+    typename TransformType::Pointer transformTemp = TransformType::New();
+    transformTemp->SetIdentity();
+    registration->SetTransform(transformTemp);
 
     // Run registration to compute transformation
     try
@@ -171,25 +170,9 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     }
 
     // Save transformation for future writing
-    switch (transformTypeInt)
-    {
-    case 0:
-    {
-        transform_Rigid3D = TransformType_Rigid3D::New();
-        transform_Rigid3D->SetIdentity();
-        transform_Rigid3D->SetFixedParameters(transform->GetFixedParameters());
-        transform_Rigid3D->SetParameters(transform->GetParameters());
-        break;
-    }
-    case 1:
-    {
-        transform_Affine = TransformType_Affine::New();
-        transform_Affine->SetIdentity();
-        transform_Affine->SetFixedParameters(transform->GetFixedParameters());
-        transform_Affine->SetParameters(transform->GetParameters());
-        break;
-    }
-    }
+    transform = transformTemp;
+    transform->SetFixedParameters(transform->GetFixedParameters());
+    transform->SetParameters(transform->GetParameters());
 
     emit proc->progressed(80);
 
@@ -249,9 +232,9 @@ itk::Transform<double,3,3>::Pointer manualRegistration::getTransform()
     return NULL;
 }
 
-void manualRegistration::setParameter(int data, int channel)
+void manualRegistration::setParameter(int data)
 {
-    d->transformTypeInt = data;
+    d->transformTypeInt = static_cast<TransformName::Value>(data);
 }
 
 QString manualRegistration::getTitleAndParameters()
@@ -269,25 +252,10 @@ bool manualRegistration::writeTransform(const QString& file)
 
     try
     {
-        switch (d->transformTypeInt)
-        {
-        case 0:
-        {
-            rpi::writeLinearTransformation<TransformScalarType,
-                    RegImageType::ImageDimension>(
-                        d->transform_Rigid3D,
-                        file.toLocal8Bit().constData());
-            break;
-        }
-        case 1:
-        {
-            rpi::writeLinearTransformation<TransformScalarType,
-                    RegImageType::ImageDimension>(
-                        d->transform_Affine,
-                        file.toLocal8Bit().constData());
-            break;
-        }
-        }
+        rpi::writeLinearTransformation<TransformScalarType,
+                RegImageType::ImageDimension>(
+                    d->transform,
+                    file.toLocal8Bit().constData());
     }
     catch (std::exception& err)
     {
