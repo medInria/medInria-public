@@ -560,9 +560,19 @@ void medDatabaseView::onEditRequested(void)
         QList<QVariant> values = item->values();
         QList<QString> labels;
 
-        // The last attribute is ThumbnailPath. Users are not allowed to change it.
-        attributes.removeLast();
-        values.removeLast();
+        // Users are not allowed to change ThumbnailPath attribute.
+        if (attributes.count() == values.count())
+        {
+            for (int i = 0; i<attributes.count(); i++)
+            {
+                if (attributes.at(i).toString() == "ThumbnailPath")
+                {
+                    attributes.removeAt(i);
+                    values.removeAt(i);
+                }
+            }
+        }
+
 
         foreach(QVariant attrib, attributes)
         {
