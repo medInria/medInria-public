@@ -438,7 +438,7 @@ void medAbstractDatabaseImporter::importData()
         return;
     }
 
-    populateMissingMetadata(d->data, "EmptySerie");
+    populateMissingMetadata(d->data, "EmptySeries");
     
     if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
         d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medInria" );

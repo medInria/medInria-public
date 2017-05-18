@@ -959,7 +959,7 @@ QStringList medDatabaseModel::columnNames() const
             ret.append(QString());
 
         int i=0;
-        ret[i++] = tr("Patient/Study/Serie");
+        ret[i++] = tr("Patient/Study/Series");
         ret[i++] = tr("Birth Date");
         ret[i++] = tr("Gender");
         ret[i++] = tr("Slice Count");

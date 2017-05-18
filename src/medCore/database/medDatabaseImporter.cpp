@@ -255,7 +255,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
 
     QString serieName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
 
-    if( studyName=="EmptyStudy" && serieName=="EmptySerie" )
+    if( studyName=="EmptyStudy" && serieName=="EmptySeries" )
         return studyDbId;
 
     query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :studyName AND uid = :studyUid" );
@@ -311,7 +311,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     QString rows           = medMetaDataKeys::Rows.getFirstValue(medData);
     QString columns        = medMetaDataKeys::Columns.getFirstValue(medData);
 
-    if( seriesName=="EmptySerie" )
+    if( seriesName=="EmptySeries" )
         return seriesDbId;
 
     query.prepare ( "SELECT * FROM series WHERE study = :study AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
@@ -325,7 +325,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     query.bindValue ( ":rows", rows );
     query.bindValue ( ":columns", columns );
 
-    if( seriesName=="EmptySerie" )
+    if( seriesName=="EmptySeries" )
         return seriesDbId;
 
     if ( !query.exec() )
