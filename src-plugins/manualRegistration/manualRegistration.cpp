@@ -89,14 +89,11 @@ int manualRegistrationPrivate::update()
 
     int res = DTK_FAILURE;
 
-    switch (transformTypeInt)
-    {
-    case 0:
+    if (transformTypeInt == TransformName::RIGID)
     {
         res = applyRegistration<PixelType, TransformType_Rigid3D>();
-        break;
     }
-    case 1:
+    else if (transformTypeInt == TransformName::AFFINE)
     {
         if ((FixedLandmarks->count() >= 4) && (MovingLandmarks->count() >= 4))
         {
@@ -106,8 +103,6 @@ int manualRegistrationPrivate::update()
         {
             proc->displayMessageError("Affine transformation needs 4 landmarks minimum by dataset");
         }
-        break;
-    }
     }
 
     QApplication::restoreOverrideCursor();
