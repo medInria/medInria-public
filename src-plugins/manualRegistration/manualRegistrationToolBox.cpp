@@ -431,7 +431,6 @@ void manualRegistrationToolBox::exportTransformation()
                                tr("Text files (*.tfm *.txt)"));
     if(fileName != "")
     {
-        d->process->setParameter(d->transformType->itemData(d->transformType->currentIndex()).toInt());
         d->process->writeTransform(fileName);
     }
 }
