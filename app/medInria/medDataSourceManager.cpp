@@ -219,7 +219,7 @@ void medDataSourceManager::fuseFromPaths(QStringList paths)
         {
             medAbstractData* data = medDataManager::instance()->retrieveData(dataIndex);
             loadedDataList.append(data);
-            process->setInput(data);
+            process->setInput(data, loadedDataList.count()-1);
         }
 
         // Fuse...
