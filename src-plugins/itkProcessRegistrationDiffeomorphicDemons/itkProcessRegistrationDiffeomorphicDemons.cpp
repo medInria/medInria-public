@@ -108,16 +108,6 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
     //unfortunately diffeomorphic demons only work with double or float types...
     // so we need to use a cast filter.
     typedef itk::Image< float, 3 > RegImageType;
-    typedef itk::CastImageFilter< FixedImageType, RegImageType > FixedCastFilterType;
-    typedef itk::CastImageFilter< MovingImageType, RegImageType > MovingCastFilterType;
-    typename FixedCastFilterType::Pointer fixedCastFilter = FixedCastFilterType::New();
-    fixedCastFilter->SetInput((FixedImageType*)proc->fixedImage().GetPointer());
-    fixedCastFilter->Update();
-    typename MovingCastFilterType::Pointer movingCastFilter = MovingCastFilterType::New();
-    movingCastFilter->SetInput((MovingImageType*)proc->movingImages()[0].GetPointer());
-    movingCastFilter->Update();
-
-
     typedef double TransformScalarType;
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
                     TransformScalarType > RegistrationType;
@@ -125,8 +115,8 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
 
     registrationMethod = registration;
 
-    registration->SetFixedImage(fixedCastFilter->GetOutput());
-    registration->SetMovingImage(movingCastFilter->GetOutput());
+    registration->SetFixedImage((FixedImageType*)proc->fixedImage().GetPointer());
+    registration->SetMovingImage((MovingImageType*)proc->movingImages()[0].GetPointer());
 
     registration->SetNumberOfIterations(iterations);
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
