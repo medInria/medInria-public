@@ -317,6 +317,9 @@ void medToolBox::handleDisplayError(int error)
     case medAbstractProcess::DATA_SIZE:    //! Handle volume errors: size
         displayMessageError("Inputs must be the same size");
         break;
+    case medAbstractProcess::MISMATCHED_DATA_TYPES:
+        displayMessageError("Inputs must be the same type");
+        break;
     default:
         displayMessageError("This action failed (undefined error)");
         break;
