@@ -49,25 +49,17 @@ signals:
     void open(const medDataIndex&);
     void open(QString);
     void load(QString);
-    void fuse(QStringList);
-    void loadingsFinished();
 
 protected:
     void connectDataSource(medAbstractDataSource* dataSource);
 
-
     medDataSourceManager();
     ~medDataSourceManager();
-
 
 protected slots:
     void openFromPath(QString path);
     void openFromIndex(medDataIndex index);
     void loadFromPath(QString path);
-    void fuseFromPaths(QStringList paths);
-
-public slots:
-    void dataImported(const medDataIndex& index, QUuid uuid);
 
 private:
 

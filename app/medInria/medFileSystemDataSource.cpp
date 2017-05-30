@@ -13,11 +13,11 @@
 
 #include "medFileSystemDataSource.h"
 
-#include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>
 
 #include <medActionsToolBox.h>
-#include<medSettingsManager.h>
+#include <medSettingsManager.h>
+#include <medToolBoxFactory.h>
 
 class medFileSystemDataSourcePrivate
 {
@@ -72,21 +72,16 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     QAction *viewAction = new QAction(tr("View"), this);
     viewAction->setIconVisibleInMenu(true);
     viewAction->setIcon(QIcon(":icons/eye.png"));
-    QAction *fuseAction = new QAction(tr("Fuse"), this);
-    fuseAction->setIconVisibleInMenu(true);
-    fuseAction->setIcon(QIcon(":icons/lightning_add.png"));
 
     d->finder->addContextMenuAction(importAction);
     d->finder->addContextMenuAction(indexAction);
     d->finder->addContextMenuAction(loadAction);
     d->finder->addContextMenuAction(viewAction);
-    d->finder->addContextMenuAction(fuseAction);
 
     connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportRequested()));
     connect(indexAction, SIGNAL(triggered()), this, SLOT(onFileSystemIndexRequested()));
     connect( loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
     connect( viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
-    connect( fuseAction, SIGNAL(triggered()), this, SLOT(onFileSystemFuseRequested()));
 
     QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
     QHBoxLayout *toolbar_layout = new QHBoxLayout();
@@ -142,7 +137,6 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     connect(d->actionsToolBox, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
     connect(d->actionsToolBox, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexRequested()));
     connect(d->actionsToolBox, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadRequested()));
-    connect(d->actionsToolBox, SIGNAL(fuseClicked()), this, SLOT(onFileSystemFuseRequested()));
 
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), this, SLOT(saveHiddenFilesSettings(bool)));
@@ -236,21 +230,6 @@ void medFileSystemDataSource::onFileSystemViewRequested()
         QFileInfo info(path);
         emit open(info.absoluteFilePath());
     }
-}
-
-void medFileSystemDataSource::onFileSystemFuseRequested()
-{
-    // remove paths that are subpaths of some other path in the list
-    QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
-
-    QStringList absoluteFilePathList;
-    foreach(QString path, purgedList)
-    {
-        QFileInfo info(path);
-        absoluteFilePathList.append(info.absoluteFilePath());
-    }
-
-    emit fuse(absoluteFilePathList);
 }
 
 void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)

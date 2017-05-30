@@ -11,12 +11,9 @@
 
 =========================================================================*/
 
-#include <medActionsToolBox.h>
-
-#include <QtGui>
-
-#include <medDataManager.h>
 #include <medAbstractDbController.h>
+#include <medActionsToolBox.h>
+#include <medDataManager.h>
 #include <medToolBoxBody.h>
 
 class medActionsToolBoxPrivate
@@ -37,7 +34,6 @@ public:
     QPushButton* newPatientBt;
     QPushButton* newStudyBt;
     QPushButton* editBt;
-    QPushButton* fuseBt;
 
     QList<QAbstractButton*> buttonsList;
     QMultiMap<QString, QString> itemToActions;
@@ -95,20 +91,13 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
         d->bookmarkBt->setIcon(QIcon(":/icons/star.svg"));
         
-        d->fuseBt = new QPushButton(d->buttonsWidget);
-        d->fuseBt->setAccessibleName("Fuse");
-        d->fuseBt->setText(tr("Fuse"));
-        d->fuseBt->setToolTip(tr("Fuse several data and import the result in the database."));
-        d->fuseBt->setIcon(QIcon(":/icons/lightning_add.png"));
-
-        connect(d->fuseBt, SIGNAL(clicked()), this, SIGNAL(fuseClicked()));
         connect(d->bookmarkBt, SIGNAL(clicked()), this, SIGNAL(bookmarkClicked()));
         connect(d->importBt, SIGNAL(clicked()), this, SIGNAL(importClicked()));
         connect(d->loadBt, SIGNAL(clicked()), this, SIGNAL(loadClicked()));
         connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
 
         // the order of the buttons in this list determines the order used to place them in the grid layout
-        d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->fuseBt << d->indexBt << d->bookmarkBt;
+        d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt << d->bookmarkBt;
     }
     else //IF DATABASE
     {

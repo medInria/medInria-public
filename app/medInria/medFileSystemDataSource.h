@@ -56,19 +56,11 @@ signals:
 **/
     void open(QString path);
 
-    /**
-* Signal emitted when the user chooses to fuse
-* a batch of files or a directory.
-* @param paths - a list of path of the images or directory
-**/
-    void fuse(QStringList paths);
-
 private slots:
     void onFileSystemImportRequested();
     void onFileSystemIndexRequested();
     void onFileSystemLoadRequested();
     void onFileSystemViewRequested();
-    void onFileSystemFuseRequested();
     void onFileDoubleClicked(const QString& filename);
     void onFileClicked(const QFileInfo& info);
     void onNothingSelected();
