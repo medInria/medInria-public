@@ -339,7 +339,6 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions.insert("Files", "Index");
     d->itemToActions.insert("Files", "Load");
     d->itemToActions.insert("Files", "View");
-    d->itemToActions.insert("Files", "Fuse");
 
     d->itemToActions.insert("Files & Folders", "Import");
     d->itemToActions.insert("Files & Folders", "Index");
