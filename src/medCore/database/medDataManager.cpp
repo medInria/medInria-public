@@ -255,6 +255,21 @@ void medDataManager::launchExporter(medDatabaseExporter* exporter, const QString
     QThreadPool::globalInstance()->start(exporter);
 }
 
+QList<medDataIndex> medDataManager::getSeriesListFromStudy(const medDataIndex& indexStudy)
+{
+    Q_D(medDataManager);
+    QList<medDataIndex> indexList;
+
+    medAbstractDbController * dbc = d->controllerForDataSource(indexStudy.dataSourceId());
+
+    if (dbc)
+    {
+        // Get the list of each series from that study index
+        indexList = dbc->series(indexStudy);
+    }
+
+    return indexList;
+}
 
 QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {

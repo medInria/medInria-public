@@ -475,6 +475,8 @@ QMimeData *medDatabaseModel::mimeData(const QModelIndexList &indexes) const
 
 bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
+    // Called if the user moves a dataset from the DB to another position in the DB
+
     Q_UNUSED(row);
 
     if (action == Qt::IgnoreAction)

@@ -636,34 +636,37 @@ void medViewContainer::dropEvent(QDropEvent *event)
 {
     const QMimeData *mimeData = event->mimeData();
     medDataIndex index = medDataIndex::readMimeData(mimeData);
-    if(!index.isValidForSeries())
-        return;
 
-    if(d->userSplittable)
+    // User can drop a study or a series into the view
+    if(index.isValidForSeries() || index.isValidForStudy())
     {
-        DropArea area = computeDropArea(event->pos().x(), event->pos().y());
+        if(d->userSplittable)
+        {
+            DropArea area = computeDropArea(event->pos().x(), event->pos().y());
 
-        if(area == AREA_TOP)
-            emit splitRequest(index, Qt::AlignTop);
-        else if(area == AREA_RIGHT)
-            emit splitRequest(index, Qt::AlignRight);
-        else if(area == AREA_BOTTOM)
-            emit splitRequest(index, Qt::AlignBottom);
-        else if(area == AREA_LEFT)
-            emit splitRequest(index, Qt::AlignLeft);
-        else if(area == AREA_CENTER)
+            if(area == AREA_TOP)
+                emit splitRequest(index, Qt::AlignTop);
+            else if(area == AREA_RIGHT)
+                emit splitRequest(index, Qt::AlignRight);
+            else if(area == AREA_BOTTOM)
+                emit splitRequest(index, Qt::AlignBottom);
+            else if(area == AREA_LEFT)
+                emit splitRequest(index, Qt::AlignLeft);
+            else if(area == AREA_CENTER)
+                this->addData(index);
+        }
+        else
+        {
             this->addData(index);
+        }
+
+        this->setStyleSheet(d->defaultStyleSheet);
+        if(d->selected)
+            this->highlight(d->highlightColor);
+
+        event->acceptProposedAction();
     }
-    else
-        this->addData(index);
-
-    this->setStyleSheet(d->defaultStyleSheet);
-    if(d->selected)
-        this->highlight(d->highlightColor);
-
-    event->acceptProposedAction();
 }
-
 
 void medViewContainer::addData(medAbstractData *data)
 {
@@ -703,9 +706,24 @@ void medViewContainer::addData(medDataIndex index)
 {
     if( ! d->expectedUuids.isEmpty())
         return; // we're already waiting for a import to finish, don't accept other data
-    this->addData(medDataManager::instance()->retrieveData(index));
-}
 
+    if (index.isValidForSeries())
+    {
+        this->addData(medDataManager::instance()->retrieveData(index));
+    }
+    else if (index.isValidForStudy())
+    {
+        // We get the list of each series from that study index, and open it
+        QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
+        if (seriesList.count() > 0)
+        {
+            foreach (medDataIndex seriesIndex, seriesList)
+            {
+                this->addData(medDataManager::instance()->retrieveData(seriesIndex));
+            }
+        }
+    }
+}
 
 medViewContainer * medViewContainer::splitHorizontally()
 {
