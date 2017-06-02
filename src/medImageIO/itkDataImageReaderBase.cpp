@@ -42,6 +42,9 @@ bool itkDataImageReaderBase::canRead (const QString& path)
     if (this->io.IsNull())
         return false;
 
+    // Avoid to display log of each metadata not read by itk::ImageIOBase
+    this->io->SetGlobalWarningDisplay(false);
+
     if (!this->io->CanReadFile( path.toAscii().constData() ))
     {
         return false;

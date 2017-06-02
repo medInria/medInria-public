@@ -49,7 +49,6 @@ medAbstractData* medDatabaseReader::run()
     QVariant patientDbId = d->index.patientId();
     QVariant   studyDbId = d->index.studyId();
     QVariant  seriesDbId = d->index.seriesId();
-    QVariant   imageDbId = d->index.imageId();
 
     QSqlQuery query(medDatabaseController::instance()->database());
 
@@ -226,10 +225,7 @@ qint64 medDatabaseReader::getDataSize()
 
 QString medDatabaseReader::getFilePath()
 {
-    QVariant patientDbId = d->index.patientId();
-    QVariant   studyDbId = d->index.studyId();
     QVariant  seriesDbId = d->index.seriesId();
-    QVariant   imageDbId = d->index.imageId();
 
     QSqlQuery query (medDatabaseController::instance()->database());
 

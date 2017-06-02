@@ -405,7 +405,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         {
             emit dataImported(index, d->uuid);
         }
-        else 
+        else
         {
             emit dataImported(index);
         }

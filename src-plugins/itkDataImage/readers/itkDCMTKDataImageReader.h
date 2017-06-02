@@ -15,6 +15,7 @@
 
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <itkDataImagePluginExport.h>
+#include <medAbstractData.h>
 
 class itkDCMTKDataImageReaderPrivate;
 
@@ -49,6 +50,9 @@ public slots:
 
     void setProgress (int value);
     
+protected:
+    void updateMetaData(medAbstractData *medData, QString metakey, QString value);
+
 private:
 
     itkDCMTKDataImageReaderPrivate *d;
