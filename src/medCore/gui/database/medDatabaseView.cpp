@@ -559,13 +559,29 @@ void medDatabaseView::onEditRequested(void)
         QList<QVariant> attributes = item->attributes();
         QList<QVariant> values = item->values();
         QList<QString> labels;
-        
+
+        // Users are not allowed to change ThumbnailPath attribute.
+        for (int i = 0; i<attributes.count(); i++)
+        {
+            if (attributes.at(i).toString() == "ThumbnailPath")
+            {
+                attributes.removeAt(i);
+                values.removeAt(i);
+            }
+        }
+
         foreach(QVariant attrib, attributes)
         {
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
+
             if(key)
+            {
                 labels << key->label();
-            else labels << "";
+            }
+            else
+            {
+                labels << "";
+            }
         }
         
         medDatabaseEditItemDialog editDialog(labels,values,this);
