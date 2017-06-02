@@ -561,18 +561,14 @@ void medDatabaseView::onEditRequested(void)
         QList<QString> labels;
 
         // Users are not allowed to change ThumbnailPath attribute.
-        if (attributes.count() == values.count())
+        for (int i = 0; i<attributes.count(); i++)
         {
-            for (int i = 0; i<attributes.count(); i++)
+            if (attributes.at(i).toString() == "ThumbnailPath")
             {
-                if (attributes.at(i).toString() == "ThumbnailPath")
-                {
-                    attributes.removeAt(i);
-                    values.removeAt(i);
-                }
+                attributes.removeAt(i);
+                values.removeAt(i);
             }
         }
-
 
         foreach(QVariant attrib, attributes)
         {
