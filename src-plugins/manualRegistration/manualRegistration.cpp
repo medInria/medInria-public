@@ -50,6 +50,9 @@ public:
 manualRegistration::manualRegistration() : itkProcessRegistration(), d(new manualRegistrationPrivate)
 {
     d->proc = this;
+ 
+    //set transform type for the exportation of the transformation to a file
+    this->setProperty("transformType","Rigid");
 }
 
 manualRegistration::~manualRegistration()
