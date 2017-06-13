@@ -898,10 +898,23 @@ QString medViewContainer::saveScene()
 
             // Patient informations
             QDomElement patientInfo = doc.createElement("patient");
-            patientInfo.setAttribute("patientName", layeredView->layerData(0)->metadata(medMetaDataKeys::PatientName.key()));
-            patientInfo.setAttribute("patientID",   layeredView->layerData(0)->metadata(medMetaDataKeys::PatientID.key()));
-            patientInfo.setAttribute("birthDate",   layeredView->layerData(0)->metadata(medMetaDataKeys::BirthDate.key()));
-            patientInfo.setAttribute("gender",      layeredView->layerData(0)->metadata(medMetaDataKeys::Gender.key()));
+            if (layeredView->layerData(0)->hasMetaData(medMetaDataKeys::PatientName.key()))
+            {
+                patientInfo.setAttribute("patientName", layeredView->layerData(0)->metadata(medMetaDataKeys::PatientName.key()));
+            }
+            if (layeredView->layerData(0)->hasMetaData(medMetaDataKeys::PatientID.key()))
+            {
+                patientInfo.setAttribute("patientID",   layeredView->layerData(0)->metadata(medMetaDataKeys::PatientID.key()));
+            }
+            if (layeredView->layerData(0)->hasMetaData(medMetaDataKeys::BirthDate.key()))
+            {
+                patientInfo.setAttribute("birthDate",   layeredView->layerData(0)->metadata(medMetaDataKeys::BirthDate.key()));
+            }
+            if (layeredView->layerData(0)->hasMetaData(medMetaDataKeys::Gender.key()))
+            {
+                patientInfo.setAttribute("gender",      layeredView->layerData(0)->metadata(medMetaDataKeys::Gender.key()));
+            }
+
             patientInfo.setAttribute("studyDescription", "Scene");
             root.appendChild(patientInfo);
 
@@ -995,30 +1008,70 @@ void medViewContainer::loadScene()
 
             // Get back informations about the patient
             QDomNodeList informationNodes = doc.elementsByTagName("patient");
+
+            QString patientName, patientID, birthDate, gender, studyDescription = "";
+
             for(int i=0; i<informationNodes.size(); i++)
             {
                 QDomElement infoElement = informationNodes.item(i).toElement();
                 if(infoElement.isNull())
                 {
-                    printInConsole("Failed to open a view, unable to find patient element");
                     continue;
                 }
-                QString patientName      = infoElement.attribute("patientName");
-                QString patientID        = infoElement.attribute("patientID");
-                QString birthDate        = infoElement.attribute("birthDate");
-                QString gender           = infoElement.attribute("gender");
-                QString studyDescription = infoElement.attribute("studyDescription");
 
-                medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view());
-                for(unsigned i=0; i<layeredView->layersCount(); i++)
+                if (infoElement.hasAttribute("patientName"))
                 {
-                    medDataManager::instance()->removeData(layeredView->layerData(i)->dataIndex());
-                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::PatientName.key(),      patientName);
-                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::PatientID.key(),        patientID);
-                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::BirthDate.key(),        birthDate);
-                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::Gender.key(),           gender);
-                    layeredView->layerData(i)->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDescription);
-                    medDataManager::instance()->importData(layeredView->layerData(i));
+                    patientName      = infoElement.attribute("patientName");
+                }
+                if (infoElement.hasAttribute("patientID"))
+                {
+                    patientID        = infoElement.attribute("patientID");
+                }
+                if (infoElement.hasAttribute("birthDate"))
+                {
+                    birthDate        = infoElement.attribute("birthDate");
+                }
+                if (infoElement.hasAttribute("gender"))
+                {
+                    gender           = infoElement.attribute("gender");
+                }
+                if (infoElement.hasAttribute("studyDescription"))
+                {
+                    studyDescription = infoElement.attribute("studyDescription");
+                }
+
+                if (!patientName.isEmpty() || !patientID.isEmpty() || !birthDate.isEmpty() || !gender.isEmpty() || !studyDescription.isEmpty() )
+                {
+                    medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view());
+
+                    // Update data with informations from the xml file and reset the display (for patientName and studyDescription)
+                    for(unsigned i=0; i<layeredView->layersCount(); i++)
+                    {
+                        medDataManager::instance()->removeData(layeredView->layerData(i)->dataIndex());
+
+                        if (patientName != "")
+                        {
+                            layeredView->layerData(i)->setMetaData(medMetaDataKeys::PatientName.key(),      patientName);
+                        }
+                        if (patientID != "")
+                        {
+                            layeredView->layerData(i)->setMetaData(medMetaDataKeys::PatientID.key(),        patientID);
+                        }
+                        if (birthDate != "")
+                        {
+                            layeredView->layerData(i)->setMetaData(medMetaDataKeys::BirthDate.key(),        birthDate);
+                        }
+                        if (gender != "")
+                        {
+                            layeredView->layerData(i)->setMetaData(medMetaDataKeys::Gender.key(),           gender);
+                        }
+                        if (studyDescription != "")
+                        {
+                            layeredView->layerData(i)->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDescription);
+                        }
+
+                        medDataManager::instance()->importData(layeredView->layerData(i));
+                    }
                 }
             }
         }
