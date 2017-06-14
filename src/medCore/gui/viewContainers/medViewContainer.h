@@ -15,6 +15,7 @@
 
 #include <QFrame>
 
+#include <QDomElement>
 #include <medCoreExport.h>
 
 
@@ -122,6 +123,9 @@ protected:
 
     void recomputeStyleSheet();
     void open(const QString & path);
+    void addMetadataToQDomElement(medAbstractData *data, QDomElement patientInfo, QString metadata);
+    void addMetadataToMedAbstractData(medAbstractData *data, QString value, QString metadata);
+    bool isRemoveAndAddMedAbstractDataNeeded(medAbstractData *data, QString patientName, QString studyDescription);
     void printInConsole(QString message);
     void displayMessageError(QString message);
 
@@ -137,5 +141,4 @@ private slots:
 
 private:
     medViewContainerPrivate *d;
-
 };
