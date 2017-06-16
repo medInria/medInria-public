@@ -102,6 +102,7 @@ medCropToolBox::medCropToolBox(QWidget* parent)
     d->borderWidget = vtkSmartPointer<vtkBorderWidget>::New();
     d->borderWidget->CreateDefaultRepresentation();
     d->borderWidget->SelectableOff();
+    static_cast<vtkBorderRepresentation*>(d->borderWidget->GetRepresentation())->GetBorderProperty()->SetColor(0,1,0);
 
     d->applyButton = new QPushButton(applyButtonName, this);
     d->applyButton->setObjectName(applyButtonName);
