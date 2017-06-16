@@ -40,7 +40,7 @@ public:
     QList<manualRegistrationLandmark*> * MovingLandmarks;
 
     TransformType_Generic::Pointer  transform;
-    TransformName::Value transformTypeInt;
+    TransformName::TransformNameEnum transformTypeInt;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -169,8 +169,6 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
 
     // Save transformation for future writing
     transform = transformTemp;
-    transform->SetFixedParameters(transform->GetFixedParameters());
-    transform->SetParameters(transform->GetParameters());
 
     emit proc->progressed(80);
 
@@ -232,7 +230,7 @@ itk::Transform<double,3,3>::Pointer manualRegistration::getTransform()
 
 void manualRegistration::setParameter(int data)
 {
-    d->transformTypeInt = static_cast<TransformName::Value>(data);
+    d->transformTypeInt = static_cast<TransformName::TransformNameEnum>(data);
 }
 
 QString manualRegistration::getTitleAndParameters()

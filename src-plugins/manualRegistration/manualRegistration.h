@@ -19,10 +19,11 @@
 
 class manualRegistrationPrivate;
 
-namespace TransformName
+class TransformName
 {
-    enum Value {RIGID,AFFINE};
-}
+public:
+    enum TransformNameEnum {RIGID,AFFINE};
+};
 
 /**
  * @brief Registration process using diffeomorphic demons from itk.
