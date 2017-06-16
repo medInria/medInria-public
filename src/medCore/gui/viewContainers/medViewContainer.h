@@ -75,6 +75,8 @@ public:
     void addColorIndicator(QColor color, QString description="");
     void removeColorIndicator(QColor color);
 
+    bool userValidationForStudyDrop();
+
 public slots:
     void setView(medAbstractView* view);
     void removeView();
@@ -137,5 +139,4 @@ private slots:
 
 private:
     medViewContainerPrivate *d;
-
 };

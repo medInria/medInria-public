@@ -104,7 +104,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
-    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series here from the left panel or"));
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or"));
     QPushButton *openButton= new QPushButton(tr("Open a file from your system"));
     QPushButton *sceneButton= new QPushButton(tr("Open a scene from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
@@ -717,12 +717,39 @@ void medViewContainer::addData(medDataIndex index)
         QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
         if (seriesList.count() > 0)
         {
-            foreach (medDataIndex seriesIndex, seriesList)
+            bool userIsOk = true;
+
+            if (seriesList.count() > 10)
             {
-                this->addData(medDataManager::instance()->retrieveData(seriesIndex));
+                userIsOk = userValidationForStudyDrop();
+            }
+
+            if (userIsOk)
+            {
+                foreach (medDataIndex seriesIndex, seriesList)
+                {
+                    this->addData(medDataManager::instance()->retrieveData(seriesIndex));
+                }
             }
         }
     }
+}
+
+bool medViewContainer::userValidationForStudyDrop()
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Study Drop");
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setText("Are you sure you want to open this study?");
+    msgBox.setInformativeText("This action is going to open every data from the study.");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+
+    if (msgBox.exec() == QMessageBox::Yes)
+    {
+        return true;
+    }
+    return false;
 }
 
 medViewContainer * medViewContainer::splitHorizontally()
