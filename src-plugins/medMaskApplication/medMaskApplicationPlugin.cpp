@@ -83,7 +83,7 @@ QString medMaskApplicationPlugin::version() const
 
 QString medMaskApplicationPlugin::contact() const
 {
-    return "";
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList medMaskApplicationPlugin::authors() const

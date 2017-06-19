@@ -90,13 +90,13 @@ QString reformatPlugin::version() const
 
 QString reformatPlugin::contact() const
 {
-    return QString::fromUtf8("Florent Collot <florent.collot@ihu-liryc.fr>");
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList reformatPlugin::authors() const
 {
-    return QStringList() << "Mathilde Merle <mathilde.merle@ihu-liryc.fr>"
-                         << "Florent Collot <florent.collot@ihu-liryc.fr>";
+    return QStringList() << "Mathilde Merle"
+                         << "Florent Collot";
 }
 
 QStringList reformatPlugin::contributors() const

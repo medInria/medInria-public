@@ -20,7 +20,8 @@ class itkN4BiasCorrectionToolBoxPrivate;
 class itkN4BiasCorrectionToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("N4 Bias Correction","N4 Bias Correction",<<"Filtering")
+    MED_TOOLBOX_INTERFACE("N4 Bias Correction",
+                          "Apply the N4 bias field correction algorithm",<<"Filtering")
 
 public:
     itkN4BiasCorrectionToolBox(QWidget *parent = 0);

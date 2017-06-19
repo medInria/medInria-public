@@ -21,7 +21,8 @@ class manualRegistrationToolBoxPrivate;
 class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("Manual Registration","register two images manually",<<"Registration")
+    MED_TOOLBOX_INTERFACE("Manual Registration",
+                          "Register two images manually",<<"Registration")
 
 public:
     manualRegistrationToolBox(QWidget *parent = 0);

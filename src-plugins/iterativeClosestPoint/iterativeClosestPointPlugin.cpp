@@ -83,7 +83,7 @@ QString iterativeClosestPointPlugin::version() const
 
 QString iterativeClosestPointPlugin::contact() const
 {
-    return "";
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList iterativeClosestPointPlugin::authors() const

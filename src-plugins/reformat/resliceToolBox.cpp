@@ -135,7 +135,7 @@ bool resliceToolBox::registered()
 dtkPlugin* resliceToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "reslicePlugin" );
+    dtkPlugin* plugin = pm->plugin ( "reformatPlugin" );
     return plugin;
 }
 

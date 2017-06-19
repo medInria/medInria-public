@@ -101,13 +101,12 @@ QString medBinaryOperationPlugin::version() const
 
 QString medBinaryOperationPlugin::contact() const
 {
-    return QString::fromUtf8("Mathilde Merle <mathilde.merle@ihu-liryc.fr>");
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList medBinaryOperationPlugin::authors() const
 {
-    return QStringList() << "Mathilde Merle <mathilde.merle@ihu-liryc.fr>";
-
+    return QStringList() << "Mathilde Merle";
 }
 
 QStringList medBinaryOperationPlugin::contributors() const

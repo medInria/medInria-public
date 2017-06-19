@@ -82,13 +82,12 @@ QString itkN4BiasCorrectionPlugin::version() const
 
 QString itkN4BiasCorrectionPlugin::contact() const
 {
-    return "";
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList itkN4BiasCorrectionPlugin::authors() const
 {
-    QStringList list;
-    return list;
+    return QStringList() << QString::fromUtf8("Loïc Cadour");
 }
 
 QStringList itkN4BiasCorrectionPlugin::contributors() const

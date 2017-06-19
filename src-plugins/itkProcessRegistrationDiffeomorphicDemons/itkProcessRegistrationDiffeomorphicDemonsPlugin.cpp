@@ -63,7 +63,7 @@ QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name() const
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::contact() const
 {
-    return QString::fromUtf8("benoit.bleuze@inria.fr");
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors() const

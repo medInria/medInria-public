@@ -197,7 +197,7 @@ bool itkN4BiasCorrectionToolBox::registered()
 dtkPlugin* itkN4BiasCorrectionToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "itkN4BiasCorrectionProcessPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "itkN4BiasCorrectionPlugin" );
     return plugin;
 }
 

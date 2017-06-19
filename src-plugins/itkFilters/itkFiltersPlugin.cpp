@@ -101,7 +101,7 @@ QString itkFiltersPlugin::name() const
 
 QString itkFiltersPlugin::contact() const
 {
-    return QString::fromUtf8("Alexandre Abadie <Alexandre.Abadie@inria.fr>");
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QString itkFiltersPlugin::version() const
@@ -111,12 +111,13 @@ QString itkFiltersPlugin::version() const
 
 QStringList itkFiltersPlugin::authors() const
 {
-    return QStringList() << "Alexandre Abadie <Alexandre.Abadie@inria.fr>";
+    return QStringList() << "Alexandre Abadie";
 }
 
 QStringList itkFiltersPlugin::contributors() const
 {
-    return QStringList() << QString::fromUtf8("Benoit Bleuzé <Benoit.Bleuze@inria.fr>");
+    return QStringList() << QString::fromUtf8("Benoit Bleuzé")
+                         << "Mathilde Merle";
 }
 
 QStringList itkFiltersPlugin::dependencies() const

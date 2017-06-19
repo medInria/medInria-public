@@ -48,8 +48,8 @@ typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("Paint Segmentation", "Paint Tool",
-                          <<"Segmentation")
+    MED_TOOLBOX_INTERFACE("Paint Segmentation",
+                          "Use paint and region growing tools",<<"Segmentation")
 public:
 
     typedef QPair<Mask2dType::Pointer,unsigned int> SlicePair;

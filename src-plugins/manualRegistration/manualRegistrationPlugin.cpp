@@ -83,7 +83,7 @@ QString manualRegistrationPlugin::version() const
 
 QString manualRegistrationPlugin::contact() const
 {
-    return "";
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList manualRegistrationPlugin::authors() const

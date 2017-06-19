@@ -41,7 +41,7 @@ QString AlgorithmPaintPlugin::version() const
 
 QString AlgorithmPaintPlugin::contact() const
 {
-    return "";
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QStringList AlgorithmPaintPlugin::authors() const
@@ -52,8 +52,8 @@ QStringList AlgorithmPaintPlugin::authors() const
 
 QStringList AlgorithmPaintPlugin::contributors() const
 {
-    QStringList list;
-    return list;
+    return QStringList() << QString::fromUtf8("Loïc Cadour")
+                         << "Mathilde Merle";
 }
 
 QString AlgorithmPaintPlugin::identifier() const
