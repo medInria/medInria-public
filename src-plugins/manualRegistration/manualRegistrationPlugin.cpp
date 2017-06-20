@@ -95,6 +95,9 @@ QStringList manualRegistrationPlugin::authors() const
 QStringList manualRegistrationPlugin::contributors() const
 {
     QStringList list;
+    list << "Mathilde Merle";
+    list << QString::fromUtf8("Loïc Cadour");
+    list << "Florent Collot";
     return list;
 }
 

@@ -92,8 +92,8 @@ QStringList itkN4BiasCorrectionPlugin::authors() const
 
 QStringList itkN4BiasCorrectionPlugin::contributors() const
 {
-    QStringList list;
-    return list;
+    return QStringList() << "Mathilde Merle"
+                         << "Florent Collot";
 }
 
 QString itkN4BiasCorrectionPlugin::identifier() const

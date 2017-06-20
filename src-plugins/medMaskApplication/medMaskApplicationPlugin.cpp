@@ -94,8 +94,9 @@ QStringList medMaskApplicationPlugin::authors() const
 
 QStringList medMaskApplicationPlugin::contributors() const
 {
-    QStringList list;
-    return list;
+    return QStringList() << QString::fromUtf8("Loïc Cadour")
+                         << "Mathilde Merle"
+                         << "Florent Collot";
 }
 
 QString medMaskApplicationPlugin::identifier() const

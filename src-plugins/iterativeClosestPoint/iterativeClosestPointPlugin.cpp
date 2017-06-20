@@ -95,6 +95,9 @@ QStringList iterativeClosestPointPlugin::authors() const
 QStringList iterativeClosestPointPlugin::contributors() const
 {
     QStringList list;
+    list << "Mathilde Merle";
+    list << QString::fromUtf8("Loïc Cadour");
+    list << "Florent Collot";
     return list;
 }
 

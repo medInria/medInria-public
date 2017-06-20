@@ -76,7 +76,10 @@ QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors() const
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::contributors() const
 {
     QStringList list;
-    list <<  "Vincent Garcia";
+    list << "Vincent Garcia";
+    list << "Mathilde Merle";
+    list << QString::fromUtf8("Loïc Cadour");
+    list << "Florent Collot";
     return list;
 }
 

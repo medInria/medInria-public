@@ -96,7 +96,8 @@ QString reformatPlugin::contact() const
 QStringList reformatPlugin::authors() const
 {
     return QStringList() << "Mathilde Merle"
-                         << "Florent Collot";
+                         << "Florent Collot"
+                         << QString::fromUtf8("Loïc Cadour");
 }
 
 QStringList reformatPlugin::contributors() const

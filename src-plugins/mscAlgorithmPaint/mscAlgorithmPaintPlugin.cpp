@@ -53,7 +53,10 @@ QStringList AlgorithmPaintPlugin::authors() const
 QStringList AlgorithmPaintPlugin::contributors() const
 {
     return QStringList() << QString::fromUtf8("Loïc Cadour")
-                         << "Mathilde Merle";
+                         << "Mathilde Merle"
+                         << "Pauline Migerditichan"
+                         << "Mehdi Juhoor"
+                         << "Florent Collot";
 }
 
 QString AlgorithmPaintPlugin::identifier() const

@@ -112,6 +112,8 @@ QStringList medBinaryOperationPlugin::authors() const
 QStringList medBinaryOperationPlugin::contributors() const
 {
     QStringList list;
+    list << QString::fromUtf8("Loïc Cadour");
+    list << "Florent Collot";
     return list;
 }
 

@@ -117,7 +117,10 @@ QStringList itkFiltersPlugin::authors() const
 QStringList itkFiltersPlugin::contributors() const
 {
     return QStringList() << QString::fromUtf8("Benoit Bleuzé")
-                         << "Mathilde Merle";
+                         << "Mathilde Merle"
+                         << "Mehdi Juhoor"
+                         << QString::fromUtf8("Loïc Cadour")
+                         << "Florent Collot";
 }
 
 QStringList itkFiltersPlugin::dependencies() const
