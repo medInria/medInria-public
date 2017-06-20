@@ -23,6 +23,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkPlane.h>
 #include <vtkPolyData.h>
+#include <vtkProperty2D.h>
 #include <vtkRenderer.h>
 
 class medCropCallback;
