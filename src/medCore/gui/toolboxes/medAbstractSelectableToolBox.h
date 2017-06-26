@@ -35,6 +35,16 @@ public:
 
     void setSelectorToolBox(medSelectorToolBox *toolbox);
 
+    /**
+    * @brief setCursorWait allows to display a wait cursor for toolboxes not using medRunnableProcess
+    */
+    void setCursorWait();
+
+    /**
+     * @brief setCursorClassic allows to display the original cursor
+     */
+    void setCursorClassic();
+
 public slots:
 
     void updateView(){}
