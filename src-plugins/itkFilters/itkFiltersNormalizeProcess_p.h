@@ -55,7 +55,7 @@ public:
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " normalize filter";
     
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
         return DTK_SUCCEED;
     }    

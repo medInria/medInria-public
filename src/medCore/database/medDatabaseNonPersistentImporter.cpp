@@ -138,8 +138,8 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         index = medDataIndex ( npdc->dataSourceId(), patientDbId, -1, -1, -1 );
 
         medAbstractData *medData = new medAbstractData();
-        medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  patientName );
-        medData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+        medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  patientName );
+        medData->setMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
 
         patientItem->d->name = patientName;
         patientItem->d->patientId = patientId;
@@ -193,11 +193,11 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
             medAbstractData *medData = new medAbstractData();
 
-            medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-            medData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
-            medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
-            medData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
-            medData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
+            medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+            medData->setMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+            medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+            medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
+            medData->setMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
 
             studyItem->d->name = patientName;
             studyItem->d->patientId = patientId;

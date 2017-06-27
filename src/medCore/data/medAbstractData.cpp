@@ -93,7 +93,7 @@ medAbstractData * medAbstractData::convert(const QString &toType)
             if(conversion)
             {
                 foreach(QString metaDataKey, this->metaDataList())
-                    conversion->addMetaData(metaDataKey, this->metaDataValues(metaDataKey));
+                    conversion->setMetaData(metaDataKey, this->metaDataValues(metaDataKey));
 
                 foreach(QString propertyKey, this->propertyList())
                     conversion->addProperty(propertyKey, this->propertyValues(propertyKey));
@@ -102,6 +102,40 @@ medAbstractData * medAbstractData::convert(const QString &toType)
     }
 
     return conversion;
+}
+
+void medAbstractData::setMetaData(const QString& key, const QStringList& value)
+{
+    if (!value.isEmpty())
+    {
+        dtkAbstractObject* dtkObj = dynamic_cast<dtkAbstractObject*>(this);
+
+        if (dtkObj->hasMetaData(key))
+        {
+            dtkObj->setMetaData(key, value);
+        }
+        else
+        {
+            dtkObj->addMetaData(key, value);
+        }
+    }
+}
+
+void medAbstractData::setMetaData(const QString& key, const QString& value)
+{
+    if (!value.isNull() && !value.isEmpty())
+    {
+        dtkAbstractObject* dtkObj = dynamic_cast<dtkAbstractObject*>(this);
+
+        if (dtkObj->hasMetaData(key))
+        {
+            dtkObj->setMetaData(key, value);
+        }
+        else
+        {
+            dtkObj->addMetaData(key, value);
+        }
+    }
 }
 
 /**

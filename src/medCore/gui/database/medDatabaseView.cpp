@@ -477,10 +477,10 @@ void medDatabaseView::onCreatePatientRequested(void)
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
-        medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-        medData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
-        medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
-        medData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
+        medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+        medData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
+        medData->setMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
+        medData->setMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
 
         medDataManager::instance()->importData(medData, editDialog.isPersistent());
     }
@@ -531,12 +531,12 @@ void medDatabaseView::onCreateStudyRequested(void)
             // Need to be rethought
             medAbstractData* medData = new medAbstractData();
 
-            medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-            medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
-            medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+            medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+            medData->setMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
+            medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
             
-            medData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-            medData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+            medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
+            medData->setMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
 
             medDataManager::instance()->importData(medData, editDialog.isPersistent());
         }

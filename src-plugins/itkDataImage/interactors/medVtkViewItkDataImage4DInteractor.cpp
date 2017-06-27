@@ -143,8 +143,8 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
               AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
               AppendImageSequence<double>(data,d->view,d->sequence, layer))
         {
-            d->imageData->addMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
-            d->imageData->addMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
+            d->imageData->setMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
+            d->imageData->setMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
                                                                            (double)d->sequence->GetMaxTime()));
 
             qDebug() << "SequenceDuration" << d->sequence->GetMaxTime();

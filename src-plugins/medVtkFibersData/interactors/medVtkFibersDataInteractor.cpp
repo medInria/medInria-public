@@ -473,10 +473,8 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
         }
         d->colorFiberParameter->blockSignals(false);
 
-        if (!data->hasMetaData("BundleList"))
-            data->addMetaData("BundleList", QStringList());
-        if (!data->hasMetaData("BundleColorList"))
-            data->addMetaData("BundleColorList", QStringList());
+        data->setMetaData("BundleList", QStringList());
+        data->setMetaData("BundleColorList", QStringList());
 
         d->actor = d->manager->GetOutput();
         d->opacityProperty = vtkSmartPointer <vtkProperty>::New();
@@ -665,8 +663,8 @@ void medVtkFibersDataInteractor::validateSelection(const QString &name, const QC
     d->view2d->SetInput(d->manager->GetBundleActor(name.toAscii().constData()), d->view->layer(d->data));
     d->view3d->GetRenderer()->AddActor(d->manager->GetBundleActor(name.toAscii().constData()));
     
-    d->data->addMetaData("BundleList", name);
-    d->data->addMetaData("BundleColorList", color.name());
+    d->data->setMetaData("BundleList", name);
+    d->data->setMetaData("BundleColorList", color.name());
 
     // reset to initial navigation state
     d->manager->Reset();
@@ -706,8 +704,7 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
             if ((metaData == "BundleList")||(metaData == "BundleColorList"))
                 continue;
 
-            if (!tmpBundle->hasMetaData(metaData))
-                tmpBundle->addMetaData (metaData, d->data->metaDataValues (metaData));
+            tmpBundle->setMetaData(metaData, d->data->metaDataValues (metaData));
         }
 
         foreach ( QString property, d->data->propertyList() )
@@ -1391,8 +1388,7 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
         if ((metaData == "BundleList")||(metaData == "BundleColorList"))
             continue;
         
-        if (!savedBundle->hasMetaData(metaData))
-            savedBundle->addMetaData (metaData, d->data->metaDataValues (metaData));
+        savedBundle->setMetaData (metaData, d->data->metaDataValues (metaData));
     }
     
     foreach ( QString property, d->data->propertyList() )

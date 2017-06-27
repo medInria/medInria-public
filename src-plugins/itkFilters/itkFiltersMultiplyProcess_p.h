@@ -59,7 +59,7 @@ public:
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " multiply filter (" + QString::number(multiplyFactor) + ")";
     
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
         return DTK_SUCCEED;
     }

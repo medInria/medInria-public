@@ -447,7 +447,7 @@ void medAbstractDatabaseImporter::importData()
     QString size ="";
     if ( medAbstractImageData *imagedata = dynamic_cast<medAbstractImageData*> ( d->data.data()) )
         size = QString::number ( imagedata->zDimension() );
-    d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
+    d->data->setMetaData ( medMetaDataKeys::Size.key(), size );
 
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(d->data).simplified();
     QString birthDate   = medMetaDataKeys::BirthDate.getFirstValue(d->data);
@@ -547,7 +547,7 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
         // if none of these fields could be read from the file(s) then we won't be able to know for sure
         // if it was previously imported/indexed as it could happen that it is just another file with the same path
         // see http://pm-med.inria.fr/issues/292
-        medData->addMetaData ( medMetaDataKeys::ContainsBasicInfo.key(), "false" );
+        medData->setMetaData ( medMetaDataKeys::ContainsBasicInfo.key(), "false" );
 
         // it could be that we have already another image with this characteristics
         // so we would like to check whether the image filename is on the db
@@ -557,97 +557,97 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
     }
     else
     {
-        medData->addMetaData ( medMetaDataKeys::ContainsBasicInfo.key(), "true" );
+        medData->setMetaData ( medMetaDataKeys::ContainsBasicInfo.key(), "true" );
         newSeriesDescription = seriesDescription;
     }
 
     if ( !medData->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
-        medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << "John Doe" );
+        medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << "John Doe" );
 
     if (!medData->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
-      medData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << "0" );
+      medData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << "0" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) )
-        medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy" );
+        medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
-        medData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription );
+        medData->setMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
-        medData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
+        medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
-        medData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
 
     QString generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
 
     if ( !medData->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
-      medData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
+      medData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
 
     QString generatedSeriesDicomID = QUuid::createUuid().toString().replace("{","").replace("}","");
 
     if ( !medData->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
-        medData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesDicomID );
+        medData->setMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesDicomID );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::SeriesNumber.key() ) )
-        medData->addMetaData ( medMetaDataKeys::SeriesNumber.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::SeriesNumber.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::SequenceName.key() ) )
-        medData->addMetaData ( medMetaDataKeys::SequenceName.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::SequenceName.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::SliceThickness.key() ) )
-        medData->addMetaData ( medMetaDataKeys::SliceThickness.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::SliceThickness.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Rows.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Rows.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Rows.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Columns.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Columns.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Columns.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Age.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Age.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Age.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::BirthDate.key() ) )
-        medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Gender.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Gender.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Description.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Description.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Description.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Modality.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Modality.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Modality.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Protocol.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Protocol.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Protocol.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Comments.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Comments.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Comments.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Status.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Status.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Status.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::AcquisitionDate.key() ) )
-        medData->addMetaData ( medMetaDataKeys::AcquisitionDate.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::AcquisitionDate.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::ImportationDate.key() ) )
-        medData->addMetaData ( medMetaDataKeys::ImportationDate.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::ImportationDate.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Referee.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Referee.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Referee.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Performer.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Performer.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Performer.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Institution.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Institution.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Institution.key(), QStringList() << "" );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Report.key() ) )
-        medData->addMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
+        medData->setMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -679,7 +679,7 @@ QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* m
     QString refThumbPath = pathToStoreThumbnails + "ref.png";
     refThumbnail.save ( medStorage::dataLocation() + refThumbPath, "PNG" );
 
-    medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), refThumbPath );
+    medData->setMetaData( medMetaDataKeys::ThumbnailPath.key(), refThumbPath );
 
     return thumbPaths;
 }
@@ -942,7 +942,7 @@ void medAbstractDatabaseImporter::addAdditionalMetaData ( medAbstractData* imDat
     if ( !imData->hasMetaData ( "FilePaths" ) )
         imData->addMetaData ( "FilePaths", aggregatedFilesPaths );
 
-    imData->addMetaData ( "FileName", aggregatedFileName );
+    imData->setMetaData ( "FileName", aggregatedFileName );
 }
 
 //-----------------------------------------------------------------------------------------------------------

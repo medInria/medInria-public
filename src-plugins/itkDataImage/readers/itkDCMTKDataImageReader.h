@@ -49,9 +49,6 @@ public slots:
     bool read (const QStringList& paths);
 
     void setProgress (int value);
-    
-protected:
-    void updateMetaData(medAbstractData *medData, QString metakey, QString value);
 
 private:
 

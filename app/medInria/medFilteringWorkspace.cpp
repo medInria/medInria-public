@@ -107,15 +107,12 @@ void medFilteringWorkspace::onProcessSuccess()
             {
                 QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
                 newSeriesDescription += " filtered";
-                d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+                d->filterOutput->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
             }
 
             foreach ( QString metaData, inputData->metaDataList() )
             {
-                if (!d->filterOutput->hasMetaData(metaData))
-                {
-                    d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
-                }
+                d->filterOutput->setMetaData ( metaData, inputData->metaDataValues ( metaData ) );
             }
 
             foreach ( QString property, inputData->propertyList() )
