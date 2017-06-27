@@ -112,7 +112,10 @@ void medFilteringWorkspace::onProcessSuccess()
 
             foreach ( QString metaData, inputData->metaDataList() )
             {
-                d->filterOutput->setMetaData ( metaData, inputData->metaDataValues ( metaData ) );
+                if (!d->filterOutput->hasMetaData(metaData))
+                {
+                    d->filterOutput->setMetaData ( metaData, inputData->metaDataValues ( metaData ) );
+                }
             }
 
             foreach ( QString property, inputData->propertyList() )
