@@ -136,8 +136,6 @@ int iterativeClosestPointProcess::update()
 {
     if ( !d->inputSource || !d->inputTarget )
         return DTK_FAILURE;
-    
-    QApplication::setOverrideCursor(Qt::WaitCursor);
 
     vtkSmartPointer<vtkICPFilter> ICPFilter = vtkICPFilter::New();
     
@@ -165,8 +163,6 @@ int iterativeClosestPointProcess::update()
     d->output = medAbstractDataFactory::instance()->createSmartPointer ( "vtkDataMesh" );
     d->output->setData(output_mesh);
     medUtilities::setDerivedMetaData(d->output, d->inputSource, "ICP");
-
-    QApplication::restoreOverrideCursor();
 
     return DTK_SUCCEED;
 }
