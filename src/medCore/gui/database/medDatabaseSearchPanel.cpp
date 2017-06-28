@@ -106,12 +106,13 @@ void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
 
     foreach(QString columnName, columns)
     {
-        d->columnBox->addItem(columnName);
+        if (columnName != "")
+        {
+            d->columnBox->addItem(columnName);
+        }
     }
 
-    //d->columnBox->setCurrentIndex(2); // debug
     addBox(); // add patient name
-
 }
 
 void medDatabaseSearchPanel::addBox( )
