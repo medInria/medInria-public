@@ -24,10 +24,18 @@ class ITKFILTERSPLUGIN_EXPORT itkMorphologicalFiltersProcessBase : public itkFil
 {
     Q_OBJECT
 public:
+    enum KernelShape
+    {
+        BallKernel,
+        CrossKernel,
+        BoxKernel,
+    };
+
     itkMorphologicalFiltersProcessBase(itkMorphologicalFiltersProcessBase * parent = 0);
     itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other);
     virtual ~itkMorphologicalFiltersProcessBase(void);
     void setParameter(double data, int channel);
+    void setParameter(int data);
 
 public slots:
     int tryUpdate();
