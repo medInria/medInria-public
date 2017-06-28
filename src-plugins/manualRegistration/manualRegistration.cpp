@@ -88,7 +88,6 @@ template <typename PixelType>
 int manualRegistrationPrivate::update()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
 
     int res = DTK_FAILURE;
 
@@ -116,6 +115,8 @@ int manualRegistrationPrivate::update()
 
 template <typename PixelType, typename TransformType> int manualRegistrationPrivate::applyRegistration()
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
 
@@ -164,6 +165,7 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     {
         qDebug(err.what());
         proc->displayMessageError("Error initializing transformation");
+        QApplication::restoreOverrideCursor();
         return DTK_FAILURE;
     }
 
@@ -191,6 +193,7 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     {
         qDebug(err.GetDescription());
         proc->displayMessageError("Error applying transformation");
+        QApplication::restoreOverrideCursor();
         return DTK_FAILURE;
     }
 
@@ -201,6 +204,8 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     {
         proc->output()->setData (result);
     }
+
+    QApplication::restoreOverrideCursor();
 
     return DTK_SUCCEED;
 }

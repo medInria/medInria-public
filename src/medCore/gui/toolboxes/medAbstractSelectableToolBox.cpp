@@ -65,15 +65,3 @@ void medAbstractSelectableToolBox::hideEvent(QHideEvent *event)
                    SLOT(updateView()));
     }
 }
-
-void medAbstractSelectableToolBox::setCursorWait()
-{
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
-}
-
-void medAbstractSelectableToolBox::setCursorClassic()
-{
-    QApplication::restoreOverrideCursor();
-    QApplication::processEvents();
-}
