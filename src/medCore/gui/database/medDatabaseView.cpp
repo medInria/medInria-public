@@ -229,6 +229,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
         {
             d->contextMenu->addAction(d->editAction);
             d->editAction->setIcon(QIcon(":icons/page_edit.png"));
+            d->contextMenu->addAction(d->viewAction);
             d->contextMenu->addAction(d->exportAction);
             d->contextMenu->addAction(d->removeAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
@@ -265,6 +266,8 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 /** Opens the currently selected item. */
 void medDatabaseView::onViewSelectedItemRequested(void)
 {
+    // Called when the user right click->View in DB on a series/study
+
     if(!this->selectedIndexes().count())
         return;
 
@@ -278,7 +281,7 @@ void medDatabaseView::onViewSelectedItemRequested(void)
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
-    if (item && (item->dataIndex().isValidForSeries()))
+    if (item && (item->dataIndex().isValidForSeries() || item->dataIndex().isValidForStudy()))
     {
         emit open(item->dataIndex ());
     }

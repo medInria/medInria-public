@@ -54,6 +54,8 @@ public:
 
     QPixmap thumbnail(const medDataIndex& index);
 
+    QList<medDataIndex> getSeriesListFromStudy(const medDataIndex &indexStudy);
+
     // ------------------------- To be moved elsewhere -----------------------
 
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
