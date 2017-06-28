@@ -104,40 +104,6 @@ medAbstractData * medAbstractData::convert(const QString &toType)
     return conversion;
 }
 
-void medAbstractData::setMetaData(const QString& key, const QStringList& value)
-{
-    if (!value.isEmpty())
-    {
-        dtkAbstractObject* dtkObj = dynamic_cast<dtkAbstractObject*>(this);
-
-        if (dtkObj->hasMetaData(key))
-        {
-            dtkObj->setMetaData(key, value);
-        }
-        else
-        {
-            dtkObj->addMetaData(key, value);
-        }
-    }
-}
-
-void medAbstractData::setMetaData(const QString& key, const QString& value)
-{
-    if (!value.isNull() && !value.isEmpty())
-    {
-        dtkAbstractObject* dtkObj = dynamic_cast<dtkAbstractObject*>(this);
-
-        if (dtkObj->hasMetaData(key))
-        {
-            dtkObj->setMetaData(key, value);
-        }
-        else
-        {
-            dtkObj->addMetaData(key, value);
-        }
-    }
-}
-
 /**
  * @brief Get attached data (like histogram, annotations etc.)
  *
