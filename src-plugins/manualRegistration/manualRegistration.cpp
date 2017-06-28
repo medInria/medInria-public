@@ -14,24 +14,16 @@
 #include <manualRegistration.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractData.h>
-#include <medAbstractDataFactory.h>
-#include <iostream>
-#include <itkImage.h>
 #include <itkImageRegistrationMethod.h>
 #include <itkLandmarkBasedTransformInitializer.h>
-#include <itkPoint.h>
-#include <itkResampleImageFilter.h>
+#include <medMessageController.h>
 #include <rpiCommonTools.hxx>
-#include <time.h>
-#include <vector>
 #include <vtkPointHandleRepresentation2D.h>
 
-
-
 typedef double TransformScalarType;
-typedef itk::VersorRigid3DTransform<TransformScalarType> TransformType;
-
+typedef itk::VersorRigid3DTransform<TransformScalarType>    TransformType_Rigid3D;
+typedef itk::AffineTransform<TransformScalarType>           TransformType_Affine;
+typedef itk::MatrixOffsetTransformBase<TransformScalarType> TransformType_Generic;
 
 // /////////////////////////////////////////////////////////////////
 // manualRegistrationDiffeomorphicDemonsPrivate
@@ -41,14 +33,14 @@ class manualRegistrationPrivate
 {
 public:
     manualRegistration * proc;
-    template <class PixelType>
-    int update();
-    template < typename TFixedImage, typename TMovingImage >
-    bool write(const QString&);
-    void * registrationMethod ;
+    template <class PixelType> int update();
+    template <typename PixelType, typename TransformType> int applyRegistration();
+
     QList<manualRegistrationLandmark*> * FixedLandmarks;
     QList<manualRegistrationLandmark*> * MovingLandmarks;
-    TransformType::Pointer transform;
+
+    TransformType_Generic::Pointer  transform;
+    TransformName::TransformNameEnum transformTypeInt;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -58,8 +50,7 @@ public:
 manualRegistration::manualRegistration() : itkProcessRegistration(), d(new manualRegistrationPrivate)
 {
     d->proc = this;
-    d->registrationMethod = NULL ;
-
+ 
     //set transform type for the exportation of the transformation to a file
     this->setProperty("transformType","Rigid");
 }
@@ -67,7 +58,6 @@ manualRegistration::manualRegistration() : itkProcessRegistration(), d(new manua
 manualRegistration::~manualRegistration()
 {
     d->proc = NULL;
-    d->registrationMethod = NULL;
     delete d;
     d = NULL;
 }
@@ -100,19 +90,43 @@ int manualRegistrationPrivate::update()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::processEvents();
 
+    int res = DTK_FAILURE;
+
+    if (transformTypeInt == TransformName::RIGID)
+    {
+        res = applyRegistration<PixelType, TransformType_Rigid3D>();
+    }
+    else if (transformTypeInt == TransformName::AFFINE)
+    {
+        if ((FixedLandmarks->count() >= 4) && (MovingLandmarks->count() >= 4))
+        {
+            res = applyRegistration<PixelType, TransformType_Affine>();
+        }
+        else
+        {
+            proc->displayMessageError("Affine transformation needs 4 landmarks minimum by dataset");
+        }
+    }
+
+    QApplication::restoreOverrideCursor();
+    QApplication::processEvents();
+
+    return res;
+}
+
+template <typename PixelType, typename TransformType> int manualRegistrationPrivate::applyRegistration()
+{
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
 
-    typedef itk::LandmarkBasedTransformInitializer< TransformType, FixedImageType, MovingImageType > RegistrationType;
-
-    typename RegistrationType::Pointer registration = RegistrationType::New();
-    
-    registrationMethod = registration;
+    typedef itk::LandmarkBasedTransformInitializer< TransformType,
+            FixedImageType, MovingImageType > RegistrationType;
 
     typename RegistrationType::LandmarkPointContainer containerFixed;
     typename RegistrationType::LandmarkPointContainer containerMoving;
-    
-    for(int i = 0;i<FixedLandmarks->length();i++)
+
+    // Fill fixed and moving containers
+    for(int i = 0; i<FixedLandmarks->length(); i++)
     {
         itk::Point<double,3> point;
         point[0] = FixedLandmarks->at(i)->GetHandleRepresentation()->GetWorldPosition()[0];
@@ -122,7 +136,7 @@ int manualRegistrationPrivate::update()
         containerFixed.push_back(point);
     }
 
-    for(int i = 0;i<MovingLandmarks->length();i++)
+    for(int i = 0; i<MovingLandmarks->length(); i++)
     {
         itk::Point<double,3> point;
         point[0] = MovingLandmarks->at(i)->GetHandleRepresentation()->GetWorldPosition()[0];
@@ -132,32 +146,33 @@ int manualRegistrationPrivate::update()
         containerMoving.push_back(point);
     }
 
+    // Set transformation parameters to registration
+    typename RegistrationType::Pointer registration = RegistrationType::New();
     registration->SetFixedLandmarks(containerFixed);
     registration->SetMovingLandmarks(containerMoving);
 
-    transform = TransformType::New();
-    transform->SetIdentity();
-    registration->SetTransform(transform);
+    typename TransformType::Pointer transformTemp = TransformType::New();
+    transformTemp->SetIdentity();
+    registration->SetTransform(transformTemp);
 
-    // Print method parameters
-    //QString methodParameters = proc->getTitleAndParameters();
-
-    // Run the registration
-    //time_t t1 = clock();
-    try {
+    // Run registration to compute transformation
+    try
+    {
         registration->InitializeTransform();
     }
     catch( std::exception & err )
     {
-        qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
-        QApplication::restoreOverrideCursor();
-        QApplication::processEvents();
-        return 1;
+        qDebug(err.what());
+        proc->displayMessageError("Error initializing transformation");
+        return DTK_FAILURE;
     }
-    //time_t t2 = clock();
+
+    // Save transformation for future writing
+    transform = transformTemp;
 
     emit proc->progressed(80);
-    
+
+    // Apply transformation on the moving dataset
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(transform);
@@ -168,26 +183,26 @@ int manualRegistrationPrivate::update()
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
 
-    try {
+    try
+    {
         resampler->Update();
     }
-    catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        QApplication::restoreOverrideCursor();
-        QApplication::processEvents();
-        return 1;
+    catch (itk::ExceptionObject &err)
+    {
+        qDebug(err.GetDescription());
+        proc->displayMessageError("Error applying transformation");
+        return DTK_FAILURE;
     }
 
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
     result->DisconnectPipeline();
-    
+
     if (proc->output())
+    {
         proc->output()->setData (result);
+    }
 
-    QApplication::restoreOverrideCursor();
-    QApplication::processEvents();
-
-    return 0;
+    return DTK_SUCCEED;
 }
 
 int manualRegistration::update(itkProcessRegistration::ImageType imgType)
@@ -195,31 +210,27 @@ int manualRegistration::update(itkProcessRegistration::ImageType imgType)
     if(fixedImage().IsNull() || movingImages().isEmpty()
             || movingImages()[0].IsNull())
     {
-        qWarning() << "Either the fixed image or the moving image is Null";
-        return 1;
+        displayMessageError("Either the fixed image or the moving image is empty");
+        return DTK_FAILURE;
     }
 
     if (imgType != itkProcessRegistration::FLOAT)
     {
-        qWarning() << "the imageType should be float, and it's :"<<imgType;
-        return 1;
+        displayMessageError("Images type should be float");
+        return DTK_FAILURE;
     }
 
     return d->update<float>();
 }
 
-itk::Transform<double,3,3>::Pointer manualRegistration::getTransform(){
-    //typedef float PixelType;
-    //typedef double TransformScalarType;
-    //typedef itk::Image< PixelType, 3 > RegImageType;
-    ////normaly should use long switch cases, but here we know we work with float3 data.
-    //if (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
-    //        static_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod))
-    //{
-    //    return registration->GetTransformation();
-    //}
-    //else
+itk::Transform<double,3,3>::Pointer manualRegistration::getTransform()
+{
     return NULL;
+}
+
+void manualRegistration::setParameter(int data)
+{
+    d->transformTypeInt = static_cast<TransformName::TransformNameEnum>(data);
 }
 
 QString manualRegistration::getTitleAndParameters()
@@ -235,15 +246,17 @@ bool manualRegistration::writeTransform(const QString& file)
 
     typedef itk::Image< PixelType, 3 > RegImageType;
 
-    try{
+    try
+    {
         rpi::writeLinearTransformation<TransformScalarType,
                 RegImageType::ImageDimension>(
                     d->transform,
                     file.toLocal8Bit().constData());
     }
-    catch (std::exception& ex)
+    catch (std::exception& err)
     {
-        std::cout<<ex.what()<<std::endl;
+        qDebug(err.what());
+        displayMessageError("Error writing transformation");
         return false;
     }
 
@@ -258,6 +271,12 @@ void manualRegistration::SetFixedLandmarks(QList<manualRegistrationLandmark*> * 
 void manualRegistration::SetMovingLandmarks(QList<manualRegistrationLandmark*> * movingLandmarks)
 {
     d->MovingLandmarks = movingLandmarks;
+}
+
+void manualRegistration::displayMessageError(QString error)
+{
+    qDebug() << this->description() + ": " + error;
+    medMessageController::instance()->showError(error, 3000);
 }
 
 // /////////////////////////////////////////////////////////////////

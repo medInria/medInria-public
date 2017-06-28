@@ -19,6 +19,12 @@
 
 class manualRegistrationPrivate;
 
+class TransformName
+{
+public:
+    enum TransformNameEnum {RIGID,AFFINE};
+};
+
 /**
  * @brief Registration process using diffeomorphic demons from itk.
  *
@@ -69,7 +75,6 @@ public:
     */
     static bool registered();
 
-public:
     /**
      * @brief Runs the process.
      *
@@ -91,6 +96,10 @@ public:
      * @return bool successful or not.
     */
     virtual bool writeTransform(const QString& file);
+
+    void setParameter(int data);
+
+    void displayMessageError(QString error);
 
 private:
     manualRegistrationPrivate *d;

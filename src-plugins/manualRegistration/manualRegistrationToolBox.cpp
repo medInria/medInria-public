@@ -40,6 +40,9 @@ public:
     QPushButton * b_reset;
     QPushButton * b_save;
     QPushButton * b_exportTransformation;
+
+    medComboBox* transformType;
+
     medAbstractLayeredView * currentView;
     medViewContainer * leftContainer;
     medViewContainer * rightContainer;
@@ -69,6 +72,16 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medAbstr
     d->numberOfLdInLeftContainer = new QLabel("Number of landmarks in left container: 0",widget);
     d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container: 0",widget);
 
+    // Choice between transformations
+    QHBoxLayout * transformationLayout = new QHBoxLayout;
+    transformationLayout->addWidget(new QLabel("Transformation:"));
+    d->transformType = new medComboBox(widget);
+    d->transformType->setObjectName("transformType");
+    d->transformType->addItem("Rigid",  TransformName::RIGID);
+    d->transformType->addItem("Affine", TransformName::AFFINE);
+    transformationLayout->addWidget(d->transformType);
+
+    // Action buttons
     d->b_computeRegistration = new QPushButton("Compute Registration",widget);
     connect(d->b_computeRegistration,SIGNAL(clicked()),this,SLOT(computeRegistration()));
     d->b_computeRegistration->setObjectName("computeRegistrationButton");
@@ -92,6 +105,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medAbstr
     mainLayout->addWidget(explanation);
     mainLayout->addWidget(d->numberOfLdInLeftContainer);
     mainLayout->addWidget(d->numberOfLdInRightContainer);
+    mainLayout->addLayout(transformationLayout);
     mainLayout->addWidget(d->b_computeRegistration);
     mainLayout->addWidget(d->b_reset);
     mainLayout->addWidget(d->b_save);
@@ -329,6 +343,7 @@ void manualRegistrationToolBox::computeRegistration()
     d->process->SetMovingLandmarks(d->controller->getPoints_Moving());
     d->process->setFixedInput(qobject_cast<medAbstractLayeredView*>(d->leftContainer->view())->layerData(0));
     d->process->setMovingInput(qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0));
+    d->process->setParameter(d->transformType->itemData(d->transformType->currentIndex()).toInt());
     d->process->update(itkProcessRegistration::FLOAT);
 
     medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
@@ -340,20 +355,18 @@ void manualRegistrationToolBox::computeRegistration()
 
     medAbstractData * newOutput = d->process->output();
 
-    if(!newOutput)
+    if(newOutput && newOutput->data())
     {
-        return;
+        d->output = newOutput;
+
+        medUtilities::setDerivedMetaData(d->output, (qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0)), "registered");
+
+        qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->removeLayer(1);
+        qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
+        synchroniseMovingFuseView();
+
+        setDisableSaveButtons(false);
     }
-
-    d->output = newOutput;
-
-    medUtilities::setDerivedMetaData(d->output, (qobject_cast<medAbstractLayeredView*>(d->rightContainer->view())->layerData(0)), "registered");
-
-    qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->removeLayer(1);
-    qobject_cast<medAbstractImageView*>(d->bottomContainer->view())->addLayer(d->output);
-    synchroniseMovingFuseView();
-
-    setDisableSaveButtons(false);
 }
 
 void manualRegistrationToolBox::reset()
