@@ -42,6 +42,7 @@ public:
         MESH_TYPE,      //! Not a mesh
         NO_MESH,        //! Input can not be a mesh
         DATA_SIZE,      //! Inputs must be the same size
+        MISMATCHED_DATA_TYPES, //! Inputs must be the same type
         UNDEFINED,      //! Miscellanous
     };
 

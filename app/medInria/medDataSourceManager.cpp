@@ -11,24 +11,23 @@
 
 =========================================================================*/
 
-#include <medDataSourceManager.h>
-#include <dtkCore>
+#include "medDataSourceManager.h"
 
-#include <QList>
-#include <QUuid>
+#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
+
+#include <medAbstractData.h>
 #include <medAbstractDataSource.h>
 #include <medAbstractDataSourceFactory.h>
-#include <medDataManager.h>
-#include <medPacsWidget.h>
-#include <medMetaDataKeys.h>
-#include <medStorage.h>
-#include <medMessageController.h>
-
-#include <medFileSystemDataSource.h>
-#include <medDatabaseDataSource.h>
-#include <medPacsDataSource.h>
-
 #include <medApplication.h>
+#include <medDatabaseDataSource.h>
+#include <medDataManager.h>
+#include <medFileSystemDataSource.h>
+#include <medMessageController.h>
+#include <medMetaDataKeys.h>
+#include <medPacsDataSource.h>
+#include <medPacsWidget.h>
+#include <medStorage.h>
 
 class medDataSourceManagerPrivate
 {

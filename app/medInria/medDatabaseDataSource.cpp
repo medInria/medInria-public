@@ -13,18 +13,15 @@
 
 #include "medDatabaseDataSource.h"
 
-#include <medDataManager.h>
-
+#include <medActionsToolBox.h>
+#include <medDatabaseCompactWidget.h>
+#include <medDatabaseExporter.h>
+#include <medDatabaseModel.h>
+#include <medDatabasePreview.h>
+#include <medDatabaseProxyModel.h>
 #include <medDatabaseSearchPanel.h>
 #include <medDatabaseView.h>
-
-#include <medDatabaseProxyModel.h>
-#include <medDatabaseModel.h>
-#include <medDatabaseExporter.h>
-#include <medDatabasePreview.h>
-#include <medDatabaseCompactWidget.h>
-
-#include <medActionsToolBox.h>
+#include <medDataManager.h>
 
 class medDatabaseDataSourcePrivate
 {

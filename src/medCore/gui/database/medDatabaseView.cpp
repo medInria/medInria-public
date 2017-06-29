@@ -158,7 +158,6 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     d->editAction->setIconVisibleInMenu(true);
     d->editAction->setIcon(QIcon(":icons/page_edit.png"));
     connect(d->editAction, SIGNAL(triggered()), this, SLOT(onEditRequested()));
-
 }
 
 medDatabaseView::~medDatabaseView(void)

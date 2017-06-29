@@ -11,12 +11,9 @@
 
 =========================================================================*/
 
-#include <medActionsToolBox.h>
-
-#include <QtGui>
-
-#include <medDataManager.h>
 #include <medAbstractDbController.h>
+#include <medActionsToolBox.h>
+#include <medDataManager.h>
 #include <medToolBoxBody.h>
 
 class medActionsToolBoxPrivate
@@ -68,25 +65,24 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
     d->viewBt->setIcon(QIcon(":/icons/eye.png"));
     connect(d->viewBt, SIGNAL(clicked()), this, SIGNAL(viewClicked()));
 
-
     if (FILE_SYSTEM)
     {
         d->loadBt = new QPushButton(d->buttonsWidget);
         d->loadBt->setAccessibleName("Load");
         d->loadBt->setText(tr("Load"));
-        d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
+        d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside the application,\nbut do not include them in the database."));
         d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
 
         d->importBt = new QPushButton(d->buttonsWidget);
         d->importBt->setAccessibleName("Import");
         d->importBt->setText(tr("Import"));
-        d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
+        d->importBt->setToolTip(tr("Import (copy) item(s) into the database."));
         d->importBt->setIcon(QIcon(":/icons/import.png"));
 
         d->indexBt = new QPushButton(d->buttonsWidget);
         d->indexBt->setAccessibleName("Index");
         d->indexBt->setText(tr("Index"));
-        d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
+        d->indexBt->setToolTip(tr("Include the item(s) into the database but do not import (copy) them."));
         d->indexBt->setIcon(QIcon(":/icons/finger.png"));
 
         d->bookmarkBt = new QPushButton(d->buttonsWidget);
@@ -101,8 +97,8 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
 
         // the order of the buttons in this list determines the order used to place them in the grid layout
-        d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt <<d->bookmarkBt;}
-
+        d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt << d->bookmarkBt;
+    }
     else //IF DATABASE
     {
         d->saveBt = new QPushButton(d->buttonsWidget);
@@ -294,6 +290,8 @@ void medActionsToolBox::initializeItemToActionsMap()
 {
     d->itemToActions = QMultiMap<QString, QString>();
 
+    // DATABASE
+
     d->itemToActions.insert("Patient", "Remove");
     d->itemToActions.insert("Patient", "Export");
     d->itemToActions.insert("Patient", "New Patient");
@@ -328,6 +326,8 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions.insert("Unsaved Series", "Export");
     d->itemToActions.insert("Unsaved Series", "New Patient");
     d->itemToActions.insert("Unsaved Series", "Edit");
+
+    // FILE_SYSTEM
 
     d->itemToActions.insert("Folders", "Bookmark");
     d->itemToActions.insert("Folders", "Import");

@@ -53,10 +53,8 @@ signals:
 protected:
     void connectDataSource(medAbstractDataSource* dataSource);
 
-
     medDataSourceManager();
     ~medDataSourceManager();
-
 
 protected slots:
     void openFromPath(QString path);

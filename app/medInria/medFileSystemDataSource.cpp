@@ -13,11 +13,11 @@
 
 #include "medFileSystemDataSource.h"
 
-#include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>
 
 #include <medActionsToolBox.h>
-#include<medSettingsManager.h>
+#include <medSettingsManager.h>
+#include <medToolBoxFactory.h>
 
 class medFileSystemDataSourcePrivate
 {
