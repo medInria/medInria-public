@@ -13,11 +13,10 @@
 
 #pragma once
 
+#include <QDomElement>
 #include <QFrame>
 
-#include <QDomElement>
 #include <medCoreExport.h>
-
 
 struct QUuid;
 class medAbstractView;

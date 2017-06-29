@@ -13,27 +13,20 @@
 
 #include <medViewContainer.h>
 
-#include <QVBoxLayout>
+
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QUuid>
-#include <QFileDialog>
+#include <QVBoxLayout>
 
 #include <medAbstractImageView.h>
-#include <medAbstractData.h>
 #include <medAbstractView.h>
-#include <medAbstractInteractor.h>
-#include <medAbstractLayeredView.h>
-#include <medBoolParameter.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medLayoutChooser.h>
 #include <medMetaDataKeys.h>
 #include <medPoolIndicator.h>
 #include <medSettingsManager.h>
-#include <medStringListParameter.h>
-#include <medToolBox.h>
-#include <medToolBoxHeader.h>
 #include <medTriggerParameter.h>
 #include <medViewContainerManager.h>
 #include <medViewContainerSplitter.h>
