@@ -51,7 +51,7 @@ bool medBinaryOperationPlugin::initialize()
 
 QString medBinaryOperationPlugin::name() const
 {
-    return "medBinaryOperationPlugin";
+    return "Binary Operation";
 }
 
 QString medBinaryOperationPlugin::description() const

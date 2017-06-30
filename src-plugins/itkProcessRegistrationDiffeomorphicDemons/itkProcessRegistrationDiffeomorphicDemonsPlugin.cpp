@@ -26,7 +26,7 @@ bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize()
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name() const
 {
-    return "itkProcessRegistrationDiffeomorphicDemonsPlugin";
+    return "Diffeomorphic Demons";
 }
 
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors() const

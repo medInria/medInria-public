@@ -32,7 +32,7 @@ bool medMaskApplicationPlugin::initialize()
 
 QString medMaskApplicationPlugin::name() const
 {
-    return "medMaskApplicationPlugin";
+    return "Mask Application";
 }
 
 QString medMaskApplicationPlugin::version() const

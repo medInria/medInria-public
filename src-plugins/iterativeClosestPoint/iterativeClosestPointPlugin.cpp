@@ -33,7 +33,7 @@ bool iterativeClosestPointPlugin::initialize()
 
 QString iterativeClosestPointPlugin::name() const
 {
-    return "iterativeClosestPointPlugin";
+    return "Iterative Closest Point";
 }
 
 QString iterativeClosestPointPlugin::version() const

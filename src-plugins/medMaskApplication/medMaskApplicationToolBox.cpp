@@ -105,7 +105,7 @@ bool medMaskApplicationToolBox::registered()
 dtkPlugin* medMaskApplicationToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "medMaskApplicationPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "Mask Application" );
     return plugin;
 }
 

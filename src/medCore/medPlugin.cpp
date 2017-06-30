@@ -24,7 +24,7 @@ bool medPlugin::uninitialize()
 
 QString medPlugin::contact() const
 {
-    return "<music-userfeedback@inria.fr>";
+    return "For any feedback <music-userfeedback@inria.fr>";
 }
 
 QString medPlugin::description() const

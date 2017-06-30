@@ -132,12 +132,6 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
 
     this->addWidget ( widget );
 
-    // Add about plugin
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
-    setAboutPluginButton ( plugin );
-    setAboutPluginVisibility ( true );
-
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
 }
 

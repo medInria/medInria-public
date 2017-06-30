@@ -266,6 +266,6 @@ medAbstractData* iterativeClosestPointToolBox::processOutput()
 dtkPlugin* iterativeClosestPointToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "iterativeClosestPointPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "Iterative Closest Point" );
     return plugin;
 }

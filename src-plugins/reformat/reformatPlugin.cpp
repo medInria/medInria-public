@@ -41,7 +41,7 @@ bool reformatPlugin::initialize()
 
 QString reformatPlugin::name() const
 {
-    return "reformatPlugin";
+    return "Reformat";
 }
 
 QString reformatPlugin::version() const

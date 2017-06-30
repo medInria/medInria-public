@@ -130,13 +130,6 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     widget->setLayout(layout);
     this->addWidget(widget);
 
-    //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin(
-                "itkProcessRegistrationDiffeomorphicDemonsPlugin");
-    setAboutPluginButton(plugin);
-    setAboutPluginVisibility(true);
-
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
@@ -156,7 +149,7 @@ bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
 dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "itkProcessRegistrationDiffeomorphicDemonsPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "Diffeomorphic Demons" );
     return plugin;
 }
 

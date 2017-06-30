@@ -33,7 +33,7 @@ bool manualRegistrationPlugin::initialize()
 
 QString manualRegistrationPlugin::name() const
 {
-    return "manualRegistrationPlugin";
+    return "Manual Registration";
 }
 
 QString manualRegistrationPlugin::version() const

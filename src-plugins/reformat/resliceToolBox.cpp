@@ -25,9 +25,6 @@ public:
 
 resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox (parent), d(new resliceToolBoxPrivate)
 {
-    this->setAboutPluginVisibility(false);
-    this->setAboutPluginButton(this->plugin());
-
     // Fill the toolBox
     QWidget *resliceToolBoxBody = new QWidget(this);
     d->b_startReslice = new QPushButton("Start Reslice", resliceToolBoxBody);
@@ -135,7 +132,7 @@ bool resliceToolBox::registered()
 dtkPlugin* resliceToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "reformatPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "Reformat" );
     return plugin;
 }
 

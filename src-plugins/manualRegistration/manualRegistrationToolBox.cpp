@@ -174,7 +174,7 @@ bool manualRegistrationToolBox::registered()
 dtkPlugin* manualRegistrationToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "manualRegistrationPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "Manual Registration" );
     return plugin;
 }
 

@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkPlugin.h>
+#include <dtkLog/dtkLog.h>
 #include <medCoreExport.h>
 
 class MEDCORE_EXPORT medPlugin : public dtkPlugin

@@ -32,7 +32,7 @@ bool itkN4BiasCorrectionPlugin::initialize()
 
 QString itkN4BiasCorrectionPlugin::name() const
 {
-    return "itkN4BiasCorrectionPlugin";
+    return "N4 Bias Correction";
 }
 
 QString itkN4BiasCorrectionPlugin::version() const
