@@ -13,23 +13,20 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include <itkDataTensorImagePluginExport.h>
 
 class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePluginPrivate;
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePlugin : public dtkPlugin
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePlugin : public medPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
 
 public:
      itkDataTensorImagePlugin(QObject *parent = 0);
     ~itkDataTensorImagePlugin();
 
     virtual bool initialize();
-    virtual bool uninitialize();
 
     virtual QString name() const;
     virtual QString description() const;

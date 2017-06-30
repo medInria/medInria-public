@@ -15,35 +15,6 @@
 
 #include <medAnnotationInteractor.h>
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// PluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class medSegmentationPluginPrivate
-{
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-const char * medSegmentationPluginPrivate::s_Name = "segmentationPlugin";
-
-// /////////////////////////////////////////////////////////////////
-// Plugin
-// /////////////////////////////////////////////////////////////////
-
-medSegmentationPlugin::medSegmentationPlugin(QObject *parent) : dtkPlugin(parent), d(new medSegmentationPluginPrivate)
-{
-
-}
-
-medSegmentationPlugin::~medSegmentationPlugin()
-{
-    delete d;
-    d = NULL;
-}
-
 bool medSegmentationPlugin::initialize()
 {
     if(!medAnnotationInteractor::registered())
@@ -51,14 +22,9 @@ bool medSegmentationPlugin::initialize()
     return true;
 }
 
-bool medSegmentationPlugin::uninitialize()
-{
-    return true;
-}
-
 QString medSegmentationPlugin::name() const
 {
-    return medSegmentationPluginPrivate::s_Name;
+    return "segmentationPlugin";
 }
 
 QString medSegmentationPlugin::description() const
@@ -82,11 +48,6 @@ QString medSegmentationPlugin::version() const
     return MEDSEGMENTATIONPLUGIN_VERSION;
 }
 
-QString medSegmentationPlugin::contact() const
-{
-    return "John.Stark@inria.fr";
-}
-
 QStringList medSegmentationPlugin::authors() const
 {
     QStringList list;
@@ -97,24 +58,15 @@ QStringList medSegmentationPlugin::authors() const
 QStringList medSegmentationPlugin::contributors() const
 {
     QStringList list;
-    list <<  QString::fromUtf8("Benoît Bleuzé")
-             << "Olivier Commowick";
+    list <<  QString::fromUtf8("Benoît Bleuzé");
+    list << "Olivier Commowick";
+    list << medPlugin::contributors();
     return list;
 }
 
 QString medSegmentationPlugin::identifier() const
 {
-    return medSegmentationPluginPrivate::s_Name;
-}
-
-QStringList medSegmentationPlugin::tags() const
-{
-    return QStringList();
-}
-
-QStringList medSegmentationPlugin::types() const
-{
-    return QStringList();
+    return name();
 }
 
 Q_EXPORT_PLUGIN2(medSegmentationPlugin, medSegmentationPlugin)

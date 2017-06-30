@@ -13,38 +13,20 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include "reformatPluginExport.h"
 
-class REFORMATPLUGIN_EXPORT reformatPluginPrivate;
-
-class REFORMATPLUGIN_EXPORT reformatPlugin : public dtkPlugin
+class REFORMATPLUGIN_EXPORT reformatPlugin : public medPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
     
 public:
-    reformatPlugin(QObject *parent = 0);
-    ~reformatPlugin();
-    
     virtual bool initialize();
-    virtual bool uninitialize();
     
     virtual QString name() const;
     virtual QString identifier() const;
-    virtual QString description() const;
-    virtual QString contact() const;
     virtual QString version() const;
-    virtual QStringList authors() const;
-    virtual QStringList contributors() const;
-    virtual QStringList dependencies() const;
-    
-    virtual QStringList tags() const;
     virtual QStringList types() const;
-    
-private:
-    reformatPluginPrivate *d;
 };
 
 

@@ -41,7 +41,7 @@ public:
 // itkDataDiffusionGradientListPlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataDiffusionGradientListPlugin::itkDataDiffusionGradientListPlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataDiffusionGradientListPluginPrivate)
+itkDataDiffusionGradientListPlugin::itkDataDiffusionGradientListPlugin(QObject *parent) : medPlugin(parent), d(new itkDataDiffusionGradientListPluginPrivate)
 {
 
 }
@@ -59,11 +59,6 @@ bool itkDataDiffusionGradientListPlugin::initialize()
         dtkWarn() << "Unable to register itkDataDiffusionGradientList type";
     }
 
-    return true;
-}
-
-bool itkDataDiffusionGradientListPlugin::uninitialize()
-{
     return true;
 }
 

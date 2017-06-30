@@ -16,33 +16,6 @@
 #include <medVtkView.h>
 #include <medVtkViewNavigator.h>
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// medVtkViewPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class medVtkViewPluginPrivate
-{
-public:
-    // Class variables go here.
-};
-
-// /////////////////////////////////////////////////////////////////
-// medVtkViewPlugin
-// /////////////////////////////////////////////////////////////////
-
-medVtkViewPlugin::medVtkViewPlugin(QObject *parent) :
-    dtkPlugin(parent), d(new medVtkViewPluginPrivate)
-{
-
-}
-
-medVtkViewPlugin::~medVtkViewPlugin()
-{
-    delete d;
-    d = NULL;
-}
 
 bool medVtkViewPlugin::initialize()
 {
@@ -53,33 +26,15 @@ bool medVtkViewPlugin::initialize()
     return true;
 }
 
-bool medVtkViewPlugin::uninitialize()
-{
-    return true;
-}
-
 QString medVtkViewPlugin::name() const
 {
     return "medVtkViewPlugin";
-}
-
-QString medVtkViewPlugin::contact() const
-{
-    return "medinria team";
 }
 
 QStringList medVtkViewPlugin::authors() const
 {
     QStringList list;
     list << QString::fromUtf8("rdebroiz");
-    return list;
-}
-
-QStringList medVtkViewPlugin::contributors() const
-{
-    QStringList list;
-    list << "rdebroiz";
-
     return list;
 }
 

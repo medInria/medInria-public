@@ -13,32 +13,84 @@
 
 #pragma once
 
+#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkPlugin.h>
 #include <medCoreExport.h>
 
 class MEDCORE_EXPORT medPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
     medPlugin(QObject* parent = 0);
 
+    /**
+     * @brief name() fills the header widget in the "i" information pop-up.
+     *        Is also used to link a toolbox with a plugin in its plugin() function
+     * @return the name of the plugin
+     */
     virtual QString name() const = 0;
-    //virtual QString version() const;
-    virtual QStringList authorFullNames() const = 0;
-    virtual QStringList contributorFullNames() const = 0;
-    //virtual QStringList dependencies() const;
-    virtual QStringList tags() const = 0;
-    virtual QStringList types() const = 0;
 
-private:
+    /**
+     * @brief contact() fills the Contact widget in the "i" information pop-up
+     * @return a contact mail adress/phone number/etc.
+     */
     virtual QString contact() const;
+
+    /**
+     * @brief description() fills the Description widget in the "i" information pop-up
+     * @return a description of the plugin
+     */
     virtual QString description() const;
+
+    /**
+     * @brief authors() fills the Authors widget in the "i" information pop-up
+     * @return a list of authors of the plugin
+     */
     virtual QStringList authors() const;
+
+    /**
+     * @brief contributors() fills the Contributors widget in the "i" information pop-up
+     * @return a list of contributors of the plugin
+     */
     virtual QStringList contributors() const;
 
-    QStringList sortByLastName(QStringList names) const;
-    static bool nameLessThan(const QString &string1, const QString &string2);
+    /**
+     * @brief dependencies() fills the Dependencies widget in the "i" information pop-up
+     * @return a list of external dependencies needed by the plugin
+     */
+    virtual QStringList dependencies() const;
+
+    /**
+     * @brief tags() is used to add tags to plugins
+     * @return a list of tags linked to the plugin
+     */
+    virtual QStringList tags() const;
+
+    /**
+     * @brief <not used>
+     * @return <not used>
+     */
+    virtual bool uninitialize();
+
+    /**
+     * @brief identifier() is used to identify the current plugin with a uniq QString
+     * @return the identifier of the current plugin
+     */
+    virtual QString identifier() const;
+
+    /**
+     * @brief version() fills the Version widget in the "i" information pop-up
+     * @return the version number set in the plugin CMakeLists file
+     */
+    virtual QString version() const;
+
+    /**
+     * @brief types() is used to define the processes/toolboxes types in the plugin
+     * @return a list of types defined in the plugin
+     */
+    virtual QStringList types() const;
 };
 
 

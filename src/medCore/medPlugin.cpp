@@ -17,6 +17,11 @@ medPlugin::medPlugin(QObject* parent) : dtkPlugin(parent)
 {
 }
 
+bool medPlugin::uninitialize()
+{
+    return true;
+}
+
 QString medPlugin::contact() const
 {
     return "<music-userfeedback@inria.fr>";
@@ -24,26 +29,40 @@ QString medPlugin::contact() const
 
 QString medPlugin::description() const
 {
-    return "Copyright (c) 2015, IHU Liryc, Université de Bordeaux and Inria. All rights reserved.";
+    return "";
+}
+
+QString medPlugin::identifier() const
+{
+    return "";
+}
+
+QString medPlugin::version() const
+{
+    return "";
 }
 
 QStringList medPlugin::authors() const
 {
-    return sortByLastName(authorFullNames());
+    return QStringList() << "MUSIC team";
 }
 
 QStringList medPlugin::contributors() const
 {
-    return sortByLastName(contributorFullNames());
+    return QStringList() << "MUSIC team";
 }
 
-QStringList medPlugin::sortByLastName(QStringList names) const
+QStringList medPlugin::dependencies() const
 {
-    qSort(names.begin(), names.end(), nameLessThan);
-    return names;
+    return QStringList();
 }
 
-bool medPlugin::nameLessThan(const QString& string1, const QString& string2)
+QStringList medPlugin::tags() const
 {
-    return string1.split(" ").last() < string2.split(" ").last();
+    return QStringList();
+}
+
+QStringList medPlugin::types() const
+{
+    return QStringList();
 }

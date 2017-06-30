@@ -13,38 +13,22 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include <itkProcessRegistrationDiffeomorphicDemonsPluginExport.h>
 
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPluginPrivate;
-
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPlugin : public dtkPlugin
+class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPlugin : public medPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
 
 public:
-    itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent = 0);
-    ~itkProcessRegistrationDiffeomorphicDemonsPlugin();
-
     virtual bool initialize();
-    virtual bool uninitialize();
 
-    virtual QString contact() const;
     virtual QString description() const;
     virtual QString name() const;
     virtual QString version() const;
-
-     virtual QStringList authors() const;
-     virtual QStringList contributors() const;
-     virtual QStringList dependencies() const;
-
-    virtual QStringList tags() const;
+    virtual QStringList authors() const;
+    virtual QStringList contributors() const;
     virtual QStringList types() const;
-
-private:
-     itkProcessRegistrationDiffeomorphicDemonsPluginPrivate *d;
 };
 
 

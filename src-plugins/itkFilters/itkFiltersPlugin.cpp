@@ -34,24 +34,6 @@
 #include <itkFiltersToolBox.h>
 #include <itkMorphologicalFiltersToolBox.h>
 
-#include <dtkLog/dtkLog.h>
-
-class itkFiltersPluginPrivate
-{
-public:
-};
-
-itkFiltersPlugin::itkFiltersPlugin ( QObject* parent ) : dtkPlugin ( parent ), d ( new itkFiltersPluginPrivate )
-{
-
-}
-
-itkFiltersPlugin::~itkFiltersPlugin()
-{
-    delete d;
-
-    d = NULL;
-}
 
 bool itkFiltersPlugin::initialize()
 {
@@ -79,11 +61,6 @@ bool itkFiltersPlugin::initialize()
     return true;
 }
 
-bool itkFiltersPlugin::uninitialize()
-{
-    return true;
-}
-
 QString itkFiltersPlugin::description() const
 {
   QString description;
@@ -99,11 +76,6 @@ QString itkFiltersPlugin::name() const
     return "itkFiltersPlugin";
 }
 
-QString itkFiltersPlugin::contact() const
-{
-    return "For any feedback <music-userfeedback@inria.fr>";
-}
-
 QString itkFiltersPlugin::version() const
 {
     return ITKFILTERSPLUGIN_VERSION;
@@ -117,15 +89,7 @@ QStringList itkFiltersPlugin::authors() const
 QStringList itkFiltersPlugin::contributors() const
 {
     return QStringList() << QString::fromUtf8("Benoit Bleuzé")
-                         << "Mathilde Merle"
-                         << "Mehdi Juhoor"
-                         << QString::fromUtf8("Loïc Cadour")
-                         << "Florent Collot";
-}
-
-QStringList itkFiltersPlugin::dependencies() const
-{
-    return dtkPlugin::dependencies();
+                         << medPlugin::contributors();
 }
 
 QStringList itkFiltersPlugin::tags() const

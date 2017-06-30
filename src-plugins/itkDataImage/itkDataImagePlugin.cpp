@@ -93,7 +93,7 @@ public:
 // itkDataImagePlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataImagePlugin::itkDataImagePlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataImagePluginPrivate)
+itkDataImagePlugin::itkDataImagePlugin(QObject *parent) : medPlugin(parent), d(new itkDataImagePluginPrivate)
 {
 
 }
@@ -162,11 +162,6 @@ bool itkDataImagePlugin::initialize()
     if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
     if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type"; }
 
-    return true;
-}
-
-bool itkDataImagePlugin::uninitialize()
-{
     return true;
 }
 

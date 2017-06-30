@@ -13,38 +13,20 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include "itkN4BiasCorrectionPluginExport.h"
 
-class ITKN4BIASCORRECTIONPLUGIN_EXPORT itkN4BiasCorrectionPluginPrivate;
-
-class ITKN4BIASCORRECTIONPLUGIN_EXPORT itkN4BiasCorrectionPlugin : public dtkPlugin
+class ITKN4BIASCORRECTIONPLUGIN_EXPORT itkN4BiasCorrectionPlugin : public medPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
     
 public:
-    itkN4BiasCorrectionPlugin(QObject *parent = 0);
-    ~itkN4BiasCorrectionPlugin();
-    
     virtual bool initialize();
-    virtual bool uninitialize();
     
     virtual QString name() const;
     virtual QString identifier() const;
-    virtual QString description() const;
-    virtual QString contact() const;
     virtual QString version() const;
-    virtual QStringList authors() const;
-    virtual QStringList contributors() const;
-    virtual QStringList dependencies() const;
-    
-    virtual QStringList tags() const;
     virtual QStringList types() const;
-    
-private:
-    itkN4BiasCorrectionPluginPrivate *d;
 };
 
 

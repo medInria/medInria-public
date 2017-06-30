@@ -13,23 +13,20 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include <itkDataDiffusionGradientListPluginExport.h>
 
 class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPluginPrivate;
 
-class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPlugin : public dtkPlugin
+class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPlugin : public medPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
 
 public:
      itkDataDiffusionGradientListPlugin(QObject *parent = 0);
     ~itkDataDiffusionGradientListPlugin();
 
     virtual bool initialize();
-    virtual bool uninitialize();
 
     virtual QString name() const;
     virtual QString description() const;

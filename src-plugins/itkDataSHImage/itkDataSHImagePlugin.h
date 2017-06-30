@@ -13,22 +13,20 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <medPlugin.h>
 #include <itkDataSHImagePluginExport.h>
 
 class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImagePluginPrivate;
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImagePlugin : public dtkPlugin
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImagePlugin : public medPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
 
 public:
      itkDataSHImagePlugin(QObject *parent = 0);
     ~itkDataSHImagePlugin();
 
     virtual bool initialize();
-    virtual bool uninitialize();
 
     virtual QString name() const;
     virtual QString description() const;
@@ -37,7 +35,6 @@ public:
     virtual QStringList types() const;
 
     virtual QString version() const;
-    virtual QString contact(void) const;
     virtual QStringList authors() const;
     virtual QStringList contributors() const;
 

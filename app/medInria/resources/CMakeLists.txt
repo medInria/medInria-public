@@ -19,11 +19,18 @@ set(${PROJECT_NAME}_QRC
   PARENT_SCOPE
   )
 
-
 file(GLOB ${PROJECT_NAME}_QSS
   *.qss
   )
 set(${PROJECT_NAME}_QSS 
   ${${PROJECT_NAME}_QSS} 
+  PARENT_SCOPE
+  )
+
+file(GLOB ${PROJECT_NAME}_HTML
+  *.html
+  )
+set(${PROJECT_NAME}_HTML
+  ${${PROJECT_NAME}_HTML}
   PARENT_SCOPE
   )

@@ -13,38 +13,20 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include "iterativeClosestPointPluginExport.h"
 
-class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointPluginPrivate;
-
-class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointPlugin : public dtkPlugin
+class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointPlugin : public medPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
     
 public:
-    iterativeClosestPointPlugin(QObject *parent = 0);
-    ~iterativeClosestPointPlugin();
-    
     virtual bool initialize();
-    virtual bool uninitialize();
     
     virtual QString name() const;
     virtual QString identifier() const;
-    virtual QString description() const;
-    virtual QString contact() const;
     virtual QString version() const;
-    virtual QStringList authors() const;
-    virtual QStringList contributors() const;
-    virtual QStringList dependencies() const;
-    
-    virtual QStringList tags() const;
     virtual QStringList types() const;
-    
-private:
-    iterativeClosestPointPluginPrivate *d;
 };
 
 
