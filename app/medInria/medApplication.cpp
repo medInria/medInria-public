@@ -42,12 +42,14 @@
 
 #include <QtGui>
 
+#define projectContact PROJECT_CONTACT
 
 class medApplicationPrivate
 {
 public:
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
+    QString projectName;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -58,6 +60,8 @@ medApplication::medApplication(int & argc, char**argv) :
         QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
+    d->projectName = QFileInfo(argv[0]).baseName();
+
     this->initialize();
 }
 
@@ -117,7 +121,7 @@ void medApplication::open(QString path)
 
 void medApplication::initialize()
 {
-    this->setApplicationName("MUSIC");            /*Beware, change database path*/
+    this->setApplicationName(d->projectName);     /*Beware, change database path*/
     this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
@@ -139,8 +143,10 @@ void medApplication::initialize()
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
     {
-        QString expiredInfo = "This copy of MUSIC has expired, please contact ";
-        expiredInfo += "music-userfeedback@inria.fr";
+        QString expiredInfo = "This copy of ";
+        expiredInfo += d->projectName;
+        expiredInfo += " has expired, please contact ";
+        expiredInfo += (char*)(projectContact);
         expiredInfo += " for more information.";
         QMessageBox msg;
         msg.setText(expiredInfo);

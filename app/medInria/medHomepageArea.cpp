@@ -77,7 +77,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
-    aboutButton->setToolTip(tr("About MUSIC"));
+    aboutButton->setToolTip(QString("About ")+qApp->applicationName());
     aboutButton->setFocusPolicy ( Qt::NoFocus );
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -110,7 +110,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
-    settingsButton->setToolTip(tr("Configure MUSIC"));
+    settingsButton->setToolTip(QString("Configure ")+qApp->applicationName());
     settingsButton->setFocusPolicy ( Qt::NoFocus );
     settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -138,8 +138,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                                           "<br/><br/>"
                                           "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria."
                                           "<br/><br/>"
-                                          " <font color = 'red'><b>This MUSIC copy will expire on ")
+                                          " <font color = 'red'><b>This %2 copy will expire on ")
                         .arg(qApp->applicationVersion())
+                        .arg(qApp->applicationName())
                         + QLocale(QLocale::English).toString(expiryDate, "d MMMM yyyy")
                         + ".</b></font>");
 

@@ -13,6 +13,8 @@
 
 #include <medPlugin.h>
 
+#define projectContact PROJECT_CONTACT
+
 medPlugin::medPlugin(QObject* parent) : dtkPlugin(parent)
 {
 }
@@ -24,7 +26,10 @@ bool medPlugin::uninitialize()
 
 QString medPlugin::contact() const
 {
-    return "For any feedback <music-userfeedback@inria.fr>";
+    QString resContact = "For any feedback <";
+    resContact += (char*)(projectContact);
+    resContact += ">";
+    return resContact;
 }
 
 QString medPlugin::description() const
