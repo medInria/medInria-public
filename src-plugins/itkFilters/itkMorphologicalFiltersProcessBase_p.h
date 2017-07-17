@@ -81,7 +81,7 @@ public:
 
         switch (kernelShape)
         {
-        case itkMorphologicalFiltersProcessBase::BallKernel:
+        case itkMorphologicalFiltersProcessBase::BallKernel: default:
             kernel = StructuringElementType::Ball(elementRadius);
             break;
         case itkMorphologicalFiltersProcessBase::CrossKernel:
