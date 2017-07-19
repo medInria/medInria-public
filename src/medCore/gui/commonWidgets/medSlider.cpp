@@ -23,10 +23,11 @@ void medSlider::addTick(int position)
 
 int medSlider::tickCount()
 {
-    if (!ticksList.toVector().isEmpty())
+    if (!ticksList.isEmpty())
     {
         return ticksList.count();
     }
+
     return 0;
 }
 
@@ -53,7 +54,7 @@ void medSlider::paintEvent(QPaintEvent *ev)
 
     QPainter painter(this);
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-    for(int i = 0; i<ticksList.size(); i++)
+    for(int i = 0; i<tickCount(); i++)
     {
         int position = QStyle::sliderPositionFromValue(minimum(),
                                                        maximum(),
