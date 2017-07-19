@@ -411,10 +411,8 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 filePaths << d->io->GetOrderedFileNames()[i].c_str();
             }
         }
-        if (filePaths.count() != 0)
-        {
-            medData->addMetaData(medMetaDataKeys::FilePaths.key(), filePaths);
-        }
+
+        medData->addMetaData(medMetaDataKeys::FilePaths.key(), filePaths);
 
         medData->setMetaData(medMetaDataKeys::Status.key(),          d->io->GetPatientStatus().c_str());
         medData->setMetaData(medMetaDataKeys::SequenceName.key(),    d->io->GetSequenceName().c_str());
