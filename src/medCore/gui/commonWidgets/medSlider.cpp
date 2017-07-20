@@ -15,7 +15,7 @@
 
 void medSlider::addTick(int position)
 {
-    if( (tickCount() == 0) || !ticksList.contains(position))
+    if( (ticksList.isEmpty()) || !ticksList.contains(position))
     {
         ticksList.append(position);
     }
@@ -33,7 +33,7 @@ int medSlider::tickCount()
 
 void medSlider::removeTick(int position)
 {
-    if (tickCount() > 0)
+    if (!ticksList.isEmpty())
     {
         ticksList.removeAll(position);
     }
@@ -41,7 +41,7 @@ void medSlider::removeTick(int position)
 
 void medSlider::removeAllTicks()
 {
-    if (tickCount() > 0)
+    if (!ticksList.isEmpty())
     {
         ticksList.clear();
     }
