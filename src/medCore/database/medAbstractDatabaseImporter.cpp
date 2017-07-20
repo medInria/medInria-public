@@ -940,7 +940,7 @@ void medAbstractDatabaseImporter::addAdditionalMetaData ( medAbstractData* imDat
     imData->setMetaData ( "Size", size );
 
     if ( !imData->hasMetaData ( "FilePaths" ) )
-        imData->addMetaData ( "FilePaths", aggregatedFilesPaths );
+        imData->setMetaData ( "FilePaths", aggregatedFilesPaths );
 
     imData->setMetaData ( "FileName", aggregatedFileName );
 }

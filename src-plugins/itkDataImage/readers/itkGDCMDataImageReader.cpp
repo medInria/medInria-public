@@ -482,7 +482,7 @@ bool itkGDCMDataImageReader::read (const QStringList &paths)
             if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
                 const StringVectorType &values = metaData->GetMetaDataObjectValue();
                 for (unsigned int i=0; i<values.size(); i++)
-                    medData->setMetaData( it->first.c_str(), values[i].c_str());
+                    medData->addMetaData( it->first.c_str(), values[i].c_str());
             }
             ++it;
         }
