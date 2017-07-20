@@ -473,8 +473,10 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
         }
         d->colorFiberParameter->blockSignals(false);
 
-        data->setMetaData("BundleList", QStringList());
-        data->setMetaData("BundleColorList", QStringList());
+        if (!data->hasMetaData("BundleList"))
+            data->setMetaData("BundleList", QStringList());
+        if (!data->hasMetaData("BundleColorList"))
+            data->setMetaData("BundleColorList", QStringList());
 
         d->actor = d->manager->GetOutput();
         d->opacityProperty = vtkSmartPointer <vtkProperty>::New();
@@ -704,7 +706,8 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
             if ((metaData == "BundleList")||(metaData == "BundleColorList"))
                 continue;
 
-            tmpBundle->setMetaData(metaData, d->data->metaDataValues (metaData));
+            if (!tmpBundle->hasMetaData(metaData))
+                tmpBundle->setMetaData(metaData, d->data->metaDataValues (metaData));
         }
 
         foreach ( QString property, d->data->propertyList() )
@@ -1388,7 +1391,8 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
         if ((metaData == "BundleList")||(metaData == "BundleColorList"))
             continue;
         
-        savedBundle->setMetaData (metaData, d->data->metaDataValues (metaData));
+        if (!savedBundle->hasMetaData(metaData))
+            savedBundle->setMetaData (metaData, d->data->metaDataValues (metaData));
     }
     
     foreach ( QString property, d->data->propertyList() )

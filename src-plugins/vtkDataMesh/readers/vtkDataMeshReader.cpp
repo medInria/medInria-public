@@ -150,7 +150,7 @@ bool vtkDataMeshReader::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)
 
             for (int j = 0; j < array->GetSize(); j++)
             {
-                data()->setMetaData(metaDataKey, QString(array->GetValue(j)));
+                data()->addMetaData(metaDataKey, QString(array->GetValue(j)));
             }
         }
         else

@@ -42,20 +42,6 @@ public:
 
     virtual QImage& thumbnail();
 
-    /**
-          * @brief setMetaData allows to test if a metadata list is set and fill it, or create it
-          * @param key
-          * @param value
-          */
-    void setMetaData(const QString& key, const QStringList& value);
-
-    /**
-          * @brief setMetaData allows to test if a metadata is set and fill it, or create it
-          * @param key
-          * @param value
-          */
-    void setMetaData(const QString& key, const QString& value);
-
 public slots:
 
     void clearAttachedData();

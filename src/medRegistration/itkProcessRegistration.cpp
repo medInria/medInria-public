@@ -282,7 +282,8 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
 
     dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
     foreach ( QString metaData, data->metaDataList() )
-        convertedData->setMetaData ( metaData, data->metaDataValues ( metaData ) );
+        if (!convertedData->hasMetaData(metaData))
+            convertedData->setMetaData ( metaData, data->metaDataValues ( metaData ) );
 
     foreach ( QString property, data->propertyList() )
         convertedData->addProperty ( property,data->propertyValues ( property ) );
