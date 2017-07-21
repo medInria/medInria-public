@@ -175,8 +175,10 @@ void DCMTKImageIO::ReadImageInformation()
 
             //Forcing sliceLocation to be a multiple of spacing between slices
             //Prevents from some sorting issues (e.g due to extremely small differences in sliceLocations)
-
-            sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2];
+            if(sliceLocation>0)
+                sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2];
+            else
+                sliceLocation = floor(sliceLocation/m_Spacing[2])*m_Spacing[2];
             m_LocationSet.insert( sliceLocation );
             m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *it ) );
             m_FilenameToIndexMap[ *it ] = fileIndex;
