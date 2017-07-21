@@ -90,7 +90,6 @@ public:
     QToolButton*              adjustSizeButton;
     QToolButton*              screenshotButton;
     QToolButton*              fullscreenButton;
-    QToolButton*              quitButton;
 
     QList<QString>            importUuids;
     medQuickAccessMenu * quickAccessWidget;
@@ -176,15 +175,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->shortcutAccessVisible = false;
     d->controlPressed = false;
 
-    //Add quit button
-    QIcon quitIcon;
-    quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
-    d->quitButton = new QToolButton(this);
-    d->quitButton->setIcon(quitIcon);
-    d->quitButton->setObjectName("quitButton");
-    connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
-    d->quitButton->setToolTip(tr("Close MUSIC"));
-
     //  Setup Fullscreen Button
     QIcon fullscreenIcon ;
     fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
@@ -240,7 +230,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     rightEndButtonsLayout->addWidget( d->adjustSizeButton );
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
-    rightEndButtonsLayout->addWidget( d->quitButton );
 
     //  Setting up status bar
     d->statusBarLayout = new QHBoxLayout;
