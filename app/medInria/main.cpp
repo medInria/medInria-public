@@ -79,7 +79,7 @@ int main(int argc,char* argv[]) {
     QLocale::setDefault(QLocale("C"));
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
-        qDebug() << "Usage: <<"<<QFileInfo(argv[0]).baseName().toStdString().c_str()<<" [--fullscreen|--no-fullscreen] [--stereo] "
+        qDebug() << "Usage: "<<QFileInfo(argv[0]).baseName().toStdString().c_str()<<" [--fullscreen|--no-fullscreen] [--stereo] "
         #ifdef ACTIVATE_WALL_OPTION
         "[--wall] [--tracker=URL] "
         #endif
