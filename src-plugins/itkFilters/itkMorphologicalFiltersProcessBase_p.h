@@ -41,7 +41,10 @@ class itkMorphologicalFiltersProcessBase;
 class ITKFILTERSPLUGIN_EXPORT itkMorphologicalFiltersProcessBasePrivate : public itkFiltersProcessBasePrivate
 {
 public:
-    itkMorphologicalFiltersProcessBasePrivate(itkMorphologicalFiltersProcessBase *q = 0) : itkFiltersProcessBasePrivate(q) {}
+    itkMorphologicalFiltersProcessBasePrivate(itkMorphologicalFiltersProcessBase *q = 0) : itkFiltersProcessBasePrivate(q)
+    {
+        kernelShape = itkMorphologicalFiltersProcessBase::BallKernel;
+    }
     itkMorphologicalFiltersProcessBasePrivate(const itkMorphologicalFiltersProcessBasePrivate& other) : itkFiltersProcessBasePrivate(other) {}
 
     virtual ~itkMorphologicalFiltersProcessBasePrivate(void) {}
@@ -81,7 +84,7 @@ public:
 
         switch (kernelShape)
         {
-        case itkMorphologicalFiltersProcessBase::BallKernel: default:
+        case itkMorphologicalFiltersProcessBase::BallKernel:
             kernel = StructuringElementType::Ball(elementRadius);
             break;
         case itkMorphologicalFiltersProcessBase::CrossKernel:

@@ -36,14 +36,12 @@ itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorpho
 
     d->isRadiusInPixels = false;    
     d->description = "";
-
-    d->kernelShape = BallKernel;
 }
 
 itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other) 
     : itkFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
 {
-    
+
 }
 
 itkMorphologicalFiltersProcessBase::~itkMorphologicalFiltersProcessBase()
