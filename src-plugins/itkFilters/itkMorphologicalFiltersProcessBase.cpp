@@ -11,21 +11,31 @@
 
 =========================================================================*/
 
-#include <itkMorphologicalFiltersProcessBase.h>
+#include "itkMorphologicalFiltersProcessBase.h"
 
-#include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <itkBinaryDilateImageFilter.h>
+#include <itkBinaryErodeImageFilter.h>
+#include <itkBinaryMorphologicalClosingImageFilter.h>
+#include <itkBinaryMorphologicalOpeningImageFilter.h>
+#include <itkFlatStructuringElement.h>
+#include <itkGrayscaleMorphologicalClosingImageFilter.h>
+#include <itkGrayscaleMorphologicalOpeningImageFilter.h>
+#include <itkImage.h>
+#include <itkMinimumMaximumImageFilter.h>
+#include <medUtilities.h>
 
-#include <itkMorphologicalFiltersProcessBase_p.h>
+class itkMorphologicalFiltersProcessBasePrivate
+{
+public:
+    double radius[3];
+    double radiusMm[3];
+    bool isRadiusInPixels;
+    itkMorphologicalFiltersProcessBase::KernelShape kernelShape;
+};
 
 itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorphologicalFiltersProcessBase *parent) 
-    : itkFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
-{
-    DTK_D(itkMorphologicalFiltersProcessBase);
-    
-    d->input = NULL;
-    d->output = NULL;
-
+    : itkFiltersProcessBase(), d(new itkMorphologicalFiltersProcessBasePrivate)
+{  
     d->radius[0] = 0;
     d->radius[1] = 0;
     d->radius[2] = 0;
@@ -34,27 +44,15 @@ itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorpho
     d->radiusMm[1] = 0;
     d->radiusMm[2] = 0;
 
-    d->isRadiusInPixels = false;    
-    d->description = "";
-}
+    d->isRadiusInPixels = false;
 
-itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other) 
-    : itkFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
-{
-
-}
-
-itkMorphologicalFiltersProcessBase::~itkMorphologicalFiltersProcessBase()
-{
-    
+    d->kernelShape = itkMorphologicalFiltersProcessBase::BallKernel;
 }
 
 void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)
 {
     if (channel <= 1)
     {
-        DTK_D(itkMorphologicalFiltersProcessBase);
-
         d->radius[0] = data;
         d->radius[1] = data;
         d->radius[2] = data;
@@ -72,61 +70,57 @@ void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)
 
 void itkMorphologicalFiltersProcessBase::setParameter(int data)
 {
-    DTK_D(itkMorphologicalFiltersProcessBase);
-
     d->kernelShape = static_cast<KernelShape>(data);
 }
 
 //only called if not defined in subclasses (e.g. dilate/erodeFilter)
 int itkMorphologicalFiltersProcessBase::tryUpdate()
 {
-    DTK_D(itkMorphologicalFiltersProcessBase);
-
     int res = DTK_FAILURE;
 
-    if (d->input)
+    if (inputData)
     {
-        QString id = d->input->identifier();
+        QString id = inputData->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -134,4 +128,146 @@ int itkMorphologicalFiltersProcessBase::tryUpdate()
         }
     }
     return res;
+}
+
+template <class ImageType> void itkMorphologicalFiltersProcessBase::convertMmInPixels()
+{
+    ImageType *image = dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) );
+    for (unsigned int i=0; i<image->GetSpacing().Size(); i++)
+    {
+        d->radius[i] = floor((d->radius[i]/image->GetSpacing()[i])+0.5); //rounding
+        d->radiusMm[i] = d->radius[i] * image->GetSpacing()[i];
+    }
+}
+
+template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+
+    if(!d->isRadiusInPixels)
+    {
+        convertMmInPixels<ImageType>();
+    }
+
+    typedef itk::FlatStructuringElement < 3> StructuringElementType;
+    StructuringElementType::RadiusType elementRadius;
+    elementRadius[0] = d->radius[0]; //radius (double) is truncated
+    elementRadius[1] = d->radius[1];
+    elementRadius[2] = d->radius[2];
+
+    StructuringElementType kernel;
+
+    switch (d->kernelShape)
+    {
+    case itkMorphologicalFiltersProcessBase::BallKernel:
+        kernel = StructuringElementType::Ball(elementRadius);
+        break;
+    case itkMorphologicalFiltersProcessBase::CrossKernel:
+        kernel = StructuringElementType::Cross(elementRadius);
+        break;
+    case itkMorphologicalFiltersProcessBase::BoxKernel:
+        kernel = StructuringElementType::Box(elementRadius);
+        break;
+    }
+
+    kernel.SetRadiusIsParametric(true);
+
+    typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
+    typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+    imageCalculatorFilter->SetInput( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    imageCalculatorFilter->Update();
+
+    typedef itk::KernelImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
+    typename FilterType::Pointer filter;
+
+    QString filenameDescription;
+
+    if(descriptionText == "Dilate filter")
+    {
+        filenameDescription = "dilated";
+
+        typedef itk::BinaryDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateFilterType;
+        filter = DilateFilterType::New();
+        dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+        dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+    }
+    else if(descriptionText == "Erode filter")
+    {
+        filenameDescription = "eroded";
+
+        typedef itk::BinaryErodeImageFilter< ImageType, ImageType,StructuringElementType >  ErodeFilterType;
+        filter = ErodeFilterType::New();
+        dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+        dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+    }
+    else if(descriptionText == "Grayscale Close filter")
+    {
+        filenameDescription = "grayscaleClosed";
+
+        typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  GCloseFilterType;
+        filter = GCloseFilterType::New();
+    }
+    else if(descriptionText == "Grayscale Open filter")
+    {
+        filenameDescription = "grayscaleOpened";
+
+        typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  GOpenFilterType;
+        filter = GOpenFilterType::New();
+    }
+    else if(descriptionText == "Binary Close filter")
+    {
+        filenameDescription = "binaryClosed";
+
+        typedef itk::BinaryMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  BCloseFilterType;
+        filter = BCloseFilterType::New();
+        dynamic_cast<BCloseFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+    }
+    else if(descriptionText == "Binary Open filter")
+    {
+        filenameDescription = "binaryOpened";
+
+        typedef itk::BinaryMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  BOpenFilterType;
+        filter = BOpenFilterType::New();
+        dynamic_cast<BOpenFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
+        dynamic_cast<BOpenFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
+    }
+    else
+    {
+        qDebug()<<"Wrong morphological filter";
+        return DTK_FAILURE;
+    }
+
+    filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    filter->SetKernel ( kernel );
+
+    callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    filter->AddObserver ( itk::ProgressEvent(), callback );
+
+    filter->Update();
+
+    outputData->setData ( filter->GetOutput() );
+
+    // Add description on output data
+    QString newSeriesDescription = filenameDescription + " ";
+
+    if (d->isRadiusInPixels)
+    {
+        newSeriesDescription += QString::number(floor(d->radius[0])) + "/" +
+                QString::number(floor(d->radius[1])) + "/" +
+                QString::number(floor(d->radius[2])) +
+                " px";
+    }
+    else
+    {
+        newSeriesDescription += QString::number(float(d->radiusMm[0])) + "/" +
+                QString::number(float(d->radiusMm[1])) + "/" +
+                QString::number(float(d->radiusMm[2])) +
+                " mm";
+    }
+
+    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+
+    return DTK_SUCCEED;
 }

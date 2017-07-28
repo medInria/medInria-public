@@ -13,37 +13,41 @@
 
 #include <itkFiltersWindowingProcess.h>
 
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
+#include <itkImage.h>
+#include <itkIntensityWindowingImageFilter.h>
 
-#include <itkFiltersWindowingProcess_p.h>
+#include <medUtilities.h>
+
+class itkFiltersWindowingProcessPrivate
+{
+public:
+    double minimumIntensityValue;
+    double maximumIntensityValue;
+    double minimumOutputIntensityValue;
+    double maximumOutputIntensityValue;
+};
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersWindowingProcess::itkFiltersWindowingProcess(itkFiltersWindowingProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersWindowingProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersWindowingProcess);
-    
-    d->filter = this;
-    d->output = NULL;
-    
-    d->description = tr("ITK intensity windowing filter");
-}
+    : itkFiltersProcessBase(), d(new itkFiltersWindowingProcessPrivate)
+{   
+    filter = this;
+    descriptionText = tr("ITK intensity windowing filter");
 
-
-itkFiltersWindowingProcess::itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersWindowingProcessPrivate(*other.d_func()), other)
-{
+    d->minimumIntensityValue = 0;
+    d->maximumIntensityValue = 255;
+    d->minimumOutputIntensityValue = 0;
+    d->maximumOutputIntensityValue = 255;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersWindowingProcess::~itkFiltersWindowingProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -59,8 +63,6 @@ void itkFiltersWindowingProcess::setParameter(double data, int channel)
 {
     if (channel > 3)
         return;
- 
-    DTK_D(itkFiltersWindowingProcess);
     
     switch ( channel )
     {
@@ -82,54 +84,52 @@ void itkFiltersWindowingProcess::setParameter(double data, int channel)
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersWindowingProcess::tryUpdate()
-{
-    DTK_D(itkFiltersWindowingProcess);
-    
+{   
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( inputData )
     {
-        QString id = d->input->identifier();
+        QString id = inputData->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -138,6 +138,35 @@ int itkFiltersWindowingProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersWindowingProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  WindowingFilterType;
+    typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
+
+    windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    windowingFilter->SetWindowMinimum ( ( PixelType ) d->minimumIntensityValue );
+    windowingFilter->SetWindowMaximum ( ( PixelType ) d->maximumIntensityValue );
+    windowingFilter->SetOutputMinimum ( ( PixelType ) d->minimumOutputIntensityValue );
+    windowingFilter->SetOutputMaximum ( ( PixelType ) d->maximumOutputIntensityValue );
+
+    callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    windowingFilter->Update();
+
+    outputData->setData ( windowingFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = "windowing " + QString::number(d->minimumIntensityValue)
+            + " " + QString::number(d->maximumIntensityValue);
+    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

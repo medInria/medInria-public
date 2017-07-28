@@ -14,11 +14,7 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
 
-#include <itkFiltersPluginExport.h>
-
-class itkFiltersInvertProcessPrivate;
 class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersInvertProcess : public itkFiltersProcessBase
@@ -27,8 +23,6 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersInvertProcess : public itkFiltersProcess
     
 public:
     itkFiltersInvertProcess(itkFiltersInvertProcess * parent = 0);
-    itkFiltersInvertProcess(const itkFiltersInvertProcess& other);
-    virtual ~itkFiltersInvertProcess(void);
 
     static bool registered ( void );
     
@@ -36,10 +30,9 @@ public slots:
 
     int tryUpdate();
 
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersInvertProcess)
+protected:
+    template <class PixelType> int updateProcess();
 };
-
 
 dtkAbstractProcess * createitkFiltersInvertProcess(void);
 

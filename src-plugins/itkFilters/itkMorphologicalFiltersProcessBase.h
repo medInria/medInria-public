@@ -14,15 +14,13 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
-
-#include <itkFiltersPluginExport.h>
 
 class itkMorphologicalFiltersProcessBasePrivate;
 
 class ITKFILTERSPLUGIN_EXPORT itkMorphologicalFiltersProcessBase : public itkFiltersProcessBase
 {
     Q_OBJECT
+
 public:
     enum KernelShape
     {
@@ -32,15 +30,18 @@ public:
     };
 
     itkMorphologicalFiltersProcessBase(itkMorphologicalFiltersProcessBase * parent = 0);
-    itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other);
-    virtual ~itkMorphologicalFiltersProcessBase(void);
+
     void setParameter(double data, int channel);
     void setParameter(int data);
 
 public slots:
     int tryUpdate();
-    
+
+protected:
+    template <class ImageType> void convertMmInPixels();
+    template <class PixelType> int updateProcess();
+
 private:
-    DTK_DECLARE_PRIVATE(itkMorphologicalFiltersProcessBase)
+    itkMorphologicalFiltersProcessBasePrivate *d;
 };
 

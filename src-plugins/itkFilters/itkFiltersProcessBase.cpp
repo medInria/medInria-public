@@ -12,39 +12,23 @@
 =========================================================================*/
 
 #include <itkFiltersProcessBase.h>
+#include <itkMacro.h>
+#include <itkProcessObject.h>
 
 #include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-
-#include <itkFiltersProcessBase_p.h>
 
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
-    : medAbstractProcess(*new itkFiltersProcessBasePrivate(this), parent)
-{
-    DTK_D(itkFiltersProcessBase);
+    : medAbstractProcess()
+{  
+    inputData = NULL;
+    outputData = NULL;
     
-    d->input = NULL;
-    d->output = NULL;
-    
-    d->description = "";
+    descriptionText = "";
 }
-
-
-itkFiltersProcessBase::itkFiltersProcessBase(const itkFiltersProcessBase& other) 
-    : medAbstractProcess(*new itkFiltersProcessBasePrivate(*other.d_func()), other)
-{
-    
-}
-
 
 itkFiltersProcessBase& itkFiltersProcessBase::operator = (const itkFiltersProcessBase& other)
 {
     return *this;
-}
-
-itkFiltersProcessBase::~itkFiltersProcessBase()
-{
-    
 }
 
 void itkFiltersProcessBase::emitProgress(int progress)
@@ -53,31 +37,24 @@ void itkFiltersProcessBase::emitProgress(int progress)
 }
 
 QString itkFiltersProcessBase::description()
-{
-    DTK_D(itkFiltersProcessBase);
-    
-    return d->description;
+{ 
+    return descriptionText;
 }
-
 
 void itkFiltersProcessBase::setInput(medAbstractData *data, int channel)
 {
     if (!data)
         return;
- 
-    DTK_D(itkFiltersProcessBase);
-    
+   
     QString identifier = data->identifier();
     
-    d->output = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
-    d->input = dynamic_cast<medAbstractImageData*> (data);
+    outputData = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
+    inputData = dynamic_cast<medAbstractImageData*> (data);
 }
 
 medAbstractData * itkFiltersProcessBase::output ( void )
-{
-    DTK_D(itkFiltersProcessBase);
-    
-    return ( d->output );
+{   
+    return outputData;
 }
 
 int itkFiltersProcessBase::update()
@@ -95,4 +72,14 @@ int itkFiltersProcessBase::update()
     }
 
     return res;
+}
+
+void itkFiltersProcessBase::eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData)
+{
+    itkFiltersProcessBase * source = reinterpret_cast<itkFiltersProcessBase *> ( clientData );
+    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
+
+    if ( !source ) { dtkWarn() << "Source is null"; }
+
+    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
 }

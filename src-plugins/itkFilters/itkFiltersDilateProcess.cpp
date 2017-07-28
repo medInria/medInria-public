@@ -14,32 +14,14 @@
 #include <itkFiltersDilateProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
-#include <itkMorphologicalFiltersProcessBase_p.h>
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent) 
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
-{
-    DTK_D(itkMorphologicalFiltersProcessBase);
-    
-    d->filter = this;
-    d->description = tr("Dilate filter");
-}
-
-
-itkFiltersDilateProcess::itkFiltersDilateProcess(const itkFiltersDilateProcess& other) 
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
-{
-}
-
-//-------------------------------------------------------------------------------------------
-
-itkFiltersDilateProcess::~itkFiltersDilateProcess( void )
-{
+    : itkMorphologicalFiltersProcessBase()
+{  
+    filter = this;
+    descriptionText = tr("Dilate filter");
 }
 
 //-------------------------------------------------------------------------------------------

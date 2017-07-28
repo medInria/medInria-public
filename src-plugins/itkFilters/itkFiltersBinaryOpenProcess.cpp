@@ -8,28 +8,15 @@
 =========================================================================*/
 
 #include <itkFiltersBinaryOpenProcess.h>
-#include <itkMorphologicalFiltersProcessBase_p.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenProcess *parent)
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
+    : itkMorphologicalFiltersProcessBase()
 {
-    DTK_D(itkMorphologicalFiltersProcessBase);
-
-    d->filter = this;
-    d->description = tr("Binary Open filter");
-}
-
-itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other)
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
-{
-}
-
-itkFiltersBinaryOpenProcess::~itkFiltersBinaryOpenProcess( void )
-{
+    filter = this;
+    descriptionText = tr("Binary Open filter");
 }
 
 bool itkFiltersBinaryOpenProcess::registered( void )

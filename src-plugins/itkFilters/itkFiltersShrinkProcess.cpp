@@ -14,36 +14,36 @@
 #include <itkFiltersShrinkProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
+#include <itkImage.h>
+#include <itkShrinkImageFilter.h>
 
-#include <itkFiltersShrinkProcess_p.h>
+#include <medUtilities.h>
+
+class itkFiltersShrinkProcessPrivate
+{
+public:
+    unsigned int shrinkFactors[3];
+};
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersShrinkProcess::itkFiltersShrinkProcess(itkFiltersShrinkProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersShrinkProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersShrinkProcess);
-    
-    d->filter = this;
-    d->input = NULL;
-    d->output = NULL;
-    
-    d->description = tr("ITK shrink filter");
-}
+itkFiltersShrinkProcess::itkFiltersShrinkProcess(itkFiltersShrinkProcess *parent)
+    : itkFiltersProcessBase(), d(new itkFiltersShrinkProcessPrivate)
+{   
+    filter = this;
+    descriptionText = tr("ITK shrink filter");
 
-
-itkFiltersShrinkProcess::itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersShrinkProcessPrivate(*other.d_func()), other)
-{
+    d->shrinkFactors[0] = 1;
+    d->shrinkFactors[1] = 1;
+    d->shrinkFactors[2] = 1;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersShrinkProcess::~itkFiltersShrinkProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -56,9 +56,7 @@ bool itkFiltersShrinkProcess::registered( void )
 //-------------------------------------------------------------------------------------------
 
 void itkFiltersShrinkProcess::setParameter(double data, int channel)
-{   
-    DTK_D(itkFiltersShrinkProcess);
-    
+{     
     if (channel > 2)
         return;
     
@@ -79,54 +77,52 @@ void itkFiltersShrinkProcess::setParameter(double data, int channel)
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersShrinkProcess::tryUpdate()
-{
-    DTK_D(itkFiltersShrinkProcess);
-    
+{   
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( inputData )
     {
-        QString id = d->input->identifier();
+        QString id = inputData->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -135,6 +131,31 @@ int itkFiltersShrinkProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersShrinkProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::ShrinkImageFilter< ImageType, ImageType >  ShrinkFilterType;
+    typename ShrinkFilterType::Pointer shrinkFilter = ShrinkFilterType::New();
+
+    shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    shrinkFilter->SetShrinkFactors(d->shrinkFactors);
+
+    callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    shrinkFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    shrinkFilter->Update();
+
+    outputData->setData ( shrinkFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = "shrink filter " + QString::number(d->shrinkFactors[0]) + "," + QString::number(d->shrinkFactors[1]) + "," + QString::number(d->shrinkFactors[2]);
+    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

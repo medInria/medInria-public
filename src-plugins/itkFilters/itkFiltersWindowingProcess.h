@@ -14,9 +14,6 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
-
-#include <itkFiltersPluginExport.h>
 
 class itkFiltersWindowingProcessPrivate;
 class medAbstractData;
@@ -27,9 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersWindowingProcess : public itkFiltersProc
     
 public:
     itkFiltersWindowingProcess(itkFiltersWindowingProcess * parent = 0);
-    itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other);
     virtual ~itkFiltersWindowingProcess(void);
-
     static bool registered ( void );
     
 public slots:
@@ -37,10 +32,12 @@ public slots:
     void setParameter ( double  data, int channel );
     int tryUpdate();
 
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersWindowingProcess)
-};
+protected:
+    template <class PixelType> int updateProcess();
 
+private:
+    itkFiltersWindowingProcessPrivate *d;
+};
 
 dtkAbstractProcess * createitkFiltersWindowingProcess(void);
 

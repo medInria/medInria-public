@@ -13,20 +13,20 @@
 
 #pragma once
 
-#include <medAbstractProcess.h>
-#include <medAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
 
+#include <itkCommand.h>
 #include <itkFiltersPluginExport.h>
 
-class itkFiltersProcessBasePrivate;
+#include <medAbstractImageData.h>
+#include <medAbstractProcess.h>
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBase : public medAbstractProcess
 {
     Q_OBJECT
+
 public:
     itkFiltersProcessBase(itkFiltersProcessBase * parent = 0);
-    itkFiltersProcessBase(const itkFiltersProcessBase& other);
-    virtual ~itkFiltersProcessBase(void);
     
     itkFiltersProcessBase& operator = (const itkFiltersProcessBase& other);
 
@@ -40,11 +40,15 @@ public:
 
     virtual int tryUpdate(){return DTK_FAILURE;}
     int update();
-    
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersProcessBase)
-    
-    using dtkAbstractProcess::description;
+
+    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
+
+protected:
+    QString descriptionText;
+    itkFiltersProcessBase *filter;
+    dtkSmartPointer <medAbstractImageData> inputData;
+    dtkSmartPointer <medAbstractImageData> outputData;
+    itk::CStyleCommand::Pointer callback;
 };
 
 

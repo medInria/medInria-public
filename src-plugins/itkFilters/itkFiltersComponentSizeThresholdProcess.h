@@ -13,10 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractData.h>
 #include "itkFiltersProcessBase.h"
-
-#include "itkFiltersPluginExport.h"
 
 class itkFiltersComponentSizeThresholdProcessPrivate;
 class dtkAbstractData;
@@ -27,9 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersComponentSizeThresholdProcess : public i
     
 public:
     itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess * parent = 0);
-    itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other);
     virtual ~itkFiltersComponentSizeThresholdProcess(void);
-
     static bool registered ( void );
     
 public slots:
@@ -37,8 +32,12 @@ public slots:
     void setParameter ( int  data, int channel );
     int tryUpdate();
 
+protected:
+    template <class PixelType> int castToUInt3();
+    template <class PixelType> int updateProcess();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersComponentSizeThresholdProcess)
+    itkFiltersComponentSizeThresholdProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersComponentSizeThresholdProcess(void);

@@ -14,9 +14,6 @@
 #pragma once
 
 #include "itkFiltersProcessBase.h"
-#include <medAbstractData.h>
-
-#include "itkFiltersPluginExport.h"
 
 class itkFiltersThresholdingProcessPrivate;
 class medAbstractData;
@@ -27,9 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersThresholdingProcess : public itkFiltersP
     
 public:
     itkFiltersThresholdingProcess(itkFiltersThresholdingProcess * parent = 0);
-    itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other);
     virtual ~itkFiltersThresholdingProcess(void);
-
     static bool registered ( void );
     
 public slots:
@@ -37,8 +32,11 @@ public slots:
     void setParameter ( double  data, int channel );
     int tryUpdate();
 
+protected:
+    template <class PixelType> int updateProcess();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersThresholdingProcess)
+    itkFiltersThresholdingProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersThresholdingProcess(void);

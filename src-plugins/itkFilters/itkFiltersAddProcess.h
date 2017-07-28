@@ -13,10 +13,7 @@
 
 #pragma once
 
-#include <medAbstractData.h>
 #include <itkFiltersProcessBase.h>
-
-#include <itkFiltersPluginExport.h>
 
 class itkFiltersAddProcessPrivate;
 class medAbstractData;
@@ -27,9 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersAddProcess : public itkFiltersProcessBas
     
 public:
     itkFiltersAddProcess(itkFiltersAddProcess * parent = 0);
-    itkFiltersAddProcess(const itkFiltersAddProcess& other);
     virtual ~itkFiltersAddProcess(void);
-
     static bool registered ( void );
     
 public slots:
@@ -37,8 +32,11 @@ public slots:
     void setParameter ( double  data, int channel );
     int tryUpdate();
 
+protected:
+    template <class PixelType> int updateProcess();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersAddProcess)
+    itkFiltersAddProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersAddProcess(void);

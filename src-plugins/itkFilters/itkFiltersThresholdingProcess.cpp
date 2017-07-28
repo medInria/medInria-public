@@ -14,39 +14,36 @@
 #include <itkFiltersThresholdingProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
 
 #include <itkImage.h>
-#include <itkCommand.h>
-#include <itkSmoothingRecursiveGaussianImageFilter.h>
+#include <itkThresholdImageFilter.h>
 
-#include <itkExceptionObject.h>
-#include <itkFiltersThresholdingProcess_p.h>
+#include <medUtilities.h>
+
+class itkFiltersThresholdingProcessPrivate
+{
+public:
+    double threshold;
+    int outsideValue;
+    bool comparisonOperator;
+};
 
 itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(itkFiltersThresholdingProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersThresholdingProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersThresholdingProcess);
-    
-    d->filter = this;
-    d->output = NULL; 
-    d->outsideValue =0;
-    d->threshold = 0;
+    : itkFiltersProcessBase(), d(new itkFiltersThresholdingProcessPrivate)
+{   
+    filter = this;
+    descriptionText = tr("ITK thresholding filter");
+
+    d->outsideValue = 0;
+    d->threshold = 200;
     d->comparisonOperator = true;
-    
-    d->description = tr("ITK thresholding filter");
 }
 
-
-itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersThresholdingProcessPrivate(*other.d_func()), other)
-{
-}
+//-------------------------------------------------------------------------------------------
 
 itkFiltersThresholdingProcess::~itkFiltersThresholdingProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -63,7 +60,6 @@ void itkFiltersThresholdingProcess::setParameter(double data, int channel)
     if (channel > 2)
         return;
 
-    DTK_D(itkFiltersThresholdingProcess);
     if (channel == 0)
         d->threshold = data;
     if (channel == 1)
@@ -75,54 +71,52 @@ void itkFiltersThresholdingProcess::setParameter(double data, int channel)
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersThresholdingProcess::tryUpdate()
-{
-    DTK_D(itkFiltersThresholdingProcess);
-    
+{   
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( inputData )
     {
-        QString id = d->input->identifier();
+        QString id = inputData->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -131,6 +125,33 @@ int itkFiltersThresholdingProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersThresholdingProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::ThresholdImageFilter < ImageType>  ThresholdImageFilterType;
+    typename ThresholdImageFilterType::Pointer thresholdFilter = ThresholdImageFilterType::New();
+    thresholdFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    if (d->comparisonOperator)
+        thresholdFilter->SetUpper( d->threshold ); // <= threshold
+    else
+        thresholdFilter->SetLower( d->threshold );
+    thresholdFilter->SetOutsideValue( d->outsideValue );
+
+    callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    thresholdFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    thresholdFilter->Update();
+
+    outputData->setData ( thresholdFilter->GetOutput() );
+
+    QString newSeriesDescription = "threshold " + QString::number(d->threshold);
+    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

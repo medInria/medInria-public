@@ -8,28 +8,15 @@
 =========================================================================*/
 
 #include <itkFiltersBinaryCloseProcess.h>
-#include <itkMorphologicalFiltersProcessBase_p.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(itkFiltersBinaryCloseProcess *parent)
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
+    : itkMorphologicalFiltersProcessBase()
 {
-    DTK_D(itkMorphologicalFiltersProcessBase);
-
-    d->filter = this;
-    d->description = tr("Binary Close filter");
-}
-
-itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other)
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
-{
-}
-
-itkFiltersBinaryCloseProcess::~itkFiltersBinaryCloseProcess( void )
-{
+    filter = this;
+    descriptionText = tr("Binary Close filter");
 }
 
 bool itkFiltersBinaryCloseProcess::registered( void )

@@ -13,13 +13,7 @@
 
 #pragma once
 
-#include <medAbstractData.h>
 #include <itkMorphologicalFiltersProcessBase.h>
-
-#include <itkFiltersPluginExport.h>
-
-class itkMorphologicalFiltersProcessBasePrivate;
-class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersDilateProcess : public itkMorphologicalFiltersProcessBase
 {
@@ -27,8 +21,6 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersDilateProcess : public itkMorphologicalF
     
 public:
     itkFiltersDilateProcess(itkFiltersDilateProcess * parent = 0);
-    itkFiltersDilateProcess(const itkFiltersDilateProcess& other);
-    virtual ~itkFiltersDilateProcess(void);
 
     static bool registered ( void );
 };
