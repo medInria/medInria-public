@@ -71,7 +71,7 @@ protected:
     ~vtkUniform() { }
 
     virtual void SetGlUniformSpecific() {
-        vtkgl::Uniform1f(Location, Value);
+        glUniform1f(Location, Value);
     }
 
 private:
@@ -107,20 +107,20 @@ template<>
 inline
 void vtkUniform<Vec<2> >::SetGlUniformSpecific() {
     vtkDebugMacro(<< "Calling glUniform2f(" << Location << ", " << Value[0] << ", " << Value[1] << ").");
-    vtkgl::Uniform2f(Location,Value[0],Value[1]);
+    glUniform2f(Location,Value[0],Value[1]);
 }
 
 template<>
 inline
 void vtkUniform<Vec<3> >::SetGlUniformSpecific() {
     vtkDebugMacro(<< "Calling glUniform3f(" << Location << ", " << Value[0] << ", " << Value[1] << ", " << Value[2] << ").");
-    vtkgl::Uniform3f(Location,Value[0],Value[1],Value[2]);
+    glUniform3f(Location,Value[0],Value[1],Value[2]);
 }
 
 template<>
 inline
 void vtkUniform<Vec<4> >::SetGlUniformSpecific() {
     vtkDebugMacro(<< "Calling glUniform4f(" << Location << ", " << Value[0] << ", " << Value[1] << ", " << Value[2] << ", " << Value[3] << ").");
-    vtkgl::Uniform4f(Location,Value[0],Value[1],Value[2],Value[3]);
+    glUniform4f(Location,Value[0],Value[1],Value[2],Value[3]);
 }
 

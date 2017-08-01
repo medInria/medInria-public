@@ -35,18 +35,17 @@ vtkStandardNewMacro(vtkUniformFloat);
 
 vtkUniformFloat::vtkUniformFloat()
 {
-  this->Value = 0.0;
+    this->Value = 0.0;
 }
 
 vtkUniformFloat::~vtkUniformFloat()
 {
-  // nothing to do.
+    // nothing to do.
 }
 
 void vtkUniformFloat::SetGlUniformSpecific()
 {
-  vtkDebugMacro(<<"Calling glUniform1f("<<this->Location<<", "
-		<<this->Value<<").");
-  vtkgl::Uniform1f(this->Location, this->Value);
+    vtkDebugMacro(<<"Calling glUniform1f("<<this->Location<<", "
+                  <<this->Value<<").");
+    glUniform1f(this->Location, this->Value);
 }
-

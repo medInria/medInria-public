@@ -90,7 +90,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkShadowMappingHelperLines.h"
 
 #include <vtkOpenGLRenderWindow.h>
-#include <vtkOpenGLExtensionManager.h>
+//#include <vtkOpenGLExtensionManager.h>
 #include <vtkProperty.h>
 
 vtkStandardNewMacro(vtkFiberMapper);
@@ -323,10 +323,10 @@ void vtkFiberMapper::DrawLines(vtkPoints* points, vtkCellArray* lineStrips,
           //cout << tangent[j] << " ";
           } // for k
 
-        vtkgl::VertexAttrib3dv(1, tangent);
+        glVertexAttrib3dv(1, tangent);
         if (this->Shadowing)
           {
-          vtkgl::VertexAttrib2sv(2, lineID); // pass fibernr, linenr (in fiber)
+          glVertexAttrib2sv(2, lineID); // pass fibernr, linenr (in fiber)
           }  // this->Shadowing
         } // this->Lighting
 
@@ -362,7 +362,7 @@ void vtkFiberMapper::DrawLines(vtkPoints* points, vtkCellArray* lineStrips,
 
       if (this->Shadowing)
         {
-        vtkgl::VertexAttrib2sv(2, lineID);
+        glVertexAttrib2sv(2, lineID);
         } // this->Shadowing
       glVertex3dv(currentPoint);
       } // for i
@@ -560,31 +560,32 @@ void vtkFiberMapper::Initialize(vtkRenderer *r)
 {
   this->Initialized = false;
 
-  vtkOpenGLExtensionManager *extensions=static_cast<vtkOpenGLRenderWindow *>(
-    r->GetRenderWindow())->GetExtensionManager();
+    // Not in opengl2 vbackend anymore, but since we are sure we use opengl2, probably useless to do this
+//  vtkOpenGLExtensionManager *extensions=static_cast<vtkOpenGLRenderWindow *>(
+//    r->GetRenderWindow())->GetExtensionManager();
 
-  int supports_GL_VERSION_2_0			= extensions->ExtensionSupported("GL_VERSION_2_0");
-  int supports_GL_EXT_framebuffer_object	= extensions->ExtensionSupported("GL_EXT_framebuffer_object");
+//  int supports_GL_VERSION_2_0			= extensions->ExtensionSupported("GL_VERSION_2_0");
+//  int supports_GL_EXT_framebuffer_object	= extensions->ExtensionSupported("GL_EXT_framebuffer_object");
 
-  if (supports_GL_VERSION_2_0)
-    {
-    extensions->LoadExtension("GL_VERSION_2_0");
-    }
-  else
-    {
-    vtkWarningMacro(<<"GL_VERSION_2_0 not supported!");
-    return;
-    }
+//  if (supports_GL_VERSION_2_0)
+//    {
+//    extensions->LoadExtension("GL_VERSION_2_0");
+//    }
+//  else
+//    {
+//    vtkWarningMacro(<<"GL_VERSION_2_0 not supported!");
+//    return;
+//    }
 
-  if (supports_GL_EXT_framebuffer_object)
-    {
-    extensions->LoadExtension("GL_EXT_framebuffer_object");
-    }
-  else
-    {
-    vtkWarningMacro(<<"GL_EXT_framebuffer_object not supported!");
-    return;
-    }
+//  if (supports_GL_EXT_framebuffer_object)
+//    {
+//    extensions->LoadExtension("GL_EXT_framebuffer_object");
+//    }
+//  else
+//    {
+//    vtkWarningMacro(<<"GL_EXT_framebuffer_object not supported!");
+//    return;
+//    }
 
   this->Initialized = true;
 }

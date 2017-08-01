@@ -51,421 +51,420 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkShaderUniformCollection.h"
 #include <vtkObjectFactory.h>
 #include <string>
-#include <vtkgl.h>
+#include <vtk_glew.h>
 
 
 vtkStandardNewMacro(vtkBMIAShaderProgram);
 
 vtkBMIAShaderProgram::vtkBMIAShaderProgram()
 {
-  this->ShaderObjects = vtkShaderObjectCollection::New();
-  this->ShaderUniforms = vtkShaderUniformCollection::New();
-  this->Linked = false;
+    this->ShaderObjects = vtkShaderObjectCollection::New();
+    this->ShaderUniforms = vtkShaderUniformCollection::New();
+    this->Linked = false;
 }
 
 vtkBMIAShaderProgram::~vtkBMIAShaderProgram()
 {
-  this->DetachAllGlShaders(this->ShaderObjects);
-  this->ShaderObjects->Delete();
-  this->ShaderUniforms->Delete();
-  this->DeleteGlProgram();
+    this->DetachAllGlShaders(this->ShaderObjects);
+    this->ShaderObjects->Delete();
+    this->ShaderUniforms->Delete();
+    this->DeleteGlProgram();
 }
 
 void vtkBMIAShaderProgram::AddShaderObject(vtkShaderObject* object)
 {
-  vtkDebugMacro(<<"Adding shader object "<<object);
-  if (object == NULL)
+    vtkDebugMacro(<<"Adding shader object "<<object);
+    if (object == NULL)
     {
-    vtkDebugMacro(<<"Don't add NULL shader objects!");
-    return;
+        vtkDebugMacro(<<"Don't add NULL shader objects!");
+        return;
     }
-  this->ShaderObjects->AddItem(object);
-  this->Modified();
+    this->ShaderObjects->AddItem(object);
+    this->Modified();
 }
 
 void vtkBMIAShaderProgram::RemoveShaderObject(vtkShaderObject* object)
 {
-  this->ShaderObjects->RemoveItem(object);
-  this->Modified();
+    this->ShaderObjects->RemoveItem(object);
+    this->Modified();
 }
 
 void vtkBMIAShaderProgram::AddShaderUniform(vtkShaderUniform* uniform)
 {
-  if (uniform == NULL)
+    if (uniform == NULL)
     {
-    vtkDebugMacro(<<"Not adding the uniform with value NULL.");
-    return;
+        vtkDebugMacro(<<"Not adding the uniform with value NULL.");
+        return;
     }
-  this->ShaderUniforms->AddItem(uniform);
-  this->Modified();
+    this->ShaderUniforms->AddItem(uniform);
+    this->Modified();
 }
 
 void vtkBMIAShaderProgram::RemoveShaderUniform(vtkShaderUniform* uniform)
 {
-  this->ShaderUniforms->RemoveItem(uniform);
-  this->Modified();
+    this->ShaderUniforms->RemoveItem(uniform);
+    this->Modified();
 }
 
 vtkMTimeType vtkBMIAShaderProgram::GetMTime()
 {
-  unsigned long mTime = this-> vtkShaderBase::GetMTime();
-  unsigned long time;
+    unsigned long mTime = this-> vtkShaderBase::GetMTime();
+    unsigned long time;
 
-  this->ShaderObjects->InitTraversal();
-  vtkShaderObject* object = this->ShaderObjects->GetNextItem();
-  while (object != NULL)
+    this->ShaderObjects->InitTraversal();
+    vtkShaderObject* object = this->ShaderObjects->GetNextItem();
+    while (object != NULL)
     {
-    time = object->GetMTime();
-    mTime = ( time > mTime ? time : mTime );
-    object = this->ShaderObjects->GetNextItem();
+        time = object->GetMTime();
+        mTime = ( time > mTime ? time : mTime );
+        object = this->ShaderObjects->GetNextItem();
     }
-  //object == NULL
+    //object == NULL
 
-  return mTime;
+    return mTime;
 }
 
 void vtkBMIAShaderProgram::Link()
 {
-  if (this->Linked && this->LinkTime > this->GetMTime())
+    if (this->Linked && this->LinkTime > this->GetMTime())
     {
-    vtkDebugMacro(<<"Link time > MTime and linked, so not re-linking.");
+        vtkDebugMacro(<<"Link time > MTime and linked, so not re-linking.");
     }
-  else
+    else
     {
-    vtkDebugMacro(<<"(Re)linking.");
-    this->Linked = false;
+        vtkDebugMacro(<<"(Re)linking.");
+        this->Linked = false;
 
-    if (!this->SupportsOpenGLVersion(2, 0))
-      {
-      vtkErrorMacro(<<"OpenGL 2.0 not supported, so shader program cannot "
-        <<"be used. Terminating program.");
-      exit(1);
-      }
+        if (!this->SupportsOpenGLVersion(2, 0))
+        {
+            vtkErrorMacro(<<"OpenGL 2.0 not supported, so shader program cannot "
+                          <<"be used. Terminating program.");
+            exit(1);
+        }
 
-    if (!this->CreateGlProgram()) return;
-    vtkgl::BindAttribLocation(this->GetHandle(), 1, "Tangent");
-    vtkgl::BindAttribLocation(this->GetHandle(), 2, "LineID");
-    if (!this->AttachAllGlShaders(this->ShaderObjects)) return;
-    if (!this->LinkGlProgram())
-      {
-      return;
-      }
+        if (!this->CreateGlProgram()) return;
+        glBindAttribLocation(this->GetHandle(), 1, "Tangent");
+        glBindAttribLocation(this->GetHandle(), 2, "LineID");
+        if (!this->AttachAllGlShaders(this->ShaderObjects)) return;
+        if (!this->LinkGlProgram())
+        {
+            return;
+        }
 
-    this->LinkTime.Modified();
-    this->Linked = true;
+        this->LinkTime.Modified();
+        this->Linked = true;
 
-    //this->glUniformAll(this->ShaderUniforms);
-    // must be done after calling glUseProgramObject.
-    // XXX: Now handled in vtkShaderManager.
-  } // else
+        //this->glUniformAll(this->ShaderUniforms);
+        // must be done after calling glUseProgramObject.
+        // XXX: Now handled in vtkShaderManager.
+    } // else
 
-  return;
+    return;
 }
 
 void vtkBMIAShaderProgram::ForceReLink()
 {
-  if (!this->LinkGlProgram()) return;
-  this->LinkTime.Modified();
-  this->Linked = true;
+    if (!this->LinkGlProgram()) return;
+    this->LinkTime.Modified();
+    this->Linked = true;
 }
 
 bool vtkBMIAShaderProgram::CreateGlProgram()
 {
-  if (this->GetHandleValid())
+    if (this->GetHandleValid())
     {
-    // no need to create a new handle.
-    vtkDebugMacro(<<"Handle is already valid. Not creating a new one");
+        // no need to create a new handle.
+        vtkDebugMacro(<<"Handle is already valid. Not creating a new one");
     }
-  else
+    else
     {
-    // create a new  handle.
-    vtkDebugMacro(<<"No valid handle found. Creating new one...");
-    GLuint handle = vtkgl::CreateProgram();
-    vtkDebugMacro(<<"Handle created. Setting handle...");
-    this->SetHandle(handle);
+        // create a new  handle.
+        vtkDebugMacro(<<"No valid handle found. Creating new one...");
+        GLuint handle = glCreateProgram();
+        vtkDebugMacro(<<"Handle created. Setting handle...");
+        this->SetHandle(handle);
     }
-  return true;
+    return true;
 }
 
 bool vtkBMIAShaderProgram::AttachGlShader(vtkShaderObject* object)
 {
-  if (!this->GetHandleValid())
+    if (!this->GetHandleValid())
     {
-    vtkErrorMacro(<<"Do not try to attach shader objects to a shader program "
-        <<"that does not have a handle yet!");
-    return false;
+        vtkErrorMacro(<<"Do not try to attach shader objects to a shader program "
+                      <<"that does not have a handle yet!");
+        return false;
     }
 
-  if (object == NULL)
+    if (object == NULL)
     {
-    vtkWarningMacro(<<"Cannot attach a NULL shader object!");
-    //return true; // why not continue with the other shader programs?
-    return false;
+        vtkWarningMacro(<<"Cannot attach a NULL shader object!");
+        //return true; // why not continue with the other shader programs?
+        return false;
     }
 
-  // make sure the shader object is compiled
-  object->Compile();
+    // make sure the shader object is compiled
+    object->Compile();
 
-  vtkgl::AttachShader(this->GetHandle(), object->GetHandle());
-  // TODO: check whether the attaching was successful?
+    glAttachShader(this->GetHandle(), object->GetHandle());
+    // TODO: check whether the attaching was successful?
 
-  return true;
+    return true;
 }
 
 bool vtkBMIAShaderProgram::DetachGlShader(vtkShaderObject* object)
 {
-  if (!this->GetHandleValid())
+    if (!this->GetHandleValid())
     {
-    vtkErrorMacro(<<"How can you detach a shader object if the shader program "
-        <<"does not even have a handle??");
-    return false;
+        vtkErrorMacro(<<"How can you detach a shader object if the shader program "
+                      <<"does not even have a handle??");
+        return false;
     }
 
-  if (object == NULL)
+    if (object == NULL)
     {
-    vtkWarningMacro(<<"Cannot detach a NULL shader object!");
-    return false; // or true, if glAttach(NULL) does this.
+        vtkWarningMacro(<<"Cannot detach a NULL shader object!");
+        return false; // or true, if glAttach(NULL) does this.
     }
 
-  if (object->GetHandleValid())
+    if (object->GetHandleValid())
     {
-    vtkgl::DetachShader(this->GetHandle(), object->GetHandle());
-    return true;
+        glDetachShader(this->GetHandle(), object->GetHandle());
+        return true;
     }
-  else
+    else
     { // !object->GetHandleValid()
-    vtkErrorMacro(<<"Trying to detach a shader object that does not"
-        <<" have a handle!");
-    return false;
+        vtkErrorMacro(<<"Trying to detach a shader object that does not"
+                      <<" have a handle!");
+        return false;
     }
 }
 
 bool vtkBMIAShaderProgram::AttachAllGlShaders(vtkShaderObjectCollection* objects)
 {
-  if (!this->GetHandleValid())
+    if (!this->GetHandleValid())
     {
-    vtkErrorMacro(<<"Cannot attach shader objects to a shader program that"
-        <<" does not have a handle yet!");
-    return false;
+        vtkErrorMacro(<<"Cannot attach shader objects to a shader program that"
+                      <<" does not have a handle yet!");
+        return false;
     }
 
-  if (objects == NULL)
+    if (objects == NULL)
     {
-    vtkErrorMacro(<<"Don't call glAttachAll(NULL)!");
-    return false;
+        vtkErrorMacro(<<"Don't call glAttachAll(NULL)!");
+        return false;
     }
 
-  if (objects->GetNumberOfItems() < 1)
+    if (objects->GetNumberOfItems() < 1)
     {
-    vtkErrorMacro(<<"No shader objects specified to link to shader program!");
-    return false;
+        vtkErrorMacro(<<"No shader objects specified to link to shader program!");
+        return false;
     }
 
-  bool result = true;
-  this->ShaderObjects->InitTraversal();
-  vtkShaderObject* object = this->ShaderObjects->GetNextItem();
-  while (object != NULL)
+    bool result = true;
+    this->ShaderObjects->InitTraversal();
+    vtkShaderObject* object = this->ShaderObjects->GetNextItem();
+    while (object != NULL)
     {
-    result = (result && this->AttachGlShader(object));
-    object = this->ShaderObjects->GetNextItem();
+        result = (result && this->AttachGlShader(object));
+        object = this->ShaderObjects->GetNextItem();
     }
-  //object == NULL
+    //object == NULL
 
-  return result;
+    return result;
 }
 
 bool vtkBMIAShaderProgram::DetachAllGlShaders(vtkShaderObjectCollection* objects)
 {
-  if (!this->GetHandleValid())
+    if (!this->GetHandleValid())
     {
-    vtkDebugMacro(<<"Cannot detach shader objects if the shader program"
-        <<" does not have a valid handle.");
-    return false;
+        vtkDebugMacro(<<"Cannot detach shader objects if the shader program"
+                      <<" does not have a valid handle.");
+        return false;
     }
 
-  if (objects == NULL)
+    if (objects == NULL)
     {
-    vtkErrorMacro(<<"Don't call glDetachAll(NULL)!");
-    return false;
+        vtkErrorMacro(<<"Don't call glDetachAll(NULL)!");
+        return false;
     }
 
-  bool result = true;
-  this->ShaderObjects->InitTraversal();
-  vtkShaderObject* object = this->ShaderObjects->GetNextItem();
-  while (object != NULL)
+    bool result = true;
+    this->ShaderObjects->InitTraversal();
+    vtkShaderObject* object = this->ShaderObjects->GetNextItem();
+    while (object != NULL)
     {
-    result = (this->DetachGlShader(object) && result);
-    object = this->ShaderObjects->GetNextItem();
+        result = (this->DetachGlShader(object) && result);
+        object = this->ShaderObjects->GetNextItem();
     }
-  // object == NULL
+    // object == NULL
 
-  return result;
+    return result;
 }
 
 bool vtkBMIAShaderProgram::LinkGlProgram()
 {
-  GLint success;
-  GLuint handle = this->GetHandle();
-  vtkgl::LinkProgram(handle);
-  //glGetShaderiv(handle, GL_LINK_STATUS, &success);
-  vtkgl::GetProgramiv(handle, vtkgl::LINK_STATUS, &success);
+    GLint success;
+    GLuint handle = this->GetHandle();
+    glLinkProgram(handle);
+    //glGetShaderiv(handle, GL_LINK_STATUS, &success);
+    glGetProgramiv(handle, GL_LINK_STATUS, &success);
 
-  if (this->GetDebug() || (success != GL_TRUE))
+    if (this->GetDebug() || (success != GL_TRUE))
     {
-    if (success != GL_TRUE)
-      {
-      vtkWarningMacro(<<"Linking of shader program failed!");
-      }
-
-    GLint InfoLogLength;
-    vtkgl::GetProgramiv(handle, vtkgl::INFO_LOG_LENGTH, &InfoLogLength);
-    if (InfoLogLength == 0)
-      {
-      vtkWarningMacro(<<"OpenGL info log has length 0!");
-      return false;
-      }
-    else // InfoLogLength != 0
-      {
-          vtkgl::GLchar* InfoLog = (vtkgl::GLchar *)malloc(InfoLogLength);
-      if (InfoLog == NULL)
+        if (success != GL_TRUE)
         {
-        vtkWarningMacro(<<"Could not allocate InfoLog buffer!");
-        return false;
+            vtkWarningMacro(<<"Linking of shader program failed!");
         }
-      GLint CharsWritten = 0;
-      vtkgl::GetProgramInfoLog(handle, InfoLogLength, &CharsWritten, InfoLog);
-      vtkWarningMacro("Shader InfoLog for shader with handle "<<handle<<":\n"<<InfoLog);
-      free(InfoLog);
-      }
-    //this->Validate();
-    if (success != GL_TRUE) return false;
+
+        GLint InfoLogLength;
+        glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        if (InfoLogLength == 0)
+        {
+            vtkWarningMacro(<<"OpenGL info log has length 0!");
+            return false;
+        }
+        else // InfoLogLength != 0
+        {
+            GLchar* InfoLog = (GLchar *)malloc(InfoLogLength);
+            if (InfoLog == NULL)
+            {
+                vtkWarningMacro(<<"Could not allocate InfoLog buffer!");
+                return false;
+            }
+            GLint CharsWritten = 0;
+            glGetProgramInfoLog(handle, InfoLogLength, &CharsWritten, InfoLog);
+            vtkWarningMacro("Shader InfoLog for shader with handle "<<handle<<":\n"<<InfoLog);
+            free(InfoLog);
+        }
+        //this->Validate();
+        if (success != GL_TRUE) return false;
     }
-  vtkDebugMacro(<<"Linking of shader program succeeded.");
+    vtkDebugMacro(<<"Linking of shader program succeeded.");
 
-  if (this->GetDebug()) this->Validate();
+    if (this->GetDebug()) this->Validate();
 
-  return true;
+    return true;
 }
 
 bool vtkBMIAShaderProgram::SetAllGlUniforms(vtkShaderUniformCollection* uniforms)
 {
-  if (!this->GetHandleValid())
+    if (!this->GetHandleValid())
     {
-    vtkErrorMacro(<<"Cannot set uniform values for a shader program that"
-        <<" does not have a handle yet!");
-    return false;
+        vtkErrorMacro(<<"Cannot set uniform values for a shader program that"
+                      <<" does not have a handle yet!");
+        return false;
     }
 
-  if (uniforms == NULL)
+    if (uniforms == NULL)
     {
-    vtkErrorMacro(<<"Don't call glUniformAll(NULL)!");
-    return false;
+        vtkErrorMacro(<<"Don't call glUniformAll(NULL)!");
+        return false;
     }
 
-  if (uniforms->GetNumberOfItems() < 1)
+    if (uniforms->GetNumberOfItems() < 1)
     {
-    vtkDebugMacro(<<"No uniform values specified.");
-    return true;
+        vtkDebugMacro(<<"No uniform values specified.");
+        return true;
     }
 
-  bool result = true;
-  this->ShaderUniforms->InitTraversal();
-  vtkShaderUniform* uniform = this->ShaderUniforms->GetNextItem();
-  while (uniform != NULL)
+    bool result = true;
+    this->ShaderUniforms->InitTraversal();
+    vtkShaderUniform* uniform = this->ShaderUniforms->GetNextItem();
+    while (uniform != NULL)
     {
-    vtkDebugMacro("Handling uniform "<<uniform<<"...");
-    //uniform->DebugOn();
-    result = (this->SetGlUniform(uniform) && result);
-    uniform = this->ShaderUniforms->GetNextItem();
+        vtkDebugMacro("Handling uniform "<<uniform<<"...");
+        //uniform->DebugOn();
+        result = (this->SetGlUniform(uniform) && result);
+        uniform = this->ShaderUniforms->GetNextItem();
     }
-  /* uniform == NULL */
+    /* uniform == NULL */
 
-  return result;
+    return result;
 }
 
 bool vtkBMIAShaderProgram::SetGlUniform(vtkShaderUniform* uniform)
 {
-  if (!uniform)
+    if (!uniform)
     {
-    vtkErrorMacro(<<"Don't call glUniform with parameter NULL!");
-    return false;
+        vtkErrorMacro(<<"Don't call glUniform with parameter NULL!");
+        return false;
     }
-  //uniform->DebugOn();
-  uniform->SetHandle(this->GetHandle());
-  return uniform->SetGlUniform();
+    //uniform->DebugOn();
+    uniform->SetHandle(this->GetHandle());
+    return uniform->SetGlUniform();
 }
 
 bool vtkBMIAShaderProgram::DeleteGlProgram()
 {
-  if (!this->GetHandleValid())
+    if (!this->GetHandleValid())
     {
-    vtkDebugMacro(<<"Calling DeleteGlProgram() without a valid handle!");
-    // nothing to delete.
-    return false;
+        vtkDebugMacro(<<"Calling DeleteGlProgram() without a valid handle!");
+        // nothing to delete.
+        return false;
     }
-  vtkgl::DeleteProgram(this->GetHandle());
-  return true;
+    glDeleteProgram(this->GetHandle());
+    return true;
 }
 
 bool vtkBMIAShaderProgram::Validate()
 {
-  if (!this->GetHandleValid())
+    if (!this->GetHandleValid())
     {
-    vtkErrorMacro(<<"Cannot validate shader program without a handle!");
-    return false;
-    }
-
-  GLint handle = this->GetHandle();
-  GLint success;
-  vtkgl::ValidateProgram(handle);
-  vtkgl::GetProgramiv(handle, vtkgl::VALIDATE_STATUS, &success);
-
-  if (success)
-    {
-    vtkWarningMacro(<<"Shader program successfully validated.");
-    return true;
-    }
-  else // !success
-    {
-    GLint InfoLogLength;
-    vtkgl::GetProgramiv(handle, vtkgl::INFO_LOG_LENGTH, &InfoLogLength);
-    if (InfoLogLength == 0)
-      {
-      vtkWarningMacro(<<"OpenGL info log has length 0!");
-      }
-    else // InfoLogLength != 0
-      {
-          vtkgl::GLchar* InfoLog = (vtkgl::GLchar *)malloc(InfoLogLength);
-      if (InfoLog == NULL)
-        {
-        vtkWarningMacro(<<"Could not allocate InfoLog buffer!");
+        vtkErrorMacro(<<"Cannot validate shader program without a handle!");
         return false;
-        }
-      GLint CharsWritten = 0;
-      vtkgl::GetProgramInfoLog(handle, InfoLogLength, &CharsWritten, InfoLog);
-      vtkWarningMacro("Validation of shader program failed. InfoLog:\n"<<InfoLog);
-      free(InfoLog);
-      }
     }
 
-  return false;
+    GLint handle = this->GetHandle();
+    GLint success;
+    glValidateProgram(handle);
+    glGetProgramiv(handle, GL_VALIDATE_STATUS, &success);
+
+    if (success)
+    {
+        vtkWarningMacro(<<"Shader program successfully validated.");
+        return true;
+    }
+    else // !success
+    {
+        GLint InfoLogLength;
+        glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        if (InfoLogLength == 0)
+        {
+            vtkWarningMacro(<<"OpenGL info log has length 0!");
+        }
+        else // InfoLogLength != 0
+        {
+            GLchar* InfoLog = (GLchar *)malloc(InfoLogLength);
+            if (InfoLog == NULL)
+            {
+                vtkWarningMacro(<<"Could not allocate InfoLog buffer!");
+                return false;
+            }
+            GLint CharsWritten = 0;
+            glGetProgramInfoLog(handle, InfoLogLength, &CharsWritten, InfoLog);
+            vtkWarningMacro("Validation of shader program failed. InfoLog:\n"<<InfoLog);
+            free(InfoLog);
+        }
+    }
+
+    return false;
 }
 
 void vtkBMIAShaderProgram::ApplyShaderUniforms()
 {
-  this->SetAllGlUniforms(this->ShaderUniforms);
+    this->SetAllGlUniforms(this->ShaderUniforms);
 }
 
 void vtkBMIAShaderProgram::Activate()
 {
-  vtkDebugMacro(<<"Activating shader program...");
-  this->Link();
-  vtkgl::UseProgram(this->GetHandle());
-  this->ApplyShaderUniforms();
+    vtkDebugMacro(<<"Activating shader program...");
+    this->Link();
+    glUseProgram(this->GetHandle());
+    this->ApplyShaderUniforms();
 }
 
 void vtkBMIAShaderProgram::Deactivate()
 {
-  vtkgl::UseProgram(0);
+    glUseProgram(0);
 }
-

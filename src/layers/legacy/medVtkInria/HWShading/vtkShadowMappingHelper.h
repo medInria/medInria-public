@@ -38,7 +38,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkObject.h>
 
-#include <vtkgl.h> // for GLuint
+#include <vtk_glew.h> // for GLuint
 
 class vtkCamera;
 

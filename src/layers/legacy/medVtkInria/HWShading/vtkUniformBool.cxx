@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Use OpenGL 2.0
  *
  * 2006-01-30	Tim PEeters
- * - Use vtkgl::Unifrom1i() instead of glUniform1i().
+ * - Use glUnifrom1i() instead of glUniform1i().
  */
 
 #include "vtkUniformBool.h"
@@ -35,26 +35,25 @@ vtkStandardNewMacro(vtkUniformBool);
 
 vtkUniformBool::vtkUniformBool()
 {
-  this->Value = false;
+    this->Value = false;
 }
 
 vtkUniformBool::~vtkUniformBool()
 {
-  // nothing to do.
+    // nothing to do.
 }
 
 void vtkUniformBool::SetGlUniformSpecific()
 {
-  // Bools may be passed as either integers or floats where 0 or 0.0f is
-  // equivealent to false, and other values are equivalent to true.
-  // Here we use an integer value to pass a bool. 
-  if (this->Value)
+    // Bools may be passed as either integers or floats where 0 or 0.0f is
+    // equivealent to false, and other values are equivalent to true.
+    // Here we use an integer value to pass a bool.
+    if (this->Value)
     {
-    vtkgl::Uniform1i(this->Location, 1);
+        glUniform1i(this->Location, 1);
     }
-  else
+    else
     {
-    vtkgl::Uniform1i(this->Location, 0);
+        glUniform1i(this->Location, 0);
     }
 }
-
