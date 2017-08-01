@@ -18,8 +18,9 @@
 #include <QHash>
 
 #include <QVTKGraphicsItem.h>
+#include <QVTKOpenGLWidget.h>
 #include <QGLFramebufferObject>
-#include <QGLContext>
+#include <QSurfaceFormat>
 
 #include <QVTKInteractorAdapter.h>
 #include <QVTKInteractor.h>
@@ -55,8 +56,6 @@
 #include <medParameterPoolL.h>
 #include <medParameterPoolManagerL.h>
 #include <medSettingsManager.h>
-
-#include <vtkGenericOpenGLRenderWindow.h>
 
 #include "medVtkViewQGraphicsView.h"
 
@@ -157,14 +156,12 @@ public:
 
     vtkInteractorStyle *interactorStyle2D;
 
-
     // views
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
 
     vtkGenericOpenGLRenderWindow *renWin;
-    medVtkViewQVtkGraphicsItem *vtkItem;
-    medVtkViewQGraphicsView *viewWidget;
+    QVTKOpenGLWidget *viewWidget;
 
     medVtkViewObserver *observer;
 
@@ -220,22 +217,16 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
-    d->viewWidget = new medVtkViewQGraphicsView;
-    connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternViewWidget()));
-    // Event filter used to know if the view is selecetd or not
+    QSurfaceFormat format;
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setVersion(3, 2);
+    format.setProfile(QSurfaceFormat::CoreProfile);
 
-    QGLWidget *glWidget = new QGLWidget();
-    d->viewWidget->setViewport(glWidget);
+    d->viewWidget = new QVTKOpenGLWidget();
+    d->viewWidget->setFormat(format);
+    d->viewWidget->SetRenderWindow(d->renWin);
 
-    d->vtkItem = new medVtkViewQVtkGraphicsItem(const_cast<QGLContext*>(glWidget->context()), 0, glWidget);
-    d->vtkItem->SetRenderWindow(d->renWin);
-    QGraphicsScene *scene = new QGraphicsScene;
-    d->viewWidget->setScene(scene);
-    d->viewWidget->setQVtkGraphicsItem(d->vtkItem);
-    scene->addItem(d->vtkItem);
-
-    // Don'yt ask me why, this is necessary ... - RDE
-    d->vtkItem->resize(d->viewWidget->size());
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
@@ -532,7 +523,7 @@ void medVtkView::displayDataInfo(uint layer)
 
 QImage medVtkView::buildThumbnail(const QSize &size)
 {
-//    this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
+    this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
     int w(size.width()), h(size.height());
 
 //    // will cause crashes if any calls to renWin->Render() happened before this line
@@ -549,9 +540,8 @@ QImage medVtkView::buildThumbnail(const QSize &size)
 ////    }
 ////#endif
 
-//    QImage thumbnail = d->viewWidget->grabFrameBuffer(true);
-//    this->blockSignals(false);
-    QImage thumbnail = d->vtkItem->toImage();
+    QImage thumbnail = d->viewWidget->grabFramebuffer();
+    this->blockSignals(false);
     thumbnail = thumbnail.copy(0, thumbnail.height() - h, w, h);
     return thumbnail;
 }
