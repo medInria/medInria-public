@@ -128,7 +128,7 @@ bool vtkShaderObject::SetGlShaderSource()
 
   const char* text = this->SourceText;
   //glShaderSource(this->GetHandle(), 1, &text, NULL);
-  vtkgl::ShaderSource(this->GetHandle(), 1, &text, NULL);
+  glShaderSource(this->GetHandle(), 1, &text, NULL);
 
   // XXX: I think/assume text only copies the pointer to SourceText,
   // so it does not need to be deleted here.
@@ -148,9 +148,9 @@ bool vtkShaderObject::CompileGlShader()
 
   GLint success;
 
-  vtkgl::CompileShader(this->GetHandle());
+  glCompileShader(this->GetHandle());
 
-  vtkgl::GetShaderiv(this->GetHandle(), vtkgl::COMPILE_STATUS, &success);
+  glGetShaderiv(this->GetHandle(), GL_COMPILE_STATUS, &success);
   if (success != GL_TRUE)
     {
     vtkWarningMacro(<<"Compilation of shader failed!");
@@ -206,7 +206,7 @@ bool vtkShaderObject::DeleteGlShader()
     // nothing to delete.
     return false;
     }
-  vtkgl::DeleteShader(this->GetHandle());
+  glDeleteShader(this->GetHandle());
   return true;
 }
 
@@ -217,23 +217,23 @@ void vtkShaderObject::PrintShaderInfoLog(GLuint shader)
 {
     GLint infologLength = 0;
     GLsizei charsWritten  = 0;
-    vtkgl::GLchar *infoLog;
+    GLchar *infoLog;
 
     //printOpenGLError();  // Check for OpenGL errors
 
-    vtkgl::GetShaderiv(shader, vtkgl::INFO_LOG_LENGTH, &infologLength);
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infologLength);
 
     //printOpenGLError();  // Check for OpenGL errors
 
     if (infologLength > 0)
     {
-	infoLog = (vtkgl::GLchar *)malloc(infologLength);
+    infoLog = (GLchar *)malloc(infologLength);
         if (infoLog == NULL)
         {
             printf("ERROR: Could not allocate InfoLog buffer\n");
             exit(1);
         }
-        vtkgl::GetShaderInfoLog(shader, infologLength, &charsWritten, infoLog);
+        glGetShaderInfoLog(shader, infologLength, &charsWritten, infoLog);
         printf("Shader InfoLog:\n%s\n\n", infoLog);
         free(infoLog);
     }

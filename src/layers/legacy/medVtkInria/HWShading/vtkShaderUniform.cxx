@@ -62,7 +62,7 @@ bool vtkShaderUniform::SetGlUniform()
     return false;
     }
 
-  this->Location = vtkgl::GetUniformLocation(this->GetHandle(), this->Name);
+  this->Location = glGetUniformLocation(this->GetHandle(), this->Name);
   vtkDebugMacro(<<"Location of uniform "<<this->Name<<" with handle "<<this->GetHandle()<<" is: "<<this->Location);
 
   if (this->Location == -1)

@@ -57,7 +57,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkLightCollection.h>
 
 #include <assert.h>
-#include <vtkgl.h>
+#include <vtk_glew.h>
 
 #include "vtkAnisoLiShadowMapSP.h"
 
@@ -218,7 +218,7 @@ void vtkShadowRenderer::DrawShadowMap()
   glEnable(GL_TEXTURE_2D);
   glDisable(GL_LIGHTING);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glTexParameteri(GL_TEXTURE_2D, vtkgl::TEXTURE_COMPARE_MODE, GL_NONE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
