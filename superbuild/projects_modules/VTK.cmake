@@ -39,7 +39,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url git://vtk.org/VTK.git)
-set(git_tag v7.1.1)
+set(git_tag v8.0.0)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -63,8 +63,9 @@ set(cmake_args
   -DBUILD_TESTING=OFF
   -DBUILD_DOCUMENTATION=OFF
   -DBUILD_EXAMPLES=OFF
-  -DVTK_RENDERING_BACKEND=OpenGL
+  -DVTK_RENDERING_BACKEND=OpenGL2
   -DVTK_Group_Qt=ON
+  -DModule_vtkGUISupportQtOpenGL=ON
   -DVTK_QT_VERSION=5
   -DQt5_DIR=${Qt5_DIR}
   )
