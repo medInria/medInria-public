@@ -13,11 +13,11 @@
 
 #include <QtGui>
 #include <QtOpenGL>
+#include <QSurfaceFormat>
 
 #include <medMainWindow.h>
 #include <medApplication.h>
 #include <medSplashScreen.h>
-
 
 #include <medPluginManager.h>
 #include <medDataIndex.h>
@@ -64,9 +64,25 @@ void forceShow(medMainWindow& mainwindow )
 
 int main(int argc,char* argv[])
 {
-
-
     qRegisterMetaType<medDataIndex>("medDataIndex");
+
+    // Setup openGL surface compatible with QVTKOpenGLWidget,
+    // required by medVtkView
+    QSurfaceFormat fmt;
+    fmt.setRenderableType(QSurfaceFormat::OpenGL);
+    fmt.setVersion(3, 2);
+    fmt.setProfile(QSurfaceFormat::CoreProfile);
+    fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    fmt.setRedBufferSize(1);
+    fmt.setGreenBufferSize(1);
+    fmt.setBlueBufferSize(1);
+    fmt.setDepthBufferSize(1);
+    fmt.setStencilBufferSize(0);
+    fmt.setAlphaBufferSize(1);
+    fmt.setStereo(false);
+    fmt.setSamples(0);
+
+    QSurfaceFormat::setDefaultFormat(fmt);
 
     // this needs to be done before creating the QApplication object, as per the
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
@@ -209,7 +225,6 @@ int main(int argc,char* argv[])
     }
 
     mainwindow->setFullScreen(fullScreen);
-
 
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;
