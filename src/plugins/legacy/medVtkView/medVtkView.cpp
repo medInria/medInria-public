@@ -217,11 +217,8 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
-    QSurfaceFormat format;
-    format.setDepthBufferSize(24);
-    format.setStencilBufferSize(8);
-    format.setVersion(3, 2);
-    format.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat format = QVTKOpenGLWidget::defaultFormat();
+    format.setSamples(0);
 
     d->viewWidget = new QVTKOpenGLWidget();
     d->viewWidget->setFormat(format);
