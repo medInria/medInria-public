@@ -488,7 +488,7 @@ void vtkMetaDataSet::ReadDataInternal(const char* filename)
     for (unsigned int t=0; t<Dim; t++)
       file >> tuple[t];
     
-    array->InsertNextTupleValue (tuple);
+    array->InsertNextTypedTuple (tuple);
     i++;
     
   }
