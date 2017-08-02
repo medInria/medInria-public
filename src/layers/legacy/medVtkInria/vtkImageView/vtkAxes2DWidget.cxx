@@ -87,10 +87,10 @@ vtkAxes2DWidget::vtkAxes2DWidget()
   this->ColorArray->SetNumberOfComponents (3);
 
   unsigned char red[3]   = {255,0,0};
-  this->ColorArray->InsertNextTupleValue (red);
-  this->ColorArray->InsertNextTupleValue (red);
-  this->ColorArray->InsertNextTupleValue (red);
-  this->ColorArray->InsertNextTupleValue (red);
+  this->ColorArray->InsertNextTypedTuple (red);
+  this->ColorArray->InsertNextTypedTuple (red);
+  this->ColorArray->InsertNextTypedTuple (red);
+  this->ColorArray->InsertNextTypedTuple (red);
 
   this->Source->GetPointData()->SetScalars (this->ColorArray);
 
@@ -215,10 +215,10 @@ void vtkAxes2DWidget::ComputePlanes()
     break;
   }
 
-  this->ColorArray->SetTupleValue (0, colorX);
-  this->ColorArray->SetTupleValue (1, colorX);
-  this->ColorArray->SetTupleValue (2, colorY);
-  this->ColorArray->SetTupleValue (3, colorY);
+  this->ColorArray->SetTypedTuple (0, colorX);
+  this->ColorArray->SetTypedTuple (1, colorX);
+  this->ColorArray->SetTypedTuple (2, colorY);
+  this->ColorArray->SetTypedTuple (3, colorY);
 
   vtkCamera* cam = this->ImageView->GetRenderer()->GetActiveCamera();
   double* normal = cam->GetViewPlaneNormal();

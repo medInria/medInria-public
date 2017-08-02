@@ -114,9 +114,9 @@ int vtkLimitVectorsToVOI::RequestData (vtkInformation *vtkNotUsed(request),
       
       pt = points->GetPoint (i);
       if (vectors)
-	vectors->GetTupleValue (i, vector);
+    vectors->GetTypedTuple (i, vector);
       if (colors)
-	colors->GetTupleValue (i, color);
+    colors->GetTypedTuple (i, color);
       
       if(pt[0]>m_XMin && pt[0]<m_XMax &&
 	 pt[1]>m_YMin && pt[1]<m_YMax &&
@@ -124,9 +124,9 @@ int vtkLimitVectorsToVOI::RequestData (vtkInformation *vtkNotUsed(request),
       {
 	newpoints->InsertNextPoint(pt);
 	if (vectors)
-	  newvectors->InsertNextTupleValue (vector);
+      newvectors->InsertNextTypedTuple (vector);
 	if (colors)
-	  newcolors->InsertNextTupleValue (color);
+      newcolors->InsertNextTypedTuple (color);
       }
       
       i++;
@@ -153,8 +153,8 @@ int vtkLimitVectorsToVOI::RequestData (vtkInformation *vtkNotUsed(request),
 //       double* bounds;
 //       double* point;
       
-//       vectors->GetTupleValue (i, vector);
-//       colors->GetTupleValue (i, color);
+//       vectors->GetTypedTuple (i, vector);
+//       colors->GetTypedTuple (i, color);
 //       cell = input->GetCell (i);
 //       bounds = cell->GetBounds();
 //       typearray[i] = input->GetCellType (i);
@@ -167,8 +167,8 @@ int vtkLimitVectorsToVOI::RequestData (vtkInformation *vtkNotUsed(request),
 // 	 bounds[4]>m_ZMin && bounds[5]<m_ZMax )
 //       {
 // 	newcells->InsertNextCell (cell);
-// 	newvectors->InsertNextTupleValue (vector);
-// 	newcolors->InsertNextTupleValue (color);
+// 	newvectors->InsertNextTypedTuple (vector);
+// 	newcolors->InsertNextTypedTuple (color);
 // 	newpoints->InsertNextPoint(point);
 //       }
       
