@@ -1173,7 +1173,7 @@ int layer )
         {
 
             int pointExtent [6] = { indices [0], indices [0], indices [1], indices [1], indices [2], indices [2] };
-            this->GetInputAlgorithm(layer)->SetUpdateExtent(pointExtent);
+            this->GetInputAlgorithm(layer)->UpdateExtent(pointExtent);
             this->GetInputAlgorithm(layer)->Update();
 
         } else {

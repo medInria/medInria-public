@@ -1910,7 +1910,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
       // determine the scalar range. Copy the update extent to match the input's one
       double range[2];
       //TODO GPR: to check
-//      reslicedImage->SetUpdateExtent (this->GetInput()->GetUpdateExtent());
+//      reslicedImage->UpdateExtent (this->GetInput()->GetUpdateExtent());
 //      reslicedImage->PropagateUpdateExtent();
 //      reslicedImage->Update();
       reslicedImage->GetScalarRange(range);
