@@ -239,7 +239,7 @@ medViewContainer::~medViewContainer()
     // see medViewContainerSplitter::~medViewContainerSplitter() and medViewContainerSplitter::checkIfStillDeserveToLive()
 
     // Apparently this is not needed with Qt5 anymore.
-//    this->setParent(NULL);
+    this->setParent(NULL);
 
     medViewContainerManager::instance()->unregisterContainer(this);
     delete d;
