@@ -41,7 +41,7 @@ medViewContainerSplitter::~medViewContainerSplitter()
     // see medViewContainerSplitter::~medViewContainerSplitter() and medViewContainerSplitter::checkIfStillDeserveToLive()
 
     // Apparently this is not needed with Qt5 anymore.
-//    this->setParent(NULL);
+    this->setParent(NULL);
 }
 
 medViewContainer * medViewContainerSplitter::splitHorizontally(medViewContainer *sender)
@@ -143,7 +143,7 @@ void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag align
 
 /**
  * @brief checkIfStillDeserveToLive
- * Check the number of child widget and call the destuctor if there is no one.
+ * Check the number of child widget and call the destructor if there is no one.
  */
 void medViewContainerSplitter::checkIfStillDeserveToLive()
 {
