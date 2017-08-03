@@ -161,17 +161,16 @@ target_link_libraries(${TARGET_NAME}
   vtkImagingGeneral
   vtkImagingHybrid
   vtkIOCore
+  vtkIOExportOpenGL2
   vtkIOGeometry
   vtkIOImage
   vtkIOLegacy
   vtkIOXML
   vtkRenderingAnnotation
   vtkRenderingCore
-  vtkRenderingOpenGL
-  vtkRenderingVolumeOpenGL
-  #vtkRenderingVolumeOpenGLNew
-  #vtkRenderingFreeTypeOpenGL
-  vtkRenderingContextOpenGL
+  vtkRenderingOpenGL2
+  vtkRenderingVolumeOpenGL2
+  vtkRenderingContextOpenGL2
   vtkInteractionWidgets
   vtkInteractionStyle
   vtkFiltersExtraction

@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Use OpenGL 2.0
  *
  * 2006-01-30	Tim Peeters
- * - Use vtkgl::Uniform4f() instead of glUniform4f().
+ * - Use glUniform4f() instead of glUniform4f().
  */
 
 #include "vtkUniformVec4.h"
@@ -48,5 +48,5 @@ vtkUniformVec4::~vtkUniformVec4()
 
 void vtkUniformVec4::SetGlUniformSpecific()
 {
-  vtkgl::Uniform4f(this->Location, this->Value[0], this->Value[1], this->Value[2], this->Value[3]);
+  glUniform4f(this->Location, this->Value[0], this->Value[1], this->Value[2], this->Value[3]);
 }

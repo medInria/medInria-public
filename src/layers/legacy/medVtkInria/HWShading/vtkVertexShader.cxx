@@ -27,7 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
  *
  * 2006-01-30	Tim Peeters
  * - Switch from glew to VTK OpenGL extension manager.
- *   Use vtkgl::CreateShader(vtkgl::VERTEX_SHADER) instead of
+ *   Use glCreateShader(GL_VERTEX_SHADER) instead of
  *   glCreateShader(GL_VERTEX_SHADER).
  */
 
@@ -56,7 +56,7 @@ bool vtkVertexShader::CreateGlShader()
     }
 
   vtkDebugMacro("Calling glCreateShader(GL_VERTEX_SHADER)");
-  GLuint handle = vtkgl::CreateShader(vtkgl::VERTEX_SHADER);
+  GLuint handle = glCreateShader(GL_VERTEX_SHADER);
   vtkDebugMacro("glCreateShader() returned handle "<<handle<<".");
   this->SetHandle(handle);
   return true;

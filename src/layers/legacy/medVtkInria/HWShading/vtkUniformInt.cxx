@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Use OpenGL 2.0
  *
  * 2006-01-30	Tim Peeters
-  - Use vtkgl::Uniform1i() instead of glUniform1i().
+  - Use glUniform1i() instead of glUniform1i().
  */
 
 #include "vtkUniformInt.h"
@@ -35,16 +35,15 @@ vtkStandardNewMacro(vtkUniformInt);
 
 vtkUniformInt::vtkUniformInt()
 {
-  this->Value = 0;
+    this->Value = 0;
 }
 
 vtkUniformInt::~vtkUniformInt()
 {
-  // nothing to do.
+    // nothing to do.
 }
 
 void vtkUniformInt::SetGlUniformSpecific()
 {
-  vtkgl::Uniform1i(this->Location, this->Value);
+    glUniform1i(this->Location, this->Value);
 }
-

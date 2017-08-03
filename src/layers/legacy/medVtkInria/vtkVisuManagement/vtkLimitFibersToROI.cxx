@@ -279,7 +279,7 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
       if( allColors )
       {
         unsigned char fiberColor[3];
-        allColors->GetTupleValue ( cellId, fiberColor );
+        allColors->GetTypedTuple ( cellId, fiberColor );
         newColors->InsertNextValue (fiberColor[0]);
         newColors->InsertNextValue (fiberColor[1]);
         newColors->InsertNextValue (fiberColor[2]);

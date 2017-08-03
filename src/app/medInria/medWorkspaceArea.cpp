@@ -126,8 +126,10 @@ medWorkspaceArea::~medWorkspaceArea(void)
 QPixmap medWorkspaceArea::grabScreenshot()
 {
     QSize imageSize = this->currentWorkspace()->tabbedViewContainers()->currentWidget()->size();
+    imageSize *= 2;
     QImage img(imageSize,QImage::Format_ARGB32);
     QPainter painter(&img);
+    painter.scale(2, 2);
     this->currentWorkspace()->tabbedViewContainers()->currentWidget()->render(&painter);
 
     return QPixmap::fromImage(img);

@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Use OpenGL 2.0
  *
  * 2006-01-30	Tim Peeters
- * - Use vtkgl::Uniform3f() instead of glUniform3f().
+ * - Use glUniform3f() instead of glUniform3f().
  */
 
 #include "vtkUniformVec3.h"
@@ -49,6 +49,6 @@ void vtkUniformVec3::SetGlUniformSpecific()
 {
   vtkDebugMacro(<<"Calling glUniform3f("<<this->Location<<", "<<this->Value[0]
 	<<", "<<this->Value[1]<<", "<<this->Value[2]<<").");
-  vtkgl::Uniform3f(this->Location, this->Value[0], this->Value[1], this->Value[2]);
+  glUniform3f(this->Location, this->Value[0], this->Value[1], this->Value[2]);
 }
 
