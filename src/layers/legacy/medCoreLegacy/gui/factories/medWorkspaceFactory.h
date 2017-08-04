@@ -78,7 +78,8 @@ public:
      * @param description short description (Potentially localised).
      */
     template <typename workspaceType>
-    bool registerWorkspace(bool isActive = true){
+    bool registerWorkspace(bool isActive = true)
+    {
         //we must keep the templated part in the .h file for library users
         medWorkspaceCreator creator = create<workspaceType>;
         return registerWorkspace(workspaceType::staticIdentifier(),
