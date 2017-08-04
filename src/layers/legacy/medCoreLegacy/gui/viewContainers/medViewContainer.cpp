@@ -238,7 +238,6 @@ medViewContainer::~medViewContainer()
     // this is used to remove the ownership of the container, If the parent splitter end up with no child it will be deleted.
     // see medViewContainerSplitter::~medViewContainerSplitter() and medViewContainerSplitter::checkIfStillDeserveToLive()
 
-    // Apparently this is not needed with Qt5 anymore.
     this->setParent(NULL);
 
     medViewContainerManager::instance()->unregisterContainer(this);
