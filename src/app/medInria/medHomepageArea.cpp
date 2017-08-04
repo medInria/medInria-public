@@ -170,7 +170,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutText += QString::fromLocal8Bit(REVISIONS);
 #endif
 
-
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
@@ -238,7 +237,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginLayout->addWidget(pWid);
     pluginLayout->addLayout(pluginHideButtonLayout);
 
-
     //Create the setttings widget.
     d->settingsWidget = new QWidget(this);
     d->settingsWidget->setObjectName("settingsWidget");
@@ -261,8 +259,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsLayout->addWidget(medInriaLabel4);
     settingsLayout->addWidget(d->settingsEditor);
     settingsLayout->addLayout(settingsHideButtonLayout);
-
-
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
