@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url git://git.dcmtk.org/dcmtk.git)
-set(git_tag DCMTK-3.6.1_20150924)
+set(git_tag DCMTK-3.6.2)
 
 
 ## #############################################################################
@@ -66,16 +66,17 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS:=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX:=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
-  -DDCMTK_WITH_DOXYGEN=OFF
-  -DDCMTK_WITH_ZLIB=OFF    
-  -DDCMTK_WITH_OPENSSL=OFF 
-  -DDCMTK_WITH_PNG=OFF     
-  -DDCMTK_WITH_TIFF=OFF    
-  -DDCMTK_WITH_XML=OFF
-  -DDCMTK_WITH_WRAP=OFF
-  -DDCMTK_WITH_ICONV=OFF
-  -DBUILD_APPS=OFF
-  -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS=OFF
+  -DDCMTK_WITH_DOXYGEN:BOOL=OFF
+  -DDCMTK_WITH_ZLIB:BOOL=OFF    
+  -DDCMTK_WITH_OPENSSL:BOOL=OFF 
+  -DDCMTK_WITH_PNG:BOOL=OFF     
+  -DDCMTK_WITH_TIFF:BOOL=OFF    
+  -DDCMTK_WITH_XML:BOOL=OFF
+  -DDCMTK_WITH_WRAP:BOOL=OFF
+  -DDCMTK_WITH_ICONV:BOOL=OFF
+  -DDCMTK_USE_CXX11_STL:BOOL=ON
+  -DBUILD_APPS:BOOL=OFF
+  -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS:BOOL=OFF
   )
 
 ## #############################################################################
