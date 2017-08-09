@@ -40,8 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url git://git.dcmtk.org/dcmtk.git)
-set(git_tag DCMTK-3.6.1_20170228)
-
+set(git_tag DCMTK-3.6.2)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -74,10 +73,17 @@ set(cmake_args
   -DDCMTK_WITH_XML:BOOL=OFF
   -DDCMTK_WITH_WRAP:BOOL=OFF
   -DDCMTK_WITH_ICONV:BOOL=OFF
-  -DDCMTK_USE_CXX11_STL:BOOL=ON
+  -DDCMTK_ENABLE_STL:BOOL=ON
+  -DDCMTK_ENABLE_CXX11:BOOL=ON
   -DBUILD_APPS:BOOL=OFF
   -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS:BOOL=OFF
   )
+
+## #############################################################################
+## Check if patch has to be applied
+## #############################################################################
+  
+ep_GeneratePatchCommand(DCMTK DCMTK_PATCH_COMMAND DCMTK_STL.patch)
 
 ## #############################################################################
 ## Add external-project
@@ -87,6 +93,7 @@ ExternalProject_Add(${ep}
   PREFIX ${EP_PREFIX_thirdparts}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
+  PATCH_COMMAND ${DCMTK_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
