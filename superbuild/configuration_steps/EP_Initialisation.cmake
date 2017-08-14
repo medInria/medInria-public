@@ -29,6 +29,19 @@ option(USE_SYSTEM_${ep}
 if (USE_SYSTEM_${ep})
   find_package(${ep} REQUIRED)
 
+if (WIN32)
+  if (DEFINED ${ep}_DIR)
+    file(TO_CMAKE_PATH ${${ep}_DIR} ${${ep}_DIR})
+  endif()
+  
+  if (DEFINED ${ep}_BINARY_DIR)
+    file(TO_CMAKE_PATH ${${ep}_BINARY_DIR} ${${ep}_BINARY_DIR})
+  endif()
+  
+  if (DEFINED EP_PREFIX_thirdparts)
+    file(TO_CMAKE_PATH ${EP_PREFIX_thirdparts} ${EP_PREFIX_thirdparts})
+  endif()
+endif()
 
 ## #############################################################################
 ## Complete superProjectConfig.cmake
