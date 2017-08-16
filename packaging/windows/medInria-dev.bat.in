@@ -1,11 +1,11 @@
 call "%@VS_TYPE@%\..\..\VC\vcvarsall.bat" @WIN_TYPE@
 
-REM This .bat sets the environment variables medInria_PLUGIN_PATH and PATH and launches Visual Studio
+REM This .bat sets the environment variables medInria_PLUGINS_DIR and PATH and launches Visual Studio
 REM Usage : medInria-dev.bat
 @echo off
 set PATH=%PATH%;@dtk_DIR@/bin/%1;@ITK_DIR@/bin/%1;@TTK_DIR@/bin/%1;@VTK_DIR@/bin/%1;@QtDCM_DIR@/bin/%1;@medInria_DIR@/bin/%1;@QT_BINARY_DIR@
 set MEDINRIA_PLUGINS_DIR=@medInria_DIR@/bin/plugins/%1;@DEV_PLUGINS_DIRS@
-set MEDINRIA_PLUGINS_DIR_LEGACY=@medInria_DIR@/bin/plugins_legacy/%1:@DEV_PLUGINS_DIRS@
+set MEDINRIA_PLUGINS_DIR_LEGACY=@medInria_DIR@/bin/plugins_legacy/%1:@DEV_PLUGINS_LEGACY_DIRS@
 
 start devenv.exe @medInria_DIR@/ALL_BUILD.vcxproj
 exit

@@ -22,6 +22,10 @@ foreach (dir ${PRIVATE_PLUGINS_DIRS})
 	set(DEV_PLUGINS_DIRS "${DEV_PLUGINS_DIRS}:${dir}/plugins")
 endforeach() 
 
+foreach (dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
+	set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/plugins_legacy")
+endforeach() 
+
 ExternalProject_Get_Property(medInria binary_dir)
 
 set(LOCATE "")
@@ -34,6 +38,7 @@ else()
 endif()
 
 set(MEDINRIA_PLUGINS_DIRS "${binary_dir}/plugins:${DEV_PLUGINS_DIRS}")
+set(MEDINRIA_PLUGINS_LEGACY_DIRS "${binary_dir}/plugins:${DEV_PLUGINS_LEGACY_DIRS}")
 
 configure_file(${CURRENT_SRC_DIR}/medInria.sh.in medInria.sh @ONLY)
 
@@ -49,6 +54,7 @@ else()
 endif()
 
 set(MEDINRIA_PLUGINS_DIRS "\${MEDINRIA_DIR}/plugins:\${MEDINRIA_USER_PLUGINS_DIRS}")
+set(MEDINRIA_PLUGINS_LEGACY_DIRS "\${MEDINRIA_DIR}/plugins_legacy:\${MEDINRIA_USER_PLUGINS_DIRS}")
 
 configure_file(${CURRENT_SRC_DIR}/medInria.sh.in ${CURRENT_BIN_DIR}/medInria_launcher.sh @ONLY)
 install(PROGRAMS ${CURRENT_BIN_DIR}/medInria_launcher.sh
