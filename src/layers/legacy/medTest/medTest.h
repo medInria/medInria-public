@@ -30,7 +30,7 @@ namespace medTest
 
     /**
      * Initialize the medPluginManager with paths defined
-     * in MEDINRIA_PLUGINS_PATH. Test will fail is environment
+     * in MEDINRIA_PLUGINS_DIR and MEDINRIA_PLUGINS_DIR_LEGACY. Test will fail is environment
      * variable is not defined or empty.
      */
     MEDTEST_EXPORT void initializePlugins();

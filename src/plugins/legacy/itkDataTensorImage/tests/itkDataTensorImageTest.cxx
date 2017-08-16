@@ -99,7 +99,7 @@ itkDataTensorImageTest::~itkDataTensorImageTest()
 
 void itkDataTensorImageTest::initTestCase()
 {
-    QString pluginsPath = MEDINRIA_PLUGINS_PATH;
+    QString pluginsPath = MEDINRIA_PLUGINS_DIR_LEGACY;
 
     this->dataPath = MEDINRIA_TEST_DATA_ROOT;
     QDir dataDir(this->dataPath);

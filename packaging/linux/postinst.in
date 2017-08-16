@@ -7,11 +7,11 @@ rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/include
 rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/share/qtdcm
 rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/plugins/designer
 rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/*.cmake
-rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/testing
-rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/doxygen
-rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/doc
-rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/CMake
-rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-5.8/*.cmake
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-8.0/testing
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-8.0/doxygen
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-8.0/doc
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-8.0/CMake
+rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/vtk-8.0/*.cmake
 rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/lib/InsightToolkit/*.cmake
 rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/bin/vtk*
 rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/bin/ttk*

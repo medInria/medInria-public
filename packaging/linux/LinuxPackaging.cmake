@@ -39,7 +39,7 @@ if(${DISTRIBUTOR_ID} MATCHES fc|fedora|Fedora|Centos|centos|SUSE|Suse|suse)
     set(CPACK_GENERATOR RPM)
 endif()
 
-# For the 2.2 release, disable RPM/DEB as we're too far behind Ubuntu/Fedora
+# For the 3.0 release, disable RPM/DEB as we're too far behind Ubuntu/Fedora
 # releases on the build farm, will re-enable if we ever manage to get up to date
 
 set(CPACK_GENERATOR "ZIP")
@@ -92,7 +92,11 @@ foreach(external_project ${external_projects})
 endforeach()
 
 foreach(dir ${PRIVATE_PLUGINS_DIRS})
-	set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL ${dir})
+    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL ${dir})
+endforeach()
+
+foreach(dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
+    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL ${dir})
 endforeach()
 
 install(CODE "include(${CURRENT_BIN_DIR}/PostArchiveCleanupScript.cmake)")
