@@ -8,6 +8,7 @@ file(REMOVE_RECURSE ${DIR}/share)
 
 # Cleaning up useless stuff in /lib
 file(REMOVE_RECURSE ${DIR}/lib/cmake)
+file(REMOVE_RECURSE ${DIR}/lib64/cmake)
 file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/CMake)
 file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/doc)
 file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/doxygen)
