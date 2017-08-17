@@ -80,23 +80,23 @@ install(FILES ${CURRENT_BIN_DIR}/medInria.desktop
 # Add project to package
 
 # save the medinria-superproject install target to add it last
-set(backup_CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${CMAKE_BINARY_DIR} ${CMAKE_PROJECT_NAME} ALL ${CMAKE_PROJECT_NAME})
+set(backup_CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${CMAKE_BINARY_DIR} ${CMAKE_PROJECT_NAME} ALL "/")
 
 #clear it
 set(CPACK_INSTALL_CMAKE_PROJECTS "")
 foreach(external_project ${external_projects}) 
 	if(NOT USE_SYSTEM_${external_project} AND BUILD_SHARED_LIBS_${external_project})
 		ExternalProject_Get_Property(${external_project} binary_dir)
-		set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${binary_dir} ${external_project} ALL ${external_project})
+		set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${binary_dir} ${external_project} ALL "/")
 	endif()
 endforeach()
 
 foreach(dir ${PRIVATE_PLUGINS_DIRS})
-    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL ${dir})
+    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/")
 endforeach()
 
 foreach(dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
-    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL ${dir})
+    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/")
 endforeach()
 
 install(CODE "include(${CURRENT_BIN_DIR}/PostArchiveCleanupScript.cmake)")

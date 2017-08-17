@@ -33,7 +33,7 @@ else()
     )
 endif()
 
-install(TARGETS ${project_name}
+install(TARGETS ${target}
   RUNTIME DESTINATION bin/plugins_legacy
   LIBRARY DESTINATION bin/plugins_legacy
   )
