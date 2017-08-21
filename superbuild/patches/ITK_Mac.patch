@@ -1,0 +1,13 @@
+diff --git a/Modules/ThirdParty/KWSys/src/CMakeLists.txt b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+index 026ad4f4b8..5340dc6778 100644
+--- a/Modules/ThirdParty/KWSys/src/CMakeLists.txt
++++ b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+@@ -22,7 +22,7 @@ set(KWSYS_INSTALL_EXPORT_NAME ${ITKKWSys-targets})
+ set(KWSYS_INSTALL_COMPONENT_NAME_RUNTIME RuntimeLibraries)
+ set(KWSYS_INSTALL_COMPONENT_NAME_DEVELOPMENT Development)
+ set(KWSYS_PROPERTIES_C WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+-set(KWSYS_PROPERTIES_CXX MACOSX_RPATH 1 WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
++set(KWSYS_PROPERTIES_CXX MACOSX_RPATH 0 WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ 
+ add_subdirectory(KWSys)
+ itk_module_target(${KWSYS_NAMESPACE} NO_INSTALL)
