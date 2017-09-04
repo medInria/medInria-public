@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013 - 2017. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -162,7 +162,13 @@ void medQuickAccessMenu::switchToCurrentlySelected()
         return;
     }
 
-    if (currentSelected >= 2)
+    if (currentSelected == 2)
+    {
+       emit composerSelected();
+       return;
+    }
+
+    if (currentSelected >= 3)
     {
         emit workspaceSelected(buttonsList[currentSelected]->identifier());
         return;
@@ -327,19 +333,34 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     buttonsList.push_back(homeButton);
 
     //Setup browser access button
-    medHomepagePushButton * browserButton = new medHomepagePushButton ( this );
+    medHomepagePushButton * browserButton = new medHomepagePushButton(this);
     browserButton->setCursor(Qt::PointingHandCursor);
     browserButton->setStyleSheet("border: 0px;");
-    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
-    browserButton->setText ( "Browser" );
-    browserButton->setFixedHeight ( 40 );
-    browserButton->setMaximumWidth ( 250 );
-    browserButton->setMinimumWidth ( 250 );
+    browserButton->setIcon(QIcon(":/icons/folder.png"));
+    browserButton->setText("Browser");
+    browserButton->setFixedHeight(40);
+    browserButton->setMaximumWidth(250);
+    browserButton->setMinimumWidth(250);
     browserButton->setIdentifier("Browser");
-    browserButton->setFocusPolicy ( Qt::NoFocus );
-    workspaceButtonsLayout->addWidget ( browserButton );
-    QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SIGNAL ( browserSelected()) );
+    browserButton->setFocusPolicy(Qt::NoFocus);
+    workspaceButtonsLayout->addWidget(browserButton);
+    QObject::connect(browserButton, SIGNAL(clicked()), this, SIGNAL(browserSelected()));
     buttonsList.push_back(browserButton);
+
+    //Setup composer access button
+    medHomepagePushButton * composerButton = new medHomepagePushButton(this);
+    composerButton->setCursor(Qt::PointingHandCursor);
+    composerButton->setStyleSheet("border: 0px;");
+    composerButton->setIcon(QIcon(":/icons/composer.png"));
+    composerButton->setText("composer");
+    composerButton->setFixedHeight(40);
+    composerButton->setMaximumWidth(250);
+    composerButton->setMinimumWidth(250);
+    composerButton->setIdentifier("composer");
+    composerButton->setFocusPolicy(Qt::NoFocus);
+    workspaceButtonsLayout->addWidget(composerButton);
+    QObject::connect(composerButton, SIGNAL(clicked()), this, SIGNAL(composerSelected()));
+    buttonsList.push_back(composerButton);
 
     //Dynamically setup workspaces access button
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
@@ -409,6 +430,19 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     shortcutAccessLayout->addWidget ( smallBrowserButton );
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ),this, SIGNAL ( browserSelected()) );
     buttonsList.push_back(smallBrowserButton);
+
+    //Setup composer access button
+    medHomepagePushButton * smallComposerButton = new medHomepagePushButton(this);
+    smallComposerButton->setCursor(Qt::PointingHandCursor);
+    smallComposerButton->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:icons/composer_sc.png) no-repeat;");
+    smallComposerButton->setFixedHeight(100);
+    smallComposerButton->setFixedWidth(160);
+    smallComposerButton->setFocusPolicy(Qt::NoFocus);
+    smallComposerButton->setText("Composer");
+    smallComposerButton->setIdentifier("Composer");
+    shortcutAccessLayout->addWidget(smallComposerButton);
+    QObject::connect(smallComposerButton, SIGNAL(clicked()), this, SIGNAL(composerSelected()));
+    buttonsList.push_back(smallComposerButton);
 
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     unsigned int numActiveWorkspaces = 0;
