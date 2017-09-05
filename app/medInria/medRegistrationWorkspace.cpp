@@ -173,9 +173,6 @@ void medRegistrationWorkspace::updateFromContainer(medRegistrationWorkspace::Con
 
             if(currentData)
             {
-                d->viewGroup->addImpactedView(currentView);
-                d->viewGroup->addImpactedView(fuseView);
-
                 d->layerGroups[containerIndex]->addImpactedlayer(currentView, currentData);
                 d->layerGroups[containerIndex]->addImpactedlayer(fuseView, currentData);
             }
