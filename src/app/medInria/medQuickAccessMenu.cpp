@@ -352,11 +352,11 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     composerButton->setCursor(Qt::PointingHandCursor);
     composerButton->setStyleSheet("border: 0px;");
     composerButton->setIcon(QIcon(":/icons/composer.png"));
-    composerButton->setText("composer");
+    composerButton->setText("Composer");
     composerButton->setFixedHeight(40);
     composerButton->setMaximumWidth(250);
     composerButton->setMinimumWidth(250);
-    composerButton->setIdentifier("composer");
+    composerButton->setIdentifier("Composer");
     composerButton->setFocusPolicy(Qt::NoFocus);
     workspaceButtonsLayout->addWidget(composerButton);
     QObject::connect(composerButton, SIGNAL(clicked()), this, SIGNAL(composerSelected()));
@@ -386,7 +386,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
         buttonsList.push_back(button);
     }
     workspaceButtonsLayout->addStretch();
-    this->setMinimumHeight ( 20 + 40 * ( 2 + numActiveWorkspaces ) );
+    this->setMinimumHeight ( 20 + 40 * ( 3 + numActiveWorkspaces ) );
     this->setLayout(workspaceButtonsLayout);
 }
 
