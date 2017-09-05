@@ -49,6 +49,7 @@ signals:
     void menuHidden();
     void homepageSelected();
     void browserSelected();
+    void composerSelected();
     void areaSelected(QString);
     void workspaceSelected(QString);
 

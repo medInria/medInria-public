@@ -374,7 +374,8 @@ void medHomepageArea::initPage()
     medHomepageButton * composerButton = new medHomepageButton ( this );
     composerButton->setText ("Composer");
     composerButton->setFocusPolicy ( Qt::NoFocus );
-    composerButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    composerButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    composerButton->setIcon(QIcon(":/icons/composer.png"));
     composerButton->setMinimumHeight ( 40 );
     composerButton->setMaximumWidth ( 250 );
     composerButton->setMinimumWidth ( 250 );
