@@ -261,7 +261,7 @@ void itkDataImageReaderBase::extractMetaData()
     itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
     std::vector<std::string> keys = metaDataDictionary.GetKeys();
 
-    for (int i = 0; i < keys.size(); i++)
+    for (unsigned int i = 0; i < keys.size(); i++)
     {
         std::string key = keys[i];
         std::string value;

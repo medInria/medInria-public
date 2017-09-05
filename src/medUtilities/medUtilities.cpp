@@ -52,7 +52,7 @@ void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData
 
 void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData* original, QString metaDataKey)
 {
-    if (!derived->hasMetaData(metaDataKey))
+    if (!derived->hasMetaData(metaDataKey) && original->hasMetaData(metaDataKey))
     {
         derived->setMetaData(metaDataKey, original->metadata(metaDataKey));
     }

@@ -58,7 +58,7 @@ public:
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " shrink filter (" + QString::number(shrinkFactors[0]) + "," + QString::number(shrinkFactors[1]) + "," + QString::number(shrinkFactors[2]) + ")";
 
-        output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
         return DTK_SUCCEED;
     }
