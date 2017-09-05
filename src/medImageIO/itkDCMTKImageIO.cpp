@@ -158,7 +158,7 @@ void DCMTKImageIO::ReadImageInformation()
 
     /** The purpose of the next loop is to order filenames depending on their sliceLocation,
        assuming that the sliceLocation field gives the order dicoms are obtained. */
-    int i = 0;
+    double b = 0.0;
     fileIndex =0;
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
 
@@ -167,16 +167,29 @@ void DCMTKImageIO::ReadImageInformation()
         try
         {
             if (imagePositions.size() > 0) {
-                sliceLocation = this->GetSliceLocation(imagePositions[i]);
+                sliceLocation = this->GetSliceLocation(imagePositions[fileIndex]);
             } else {
                 sliceLocation = 0;
             }
-            i++;
 
-            //Forcing sliceLocation to be a multiple of spacing between slices
-            //Prevents from some sorting issues (e.g due to extremely small differences in sliceLocations)
+            //Forcing sliceLocation to follow affine fucntion a*x+b, where  a is the z-spacing
+            //                                                              b is the position of the first slice
+            //                                                              x is slice index (not used, just for explanation)
+            //Prevents from some sorting issues (sequences not being recognized because of tiny sliceLocation difference)
 
-            sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2];
+            if(fileIndex == 0)
+            {
+                b = sliceLocation;
+            }
+            else
+            {
+                double a = m_Spacing[2];
+                double aX = sliceLocation - b;
+                
+                aX = floor(aX/a + 0.5)*a;
+                sliceLocation = aX + b;
+            }
+
             m_LocationSet.insert( sliceLocation );
             m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *it ) );
             m_FilenameToIndexMap[ *it ] = fileIndex;
