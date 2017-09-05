@@ -15,7 +15,7 @@
 
 void medSlider::addTick(int position)
 {
-    if(!ticksList.contains(position))
+    if( (ticksList.isEmpty()) || !ticksList.contains(position))
     {
         ticksList.append(position);
     }
@@ -23,17 +23,28 @@ void medSlider::addTick(int position)
 
 int medSlider::tickCount()
 {
-   return ticksList.count();
+    if (!ticksList.isEmpty())
+    {
+        return ticksList.count();
+    }
+
+    return 0;
 }
 
 void medSlider::removeTick(int position)
 {
-    ticksList.removeAll(position);
+    if (!ticksList.isEmpty())
+    {
+        ticksList.removeAll(position);
+    }
 }
 
 void medSlider::removeAllTicks()
 {
-    ticksList.clear();
+    if (!ticksList.isEmpty())
+    {
+        ticksList.clear();
+    }
 }
 
 void medSlider::paintEvent(QPaintEvent *ev)
@@ -43,7 +54,7 @@ void medSlider::paintEvent(QPaintEvent *ev)
 
     QPainter painter(this);
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-    for(int i = 0; i<ticksList.size(); i++)
+    for(int i = 0; i<tickCount(); i++)
     {
         int position = QStyle::sliderPositionFromValue(minimum(),
                                                        maximum(),
