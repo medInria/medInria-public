@@ -386,6 +386,19 @@ namespace singleFilterOperation
             return _private::factory;
         }
     }
+
+    namespace biasCorrection
+    {
+       namespace _private
+       {
+          medAbstractBiasCorrectionProcessPresenterFactory factory;
+       }
+
+       medAbstractBiasCorrectionProcessPresenterFactory& presenterFactory()
+       {
+          return _private::factory;
+       }
+    }
 }
 
 } // end of medWidgets
