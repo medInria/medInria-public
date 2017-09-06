@@ -303,6 +303,19 @@ namespace singleFilterOperation
             return _private::factory;
         }
     }
+
+    namespace biasCorrection
+    {
+       namespace _private
+       {
+          medAbstractBiasCorrectionProcessPluginFactory factory;
+       }
+
+       medAbstractBiasCorrectionProcessPluginFactory& pluginFactory(void)
+       {
+          return _private::factory;
+       }
+    }
 }
 
 // morphomath
