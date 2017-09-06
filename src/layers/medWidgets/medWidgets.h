@@ -32,6 +32,7 @@
 #include <medAbstractImageDenoisingProcessPresenter.h>
 #include <medAbstractRelaxometryEstimationProcessPresenter.h>
 #include <medAbstractSymmetryPlaneAlignmentProcessPresenter.h>
+#include <medAbstractBiasCorrectionProcessPresenter.h>
 
 #include <medWidgetsExport.h>
 
@@ -145,12 +146,22 @@ namespace medWidgets
         {
             MEDWIDGETS_EXPORT medAbstractSymmetryPlaneAlignmentProcessPresenterFactory& presenterFactory();
         }
+        namespace biasCorrection
+        {
+           MEDWIDGETS_EXPORT medAbstractBiasCorrectionProcessPresenterFactory& presenterFactory();
+        }
     }
 
     namespace maskImage
     {
         MEDWIDGETS_EXPORT medAbstractMaskImageProcessPresenterFactory& presenterFactory();
     }
+/*
+
+    namespace biasCorrection
+    {
+       MEDWIDGETS_EXPORT medAbstractBiasCorrectionProcessPresenterFactory& presenterFactory();
+    }*/
 
     namespace dwiMasking
     {
