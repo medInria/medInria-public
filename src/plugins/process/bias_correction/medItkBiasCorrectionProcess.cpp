@@ -30,11 +30,91 @@
 #include <itkOtsuThresholdImageFilter.h>
 #include <itkShrinkImageFilter.h>
 #include <itkTimeProbe.h>
-medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent)
-    : medAbstractBiasCorrectionProcess(parent)
 
+
+#include <medDoubleParameter.h>
+
+#define MAX_INT_POSITIVE 4294967295
+
+
+medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAbstractBiasCorrectionProcess(parent)
 {
     m_filter = NULL;
+
+
+    m_poUIThreadNb = new medIntParameter("ThreadNb", this);
+    m_poUIThreadNb->setCaption("Number of threads");
+    m_poUIThreadNb->setDescription("Set the number of computing treads, 0 for 1 thread per CPU");
+    m_poUIThreadNb->setRange(0, 128);
+    m_poUIThreadNb->setValue(0);
+
+    m_poUIShrinkFactors = new medIntParameter("Shrinkfactor", this);
+    m_poUIShrinkFactors->setCaption("Shrink factor");
+    m_poUIShrinkFactors->setDescription("Shrink factor");
+    m_poUIShrinkFactors->setRange(0, MAX_INT_POSITIVE);
+    m_poUIShrinkFactors->setValue(4);
+
+    m_poUISplineOrder = new medIntParameter("BSplineOrder", this);
+    m_poUISplineOrder->setCaption("BSpline Order");
+    m_poUISplineOrder->setDescription("BSpline Order");
+    m_poUISplineOrder->setRange(0, MAX_INT_POSITIVE);
+    m_poUISplineOrder->setValue(3);
+
+    m_poUIMaxNumbersIterationsVector1 = new medIntParameter("Iterations1st", this);
+    m_poUIMaxNumbersIterationsVector1->setCaption("Iterations vector");
+    m_poUIMaxNumbersIterationsVector1->setDescription("Firsts iterations round");
+    m_poUIMaxNumbersIterationsVector1->setRange(0, 500);
+    m_poUIMaxNumbersIterationsVector1->setValue(50);
+    m_poUIMaxNumbersIterationsVector2 = new medIntParameter("Iterations2nd", this);
+    m_poUIMaxNumbersIterationsVector2->setCaption("Iterations vector");
+    m_poUIMaxNumbersIterationsVector2->setDescription("Seconds iterations round");
+    m_poUIMaxNumbersIterationsVector2->setRange(0, 500);
+    m_poUIMaxNumbersIterationsVector2->setValue(40);
+    m_poUIMaxNumbersIterationsVector3 = new medIntParameter("Iterations3rd", this);
+    m_poUIMaxNumbersIterationsVector3->setCaption("Iterations vector");
+    m_poUIMaxNumbersIterationsVector3->setDescription("Thirds iterations round");
+    m_poUIMaxNumbersIterationsVector3->setRange(0, 500);
+    m_poUIMaxNumbersIterationsVector3->setValue(30);
+
+    m_poFWienerFilterNoise = new medDoubleParameter("WienerFilterNoise", this);
+    m_poFWienerFilterNoise->setCaption("Wiener Filter Noise");
+    m_poFWienerFilterNoise->setDescription("Wiener Filter Noise");
+    m_poFWienerFilterNoise->setRange(0.000001, 1);
+    m_poFWienerFilterNoise->setValue(0.01);
+
+    m_poFbfFWHM = new medDoubleParameter("FbfFWHM", this);
+    m_poFbfFWHM->setCaption("Bias field Full Width at Half Maximum");
+    m_poFbfFWHM->setDescription("Bias field Full Width at Half Maximum");
+    m_poFbfFWHM->setRange(0.0001, 1);
+    m_poFbfFWHM->setValue(0.15);
+
+    m_poFConvergenceThreshold = new medDoubleParameter("ConvergenceThreshold", this);
+    m_poFConvergenceThreshold->setCaption("Convergence Threshold");
+    m_poFConvergenceThreshold->setDescription("Convergence Threshold");
+    m_poFConvergenceThreshold->setRange(0.00000001, MAX_INT_POSITIVE);
+    m_poFConvergenceThreshold->setValue(0.0001);
+
+    m_poFSplineDistance = new medDoubleParameter("SplineDistance", this);
+    m_poFSplineDistance->setCaption("B-Spline distance");
+    m_poFSplineDistance->setDescription("B-Spline distance");
+    m_poFSplineDistance->setRange(0, 128);
+    m_poFSplineDistance->setValue(0);
+
+    m_poFInitialMeshResolutionVect1 = new medDoubleParameter("XMeshResolution", this);
+    m_poFInitialMeshResolutionVect1->setCaption("Spline grid resolution");
+    m_poFInitialMeshResolutionVect1->setDescription("Mesh resolution for X");
+    m_poFInitialMeshResolutionVect1->setRange(0.000001, MAX_INT_POSITIVE);
+    m_poFInitialMeshResolutionVect1->setValue(1);
+    m_poFInitialMeshResolutionVect2 = new medDoubleParameter("YMeshResolution", this);
+    m_poFInitialMeshResolutionVect2->setCaption("Spline grid resolution");
+    m_poFInitialMeshResolutionVect2->setDescription("Mesh resolution for Y");
+    m_poFInitialMeshResolutionVect2->setRange(0.000001, MAX_INT_POSITIVE);
+    m_poFInitialMeshResolutionVect2->setValue(1);
+    m_poFInitialMeshResolutionVect3 = new medDoubleParameter("ZMeshResolution", this);
+    m_poFInitialMeshResolutionVect3->setCaption("Spline grid resolution");
+    m_poFInitialMeshResolutionVect3->setDescription("Mesh resolution for Z");
+    m_poFInitialMeshResolutionVect3->setRange(0.000001, MAX_INT_POSITIVE);
+    m_poFInitialMeshResolutionVect3->setValue(1);
 }
 
 medItkBiasCorrectionProcess::~medItkBiasCorrectionProcess()
@@ -52,6 +132,7 @@ QString medItkBiasCorrectionProcess::description() const
 {
     return "Use ITK N4BiasCorrectionFilter to compute a bias corrected image.";
 }
+
 medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::run()
 {
     medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
@@ -99,47 +180,7 @@ medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::run()
         else if ( id == "itkDataImageDouble3" )
         {
             jobExitSatus = this->_run<double, 3>();
-        }/*
-        else if ( id == "itkDataImageChar4" )
-        {
-            jobExitSatus = this->_run<char, 4>();
         }
-        else if ( id == "itkDataImageUChar4" )
-        {
-            jobExitSatus = this->_run<unsigned char, 4>();
-        }
-        else if ( id == "itkDataImageShort4" )
-        {
-            jobExitSatus = this->_run<short, 4>();
-        }
-        else if ( id == "itkDataImageUShort4" )
-        {
-            jobExitSatus = this->_run<unsigned short, 4>();
-        }
-        else if ( id == "itkDataImageInt4" )
-        {
-            jobExitSatus = this->_run<int, 4>();
-        }
-        else if ( id == "itkDataImageUInt4" )
-        {
-            jobExitSatus = this->_run<unsigned int, 4>();
-        }
-        else if ( id == "itkDataImageLong4" )
-        {
-            jobExitSatus = this->_run<long, 4>();
-        }
-        else if ( id == "itkDataImageULong4" )
-        {
-            jobExitSatus = this->_run<unsigned long, 4>();
-        }
-        else if ( id == "itkDataImageFloat4" )
-        {
-            jobExitSatus = this->_run<float, 4>();
-        }
-        else if ( id == "itkDataImageDouble4" )
-        {
-            jobExitSatus = this->_run<double, 4>();
-        }*/
     }
     return jobExitSatus;
 }
@@ -147,8 +188,19 @@ medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::run()
 
 template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::_run()
 {
-    N4BiasCorrectionCore();
-    return medAbstractJob::MED_JOB_EXIT_FAILURE;
+    medJobExitStatus eRes = medAbstractJob::MED_JOB_EXIT_SUCCESS;
+    
+    try
+    {
+       eRes = N4BiasCorrectionCore();
+    }
+    catch (...)
+    {
+       eRes = medAbstractJob::MED_JOB_EXIT_FAILURE;
+    }
+
+
+    return eRes;
 }
 
 void medItkBiasCorrectionProcess::cancel()
@@ -159,8 +211,10 @@ void medItkBiasCorrectionProcess::cancel()
     }
 }
 
-void medItkBiasCorrectionProcess::N4BiasCorrectionCore()
+medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::N4BiasCorrectionCore()
 {
+   medJobExitStatus eRes = medAbstractJob::MED_JOB_EXIT_SUCCESS;
+
    typedef itk::Image<float, 3 > ImageType;
    typedef itk::Image<unsigned char, 3> MaskImageType;
    typedef itk::N4BiasFieldCorrectionImageFilter<ImageType, MaskImageType, ImageType> BiasFilter;
@@ -173,21 +227,23 @@ void medItkBiasCorrectionProcess::N4BiasCorrectionCore()
    typedef itk::DivideImageFilter<ImageType, ImageType, ImageType> DividerType;
    typedef itk::ExtractImageFilter<ImageType, ImageType> CropperType;
 
-   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////  TODO TODO TODO ////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////  TODO TODO TODO ////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////  TODO TODO TODO ////////////////////////////////////////////////////////////////
-   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   unsigned int uiThreadNb = 0;
-   unsigned int uiShrinkFactors = 0;
-   unsigned int uiSplineOrder = 0;
-   float fWienerFilterNoise;
-   float fbfFWHM;
-   float fConvergenceThreshold;
-   std::vector<unsigned int> oMaxNumbersIterationsVector;//TODO = extractMaxNumberOfIterationsVector(oArgIterationsString.getValue());
-   std::vector<float> oInitialMeshResolutionVect;//TODO = ConvertVector<float>(oArgInitialMeshResolutionString.getValue());
-   float fSplineDistance;//TODO = oArgSplineDistance.getValue();
 
+   unsigned int uiThreadNb = static_cast<unsigned int>(m_poUIThreadNb->value());
+   unsigned int uiShrinkFactors = static_cast<unsigned int>(m_poUIShrinkFactors->value());
+   unsigned int uiSplineOrder = static_cast<unsigned int>(m_poUISplineOrder->value());
+   float fWienerFilterNoise = static_cast<float>(m_poFWienerFilterNoise->value());
+   float fbfFWHM = static_cast<float>(m_poFbfFWHM->value());
+   float fConvergenceThreshold = static_cast<float>(m_poFConvergenceThreshold->value());
+   float fSplineDistance = static_cast<float>(m_poFSplineDistance->value());
+
+   std::vector<unsigned int> oMaxNumbersIterationsVector;
+   std::vector<float> oInitialMeshResolutionVect;
+   oMaxNumbersIterationsVector[0] = static_cast<unsigned int>(m_poUIMaxNumbersIterationsVector1->value());
+   oMaxNumbersIterationsVector[1] = static_cast<unsigned int>(m_poUIMaxNumbersIterationsVector2->value());
+   oMaxNumbersIterationsVector[2] = static_cast<unsigned int>(m_poUIMaxNumbersIterationsVector3->value());
+   oInitialMeshResolutionVect[0] = static_cast<float>(m_poFInitialMeshResolutionVect1->value());
+   oInitialMeshResolutionVect[1] = static_cast<float>(m_poFInitialMeshResolutionVect2->value());
+   oInitialMeshResolutionVect[2] = static_cast<float>(m_poFInitialMeshResolutionVect3->value());
 
    /********************************************************************************/
    /***************************** PREPARING STARTING *******************************/
@@ -201,7 +257,6 @@ void medItkBiasCorrectionProcess::N4BiasCorrectionCore()
    ImageType::Pointer image = dynamic_cast<ImageType *>((itk::Object*)(this->input()->data()));
 
    /*** 2 ******************* Creating Otsu mask *****************************/
-   //TODO std::cout << "Creating Otsu mask." << std::endl;
    itk::TimeProbe timer;
    timer.Start();
    MaskImageType::Pointer maskImage = ITK_NULLPTR;
@@ -332,7 +387,8 @@ void medItkBiasCorrectionProcess::N4BiasCorrectionCore()
    {
       std::cerr << "ExceptionObject caught !" << std::endl;
       std::cerr << err << std::endl;
-      exit(EXIT_FAILURE);
+      eRes = medAbstractJob::MED_JOB_EXIT_FAILURE;
+      return eRes;
    }
 
 

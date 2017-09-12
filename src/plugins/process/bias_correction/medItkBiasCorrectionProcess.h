@@ -45,12 +45,43 @@ public:
     virtual QString caption() const;
     virtual QString description() const;
 
+
+    medIntParameter* getUIThreadNb() { return m_poUIThreadNb; }
+    medIntParameter* getUIShrinkFactors() { return m_poUIShrinkFactors; }
+    medIntParameter* getUISplineOrder() { return m_poUISplineOrder; }
+    medIntParameter* getUIMaxNumbersIterationsVector1() { return m_poUIMaxNumbersIterationsVector1; }
+    medIntParameter* getUIMaxNumbersIterationsVector2() { return m_poUIMaxNumbersIterationsVector2; }
+    medIntParameter* getUIMaxNumbersIterationsVector3() { return m_poUIMaxNumbersIterationsVector3; }
+
+    medDoubleParameter* getFWienerFilterNoise() { return m_poFWienerFilterNoise; }
+    medDoubleParameter* getFbfFWHM() { return m_poFbfFWHM; }
+    medDoubleParameter* getFConvergenceThreshold() { return m_poFConvergenceThreshold; }
+    medDoubleParameter* getFSplineDistance() { return m_poFSplineDistance; }
+    medDoubleParameter* getFInitialMeshResolutionVect1() { return m_poFInitialMeshResolutionVect1; }
+    medDoubleParameter* getFInitialMeshResolutionVect2() { return m_poFInitialMeshResolutionVect2; }
+    medDoubleParameter* getFInitialMeshResolutionVect3() { return m_poFInitialMeshResolutionVect3; }
+
 private:
     template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitStatus _run();
-    void N4BiasCorrectionCore();
+    medJobExitStatus N4BiasCorrectionCore();
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
+
+    medIntParameter    *m_poUIThreadNb;
+    medIntParameter    *m_poUIShrinkFactors;
+    medIntParameter    *m_poUISplineOrder;
+    medIntParameter    *m_poUIMaxNumbersIterationsVector1;
+    medIntParameter    *m_poUIMaxNumbersIterationsVector2;
+    medIntParameter    *m_poUIMaxNumbersIterationsVector3;
+
+    medDoubleParameter *m_poFWienerFilterNoise;
+    medDoubleParameter *m_poFbfFWHM;
+    medDoubleParameter *m_poFConvergenceThreshold;
+    medDoubleParameter *m_poFSplineDistance;
+    medDoubleParameter *m_poFInitialMeshResolutionVect1;
+    medDoubleParameter *m_poFInitialMeshResolutionVect2;
+    medDoubleParameter *m_poFInitialMeshResolutionVect3;
 };
 
 inline medAbstractBiasCorrectionProcess* medItkBiasCorrectionProcessCreator()
