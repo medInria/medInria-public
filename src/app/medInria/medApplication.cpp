@@ -203,10 +203,6 @@ void medApplication::initialize()
     plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
 #else
     plugins_dir = qApp->applicationDirPath() + "/../plugins";
-    char pchTmp[1024];
-    int len = 1024;
-    GetCurrentDirectory(len, pchTmp);
-    pchTmp;
 #endif
     defaultPath = plugins_dir.absolutePath();
 

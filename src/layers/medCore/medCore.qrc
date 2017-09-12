@@ -26,6 +26,7 @@
         <file>process/single_filter/medAbstractImageDenoisingProcess.json</file>
         <file>process/single_filter/medAbstractRelaxometryEstimationProcess.json</file>
         <file>process/single_filter/medAbstractSymmetryPlaneAlignmentProcess.json</file>
+        <file>process/single_filter/medAbstractBiasCorrectionProcess.json</file>
         <file>process/medGenericReaderNode.json</file>
         <file>process/medGenericWriterNode.json</file>
         <file>process/medImageReaderNode.json</file>

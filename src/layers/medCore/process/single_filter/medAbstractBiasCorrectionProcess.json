@@ -1,8 +1,8 @@
 {
-          "title" : "BiasCorrection filter",
+          "title" : "Bias correction filter",
            "kind" : "process",
-           "type" : "medAbstractBiasCorrectionFilterProcess",
-           "tags" : ["biascorrection","filter", "operation"],
+           "type" : "medAbstractBiasCorrectionProcess",
+           "tags" : ["bias correction","filter", "operation"],
     "description" : "<p>Bias correction filter</p>",
          "inputs" : ["scalarImage"],
         "outputs" : ["scalarImage"]
