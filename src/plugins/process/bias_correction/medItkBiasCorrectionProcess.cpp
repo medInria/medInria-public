@@ -350,12 +350,10 @@ medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::N4BiasCorrectionCo
    /*** 10 ******************* Shrinker image ********************************/
    ShrinkerType::Pointer imageShrinker = ShrinkerType::New();
    imageShrinker->SetInput(image);
-   imageShrinker->SetShrinkFactors(1);
 
    /*** 11 ******************* Shrinker mask *********************************/
    MaskShrinkerType::Pointer maskShrinker = MaskShrinkerType::New();
    maskShrinker->SetInput(maskImage);
-   maskShrinker->SetShrinkFactors(1);
 
    /*** 12 ******************* Shrink mask and image *************************/
    imageShrinker->SetShrinkFactors(uiShrinkFactors);
@@ -445,8 +443,8 @@ medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::N4BiasCorrectionCo
    cropper->SetNumberOfThreads(uiThreadNb);
    cropper->Update();
 
-   timer.Stop();
-   std::cout << "\nComputation time : " << timer.GetTotal() << std::endl;
+   //timer.Stop();
+   //std::cout << "\nComputation time : " << timer.GetTotal() << std::endl;
 
    /********************** Write output image *************************/
    medAbstractImageData *out = qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
