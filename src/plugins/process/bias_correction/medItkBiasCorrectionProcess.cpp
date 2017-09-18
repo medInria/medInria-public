@@ -44,20 +44,20 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
 
     m_poUIThreadNb = new medIntParameter("ThreadNb", this);
     m_poUIThreadNb->setCaption("Number of threads");
-    m_poUIThreadNb->setDescription("Set the number of computing treads, 0 for 1 thread per CPU");
-    m_poUIThreadNb->setRange(0, 128);
-    m_poUIThreadNb->setValue(0);
+    m_poUIThreadNb->setDescription("Set the number of computing treads");
+    m_poUIThreadNb->setRange(1, itk::MultiThreader::GetGlobalDefaultNumberOfThreads());
+    m_poUIThreadNb->setValue(itk::MultiThreader::GetGlobalDefaultNumberOfThreads());
 
     m_poUIShrinkFactors = new medIntParameter("Shrinkfactor", this);
     m_poUIShrinkFactors->setCaption("Shrink factor");
     m_poUIShrinkFactors->setDescription("Shrink factor");
-    m_poUIShrinkFactors->setRange(0, MAX_INT_POSITIVE);
+    m_poUIShrinkFactors->setRange(1, 10);
     m_poUIShrinkFactors->setValue(4);
 
     m_poUISplineOrder = new medIntParameter("BSplineOrder", this);
     m_poUISplineOrder->setCaption("BSpline Order");
     m_poUISplineOrder->setDescription("BSpline Order");
-    m_poUISplineOrder->setRange(0, MAX_INT_POSITIVE);
+    m_poUISplineOrder->setRange(1, 16);
     m_poUISplineOrder->setValue(3);
 
     m_poUIMaxNumbersIterationsVector1 = new medIntParameter("Iterations1st", this);
@@ -91,7 +91,7 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
     m_poFConvergenceThreshold = new medDoubleParameter("ConvergenceThreshold", this);
     m_poFConvergenceThreshold->setCaption("Convergence Threshold");
     m_poFConvergenceThreshold->setDescription("Convergence Threshold");
-    m_poFConvergenceThreshold->setRange(0.00000001, MAX_INT_POSITIVE);
+    m_poFConvergenceThreshold->setRange(0.00000001, 10);
     m_poFConvergenceThreshold->setValue(0.0001);
 
     m_poFSplineDistance = new medDoubleParameter("SplineDistance", this);
