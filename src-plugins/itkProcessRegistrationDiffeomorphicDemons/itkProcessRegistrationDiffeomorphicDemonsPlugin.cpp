@@ -15,6 +15,9 @@
 #include <itkProcessRegistrationDiffeomorphicDemonsPlugin.h>
 #include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
+itkProcessRegistrationDiffeomorphicDemonsPlugin::itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize()
 {

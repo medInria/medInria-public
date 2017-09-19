@@ -21,6 +21,7 @@ class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImagePluginPrivate;
 class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImagePlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
      itkDataSHImagePlugin(QObject *parent = 0);

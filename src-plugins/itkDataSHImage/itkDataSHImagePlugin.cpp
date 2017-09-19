@@ -61,7 +61,7 @@ bool itkDataSHImagePlugin::initialize() {
 }
 
 QString itkDataSHImagePlugin::name() const {
-    return "itkDataSHImagePlugin";
+    return "ITK Data SH Image";
 }
 
 QStringList itkDataSHImagePlugin::authors() const {

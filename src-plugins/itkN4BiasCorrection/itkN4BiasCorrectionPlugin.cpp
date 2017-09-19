@@ -15,6 +15,9 @@
 #include "itkN4BiasCorrectionPlugin.h"
 #include "itkN4BiasCorrectionToolBox.h"
 
+itkN4BiasCorrectionPlugin::itkN4BiasCorrectionPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool itkN4BiasCorrectionPlugin::initialize()
 {
@@ -38,11 +41,6 @@ QString itkN4BiasCorrectionPlugin::name() const
 QString itkN4BiasCorrectionPlugin::version() const
 {
     return ITKN4BIASCORRECTIONPLUGIN_VERSION;
-}
-
-QString itkN4BiasCorrectionPlugin::identifier() const
-{
-    return "itkN4BiasCorrection";
 }
 
 QStringList itkN4BiasCorrectionPlugin::types() const

@@ -19,15 +19,14 @@
 class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationPlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
     
 public:
+    medBinaryOperationPlugin(QObject *parent = 0);
     virtual bool initialize();
     
     virtual QString name() const;
-    virtual QString identifier() const;
     virtual QString description() const;
     virtual QString version() const;
     virtual QStringList types() const;
 };
-
-

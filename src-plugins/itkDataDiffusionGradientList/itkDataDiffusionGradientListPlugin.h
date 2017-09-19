@@ -21,6 +21,7 @@ class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPlug
 class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientListPlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
      itkDataDiffusionGradientListPlugin(QObject *parent = 0);
@@ -30,7 +31,6 @@ public:
 
     virtual QString name() const;
     virtual QString description() const;
-    virtual QString identifier() const;
     virtual QString version() const;
     virtual QStringList tags() const;
     virtual QStringList types() const;

@@ -167,7 +167,7 @@ bool itkDataImagePlugin::initialize()
 
 QString itkDataImagePlugin::name() const
 {
-    return "itkDataImagePlugin";
+    return "ITK Data Image";
 }
 
 QString itkDataImagePlugin::description() const

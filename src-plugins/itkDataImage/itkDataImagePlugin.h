@@ -21,6 +21,7 @@ class itkDataImagePluginPrivate;
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImagePlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
      itkDataImagePlugin(QObject *parent = 0);
@@ -37,5 +38,3 @@ public:
 private:
     itkDataImagePluginPrivate *d;
 };
-
-

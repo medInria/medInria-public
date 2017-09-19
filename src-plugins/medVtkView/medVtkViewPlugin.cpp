@@ -16,6 +16,9 @@
 #include <medVtkView.h>
 #include <medVtkViewNavigator.h>
 
+medVtkViewPlugin::medVtkViewPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool medVtkViewPlugin::initialize()
 {
@@ -28,7 +31,7 @@ bool medVtkViewPlugin::initialize()
 
 QString medVtkViewPlugin::name() const
 {
-    return "medVtkViewPlugin";
+    return "VTK View";
 }
 
 QStringList medVtkViewPlugin::authors() const

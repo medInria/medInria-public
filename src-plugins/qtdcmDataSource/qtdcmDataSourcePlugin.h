@@ -19,8 +19,10 @@
 class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSourcePlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
+    qtdcmDataSourcePlugin(QObject *parent = 0);
     virtual bool initialize();
 
     virtual QString description() const;
@@ -33,5 +35,3 @@ public:
     virtual QStringList tags() const;
     virtual QStringList types() const;
 };
-
-

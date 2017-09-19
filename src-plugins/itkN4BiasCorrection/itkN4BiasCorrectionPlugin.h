@@ -19,12 +19,13 @@
 class ITKN4BIASCORRECTIONPLUGIN_EXPORT itkN4BiasCorrectionPlugin : public medPlugin
 {
     Q_OBJECT
-    
+    Q_INTERFACES(dtkPlugin)
+
 public:
+    itkN4BiasCorrectionPlugin(QObject *parent = 0);
     virtual bool initialize();
     
     virtual QString name() const;
-    virtual QString identifier() const;
     virtual QString version() const;
     virtual QStringList types() const;
 };

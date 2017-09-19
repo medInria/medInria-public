@@ -80,7 +80,7 @@ bool medVtkFibersDataPlugin::initialize()
 
 QString medVtkFibersDataPlugin::name() const
 {
-    return "medVtkFibersDataPlugin";
+    return "VTK Fibers Data";
 }
 
 QString medVtkFibersDataPlugin::description() const

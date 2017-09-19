@@ -14,6 +14,10 @@
 #include <qtdcmDataSource.h>
 #include <qtdcmDataSourcePlugin.h>
 
+qtdcmDataSourcePlugin::qtdcmDataSourcePlugin(QObject *parent) : medPlugin(parent)
+{
+}
+
 bool qtdcmDataSourcePlugin::initialize()
 {
     if ( !qtdcmDataSource::registered() ) { dtkWarn() << "Unable to register qtdcmDataSource type"; }
@@ -23,7 +27,7 @@ bool qtdcmDataSourcePlugin::initialize()
 
 QString qtdcmDataSourcePlugin::name() const
 {
-    return "qtdcmDataSourcePlugin";
+    return "QtDCM Data Source";
 }
 
 QString qtdcmDataSourcePlugin::description() const

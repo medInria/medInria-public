@@ -19,8 +19,10 @@
 class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
+    itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent = 0);
     virtual bool initialize();
 
     virtual QString description() const;
@@ -30,5 +32,3 @@ public:
     virtual QStringList contributors() const;
     virtual QStringList types() const;
 };
-
-

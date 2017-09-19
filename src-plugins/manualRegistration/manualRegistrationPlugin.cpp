@@ -15,6 +15,9 @@
 #include <manualRegistrationPlugin.h>
 #include <manualRegistrationToolBox.h>
 
+manualRegistrationPlugin::manualRegistrationPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool manualRegistrationPlugin::initialize()
 {
@@ -39,11 +42,6 @@ QString manualRegistrationPlugin::name() const
 QString manualRegistrationPlugin::version() const
 {
     return MANUALREGISTRATIONPLUGIN_VERSION;
-}
-
-QString manualRegistrationPlugin::identifier() const
-{
-    return "manualRegistration";
 }
 
 QStringList manualRegistrationPlugin::types() const

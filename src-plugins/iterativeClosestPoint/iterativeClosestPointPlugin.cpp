@@ -15,6 +15,9 @@
 #include "iterativeClosestPointPlugin.h"
 #include "iterativeClosestPointToolBox.h"
 
+iterativeClosestPointPlugin::iterativeClosestPointPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool iterativeClosestPointPlugin::initialize()
 {
@@ -39,11 +42,6 @@ QString iterativeClosestPointPlugin::name() const
 QString iterativeClosestPointPlugin::version() const
 {
     return ITERATIVECLOSESTPOINTPLUGIN_VERSION;
-}
-
-QString iterativeClosestPointPlugin::identifier() const
-{
-    return "iterativeClosestPoint";
 }
 
 QStringList iterativeClosestPointPlugin::types() const

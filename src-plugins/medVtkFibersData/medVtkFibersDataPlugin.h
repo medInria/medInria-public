@@ -21,6 +21,7 @@ class medVtkFibersDataPluginPrivate;
 class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataPlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
      medVtkFibersDataPlugin(QObject *parent = 0);

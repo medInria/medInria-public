@@ -15,6 +15,10 @@
 
 #include <medAnnotationInteractor.h>
 
+medSegmentationPlugin::medSegmentationPlugin(QObject *parent) : medPlugin(parent)
+{
+}
+
 bool medSegmentationPlugin::initialize()
 {
     if(!medAnnotationInteractor::registered())
@@ -24,7 +28,7 @@ bool medSegmentationPlugin::initialize()
 
 QString medSegmentationPlugin::name() const
 {
-    return "segmentationPlugin";
+    return "Segmentation";
 }
 
 QString medSegmentationPlugin::description() const
@@ -62,11 +66,6 @@ QStringList medSegmentationPlugin::contributors() const
     list << "Olivier Commowick";
     list << medPlugin::contributors();
     return list;
-}
-
-QString medSegmentationPlugin::identifier() const
-{
-    return name();
 }
 
 Q_EXPORT_PLUGIN2(medSegmentationPlugin, medSegmentationPlugin)

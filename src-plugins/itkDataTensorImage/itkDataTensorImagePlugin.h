@@ -21,6 +21,7 @@ class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePluginPrivate;
 class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
      itkDataTensorImagePlugin(QObject *parent = 0);

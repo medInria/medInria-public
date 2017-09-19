@@ -6,6 +6,10 @@
 namespace msc
 {
 
+AlgorithmPaintPlugin::AlgorithmPaintPlugin(QObject *parent) : medPlugin(parent)
+{
+}
+
 bool AlgorithmPaintPlugin::initialize()
 {
     if(!AlgorithmPaintToolBox::registered())
@@ -28,11 +32,6 @@ QString AlgorithmPaintPlugin::description() const
 QString AlgorithmPaintPlugin::version() const
 {
     return MSCALGORITHMPAINT_VERSION;
-}
-
-QString AlgorithmPaintPlugin::identifier() const
-{
-    return "mscAlgorithmPaint";
 }
 
 QStringList AlgorithmPaintPlugin::types() const

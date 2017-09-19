@@ -51,7 +51,7 @@ qtdcmDataSourceSerieToolBox::qtdcmDataSourceSerieToolBox ( QWidget* parent ) : m
 
     // Add about plugin
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "qtdcmDataSourcePlugin" );
+    dtkPlugin* plugin = pm->plugin ( "QtDCM Data Source" );
     setAboutPluginButton ( plugin );
     setAboutPluginVisibility( true );
 }

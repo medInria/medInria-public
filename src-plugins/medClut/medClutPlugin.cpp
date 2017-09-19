@@ -5,6 +5,10 @@
 #include "medClutPlugin.h"
 #include <medClutToolBox.h>
 
+medClutPlugin::medClutPlugin(QObject *parent) : medPlugin(parent)
+{
+}
+
 bool medClutPlugin::initialize(void)
 {
     if (!medClutToolBox::registered()) { dtkWarn() << "Unable to register medClut toolbox"; }
@@ -14,17 +18,12 @@ bool medClutPlugin::initialize(void)
 
 QString medClutPlugin::name(void) const
 {
-    return "medClutPlugin";
+    return "Clut";
 }
 
 QString medClutPlugin::version(void) const
 {
     return MEDCLUTPLUGIN_VERSION;
-}
-
-QString medClutPlugin::identifier(void) const
-{
-    return "medClut";
 }
 
 QStringList medClutPlugin::types(void) const

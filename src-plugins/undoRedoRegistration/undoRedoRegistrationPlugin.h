@@ -19,14 +19,13 @@
 class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationPlugin : public medPlugin
 {
     Q_OBJECT
-    
+    Q_INTERFACES(dtkPlugin)
+
 public:
+    undoRedoRegistrationPlugin(QObject *parent = 0);
     virtual bool initialize(void);
     
     virtual QString name(void) const;
-    virtual QString identifier(void) const;
     virtual QString version (void) const;
     virtual QStringList types(void) const;
 };
-
-

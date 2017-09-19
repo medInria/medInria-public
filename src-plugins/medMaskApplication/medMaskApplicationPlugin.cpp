@@ -15,6 +15,10 @@
 #include "medMaskApplicationPlugin.h"
 #include "medMaskApplicationToolBox.h"
 
+medMaskApplicationPlugin::medMaskApplicationPlugin(QObject *parent) : medPlugin(parent)
+{
+}
+
 bool medMaskApplicationPlugin::initialize()
 {
     if(!medMaskApplication::registered())
@@ -38,11 +42,6 @@ QString medMaskApplicationPlugin::name() const
 QString medMaskApplicationPlugin::version() const
 {
     return MEDMASKAPPLICATIONPLUGIN_VERSION;
-}
-
-QString medMaskApplicationPlugin::identifier() const
-{
-    return "medMaskApplication";
 }
 
 QStringList medMaskApplicationPlugin::types() const

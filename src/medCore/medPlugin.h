@@ -20,7 +20,6 @@
 class MEDCORE_EXPORT medPlugin : public dtkPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(dtkPlugin)
 
 public:
     medPlugin(QObject* parent = 0);

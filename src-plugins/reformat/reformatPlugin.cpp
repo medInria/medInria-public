@@ -17,6 +17,9 @@
 #include <resliceToolBox.h>
 #include <resampleProcess.h>
 
+reformatPlugin::reformatPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool reformatPlugin::initialize()
 {
@@ -47,11 +50,6 @@ QString reformatPlugin::name() const
 QString reformatPlugin::version() const
 {
     return REFORMATPLUGIN_VERSION;
-}
-
-QString reformatPlugin::identifier() const
-{
-    return "reformat";
 }
 
 QStringList reformatPlugin::types() const

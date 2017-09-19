@@ -85,7 +85,7 @@ bool itkDataTensorImagePlugin::initialize()
 
 QString itkDataTensorImagePlugin::name() const
 {
-    return "itkDataTensorImagePlugin";
+    return "ITK Data Tensor Image";
 }
 
 QString itkDataTensorImagePlugin::description() const

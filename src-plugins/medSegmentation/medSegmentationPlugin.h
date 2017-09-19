@@ -25,17 +25,16 @@
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medSegmentationPlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
+    medSegmentationPlugin(QObject *parent = 0);
     virtual bool initialize();
 
     virtual QString name() const;
     virtual QString description() const;
-    virtual QString identifier() const;
     virtual QString version() const;
 
     virtual QStringList authors() const;
     virtual QStringList contributors() const;
 };
-
-

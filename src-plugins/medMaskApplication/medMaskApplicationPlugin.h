@@ -19,14 +19,13 @@
 class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationPlugin : public medPlugin
 {
     Q_OBJECT
-    
+    Q_INTERFACES(dtkPlugin)
+
 public:
+    medMaskApplicationPlugin(QObject *parent = 0);
     virtual bool initialize();
     
     virtual QString name() const;
-    virtual QString identifier() const;
     virtual QString version() const;
     virtual QStringList types() const;
 };
-
-

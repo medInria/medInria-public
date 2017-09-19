@@ -18,6 +18,9 @@
 #include "medBinaryOperationPlugin.h"
 #include "medBinaryOperationToolBox.h"
 
+medBinaryOperationPlugin::medBinaryOperationPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool medBinaryOperationPlugin::initialize()
 {
@@ -62,11 +65,6 @@ QString medBinaryOperationPlugin::description() const
 QString medBinaryOperationPlugin::version() const
 {
     return MEDBINARYOPERATIONPLUGIN_VERSION;
-}
-
-QString medBinaryOperationPlugin::identifier() const
-{
-    return "medBinaryOperation";
 }
 
 QStringList medBinaryOperationPlugin::types() const

@@ -21,6 +21,7 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPluginPrivate;
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
      vtkDataMeshPlugin(QObject *parent = 0);
@@ -37,5 +38,3 @@ public:
 private:
      vtkDataMeshPluginPrivate *d;
 };
-
-

@@ -34,6 +34,9 @@
 #include <itkFiltersToolBox.h>
 #include <itkMorphologicalFiltersToolBox.h>
 
+itkFiltersPlugin::itkFiltersPlugin(QObject* parent) : medPlugin (parent)
+{
+}
 
 bool itkFiltersPlugin::initialize()
 {
@@ -73,7 +76,7 @@ QString itkFiltersPlugin::description() const
 
 QString itkFiltersPlugin::name() const
 {
-    return "itkFiltersPlugin";
+    return "ITK Basic Filters";
 }
 
 QString itkFiltersPlugin::version() const

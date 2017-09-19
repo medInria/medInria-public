@@ -15,6 +15,9 @@
 #include <undoRedoRegistrationPlugin.h>
 #include <undoRedoRegistrationToolBox.h>
 
+undoRedoRegistrationPlugin::undoRedoRegistrationPlugin(QObject *parent) : medPlugin(parent)
+{
+}
 
 bool undoRedoRegistrationPlugin::initialize(void)
 {
@@ -26,17 +29,12 @@ bool undoRedoRegistrationPlugin::initialize(void)
 
 QString undoRedoRegistrationPlugin::name(void) const
 {
-    return "undoRedoRegistrationPlugin";
+    return "Undo Redo Registration";
 }
 
 QString undoRedoRegistrationPlugin::version(void) const
 {
     return UNDOREDOREGISTRATIONPLUGIN_VERSION;
-}
-
-QString undoRedoRegistrationPlugin::identifier(void) const
-{
-    return "undoRedoRegistration";
 }
 
 QStringList undoRedoRegistrationPlugin::types(void) const

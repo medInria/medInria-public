@@ -34,7 +34,7 @@ QString medPlugin::description() const
 
 QString medPlugin::identifier() const
 {
-    return "";
+    return metaObject()->className();
 }
 
 QString medPlugin::version() const

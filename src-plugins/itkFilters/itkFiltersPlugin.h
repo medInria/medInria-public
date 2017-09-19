@@ -19,8 +19,10 @@
 class ITKFILTERSPLUGIN_EXPORT itkFiltersPlugin : public medPlugin
 {
     Q_OBJECT
+    Q_INTERFACES(dtkPlugin)
 
 public:
+    itkFiltersPlugin(QObject *parent = 0);
     virtual bool initialize();
 
     virtual QString description() const;

@@ -79,7 +79,7 @@ bool vtkDataMeshPlugin::initialize()
 
 QString vtkDataMeshPlugin::name() const
 {
-    return "vtkDataMeshPlugin";
+    return "VTK Data Mesh";
 }
 
 QString vtkDataMeshPlugin::description() const
