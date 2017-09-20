@@ -112,6 +112,9 @@ public slots:
     //! Switch between errors
     void handleDisplayError(int);
 
+    //! Put back overrided cursor
+    void restoreOverrideCursor();
+
     virtual void updateView(){}
 
 protected slots:

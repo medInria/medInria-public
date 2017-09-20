@@ -54,11 +54,7 @@ void medRunnableProcess::internalRun()
 {
     if (d->process)
     {
-        QApplication::setOverrideCursor(Qt::WaitCursor);
-
         int res = d->process->update();
-
-        QApplication::restoreOverrideCursor();
 
         if (res == DTK_SUCCEED)
         {

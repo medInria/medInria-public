@@ -791,6 +791,8 @@ void itkFiltersToolBox::run ( void )
     if (! d->process)
         return;
 
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess ( d->process );
 
@@ -799,6 +801,8 @@ void itkFiltersToolBox::run ( void )
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
     connect ( runProcess, SIGNAL ( failure   (int)),        this, SLOT   (handleDisplayError(int)));
+    connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
+    connect (runProcess, SIGNAL (failure   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
     connect ( runProcess, SIGNAL (activate(QObject*,bool)), d->progressionStack, SLOT(setActive(QObject*,bool)));
 
     medJobManager::instance()->registerJobItem ( runProcess );

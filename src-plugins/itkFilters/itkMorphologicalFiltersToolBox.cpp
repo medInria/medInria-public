@@ -194,6 +194,8 @@ void itkMorphologicalFiltersToolBox::run ( void )
 
             if ( d->process )
             {
+                QApplication::setOverrideCursor(Qt::WaitCursor);
+
                 d->process->setInput ( this->selectorToolBox()->data() );
                 d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
 
@@ -218,6 +220,8 @@ void itkMorphologicalFiltersToolBox::run ( void )
                 connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
                 connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
                 connect ( runProcess, SIGNAL ( failure   (int)),        this, SLOT   (handleDisplayError(int)));
+                connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
+                connect (runProcess, SIGNAL (failure   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
                 connect ( runProcess, SIGNAL (activate(QObject*,bool)), d->progressionStack, SLOT(setActive(QObject*,bool)));
 
                 medJobManager::instance()->registerJobItem ( runProcess );

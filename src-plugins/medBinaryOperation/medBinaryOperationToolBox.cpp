@@ -176,6 +176,9 @@ void medBinaryOperationToolBox::run()
     {
         d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkXorOperator");
     }
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     d->process->setInput ( this->selectorToolBox()->data(), 0 );
     d->process->setInput ( d->secondInput, 1 );
 
@@ -190,7 +193,9 @@ void medBinaryOperationToolBox::run()
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-    
+    connect (runProcess, SIGNAL (success   (QObject*)), this, SLOT   (restoreOverrideCursor()));
+    connect (runProcess, SIGNAL (failure   (QObject*)), this, SLOT   (restoreOverrideCursor()));
+
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progression_stack, SLOT(setActive(QObject*,bool)));
     

@@ -336,3 +336,8 @@ void medToolBox::displayMessageError(QString error)
     qDebug() << name() + ": " + error;
     medMessageController::instance()->showError(error,3000);
 }
+
+void medToolBox::restoreOverrideCursor()
+{
+    QApplication::restoreOverrideCursor();
+}

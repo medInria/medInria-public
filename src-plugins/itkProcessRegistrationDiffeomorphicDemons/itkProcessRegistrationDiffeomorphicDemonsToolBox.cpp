@@ -191,6 +191,9 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
         qWarning() << "registration process doesn't exist" ;
         return;
     }
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     process_Registration->setDisplacementFieldStandardDeviation(
                 d->disFieldStdDevBox->value());
     process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
@@ -206,6 +209,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     catch ( std::exception & )
     {
         qDebug() << "wrong iteration format";
+        QApplication::restoreOverrideCursor();
         return;
     }
 
@@ -215,21 +219,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     medRunnableProcess *runProcess = new medRunnableProcess;
 
     runProcess->setProcess (d->process);
-
-    d->progressionStack->addJobItem(runProcess, tr("Progress:"));
-    d->progressionStack->setActive(runProcess,true);
-    d->progressionStack->disableCancel(runProcess);
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
-    //First have the moving progress bar,
-    //and then display the remaining % when known
-    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progressionStack, SLOT(setActive(QObject*,bool)));
-
-    medJobManager::instance()->registerJobItem(runProcess,d->process->identifier());
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+    this->addConnectionsAndStartJob(runProcess);
 }
 
 medAbstractData* itkProcessRegistrationDiffeomorphicDemonsToolBox::processOutput()

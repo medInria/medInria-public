@@ -122,6 +122,8 @@ void medMaskApplicationToolBox::run()
 {
     if (d->mask && this->selectorToolBox()->data())
     {
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+
         if(!d->process)
         {
             d->process= new medMaskApplication;
@@ -141,7 +143,8 @@ void medMaskApplicationToolBox::run()
         connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
         connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
         connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-
+        connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
+        connect (runProcess, SIGNAL (failure   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
         connect (runProcess, SIGNAL(activate(QObject*,bool)),
                  d->progression_stack, SLOT(setActive(QObject*,bool)));
 

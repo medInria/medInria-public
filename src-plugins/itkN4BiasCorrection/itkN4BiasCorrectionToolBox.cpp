@@ -222,12 +222,13 @@ void itkN4BiasCorrectionToolBox::run()
 {
     if(!this->selectorToolBox())
         return;
-    
-    d->process = new itkN4BiasCorrection();
-    
+        
     if(!this->selectorToolBox()->data())
         return;
     
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    d->process = new itkN4BiasCorrection();
     d->process->setInput(this->selectorToolBox()->data());
 
     d->process->setParameter(d->splineDistanceSpinBox->value(), 0);
@@ -254,7 +255,8 @@ void itkN4BiasCorrectionToolBox::run()
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
-    
+    connect (runProcess, SIGNAL (success   (QObject*)), this, SLOT (restoreOverrideCursor()));
+    connect (runProcess, SIGNAL (failure   (QObject*)), this, SLOT (restoreOverrideCursor()));
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progression_stack, SLOT(setActive(QObject*,bool)));
     

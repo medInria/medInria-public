@@ -162,6 +162,8 @@ void iterativeClosestPointToolBox::run()
     
         if (targetData && sourceData)
         {
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+
             d->process = new iterativeClosestPointProcess();
             d->process->setInput(sourceData,  0);
             d->process->setInput(targetData, 1);
@@ -185,6 +187,8 @@ void iterativeClosestPointToolBox::run()
             connect (runProcess, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
             connect (runProcess, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
             connect (runProcess, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
+            connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
+            connect (runProcess, SIGNAL (failure   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
             connect (runProcess, SIGNAL (activate(QObject*,bool)), d->progression_stack, SLOT(setActive(QObject*,bool)));
 
             medJobManager::instance()->registerJobItem(runProcess);
