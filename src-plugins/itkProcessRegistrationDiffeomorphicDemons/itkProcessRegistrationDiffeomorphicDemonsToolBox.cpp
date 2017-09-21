@@ -222,6 +222,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
+    connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
     //First have the moving progress bar,
     //and then display the remaining % when known
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
