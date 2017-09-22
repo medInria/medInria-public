@@ -24,7 +24,8 @@ class REFORMATPLUGIN_EXPORT reformatPlugin : public medPlugin
 public:
     reformatPlugin(QObject *parent = 0);
     virtual bool initialize();
-    
+
+    virtual QString description() const;
     virtual QString name() const;
     virtual QString version() const;
     virtual QStringList types() const;

@@ -42,6 +42,19 @@ bool reformatPlugin::initialize()
     return true;
 }
 
+QString reformatPlugin::description() const
+{
+  QString description = \
+          "This plugin implements two toolboxes:  \
+          <br><h5>Cropping</h5><br>  \
+          which allow to crop a volume into a smaller one. \
+          <br><h5>Reslice</h5><br>  \
+          which allow to reorient a volume, change its spacing or dimension. \
+          <br><br>These processes are based on the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK</a> \
+          and <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK</a> libraries.";
+  return description;
+}
+
 QString reformatPlugin::name() const
 {
     return "Reformat";

@@ -26,7 +26,10 @@ QString AlgorithmPaintPlugin::name() const
 
 QString AlgorithmPaintPlugin::description() const
 {
-    return tr("Segmentation using manual painting");
+    QString description = \
+            tr("Segmentation using manual painting. \
+               <br><br>This process is based on the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.");
+    return description;
 }
 
 QString AlgorithmPaintPlugin::version() const

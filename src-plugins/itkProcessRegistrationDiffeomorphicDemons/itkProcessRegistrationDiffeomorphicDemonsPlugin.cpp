@@ -49,7 +49,9 @@ QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::contributors() cons
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::description() const
 {
-    return tr("Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>");
+    return tr("Applies the diffeomorphic demons as they can be found in the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>. <br><br>\
+              Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images. <br/><br> \
+              See: <a href=\"http://www.insight-journal.org/browse/publication/154\" style=\"color: #cc0000\" > http://www.insight-journal.org/browse/publication/154 </a>");
 }
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::version() const

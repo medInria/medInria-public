@@ -59,7 +59,11 @@ QString medBinaryOperationPlugin::name() const
 
 QString medBinaryOperationPlugin::description() const
 {
-    return tr("Plugin allowing to apply several binary operations on your data.");
+    QString description = \
+            "Plugin allowing to apply several binary operations on mask:<br><br> \
+            <i>OR, AND, XOR</i> and <i>NOT</i>.  \
+            <br><br>These processes are based on the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
+    return description;
 }
 
 QString medBinaryOperationPlugin::version() const
