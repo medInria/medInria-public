@@ -28,7 +28,7 @@ QString AlgorithmPaintPlugin::description() const
 {
     QString description = \
             tr("Segmentation using manual painting. \
-               <br><br>This process is based on the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.");
+               <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.");
     return description;
 }
 

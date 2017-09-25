@@ -37,9 +37,9 @@ bool medMaskApplicationPlugin::initialize()
 QString medMaskApplicationPlugin::description() const
 {
     QString description = \
-            "This plugin allows to apply a mask to a volume.<br>  \
+            "Apply a mask to a volume.<br>  \
             Drop your volume in the INPUT view, and your mask in the toolbox drop area.\
-            <br><br>This process is based on the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
+            <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
     return description;
 }
 

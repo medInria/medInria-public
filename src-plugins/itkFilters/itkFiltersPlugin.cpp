@@ -69,21 +69,19 @@ QString itkFiltersPlugin::description() const
   QString description = \
           "This plugin implements two toolboxes:  \
           <br><h5>Morphological Filters</h5><br>  \
-          which allow to apply morphological filters:<br> \
-          <i>dilate, erode, binary close, binary open, grayscale close, grayscale open</i>.\
+          Processes: <i>dilate, erode, binary close, binary open, grayscale close, grayscale open</i>.\
           <br><h5>ITK Basic Filters</h5><br>  \
-          which allow to apply basic filters:<br>         \
-          <i>add constant, subtract constant, multiply by constant, \
+          Processes: <i>add constant, subtract constant, multiply by constant, \
           divide by constant, gaussian filter, normalize filter, \
           median filter, invert filter, shrink filter, intensity filter, \
           threshold and isolated pixels removal</i>.  \
-          <br><br>These processes are based on the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
+          <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
   return description;
 }
 
 QString itkFiltersPlugin::name() const
 {
-    return "ITK Basic Filters";
+    return "ITK Filters";
 }
 
 QString itkFiltersPlugin::version() const

@@ -37,9 +37,10 @@ bool manualRegistrationPlugin::initialize()
 QString manualRegistrationPlugin::description() const
 {
     QString description = \
-            tr("Applies transformations as they can be found in the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>: <br><br> \
-               - <a href=\"https://itk.org/Doxygen/html/classitk_1_1VersorRigid3DTransform.html\" style=\"color: #cc0000\" >Rigid</a> transformation<br>\
-            - <a href=\"https://itk.org/Doxygen/html/classitk_1_1AffineTransform.html\" style=\"color: #cc0000\" >Affine</a> transformation");
+            tr("Manual registration between two volumes using landmarks. Implemented transformations: <br><br> \
+               <a href=\"https://itk.org/Doxygen/html/classitk_1_1VersorRigid3DTransform.html\" style=\"color: #cc0000\" >Rigid</a> and \
+               <a href=\"https://itk.org/Doxygen/html/classitk_1_1AffineTransform.html\" style=\"color: #cc0000\" >Affine</a> \
+               <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.");
     return description;
 }
 
