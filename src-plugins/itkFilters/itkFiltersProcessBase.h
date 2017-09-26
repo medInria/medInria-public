@@ -26,8 +26,24 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBase : public medAbstractProcess
     Q_OBJECT
 
 public:
+
+    static const double initAddValue       = 100.0;
+    static const double initSubtractValue  = 100.0;
+    static const double initMultiplyFactor = 2.0;
+    static const double initDivideFactor   = 2.0;
+    static const double initSigma          = 1.0;
+    static const double initThreshold          = 200.0;
+    static const int    initOutsideValue       = 0;
+    static const bool   initComparisonOperator = true;
+    static const double initMinimumSize        = 50.0;
+    static const int    initShrinkFactors(int index)
+    {
+        static const int a[] = {1,1,1};
+        return a[index];
+    }
+
     itkFiltersProcessBase(itkFiltersProcessBase * parent = 0);
-    
+    itkFiltersProcessBase(const itkFiltersProcessBase& other);
     itkFiltersProcessBase& operator = (const itkFiltersProcessBase& other);
 
     QString description ( void );
@@ -45,7 +61,6 @@ public:
 
 protected:
     QString descriptionText;
-    itkFiltersProcessBase *filter;
     dtkSmartPointer <medAbstractImageData> inputData;
     dtkSmartPointer <medAbstractImageData> outputData;
     itk::CStyleCommand::Pointer callback;

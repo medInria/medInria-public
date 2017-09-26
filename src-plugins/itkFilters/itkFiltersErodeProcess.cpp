@@ -18,10 +18,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersErodeProcess::itkFiltersErodeProcess(itkFiltersErodeProcess *parent) 
-    : itkMorphologicalFiltersProcessBase()
+    : itkMorphologicalFiltersProcessBase(parent)
 {
-    filter = this;
     descriptionText = tr("Erode filter");
+}
+
+itkFiltersErodeProcess::itkFiltersErodeProcess(const itkFiltersErodeProcess& other)
+     : itkMorphologicalFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

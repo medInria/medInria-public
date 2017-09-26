@@ -107,7 +107,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->addFilterWidget = new QWidget(this);
     d->addFilterValue = new QDoubleSpinBox;
     d->addFilterValue->setMaximum ( 1000000000 );
-    d->addFilterValue->setValue ( 100.0 );
+    d->addFilterValue->setValue ( itkFiltersProcessBase::initAddValue );
     QLabel * addFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * addFilterLayout = new QHBoxLayout;
     addFilterLayout->addWidget ( addFilterLabel );
@@ -119,7 +119,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->subtractFilterWidget = new QWidget(this);
     d->subtractFilterValue = new QDoubleSpinBox;
     d->subtractFilterValue->setMaximum ( 1000000000 );
-    d->subtractFilterValue->setValue ( 100.0 );
+    d->subtractFilterValue->setValue ( itkFiltersProcessBase::initSubtractValue );
     QLabel * subtractFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * subtractFilterLayout = new QHBoxLayout;
     subtractFilterLayout->addWidget ( subtractFilterLabel );
@@ -130,7 +130,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     //Multiply filter widgets
     d->multiplyFilterWidget = new QWidget(this);
     d->multiplyFilterValue = new QDoubleSpinBox;
-    d->multiplyFilterValue->setValue ( 2.0 );
+    d->multiplyFilterValue->setValue ( itkFiltersProcessBase::initMultiplyFactor );
     d->multiplyFilterValue->setMaximum ( 1000000000 );
     QLabel * multiplyFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * multiplyFilterLayout = new QHBoxLayout;
@@ -142,7 +142,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     //Divide filter widgets
     d->divideFilterWidget = new QWidget(this);
     d->divideFilterValue = new QDoubleSpinBox;
-    d->divideFilterValue->setValue ( 2.0 );
+    d->divideFilterValue->setValue ( itkFiltersProcessBase::initDivideFactor );
     d->divideFilterValue->setMaximum ( 1000000000 );
     d->divideFilterValue->setMinimum(1);
     QLabel * divideFilterLabel = new QLabel ( tr ( "Constant value:" ) );
@@ -155,7 +155,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     //Gaussian filter widgets
     d->gaussianFilterWidget = new QWidget(this);
     d->gaussianFilterValue = new QDoubleSpinBox;
-    d->gaussianFilterValue->setValue ( 1.0 );
+    d->gaussianFilterValue->setValue ( itkFiltersProcessBase::initSigma );
     d->gaussianFilterValue->setMaximum ( 10.0 );
     QLabel * gaussianFilterLabel = new QLabel ( tr ( "Sigma value:" ) );
     QHBoxLayout * gaussianFilterLayout = new QHBoxLayout;
@@ -178,17 +178,17 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     //Shrink filter widgets
     d->shrinkFilterWidget = new QWidget;
     d->shrink0Value = new QSpinBox;
-    d->shrink0Value->setValue ( 1 );
+    d->shrink0Value->setValue (itkFiltersProcessBase::initShrinkFactors(0));
     d->shrink0Value->setMinimum ( 1 );
     d->shrink0Value->setMaximum ( 10 );
 
     d->shrink1Value = new QSpinBox;
-    d->shrink1Value->setValue ( 1 );
+    d->shrink1Value->setValue (itkFiltersProcessBase::initShrinkFactors(1));
     d->shrink1Value->setMinimum ( 1 );
     d->shrink1Value->setMaximum ( 10 );
 
     d->shrink2Value = new QSpinBox;
-    d->shrink2Value->setValue ( 1 );
+    d->shrink2Value->setValue (itkFiltersProcessBase::initShrinkFactors(2));
     d->shrink2Value->setMinimum ( 1 );
     d->shrink2Value->setMaximum ( 10 );
 
@@ -244,12 +244,12 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->thresholdFilterWidget = new QWidget(this);
     d->thresholdFilterValue = new QDoubleSpinBox;
     d->thresholdFilterValue->setRange ( -10000, 10000 );
-    d->thresholdFilterValue->setValue ( 200.0 );
+    d->thresholdFilterValue->setValue ( itkFiltersProcessBase::initThreshold );
     d->thresholdFilterValue2 = new QSpinBox;
     d->thresholdFilterValue2->setRange ( -10000, 10000 );
-    d->thresholdFilterValue2->setValue ( 0 );
+    d->thresholdFilterValue2->setValue ( itkFiltersProcessBase::initOutsideValue );
     d->greaterButton = new QRadioButton(tr(" greater than: "), this);
-    d->greaterButton->setChecked(true);
+    d->greaterButton->setChecked(itkFiltersProcessBase::initComparisonOperator);
     d->lowerButton = new QRadioButton(tr(" lower than: "), this);
     QLabel * thresholdFilterLabel = new QLabel ( tr ( "Set pixels values  :" ) );
     QLabel * thresholdFilterLabel2 = new QLabel ( tr ( " to :" ) );
@@ -280,7 +280,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->componentSizeThresholdFilterValue = new QSpinBox;
     d->componentSizeThresholdFilterValue->setObjectName("Minimum size of an object: ");
     d->componentSizeThresholdFilterValue->setMaximum ( 100000 );
-    d->componentSizeThresholdFilterValue->setValue ( 50 );
+    d->componentSizeThresholdFilterValue->setValue ( itkFiltersProcessBase::initMinimumSize );
     QLabel * componentSizeThresholdFilterLabel = new QLabel ( tr ( "Minimum size in pixel of an object:" ) );
     QHBoxLayout * componentSizeThresholdFilterLayout = new QHBoxLayout;
     componentSizeThresholdFilterLayout->addWidget ( componentSizeThresholdFilterLabel );

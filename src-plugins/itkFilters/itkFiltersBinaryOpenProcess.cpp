@@ -13,10 +13,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenProcess *parent)
-    : itkMorphologicalFiltersProcessBase()
+    : itkMorphologicalFiltersProcessBase(parent)
 {
-    filter = this;
     descriptionText = tr("Binary Open filter");
+}
+
+itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other)
+     : itkMorphologicalFiltersProcessBase(other)
+{
+
 }
 
 bool itkFiltersBinaryOpenProcess::registered( void )

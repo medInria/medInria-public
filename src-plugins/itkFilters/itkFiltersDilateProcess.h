@@ -21,7 +21,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersDilateProcess : public itkMorphologicalF
     
 public:
     itkFiltersDilateProcess(itkFiltersDilateProcess * parent = 0);
-
+    itkFiltersDilateProcess(const itkFiltersDilateProcess& other);
     static bool registered ( void );
 };
 

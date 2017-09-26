@@ -24,6 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGaussianProcess : public itkFiltersProce
     
 public:
     itkFiltersGaussianProcess(itkFiltersGaussianProcess * parent = 0);
+    itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other);
     virtual ~itkFiltersGaussianProcess(void);
     static bool registered ( void );
     

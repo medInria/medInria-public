@@ -32,15 +32,20 @@ public:
 //-------------------------------------------------------------------------------------------
 
 itkFiltersWindowingProcess::itkFiltersWindowingProcess(itkFiltersWindowingProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersWindowingProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersWindowingProcessPrivate)
 {   
-    filter = this;
     descriptionText = tr("ITK intensity windowing filter");
 
     d->minimumIntensityValue = 0;
     d->maximumIntensityValue = 255;
     d->minimumOutputIntensityValue = 0;
     d->maximumOutputIntensityValue = 255;
+}
+
+itkFiltersWindowingProcess::itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

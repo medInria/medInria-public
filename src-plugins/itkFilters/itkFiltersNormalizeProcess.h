@@ -23,7 +23,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersNormalizeProcess : public itkFiltersProc
     
 public:
     itkFiltersNormalizeProcess(itkFiltersNormalizeProcess * parent = 0);
-
+    itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other);
     static bool registered ( void );
     
 public slots:

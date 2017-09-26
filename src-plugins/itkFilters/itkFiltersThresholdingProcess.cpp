@@ -29,14 +29,19 @@ public:
 };
 
 itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(itkFiltersThresholdingProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersThresholdingProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersThresholdingProcessPrivate)
 {   
-    filter = this;
     descriptionText = tr("ITK thresholding filter");
 
-    d->outsideValue = 0;
-    d->threshold = 200;
-    d->comparisonOperator = true;
+    d->threshold          = itkFiltersProcessBase::initThreshold;
+    d->outsideValue       = itkFiltersProcessBase::initOutsideValue;
+    d->comparisonOperator = itkFiltersProcessBase::initComparisonOperator;
+}
+
+itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

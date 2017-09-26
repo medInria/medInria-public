@@ -29,14 +29,19 @@ public:
 //-------------------------------------------------------------------------------------------
 
 itkFiltersShrinkProcess::itkFiltersShrinkProcess(itkFiltersShrinkProcess *parent)
-    : itkFiltersProcessBase(), d(new itkFiltersShrinkProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersShrinkProcessPrivate)
 {   
-    filter = this;
     descriptionText = tr("ITK shrink filter");
 
-    d->shrinkFactors[0] = 1;
-    d->shrinkFactors[1] = 1;
-    d->shrinkFactors[2] = 1;
+    d->shrinkFactors[0] = itkFiltersProcessBase::initShrinkFactors(0);
+    d->shrinkFactors[1] = itkFiltersProcessBase::initShrinkFactors(1);
+    d->shrinkFactors[2] = itkFiltersProcessBase::initShrinkFactors(2);
+}
+
+itkFiltersShrinkProcess::itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

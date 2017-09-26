@@ -13,10 +13,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(itkFiltersGrayscaleCloseProcess *parent)
-    : itkMorphologicalFiltersProcessBase()
+    : itkMorphologicalFiltersProcessBase(parent)
 {
-    filter = this;
     descriptionText = tr("Grayscale Close filter");
+}
+
+itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(const itkFiltersGrayscaleCloseProcess& other)
+     : itkMorphologicalFiltersProcessBase(other)
+{
+
 }
 
 bool itkFiltersGrayscaleCloseProcess::registered( void )

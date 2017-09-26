@@ -21,10 +21,15 @@
 #include <medUtilities.h>
 
 itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent)
-    : itkFiltersProcessBase()
+    : itkFiltersProcessBase(parent)
 {
-    filter = this;
     descriptionText = tr("ITK invert intensity filter");
+}
+
+itkFiltersInvertProcess::itkFiltersInvertProcess(const itkFiltersInvertProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

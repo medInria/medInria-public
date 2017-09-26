@@ -23,10 +23,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent) 
-    : itkFiltersProcessBase()
+    : itkFiltersProcessBase(parent)
 {
-    filter = this;
     descriptionText = tr("ITK median filter");
+}
+
+itkFiltersMedianProcess::itkFiltersMedianProcess(const itkFiltersMedianProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

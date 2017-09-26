@@ -24,6 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersWindowingProcess : public itkFiltersProc
     
 public:
     itkFiltersWindowingProcess(itkFiltersWindowingProcess * parent = 0);
+    itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other);
     virtual ~itkFiltersWindowingProcess(void);
     static bool registered ( void );
     

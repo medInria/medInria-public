@@ -29,12 +29,17 @@ public:
 //-------------------------------------------------------------------------------------------
 
 itkFiltersAddProcess::itkFiltersAddProcess(itkFiltersAddProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersAddProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersAddProcessPrivate)
 {  
-    filter = this;
     descriptionText = tr("ITK add constant filter");
 
-    d->addValue = 100;
+    d->addValue = itkFiltersProcessBase::initAddValue;
+}
+
+itkFiltersAddProcess::itkFiltersAddProcess(const itkFiltersAddProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

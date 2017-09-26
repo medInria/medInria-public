@@ -24,6 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMultiplyProcess : public itkFiltersProce
     
 public:
     itkFiltersMultiplyProcess(itkFiltersMultiplyProcess * parent = 0);
+    itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other);
     virtual ~itkFiltersMultiplyProcess(void);
     static bool registered ( void );
     

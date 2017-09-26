@@ -24,6 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersDivideProcess : public itkFiltersProcess
     
 public:
     itkFiltersDivideProcess(itkFiltersDivideProcess * parent = 0);
+    itkFiltersDivideProcess(const itkFiltersDivideProcess& other);
     virtual ~itkFiltersDivideProcess(void);
     static bool registered ( void );
     

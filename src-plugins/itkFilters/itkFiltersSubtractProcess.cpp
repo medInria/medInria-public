@@ -29,12 +29,17 @@ public:
 //-------------------------------------------------------------------------------------------
 
 itkFiltersSubtractProcess::itkFiltersSubtractProcess(itkFiltersSubtractProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersSubtractProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersSubtractProcessPrivate)
 {   
-    filter = this;
     descriptionText = tr("ITK subtract constant filter");
 
-    d->subtractValue = 100;
+    d->subtractValue = itkFiltersProcessBase::initSubtractValue;
+}
+
+itkFiltersSubtractProcess::itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

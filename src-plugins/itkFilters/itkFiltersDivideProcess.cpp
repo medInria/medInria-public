@@ -29,12 +29,17 @@ public:
 //-------------------------------------------------------------------------------------------
 
 itkFiltersDivideProcess::itkFiltersDivideProcess(itkFiltersDivideProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersDivideProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersDivideProcessPrivate)
 {  
-    filter = this;
     descriptionText = tr("ITK divide by constant filter");
 
-    d->divideFactor = 2.0;
+    d->divideFactor = itkFiltersProcessBase::initDivideFactor;
+}
+
+itkFiltersDivideProcess::itkFiltersDivideProcess(const itkFiltersDivideProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

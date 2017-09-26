@@ -13,10 +13,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(itkFiltersBinaryCloseProcess *parent)
-    : itkMorphologicalFiltersProcessBase()
+    : itkMorphologicalFiltersProcessBase(parent)
 {
-    filter = this;
     descriptionText = tr("Binary Close filter");
+}
+
+itkFiltersBinaryCloseProcess::itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other)
+     : itkMorphologicalFiltersProcessBase(other)
+{
+
 }
 
 bool itkFiltersBinaryCloseProcess::registered( void )

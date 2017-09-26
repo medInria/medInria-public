@@ -18,12 +18,18 @@
 #include <medAbstractDataFactory.h>
 
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
-    : medAbstractProcess()
+    : medAbstractProcess(parent)
 {  
     inputData = NULL;
     outputData = NULL;
     
     descriptionText = "";
+}
+
+itkFiltersProcessBase::itkFiltersProcessBase(const itkFiltersProcessBase& other)
+     : medAbstractProcess(other)
+{
+
 }
 
 itkFiltersProcessBase& itkFiltersProcessBase::operator = (const itkFiltersProcessBase& other)
@@ -81,5 +87,5 @@ void itkFiltersProcessBase::eventCallback ( itk::Object *caller, const itk::Even
 
     if ( !source ) { dtkWarn() << "Source is null"; }
 
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
+    source->emitProgress((int) (processObject->GetProgress() * 100));
 }

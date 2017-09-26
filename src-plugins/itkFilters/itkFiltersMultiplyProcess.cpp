@@ -29,12 +29,17 @@ public:
 //-------------------------------------------------------------------------------------------
 
 itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(itkFiltersMultiplyProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersMultiplyProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersMultiplyProcessPrivate)
 {  
-    filter = this;
     descriptionText = tr("ITK multiply by constant filter");
 
-    d->multiplyFactor = 2.0;
+    d->multiplyFactor = itkFiltersProcessBase::initMultiplyFactor;
+}
+
+itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

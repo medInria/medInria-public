@@ -24,6 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersThresholdingProcess : public itkFiltersP
     
 public:
     itkFiltersThresholdingProcess(itkFiltersThresholdingProcess * parent = 0);
+    itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other);
     virtual ~itkFiltersThresholdingProcess(void);
     static bool registered ( void );
     

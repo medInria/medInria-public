@@ -33,12 +33,17 @@ public:
 //-------------------------------------------------------------------------------------------
 
 itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersComponentSizeThresholdProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersComponentSizeThresholdProcessPrivate)
 {  
-    filter = this;
     descriptionText = tr("Size Threshold filter");
 
-    d->minimumSize = 50;
+    d->minimumSize = itkFiltersProcessBase::initMinimumSize;
+}
+
+itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

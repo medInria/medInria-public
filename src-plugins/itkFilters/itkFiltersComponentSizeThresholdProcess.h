@@ -24,6 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersComponentSizeThresholdProcess : public i
     
 public:
     itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess * parent = 0);
+    itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other);
     virtual ~itkFiltersComponentSizeThresholdProcess(void);
     static bool registered ( void );
     

@@ -23,7 +23,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public itkFiltersProcess
     
 public:
     itkFiltersMedianProcess(itkFiltersMedianProcess * parent = 0);
-
+    itkFiltersMedianProcess(const itkFiltersMedianProcess& other);
     static bool registered ( void );
     
 public slots:

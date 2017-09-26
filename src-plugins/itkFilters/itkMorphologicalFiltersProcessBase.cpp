@@ -34,7 +34,7 @@ public:
 };
 
 itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorphologicalFiltersProcessBase *parent) 
-    : itkFiltersProcessBase(), d(new itkMorphologicalFiltersProcessBasePrivate)
+    : itkFiltersProcessBase(parent), d(new itkMorphologicalFiltersProcessBasePrivate)
 {  
     d->radius[0] = 0;
     d->radius[1] = 0;
@@ -47,6 +47,12 @@ itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorpho
     d->isRadiusInPixels = false;
 
     d->kernelShape = itkMorphologicalFiltersProcessBase::BallKernel;
+}
+
+itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)

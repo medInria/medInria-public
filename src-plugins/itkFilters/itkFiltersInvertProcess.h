@@ -23,7 +23,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersInvertProcess : public itkFiltersProcess
     
 public:
     itkFiltersInvertProcess(itkFiltersInvertProcess * parent = 0);
-
+    itkFiltersInvertProcess(const itkFiltersInvertProcess& other);
     static bool registered ( void );
     
 public slots:

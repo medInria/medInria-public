@@ -18,10 +18,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent) 
-    : itkMorphologicalFiltersProcessBase()
+    : itkMorphologicalFiltersProcessBase(parent)
 {  
-    filter = this;
     descriptionText = tr("Dilate filter");
+}
+
+itkFiltersDilateProcess::itkFiltersDilateProcess(const itkFiltersDilateProcess& other)
+     : itkMorphologicalFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

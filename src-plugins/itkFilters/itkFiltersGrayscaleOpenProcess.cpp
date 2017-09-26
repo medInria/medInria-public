@@ -13,10 +13,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersGrayscaleOpenProcess::itkFiltersGrayscaleOpenProcess(itkFiltersGrayscaleOpenProcess *parent)
-    : itkMorphologicalFiltersProcessBase()
+    : itkMorphologicalFiltersProcessBase(parent)
 {
-    filter = this;
     descriptionText = tr("Grayscale Open filter");
+}
+
+itkFiltersGrayscaleOpenProcess::itkFiltersGrayscaleOpenProcess(const itkFiltersGrayscaleOpenProcess& other)
+     : itkMorphologicalFiltersProcessBase(other)
+{
+
 }
 
 bool itkFiltersGrayscaleOpenProcess::registered( void )

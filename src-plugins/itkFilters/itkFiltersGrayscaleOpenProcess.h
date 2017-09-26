@@ -17,7 +17,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGrayscaleOpenProcess : public itkMorphol
 
 public:
     itkFiltersGrayscaleOpenProcess(itkFiltersGrayscaleOpenProcess * parent = 0);
-
+    itkFiltersGrayscaleOpenProcess(const itkFiltersGrayscaleOpenProcess& other);
     static bool registered ( void );
 };
 

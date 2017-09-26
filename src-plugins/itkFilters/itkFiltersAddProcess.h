@@ -24,6 +24,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersAddProcess : public itkFiltersProcessBas
     
 public:
     itkFiltersAddProcess(itkFiltersAddProcess * parent = 0);
+    itkFiltersAddProcess(const itkFiltersAddProcess& other);
     virtual ~itkFiltersAddProcess(void);
     static bool registered ( void );
     

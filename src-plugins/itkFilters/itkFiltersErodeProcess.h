@@ -21,7 +21,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkMorphologicalFi
     
 public:
     itkFiltersErodeProcess(itkFiltersErodeProcess * parent = 0);
-
+    itkFiltersErodeProcess(const itkFiltersErodeProcess& other);
     static bool registered ( void );
 };
 

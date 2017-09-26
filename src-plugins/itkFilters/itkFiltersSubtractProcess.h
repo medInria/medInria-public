@@ -21,8 +21,10 @@ class itkFiltersSubtractProcessPrivate;
 class ITKFILTERSPLUGIN_EXPORT itkFiltersSubtractProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
+
 public:
     itkFiltersSubtractProcess(itkFiltersSubtractProcess * parent = 0);
+    itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other);
     virtual ~itkFiltersSubtractProcess(void);
     static bool registered(void);
     

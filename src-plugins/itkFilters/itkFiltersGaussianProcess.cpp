@@ -27,12 +27,17 @@ public:
 };
 
 itkFiltersGaussianProcess::itkFiltersGaussianProcess(itkFiltersGaussianProcess *parent) 
-    : itkFiltersProcessBase(), d(new itkFiltersGaussianProcessPrivate)
+    : itkFiltersProcessBase(parent), d(new itkFiltersGaussianProcessPrivate)
 {
-    filter = this;
     descriptionText = tr("ITK gaussian filter");
 
-    d->sigma = 1;
+    d->sigma = itkFiltersProcessBase::initSigma;
+}
+
+itkFiltersGaussianProcess::itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

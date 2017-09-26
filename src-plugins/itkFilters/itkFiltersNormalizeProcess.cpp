@@ -23,10 +23,15 @@
 //-------------------------------------------------------------------------------------------
 
 itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(itkFiltersNormalizeProcess *parent) 
-    : itkFiltersProcessBase()
+    : itkFiltersProcessBase(parent)
 {   
-    filter = this;
     descriptionText = tr("ITK normalize filter");
+}
+
+itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other)
+     : itkFiltersProcessBase(other)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------

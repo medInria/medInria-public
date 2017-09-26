@@ -30,7 +30,7 @@ public:
     };
 
     itkMorphologicalFiltersProcessBase(itkMorphologicalFiltersProcessBase * parent = 0);
-
+    itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other);
     void setParameter(double data, int channel);
     void setParameter(int data);
 
