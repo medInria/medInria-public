@@ -36,10 +36,10 @@ itkFiltersWindowingProcess::itkFiltersWindowingProcess(itkFiltersWindowingProces
 {   
     descriptionText = tr("ITK intensity windowing filter");
 
-    d->minimumIntensityValue = 0;
-    d->maximumIntensityValue = 255;
-    d->minimumOutputIntensityValue = 0;
-    d->maximumOutputIntensityValue = 255;
+    d->minimumIntensityValue = itkFiltersProcessBase::initMinimumIntensityValue;
+    d->maximumIntensityValue = itkFiltersProcessBase::initMaximumIntensityValue;
+    d->minimumOutputIntensityValue = itkFiltersProcessBase::initMinimumIntensityValue;
+    d->maximumOutputIntensityValue = itkFiltersProcessBase::initMaximumIntensityValue;
 }
 
 itkFiltersWindowingProcess::itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other)

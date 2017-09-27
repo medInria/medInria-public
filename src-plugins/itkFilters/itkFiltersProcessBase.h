@@ -27,6 +27,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersProcessBase : public medAbstractProcess
 
 public:
 
+    // Default values for itkFiltersProcessBase processes
     static const double initAddValue       = 100.0;
     static const double initSubtractValue  = 100.0;
     static const double initMultiplyFactor = 2.0;
@@ -36,6 +37,8 @@ public:
     static const int    initOutsideValue       = 0;
     static const bool   initComparisonOperator = true;
     static const double initMinimumSize        = 50.0;
+    static const double initMinimumIntensityValue = 0.0;
+    static const double initMaximumIntensityValue = 255.0;
     static const int    initShrinkFactors(int index)
     {
         static const int a[] = {1,1,1};

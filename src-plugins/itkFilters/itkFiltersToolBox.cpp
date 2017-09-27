@@ -362,21 +362,21 @@ medAbstractData* itkFiltersToolBox::processOutput()
 
 void itkFiltersToolBox::clear()
 {
-    d->intensityMinimumValue->setMinimum ( 0 );
-    d->intensityMinimumValue->setMaximum ( 255 );
-    d->intensityMinimumValue->setValue ( 0 );
+    d->intensityMinimumValue->setMinimum (itkFiltersProcessBase::initMinimumIntensityValue);
+    d->intensityMinimumValue->setMaximum (itkFiltersProcessBase::initMaximumIntensityValue);
+    d->intensityMinimumValue->setValue (itkFiltersProcessBase::initMinimumIntensityValue);
 
-    d->intensityMaximumValue->setMinimum ( 0 );
-    d->intensityMaximumValue->setMaximum ( 255 );
-    d->intensityMaximumValue->setValue ( 255 );
+    d->intensityMaximumValue->setMinimum (itkFiltersProcessBase::initMinimumIntensityValue);
+    d->intensityMaximumValue->setMaximum (itkFiltersProcessBase::initMaximumIntensityValue);
+    d->intensityMaximumValue->setValue (itkFiltersProcessBase::initMaximumIntensityValue);
 
-    d->intensityOutputMinimumValue->setMinimum ( 0 );
-    d->intensityOutputMinimumValue->setMaximum ( 255 );
-    d->intensityOutputMinimumValue->setValue ( 0 );
+    d->intensityOutputMinimumValue->setMinimum (itkFiltersProcessBase::initMinimumIntensityValue);
+    d->intensityOutputMinimumValue->setMaximum (itkFiltersProcessBase::initMaximumIntensityValue);
+    d->intensityOutputMinimumValue->setValue (itkFiltersProcessBase::initMinimumIntensityValue);
 
-    d->intensityOutputMaximumValue->setMinimum ( 0 );
-    d->intensityOutputMaximumValue->setMaximum ( 255 );
-    d->intensityOutputMaximumValue->setValue ( 255 );
+    d->intensityOutputMaximumValue->setMinimum (itkFiltersProcessBase::initMinimumIntensityValue);
+    d->intensityOutputMaximumValue->setMaximum (itkFiltersProcessBase::initMaximumIntensityValue);
+    d->intensityOutputMaximumValue->setValue (itkFiltersProcessBase::initMaximumIntensityValue);
 }
 
 void itkFiltersToolBox::update()
@@ -574,8 +574,8 @@ void itkFiltersToolBox::update()
         statsProcess.setInput(data, 0); //data
         statsProcess.setParameter(statsROI::MINMAX);
 
-        double m_MinValueImage = 0.0;
-        double m_MaxValueImage = 255.0;
+        double m_MinValueImage = itkFiltersProcessBase::initMinimumIntensityValue;
+        double m_MaxValueImage = itkFiltersProcessBase::initMaximumIntensityValue;
 
         if(statsProcess.update() == DTK_SUCCEED)
         {
