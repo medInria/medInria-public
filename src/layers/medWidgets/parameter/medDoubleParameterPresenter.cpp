@@ -94,18 +94,18 @@ QWidget* medDoubleParameterPresenter::buildWidget()
 QDoubleSpinBox* medDoubleParameterPresenter::buildSpinBox()
 {
     QDoubleSpinBox *spinBox = new medDoubleSpinBox;
+
+    spinBox->setToolTip(d->parameter->description());
+    spinBox->setRange(d->parameter->minimum(), d->parameter->maximum());
+    spinBox->setDecimals(d->decimals);
+    spinBox->setSingleStep(d->singleStep);
     spinBox->setValue(d->parameter->value());
+
+    this->_connectWidget(spinBox);
     connect(spinBox, SIGNAL(valueChanged(double)),
            d->parameter, SLOT(setValue(double)));
     connect(d->parameter, &medDoubleParameter::valueChanged,
             spinBox, &QDoubleSpinBox::setValue);
-
-    spinBox->setToolTip(d->parameter->description());
-    this->_connectWidget(spinBox);
-
-    spinBox->setRange(d->parameter->minimum(), d->parameter->maximum());
-    spinBox->setDecimals(d->decimals);
-    spinBox->setSingleStep(d->singleStep);
     connect(d->parameter, &medDoubleParameter::rangeChanged,
             spinBox, &QDoubleSpinBox::setRange);
     connect(this, &medDoubleParameterPresenter::decimalsChanged,
@@ -120,8 +120,7 @@ QProgressBar* medDoubleParameterPresenter::buildProgressBar()
 {
     QProgressBar *progressBar = new QProgressBar;
     progressBar->setValue(_percentFromValue(d->parameter->value()));
-    connect(this, &medDoubleParameterPresenter::valueChanged,
-            progressBar, &QProgressBar::setValue);
+    connect(this, &medDoubleParameterPresenter::valueChanged,progressBar, &QProgressBar::setValue);
 
     progressBar->setToolTip(d->parameter->description());
     this->_connectWidget(progressBar);
