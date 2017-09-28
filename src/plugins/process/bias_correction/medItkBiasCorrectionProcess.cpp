@@ -16,13 +16,15 @@
 #include <dtkLog>
 
 #include <itkImage.h>
-//#include <itkBiasCorrectionFilter.h>
 #include <itkBinaryBallStructuringElement.h>
 #include <itkCommand.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
+
 #include <medIntParameter.h>
+#include <medDoubleParameter.h>
+#include <medStringParameter.h>
 
 #include <itkN4BiasFieldCorrectionImageFilter.h>
 #include <itkExtractImageFilter.h>
@@ -30,9 +32,6 @@
 #include <itkOtsuThresholdImageFilter.h>
 #include <itkShrinkImageFilter.h>
 #include <itkTimeProbe.h>
-
-
-#include <medDoubleParameter.h>
 
 #define MAX_INT_POSITIVE 4294967295
 
@@ -60,21 +59,11 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
     m_poUISplineOrder->setRange(1, 16);
     m_poUISplineOrder->setValue(3);
 
-    m_poUIMaxNumbersIterationsVector1 = new medIntParameter("Iterations1st", this);
-    m_poUIMaxNumbersIterationsVector1->setCaption("Iterations vector");
-    m_poUIMaxNumbersIterationsVector1->setDescription("Firsts iterations round");
-    m_poUIMaxNumbersIterationsVector1->setRange(0, 500);
-    m_poUIMaxNumbersIterationsVector1->setValue(50);
-    m_poUIMaxNumbersIterationsVector2 = new medIntParameter("Iterations2nd", this);
-    m_poUIMaxNumbersIterationsVector2->setCaption("Iterations vector");
-    m_poUIMaxNumbersIterationsVector2->setDescription("Seconds iterations round");
-    m_poUIMaxNumbersIterationsVector2->setRange(0, 500);
-    m_poUIMaxNumbersIterationsVector2->setValue(40);
-    m_poUIMaxNumbersIterationsVector3 = new medIntParameter("Iterations3rd", this);
-    m_poUIMaxNumbersIterationsVector3->setCaption("Iterations vector");
-    m_poUIMaxNumbersIterationsVector3->setDescription("Thirds iterations round");
-    m_poUIMaxNumbersIterationsVector3->setRange(0, 500);
-    m_poUIMaxNumbersIterationsVector3->setValue(30);
+    m_poSMaxIterations = new medStringParameter("Iterations", this);
+    m_poSMaxIterations->setCaption("Rounds of iterations");
+    m_poSMaxIterations->setDescription("Number of round and number of iteration per round\n like 50x40x30");
+    m_poSMaxIterations->setValidator(new QRegExpValidator(QRegExp("^[1-9][0-9]{0,2}(x[1-9][0-9]{1,3})*")));
+    m_poSMaxIterations->setValue("50x40x30");
 
     m_poFWienerFilterNoise = new medDoubleParameter("WienerFilterNoise", this);
     m_poFWienerFilterNoise->setCaption("Wiener Filter Noise");
@@ -101,17 +90,17 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
     m_poFSplineDistance->setValue(0);
 
     m_poFInitialMeshResolutionVect1 = new medDoubleParameter("XMeshResolution", this);
-    m_poFInitialMeshResolutionVect1->setCaption("Spline grid resolution");
+    m_poFInitialMeshResolutionVect1->setCaption("Spline Mesh resolution for X");
     m_poFInitialMeshResolutionVect1->setDescription("Mesh resolution for X");
     m_poFInitialMeshResolutionVect1->setRange(0.000001, MAX_INT_POSITIVE);
     m_poFInitialMeshResolutionVect1->setValue(1);
     m_poFInitialMeshResolutionVect2 = new medDoubleParameter("YMeshResolution", this);
-    m_poFInitialMeshResolutionVect2->setCaption("Spline grid resolution");
+    m_poFInitialMeshResolutionVect2->setCaption("Spline Mesh resolution for Y");
     m_poFInitialMeshResolutionVect2->setDescription("Mesh resolution for Y");
     m_poFInitialMeshResolutionVect2->setRange(0.000001, MAX_INT_POSITIVE);
     m_poFInitialMeshResolutionVect2->setValue(1);
     m_poFInitialMeshResolutionVect3 = new medDoubleParameter("ZMeshResolution", this);
-    m_poFInitialMeshResolutionVect3->setCaption("Spline grid resolution");
+    m_poFInitialMeshResolutionVect3->setCaption("Spline Mesh resolution for Z");
     m_poFInitialMeshResolutionVect3->setDescription("Mesh resolution for Z");
     m_poFInitialMeshResolutionVect3->setRange(0.000001, MAX_INT_POSITIVE);
     m_poFInitialMeshResolutionVect3->setValue(1);
@@ -192,7 +181,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     
     try
     {
-       eRes = N4BiasCorrectionCore();
+       eRes = N4BiasCorrectionCore<inputType, Dimension>();
     }
     catch (...)
     {
@@ -211,12 +200,12 @@ void medItkBiasCorrectionProcess::cancel()
     }
 }
 
-medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::N4BiasCorrectionCore()
+template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::N4BiasCorrectionCore()
 {
    medJobExitStatus eRes = medAbstractJob::MED_JOB_EXIT_SUCCESS;
 
-   typedef itk::Image<float, 3 > ImageType;
-   typedef itk::Image<unsigned char, 3> MaskImageType;
+   typedef itk::Image<inputType, Dimension > ImageType;
+   typedef itk::Image<unsigned char, Dimension> MaskImageType;
    typedef itk::N4BiasFieldCorrectionImageFilter<ImageType, MaskImageType, ImageType> BiasFilter;
    typedef itk::ConstantPadImageFilter<ImageType, ImageType> PadderType;
    typedef itk::ConstantPadImageFilter<MaskImageType, MaskImageType> MaskPadderType;
@@ -236,11 +225,14 @@ medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::N4BiasCorrectionCo
    float fConvergenceThreshold = static_cast<float>(m_poFConvergenceThreshold->value());
    float fSplineDistance = static_cast<float>(m_poFSplineDistance->value());
 
-   std::vector<unsigned int> oMaxNumbersIterationsVector;
-   std::vector<float> oInitialMeshResolutionVect;
-   oMaxNumbersIterationsVector[0] = static_cast<unsigned int>(m_poUIMaxNumbersIterationsVector1->value());
-   oMaxNumbersIterationsVector[1] = static_cast<unsigned int>(m_poUIMaxNumbersIterationsVector2->value());
-   oMaxNumbersIterationsVector[2] = static_cast<unsigned int>(m_poUIMaxNumbersIterationsVector3->value());
+   QStringList oListValue = m_poSMaxIterations->value().split("x");
+
+   std::vector<unsigned int> oMaxNumbersIterationsVector(oListValue.size());
+   std::vector<float> oInitialMeshResolutionVect(Dimension);
+   for (int i=0; i<oMaxNumbersIterationsVector.size(); ++i)
+   {
+      oMaxNumbersIterationsVector[i] = (unsigned int)oListValue[i].toInt();
+   }
    oInitialMeshResolutionVect[0] = static_cast<float>(m_poFInitialMeshResolutionVect1->value());
    oInitialMeshResolutionVect[1] = static_cast<float>(m_poFInitialMeshResolutionVect2->value());
    oInitialMeshResolutionVect[2] = static_cast<float>(m_poFInitialMeshResolutionVect3->value());
@@ -450,4 +442,6 @@ medAbstractJob::medJobExitStatus medItkBiasCorrectionProcess::N4BiasCorrectionCo
    medAbstractImageData *out = qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
    out->setData(cropper->GetOutput());
    this->setOutput(out);
+   
+   return eRes;
 }
