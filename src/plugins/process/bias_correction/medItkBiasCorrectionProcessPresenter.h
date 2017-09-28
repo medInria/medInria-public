@@ -21,6 +21,7 @@
 
 class medIntParameterPresenter;
 class medDoubleParameterPresenter;
+class medStringParameterPresenter;
 
 class MEDITKBIASCORRECTIONPROCESSPLUGIN_EXPORT medItkBiasCorrectionProcessPresenter: public medAbstractBiasCorrectionProcessPresenter
 {
@@ -35,16 +36,17 @@ private:
     medIntParameterPresenter    *m_poUIPresenterThreadNb;                     //Number of threads to run on (default: all cores)
     medIntParameterPresenter    *m_poUIPresenterShrinkFactors;                //Shrink factor, default=4
     medIntParameterPresenter    *m_poUIPresenterSplineOrder;                  //BSpline Order, default=3
-    medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector1;  //B - Spline grid resolution
+    medStringParameterPresenter *m_poSPresenterMaxIterations;                 //Max iterations per round
+  /*medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector1;  //B - Spline grid resolution
     medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector2;  //B - Spline grid resolution
-    medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector3;  //B - Spline grid resolution
+    medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector3;  //B - Spline grid resolution*/
     medDoubleParameterPresenter *m_poFPresenterWienerFilterNoise;              //Wiener Filter Noise, default=0.01
     medDoubleParameterPresenter *m_poFPresenterbfFWHM;                         //Bias field Full Width at Half Maximum, default=0.15
     medDoubleParameterPresenter *m_poFPresenterConvergenceThreshold;           //Convergence Threshold, default=0.0001
     medDoubleParameterPresenter *m_poFPresenterSplineDistance;                 //B-Spline distance, default=0.0
-    medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect1;     //B - Spline grid resolution. Exist only if SplineDistance == 0. \ 
+    medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect1;     //B - Spline grid resolution. Exist only if SplineDistance == 0. | 
     medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect2;     //B - Spline grid resolution. Exist only if SplineDistance == 0. |--default=1x1x1
-    medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect3;     //B - Spline grid resolution. Exist only if SplineDistance == 0. / 
+    medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect3;     //B - Spline grid resolution. Exist only if SplineDistance == 0. | 
 
 };
 
