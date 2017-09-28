@@ -42,6 +42,7 @@ struct SingleFiltersGathering
     medAbstractImageDenoisingProcessPluginFactory* denoisingFactory;
     medAbstractRelaxometryEstimationProcessPluginFactory* relaxometryFactory;
     medAbstractSymmetryPlaneAlignmentProcessPluginFactory* symmetryFactory;
+    medAbstractBiasCorrectionProcessPluginFactory* biasCorrectionFactory;
 
     medAbstractGaussianFilterProcessPresenterFactory* gaussianFactoryPresenter;
     medAbstractMedianFilterProcessPresenterFactory* medianFactoryPresenter;
@@ -51,6 +52,7 @@ struct SingleFiltersGathering
     medAbstractImageDenoisingProcessPresenterFactory* denoisingFactoryPresenter;
     medAbstractRelaxometryEstimationProcessPresenterFactory* relaxometryFactoryPresenter;
     medAbstractSymmetryPlaneAlignmentProcessPresenterFactory* symmetryFactoryPresenter;
+    medAbstractBiasCorrectionProcessPresenterFactory* biasCorrectionFactoryPresenter;
 
     QString pluginKey;
     medAbstractProcess* myProcess;
@@ -65,6 +67,7 @@ struct SingleFiltersGathering
         denoisingFactory = 0;
         relaxometryFactory = 0;
         symmetryFactory = 0;
+        biasCorrectionFactory = 0;
 
         gaussianFactoryPresenter = 0;
         medianFactoryPresenter = 0;
@@ -74,6 +77,7 @@ struct SingleFiltersGathering
         denoisingFactoryPresenter = 0;
         relaxometryFactoryPresenter = 0;
         symmetryFactoryPresenter = 0;
+        biasCorrectionFactoryPresenter = 0;
 
         myProcess = 0;
     }
@@ -104,6 +108,9 @@ struct SingleFiltersGathering
         else if(symmetryFactory)
             myProcess = symmetryFactory->create(pluginKey);
 
+        else if (biasCorrectionFactory)
+           myProcess = biasCorrectionFactory->create(pluginKey);
+
         return myProcess;
     }
 
@@ -130,8 +137,11 @@ struct SingleFiltersGathering
         else if(relaxometryFactoryPresenter)
             return relaxometryFactoryPresenter->create(myProcess);
 
-        else if(symmetryFactoryPresenter)
-            return symmetryFactoryPresenter->create(myProcess);
+        else if (symmetryFactoryPresenter)
+           return symmetryFactoryPresenter->create(myProcess);
+
+        else if (biasCorrectionFactoryPresenter)
+           return biasCorrectionFactoryPresenter->create(myProcess);
 
         return 0;
     }
@@ -609,6 +619,22 @@ void medFilteringWorkspace::setProcessType(int index)
 
                     d->singleFiltersVector.push_back(aSolution);
                 }
+            }
+
+            plugins = medCore::singleFilterOperation::biasCorrection::pluginFactory().keys();
+            foreach(QString pluginKey, plugins)
+            {
+               medAbstractProcess *process = medCore::singleFilterOperation::biasCorrection::pluginFactory().create(pluginKey);
+               if (process)
+               {
+                  d->processSelectorComboBox->addItem(process->caption(), pluginKey);
+                  SingleFiltersGathering aSolution;
+                  aSolution.pluginKey = pluginKey;
+                  aSolution.biasCorrectionFactory = &medCore::singleFilterOperation::biasCorrection::pluginFactory();
+                  aSolution.biasCorrectionFactoryPresenter = &medWidgets::singleFilterOperation::biasCorrection::presenterFactory();
+
+                  d->singleFiltersVector.push_back(aSolution);
+               }
             }
 
             break;

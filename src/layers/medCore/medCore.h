@@ -35,6 +35,7 @@
 #include <medAbstractWindowingFilterProcess.h>
 #include <medAbstractImageDenoisingProcess.h>
 #include <medAbstractRelaxometryEstimationProcess.h>
+#include <medAbstractBiasCorrectionProcess.h>
 
 #include <medAbstractMorphomathOperationProcess.h>
 #include <medAbstractErodeImageProcess.h>
@@ -64,7 +65,8 @@ namespace medCore
     DTK_DECLARE_CONCEPT(medAbstractDiffusionModelEstimationProcess,MEDCORE_EXPORT,diffusionModelEstimation)
     DTK_DECLARE_CONCEPT(medAbstractDiffusionScalarMapsProcess,MEDCORE_EXPORT,diffusionScalarMaps)
     DTK_DECLARE_CONCEPT(medAbstractTractographyProcess,MEDCORE_EXPORT,tractography)
-    DTK_DECLARE_CONCEPT(medAbstractMaskImageProcess,MEDCORE_EXPORT,maskImage)
+    DTK_DECLARE_CONCEPT(medAbstractMaskImageProcess, MEDCORE_EXPORT, maskImage)
+    //DTK_DECLARE_CONCEPT(medAbstractBiasCorrectionProcess, MEDCORE_EXPORT, biasCorrection)
     DTK_DECLARE_CONCEPT(medAbstractDataConverter,MEDCORE_EXPORT,dataConverter)
 
     namespace arithmeticOperation
@@ -160,6 +162,11 @@ namespace medCore
         {
             MEDCORE_EXPORT medAbstractSymmetryPlaneAlignmentProcessPluginFactory& pluginFactory(void);
         }
+
+        namespace biasCorrection
+        {
+           MEDCORE_EXPORT medAbstractBiasCorrectionProcessPluginFactory& pluginFactory(void);
+        }
     }
 
     namespace morphomathOperation
@@ -186,4 +193,5 @@ namespace medCore
         }
     }
 
+ 
 }
