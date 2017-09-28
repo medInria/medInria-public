@@ -70,17 +70,17 @@ QWidget* medIntParameterPresenter::buildWidget()
 QSpinBox* medIntParameterPresenter::buildSpinBox()
 {
     QSpinBox *spinBox = new QSpinBox;
+
+    spinBox->setToolTip(d->parameter->description());
+    spinBox->setRange(d->parameter->minimum(), d->parameter->maximum());
+    spinBox->setValue(d->parameter->value());
+    spinBox->setSingleStep(d->singleStep);
+
+    this->_connectWidget(spinBox);
     connect(spinBox, SIGNAL(valueChanged(int)),
             d->parameter, SLOT(setValue(int)));
     connect(d->parameter, &medIntParameter::valueChanged,
             spinBox, &QSpinBox::setValue);
-
-    spinBox->setToolTip(d->parameter->description());
-    this->_connectWidget(spinBox);
-
-    spinBox->setRange(d->parameter->minimum(), d->parameter->maximum());
-    spinBox->setValue(d->parameter->value());
-    spinBox->setSingleStep(d->singleStep);
     connect(d->parameter, &medIntParameter::rangeChanged,
             spinBox, &QSpinBox::setRange);
     connect(this, &medIntParameterPresenter::singleStepChanged,
@@ -92,14 +92,14 @@ QSpinBox* medIntParameterPresenter::buildSpinBox()
 QProgressBar* medIntParameterPresenter::buildProgressBar()
 {
     QProgressBar *progressBar = new QProgressBar;
-    progressBar->setValue(d->parameter->value());
-    connect(d->parameter, &medIntParameter::valueChanged,
-            progressBar, &QProgressBar::setValue);
 
     progressBar->setToolTip(d->parameter->description());
-    this->_connectWidget(progressBar);
-
     progressBar->setRange(d->parameter->minimum(), d->parameter->maximum());
+    progressBar->setValue(d->parameter->value());
+
+    this->_connectWidget(progressBar);
+    connect(d->parameter, &medIntParameter::valueChanged,
+            progressBar, &QProgressBar::setValue);
     connect(d->parameter, &medIntParameter::rangeChanged,
             progressBar, &QProgressBar::setRange);
 
