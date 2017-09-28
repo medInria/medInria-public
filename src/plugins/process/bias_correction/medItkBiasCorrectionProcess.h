@@ -19,6 +19,7 @@
 #include <itkSmartPointer.h>
 
 #include <medIntParameter.h>
+#include <medStringParameter.h>
 
 #include <medItkBiasCorrectionProcessPluginExport.h>
 
@@ -49,9 +50,7 @@ public:
     medIntParameter* getUIThreadNb() { return m_poUIThreadNb; }
     medIntParameter* getUIShrinkFactors() { return m_poUIShrinkFactors; }
     medIntParameter* getUISplineOrder() { return m_poUISplineOrder; }
-    medIntParameter* getUIMaxNumbersIterationsVector1() { return m_poUIMaxNumbersIterationsVector1; }
-    medIntParameter* getUIMaxNumbersIterationsVector2() { return m_poUIMaxNumbersIterationsVector2; }
-    medIntParameter* getUIMaxNumbersIterationsVector3() { return m_poUIMaxNumbersIterationsVector3; }
+    medStringParameter* getSMaxIterations() { return m_poSMaxIterations; }
 
     medDoubleParameter* getFWienerFilterNoise() { return m_poFWienerFilterNoise; }
     medDoubleParameter* getFbfFWHM() { return m_poFbfFWHM; }
@@ -63,7 +62,7 @@ public:
 
 private:
     template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitStatus _run();
-    medJobExitStatus N4BiasCorrectionCore();
+    template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitStatus N4BiasCorrectionCore();
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
@@ -71,9 +70,7 @@ private:
     medIntParameter    *m_poUIThreadNb;
     medIntParameter    *m_poUIShrinkFactors;
     medIntParameter    *m_poUISplineOrder;
-    medIntParameter    *m_poUIMaxNumbersIterationsVector1;
-    medIntParameter    *m_poUIMaxNumbersIterationsVector2;
-    medIntParameter    *m_poUIMaxNumbersIterationsVector3;
+    medStringParameter *m_poSMaxIterations;
 
     medDoubleParameter *m_poFWienerFilterNoise;
     medDoubleParameter *m_poFbfFWHM;

@@ -17,6 +17,7 @@
 
 #include <medIntParameterPresenter.h>
 #include <medDoubleParameterPresenter.h>
+#include <medStringParameterPresenter.h>
 
 #include <QLayout>
 #include <QWidget>
@@ -30,9 +31,7 @@ medItkBiasCorrectionProcessPresenter::medItkBiasCorrectionProcessPresenter(medIt
    m_poUIPresenterThreadNb = new medIntParameterPresenter(m_process->getUIThreadNb());
    m_poUIPresenterShrinkFactors = new medIntParameterPresenter(m_process->getUIShrinkFactors());
    m_poUIPresenterSplineOrder = new medIntParameterPresenter(m_process->getUISplineOrder());
-   m_poUIPresenterMaxNumbersIterationsVector1 = new medIntParameterPresenter(m_process->getUIMaxNumbersIterationsVector1());
-   m_poUIPresenterMaxNumbersIterationsVector2 = new medIntParameterPresenter(m_process->getUIMaxNumbersIterationsVector2());
-   m_poUIPresenterMaxNumbersIterationsVector3 = new medIntParameterPresenter(m_process->getUIMaxNumbersIterationsVector3());
+   m_poSPresenterMaxIterations = new medStringParameterPresenter(m_process->getSMaxIterations());
 
    m_poFPresenterWienerFilterNoise = new medDoubleParameterPresenter(m_process->getFWienerFilterNoise());
    m_poFPresenterbfFWHM = new medDoubleParameterPresenter(m_process->getFbfFWHM());
@@ -67,12 +66,11 @@ QWidget * medItkBiasCorrectionProcessPresenter::buildToolBoxWidget()
    poSplineOrderLayout->addWidget(m_poUIPresenterSplineOrder->buildWidget());
    poVLayout->addLayout(poSplineOrderLayout);
 
-   QLabel *poMaxNumbersIterationsLabel = new QLabel(m_poUIPresenterMaxNumbersIterationsVector1->parameter()->caption(), poResWidget);
+   QLabel *poMaxNumbersIterationsLabel = new QLabel(m_poSPresenterMaxIterations->parameter()->caption(), poResWidget);
    QHBoxLayout *poMaxNumbersIterationsLayout = new QHBoxLayout;
    poMaxNumbersIterationsLayout->addWidget(poMaxNumbersIterationsLabel);
-   poMaxNumbersIterationsLayout->addWidget(m_poUIPresenterMaxNumbersIterationsVector1->buildWidget());
-   poMaxNumbersIterationsLayout->addWidget(m_poUIPresenterMaxNumbersIterationsVector2->buildWidget());
-   poMaxNumbersIterationsLayout->addWidget(m_poUIPresenterMaxNumbersIterationsVector3->buildWidget());
+   poMaxNumbersIterationsLayout->addWidget(m_poSPresenterMaxIterations->buildWidget());
+
    poVLayout->addLayout(poMaxNumbersIterationsLayout);
    
 
@@ -101,7 +99,9 @@ QWidget * medItkBiasCorrectionProcessPresenter::buildToolBoxWidget()
    poVLayout->addLayout(poSplineDistanceLayout);
 
 
-   QLabel *poInitialMeshResolutionLabel = new QLabel(m_poFPresenterInitialMeshResolutionVect1->parameter()->caption(), poResWidget);
+   QLabel *poInitialMeshResolutionLabelX = new QLabel(m_poFPresenterInitialMeshResolutionVect1->parameter()->caption(), poResWidget);
+   QLabel *poInitialMeshResolutionLabelY = new QLabel(m_poFPresenterInitialMeshResolutionVect2->parameter()->caption(), poResWidget);
+   QLabel *poInitialMeshResolutionLabelZ = new QLabel(m_poFPresenterInitialMeshResolutionVect3->parameter()->caption(), poResWidget);
    QWidget *poWInitialMeshResolution1 = m_poFPresenterInitialMeshResolutionVect1->buildWidget();
    QWidget *poWInitialMeshResolution2 = m_poFPresenterInitialMeshResolutionVect2->buildWidget();
    QWidget *poWInitialMeshResolution3 = m_poFPresenterInitialMeshResolutionVect3->buildWidget();
@@ -109,25 +109,29 @@ QWidget * medItkBiasCorrectionProcessPresenter::buildToolBoxWidget()
    connect(m_poFPresenterSplineDistance->parameter(), &medDoubleParameter::valueChanged, [=](double pi_fVal)
    {
       bool bActive = pi_fVal != 0;
-      poInitialMeshResolutionLabel->setDisabled(bActive);
+      poInitialMeshResolutionLabelX->setDisabled(bActive);
+      poInitialMeshResolutionLabelY->setDisabled(bActive);
+      poInitialMeshResolutionLabelZ->setDisabled(bActive);
       poWInitialMeshResolution1->setDisabled(bActive);
       poWInitialMeshResolution2->setDisabled(bActive);
       poWInitialMeshResolution3->setDisabled(bActive);
    });
-   QHBoxLayout *poInitialMeshResolutionLayout = new QHBoxLayout;
-   poInitialMeshResolutionLayout->addWidget(poInitialMeshResolutionLabel);
-   poInitialMeshResolutionLayout->addWidget(poWInitialMeshResolution1);
-   poInitialMeshResolutionLayout->addWidget(poWInitialMeshResolution2);
-   poInitialMeshResolutionLayout->addWidget(poWInitialMeshResolution3);
-   /*poInitialMeshResolutionLayout->setSizeConstraint(QLayout::SetMaximumSize);
-   poInitialMeshResolutionLayout->setSizeConstraint(QLayout::SetMaximumSize);
-   poInitialMeshResolutionLayout->setSizeConstraint(QLayout::SetMaximumSize);
-   poInitialMeshResolutionLayout->setSizeConstraint(QLayout::SetMaximumSize);*/
-   poVLayout->addLayout(poInitialMeshResolutionLayout);
+
+   QHBoxLayout *poInitialMeshResolutionLayoutX = new QHBoxLayout;
+   poInitialMeshResolutionLayoutX->addWidget(poInitialMeshResolutionLabelX);
+   poInitialMeshResolutionLayoutX->addWidget(poWInitialMeshResolution1);
+   poVLayout->addLayout(poInitialMeshResolutionLayoutX);
+   QHBoxLayout *poInitialMeshResolutionLayoutY = new QHBoxLayout;
+   poInitialMeshResolutionLayoutY->addWidget(poInitialMeshResolutionLabelY);
+   poInitialMeshResolutionLayoutY->addWidget(poWInitialMeshResolution2);
+   poVLayout->addLayout(poInitialMeshResolutionLayoutY);
+   QHBoxLayout *poInitialMeshResolutionLayoutZ = new QHBoxLayout;
+   poInitialMeshResolutionLayoutZ->addWidget(poInitialMeshResolutionLabelZ);
+   poInitialMeshResolutionLayoutZ->addWidget(poWInitialMeshResolution3);
+   poVLayout->addLayout(poInitialMeshResolutionLayoutZ);
 
    poVLayout->addWidget(buildRunButton());
    poVLayout->addWidget(buildCancelButton());
-   //poVLayout->setSizeConstraint(QLayout::SetMinimumSize);// SetMinimumSize
 
    return poResWidget;
 }
