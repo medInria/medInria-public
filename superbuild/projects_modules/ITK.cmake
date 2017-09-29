@@ -42,7 +42,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v4.12.1)
+set(git_tag v4.12.2)
 
 
 ## #############################################################################
@@ -71,6 +71,12 @@ set(cmake_args
   -DModule_ITKVtkGlue:BOOL=ON
   -DVTK_DIR:PATH=${VTK_DIR}
   )
+
+## #############################################################################
+## Check if patch has to be applied
+## #############################################################################
+  
+ep_GeneratePatchCommand(ITK ITK_PATCH_COMMAND ITK_Mac.patch)
 
 ## #############################################################################
 ## Add external-project
