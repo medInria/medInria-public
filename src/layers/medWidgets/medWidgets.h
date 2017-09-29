@@ -156,12 +156,6 @@ namespace medWidgets
     {
         MEDWIDGETS_EXPORT medAbstractMaskImageProcessPresenterFactory& presenterFactory();
     }
-/*
-
-    namespace biasCorrection
-    {
-       MEDWIDGETS_EXPORT medAbstractBiasCorrectionProcessPresenterFactory& presenterFactory();
-    }*/
 
     namespace dwiMasking
     {

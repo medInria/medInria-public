@@ -32,4 +32,3 @@ void medItkBiasCorrectionProcessPlugin::uninitialize(void)
 }
 
 DTK_DEFINE_PLUGIN(medItkBiasCorrectionProcess)
-//DTK_DEFINE_PLUGIN(medItkBiasCorrectionProcessPresenter)

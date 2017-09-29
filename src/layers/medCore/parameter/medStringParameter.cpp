@@ -36,12 +36,12 @@ QString medStringParameter::value() const
     return d->value;
 }
 
-void medStringParameter::setValue(const QString & value)
+void medStringParameter::setValue( QString const& value)
 {
     if(value != d->value)
     {
        int i = -1;
-       if (d->poValidator == NULL || d->poValidator->validate(d->value, i) == QValidator::Acceptable)
+       if (d->poValidator == NULL || d->poValidator->validate(QString(value), i) == QValidator::Acceptable)
        {
           d->value = value;
           emit valueChanged(d->value);

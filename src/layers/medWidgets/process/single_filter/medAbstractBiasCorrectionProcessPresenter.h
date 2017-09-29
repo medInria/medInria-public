@@ -25,7 +25,7 @@ class MEDWIDGETS_EXPORT medAbstractBiasCorrectionProcessPresenter: public medAbs
 private:
 
 public:
-    medAbstractBiasCorrectionProcessPresenter(medAbstractBiasCorrectionProcess *parent);
+   medAbstractBiasCorrectionProcessPresenter(medAbstractBiasCorrectionProcess *parent) : medAbstractSingleFilterOperationProcessPresenter(parent) {}
     virtual QWidget* buildToolBoxWidget() = 0;
     virtual medAbstractBiasCorrectionProcess* process() const = 0;
 };

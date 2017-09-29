@@ -62,7 +62,7 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
     m_poSMaxIterations = new medStringParameter("Iterations", this);
     m_poSMaxIterations->setCaption("Rounds of iterations");
     m_poSMaxIterations->setDescription("Number of round and number of iteration per round\n like 50x40x30");
-    m_poSMaxIterations->setValidator(new QRegExpValidator(QRegExp("^[1-9][0-9]{0,2}(x[1-9][0-9]{1,3})*")));
+    m_poSMaxIterations->setValidator(new QRegExpValidator(QRegExp("^[1-9][0-9]{0,2}(x[1-9][0-9]{0,2})*")));
     m_poSMaxIterations->setValue("50x40x30");
 
     m_poFWienerFilterNoise = new medDoubleParameter("WienerFilterNoise", this);
@@ -211,7 +211,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    typedef itk::ConstantPadImageFilter<MaskImageType, MaskImageType> MaskPadderType;
    typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkerType;
    typedef itk::ShrinkImageFilter<MaskImageType, MaskImageType> MaskShrinkerType;
-   typedef itk::BSplineControlPointImageFilter< BiasFilter::BiasFieldControlPointLatticeType, BiasFilter::ScalarImageType> BSplinerType;
+   typedef itk::BSplineControlPointImageFilter<typename BiasFilter::BiasFieldControlPointLatticeType, typename BiasFilter::ScalarImageType> BSplinerType;
    typedef itk::ExpImageFilter<ImageType, ImageType> ExpFilterType;
    typedef itk::DivideImageFilter<ImageType, ImageType, ImageType> DividerType;
    typedef itk::ExtractImageFilter<ImageType, ImageType> CropperType;
@@ -242,18 +242,18 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    /********************************************************************************/
 
    /*** 0 ******************* Create filter and accessories ******************/
-   BiasFilter::Pointer filter = BiasFilter::New();
-   BiasFilter::ArrayType oNumberOfControlPointsArray;
+   typename BiasFilter::Pointer filter = BiasFilter::New();
+   typename BiasFilter::ArrayType oNumberOfControlPointsArray;
 
    /*** 1 ******************* Read input image *******************************/
-   ImageType::Pointer image = dynamic_cast<ImageType *>((itk::Object*)(this->input()->data()));
+   typename ImageType::Pointer image = dynamic_cast<ImageType *>((itk::Object*)(this->input()->data()));
 
    /*** 2 ******************* Creating Otsu mask *****************************/
    itk::TimeProbe timer;
    timer.Start();
-   MaskImageType::Pointer maskImage = ITK_NULLPTR;
+   typename MaskImageType::Pointer maskImage = ITK_NULLPTR;
    typedef itk::OtsuThresholdImageFilter<ImageType, MaskImageType> ThresholderType;
-   ThresholderType::Pointer otsu = ThresholderType::New();
+   typename ThresholderType::Pointer otsu = ThresholderType::New();
    otsu->SetInput(image);
    otsu->SetNumberOfHistogramBins(200);
    otsu->SetInsideValue(0);
@@ -264,7 +264,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    maskImage = otsu->GetOutput();
 
    /*** 3A *************** Set Maximum number of Iterations for the filter ***/
-   BiasFilter::VariableSizeArrayType itkTabMaximumIterations;
+   typename BiasFilter::VariableSizeArrayType itkTabMaximumIterations;
    itkTabMaximumIterations.SetSize(oMaxNumbersIterationsVector.size());
    for (int i = 0; i < oMaxNumbersIterationsVector.size(); ++i)
    {
@@ -273,14 +273,14 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    filter->SetMaximumNumberOfIterations(itkTabMaximumIterations);
 
    /*** 3B *************** Set Fitting Levels for the filter *****************/
-   BiasFilter::ArrayType oFittingLevelsTab;
+   typename BiasFilter::ArrayType oFittingLevelsTab;
    oFittingLevelsTab.Fill(oMaxNumbersIterationsVector.size());
    filter->SetNumberOfFittingLevels(oFittingLevelsTab);
 
    /*** 4 ******************* Save image's index, size, origine **************/
-   ImageType::IndexType oImageIndex = image->GetLargestPossibleRegion().GetIndex();
-   ImageType::SizeType oImageSize = image->GetLargestPossibleRegion().GetSize();
-   ImageType::PointType newOrigin = image->GetOrigin();
+   typename ImageType::IndexType oImageIndex = image->GetLargestPossibleRegion().GetIndex();
+   typename ImageType::SizeType oImageSize = image->GetLargestPossibleRegion().GetSize();
+   typename ImageType::PointType newOrigin = image->GetOrigin();
 
    if (fSplineDistance > 0)
    {
@@ -300,7 +300,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
       }
 
       /*** 6 ******************* Padder  ****************************************/
-      PadderType::Pointer imagePadder = PadderType::New();
+      typename PadderType::Pointer imagePadder = PadderType::New();
       imagePadder->SetInput(image);
       imagePadder->SetPadLowerBound(lowerBound);
       imagePadder->SetPadUpperBound(upperBound);
@@ -311,7 +311,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
       image = imagePadder->GetOutput();
 
       /*** 7 ******************** Handle the mask image *************************/
-      MaskPadderType::Pointer maskPadder = MaskPadderType::New();
+      typename MaskPadderType::Pointer maskPadder = MaskPadderType::New();
       maskPadder->SetInput(maskImage);
       maskPadder->SetPadLowerBound(lowerBound);
       maskPadder->SetPadUpperBound(upperBound);
@@ -340,11 +340,11 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    }
 
    /*** 10 ******************* Shrinker image ********************************/
-   ShrinkerType::Pointer imageShrinker = ShrinkerType::New();
+   typename ShrinkerType::Pointer imageShrinker = ShrinkerType::New();
    imageShrinker->SetInput(image);
 
    /*** 11 ******************* Shrinker mask *********************************/
-   MaskShrinkerType::Pointer maskShrinker = MaskShrinkerType::New();
+   typename MaskShrinkerType::Pointer maskShrinker = MaskShrinkerType::New();
    maskShrinker->SetInput(maskImage);
 
    /*** 12 ******************* Shrink mask and image *************************/
@@ -387,7 +387,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    * the original input image by the bias field to get the final
    * corrected image.
    */
-   BSplinerType::Pointer bspliner = BSplinerType::New();
+   typename BSplinerType::Pointer bspliner = BSplinerType::New();
    bspliner->SetInput(filter->GetLogBiasFieldControlPointLattice());
    bspliner->SetSplineOrder(filter->GetSplineOrder());
    bspliner->SetSize(image->GetLargestPossibleRegion().GetSize());
@@ -397,14 +397,14 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    bspliner->SetNumberOfThreads(uiThreadNb);
    bspliner->Update();
 
-   ImageType::Pointer logField = ImageType::New();
+   typename ImageType::Pointer logField = ImageType::New();
    logField->SetOrigin(image->GetOrigin());
    logField->SetSpacing(image->GetSpacing());
    logField->SetRegions(image->GetLargestPossibleRegion());
    logField->SetDirection(image->GetDirection());
    logField->Allocate();
 
-   itk::ImageRegionIterator<BiasFilter::ScalarImageType> IB(bspliner->GetOutput(), bspliner->GetOutput()->GetLargestPossibleRegion());
+   itk::ImageRegionIterator<typename BiasFilter::ScalarImageType> IB(bspliner->GetOutput(), bspliner->GetOutput()->GetLargestPossibleRegion());
 
    itk::ImageRegionIterator<ImageType> IF(logField, logField->GetLargestPossibleRegion());
 
@@ -413,30 +413,27 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
       IF.Set(IB.Get()[0]);
    }
 
-   ExpFilterType::Pointer expFilter = ExpFilterType::New();
+   typename ExpFilterType::Pointer expFilter = ExpFilterType::New();
    expFilter->SetInput(logField);
    expFilter->SetNumberOfThreads(uiThreadNb);
    expFilter->Update();
 
-   DividerType::Pointer divider = DividerType::New();
+   typename DividerType::Pointer divider = DividerType::New();
    divider->SetInput1(image);
    divider->SetInput2(expFilter->GetOutput());
    divider->SetNumberOfThreads(uiThreadNb);
    divider->Update();
 
-   ImageType::RegionType inputRegion;
+   typename ImageType::RegionType inputRegion;
    inputRegion.SetIndex(oImageIndex);
    inputRegion.SetSize(oImageSize);
 
-   CropperType::Pointer cropper = CropperType::New();
+   typename CropperType::Pointer cropper = CropperType::New();
    cropper->SetInput(divider->GetOutput());
    cropper->SetExtractionRegion(inputRegion);
    cropper->SetDirectionCollapseToSubmatrix();
    cropper->SetNumberOfThreads(uiThreadNb);
    cropper->Update();
-
-   //timer.Stop();
-   //std::cout << "\nComputation time : " << timer.GetTotal() << std::endl;
 
    /********************** Write output image *************************/
    medAbstractImageData *out = qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));

@@ -66,7 +66,6 @@ namespace medCore
     DTK_DECLARE_CONCEPT(medAbstractDiffusionScalarMapsProcess,MEDCORE_EXPORT,diffusionScalarMaps)
     DTK_DECLARE_CONCEPT(medAbstractTractographyProcess,MEDCORE_EXPORT,tractography)
     DTK_DECLARE_CONCEPT(medAbstractMaskImageProcess, MEDCORE_EXPORT, maskImage)
-    //DTK_DECLARE_CONCEPT(medAbstractBiasCorrectionProcess, MEDCORE_EXPORT, biasCorrection)
     DTK_DECLARE_CONCEPT(medAbstractDataConverter,MEDCORE_EXPORT,dataConverter)
 
     namespace arithmeticOperation
