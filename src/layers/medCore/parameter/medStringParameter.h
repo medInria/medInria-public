@@ -14,6 +14,7 @@
 #pragma once
 
 #include <medAbstractParameter.h>
+#include <QValidator>
 
 class medStringParameterPrivate;
 class MEDCORE_EXPORT medStringParameter : public medAbstractParameter
@@ -27,6 +28,10 @@ public:
     virtual medParameterType type() const {return medParameterType::MED_PARAMETER_STRING;}
 
     QString value() const;
+
+    void setValidator(QValidator *pi_poValidator);
+    QValidator *getValidator() const;
+
 public slots:
     void setValue(QString const& value);
 
@@ -34,6 +39,7 @@ public slots:
 
 signals:
     void valueChanged(QString const& value);
+    void validatorChanged(QValidator *const& poValidator);
 
 private:
     const QScopedPointer<medStringParameterPrivate> d;

@@ -191,9 +191,6 @@ public:
     virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
     virtual void RemoveDataSet (vtkPointSet* arg);
 
-    virtual void AddExtraPlane (vtkImageActor* input);
-    virtual void RemoveExtraPlane (vtkImageActor* input);
-
     virtual void AddLayer (int layer);
     virtual int GetNumberOfLayers() const;
     virtual void RemoveLayer (int layer);
@@ -289,7 +286,9 @@ protected:
         vtkSmartPointer<vtkImage3DDisplay> ImageDisplay;
     };
 
-    vtkSmartPointer<vtkImageMapToColors>        PlanarWindowLevel;
+    vtkSmartPointer<vtkImageMapToColors>        PlanarWindowLevelX;
+    vtkSmartPointer<vtkImageMapToColors>        PlanarWindowLevelY;
+    vtkSmartPointer<vtkImageMapToColors>        PlanarWindowLevelZ;
     // Layer indices start from 0, as they do for the 2d case
     //(API change)
     typedef std::vector<LayerInfo > LayerInfoVecType;
