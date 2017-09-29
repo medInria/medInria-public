@@ -15,18 +15,16 @@
 itkFiltersGrayscaleOpenProcess::itkFiltersGrayscaleOpenProcess(itkFiltersGrayscaleOpenProcess *parent)
     : itkMorphologicalFiltersProcessBase(parent)
 {
-    descriptionText = tr("Grayscale Open filter");
-}
-
-itkFiltersGrayscaleOpenProcess::itkFiltersGrayscaleOpenProcess(const itkFiltersGrayscaleOpenProcess& other)
-     : itkMorphologicalFiltersProcessBase(other)
-{
-
 }
 
 bool itkFiltersGrayscaleOpenProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkGrayscaleOpenProcess", createitkFiltersGrayscaleOpenProcess);
+}
+
+QString itkFiltersGrayscaleOpenProcess::description() const
+{
+    return tr("Grayscale Open filter");
 }
 
 // /////////////////////////////////////////////////////////////////

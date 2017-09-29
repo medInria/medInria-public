@@ -23,10 +23,14 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersShrinkProcess : public itkFiltersProcess
     Q_OBJECT
     
 public:
+    static const unsigned int defaultShrinkFactors[3];
+
     itkFiltersShrinkProcess(itkFiltersShrinkProcess * parent = 0);
     itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other);
     virtual ~itkFiltersShrinkProcess(void);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

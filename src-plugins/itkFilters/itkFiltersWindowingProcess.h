@@ -23,10 +23,15 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersWindowingProcess : public itkFiltersProc
     Q_OBJECT
     
 public:
+    static const double defaultMinimumIntensityValue;
+    static const double defaultMaximumIntensityValue;
+
     itkFiltersWindowingProcess(itkFiltersWindowingProcess * parent = 0);
     itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other);
     virtual ~itkFiltersWindowingProcess(void);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

@@ -23,10 +23,14 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersComponentSizeThresholdProcess : public i
     Q_OBJECT
     
 public:
+    static const double defaultMinimumSize;
+
     itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess * parent = 0);
     itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other);
     virtual ~itkFiltersComponentSizeThresholdProcess(void);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

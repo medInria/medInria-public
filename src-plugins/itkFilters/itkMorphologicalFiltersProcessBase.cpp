@@ -50,9 +50,8 @@ itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(itkMorpho
 }
 
 itkMorphologicalFiltersProcessBase::itkMorphologicalFiltersProcessBase(const itkMorphologicalFiltersProcessBase& other)
-     : itkFiltersProcessBase(other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
-
 }
 
 void itkMorphologicalFiltersProcessBase::setParameter(double data, int channel)
@@ -84,9 +83,9 @@ int itkMorphologicalFiltersProcessBase::tryUpdate()
 {
     int res = DTK_FAILURE;
 
-    if (inputData)
+    if (getInputData())
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -138,7 +137,7 @@ int itkMorphologicalFiltersProcessBase::tryUpdate()
 
 template <class ImageType> void itkMorphologicalFiltersProcessBase::convertMmInPixels()
 {
-    ImageType *image = dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) );
+    ImageType *image = dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) );
     for (unsigned int i=0; i<image->GetSpacing().Size(); i++)
     {
         d->radius[i] = floor((d->radius[i]/image->GetSpacing()[i])+0.5); //rounding
@@ -180,7 +179,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
 
     typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
     typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
-    imageCalculatorFilter->SetInput( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    imageCalculatorFilter->SetInput( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     imageCalculatorFilter->Update();
 
     typedef itk::KernelImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
@@ -188,7 +187,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
 
     QString filenameDescription;
 
-    if(descriptionText == "Dilate filter")
+    if(description() == "Dilate filter")
     {
         filenameDescription = "dilated";
 
@@ -197,7 +196,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
         dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
         dynamic_cast<DilateFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
     }
-    else if(descriptionText == "Erode filter")
+    else if(description() == "Erode filter")
     {
         filenameDescription = "eroded";
 
@@ -206,21 +205,21 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
         dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
         dynamic_cast<ErodeFilterType *>(filter.GetPointer())->SetBackgroundValue(imageCalculatorFilter->GetMinimum());
     }
-    else if(descriptionText == "Grayscale Close filter")
+    else if(description() == "Grayscale Close filter")
     {
         filenameDescription = "grayscaleClosed";
 
         typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  GCloseFilterType;
         filter = GCloseFilterType::New();
     }
-    else if(descriptionText == "Grayscale Open filter")
+    else if(description() == "Grayscale Open filter")
     {
         filenameDescription = "grayscaleOpened";
 
         typedef itk::GrayscaleMorphologicalOpeningImageFilter< ImageType, ImageType, StructuringElementType >  GOpenFilterType;
         filter = GOpenFilterType::New();
     }
-    else if(descriptionText == "Binary Close filter")
+    else if(description() == "Binary Close filter")
     {
         filenameDescription = "binaryClosed";
 
@@ -228,7 +227,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
         filter = BCloseFilterType::New();
         dynamic_cast<BCloseFilterType *>(filter.GetPointer())->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     }
-    else if(descriptionText == "Binary Open filter")
+    else if(description() == "Binary Open filter")
     {
         filenameDescription = "binaryOpened";
 
@@ -243,17 +242,17 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
         return DTK_FAILURE;
     }
 
-    filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     filter->SetKernel ( kernel );
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     filter->AddObserver ( itk::ProgressEvent(), callback );
 
     filter->Update();
 
-    outputData->setData ( filter->GetOutput() );
+    getOutputData()->setData ( filter->GetOutput() );
 
     // Add description on output data
     QString newSeriesDescription = filenameDescription + " ";
@@ -273,7 +272,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
                 " mm";
     }
 
-    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
 
     return DTK_SUCCEED;
 }

@@ -23,13 +23,6 @@
 itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent)
     : itkFiltersProcessBase(parent)
 {
-    descriptionText = tr("ITK invert intensity filter");
-}
-
-itkFiltersInvertProcess::itkFiltersInvertProcess(const itkFiltersInvertProcess& other)
-     : itkFiltersProcessBase(other)
-{
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -41,13 +34,20 @@ bool itkFiltersInvertProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersInvertProcess::description() const
+{
+    return tr("ITK invert intensity filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 int itkFiltersInvertProcess::tryUpdate()
 {
     int res = DTK_FAILURE;
 
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -105,25 +105,25 @@ template <class PixelType> int itkFiltersInvertProcess::updateProcess()
     typedef itk::MinimumMaximumImageCalculator< ImageType > MinMaxFilterType;
     typename MinMaxFilterType::Pointer maxFilter = MinMaxFilterType::New();
 
-    maxFilter->SetImage( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    maxFilter->SetImage( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     maxFilter->Compute();
     PixelType maximum = maxFilter->GetMaximum();
     PixelType minimum = maxFilter->GetMinimum();
 
-    invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     invertFilter->SetMaximum(maximum + minimum);
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     invertFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     invertFilter->Update();
 
-    outputData->setData ( invertFilter->GetOutput() );
+    getOutputData()->setData ( invertFilter->GetOutput() );
 
     //Set output description metadata
-    medUtilities::setDerivedMetaData(outputData, inputData, "invert filter");
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), "invert filter");
 
     return DTK_SUCCEED;
 }

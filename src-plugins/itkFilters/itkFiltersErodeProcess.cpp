@@ -20,13 +20,6 @@
 itkFiltersErodeProcess::itkFiltersErodeProcess(itkFiltersErodeProcess *parent) 
     : itkMorphologicalFiltersProcessBase(parent)
 {
-    descriptionText = tr("Erode filter");
-}
-
-itkFiltersErodeProcess::itkFiltersErodeProcess(const itkFiltersErodeProcess& other)
-     : itkMorphologicalFiltersProcessBase(other)
-{
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -34,6 +27,11 @@ itkFiltersErodeProcess::itkFiltersErodeProcess(const itkFiltersErodeProcess& oth
 bool itkFiltersErodeProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkErodeProcess", createitkFiltersErodeProcess);
+}
+
+QString itkFiltersErodeProcess::description() const
+{
+    return tr("Erode filter");
 }
 
 // /////////////////////////////////////////////////////////////////

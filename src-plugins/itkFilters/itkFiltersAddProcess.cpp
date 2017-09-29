@@ -26,20 +26,19 @@ public:
     double addValue;
 };
 
+const double itkFiltersAddProcess::defaultAddValue = 100.0;
+
 //-------------------------------------------------------------------------------------------
 
 itkFiltersAddProcess::itkFiltersAddProcess(itkFiltersAddProcess *parent) 
     : itkFiltersProcessBase(parent), d(new itkFiltersAddProcessPrivate)
 {  
-    descriptionText = tr("ITK add constant filter");
-
-    d->addValue = itkFiltersProcessBase::initAddValue;
+    d->addValue = defaultAddValue;
 }
 
 itkFiltersAddProcess::itkFiltersAddProcess(const itkFiltersAddProcess& other)
-     : itkFiltersProcessBase(other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -58,6 +57,13 @@ bool itkFiltersAddProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersAddProcess::description() const
+{
+    return tr("ITK add constant filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 void itkFiltersAddProcess::setParameter(double data, int channel)
 {
     if (channel != 0)
@@ -72,9 +78,9 @@ int itkFiltersAddProcess::tryUpdate()
 {
     int res = DTK_FAILURE;
 
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -131,20 +137,20 @@ template <class PixelType> int itkFiltersAddProcess::updateProcess()
     typedef itk::AddImageFilter<ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType> AddFilterType;
     typename AddFilterType::Pointer addFilter = AddFilterType::New();
 
-    addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     addFilter->SetConstant ( d->addValue );
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     addFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     addFilter->Update();
 
-    outputData->setData ( addFilter->GetOutput() );
+    getOutputData()->setData ( addFilter->GetOutput() );
 
     QString newSeriesDescription = "add filter " + QString::number(d->addValue);
-    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
 
     return DTK_SUCCEED;
 }

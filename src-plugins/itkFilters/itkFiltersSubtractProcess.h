@@ -23,10 +23,14 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersSubtractProcess : public itkFiltersProce
     Q_OBJECT
 
 public:
+    static const double defaultSubtractValue;
+
     itkFiltersSubtractProcess(itkFiltersSubtractProcess * parent = 0);
     itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other);
     virtual ~itkFiltersSubtractProcess(void);
     static bool registered(void);
+
+    virtual QString description(void) const;
     
 public slots:
     void setParameter(double data, int channel);

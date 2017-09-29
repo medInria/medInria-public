@@ -26,20 +26,19 @@ public:
     double divideFactor;
 };
 
+const double itkFiltersDivideProcess::defaultDivideFactor = 2.0;
+
 //-------------------------------------------------------------------------------------------
 
 itkFiltersDivideProcess::itkFiltersDivideProcess(itkFiltersDivideProcess *parent) 
     : itkFiltersProcessBase(parent), d(new itkFiltersDivideProcessPrivate)
 {  
-    descriptionText = tr("ITK divide by constant filter");
-
-    d->divideFactor = itkFiltersProcessBase::initDivideFactor;
+    d->divideFactor = defaultDivideFactor;
 }
 
 itkFiltersDivideProcess::itkFiltersDivideProcess(const itkFiltersDivideProcess& other)
-     : itkFiltersProcessBase(other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -58,6 +57,13 @@ bool itkFiltersDivideProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersDivideProcess::description() const
+{
+    return tr("ITK divide by constant filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 void itkFiltersDivideProcess::setParameter(double data, int channel)
 {
     if (channel != 0)
@@ -72,9 +78,9 @@ int itkFiltersDivideProcess::tryUpdate()
 {
     int res = DTK_FAILURE;
     
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -131,20 +137,20 @@ template <class PixelType> int itkFiltersDivideProcess::updateProcess()
     typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  DivideFilterType;
     typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
 
-    divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     divideFilter->SetConstant ( d->divideFactor );
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     divideFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     divideFilter->Update();
 
-    outputData->setData ( divideFilter->GetOutput() );
+    getOutputData()->setData ( divideFilter->GetOutput() );
 
     QString newSeriesDescription = "divide filter " + QString::number(d->divideFactor);
-    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
 
     return DTK_SUCCEED;
 }

@@ -24,14 +24,7 @@
 
 itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(itkFiltersNormalizeProcess *parent) 
     : itkFiltersProcessBase(parent)
-{   
-    descriptionText = tr("ITK normalize filter");
-}
-
-itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other)
-     : itkFiltersProcessBase(other)
 {
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -43,13 +36,20 @@ bool itkFiltersNormalizeProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersNormalizeProcess::description() const
+{
+    return tr("ITK normalize filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 int itkFiltersNormalizeProcess::tryUpdate()
 {   
     int res = DTK_FAILURE;
 
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -106,19 +106,19 @@ template <class PixelType> int itkFiltersNormalizeProcess::updateProcess()
     typedef itk::NormalizeImageFilter< ImageType, ImageType >  NormalizeFilterType;
     typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
 
-    normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     normalizeFilter->Update();
 
-    outputData->setData ( normalizeFilter->GetOutput() );
+    getOutputData()->setData ( normalizeFilter->GetOutput() );
 
     //Set output description metadata
-    medUtilities::setDerivedMetaData(outputData, inputData, "normalize filter");
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), "normalize filter");
 
     return DTK_SUCCEED;
 }
