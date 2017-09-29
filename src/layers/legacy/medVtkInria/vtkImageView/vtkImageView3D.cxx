@@ -68,6 +68,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkDataSetCollection.h>
 #include <vtkProp3DCollection.h>
+#include <vtkImageMapper3D.h>
 
 
 
@@ -158,7 +159,9 @@ vtkImageView3D::vtkImageView3D()
   this->Marker      = vtkOrientationMarkerWidget::New();
   this->Cube        = vtkAnnotatedCubeActor::New();
 
-  this->PlanarWindowLevel = vtkSmartPointer<vtkImageMapToColors>::New();
+  this->PlanarWindowLevelX = vtkSmartPointer<vtkImageMapToColors>::New();
+  this->PlanarWindowLevelY = vtkSmartPointer<vtkImageMapToColors>::New();
+  this->PlanarWindowLevelZ = vtkSmartPointer<vtkImageMapToColors>::New();
   this->ActorX = vtkImageActor::New();
   this->ActorY = vtkImageActor::New();
   this->ActorZ = vtkImageActor::New();
@@ -232,7 +235,9 @@ vtkMTimeType vtkImageView3D::GetMTime()
     this->Cube,
     this->Marker,
     this->PlaneWidget,
-    this->PlanarWindowLevel,
+    this->PlanarWindowLevelX,
+    this->PlanarWindowLevelY,
+    this->PlanarWindowLevelZ,
     this->ActorX,
     this->ActorY,
     this->ActorZ};
@@ -399,8 +404,10 @@ void vtkImageView3D::SetupVolumeRendering()
        this->VolumeProperty->GetIndependentComponents())
   {
     this->VolumeProperty->SetScalarOpacity(0, this->GetOpacityTransferFunction(0) );
-    this->VolumeProperty->SetColor(0, this->GetColorTransferFunction(0) );
-    this->PlanarWindowLevel->SetLookupTable(this->GetColorTransferFunction(0));
+    this->VolumeProperty->SetColor(0, this->GetColorTransferFunction(0));
+    this->PlanarWindowLevelX->SetLookupTable(this->GetColorTransferFunction(0));
+    this->PlanarWindowLevelY->SetLookupTable(this->GetColorTransferFunction(0));
+    this->PlanarWindowLevelZ->SetLookupTable(this->GetColorTransferFunction(0));
   }
   else if (!this->VolumeProperty->GetIndependentComponents())
   {
@@ -577,13 +584,13 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
       (size[2] < 2) )
   {
     vtkWarningMacro ( <<"Cannot do volume rendering for a single slice, skipping"<<endl);
-    this->ActorX->SetInputData ( (vtkImageData*)0 );
-    this->ActorY->SetInputData ( (vtkImageData*)0 );
-    this->ActorZ->SetInputData ( (vtkImageData*)0 );
+    this->ActorX->GetMapper()->SetInputConnection (nullptr);
+    this->ActorY->GetMapper()->SetInputConnection (nullptr);
+    this->ActorZ->GetMapper()->SetInputConnection (nullptr);
 
-    this->VolumeMapper->SetInputData( static_cast< vtkImageData * >( NULL ) );
-    this->BoxWidget->SetInputData ( (vtkImageData*)0 );
-    this->PlaneWidget->SetInputData ( (vtkImageData*)0 );
+    this->VolumeMapper->SetInputConnection(nullptr);
+    this->BoxWidget->SetInputConnection (nullptr);
+    this->PlaneWidget->SetInputConnection(nullptr);
 
     return;
   }
@@ -665,9 +672,9 @@ void vtkImageView3D::InternalUpdate()
     {
         this->Renderer->RemoveAllViewProps();
         //TODO apparently RemoveAllViewProps() is not enough, though it should be
-        this->ActorX->SetInputData ( (vtkImageData*)0 );
-        this->ActorY->SetInputData ( (vtkImageData*)0 );
-        this->ActorZ->SetInputData ( (vtkImageData*)0 );
+        this->ActorX->GetMapper()->SetInputConnection(nullptr);
+        this->ActorY->GetMapper()->SetInputConnection(nullptr);
+        this->ActorZ->GetMapper()->SetInputConnection(nullptr);
         this->Render();
         return;
     }
@@ -711,34 +718,44 @@ void vtkImageView3D::InternalUpdate()
         //shading and more than one dependent component (rgb) don't work well...
         //as vtk stands now in debug mode an assert makes this crash.
         this->VolumeProperty->ShadeOff();
-        this->ActorX->SetInputData ( input );
-        this->ActorY->SetInputData ( input );
-        this->ActorZ->SetInputData ( input );
+        this->ActorX->GetMapper()->SetInputConnection(appender->GetOutputPort());
+        this->ActorY->GetMapper()->SetInputConnection(appender->GetOutputPort());
+        this->ActorZ->GetMapper()->SetInputConnection(appender->GetOutputPort());
     }
     else
     {
         this->VolumeProperty->IndependentComponentsOn();
         this->VolumeProperty->ShadeOn();
-        this->PlanarWindowLevel->SetInputData(this->Input);
-        this->PlanarWindowLevel->SetOutputFormatToRGB();
-        this->PlanarWindowLevel->UpdateInformation();
-        this->PlanarWindowLevel->Update();
+        this->PlanarWindowLevelX->SetInputData(this->Input);
+        this->PlanarWindowLevelX->SetOutputFormatToRGB();
+        this->PlanarWindowLevelX->UpdateInformation();
+        this->PlanarWindowLevelX->Update();
+        this->PlanarWindowLevelY->SetInputData(this->Input);
+        this->PlanarWindowLevelY->SetOutputFormatToRGB();
+        this->PlanarWindowLevelY->UpdateInformation();
+        this->PlanarWindowLevelY->Update();
+        this->PlanarWindowLevelZ->SetInputData(this->Input);
+        this->PlanarWindowLevelZ->SetOutputFormatToRGB();
+        this->PlanarWindowLevelZ->UpdateInformation();
+        this->PlanarWindowLevelZ->Update();
         vtkScalarsToColors* lut = this->VolumeProperty->GetRGBTransferFunction(0);
         if (lut)
         {
-            this->PlanarWindowLevel->SetLookupTable(lut);
-            this->ActorX->SetInputData ( this->PlanarWindowLevel->GetOutput() );
-            this->ActorY->SetInputData ( this->PlanarWindowLevel->GetOutput() );
-            this->ActorZ->SetInputData ( this->PlanarWindowLevel->GetOutput() );
+            this->PlanarWindowLevelX->SetLookupTable(lut);
+            this->PlanarWindowLevelY->SetLookupTable(lut);
+            this->PlanarWindowLevelZ->SetLookupTable(lut);
+            this->ActorX->GetMapper()->SetInputConnection(this->PlanarWindowLevelX->GetOutputPort());
+            this->ActorY->GetMapper()->SetInputConnection(this->PlanarWindowLevelY->GetOutputPort());
+            this->ActorZ->GetMapper()->SetInputConnection(this->PlanarWindowLevelZ->GetOutputPort());
         }
     }
     // Read bounds and use these to place widget, rather than force whole dataset to be read.
     double bounds [6];
     this->GetInputBounds (bounds);
-    this->BoxWidget->SetInputData (input);
+    this->BoxWidget->SetInputConnection(appender->GetOutputPort());
     this->BoxWidget->PlaceWidget (bounds);
     this->Callback->Execute (this->BoxWidget, 0, bounds);
-    this->PlaneWidget->SetInputData (input);
+    this->PlaneWidget->SetInputConnection(appender->GetOutputPort());
     this->PlaneWidget->PlaceWidget(bounds);
     this->UpdateDisplayExtent();
 }
@@ -782,8 +799,10 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
     this->VolumeProperty->SetScalarOpacity(layer, opacity );
     if (layer == 0)
     {
-      //update planar window level only if we change layer 0
-      this->PlanarWindowLevel->SetLookupTable(color);
+       //update planar window level only if we change layer 0
+       this->PlanarWindowLevelX->SetLookupTable(color);
+       this->PlanarWindowLevelY->SetLookupTable(color);
+       this->PlanarWindowLevelZ->SetLookupTable(color);
     }
   }
 
@@ -1230,7 +1249,7 @@ public:
       {
         this->Actor->SetDisplayExtent (imagecaller->GetDisplayExtent());
         this->Actor->SetVisibility(imagecaller->GetVisibility());
-        this->Actor->SetInputData(imagecaller->GetInput());
+        this->Actor->GetMapper()->SetInputConnection(imagecaller->GetMapper()->GetOutputPort());
         this->Actor->SetInterpolate(imagecaller->GetInterpolate());
         this->Actor->SetOpacity(imagecaller->GetOpacity());
         this->Actor->SetUserMatrix (imagecaller->GetUserMatrix());
@@ -1276,75 +1295,6 @@ protected:
 };
 
 
-//----------------------------------------------------------------------------
-/**
- Add an extra plane to the 3D view. the argument is an image actor
- that supposingly follows a vtkImageView2D instance. The actor will
- be displayed in the 3D scene and will be fully synchronized with
- the actor it came from.
-*/
-void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
-{
-
-  if (!this->GetRenderer())
-    return;
-
-  ImageActorCallback* cbk = ImageActorCallback::New();
-  vtkImageActor* actor = vtkImageActor::New();
-  cbk->SetActor (actor);
-  actor->SetInputData(input->GetInput());
-  actor->SetDisplayExtent (input->GetDisplayExtent());
-  actor->SetUserMatrix (input->GetUserMatrix());
-  actor->SetInterpolate(input->GetInterpolate());
-  actor->SetOpacity(input->GetOpacity());
-  actor->SetVisibility (input->GetVisibility());
-
-  input->AddObserver (vtkCommand::ModifiedEvent, cbk);
-  if (input->GetInput())
-    input->GetInput()->AddObserver (vtkCommand::ModifiedEvent, cbk);
-
-  this->GetRenderer()->AddViewProp (actor);
-
-  this->ExtraPlaneCollection->AddItem (actor);
-  this->ExtraPlaneInputCollection->AddItem (input);
-
-  actor->Delete();
-  cbk->Delete();
-
-  /**
-     IMPORTANT NOTE
-
-     Adding a 2D actor in the 3D scene should be as simple as the next line
-
-     instead of the code above...
-
-     Unfortunately it does not seem to work properly. But this is something
-     we should investigate in because it would be much simpler
-  */
-//  this->GetRenderer()->AddActor (input);
-
-}
-
-//----------------------------------------------------------------------------
-void vtkImageView3D::RemoveExtraPlane (vtkImageActor* input)
-{
-  if (!this->GetRenderer())
-    return;
-  this->ExtraPlaneCollection->InitTraversal();
-  this->ExtraPlaneInputCollection->InitTraversal();
-  vtkProp3D* item = this->ExtraPlaneCollection->GetNextProp3D();
-  vtkProp3D* iteminput = this->ExtraPlaneInputCollection->GetNextProp3D();
-  while(item && iteminput)
-  {
-    if ( iteminput == input)
-    {
-      this->GetRenderer()->RemoveViewProp (item);
-      break;
-    }
-    item = this->ExtraPlaneCollection->GetNextProp3D();
-    iteminput = this->ExtraPlaneCollection->GetNextProp3D();
-  }
-}
 
 //! Get layer specific info
 vtkImage3DDisplay * vtkImageView3D::GetImage3DDisplayForLayer( int layer ) const
@@ -1387,8 +1337,10 @@ void vtkImageView3D::StoreColorTransferFunction(vtkColorTransferFunction *ctf, i
     this->VolumeProperty->SetColor(layer,ctf);
     if (layer ==0)
     {
-      //only update multiplanar windowlevel if layer 0 changes
-      this->PlanarWindowLevel->SetLookupTable(this->VolumeProperty->GetRGBTransferFunction());
+       //only update multiplanar windowlevel if layer 0 changes
+       this->PlanarWindowLevelX->SetLookupTable(this->VolumeProperty->GetRGBTransferFunction());
+       this->PlanarWindowLevelY->SetLookupTable(this->VolumeProperty->GetRGBTransferFunction());
+       this->PlanarWindowLevelZ->SetLookupTable(this->VolumeProperty->GetRGBTransferFunction());
     }
   }
 
