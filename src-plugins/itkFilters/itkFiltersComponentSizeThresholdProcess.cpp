@@ -30,20 +30,19 @@ public:
     double minimumSize;
 };
 
+const double itkFiltersComponentSizeThresholdProcess::defaultMinimumSize = 50.0;
+
 //-------------------------------------------------------------------------------------------
 
 itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess *parent) 
     : itkFiltersProcessBase(parent), d(new itkFiltersComponentSizeThresholdProcessPrivate)
 {  
-    descriptionText = tr("Size Threshold filter");
-
-    d->minimumSize = itkFiltersProcessBase::initMinimumSize;
+    d->minimumSize = defaultMinimumSize;
 }
 
 itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other)
-     : itkFiltersProcessBase(other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -58,6 +57,11 @@ itkFiltersComponentSizeThresholdProcess::~itkFiltersComponentSizeThresholdProces
 bool itkFiltersComponentSizeThresholdProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkComponentSizeThresholdProcess", createitkFiltersComponentSizeThresholdProcess);
+}
+
+QString itkFiltersComponentSizeThresholdProcess::description() const
+{
+    return tr("Size Threshold filter");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -76,9 +80,9 @@ int itkFiltersComponentSizeThresholdProcess::tryUpdate()
 {  
     int res = DTK_FAILURE;
 
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -143,12 +147,12 @@ template <class PixelType> int itkFiltersComponentSizeThresholdProcess::castToUI
     typedef itk::CastImageFilter< InputImageType, OutputImageType > CastFilterType;
 
     typename CastFilterType::Pointer  caster = CastFilterType::New();
-    typename InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(inputData->data()));
+    typename InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(getInputData()->data()));
     caster->SetInput(im);
     caster->Update();
 
-    inputData = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" );
-    inputData->setData(caster->GetOutput());
+    setInputData(medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" ));
+    getInputData()->setData(caster->GetOutput());
 
     return DTK_SUCCEED;
 }
@@ -160,7 +164,7 @@ template <class PixelType> int itkFiltersComponentSizeThresholdProcess::updatePr
 
     typedef itk::ConnectedComponentImageFilter <ImageType, OutputImageType> ConnectedComponentFilterType;
     typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
-    connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) (getInputData()->data() ) ) );
     connectedComponentFilter->Update();
 
     // RELABEL COMPONENTS according to their sizes (0:largest(background))
@@ -181,16 +185,16 @@ template <class PixelType> int itkFiltersComponentSizeThresholdProcess::updatePr
 
     thresholdFilter->Update();
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
 
-    outputData = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUShort3" );
-    outputData->setData ( thresholdFilter->GetOutput() );
+    setOutputData(medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUShort3" ));
+    getOutputData()->setData ( thresholdFilter->GetOutput() );
 
     QString newSeriesDescription = "connectedComponent " + QString::number(d->minimumSize);
-    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
 
     return DTK_SUCCEED;
 }

@@ -23,10 +23,14 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersAddProcess : public itkFiltersProcessBas
     Q_OBJECT
     
 public:
+    static const double defaultAddValue;
+
     itkFiltersAddProcess(itkFiltersAddProcess * parent = 0);
     itkFiltersAddProcess(const itkFiltersAddProcess& other);
     virtual ~itkFiltersAddProcess(void);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

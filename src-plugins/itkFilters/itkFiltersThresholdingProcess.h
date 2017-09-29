@@ -23,10 +23,16 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersThresholdingProcess : public itkFiltersP
     Q_OBJECT
     
 public:
+    static const double defaultThreshold;
+    static const int defaultOutsideValue;
+    static const bool defaultComparisonOperator;
+
     itkFiltersThresholdingProcess(itkFiltersThresholdingProcess * parent = 0);
     itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other);
     virtual ~itkFiltersThresholdingProcess(void);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

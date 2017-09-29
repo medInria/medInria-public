@@ -20,13 +20,6 @@
 itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent) 
     : itkMorphologicalFiltersProcessBase(parent)
 {  
-    descriptionText = tr("Dilate filter");
-}
-
-itkFiltersDilateProcess::itkFiltersDilateProcess(const itkFiltersDilateProcess& other)
-     : itkMorphologicalFiltersProcessBase(other)
-{
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -34,6 +27,11 @@ itkFiltersDilateProcess::itkFiltersDilateProcess(const itkFiltersDilateProcess& 
 bool itkFiltersDilateProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkDilateProcess", createitkFiltersDilateProcess);
+}
+
+QString itkFiltersDilateProcess::description() const
+{
+    return tr("Dilate filter");
 }
 
 // /////////////////////////////////////////////////////////////////

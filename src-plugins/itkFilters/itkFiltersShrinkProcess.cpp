@@ -26,22 +26,21 @@ public:
     unsigned int shrinkFactors[3];
 };
 
+const unsigned int itkFiltersShrinkProcess::defaultShrinkFactors[] = {1, 1, 1};
+
 //-------------------------------------------------------------------------------------------
 
 itkFiltersShrinkProcess::itkFiltersShrinkProcess(itkFiltersShrinkProcess *parent)
     : itkFiltersProcessBase(parent), d(new itkFiltersShrinkProcessPrivate)
 {   
-    descriptionText = tr("ITK shrink filter");
-
-    d->shrinkFactors[0] = itkFiltersProcessBase::initShrinkFactors(0);
-    d->shrinkFactors[1] = itkFiltersProcessBase::initShrinkFactors(1);
-    d->shrinkFactors[2] = itkFiltersProcessBase::initShrinkFactors(2);
+    d->shrinkFactors[0] = defaultShrinkFactors[0];
+    d->shrinkFactors[1] = defaultShrinkFactors[1];
+    d->shrinkFactors[2] = defaultShrinkFactors[2];
 }
 
 itkFiltersShrinkProcess::itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other)
-     : itkFiltersProcessBase(other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -56,6 +55,13 @@ itkFiltersShrinkProcess::~itkFiltersShrinkProcess( void )
 bool itkFiltersShrinkProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkShrinkProcess", createitkFiltersShrinkProcess);
+}
+
+//-------------------------------------------------------------------------------------------
+
+QString itkFiltersShrinkProcess::description() const
+{
+    return tr("ITK shrink filter");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -85,9 +91,9 @@ int itkFiltersShrinkProcess::tryUpdate()
 {   
     int res = DTK_FAILURE;
 
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -144,21 +150,21 @@ template <class PixelType> int itkFiltersShrinkProcess::updateProcess()
     typedef itk::ShrinkImageFilter< ImageType, ImageType >  ShrinkFilterType;
     typename ShrinkFilterType::Pointer shrinkFilter = ShrinkFilterType::New();
 
-    shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     shrinkFilter->SetShrinkFactors(d->shrinkFactors);
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     shrinkFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     shrinkFilter->Update();
 
-    outputData->setData ( shrinkFilter->GetOutput() );
+    getOutputData()->setData ( shrinkFilter->GetOutput() );
 
     //Set output description metadata
     QString newSeriesDescription = "shrink filter " + QString::number(d->shrinkFactors[0]) + "," + QString::number(d->shrinkFactors[1]) + "," + QString::number(d->shrinkFactors[2]);
-    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
 
     return DTK_SUCCEED;
 }

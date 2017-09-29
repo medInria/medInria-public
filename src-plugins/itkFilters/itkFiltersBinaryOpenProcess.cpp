@@ -15,18 +15,16 @@
 itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenProcess *parent)
     : itkMorphologicalFiltersProcessBase(parent)
 {
-    descriptionText = tr("Binary Open filter");
-}
-
-itkFiltersBinaryOpenProcess::itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other)
-     : itkMorphologicalFiltersProcessBase(other)
-{
-
 }
 
 bool itkFiltersBinaryOpenProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkBinaryOpenProcess", createitkFiltersBinaryOpenProcess);
+}
+
+QString itkFiltersBinaryOpenProcess::description() const
+{
+    return tr("Binary Open filter");
 }
 
 // /////////////////////////////////////////////////////////////////

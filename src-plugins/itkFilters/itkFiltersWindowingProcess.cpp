@@ -29,21 +29,22 @@ public:
     double maximumOutputIntensityValue;
 };
 
+const double itkFiltersWindowingProcess::defaultMinimumIntensityValue = 0.0;
+const double itkFiltersWindowingProcess::defaultMaximumIntensityValue = 255.0;
+
 //-------------------------------------------------------------------------------------------
 
 itkFiltersWindowingProcess::itkFiltersWindowingProcess(itkFiltersWindowingProcess *parent) 
     : itkFiltersProcessBase(parent), d(new itkFiltersWindowingProcessPrivate)
 {   
-    descriptionText = tr("ITK intensity windowing filter");
-
-    d->minimumIntensityValue = itkFiltersProcessBase::initMinimumIntensityValue;
-    d->maximumIntensityValue = itkFiltersProcessBase::initMaximumIntensityValue;
-    d->minimumOutputIntensityValue = itkFiltersProcessBase::initMinimumIntensityValue;
-    d->maximumOutputIntensityValue = itkFiltersProcessBase::initMaximumIntensityValue;
+    d->minimumIntensityValue = defaultMinimumIntensityValue;
+    d->maximumIntensityValue = defaultMaximumIntensityValue;
+    d->minimumOutputIntensityValue = defaultMinimumIntensityValue;
+    d->maximumOutputIntensityValue = defaultMaximumIntensityValue;
 }
 
 itkFiltersWindowingProcess::itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other)
-     : itkFiltersProcessBase(other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
 
 }
@@ -60,6 +61,13 @@ itkFiltersWindowingProcess::~itkFiltersWindowingProcess( void )
 bool itkFiltersWindowingProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkWindowingProcess", createitkFiltersWindowingProcess);
+}
+
+//-------------------------------------------------------------------------------------------
+
+QString itkFiltersWindowingProcess::description() const
+{
+    return tr("ITK intensity windowing filter");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -92,9 +100,9 @@ int itkFiltersWindowingProcess::tryUpdate()
 {   
     int res = DTK_FAILURE;
 
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -151,25 +159,25 @@ template <class PixelType> int itkFiltersWindowingProcess::updateProcess()
     typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  WindowingFilterType;
     typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
 
-    windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
     windowingFilter->SetWindowMinimum ( ( PixelType ) d->minimumIntensityValue );
     windowingFilter->SetWindowMaximum ( ( PixelType ) d->maximumIntensityValue );
     windowingFilter->SetOutputMinimum ( ( PixelType ) d->minimumOutputIntensityValue );
     windowingFilter->SetOutputMaximum ( ( PixelType ) d->maximumOutputIntensityValue );
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     windowingFilter->Update();
 
-    outputData->setData ( windowingFilter->GetOutput() );
+    getOutputData()->setData ( windowingFilter->GetOutput() );
 
     //Set output description metadata
     QString newSeriesDescription = "windowing " + QString::number(d->minimumIntensityValue)
             + " " + QString::number(d->maximumIntensityValue);
-    medUtilities::setDerivedMetaData(outputData, inputData, newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
 
     return DTK_SUCCEED;
 }

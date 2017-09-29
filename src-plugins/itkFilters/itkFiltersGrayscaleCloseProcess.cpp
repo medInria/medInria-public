@@ -15,18 +15,16 @@
 itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(itkFiltersGrayscaleCloseProcess *parent)
     : itkMorphologicalFiltersProcessBase(parent)
 {
-    descriptionText = tr("Grayscale Close filter");
-}
-
-itkFiltersGrayscaleCloseProcess::itkFiltersGrayscaleCloseProcess(const itkFiltersGrayscaleCloseProcess& other)
-     : itkMorphologicalFiltersProcessBase(other)
-{
-
 }
 
 bool itkFiltersGrayscaleCloseProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkGrayscaleCloseProcess", createitkFiltersGrayscaleCloseProcess);
+}
+
+QString itkFiltersGrayscaleCloseProcess::description() const
+{
+    return tr("Grayscale Close filter");
 }
 
 // /////////////////////////////////////////////////////////////////

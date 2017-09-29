@@ -25,13 +25,6 @@
 itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent) 
     : itkFiltersProcessBase(parent)
 {
-    descriptionText = tr("ITK median filter");
-}
-
-itkFiltersMedianProcess::itkFiltersMedianProcess(const itkFiltersMedianProcess& other)
-     : itkFiltersProcessBase(other)
-{
-
 }
 
 //-------------------------------------------------------------------------------------------
@@ -43,13 +36,20 @@ bool itkFiltersMedianProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersMedianProcess::description() const
+{
+    return tr("ITK median filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 int itkFiltersMedianProcess::tryUpdate()
 {
     int res = DTK_FAILURE;
 
-    if ( inputData )
+    if ( getInputData() )
     {
-        QString id = inputData->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
@@ -106,19 +106,19 @@ template <class PixelType> int itkFiltersMedianProcess::updateProcess()
     typedef itk::MedianImageFilter< ImageType, ImageType >  MedianFilterType;
     typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
 
-    medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( inputData->data() ) ) );
+    medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
 
-    callback = itk::CStyleCommand::New();
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     medianFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     medianFilter->Update();
 
-    outputData->setData ( medianFilter->GetOutput() );
+    getOutputData()->setData ( medianFilter->GetOutput() );
 
     //Set output description metadata
-    medUtilities::setDerivedMetaData(outputData, inputData, "median filter");
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), "median filter");
 
     return DTK_SUCCEED;
 }

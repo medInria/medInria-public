@@ -23,10 +23,14 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMultiplyProcess : public itkFiltersProce
     Q_OBJECT
     
 public:
+    static const double defaultMultiplyFactor;
+
     itkFiltersMultiplyProcess(itkFiltersMultiplyProcess * parent = 0);
     itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other);
     virtual ~itkFiltersMultiplyProcess(void);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

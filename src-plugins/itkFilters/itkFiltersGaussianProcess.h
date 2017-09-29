@@ -23,10 +23,14 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGaussianProcess : public itkFiltersProce
     Q_OBJECT
     
 public:
+    static const double defaultSigma;
+
     itkFiltersGaussianProcess(itkFiltersGaussianProcess * parent = 0);
     itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other);
     virtual ~itkFiltersGaussianProcess(void);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

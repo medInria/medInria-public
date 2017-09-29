@@ -23,8 +23,9 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersInvertProcess : public itkFiltersProcess
     
 public:
     itkFiltersInvertProcess(itkFiltersInvertProcess * parent = 0);
-    itkFiltersInvertProcess(const itkFiltersInvertProcess& other);
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 

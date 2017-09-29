@@ -17,19 +17,23 @@
 
 #include <medAbstractDataFactory.h>
 
+class itkFiltersProcessBasePrivate
+{
+public:
+    dtkSmartPointer<medAbstractImageData> inputData;
+    dtkSmartPointer<medAbstractImageData> outputData;
+};
+
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
-    : medAbstractProcess(parent)
+    : medAbstractProcess(parent), d(new itkFiltersProcessBasePrivate)
 {  
-    inputData = NULL;
-    outputData = NULL;
-    
-    descriptionText = "";
+    d->inputData = NULL;
+    d->outputData = NULL;
 }
 
 itkFiltersProcessBase::itkFiltersProcessBase(const itkFiltersProcessBase& other)
-     : medAbstractProcess(other)
+     : medAbstractProcess(other), d(other.d)
 {
-
 }
 
 itkFiltersProcessBase& itkFiltersProcessBase::operator = (const itkFiltersProcessBase& other)
@@ -42,11 +46,6 @@ void itkFiltersProcessBase::emitProgress(int progress)
     emit progressed(progress);
 }
 
-QString itkFiltersProcessBase::description()
-{ 
-    return descriptionText;
-}
-
 void itkFiltersProcessBase::setInput(medAbstractData *data, int channel)
 {
     if (!data)
@@ -54,13 +53,13 @@ void itkFiltersProcessBase::setInput(medAbstractData *data, int channel)
    
     QString identifier = data->identifier();
     
-    outputData = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
-    inputData = dynamic_cast<medAbstractImageData*> (data);
+    d->outputData = dynamic_cast<medAbstractImageData*> (medAbstractDataFactory::instance()->create(identifier));
+    d->inputData = dynamic_cast<medAbstractImageData*> (data);
 }
 
 medAbstractData * itkFiltersProcessBase::output ( void )
 {   
-    return outputData;
+    return d->outputData;
 }
 
 int itkFiltersProcessBase::update()
@@ -88,4 +87,24 @@ void itkFiltersProcessBase::eventCallback ( itk::Object *caller, const itk::Even
     if ( !source ) { dtkWarn() << "Source is null"; }
 
     source->emitProgress((int) (processObject->GetProgress() * 100));
+}
+
+dtkSmartPointer<medAbstractImageData> itkFiltersProcessBase::getInputData()
+{
+    return d->inputData;
+}
+
+void itkFiltersProcessBase::setInputData(dtkSmartPointer<medAbstractImageData> inputData)
+{
+    d->inputData = inputData;
+}
+
+dtkSmartPointer<medAbstractImageData> itkFiltersProcessBase::getOutputData()
+{
+    return d->outputData;
+}
+
+void itkFiltersProcessBase::setOutputData(dtkSmartPointer<medAbstractImageData> outputData)
+{
+    d->outputData = outputData;
 }

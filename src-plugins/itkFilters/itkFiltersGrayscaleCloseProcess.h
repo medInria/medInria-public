@@ -17,8 +17,10 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGrayscaleCloseProcess : public itkMorpho
 
 public:
     itkFiltersGrayscaleCloseProcess(itkFiltersGrayscaleCloseProcess * parent = 0);
-    itkFiltersGrayscaleCloseProcess(const itkFiltersGrayscaleCloseProcess& other);
+
     static bool registered ( void );
+
+    virtual QString description(void) const;
 };
 
 dtkAbstractProcess * createitkFiltersGrayscaleCloseProcess(void);

@@ -21,8 +21,9 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkMorphologicalFi
     
 public:
     itkFiltersErodeProcess(itkFiltersErodeProcess * parent = 0);
-    itkFiltersErodeProcess(const itkFiltersErodeProcess& other);
     static bool registered ( void );
+
+    virtual QString description(void) const;
 };
 
 dtkAbstractProcess * createitkFiltersErodeProcess(void);

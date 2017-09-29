@@ -17,8 +17,10 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersBinaryCloseProcess : public itkMorpholog
 
 public:
     itkFiltersBinaryCloseProcess(itkFiltersBinaryCloseProcess * parent = 0);
-    itkFiltersBinaryCloseProcess(const itkFiltersBinaryCloseProcess& other);
+
     static bool registered ( void );
+
+    virtual QString description(void) const;
 };
 
 dtkAbstractProcess * createitkFiltersBinaryCloseProcess(void);
