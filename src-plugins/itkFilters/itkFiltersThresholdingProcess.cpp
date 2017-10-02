@@ -14,39 +14,42 @@
 #include <itkFiltersThresholdingProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
 
 #include <itkImage.h>
-#include <itkCommand.h>
-#include <itkSmoothingRecursiveGaussianImageFilter.h>
+#include <itkThresholdImageFilter.h>
 
-#include <itkExceptionObject.h>
-#include <itkFiltersThresholdingProcess_p.h>
+#include <medUtilities.h>
+
+class itkFiltersThresholdingProcessPrivate
+{
+public:
+    double threshold;
+    int outsideValue;
+    bool comparisonOperator;
+};
+
+const double itkFiltersThresholdingProcess::defaultThreshold = 200.0;
+const int itkFiltersThresholdingProcess::defaultOutsideValue = 0;
+const bool itkFiltersThresholdingProcess::defaultComparisonOperator = true;
 
 itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(itkFiltersThresholdingProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersThresholdingProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersThresholdingProcess);
-    
-    d->filter = this;
-    d->output = NULL; 
-    d->outsideValue =0;
-    d->threshold = 0;
-    d->comparisonOperator = true;
-    
-    d->description = tr("ITK thresholding filter");
+    : itkFiltersProcessBase(parent), d(new itkFiltersThresholdingProcessPrivate)
+{   
+    d->threshold = defaultThreshold;
+    d->outsideValue = defaultOutsideValue;
+    d->comparisonOperator = defaultComparisonOperator;
 }
 
-
-itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersThresholdingProcessPrivate(*other.d_func()), other)
+itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
 }
+
+//-------------------------------------------------------------------------------------------
 
 itkFiltersThresholdingProcess::~itkFiltersThresholdingProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -58,12 +61,18 @@ bool itkFiltersThresholdingProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersThresholdingProcess::description() const
+{
+    return tr("ITK thresholding filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 void itkFiltersThresholdingProcess::setParameter(double data, int channel)
 {
     if (channel > 2)
         return;
 
-    DTK_D(itkFiltersThresholdingProcess);
     if (channel == 0)
         d->threshold = data;
     if (channel == 1)
@@ -75,54 +84,52 @@ void itkFiltersThresholdingProcess::setParameter(double data, int channel)
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersThresholdingProcess::tryUpdate()
-{
-    DTK_D(itkFiltersThresholdingProcess);
-    
+{   
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( getInputData() )
     {
-        QString id = d->input->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -131,6 +138,33 @@ int itkFiltersThresholdingProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersThresholdingProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::ThresholdImageFilter < ImageType>  ThresholdImageFilterType;
+    typename ThresholdImageFilterType::Pointer thresholdFilter = ThresholdImageFilterType::New();
+    thresholdFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    if (d->comparisonOperator)
+        thresholdFilter->SetUpper( d->threshold ); // <= threshold
+    else
+        thresholdFilter->SetLower( d->threshold );
+    thresholdFilter->SetOutsideValue( d->outsideValue );
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    thresholdFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    thresholdFilter->Update();
+
+    getOutputData()->setData ( thresholdFilter->GetOutput() );
+
+    QString newSeriesDescription = "threshold " + QString::number(d->threshold);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -9,13 +9,7 @@
 
 #pragma once
 
-#include <medAbstractData.h>
 #include <itkMorphologicalFiltersProcessBase.h>
-
-#include <itkFiltersPluginExport.h>
-
-class itkMorphologicalFiltersProcessBasePrivate;
-class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersGrayscaleOpenProcess : public itkMorphologicalFiltersProcessBase
 {
@@ -23,10 +17,10 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGrayscaleOpenProcess : public itkMorphol
 
 public:
     itkFiltersGrayscaleOpenProcess(itkFiltersGrayscaleOpenProcess * parent = 0);
-    itkFiltersGrayscaleOpenProcess(const itkFiltersGrayscaleOpenProcess& other);
-    virtual ~itkFiltersGrayscaleOpenProcess(void);
 
     static bool registered ( void );
+
+    virtual QString description(void) const;
 };
 
 dtkAbstractProcess * createitkFiltersGrayscaleOpenProcess(void);

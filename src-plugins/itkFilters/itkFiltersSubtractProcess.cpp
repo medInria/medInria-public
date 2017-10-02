@@ -14,29 +14,30 @@
 #include <itkFiltersSubtractProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
+#include <itkImage.h>
+#include <itkSubtractImageFilter.h>
 
+#include <medUtilities.h>
 
-#include <itkFiltersSubtractProcess_p.h>
+class itkFiltersSubtractProcessPrivate
+{
+public:
+    double subtractValue;
+};
+
+const double itkFiltersSubtractProcess::defaultSubtractValue = 100.0;
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersSubtractProcess::itkFiltersSubtractProcess(itkFiltersSubtractProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersSubtractProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersSubtractProcess);
-    
-    d->filter = this;
-    d->output = NULL;
-    
-    d->description = tr("ITK subtract constant filter");
+    : itkFiltersProcessBase(parent), d(new itkFiltersSubtractProcessPrivate)
+{   
+    d->subtractValue = defaultSubtractValue;
 }
 
-
-itkFiltersSubtractProcess::itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersSubtractProcessPrivate(*other.d_func()), other)
+itkFiltersSubtractProcess::itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
 }
 
@@ -44,6 +45,7 @@ itkFiltersSubtractProcess::itkFiltersSubtractProcess(const itkFiltersSubtractPro
 
 itkFiltersSubtractProcess::~itkFiltersSubtractProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -55,12 +57,17 @@ bool itkFiltersSubtractProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersSubtractProcess::description() const
+{
+    return tr("ITK subtract constant filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 void itkFiltersSubtractProcess::setParameter(double data, int channel)
 {
     if (channel != 0)
         return;
-    
-    DTK_D(itkFiltersSubtractProcess);
     
     d->subtractValue = data;
 }
@@ -68,54 +75,52 @@ void itkFiltersSubtractProcess::setParameter(double data, int channel)
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersSubtractProcess::tryUpdate()
-{
-    DTK_D(itkFiltersSubtractProcess);
-    
+{   
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( getInputData() )
     {
-        QString id = d->input->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -124,6 +129,31 @@ int itkFiltersSubtractProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersSubtractProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  SubtractFilterType;
+    typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
+
+    subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    subtractFilter->SetConstant ( d->subtractValue );
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    subtractFilter->Update();
+
+    getOutputData()->setData ( subtractFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = "subtract filter " + QString::number(d->subtractValue);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

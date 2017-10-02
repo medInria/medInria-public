@@ -14,27 +14,30 @@
 #include <itkFiltersMultiplyProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
-#include <itkFiltersMultiplyProcess_p.h>
+#include <itkImage.h>
+#include <itkMultiplyImageFilter.h>
+
+#include <medUtilities.h>
+
+class itkFiltersMultiplyProcessPrivate
+{
+public:
+    double multiplyFactor;
+};
+
+const double itkFiltersMultiplyProcess::defaultMultiplyFactor = 2.0;
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(itkFiltersMultiplyProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersMultiplyProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersMultiplyProcess);
-    
-    d->filter = this;
-    d->output = NULL;
-    
-     d->description = tr("ITK multiply by constant filter");
+    : itkFiltersProcessBase(parent), d(new itkFiltersMultiplyProcessPrivate)
+{  
+    d->multiplyFactor = defaultMultiplyFactor;
 }
 
-
-itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersMultiplyProcessPrivate(*other.d_func()), other)
+itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
 }
 
@@ -42,6 +45,7 @@ itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(const itkFiltersMultiplyPro
 
 itkFiltersMultiplyProcess::~itkFiltersMultiplyProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -53,12 +57,17 @@ bool itkFiltersMultiplyProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersMultiplyProcess::description() const
+{
+    return tr("ITK multiply by constant filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 void itkFiltersMultiplyProcess::setParameter(double data, int channel)
 {
     if (channel != 0)
         return;
- 
-    DTK_D(itkFiltersMultiplyProcess);
     
     d->multiplyFactor = data;
 }
@@ -66,54 +75,52 @@ void itkFiltersMultiplyProcess::setParameter(double data, int channel)
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersMultiplyProcess::tryUpdate()
-{
-    DTK_D(itkFiltersMultiplyProcess);
-    
+{  
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( getInputData() )
     {
-        QString id = d->input->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -122,6 +129,31 @@ int itkFiltersMultiplyProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersMultiplyProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::MultiplyImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  MultiplyFilterType;
+    typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
+
+    multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    multiplyFilter->SetConstant ( d->multiplyFactor );
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    multiplyFilter->Update();
+
+    getOutputData()->setData ( multiplyFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = "multiply filter " + QString::number(d->multiplyFactor);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -8,33 +8,23 @@
 =========================================================================*/
 
 #include <itkFiltersGrayscaleOpenProcess.h>
-#include <itkMorphologicalFiltersProcessBase_p.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersGrayscaleOpenProcess::itkFiltersGrayscaleOpenProcess(itkFiltersGrayscaleOpenProcess *parent)
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
-{
-    DTK_D(itkMorphologicalFiltersProcessBase);
-
-    d->filter = this;
-    d->description = tr("Grayscale Open filter");
-}
-
-itkFiltersGrayscaleOpenProcess::itkFiltersGrayscaleOpenProcess(const itkFiltersGrayscaleOpenProcess& other)
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
-{
-}
-
-itkFiltersGrayscaleOpenProcess::~itkFiltersGrayscaleOpenProcess( void )
+    : itkMorphologicalFiltersProcessBase(parent)
 {
 }
 
 bool itkFiltersGrayscaleOpenProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkGrayscaleOpenProcess", createitkFiltersGrayscaleOpenProcess);
+}
+
+QString itkFiltersGrayscaleOpenProcess::description() const
+{
+    return tr("Grayscale Open filter");
 }
 
 // /////////////////////////////////////////////////////////////////

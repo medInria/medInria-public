@@ -13,10 +13,7 @@
 
 #pragma once
 
-#include <medAbstractData.h>
 #include <itkFiltersProcessBase.h>
-
-#include <itkFiltersPluginExport.h>
 
 class medAbstractData;
 class itkFiltersSubtractProcessPrivate;
@@ -24,21 +21,27 @@ class itkFiltersSubtractProcessPrivate;
 class ITKFILTERSPLUGIN_EXPORT itkFiltersSubtractProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
+
 public:
+    static const double defaultSubtractValue;
+
     itkFiltersSubtractProcess(itkFiltersSubtractProcess * parent = 0);
     itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other);
     virtual ~itkFiltersSubtractProcess(void);
-    
     static bool registered(void);
+
+    virtual QString description(void) const;
     
 public slots:
     void setParameter(double data, int channel);
     int tryUpdate();
     
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersSubtractProcess)
-};
+protected:
+    template <class PixelType> int updateProcess();
 
+private:
+    itkFiltersSubtractProcessPrivate *d;
+};
 
 dtkAbstractProcess * createitkFiltersSubtractProcess(void);
 

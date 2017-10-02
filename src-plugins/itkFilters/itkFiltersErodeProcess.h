@@ -13,13 +13,7 @@
 
 #pragma once
 
-#include <medAbstractData.h>
 #include <itkMorphologicalFiltersProcessBase.h>
-
-#include <itkFiltersPluginExport.h>
-
-class itkMorphologicalFiltersProcessBasePrivate;
-class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkMorphologicalFiltersProcessBase
 {
@@ -27,10 +21,9 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersErodeProcess : public itkMorphologicalFi
     
 public:
     itkFiltersErodeProcess(itkFiltersErodeProcess * parent = 0);
-    itkFiltersErodeProcess(const itkFiltersErodeProcess& other);
-    virtual ~itkFiltersErodeProcess(void);
-
     static bool registered ( void );
+
+    virtual QString description(void) const;
 };
 
 dtkAbstractProcess * createitkFiltersErodeProcess(void);

@@ -14,11 +14,7 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
 
-#include <itkFiltersPluginExport.h>
-
-class itkFiltersMedianProcessPrivate;
 class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public itkFiltersProcessBase
@@ -27,19 +23,18 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public itkFiltersProcess
     
 public:
     itkFiltersMedianProcess(itkFiltersMedianProcess * parent = 0);
-    itkFiltersMedianProcess(const itkFiltersMedianProcess& other);
-    virtual ~itkFiltersMedianProcess(void);
 
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 
     int tryUpdate();
 
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersMedianProcess)
+protected:
+    template <class PixelType> int updateProcess();
 };
-
 
 dtkAbstractProcess * createitkFiltersMedianProcess(void);
 

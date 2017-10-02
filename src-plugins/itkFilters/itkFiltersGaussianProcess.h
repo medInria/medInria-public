@@ -14,9 +14,6 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
-
-#include <itkFiltersPluginExport.h>
 
 class itkFiltersGaussianProcessPrivate;
 class medAbstractData;
@@ -26,19 +23,25 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGaussianProcess : public itkFiltersProce
     Q_OBJECT
     
 public:
+    static const double defaultSigma;
+
     itkFiltersGaussianProcess(itkFiltersGaussianProcess * parent = 0);
     itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other);
     virtual ~itkFiltersGaussianProcess(void);
-
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 
     void setParameter ( double  data, int channel );
     int tryUpdate();
 
+protected:
+    template <class PixelType> int updateProcess();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersGaussianProcess)
+    itkFiltersGaussianProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersGaussianProcess(void);

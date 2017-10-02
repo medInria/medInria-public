@@ -14,34 +14,16 @@
 #include <itkFiltersMedianProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
+#include <itkImage.h>
+#include <itkMedianImageFilter.h>
 
-#include <itkFiltersMedianProcess_p.h>
+#include <medUtilities.h>
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersMedianProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersMedianProcess);
-    
-    d->filter = this;
-    d->output = NULL;
-    
-     d->description = tr("ITK median filter");
-}
-
-
-itkFiltersMedianProcess::itkFiltersMedianProcess(const itkFiltersMedianProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersMedianProcessPrivate(*other.d_func()), other)
-{
-}
-
-//-------------------------------------------------------------------------------------------
-
-itkFiltersMedianProcess::~itkFiltersMedianProcess( void )
+    : itkFiltersProcessBase(parent)
 {
 }
 
@@ -54,55 +36,60 @@ bool itkFiltersMedianProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersMedianProcess::description() const
+{
+    return tr("ITK median filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 int itkFiltersMedianProcess::tryUpdate()
 {
-    DTK_D(itkFiltersMedianProcess);
-    
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( getInputData() )
     {
-        QString id = d->input->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -111,6 +98,29 @@ int itkFiltersMedianProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersMedianProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::MedianImageFilter< ImageType, ImageType >  MedianFilterType;
+    typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
+
+    medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    medianFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    medianFilter->Update();
+
+    getOutputData()->setData ( medianFilter->GetOutput() );
+
+    //Set output description metadata
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), "median filter");
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

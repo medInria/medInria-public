@@ -14,9 +14,6 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
-
-#include <itkFiltersPluginExport.h>
 
 class itkFiltersMultiplyProcessPrivate;
 class medAbstractData;
@@ -26,21 +23,26 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMultiplyProcess : public itkFiltersProce
     Q_OBJECT
     
 public:
+    static const double defaultMultiplyFactor;
+
     itkFiltersMultiplyProcess(itkFiltersMultiplyProcess * parent = 0);
     itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other);
     virtual ~itkFiltersMultiplyProcess(void);
-
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 
     void setParameter ( double  data, int channel );
     int tryUpdate();
 
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersMultiplyProcess)
-};
+protected:
+    template <class PixelType> int updateProcess();
 
+private:
+    itkFiltersMultiplyProcessPrivate *d;
+};
 
 dtkAbstractProcess * createitkFiltersMultiplyProcess(void);
 

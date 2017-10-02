@@ -9,13 +9,7 @@
 
 #pragma once
 
-#include <medAbstractData.h>
 #include <itkMorphologicalFiltersProcessBase.h>
-
-#include <itkFiltersPluginExport.h>
-
-class itkMorphologicalFiltersProcessBasePrivate;
-class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersBinaryOpenProcess : public itkMorphologicalFiltersProcessBase
 {
@@ -23,10 +17,10 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersBinaryOpenProcess : public itkMorphologi
 
 public:
     itkFiltersBinaryOpenProcess(itkFiltersBinaryOpenProcess * parent = 0);
-    itkFiltersBinaryOpenProcess(const itkFiltersBinaryOpenProcess& other);
-    virtual ~itkFiltersBinaryOpenProcess(void);
 
     static bool registered ( void );
+
+    virtual QString description(void) const;
 };
 
 dtkAbstractProcess * createitkFiltersBinaryOpenProcess(void);

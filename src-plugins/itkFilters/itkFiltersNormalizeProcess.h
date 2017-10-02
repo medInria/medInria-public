@@ -14,11 +14,7 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
 
-#include <itkFiltersPluginExport.h>
-
-class itkFiltersNormalizeProcessPrivate;
 class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersNormalizeProcess : public itkFiltersProcessBase
@@ -27,17 +23,17 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersNormalizeProcess : public itkFiltersProc
     
 public:
     itkFiltersNormalizeProcess(itkFiltersNormalizeProcess * parent = 0);
-    itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other);
-    virtual ~itkFiltersNormalizeProcess(void);
 
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 
     int tryUpdate();
 
-private:
-    DTK_DECLARE_PRIVATE(itkFiltersNormalizeProcess)
+protected:
+    template <class PixelType> int updateProcess();
 };
 
 dtkAbstractProcess * createitkFiltersNormalizeProcess(void);

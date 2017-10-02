@@ -14,31 +14,11 @@
 #include <itkFiltersErodeProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-
-#include <medMetaDataKeys.h>
-#include <itkMorphologicalFiltersProcessBase_p.h>
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersErodeProcess::itkFiltersErodeProcess(itkFiltersErodeProcess *parent) 
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(this), parent)
-{
-    DTK_D(itkMorphologicalFiltersProcessBase);
-
-    d->filter = this;
-    d->description = tr("Erode filter");
-}
-
-
-itkFiltersErodeProcess::itkFiltersErodeProcess(const itkFiltersErodeProcess& other) 
-    : itkMorphologicalFiltersProcessBase(*new itkMorphologicalFiltersProcessBasePrivate(*other.d_func()), other)
-{
-}
-
-//-------------------------------------------------------------------------------------------
-
-itkFiltersErodeProcess::~itkFiltersErodeProcess( void )
+    : itkMorphologicalFiltersProcessBase(parent)
 {
 }
 
@@ -49,6 +29,10 @@ bool itkFiltersErodeProcess::registered( void )
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkErodeProcess", createitkFiltersErodeProcess);
 }
 
+QString itkFiltersErodeProcess::description() const
+{
+    return tr("Erode filter");
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation

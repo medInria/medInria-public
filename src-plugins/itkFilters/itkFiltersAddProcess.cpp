@@ -11,31 +11,33 @@
 
 =========================================================================*/
 
-#include <itkFiltersAddProcess.h>
+#include "itkFiltersAddProcess.h"
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
+#include <itkAddImageFilter.h>
+#include <itkImage.h>
 
-#include <itkFiltersAddProcess_p.h>
+#include <medUtilities.h>
+
+class itkFiltersAddProcessPrivate
+{
+public:
+    double addValue;
+};
+
+const double itkFiltersAddProcess::defaultAddValue = 100.0;
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersAddProcess::itkFiltersAddProcess(itkFiltersAddProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersAddProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersAddProcess);
-    
-    d->filter = this;
-    d->output = NULL;
-    
-    d->description = tr("ITK add constant filter");
+    : itkFiltersProcessBase(parent), d(new itkFiltersAddProcessPrivate)
+{  
+    d->addValue = defaultAddValue;
 }
 
-
-itkFiltersAddProcess::itkFiltersAddProcess(const itkFiltersAddProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersAddProcessPrivate(*other.d_func()), other)
+itkFiltersAddProcess::itkFiltersAddProcess(const itkFiltersAddProcess& other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
 }
 
@@ -43,6 +45,7 @@ itkFiltersAddProcess::itkFiltersAddProcess(const itkFiltersAddProcess& other)
 
 itkFiltersAddProcess::~itkFiltersAddProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -54,12 +57,17 @@ bool itkFiltersAddProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersAddProcess::description() const
+{
+    return tr("ITK add constant filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 void itkFiltersAddProcess::setParameter(double data, int channel)
 {
     if (channel != 0)
         return;
-    
-    DTK_D(itkFiltersAddProcess);
     
     d->addValue = data;
 }
@@ -68,53 +76,51 @@ void itkFiltersAddProcess::setParameter(double data, int channel)
 
 int itkFiltersAddProcess::tryUpdate()
 {
-    DTK_D(itkFiltersAddProcess);
-    
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( getInputData() )
     {
-        QString id = d->input->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -125,6 +131,29 @@ int itkFiltersAddProcess::tryUpdate()
     return res;
 }
 
+template <class PixelType> int itkFiltersAddProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::AddImageFilter<ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType> AddFilterType;
+    typename AddFilterType::Pointer addFilter = AddFilterType::New();
+
+    addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    addFilter->SetConstant ( d->addValue );
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    addFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    addFilter->Update();
+
+    getOutputData()->setData ( addFilter->GetOutput() );
+
+    QString newSeriesDescription = "add filter " + QString::number(d->addValue);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+
+    return DTK_SUCCEED;
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation

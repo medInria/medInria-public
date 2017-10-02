@@ -14,28 +14,30 @@
 #include <itkFiltersDivideProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
+#include <itkDivideImageFilter.h>
+#include <itkImage.h>
 
-#include <itkFiltersDivideProcess_p.h>
+#include <medUtilities.h>
+
+class itkFiltersDivideProcessPrivate
+{
+public:
+    double divideFactor;
+};
+
+const double itkFiltersDivideProcess::defaultDivideFactor = 2.0;
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersDivideProcess::itkFiltersDivideProcess(itkFiltersDivideProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersDivideProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersDivideProcess);
-    
-    d->filter = this;
-    d->output = NULL;
-    
-    d->description = tr("ITK divide by constant filter");
+    : itkFiltersProcessBase(parent), d(new itkFiltersDivideProcessPrivate)
+{  
+    d->divideFactor = defaultDivideFactor;
 }
 
-
-itkFiltersDivideProcess::itkFiltersDivideProcess(const itkFiltersDivideProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersDivideProcessPrivate(*other.d_func()), other)
+itkFiltersDivideProcess::itkFiltersDivideProcess(const itkFiltersDivideProcess& other)
+     : itkFiltersProcessBase(other), d(other.d)
 {
 }
 
@@ -43,6 +45,7 @@ itkFiltersDivideProcess::itkFiltersDivideProcess(const itkFiltersDivideProcess& 
 
 itkFiltersDivideProcess::~itkFiltersDivideProcess( void )
 {
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -54,12 +57,18 @@ bool itkFiltersDivideProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
+QString itkFiltersDivideProcess::description() const
+{
+    return tr("ITK divide by constant filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
 void itkFiltersDivideProcess::setParameter(double data, int channel)
 {
     if (channel != 0)
         return;
     
-    DTK_D(itkFiltersDivideProcess);
     d->divideFactor = data;
 }
 
@@ -67,53 +76,51 @@ void itkFiltersDivideProcess::setParameter(double data, int channel)
 
 int itkFiltersDivideProcess::tryUpdate()
 {
-    DTK_D(itkFiltersDivideProcess);
-
     int res = DTK_FAILURE;
     
-    if ( d->input )
+    if ( getInputData() )
     {
-        QString id = d->input->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -122,6 +129,30 @@ int itkFiltersDivideProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersDivideProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::DivideImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  DivideFilterType;
+    typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
+
+    divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    divideFilter->SetConstant ( d->divideFactor );
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    divideFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    divideFilter->Update();
+
+    getOutputData()->setData ( divideFilter->GetOutput() );
+
+    QString newSeriesDescription = "divide filter " + QString::number(d->divideFactor);
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

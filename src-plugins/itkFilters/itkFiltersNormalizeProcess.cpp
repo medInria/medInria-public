@@ -14,34 +14,16 @@
 #include <itkFiltersNormalizeProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
 
-#include <medMetaDataKeys.h>
+#include <itkImage.h>
+#include <itkNormalizeImageFilter.h>
 
-#include <itkFiltersNormalizeProcess_p.h>
+#include <medUtilities.h>
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(itkFiltersNormalizeProcess *parent) 
-    : itkFiltersProcessBase(*new itkFiltersNormalizeProcessPrivate(this), parent)
-{
-    DTK_D(itkFiltersNormalizeProcess);
-    
-    d->filter = this;
-    d->output = NULL;
-    
-    d->description = tr("ITK normalize filter");
-}
-
-
-itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other) 
-    : itkFiltersProcessBase(*new itkFiltersNormalizeProcessPrivate(*other.d_func()), other)
-{
-}
-
-//-------------------------------------------------------------------------------------------
-
-itkFiltersNormalizeProcess::~itkFiltersNormalizeProcess( void )
+    : itkFiltersProcessBase(parent)
 {
 }
 
@@ -54,55 +36,60 @@ bool itkFiltersNormalizeProcess::registered( void )
 
 //-------------------------------------------------------------------------------------------
 
-int itkFiltersNormalizeProcess::tryUpdate()
+QString itkFiltersNormalizeProcess::description() const
 {
-    DTK_D(itkFiltersNormalizeProcess);
-    
+    return tr("ITK normalize filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
+int itkFiltersNormalizeProcess::tryUpdate()
+{   
     int res = DTK_FAILURE;
 
-    if ( d->input )
+    if ( getInputData() )
     {
-        QString id = d->input->identifier();
+        QString id = getInputData()->identifier();
 
         if ( id == "itkDataImageChar3" )
         {
-            res = d->update<char>();
+            res = updateProcess<char>();
         }
         else if ( id == "itkDataImageUChar3" )
         {
-            res = d->update<unsigned char>();
+            res = updateProcess<unsigned char>();
         }
         else if ( id == "itkDataImageShort3" )
         {
-            res = d->update<short>();
+            res = updateProcess<short>();
         }
         else if ( id == "itkDataImageUShort3" )
         {
-            res = d->update<unsigned short>();
+            res = updateProcess<unsigned short>();
         }
         else if ( id == "itkDataImageInt3" )
         {
-            res = d->update<int>();
+            res = updateProcess<int>();
         }
         else if ( id == "itkDataImageUInt3" )
         {
-            res = d->update<unsigned int>();
+            res = updateProcess<unsigned int>();
         }
         else if ( id == "itkDataImageLong3" )
         {
-            res = d->update<long>();
+            res = updateProcess<long>();
         }
         else if ( id== "itkDataImageULong3" )
         {
-            res = d->update<unsigned long>();
+            res = updateProcess<unsigned long>();
         }
         else if ( id == "itkDataImageFloat3" )
         {
-            res = d->update<float>();
+            res = updateProcess<float>();
         }
         else if ( id == "itkDataImageDouble3" )
         {
-            res = d->update<double>();
+            res = updateProcess<double>();
         }
         else
         {
@@ -111,6 +98,29 @@ int itkFiltersNormalizeProcess::tryUpdate()
     }
 
     return res;
+}
+
+template <class PixelType> int itkFiltersNormalizeProcess::updateProcess()
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::NormalizeImageFilter< ImageType, ImageType >  NormalizeFilterType;
+    typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
+
+    normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
+
+    normalizeFilter->Update();
+
+    getOutputData()->setData ( normalizeFilter->GetOutput() );
+
+    //Set output description metadata
+    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), "normalize filter");
+
+    return DTK_SUCCEED;
 }
 
 // /////////////////////////////////////////////////////////////////

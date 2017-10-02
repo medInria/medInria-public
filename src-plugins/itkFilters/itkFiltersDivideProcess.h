@@ -14,9 +14,6 @@
 #pragma once
 
 #include <itkFiltersProcessBase.h>
-#include <medAbstractData.h>
-
-#include <itkFiltersPluginExport.h>
 
 class itkFiltersDivideProcessPrivate;
 class medAbstractData;
@@ -26,19 +23,25 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersDivideProcess : public itkFiltersProcess
     Q_OBJECT
     
 public:
+    static const double defaultDivideFactor;
+
     itkFiltersDivideProcess(itkFiltersDivideProcess * parent = 0);
     itkFiltersDivideProcess(const itkFiltersDivideProcess& other);
     virtual ~itkFiltersDivideProcess(void);
-
     static bool registered ( void );
+
+    virtual QString description(void) const;
     
 public slots:
 
     void setParameter ( double  data, int channel );
     int tryUpdate();
 
+protected:
+    template <class PixelType> int updateProcess();
+
 private:
-    DTK_DECLARE_PRIVATE(itkFiltersDivideProcess)
+    itkFiltersDivideProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersDivideProcess(void);
