@@ -13,10 +13,10 @@
 
 #pragma once
 
+#include <QDomElement>
 #include <QFrame>
 
 #include <medCoreExport.h>
-
 
 struct QUuid;
 class medAbstractView;
@@ -124,6 +124,7 @@ protected:
 
     void recomputeStyleSheet();
     void open(const QString & path);
+    void addMetadataToQDomElement(medAbstractData *data, QDomElement patientInfo, QString metadata);
     void printInConsole(QString message);
     void displayMessageError(QString message);
 

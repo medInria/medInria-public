@@ -13,32 +13,24 @@
 
 #include <medViewContainer.h>
 
-#include <QVBoxLayout>
+
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QUuid>
-#include <QFileDialog>
+#include <QVBoxLayout>
 
-#include <medViewContainerManager.h>
-#include <medAbstractView.h>
 #include <medAbstractImageView.h>
-#include <medBoolParameter.h>
+#include <medAbstractView.h>
 #include <medDataIndex.h>
-#include <medAbstractData.h>
 #include <medDataManager.h>
-#include <medViewFactory.h>
-#include <medAbstractLayeredView.h>
-#include <medToolBox.h>
-#include <medToolBoxHeader.h>
-#include <medStringListParameter.h>
-#include <medTriggerParameter.h>
-#include <medViewContainerSplitter.h>
-#include <medDataManager.h>
-#include <medSettingsManager.h>
-#include <medAbstractInteractor.h>
-#include <medPoolIndicator.h>
 #include <medLayoutChooser.h>
-
+#include <medMetaDataKeys.h>
+#include <medPoolIndicator.h>
+#include <medSettingsManager.h>
+#include <medTriggerParameter.h>
+#include <medViewContainerManager.h>
+#include <medViewContainerSplitter.h>
+#include <medViewFactory.h>
 
 class medViewContainerPrivate
 {
@@ -941,6 +933,23 @@ QString medViewContainer::saveScene()
             layeredViewInfo.setAttribute("path",subDirName+"/mapping.xml");
             layeredViewInfo.setAttribute("id",layeredView->identifier());
             root.appendChild(layeredViewInfo);
+
+            // Patient informations added in the xml file
+            QDomElement patientInfo = doc.createElement("patient");
+
+            medAbstractData* dataset = layeredView->layerData(0);
+
+            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::PatientName.key());
+            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::PatientID.key());
+            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::BirthDate.key());
+            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::Gender.key());
+            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::StudyDescription.key());
+
+            if (patientInfo.hasAttributes())
+            {
+                root.appendChild(patientInfo);
+            }
+
             layeredView->write(generatedPath);
             workingDir.cdUp();
 
@@ -969,6 +978,14 @@ QString medViewContainer::saveScene()
         displayMessageError("Scene saving failed");
     }
     return "";
+}
+
+void medViewContainer::addMetadataToQDomElement(medAbstractData* data, QDomElement patientInfo, QString metadata)
+{
+    if (data->hasMetaData(metadata) && data->metadata(metadata) != "")
+    {
+        patientInfo.setAttribute(metadata, data->metadata(metadata));
+    }
 }
 
 void medViewContainer::loadScene()
