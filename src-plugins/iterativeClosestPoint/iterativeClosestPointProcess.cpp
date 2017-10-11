@@ -97,30 +97,45 @@ void iterativeClosestPointProcess::setInput(medAbstractData *data, int channel)
     }
 }    
 
-void iterativeClosestPointProcess::setParameter ( double data, int channel )
+void iterativeClosestPointProcess::setParameter(double data, int channel)
 {
-    switch (channel) {
-        case 0:
-            d->bStartByMatchingCentroids = (data>0) ? true : false;
-            break;
-        case 1:
-            d->bTransformation = (int)data;
-            break;
-        case 2:
-            d->bCheckMeanDistance = (data>0) ? true : false;
-            break;
-        case 3:
-            d->MaxMeanDistance = data;
-            break;
-        case 4:
-            d->MaxNumIterations = data;
-            break;
-        case 5:
-            d->MaxNumLandmarks = data;
-            break;
-        case 6:
-            d->ScaleFactor = data;
-            break;
+    switch (channel)
+    {
+    case 3:
+        d->MaxMeanDistance = data;
+        break;
+    case 6:
+        d->ScaleFactor = data;
+        break;
+    }
+}
+
+void iterativeClosestPointProcess::setParameter(bool data, int channel)
+{
+    switch (channel)
+    {
+    case 0:
+        d->bStartByMatchingCentroids = data;
+        break;
+    case 2:
+        d->bCheckMeanDistance = data;
+        break;
+    }
+}
+
+void iterativeClosestPointProcess::setParameter(int data, int channel)
+{
+    switch (channel)
+    {
+    case 1:
+        d->bTransformation = data;
+        break;
+    case 4:
+        d->MaxNumIterations = data;
+        break;
+    case 5:
+        d->MaxNumLandmarks = data;
+        break;
     }
 }
 

@@ -166,12 +166,12 @@ void iterativeClosestPointToolBox::run()
             d->process->setInput(sourceData,  0);
             d->process->setInput(targetData, 1);
 
-            d->process->setParameter((double)d->bStartByMatchingCentroids->isChecked(),0);
-            d->process->setParameter((double)d->bTransformationComboBox->currentIndex(),1);
-            d->process->setParameter((double)d->bCheckMeanDistance->isChecked(),2);
+            d->process->setParameter(d->bStartByMatchingCentroids->isChecked(),0);
+            d->process->setParameter(d->bTransformationComboBox->currentIndex(),1);
+            d->process->setParameter(d->bCheckMeanDistance->isChecked(),2);
             d->process->setParameter(d->MaxMeanDistance->value(),3);
-            d->process->setParameter((double)d->MaxNumIterations->value(),4);
-            d->process->setParameter((double)d->MaxNumLandmarks->value(),5);
+            d->process->setParameter(d->MaxNumIterations->value(),4);
+            d->process->setParameter(d->MaxNumLandmarks->value(),5);
             d->process->setParameter(d->ScaleFactor->value(),6);
 
             // Progression stack
