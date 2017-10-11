@@ -232,6 +232,15 @@ double medUtilities::minimumValue(dtkSmartPointer<medAbstractData> data)
     return statsProcess.output().at(0);
 }
 
+double medUtilities::maximumValue(dtkSmartPointer<medAbstractData> data)
+{
+    statsROI statsProcess;
+    statsProcess.setInput(data, 0);
+    statsProcess.setParameter(statsROI::MINMAX);
+    statsProcess.update();
+    return statsProcess.output().at(1);
+}
+
 double medUtilities::volume(dtkSmartPointer<medAbstractData> data)
 {
     statsROI statsProcess;
