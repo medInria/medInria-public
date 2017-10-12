@@ -40,7 +40,6 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
     d->chooseComboBox->setItemData(0, "Choose a toolbox", Qt::ToolTipRole);
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
-    int i = 1; // toolboxes positions
 
     // Get informations about the workspace toolboxes:
     // displayed name, description for tooltip, and identifier
@@ -59,6 +58,7 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
     QList<QString> names = toolboxDataHash.keys();
     qSort(names.begin(), names.end());
 
+    int i = 1; // toolboxes positions
     foreach( QString name, names )
     {
         QStringList values = toolboxDataHash.value(name);
