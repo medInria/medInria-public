@@ -36,21 +36,36 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
 
     d->chooseComboBox = new medComboBox;
     d->chooseComboBox->addItem("* Choose a toolbox *");
-    d->chooseComboBox->setToolTip(tr("Choose a toolbox"));
+    d->chooseComboBox->setToolTip(tr("Choose a toolbox in the list"));
+    d->chooseComboBox->setItemData(0, "Choose a toolbox", Qt::ToolTipRole);
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
     int i = 1; // toolboxes positions
+
+    // Get informations about the workspace toolboxes:
+    // displayed name, description for tooltip, and identifier
+    QHash<QString, QStringList> toolboxDataHash;
     foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(tlbxId))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolboxName);
 
-        d->chooseComboBox->addItem(details->name, toolboxName);
-        d->chooseComboBox->setItemData(i, details->description, Qt::ToolTipRole);
-        i++;
+        QStringList current;
+        current.append(toolboxName);
+        current.append(details->description);
+        toolboxDataHash[details->name] = current;
     }
 
-    // Sort alphabetically the combobox
-    d->chooseComboBox->model()->sort(0);
+    // Sort toolboxes names alphabetically
+    QList<QString> names = toolboxDataHash.keys();
+    qSort(names.begin(), names.end());
+
+    foreach( QString name, names )
+    {
+        QStringList values = toolboxDataHash.value(name);
+        d->chooseComboBox->addItem(name, values.at(0));
+        d->chooseComboBox->setItemData(i, values.at(1), Qt::ToolTipRole);
+        i++;
+    }
 
     connect(d->chooseComboBox, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
