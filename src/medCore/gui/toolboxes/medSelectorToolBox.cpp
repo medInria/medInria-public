@@ -49,6 +49,9 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
         i++;
     }
 
+    // Sort alphabetically the combobox
+    d->chooseComboBox->model()->sort(0);
+
     connect(d->chooseComboBox, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
     QWidget *mainWidget = new QWidget;
