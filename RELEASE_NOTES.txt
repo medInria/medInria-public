@@ -1,3 +1,27 @@
+MUSIC v2.0.0:
+- Scrips pipelines in Python
+- MAIN files in XML
+- Histogram Analysis: solve a bug in UTAH3D
+- Workspace comboboxes show toolboxes alphabetically
+- Solve some DICOM import errors
+- Cropping: box in green
+- DB: possibility to drop a study with several series in a view
+- DB: improve the search bar
+- Manual Registration: add Affine transformation
+- Sliders: larger handle
+- ... many other enhancements and bug fixes.
+
+MUSIC v1.1.2:
+- New Tools added since the switch medInria -> MUSIC
+- Logs: save debug, info, error messages in a log file (Homepage ->Log)
+- NavX export :  take into account the number of triangles limitation
+- PolygonROI: new interpolation algorithm with the introduction of master ROIs (defined as new polygons or a modified ones)
+- PolygonROI: extraction of a polygonROI from a binary mask
+- PolygonROI: positions of segmented slices notified by a tick on the slice slider
+- Invert intensity filter: correct output's dynamic range
+- Ease of use improved with more explanations, tooltips
+- ... many other enhancements and bug fixes.
+
 medInria v2.2.2:
 - Minimum CMake version is now 2.8.10, as it corrects problem with automoc
 - Window/Level sliders are now expressed as Min/Max for easier manipulation
