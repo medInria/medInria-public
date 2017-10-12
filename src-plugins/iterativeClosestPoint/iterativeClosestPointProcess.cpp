@@ -110,25 +110,18 @@ void iterativeClosestPointProcess::setParameter(double data, int channel)
     }
 }
 
-void iterativeClosestPointProcess::setParameter(bool data, int channel)
+void iterativeClosestPointProcess::setParameter(int data, int channel)
 {
     switch (channel)
     {
     case 0:
         d->bStartByMatchingCentroids = data;
         break;
-    case 2:
-        d->bCheckMeanDistance = data;
-        break;
-    }
-}
-
-void iterativeClosestPointProcess::setParameter(int data, int channel)
-{
-    switch (channel)
-    {
     case 1:
         d->bTransformation = data;
+        break;
+    case 2:
+        d->bCheckMeanDistance = data;
         break;
     case 4:
         d->MaxNumIterations = data;

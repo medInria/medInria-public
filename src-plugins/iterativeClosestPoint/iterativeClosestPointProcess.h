@@ -39,7 +39,6 @@ public slots:
 
     //! Parameters are set through here, channel allows to handle multiple parameters
     void setParameter(double data, int channel);
-    void setParameter(bool data, int channel);
     void setParameter(int data, int channel);
 
     //! Method to actually start the filter
