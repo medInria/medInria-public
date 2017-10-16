@@ -692,9 +692,9 @@ void itkFiltersToolBox::setupItkShrinkProcess()
         return;
     
     d->process->setInput ( this->selectorToolBox()->data() );
-    d->process->setParameter ( ( double ) d->shrink0Value->value(), 0 );
-    d->process->setParameter ( ( double ) d->shrink1Value->value(), 1 );
-    d->process->setParameter ( ( double ) d->shrink2Value->value(), 2 );
+    d->process->setParameter ( d->shrink0Value->value(), 0 );
+    d->process->setParameter ( d->shrink1Value->value(), 1 );
+    d->process->setParameter ( d->shrink2Value->value(), 2 );
 }
 
 void itkFiltersToolBox::setupItkWindowingProcess()

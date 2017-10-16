@@ -66,7 +66,7 @@ QString itkFiltersShrinkProcess::description() const
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersShrinkProcess::setParameter(double data, int channel)
+void itkFiltersShrinkProcess::setParameter(int data, int channel)
 {     
     if (channel > 2)
         return;
