@@ -25,7 +25,7 @@ namespace medMetaDataKeys {
     // PATIENT
     MEDCORE_EXPORT const Key PatientID("PatientID");
     MEDCORE_EXPORT const Key PatientName("PatientName", "Patient Name");
-    MEDCORE_EXPORT const Key Age("Age", "Age", QVariant::UInt);
+    MEDCORE_EXPORT const Key Age("Age", "Age"); // could be "00" format, or for instance "00Y"
     MEDCORE_EXPORT const Key BirthDate("BirthDate", "Birth Date"/*, QVariant::Date*/);
     MEDCORE_EXPORT const Key Gender("Gender", "Gender", QVariant::Char);
     MEDCORE_EXPORT const Key Description("Description"); //what?
