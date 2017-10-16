@@ -15,6 +15,8 @@
 
 #include <medVtkInriaExport.h>
 
+#include <medVtkImageInfo.h>
+
 #include <vtkObject.h>
 #include <vtkCommand.h>
 #include <vtkInteractorStyle.h>
@@ -169,10 +171,11 @@ public:
     virtual void Render();
 
 
-    virtual void SetInput (vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
-    virtual void SetInputConnection (vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
+    virtual void SetInput (vtkAlgorithmOutput* pi_povtkAlgo, vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
+    //virtual void SetInputConnection (vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
 
-    virtual vtkImageData* GetInput (int layer = 0) const = 0;
+    //virtual vtkImageData* GetMedVtkImageInfo (int layer = 0) const = 0;
+    virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const = 0;
 
     // Get the internal render window, renderer, image map and interactor instances.
     vtkGetObjectMacro(RenderWindow,    vtkRenderWindow);
@@ -443,6 +446,57 @@ public:
     virtual void SetCurrentLayer (int layer);
     virtual int GetCurrentLayer() const;
 
+    double * GetScalarRange(unsigned int pi_uiLayer = 0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      When ITK is set ot ON, we propose the following method to open
      directly an ITK image. Because of the templates, we have to setup
@@ -596,7 +650,7 @@ protected:
     virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);
 
 
-    virtual vtkImageData *ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix);
+    virtual vtkAlgorithmOutput* ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkImageData *image, vtkMatrix4x4 *matrix);
 
     virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
 

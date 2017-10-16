@@ -14,6 +14,8 @@
 #pragma once
 
 #include <medVtkInriaExport.h>
+#include <medVtkImageInfo.h>
+
 #include <vtkImageView.h>
 #include <vtkInteractorStyleImageView2D.h>
 
@@ -108,27 +110,20 @@ public:
     virtual void   SetOpacity(double opacity, int layer);
     virtual double GetOpacity(int layer) const;
 
-  // Description:
-  // Set/Get the input image to the viewer.
-  virtual void SetInput (vtkImageData *image,
-                         vtkMatrix4x4 *matrix = 0,
-                         int layer=0);
-  virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = 0,
-                         const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
+    // Description:
+    // Set/Get the input image to the viewer.
+    virtual void SetInput (vtkAlgorithmOutput *pi_povtkAlgo, vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
+    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
 
-    virtual void SetInputConnection (vtkAlgorithmOutput* arg,
-                                     vtkMatrix4x4 *matrix = 0,
-                                     int layer=0);
 
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
     
-    int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
+    //int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
 
     virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
     virtual void RemoveDataSet (vtkPointSet *arg);
 
-    vtkImageData *GetImageInput(int layer) const;
-    vtkImageData *GetInput(int layer = 0) const;
+    medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
 
     virtual void InstallInteractor();
@@ -431,7 +426,8 @@ protected:
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
     //ETX
 
-    void SetFirstLayer (vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
+    //void SetFirstLayer2(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
+    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
