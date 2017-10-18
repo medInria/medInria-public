@@ -39,11 +39,11 @@ void vtkImage3DDisplay::SetInputConnection(vtkAlgorithmOutput* pi_poVtkAlgoPort)
             vtkImageAlgorithm* poVtkImgAlgoTmp = static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoPort->GetProducer());
             vtkImageData* poVtkImgTmp = poVtkImgAlgoTmp->GetOutput();
 
-            m_sVtkImageInfo.SetSpacing(poVtkImgTmp->GetSpacing(), 3);
-            m_sVtkImageInfo.SetOrigin(poVtkImgTmp->GetOrigin(), 3);
+            m_sVtkImageInfo.SetSpacing(poVtkImgTmp->GetSpacing());
+            m_sVtkImageInfo.SetOrigin(poVtkImgTmp->GetOrigin());
             m_sVtkImageInfo.SetScalarRange(poVtkImgTmp->GetScalarRange());
             m_sVtkImageInfo.SetExtent(poVtkImgTmp->GetExtent());
-            m_sVtkImageInfo.SetDimensions(poVtkImgTmp->GetDimensions(), 3);
+            m_sVtkImageInfo.SetDimensions(poVtkImgTmp->GetDimensions());
             m_sVtkImageInfo.scalarType = poVtkImgTmp->GetScalarType();
             m_sVtkImageInfo.nbScalarComponent = poVtkImgTmp->GetNumberOfScalarComponents();
             m_sVtkImageInfo.initialized = true;
