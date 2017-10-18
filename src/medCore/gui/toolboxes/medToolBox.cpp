@@ -15,6 +15,7 @@
 #include <medAbstractProcess.h>
 #include <medAbstractView.h>
 #include <medButton.h>
+#include <medJobManager.h>
 #include <medMessageController.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBox.h>
@@ -337,7 +338,38 @@ void medToolBox::displayMessageError(QString error)
     medMessageController::instance()->showError(error,3000);
 }
 
-void medToolBox::restoreOverrideCursor()
+void medToolBox::setToolBoxOnWaitStatus()
 {
-    QApplication::restoreOverrideCursor();
+    this->setDisabled(true);
+}
+
+void medToolBox::setToolBoxOnReadyToUse()
+{
+    this->setDisabled(false);
+}
+
+medProgressionStack* medToolBox::getProgressionStack()
+{
+    return getWorkspace()->getProgressionStack();
+}
+
+void medToolBox::addConnectionsAndStartJob(medJobItem* job)
+{
+    addToolBoxConnections(job);
+
+    getProgressionStack()->addJobItem(job, "Progress:");
+
+    medJobManager::instance()->registerJobItem(job);
+    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(job));
+}
+
+void medToolBox::addToolBoxConnections(medJobItem* job)
+{
+    connect (job, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
+    connect (job, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
+    connect (job, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
+    connect (job, SIGNAL (cancelled (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
+    connect (job, SIGNAL (success   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
+    connect (job, SIGNAL (failure   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
+    connect (job, SIGNAL (activate(QObject*,bool)), getProgressionStack(), SLOT(setActive(QObject*,bool)));
 }

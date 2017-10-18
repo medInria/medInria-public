@@ -28,9 +28,7 @@
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
 #include <medAbstractSelectableToolBox.h>
-#include <medJobManager.h>
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRunnableProcess.h>
 #include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
@@ -46,8 +44,6 @@ public:
     
     medComboBox * filters;
     dtkSmartPointer <itkMorphologicalFiltersProcessBase> process;
-    
-    medProgressionStack * progressionStack;
 };
 
 itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent ) : medAbstractSelectableToolBox ( parent ), d ( new itkMorphologicalFiltersToolBoxPrivate )
@@ -118,14 +114,11 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     // Principal layout:
     QWidget *widget = new QWidget ( this );
 
-    d->progressionStack = new medProgressionStack ( widget );
-
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
     layout->addWidget ( kernelSizeWidget );
     layout->addWidget ( kernelShapeWidget );
     layout->addWidget ( runButton );
-    layout->addWidget ( d->progressionStack );
     layout->addStretch ( 1 );
 
     widget->setLayout ( layout );
@@ -194,7 +187,7 @@ void itkMorphologicalFiltersToolBox::run ( void )
 
             if ( d->process )
             {
-                QApplication::setOverrideCursor(Qt::WaitCursor);
+                this->setToolBoxOnWaitStatus();
 
                 d->process->setInput ( this->selectorToolBox()->data() );
                 d->process->setParameter ( (double)d->kernelSize->value(), (d->pixelButton->isChecked())? 1:0 );
@@ -214,18 +207,8 @@ void itkMorphologicalFiltersToolBox::run ( void )
 
                 medRunnableProcess *runProcess = new medRunnableProcess;
                 runProcess->setProcess ( d->process );
-
-                d->progressionStack->addJobItem ( runProcess, tr ( "Progress:" ) );
-
-                connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
-                connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
-                connect ( runProcess, SIGNAL ( failure   (int)),        this, SLOT   (handleDisplayError(int)));
-                connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
-                connect (runProcess, SIGNAL (failure   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
-                connect ( runProcess, SIGNAL (activate(QObject*,bool)), d->progressionStack, SLOT(setActive(QObject*,bool)));
-
-                medJobManager::instance()->registerJobItem ( runProcess );
-                QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
+                connect (runProcess, SIGNAL (failure(int)), this, SLOT(handleDisplayError(int)));
+                this->addConnectionsAndStartJob(runProcess);
             }
         }
     }

@@ -23,10 +23,8 @@
 #include <medAbstractProcess.h>
 #include <medDataManager.h>
 #include <medDropSite.h>
-#include <medJobManager.h>
 #include <medMetaDataKeys.h>
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRunnableProcess.h>
 #include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
@@ -36,7 +34,6 @@ class medBinaryOperationToolBoxPrivate
 public:
     
     dtkSmartPointer <medAbstractProcess> process;
-    medProgressionStack * progression_stack;
     medDropSite *dropsite;
     dtkSmartPointer<medAbstractData> secondInput;
 
@@ -97,13 +94,7 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medAbstr
 
     QPushButton *runButton = new QPushButton(tr("Run"), this);
     
-    // progression stack
-    d->progression_stack = new medProgressionStack(widget);
-    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-    progressStackLayout->addWidget(d->progression_stack);
-    
     this->addWidget(runButton);
-    this->addWidget(d->progression_stack);
     
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
@@ -177,30 +168,15 @@ void medBinaryOperationToolBox::run()
         d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkXorOperator");
     }
 
-    QApplication::setOverrideCursor(Qt::WaitCursor);
+    this->setToolBoxOnWaitStatus();
 
     d->process->setInput ( this->selectorToolBox()->data(), 0 );
     d->process->setInput ( d->secondInput, 1 );
 
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (d->process);
-    
-    d->progression_stack->addJobItem(runProcess, "Progress:");
-    d->progression_stack->setActive(runProcess,true);
-    d->progression_stack->disableCancel(runProcess);
-    
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
-    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (success   (QObject*)), this, SLOT   (restoreOverrideCursor()));
-    connect (runProcess, SIGNAL (failure   (QObject*)), this, SLOT   (restoreOverrideCursor()));
-
-    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progression_stack, SLOT(setActive(QObject*,bool)));
-    
-    medJobManager::instance()->registerJobItem(runProcess);
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+    connect (runProcess, SIGNAL (failure(int)), this, SLOT(handleDisplayError(int)));
+    this->addConnectionsAndStartJob(runProcess);
 }
 
 void medBinaryOperationToolBox::onSecondInputImported(const medDataIndex& index)

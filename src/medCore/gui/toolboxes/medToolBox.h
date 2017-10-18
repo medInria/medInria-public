@@ -16,6 +16,8 @@
 #include <medCoreExport.h>
 #include <medAbstractWorkspace.h>
 #include <medComboBox.h>
+#include <medProgressionStack.h>
+#include <medJobItem.h>
 
 #include <QtGui>
 #include <QDomDocument>
@@ -71,6 +73,8 @@ public:
     //! Display a qDebug and a medMessageController
     void displayMessageError(QString error);
 
+    medProgressionStack *getProgressionStack();
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.
@@ -112,10 +116,15 @@ public slots:
     //! Switch between errors
     void handleDisplayError(int);
 
-    //! Put back overrided cursor
-    void restoreOverrideCursor();
+    //!
+    void setToolBoxOnWaitStatus();
+    void setToolBoxOnReadyToUse();
 
     virtual void updateView(){}
+
+    void addConnectionsAndStartJob(medJobItem *job);
+
+    void addToolBoxConnections(medJobItem *job);
 
 protected slots:
     void onAboutButtonClicked();

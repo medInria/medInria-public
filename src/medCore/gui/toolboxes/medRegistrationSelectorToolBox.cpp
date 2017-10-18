@@ -30,7 +30,6 @@
 #include <medAbstractRegistrationProcess.h>
 
 #include <medAbstractImageData.h>
-#include <medRunnableProcess.h>
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>

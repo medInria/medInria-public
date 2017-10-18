@@ -16,19 +16,29 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
+<<<<<<< 9a8f255b3f796b351ee23023b57f631d642319e4
 #include <medJobManager.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medRunnableProcess.h>
 #include <medToolBoxFactory.h>
+=======
+
+#include <medAbstractView.h>
+#include <medRunnableProcess.h>
+#include <medPluginManager.h>
+
+#include <medToolBoxFactory.h>
+#include <medRegistrationSelectorToolBox.h>
+
+>>>>>>> [ProgressBar] standardized unique progressbar
 #include <rpiCommonTools.hxx>
 
 class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
-    medProgressionStack * progressionStack;
     medComboBox * updateRuleBox;
     medComboBox * gradientTypeBox;
     QDoubleSpinBox * maxStepLengthBox;
@@ -123,10 +133,6 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     runButton->setToolTip(tr("Start Registration"));
     layout->addWidget(runButton);
 
-    // progression stack
-    d->progressionStack = new medProgressionStack(widget);
-    layout->addWidget(d->progressionStack);
-
     widget->setLayout(layout);
     this->addWidget(widget);
 
@@ -192,7 +198,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
         return;
     }
 
-    QApplication::setOverrideCursor(Qt::WaitCursor);
+    this->setToolBoxOnWaitStatus();
 
     process_Registration->setDisplacementFieldStandardDeviation(
                 d->disFieldStdDevBox->value());
@@ -209,7 +215,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     catch ( std::exception & )
     {
         qDebug() << "wrong iteration format";
-        QApplication::restoreOverrideCursor();
+        this->setToolBoxOnReadyToUse();
         return;
     }
 
@@ -217,7 +223,6 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     process_Registration->setMovingInput(movingData);
 
     medRunnableProcess *runProcess = new medRunnableProcess;
-
     runProcess->setProcess (d->process);
     this->addConnectionsAndStartJob(runProcess);
 }

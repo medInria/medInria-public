@@ -16,10 +16,8 @@
 
 #include <medAbstractLayeredView.h>
 #include <medDataManager.h>
-#include <medJobManager.h>
 #include <medMetaDataKeys.h>
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRunnableProcess.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
@@ -36,7 +34,6 @@ public:
     medComboBox* bTransformationComboBox;
 
     dtkSmartPointer<iterativeClosestPointProcess> process;
-    medProgressionStack * progression_stack;
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new iterativeClosestPointToolBoxPrivate)
@@ -120,11 +117,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
-    // progression stack
-    d->progression_stack = new medProgressionStack(widget);
-    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-    progressStackLayout->addWidget(d->progression_stack);
-
     parameters_layout->addWidget(d->bStartByMatchingCentroids);
     parameters_layout->addLayout(transformation_layout);
     parameters_layout->addWidget(d->bCheckMeanDistance);
@@ -133,7 +125,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent) : me
     parameters_layout->addLayout(MaxNumIterations_layout);
     parameters_layout->addLayout(MaxNumLandmarks_layout);
     parameters_layout->addWidget(runButton);
-    parameters_layout->addLayout(progressStackLayout);
 
     widget->setLayout(parameters_layout);
     this->addWidget(widget);
@@ -162,7 +153,7 @@ void iterativeClosestPointToolBox::run()
     
         if (targetData && sourceData)
         {
-            QApplication::setOverrideCursor(Qt::WaitCursor);
+            this->setToolBoxOnWaitStatus();
 
             d->process = new iterativeClosestPointProcess();
             d->process->setInput(sourceData,  0);
@@ -176,23 +167,11 @@ void iterativeClosestPointToolBox::run()
             d->process->setParameter(d->MaxNumLandmarks->value(),5);
             d->process->setParameter(d->ScaleFactor->value(),6);
 
-            // Progression stack
             medRunnableProcess *runProcess = new medRunnableProcess;
             runProcess->setProcess (d->process);
-            d->progression_stack->addJobItem(runProcess, "Progress:");
-            d->progression_stack->disableCancel(runProcess);
-
-            connect (runProcess, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
             connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (displayOutput()));
-            connect (runProcess, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
             connect (runProcess, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
-            connect (runProcess, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
-            connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
-            connect (runProcess, SIGNAL (failure   (QObject*)),    this, SLOT   (restoreOverrideCursor()));
-            connect (runProcess, SIGNAL (activate(QObject*,bool)), d->progression_stack, SLOT(setActive(QObject*,bool)));
-
-            medJobManager::instance()->registerJobItem(runProcess);
-            QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+            this->addConnectionsAndStartJob(runProcess);
         }
         else
         {

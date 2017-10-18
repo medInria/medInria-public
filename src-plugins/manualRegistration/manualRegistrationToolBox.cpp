@@ -338,7 +338,7 @@ void manualRegistrationToolBox::computeRegistration()
     if (d->controller->checkLandmarks() == DTK_FAILURE)
         return;
 
-    QApplication::setOverrideCursor(Qt::WaitCursor);
+    this->setToolBoxOnWaitStatus();
 
     d->process = new manualRegistration();
     d->process->SetFixedLandmarks(d->controller->getPoints_Fixed());
@@ -370,7 +370,7 @@ void manualRegistrationToolBox::computeRegistration()
         setDisableSaveButtons(false);
     }
 
-    QApplication::restoreOverrideCursor();
+    this->setToolBoxOnReadyToUse();
 }
 
 void manualRegistrationToolBox::reset()

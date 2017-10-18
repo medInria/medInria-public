@@ -74,6 +74,8 @@ public:
 
     medLinkMenu *viewLinkMenu;
     medLinkMenu *layerLinkMenu;
+
+    medProgressionStack * progressionStack;
 };
 
 medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d(new medAbstractWorkspacePrivate)
@@ -114,7 +116,10 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->interactorToolBox->header()->hide();
     d->layersToolBox->addWidget(d->interactorToolBox);
 
+    d->progressionStack = new medProgressionStack();
+
     d->selectionToolBox->addWidget(d->layersToolBox);
+    d->selectionToolBox->addWidget(d->progressionStack);
 
     d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -943,4 +948,9 @@ void medAbstractWorkspace::changeLayerGroupColor(QString group, QColor color)
 {
     medLayerParameterGroup *paramGroup = medParameterGroupManager::instance()->layerGroup(group, this->identifier());
     paramGroup->setColor(color);
+}
+
+medProgressionStack* medAbstractWorkspace::getProgressionStack()
+{
+    return d->progressionStack;
 }
