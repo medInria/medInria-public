@@ -58,8 +58,8 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
         vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
         vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(sequence->GetDataSet());
 
-        backend->view2D->SetInput(metaimage->GetAlgorithmOutputPort(), vtkimage,metaimage->GetOrientationMatrix(), layer);
-        backend->view3D->SetInput(metaimage->GetAlgorithmOutputPort(), vtkimage,metaimage->GetOrientationMatrix(), layer);
+        backend->view2D->SetInput(metaimage->GetAlgorithmOutputPort(), metaimage->GetOrientationMatrix(), layer);
+        backend->view3D->SetInput(metaimage->GetAlgorithmOutputPort(), metaimage->GetOrientationMatrix(), layer);
         layer = backend->view2D->GetNumberOfLayers()-1;
 
         return true;

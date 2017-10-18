@@ -473,6 +473,3 @@ private:
     void operator=(const vtkImageView2D&);    // Not implemented.
 
 };
-
-
-

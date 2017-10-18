@@ -442,54 +442,9 @@ public:
 
     double * GetScalarRange(unsigned int pi_uiLayer = 0);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //////////////////////////////////////////////////////////////////////////
+    //FloTODO split itk reading phase from vtkImage to an other class
+    //////////////////////////////////////////////////////////////////////////
 
     /**
      When ITK is set ot ON, we propose the following method to open
@@ -600,22 +555,9 @@ private:
     //! Template function which sets the time step.
     template < class T >
     void SetTimeIndex(vtkIdType timeIndex);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //////////////////////////////////////////////////////////////////////////
+    //End of FloTODO split itk reading phase from vtkImage to an other class
+    //////////////////////////////////////////////////////////////////////////
 
 public:
     void        SetPatientName (const char* name);
@@ -799,5 +741,4 @@ private:
 
     vtkImageView  (const vtkImageView&); // Not implemented.
     void operator=(const vtkImageView&); // Not implemented.
-
 };
