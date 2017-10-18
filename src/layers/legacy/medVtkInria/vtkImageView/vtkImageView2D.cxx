@@ -84,6 +84,8 @@
 #include <vtkRendererCollection.h>
 #include "vtkImage2DDisplay.h"
 
+#include <vtkImageAlgorithm.h>
+#include <vtkAlgorithmOutput.h>
 
 
 vtkStandardNewMacro(vtkImageView2D);
@@ -395,7 +397,7 @@ void vtkImageView2D::SetSliceOrientation(int orientation)
   this->UpdateOrientation();
 
   // The slice might have changed in the process
-  if (this->Input)
+  if (this->m_poInternalImageFromInput)
   {
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
@@ -659,7 +661,7 @@ void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
   this->UpdateOrientation();
 
   // The slice might have changed in the process
-  if (this->Input)
+  if (this->m_poInternalImageFromInput)
   {
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
@@ -1714,22 +1716,27 @@ void vtkImageView2D::ApplyColorTransferFunction(vtkScalarsToColors * colors, int
   imageDisplay->GetWindowLevel()->SetLookupTable(colors);
 }
 
-void vtkImageView2D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
+void vtkImageView2D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer)
 {
-    if(image)
+    if(pi_poInputAlgoImg)
     {
         if( layer > 0 )
           this->AddLayer(layer);
 
         this->GetImage2DDisplayForLayer(layer)->SetInput(pi_poInputAlgoImg);
-        this->Superclass::SetInput (pi_poInputAlgoImg, image, matrix, 0);
+        this->Superclass::SetInput (pi_poInputAlgoImg, matrix, 0);
         this->GetWindowLevel(layer)->SetInputConnection(pi_poInputAlgoImg);
-        double *range = this->GetImage2DDisplayForLayer(layer)->GetMedVtkImageInfo()->scalarRange; //FloTODO
+        double *range = this->GetImage2DDisplayForLayer(layer)->GetMedVtkImageInfo()->scalarRange;
         this->SetColorRange(range,layer);
         this->Reset();
     }
 }
 
+/**
+ @brief If the layer numbered "layer" is the first of the stack of layers to contain an image then it is the first layer.
+ @return True if is the first layer to contain an image.
+ False in other cases.
+*/
 bool vtkImageView2D::IsFirstLayer(int layer) const
 {
     bool firstLayer = true;
@@ -1758,13 +1765,13 @@ int vtkImageView2D::GetFirstLayer() const
 
 //----------------------------------------------------------------------------
 /** Set/Get the input image to the viewer. */
-void vtkImageView2D::SetInput(vtkAlgorithmOutput*  pi_poVtkAlgoPort, vtkImageData *arg, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
+void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
   vtkRenderer *renderer = 0;
 
   if ( layer == 0 || IsFirstLayer(layer))
   {
-      SetFirstLayer( pi_poVtkAlgoPort, arg, matrix, layer);
+      SetFirstLayer( pi_poVtkAlgoOutput, matrix, layer);
   }
   else // layer >0
   {
@@ -1776,7 +1783,7 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput*  pi_poVtkAlgoPort, vtkImageDat
           return;
       }
 
-      vtkAlgorithmOutput *reslicerOutputPort = this->ResliceImageToInput(pi_poVtkAlgoPort, arg, matrix);
+      vtkAlgorithmOutput *reslicerOutputPort = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
       if (!reslicerOutputPort)
       {
           vtkErrorMacro (<< "Could not reslice image to input");
@@ -1798,6 +1805,7 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput*  pi_poVtkAlgoPort, vtkImageDat
   }
 
   renderer = this->GetRendererForLayer(layer);
+  this->LayerInfoVec[layer].ImageAlgo = (vtkImageAlgorithm*)pi_poVtkAlgoOutput->GetProducer();
   if (!renderer)
     return;
 
@@ -1878,17 +1886,6 @@ void vtkImageView2D::RemoveLayerActor(vtkActor *actor, int layer)
     this->UpdateSlicePlane();
     this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 }
-
-/*int vtkImageView2D::AddInput (vtkImageData *image, vtkMatrix4x4 *matrix)
-{
-  int layer = GetNumberOfLayers();
-  vtkSmartPointer<vtkImageActor> actorImgTmp = vtkImageActor::New();
-  actorImgTmp->SetInputData(image);
-
-  SetInput(actorImgTmp->GetMapper()->GetOutputPort(), image, matrix, layer);
-
-  return layer;
-}*/
 
 
 //----------------------------------------------------------------------------
@@ -2139,7 +2136,7 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int 
 
         vtkImageData * image = imagegenerator->GetOutput();
 
-        SetInput(imagegenerator->GetOutputPort(), image, 0, layer);
+        SetInput(imagegenerator->GetOutputPort(), 0, layer);
         vtkImageActor *actor = GetImageActor(layer);
         actor->SetOpacity(0.0);
         isImageOutBounded=false;
@@ -2299,6 +2296,15 @@ vtkRenderer * vtkImageView2D::GetRendererForLayer( int layer ) const
     else return NULL;
 }
 
+vtkImageAlgorithm * vtkImageView2D::GetImageAlgorithmForLayer(int layer) const
+{
+    if (layer > -1 && (unsigned int)layer < this->LayerInfoVec.size())
+    {
+        return this->LayerInfoVec.at(layer).ImageAlgo;
+    }
+    else return NULL;
+}
+
 vtkRenderer * vtkImageView2D::GetRenderer() const
 {
     return this->LayerInfoVec.at(this->CurrentLayer).Renderer;
@@ -2320,11 +2326,6 @@ vtkAlgorithm* vtkImageView2D::GetInputAlgorithm (int layer) const
 
 ////----------------------------------------------------------------------------
 
-//void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings()
-//{
-//    int currentLayer = this->GetCurrentLayer();
-//    this->SetTransferFunctionRangeFromWindowSettings(currentLayer);
-//}
 
 void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
 {
@@ -2333,62 +2334,6 @@ void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
   imageDisplay->GetWindowLevel()->Modified();
 
 }
-
-//void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
-//{
-//    double targetRange[2];
-
-//    this->GetColorRange( targetRange, layer );
-//    if (targetRange[1] - targetRange[0] <= 0.0)
-//    {
-//      targetRange[0] = 0.0;
-//      targetRange[1] = 1.0;
-//    }
-//    std::cout<< "change transfer function on layer:"<< layer <<std::endl;
-//    vtkWarningMacro(<< targetRange[0] << " " << targetRange[1]);
-//    bool touched = false;
-
-//    // lookup table
-//    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-//    vtkScalarsToColors * lookupTable = imageDisplay->GetWindowLevel()->GetLookupTable();
-//    if ( imageDisplay->GetUseLookupTable() &&
-//         lookupTable != NULL )
-//    {
-//      const double * currentRange = lookupTable->GetRange();
-//      if ( currentRange[0] != targetRange[0] ||
-//          currentRange[1] != targetRange[1] )
-//      {
-//        lookupTable->SetRange( targetRange );
-//        touched = true;
-//      }
-//    }
-
-//    // color transfer function
-//    if ( !imageDisplay->GetUseLookupTable())
-//    {
-//        this->Superclass::SetTransferFunctionRangeFromWindowSettings(
-//                    imageDisplay->GetColorTransferFunction(),
-//                    imageDisplay->GetOpacityTransferFunction(),
-//                                                         targetRange[0],
-//                                                         targetRange[1]);
-
-//        if (imageDisplay->GetColorTransferFunction())
-//           imageDisplay->GetWindowLevel()->
-//                   SetLookupTable(imageDisplay->GetColorTransferFunction());
-//        touched = true;
-////        vtkWarningMacro(<<"not using lookup table");
-//    }
-//    if ( touched )
-//    {
-//      imageDisplay->GetWindowLevel()->Modified();
-//      imageDisplay->GetImageActor()->Modified();
-//      this->Modified();
-//      this->ScalarBar->Modified();
-//    }
-//}
-
-
-
 double vtkImageView2D::GetColorLevel(int layer)const
 {
   vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);

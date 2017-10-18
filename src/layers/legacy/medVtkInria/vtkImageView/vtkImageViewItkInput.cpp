@@ -176,7 +176,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
     myConverter->GetImporter()->UpdateInformation();
     myConverter->GetImporter()->Update();
 
-    this->SetInput(myConverter->GetImporter()->GetOutputPort(), myConverter->GetOutput(), matrix, layer);
+    this->SetInput(myConverter->GetImporter()->GetOutputPort(), matrix, layer);
     this->Impl->ImageConverter[layer] = myConverter;
 
     if((int)(this->ITKInputVector.size()) <= layer) {

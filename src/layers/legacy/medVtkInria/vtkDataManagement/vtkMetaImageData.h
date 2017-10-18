@@ -99,6 +99,7 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
      For other use please refer to templated method GetItkImage()
   */
   itk::ImageBase<3>* GetItkImage();
+
   /**
      Access to the DICOM dictionary of this image
      Note that this dictionary is not filled automatically when ITK image is set.
@@ -240,6 +241,7 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
     vtkinput->Delete();
 #endif    
 
+    this->SetAlgorithmOutput(converter->GetImporter()->GetOutputPort());
     this->m_ItkImage = input;
     this->m_Converter = converter;
     
@@ -413,6 +415,17 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
      Set the dataset associated with the metadataset
   */
   virtual void SetDataSet(vtkDataSet* dataset);
+
+  /**
+     Set the output of algorithm associated with the metadataset
+  */
+  void SetAlgorithmOutput(vtkAlgorithmOutput *pi_poPort);
+
+  /**
+  Get the output of algorithm associated with the metadataset
+  */
+  vtkAlgorithmOutput* GetAlgorithmOutputPort();
+
   /**
      Get mehtod to get the vtkDataSet as an vtkImageData
   */
@@ -452,6 +465,8 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
   
   DictionaryType DicomDictionary;
   DicomEntryList DicomTagList;
+
+  vtkAlgorithmOutput* m_poPort;
   //ETX
 
 

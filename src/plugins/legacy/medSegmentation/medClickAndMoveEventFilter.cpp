@@ -51,7 +51,6 @@ void medClickAndMoveEventFilter::setColorMap( medImageMaskAnnotationData::ColorM
     }
 }
 
-
 bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEvent *mouseEvent )
 {
     m_paintState = m_toolbox->paintState();
@@ -78,7 +77,7 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
 
     mouseEvent->accept();
 
-    medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
+    medAbstractImageView *imageView = dynamic_cast<medAbstractImageView*>(view);
     if(!imageView)
         return false;
 
@@ -87,12 +86,11 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
 
     for(unsigned int i=0; i<imageView->layersCount(); i++)
     {
-
         medAbstractData *data = imageView->layerData(i);
         if (!data)
             continue;
 
-        medImageMaskAnnotationData * existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData *>(data);
+        medImageMaskAnnotationData *existingMaskAnnData = dynamic_cast<medImageMaskAnnotationData*>(data);
         if(!existingMaskAnnData)
         {
             this->setData( data );
@@ -126,7 +124,7 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
             options->data = m_imageData;
             options->radius = m_toolbox->wandRadius();
             options->itkMask = m_itkMask;
-            options->maskData = m_maskData;
+            options->maskAnnotationData = m_maskAnnotationData;
             options->maskValue = m_toolbox->strokeLabel();
 
             medMagicWandCommand *magicWandCommand = new medMagicWandCommand(options, m_toolbox->isWand3D());
@@ -138,12 +136,11 @@ bool medClickAndMoveEventFilter::mousePressEvent(medAbstractView *view, QMouseEv
     return mouseEvent->isAccepted();
 }
 
-
 bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
     m_view = view;
 
-    medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
+    medAbstractImageView *imageView = dynamic_cast<medAbstractImageView*>(view);
     if(!imageView)
         return false;
 
@@ -167,7 +164,7 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
         options->data = m_imageData;
         options->radius = m_toolbox->strokeRadius();
         options->itkMask = m_itkMask;
-        options->maskData = m_maskData;
+        options->maskAnnotationData = m_maskAnnotationData;
 
         if(this->m_paintState == PaintState::Stroke)
             options->maskValue = m_toolbox->strokeLabel();
@@ -183,12 +180,11 @@ bool medClickAndMoveEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEv
     return mouseEvent->isAccepted();
 }
 
-
 bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
     m_view = view;
 
-    medAbstractImageView * imageView = dynamic_cast<medAbstractImageView *>(view);
+    medAbstractImageView *imageView = dynamic_cast<medAbstractImageView*>(view);
     if(!imageView)
         return false;
 
@@ -203,7 +199,7 @@ bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMous
         options->data = m_imageData;
         options->radius = m_toolbox->strokeRadius();
         options->itkMask = m_itkMask;
-        options->maskData = m_maskData;
+        options->maskAnnotationData = m_maskAnnotationData;
 
         if(this->m_paintState == PaintState::Stroke)
             options->maskValue = m_toolbox->strokeLabel();
@@ -222,53 +218,48 @@ bool medClickAndMoveEventFilter::mouseReleaseEvent( medAbstractView *view, QMous
     return true;
 }
 
-
 void medClickAndMoveEventFilter::setData( medAbstractData *medData )
 {
     if (!medData)
         return;
 
-    // disconnect existing
-    if ( m_imageData )
-    {
-        // TODO?
-    }
-
     m_imageData = medData;
 
     // Update values of slider
 
-    GenerateMinMaxValuesFromImage < itk::Image <char,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <unsigned char,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <short,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <unsigned short,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <int,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <unsigned int,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <long,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <unsigned long,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <float,3> > ();
-    GenerateMinMaxValuesFromImage < itk::Image <double,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <char, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned char, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <short, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned short, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <int, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned int, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <long, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned long, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <float, 3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <double, 3> > ();
 
-    if ( m_imageData ) {
-        medImageMaskAnnotationData * existingMaskAnnData = NULL;
-        foreach( medAttachedData * data, m_imageData->attachedData() ) {
-
+    if ( m_imageData )
+    {
+        medImageMaskAnnotationData *existingMaskAnnData = NULL;
+        foreach( medAttachedData * data, m_imageData->attachedData() ) 
+        {
             if ( qobject_cast<medImageMaskAnnotationData*>(data) ) {
                 existingMaskAnnData =  qobject_cast<medImageMaskAnnotationData*>(data);
                 break;
             }
         }
 
-        if ( existingMaskAnnData ) {
-
+        if ( existingMaskAnnData ) 
+        {
             m_maskAnnotationData = existingMaskAnnData;
             m_maskData = existingMaskAnnData->maskData();
-
-        } else {
-
+        }
+        else 
+        {
             m_maskData = medAbstractDataFactory::instance()->createSmartPointer( "itkDataImageUChar3" );
 
-            if ( !m_maskData ) {
+            if ( !m_maskData )
+            {
                 dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create itkDataImageUChar3";
                 return;
             }
@@ -285,10 +276,13 @@ void medClickAndMoveEventFilter::setData( medAbstractData *medData )
         }
     }
 
-    if ( m_imageData ) {
+    if ( m_imageData )
+    {
         m_itkMask = dynamic_cast<MaskType*>( reinterpret_cast<itk::Object*>(m_maskData->data()) );
         m_toolbox->showButtons(true);
-    } else {
+    }
+    else
+    {
         m_itkMask = NULL;
         m_toolbox->showButtons(false);
     }
@@ -296,13 +290,13 @@ void medClickAndMoveEventFilter::setData( medAbstractData *medData )
     m_toolbox->setMask(m_itkMask);
 }
 
-void medClickAndMoveEventFilter::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
+void medClickAndMoveEventFilter::initializeMaskData( medAbstractData *imageData, medAbstractData *maskData )
 {
     MaskType::Pointer mask = MaskType::New();
 
     Q_ASSERT(mask->GetImageDimension() == 3);
 
-    medAbstractImageData * mImage = qobject_cast<medAbstractImageData*>(imageData);
+    medAbstractImageData *mImage = qobject_cast<medAbstractImageData*>(imageData);
     Q_ASSERT(mImage);
     //Q_ASSERT(mask->GetImageDimension() >= mImage->Dimension());
 
@@ -318,61 +312,69 @@ void medClickAndMoveEventFilter::initializeMaskData( medAbstractData * imageData
     direction.Fill(0);
     spacing.Fill(0);
     origin.Fill(0);
-    for (unsigned int i = 0;i < mask->GetImageDimension();++i)
-        direction(i,i) = 1;
+    for (unsigned int i = 0; i < mask->GetImageDimension(); ++i)
+    {
+        direction(i, i) = 1;
+    }
 
-    unsigned int maxIndex = std::min<unsigned int>(mask->GetImageDimension(),mImage->Dimension());
+    unsigned int maxIndex = std::min<unsigned int>(mask->GetImageDimension(), mImage->Dimension());
 
     switch (mImage->Dimension())
     {
-    case 2:
-    {
-        itk::ImageBase <2> * imageDataOb = dynamic_cast<itk::ImageBase <2> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
-
-        for (unsigned int i = 0;i < maxIndex;++i)
+        case 2:
         {
-            for (unsigned int j = 0;j < maxIndex;++j)
-                direction(i,j) = imageDataOb->GetDirection()(i,j);
+            itk::ImageBase <2> *imageDataOb = dynamic_cast<itk::ImageBase <2>*>( reinterpret_cast<itk::Object*>(imageData->data()) );
 
-            spacing[i] = imageDataOb->GetSpacing()[i];
-            origin[i] = imageDataOb->GetOrigin()[i];
+            for (unsigned int i = 0; i < maxIndex; ++i)
+            {
+                for (unsigned int j = 0; j < maxIndex; ++j)
+                {
+                    direction(i, j) = imageDataOb->GetDirection() (i, j);
+                }
+
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
         }
 
-        break;
-    }
-
-    case 4:
-    {
-        itk::ImageBase <4> * imageDataOb = dynamic_cast<itk::ImageBase <4> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
-
-        for (unsigned int i = 0;i < maxIndex;++i)
+        case 4:
         {
-            for (unsigned int j = 0;j < maxIndex;++j)
-                direction(i,j) = imageDataOb->GetDirection()(i,j);
+            itk::ImageBase <4> *imageDataOb = dynamic_cast<itk::ImageBase <4>*>( reinterpret_cast<itk::Object*>(imageData->data()) );
 
-            spacing[i] = imageDataOb->GetSpacing()[i];
-            origin[i] = imageDataOb->GetOrigin()[i];
+            for (unsigned int i = 0; i < maxIndex; ++i)
+            {
+                for (unsigned int j = 0; j < maxIndex; ++j)
+                {
+                    direction(i, j) = imageDataOb->GetDirection() (i, j);
+                }
+
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
         }
 
-        break;
-    }
-
-    case 3:
-    default:
-    {
-        itk::ImageBase <3> * imageDataOb = dynamic_cast<itk::ImageBase <3> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
-
-        for (unsigned int i = 0;i < maxIndex;++i)
+        case 3:
+        default:
         {
-            for (unsigned int j = 0;j < maxIndex;++j)
-                direction(i,j) = imageDataOb->GetDirection()(i,j);
+            itk::ImageBase <3> *imageDataOb = dynamic_cast<itk::ImageBase <3>*>( reinterpret_cast<itk::Object*>(imageData->data()) );
 
-            spacing[i] = imageDataOb->GetSpacing()[i];
-            origin[i] = imageDataOb->GetOrigin()[i];
+            for (unsigned int i = 0; i < maxIndex; ++i)
+            {
+                for (unsigned int j = 0; j < maxIndex; ++j)
+                {
+                    direction(i, j) = imageDataOb->GetDirection() (i, j);
+                }
+
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
         }
-
-        break;
-    }
     }
 
     mask->SetOrigin(origin);
@@ -386,13 +388,11 @@ void medClickAndMoveEventFilter::initializeMaskData( medAbstractData * imageData
     maskData->setData((QObject*)(mask.GetPointer()));
 }
 
-
-
 template <typename IMAGE>
 void
 medClickAndMoveEventFilter::GenerateMinMaxValuesFromImage ()
 {
-    IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
+    IMAGE *tmpPtr = dynamic_cast<IMAGE*> ((itk::Object*)(m_imageData->data()));
 
     if (!tmpPtr)
         return;
@@ -412,21 +412,22 @@ medClickAndMoveEventFilter::GenerateMinMaxValuesFromImage ()
     m_toolbox->setWandSliderValue(m_toolbox->wandRadius());
 }
 
-void medClickAndMoveEventFilter::setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData)
+void medClickAndMoveEventFilter::setOutputMetadata(const medAbstractData *inputData, medAbstractData *outputData)
 {
     Q_ASSERT(outputData && inputData);
 
     QStringList metaDataToCopy;
     metaDataToCopy
-            << medMetaDataKeys::PatientName.key()
-            << medMetaDataKeys::StudyDescription.key();
+    << medMetaDataKeys::PatientName.key()
+    << medMetaDataKeys::StudyDescription.key();
 
-    foreach( const QString & key, metaDataToCopy ) {
+    foreach( const QString &key, metaDataToCopy ) {
         outputData->setMetaData(key, inputData->metadatas(key));
     }
 
     QString seriesDesc;
     seriesDesc = tr("Segmented from ") + medMetaDataKeys::SeriesDescription.getFirstValue( inputData );
 
-    medMetaDataKeys::SeriesDescription.set(outputData,seriesDesc);
+    medMetaDataKeys::SeriesDescription.set(outputData, seriesDesc);
 }
+

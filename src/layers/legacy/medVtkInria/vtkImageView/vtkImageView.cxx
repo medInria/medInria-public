@@ -50,8 +50,8 @@
 #include <itkMatrix.h>
 #include <vtkRendererCollection.h>
 #include <vtkImageReader2.h>
+#include <vtkAlgorithmOutput.h>
 
-//#include <vnl/algo/vnl_qr.h>
 
 #ifdef WIN32
 #define snprintf _snprintf_s
@@ -84,7 +84,8 @@ enum ImageViewType {
 
 
 // pIMPL class for vtkImageView
-class vtkImageView::vtkImageViewImplementation {
+class vtkImageView::vtkImageViewImplementation 
+{
 public:
     //! Default constructor
     vtkImageViewImplementation () : TemporalFilterType (IMAGE_VIEW_NONE) {}
@@ -140,7 +141,8 @@ vtkImageView::vtkImageView()
     this->OverlayRenderer        = 0;
     this->RenderWindow           = 0;
     this->Interactor             = 0;
-    this->Input                  = 0;
+    this->m_poInternalImageFromInput = nullptr;
+    this->m_poInputVtkAlgoOutput = nullptr;
     this->InternalMTime          = 0;
     this->InteractorStyle        = 0;
     this->IsInteractorInstalled  = 0;
@@ -183,11 +185,6 @@ vtkImageView::vtkImageView()
     this->ShowScalarBar = true;
 
     this->OrientationTransform->SetInput (this->OrientationMatrix);
-
-    // use default maps, sets color map of WindowLevel and ScalarBar
-    //this->SetTransferFunctions( NULL, NULL );
-
-    //this->WindowLevel->SetOutputFormatToRGB();
 
     this->TimeIndex = 0;
 
@@ -250,10 +247,11 @@ vtkImageView::~vtkImageView()
         this->InteractorStyle->Delete();
         this->InteractorStyle = 0;
     }
-    if (this->Input)
+    if (this->m_poInternalImageFromInput)
     {
-        this->Input->Delete();
-        this->Input = 0;
+        //this->m_poInternalImageFromInput->Delete();
+        this->m_poInternalImageFromInput = nullptr;
+        this->m_poInputVtkAlgoOutput = nullptr;
     }
 
     delete this->Impl;
@@ -273,7 +271,7 @@ vtkMTimeType vtkImageView::GetMTime()
         // Renderer, RenderWindow,Interactor,
         InteractorStyle, WindowLevel, OrientationTransform, ScalarBar, OrientationMatrix,
         InvertOrientationMatrix, CornerAnnotation, TextProperty, LookupTable,
-        ScalarBar, Input };
+        ScalarBar, m_poInternalImageFromInput };
     const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
 
     for ( int i(0); i<numObjects; ++i ) {
@@ -378,15 +376,15 @@ bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
 /**
 * Reslice an image onto the input image. Internal use only.
 */
-vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkImageData *image, vtkMatrix4x4 *matrix)
+vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkMatrix4x4 *matrix)
 {
     vtkAlgorithmOutput *poResOutput = 0;
-
-    if (!pi_poVtkAlgoPort || !image || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    vtkImageData* image = ((vtkImageAlgorithm*)pi_poVtkAlgoPort->GetProducer())->GetOutput();
+    if (!pi_poVtkAlgoPort || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
         return NULL;
 
 
-    if ( image &&
+    if ( pi_poVtkAlgoPort &&
          this->Compare(image->GetOrigin(),      this->GetMedVtkImageInfo()->origin, 3) &&
          this->Compare(image->GetSpacing(),     this->GetMedVtkImageInfo()->spacing, 3) &&
          this->Compare(image->GetExtent(), this->GetMedVtkImageInfo()->extent, 6) &&
@@ -410,14 +408,7 @@ vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poV
         vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
 
         vtkImageReslice *reslicer = vtkImageReslice::New();
-        if (pi_poVtkAlgoPort)
-        {
-            reslicer->SetInputConnection (pi_poVtkAlgoPort);
-        } 
-        else
-        {
-            reslicer->SetInputData       (image);
-        }
+        reslicer->SetInputConnection (pi_poVtkAlgoPort);
         reslicer->SetResliceAxes     (auxMatrix);
         reslicer->SetOutputOrigin    (this->GetMedVtkImageInfo()->origin);
         reslicer->SetOutputSpacing   (this->GetMedVtkImageInfo()->spacing);
@@ -435,16 +426,14 @@ vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poV
 
 //----------------------------------------------------------------------------
 /**  Set the input image to the viewer. */
-void vtkImageView::SetInput(vtkAlgorithmOutput* pi_povtkAlgo, vtkImageData *arg, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
+void vtkImageView::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
-    vtkSetObjectBodyMacro (Input, vtkImageData, arg);
-    if (pi_povtkAlgo)
+    //vtkSetObjectBodyMacro (Input, vtkImageData, arg);
+    m_poInputVtkAlgoOutput = pi_poVtkAlgoOutput;
+    m_poInternalImageFromInput = ((vtkImageAlgorithm*)pi_poVtkAlgoOutput->GetProducer())->GetOutput();
+    if (pi_poVtkAlgoOutput)
     {
-       this->WindowLevel->SetInputConnection(pi_povtkAlgo);
-    } 
-    else if (arg)
-    {
-       this->WindowLevel->SetInputData(arg);
+       this->WindowLevel->SetInputConnection(pi_poVtkAlgoOutput);
     }
 
     if (layer==0)
@@ -1136,20 +1125,24 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
 double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int component, int layer )
 {
     if (!this->GetMedVtkImageInfo(layer) || !this->GetMedVtkImageInfo(layer)->initialized)
+    {
         return 0.0;
+    }
 
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
     this->GetInputAlgorithm()->UpdateInformation();
 
     int* w_extent = this->GetMedVtkImageInfo()->extent;
-    if ( (indices[0] < w_extent[0]) ||
-         (indices[0] > w_extent[1]) ||
-         (indices[1] < w_extent[2]) ||
-         (indices[1] > w_extent[3]) ||
-         (indices[2] < w_extent[4]) ||
-         (indices[2] > w_extent[5]) )
+    if ((indices[0] < w_extent[0]) ||
+        (indices[0] > w_extent[1]) ||
+        (indices[1] < w_extent[2]) ||
+        (indices[1] > w_extent[3]) ||
+        (indices[2] < w_extent[4]) ||
+        (indices[2] > w_extent[5]))
+    {
         return 0;
+    }
 
     // Is the requested point in the currently loaded data extent? If not, attempt to update.
     int* extent = this->GetMedVtkImageInfo()->extent;
@@ -1169,7 +1162,6 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
              (indices[2] < u_extent[4]) ||
              (indices[2] > u_extent[5]) )
         {
-
             int pointExtent [6] = { indices [0], indices [0], indices [1], indices [1], indices [2], indices [2] };
             this->GetInputAlgorithm(layer)->UpdateExtent(pointExtent);
             this->GetInputAlgorithm(layer)->Update();
@@ -1191,13 +1183,14 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
             }
 
         }
-    } else {
-
+    }
+    else
+    {
         // Need to be sure that the input is up to date. Otherwise we may be requesting bad data.
         this->GetInputAlgorithm(layer)->Update();
     }
 
-    return 0.0;// input->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component); //FloTODO
+    return m_poInternalImageFromInput->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);//FloTODO
 
 }
 
@@ -1819,10 +1812,10 @@ void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "OrientationMatrix:\n";
     this->OrientationMatrix->PrintSelf(os,indent.GetNextIndent());
 
-    if (this->Input)
+    if (this->m_poInternalImageFromInput)
     {
         os << indent << "Input:\n";
-        this->Input->PrintSelf(os,indent.GetNextIndent());
+        this->m_poInternalImageFromInput->PrintSelf(os,indent.GetNextIndent());
     }
     if (this->RenderWindow)
     {

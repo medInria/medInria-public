@@ -32,6 +32,7 @@ class medAbstractPaintCommandPrivate;
 class medClickAndMoveEventFilter;
 class medAbstractImageView;
 class medAbstractData;
+class medAnnotationData;
 class medAbstractImageData;
 
 
@@ -68,7 +69,8 @@ struct medPaintCommandOptions
 {
     medAbstractImageView *view;
     medAbstractData* data;
-    medAbstractData *maskData;
+    //medAbstractData *maskData;
+    medAnnotationData *maskAnnotationData;
     MaskType::Pointer itkMask;
     QVector<QVector3D> points;
     unsigned int maskValue;

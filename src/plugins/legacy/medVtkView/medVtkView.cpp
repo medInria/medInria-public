@@ -38,7 +38,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkMath.h>
 
-#include <vtkImageViewCollection.h>
+//#include <vtkImageViewCollection.h>
 
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>

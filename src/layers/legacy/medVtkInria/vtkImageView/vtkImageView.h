@@ -51,6 +51,7 @@ class vtkProp3DCollection;
 class vtkProp3D;
 class vtkScalarsToColors;
 class vtkAlgorithm;
+class vtkImageAlgorithm;
 
 
 /**
@@ -134,9 +135,6 @@ class vtkAlgorithm;
    L) Input
    No actual need to keep the input instance, but preferably directly put it into the ImageToColor instance
    as it will (or should) normally not be used otherwise.
-
-   NOTA on ITK: if we want at one point to submit this concept to VTK, we might
-   consider remove ITK dependency.
 */
 class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
 {
@@ -171,10 +169,7 @@ public:
     virtual void Render();
 
 
-    virtual void SetInput (vtkAlgorithmOutput* pi_povtkAlgo, vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
-    //virtual void SetInputConnection (vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
-
-    //virtual vtkImageData* GetMedVtkImageInfo (int layer = 0) const = 0;
+    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = 0, int layer = 0);
     virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const = 0;
 
     // Get the internal render window, renderer, image map and interactor instances.
@@ -191,8 +186,7 @@ public:
 
 
     virtual void SetupInteractor           (vtkRenderWindowInteractor* arg);
-    virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* arg)
-    { this->SetupInteractor (arg); }
+    virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* arg) { this->SetupInteractor (arg); }
 
     // Start/Stop the interactor relation with the view.
     // it basically plug or unplug the interactor.
@@ -588,8 +582,42 @@ public:
 
     itk::ImageBase<4>* GetTemporalITKInput() const;
 
+private:
+    //! Template function which implements SetInput for all types.
+    template < class T >
+    void SetITKInput(typename itk::Image<T, 3>::Pointer itkImage, int layer = 0);
+
+    template < class T >
+    void AddITKInput(typename itk::Image<T, 3>::Pointer itkImage);
+
+    //! Template function which implements SetInput4 for all types.
+    template < class T >
+    void SetITKInput4(typename itk::Image<T, 4>::Pointer itkImage, int layer = 0);
+
+    template < class T >
+    void AddITKInput4(typename itk::Image<T, 4>::Pointer itkImage);
+
+    //! Template function which sets the time step.
+    template < class T >
+    void SetTimeIndex(vtkIdType timeIndex);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public:
     void        SetPatientName (const char* name);
     const char *GetPatientName() const;
 
@@ -650,28 +678,11 @@ protected:
     virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);
 
 
-    virtual vtkAlgorithmOutput* ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkImageData *image, vtkMatrix4x4 *matrix);
+    virtual vtkAlgorithmOutput* ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkMatrix4x4 *matrix);
 
     virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
 
-private:
-    //! Template function which implements SetInput for all types.
-    template < class T >
-    void SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer=0);
 
-    template < class T >
-    void AddITKInput (typename itk::Image<T, 3>::Pointer itkImage);
-
-    //! Template function which implements SetInput4 for all types.
-    template < class T >
-    void SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer=0);
-
-    template < class T >
-    void AddITKInput4 (typename itk::Image<T, 4>::Pointer itkImage);
-
-    //! Template function which sets the time step.
-    template < class T >
-    void SetTimeIndex (vtkIdType timeIndex);
 
 protected:
     /**
@@ -760,7 +771,8 @@ protected:
     vtkInteractorStyle*             InteractorStyle;
     vtkImageMapToColors*            WindowLevel;
 
-    vtkImageData*                   Input;
+    vtkImageData*                   m_poInternalImageFromInput;
+    vtkAlgorithmOutput*             m_poInputVtkAlgoOutput;
 
     std::string PatientName;
     std::string StudyName;
@@ -789,6 +801,3 @@ private:
     void operator=(const vtkImageView&); // Not implemented.
 
 };
-
-
-

@@ -186,12 +186,12 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
     if( d->imageData->PixelType() == typeid(double) || d->imageData->PixelType() == typeid(float) )
         d->isFloatImage = true;
 
-    d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
+    //d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
     initParameters(d->imageData);
 
     //TODO GPR: to check: update not available anymore in VTK6
-    //d->view2d->GetInput()->Update();
-    double* range = d->view2d->GetInput(d->view->layer(d->imageData))->GetScalarRange();
+    //d->view2d->GetInput()->Modified(); // Update();
+    double* range = d->view2d->GetScalarRange(d->view->layer(d->imageData));
     this->initWindowLevelParameters(range);
 }
 
@@ -412,7 +412,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 
     if ( preset == "None" )
     {
-        double *range = d->view2d->GetInput(d->view->layer(d->imageData))->GetScalarRange();
+        double *range = d->view2d->GetScalarRange(d->view->layer(d->imageData));
         wl["Window"] = QVariant(range[1]-range[0]);
         wl["Level"] = QVariant(0.5*(range[1]+range[0]));
         setWindowLevel(wl);

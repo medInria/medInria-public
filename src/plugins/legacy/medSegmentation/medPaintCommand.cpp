@@ -30,6 +30,8 @@
 #include <itkLabelMapToLabelImageFilter.h>
 #include <itkLabelMapToAttributeImageFilter.h>
 
+#include <medVtkViewBackend.h>
+#include <vtkImageAlgorithm.h>
 
 
 class medPaintCommandPrivate
@@ -157,9 +159,14 @@ void medPaintCommand::paint()
                 }
             }
         }
-        this->options()->itkMask->Modified();
+        vtkImageView2D* poImageViewTmp = ((medVtkViewBackend*)this->options()->view->backend())->view2D;
+        unsigned int uiLayer = this->options()->view->layer((medAbstractData*) this->options()->maskAnnotationData);
+        vtkAlgorithm * poAlgoTmp = poImageViewTmp->GetImageAlgorithmForLayer(uiLayer);
+        poAlgoTmp->Modified();
+
+        /*this->options()->itkMask->Modified();
         this->options()->itkMask->GetPixelContainer()->Modified();
-        this->options()->itkMask->SetPipelineMTime(this->options()->itkMask->GetMTime());
+        this->options()->itkMask->SetPipelineMTime(this->options()->itkMask->GetMTime());*/
     }
 }
 

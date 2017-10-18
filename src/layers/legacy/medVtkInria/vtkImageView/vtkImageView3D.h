@@ -144,7 +144,7 @@ public:
     virtual void SetCroppingMode(unsigned int);
     virtual unsigned int GetCroppingMode ();
 
-    virtual void SetInput (vtkAlgorithmOutput* pi_povtkAlgo, vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
+    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = 0, int layer = 0);
     //virtual void AddInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0);
     virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
 

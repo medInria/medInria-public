@@ -26,20 +26,6 @@ vtkImage2DDisplay::~vtkImage2DDisplay()
 
 void vtkImage2DDisplay::SetInput(vtkAlgorithmOutput *pi_poVtkAlgoPort)
 {
-    //this->Input = pi_poVtkAlgoPort;
-    /*m_sVtkImageInfo.initialized = true;
-    vtkAlgorithmOutput *poVtkAlgoPortTmp = pi_poVtkAlgoPort;
-    vtkImageAlgorithm *poVtkImgAlgoTmp = (vtkImageAlgorithm*)(pi_poVtkAlgoPort->GetProducer());
-    vtkImageData *poImg = poVtkImgAlgoTmp->GetOutput();
-    if (!(pi_poVtkAlgoPort && poImg->GetScalarType()==VTK_UNSIGNED_CHAR && (poImg->GetNumberOfScalarComponents()==3 || poImg->GetNumberOfScalarComponents()==4) ))
-    {
-        this->WindowLevel->SetInputConnection(poVtkAlgoPortTmp);
-        poVtkAlgoPortTmp = this->WindowLevel->GetOutputPort();
-    }
-
-    this->ImageActor->GetMapper()->SetInputConnection(poVtkAlgoPortTmp);*/
-
-
     if (pi_poVtkAlgoPort)
     {
         if (pi_poVtkAlgoPort->GetProducer() && pi_poVtkAlgoPort->GetProducer()->IsA("vtkImageAlgorithm")/* && pi_poVtkAlgoPort->GetProducer()->IsTypeOf("vtkImageAlgorithm")*/)

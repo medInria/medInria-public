@@ -469,8 +469,9 @@ void vtkImageView3D::UnInstallInteractor()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgo, vtkImageData *arg, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
+void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
+    vtkImageData *vtkImgTmp = ((vtkImageAlgorithm*)pi_poVtkAlgoOutput->GetProducer())->GetOutput();
   if(layer==0)
   {
     if (this->GetMedVtkImageInfo() && this->GetMedVtkImageInfo()->initialized)
@@ -478,12 +479,12 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgo, vtkImageData *ar
       this->RemoveAllLayers();
     }
 
-    if(arg)
+    if(pi_poVtkAlgoOutput)
     {
-        this->Superclass::SetInput (pi_poVtkAlgo, arg, matrix, layer);
-        this->GetImage3DDisplayForLayer(0)->SetInputConnection(pi_poVtkAlgo);
+        this->Superclass::SetInput (pi_poVtkAlgoOutput, matrix, layer);
+        this->GetImage3DDisplayForLayer(0)->SetInputConnection(pi_poVtkAlgoOutput);
 
-        double *range = arg->GetScalarRange();
+        double *range = vtkImgTmp->GetScalarRange();
         this->SetColorRange(range,0);
         this->VolumeProperty->SetShade(0, 1);
         this->VolumeProperty->SetComponentWeight(0, 1.0);
@@ -496,20 +497,17 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgo, vtkImageData *ar
     }
   }
 
-  if( !arg )
+  if( !pi_poVtkAlgoOutput)
   {
     return;
   }
 
   // Get whole extent : More reliable than dimensions if not up-to-date.
-  int * w_extent = arg->GetExtent();
+  int * w_extent = vtkImgTmp->GetExtent();
 
   int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
 
-  //  int* size = image->GetDimensions();
-  if ( (size[0] < 2) ||
-      (size[1] < 2) ||
-      (size[2] < 2) )
+  if ( (size[0] < 2) ||(size[1] < 2) || (size[2] < 2) )
   {
     vtkWarningMacro ( <<"Cannot do volume rendering for a single slice, skipping"<<endl);
     this->ActorX->GetMapper()->SetInputConnection (nullptr);
@@ -534,7 +532,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgo, vtkImageData *ar
     }
 
     // reslice input image if needed
-    vtkAlgorithmOutput *poReslicerOutput = this->ResliceImageToInput(pi_poVtkAlgo, arg, matrix);
+    vtkAlgorithmOutput *poReslicerOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
     if (!poReslicerOutput)
     {
       vtkErrorMacro (<< "Could not reslice image to input");
@@ -552,7 +550,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgo, vtkImageData *ar
 
       poVtkAlgoOutputTmp = cast->GetOutputPort();
 
-      cast->Delete();
+      //cast->Delete();
     }
 
     this->AddLayer (layer);
@@ -585,9 +583,9 @@ void vtkImageView3D::InternalUpdate()
 {
     //vtkSmartPointer<vtkImageData> input = this->GetMedVtkImageInfo();
     bool multiLayers = false;
-    bool multichannelInput = (this->Input->GetScalarType() == VTK_UNSIGNED_CHAR &&
-                              (this->Input->GetNumberOfScalarComponents() == 3 ||
-                               this->Input->GetNumberOfScalarComponents() == 4 ));
+    bool multichannelInput = (this->m_poInternalImageFromInput->GetScalarType() == VTK_UNSIGNED_CHAR &&
+                              (this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 3 ||
+                               this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 4 ));
     if(this->GetMedVtkImageInfo() == NULL || !this->GetMedVtkImageInfo()->initialized)
     {
         this->Renderer->RemoveAllViewProps();
@@ -646,15 +644,18 @@ void vtkImageView3D::InternalUpdate()
     {
         this->VolumeProperty->IndependentComponentsOn();
         this->VolumeProperty->ShadeOn();
-        this->PlanarWindowLevelX->SetInputData(this->Input);
+        this->PlanarWindowLevelX->SetInputConnection(this->m_poInputVtkAlgoOutput);
+        //this->PlanarWindowLevelX->SetInputData(this->m_poInternalImageFromInput);
         this->PlanarWindowLevelX->SetOutputFormatToRGB();
         this->PlanarWindowLevelX->UpdateInformation();
         this->PlanarWindowLevelX->Update();
-        this->PlanarWindowLevelY->SetInputData(this->Input);
+        this->PlanarWindowLevelY->SetInputConnection(this->m_poInputVtkAlgoOutput);
+        //this->PlanarWindowLevelY->SetInputData(this->m_poInternalImageFromInput);
         this->PlanarWindowLevelY->SetOutputFormatToRGB();
         this->PlanarWindowLevelY->UpdateInformation();
         this->PlanarWindowLevelY->Update();
-        this->PlanarWindowLevelZ->SetInputData(this->Input);
+        this->PlanarWindowLevelZ->SetInputConnection(this->m_poInputVtkAlgoOutput);
+        //this->PlanarWindowLevelZ->SetInputData(this->m_poInternalImageFromInput);
         this->PlanarWindowLevelZ->SetOutputFormatToRGB();
         this->PlanarWindowLevelZ->UpdateInformation();
         this->PlanarWindowLevelZ->Update();

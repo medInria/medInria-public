@@ -44,6 +44,8 @@ vtkMetaImageData::vtkMetaImageData()
 
   this->OrientationMatrix = vtkMatrix4x4::New();
   this->OrientationMatrix->Identity();
+
+  this->m_poPort = nullptr;
   
 }
 
@@ -59,6 +61,18 @@ void vtkMetaImageData::SetDataSet(vtkDataSet* dataset)
   if (!vtkImageData::SafeDownCast(dataset))
     vtkWarningMacro(<<"data type is not image"<<endl);
   this->Superclass::SetDataSet (dataset);
+}
+
+
+void vtkMetaImageData::SetAlgorithmOutput(vtkAlgorithmOutput *pi_poPort)
+{
+   m_poPort = pi_poPort;
+}
+
+
+vtkAlgorithmOutput* vtkMetaImageData::GetAlgorithmOutputPort()
+{
+   return m_poPort;
 }
 
 //----------------------------------------------------------------------------
@@ -197,8 +211,7 @@ itk::ImageBase<3>* vtkMetaImageData::GetItkImage()
   return this->m_ItkImage;
 }
 
-
-void vtkMetaImageData::CopyInformation (vtkMetaDataSet* metadataset)
+void vtkMetaImageData::CopyInformation(vtkMetaDataSet* metadataset)
 {
   this->Superclass::CopyInformation(metadataset);
   vtkMetaImageData* imagedata = vtkMetaImageData::SafeDownCast (metadataset);

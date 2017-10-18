@@ -23,6 +23,9 @@
 
 #include <QVector3D>
 
+#include <medVtkViewBackend.h>
+#include <vtkImageAlgorithm.h>
+
 class medMagicWandCommandPrivate
 {
 public:
@@ -220,10 +223,14 @@ medMagicWandCommand::RunConnectedFilter (MaskType::IndexType &index, unsigned in
             ++maskFilterItr;
         }
     }
+    vtkImageView2D* poImageViewTmp = ((medVtkViewBackend*)this->options()->view->backend())->view2D;
+    unsigned int uiLayer = this->options()->view->layer((medAbstractData*) this->options()->maskAnnotationData);
+    vtkAlgorithm * poAlgoTmp = poImageViewTmp->GetImageAlgorithmForLayer(uiLayer);
+    poAlgoTmp->Modified();
 
-    this->options()->itkMask->Modified();
+    /*this->options()->itkMask->Modified();
     this->options()->itkMask->GetPixelContainer()->Modified();
-    this->options()->itkMask->SetPipelineMTime(this->options()->itkMask->GetMTime());
+    this->options()->itkMask->SetPipelineMTime(this->options()->itkMask->GetMTime());*/
 }
 
 

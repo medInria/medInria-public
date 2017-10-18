@@ -272,84 +272,78 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
     SetITKDataSet<type>(reader->GetOutput(), filename);
   }
   
-  template <typename type> inline void SetITKDataSet (typename itk::Image<type, 4>* dataset, const char* filename = "nofile")
+  template <typename type> inline void SetITKDataSet (typename itk::Image<type, 4> *dataset, const char *filename = "nofile")
   {
-    
-    typedef typename itk::Image<type, 4> Image4DType;
-    typedef typename itk::Image<type, 3> Image3DType;
-  
-    typename Image4DType::Pointer image = dataset;
+      typedef typename itk::Image<type, 4> Image4DType;
+      typedef typename itk::Image<type, 3> Image3DType;
 
-    typename Image4DType::SizeType size = image->GetLargestPossibleRegion().GetSize();
-    unsigned int nVolumes = size[3];
+      typename Image4DType::Pointer image = dataset;
 
-    // split the 4D volume into 3D volumes
-    typename Image4DType::RegionType regionToExtract = image->GetLargestPossibleRegion();
-    typename Image4DType::IndexType index;
-    index[0] = 0;
-    index[1] = 0;
-    index[2] = 0;
-    index[3] = 0;
-    size[3] = 0;
-    regionToExtract.SetSize (size);
-    regionToExtract.SetIndex (index);
-    
-    if( nVolumes==0 )
-    {
-      throw vtkErrorCode::CannotOpenFileError;
-    }
+      typename Image4DType::SizeType size = image->GetLargestPossibleRegion().GetSize();
+      unsigned int nVolumes = size[3];
 
-    this->Type = vtkMetaDataSet::VTK_META_IMAGE_DATA;
-  
+      // split the 4D volume into 3D volumes
+      typename Image4DType::RegionType regionToExtract = image->GetLargestPossibleRegion();
+      typename Image4DType::IndexType index;
+      index[0] = 0;
+      index[1] = 0;
+      index[2] = 0;
+      index[3] = 0;
+      size[3] = 0;
+      regionToExtract.SetSize (size);
+      regionToExtract.SetIndex (index);
 
-    double res = image->GetSpacing ()[3];
-  
-    for( unsigned int n=0; n<nVolumes;  n++)
-    {
-      typedef typename itk::ExtractImageFilter<Image4DType, Image3DType> ExtractImageType;
-      regionToExtract.SetIndex (3,n);
-      typename ExtractImageType::Pointer myExtractor = ExtractImageType::New();
-      myExtractor->SetExtractionRegion (regionToExtract);
-        myExtractor->SetDirectionCollapseToGuess();
-      myExtractor->SetInput (image);
-      
-      try
+      if( nVolumes==0 )
       {
-	myExtractor->Update();
-      }
-      catch (itk::ExceptionObject &)
-      {
-	vtkErrorMacro(<<"no volume in file : "<<filename<<endl);
-	throw vtkErrorCode::UserError;
+          throw vtkErrorCode::CannotOpenFileError;
       }
 
-      vtkMetaImageData* imagedata = vtkMetaImageData::New();
+      this->Type = vtkMetaDataSet::VTK_META_IMAGE_DATA;
 
-      try
+
+      double res = image->GetSpacing ()[3];
+
+      for( unsigned int n=0; n<nVolumes; n++)
       {
+          typedef typename itk::ExtractImageFilter<Image4DType, Image3DType> ExtractImageType;
+          regionToExtract.SetIndex (3, n);
+          typename ExtractImageType::Pointer myExtractor = ExtractImageType::New();
+          myExtractor->SetExtractionRegion (regionToExtract);
+          myExtractor->SetDirectionCollapseToGuess();
+          myExtractor->SetInput (image);
 
-	imagedata->SetItkImage<type>(myExtractor->GetOutput());
-      
-	double time = (double)(n)*res;
-	std::string name = vtksys::SystemTools::GetFilenameWithoutExtension((vtksys::SystemTools::GetFilenameName (filename)).c_str()).c_str();
-	std::ostringstream o_name;
-	o_name<<name.c_str()<<"("<<n<<")";
-      
-	imagedata->SetName (o_name.str().c_str());
-	imagedata->SetTime (time);
-	this->AddMetaDataSet (imagedata );
-      
-      
-      }
-      catch (itk::ExceptionObject &)
-      {
-	vtkErrorMacro(<<"error when reading : skipping volume "<<n<<" of file "<<filename<<endl);
-      }
+          try
+          {
+              myExtractor->Update();
+          }
+          catch (itk::ExceptionObject &)
+          {
+              vtkErrorMacro(<<"no volume in file : "<<filename<<endl);
+              throw vtkErrorCode::UserError;
+          }
 
-      imagedata->Delete();
-    
-    }
-    
+          vtkMetaImageData *imagedata = vtkMetaImageData::New();
+
+          try
+          {
+              imagedata->SetItkImage<type>(myExtractor->GetOutput());
+
+              double time = (double)(n)*res;
+              std::string name = vtksys::SystemTools::GetFilenameWithoutExtension((vtksys::SystemTools::GetFilenameName (filename)).c_str()).c_str();
+              std::ostringstream o_name;
+              o_name<<name.c_str()<<"("<<n<<")";
+
+              imagedata->SetName (o_name.str().c_str());
+              imagedata->SetTime (time);
+              this->AddMetaDataSet (imagedata );
+          }
+          catch (itk::ExceptionObject &)
+          {
+              vtkErrorMacro(<<"error when reading : skipping volume "<<n<<" of file "<<filename<<endl);
+          }
+
+          imagedata->Delete();
+      }
   }
   
 

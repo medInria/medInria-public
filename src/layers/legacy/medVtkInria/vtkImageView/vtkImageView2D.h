@@ -37,6 +37,7 @@ class vtkImageView2DCommand;
 class vtkTransform;
 class vtkPolyData;
 class vtkImage2DDisplay;
+class vtkImageAlgorithm;
 
 /**
 
@@ -112,7 +113,7 @@ public:
 
     // Description:
     // Set/Get the input image to the viewer.
-    virtual void SetInput (vtkAlgorithmOutput *pi_povtkAlgo, vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
+    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = 0, int layer = 0);
     virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
 
 
@@ -254,7 +255,8 @@ public:
     virtual void ResetCamera();
 
     virtual void GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position);
-
+    
+    //virtual vtkImageAlgorithm* GetWindowLevelInputAlgorithm (int layer = 0) const;
 
     virtual vtkImageMapToColors *GetWindowLevel(int layer=0) const;
 
@@ -355,10 +357,11 @@ public:
     virtual void StoreColorWindow(double s,int layer);
     virtual void StoreColorLevel(double s,int layer);
 
-  virtual void UpdateBounds (const double bounds[6], int layer = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
+    virtual void UpdateBounds (const double bounds[6], int layer = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
                              const double imageOrigin[] = 0);
 
     virtual vtkRenderer * GetRenderer() const;
+    vtkImageAlgorithm * GetImageAlgorithmForLayer(int layer) const;
 
 protected:
     vtkImageView2D();
@@ -422,12 +425,13 @@ protected:
     vtkRenderer * GetRendererForLayer(int layer) const;
 
 
+
     //BTX
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
     //ETX
 
     //void SetFirstLayer2(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
-    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
+    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
@@ -458,6 +462,7 @@ protected:
 
     struct LayerInfo {
         vtkSmartPointer<vtkImage2DDisplay> ImageDisplay;
+        vtkSmartPointer<vtkImageAlgorithm> ImageAlgo;
         vtkSmartPointer<vtkRenderer> Renderer;
     };
     typedef std::vector<LayerInfo > LayerInfoVecType;
