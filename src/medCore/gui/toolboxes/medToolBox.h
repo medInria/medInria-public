@@ -73,6 +73,7 @@ public:
     //! Display a qDebug and a medMessageController
     void displayMessageError(QString error);
 
+    //! Get back progress bar from workspace
     medProgressionStack *getProgressionStack();
 
 signals:
@@ -116,15 +117,19 @@ public slots:
     //! Switch between errors
     void handleDisplayError(int);
 
-    //!
+    //! Deactivate toolbox
     void setToolBoxOnWaitStatus();
+
+    //! Enable toolbox
     void setToolBoxOnReadyToUse();
 
-    virtual void updateView(){}
-
+    //! Add default connection and start a process
     void addConnectionsAndStartJob(medJobItem *job);
 
+    //! Default connections between a toolbox and a process (success, failure, etc)
     void addToolBoxConnections(medJobItem *job);
+
+    virtual void updateView(){}
 
 protected slots:
     void onAboutButtonClicked();
