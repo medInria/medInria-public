@@ -357,7 +357,7 @@ void medToolBox::addConnectionsAndStartJob(medJobItem* job)
 {
     addToolBoxConnections(job);
 
-    getProgressionStack()->addJobItem(job, "Progress:");
+    getProgressionStack()->addJobItem(job, "Progress "+this->name()+":");
 
     medJobManager::instance()->registerJobItem(job);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(job));

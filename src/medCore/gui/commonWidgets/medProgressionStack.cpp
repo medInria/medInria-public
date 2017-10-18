@@ -27,8 +27,8 @@ QString medChop(const QString& string)
 {
     QString result = string;
 
-    if(string.size() > 15) {
-        result.resize(12);
+    if(string.size() > 25) {
+        result.resize(22);
         result.append("...");
     }
 
