@@ -120,6 +120,9 @@ public slots:
     //! Deactivate toolbox
     void setToolBoxOnWaitStatus();
 
+    //! Deactivate toolbox in function non using medRunnableProcess
+    void setToolBoxOnWaitStatusForNonRunnableProcess();
+
     //! Enable toolbox
     void setToolBoxOnReadyToUse();
 

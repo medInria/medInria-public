@@ -338,7 +338,7 @@ void manualRegistrationToolBox::computeRegistration()
     if (d->controller->checkLandmarks() == DTK_FAILURE)
         return;
 
-    this->setToolBoxOnWaitStatus();
+    this->setToolBoxOnWaitStatusForNonRunnableProcess();
 
     d->process = new manualRegistration();
     d->process->SetFixedLandmarks(d->controller->getPoints_Fixed());

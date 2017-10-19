@@ -51,6 +51,7 @@ void medJobItem::run()
 
 void medJobItem::onCancel( QObject* )
 {
+
 }
 
 void medJobItem::onProgress( QObject* sender, int prog )

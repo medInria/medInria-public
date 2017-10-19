@@ -343,6 +343,15 @@ void medToolBox::setToolBoxOnWaitStatus()
     this->setDisabled(true);
 }
 
+void medToolBox::setToolBoxOnWaitStatusForNonRunnableProcess()
+{
+    setToolBoxOnWaitStatus();
+
+    // Needed for non-medRunnableProcess functions
+    this->repaint();
+    QApplication::processEvents();
+}
+
 void medToolBox::setToolBoxOnReadyToUse()
 {
     this->setDisabled(false);
