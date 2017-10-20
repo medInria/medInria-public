@@ -297,28 +297,33 @@ void medToolBox::toXMLNode(QDomDocument* doc, QDomElement* currentNode)
 
 void medToolBox::handleDisplayError(int error)
 {
+    // Handle volume(s)/mesh(es) error
+
     switch (error)
     {
-    case medAbstractProcess::PIXEL_TYPE:   //! Handle volume errors: pixel type
+    case medAbstractProcess::PIXEL_TYPE:
         displayMessageError("Pixel type not yet implemented");
         break;
-    case medAbstractProcess::DIMENSION_3D: //! Handle volume errors: dimension
+    case medAbstractProcess::DIMENSION_3D:
         displayMessageError("This toolbox is designed to be used with 3D volumes");
         break;
-    case medAbstractProcess::DIMENSION_4D: //! Handle volume errors: dimension
+    case medAbstractProcess::DIMENSION_4D:
         displayMessageError("This toolbox is designed to be used with 4D volumes");
         break;
-    case medAbstractProcess::MESH_TYPE:    //! Handle mesh errors: data type
+    case medAbstractProcess::MESH_TYPE:
         displayMessageError("This toolbox is designed to be used with meshes");
         break;
-    case medAbstractProcess::NO_MESH:    //! Handle mesh errors: data type
+    case medAbstractProcess::NO_MESH:
         displayMessageError("This toolbox is not designed to be used with meshes");
         break;
-    case medAbstractProcess::DATA_SIZE:    //! Handle volume errors: size
+    case medAbstractProcess::DATA_SIZE:
         displayMessageError("Inputs must be the same size");
         break;
     case medAbstractProcess::MISMATCHED_DATA_TYPES:
         displayMessageError("Inputs must be the same type");
+        break;
+    case medAbstractProcess::MISMATCHED_DATA_SIZES_ORIGIN_SPACING:
+        displayMessageError("Inputs must be the same size, origin, spacing");
         break;
     default:
         displayMessageError("This action failed (undefined error)");

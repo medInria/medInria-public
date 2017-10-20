@@ -4,34 +4,17 @@
 
  Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <itkProcessRegistrationDiffeomorphicDemons.h>
-
-#include <medAbstractData.h>
-#include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-
-// /////////////////////////////////////////////////////////////////
-//
-// /////////////////////////////////////////////////////////////////
-
-#include <itkImageRegistrationMethod.h>
-
-#include <itkImage.h>
-#include <itkResampleImageFilter.h>
-
-#include <time.h>
-
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
+#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <itkProcessRegistrationDiffeomorphicDemons.h>
 #include <rpiCommonTools.hxx>
-#include <registrationFactory.h>
-
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsDiffeomorphicDemonsPrivate
@@ -117,15 +100,25 @@ QString itkProcessRegistrationDiffeomorphicDemons::identifier() const
 
 
 template <typename PixelType>
-        int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
+int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
 
-    //unfortunately diffeomorphic demons only work with double or float types...
-    // so we need to use a cast filter.
     typedef itk::Image< float, 3 > RegImageType;
     typedef double TransformScalarType;
+
+    // Check that the inputs are the same size/origin/spacing
+    if ( (proc->fixedImage()->GetLargestPossibleRegion().GetSize()
+          != proc->movingImages()[0]->GetLargestPossibleRegion().GetSize())
+         || (proc->fixedImage()->GetOrigin()
+             != proc->movingImages()[0]->GetOrigin())
+         || (proc->fixedImage()->GetSpacing()
+             != proc->movingImages()[0]->GetSpacing()) )
+    {
+        return medAbstractProcess::MISMATCHED_DATA_SIZES_ORIGIN_SPACING;
+    }
+
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
                     TransformScalarType > RegistrationType;
     RegistrationType * registration = new RegistrationType;
@@ -175,7 +168,7 @@ template <typename PixelType>
 
     // Print method parameters
     QString methodParameters = proc->getTitleAndParameters();
-    
+
     qDebug() << "METHOD PARAMETERS";
     qDebug() << methodParameters;
 
@@ -186,15 +179,15 @@ template <typename PixelType>
     }
     catch( std::exception & err )
     {
-        qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
-        return 1;
+        qDebug() << "ExceptionObject caught (StartRegistration): " << err.what();
+        return medAbstractProcess::FAILURE;
     }
     time_t t2 = clock();
 
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
     emit proc->progressed(80);
-    
+
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registration->GetTransformation());
@@ -205,22 +198,23 @@ template <typename PixelType>
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
 
-    try {
+    try
+    {
         resampler->Update();
     }
-    catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        return 1;
+    catch (itk::ExceptionObject & err)
+    {
+        qDebug() << "ExceptionObject caught (resampler): " << err.GetDescription();
+        return medAbstractProcess::FAILURE;
     }
 
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    qDebug() << "Resampled? ";
     result->DisconnectPipeline();
-    
+
     if (proc->output())
         proc->output()->setData (result);
-        
-    return 0;
+
+    return medAbstractProcess::SUCCESS;
 }
 
 int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
@@ -384,4 +378,3 @@ dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons()
 {
     return new itkProcessRegistrationDiffeomorphicDemons;
 }
-

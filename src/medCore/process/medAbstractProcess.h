@@ -36,13 +36,17 @@ public:
 
     enum DataError
     {
-        PIXEL_TYPE = 2, //! Pixel type not yet implemented
+        SUCCESS = DTK_SUCCEED,
+        FAILURE = DTK_FAILURE,
+
+        PIXEL_TYPE = 1 + SUCCESS * SUCCESS + FAILURE * FAILURE, //! Pixel type not yet implemented
         DIMENSION_3D,   //! Not a 3D volume
         DIMENSION_4D,   //! Not a 4D volume
         MESH_TYPE,      //! Not a mesh
         NO_MESH,        //! Input can not be a mesh
         DATA_SIZE,      //! Inputs must be the same size
         MISMATCHED_DATA_TYPES, //! Inputs must be the same type
+        MISMATCHED_DATA_SIZES_ORIGIN_SPACING, //! Inputs should have the same sizes, origins, spacings
         UNDEFINED,      //! Miscellanous
     };
 
