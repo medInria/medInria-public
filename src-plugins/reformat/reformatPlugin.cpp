@@ -54,7 +54,7 @@ QString reformatPlugin::version() const
 
 QStringList reformatPlugin::types() const
 {
-    return QStringList() << "reformat" << "crop" << "reslice" << "resample";
+    return QStringList() << "medReformatWorkspace" << "medCropToolBox" << "resliceToolBox" << "resampleProcess";
 }
 
 Q_EXPORT_PLUGIN2(reformatPlugin, reformatPlugin)
