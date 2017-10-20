@@ -16,23 +16,12 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
-<<<<<<< 9a8f255b3f796b351ee23023b57f631d642319e4
-#include <medJobManager.h>
+
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medRunnableProcess.h>
 #include <medToolBoxFactory.h>
-=======
 
-#include <medAbstractView.h>
-#include <medRunnableProcess.h>
-#include <medPluginManager.h>
-
-#include <medToolBoxFactory.h>
-#include <medRegistrationSelectorToolBox.h>
-
->>>>>>> [ProgressBar] standardized unique progressbar
 #include <rpiCommonTools.hxx>
 
 class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
