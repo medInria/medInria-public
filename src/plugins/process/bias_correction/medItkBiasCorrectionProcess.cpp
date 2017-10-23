@@ -34,7 +34,7 @@
 #include <itkTimeProbe.h>
 
 #define MAX_INT_POSITIVE 4294967295
-
+#define NB_STEPS 18
 
 medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAbstractBiasCorrectionProcess(parent)
 {
@@ -225,6 +225,8 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    float fConvergenceThreshold = static_cast<float>(m_poFConvergenceThreshold->value());
    float fSplineDistance = static_cast<float>(m_poFSplineDistance->value());
 
+   float fProgression = 0;
+
    QStringList oListValue = m_poSMaxIterations->value().split("x");
 
    std::vector<unsigned int> oMaxNumbersIterationsVector(oListValue.size());
@@ -247,6 +249,8 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
    /*** 1 ******************* Read input image *******************************/
    typename ImageType::Pointer image = dynamic_cast<ImageType *>((itk::Object*)(this->input()->data()));
+   fProgression = 1;
+   updateProgression(fProgression);
 
    /*** 2 ******************* Creating Otsu mask *****************************/
    itk::TimeProbe timer;
@@ -261,6 +265,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
    otsu->SetNumberOfThreads(uiThreadNb);
    otsu->Update();
+   updateProgression(fProgression);
    maskImage = otsu->GetOutput();
 
    /*** 3A *************** Set Maximum number of Iterations for the filter ***/
@@ -276,6 +281,8 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    typename BiasFilter::ArrayType oFittingLevelsTab;
    oFittingLevelsTab.Fill(oMaxNumbersIterationsVector.size());
    filter->SetNumberOfFittingLevels(oFittingLevelsTab);
+
+   updateProgression(fProgression);
 
    /*** 4 ******************* Save image's index, size, origine **************/
    typename ImageType::IndexType oImageIndex = image->GetLargestPossibleRegion().GetIndex();
@@ -298,6 +305,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
          newOrigin[i] -= (static_cast<float>(lowerBound[i]) * image->GetSpacing()[i]);
          oNumberOfControlPointsArray[i] = numberOfSpans + filter->GetSplineOrder();
       }
+      updateProgression(fProgression);
 
       /*** 6 ******************* Padder  ****************************************/
       typename PadderType::Pointer imagePadder = PadderType::New();
@@ -307,6 +315,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
       imagePadder->SetConstant(0);
       imagePadder->SetNumberOfThreads(uiThreadNb);
       imagePadder->Update();
+      updateProgression(fProgression);
 
       image = imagePadder->GetOutput();
 
@@ -319,8 +328,10 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
       maskPadder->SetNumberOfThreads(uiThreadNb);
       maskPadder->Update();
+      updateProgression(fProgression);
 
       maskImage = maskPadder->GetOutput();
+
 
       /*** 8 ******************** SetNumber Of Control Points *******************/
       filter->SetNumberOfControlPoints(oNumberOfControlPointsArray);
@@ -333,10 +344,14 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
          oNumberOfControlPointsArray[i] = static_cast<unsigned int>(oInitialMeshResolutionVect[i]) + filter->GetSplineOrder();
       }
       filter->SetNumberOfControlPoints(oNumberOfControlPointsArray);
+
+      updateProgression(fProgression, 3);
    }
    else
    {
-      std::cout << "No BSpline distance and Mesh Resolution is ignored because not 3 dimensions" << std::endl;
+       fProgression = 0;
+       updateProgression(fProgression);
+       std::cout << "No BSpline distance and Mesh Resolution is ignored because not 3 dimensions" << std::endl;
    }
 
    /*** 10 ******************* Shrinker image ********************************/
@@ -353,8 +368,9 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    imageShrinker->SetNumberOfThreads(uiThreadNb);
    maskShrinker->SetNumberOfThreads(uiThreadNb);
    imageShrinker->Update();
+   updateProgression(fProgression);
    maskShrinker->Update();
-
+   updateProgression(fProgression);
 
    /*** 13 ******************* Filter setings ********************************/
    filter->SetSplineOrder(uiSplineOrder);
@@ -365,13 +381,15 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    filter->SetMaskImage(maskShrinker->GetOutput());
 
    /*** 14 ******************* Apply filter **********************************/
-   itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
-   callback->SetCallback(eventCallback);
-   filter->AddObserver(itk::ProgressEvent(), callback);
+   /*itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+   callback->SetClientData((void*)this);
+   callback->SetConstCallback(eventCallback);
+   filter->AddObserver(itk::ProgressEvent(), callback);*/
    try
    {
       filter->SetNumberOfThreads(uiThreadNb);
       filter->Update();
+      updateProgression(fProgression, 5);
    }
    catch (itk::ExceptionObject & err)
    {
@@ -396,6 +414,8 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    bspliner->SetSpacing(image->GetSpacing());
    bspliner->SetNumberOfThreads(uiThreadNb);
    bspliner->Update();
+   updateProgression(fProgression);
+
 
    typename ImageType::Pointer logField = ImageType::New();
    logField->SetOrigin(image->GetOrigin());
@@ -417,12 +437,14 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    expFilter->SetInput(logField);
    expFilter->SetNumberOfThreads(uiThreadNb);
    expFilter->Update();
+   updateProgression(fProgression);
 
    typename DividerType::Pointer divider = DividerType::New();
    divider->SetInput1(image);
    divider->SetInput2(expFilter->GetOutput());
    divider->SetNumberOfThreads(uiThreadNb);
    divider->Update();
+   updateProgression(fProgression);
 
    typename ImageType::RegionType inputRegion;
    inputRegion.SetIndex(oImageIndex);
@@ -434,6 +456,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    cropper->SetDirectionCollapseToSubmatrix();
    cropper->SetNumberOfThreads(uiThreadNb);
    cropper->Update();
+   updateProgression(fProgression);
 
    /********************** Write output image *************************/
    medAbstractImageData *out = qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
@@ -441,4 +464,11 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
    this->setOutput(out);
    
    return eRes;
+}
+
+float medItkBiasCorrectionProcess::updateProgression(float &pio_rfProgression, int pi_iStepLevel)
+{
+    pio_rfProgression > 0 ? pio_rfProgression+= pi_iStepLevel : 0;
+    progression()->setValue(pio_rfProgression * 100 / NB_STEPS);
+    return pio_rfProgression;
 }

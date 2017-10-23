@@ -47,6 +47,7 @@ private:
     medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect1;     //B - Spline grid resolution. Exist only if SplineDistance == 0. | 
     medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect2;     //B - Spline grid resolution. Exist only if SplineDistance == 0. |--default=1x1x1
     medDoubleParameterPresenter *m_poFPresenterInitialMeshResolutionVect3;     //B - Spline grid resolution. Exist only if SplineDistance == 0. | 
+    medIntParameterPresenter    *m_poUIPresenterProgression;                   //For progression bar
 
 };
 

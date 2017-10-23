@@ -23,6 +23,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
+#include <QProgressBar>
 
 medItkBiasCorrectionProcessPresenter::medItkBiasCorrectionProcessPresenter(medItkBiasCorrectionProcess *parent) : medAbstractBiasCorrectionProcessPresenter(parent)
 {
@@ -40,6 +41,8 @@ medItkBiasCorrectionProcessPresenter::medItkBiasCorrectionProcessPresenter(medIt
    m_poFPresenterInitialMeshResolutionVect1 = new medDoubleParameterPresenter(m_process->getFInitialMeshResolutionVect1());
    m_poFPresenterInitialMeshResolutionVect2 = new medDoubleParameterPresenter(m_process->getFInitialMeshResolutionVect2());
    m_poFPresenterInitialMeshResolutionVect3 = new medDoubleParameterPresenter(m_process->getFInitialMeshResolutionVect3());
+
+   m_poUIPresenterProgression = new medIntParameterPresenter(m_process->progression());
 }
 
 QWidget * medItkBiasCorrectionProcessPresenter::buildToolBoxWidget()
@@ -129,6 +132,9 @@ QWidget * medItkBiasCorrectionProcessPresenter::buildToolBoxWidget()
    poInitialMeshResolutionLayoutZ->addWidget(poInitialMeshResolutionLabelZ);
    poInitialMeshResolutionLayoutZ->addWidget(poWInitialMeshResolution3);
    poVLayout->addLayout(poInitialMeshResolutionLayoutZ);
+
+   QProgressBar *poProgessBar = m_poUIPresenterProgression->buildProgressBar();
+   poVLayout->addWidget(poProgessBar);
 
    poVLayout->addWidget(buildRunButton());
    poVLayout->addWidget(buildCancelButton());

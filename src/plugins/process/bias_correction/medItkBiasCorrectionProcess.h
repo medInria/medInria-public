@@ -31,7 +31,7 @@ class MEDITKBIASCORRECTIONPROCESSPLUGIN_EXPORT medItkBiasCorrectionProcess: publ
 public:
     static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
     {
-        medAbstractBiasCorrectionProcess * source = reinterpret_cast<medAbstractBiasCorrectionProcess *>(clientData);
+        medItkBiasCorrectionProcess * source = reinterpret_cast<medItkBiasCorrectionProcess *>(clientData);
         itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
         source->progression()->setValue(processObject->GetProgress() * 100);
     }
@@ -63,6 +63,8 @@ public:
 private:
     template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitStatus _run();
     template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitStatus N4BiasCorrectionCore();
+
+    float updateProgression(float &pio_rfProgression, int pi_iStepLevel = 1);
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;
