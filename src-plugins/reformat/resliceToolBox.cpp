@@ -179,6 +179,7 @@ void resliceToolBox::stopReformat()
 {
     if (getWorkspace())
     {
+        d->bySpacingOrDimension->setCurrentIndex(0); // init resample parameter
         d->help0->show();
         d->reformatOptions->hide();
         d->b_startReslice->show();
