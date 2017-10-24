@@ -59,7 +59,14 @@ QString medBinaryOperationPlugin::name() const
 
 QString medBinaryOperationPlugin::description() const
 {
-    return tr("Plugin allowing to apply several binary operations on your data.");
+    QString description = \
+            "Apply binary operations on masks:<br><br> \
+            <a href=\"https://itk.org/Doxygen/html/classitk_1_1XorImageFilter.html\" style=\"color: #cc0000\" >XOR</a>, \
+            <a href=\"https://itk.org/Doxygen/html/classitk_1_1AndImageFilter.html\" style=\"color: #cc0000\" >AND</a>, \
+            <a href=\"https://itk.org/Doxygen/html/classitk_1_1OrImageFilter.html\" style=\"color: #cc0000\" >OR</a> and \
+            <a href=\"https://itk.org/Doxygen/html/classitk_1_1BinaryNotImageFilter.html\" style=\"color: #cc0000\" >NOT</a>. \
+            <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
+    return description;
 }
 
 QString medBinaryOperationPlugin::version() const

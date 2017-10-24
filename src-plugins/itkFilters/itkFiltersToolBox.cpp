@@ -861,7 +861,7 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
 dtkPlugin* itkFiltersToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "ITK Basic Filters" );
+    dtkPlugin* plugin = pm->plugin ( "ITK Filters" );
     return plugin;
 }
 

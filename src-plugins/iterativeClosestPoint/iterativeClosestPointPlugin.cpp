@@ -34,6 +34,15 @@ bool iterativeClosestPointPlugin::initialize()
     return true;
 }
 
+QString iterativeClosestPointPlugin::description() const
+{
+    QString description = \
+            tr("Match the orientation/grid between two meshes through the \
+               <a href=\"https://www.vtk.org/doc/nightly/html/classvtkIterativeClosestPointTransform.html\" style=\"color: #cc0000\" >vtkIterativeClosestPointTransform</a> filter. \
+               <br><br>This plugin uses the <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK library</a>.");
+    return description;
+}
+
 QString iterativeClosestPointPlugin::name() const
 {
     return "Iterative Closest Point";

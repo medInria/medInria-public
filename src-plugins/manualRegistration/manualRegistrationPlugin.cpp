@@ -34,6 +34,16 @@ bool manualRegistrationPlugin::initialize()
     return true;
 }
 
+QString manualRegistrationPlugin::description() const
+{
+    QString description = \
+            tr("Manual registration between two volumes using landmarks. Implemented transformations: <br><br> \
+               <a href=\"https://itk.org/Doxygen/html/classitk_1_1VersorRigid3DTransform.html\" style=\"color: #cc0000\" >Rigid</a> and \
+               <a href=\"https://itk.org/Doxygen/html/classitk_1_1AffineTransform.html\" style=\"color: #cc0000\" >Affine</a> \
+               <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.");
+    return description;
+}
+
 QString manualRegistrationPlugin::name() const
 {
     return "Manual Registration";

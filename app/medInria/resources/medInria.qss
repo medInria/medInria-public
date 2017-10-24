@@ -48,7 +48,7 @@ $TOOLTIP_BACKGROUND                     = $ORANGE;
 $LIST_BACKGROUND                        = $GREY02;
 $ALT_LIST_BACKGROUND                    = $GREY03;
 
-$EDITION_BACKGROUND                     = $GREY06;
+$EDITION_BACKGROUND                     = $GREY03;
 
 $HEADER_BACKGROUND                      = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 $GREY01, stop: 1 $GREY00);
 
@@ -342,7 +342,6 @@ QTextEdit
     color: $EDITION_COLOR;
     background: $EDITION_BACKGROUND;
 }
-
 
 /*******************************************************************************
     QDateEdit
