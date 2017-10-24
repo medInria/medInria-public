@@ -42,8 +42,6 @@
 
 #include <QtGui>
 
-#define projectContact PROJECT_CONTACT
-
 class medApplicationPrivate
 {
 public:
@@ -146,7 +144,7 @@ void medApplication::initialize()
         QString expiredInfo = "This copy of ";
         expiredInfo += d->projectName;
         expiredInfo += " has expired, please contact ";
-        expiredInfo += (char*)(projectContact);
+        expiredInfo += (char*)(PROJECT_CONTACT);
         expiredInfo += " for more information.";
         QMessageBox msg;
         msg.setText(expiredInfo);
