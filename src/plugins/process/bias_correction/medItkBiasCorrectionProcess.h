@@ -23,20 +23,13 @@
 
 #include <medItkBiasCorrectionProcessPluginExport.h>
 
+#include <vector>
 class medItkBiasCorrectionProcessPrivate;
 
 class MEDITKBIASCORRECTIONPROCESSPLUGIN_EXPORT medItkBiasCorrectionProcess: public medAbstractBiasCorrectionProcess
 {
     Q_OBJECT
 public:
-    static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
-    {
-        medItkBiasCorrectionProcess * source = reinterpret_cast<medItkBiasCorrectionProcess *>(clientData);
-        itk::ProcessObject * processObject = (itk::ProcessObject*) caller;
-        source->progression()->setValue(processObject->GetProgress() * 100);
-    }
-
-
     medItkBiasCorrectionProcess(QObject* parent = NULL);
     ~medItkBiasCorrectionProcess();
 
@@ -67,8 +60,6 @@ private:
     float updateProgression(float &pio_rfProgression, int pi_iStepLevel = 1);
 
 private:
-    itk::SmartPointer<itk::ProcessObject> m_filter;
-
     medIntParameter    *m_poUIThreadNb;
     medIntParameter    *m_poUIShrinkFactors;
     medIntParameter    *m_poUISplineOrder;
@@ -81,6 +72,9 @@ private:
     medDoubleParameter *m_poFInitialMeshResolutionVect1;
     medDoubleParameter *m_poFInitialMeshResolutionVect2;
     medDoubleParameter *m_poFInitialMeshResolutionVect3;
+
+    std::vector</*itk::SmartPointer<*/itk::ProcessObject*/*>**/> m_oVectOfInternalsFilters;
+    bool m_bAborting;
 };
 
 inline medAbstractBiasCorrectionProcess* medItkBiasCorrectionProcessCreator()
