@@ -38,7 +38,7 @@ QString itkN4BiasCorrectionPlugin::description() const
   QString description = \
           "This plugin implements <a href=\"https://itk.org/Doxygen/html/classitk_1_1N4BiasFieldCorrectionImageFilter.html\" style=\"color: #cc0000\" >itk::N4BiasFieldCorrectionImageFilter</a> \
           from the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.<br>  \
-          Drop a MRI volume in the INPUT view, choose your parameters and run.";
+          Drop an MRI volume in the INPUT view, choose your parameters and run.";
   return description;
 }
 
