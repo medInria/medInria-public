@@ -331,12 +331,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
 
     this->addWidget ( widget );
 
-    // Add about plugin
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
-    setAboutPluginButton ( plugin );
-    setAboutPluginVisibility ( true );
-
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
 
     if (this->selectorToolBox()) // empty in pipelines
@@ -867,7 +861,7 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
 dtkPlugin* itkFiltersToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "ITK Basic Filters" );
     return plugin;
 }
 

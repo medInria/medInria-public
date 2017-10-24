@@ -21,7 +21,8 @@ class iterativeClosestPointToolBoxPrivate;
 class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("Iterative Closest Point","IterativeClosestPoint (Mesh)",<<"Meshing")
+    MED_TOOLBOX_INTERFACE("Iterative Closest Point",
+                          "Used to match two meshes using the ICP algorithm",<<"Meshing")
     
 public:
     iterativeClosestPointToolBox(QWidget *parent = 0);

@@ -24,8 +24,6 @@
 #include <vtkDataMeshWriter.h>
 #include <vtkDataMesh4DWriter.h>
 
-#include <dtkLog/dtkLog.h>
-
 #include <vtkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -51,7 +49,7 @@ public:
 // vtkDataMeshPlugin
 // /////////////////////////////////////////////////////////////////
 
-vtkDataMeshPlugin::vtkDataMeshPlugin(QObject *parent) : dtkPlugin(parent), d(new vtkDataMeshPluginPrivate)
+vtkDataMeshPlugin::vtkDataMeshPlugin(QObject *parent) : medPlugin(parent), d(new vtkDataMeshPluginPrivate)
 {
 
 }
@@ -79,14 +77,9 @@ bool vtkDataMeshPlugin::initialize()
   return true;
 }
 
-bool vtkDataMeshPlugin::uninitialize()
-{
-    return true;
-}
-
 QString vtkDataMeshPlugin::name() const
 {
-    return "vtkDataMeshPlugin";
+    return "VTK Data Mesh";
 }
 
 QString vtkDataMeshPlugin::description() const

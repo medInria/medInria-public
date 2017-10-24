@@ -15,35 +15,8 @@
 #include "iterativeClosestPointPlugin.h"
 #include "iterativeClosestPointToolBox.h"
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// iterativeClosestPointPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class iterativeClosestPointPluginPrivate
+iterativeClosestPointPlugin::iterativeClosestPointPlugin(QObject *parent) : medPlugin(parent)
 {
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-
-const char * iterativeClosestPointPluginPrivate::s_Name = "iterativeClosestPoint";
-
-// /////////////////////////////////////////////////////////////////
-// iterativeClosestPointPlugin
-// /////////////////////////////////////////////////////////////////
-
-iterativeClosestPointPlugin::iterativeClosestPointPlugin(QObject *parent) : dtkPlugin(parent), d(new iterativeClosestPointPluginPrivate)
-{
-    
-}
-
-iterativeClosestPointPlugin::~iterativeClosestPointPlugin()
-{
-    delete d;
-    
-    d = NULL;
 }
 
 bool iterativeClosestPointPlugin::initialize()
@@ -61,19 +34,9 @@ bool iterativeClosestPointPlugin::initialize()
     return true;
 }
 
-bool iterativeClosestPointPlugin::uninitialize()
-{
-    return true;
-}
-
 QString iterativeClosestPointPlugin::name() const
 {
-    return "iterativeClosestPointPlugin";
-}
-
-QString iterativeClosestPointPlugin::description() const
-{
-    return tr("");
+    return "Iterative Closest Point";
 }
 
 QString iterativeClosestPointPlugin::version() const
@@ -81,41 +44,9 @@ QString iterativeClosestPointPlugin::version() const
     return ITERATIVECLOSESTPOINTPLUGIN_VERSION;
 }
 
-QString iterativeClosestPointPlugin::contact() const
-{
-    return "";
-}
-
-QStringList iterativeClosestPointPlugin::authors() const
-{
-    QStringList list;
-    return list;
-}
-
-QStringList iterativeClosestPointPlugin::contributors() const
-{
-    QStringList list;
-    return list;
-}
-
-QString iterativeClosestPointPlugin::identifier() const
-{
-    return iterativeClosestPointPluginPrivate::s_Name;
-}
-
-
-QStringList iterativeClosestPointPlugin::tags() const
-{
-    return QStringList();
-}
-
 QStringList iterativeClosestPointPlugin::types() const
 {
     return QStringList() << "iterativeClosestPoint";
-}
-QStringList iterativeClosestPointPlugin::dependencies() const
-{
-    return QStringList();
 }
 
 Q_EXPORT_PLUGIN2(iterativeClosestPointPlugin, iterativeClosestPointPlugin)

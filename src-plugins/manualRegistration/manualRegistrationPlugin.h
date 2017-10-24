@@ -13,38 +13,19 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include "manualRegistrationPluginExport.h"
 
-class manualRegistrationPluginPrivate;
-
-class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationPlugin : public dtkPlugin
+class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationPlugin : public medPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
-    
+
 public:
     manualRegistrationPlugin(QObject *parent = 0);
-    ~manualRegistrationPlugin();
-    
     virtual bool initialize();
-    virtual bool uninitialize();
     
     virtual QString name() const;
-    virtual QString identifier() const;
-    virtual QString description() const;
-    virtual QString contact() const;
     virtual QString version() const;
-    virtual QStringList authors() const;
-    virtual QStringList contributors() const;
-    virtual QStringList dependencies() const;
-    
-    virtual QStringList tags() const;
     virtual QStringList types() const;
-    
-private:
-    manualRegistrationPluginPrivate *d;
 };
-
-

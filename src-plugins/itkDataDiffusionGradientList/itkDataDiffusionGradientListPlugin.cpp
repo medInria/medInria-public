@@ -41,7 +41,7 @@ public:
 // itkDataDiffusionGradientListPlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataDiffusionGradientListPlugin::itkDataDiffusionGradientListPlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataDiffusionGradientListPluginPrivate)
+itkDataDiffusionGradientListPlugin::itkDataDiffusionGradientListPlugin(QObject *parent) : medPlugin(parent), d(new itkDataDiffusionGradientListPluginPrivate)
 {
 
 }
@@ -62,24 +62,14 @@ bool itkDataDiffusionGradientListPlugin::initialize()
     return true;
 }
 
-bool itkDataDiffusionGradientListPlugin::uninitialize()
-{
-    return true;
-}
-
 QString itkDataDiffusionGradientListPlugin::name() const
 {
-    return "itkDataDiffusionGradientListPlugin";
+    return "Diffusion Gradient List";
 }
 
 QString itkDataDiffusionGradientListPlugin::description() const
 {
     return tr("List of gradients for Diffusion Weighted Images");
-}
-
-QString itkDataDiffusionGradientListPlugin::identifier() const
-{
-    return "itkDataDiffusionGradientListPlugin";
 }
 
 QString itkDataDiffusionGradientListPlugin::version() const

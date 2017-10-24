@@ -14,32 +14,8 @@
 #include <qtdcmDataSource.h>
 #include <qtdcmDataSourcePlugin.h>
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// qtdcmDataSourcePluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class qtdcmDataSourcePluginPrivate
+qtdcmDataSourcePlugin::qtdcmDataSourcePlugin(QObject *parent) : medPlugin(parent)
 {
-public:
-    // Class variables go here.
-};
-
-// /////////////////////////////////////////////////////////////////
-// qtdcmDataSourcePlugin
-// /////////////////////////////////////////////////////////////////
-
-qtdcmDataSourcePlugin::qtdcmDataSourcePlugin ( QObject *parent ) : dtkPlugin ( parent ), d ( new qtdcmDataSourcePluginPrivate )
-{
-
-}
-
-qtdcmDataSourcePlugin::~qtdcmDataSourcePlugin()
-{
-    delete d;
-
-    d = NULL;
 }
 
 bool qtdcmDataSourcePlugin::initialize()
@@ -49,14 +25,9 @@ bool qtdcmDataSourcePlugin::initialize()
     return true;
 }
 
-bool qtdcmDataSourcePlugin::uninitialize()
-{
-    return true;
-}
-
 QString qtdcmDataSourcePlugin::name() const
 {
-    return "qtdcmDataSourcePlugin";
+    return "QtDCM Data Source";
 }
 
 QString qtdcmDataSourcePlugin::description() const
@@ -66,17 +37,13 @@ QString qtdcmDataSourcePlugin::description() const
 
 QStringList qtdcmDataSourcePlugin::authors() const
 {
-  return QStringList() << "Alexandre Abadie <Alexandre.Abadie@inria.fr>";
-}
-
-QString qtdcmDataSourcePlugin::contact() const
-{
-  return "Alexandre Abadie <Alexandre.Abadie@inria.fr>";
+  return QStringList() << "Alexandre Abadie ";
 }
 
 QStringList qtdcmDataSourcePlugin::contributors() const
 {
-  return QStringList() << "Olivier Commowick <Olivier.Commowick@inria.fr>";
+  return QStringList() << "Olivier Commowick"
+                       << medPlugin::contributors();
 }
 
 QStringList qtdcmDataSourcePlugin::dependencies() const
@@ -88,7 +55,6 @@ QString qtdcmDataSourcePlugin::version() const
 {
   return QTDCMDATASOURCEPLUGIN_VERSION;
 }
-
 
 QStringList qtdcmDataSourcePlugin::tags() const
 {

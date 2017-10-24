@@ -135,7 +135,7 @@ medCropToolBox::~medCropToolBox()
 
 dtkPlugin* medCropToolBox::plugin()
 {
-    return medPluginManager::instance()->plugin("reformatPlugin");
+    return medPluginManager::instance()->plugin("Reformat");
 }
 
 medAbstractData* medCropToolBox::processOutput()

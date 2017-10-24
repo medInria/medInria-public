@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <medPlugin.h>
 #include <medVtkFibersDataPluginExport.h>
 
 class medVtkFibersDataPluginPrivate;
 
-class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataPlugin : public dtkPlugin
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataPlugin : public medPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
@@ -28,7 +28,6 @@ public:
     ~medVtkFibersDataPlugin();
 
     virtual bool initialize();
-    virtual bool uninitialize();
 
     virtual QString name() const;
     virtual QString description() const;

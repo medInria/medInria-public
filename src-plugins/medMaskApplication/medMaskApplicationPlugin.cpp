@@ -15,35 +15,8 @@
 #include "medMaskApplicationPlugin.h"
 #include "medMaskApplicationToolBox.h"
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// medMaskApplicationPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class medMaskApplicationPluginPrivate
+medMaskApplicationPlugin::medMaskApplicationPlugin(QObject *parent) : medPlugin(parent)
 {
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-
-const char * medMaskApplicationPluginPrivate::s_Name = "medMaskApplication";
-
-// /////////////////////////////////////////////////////////////////
-// medMaskApplicationPlugin
-// /////////////////////////////////////////////////////////////////
-
-medMaskApplicationPlugin::medMaskApplicationPlugin(QObject *parent) : dtkPlugin(parent), d(new medMaskApplicationPluginPrivate)
-{
-    
-}
-
-medMaskApplicationPlugin::~medMaskApplicationPlugin()
-{
-    delete d;
-    
-    d = NULL;
 }
 
 bool medMaskApplicationPlugin::initialize()
@@ -61,19 +34,9 @@ bool medMaskApplicationPlugin::initialize()
     return true;
 }
 
-bool medMaskApplicationPlugin::uninitialize()
-{
-    return true;
-}
-
 QString medMaskApplicationPlugin::name() const
 {
-    return "medMaskApplicationPlugin";
-}
-
-QString medMaskApplicationPlugin::description() const
-{
-    return tr("");
+    return "Mask Application";
 }
 
 QString medMaskApplicationPlugin::version() const
@@ -81,40 +44,9 @@ QString medMaskApplicationPlugin::version() const
     return MEDMASKAPPLICATIONPLUGIN_VERSION;
 }
 
-QString medMaskApplicationPlugin::contact() const
-{
-    return "";
-}
-
-QStringList medMaskApplicationPlugin::authors() const
-{
-    QStringList list;
-    return list;
-}
-
-QStringList medMaskApplicationPlugin::contributors() const
-{
-    QStringList list;
-    return list;
-}
-
-QString medMaskApplicationPlugin::identifier() const
-{
-    return medMaskApplicationPluginPrivate::s_Name;
-}
-
-
-QStringList medMaskApplicationPlugin::tags() const
-{
-    return QStringList();
-}
-
 QStringList medMaskApplicationPlugin::types() const
 {
     return QStringList() << "medMaskApplication";
 }
-QStringList medMaskApplicationPlugin::dependencies() const
-{
-    return QStringList();
-}
+
 Q_EXPORT_PLUGIN2(medMaskApplicationPlugin, medMaskApplicationPlugin)

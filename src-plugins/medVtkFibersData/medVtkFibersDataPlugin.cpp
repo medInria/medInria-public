@@ -45,7 +45,7 @@ public:
 // medVtkFibersDataPlugin
 // /////////////////////////////////////////////////////////////////
 
-medVtkFibersDataPlugin::medVtkFibersDataPlugin(QObject *parent) : dtkPlugin(parent), d(new medVtkFibersDataPluginPrivate)
+medVtkFibersDataPlugin::medVtkFibersDataPlugin(QObject *parent) : medPlugin(parent), d(new medVtkFibersDataPluginPrivate)
 {
 
 }
@@ -78,14 +78,9 @@ bool medVtkFibersDataPlugin::initialize()
     return true;
 }
 
-bool medVtkFibersDataPlugin::uninitialize()
-{
-    return true;
-}
-
 QString medVtkFibersDataPlugin::name() const
 {
-    return "medVtkFibersDataPlugin";
+    return "VTK Fibers Data";
 }
 
 QString medVtkFibersDataPlugin::description() const
@@ -102,8 +97,6 @@ QStringList medVtkFibersDataPlugin::tags() const
 {
     return QStringList() << "vtk" << "data";
 }
-
-
 
 QStringList medVtkFibersDataPlugin::types() const
 {

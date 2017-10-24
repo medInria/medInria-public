@@ -139,9 +139,11 @@ void medApplication::initialize()
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
     {
+        QString expiredInfo = "This copy of MUSIC has expired, please contact ";
+        expiredInfo += "music-userfeedback@inria.fr";
+        expiredInfo += " for more information.";
         QMessageBox msg;
-        msg.setText("This copy of MUSIC has expired, please contact "
-        "maxime.sermesant@inria.fr for more information.");
+        msg.setText(expiredInfo);
         msg.exec();
         ::exit(1);
     }

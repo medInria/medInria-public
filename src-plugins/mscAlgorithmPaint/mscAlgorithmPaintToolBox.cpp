@@ -1257,7 +1257,7 @@ void AlgorithmPaintToolBox::updateMouseInteraction() //Apply the current interac
 dtkPlugin* AlgorithmPaintToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "mscAlgorithmPaint" );
+    dtkPlugin* plugin = pm->plugin ( "Algorithm Paint" );
     return plugin;
 }
 

@@ -128,7 +128,7 @@ bool medBinaryOperationToolBox::registered()
 dtkPlugin* medBinaryOperationToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "medBinaryOperationPlugin" );
+    dtkPlugin* plugin = pm->plugin ( "Binary Operation" );
     return plugin;
 }
 

@@ -15,35 +15,8 @@
 #include "itkN4BiasCorrectionPlugin.h"
 #include "itkN4BiasCorrectionToolBox.h"
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// itkN4BiasCorrectionPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class itkN4BiasCorrectionPluginPrivate
+itkN4BiasCorrectionPlugin::itkN4BiasCorrectionPlugin(QObject *parent) : medPlugin(parent)
 {
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-
-const char * itkN4BiasCorrectionPluginPrivate::s_Name = "itkN4BiasCorrection";
-
-// /////////////////////////////////////////////////////////////////
-// itkN4BiasCorrectionPlugin
-// /////////////////////////////////////////////////////////////////
-
-itkN4BiasCorrectionPlugin::itkN4BiasCorrectionPlugin(QObject *parent) : dtkPlugin(parent), d(new itkN4BiasCorrectionPluginPrivate)
-{
-    
-}
-
-itkN4BiasCorrectionPlugin::~itkN4BiasCorrectionPlugin()
-{
-    delete d;
-    
-    d = NULL;
 }
 
 bool itkN4BiasCorrectionPlugin::initialize()
@@ -60,19 +33,9 @@ bool itkN4BiasCorrectionPlugin::initialize()
     return true;
 }
 
-bool itkN4BiasCorrectionPlugin::uninitialize()
-{
-    return true;
-}
-
 QString itkN4BiasCorrectionPlugin::name() const
 {
-    return "itkN4BiasCorrectionPlugin";
-}
-
-QString itkN4BiasCorrectionPlugin::description() const
-{
-    return tr("");
+    return "N4 Bias Correction";
 }
 
 QString itkN4BiasCorrectionPlugin::version() const
@@ -80,40 +43,9 @@ QString itkN4BiasCorrectionPlugin::version() const
     return ITKN4BIASCORRECTIONPLUGIN_VERSION;
 }
 
-QString itkN4BiasCorrectionPlugin::contact() const
-{
-    return "";
-}
-
-QStringList itkN4BiasCorrectionPlugin::authors() const
-{
-    QStringList list;
-    return list;
-}
-
-QStringList itkN4BiasCorrectionPlugin::contributors() const
-{
-    QStringList list;
-    return list;
-}
-
-QString itkN4BiasCorrectionPlugin::identifier() const
-{
-    return itkN4BiasCorrectionPluginPrivate::s_Name;
-}
-
-
-QStringList itkN4BiasCorrectionPlugin::tags() const
-{
-    return QStringList();
-}
-
 QStringList itkN4BiasCorrectionPlugin::types() const
 {
     return QStringList() << "itkN4BiasCorrection";
 }
-QStringList itkN4BiasCorrectionPlugin::dependencies() const
-{
-    return QStringList();
-}
+
 Q_EXPORT_PLUGIN2(itkN4BiasCorrectionPlugin, itkN4BiasCorrectionPlugin)

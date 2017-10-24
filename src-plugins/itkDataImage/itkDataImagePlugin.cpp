@@ -93,7 +93,7 @@ public:
 // itkDataImagePlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataImagePlugin::itkDataImagePlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataImagePluginPrivate)
+itkDataImagePlugin::itkDataImagePlugin(QObject *parent) : medPlugin(parent), d(new itkDataImagePluginPrivate)
 {
 
 }
@@ -165,14 +165,9 @@ bool itkDataImagePlugin::initialize()
     return true;
 }
 
-bool itkDataImagePlugin::uninitialize()
-{
-    return true;
-}
-
 QString itkDataImagePlugin::name() const
 {
-    return "itkDataImagePlugin";
+    return "ITK Data Image";
 }
 
 QString itkDataImagePlugin::description() const

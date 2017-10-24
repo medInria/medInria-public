@@ -9,7 +9,8 @@ class medCropToolBoxPrivate;
 class REFORMATPLUGIN_EXPORT medCropToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("Cropping", "Image cropping",<<"Reformat")
+    MED_TOOLBOX_INTERFACE("Cropping",
+                          "Used to crop one or more datasets",<<"Reformat")
 
 public:
     static bool registered();

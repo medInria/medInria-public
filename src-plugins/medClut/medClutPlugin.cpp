@@ -5,32 +5,8 @@
 #include "medClutPlugin.h"
 #include <medClutToolBox.h>
 
-// /////////////////////////////////////////////////////////////////
-// medClutPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class medClutPluginPrivate
+medClutPlugin::medClutPlugin(QObject *parent) : medPlugin(parent)
 {
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-const char * medClutPluginPrivate::s_Name = "medClut";
-
-// /////////////////////////////////////////////////////////////////
-// medClutPlugin
-// /////////////////////////////////////////////////////////////////
-
-medClutPlugin::medClutPlugin(QObject *parent) : dtkPlugin(parent), d(new medClutPluginPrivate)
-{
-    
-}
-
-medClutPlugin::~medClutPlugin(void)
-{
-    delete d;
-    
-    d = NULL;
 }
 
 bool medClutPlugin::initialize(void)
@@ -40,19 +16,9 @@ bool medClutPlugin::initialize(void)
     return true;
 }
 
-bool medClutPlugin::uninitialize(void)
-{
-    return true;
-}
-
 QString medClutPlugin::name(void) const
 {
-    return "medClutPlugin";
-}
-
-QString medClutPlugin::description(void) const
-{
-    return tr("");
+    return "Clut";
 }
 
 QString medClutPlugin::version(void) const
@@ -60,41 +26,9 @@ QString medClutPlugin::version(void) const
     return MEDCLUTPLUGIN_VERSION;
 }
 
-QString medClutPlugin::contact(void) const
-{
-    return "";
-}
-
-QStringList medClutPlugin::authors(void) const
-{
-    QStringList list;
-    return list;
-}
-
-QStringList medClutPlugin::contributors(void) const
-{
-    QStringList list;
-    return list;
-}
-
-QString medClutPlugin::identifier(void) const
-{
-    return medClutPluginPrivate::s_Name;
-}
-
-
-QStringList medClutPlugin::tags(void) const
-{
-    return QStringList();
-}
-
 QStringList medClutPlugin::types(void) const
 {
     return QStringList() << "medClut";
-}
-QStringList medClutPlugin::dependencies(void) const
-{
-    return QStringList();
 }
 
 Q_EXPORT_PLUGIN2(medClutPlugin, medClutPlugin)

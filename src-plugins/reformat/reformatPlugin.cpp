@@ -16,35 +16,9 @@
 #include "reformatPlugin.h"
 #include <resliceToolBox.h>
 #include <resampleProcess.h>
-#include <dtkLog/dtkLog.h>
 
-// /////////////////////////////////////////////////////////////////
-// reformatPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class reformatPluginPrivate
+reformatPlugin::reformatPlugin(QObject *parent) : medPlugin(parent)
 {
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-
-const char * reformatPluginPrivate::s_Name = "reformat";
-
-// /////////////////////////////////////////////////////////////////
-// reformatPlugin
-// /////////////////////////////////////////////////////////////////
-
-reformatPlugin::reformatPlugin(QObject *parent) : dtkPlugin(parent), d(new reformatPluginPrivate)
-{
-    
-}
-
-reformatPlugin::~reformatPlugin()
-{
-    delete d;
-    
-    d = NULL;
 }
 
 bool reformatPlugin::initialize()
@@ -68,19 +42,9 @@ bool reformatPlugin::initialize()
     return true;
 }
 
-bool reformatPlugin::uninitialize()
-{
-    return true;
-}
-
 QString reformatPlugin::name() const
 {
-    return "reformatPlugin";
-}
-
-QString reformatPlugin::description() const
-{
-    return tr("");
+    return "Reformat";
 }
 
 QString reformatPlugin::version() const
@@ -88,40 +52,9 @@ QString reformatPlugin::version() const
     return REFORMATPLUGIN_VERSION;
 }
 
-QString reformatPlugin::contact() const
-{
-    return QString::fromUtf8("Florent Collot <florent.collot@ihu-liryc.fr>");
-}
-
-QStringList reformatPlugin::authors() const
-{
-    return QStringList() << "Mathilde Merle <mathilde.merle@ihu-liryc.fr>"
-                         << "Florent Collot <florent.collot@ihu-liryc.fr>";
-}
-
-QStringList reformatPlugin::contributors() const
-{
-    QStringList list;
-    return list;
-}
-
-QString reformatPlugin::identifier() const
-{
-    return reformatPluginPrivate::s_Name;
-}
-
-
-QStringList reformatPlugin::tags() const
-{
-    return QStringList();
-}
-
 QStringList reformatPlugin::types() const
 {
-    return QStringList() << "reformat";
+    return QStringList() << "medReformatWorkspace" << "medCropToolBox" << "resliceToolBox" << "resampleProcess";
 }
-QStringList reformatPlugin::dependencies() const
-{
-    return QStringList();
-}
+
 Q_EXPORT_PLUGIN2(reformatPlugin, reformatPlugin)

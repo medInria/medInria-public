@@ -54,7 +54,7 @@ public:
 // itkDataTensorImagePlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImagePlugin::itkDataTensorImagePlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataTensorImagePluginPrivate)
+itkDataTensorImagePlugin::itkDataTensorImagePlugin(QObject *parent) : medPlugin(parent), d(new itkDataTensorImagePluginPrivate)
 {
 
 }
@@ -83,14 +83,9 @@ bool itkDataTensorImagePlugin::initialize()
     return true;
 }
 
-bool itkDataTensorImagePlugin::uninitialize()
-{
-    return true;
-}
-
 QString itkDataTensorImagePlugin::name() const
 {
-    return "itkDataTensorImagePlugin";
+    return "ITK Data Tensor Image";
 }
 
 QString itkDataTensorImagePlugin::description() const
@@ -107,7 +102,6 @@ QString itkDataTensorImagePlugin::version() const
 {
     return ITKDATATENSORIMAGEPLUGIN_VERSION;
 }
-
 
 QStringList itkDataTensorImagePlugin::types() const
 {

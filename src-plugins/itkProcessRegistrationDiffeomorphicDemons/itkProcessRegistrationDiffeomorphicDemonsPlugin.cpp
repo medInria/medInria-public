@@ -15,32 +15,8 @@
 #include <itkProcessRegistrationDiffeomorphicDemonsPlugin.h>
 #include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// itkProcessRegistrationDiffeomorphicDemonsPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class itkProcessRegistrationDiffeomorphicDemonsPluginPrivate
+itkProcessRegistrationDiffeomorphicDemonsPlugin::itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent) : medPlugin(parent)
 {
-public:
-    // Class variables go here.
-};
-
-// /////////////////////////////////////////////////////////////////
-// itkProcessRegistrationDiffeomorphicDemonsPlugin
-// /////////////////////////////////////////////////////////////////
-
-itkProcessRegistrationDiffeomorphicDemonsPlugin::itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent) : dtkPlugin(parent), d(new itkProcessRegistrationDiffeomorphicDemonsPluginPrivate)
-{
-
-}
-
-itkProcessRegistrationDiffeomorphicDemonsPlugin::~itkProcessRegistrationDiffeomorphicDemonsPlugin()
-{
-    delete d;
-
-    d = NULL;
 }
 
 bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize()
@@ -51,19 +27,9 @@ bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize()
     return true;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemonsPlugin::uninitialize()
-{
-    return true;
-}
-
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name() const
 {
-    return "itkProcessRegistrationDiffeomorphicDemonsPlugin";
-}
-
-QString itkProcessRegistrationDiffeomorphicDemonsPlugin::contact() const
-{
-    return QString::fromUtf8("benoit.bleuze@inria.fr");
+    return "Diffeomorphic Demons";
 }
 
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors() const
@@ -76,7 +42,8 @@ QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors() const
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::contributors() const
 {
     QStringList list;
-    list <<  "Vincent Garcia";
+    list << "Vincent Garcia";
+    list << medPlugin::contributors();
     return list;
 }
 
@@ -85,23 +52,10 @@ QString itkProcessRegistrationDiffeomorphicDemonsPlugin::description() const
     return tr("Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>");
 }
 
-
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::version() const
 {
     return ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_VERSION;
 }
-
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::dependencies() const
-{
-    return QStringList();
-}
-
-
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::tags() const
-{
-    return QStringList();
-}
-
 
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::types() const
 {

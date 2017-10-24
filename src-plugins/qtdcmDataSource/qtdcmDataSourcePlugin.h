@@ -13,25 +13,18 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
-
+#include <medPlugin.h>
 #include <qtdcmDataSourcePluginExport.h>
 
-class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSourcePluginPrivate;
-
-class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSourcePlugin : public dtkPlugin
+class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSourcePlugin : public medPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     qtdcmDataSourcePlugin(QObject *parent = 0);
-    ~qtdcmDataSourcePlugin();
-
+    qtdcmDataSourcePlugin(QObject *parent = 0);
     virtual bool initialize();
-    virtual bool uninitialize();
 
-    virtual QString contact() const;
     virtual QString description() const;
     virtual QString name() const;
     virtual QString version() const;
@@ -41,9 +34,4 @@ public:
 
     virtual QStringList tags() const;
     virtual QStringList types() const;
-
-private:
-     qtdcmDataSourcePluginPrivate *d;
 };
-
-

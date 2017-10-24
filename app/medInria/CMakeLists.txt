@@ -102,6 +102,7 @@ add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
   ${${PROJECT_NAME}_QRC}
   ${${PROJECT_NAME}_QSS} # Just to have it in EDI
   ${${PROJECT_NAME}_RC}  # Empty for Unix 
+  ${${PROJECT_NAME}_HTML}
   )
 
 if (APPLE)

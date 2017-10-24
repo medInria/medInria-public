@@ -42,7 +42,7 @@ public:
 // itkDataSHImagePlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataSHImagePlugin::itkDataSHImagePlugin(QObject *parent): dtkPlugin(parent),d(new itkDataSHImagePluginPrivate) { }
+itkDataSHImagePlugin::itkDataSHImagePlugin(QObject *parent): medPlugin(parent),d(new itkDataSHImagePluginPrivate) { }
 
 itkDataSHImagePlugin::~itkDataSHImagePlugin() {
     delete d;
@@ -60,16 +60,8 @@ bool itkDataSHImagePlugin::initialize() {
     return true;
 }
 
-bool itkDataSHImagePlugin::uninitialize() {
-    return true;
-}
-
 QString itkDataSHImagePlugin::name() const {
-    return "itkDataSHImagePlugin";
-}
-
-QString itkDataSHImagePlugin::contact() const {
-    return QString::fromUtf8("Théo Papadopoulo <Theodore.Papadopoulo@inria.fr>");
+    return "ITK Data SH Image";
 }
 
 QStringList itkDataSHImagePlugin::authors() const {
@@ -81,6 +73,7 @@ QStringList itkDataSHImagePlugin::authors() const {
 QStringList itkDataSHImagePlugin::contributors() const {
     QStringList list;
     list << QString::fromUtf8("Théo Papadopoulo");
+    list << medPlugin::contributors();
     return list;
 }
 
