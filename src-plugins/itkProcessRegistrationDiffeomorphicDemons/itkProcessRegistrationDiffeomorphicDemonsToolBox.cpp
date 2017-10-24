@@ -129,8 +129,6 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
 
     widget->setLayout(layout);
     this->addWidget(widget);
-    this->addWidget(runButton);
-    this->addWidget(d->progressionStack);
 
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
