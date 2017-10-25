@@ -1,5 +1,5 @@
 MUSIC v2.0.0:
-- Scrips pipelines in Python
+- Python pipelines
 - MAIN files in XML
 - Histogram Analysis: solve a bug in UTAH3D
 - Workspace comboboxes show toolboxes alphabetically
@@ -9,6 +9,8 @@ MUSIC v2.0.0:
 - DB: improve the search bar
 - Manual Registration: add Affine transformation
 - Sliders: larger handle
+- Enhancement of the Help (?) buttons in the toolboxes headers
+- Add a unique progress bar for processes
 - ... many other enhancements and bug fixes.
 
 MUSIC v1.1.2:
