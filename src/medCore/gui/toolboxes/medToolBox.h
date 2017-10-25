@@ -16,6 +16,8 @@
 #include <medCoreExport.h>
 #include <medAbstractWorkspace.h>
 #include <medComboBox.h>
+#include <medProgressionStack.h>
+#include <medJobItem.h>
 
 #include <QtGui>
 #include <QDomDocument>
@@ -71,6 +73,9 @@ public:
     //! Display a qDebug and a medMessageController
     void displayMessageError(QString error);
 
+    //! Get back progress bar from workspace
+    medProgressionStack *getProgressionStack();
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.
@@ -111,6 +116,21 @@ public slots:
 
     //! Switch between errors
     void handleDisplayError(int);
+
+    //! Deactivate toolbox
+    void setToolBoxOnWaitStatus();
+
+    //! Deactivate toolbox in function non using medRunnableProcess
+    void setToolBoxOnWaitStatusForNonRunnableProcess();
+
+    //! Enable toolbox
+    void setToolBoxOnReadyToUse();
+
+    //! Add default connection and start a process
+    void addConnectionsAndStartJob(medJobItem *job);
+
+    //! Default connections between a toolbox and a process (success, failure, etc)
+    void addToolBoxConnections(medJobItem *job);
 
     virtual void updateView(){}
 

@@ -338,6 +338,8 @@ void manualRegistrationToolBox::computeRegistration()
     if (d->controller->checkLandmarks() == DTK_FAILURE)
         return;
 
+    this->setToolBoxOnWaitStatusForNonRunnableProcess();
+
     d->process = new manualRegistration();
     d->process->SetFixedLandmarks(d->controller->getPoints_Fixed());
     d->process->SetMovingLandmarks(d->controller->getPoints_Moving());
@@ -367,6 +369,8 @@ void manualRegistrationToolBox::computeRegistration()
 
         setDisableSaveButtons(false);
     }
+
+    this->setToolBoxOnReadyToUse();
 }
 
 void manualRegistrationToolBox::reset()

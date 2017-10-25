@@ -23,13 +23,11 @@
 
 #include <medAbstractView.h>
 #include <medRunnableProcess.h>
-#include <medJobManager.h>
 
 #include <medAbstractImageData.h>
 
 #include <medToolBoxFactory.h>
 #include <medSelectorToolBox.h>
-#include <medProgressionStack.h>
 #include <medPluginManager.h>
 
 #include <sstream>
@@ -39,7 +37,6 @@ class itkN4BiasCorrectionToolBoxPrivate
 public:
     
     dtkSmartPointer <itkN4BiasCorrection> process;
-    medProgressionStack * progression_stack;
     QDoubleSpinBox * splineDistanceSpinBox, *widthSpinBox, 
         *convThresholdSpinBox, *wienerNoiseSpinBox;
     QSpinBox *bsplineOrderSpinBox, *shrinkFactorSpinBox, *nbHistogramBinsSpinBox;
@@ -156,11 +153,6 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     QHBoxLayout * saveBiasLayout = new QHBoxLayout();
     saveBiasLayout->addWidget(saveBiasLabel);
     saveBiasLayout->addWidget(d->saveBiasCheckBox);
-
-    // progression stack
-    d->progression_stack = new medProgressionStack(widget);
-    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-    progressStackLayout->addWidget(d->progression_stack);
     
     QVBoxLayout * layout = new QVBoxLayout();
     //layout->addLayout(splineGridResolutionLayout);
@@ -174,7 +166,6 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     layout->addLayout(wienerNoiseLayout);
     layout->addLayout(saveBiasLayout);
     layout->addWidget(runButton);
-    layout->addWidget(d->progression_stack);
     widget->setLayout(layout);
     this->addWidget(widget);
     
@@ -222,12 +213,13 @@ void itkN4BiasCorrectionToolBox::run()
 {
     if(!this->selectorToolBox())
         return;
-    
-    d->process = new itkN4BiasCorrection();
-    
+        
     if(!this->selectorToolBox()->data())
         return;
     
+    this->setToolBoxOnWaitStatus();
+
+    d->process = new itkN4BiasCorrection();
     d->process->setInput(this->selectorToolBox()->data());
 
     d->process->setParameter(d->splineDistanceSpinBox->value(), 0);
@@ -246,20 +238,7 @@ void itkN4BiasCorrectionToolBox::run()
     
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (d->process);
-    
-    d->progression_stack->addJobItem(runProcess, "Progress:");
-    d->progression_stack->setActive(runProcess,true);
-    d->progression_stack->disableCancel(runProcess);
-    
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
-    
-    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progression_stack, SLOT(setActive(QObject*,bool)));
-    
-    medJobManager::instance()->registerJobItem(runProcess);
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+    this->addConnectionsAndStartJob(runProcess);
 }
 
 std::vector<int> itkN4BiasCorrectionToolBox::extractValue(QString text)

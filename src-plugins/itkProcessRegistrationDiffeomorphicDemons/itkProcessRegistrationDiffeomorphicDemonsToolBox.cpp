@@ -16,19 +16,18 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
-#include <medJobManager.h>
+
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medRunnableProcess.h>
 #include <medToolBoxFactory.h>
+
 #include <rpiCommonTools.hxx>
 
 class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
-    medProgressionStack * progressionStack;
     medComboBox * updateRuleBox;
     medComboBox * gradientTypeBox;
     QDoubleSpinBox * maxStepLengthBox;
@@ -123,10 +122,6 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     runButton->setToolTip(tr("Start Registration"));
     layout->addWidget(runButton);
 
-    // progression stack
-    d->progressionStack = new medProgressionStack(widget);
-    layout->addWidget(d->progressionStack);
-
     widget->setLayout(layout);
     this->addWidget(widget);
 
@@ -184,6 +179,9 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
         qWarning() << "registration process doesn't exist" ;
         return;
     }
+
+    this->setToolBoxOnWaitStatus();
+
     process_Registration->setDisplacementFieldStandardDeviation(
                 d->disFieldStdDevBox->value());
     process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
@@ -199,6 +197,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     catch ( std::exception & )
     {
         qDebug() << "wrong iteration format";
+        this->setToolBoxOnReadyToUse();
         return;
     }
 
@@ -206,23 +205,8 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     process_Registration->setMovingInput(movingData);
 
     medRunnableProcess *runProcess = new medRunnableProcess;
-
     runProcess->setProcess (d->process);
-
-    d->progressionStack->addJobItem(runProcess, tr("Progress:"));
-    d->progressionStack->setActive(runProcess,true);
-    d->progressionStack->disableCancel(runProcess);
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
-    //First have the moving progress bar,
-    //and then display the remaining % when known
-    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progressionStack, SLOT(setActive(QObject*,bool)));
-
-    medJobManager::instance()->registerJobItem(runProcess,d->process->identifier());
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+    this->addConnectionsAndStartJob(runProcess);
 }
 
 medAbstractData* itkProcessRegistrationDiffeomorphicDemonsToolBox::processOutput()

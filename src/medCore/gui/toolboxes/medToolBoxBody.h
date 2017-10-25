@@ -13,9 +13,8 @@
 
 #pragma once
 
-#include <medCoreExport.h>
-
 #include <QtGui>
+#include <medCoreExport.h>
 
 class medToolBoxBodyPrivate;
 class medToolBoxTab;

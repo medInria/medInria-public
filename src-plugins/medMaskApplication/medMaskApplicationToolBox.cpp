@@ -26,11 +26,9 @@
 #include <medAbstractView.h>
 #include <medDataManager.h>
 #include <medDropSite.h>
-#include <medJobManager.h>
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRunnableProcess.h>
 #include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
@@ -40,7 +38,6 @@ class medMaskApplicationToolBoxPrivate
 public:
     
     dtkSmartPointer <medMaskApplication> process;
-    medProgressionStack * progression_stack;
     medDropSite *maskDropSite;
     QDoubleSpinBox* backgroundSpinBox;
 
@@ -78,14 +75,8 @@ medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medAbstr
     bundlingLayout->addLayout(backgroundLayout);
 
     QPushButton *runButton = new QPushButton(tr("Run"), this);
-    
-    // progression stack
-    d->progression_stack = new medProgressionStack(widget);
-    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-    progressStackLayout->addWidget(d->progression_stack);
-    
+      
     this->addWidget(runButton);
-    this->addWidget(d->progression_stack);
     
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
@@ -122,6 +113,8 @@ void medMaskApplicationToolBox::run()
 {
     if (d->mask && this->selectorToolBox()->data())
     {
+        this->setToolBoxOnWaitStatus();
+
         if(!d->process)
         {
             d->process= new medMaskApplication;
@@ -132,21 +125,8 @@ void medMaskApplicationToolBox::run()
 
         medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
-
-        d->progression_stack->addJobItem(runProcess, "Progress:");
-        d->progression_stack->setActive(runProcess,true);
-        d->progression_stack->disableCancel(runProcess);
-
-        connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-        connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-        connect (runProcess, SIGNAL (failure  (int)),       this, SLOT   (handleDisplayError(int)));
-        connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-
-        connect (runProcess, SIGNAL(activate(QObject*,bool)),
-                 d->progression_stack, SLOT(setActive(QObject*,bool)));
-
-        medJobManager::instance()->registerJobItem(runProcess);
-        QThreadPool::globalInstance()->start(runProcess);
+        connect (runProcess, SIGNAL(failure(int)), this, SLOT(handleDisplayError(int)));
+        this->addConnectionsAndStartJob(runProcess);
     }
     else
     {

@@ -1829,6 +1829,8 @@ void AlgorithmPaintToolBox::interpolate()
         return;
     }
 
+    this->setToolBoxOnWaitStatusForNonRunnableProcess();
+
     MaskType::IndexType index3D;
     QVector3D vector = currentView->mapDisplayToWorldCoordinates(QPointF(0,0));
     bool isInside;
@@ -1924,6 +1926,8 @@ void AlgorithmPaintToolBox::interpolate()
             isD0=false;
         }
     } // end for each slice
+
+    this->setToolBoxOnReadyToUse();
 }
 
 // Is there data to observe in the image ?

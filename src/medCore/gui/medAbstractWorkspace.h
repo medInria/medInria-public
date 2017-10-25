@@ -15,6 +15,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <medProgressionStack.h>
 
 #include <medCoreExport.h>
 
@@ -76,6 +77,8 @@ public:
     bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
     virtual void setInitialGroups();
+
+    medProgressionStack *getProgressionStack();
 
 public slots:
     virtual void clear();

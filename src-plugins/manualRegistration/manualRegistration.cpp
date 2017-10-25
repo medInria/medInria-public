@@ -87,9 +87,6 @@ QString manualRegistration::identifier() const
 template <typename PixelType>
 int manualRegistrationPrivate::update()
 {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
-
     int res = DTK_FAILURE;
 
     if (transformTypeInt == TransformName::RIGID)
@@ -107,9 +104,6 @@ int manualRegistrationPrivate::update()
             proc->displayMessageError("Affine transformation needs 4 landmarks minimum by dataset");
         }
     }
-
-    QApplication::restoreOverrideCursor();
-    QApplication::processEvents();
 
     return res;
 }

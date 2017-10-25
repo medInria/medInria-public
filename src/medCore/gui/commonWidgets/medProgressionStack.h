@@ -14,7 +14,6 @@
 #pragma once
 
 #include <medCoreExport.h>
-
 #include <QtGui/QWidget>
 
 class medJobItem;
