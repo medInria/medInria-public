@@ -77,7 +77,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
-    aboutButton->setToolTip(tr("About MUSIC"));
+    aboutButton->setToolTip(QString("About ")+qApp->applicationName());
     aboutButton->setFocusPolicy ( Qt::NoFocus );
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -110,7 +110,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
-    settingsButton->setToolTip(tr("Configure MUSIC"));
+    settingsButton->setToolTip(QString("Configure ")+qApp->applicationName());
     settingsButton->setFocusPolicy ( Qt::NoFocus );
     settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -131,14 +131,15 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( QString::fromUtf8("<b>MUSIC</b> (%1) is a software developed in collaboration with "
+    textEdit->setHtml ( QString::fromUtf8("<b>%1</b> (%2) is a software developed in collaboration with "
                                           "the IHU LIRYC in order to propose functionalities "
                                           "dedicated to cardiac interventional planning and "
                                           "guidance, based on the medInria software platform."
                                           "<br/><br/>"
-                                          "<b>MUSIC</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria."
+                                          "<b>%1</b> is proprietary software, copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria."
                                           "<br/><br/>"
-                                          " <font color = 'red'><b>This MUSIC copy will expire on ")
+                                          " <font color = 'red'><b>This %1 copy will expire on ")
+                        .arg(qApp->applicationName())
                         .arg(qApp->applicationVersion())
                         + QLocale(QLocale::English).toString(expiryDate, "d MMMM yyyy")
                         + ".</b></font>");
@@ -163,10 +164,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
 
-    QString aboutText = QString::fromUtf8("MUSIC (%1) is the cardiac imaging platform based on medInria developed at "
-                      "Inria and IHU LIRYC.<br/>"
-                      "<center>Copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria</center>")
-                      .arg(qApp->applicationVersion());
+    QString aboutText = QString::fromUtf8("%1 (%2) is the cardiac imaging platform based on medInria developed at "
+                                          "Inria and IHU LIRYC.<br/>"
+                                          "<center>Copyright (c) 2014-2015, IHU Liryc, Université de Bordeaux and Inria</center>")
+                                          .arg(qApp->applicationName())
+                                          .arg(qApp->applicationVersion());
     
 #ifdef MEDINRIA_HAS_REVISIONS
     aboutText += QString::fromLocal8Bit(REVISIONS);

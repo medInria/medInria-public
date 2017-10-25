@@ -176,7 +176,7 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
 
 QString medDatabaseDataSource::description(void) const
 {
-    return tr("Browse the MUSIC Database");
+    return tr("Browse the Database");
 }
 
 void medDatabaseDataSource::onFilter( const QString &text, int column )

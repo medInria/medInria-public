@@ -42,7 +42,6 @@
 
 #include <QtGui>
 
-
 class medApplicationPrivate
 {
 public:
@@ -117,7 +116,7 @@ void medApplication::open(QString path)
 
 void medApplication::initialize()
 {
-    this->setApplicationName("MUSIC");            /*Beware, change database path*/
+    this->setApplicationName(PROJECT_NAME);     /*Beware, change database path*/
     this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
@@ -139,8 +138,10 @@ void medApplication::initialize()
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
     {
-        QString expiredInfo = "This copy of MUSIC has expired, please contact ";
-        expiredInfo += "music-userfeedback@inria.fr";
+        QString expiredInfo = "This copy of ";
+        expiredInfo += (char*)(PROJECT_NAME);
+        expiredInfo += " has expired, please contact ";
+        expiredInfo += (char*)(PROJECT_CONTACT);
         expiredInfo += " for more information.";
         QMessageBox msg;
         msg.setText(expiredInfo);
