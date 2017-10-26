@@ -64,7 +64,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     // We use the same widget for all the morphological filters
     QWidget *kernelSizeWidget = new QWidget(this);
     d->kernelSize = new QDoubleSpinBox;
-    d->kernelSize->setMaximum ( 10 );
+    d->kernelSize->setMaximum ( 100 );
     d->kernelSize->setValue ( 1 );
     d->kernelSize->setObjectName("kernelSize");
 
