@@ -247,10 +247,10 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
     foreach(medDataIndex index, this->dataList())
     {
-        medAbstractData *data = medDataManager::instance()->retrieveData(index);
-        if (data)
-        {
-            this->removeLayer(this->layer(data));
+        if (!dataList.contains(index)) {
+            medAbstractData *data = medDataManager::instance()->retrieveData(index);
+            if (data)
+                this->removeLayer(this->layer(data));
         }
     }
 
