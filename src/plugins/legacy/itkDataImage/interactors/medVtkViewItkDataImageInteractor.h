@@ -17,6 +17,8 @@
 
 #include <itkDataImagePluginExport.h>
 
+#include <vtkItkConversion.h>
+
 class medVtkViewItkDataImageInteractorPrivate;
 
 class medAbstractImageData;
@@ -49,7 +51,7 @@ public slots:
     void setPreset(QString value);
     virtual void setLut(QString lut);
     void setWindowLevel(QHash<QString, QVariant>);
-    void enableWIndowLevel(bool enable);
+    void enableWindowLevel(bool enable);
 
     void setVisibility(bool);
 
@@ -77,6 +79,6 @@ private slots:
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;
-
+    vtkItkConversion m_oConv;
 };
 

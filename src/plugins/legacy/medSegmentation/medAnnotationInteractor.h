@@ -20,9 +20,11 @@
 
 #include <medSegmentationPluginExport.h>
 
+#include <vtkItkConversion.h>
 
 class msegAnnotationInteractorPrivate;
 class medAnnotationInteractor;
+
 
 // Helper class for msegAnnotationInteractor
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT msegAnnIntHelper {
@@ -62,6 +64,8 @@ public:
     virtual QList<medAbstractParameterL*> linkableParameters();
     virtual QList<medBoolParameterL*> mouseInteractionParameters();
     virtual void setInputData(medAbstractData * data);
+
+    bool SetViewInput(medAbstractData *data);
 
     virtual void setUpViewForThumbnail();
 
@@ -124,6 +128,7 @@ private:
 
 private:
     msegAnnotationInteractorPrivate *d;
+    vtkItkConversion m_oConv;
 };
 
 

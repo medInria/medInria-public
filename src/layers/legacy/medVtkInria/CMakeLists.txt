@@ -50,6 +50,9 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${${TARGET_NAME}_CFILES})
+
+message(${${TARGET_NAME}_CFILES})
 ## #############################################################################
 ## write header shader
 ## #############################################################################

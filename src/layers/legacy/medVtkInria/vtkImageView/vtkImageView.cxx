@@ -83,40 +83,6 @@ enum ImageViewType {
 }
 
 
-// pIMPL class for vtkImageView
-class vtkImageView::vtkImageViewImplementation 
-{
-public:
-    //! Default constructor
-    vtkImageViewImplementation () : TemporalFilterType (IMAGE_VIEW_NONE) {}
-
-    std::map<int, itk::ProcessObject::Pointer> ImageConverter;
-    // should not be handled in this class.
-    std::map<int, itk::ProcessObject::Pointer> ImageTemporalFilter;
-    int TemporalFilterType;
-
-public :
-    template < typename T > static ImageViewType GetImageViewType () ;
-public:
-};
-
-// Template specialisations return the enumeration corresponding to the pixel type.
-// NT: Use the VTK_DOUBLE/SHORT/etc definitions ?... or the itkImageIO:ComponentType since we have ITK there
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < double > () { return     IMAGE_VIEW_DOUBLE ; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < float > () { return     IMAGE_VIEW_FLOAT; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < int > () { return     IMAGE_VIEW_INT; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned int > () { return     IMAGE_VIEW_UNSIGNED_INT; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < short > () { return     IMAGE_VIEW_SHORT; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned short > () { return     IMAGE_VIEW_UNSIGNED_SHORT; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < long > () { return     IMAGE_VIEW_LONG; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned long > () { return     IMAGE_VIEW_UNSIGNED_LONG; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < char > () { return     IMAGE_VIEW_CHAR; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned char > () { return     IMAGE_VIEW_UNSIGNED_CHAR; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::RGBPixelType > () { return     IMAGE_VIEW_RGBPIXELTYPE; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::RGBAPixelType > () { return     IMAGE_VIEW_RGBAPIXELTYPE; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::UCharVector3Type > () { return     IMAGE_VIEW_UCHARVECTOR3TYPE ; }
-template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::FloatVector3Type > () { return     IMAGE_VIEW_FLOATVECTOR3TYPE ; }
-
 vtkImageView::vtkImageView()
 {
     //by default the CurrentLayer is always the bottom one.
@@ -146,10 +112,6 @@ vtkImageView::vtkImageView()
     this->InternalMTime          = 0;
     this->InteractorStyle        = 0;
     this->IsInteractorInstalled  = 0;
-
-    this->Impl = new vtkImageViewImplementation;
-    //this->ITKInput  = 0;
-    this->ITKInput4 = 0;
 
     this->CornerAnnotation->SetNonlinearFontScaleFactor (0.3);
     this->CornerAnnotation->SetTextProperty ( this->TextProperty );
@@ -254,7 +216,7 @@ vtkImageView::~vtkImageView()
         this->m_poInputVtkAlgoOutput = nullptr;
     }
 
-    delete this->Impl;
+    //delete this->Impl;
 
     std::cout<<"deleting a view. done"<<std::endl;
 
@@ -1557,10 +1519,10 @@ void vtkImageView::AddLayer(int layer)
 */
 void vtkImageView::RemoveLayer(int layer)
 {
-    if( layer < (int)(this->ITKInputVector.size()) )
+    /*if( layer < (int)(this->ITKInputVector.size()) )
     {
         this->ITKInputVector.erase(this->ITKInputVector.begin() + layer);
-    }
+    }*/
 }
 
 //----------------------------------------------------------------------------
@@ -1636,7 +1598,8 @@ vtkDataSet* vtkImageView::FindActorDataSet (vtkProp3D* arg)
 /// time should not be handled in this class.
 
 //----------------------------------------------------------------------------
-template < class T >
+//FloTODO
+/*template < class T >
 void vtkImageView::SetTimeIndex (vtkIdType timeIndex)
 {
     typedef typename itk::Image<T, 4> ImageType4d;
@@ -1661,51 +1624,51 @@ void vtkImageView::SetTimeIndex (vtkIdType timeIndex)
             extractor->UpdateLargestPossibleRegion();
         }
     }
-}
+}*/
 
 //----------------------------------------------------------------------------
 void vtkImageView::SetTimeIndex ( vtkIdType index )
-{
-    if ( this->TimeIndex != index ) {
-
+{/*
+ //FloTODO
+    if ( this->TimeIndex != index )
+    {
         if (this->Impl->ImageTemporalFilter.size())
         {
-            if ( this->Impl->ImageTemporalFilter[0].IsNotNull ()) {
+            if ( this->Impl->ImageTemporalFilter[0].IsNotNull ())
+            {
+                switch ( this->Impl->TemporalFilterType )
+                {
+                    default:
+                    case IMAGE_VIEW_NONE: break;
+// Macro calls template method for correct argument type.
+#define ImageViewCaseEntry( type, enumName )       \
+    case enumName:             \
+    {                       \
+        this->SetTimeIndex < type > ( index );  \
+        break;                 \
+    }
 
-                switch ( this->Impl->TemporalFilterType ) {
-
-                default:
-                case IMAGE_VIEW_NONE : break;
-                    // Macro calls template method for correct argument type.
-#define ImageViewCaseEntry( type , enumName )		\
-                case enumName :				\
-                    {						\
-    this->SetTimeIndex < type > ( index );	\
-    break ;					\
+                        ImageViewCaseEntry( double, IMAGE_VIEW_DOUBLE );
+                        ImageViewCaseEntry( float, IMAGE_VIEW_FLOAT );
+                        ImageViewCaseEntry( int, IMAGE_VIEW_INT );
+                        ImageViewCaseEntry( unsigned int, IMAGE_VIEW_UNSIGNED_INT );
+                        ImageViewCaseEntry( short, IMAGE_VIEW_SHORT );
+                        ImageViewCaseEntry( unsigned short, IMAGE_VIEW_UNSIGNED_SHORT );
+                        ImageViewCaseEntry( long, IMAGE_VIEW_LONG );
+                        ImageViewCaseEntry( unsigned long, IMAGE_VIEW_UNSIGNED_LONG );
+                        ImageViewCaseEntry( char, IMAGE_VIEW_CHAR );
+                        ImageViewCaseEntry( unsigned char, IMAGE_VIEW_UNSIGNED_CHAR );
+                        ImageViewCaseEntry( RGBPixelType, IMAGE_VIEW_RGBPIXELTYPE );
+                        ImageViewCaseEntry( RGBAPixelType, IMAGE_VIEW_RGBAPIXELTYPE );
+                        ImageViewCaseEntry( UCharVector3Type, IMAGE_VIEW_UCHARVECTOR3TYPE  );
+                        ImageViewCaseEntry( FloatVector3Type, IMAGE_VIEW_FLOATVECTOR3TYPE  );
                 }
-
-                    ImageViewCaseEntry( double, IMAGE_VIEW_DOUBLE );
-                    ImageViewCaseEntry( float, IMAGE_VIEW_FLOAT );
-                    ImageViewCaseEntry( int, IMAGE_VIEW_INT );
-                    ImageViewCaseEntry( unsigned int, IMAGE_VIEW_UNSIGNED_INT );
-                    ImageViewCaseEntry( short, IMAGE_VIEW_SHORT );
-                    ImageViewCaseEntry( unsigned short, IMAGE_VIEW_UNSIGNED_SHORT );
-                    ImageViewCaseEntry( long, IMAGE_VIEW_LONG );
-                    ImageViewCaseEntry( unsigned long, IMAGE_VIEW_UNSIGNED_LONG );
-                    ImageViewCaseEntry( char, IMAGE_VIEW_CHAR );
-                    ImageViewCaseEntry( unsigned char, IMAGE_VIEW_UNSIGNED_CHAR );
-                    ImageViewCaseEntry( RGBPixelType, IMAGE_VIEW_RGBPIXELTYPE );
-                    ImageViewCaseEntry( RGBAPixelType, IMAGE_VIEW_RGBAPIXELTYPE );
-                    ImageViewCaseEntry( UCharVector3Type, IMAGE_VIEW_UCHARVECTOR3TYPE  );
-                    ImageViewCaseEntry( FloatVector3Type, IMAGE_VIEW_FLOATVECTOR3TYPE  );
-
-                };
             }
             this->TimeIndex = index;
             this->InvokeEvent( vtkImageView2DCommand::TimeChangeEvent );
             this->Modified ();
         }
-    }
+    }*/
 }
 //----------------------------------------------------------------------------
 

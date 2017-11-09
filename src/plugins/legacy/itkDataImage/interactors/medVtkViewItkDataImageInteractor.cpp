@@ -45,6 +45,8 @@
 #include <QLabel>
 #include <QComboBox>
 
+#include <vtkItkConversion.h>
+
 class medVtkViewItkDataImageInteractorPrivate
 {
 public:
@@ -186,11 +188,8 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
     if( d->imageData->PixelType() == typeid(double) || d->imageData->PixelType() == typeid(float) )
         d->isFloatImage = true;
 
-    //d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
     initParameters(d->imageData);
 
-    //TODO GPR: to check: update not available anymore in VTK6
-    //d->view2d->GetInput()->Modified(); // Update();
     double* range = d->view2d->GetScalarRange(d->view->layer(d->imageData));
     this->initWindowLevelParameters(range);
 }
@@ -205,19 +204,32 @@ void medVtkViewItkDataImageInteractor::removeData()
 template <typename IMAGE>
 bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstractData* data, int layer)
 {
-    if (data->identifier() != type)
+    bool bRes = data->identifier() == type;
+
+    if (bRes)
     {
-        return false;
+        if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
+        {
+            vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
+            vtkMatrix4x4 *poMatrix = nullptr;
+            bRes = m_oConv.SetITKInput(image, layer);
+            if (bRes)
+            {
+                bRes = m_oConv.GetConversion(layer, poVtkAlgoOutputPort, poMatrix);
+                if (bRes)
+                {
+                    d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
+                    d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
+                }
+            }
+        }
+        else
+        {
+            bRes = false;
+        }
     }
 
-    if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
-    {
-        d->view2d->SetITKInput(image, layer);
-        d->view3d->SetITKInput(image, layer);
-        return true;
-    }
-
-    return false;
+    return bRes;
 }
 
 void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data)
@@ -279,7 +291,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->enableWindowLevelParameter = new medBoolParameterL("Windowing", this);
     d->enableWindowLevelParameter->setIcon(QIcon (":/icons/wlww.png"));
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
-    connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWIndowLevel(bool)));
+    connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWindowLevel(bool)));
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)),
             this, SLOT(updateSlicingParam()));
@@ -653,7 +665,7 @@ void medVtkViewItkDataImageInteractor::updateSlicingParam()
     d->slicingParameter->setValue(d->view2d->GetSlice());
 }
 
-void medVtkViewItkDataImageInteractor::enableWIndowLevel(bool enable)
+void medVtkViewItkDataImageInteractor::enableWindowLevel(bool enable)
 {
     if(enable)
         d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeWindowLevel );

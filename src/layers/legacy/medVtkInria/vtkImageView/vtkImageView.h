@@ -442,122 +442,6 @@ public:
 
     double * GetScalarRange(unsigned int pi_uiLayer = 0);
 
-    //////////////////////////////////////////////////////////////////////////
-    //FloTODO split itk reading phase from vtkImage to an other class
-    //////////////////////////////////////////////////////////////////////////
-
-    /**
-     When ITK is set ot ON, we propose the following method to open
-     directly an ITK image. Because of the templates, we have to setup
-     a method for each type of image. Up to now are supported 3D images
-     of types: double, float, (unsigned) int, (unsigned) short and
-     (unsigned) char. This class does the ITK->VTK conversion using
-     the filter itk::ImageToVTKImageFilter (taken from InsightApplications).
-     The problem with this filter is that if it is not registered,
-     the output is erased along with the filter (in fact the output has
-     the same registered count as the input. For instance, if the input
-     image comes from an ITK reader, its reference count is set to 1.
-     After conversion, one would like to erase the reader. If the
-     converter is not referenced, the output buffer sees its ref count
-     goes to 0, which result in a godamn seg fault. To overcome this,
-     we reference the current converter in the pointer ImageConverter.
-   */
-
-    typedef itk::RGBPixel<unsigned char>  RGBPixelType;
-    typedef itk::RGBAPixel<unsigned char> RGBAPixelType;
-    typedef itk::Vector<unsigned char, 3> UCharVector3Type;
-    typedef itk::Vector<float, 3> FloatVector3Type;
-
-    virtual void SetITKInput (itk::Image<double, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<float, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<int, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<unsigned int, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<short, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<unsigned short, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<long, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<unsigned long, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<char, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<unsigned char, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<RGBPixelType, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<RGBAPixelType, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input, int layer=0);
-    virtual void SetITKInput (itk::Image<FloatVector3Type, 3>::Pointer input, int layer=0);
-
-    virtual void AddITKInput (itk::Image<double, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<float, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<int, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<unsigned int, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<short, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<unsigned short, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<long, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<unsigned long, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<char, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<unsigned char, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<RGBPixelType, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<RGBAPixelType, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<UCharVector3Type, 3>::Pointer input);
-    virtual void AddITKInput (itk::Image<FloatVector3Type, 3>::Pointer input);
-    itk::ImageBase<3>*  GetITKInput (int layer = 0) const;
-
-    /**
-     NT:
-     \todo The 4th dimension might have to be moved to another class as it is
-     a bit overloading the code of this class with a concept which can be placed
-     in a dedicated class.
-    */
-    virtual void SetITKInput4 (itk::Image<double, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<float, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<int, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<unsigned int, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<short, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<unsigned short, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<long, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<unsigned long, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<char, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<unsigned char, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<RGBPixelType, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<RGBAPixelType, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<UCharVector3Type, 4>::Pointer input, int layer=0);
-    virtual void SetITKInput4 (itk::Image<FloatVector3Type, 4>::Pointer input, int layer=0);
-
-    virtual void AddITKInput4 (itk::Image<double, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<float, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<int, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<unsigned int, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<short, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<unsigned short, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<long, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<unsigned long, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<char, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<unsigned char, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<RGBPixelType, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<RGBAPixelType, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<UCharVector3Type, 4>::Pointer input);
-    virtual void AddITKInput4 (itk::Image<FloatVector3Type, 4>::Pointer input);
-
-    itk::ImageBase<4>* GetTemporalITKInput() const;
-
-private:
-    //! Template function which implements SetInput for all types.
-    template < class T >
-    void SetITKInput(typename itk::Image<T, 3>::Pointer itkImage, int layer = 0);
-
-    template < class T >
-    void AddITKInput(typename itk::Image<T, 3>::Pointer itkImage);
-
-    //! Template function which implements SetInput4 for all types.
-    template < class T >
-    void SetITKInput4(typename itk::Image<T, 4>::Pointer itkImage, int layer = 0);
-
-    template < class T >
-    void AddITKInput4(typename itk::Image<T, 4>::Pointer itkImage);
-
-    //! Template function which sets the time step.
-    template < class T >
-    void SetTimeIndex(vtkIdType timeIndex);
-    //////////////////////////////////////////////////////////////////////////
-    //End of FloTODO split itk reading phase from vtkImage to an other class
-    //////////////////////////////////////////////////////////////////////////
 
 public:
     void        SetPatientName (const char* name);
@@ -730,14 +614,14 @@ private:
     /**
      This pointer is used to store internally a reference to the
      current ITK->VTK converter, in order to prevent the image buffer
-     to be deleted unexpectdely. See the SetITKImageInXXX for more
+     to be deleted unexpectedly. See the SetITKImageInXXX for more
      information.
     */
-    class vtkImageViewImplementation;
-    vtkImageViewImplementation * Impl;
+    //class vtkImageViewImplementation;
+    //vtkImageViewImplementation * Impl;
 
-    std::vector< itk::ImageBase<3>::Pointer> ITKInputVector;
-    itk::ImageBase<4>::Pointer  ITKInput4;
+    //std::vector< itk::ImageBase<3>::Pointer> ITKInputVector;
+    //itk::ImageBase<4>::Pointer  ITKInput4;
 
     vtkImageView  (const vtkImageView&); // Not implemented.
     void operator=(const vtkImageView&); // Not implemented.
