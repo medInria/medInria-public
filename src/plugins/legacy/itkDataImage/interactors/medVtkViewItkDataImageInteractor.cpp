@@ -212,10 +212,10 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
         {
             vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
             vtkMatrix4x4 *poMatrix = nullptr;
-            bRes = m_oConv.SetITKInput(image, layer);
+            bRes = m_oConv.SetITKInput(image);
             if (bRes)
             {
-                bRes = m_oConv.GetConversion(layer, poVtkAlgoOutputPort, poMatrix);
+                bRes = m_oConv.GetConversion(poVtkAlgoOutputPort, poMatrix);
                 if (bRes)
                 {
                     d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);

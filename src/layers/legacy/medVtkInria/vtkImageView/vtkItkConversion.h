@@ -6,19 +6,25 @@
 #include <itkRGBPixel.h>
 #include <itkRGBAPixel.h>
 
-#include <vtkType.h>
 #include <vtkAlgorithmOutput.h>
 #include <vtkMatrix4x4.h>
 
 class MEDVTKINRIA_EXPORT vtkItkConversion
 {
+private:
+    /**
+    This pointer is used to store internally a reference to the
+    current ITK->VTK converter, in order to prevent the image buffer
+    to be deleted unexpectedly. See the SetITKImageInXXX for more
+    information.
+    */
+    itk::ProcessObject::Pointer m_ImageConverter;
+    vtkAlgorithmOutput * m_ImageConverterOutput;
+    itk::ImageBase<3>::Pointer m_ItkInputImage;
+
 public:
     vtkItkConversion();
     ~vtkItkConversion();
-
-    //////////////////////////////////////////////////////////////////////////
-    //FloTODO split itk reading phase from vtkImage to an other class
-    //////////////////////////////////////////////////////////////////////////
 
     /**
      When ITK is set at ON, we propose the following method to open
@@ -42,61 +48,33 @@ public:
     typedef itk::Vector<unsigned char, 3> UCharVector3Type;
     typedef itk::Vector<float, 3> FloatVector3Type;
 
-    bool GetConversion(int pi_iLayer, vtkAlgorithmOutput *& po_poAlgoOut, vtkMatrix4x4  *&po_poMatrix);
+    bool GetConversion(vtkAlgorithmOutput *& po_poAlgoOut, vtkMatrix4x4  *&po_poMatrix);
 
-    virtual bool SetITKInput (itk::Image<double, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<float, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<int, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<unsigned int, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<short, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<unsigned short, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<long, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<unsigned long, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<char, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<unsigned char, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<RGBPixelType, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<RGBAPixelType, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input, int pi_iLayer);
-    virtual bool SetITKInput (itk::Image<FloatVector3Type, 3>::Pointer input, int pi_iLayer);
+    bool SetITKInput (itk::Image<double, 3>::Pointer input);
+    bool SetITKInput (itk::Image<float, 3>::Pointer input);
+    bool SetITKInput (itk::Image<int, 3>::Pointer input);
+    bool SetITKInput (itk::Image<unsigned int, 3>::Pointer input);
+    bool SetITKInput (itk::Image<short, 3>::Pointer input);
+    bool SetITKInput (itk::Image<unsigned short, 3>::Pointer input);
+    bool SetITKInput (itk::Image<long, 3>::Pointer input);
+    bool SetITKInput (itk::Image<unsigned long, 3>::Pointer input);
+    bool SetITKInput (itk::Image<char, 3>::Pointer input);
+    bool SetITKInput (itk::Image<unsigned char, 3>::Pointer input);
+    bool SetITKInput (itk::Image<RGBPixelType, 3>::Pointer input);
+    bool SetITKInput (itk::Image<RGBAPixelType, 3>::Pointer input);
+    bool SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input);
+    bool SetITKInput (itk::Image<FloatVector3Type, 3>::Pointer input);
     
-    itk::ImageBase<3>*  GetITKInput (int layer = 0) const;
-
-
+    itk::ImageBase<3>::Pointer  GetITKInput() const { return m_ItkInputImage; };
 
 private:
     //! Template function which implements SetInput for all types.
-    template < class T > bool SetITKInput(typename itk::Image<T, 3>::Pointer itkImage, int pi_iLayer);
-
-
-
-
+    template < class T > bool SetITKInput(typename itk::Image<T, 3>::Pointer itkImage);
 
     //! Template function which sets the time step.
-    template < class T >
-    void SetTimeIndex(vtkIdType timeIndex);
-    //////////////////////////////////////////////////////////////////////////
-    //End of FloTODO split itk reading phase from vtkImage to an other class
-    //////////////////////////////////////////////////////////////////////////
-
-
-
-
-private:
-    /**
-    This pointer is used to store internally a reference to the
-    current ITK->VTK converter, in order to prevent the image buffer
-    to be deleted unexpectedly. See the SetITKImageInXXX for more
-    information.
-    */
-    std::map<int, itk::ProcessObject::Pointer> ImageConverter;
-    std::map<int, vtkAlgorithmOutput *> ImageConverterOutput;
-    std::vector< itk::ImageBase<3>::Pointer> ITKInputVector;
+    //template < class T >void SetTimeIndex(vtkIdType timeIndex);
 };
 
-inline vtkItkConversion::vtkItkConversion()
-{
-}
+inline vtkItkConversion::vtkItkConversion():m_ImageConverterOutput(nullptr){}
 
-inline vtkItkConversion::~vtkItkConversion()
-{
-}
+inline vtkItkConversion::~vtkItkConversion(){}

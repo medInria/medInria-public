@@ -27,6 +27,9 @@
 
 #include <cstring>
 
+#include <vtkSmartPointer.h>
+#include <vtkImageFromBoundsSource.h>
+
 class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
@@ -603,6 +606,8 @@ protected:
     std::string PatientName;
     std::string StudyName;
     std::string SeriesName;
+
+    vtkSmartPointer<vtkImageFromBoundsSource> m_vtkImageFromBoundsSourceGenerator;
 
 private:
 

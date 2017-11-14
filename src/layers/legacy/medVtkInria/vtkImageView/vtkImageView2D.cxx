@@ -1128,7 +1128,7 @@ or change orientation.
 */
 void vtkImageView2D::UpdateSlicePlane()
 {
-  if( !this->GetMedVtkImageInfo() ) // if input is not set yet, no way we can now the display bounds
+  if( !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) // if input is not set yet, no way we can now the display bounds
     return;
 
   vtkPoints* oldpoints = vtkPoints::New();
@@ -2056,7 +2056,8 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   this->DataSetWidgets.push_back( widget );
 
   // If this is the first widget to be added, reset camera
-  if ( (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1)) {
+  if ( (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
+  {
 
       vtkBoundingBox box;
       typedef std::list<vtkDataSet2DWidget*> WidgetListType;
@@ -2081,8 +2082,7 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   return widget->GetActor();
 }
 
-void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int imageSize[3], const double imageSpacing[3],
-                                   const double imageOrigin[3])
+void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int imageSize[3], const double imageSpacing[3], const double imageOrigin[3])
 {
     bool isImageOutBounded = false;
     double imageBounds[6];
@@ -2108,7 +2108,7 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int 
 
     if(isImageOutBounded)
     {
-        vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
+        m_vtkImageFromBoundsSourceGenerator = vtkImageFromBoundsSource::New();
         unsigned int imSize [3];
         if( imageSize != 0 )
         {
@@ -2123,24 +2123,23 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int 
             imSize[2]=100;
         }
 
-        imagegenerator->SetOutputImageSize(imSize);
+        m_vtkImageFromBoundsSourceGenerator->SetOutputImageSize(imSize);
         if (imageSpacing)
-            imagegenerator->SetOutputImageSpacing(imageSpacing);
+            m_vtkImageFromBoundsSourceGenerator->SetOutputImageSpacing(imageSpacing);
         if (imageOrigin)
-            imagegenerator->SetOutputImageOrigin(imageOrigin);
+            m_vtkImageFromBoundsSourceGenerator->SetOutputImageOrigin(imageOrigin);
 
-        imagegenerator->SetOutputImageBounds(imageBounds);
+        m_vtkImageFromBoundsSourceGenerator->SetOutputImageBounds(imageBounds);
 
-        imagegenerator->UpdateInformation();
-        imagegenerator->Update();
+        m_vtkImageFromBoundsSourceGenerator->UpdateInformation();
+        m_vtkImageFromBoundsSourceGenerator->Update();
 
-        vtkImageData * image = imagegenerator->GetOutput();
+        vtkImageData * image = m_vtkImageFromBoundsSourceGenerator->GetOutput();
 
-        SetInput(imagegenerator->GetOutputPort(), 0, layer);
+        SetInput(m_vtkImageFromBoundsSourceGenerator->GetOutputPort(), 0, layer);
         vtkImageActor *actor = GetImageActor(layer);
         actor->SetOpacity(0.0);
         isImageOutBounded=false;
-        //imagegenerator->Delete();
         ResetCamera();
     }
 }

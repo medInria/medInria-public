@@ -83,7 +83,6 @@ public:
     vtkGetObjectMacro (ExtraPlaneCollection, vtkProp3DCollection);
 
     virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
-    //virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
     virtual void SetVolumeMapperTo3DTexture();
     virtual void SetVolumeMapperToRayCast();

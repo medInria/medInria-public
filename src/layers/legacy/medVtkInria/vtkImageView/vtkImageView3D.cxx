@@ -1049,7 +1049,8 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   actor->Delete();
 
   // If this is the first widget to be added, reset camera
-  if ( ! this->GetMedVtkImageInfo() ) {
+  if ( ! this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+  {
 
       vtkBoundingBox box;
       box.AddBounds( arg->GetBounds() );
@@ -1147,73 +1148,6 @@ void vtkImageView3D::RemoveAllLayers()
     this->RemoveLayer (this->LayerInfoVec.size() -1);
   }
 }
-
-
-
-
-//----------------------------------------------------------------------------
-class ImageActorCallback : public vtkCommand
-{
-public:
-  static ImageActorCallback *New()
-  { return new ImageActorCallback; }
-
-  void Execute(vtkObject *caller,
-               unsigned long event,
-               void *vtkNotUsed(callData))
-  {
-    if (this->Actor != NULL)
-    {
-      vtkImageActor* imagecaller = vtkImageActor::SafeDownCast (caller);
-      if (imagecaller && (event == vtkCommand::ModifiedEvent))
-      {
-        this->Actor->SetDisplayExtent (imagecaller->GetDisplayExtent());
-        this->Actor->SetVisibility(imagecaller->GetVisibility());
-        this->Actor->GetMapper()->SetInputConnection(imagecaller->GetMapper()->GetOutputPort());
-        this->Actor->SetInterpolate(imagecaller->GetInterpolate());
-        this->Actor->SetOpacity(imagecaller->GetOpacity());
-        this->Actor->SetUserMatrix (imagecaller->GetUserMatrix());
-        this->Actor->Modified();
-      }
-      vtkImageData* image = vtkImageData::SafeDownCast (caller);
-      if (image && (event == vtkCommand::ModifiedEvent))
-      {
-        this->Actor->Modified();
-      }
-    }
-  }
-
-  void SetActor (vtkImageActor* arg)
-  {
-    if (this->Actor == arg)
-      return;
-    if (this->Actor)
-      this->Actor->UnRegister (this);
-    this->Actor = arg;
-    if (this->Actor)
-      this->Actor->Register(this);
-  }
-
-  vtkImageActor* GetActor()
-  {
-    return this->Actor;
-  }
-
-protected:
-  ImageActorCallback()
-  {
-    this->Actor = NULL;
-  }
-  ~ImageActorCallback()
-  {
-    if (this->Actor)
-      this->Actor->Delete ();
-  }
-
-  vtkImageActor* Actor;
-
-};
-
 
 
 //! Get layer specific info
