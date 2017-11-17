@@ -1,8 +1,8 @@
-#medInria
+# medInria
 
 is a medical image visualisation and processing tool developed at Inria by the teams Asclepios, Athena, Parietal and Visages.
 
-###Deploying
+### Deploying
 
 In order to ease medInria compilation, a super-build project based on CMake retrieves and compiles all the necessary dependencies as well as medInria.
 You can retrieve it on github: 
@@ -11,24 +11,24 @@ You can retrieve it on github:
 For more informations, please see :
 - https://github.com/medInria/medinria-superproject/wiki/Compiling-medInria.
 
-###Contributing changes
+### Contributing changes
 
 You are welcome to fork the project from github and make a contribution by sending us a pull request.
 
 You can also help us to track and correct bug by posting your issue on :
 - https://github.com/medInria/medInria-public/issues.
 
-###Documentation
+### Documentation
 
 Find more documentation on our wiki : 
 - https://github.com/medInria/medInria-public/wiki 
 
-###Contact us
+### Contact us
 
 Information on how to contact the developers can be found on the medInria web page :
 - http://med.inria.fr/
 
-####License
+#### License
 
 Copyright (c) INRIA 2013. All rights reserved.
 See LICENSE.txt for details.
