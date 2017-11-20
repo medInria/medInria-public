@@ -1628,7 +1628,9 @@ void vtkImageView::SetTimeIndex (vtkIdType timeIndex)
 
 //----------------------------------------------------------------------------
 void vtkImageView::SetTimeIndex ( vtkIdType index )
-{/*
+{
+    index++;
+/*
  //FloTODO
     if ( this->TimeIndex != index )
     {

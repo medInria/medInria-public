@@ -12,124 +12,58 @@ PURPOSE.
 =========================================================================*/
 
 #include "vtkItkConversion.h"
-#include <itkImageToVTKImageFilter.h>
 
-//----------------------------------------------------------------------------
-template < class T >
-inline bool vtkItkConversion::SetITKInput (typename itk::Image<T, 3>::Pointer itkImage)
+#include <medAbstractData.h>
+
+#include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
+
+typedef itk::RGBPixel<unsigned char>  RGBPixelType;
+typedef itk::RGBAPixel<unsigned char> RGBAPixelType;
+typedef itk::Vector<unsigned char, 3> UCharVector3Type;
+typedef itk::Vector<float, 3> FloatVector3Type;
+
+void toto()
 {
-    bool bRes = itkImage;
-
-    //Return without any action if image is already attached to a layer.
-    if (bRes)
-    {
-        //////////////////////////////////////////////////////////////////////////
-        // Initialization phase
-        typedef itk::ImageToVTKImageFilter< itk::Image<T, 3> > ConverterType;
-        typename ConverterType::Pointer itk2VtkConverter = ConverterType::New();
-        itkImage->UpdateOutputInformation();
-        itk2VtkConverter->SetInput(itkImage);
-        
-        //////////////////////////////////////////////////////////////////////////
-        // Update phase
-        itk2VtkConverter->UpdateOutputInformation();
-        itk2VtkConverter->GetImporter()->UpdateInformation();
-        itk2VtkConverter->GetImporter()->Update();
-
-        //////////////////////////////////////////////////////////////////////////
-        // Register phase
-        m_ImageConverter = itk2VtkConverter;
-        m_ItkInputImage = itkImage;
-        m_ImageConverterOutput = itk2VtkConverter->GetImporter()->GetOutputPort();
-    }
-
-    return bRes;
+    vtkItkConversionInterface *po = new vtkItkConversion<char, 3>();
 }
 
-bool vtkItkConversion::GetConversion(vtkAlgorithmOutput *& po_poAlgoOut, vtkMatrix4x4 *&po_poMatrix)
+vtkItkConversionInterface * vtkItkConversionInterface::creatInstance(medAbstractData* data)
 {
-    bool bRes = true;
+    vtkItkConversionInterface *poRes = nullptr;
 
-    po_poAlgoOut = nullptr;
-    po_poMatrix = nullptr;
+    itk::Object *pItkObjTmp = static_cast<itk::Object *>(data->data());
 
-    if (m_ImageConverterOutput)
+    if (dynamic_cast<itk::Image<double, 3> *>(pItkObjTmp))
     {
-
-        //////////////////////////////////////////////////////////////////////////
-        // Copy the output port
-        po_poAlgoOut = m_ImageConverterOutput;
-
-        //////////////////////////////////////////////////////////////////////////
-        // Orientation matrix correction phase
-        /**
-            The origin in ITK pipeline is taken into account in a different
-            way than in the VTK equivalent.
-            A first hack would be to force the vtkImageData instance to have
-            a null origin, and put the ITK origin in the 4th column of the
-            OrientationMatrix instance. BUT, when the ITK pipeline is updated,
-            then the ITK origin is put back in place in the vtkImageData instance.
-
-            Therefore we need to keep the vtkImageData's origin the same as the
-            ITK one. And, we need to correct for this misbehavior through a hack
-            in the OrientationMatrix 4th column, a sort of corrected origin.
-        */
-        typename itk::ImageBase<3>::DirectionType directions = m_ItkInputImage->GetDirection();
-        typename itk::ImageBase<3>::PointType origin = m_ItkInputImage->GetOrigin();
-        po_poMatrix = vtkMatrix4x4::New();
-        po_poMatrix->Identity();
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                po_poMatrix->SetElement(i, j, directions(i, j));
-            }
-        }
-        double v_origin[4], v_origin2[4];
-        for (int i = 0; i < 3; i++)
-        {
-            v_origin[i] = origin[i];
-        }
-        v_origin[3] = 1.0;
-        po_poMatrix->MultiplyPoint(v_origin, v_origin2);
-        for (int i = 0; i < 3; i++)
-        {
-            po_poMatrix->SetElement(i, 3, v_origin[i] - v_origin2[i]);
-        }
-        //The po_poMatrix instance is from now on corrected.
+        poRes = new vtkItkConversion<double, 3>();
     }
-    else
-    {
-        bRes = false;
-    }
+    else if ( dynamic_cast<itk::Image<float, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< float,3 >(); }
+    else if ( dynamic_cast<itk::Image<int, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< int,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned int, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion<  unsigned int,3 >(); }
+    else if ( dynamic_cast<itk::Image<short, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< short,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned short, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< unsigned short,3 >(); }
+    else if ( dynamic_cast<itk::Image<long, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< long,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned long, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< unsigned long,3 >(); }
+    else if ( dynamic_cast<itk::Image<char, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< char,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned char, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< unsigned char,3 >(); }
+    else if ( dynamic_cast<itk::Image<RGBPixelType, 3> *>(pItkObjTmp) )     { poRes = new vtkItkConversion< RGBPixelType,3 >(); }
+    else if ( dynamic_cast<itk::Image<RGBAPixelType, 3> *>(pItkObjTmp) )    { poRes = new vtkItkConversion< RGBAPixelType ,3 >(); }
+    else if ( dynamic_cast<itk::Image<UCharVector3Type, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< UCharVector3Type ,3 >(); }
+    else if ( dynamic_cast<itk::Image<FloatVector3Type, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< FloatVector3Type ,3 >(); }
 
-    return bRes;
+    else if (dynamic_cast<itk::Image<double, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< double,4 >(); }
+    else if (dynamic_cast<itk::Image<float, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< float,4 >(); }
+    else if (dynamic_cast<itk::Image<int, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< int,4 >(); }
+    else if (dynamic_cast<itk::Image<unsigned int, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< unsigned int,4 >(); }
+    else if (dynamic_cast<itk::Image<short, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< short,4 >(); }
+    else if (dynamic_cast<itk::Image<unsigned short, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< unsigned short,4 >(); }
+    else if (dynamic_cast<itk::Image<long, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< long,4 >(); }
+    else if (dynamic_cast<itk::Image<unsigned long, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< unsigned long ,4 >(); }
+    else if (dynamic_cast<itk::Image<char, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< char,4 >(); }
+    else if (dynamic_cast<itk::Image<unsigned char, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< unsigned char ,4 >(); }
+    else if (dynamic_cast<itk::Image<RGBPixelType, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< RGBPixelType,4 >(); }
+    else if (dynamic_cast<itk::Image<RGBAPixelType, 4> *>(pItkObjTmp)) { poRes = new vtkItkConversion< RGBAPixelType ,4 >(); }
+
+    return poRes;
 }
-
-#define vtkImplementSetITKInputMacro(type)\
-    bool vtkItkConversion::SetITKInput (itk::Image<type, 3>::Pointer itkImage)\
-    {\
-        return SetITKInput < type > (itkImage);\
-    }
-
-vtkImplementSetITKInputMacro (double);
-vtkImplementSetITKInputMacro (float);
-vtkImplementSetITKInputMacro (int);
-vtkImplementSetITKInputMacro (unsigned int);
-vtkImplementSetITKInputMacro (short);
-vtkImplementSetITKInputMacro (unsigned short);
-vtkImplementSetITKInputMacro (long);
-vtkImplementSetITKInputMacro (unsigned long);
-vtkImplementSetITKInputMacro (char);
-vtkImplementSetITKInputMacro (unsigned char);
-vtkImplementSetITKInputMacro (RGBPixelType);
-vtkImplementSetITKInputMacro (RGBAPixelType);
-vtkImplementSetITKInputMacro (UCharVector3Type);
-vtkImplementSetITKInputMacro (FloatVector3Type);
-
-/*itk::ImageBase<3>*vtkItkConversion::GetITKInput (int layer) const
-{
-    if (layer < (int)(m_ItkInputImage.size()))
-        return m_ItkInputImage[layer];
-    return NULL;
-}*/
