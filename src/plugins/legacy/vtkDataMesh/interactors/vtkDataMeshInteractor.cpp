@@ -555,15 +555,7 @@ void vtkDataMeshInteractor::setUpViewForThumbnail()
     d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
     d->view->reset();
     d->view3d->ShowAnnotationsOff();
-
-    //TODO find how to remove the litlle cube at the bottom left corner.
-//    d->view3d->ShowActorXOff();
-//    d->view3d->ShowActorYOff();
-//    d->view3d->ShowActorYOff();
-//    d->view3d->ShowBoxWidgetOff();
-//    d->view3d->ShowPlaneWidgetOff();
-//    d->view3d->ShowScalarBarOff();
-
+    d->view3d->ShowCubeOff();
 }
 
 void vtkDataMeshInteractor::updateWidgets()
