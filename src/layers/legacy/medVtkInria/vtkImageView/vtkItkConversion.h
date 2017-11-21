@@ -5,6 +5,7 @@
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
 #include <itkExtractImageFilter.h>
+//#include <itkMinimumMaximumImageCalculator.h>
 
 #include <vtkAlgorithmOutput.h>
 #include <vtkMatrix4x4.h>
@@ -24,9 +25,12 @@ public:
     virtual bool GetConversion(vtkAlgorithmOutput *& po_poAlgoOut, vtkMatrix4x4  *&po_poMatrix) = 0;
 
     virtual bool setTimeIndex(unsigned int pi_uiTimeIndex) = 0;
+
     virtual unsigned int getTimeIndex() = 0;
     virtual unsigned int getNumberOfVolumes() = 0;
     virtual float getTotalTime() = 0;
+
+    virtual double * getCurrentScalarRange() = 0;
 
     static vtkItkConversionInterface * creatInstance(medAbstractData* data);
 
@@ -89,9 +93,12 @@ public:
     virtual bool GetConversion(vtkAlgorithmOutput *& po_poAlgoOut, vtkMatrix4x4  *&po_poMatrix);
 
     virtual bool setTimeIndex(unsigned int pi_uiTimeIndex);
+
     virtual unsigned int getTimeIndex();
     virtual unsigned int getNumberOfVolumes();
     virtual float getTotalTime();
+
+    virtual double * getCurrentScalarRange();
 
 private:
 

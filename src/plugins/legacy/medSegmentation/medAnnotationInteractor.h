@@ -128,7 +128,7 @@ private:
 
 private:
     msegAnnotationInteractorPrivate *d;
-    vtkItkConversion m_oConv;
+    vtkItkConversionInterface* m_poConv;
 };
 
 

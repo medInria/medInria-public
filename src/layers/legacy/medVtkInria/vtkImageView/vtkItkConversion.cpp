@@ -34,19 +34,16 @@ vtkItkConversionInterface * vtkItkConversionInterface::creatInstance(medAbstract
 
     itk::Object *pItkObjTmp = static_cast<itk::Object *>(data->data());
 
-    if (dynamic_cast<itk::Image<double, 3> *>(pItkObjTmp))
-    {
-        poRes = new vtkItkConversion<double, 3>();
-    }
-    else if ( dynamic_cast<itk::Image<float, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< float,3 >(); }
-    else if ( dynamic_cast<itk::Image<int, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< int,3 >(); }
-    else if ( dynamic_cast<itk::Image<unsigned int, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion<  unsigned int,3 >(); }
-    else if ( dynamic_cast<itk::Image<short, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< short,3 >(); }
-    else if ( dynamic_cast<itk::Image<unsigned short, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< unsigned short,3 >(); }
-    else if ( dynamic_cast<itk::Image<long, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< long,3 >(); }
-    else if ( dynamic_cast<itk::Image<unsigned long, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< unsigned long,3 >(); }
-    else if ( dynamic_cast<itk::Image<char, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< char,3 >(); }
-    else if ( dynamic_cast<itk::Image<unsigned char, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< unsigned char,3 >(); }
+    if      (dynamic_cast<itk::Image<double, 3> *>(pItkObjTmp))             { poRes = new vtkItkConversion<double, 3>(); }
+    else if ( dynamic_cast<itk::Image<float, 3> *>(pItkObjTmp) )            { poRes = new vtkItkConversion< float,3 >(); }
+    else if ( dynamic_cast<itk::Image<int, 3> *>(pItkObjTmp) )              { poRes = new vtkItkConversion< int,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned int, 3> *>(pItkObjTmp) )     { poRes = new vtkItkConversion<  unsigned int,3 >(); }
+    else if ( dynamic_cast<itk::Image<short, 3> *>(pItkObjTmp) )            { poRes = new vtkItkConversion< short,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned short, 3> *>(pItkObjTmp) )   { poRes = new vtkItkConversion< unsigned short,3 >(); }
+    else if ( dynamic_cast<itk::Image<long, 3> *>(pItkObjTmp) )             { poRes = new vtkItkConversion< long,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned long, 3> *>(pItkObjTmp) )    { poRes = new vtkItkConversion< unsigned long,3 >(); }
+    else if ( dynamic_cast<itk::Image<char, 3> *>(pItkObjTmp) )             { poRes = new vtkItkConversion< char,3 >(); }
+    else if ( dynamic_cast<itk::Image<unsigned char, 3> *>(pItkObjTmp) )    { poRes = new vtkItkConversion< unsigned char,3 >(); }
     else if ( dynamic_cast<itk::Image<RGBPixelType, 3> *>(pItkObjTmp) )     { poRes = new vtkItkConversion< RGBPixelType,3 >(); }
     else if ( dynamic_cast<itk::Image<RGBAPixelType, 3> *>(pItkObjTmp) )    { poRes = new vtkItkConversion< RGBAPixelType ,3 >(); }
     else if ( dynamic_cast<itk::Image<UCharVector3Type, 3> *>(pItkObjTmp) ) { poRes = new vtkItkConversion< UCharVector3Type ,3 >(); }

@@ -88,6 +88,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
 
     d->isFloatImage = false;
     d->intensityStep = 0;
+    m_poConv = nullptr;
 }
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
@@ -167,7 +168,8 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
     if(!d->imageData)
         return;
 
-    if (!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->view->layer(data)) ||
+    if (!SetViewInput (data, d->view->layer(data))
+        /*!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<short,3> >("itkDataImageShort3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3", data, d->view->layer(data)) ||
@@ -179,7 +181,7 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
           SetViewInput<itk::Image<double,3> >("itkDataImageDouble3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3", data, d->view->layer(data)) ||
           SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVectorUChar3", data, d->view->layer(data))))
+          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVectorUChar3", data, d->view->layer(data)))*/)
     {
         dtkDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
         return;
@@ -201,32 +203,33 @@ void medVtkViewItkDataImageInteractor::removeData()
 }
 
 
-template <typename IMAGE>
-bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstractData* data, int layer)
+//template <typename IMAGE>
+bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int layer)
 {
-    bool bRes = data->identifier() == type;
+    bool bRes = true; //data->identifier() == type;
 
-    if (bRes)
+    m_poConv = vtkItkConversionInterface::creatInstance(data);
+
+    if (m_poConv = vtkItkConversionInterface::creatInstance(data))
     {
-        if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
+        itk::DataObject::Pointer image = (itk::DataObject*)(data->data());
+        vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
+        vtkMatrix4x4 *poMatrix = nullptr;
+      
+        bRes = m_poConv->SetITKInput(image);
+        if (bRes)
         {
-            vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
-            vtkMatrix4x4 *poMatrix = nullptr;
-            bRes = m_oConv.SetITKInput(image);
+            bRes = m_poConv->GetConversion(poVtkAlgoOutputPort, poMatrix);
             if (bRes)
             {
-                bRes = m_oConv.GetConversion(poVtkAlgoOutputPort, poMatrix);
-                if (bRes)
-                {
-                    d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
-                    d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
-                }
+                d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
+                d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
             }
         }
-        else
-        {
-            bRes = false;
-        }
+    }
+    else
+    {
+        bRes = false;
     }
 
     return bRes;

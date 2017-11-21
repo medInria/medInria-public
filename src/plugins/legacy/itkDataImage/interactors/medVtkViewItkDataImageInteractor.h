@@ -69,8 +69,8 @@ private:
     static QStringList dataHandled();
     virtual void update();
 
-    template <typename IMAGE>
-    bool SetViewInput(const char* type, medAbstractData* data, int layer);
+    //template <typename IMAGE>
+    bool SetViewInput(/*const char* type, */ medAbstractData* data, int layer);
 
 private slots:
     void updateSlicingParam();
@@ -79,6 +79,6 @@ private slots:
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;
-    vtkItkConversion m_oConv;
+    vtkItkConversionInterface *m_poConv;
 };
 

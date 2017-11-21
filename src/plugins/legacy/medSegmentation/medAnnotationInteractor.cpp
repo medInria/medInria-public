@@ -92,6 +92,8 @@ medAnnotationInteractor::~medAnnotationInteractor()
     qDeleteAll(d->helpers);
     delete d;
     d = NULL;
+    delete(m_poConv);
+    m_poConv = nullptr;
 }
 
 QStringList medAnnotationInteractor::dataHandled()
@@ -177,11 +179,11 @@ bool medAnnotationInteractor::SetViewInput(medAbstractData *data)
         {
             vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
             vtkMatrix4x4 *poMatrix = nullptr;
-
-            bRes = m_oConv.SetITKInput(image);
+            m_poConv = new vtkItkConversion<unsigned char, 3>();
+            bRes = m_poConv->SetITKInput(image);
             if (bRes)
             {
-                bRes = m_oConv.GetConversion(poVtkAlgoOutputPort, poMatrix);
+                bRes = m_poConv->GetConversion(poVtkAlgoOutputPort, poMatrix);
                 if (bRes)
                 {
                     d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);

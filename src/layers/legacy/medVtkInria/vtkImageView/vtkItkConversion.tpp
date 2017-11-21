@@ -117,6 +117,8 @@ bool vtkItkConversion<volumeType, imageDim>::initializeImage(typename itk::Image
             case 3:        
             {
                 m_ItkInputImage = reinterpret_cast<itk::Image<typename volumeType, 3>*>(input.GetPointer());
+                /*typename itk::MinimumMaximumImageCalculator<itk::Image<typename volumeType, 3> >::Pointer  minMaxCalc = itk::MinimumMaximumImageCalculator<itk::Image<typename volumeType, 3>>::New();
+                minMaxCalc->Compute();*/
                 bRes = m_ItkInputImage.IsNotNull();
                 break;
             }
@@ -161,6 +163,7 @@ bool vtkItkConversion<volumeType, imageDim>::volumeExtraction()
     {
         double dTimeResolution = m_ItkInputImage4D->GetSpacing()[3];
         m_fTotalTime = dTimeResolution * m_uiNbVolume;
+        m_oVolumeVectorFrom4D.resize(m_uiNbVolume);
 
         for (unsigned int n = 0; (n < m_uiNbVolume) && bRes; n++)
         {
@@ -183,6 +186,7 @@ bool vtkItkConversion<volumeType, imageDim>::volumeExtraction()
 
             try
             {
+                myExtractor->GetOutput();
                 m_oVolumeVectorFrom4D[n] = myExtractor->GetOutput();
             }
             catch (itk::ExceptionObject &e)
@@ -284,4 +288,39 @@ void vtkItkConversion<volumeType, imageDim>::conversion()
     m_ImageConverter->UpdateOutputInformation();
     m_ImageConverter->GetImporter()->UpdateInformation();
     m_ImageConverter->GetImporter()->Update();
+}
+
+
+template <typename volumeType, unsigned int imageDim>
+double * vtkItkConversion<volumeType, imageDim>::getCurrentScalarRange()
+{
+    static double *dResScalarRange = new double[2];
+    double scalarRangeTmp[2];
+
+    dResScalarRange[0] = VTK_DOUBLE_MAX;
+    dResScalarRange[1] = VTK_DOUBLE_MIN;
+
+    for (unsigned int i = 0; i < m_uiNbVolume; ++i)
+    {
+        setTimeIndex(i);
+        m_ImageConverter->GetImporter()->GetOutput()->GetScalarRange(scalarRangeTmp);
+        if (dResScalarRange[0] > scalarRangeTmp[0]) dResScalarRange[0] = scalarRangeTmp[0];
+        if (dResScalarRange[1] < scalarRangeTmp[1]) dResScalarRange[1] = scalarRangeTmp[1];
+    }
+
+    return dResScalarRange;
+
+    /*static double *val = new double[2];
+    val[0] = VTK_DOUBLE_MAX;
+    val[1] = VTK_DOUBLE_MIN;
+
+    for (unsigned int i = 0; i < this->MetaDataSetList.size(); i++)
+    {
+        double *range = this->MetaDataSetList[i]->GetCurrentScalarRange();
+
+        if (val[0] > range[0]) val[0] = range[0];
+        if (val[1] < range[1]) val[1] = range[1];
+    }
+
+    return val;*/
 }
