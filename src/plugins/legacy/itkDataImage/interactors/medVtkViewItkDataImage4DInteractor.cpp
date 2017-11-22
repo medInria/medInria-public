@@ -39,28 +39,19 @@ public:
     medAbstractImageView *view;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
-
-    vtkMetaDataSetSequence *sequence;
     medAbstractImageData *imageData;
-
-    //double currentTime;
 
 };
 
 
 medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstractView *parent):
-    medVtkViewItkDataImageInteractor(parent), d(new medVtkViewItkDataImage4DInteractorPrivate)
+    medVtkViewItkDataImageInteractor(parent), d(new medVtkViewItkDataImage4DInteractorPrivate), m_poConv(nullptr)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
-
-    //d->currentTime = 0.0;
-
-
-    m_poConv = nullptr;
 }
 
 medVtkViewItkDataImage4DInteractor::~medVtkViewItkDataImage4DInteractor()
@@ -114,33 +105,21 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
     if(!d->imageData)
         return;
 
-    if( data->identifier().contains("itkDataImage") &&  d->imageData->Dimension() == 4 ) {
-
-        //d->sequence = vtkMetaDataSetSequence::New();
-
+    if( data->identifier().contains("itkDataImage") &&  d->imageData->Dimension() == 4 )
+    {
         int layer = d->view->layer(data);
 
-        if (SetViewInput(data, layer) /* AppendImageSequence<char>(data,d->view,d->sequence, layer)           ||
-              AppendImageSequence<unsigned char>(data,d->view,d->sequence, layer)  ||
-              AppendImageSequence<short>(data,d->view,d->sequence, layer)          ||
-              AppendImageSequence<unsigned short>(data,d->view,d->sequence, layer) ||
-              AppendImageSequence<int>(data,d->view,d->sequence, layer)            ||
-              AppendImageSequence<unsigned int>(data,d->view,d->sequence, layer)   ||
-              AppendImageSequence<long>(data,d->view,d->sequence, layer)           ||
-              AppendImageSequence<unsigned long>(data,d->view,d->sequence, layer)  ||
-              AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
-              AppendImageSequence<double>(data,d->view,d->sequence, layer)*/)
+        if (SetViewInput(data, layer) )
         {
             d->imageData->addMetaData("SequenceDuration", QString::number(m_poConv->getTotalTime()));
             d->imageData->addMetaData("SequenceFrameRate", QString::number((double)m_poConv->getNumberOfVolumes() / (double)m_poConv->getTotalTime()));
 
-            //FloTODO dtkDebug() << "SequenceDuration" << d->sequence->GetMaxTime();
-            //FloTODO dtkDebug() << "SequenceFrameRate" <<(double)d->sequence->GetNumberOfMetaDataSets() / (double)d->sequence->GetMaxTime();
+            dtkDebug() << "SequenceDuration" << m_poConv->getTotalTime();
+            dtkDebug() << "SequenceFrameRate" <<(double)m_poConv->getNumberOfVolumes() / m_poConv->getTotalTime();
 
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
 
-            //double* range = d->sequence->GetCurrentScalarRange();
             double* range = m_poConv->getCurrentScalarRange();
             d->view2d->SetColorRange(range);
             this->initWindowLevelParameters(range);
@@ -168,7 +147,7 @@ bool medVtkViewItkDataImage4DInteractor::SetViewInput(medAbstractData* data, int
 {
     bool bRes = true;
 
-    if (m_poConv = vtkItkConversionInterface::creatInstance(data))
+    if (m_poConv = vtkItkConversionInterface::createInstance(data))
     {
         itk::DataObject::Pointer image = (itk::DataObject*)(data->data());
         vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
@@ -180,8 +159,8 @@ bool medVtkViewItkDataImage4DInteractor::SetViewInput(medAbstractData* data, int
             bRes = m_poConv->GetConversion(poVtkAlgoOutputPort, poMatrix);
             if (bRes)
             {
-                d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
-                d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
+                d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
+                d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
             }
         }
     }
@@ -191,58 +170,6 @@ bool medVtkViewItkDataImage4DInteractor::SetViewInput(medAbstractData* data, int
     }
 
     return bRes;
-}
-template <typename TYPE>
-bool AppendImageSequence(medAbstractData* data, medAbstractImageView* view, vtkMetaDataSetSequence* sequence, int& layer)
-{
-
-    if (itk::Image<TYPE, 4>* image = dynamic_cast<itk::Image<TYPE, 4>*>(static_cast<itk::Object*>(data->data())))
-    {
-
-        medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
-
-        //sequence->SetITKDataSet<TYPE>(image);
-
-        vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
-        vtkImageData*     vtkimage = vtkImageData::SafeDownCast(sequence->GetDataSet());
-
-        backend->view2D->SetInput(metaimage->GetAlgorithmOutputPort(), metaimage->GetOrientationMatrix(), layer);
-        backend->view3D->SetInput(metaimage->GetAlgorithmOutputPort(), metaimage->GetOrientationMatrix(), layer);
-        layer = backend->view2D->GetNumberOfLayers() - 1;
-
-        return true;
-    }
-    return false;
-}
-
-/*
-template <typename TYPE>
-bool AppendImageSequence(medAbstractData* data, medAbstractImageView* view, vtkMetaDataSetSequence* sequence, int& layer)
-{
-
-    if (itk::Image<TYPE, 4>* image = dynamic_cast<itk::Image<TYPE, 4>*>(static_cast<itk::Object*>(data->data())))
-    {
-
-        medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(view->backend());
-
-        sequence->SetITKDataSet<TYPE>(image);
-
-        vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
-        vtkImageData*     vtkimage = vtkImageData::SafeDownCast(sequence->GetDataSet());
-
-        backend->view2D->SetInput(metaimage->GetAlgorithmOutputPort(), metaimage->GetOrientationMatrix(), layer);
-        backend->view3D->SetInput(metaimage->GetAlgorithmOutputPort(), metaimage->GetOrientationMatrix(), layer);
-        layer = backend->view2D->GetNumberOfLayers() - 1;
-
-        return true;
-    }
-    return false;
-}
-*/
-
-void medVtkViewItkDataImage4DInteractor::SetITKDataSet(typename itk::Image<float, 4> *dataset)
-{
-    //SetITKDataSet<float>(dataset);
 }
 
 template <typename IMAGE>
@@ -283,8 +210,8 @@ medAbstractData *medVtkViewItkDataImage4DInteractor::inputData() const
 
 void medVtkViewItkDataImage4DInteractor::setCurrentTime(double time)
 {
-    if(m_poConv->getTimeIndex() * m_poConv->getTotalTime() / m_poConv->getNumberOfVolumes() == time)
-        return;
-    //d->sequence->UpdateToTime(time);
-    m_poConv->setTimeIndex(static_cast<unsigned int>(round(time * m_poConv->getNumberOfVolumes() / m_poConv->getTotalTime() )) -1);
+    if (m_poConv->getTimeIndex() * m_poConv->getTotalTime() / m_poConv->getNumberOfVolumes() != time)
+    {
+        m_poConv->setTimeIndex(static_cast<unsigned int>(round(time * m_poConv->getNumberOfVolumes() / m_poConv->getTotalTime())) - 1);
+    }    
 }

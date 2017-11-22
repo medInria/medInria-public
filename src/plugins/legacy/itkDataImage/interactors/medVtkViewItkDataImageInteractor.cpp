@@ -203,14 +203,13 @@ void medVtkViewItkDataImageInteractor::removeData()
 }
 
 
-//template <typename IMAGE>
 bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int layer)
 {
-    bool bRes = true; //data->identifier() == type;
+    bool bRes = true;
 
-    m_poConv = vtkItkConversionInterface::creatInstance(data);
+    m_poConv = vtkItkConversionInterface::createInstance(data);
 
-    if (m_poConv = vtkItkConversionInterface::creatInstance(data))
+    if (m_poConv = vtkItkConversionInterface::createInstance(data))
     {
         itk::DataObject::Pointer image = (itk::DataObject*)(data->data());
         vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
@@ -222,8 +221,8 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
             bRes = m_poConv->GetConversion(poVtkAlgoOutputPort, poMatrix);
             if (bRes)
             {
-                d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
-                d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer); //SetITKInput(image, layer);
+                d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
+                d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
             }
         }
     }

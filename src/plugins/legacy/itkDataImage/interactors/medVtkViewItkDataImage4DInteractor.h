@@ -37,15 +37,8 @@ public:
     virtual bool SetViewInput(medAbstractData* data, int layer);
     virtual medAbstractData *inputData() const;
 
-    //virtual QWidget* buildToolBoxWidget();
-    //virtual QWidget* buildToolBarWidget();
-    //virtual QWidget* buildLayerWidget();
-
-    //virtual QList<medAbstractParameterL*> linkableParameters();
-
 public slots:
     virtual void setCurrentTime (double time);
-    //virtual void updateWidgets();
 
 private:
     static QStringList dataHandled();

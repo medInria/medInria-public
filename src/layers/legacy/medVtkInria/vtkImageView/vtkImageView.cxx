@@ -148,8 +148,6 @@ vtkImageView::vtkImageView()
 
     this->OrientationTransform->SetInput (this->OrientationMatrix);
 
-    this->TimeIndex = 0;
-
     this->WindowLevel->SetLookupTable( this->LookupTable );
     this->WindowLevel->SetOutputFormatToRGB();
     this->ScalarBar->SetLookupTable( this->WindowLevel->GetLookupTable() );
@@ -1575,104 +1573,6 @@ vtkDataSet* vtkImageView::FindActorDataSet (vtkProp3D* arg)
         return NULL;
     return vtkDataSet::SafeDownCast (this->DataSetCollection->GetItemAsObject (id-1));
 }
-
-
-
-/////////////////////////////////////////////////////////////////////////////
-/////////////////// NOTE ON TIME HANDLING AND ITK-BRIDGE ////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/// Nicolas Toussaint.
-
-/// All of this pipelines of time handling, extraction etc
-/// have been implemented both for images and meshes in
-/// a vtk class called vtkMetaDataSetSequence.
-/// Note also that in the vtkMetaDataSetSequence implementation
-/// the template switch case between scalar type has ALSO been implemented,
-/// as well as all setITKInput APIs and the corr. macros...
-///
-/// I believe that the bridge between ITK and VTK should be implemented
-/// outside of the views, from an external class, such as vtkMetaDataSet(Sequence).
-/// The fact that all of these are implemented here again will make difficult the
-/// maintenance of both APIs...
-
-/// time should not be handled in this class.
-
-//----------------------------------------------------------------------------
-//FloTODO
-/*template < class T >
-void vtkImageView::SetTimeIndex (vtkIdType timeIndex)
-{
-    typedef typename itk::Image<T, 4> ImageType4d;
-    typedef typename itk::Image<T, 3> ImageType3d;
-    typedef typename itk::ExtractImageBufferFilter< ImageType4d, ImageType3d > ExtractFilterType;
-
-    // Since we store the extractor type using an enum, the dynamic cast should always succeed,
-    // unless the Filter was already NULL.
-    if(this->Impl->ImageTemporalFilter.size())
-    {
-        ExtractFilterType * extractor = dynamic_cast < ExtractFilterType *> ( this->Impl->ImageTemporalFilter[0].GetPointer () ) ;
-        if ( extractor )
-        {
-            unsigned int timeLimit = extractor->GetInput()->GetLargestPossibleRegion().GetSize()[3] -1;
-            if (timeIndex<0)
-                timeIndex = 0;
-            if (timeIndex>(vtkIdType)timeLimit)
-                timeIndex = timeLimit;
-            typename ImageType4d::RegionType region = extractor->GetExtractionRegion ();
-            region.SetIndex (3, timeIndex);
-            extractor->SetExtractionRegion (region);
-            extractor->UpdateLargestPossibleRegion();
-        }
-    }
-}*/
-
-//----------------------------------------------------------------------------
-void vtkImageView::SetTimeIndex ( vtkIdType index )
-{
-    index++;
-/*
- //FloTODO
-    if ( this->TimeIndex != index )
-    {
-        if (this->Impl->ImageTemporalFilter.size())
-        {
-            if ( this->Impl->ImageTemporalFilter[0].IsNotNull ())
-            {
-                switch ( this->Impl->TemporalFilterType )
-                {
-                    default:
-                    case IMAGE_VIEW_NONE: break;
-// Macro calls template method for correct argument type.
-#define ImageViewCaseEntry( type, enumName )       \
-    case enumName:             \
-    {                       \
-        this->SetTimeIndex < type > ( index );  \
-        break;                 \
-    }
-
-                        ImageViewCaseEntry( double, IMAGE_VIEW_DOUBLE );
-                        ImageViewCaseEntry( float, IMAGE_VIEW_FLOAT );
-                        ImageViewCaseEntry( int, IMAGE_VIEW_INT );
-                        ImageViewCaseEntry( unsigned int, IMAGE_VIEW_UNSIGNED_INT );
-                        ImageViewCaseEntry( short, IMAGE_VIEW_SHORT );
-                        ImageViewCaseEntry( unsigned short, IMAGE_VIEW_UNSIGNED_SHORT );
-                        ImageViewCaseEntry( long, IMAGE_VIEW_LONG );
-                        ImageViewCaseEntry( unsigned long, IMAGE_VIEW_UNSIGNED_LONG );
-                        ImageViewCaseEntry( char, IMAGE_VIEW_CHAR );
-                        ImageViewCaseEntry( unsigned char, IMAGE_VIEW_UNSIGNED_CHAR );
-                        ImageViewCaseEntry( RGBPixelType, IMAGE_VIEW_RGBPIXELTYPE );
-                        ImageViewCaseEntry( RGBAPixelType, IMAGE_VIEW_RGBAPIXELTYPE );
-                        ImageViewCaseEntry( UCharVector3Type, IMAGE_VIEW_UCHARVECTOR3TYPE  );
-                        ImageViewCaseEntry( FloatVector3Type, IMAGE_VIEW_FLOATVECTOR3TYPE  );
-                }
-            }
-            this->TimeIndex = index;
-            this->InvokeEvent( vtkImageView2DCommand::TimeChangeEvent );
-            this->Modified ();
-        }
-    }*/
-}
-//----------------------------------------------------------------------------
 
 /////////////////////////////////////////////////////////////////////
 ///////////////// One comment on the origin handling ////////////////

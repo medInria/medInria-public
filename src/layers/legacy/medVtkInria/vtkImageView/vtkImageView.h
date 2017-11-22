@@ -129,7 +129,7 @@ class vtkImageAlgorithm;
 
    J) Events
    The view should not send or have any events. This is the role of Command or Style instances.
-   We have to figure out a way of having the same behaviour without having events in the view instances
+   We have to figure out a way of having the same behavior without having events in the view instances
 
    K) protected
    It is very useful to have local instances in the protected section, so that upper level classes
@@ -415,10 +415,6 @@ public:
     virtual void SetSize(int a, int b);
     virtual void SetSize(int a[2]) { this->SetSize(a[0],a[1]); }
 
-    //! Get / Set the temporal slice.
-    vtkGetMacro(TimeIndex, vtkIdType);
-    virtual void SetTimeIndex(vtkIdType index);
-
 
     virtual void Enable();
     virtual void Disable();
@@ -612,21 +608,6 @@ protected:
 private:
 
     unsigned long InternalMTime;
-
-    //! The time slice to be displayed.
-    vtkIdType TimeIndex;
-
-    /**
-     This pointer is used to store internally a reference to the
-     current ITK->VTK converter, in order to prevent the image buffer
-     to be deleted unexpectedly. See the SetITKImageInXXX for more
-     information.
-    */
-    //class vtkImageViewImplementation;
-    //vtkImageViewImplementation * Impl;
-
-    //std::vector< itk::ImageBase<3>::Pointer> ITKInputVector;
-    //itk::ImageBase<4>::Pointer  ITKInput4;
 
     vtkImageView  (const vtkImageView&); // Not implemented.
     void operator=(const vtkImageView&); // Not implemented.

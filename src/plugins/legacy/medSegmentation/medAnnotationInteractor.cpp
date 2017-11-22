@@ -69,7 +69,7 @@ public:
 
 // Implementation
 medAnnotationInteractor::medAnnotationInteractor(medAbstractView *parent):
-    medAbstractImageViewInteractor(parent), d(new msegAnnotationInteractorPrivate)
+    medAbstractImageViewInteractor(parent), d(new msegAnnotationInteractorPrivate), m_poConv(nullptr)
 {
     d->helpers.push_back(new medAnnIntSeedPointHelper(this));
     d->helpers.push_back(new medAnnIntImageMaskHelper(this));
