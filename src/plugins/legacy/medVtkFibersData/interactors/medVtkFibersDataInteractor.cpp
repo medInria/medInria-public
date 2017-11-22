@@ -450,7 +450,6 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
     if(data->identifier() != "medVtkFibersData")
         return;
 
-
     if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data()))
     {
         d->dataset = dataset;
@@ -1445,6 +1444,7 @@ void medVtkFibersDataInteractor::setUpViewForThumbnail()
     d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
     d->view->reset();
     d->view3d->ShowAnnotationsOff();
+    d->view3d->ShowCubeOff();
 }
 
 QList<medAbstractParameterL*> medVtkFibersDataInteractor::linkableParameters()

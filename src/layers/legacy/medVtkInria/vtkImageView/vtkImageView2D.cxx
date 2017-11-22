@@ -1791,7 +1791,7 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
       }
 
       // determine the scalar range. Copy the update extent to match the input's one
-      double range[2];
+      //double range[2];
       //TODO GPR: to check
       //reslicedImage->UpdateExtent (this->GetInput()->GetUpdateExtent());
       //reslicedImage->PropagateUpdateExtent();
@@ -2133,8 +2133,6 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int 
 
         m_vtkImageFromBoundsSourceGenerator->UpdateInformation();
         m_vtkImageFromBoundsSourceGenerator->Update();
-
-        vtkImageData * image = m_vtkImageFromBoundsSourceGenerator->GetOutput();
 
         SetInput(m_vtkImageFromBoundsSourceGenerator->GetOutputPort(), 0, layer);
         vtkImageActor *actor = GetImageActor(layer);
