@@ -11,7 +11,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.
 
 =========================================================================*/
-#include <medVtkInriaExport.h>
+#include <medImageIOExport.h>
 
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
@@ -31,7 +31,7 @@ class medAbstractData;
 * @brief Interface for itk to vtk converter. It is the base of template class vtkItkConversion.
 * @detail the static function createInstance is here to provide an object to match with this interface.
 */
-class MEDVTKINRIA_EXPORT vtkItkConversionInterface
+class MEDIMAGEIO_EXPORT vtkItkConversionInterface
 {
 public:
     virtual ~vtkItkConversionInterface() {};
