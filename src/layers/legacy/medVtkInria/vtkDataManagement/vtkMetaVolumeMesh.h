@@ -27,7 +27,7 @@ class vtkUnstructuredGrid;
    Specific case of a volumic mesh, hendles, read and writes vtkUntructuredGrid object
    
    \see
-   vtkMetaImageData vtkMetaSurfaceMesh vtkMetaDataSet
+   vtkMetaSurfaceMesh vtkMetaDataSet
    vtkMetaDataSetSequence vtkDataManager
 */
 

@@ -54,9 +54,6 @@
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkDataManagerWriter);
 
-
-
-
 class vtkDataManagerWriterInternals
 {
 public:
@@ -67,8 +64,6 @@ public:
   std::string CreatePieceFileName(int index1, int index2, unsigned int type);
 
 };
-
-
 
 //----------------------------------------------------------------------------
 vtkDataManagerWriter::vtkDataManagerWriter()
@@ -655,4 +650,3 @@ vtkDataManager* vtkDataManagerWriter::GetInput()
 {
   return this->Input;
 }
-

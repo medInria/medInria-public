@@ -32,7 +32,7 @@
    This class is a powerfull vtk Addon class that helps handling a vtkDataSet.
    see the lower level classes for details
    \see
-   vtkMetaImageData vtkMetaSurfaceMesh vtkMetaVolumeMesh vtkDataManager
+   vtkMetaSurfaceMesh vtkMetaVolumeMesh vtkDataManager
 */
 
 class vtkDataArrayCollection;
@@ -142,7 +142,6 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
      Access to the visualization property of the metadataset
      downcast the object to the write type :
      vtkProperty for vtkMetaSurfaceMesh
-     vtkVolumeProperty for vtkMetaImageData
   */
   vtkGetObjectMacro(Property, vtkObject);
   vtkSetObjectMacro(Property, vtkObject);

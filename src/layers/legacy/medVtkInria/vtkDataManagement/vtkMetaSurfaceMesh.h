@@ -32,7 +32,7 @@ class vtkPolyData;
    
    
    \see
-   vtkMetaImageData vtkMetaDataSet vtkMetaVolumeMesh
+   vtkMetaDataSet vtkMetaVolumeMesh
    vtkMetaDataSetSequence vtkDataManager
 */
 

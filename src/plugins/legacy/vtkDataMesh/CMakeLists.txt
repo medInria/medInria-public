@@ -98,6 +98,9 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medLog
   medVtkInria
+  vtkIOXML
+  vtkIOCore
+  vtkIOLegacy
   )
 
 

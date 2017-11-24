@@ -14,24 +14,22 @@
 #pragma once
 
 #include <vtkXMLReader.h>
-#include <medVtkInriaExport.h>
+#include <vtkDataMeshPluginExport.h>
 
 class vtkDataManager;
-/* class vtkMultiGroupDataSet; */
 class vtkMetaDataSet;
 
 //BTX
 struct vtkDataManagerReaderInternals;
 //ETX
 
-class MEDVTKINRIA_EXPORT vtkDataManagerReader : public vtkXMLReader
+class VTKDATAMESHPLUGIN_EXPORT vtkDataManagerReader : public vtkXMLReader
 {
 public:
   static vtkDataManagerReader* New();
   vtkTypeMacro(vtkDataManagerReader,vtkXMLReader);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  // Description:
   // Get the output data object for a port on this algorithm.
   vtkDataManager* GetOutput();
 
@@ -55,10 +53,6 @@ protected:
 
   vtkDataSet *FileToDataSet(const char* type, const std::string& filename);
 
-/*   virtual void HandleDataSet( */
-/*     vtkXMLDataElement* ds, int group, int dsId,  */
-/*     vtkMultiGroupDataSet* output, vtkDataSet* data); */
-
   virtual int RequestInformation(vtkInformation*, 
                                  vtkInformationVector**, 
                                  vtkInformationVector*);
@@ -75,13 +69,6 @@ private:
   vtkDataManagerReader(const vtkDataManagerReader&);  // Not implemented.
   void operator=(const vtkDataManagerReader&);  // Not implemented.
 
-  vtkDataManagerReaderInternals* Internal;
-
-  
-  vtkDataManager* Output;
-/*   vtkMultiGroupDataSet* MultiGroup;   */
-  
-  
+  vtkDataManagerReaderInternals* Internal;  
+  vtkDataManager* Output;  //TODO Replace it by MetaDataSetSequence. Because it's an over architecture.
 };
-
-

@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,11 +11,8 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
-
 #include <vtkXMLWriter.h>
-#include <medVtkInriaExport.h>
+#include <vtkDataMeshPluginExport.h>
 #include <string>
 
 class vtkDataManager;
@@ -22,41 +20,33 @@ class vtkMetaDataSet;
 class vtkCallbackCommand;
 class vtkDataManagerWriterInternals;
 
-
-class MEDVTKINRIA_EXPORT vtkDataManagerWriter : public vtkXMLWriter
+class VTKDATAMESHPLUGIN_EXPORT vtkDataManagerWriter : public vtkXMLWriter
 {
 public:
   static vtkDataManagerWriter* New();
   vtkTypeMacro(vtkDataManagerWriter,vtkXMLWriter);
   void PrintSelf(ostream& os, vtkIndent indent);  
-  
-  // Description:
+
   // Get the default file extension for files written by this writer.
   virtual const char* GetDefaultFileExtension();
   
-  // Description:
   // Get/Set the piece number to write.  The same piece number is used
   // for all inputs.
   vtkGetMacro(Piece, int);
   vtkSetMacro(Piece, int);
   
-  // Description:
   // Get/Set the number of pieces into which the inputs are split.
   vtkGetMacro(NumberOfPieces, int);
   vtkSetMacro(NumberOfPieces, int);
   
-  // Description:
   // Get/Set the number of ghost levels to be written.
   vtkGetMacro(GhostLevel, int);
   vtkSetMacro(GhostLevel, int);
   
-  // Description:
   // Get/Set whether this instance will write the meta-file. 
   vtkGetMacro(WriteMetaFile, int);
   virtual void SetWriteMetaFile(int flag);
 
-
-  // Description:
   // Set/Get an input of this algorithm. You should not override these
   // methods because they are not the only way to connect a pipeline
   void SetInput(vtkDataManager *);
@@ -147,9 +137,5 @@ private:
   vtkDataManagerWriter(const vtkDataManagerWriter&);  // Not implemented.
   void operator=(const vtkDataManagerWriter&);  // Not implemented.
 
-  vtkDataManager* Input;
-  
-  
+  vtkDataManager* Input; //TODO Replace it by MetaDataSetSequence. Because it's an over architecture.
 };
-
-
