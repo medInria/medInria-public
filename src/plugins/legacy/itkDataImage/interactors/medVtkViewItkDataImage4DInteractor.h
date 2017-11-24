@@ -43,7 +43,7 @@ public slots:
 private:
     static QStringList dataHandled();
     template <typename IMAGE> bool SetViewInput(const char* type, medAbstractData* data, int layer);
-    template <typename volumeType> inline void medVtkViewItkDataImage4DInteractor::SetITKDataSet(typename itk::Image<volumeType, 4> *dataset);
+    template <typename volumeType> inline void SetITKDataSet(typename itk::Image<volumeType, 4> *dataset);
     void SetITKDataSet(typename itk::Image<float, 4> *dataset);
 
 private:

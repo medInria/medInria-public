@@ -582,7 +582,6 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     this->cameraParameter()->blockSignals(true);
 
     double pos[3];
-    int timeIndex = 0;
     vtkRenderWindow * renWin = 0;
     if(d->currentView)
     {
