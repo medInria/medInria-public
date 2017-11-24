@@ -123,13 +123,13 @@ bool vtkItkConversion<volumeType, imageDim>::initializeImage(typename itk::Image
         {
             case 3:        
             {
-                m_ItkInputImage = reinterpret_cast<itk::Image<typename volumeType, 3>*>(pi_spInputImage.GetPointer());
+                m_ItkInputImage = reinterpret_cast<itk::Image<volumeType, 3>*>(pi_spInputImage.GetPointer());
                 bRes = m_ItkInputImage.IsNotNull();
                 break;
             }
             case 4:
             {
-                m_ItkInputImage4D = reinterpret_cast<itk::Image<typename volumeType, 4>*>(pi_spInputImage.GetPointer());
+                m_ItkInputImage4D = reinterpret_cast<itk::Image<volumeType, 4>*>(pi_spInputImage.GetPointer());
                 bRes = m_ItkInputImage4D.IsNotNull();
                 break;
             }

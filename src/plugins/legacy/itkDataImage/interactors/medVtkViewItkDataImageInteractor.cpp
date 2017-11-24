@@ -209,7 +209,7 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
 
     m_poConv = vtkItkConversionInterface::createInstance(data);
 
-    if (m_poConv = vtkItkConversionInterface::createInstance(data))
+    if (m_poConv)
     {
         itk::DataObject::Pointer image = (itk::DataObject*)(data->data());
         vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;

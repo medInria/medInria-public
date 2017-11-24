@@ -147,7 +147,8 @@ bool medVtkViewItkDataImage4DInteractor::SetViewInput(medAbstractData* data, int
 {
     bool bRes = true;
 
-    if (m_poConv = vtkItkConversionInterface::createInstance(data))
+    m_poConv = vtkItkConversionInterface::createInstance(data);
+    if (m_poConv)
     {
         itk::DataObject::Pointer image = (itk::DataObject*)(data->data());
         vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
