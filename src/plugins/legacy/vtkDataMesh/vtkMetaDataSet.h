@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,16 +12,12 @@
 
 =========================================================================*/
 
-#pragma once
-
+#include <vtkDataMeshPluginExport.h>
 #include <vtkDataObject.h>
-#include <medVtkInriaExport.h>
 #include <string>
 #include <vector>
 
 #include <vtkDataSet.h>
-
-//#include <vtkActor.h>
 
 #include <itkMetaDataObject.h>
 #include <itkMetaDataDictionary.h>
@@ -43,7 +40,7 @@ class vtkScalarsToColors;
 class vtkPolyData;
 
 
-class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
+class VTKDATAMESHPLUGIN_EXPORT vtkMetaDataSet: public vtkDataObject
 {
  public:
 
