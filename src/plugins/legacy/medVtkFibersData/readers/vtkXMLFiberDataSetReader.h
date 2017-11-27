@@ -12,12 +12,12 @@
 =========================================================================*/
 
 #pragma once
-#include <medVtkInriaExport.h>
+#include <medVtkFibersDataPluginExport.h>
 #include <vtkXMLCompositeDataReader.h>
 
 class vtkFiberDataSet;
 
-class MEDVTKINRIA_EXPORT vtkXMLFiberDataSetReader : public vtkXMLCompositeDataReader
+class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkXMLFiberDataSetReader : public vtkXMLCompositeDataReader
 {
 public:
   static vtkXMLFiberDataSetReader* New();

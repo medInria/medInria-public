@@ -45,9 +45,6 @@
 #include "vtkCommand.h"
 #include "vtkImageView2DCommand.h"
 
-#include <itkExtractImageBufferFilter.h>
-#include <itkImageToVTKImageFilter.h>
-#include <itkMatrix.h>
 #include <vtkRendererCollection.h>
 #include <vtkImageReader2.h>
 #include <vtkAlgorithmOutput.h>
@@ -1517,10 +1514,6 @@ void vtkImageView::AddLayer(int layer)
 */
 void vtkImageView::RemoveLayer(int layer)
 {
-    /*if( layer < (int)(this->ITKInputVector.size()) )
-    {
-        this->ITKInputVector.erase(this->ITKInputVector.begin() + layer);
-    }*/
 }
 
 //----------------------------------------------------------------------------
