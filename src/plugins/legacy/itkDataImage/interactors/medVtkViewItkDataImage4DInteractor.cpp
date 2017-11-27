@@ -13,7 +13,6 @@
 
 #include "medVtkViewItkDataImage4DInteractor.h"
 
-#include <vtkMetaDataSetSequence.h>
 #include <vtkActor.h>
 #include <vtkProperty.h>
 #include <vtkImageActor.h>

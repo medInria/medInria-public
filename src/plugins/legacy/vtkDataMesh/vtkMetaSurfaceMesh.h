@@ -13,8 +13,8 @@
 
 #pragma once
 
+#include <vtkDataMeshPluginExport.h>
 #include <vtkMetaDataSet.h>
-#include <medVtkInriaExport.h>
 
 class vtkPolyData;
 
@@ -38,7 +38,7 @@ class vtkPolyData;
 
 
 
-class MEDVTKINRIA_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
+class VTKDATAMESHPLUGIN_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
 {
  public:
 
