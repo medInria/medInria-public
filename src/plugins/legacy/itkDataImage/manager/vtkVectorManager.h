@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,10 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medVtkInriaExport.h>
-
 #include <vtkObject.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
@@ -26,7 +23,7 @@
 
 #include "vtkVectorVisuManager.h"
 
-class MEDVTKINRIA_EXPORT vtkVectorManager: public vtkObject
+class vtkVectorManager: public vtkObject
 {
 
  public:

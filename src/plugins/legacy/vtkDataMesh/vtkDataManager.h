@@ -34,7 +34,7 @@ class vtkMetaDataSetSequence;
    This class is a powerfull vtk tool to manage datasets.
    
    \see
-   vtkMetaImageData vtkMetaSurfaceMesh vtkMetaVolumeMesh
+   vtkMetaSurfaceMesh vtkMetaVolumeMesh
    vtkMetaDataSetSequence vtkMetaDataSet
 */
 

@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <vtkPointData.h>
 #include <vtkImageData.h>
@@ -28,8 +27,8 @@
 
 #include <QTime>
 
-namespace itk {
-
+namespace itk
+{
     /**
      * Constructor
      */
@@ -119,10 +118,6 @@ namespace itk {
         for (int i=0;i<3;++i)
             m_DirectionMatrix->SetElement(i,3,origin[i]);
 
-    //    for (int l=0; l<4;l++)
-    //      std::cout << m_DirectionMatrix->GetElement(l,0) << m_DirectionMatrix->GetElement(l,1)
-    //                << m_DirectionMatrix->GetElement(l,2) << m_DirectionMatrix->GetElement(l,3)<<std::endl;
-
         sh_array->SetName(vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName());
         sh_array->SetNumberOfComponents(inputSH->GetNumberOfComponentsPerPixel());
         sh_array->SetNumberOfTuples(numVoxels);
@@ -166,8 +161,6 @@ namespace itk {
         sh_array->Delete();
         aniso_array->Delete();
         rgb_array->Delete();
-        //TODO GPR: to check
-        //m_VTKSphericalHarmonic->Update();
     }
 
     template <class TSHImage>
@@ -175,4 +168,3 @@ namespace itk {
         return m_DirectionMatrix;
     }
 }
-

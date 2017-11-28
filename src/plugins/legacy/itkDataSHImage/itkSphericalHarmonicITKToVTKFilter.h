@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,12 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
-
 #include <itkImage.h>
 #include <itkImageToImageFilter.h>
-
 
 class vtkImageData;
 class vtkMatrix4x4;
@@ -92,8 +89,3 @@ private:
 #ifndef ITK_MANUAL_INSTANTIATION
 #include <itkSphericalHarmonicITKToVTKFilter.txx>
 #endif
-
-
-
-
-

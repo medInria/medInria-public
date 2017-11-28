@@ -17,7 +17,7 @@
 
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
-#include <vtkImageFromBoundsSource.h>
+//#include <vtkImageFromBoundsSource.h>
 #include <vtkPointSet.h>
 #include <vtkImageActor.h>
 #include <vtkImageView2D.h>

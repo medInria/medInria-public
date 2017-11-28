@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,14 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include "vtkImageAlgorithm.h"
-#include <medVtkInriaExport.h>
 
 class vtkMatrix4x4;
 
-class MEDVTKINRIA_EXPORT vtkVectorOrienter : public vtkImageAlgorithm
+class vtkVectorOrienter : public vtkImageAlgorithm
 {
 public:
 

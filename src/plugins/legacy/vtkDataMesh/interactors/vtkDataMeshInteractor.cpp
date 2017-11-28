@@ -30,7 +30,7 @@
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkBoundingBox.h>
-#include <vtkImageFromBoundsSource.h>
+//#include <vtkImageFromBoundsSource.h>
 #include <vtkImageData.h>
 #include <vtkImageActor.h>
 #include <vtkLookupTableManager.h>

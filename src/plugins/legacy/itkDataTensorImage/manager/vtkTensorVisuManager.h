@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,10 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
-
-#include <medVtkInriaExport.h>
 
 #include <vtkObject.h>
 
@@ -33,7 +30,7 @@
 
 class vtkMatrix4x4;
 
-class MEDVTKINRIA_EXPORT vtkTensorVisuManager : public vtkObject
+class vtkTensorVisuManager : public vtkObject
 {
  public:
   
@@ -231,9 +228,5 @@ class MEDVTKINRIA_EXPORT vtkTensorVisuManager : public vtkObject
   double Min;
   double Max;
   
-  int GlyphResolution;
-  
+  int GlyphResolution;  
 };
-
-
-

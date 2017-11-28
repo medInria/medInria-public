@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,38 +12,27 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medVtkInriaExport.h>
-
-//#include <vtkDataSetAlgorithm.h>
 #include <vtkThreadedImageAlgorithm.h>
 
-class MEDVTKINRIA_EXPORT vtkFlipTensorImageFilter: public vtkThreadedImageAlgorithm
-{
-  
+class vtkFlipTensorImageFilter: public vtkThreadedImageAlgorithm
+{  
  public:
   static vtkFlipTensorImageFilter *New();
   vtkTypeMacro (vtkFlipTensorImageFilter, vtkThreadedImageAlgorithm);
-  void PrintSelf (ostream &os, vtkIndent indent)
-  {}
-  
+  void PrintSelf (ostream &os, vtkIndent indent) {}  
 
   vtkSetMacro (FlipX, bool);
   vtkGetMacro (FlipX, bool);
   vtkSetMacro (FlipY, bool);
   vtkGetMacro (FlipY, bool);
   vtkSetMacro (FlipZ, bool);
-  vtkGetMacro (FlipZ, bool);
-  
+  vtkGetMacro (FlipZ, bool);  
   
  protected:
   vtkFlipTensorImageFilter();
   ~vtkFlipTensorImageFilter();
  
-  virtual int RequestData(vtkInformation *request, 
-                          vtkInformationVector **inputVector, 
-                          vtkInformationVector *outputVector);
+  virtual int RequestData(vtkInformation *request,  vtkInformationVector **inputVector, vtkInformationVector *outputVector);
   
  private:
   vtkFlipTensorImageFilter (const vtkFlipTensorImageFilter&);
@@ -50,9 +40,5 @@ class MEDVTKINRIA_EXPORT vtkFlipTensorImageFilter: public vtkThreadedImageAlgori
 
   bool FlipX;
   bool FlipY;
-  bool FlipZ;
-  
+  bool FlipZ;  
 };
-
-
-

@@ -29,13 +29,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
 
-//ITK
-#include <itkConstNeighborhoodIterator.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
-#include <itkImageToImageFilter.h>
-#include <itkObjectFactory.h>
-
 
 //STL / C++ bindings for C
 #include <cmath>

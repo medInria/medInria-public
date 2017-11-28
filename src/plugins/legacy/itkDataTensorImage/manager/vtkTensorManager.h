@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,10 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medVtkInriaExport.h>
-
 #include <vtkObject.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
@@ -27,16 +24,13 @@
 
 #include <vtkTensorVisuManager.h>
 
-class MEDVTKINRIA_EXPORT vtkTensorManager: public vtkObject
+class vtkTensorManager: public vtkObject
 {
-
  public:
 
   static vtkTensorManager *New();
   vtkTypeMacro (vtkTensorManager, vtkObject);
 
-
-  //vtkSetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
   void SetRenderWindowInteractor (vtkRenderWindowInteractor*, vtkRenderer* ren=0);
   vtkGetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
 
@@ -49,7 +43,6 @@ class MEDVTKINRIA_EXPORT vtkTensorManager: public vtkObject
   vtkGetObjectMacro (TensorVisuManagerAxial,    vtkTensorVisuManager);
   vtkGetObjectMacro (TensorVisuManagerSagittal, vtkTensorVisuManager);
   vtkGetObjectMacro (TensorVisuManagerCoronal,  vtkTensorVisuManager);
-
 
 
   /** Set the glyph shape */
@@ -157,7 +150,6 @@ class MEDVTKINRIA_EXPORT vtkTensorManager: public vtkObject
       pos[i] = this->CurrentPosition[i];
   }
 
-
   /** Reset the position to the center of the dataset. */
   void ResetPosition();
 
@@ -193,9 +185,5 @@ class MEDVTKINRIA_EXPORT vtkTensorManager: public vtkObject
   vtkMatrix4x4 *DirectionMatrix;
   vtkMatrix4x4 *PhysicalToVoxelCoordinatesTransformMatrix;
 
-  int CurrentPosition[3];
-  
+  int CurrentPosition[3];  
 };
-
-
-

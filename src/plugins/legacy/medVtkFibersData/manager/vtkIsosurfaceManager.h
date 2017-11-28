@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,10 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medVtkInriaExport.h>
-
 #include <vtkImageToIsosurface.h>
 #include <vector>
 
@@ -24,10 +21,8 @@
 #include <vtkProperty.h>
 #include <vtkMatrix4x4.h>
 
-
-class MEDVTKINRIA_EXPORT vtkIsosurfaceManager: public vtkObject
-{
-  
+class vtkIsosurfaceManager: public vtkObject
+{  
  public:
   
   static vtkIsosurfaceManager* New();
@@ -129,12 +124,4 @@ class MEDVTKINRIA_EXPORT vtkIsosurfaceManager: public vtkObject
   int                                  Decimation;
 
   vtkMatrix4x4                        *DirectionMatrix;
-
 };
-
-
-
-
-
-
-  

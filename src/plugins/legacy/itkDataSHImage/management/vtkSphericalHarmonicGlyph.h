@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,17 +12,14 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
 
 #include <vtkSphericalHarmonicSource.h>
 
-#include <medVtkInriaExport.h>
 
-class MEDVTKINRIA_EXPORT vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
+class vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
 public:
 
     enum { COLOR_BY_SCALARS, COLOR_BY_DIRECTIONS };

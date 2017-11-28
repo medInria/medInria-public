@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,10 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
-
-#include <medVtkInriaExport.h>
 
 // vtk includes
 #include <vtkObject.h>
@@ -34,7 +31,7 @@
 
 class vtkMatrix4x4;
 
-class MEDVTKINRIA_EXPORT vtkVectorVisuManager : public vtkObject
+class vtkVectorVisuManager : public vtkObject
 {
 
  public:

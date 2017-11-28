@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,9 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-#include <medVtkInriaExport.h>
-
 #include <vtkPolyDataAlgorithm.h>
 
 /** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
@@ -22,7 +20,8 @@
 * \brief Perform tesselation of the unit sphere from a given platonic solid
 */
 
-class MEDVTKINRIA_EXPORT vtkTessellatedSphereSource : public vtkPolyDataAlgorithm {
+class vtkTessellatedSphereSource : public vtkPolyDataAlgorithm 
+{
 public:
   static vtkTessellatedSphereSource *New();
   vtkTypeMacro(vtkTessellatedSphereSource,vtkPolyDataAlgorithm);
@@ -66,6 +65,3 @@ private:
   /** Initialize by using the m_PolyhedraType the polyhedron that it is gong to be tesselated  */
   void initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles);
 };
-
-
-

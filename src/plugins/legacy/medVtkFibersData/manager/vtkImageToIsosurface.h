@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,10 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
-
-#include <medVtkInriaExport.h>
 
 #include <vtkObject.h>
 #include <vtkDataObject.h>
@@ -28,7 +25,7 @@
 #include <vtkSmoothPolyDataFilter.h>
 #include <vtkPolyDataNormals.h>
 
-class MEDVTKINRIA_EXPORT vtkImageToIsosurface: public vtkObject
+class vtkImageToIsosurface: public vtkObject
 {
  public:
 
@@ -78,8 +75,4 @@ class MEDVTKINRIA_EXPORT vtkImageToIsosurface: public vtkObject
   vtkImageData*      Input;
   vtkPolyDataMapper* Mapper;
   vtkActor*          Actor;
-  
 };
-
-
-

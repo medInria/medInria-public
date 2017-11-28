@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,9 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-#include <medVtkInriaExport.h>
-
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkMatrix4x4.h>
 
@@ -23,7 +21,7 @@
 
 class vtkMatrix4x4;
 
-class MEDVTKINRIA_EXPORT vtkSphericalHarmonicSource: public vtkPolyDataAlgorithm {
+class vtkSphericalHarmonicSource: public vtkPolyDataAlgorithm {
 public:
     vtkTypeMacro(vtkSphericalHarmonicSource,vtkPolyDataAlgorithm);
     void PrintSelf(ostream& os,vtkIndent indent);
@@ -235,5 +233,3 @@ private:
     vtkSphericalHarmonicSource(const vtkSphericalHarmonicSource&);  // Not implemented.
     void operator=(const vtkSphericalHarmonicSource&);  // Not implemented.
 };
-
-

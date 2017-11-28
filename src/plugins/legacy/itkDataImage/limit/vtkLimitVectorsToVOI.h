@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,13 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medVtkInriaExport.h>
-
 #include <vtkUnstructuredGridAlgorithm.h>
 
-class MEDVTKINRIA_EXPORT vtkLimitVectorsToVOI: public vtkUnstructuredGridAlgorithm
+class vtkLimitVectorsToVOI: public vtkUnstructuredGridAlgorithm
 {
 
  public:

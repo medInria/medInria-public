@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,10 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medVtkInriaExport.h>
-
 #include <vtkObject.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
@@ -25,7 +22,8 @@
 
 #include <vtkSphericalHarmonicVisuManager.h>
 
-class MEDVTKINRIA_EXPORT vtkSphericalHarmonicManager: public vtkObject {
+class vtkSphericalHarmonicManager: public vtkObject 
+{
 public:
 
     static vtkSphericalHarmonicManager *New();

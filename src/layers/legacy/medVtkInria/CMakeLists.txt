@@ -40,7 +40,6 @@ list_source_files(${TARGET_NAME}
   vtkWidgetsAddOn
   vtkVisuManagement
   vtkVisuManagement/lut
-  vtkItkWrap
   HWShading
   HWShading/helpers
   )
