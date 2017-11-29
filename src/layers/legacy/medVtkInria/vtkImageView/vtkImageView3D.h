@@ -84,9 +84,9 @@ public:
 
     virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
-    virtual void SetVolumeMapperTo3DTexture();
+    //virtual void SetVolumeMapperTo3DTexture();
     virtual void SetVolumeMapperToRayCast();
-    virtual void SetVolumeMapperToRayCastAndTexture();
+    virtual void SetVolumeMapperToOSPRayRenderMode();
     virtual void SetVolumeMapperToGPU();
     virtual void SetVolumeMapperToDefault();
 

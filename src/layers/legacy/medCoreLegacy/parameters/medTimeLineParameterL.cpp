@@ -104,6 +104,7 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     this->clear();
 
     connect(d->timeLine, SIGNAL(frameChanged(int)), this, SLOT(setFrame(int)));
+    //connect(d->timeLine, SIGNAL(frameChanged(int)), this, SLOT(increaseFrame(int)));
     connect(d->timeLine, SIGNAL(finished()), this, SLOT(reset()));
 
     connect(d->playParameter, SIGNAL(valueChanged(bool)), this, SLOT(play(bool)));
@@ -192,14 +193,9 @@ void medTimeLineParameterL::play(bool play)
 {
     d->playParameter->setValue(play);
 
-    if(d->timeLine->state() == QTimeLine::NotRunning && play)
+    if((d->timeLine->state() == QTimeLine::Paused || d->timeLine->state() == QTimeLine::NotRunning) && play)
     {
-        d->timeLine->start();
-        d->playParameter->setIcon (QPixmap(":/icons/pause.png"));
-        emit playing(play);
-    }
-    else if(d->timeLine->state() == QTimeLine::Paused && play)
-    {
+        d->timeLine->setCurrentTime(mapFrameToTime(d->currentFrame) * 1000);
         d->timeLine->resume();
         d->playParameter->setIcon (QPixmap(":/icons/pause.png"));
         emit playing(play);

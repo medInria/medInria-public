@@ -77,9 +77,8 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
 
     d->renderer3DParameter = new medStringListParameterL("Renderer", this);
     d->renderer3DParameter->addItem("GPU");
-    d->renderer3DParameter->addItem("Ray Cast / Texture");
+    d->renderer3DParameter->addItem("OSPRay / CPU");
     d->renderer3DParameter->addItem("Ray Cast");
-    d->renderer3DParameter->addItem("Texture");
     d->renderer3DParameter->addItem("Default");
     connect(d->renderer3DParameter, SIGNAL(valueChanged(QString)), this, SLOT(setRenderer(QString)));
 
@@ -225,8 +224,8 @@ void medVtkViewItkDataImageNavigator::setRenderer(QString renderer)
     if ( renderer=="GPU" )
         d->view3d->SetVolumeMapperToGPU();
 
-    else if ( renderer=="Ray Cast / Texture" )
-        d->view3d->SetVolumeMapperToRayCastAndTexture();
+    else if ( renderer=="OSPRay / CPU" )
+        d->view3d->SetVolumeMapperToOSPRayRenderMode();
 
     else if ( renderer=="Ray Cast" )
         d->view3d->SetVolumeMapperToRayCast();

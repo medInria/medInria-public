@@ -163,6 +163,7 @@ target_link_libraries(${TARGET_NAME}
   vtkRenderingOpenGL2
   vtkRenderingVolumeOpenGL2
   vtkRenderingContextOpenGL2
+  vtkRenderingOSPRay
   vtkInteractionWidgets
   vtkInteractionStyle
   vtkFiltersExtraction

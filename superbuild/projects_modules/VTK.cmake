@@ -66,6 +66,7 @@ set(cmake_args
   -DVTK_RENDERING_BACKEND=OpenGL2
   -DVTK_Group_Qt=ON
   -DModule_vtkGUISupportQtOpenGL=ON
+  -DModule_vtkRenderingOSPRay=ON
   -DVTK_QT_VERSION=5
   -DQt5_DIR=${Qt5_DIR}
   )

@@ -200,38 +200,33 @@ vtkMTimeType vtkImageView3D::GetMTime()
 
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeMapperTo3DTexture()
+/*void vtkImageView3D::SetVolumeMapperTo3DTexture()
 {
-  this->VolumeMapper->SetRequestedRenderMode(
-                                             vtkSmartVolumeMapper::TextureRenderMode );
-}
+  this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::TextureRenderMode );
+}*/
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeMapperToRayCast()
 {
-  this->VolumeMapper->SetRequestedRenderMode(
-                                             vtkSmartVolumeMapper::RayCastRenderMode );
+  this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::RayCastRenderMode );
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeMapperToRayCastAndTexture()
+void vtkImageView3D::SetVolumeMapperToOSPRayRenderMode()
 {
-  this->VolumeMapper->SetRequestedRenderMode(
-                                             vtkSmartVolumeMapper::RayCastAndTextureRenderMode );
+  this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::OSPRayRenderMode);
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeMapperToGPU()
 {
-  this->VolumeMapper->SetRequestedRenderMode(
-                                             vtkSmartVolumeMapper::GPURenderMode );
+  this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::GPURenderMode );
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeMapperToDefault()
 {
-  this->VolumeMapper->SetRequestedRenderMode(
-                                             vtkSmartVolumeMapper::DefaultRenderMode );
+  this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::DefaultRenderMode );
 }
 
 //----------------------------------------------------------------------------
@@ -455,16 +450,22 @@ void vtkImageView3D::InstallInteractor()
 //----------------------------------------------------------------------------
 void vtkImageView3D::UnInstallInteractor()
 {
-  this->BoxWidget->SetInteractor (NULL);
-  this->PlaneWidget->SetInteractor (NULL);
-  this->Marker->SetInteractor (NULL);
+    this->BoxWidget->SetInteractor (NULL);
+    this->PlaneWidget->SetInteractor (NULL);
+    this->Marker->SetInteractor (NULL);
 
-  if (this->Interactor)
-  {
-    this->Interactor->SetRenderWindow (NULL);
-    this->Interactor->SetInteractorStyle (NULL);
-  }
-  this->IsInteractorInstalled = 0;
+    if (this->Interactor)
+    {
+        auto poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
+        while (poRenderer)
+        {
+            this->RenderWindow->RemoveRenderer(poRenderer);
+            poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
+        }
+        this->Interactor->SetRenderWindow (NULL);
+        this->Interactor->SetInteractorStyle (NULL);
+    }
+    this->IsInteractorInstalled = 0;
 }
 
 //----------------------------------------------------------------------------
