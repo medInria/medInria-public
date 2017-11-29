@@ -37,8 +37,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniform.h"
 
 #include <vtkObjectFactory.h>
-//#include <vtkstd/string>
-
 
 vtkStandardNewMacro(vtkAnisoLiShadowMapSP);
 

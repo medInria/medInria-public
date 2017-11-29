@@ -44,7 +44,6 @@
 #include <vtkImageReslice.h>
 #include "vtkRenderWindow.h"
 #include "vtkScalarsToColors.h"
-//#include <vtkDataSet3DCroppingPlaneCallback.h>
 #include <vtkCamera.h>
 #include <vtkDataSet.h>
 #include <vtkDataSetMapper.h>

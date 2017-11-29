@@ -33,12 +33,9 @@
 #include <vtkTextProperty.h>
 #include <vtkImageView2DCommand.h>
 #include <vtkRenderWindowInteractor.h>
-//#include <vtkTransferFunctionPresets.h>
 #include <vtkInriaInteractorStyleRubberBandZoom.h>
 #include <vtkMatrix4x4.h>
 #include <vtkMath.h>
-
-//#include <vtkImageViewCollection.h>
 
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>

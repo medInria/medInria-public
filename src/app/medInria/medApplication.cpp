@@ -55,10 +55,6 @@
 #include <medAbstractArithmeticOperationProcess.h>
 
 #include <medJobManager.h>
-
-//#include <medGuiLayer.h>
-//#include <medAbstractArea.h>
-
 #include <medSettingsManager.h>
 
 class medApplicationPrivate

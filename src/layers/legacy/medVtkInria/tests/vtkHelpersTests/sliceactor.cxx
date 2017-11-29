@@ -34,7 +34,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageData.h>
 #include "vtkImageSliceActor.h"
 #include "vtkImageOrthogonalSlicesActor.h"
-//#include "vtkDTIComponentReader.h"
 
 #include <vtkStructuredPointsReader.h>
 #include <vtkStructuredPoints.h>

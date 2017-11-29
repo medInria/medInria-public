@@ -31,7 +31,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-//#include "vtkBMIAShaderProgram.h"
 #include <vtkAnisotropicLightingSP.h>
 
 #include <medVtkInriaExport.h>

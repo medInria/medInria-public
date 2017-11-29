@@ -65,7 +65,6 @@
 #include <vtkDataSet2DWidget.h>
 #include <vtkImageViewCornerAnnotation.h>
 #include <vtkImageCast.h>
-//#include "vtkLookupTableManager.h"
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkImageReslice.h>

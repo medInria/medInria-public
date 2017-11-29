@@ -15,8 +15,6 @@
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
 
-//#include <medGuiLayer.h>
-
 #ifdef Q_OS_MAC
     Qt::Key OSIndependentControlKey = Qt::Key_Meta;
 #else

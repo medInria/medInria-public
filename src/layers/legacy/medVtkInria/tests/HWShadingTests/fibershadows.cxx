@@ -40,8 +40,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkPolyDataReader.h>
 #include <vtkActor.h>
 
-//#include "vtkAnisotropicLightingSP.h"
-//#include "vtkAnisoLiShadowMapSP.h"
 #include "vtkShadowRenderer.h"
 #include <assert.h>
 #include <vtkCellArray.h>
