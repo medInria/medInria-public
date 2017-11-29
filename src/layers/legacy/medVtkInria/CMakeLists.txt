@@ -23,10 +23,6 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if (APPLE OR WIN32)
-    find_package(Boost REQUIRED)
-endif()
-
 find_package(OpenGL REQUIRED)
 
 
@@ -122,8 +118,6 @@ target_include_directories(${TARGET_NAME}
   PUBLIC
   ${${TARGET_NAME}_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}/shaders
-  PRIVATE
-  ${Boost_INCLUDE_DIR}
   )
 
 ## #############################################################################
