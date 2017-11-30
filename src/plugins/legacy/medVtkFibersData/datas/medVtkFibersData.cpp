@@ -61,8 +61,20 @@ bool medVtkFibersData::registered()
 
 void medVtkFibersData::setData(void *data)
 {
-  if (vtkFiberDataSet *dataset = vtkFiberDataSet::SafeDownCast (static_cast<vtkObject*>(data)))
-      d->data = dataset;
+    if (vtkFiberDataSet *dataset = vtkFiberDataSet::SafeDownCast (static_cast<vtkObject*>(data)))
+    {
+        d->data = dataset;
+        return;
+    }
+
+    vtkPolyData *inputData = vtkPolyData::SafeDownCast(static_cast <vtkObject *> (data));
+    if (!inputData)
+        return;
+
+    if (!d->data)
+        d->data = vtkFiberDataSet::New();
+
+    d->data->SetFibers(inputData);
 }
 
 void *medVtkFibersData::data()
