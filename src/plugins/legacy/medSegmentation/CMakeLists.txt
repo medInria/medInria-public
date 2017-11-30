@@ -95,6 +95,7 @@ target_link_libraries(${TARGET_NAME}
   ITKCommon
   medCore
   medVtkInria
+  medImageIO
   )
 
 

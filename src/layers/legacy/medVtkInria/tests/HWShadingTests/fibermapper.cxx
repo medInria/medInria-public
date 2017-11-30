@@ -60,9 +60,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkProperty.h>
 
 #include "vtkAnisotropicLightingSP.h"
-//#include "vtkAnisoLiShadowMapSP.h"
 #include <assert.h>
-//#include "ExtensionInitialize.h"
 
 int fibermapper(int argc, char *argv[]) {
   cout << "============================================================"<<endl;

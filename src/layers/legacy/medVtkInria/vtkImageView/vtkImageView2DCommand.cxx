@@ -51,7 +51,7 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     vtkInteractorStyleImageView2D *isi =
             static_cast<vtkInteractorStyleImageView2D *>(caller);
 
-    if (!isi || !this->Viewer || !this->Viewer->GetInput())
+    if (!isi || !this->Viewer || (!this->Viewer->GetMedVtkImageInfo() || !this->Viewer->GetMedVtkImageInfo()->initialized))
     {
         return;
     }
@@ -85,7 +85,7 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
 
         int *size = this->Viewer->GetRenderWindow()->GetSize();
 
-        double* range = this->Viewer->GetInput()->GetScalarRange();
+        double* range = this->Viewer->GetMedVtkImageInfo()->scalarRange;
         double windowImage = range[1]-range[0];
         double levelImage = 0.5*(range[1]+range[0]);
 
@@ -165,14 +165,6 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     // End Slice Move
     if (event == vtkImageView2DCommand::EndTimeChangeEvent)
     {
-        return;
-    }
-
-    // Move Slice
-    if (event == vtkImageView2DCommand::TimeChangeEvent)
-    {
-        this->Viewer->SetTimeIndex (this->Viewer->GetTimeIndex()+isi->GetSliceStep());
-        this->Viewer->Render();
         return;
     }
 

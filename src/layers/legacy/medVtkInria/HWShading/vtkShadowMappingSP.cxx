@@ -33,7 +33,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkVertexShader.h"
 #include "vtkFragmentShader.h"
-//#include "vtkUniformFloat.h"
 
 #include <vtkObjectFactory.h>
 

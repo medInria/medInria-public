@@ -14,6 +14,8 @@
 #pragma once
 
 #include <medVtkInriaExport.h>
+#include <medVtkImageInfo.h>
+
 #include <vtkImageView.h>
 #include <vtkInteractorStyleImageView2D.h>
 
@@ -35,6 +37,7 @@ class vtkImageView2DCommand;
 class vtkTransform;
 class vtkPolyData;
 class vtkImage2DDisplay;
+class vtkImageAlgorithm;
 
 /**
 
@@ -108,27 +111,20 @@ public:
     virtual void   SetOpacity(double opacity, int layer);
     virtual double GetOpacity(int layer) const;
 
-  // Description:
-  // Set/Get the input image to the viewer.
-  virtual void SetInput (vtkImageData *image,
-                         vtkMatrix4x4 *matrix = 0,
-                         int layer=0);
-  virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = 0,
-                         const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
+    // Description:
+    // Set/Get the input image to the viewer.
+    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = 0, int layer = 0);
+    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
 
-    virtual void SetInputConnection (vtkAlgorithmOutput* arg,
-                                     vtkMatrix4x4 *matrix = 0,
-                                     int layer=0);
 
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
     
-    int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
+    //int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
 
     virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
     virtual void RemoveDataSet (vtkPointSet *arg);
 
-    vtkImageData *GetImageInput(int layer) const;
-    vtkImageData *GetInput(int layer = 0) const;
+    medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
 
     virtual void InstallInteractor();
@@ -260,7 +256,6 @@ public:
 
     virtual void GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position);
 
-
     virtual vtkImageMapToColors *GetWindowLevel(int layer=0) const;
 
     using vtkImageView::GetInputAlgorithm;
@@ -360,10 +355,11 @@ public:
     virtual void StoreColorWindow(double s,int layer);
     virtual void StoreColorLevel(double s,int layer);
 
-  virtual void UpdateBounds (const double bounds[6], int layer = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
+    virtual void UpdateBounds (const double bounds[6], int layer = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
                              const double imageOrigin[] = 0);
 
     virtual vtkRenderer * GetRenderer() const;
+    vtkImageAlgorithm * GetImageAlgorithmForLayer(int layer) const;
 
 protected:
     vtkImageView2D();
@@ -427,11 +423,12 @@ protected:
     vtkRenderer * GetRendererForLayer(int layer) const;
 
 
+
     //BTX
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
     //ETX
 
-    void SetFirstLayer (vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
+    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
@@ -462,6 +459,7 @@ protected:
 
     struct LayerInfo {
         vtkSmartPointer<vtkImage2DDisplay> ImageDisplay;
+        vtkSmartPointer<vtkImageAlgorithm> ImageAlgo;
         vtkSmartPointer<vtkRenderer> Renderer;
     };
     typedef std::vector<LayerInfo > LayerInfoVecType;
@@ -472,6 +470,3 @@ private:
     void operator=(const vtkImageView2D&);    // Not implemented.
 
 };
-
-
-

@@ -278,7 +278,7 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     connect(projection, SIGNAL(valueChanged(bool)), this, SLOT(setProjection(bool)));
 
 
-    //TODO - should be done automaticly from vtkImageView - RDE
+    //TODO - should be done automatically from vtkImageView - RDE
 //    if(d->view->layer(d->data) == 0)
 //    {
 //        switch(d->view2d->GetSliceOrientation())
@@ -479,7 +479,7 @@ void medVtkViewItkVectorFieldInteractor::updateSlicingParam()
         return;
 
     //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer droped) - RDE
+    // not according to vtkInria (ie. first layer dropped) - RDE
 
     // slice orientation may differ from view orientation. Adapt slider range accordingly.
 //    int orientationId = d->view2d->GetSliceOrientation();
@@ -502,8 +502,8 @@ void medVtkViewItkVectorFieldInteractor::updateSlicingParam()
 void medVtkViewItkVectorFieldInteractor::updatePlaneVisibility()
 {
 
-    //TODO make it workes even if the SLICE_ORIENTATION is not X/Y
-    //     (ie the acquisition orientaion of the image is something else than axial)
+    //TODO make it work even if the SLICE_ORIENTATION is not X/Y
+    //     (ie the acquisition orientation of the image is something else than axial)
     //     - RDE
 
 //    switch(d->view->orientation())

@@ -36,8 +36,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-//#include "vtkTensorDataReader.h"
-//#include "vtkTensorData.h"
 #include <vtkCamera.h>
 #include <vtkJPEGReader.h>
 #include <vtkTexture.h>
@@ -49,7 +47,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkActor.h>
 #include <vtkExtractVOI.h>
 #include "vtkDoubleToUCharFilter.h"
-//#include "vtkShaderManager.h"
 #include <vtkOpenGLRenderWindow.h>
 #include "ExtensionInitialize.h"
 #include <vtkImageData.h>

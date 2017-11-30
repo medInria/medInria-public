@@ -37,7 +37,6 @@
 #include <medJobManagerL.h>
 
 #include <medWorkspaceFactory.h>
-//#include <medAbstractWorkspace.h>
 #include <medVisualizationWorkspace.h>
 
 #include <dtkComposerWidget.h>

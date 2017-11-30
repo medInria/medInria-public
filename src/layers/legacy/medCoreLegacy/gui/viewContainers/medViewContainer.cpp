@@ -659,9 +659,9 @@ void medViewContainer::addData(medAbstractData *data)
         }
         this->setView(view);
     }
-    //TODO bring a way to kow how to add the data to the view.
+    //TODO bring a way to know how to add the data to the view.
     //     assuming by now that we always have at least layered views.
-    //     this can be did by having a method that return the base abstract class(categorie)
+    //     this can be did by having a method that return the base abstract class (category)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);

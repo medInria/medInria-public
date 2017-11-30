@@ -23,10 +23,6 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if (APPLE OR WIN32)
-    find_package(Boost REQUIRED)
-endif()
-
 find_package(OpenGL REQUIRED)
 
 
@@ -36,12 +32,10 @@ find_package(OpenGL REQUIRED)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  vtkDataManagement
   vtkImageView
   vtkWidgetsAddOn
   vtkVisuManagement
   vtkVisuManagement/lut
-  vtkItkWrap
   HWShading
   HWShading/helpers
   )
@@ -122,8 +116,6 @@ target_include_directories(${TARGET_NAME}
   PUBLIC
   ${${TARGET_NAME}_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}/shaders
-  PRIVATE
-  ${Boost_INCLUDE_DIR}
   )
 
 ## #############################################################################

@@ -82,7 +82,7 @@ public:
     vtkGetObjectMacro (ActorZ, vtkImageActor);
     vtkGetObjectMacro (ExtraPlaneCollection, vtkProp3DCollection);
 
-    virtual vtkImageData* GetInput(int layer = 0) const;
+    virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
     virtual void SetVolumeMapperTo3DTexture();
     virtual void SetVolumeMapperToRayCast();
@@ -143,8 +143,8 @@ public:
     virtual void SetCroppingMode(unsigned int);
     virtual unsigned int GetCroppingMode ();
 
-    virtual void SetInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0, int layer = 0);
-    virtual void AddInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0);
+    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = 0, int layer = 0);
+    //virtual void AddInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0);
     virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
 
     using vtkImageView::SetColorWindow;

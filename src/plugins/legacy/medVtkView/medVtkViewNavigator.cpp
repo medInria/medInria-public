@@ -40,7 +40,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-
 /*=========================================================================
 
     D pointer
@@ -583,12 +582,10 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     this->cameraParameter()->blockSignals(true);
 
     double pos[3];
-    int timeIndex = 0;
     vtkRenderWindow * renWin = 0;
     if(d->currentView)
     {
         d->currentView->GetCurrentPoint(pos);
-        timeIndex = d->currentView->GetTimeIndex();
         d->currentView->UnInstallInteractor();
         renWin = d->currentView->GetRenderWindow();
         d->currentView->SetRenderWindow(NULL);
@@ -635,20 +632,19 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
 
     // hack - if we have transitioned to 3d view, and do not have any image data, grab it from 2d and make it invisible.
     // This is to fix poor performance in vtk 6.2 and a crash in 6.3 caused by a lack of extent data for the renderer
-    if (d->currentView == d->view3d && (!d->currentView->GetInput()))
+    if (d->currentView == d->view3d && (!d->currentView->GetMedVtkImageInfo() || !d->currentView->GetMedVtkImageInfo()->initialized))
     {
-        vtkImageData* data = d->view2d->GetInput();
-        if (data)
+        if (d->view2d->GetMedVtkImageInfo() && d->view2d->GetMedVtkImageInfo()->initialized)
         {
             d->view3d->GetActorX()->SetOpacity(0.0);
             d->view3d->GetActorY()->SetOpacity(0.0);
             d->view3d->GetActorZ()->SetOpacity(0.0);
-            d->currentView->SetInput(data);
+            d->currentView->SetInput(d->view2d->GetInputAlgorithm(0)->GetInputConnection(0,0));
+            d->currentView->ResetCamera();
         }
     }
     d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
-    d->currentView->SetTimeIndex(timeIndex);
     d->currentView->Render();
 
     d->orientation = orientation;

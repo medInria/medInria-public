@@ -67,6 +67,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_MACOSX_RPATH OFF)
 
 ## #############################################################################
 ## Additionals modules

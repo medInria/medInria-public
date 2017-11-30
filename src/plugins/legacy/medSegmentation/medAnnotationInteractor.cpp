@@ -41,6 +41,7 @@
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 
+#include <vtkItkConversion.h>
 
 // pImpl
 class msegAnnotationInteractorPrivate
@@ -68,7 +69,7 @@ public:
 
 // Implementation
 medAnnotationInteractor::medAnnotationInteractor(medAbstractView *parent):
-    medAbstractImageViewInteractor(parent), d(new msegAnnotationInteractorPrivate)
+    medAbstractImageViewInteractor(parent), d(new msegAnnotationInteractorPrivate), m_poConv(nullptr)
 {
     d->helpers.push_back(new medAnnIntSeedPointHelper(this));
     d->helpers.push_back(new medAnnIntImageMaskHelper(this));
@@ -91,6 +92,8 @@ medAnnotationInteractor::~medAnnotationInteractor()
     qDeleteAll(d->helpers);
     delete d;
     d = NULL;
+    delete(m_poConv);
+    m_poConv = nullptr;
 }
 
 QStringList medAnnotationInteractor::dataHandled()
@@ -137,33 +140,64 @@ void medAnnotationInteractor::setInputData(medAbstractData *data)
 {
     this->medAbstractInteractor::setInputData(data);
 
-    if ( d->imageData ) {
+    if ( d->imageData )
+    {
         disconnect(d->imageData, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
         // Remove annotations
-        foreach( dtkSmartPointer<medAnnotationData> key,  d->installedAnnotations ) {
-            if ( key->parentData() == data ) {
+        foreach( dtkSmartPointer<medAnnotationData> key,  d->installedAnnotations )
+        {
+            if ( key->parentData() == data )
+            {
                 this->removeAnnotation( key );
             }
         }
     }
+    
+    if (data)
+    {
+        SetViewInput(data);
+        medAnnotationData *annItem = qobject_cast<medAnnotationData*>(data);
+        attachData(annItem);
+        this->updateSlicingParam();
+    }
+}
+
+bool medAnnotationInteractor::SetViewInput(medAbstractData *data)
+{
+    bool bRes = data;
 
     d->imageData = data;
 
-    if (d->imageData)
+    if (bRes)
     {
+        int layer = d->medVtkView->layer(d->imageData);
+
         typedef itk::Image<unsigned char, 3> MaskType;
-        medImageMaskAnnotationData *maskAnnData = dynamic_cast<medImageMaskAnnotationData*>(data);
+        medImageMaskAnnotationData *maskAnnData = dynamic_cast<medImageMaskAnnotationData*>(d->imageData);
+
         if (MaskType* image = dynamic_cast<MaskType*>((itk::Object*)(maskAnnData->maskData()->data())))
         {
-            d->view2d->SetITKInput(image, d->medVtkView->layer(d->imageData));
-            d->view3d->SetITKInput(image, d->medVtkView->layer(d->imageData));
+            vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
+            vtkMatrix4x4 *poMatrix = nullptr;
+            m_poConv = new vtkItkConversion<unsigned char, 3>();
+            bRes = m_poConv->SetITKInput(image);
+            if (bRes)
+            {
+                bRes = m_poConv->GetConversion(poVtkAlgoOutputPort, poMatrix);
+                if (bRes)
+                {
+                    d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
+                    d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
+                }
+            }
         }
-
-        medAnnotationData *annItem = qobject_cast<medAnnotationData*>(data);
-        attachData(annItem);
-
-        this->updateSlicingParam();
+        else
+        {
+            bRes = false;
+        }
     }
+
+    return bRes;
 }
 
 void medAnnotationInteractor::removeData()

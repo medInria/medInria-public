@@ -34,7 +34,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkShadowRenderer.h"
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-//#include <GL/glew.h>
 
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>

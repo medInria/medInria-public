@@ -34,8 +34,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <medVtkInriaExport.h>
 
 #include <vtkOpenGLRenderer.h>
-//#include <GL/glew.h>
-
 #include <vtkTimeStamp.h>
 
 class vtkCamera;

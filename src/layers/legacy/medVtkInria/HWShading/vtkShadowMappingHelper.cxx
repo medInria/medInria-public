@@ -54,7 +54,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkBMIAShaderProgram.h"
 #include "vtkVertexShader.h"
 #include "vtkFragmentShader.h"
-//#include <assert.h>
 #include <BuildShadowMapVertexText.h>
 #include <BuildShadowMapFragmentText.h>
 

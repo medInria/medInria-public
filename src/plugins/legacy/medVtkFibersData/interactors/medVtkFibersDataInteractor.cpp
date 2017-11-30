@@ -16,7 +16,7 @@
 #include <vtkActor.h>
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
-#include <vtkFiberDataSetManager.h>
+#include "vtkFiberDataSetManager.h"
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -449,7 +449,6 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
 
     if(data->identifier() != "medVtkFibersData")
         return;
-
 
     if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data()))
     {
@@ -1445,6 +1444,7 @@ void medVtkFibersDataInteractor::setUpViewForThumbnail()
     d->view->setOrientation(medImageView::VIEW_ORIENTATION_3D);
     d->view->reset();
     d->view3d->ShowAnnotationsOff();
+    d->view3d->ShowCubeOff();
 }
 
 QList<medAbstractParameterL*> medVtkFibersDataInteractor::linkableParameters()

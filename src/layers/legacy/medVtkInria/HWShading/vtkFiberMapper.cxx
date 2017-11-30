@@ -90,7 +90,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkShadowMappingHelperLines.h"
 
 #include <vtkOpenGLRenderWindow.h>
-//#include <vtkOpenGLExtensionManager.h>
 #include <vtkProperty.h>
 
 vtkStandardNewMacro(vtkFiberMapper);

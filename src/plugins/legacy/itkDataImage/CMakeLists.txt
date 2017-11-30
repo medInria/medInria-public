@@ -51,6 +51,8 @@ list_source_files(${TARGET_NAME}
   . # current dir
   datas
   interactors
+  limit
+  manager
   navigators
   readers
   writers

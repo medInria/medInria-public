@@ -34,23 +34,21 @@ public:
     static bool registered();
 
     virtual void setInputData(medAbstractData *data);
+    virtual bool SetViewInput(medAbstractData* data, int layer);
     virtual medAbstractData *inputData() const;
-
-    virtual QWidget* buildToolBoxWidget();
-    virtual QWidget* buildToolBarWidget();
-    virtual QWidget* buildLayerWidget();
-
-    virtual QList<medAbstractParameterL*> linkableParameters();
 
 public slots:
     virtual void setCurrentTime (double time);
-    virtual void updateWidgets();
 
 private:
     static QStringList dataHandled();
+    template <typename IMAGE> bool SetViewInput(const char* type, medAbstractData* data, int layer);
+    template <typename volumeType> inline void SetITKDataSet(typename itk::Image<volumeType, 4> *dataset);
+    void SetITKDataSet(typename itk::Image<float, 4> *dataset);
 
 private:
     medVtkViewItkDataImage4DInteractorPrivate *d;
+    vtkItkConversionInterface *m_poConv;
 };
 
 
