@@ -75,6 +75,7 @@ void medVtkFibersData::setData(void *data)
         d->data = vtkFiberDataSet::New();
 
     d->data->SetFibers(inputData);
+    this->setMetaData("BundleList", QStringList());
 }
 
 void *medVtkFibersData::data()
