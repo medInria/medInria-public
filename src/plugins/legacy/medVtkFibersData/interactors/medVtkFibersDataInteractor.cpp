@@ -16,7 +16,7 @@
 #include <vtkActor.h>
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
-#include "../manager/vtkFiberDataSetManager.h"
+#include "vtkFiberDataSetManager.h"
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>

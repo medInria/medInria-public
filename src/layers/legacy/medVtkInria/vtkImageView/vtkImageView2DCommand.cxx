@@ -168,14 +168,6 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
         return;
     }
 
-    // Move Slice
-    /*if (event == vtkImageView2DCommand::TimeChangeEvent)
-    {
-        this->Viewer->SetTimeIndex (this->Viewer->GetTimeIndex()+isi->GetSliceStep());
-        this->Viewer->Render();
-        return;
-    }*/
-
     // Position requested
     if (event == vtkImageView2DCommand::RequestedPositionEvent)
     {

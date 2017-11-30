@@ -18,10 +18,6 @@ vtkImage3DDisplay::vtkImage3DDisplay()
 
 vtkImage3DDisplay::~vtkImage3DDisplay()
 {
-    /*if (this->InputConnection) 
-    {
-        this->InputConnection->Delete();
-    }*/
     if (this->LookupTable)
     {
         this->LookupTable->Delete();

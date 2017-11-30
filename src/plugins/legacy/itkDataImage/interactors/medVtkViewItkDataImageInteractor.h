@@ -69,8 +69,7 @@ private:
     static QStringList dataHandled();
     virtual void update();
 
-    //template <typename IMAGE>
-    bool SetViewInput(/*const char* type, */ medAbstractData* data, int layer);
+    bool SetViewInput(medAbstractData* data, int layer);
 
 private slots:
     void updateSlicingParam();

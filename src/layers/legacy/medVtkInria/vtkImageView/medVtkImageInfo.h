@@ -13,13 +13,13 @@ struct medVtkImageInfo
     
     medVtkImageInfo();
     ~medVtkImageInfo();
-    
+
     void GetScalarRange (double po_pdScalarRange[2]);
     void GetExtent      (int po_piExtent[6]);
     void GetSpacing     (double po_pdSpacing[3]);
     void GetOrigin      (double po_pdOrigin[3]);
     void GetDimensions  (int po_piDimensions[3]);
-    
+
     void SetScalarRange (double pi_pdScalarRange[2]);
     void SetExtent      (int pi_piExtent[6]);
     void SetSpacing     (double pi_pdSpacing[3]);

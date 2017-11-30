@@ -49,8 +49,6 @@ void medVtkImageInfo::SetOrigin(double pi_pdOrigin[3])
     memcpy(origin, pi_pdOrigin, sizeof(double) * 3);
 }
 
-
-
 void medVtkImageInfo::GetScalarRange(double po_pdScalarRange[2])
 {
     memcpy(po_pdScalarRange, scalarRange, sizeof(double) * 2);
@@ -75,4 +73,3 @@ void medVtkImageInfo::GetDimensions(int po_piDimensions[3])
 {
     memcpy(po_piDimensions, dimensions, sizeof(int) * 3);
 }
-

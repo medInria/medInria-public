@@ -580,7 +580,6 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
 //----------------------------------------------------------------------------
 void vtkImageView3D::InternalUpdate()
 {
-    //vtkSmartPointer<vtkImageData> input = this->GetMedVtkImageInfo();
     bool multiLayers = false;
     bool multichannelInput = (this->m_poInternalImageFromInput->GetScalarType() == VTK_UNSIGNED_CHAR &&
                               (this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 3 ||
@@ -617,12 +616,14 @@ void vtkImageView3D::InternalUpdate()
     // hack: modify the input MTime such that it is higher
     // than the VolumeMapper's one to force it to refresh
     // (see vtkSmartVolumeMapper::ConnectMapperInput(vtkVolumeMapper *m))
+    /*
     if (this->VolumeMapper->GetInput())
     {
         unsigned long mtime = this->VolumeMapper->GetInput()->GetMTime();
-        /*while (input->GetMTime()<=mtime)
-            input->Modified();*/
+        while (input->GetMTime()<=mtime)
+            input->Modified();
     }
+    */
     this->VolumeMapper->SetInputConnection( appender->GetOutputPort());
     this->VolumeMapper->Update();
     this->VolumeMapper->Modified();

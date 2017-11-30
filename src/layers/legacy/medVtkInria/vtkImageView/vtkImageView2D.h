@@ -255,8 +255,6 @@ public:
     virtual void ResetCamera();
 
     virtual void GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position);
-    
-    //virtual vtkImageAlgorithm* GetWindowLevelInputAlgorithm (int layer = 0) const;
 
     virtual vtkImageMapToColors *GetWindowLevel(int layer=0) const;
 
@@ -430,7 +428,6 @@ protected:
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
     //ETX
 
-    //void SetFirstLayer2(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkImageData *image, vtkMatrix4x4 *matrix, int layer);
     void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;

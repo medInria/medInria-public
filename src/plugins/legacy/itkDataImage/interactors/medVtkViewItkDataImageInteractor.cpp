@@ -168,20 +168,7 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
     if(!d->imageData)
         return;
 
-    if (!SetViewInput (data, d->view->layer(data))
-        /*!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<short,3> >("itkDataImageShort3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<int,3> >("itkDataImageInt3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<long,3> >("itkDataImageLong3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<float,3> >("itkDataImageFloat3", data , d->view->layer(data)) ||
-          SetViewInput<itk::Image<double,3> >("itkDataImageDouble3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3", data, d->view->layer(data)) ||
-          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVectorUChar3", data, d->view->layer(data)))*/)
+    if (!SetViewInput (data, d->view->layer(data)))
     {
         dtkDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
         return;
