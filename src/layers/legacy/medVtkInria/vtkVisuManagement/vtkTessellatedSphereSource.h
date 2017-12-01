@@ -13,6 +13,7 @@
 =========================================================================*/
 
 #include <vtkPolyDataAlgorithm.h>
+#include <medVtkInriaExport.h>
 
 /** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
 
@@ -20,7 +21,7 @@
 * \brief Perform tesselation of the unit sphere from a given platonic solid
 */
 
-class vtkTessellatedSphereSource : public vtkPolyDataAlgorithm 
+class MEDVTKINRIA_EXPORT vtkTessellatedSphereSource : public vtkPolyDataAlgorithm
 {
 public:
   static vtkTessellatedSphereSource *New();
