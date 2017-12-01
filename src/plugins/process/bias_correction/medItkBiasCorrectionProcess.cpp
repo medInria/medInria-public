@@ -33,7 +33,6 @@
 #include <itkShrinkImageFilter.h>
 #include <itkTimeProbe.h>
 
-#define MAX_INT_POSITIVE 4294967295
 #define NB_STEPS 18
 
 medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAbstractBiasCorrectionProcess(parent)
@@ -91,17 +90,17 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
     m_poFInitialMeshResolutionVect1 = new medDoubleParameter("XMeshResolution", this);
     m_poFInitialMeshResolutionVect1->setCaption("Spline Mesh resolution for X");
     m_poFInitialMeshResolutionVect1->setDescription("Mesh resolution for X");
-    m_poFInitialMeshResolutionVect1->setRange(0.000001, MAX_INT_POSITIVE);
+    m_poFInitialMeshResolutionVect1->setRange(0.000001, 100);
     m_poFInitialMeshResolutionVect1->setValue(1);
     m_poFInitialMeshResolutionVect2 = new medDoubleParameter("YMeshResolution", this);
     m_poFInitialMeshResolutionVect2->setCaption("Spline Mesh resolution for Y");
     m_poFInitialMeshResolutionVect2->setDescription("Mesh resolution for Y");
-    m_poFInitialMeshResolutionVect2->setRange(0.000001, MAX_INT_POSITIVE);
+    m_poFInitialMeshResolutionVect2->setRange(0.000001, 100);
     m_poFInitialMeshResolutionVect2->setValue(1);
     m_poFInitialMeshResolutionVect3 = new medDoubleParameter("ZMeshResolution", this);
     m_poFInitialMeshResolutionVect3->setCaption("Spline Mesh resolution for Z");
     m_poFInitialMeshResolutionVect3->setDescription("Mesh resolution for Z");
-    m_poFInitialMeshResolutionVect3->setRange(0.000001, MAX_INT_POSITIVE);
+    m_poFInitialMeshResolutionVect3->setRange(0.000001, 100);
     m_poFInitialMeshResolutionVect3->setValue(1);
 }
 
@@ -196,12 +195,8 @@ void medItkBiasCorrectionProcess::cancel()
     if(this->isRunning())
     {
         m_bAborting = true;
-        for (auto elem : m_oVectOfInternalsFilters)
-        {
-            elem->AbortGenerateDataOn();
-        }
+        m_filter->AbortGenerateDataOn();
     }
-    m_oVectOfInternalsFilters.clear();
 }
 
 #define ABORT_CHECKING(x) {if (x) {m_bAborting = false; return medAbstractJob::MED_JOB_EXIT_CANCELLED;}}
@@ -253,7 +248,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     ABORT_CHECKING(m_bAborting);
     typename BiasFilter::Pointer filter = BiasFilter::New();
     typename BiasFilter::ArrayType oNumberOfControlPointsArray;
-    m_oVectOfInternalsFilters.push_back(filter);
+    m_filter = filter;
 
     /*** 1 ******************* Read input image *******************************/
     ABORT_CHECKING(m_bAborting);
@@ -268,7 +263,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     typename MaskImageType::Pointer maskImage = ITK_NULLPTR;
     typedef itk::OtsuThresholdImageFilter<ImageType, MaskImageType> ThresholderType;
     typename ThresholderType::Pointer otsu = ThresholderType::New();
-    m_oVectOfInternalsFilters.push_back(otsu);
+    m_filter = otsu;
     otsu->SetInput(image);
     otsu->SetNumberOfHistogramBins(200);
     otsu->SetInsideValue(0);
@@ -325,7 +320,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
         /*** 6 ******************* Padder  ****************************************/
         ABORT_CHECKING(m_bAborting);
         typename PadderType::Pointer imagePadder = PadderType::New();
-        m_oVectOfInternalsFilters.push_back(imagePadder);
+        m_filter = imagePadder;
         imagePadder->SetInput(image);
         imagePadder->SetPadLowerBound(lowerBound);
         imagePadder->SetPadUpperBound(upperBound);
@@ -339,7 +334,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
         /*** 7 ******************** Handle the mask image *************************/
         ABORT_CHECKING(m_bAborting);
         typename MaskPadderType::Pointer maskPadder = MaskPadderType::New();
-        m_oVectOfInternalsFilters.push_back(maskPadder);
+        m_filter = maskPadder;
         maskPadder->SetInput(maskImage);
         maskPadder->SetPadLowerBound(lowerBound);
         maskPadder->SetPadUpperBound(upperBound);
@@ -376,13 +371,13 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     /*** 10 ******************* Shrinker image ********************************/
     ABORT_CHECKING(m_bAborting);
     typename ShrinkerType::Pointer imageShrinker = ShrinkerType::New();
-    m_oVectOfInternalsFilters.push_back(imageShrinker);
+    m_filter = imageShrinker;
     imageShrinker->SetInput(image);
 
     /*** 11 ******************* Shrinker mask *********************************/
     ABORT_CHECKING(m_bAborting);
     typename MaskShrinkerType::Pointer maskShrinker = MaskShrinkerType::New();
-    m_oVectOfInternalsFilters.push_back(maskShrinker);
+    m_filter = maskShrinker;
     maskShrinker->SetInput(maskImage);
 
     /*** 12 ******************* Shrink mask and image *************************/
@@ -429,7 +424,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     */
     ABORT_CHECKING(m_bAborting);
     typename BSplinerType::Pointer bspliner = BSplinerType::New();
-    m_oVectOfInternalsFilters.push_back(bspliner);
+    m_filter = bspliner;
     bspliner->SetInput(filter->GetLogBiasFieldControlPointLattice());
     bspliner->SetSplineOrder(filter->GetSplineOrder());
     bspliner->SetSize(image->GetLargestPossibleRegion().GetSize());
@@ -463,7 +458,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     /*********************** Exponential phase *************************/
     ABORT_CHECKING(m_bAborting);
     typename ExpFilterType::Pointer expFilter = ExpFilterType::New();
-    m_oVectOfInternalsFilters.push_back(expFilter);
+    m_filter = expFilter;
     expFilter->SetInput(logField);
     expFilter->SetNumberOfThreads(uiThreadNb);
     expFilter->Update();
@@ -472,7 +467,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     /************************ Dividing phase ***************************/
     ABORT_CHECKING(m_bAborting);
     typename DividerType::Pointer divider = DividerType::New();
-    m_oVectOfInternalsFilters.push_back(divider);
+    m_filter = divider;
     divider->SetInput1(image);
     divider->SetInput2(expFilter->GetOutput());
     divider->SetNumberOfThreads(uiThreadNb);
@@ -489,7 +484,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     /************************ Cropping phase ***************************/
     ABORT_CHECKING(m_bAborting);
     typename CropperType::Pointer cropper = CropperType::New();
-    m_oVectOfInternalsFilters.push_back(cropper);
+    m_filter = cropper;
     cropper->SetInput(divider->GetOutput());
     cropper->SetExtractionRegion(inputRegion);
     cropper->SetDirectionCollapseToSubmatrix();
@@ -502,8 +497,8 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     medAbstractImageData *out = qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
     out->setData(cropper->GetOutput());
     this->setOutput(out);
-    
-    m_oVectOfInternalsFilters.clear();
+
+    m_filter = 0;
     
     return eRes;
 }

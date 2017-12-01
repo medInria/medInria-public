@@ -73,7 +73,7 @@ private:
     medDoubleParameter *m_poFInitialMeshResolutionVect2;
     medDoubleParameter *m_poFInitialMeshResolutionVect3;
 
-    std::vector</*itk::SmartPointer<*/itk::ProcessObject*/*>**/> m_oVectOfInternalsFilters;
+    itk::SmartPointer <itk::ProcessObject> m_filter;
     bool m_bAborting;
 };
 

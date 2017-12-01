@@ -11,8 +11,6 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medItkBiasCorrectionProcessPresenter.h>
 
 #include <medIntParameterPresenter.h>

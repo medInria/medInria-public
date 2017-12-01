@@ -37,9 +37,6 @@ private:
     medIntParameterPresenter    *m_poUIPresenterShrinkFactors;                //Shrink factor, default=4
     medIntParameterPresenter    *m_poUIPresenterSplineOrder;                  //BSpline Order, default=3
     medStringParameterPresenter *m_poSPresenterMaxIterations;                 //Max iterations per round
-  /*medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector1;  //B - Spline grid resolution
-    medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector2;  //B - Spline grid resolution
-    medIntParameterPresenter    *m_poUIPresenterMaxNumbersIterationsVector3;  //B - Spline grid resolution*/
     medDoubleParameterPresenter *m_poFPresenterWienerFilterNoise;              //Wiener Filter Noise, default=0.01
     medDoubleParameterPresenter *m_poFPresenterbfFWHM;                         //Bias field Full Width at Half Maximum, default=0.15
     medDoubleParameterPresenter *m_poFPresenterConvergenceThreshold;           //Convergence Threshold, default=0.0001
