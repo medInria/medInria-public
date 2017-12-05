@@ -39,7 +39,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url git://vtk.org/VTK.git)
-set(git_tag v8.0.0)
+set(git_tag v8.1.0.rc1)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -66,12 +66,16 @@ set(cmake_args
   -DVTK_RENDERING_BACKEND=OpenGL2
   -DVTK_Group_Qt=ON
   -DModule_vtkGUISupportQtOpenGL=ON
-  -DModule_vtkRenderingOSPRay=ON
+  -DModule_vtkRenderingOSPRay:BOOL=${USE_OSPRay}
   -DVTK_QT_VERSION=5
   -DQt5_DIR=${Qt5_DIR}
   )
 
-
+if(USE_OSPRay)
+  list(APPEND cmake_args
+  -Dospray_DIR=${ospray_DIR}
+  -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR})
+endif()
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
@@ -97,4 +101,5 @@ set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 
-endfunction()
+endfunction(VTK_project)
+

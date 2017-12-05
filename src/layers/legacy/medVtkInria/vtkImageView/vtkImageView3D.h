@@ -84,9 +84,10 @@ public:
 
     virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
-    //virtual void SetVolumeMapperTo3DTexture();
     virtual void SetVolumeMapperToRayCast();
+#ifdef MED_USE_OSPRAY_4_VR_BY_CPU
     virtual void SetVolumeMapperToOSPRayRenderMode();
+#endif //MED_USE_OSPRAY_4_VR_BY_CPU
     virtual void SetVolumeMapperToGPU();
     virtual void SetVolumeMapperToDefault();
 

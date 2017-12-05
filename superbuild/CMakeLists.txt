@@ -44,10 +44,10 @@ find_package(Boost REQUIRED)
 #   * otherwise use download and compile locally the package as an external 
 #     module.
 
-option(USE_DTKIMAGING
-  "Use DTK imaging layer" OFF
-  )
-
+option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
+  
+option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
+  
 list(APPEND external_projects
   VTK 
   ITK 
@@ -67,6 +67,11 @@ else()
   list(APPEND external_projects
       medInria
       )
+endif()
+
+if (USE_OSPRay)
+  SET(ospray_DIR CACHE PATH "The directory containing a CMAKE configuration file for OSPRay")
+  SET(OSPRAY_INSTALL_DIR CACHE PATH "Install location of OSPRay")
 endif()
 
 ## #############################################################################

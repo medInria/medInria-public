@@ -211,11 +211,13 @@ void vtkImageView3D::SetVolumeMapperToRayCast()
   this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::RayCastRenderMode );
 }
 
+#ifdef MED_USE_OSPRAY_4_VR_BY_CPU
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeMapperToOSPRayRenderMode()
 {
   this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::OSPRayRenderMode);
 }
+#endif // MED_USE_OSPRAY_4_VR_BY_CPU
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeMapperToGPU()
