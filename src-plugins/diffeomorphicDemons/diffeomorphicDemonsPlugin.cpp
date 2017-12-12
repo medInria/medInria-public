@@ -21,7 +21,7 @@ diffeomorphicDemonsPlugin::diffeomorphicDemonsPlugin(QObject *parent) : medPlugi
 
 bool diffeomorphicDemonsPlugin::initialize()
 {
-    if (!diffeomorphicDemons::registered())        { dtkWarn() << "Unable to register diffeomorphicDemons type";    }
+    if (!diffeomorphicDemonsProcess::registered()) { dtkWarn() << "Unable to register diffeomorphicDemons process"; }
     if (!diffeomorphicDemonsToolBox::registered()) { dtkWarn() << "Unable to register diffeomorphicDemons toolbox"; }
 
     return true;

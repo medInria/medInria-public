@@ -172,8 +172,8 @@ void diffeomorphicDemonsToolBox::run()
 
     // Many choices here
 
-    diffeomorphicDemons *process_Registration =
-            dynamic_cast<diffeomorphicDemons *>(d->process);
+    diffeomorphicDemonsProcess *process_Registration =
+            dynamic_cast<diffeomorphicDemonsProcess *>(d->process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
