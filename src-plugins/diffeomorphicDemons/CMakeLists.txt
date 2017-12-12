@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(itkProcessRegistrationDiffeomorphicDemonsPlugin)
+project(diffeomorphicDemonsPlugin)
 
 ## #############################################################################
 ## Setup version numbering
