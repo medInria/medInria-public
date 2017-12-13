@@ -44,6 +44,11 @@ option(${PROJECT_NAME}_BUILD_DOCUMENTATION
   OFF
   )
 
+option(USE_OSPRay
+  "Build with OSPRay support"
+  OFF
+  )
+
 ## #############################################################################
 ## Find package
 ## #############################################################################
