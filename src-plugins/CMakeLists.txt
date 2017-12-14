@@ -51,7 +51,7 @@ set(PLUGIN_LIST
   qtdcmDataSource                           ON
   itkDataSHImage                            ON
   undoRedoRegistration                      ON
-  itkProcessRegistrationDiffeomorphicDemons ON
+  diffeomorphicDemons                       ON
   medVtkView                                ON
   iterativeClosestPoint                     ON
   itkN4BiasCorrection                       ON

@@ -14,9 +14,9 @@
 #pragma once
 
 #include <itkProcessRegistration.h>
-#include <itkProcessRegistrationDiffeomorphicDemonsPluginExport.h>
+#include <diffeomorphicDemonsPluginExport.h>
 
-class itkProcessRegistrationDiffeomorphicDemonsPrivate;
+class DiffeomorphicDemonsProcessPrivate;
 
 /**
  * @brief Registration process using diffeomorphic demons from itk.
@@ -25,7 +25,7 @@ class itkProcessRegistrationDiffeomorphicDemonsPrivate;
  * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medInria/src/medCore/gui.
  *
 */
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemons : public itkProcessRegistration
+class DIFFEOMORPHICDEMONSPLUGIN_EXPORT DiffeomorphicDemonsProcess : public itkProcessRegistration
 {
     Q_OBJECT
 
@@ -35,14 +35,14 @@ public:
      *
      * @param void
      */
-    itkProcessRegistrationDiffeomorphicDemons();
+    DiffeomorphicDemonsProcess();
 
     /**
      * @brief
      *
      * @param void
     */
-    virtual ~itkProcessRegistrationDiffeomorphicDemons();
+    virtual ~DiffeomorphicDemonsProcess();
 
     /**
      * @brief Description of the plugin.
@@ -142,8 +142,8 @@ protected :
     virtual bool writeTransform(const QString& file);
 
 private:
-    itkProcessRegistrationDiffeomorphicDemonsPrivate *d;
-    friend class itkProcessRegistrationDiffeomorphicDemonsPrivate;
+    DiffeomorphicDemonsProcessPrivate *d;
+    friend class DiffeomorphicDemonsProcessPrivate;
 };
 
 /**
@@ -152,6 +152,6 @@ private:
  *
  * @param void
 */
-dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons();
+dtkAbstractProcess *createDiffeomorphicDemonsProcess();
 
 

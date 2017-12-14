@@ -14,13 +14,13 @@
 #pragma once
 
 #ifdef WIN32
-    #ifdef itkProcessRegistrationDiffeomorphicDemonsPlugin_EXPORTS
-        #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllexport) 
+    #ifdef diffeomorphicDemonsPlugin_EXPORTS
+        #define DIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllexport)
     #else
-        #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllimport) 
+        #define DIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT
+    #define DIFFEOMORPHICDEMONSPLUGIN_EXPORT
 #endif
 
 

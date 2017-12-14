@@ -14,15 +14,15 @@
 #pragma once
 
 #include <medPlugin.h>
-#include <itkProcessRegistrationDiffeomorphicDemonsPluginExport.h>
+#include <diffeomorphicDemonsPluginExport.h>
 
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPlugin : public medPlugin
+class DIFFEOMORPHICDEMONSPLUGIN_EXPORT DiffeomorphicDemonsPlugin : public medPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-    itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent = 0);
+    DiffeomorphicDemonsPlugin(QObject *parent = 0);
     virtual bool initialize();
 
     virtual QString description() const;

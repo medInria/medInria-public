@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include <itkProcessRegistrationDiffeomorphicDemons.h>
-#include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
+#include <diffeomorphicDemonsProcess.h>
+#include <diffeomorphicDemonsToolBox.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -24,7 +24,7 @@
 
 #include <rpiCommonTools.hxx>
 
-class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
+class DiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
@@ -38,7 +38,7 @@ public:
     medAbstractRegistrationProcess *process;
 };
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
+DiffeomorphicDemonsToolBox::DiffeomorphicDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new DiffeomorphicDemonsToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -128,20 +128,20 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeomorphicDemonsToolBox()
+DiffeomorphicDemonsToolBox::~DiffeomorphicDemonsToolBox()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
+bool DiffeomorphicDemonsToolBox::registered()
 {
     return medToolBoxFactory::instance()->
-            registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>();
+            registerToolBox<DiffeomorphicDemonsToolBox>();
 }
 
-dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
+dtkPlugin* DiffeomorphicDemonsToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin ( "Diffeomorphic Demons" );
@@ -149,7 +149,7 @@ dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
 }
 
 
-void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
+void DiffeomorphicDemonsToolBox::run()
 {
     medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
@@ -157,7 +157,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
         return;
 
     
-    d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+    d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("DiffeomorphicDemonsProcess"));
     if(!d->process)
         return;
 
@@ -172,8 +172,8 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 
     // Many choices here
 
-    itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(d->process);
+    DiffeomorphicDemonsProcess *process_Registration =
+            dynamic_cast<DiffeomorphicDemonsProcess *>(d->process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
@@ -210,7 +210,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     this->addConnectionsAndStartJob(runProcess);
 }
 
-medAbstractData* itkProcessRegistrationDiffeomorphicDemonsToolBox::processOutput()
+medAbstractData* DiffeomorphicDemonsToolBox::processOutput()
 {
     // If called from pipelines, and run() not called before.
     if(!d->process)
