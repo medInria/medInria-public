@@ -72,6 +72,7 @@ set(cmake_args
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DUSE_DTKIMAGING:BOOL=${USE_DTKIMAGING}
+  -DUSE_OSPRay:BOOL=${USE_OSPRay}
   -DDCMTK_DIR=${DCMTK_DIR}
   -Ddtk_DIR=${dtk_DIR}
   -DITK_DIR=${ITK_DIR}
@@ -135,27 +136,4 @@ set(${ep}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 
-endfunction()     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+endfunction()

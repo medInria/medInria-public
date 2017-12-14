@@ -192,14 +192,9 @@ void medTimeLineParameterL::play(bool play)
 {
     d->playParameter->setValue(play);
 
-    if(d->timeLine->state() == QTimeLine::NotRunning && play)
+    if((d->timeLine->state() == QTimeLine::Paused || d->timeLine->state() == QTimeLine::NotRunning) && play)
     {
-        d->timeLine->start();
-        d->playParameter->setIcon (QPixmap(":/icons/pause.png"));
-        emit playing(play);
-    }
-    else if(d->timeLine->state() == QTimeLine::Paused && play)
-    {
+        d->timeLine->setCurrentTime(mapFrameToTime(d->currentFrame) * 1000);
         d->timeLine->resume();
         d->playParameter->setIcon (QPixmap(":/icons/pause.png"));
         emit playing(play);

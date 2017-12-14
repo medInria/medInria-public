@@ -25,6 +25,12 @@ include(${ITK_USE_FILE})
 
 find_package(OpenGL REQUIRED)
 
+if (USE_OSPRay)
+  add_definitions(-DMED_USE_OSPRAY_4_VR_BY_CPU)
+  set(VTK_OSPRAY_RENDERING_LIBRARY "vtkRenderingOSPRay")
+ELSE()
+  set(VTK_OSPRAY_RENDERING_LIBRARY "")
+endif()
 
 ## #############################################################################
 ## List sources
@@ -163,6 +169,7 @@ target_link_libraries(${TARGET_NAME}
   vtkRenderingOpenGL2
   vtkRenderingVolumeOpenGL2
   vtkRenderingContextOpenGL2
+  ${VTK_OSPRAY_RENDERING_LIBRARY}
   vtkInteractionWidgets
   vtkInteractionStyle
   vtkFiltersExtraction
