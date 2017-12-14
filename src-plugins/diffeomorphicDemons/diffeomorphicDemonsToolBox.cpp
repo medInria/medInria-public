@@ -24,7 +24,7 @@
 
 #include <rpiCommonTools.hxx>
 
-class diffeomorphicDemonsToolBoxPrivate
+class DiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
@@ -38,7 +38,7 @@ public:
     medAbstractRegistrationProcess *process;
 };
 
-diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new diffeomorphicDemonsToolBoxPrivate)
+DiffeomorphicDemonsToolBox::DiffeomorphicDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new DiffeomorphicDemonsToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -128,20 +128,20 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent) : medAbs
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-diffeomorphicDemonsToolBox::~diffeomorphicDemonsToolBox()
+DiffeomorphicDemonsToolBox::~DiffeomorphicDemonsToolBox()
 {
     delete d;
 
     d = NULL;
 }
 
-bool diffeomorphicDemonsToolBox::registered()
+bool DiffeomorphicDemonsToolBox::registered()
 {
     return medToolBoxFactory::instance()->
-            registerToolBox<diffeomorphicDemonsToolBox>();
+            registerToolBox<DiffeomorphicDemonsToolBox>();
 }
 
-dtkPlugin* diffeomorphicDemonsToolBox::plugin()
+dtkPlugin* DiffeomorphicDemonsToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin ( "Diffeomorphic Demons" );
@@ -149,7 +149,7 @@ dtkPlugin* diffeomorphicDemonsToolBox::plugin()
 }
 
 
-void diffeomorphicDemonsToolBox::run()
+void DiffeomorphicDemonsToolBox::run()
 {
     medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
@@ -157,7 +157,7 @@ void diffeomorphicDemonsToolBox::run()
         return;
 
     
-    d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("diffeomorphicDemonsProcess"));
+    d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("DiffeomorphicDemonsProcess"));
     if(!d->process)
         return;
 
@@ -172,8 +172,8 @@ void diffeomorphicDemonsToolBox::run()
 
     // Many choices here
 
-    diffeomorphicDemonsProcess *process_Registration =
-            dynamic_cast<diffeomorphicDemonsProcess *>(d->process);
+    DiffeomorphicDemonsProcess *process_Registration =
+            dynamic_cast<DiffeomorphicDemonsProcess *>(d->process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
@@ -210,7 +210,7 @@ void diffeomorphicDemonsToolBox::run()
     this->addConnectionsAndStartJob(runProcess);
 }
 
-medAbstractData* diffeomorphicDemonsToolBox::processOutput()
+medAbstractData* DiffeomorphicDemonsToolBox::processOutput()
 {
     // If called from pipelines, and run() not called before.
     if(!d->process)

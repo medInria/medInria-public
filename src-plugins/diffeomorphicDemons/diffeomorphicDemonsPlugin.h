@@ -16,13 +16,13 @@
 #include <medPlugin.h>
 #include <diffeomorphicDemonsPluginExport.h>
 
-class DIFFEOMORPHICDEMONSPLUGIN_EXPORT diffeomorphicDemonsPlugin : public medPlugin
+class DIFFEOMORPHICDEMONSPLUGIN_EXPORT DiffeomorphicDemonsPlugin : public medPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-    diffeomorphicDemonsPlugin(QObject *parent = 0);
+    DiffeomorphicDemonsPlugin(QObject *parent = 0);
     virtual bool initialize();
 
     virtual QString description() const;

@@ -15,31 +15,31 @@
 #include <diffeomorphicDemonsPlugin.h>
 #include <diffeomorphicDemonsToolBox.h>
 
-diffeomorphicDemonsPlugin::diffeomorphicDemonsPlugin(QObject *parent) : medPlugin(parent)
+DiffeomorphicDemonsPlugin::DiffeomorphicDemonsPlugin(QObject *parent) : medPlugin(parent)
 {
 }
 
-bool diffeomorphicDemonsPlugin::initialize()
+bool DiffeomorphicDemonsPlugin::initialize()
 {
-    if (!diffeomorphicDemonsProcess::registered()) { dtkWarn() << "Unable to register diffeomorphicDemons process"; }
-    if (!diffeomorphicDemonsToolBox::registered()) { dtkWarn() << "Unable to register diffeomorphicDemons toolbox"; }
+    if (!DiffeomorphicDemonsProcess::registered()) { dtkWarn() << "Unable to register diffeomorphicDemons process"; }
+    if (!DiffeomorphicDemonsToolBox::registered()) { dtkWarn() << "Unable to register diffeomorphicDemons toolbox"; }
 
     return true;
 }
 
-QString diffeomorphicDemonsPlugin::name() const
+QString DiffeomorphicDemonsPlugin::name() const
 {
     return "Diffeomorphic Demons";
 }
 
-QStringList diffeomorphicDemonsPlugin::authors() const
+QStringList DiffeomorphicDemonsPlugin::authors() const
 {
     QStringList list;
     list << QString::fromUtf8("Benoît Bleuzé");
     return list;
 }
 
-QStringList diffeomorphicDemonsPlugin::contributors() const
+QStringList DiffeomorphicDemonsPlugin::contributors() const
 {
     QStringList list;
     list << "Vincent Garcia";
@@ -47,7 +47,7 @@ QStringList diffeomorphicDemonsPlugin::contributors() const
     return list;
 }
 
-QString diffeomorphicDemonsPlugin::description() const
+QString DiffeomorphicDemonsPlugin::description() const
 {
     QString description = \
             tr("Applies the diffeomorphic demons algorithm implemented in the <a href=\"https://github.com/Inria-Asclepios/RPI\" style=\"color: #cc0000\" >RPI library</a>. <br><br>\
@@ -57,16 +57,16 @@ QString diffeomorphicDemonsPlugin::description() const
     return description;
 }
 
-QString diffeomorphicDemonsPlugin::version() const
+QString DiffeomorphicDemonsPlugin::version() const
 {
     return DIFFEOMORPHICDEMONSPLUGIN_VERSION;
 }
 
-QStringList diffeomorphicDemonsPlugin::types() const
+QStringList DiffeomorphicDemonsPlugin::types() const
 {
     return QStringList() << "diffeomorphicDemons";
 }
 
-Q_EXPORT_PLUGIN2(diffeomorphicDemonsPlugin, diffeomorphicDemonsPlugin)
+Q_EXPORT_PLUGIN2(DiffeomorphicDemonsPlugin, DiffeomorphicDemonsPlugin)
 
 
