@@ -198,13 +198,6 @@ vtkMTimeType vtkImageView3D::GetMTime()
   return mTime;
 }
 
-
-//----------------------------------------------------------------------------
-/*void vtkImageView3D::SetVolumeMapperTo3DTexture()
-{
-  this->VolumeMapper->SetRequestedRenderMode(vtkSmartVolumeMapper::TextureRenderMode );
-}*/
-
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeMapperToRayCast()
 {

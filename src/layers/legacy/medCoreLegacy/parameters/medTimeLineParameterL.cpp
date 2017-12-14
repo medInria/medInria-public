@@ -104,7 +104,6 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     this->clear();
 
     connect(d->timeLine, SIGNAL(frameChanged(int)), this, SLOT(setFrame(int)));
-    //connect(d->timeLine, SIGNAL(frameChanged(int)), this, SLOT(increaseFrame(int)));
     connect(d->timeLine, SIGNAL(finished()), this, SLOT(reset()));
 
     connect(d->playParameter, SIGNAL(valueChanged(bool)), this, SLOT(play(bool)));
