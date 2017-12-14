@@ -80,7 +80,7 @@ public:
     /**
      * @brief
      *
-     * @see rpiDiffeomorphicDemonsProcess
+     * @see rpiDiffeomorphicDemons
      *
      * @param iterations
     */
@@ -88,42 +88,42 @@ public:
 
     /**
      * @brief
-     * @see rpiDiffeomorphicDemonsProcess
+     * @see rpiDiffeomorphicDemons
      * @param updateRule
     */
     void setUpdateRule( unsigned char updateRule);
 
     /**
      * @brief
-     * @see rpiDiffeomorphicDemonsProcess
+     * @see rpiDiffeomorphicDemons
      * @param gradientType
     */
     void setGradientType (unsigned char gradientType);
 
     /**
      * @brief
-     * @see rpiDiffeomorphicDemonsProcess
+     * @see rpiDiffeomorphicDemons
      * @param maximumUpdateStepLength
     */
     void setMaximumUpdateLength (float maximumUpdateStepLength);
 
     /**
      * @brief
-     * @see rpiDiffeomorphicDemonsProcess
+     * @see rpiDiffeomorphicDemons
      * @param updateFieldStandardDeviation
     */
     void setUpdateFieldStandardDeviation(float updateFieldStandardDeviation);
 
     /**
      * @brief
-     * @see rpiDiffeomorphicDemonsProcess
+     * @see rpiDiffeomorphicDemons
      * @param displacementFieldStandardDeviation
     */
     void setDisplacementFieldStandardDeviation(float displacementFieldStandardDeviation);
 
     /**
      * @brief
-     * @see rpiDiffeomorphicDemonsProcess
+     * @see rpiDiffeomorphicDemons
      * @param useHistogramMatching
     */
     void setUseHistogramMatching(bool useHistogramMatching);
