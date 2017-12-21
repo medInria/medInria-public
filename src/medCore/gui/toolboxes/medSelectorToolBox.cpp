@@ -166,9 +166,11 @@ medComboBox* medSelectorToolBox::comboBox()
 void medSelectorToolBox::onInputSelected(medAbstractData *data)
 {
     d->inputData = data;
+    emit inputChanged();
 }
 
 void medSelectorToolBox::clear()
 {
     d->inputData = NULL;
+    emit inputChanged();
 }
