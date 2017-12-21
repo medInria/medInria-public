@@ -49,7 +49,9 @@ public:
 
     QUuid makePersistent(medAbstractData* data);
 
+    QString getMetaData(const medDataIndex& index, const QString& key);
     bool setMetadata(const medDataIndex& index, const QString& key, const QString& value);
+
     void removeData(const medDataIndex& index);
 
     QPixmap thumbnail(const medDataIndex& index);

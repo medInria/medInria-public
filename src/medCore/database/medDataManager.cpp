@@ -379,6 +379,13 @@ QUuid medDataManager::makePersistent(medAbstractData* data)
     return jobUuid;
 }
 
+QString medDataManager::getMetaData(const medDataIndex& index, const QString& key)
+{
+    Q_D(medDataManager);
+    medAbstractDbController* dbc = d->controllerForDataSource(index.dataSourceId());
+
+    return dbc->metaData(index, key);
+}
 
 bool medDataManager::setMetadata(const medDataIndex& index, const QString& key, const QString& value)
 {
