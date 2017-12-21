@@ -1,3 +1,10 @@
+MUSIC v2.1.0:
+- Fix pipeline export to other computer
+- Morphological kernel maximum value updated
+- Debug import of RGB DICOMs files
+- MUSIC-private toolboxes added on Linux and Mac binaries
+- Polygon ROI several debug
+
 MUSIC v2.0.0:
 - Python pipelines
 - MAIN files in XML
