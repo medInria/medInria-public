@@ -384,7 +384,14 @@ QString medDataManager::getMetaData(const medDataIndex& index, const QString& ke
     Q_D(medDataManager);
     medAbstractDbController* dbc = d->controllerForDataSource(index.dataSourceId());
 
-    return dbc->metaData(index, key);
+    if (dbc != NULL)
+    {
+        return dbc->metaData(index, key);
+    }
+    else
+    {
+        return QString();
+    }
 }
 
 bool medDataManager::setMetadata(const medDataIndex& index, const QString& key, const QString& value)
@@ -392,7 +399,8 @@ bool medDataManager::setMetadata(const medDataIndex& index, const QString& key, 
     Q_D(medDataManager);
     medAbstractDbController * dbc = d->controllerForDataSource( index.dataSourceId() );
 
-    if(dbc->setMetaData( index, key, value )) {
+    if((dbc != NULL) && (dbc->setMetaData(index, key, value)))
+    {
         emit metadataModified(index, key, value);
         return true;
     }
