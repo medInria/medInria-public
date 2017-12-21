@@ -745,7 +745,7 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
         itkExceptionMacro("Jpeg2000 encoding not supported yet.");
     }
 
-    size_t length = pixelCount;
+    size_t length = pixelCount * GetNumberOfComponents();
     switch( this->GetComponentType() ) {
         case CHAR:
             length *= sizeof(char);
