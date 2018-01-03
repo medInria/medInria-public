@@ -101,12 +101,14 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   ITKIOBioRad
   ITKIOBMP
+  ITKIOBruker
   ITKIOGDCM
   ITKIOGIPL
   ITKIOHDF5
   ITKIOJPEG
   ITKIOLSM
   ITKIOMeta
+  ITKIOMINC
   ITKIOMRC
   ITKIONIFTI
   ITKIONRRD
@@ -134,4 +136,3 @@ set_plugin_install_rules_legacy(${TARGET_NAME})
 if(MEDINRIA_BUILD_TESTS)
   #add_subdirectory(tests) #TODO : need some specific data, which ones ?
 endif()
-

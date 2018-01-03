@@ -117,12 +117,14 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   ITKIOImageBase
   ITKIOBMP
+  ITKIOBruker
   ITKIOLSM
   ITKIOJPEG
   ITKIOPNG
   ITKIOVTK
   ITKIOGDCM
   ITKIOGE
+  ITKIOMINC
   ITKNrrdIO
   ITKIONRRD
   ITKIOMeta
@@ -154,4 +156,3 @@ set_plugin_install_rules_legacy(${TARGET_NAME})
 if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
-

@@ -73,6 +73,7 @@ target_link_libraries(${TARGET_NAME}
   ITKCommon
   ITKIOImageBase
   ITKIOBMP
+  ITKIOBruker
   ITKIOLSM
   ITKIOJPEG
   ITKIOGE
@@ -82,6 +83,7 @@ target_link_libraries(${TARGET_NAME}
   ITKNrrdIO
   ITKIONRRD
   ITKIOMeta
+  ITKIOMINC
   ITKIONIFTI
   ITKIOGIPL
   ITKIOHDF5

@@ -101,6 +101,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   ITKIOBMP
   ITKIOBioRad
+  ITKIOBruker
   ITKIOGDCM
   ITKIOGIPL
   ITKIOHDF5
@@ -108,6 +109,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOLSM
   ITKIOMRC
   ITKIOMeta
+  ITKIOMINC
   ITKIONIFTI
   ITKIONRRD
   ITKIOPNG

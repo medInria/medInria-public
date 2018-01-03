@@ -135,12 +135,14 @@ target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   ITKIOImageBase
   ITKIOBMP
+  ITKIOBruker
   ITKIOLSM
   ITKIOJPEG
   ITKIOPNG
   ITKIOVTK
   ITKIOGDCM
   ITKIOGE
+  ITKIOMINC
   ITKNrrdIO
   ITKIONRRD
   ITKIOMeta
