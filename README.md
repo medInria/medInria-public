@@ -4,11 +4,14 @@ is a medical image visualisation and processing tool developed at Inria by the t
 
 ### Deploying
 
-In order to ease medInria compilation, a super-build project based on CMake retrieves and compiles all the necessary dependencies as well as medInria.
-You can retrieve it on github: 
-- https://github.com/medInria/medinria-superproject
+In order to ease compilation, medInria is a super-build project, based on CMake, which retrieves and compiles all the necessary dependencies as well as medInria. To compile everything, you just need these steps:
 
-For more informations, please see :
+1. Install CMake (version 3.2 required)
+2. Run CMake, configure and generate.
+3. Compile
+4. Go for a coffee, it will take a while. 
+
+For more informations, please see (outdated, soon to be updated):
 - https://github.com/medInria/medinria-superproject/wiki/Compiling-medInria.
 
 ### Contributing changes
