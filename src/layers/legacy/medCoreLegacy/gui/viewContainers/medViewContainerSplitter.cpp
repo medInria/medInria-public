@@ -21,6 +21,8 @@
 #include <medDataManager.h>
 #include <medViewContainer.h>
 
+#include <medRootContainer.h>
+
 medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 {
     this->setOrientation(Qt::Horizontal);
@@ -31,16 +33,9 @@ medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 
 medViewContainerSplitter::~medViewContainerSplitter()
 {
-
-    emit aboutTobedestroyed();
-
-    // Trick to 'inform' a parented splitter
-    // "you're not my dad anymore!"
-    // There is no  'takeItem()' or 'removeWidget()' or wathever methode to remove a widget from a QSplitter.
-    // this is used to remove the ownership of the container, If the parent splitter end up with no child it will be deleted.
-    // see medViewContainerSplitter::~medViewContainerSplitter() and medViewContainerSplitter::checkIfStillDeserveToLive()
-
-    this->setParent(NULL);
+#ifdef _DEBUG
+    std::cout << "~medViewContainerSplitter\n";
+#endif // _DEBUG
 }
 
 medViewContainer * medViewContainerSplitter::splitHorizontally(medViewContainer *sender)
@@ -141,23 +136,62 @@ void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag align
 }
 
 /**
- * @brief checkIfStillDeserveToLive
+ * @brief checkIfStillDeserveToLiveSpliter
  * Check the number of child widget and call the destructor if there is no one.
  */
-void medViewContainerSplitter::checkIfStillDeserveToLive()
+void medViewContainerSplitter::checkIfStillDeserveToLiveSpliter()
 {
-    if(this->count() == 0)
-        delete this;
+    QObject *poTmp = nullptr;
+    medViewContainerSplitter *poSplitterParent = nullptr;
+    medRootContainer *poTabRootContainerParent = nullptr;
+    switch (this->count())
+    {
+        case 0:
+        {
+            this->setParent(nullptr);
+            close();
+            deleteLater();
+            break;
+        }
+        case 1 :
+        {
+            poTmp = this->widget(0);
+            medViewContainerSplitter* poSplitterSon = dynamic_cast<medViewContainerSplitter*>(poTmp);
+            if (poSplitterSon)
+            {
+                poTmp = parent();
+                this->setParent(nullptr);
+                poSplitterParent = dynamic_cast<medViewContainerSplitter*>(poTmp);
+                if (poSplitterParent) //The parent is an other splitter
+                {
+                    poSplitterParent->addWidget(poSplitterSon);
+                    close();
+                    deleteLater();
+                }
+                else
+                {
+                    poTabRootContainerParent = dynamic_cast<medRootContainer*>(poTmp);
+                    if (poTabRootContainerParent) //The parent is the main medTabbedViewContainers
+                    {
+                        poTabRootContainerParent->replaceSplitter(poSplitterSon);
+                        close();
+                        deleteLater();
+                    }
+                }
+            }
+            break;
+        }
+    default:
+        break;
+    }
 }
 
 void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *container)
 {
     connect(container, SIGNAL(hSplitRequest()), this, SLOT(splitHorizontally()));
     connect(container, SIGNAL(vSplitRequest()), this, SLOT(splitVertically()));
-    connect(container, SIGNAL(splitRequest(medDataIndex, Qt::AlignmentFlag)),
-            this, SLOT(split(medDataIndex, Qt::AlignmentFlag)));
-    connect(container, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
-    connect(container, SIGNAL(destroyed()), this, SIGNAL(containerRemoved()));
+    connect(container, SIGNAL(splitRequest(medDataIndex, Qt::AlignmentFlag)), this, SLOT(split(medDataIndex, Qt::AlignmentFlag)));
+    connect(container, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLiveSpliter()));
     container->setContainerParent(this);
 
     emit newContainer(container->uuid());
@@ -191,10 +225,7 @@ void medViewContainerSplitter::recomputeSizes(int requestIndex, int newIndex, in
     this->setSizes(newSizes);
 }
 
-void medViewContainerSplitter::insertNestedSplitter(int index,
-                                                 medViewContainer *oldContainer,
-                                                 medViewContainer *newContainer,
-                                                 bool inverseOrderInSplitter)
+void medViewContainerSplitter::insertNestedSplitter(int index, medViewContainer *oldContainer, medViewContainer *newContainer, bool inverseOrderInSplitter)
 {
     Qt::Orientation ori = Qt::Vertical;
     if(this->orientation() == Qt::Vertical)
@@ -206,8 +237,7 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
     splitter->setOrientation(ori);
 
     connect(splitter, SIGNAL(newContainer(QUuid)), this, SIGNAL(newContainer(QUuid)));
-    connect(splitter, SIGNAL(containerRemoved()), this, SIGNAL(containerRemoved()));
-    connect(splitter, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
+    connect(splitter, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLiveSpliter()));
 
     if(inverseOrderInSplitter)
     {
@@ -228,7 +258,7 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
     this->setCollapsible(index, false);
     this->setSizes(savedSizes);
 
-    // resize nested container because QVtkWidget2 is automaticlly resize to fit the its view
+    // resize nested container because QVtkWidget2 is automatically resize to fit the its view
     // (given the fixed width/height of the splitter) when it is added to the splitter.
     int newSize = 0;
     if(splitter->orientation() == Qt::Vertical)

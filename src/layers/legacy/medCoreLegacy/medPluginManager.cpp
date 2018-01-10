@@ -149,7 +149,6 @@ medPluginManager::medPluginManager(void) : dtkPluginManager(), d(new medPluginMa
 medPluginManager::~medPluginManager(void)
 {
     delete d;
-
     d = NULL;
 }
 

@@ -49,8 +49,7 @@ medJobManager::~medJobManager()
     // just in case some unparented job are still living.
     for(medAbstractJob* job : d->jobs)
     {
-        dtkDebug() << "Orphan job still living at the end of the app detected:"
-                 << job->caption() << job;
+        job->cancel();
         job->deleteLater();
     }
 }
@@ -68,12 +67,6 @@ void medJobManager::unregisterJob(medAbstractJob *job)
 QList<medAbstractJob *> medJobManager::jobs() const
 {
     return d->jobs;
-}
-
-void medJobManager::cancelAll()
-{
-    for(medAbstractJob *job : d->jobs)
-        job->cancel();
 }
 
 void medJobManager::startJobInThread(medAbstractJob *job)

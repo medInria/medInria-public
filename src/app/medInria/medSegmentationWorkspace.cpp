@@ -79,9 +79,10 @@ medAbstractWorkspaceLegacy(parent), d(new medSegmentationWorkspacePrivate)
 void medSegmentationWorkspace::setupTabbedViewContainer()
 {
     if (!tabbedViewContainers()->count()) {
-        this->tabbedViewContainers()->addContainerInTab(this->name());
+        this->tabbedViewContainers()->addContainerInTabNamed(this->name());
     }
     this->tabbedViewContainers()->unlockTabs();
+    this->tabbedViewContainers()->setKeepLeastOne(true);
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)

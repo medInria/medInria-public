@@ -83,7 +83,7 @@ void medRegistrationWorkspace::setupTabbedViewContainer()
     //the stack has been instantiated in constructor
     if (!this->tabbedViewContainers()->count())
     {
-        d->fixedContainer = this->tabbedViewContainers()->addContainerInTab(tr("Compare"));
+        d->fixedContainer = this->tabbedViewContainers()->addContainerInTabNamed(tr("Compare"));
         QLabel *fixedLabel = new QLabel(tr("FIXED"));
         fixedLabel->setAlignment(Qt::AlignCenter);
         d->fixedContainer->setDefaultWidget(fixedLabel);
@@ -100,7 +100,7 @@ void medRegistrationWorkspace::setupTabbedViewContainer()
         d->movingContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
 
 
-        d->fuseContainer = this->tabbedViewContainers()->addContainerInTab(tr("Fuse"));
+        d->fuseContainer = this->tabbedViewContainers()->addContainerInTabNamed(tr("Fuse"));
         QLabel *fuseLabel = new QLabel(tr("FUSE"));
         fuseLabel->setAlignment(Qt::AlignCenter);
         d->fuseContainer->setDefaultWidget(fuseLabel);

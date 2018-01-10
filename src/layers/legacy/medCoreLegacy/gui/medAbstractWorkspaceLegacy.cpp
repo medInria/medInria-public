@@ -193,7 +193,7 @@ void medAbstractWorkspaceLegacy::clearWorkspaceToolBoxes()
 void medAbstractWorkspaceLegacy::addNewTab()
 {
     QString tabName = QString("%1 %2").arg(this->name()).arg(d->viewContainerStack->count());
-    d->viewContainerStack->addContainerInTab(tabName);
+    d->viewContainerStack->addContainerInTabNamed(tabName);
 }
 
 void medAbstractWorkspaceLegacy::updateNavigatorsToolBox()

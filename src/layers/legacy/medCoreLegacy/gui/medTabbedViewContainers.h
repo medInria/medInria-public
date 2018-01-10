@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtGui>
 #include <QUuid>
@@ -28,9 +27,8 @@ class medAbstractWorkspaceLegacy;
 class medTabbedViewContainersPrivate;
 
 /**
- * @brief A QStackedWidget that contains medViewContainers.
+ * @brief A QTabWidget that contains medViewContainers.
  * There is one such stack per medViewWorkspace.
- *
 */
 class MEDCORELEGACY_EXPORT medTabbedViewContainers : public QTabWidget
 {
@@ -43,39 +41,40 @@ public:
     void lockTabs();
     void unlockTabs();
     void hideTabBar();
-    QList<QUuid> containersSelected();
     void adjustContainersSize();
+    QList<QUuid> containersSelected();
     QList<medAbstractView*> viewsInTab(int index = 0);
     QList<medViewContainer*> containersInTab(int index = 0);
-
-    medAbstractWorkspaceLegacy * owningWorkspace() const;
-
-public slots:
-    medViewContainer* addContainerInTab();
-    medViewContainer* addContainerInTab(const QString &name);
-    medViewContainer* insertContainerInTab(int index, const QString &name);
+    void setKeepLeastOne(bool pi_bVal);
     // TODO mutualize all of this
     void setSplitter(int index, medViewContainerSplitter* splitter);
 
+public slots:
+    medViewContainer* addContainerInTabUnNamed();
+    medViewContainer* addContainerInTabNamed(const QString &name);
+    medViewContainer* insertNewTab(int index, const QString &name);
     void closeCurrentTab();
     void closeTab(int index);
 
 protected:
 
+private slots :
+    // Not sure of the name - RDE
+    //void resetTabState();
+    //void closeCurrentTab();
+    void tabBarDoubleClickedHandler(int  index);
 
-private slots:
-    void disconnectTabFromSplitter(int index);
-    void repopulateCurrentTab();
     void addContainerToSelection(QUuid container);
     void removeContainerFromSelection(QUuid container);
-    void connectContainer(QUuid container);
     void buildTemporaryPool();
+
+    void disconnectTabFromSplitter(int index);
+    void connectContainer(QUuid container);
     void connectContainerSelectedForCurrentTab();
     void minimizeOtherContainers(QUuid containerMaximized, bool maximized);
-    void minimizeSplitterContainers(QUuid containerMaximized, bool maximized,
-                                                             medViewContainerSplitter *splitter);
-    // Not sure of the name - RDE
-    void resetTabState();
+
+private:
+    void minimizeSplitterContainers(QUuid containerMaximized, bool maximized, medViewContainerSplitter *splitter);
 
 signals:
     void containersSelectedChanged();
@@ -83,5 +82,3 @@ signals:
 private:
     medTabbedViewContainersPrivate *d;
 };
-
-

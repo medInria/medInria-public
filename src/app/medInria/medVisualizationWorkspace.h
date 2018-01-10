@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,14 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtCore>
 
 #include <medAbstractWorkspaceLegacy.h>
-
-
-class medVisualizationWorkspacePrivate;
 
 class medVisualizationWorkspace : public medAbstractWorkspaceLegacy
 {
@@ -33,9 +29,6 @@ public:
     virtual void setupTabbedViewContainer();
 
     static bool isUsable();
-
-private:
-    medVisualizationWorkspacePrivate *d;
 };
 
 

@@ -90,7 +90,7 @@ void medDiffusionWorkspace::setupTabbedViewContainer()
     //the stack has been instantiated in constructor
     if ( ! this->tabbedViewContainers()->count())
     {
-        d->diffusionContainer = this->tabbedViewContainers()->addContainerInTab(this->name());
+        d->diffusionContainer = this->tabbedViewContainers()->addContainerInTabNamed(this->name());
 
         d->diffusionContainer->setClosingMode(medViewContainer::CLOSE_CONTAINER);
         d->diffusionContainer->setUserSplittable(false);
@@ -99,6 +99,7 @@ void medDiffusionWorkspace::setupTabbedViewContainer()
         connect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
         connect(this->tabbedViewContainers(),SIGNAL(containersSelectedChanged()),this,SLOT(changeCurrentContainer()));
     }
+    this->tabbedViewContainers()->setKeepLeastOne(true);
 }
 
 void medDiffusionWorkspace::getEstimationOutput(medAbstractJob::medJobExitStatus status)
