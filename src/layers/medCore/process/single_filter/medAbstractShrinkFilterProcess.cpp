@@ -30,8 +30,16 @@ medAbstractShrinkFilterProcess::medAbstractShrinkFilterProcess(QObject *parent):
     d(new medAbstractShrinkFilterProcessPrivate)
 {
     d->shrinkFactor1 = new medIntParameter("shrinkFactor1", this);
+    d->shrinkFactor1->setCaption("Shrink factor X");
+    d->shrinkFactor1->setDescription("Shrink factor on X axis");
+
     d->shrinkFactor2 = new medIntParameter("shrinkFactor2", this);
+    d->shrinkFactor2->setCaption("Shrink factor Y");
+    d->shrinkFactor2->setDescription("Shrink factor on Y axis");
+
     d->shrinkFactor3 = new medIntParameter("shrinkFactor3", this);
+    d->shrinkFactor3->setCaption("Shrink factor Z");
+    d->shrinkFactor3->setDescription("Shrink factor on Z axis");
 }
 
 medAbstractShrinkFilterProcess::~medAbstractShrinkFilterProcess()

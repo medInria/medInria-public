@@ -16,6 +16,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QProgressBar>
 
@@ -54,10 +55,13 @@ QWidget *medAbstractShrinkFilterProcessPresenter::buildToolBoxWidget()
 {
     QWidget* tbWidget = medAbstractSingleFilterOperationProcessPresenter::buildToolBoxWidget();
 
-    tbWidget->layout()->addWidget(d->shrinkFactor1->buildWidget());
-    tbWidget->layout()->addWidget(d->shrinkFactor2->buildWidget());
-    tbWidget->layout()->addWidget(d->shrinkFactor3->buildWidget());
+    QFormLayout *additionalLayout = new QFormLayout;
+    QVBoxLayout *tbLayout = qobject_cast <QVBoxLayout *> (tbWidget->layout());
+    tbLayout->addLayout(additionalLayout);
 
+    additionalLayout->addRow(d->shrinkFactor1->parameter()->caption(), d->shrinkFactor1->buildWidget());
+    additionalLayout->addRow(d->shrinkFactor2->parameter()->caption(), d->shrinkFactor2->buildWidget());
+    additionalLayout->addRow(d->shrinkFactor3->parameter()->caption(), d->shrinkFactor3->buildWidget());
 
     return tbWidget;
 }

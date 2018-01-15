@@ -16,6 +16,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QProgressBar>
 
@@ -55,11 +56,14 @@ QWidget *medAbstractWindowingFilterProcessPresenter::buildToolBoxWidget()
 {
     QWidget* tbWidget = medAbstractSingleFilterOperationProcessPresenter::buildToolBoxWidget();
 
-    tbWidget->layout()->addWidget(d->minimumIntensityValue->buildWidget());
-    tbWidget->layout()->addWidget(d->maximumIntensityValue->buildWidget());
-    tbWidget->layout()->addWidget(d->minimumOutputIntensityValue->buildWidget());
-    tbWidget->layout()->addWidget(d->maximumOutputIntensityValue->buildWidget());
+    QFormLayout *additionalLayout = new QFormLayout;
+    QVBoxLayout *tbLayout = qobject_cast <QVBoxLayout *> (tbWidget->layout());
+    tbLayout->addLayout(additionalLayout);
 
+    additionalLayout->addRow(d->minimumIntensityValue->parameter()->caption(),d->minimumIntensityValue->buildWidget());
+    additionalLayout->addRow(d->maximumIntensityValue->parameter()->caption(),d->maximumIntensityValue->buildWidget());
+    additionalLayout->addRow(d->minimumOutputIntensityValue->parameter()->caption(),d->minimumOutputIntensityValue->buildWidget());
+    additionalLayout->addRow(d->maximumOutputIntensityValue->parameter()->caption(),d->maximumOutputIntensityValue->buildWidget());
 
     return tbWidget;
 }

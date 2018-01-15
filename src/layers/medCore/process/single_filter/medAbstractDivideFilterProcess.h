@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medAbstractDivideFilterProcess: public medAbstractSingleFil
 {
     Q_OBJECT
 public:
-    medAbstractDivideFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
+    medAbstractDivideFilterProcess(QObject *parent);
 
 protected:
     virtual QString outputNameAddon() const {return "divide constant";}
