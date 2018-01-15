@@ -78,7 +78,7 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent) : QObjec
 {
     d->parent = parent;
 
-    d->selectionToolBox = new medToolBox;
+    d->selectionToolBox = new medToolBox(parent);
     d->selectionToolBox->setTitle("Selection");
     d->selectionToolBox->header()->hide();
     d->selectionToolBox->hide();
@@ -134,11 +134,13 @@ medAbstractWorkspaceLegacy::~medAbstractWorkspaceLegacy(void)
 void medAbstractWorkspaceLegacy::addToolBox(medToolBox *toolbox)
 {
     d->toolBoxes.append(toolbox);
+    d->selectionToolBox->addWidget(toolbox);
 }
 
 void medAbstractWorkspaceLegacy::removeToolBox(medToolBox *toolbox)
 {
     d->toolBoxes.removeOne(toolbox);
+    d->selectionToolBox->removeWidget(toolbox);
 }
 
 QList<medToolBox*> medAbstractWorkspaceLegacy::toolBoxes() const
