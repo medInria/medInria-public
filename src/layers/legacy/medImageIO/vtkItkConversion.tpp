@@ -170,7 +170,7 @@ bool vtkItkConversion<volumeType, imageDim>::volumeExtraction()
     if (m_uiNbVolume > 0)
     {
         double dTimeResolution = m_ItkInputImage4D->GetSpacing()[3];
-        m_fTotalTime = dTimeResolution * m_uiNbVolume;
+        m_fTotalTime = dTimeResolution * (m_uiNbVolume-1);
         m_oVolumeVectorFrom4D.resize(m_uiNbVolume);
 
         for (unsigned int n = 0; (n < m_uiNbVolume) && bRes; n++)
@@ -231,6 +231,7 @@ bool vtkItkConversion<volumeType, imageDim>::setTimeIndex(unsigned int pi_uiTime
         {
             m_ItkInputImage = m_oVolumeVectorFrom4D[pi_uiTimeIndex];
             conversion();
+            m_uiCurrentTimeIndex = pi_uiTimeIndex;
         }
         else
         {
@@ -297,6 +298,7 @@ double * vtkItkConversion<volumeType, imageDim>::getCurrentScalarRange()
 {
     double *dResScalarRange = nullptr;
     double scalarRangeTmp[2];
+    unsigned int uiPreviousTimeIndex = m_uiCurrentTimeIndex;
 
     if (m_ItkInputImage.IsNotNull() || m_ItkInputImage4D.IsNotNull())
     {
@@ -312,6 +314,8 @@ double * vtkItkConversion<volumeType, imageDim>::getCurrentScalarRange()
             if (dResScalarRange[1] < scalarRangeTmp[1]) dResScalarRange[1] = scalarRangeTmp[1];
         }
     }
+
+    setTimeIndex(uiPreviousTimeIndex);
 
     return dResScalarRange;
 }

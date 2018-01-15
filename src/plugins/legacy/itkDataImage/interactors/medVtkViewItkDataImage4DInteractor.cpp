@@ -111,10 +111,10 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
         if (SetViewInput(data, layer) )
         {
             d->imageData->addMetaData("SequenceDuration", QString::number(m_poConv->getTotalTime()));
-            d->imageData->addMetaData("SequenceFrameRate", QString::number((double)m_poConv->getNumberOfVolumes() / (double)m_poConv->getTotalTime()));
+            d->imageData->addMetaData("SequenceFrameRate", QString::number((double)(m_poConv->getNumberOfVolumes() -1 )/ (double)m_poConv->getTotalTime()));
 
             dtkDebug() << "SequenceDuration" << m_poConv->getTotalTime();
-            dtkDebug() << "SequenceFrameRate" <<(double)m_poConv->getNumberOfVolumes() / m_poConv->getTotalTime();
+            dtkDebug() << "SequenceFrameRate" <<(double)(m_poConv->getNumberOfVolumes() -1)/ m_poConv->getTotalTime();
 
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
@@ -212,6 +212,6 @@ void medVtkViewItkDataImage4DInteractor::setCurrentTime(double time)
 {
     if (m_poConv->getTimeIndex() * m_poConv->getTotalTime() / m_poConv->getNumberOfVolumes() != time)
     {
-        m_poConv->setTimeIndex(static_cast<unsigned int>(round(time * m_poConv->getNumberOfVolumes() / m_poConv->getTotalTime())) - 1);
+        m_poConv->setTimeIndex( static_cast<unsigned int>(round(time * (m_poConv->getNumberOfVolumes()-1) / m_poConv->getTotalTime())) );
     }    
 }
