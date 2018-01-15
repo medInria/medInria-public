@@ -294,6 +294,11 @@ void vtkAxes2DWidget::ComputeLyingPoints(double *pos)
     this->Points->SetPoint (3, p3);
 
     this->Source->Modified();
+    this->Modified();
+    this->Points->Modified();
+    this->Mapper->Modified();
+    this->Actor->Modified();
+    this->Renderer->Modified();
 }
 
 //----------------------------------------------------------------------------------
@@ -302,6 +307,11 @@ void vtkAxes2DWidget::PrintSelf(ostream& os, vtkIndent indent)
     //Superclass typedef defined in vtkTypeMacro() found in vtkSetGet.h
     this->Superclass::PrintSelf(os, indent);
 }
+
+
+
+
+
 
 //----------------------------------------------------------------------------------
 void vtkAxes2DWidgetCommand::Execute(vtkObject *caller, unsigned long event, void *callData)

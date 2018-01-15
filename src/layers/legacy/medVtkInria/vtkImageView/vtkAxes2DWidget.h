@@ -109,10 +109,8 @@ class MEDVTKINRIA_EXPORT vtkAxes2DWidgetCommand : public vtkCommand
   // was invoked (e.g., progress value in the vtkCommand::ProgressEvent).
   virtual void Execute(vtkObject *caller,unsigned long event, void *vtkNotUsed(callData));
 
-  void SetWidget (vtkAxes2DWidget* w)
-  { this->Widget = w; }
-  vtkAxes2DWidget* GetWidget()
-  { return this->Widget; }
+  void SetWidget (vtkAxes2DWidget* w)  { this->Widget = w; }
+  vtkAxes2DWidget* GetWidget()  { return this->Widget; }
   
  protected:
 
