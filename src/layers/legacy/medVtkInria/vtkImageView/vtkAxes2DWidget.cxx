@@ -293,12 +293,7 @@ void vtkAxes2DWidget::ComputeLyingPoints(double *pos)
     this->Points->SetPoint (2, p2);
     this->Points->SetPoint (3, p3);
 
-    this->Source->Modified();
-    this->Modified();
     this->Points->Modified();
-    this->Mapper->Modified();
-    this->Actor->Modified();
-    this->Renderer->Modified();
 }
 
 //----------------------------------------------------------------------------------
