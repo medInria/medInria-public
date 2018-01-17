@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -23,17 +23,18 @@ int retrieveGenericWorkSpace(QList<medWorkspaceFactory::Details*> pi_oListOfWork
 
 class medStartupSettingsWidgetPrivate
 {
-
 public:
-  int m_iGenericWorkspaceIndex;
-  QWidget* parent;
-  QCheckBox* startInFullScreen;
-  QCheckBox* genericWorkspaceEnabled;
-  QComboBox* defaultStartingArea;
+    int m_iGenericWorkspaceIndex;
+    QWidget *parent;
+    QCheckBox *startInFullScreen;
+    QCheckBox *genericWorkspaceEnabled;
+    QComboBox *defaultStartingArea;
 
-  medStartupSettingsWidgetPrivate();
-  ~medStartupSettingsWidgetPrivate();
+    medStartupSettingsWidgetPrivate();
+    ~medStartupSettingsWidgetPrivate();
 };
+
+
 
 medStartupSettingsWidgetPrivate::medStartupSettingsWidgetPrivate()
 {
@@ -42,7 +43,6 @@ medStartupSettingsWidgetPrivate::medStartupSettingsWidgetPrivate()
 medStartupSettingsWidgetPrivate::~medStartupSettingsWidgetPrivate()
 {
 }
-
 
 medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSettingsWidget(parent), d(new medStartupSettingsWidgetPrivate())
 {
@@ -56,17 +56,17 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSetting
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
 
     d->m_iGenericWorkspaceIndex = retrieveGenericWorkSpace(workspaceDetails);
-    d->m_iGenericWorkspaceIndex = d->m_iGenericWorkspaceIndex==-1?-1: d->m_iGenericWorkspaceIndex+3;
+    d->m_iGenericWorkspaceIndex = d->m_iGenericWorkspaceIndex==-1 ? -1 : d->m_iGenericWorkspaceIndex+3;
 
     d->defaultStartingArea = new QComboBox(this);
     d->defaultStartingArea->addItem(tr("Homepage"));
     d->defaultStartingArea->addItem(tr("Browser"));
     d->defaultStartingArea->addItem(tr("Composer"));
     foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
-        d->defaultStartingArea->addItem(detail->name);
-    QFormLayout* layout = new QFormLayout;
-    layout->addRow(tr("Fullscreen"),d->startInFullScreen);
-    layout->addRow(tr("Generic workspace enabled"),d->genericWorkspaceEnabled);
+    d->defaultStartingArea->addItem(detail->name);
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("Fullscreen"), d->startInFullScreen);
+    layout->addRow(tr("Generic workspace enabled"), d->genericWorkspaceEnabled);
     layout->addRow(tr("Starting area"), d->defaultStartingArea);
     this->setLayout(layout);
 }
@@ -84,7 +84,7 @@ bool medStartupSettingsWidget::validate()
 
 void medStartupSettingsWidget::read()
 {
-    medSettingsManager * mnger = medSettingsManager::instance();
+    medSettingsManager *mnger = medSettingsManager::instance();
     d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
     d->genericWorkspaceEnabled->setChecked(mnger->value("startup", "genericWorkspace", false).toBool());
     //if nothing is configured then Browser is the default area
@@ -101,7 +101,7 @@ void medStartupSettingsWidget::read()
     if (bFind)
     {
         d->defaultStartingArea->setCurrentIndex(i);
-    } 
+    }
     else
     {
         d->defaultStartingArea->setCurrentIndex(0);
@@ -112,16 +112,13 @@ void medStartupSettingsWidget::read()
 
 bool medStartupSettingsWidget::write()
 {
-    medSettingsManager * mnger = medSettingsManager::instance();
-    mnger->setValue("startup","fullscreen", d->startInFullScreen->isChecked());
-    mnger->setValue("startup","default_starting_area", d->defaultStartingArea->currentText());
+    medSettingsManager *mnger = medSettingsManager::instance();
+    mnger->setValue("startup", "fullscreen", d->startInFullScreen->isChecked());
+    mnger->setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
     mnger->setValue("startup", "genericWorkspace", d->genericWorkspaceEnabled->isChecked());
 
     return true;
 }
-
-
-
 
 void medStartupSettingsWidget::genericWorkspaceState(int pi_iState)
 {
@@ -134,7 +131,7 @@ void medStartupSettingsWidget::genericWorkspaceState(int pi_iState)
                 d->defaultStartingArea->setCurrentIndex(0);
             }
             d->defaultStartingArea->removeItem(d->m_iGenericWorkspaceIndex);
-        } 
+        }
         else
         {
             d->defaultStartingArea->insertItem(d->m_iGenericWorkspaceIndex, "Generic");
@@ -142,13 +139,12 @@ void medStartupSettingsWidget::genericWorkspaceState(int pi_iState)
     }
 }
 
-
 int retrieveGenericWorkSpace(QList<medWorkspaceFactory::Details*> pi_oListOfWorkspaceDetails)
 {
     int iRes = -1;
 
     bool bMatch = false;
-    medWorkspaceFactory::Details* poDetail = nullptr;
+    medWorkspaceFactory::Details *poDetail = nullptr;
     for (int i = 0; i < pi_oListOfWorkspaceDetails.size() && !bMatch; ++i)
     {
         poDetail = pi_oListOfWorkspaceDetails[i];

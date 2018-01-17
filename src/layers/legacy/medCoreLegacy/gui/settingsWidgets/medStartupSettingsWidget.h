@@ -23,10 +23,10 @@ class medStartupSettingsWidgetPrivate;
 class MEDCORELEGACY_EXPORT medStartupSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
-    MED_SETTINGS_INTERFACE("Start Up","Startup settings")
+    MED_SETTINGS_INTERFACE("Start Up", "Startup settings")
 
-public:
-    medStartupSettingsWidget(QWidget *parent = 0);
+public :
+        medStartupSettingsWidget(QWidget *parent = 0);
 
 signals:
 
@@ -40,7 +40,9 @@ protected:
 private:
     medStartupSettingsWidgetPrivate *d;
 
-private slots :
+private slots:
     void genericWorkspaceState(int pi_iState);
-
 };
+
+
+
