@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2017. All rights reserved.
+ Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -21,15 +21,41 @@
     Qt::Key OSIndependentControlKey = Qt::Key_Control;
 #endif
 
+int retrieveDefaultWorkSpace()
+{
+    int iRes = 0;
+
+    bool bMatch = false;
+    medWorkspaceFactory::Details* poDetail = nullptr;
+    QList<medWorkspaceFactory::Details*> oListOfWorkspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
+    QVariant oStartupWorkspace = medSettingsManager::instance()->value("startup", "default_starting_area");
+    if (oStartupWorkspace.toString() == "Homepage") iRes = 0;
+    else if (oStartupWorkspace.toString() == "Browser") iRes = 1;
+    else if (oStartupWorkspace.toString() == "Composer") iRes = 2;
+    else
+    {
+        for (int i = 0; i < oListOfWorkspaceDetails.size() && !bMatch; ++i)
+        {
+            poDetail = oListOfWorkspaceDetails[i];
+            bMatch = poDetail->name == oStartupWorkspace.toString();
+            if (bMatch)
+            {
+                iRes = i+3;
+            }
+        }
+    }
+
+
+    return iRes;
+}
 
 /**
  * Constructor, parameter vertical chooses if the layout will be vertical (bottom left menu) or horizontal (alt-tab like menu)
  */
-medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::WindowFlags f ) : QWidget ( parent, f )
+medQuickAccessMenu::medQuickAccessMenu(bool vertical, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
-    QVariant startupWorkspace = medSettingsManager::instance()->value("startup","default_starting_area");
+    currentSelected = retrieveDefaultWorkSpace();
 
-    currentSelected = startupWorkspace.toInt();
     if (vertical)
         this->createVerticalQuickAccessMenu();
     else
