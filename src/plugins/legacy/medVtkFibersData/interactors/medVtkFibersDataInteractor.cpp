@@ -154,7 +154,6 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
     {
         if ((roiItr.Get() != 0)&&(!labels.contains(roiItr.Get())))
             labels.append(roiItr.Get());
-
         ++roiItr;
     }
 
@@ -485,7 +484,7 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
 
         d->view2d->SetInput(d->actor, d->view->layer(d->data));
 
-        //TODO - harmonise all of this setInput methode in vtkImageView.
+        //TODO - harmonies all of this setInput method in vtkImageView.
         d->view3d->GetRenderer()->AddActor(d->actor);
         this->updateWidgets();
     }
@@ -524,8 +523,7 @@ void medVtkFibersDataInteractor::setBoxVisibility(bool visible)
 {
     if (d->view && d->view->orientation() != medImageView::VIEW_ORIENTATION_3D)
     {
-        medMessageController::instance()->showError("View must be in 3D mode to activate the bundling box",
-                                                    3000);
+        medMessageController::instance()->showError("View must be in 3D mode to activate the bundling box", 3000);
         d->manager->SetBoxWidget(false);
         return;
     }
@@ -578,7 +576,8 @@ void medVtkFibersDataInteractor::activateGPU(bool activate)
     {
         vtkFibersManager::UseHardwareShadersOn();
         d->manager->ChangeMapperToUseHardwareShaders();
-    } else
+    } 
+    else
     {
         vtkFibersManager::UseHardwareShadersOff();
         d->manager->ChangeMapperToDefault();
@@ -637,7 +636,6 @@ void medVtkFibersDataInteractor::setBoxBooleanOperation(BooleanOperation op)
 
     d->manager->GetVOILimiter()->Modified();
     d->view->render();
-
 }
 
 void medVtkFibersDataInteractor::tagSelection()
@@ -671,7 +669,6 @@ void medVtkFibersDataInteractor::validateSelection(const QString &name, const QC
     d->manager->Reset();
 
     d->view->render();
-
 }
 
 void medVtkFibersDataInteractor::saveBundlesInDataBase()

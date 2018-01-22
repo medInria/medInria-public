@@ -48,8 +48,12 @@
 #include <stdio.h>
 
 #include "vtkFiberMapper.h"
-//using namespace bmia;
+#include "vtkFiberKeyboardCallbak.h"
+#include "vtkFibersManagerCallback.h"
+#include "vtkFiberPickerCallback.h"
 
+#include <vtkDataSetSurfaceFilter.h>
+#include <vtkPolyDataNormals.h>
 
 vtkStandardNewMacro(vtkFibersManager);
 
@@ -58,425 +62,6 @@ int vtkFibersManager::vtkUseHardwareShaders  = 0;
 int vtkFibersManager::vtkFiberRenderingStyle = 0;
 
 
-/**
-   vtkFibersManagerCallback declaration & implementation
- */
-class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFibersManagerCallback: public vtkCommand
-{
-
- public:
-  static vtkFibersManagerCallback* New()
-  { return new vtkFibersManagerCallback; }
-
-  virtual void Execute ( vtkObject *caller, unsigned long, void* );
-
-  vtkPolyData* GetOutput() const
-  { return this->FiberLimiter->GetOutput(); }
-
-  vtkLimitFibersToVOI* GetFiberLimiter() const
-  { return this->FiberLimiter; }
-  
-  vtkLimitFibersToROI* GetROIFiberLimiter() const
-  { return this->ROIFiberLimiter; }
-  
-    
- protected:
-  vtkFibersManagerCallback()
-  {
-    this->FiberLimiter    = vtkLimitFibersToVOI::New();
-    this->ROIFiberLimiter = vtkLimitFibersToROI::New();
-    this->FiberLimiter->SetInputConnection ( this->ROIFiberLimiter->GetOutputPort() );    
-  }
-  ~vtkFibersManagerCallback()
-  {
-    this->FiberLimiter->Delete();
-    this->ROIFiberLimiter->Delete();
-  }
-  
- private:
-  vtkLimitFibersToVOI* FiberLimiter;
-  vtkLimitFibersToROI* ROIFiberLimiter;
-};
-
-
-void vtkFibersManagerCallback::Execute (vtkObject *caller, unsigned long, void*)
-{
-  vtkBoxWidget *widget = vtkBoxWidget::SafeDownCast(caller);
-
-  vtkPolyData* input = (vtkPolyData*)widget->GetInput();
-  if( !input )
-  {
-    return;
-  }
-  
-  // Get the poly data defined by the vtkBoxWidget
-  vtkPolyData* myBox = vtkPolyData::New();
-  widget->GetPolyData(myBox);
-  
-  // myBox contains 15 points and points 8 to 13
-  // define the bounding box
-  double xmin, xmax, ymin, ymax, zmin, zmax;
-  double* pt = myBox->GetPoint(8);
-  xmin = pt[0];
-  pt = myBox->GetPoint(9);
-  xmax = pt[0];
-  pt = myBox->GetPoint(10);
-  ymin = pt[1];
-  pt = myBox->GetPoint(11);
-  ymax = pt[1];
-  pt = myBox->GetPoint(12);
-  zmin = pt[2];
-  pt = myBox->GetPoint(13);
-  zmax = pt[2];
-  
-  this->FiberLimiter->SetVOI (xmin, xmax, ymin, ymax, zmin, zmax);
-  this->ROIFiberLimiter->Update();
-  this->FiberLimiter->Update();
-  
-  myBox->Delete();  
-}
-
-
-
-/**
-   vtkFiberPickerCallback decalaration & implementation
-*/
-class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberPickerCallback: public vtkCommand
-{
- public:
-  static vtkFiberPickerCallback* New()
-  { return new vtkFiberPickerCallback; }
-  
-  virtual void Execute ( vtkObject*, unsigned long, void*);
-  
-  void SetInput (vtkPolyData* input)
-  { this->Input = input; }
-  
-  vtkPolyData* GetInput() const
-  { return this->Input; }
-  
-  void SetFiberImage (vtkPolyData* image)
-  { this->FiberImage = image; }
-  
-  vtkPolyData* GetFiberImage() const
-  { return this->FiberImage; }
-  
-  void SetFibersManager (vtkFibersManager* manager)
-  { this->FibersManager = manager; }
-  
-  vtkActor* GetPickedActor() const
-  { return this->PickedActor; }
-  
-  void DeletePickedCell();
-  
-  
- protected:
-  vtkFiberPickerCallback()
-  {
-    this->Input        = 0;
-    this->FiberImage   = 0;
-    this->FibersManager= 0;
-    this->PickedFiber  = vtkPolyData::New();
-    this->PickedMapper = vtkPolyDataMapper::New();
-    this->PickedActor  = vtkActor::New();
-
-    this->PickedMapper->SetInputData ( this->PickedFiber );
-    this->PickedActor->SetMapper ( this->PickedMapper );
-    this->PickedActor->GetProperty()->SetColor ( 1.0, 0.0, 0.0 );
-    this->PickedActor->GetProperty()->SetLineWidth ( 5.0 );
-    
-    this->PickedFiber->Initialize();
-    this->PickedFiber->Allocate();
-    
-    this->PickedCellId = -1;    
-  }
-  ~vtkFiberPickerCallback()
-  {
-    this->PickedFiber->Delete();
-    this->PickedMapper->Delete();
-    this->PickedActor->Delete();
-  }
-  
- private:
-  vtkPolyData*       Input;
-  vtkPolyData*       FiberImage;
-  
-  vtkPolyData*       PickedFiber;
-  vtkPolyDataMapper* PickedMapper;
-  vtkActor*          PickedActor;
-  int                PickedCellId;
-  
-  vtkFibersManager*  FibersManager;
-};
-
-
-void vtkFiberPickerCallback::Execute ( vtkObject *caller, unsigned long event, void* )
-{
-  vtkCellPicker *picker = vtkCellPicker::SafeDownCast(caller);
-  if( !picker )
-  {
-    return;
-  }
-  
-  int cellid = picker->GetCellId();
-  picker->SetPath (NULL); // to prevent a bounding box to appear
-        
-  if( cellid < 0 )
-  {
-    this->PickedCellId = -1;
-    this->PickedActor->SetVisibility (0);
-    return;
-  }
-  else
-  {
-    this->PickedCellId = cellid;
-    if( this->GetInput() )
-    {
-      vtkCellArray* lines = this->Input->GetLines();
-      if( !lines )
-      {
-        return;
-      }      
-      
-      vtkCellArray* array = vtkCellArray::New();           
-      array->InsertNextCell ( this->Input->GetCell (cellid) );
-      
-      this->PickedFiber->Initialize();
-      this->PickedFiber->SetPoints ( this->Input->GetPoints() );
-      
-      switch( this->Input->GetCellType (cellid) )
-      {
-          case VTK_POLY_LINE:
-            this->PickedFiber->SetLines (array);
-            break;
-            
-          default:
-            break;
-      }
-      
-      array->Delete();
-      
-      this->PickedMapper->SetInputData ( this->PickedFiber );
-      this->PickedActor->SetVisibility (1);
-    }
-  } 
-}
-
-void vtkFiberPickerCallback::DeletePickedCell()
-{
-  if( !this->FiberImage || !this->Input || this->PickedCellId==-1)
-  {
-    return;
-  }
-
-  vtkCell* pickedCell = this->Input->GetCell (this->PickedCellId);
-  
-  int npts       = pickedCell->GetNumberOfPoints();
-  vtkIdType* pto = pickedCell->GetPointIds()->GetPointer (0);
-
-  vtkCellArray* realLines = this->FiberImage->GetLines();
-  if( !realLines )
-  {
-    return;
-  }
-
-  vtkPoints* points = this->Input->GetPoints();
-  if( points != this->FiberImage->GetPoints() )
-  {
-    return;
-  }
-  
-  realLines->InitTraversal();
-  vtkIdType rnpts, *rpto;
-  
-  vtkIdType test = realLines->GetNextCell (rnpts, rpto);
-  int cellid = 0;
-  while ( test!=0 )
-  {
-    if( rnpts == npts )
-    {
-      int i=0;
-      for( i=0; i<npts && pto[i]==rpto[i]; )
-      {
-        i++;
-      }
-
-      if( i==npts && pto[i-1]==rpto[i-1])
-      {
-        // found and remove
-        for( int j=0; j<npts; j++)
-        {
-          rpto[j]=rpto[0]; // collapse the fiber on itself
-        }
-        
-        this->FiberImage->Modified();
-	
-        if( this->FibersManager )
-        {
-          this->FibersManager->Execute(); // force the box widget to refresh
-        }
-        
-        this->PickedActor->SetVisibility (0);
-	
-        break;
-      }
-    }
-    test = realLines->GetNextCell (rnpts, rpto);
-    cellid++;
-  }
-}
-
-
-
-/**
-   vtkFiberKeyboardCallback declaration & implementation
-*/
-class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberKeyboardCallback: public vtkCommand
-{
- public:
-  static vtkFiberKeyboardCallback* New()
-  { return new vtkFiberKeyboardCallback; }
-  
-  virtual void Execute ( vtkObject*, unsigned long, void*);
-  
-  void SetFiberPickerCallback (vtkFiberPickerCallback* callback)
-  { this->FiberPickerCallback = callback; }
-  
-  void SetFiberManager(vtkFibersManager* man)
-  { this->FibersManager = man; }
-  
- protected:
-  vtkFiberKeyboardCallback()
-  {
-    this->FiberPickerCallback = 0;
-    this->FibersManager       = 0;
-  }
-  ~vtkFiberKeyboardCallback(){};
-  
- private:
-  vtkFiberPickerCallback *FiberPickerCallback;
-  vtkFibersManager       *FibersManager;
-};
-
-void vtkFiberKeyboardCallback::Execute ( vtkObject *caller, unsigned long event, void* )
-{
-  vtkRenderWindowInteractor* rwin = vtkRenderWindowInteractor::SafeDownCast (caller);
-  
-  switch( rwin->GetKeyCode() )
-  {    
-      case 'h':
-      case 'H':	
-	if( this->FibersManager )
-	{
-	  if(  this->FibersManager->GetHelpMessageVisibility() )
-	  {
-	    this->FibersManager->HideHelpMessage();
-	  }
-	  else
-	  {
-	    this->FibersManager->ShowHelpMessage();
-	  }
-	  rwin->Render();
-	}
-	break;
-  
-      case 'b':
-	if( this->FibersManager )
-	{
-	  if ( this->FibersManager->GetBoxWidgetVisibility() )
-	  {
-	    this->FibersManager->BoxWidgetOff();
-	  }
-	  else
-	  {
-	    this->FibersManager->BoxWidgetOn();
-	  }
-	}
-	break;
-	
-      case '4':
-	if( this->FibersManager )
-	{
-	  this->FibersManager->SetRenderingModeToPolyLines();
-	  rwin->Render();
-	}
-	break;
-	
-	
-      case '5':
-	if( this->FibersManager )
-	{
-	  this->FibersManager->SetRenderingModeToRibbons();
-	  rwin->Render();
-	}
-	break;
-	
-	
-      case '6':
-	if( this->FibersManager )
-	{
-	  this->FibersManager->SetRenderingModeToTubes();
-	  rwin->Render();
-	}
-	break;
-	
-      case '7':	
-	if( this->FibersManager )
-	{
-	  vtkFibersManager::UseHardwareShadersOff();
-	  this->FibersManager->ChangeMapperToDefault();
-	  rwin->Render();
-	}	
-	break;
-	
-      case '8':	
-	if( this->FibersManager )
-	{
-	  vtkFibersManager::UseHardwareShadersOn();
- 	  this->FibersManager->ChangeMapperToUseHardwareShaders();
-	  rwin->Render();
-	}	
-	break;
-	
-	
-      case 'n':
-      case 'N':
-	if( this->FibersManager )
-	{
-	  this->FibersManager->SwapInputOutput();
-	  rwin->Render();
-	}	
-	break;
-	
-	
-      case 'u':
-      case 'U':
-	if( this->FibersManager )
-	{
-	  this->FibersManager->Reset();
-	  rwin->Render();
-	}	
-	break;
-	
-      case 'd':
-      case 'D':	
-	if( this->FiberPickerCallback )
-	{
-	  this->FiberPickerCallback->DeletePickedCell();
-	  rwin->Render();
-	}        
-	break;
-	
-      default:
-	break;
-  }  
-}
-
-
-
-/**
-   vtkFiberKeyboardCallback decalaration & implementation
-*/
 vtkFibersManager::vtkFibersManager()
 {
   this->Input                  = 0;  
@@ -519,7 +104,7 @@ vtkFibersManager::vtkFibersManager()
   this->RibbonFilter->SetWidth (0.15);
   this->RibbonFilter->ReleaseDataFlagOn();
 
-  this->PickerCallback->SetInput ( this->Callback->GetOutput() );
+  this->PickerCallback->SetInputConnection ( this->Callback->GetOutputPort() );
   this->PickerCallback->SetFibersManager (this);
   
 
@@ -541,7 +126,7 @@ vtkFibersManager::vtkFibersManager()
   }
 
 
-  this->Mapper->SetInputData ( this->Callback->GetOutput() );
+  this->Mapper->SetInputConnection ( this->Callback->GetOutputPort() );
   this->Mapper->SetScalarModeToUsePointData();
   // this->Actor->SetMapper (this->Mapper); // only when input is set
 
@@ -746,7 +331,7 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   this->Initialize();
   this->Input = input;
   
-  this->Callback->GetROIFiberLimiter()->SetInputData ( this->GetInput() );
+  this->Callback->GetROIFiberLimiter()->SetInputData ( this->Input );
   this->Actor->SetMapper (this->Mapper);
   
   if( this->Renderer )
@@ -760,7 +345,7 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   
   this->Callback->Execute (this->BoxWidget, 0, NULL);
 
-  this->Mapper->SetScalarRange (0.0, 1.0);
+  this->Mapper->SetScalarRange(0.0, 1.0);
   
   int totalLines = this->Callback->GetOutput()->GetNumberOfLines();
   double ratio = (double)totalLines/(double)(this->MaximumNumberOfFibers);
@@ -876,8 +461,8 @@ void vtkFibersManager::SetRenderingModeToPolyLines()
   }
   else
   {
-    this->PickerCallback->SetInput (this->Callback->GetOutput());
-    this->Mapper->SetInputData (this->Callback->GetOutput());
+    this->PickerCallback->SetInputConnection (this->Callback->GetOutputPort());
+    this->Mapper->SetInputConnection (this->Callback->GetOutputPort());
   }
 }
 
@@ -927,7 +512,7 @@ void vtkFibersManager::ChangeMapperToUseHardwareShaders()
   mapper->LightingOff();
   mapper->ShadowingOff();
 
-  mapper->SetInputData( this->Callback->GetOutput() );
+  mapper->SetInputConnection( this->Callback->GetOutputPort() );
   this->Actor->SetMapper( mapper );
 
   if( this->Mapper )
@@ -952,7 +537,7 @@ void vtkFibersManager::ChangeMapperToDefault()
   
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
   mapper->ImmediateModeRenderingOn();  
-  mapper->SetInputData( this->Callback->GetOutput() );
+  mapper->SetInputConnection( this->Callback->GetOutputPort() );
   this->Actor->SetMapper( mapper );
   
   if( this->Mapper )
