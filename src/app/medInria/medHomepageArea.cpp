@@ -425,19 +425,23 @@ void medHomepageArea::initPage()
             button->setDisabled(true);
             button->setToolTip("No useful plugin has been found for this workspace.");
         }
-        if(!detail->category.compare("Basic")) {
+        if(!detail->category.compare("Basic")) 
+        {
             workspaceButtonsLayoutBasic->addWidget ( button );
             workspaceButtonsLayoutBasic->addSpacing(10);
         }
-        else if(!detail->category.compare("Methodology")) {
+        else if(!detail->category.compare("Methodology")) 
+        {
             workspaceButtonsLayoutMethodology->addWidget ( button );
             workspaceButtonsLayoutMethodology->addSpacing(10);
         }
-        else if(!detail->category.compare("Clinical")) {
+        else if(!detail->category.compare("Clinical")) 
+        {
             workspaceButtonsLayoutClinical->addWidget ( button );
             workspaceButtonsLayoutClinical->addSpacing(10);
         }
-        else {
+        else 
+        {
             workspaceButtonsLayoutOther->addWidget ( button );
             workspaceButtonsLayoutOther->addSpacing(10);
         }
@@ -448,14 +452,19 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutOther->addStretch();
 
     QGridLayout* workspaceButtonsLayout = new QGridLayout;
-    workspaceButtonsLayout->setColumnMinimumWidth(0,120);
-    workspaceButtonsLayout->setColumnMinimumWidth(1,120);
-    workspaceButtonsLayout->setColumnMinimumWidth(2,120);
-    workspaceButtonsLayout->setColumnMinimumWidth(3,120);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutBasic,0,0);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutMethodology,0,1);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutClinical,0,2);
-    workspaceButtonsLayout->addLayout(workspaceButtonsLayoutOther,0,3);
+    std::vector<QLayout*> oLayoutVect;
+
+    if (workspaceButtonsLayoutBasic->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutBasic);
+    if (workspaceButtonsLayoutMethodology->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutMethodology);
+    if (workspaceButtonsLayoutClinical->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutClinical);
+    if (workspaceButtonsLayoutOther->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutOther);
+
+    for (int i = 0; i < oLayoutVect.size(); ++i)
+    {
+        workspaceButtonsLayout->setColumnMinimumWidth(i, 120);
+        workspaceButtonsLayout->addLayout(oLayoutVect[i], 0, i);
+    }
+
     workspaceButtonsLayout->setSpacing(40);
     d->navigationWidget->setLayout ( workspaceButtonsLayout );
 }
