@@ -28,6 +28,7 @@
 #include <vtkLimitFibersToROI.h>
 #include <vtkIsosurfaceManager.h>
 #include <vtkCellArray.h>
+#include <vtkCellData.h>
 
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
@@ -122,6 +123,8 @@ public:
     QTreeView *bundlingList;
 
     medIntParameterL *slicingParameter;
+
+    vtkSmartPointer <vtkScalarsToColors> spoDefaultLut;
 };
 
 template <class T>
@@ -234,12 +237,11 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->manager->SetHelpMessageVisibility(0);
     d->roiManager = vtkIsosurfaceManager::New();
 
-    vtkLookupTable* lut = vtkLookupTableManager::GetSpectrumLookupTable();
-    d->manager->SetLookupTable(lut);
+    d->spoDefaultLut = d->manager->GetLookupTable();
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor());
     d->roiManager->SetRenderWindowInteractor(d->render->GetInteractor());
 
-    lut->Delete();
+    //lut->Delete();
 
     d->toolboxWidget = NULL;
     d->bundleToolboxWidget = NULL;
@@ -587,11 +589,18 @@ void medVtkFibersDataInteractor::activateGPU(bool activate)
 void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
 {
     if (mode == "Local orientation")
+    {
+        d->manager->SetLookupTable(d->spoDefaultLut);
         d->manager->SetColorModeToLocalFiberOrientation();
+    }
     else if (mode == "Global orientation")
+    {
+        d->manager->SetLookupTable(d->spoDefaultLut);
         d->manager->SetColorModelToGlobalFiberOrientation();
+    }
     else
     {
+        d->manager->SetLookupTable(vtkLookupTableManager::GetLONILookupTable());
         d->manager->SetColorModeToLocalFiberOrientation();
         for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
         {
@@ -1373,7 +1382,10 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
         return;
     
     vtkSmartPointer <vtkFiberDataSet> bundle = vtkFiberDataSet::New();
-    bundle->SetFibers((*it).second.Bundle);
+    vtkSmartPointer<vtkPolyData> spoTmpFiberBundle = vtkPolyData::New();
+    spoTmpFiberBundle->DeepCopy((*it).second.Bundle);
+    spoTmpFiberBundle->GetCellData()->SetScalars(d->dataset->GetFibers()->GetCellData()->GetScalars());
+    bundle->SetFibers(spoTmpFiberBundle);
     
     savedBundle->setData(bundle);
     

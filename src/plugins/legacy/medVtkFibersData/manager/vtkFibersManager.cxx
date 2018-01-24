@@ -128,7 +128,6 @@ vtkFibersManager::vtkFibersManager()
 
   this->Mapper->SetInputConnection ( this->Callback->GetOutputPort() );
   this->Mapper->SetScalarModeToUsePointData();
-  // this->Actor->SetMapper (this->Mapper); // only when input is set
 
   this->HelpMessage = vtkCornerAnnotation::New();
   this->HelpMessage->SetNonlinearFontScaleFactor (0.25);
@@ -161,7 +160,6 @@ vtkFibersManager::~vtkFibersManager()
   
   if( this->RenderWindowInteractor )
   {
-    // this->RemoveAllActors();
     this->RenderWindowInteractor->Delete();
   }
     
@@ -169,7 +167,6 @@ vtkFibersManager::~vtkFibersManager()
     this->Renderer->Delete();
   
   this->BoxWidget->RemoveObserver (this->Callback);
-  // this->BoxWidget->SetInteractor (NULL);
   
   this->BoxWidget->Delete();
   this->Callback->Delete();
@@ -204,25 +201,6 @@ void vtkFibersManager::Enable()
 
     if (this->BoxWidgetVisibility)
       this->BoxWidget->On();
-    
-    /*
-    if (!this->Renderer)
-    {
-      int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-      this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
-    
-      this->Renderer = vtkRenderer::New();
-      this->Renderer->SetLayer ( numLayers );
-
-      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-      if (vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem())
-	this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
-    
-      this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
-    
-      this->Renderer->Delete();
-    }
-    */
   }
 
   if (this->Renderer)
@@ -268,41 +246,6 @@ void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
   }
 
   this->Enable();
-
-  /*
-  if (this->RenderWindowInteractor)
-  {
-    vtkCellPicker* picker = vtkCellPicker::New();
-    picker->AddObserver (vtkCommand::EndPickEvent, this->PickerCallback, 0.0 );
-    picker->SetTolerance (0.001);
-    
-    this->RenderWindowInteractor->SetPicker ( picker );
-    this->RenderWindowInteractor->AddObserver (vtkCommand::CharEvent, this->KeyboardCallback, 0.0 );
-    
-    picker->Delete();
-
-    if (!this->Renderer)
-    {
-      int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-      this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
-    
-      this->Renderer = vtkRenderer::New();
-      this->Renderer->SetLayer ( numLayers );
-
-      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-      if (vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem())
-	this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
-    
-      this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
-    
-      this->Renderer->Delete();
-    }
-
-    this->Renderer->AddActor ( this->Actor );
-    this->Renderer->AddActor ( this->PickerCallback->GetPickedActor() );
-    this->Renderer->AddActor ( this->HelpMessage );
-  }
-  */
 }
 
 void vtkFibersManager::RemoveAllActors()
