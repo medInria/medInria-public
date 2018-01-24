@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medAbstractGaussianFilterProcess: public medAbstractSingleF
 {
     Q_OBJECT
 public:
-    medAbstractGaussianFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
+    medAbstractGaussianFilterProcess(QObject *parent);
 
 protected:
     virtual QString outputNameAddon() const {return "Gaussian filter";}

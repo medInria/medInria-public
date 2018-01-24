@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medAbstractMultiplyFilterProcess: public medAbstractSingleF
 {
     Q_OBJECT
 public:
-    medAbstractMultiplyFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
+    medAbstractMultiplyFilterProcess(QObject *parent);
 
 protected:
     virtual QString outputNameAddon() const {return "multiply constant";}

@@ -33,9 +33,20 @@ medAbstractWindowingFilterProcess::medAbstractWindowingFilterProcess(QObject *pa
     d(new medAbstractWindowingFilterProcessPrivate)
 {
     d->minimumIntensityValue = new medDoubleParameter("minimumIntensityValue", this);
+    d->minimumIntensityValue->setCaption("Minimum intensity");
+    d->minimumIntensityValue->setDescription("Minimum input intensity range");
+
     d->maximumIntensityValue = new medDoubleParameter("maximumIntensityValue", this);
+    d->maximumIntensityValue->setCaption("Maximum intensity");
+    d->maximumIntensityValue->setDescription("Maximum input intensity range");
+
     d->minimumOutputIntensityValue = new medDoubleParameter("minimumOutputIntensityValue", this);
+    d->minimumOutputIntensityValue->setCaption("Minimum output intensity");
+    d->minimumOutputIntensityValue->setDescription("Minimum output intensity range");
+
     d->maximumOutputIntensityValue = new medDoubleParameter("maximumOutputIntensityValue", this);
+    d->maximumOutputIntensityValue->setCaption("Maximum output intensity");
+    d->maximumOutputIntensityValue->setDescription("Maximum output intensity range");
 }
 
 medAbstractWindowingFilterProcess::~medAbstractWindowingFilterProcess()

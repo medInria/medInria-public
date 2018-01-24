@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medAbstractSubtractFilterProcess: public medAbstractSingleF
 {
     Q_OBJECT
 public:
-    medAbstractSubtractFilterProcess(QObject *parent): medAbstractSingleFilterOperationDoubleProcess(parent) {}
+    medAbstractSubtractFilterProcess(QObject *parent);
 
 protected:
     virtual QString outputNameAddon() const {return "subtract constant";}
