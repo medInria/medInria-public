@@ -66,7 +66,6 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
 medToolBox::~medToolBox(void)
 {
     delete d;
-
     d = NULL;
 }
 

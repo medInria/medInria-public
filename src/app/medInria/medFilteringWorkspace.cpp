@@ -31,8 +31,9 @@
 #include <QDebug>
 
 // Yikes, this is ugly but necessary
-struct SingleFiltersGathering
+class SingleFiltersGathering
 {
+public:
     // fun times
     medAbstractGaussianFilterProcessPluginFactory* gaussianFactory;
     medAbstractMedianFilterProcessPluginFactory* medianFactory;
@@ -147,8 +148,9 @@ struct SingleFiltersGathering
     }
 };
 
-struct MorphomathGathering
+class MorphomathGathering
 {
+public:
     // fun times
     medAbstractErodeImageProcessPluginFactory* erodeFactory;
     medAbstractDilateImageProcessPluginFactory* dilateFactory;
@@ -213,8 +215,9 @@ struct MorphomathGathering
     }
 };
 
-struct ArithmeticGathering
+class ArithmeticGathering
 {
+public:
     // Image arithmetic stuff
     medAbstractAddFilterProcessPluginFactory* addFactory;
     medAbstractSubtractFilterProcessPluginFactory* subtractFactory;
@@ -339,17 +342,25 @@ struct ArithmeticGathering
     }
 };
 
+struct  stProcessAndToolBox
+{
+    medAbstractProcess *process;
+    medAbstractProcessPresenter *presenter;
+    QWidget *toolBox;
+};
+
 class medFilteringWorkspacePrivate
 {
 public:
-    medAbstractProcess *process;
-    medAbstractProcessPresenter *presenter;
+    int iProcessSelection;
 
     QComboBox *processTypeComboBox;
     QComboBox *processSelectorComboBox;
 
     medToolBox *workspaceToolBox;
-    QWidget *currentProcessToolBox;
+    medToolBox *FiltersParamToolBox;
+    int iCurrentTab;
+    std::vector<stProcessAndToolBox> oProcessTab;
 
     std::vector <SingleFiltersGathering> singleFiltersVector;
     std::vector <MorphomathGathering> morphoMathsVector;
@@ -358,9 +369,12 @@ public:
 
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medFilteringWorkspacePrivate)
 {
+    d->iProcessSelection = 0;
+    d->processTypeComboBox = nullptr;
+    d->processSelectorComboBox = nullptr;
+    d->workspaceToolBox = nullptr;
+    d->iCurrentTab = -1;
 
-    d->presenter = NULL;
-    d->process = NULL;
 
     QWidget *processTypeWidget = new QWidget;
     QLabel *processTypeLabel = new QLabel("Process Type", processTypeWidget);
@@ -374,8 +388,7 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
     d->processTypeComboBox->addItem("Image arithmetic");
     processTypeWidget->setLayout(processTypeLayout);
 
-    connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),
-            this,SLOT(setProcessType(int)));
+    connect(d->processTypeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setProcessType(int)));
 
     QWidget *processWidget = new QWidget;
     QLabel *processLabel = new QLabel("Process", processWidget);
@@ -385,14 +398,29 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
     processLayout->addWidget(d->processSelectorComboBox);
     processWidget->setLayout(processLayout);
 
-    connect(d->processSelectorComboBox, SIGNAL(currentIndexChanged(int)),
-            this,SLOT(setProcessSelection(int)));
+    connect(d->processSelectorComboBox, SIGNAL(currentIndexChanged(int)),this,SLOT(setProcessSelection(int)));
+
+    QWidget *poDummyWidget4MarginOfCreateButton = new QWidget();
+    QGridLayout *poDummyCreatButtonLayout = new QGridLayout();
+    QPushButton *poCreateFilterButton = new QPushButton("Create filter");
+    poDummyWidget4MarginOfCreateButton->setLayout(poDummyCreatButtonLayout);
+    poDummyCreatButtonLayout->addWidget(poCreateFilterButton);
+    connect(poCreateFilterButton, SIGNAL(clicked()), this, SLOT(createFilterEnvironment()));
 
     d->workspaceToolBox = new medToolBox;
     d->workspaceToolBox->setTitle("Process controller");
     d->workspaceToolBox->addWidget(processTypeWidget);
     d->workspaceToolBox->addWidget(processWidget);
+    d->workspaceToolBox->addWidget(poDummyWidget4MarginOfCreateButton);
     this->addToolBox(d->workspaceToolBox);
+
+    d->FiltersParamToolBox = new medToolBox;
+    d->FiltersParamToolBox->setTitle("Parameters of filter");
+    this->addToolBox(d->FiltersParamToolBox);
+
+    connect(tabbedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(setCurrentTab(int)));
+    connect(tabbedViewContainers(), SIGNAL(tabCloseRequested(int)), this, SLOT(closingTab(int)));
+    
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -811,6 +839,19 @@ void medFilteringWorkspace::setProcessType(int index)
 
 void medFilteringWorkspace::setProcessSelection(int index)
 {
+    d->iProcessSelection = index;
+}
+
+/**
+* @brief  This function creates environment for a filter.
+* @detail Creates environment for a filter like new tab, ProcessPresenter, toolbox with title and process.
+*/
+void medFilteringWorkspace::createFilterEnvironment()
+{
+    medAbstractProcess *poProcess = nullptr;
+    medAbstractProcessPresenter *poPresenter = nullptr;
+    int index = d->iProcessSelection;
+
     if (index == 0)
         return;
 
@@ -825,8 +866,8 @@ void medFilteringWorkspace::setProcessSelection(int index)
             {
                 if (d->morphoMathsVector[i].pluginKey == pluginKey)
                 {
-                    d->process = d->morphoMathsVector[i].getProcess();
-                    d->presenter = d->morphoMathsVector[i].getPresenter();
+                    poProcess = d->morphoMathsVector[i].getProcess();
+                    poPresenter = d->morphoMathsVector[i].getPresenter();
                     break;
                 }
             }
@@ -840,8 +881,8 @@ void medFilteringWorkspace::setProcessSelection(int index)
             {
                 if (d->singleFiltersVector[i].pluginKey == pluginKey)
                 {
-                    d->process = d->singleFiltersVector[i].getProcess();
-                    d->presenter = d->singleFiltersVector[i].getPresenter();
+                    poProcess = d->singleFiltersVector[i].getProcess();
+                    poPresenter = d->singleFiltersVector[i].getPresenter();
                     break;
                 }
             }
@@ -856,8 +897,8 @@ void medFilteringWorkspace::setProcessSelection(int index)
             {
                 if (d->arithmeticsVector[i].pluginKey == pluginKey)
                 {
-                    d->process = d->arithmeticsVector[i].getProcess();
-                    d->presenter = d->arithmeticsVector[i].getPresenter();
+                    poProcess = d->arithmeticsVector[i].getProcess();
+                    poPresenter = d->arithmeticsVector[i].getPresenter();
                     break;
                 }
             }
@@ -866,15 +907,49 @@ void medFilteringWorkspace::setProcessSelection(int index)
         }
     }
 
-    d->workspaceToolBox->removeWidget(d->currentProcessToolBox);
-    d->currentProcessToolBox = d->presenter->buildToolBoxWidget();
-    d->workspaceToolBox->addWidget(d->currentProcessToolBox);
-    d->workspaceToolBox->setTitle(d->process->caption());
+    QWidget *poToolBoxWidget = poPresenter->buildToolBoxWidget();
+
+    d->oProcessTab.push_back({ poProcess, poPresenter, poToolBoxWidget });
+    if (d->iCurrentTab >= 0 && d->iCurrentTab < d->oProcessTab.size())
+    {
+        d->oProcessTab[d->iCurrentTab].toolBox->hide();
+    }
+    d->FiltersParamToolBox->setTitle(QString("Parameters of ") + poProcess->caption());
+    d->FiltersParamToolBox->addWidget(poToolBoxWidget);
+
+    d->iCurrentTab = d->oProcessTab.size()-1;
 
     if (this->tabbedViewContainers()->currentWidget() == 0)
-        this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->currentIndex(), d->presenter->buildViewContainerSplitter());
+        this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->currentIndex(), poPresenter->buildViewContainerSplitter());
     else
-        this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->count(), d->presenter->buildViewContainerSplitter());
+        this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->count(), poPresenter->buildViewContainerSplitter());
+}
+
+void medFilteringWorkspace::setCurrentTab(int index)
+{
+    if ( (index >= 0) && (d->iCurrentTab >= 0) && d->oProcessTab.size() && (d->iCurrentTab != index))
+    {
+        stProcessAndToolBox stTmp = d->oProcessTab[index];
+        d->FiltersParamToolBox->setTitle(QString("Parameters of ") + stTmp.process->caption());
+        if (d->iCurrentTab < d->oProcessTab.size())
+            d->oProcessTab[d->iCurrentTab].toolBox->hide();
+        stTmp.toolBox->show();
+        d->iCurrentTab = index;
+    }
+}
+
+void medFilteringWorkspace::closingTab(int index)
+{
+    stProcessAndToolBox &stTmp = d->oProcessTab[index];
+    d->FiltersParamToolBox->removeWidget(stTmp.toolBox);
+    d->iCurrentTab = d->oProcessTab.size();
+    delete stTmp.presenter;
+    delete stTmp.process;
+    delete stTmp.toolBox;
+    stTmp.presenter = nullptr;
+    stTmp.process   = nullptr;
+    stTmp.toolBox   = nullptr;
+    d->oProcessTab.erase((d->oProcessTab.begin()) + index);
 }
 
 bool medFilteringWorkspace::isUsable()

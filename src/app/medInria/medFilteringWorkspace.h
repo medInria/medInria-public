@@ -24,9 +24,7 @@ class medFilteringWorkspacePrivate;
 class medFilteringWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
-    MED_WORKSPACE_INTERFACE("Filtering",
-                            "Workspace to apply filters to images.",
-                            "Methodology")
+    MED_WORKSPACE_INTERFACE("Filtering", "Workspace to apply filters to images.", "Methodology")
 public:
     medFilteringWorkspace(QWidget *parent = 0);
     ~medFilteringWorkspace();
@@ -45,6 +43,9 @@ public:
 public slots:
     void setProcessType(int index);
     void setProcessSelection(int index);
+    void createFilterEnvironment();
+    void setCurrentTab(int index);
+    void closingTab(int index);
 
 private:
     medFilteringWorkspacePrivate *d;

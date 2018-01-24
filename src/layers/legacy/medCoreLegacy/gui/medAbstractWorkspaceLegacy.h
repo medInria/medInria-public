@@ -52,7 +52,7 @@ class MEDCORELEGACY_EXPORT medAbstractWorkspaceLegacy : public QObject
 public:
 
     medAbstractWorkspaceLegacy(QWidget *parent=0);
-    ~medAbstractWorkspaceLegacy();
+    virtual ~medAbstractWorkspaceLegacy();
 
     virtual QString identifier() const = 0;
     virtual QString name() const = 0;

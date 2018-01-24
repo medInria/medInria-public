@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QFrame>
 
@@ -92,6 +91,8 @@ public slots:
     void unHighlight();
 
     void splitContainer(unsigned int numY, unsigned int numX);
+
+    void checkIfStillDeserveToLiveContainer();
 
 signals:
     void maximized(QUuid uuid, bool maximized);

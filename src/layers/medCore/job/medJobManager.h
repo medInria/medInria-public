@@ -39,8 +39,6 @@ public:
     void unregisterJob(medAbstractJob *job);
     QList<medAbstractJob *> jobs() const;
 
-    void cancelAll();
-
 public:
      void startJobInThread(medAbstractJob* job);
 

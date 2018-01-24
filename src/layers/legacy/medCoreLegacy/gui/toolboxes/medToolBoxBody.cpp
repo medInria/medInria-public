@@ -35,7 +35,6 @@ medToolBoxBody::medToolBoxBody(QWidget *parent) : QFrame(parent), d(new medToolB
 medToolBoxBody::~medToolBoxBody(void)
 {
     delete d;
-
     d = NULL;
 }
 
@@ -46,20 +45,18 @@ void medToolBoxBody::addWidget(QWidget *widget)
 
     d->widgets.append(widget);
 
-    if (d->layoutOrientation == Qt::Vertical) {
+    if (d->layoutOrientation == Qt::Vertical)
+    {
         d->layout->setRowStretch (d->layout->count(), 0);
-        d->layout->addWidget(widget, d->layout->count(),
-                             0, Qt::AlignTop);
+        d->layout->addWidget(widget, d->layout->count(), 0, Qt::AlignTop);
         d->layout->setRowStretch (d->layout->count(), 1);
     }
-    else {
+    else
+    {
         d->layout->setColumnStretch (d->layout->count(), 0);
-        d->layout->addWidget(widget, 0,
-                             d->layout->count(), Qt::AlignTop);
+        d->layout->addWidget(widget, 0, d->layout->count(), Qt::AlignTop);
         d->layout->setColumnStretch (d->layout->count(), 1);
     }
-
-    widget->setParent(this);
 }
 
 void medToolBoxBody::removeWidget(QWidget *widget)
@@ -104,7 +101,8 @@ void medToolBoxBody::setOrientation(Qt::Orientation orientation)
     this->clear();
 
 
-    foreach(QWidget * wid, d->widgets ) {
+    foreach(QWidget * wid, d->widgets )
+    {
       //addToolBox also sets the orientation of the toolboxes
       addWidget (wid);
       wid->show();
