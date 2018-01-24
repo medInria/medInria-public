@@ -43,7 +43,7 @@ public:
 public slots:
     void setProcessType(int index);
     void setProcessSelection(int index);
-    void createFilterEnv(/*int index*/);
+    void createFilterEnvironment();
     void setCurrentTab(int index);
     void closingTab(int index);
 

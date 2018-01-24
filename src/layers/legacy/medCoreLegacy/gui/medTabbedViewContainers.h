@@ -59,9 +59,6 @@ public slots:
 protected:
 
 private slots :
-    // Not sure of the name - RDE
-    //void resetTabState();
-    //void closeCurrentTab();
     void tabBarDoubleClickedHandler(int  index);
 
     void addContainerToSelection(QUuid container);

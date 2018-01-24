@@ -405,7 +405,7 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
     QPushButton *poCreateFilterButton = new QPushButton("Create filter");
     poDummyWidget4MarginOfCreateButton->setLayout(poDummyCreatButtonLayout);
     poDummyCreatButtonLayout->addWidget(poCreateFilterButton);
-    connect(poCreateFilterButton, SIGNAL(clicked()), this, SLOT(createFilterEnv()));
+    connect(poCreateFilterButton, SIGNAL(clicked()), this, SLOT(createFilterEnvironment()));
 
     d->workspaceToolBox = new medToolBox;
     d->workspaceToolBox->setTitle("Process controller");
@@ -842,7 +842,11 @@ void medFilteringWorkspace::setProcessSelection(int index)
     d->iProcessSelection = index;
 }
 
-void medFilteringWorkspace::createFilterEnv()
+/**
+* @brief  This function creates environment for a filter.
+* @detail Creates environment for a filter like new tab, ProcessPresenter, toolbox with title and process.
+*/
+void medFilteringWorkspace::createFilterEnvironment()
 {
     medAbstractProcess *poProcess = nullptr;
     medAbstractProcessPresenter *poPresenter = nullptr;

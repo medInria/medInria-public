@@ -34,7 +34,7 @@ medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 medViewContainerSplitter::~medViewContainerSplitter()
 {
 #ifdef _DEBUG
-    std::cout << "~medViewContainerSplitter\n";
+    std::cout << "~medViewContainerSplitter" << std::endl;
 #endif // _DEBUG
 }
 

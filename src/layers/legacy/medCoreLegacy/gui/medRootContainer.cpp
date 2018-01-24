@@ -14,7 +14,7 @@ medRootContainer::medRootContainer(medTabbedViewContainers* parent) : m_poParent
 medRootContainer::~medRootContainer()
 {
 #ifdef _DEBUG
-    std::cout << "~medRootContainer\n";
+    std::cout << "~medRootContainer" << std::endl;
 #endif // _DEBUG
 }
 
