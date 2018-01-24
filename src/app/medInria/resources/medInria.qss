@@ -440,7 +440,7 @@ QComboBox::hover
     background-color: $COMBO_BOX_HOVER_BACKGROUND;
 }
 
-QComboBox QAbstractItemView
+QComboBox QAbstractItemView:item
 {
     background-color: $COMBO_BOX_ITEM_BACKGROUND;
     selection-background-color: $COMBO_BOX_ITEM_SELECTED_BACKGROUND;
@@ -448,6 +448,11 @@ QComboBox QAbstractItemView
     outline: 0px;
 }
 
+QComboBox:item:selected
+{
+    selection-background-color: $COMBO_BOX_ITEM_SELECTED_BACKGROUND;
+    selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
+}
 
 /*******************************************************************************
      QCheckBox
