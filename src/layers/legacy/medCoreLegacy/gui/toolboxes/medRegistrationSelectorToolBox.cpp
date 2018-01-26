@@ -34,6 +34,7 @@
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
+#include <medButton.h>
 
 #include <medRegistrationAbstractToolBox.h>
 
@@ -184,7 +185,9 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 
     medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
 
-    if(!toolbox) {
+    if(!toolbox) 
+    {
+        this->setAboutPluginVisibility(false);
         dtkWarn() << "Unable to instantiate" << id << "toolbox";
         return;
     }
@@ -201,6 +204,9 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
     connect (toolbox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
     connect (toolbox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+
+    this->setAboutPluginVisibility(true);
+    connect(this->header()->aboutButton(), SIGNAL(triggered()), toolbox, SLOT(onAboutButtonClicked()));
 
     if (!d->undoRedoProcess && !d->undoRedoToolBox)
     {
