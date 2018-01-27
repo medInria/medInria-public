@@ -5,20 +5,20 @@ void vtkFibersManagerCallback::Execute(vtkObject *caller, unsigned long, void*)
 {
     vtkBoxWidget *widget = vtkBoxWidget::SafeDownCast(caller);
 
-    vtkPolyData* input = (vtkPolyData*)widget->GetInput();
+    vtkPolyData *input = (vtkPolyData*)widget->GetInput();
     if (!input)
     {
         return;
     }
 
     // Get the poly data defined by the vtkBoxWidget
-    vtkPolyData* myBox = vtkPolyData::New();
+    vtkPolyData *myBox = vtkPolyData::New();
     widget->GetPolyData(myBox);
 
     // myBox contains 15 points and points 8 to 13
     // define the bounding box
     double xmin, xmax, ymin, ymax, zmin, zmax;
-    double* pt = myBox->GetPoint(8);
+    double *pt = myBox->GetPoint(8);
     xmin = pt[0];
     pt = myBox->GetPoint(9);
     xmax = pt[0];
@@ -37,6 +37,4 @@ void vtkFibersManagerCallback::Execute(vtkObject *caller, unsigned long, void*)
 
     myBox->Delete();
 }
-
-
 

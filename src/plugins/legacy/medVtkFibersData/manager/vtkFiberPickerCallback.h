@@ -24,69 +24,83 @@ PURPOSE.
 /**
    vtkFiberPickerCallback declaration & implementation
 */
-class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberPickerCallback: public vtkCommand
+class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberPickerCallback : public vtkCommand
 {
- public:
-  static vtkFiberPickerCallback* New()
-  { return new vtkFiberPickerCallback; }
-  
-  virtual void Execute ( vtkObject*, unsigned long, void*);
-  
-  void SetInputConnection(vtkAlgorithmOutput* input)
-  {
-      inputPort = input;
-  }
-  
-  void SetFiberImage (vtkPolyData* image)
-  { this->FiberImage = image; }
-  
-  vtkPolyData* GetFiberImage() const
-  { return this->FiberImage; }
-  
-  void SetFibersManager (vtkFibersManager* manager)
-  { this->FibersManager = manager; }
-  
-  vtkActor* GetPickedActor() const
-  { return this->PickedActor; }
-  
-  void DeletePickedCell();
-  
-  
- protected:
-  vtkFiberPickerCallback()
-  {
-    inputPort = nullptr;
-    this->FiberImage   = 0;
-    this->FibersManager= 0;
-    this->PickedFiber  = vtkPolyData::New();
-    this->PickedMapper = vtkPolyDataMapper::New();
-    this->PickedActor  = vtkActor::New();
+public:
+    static vtkFiberPickerCallback*New()
+    {
+        return new vtkFiberPickerCallback;
+    }
 
-    this->PickedMapper->SetInputData ( this->PickedFiber );
-    this->PickedActor->SetMapper ( this->PickedMapper );
-    this->PickedActor->GetProperty()->SetColor ( 1.0, 0.0, 0.0 );
-    this->PickedActor->GetProperty()->SetLineWidth ( 5.0 );
-    
-    this->PickedFiber->Initialize();
-    this->PickedFiber->Allocate();
-    
-    this->PickedCellId = -1;    
-  }
-  ~vtkFiberPickerCallback()
-  {
-    this->PickedFiber->Delete();
-    this->PickedMapper->Delete();
-    this->PickedActor->Delete();
-  }
-  
- private:
-  vtkAlgorithmOutput* inputPort;
-  vtkPolyData*       FiberImage;
-  
-  vtkPolyData*       PickedFiber;
-  vtkPolyDataMapper* PickedMapper;
-  vtkActor*          PickedActor;
-  int                PickedCellId;
-  
-  vtkFibersManager*  FibersManager;
+    virtual void Execute ( vtkObject*, unsigned long, void*);
+
+    void SetInputConnection(vtkAlgorithmOutput *input)
+    {
+        inputPort = input;
+    }
+
+    void SetFiberImage (vtkPolyData *image)
+    {
+        this->FiberImage = image;
+    }
+
+    vtkPolyData*GetFiberImage() const
+    {
+        return this->FiberImage;
+    }
+
+    void SetFibersManager (vtkFibersManager *manager)
+    {
+        this->FibersManager = manager;
+    }
+
+    vtkActor*GetPickedActor() const
+    {
+        return this->PickedActor;
+    }
+
+    void DeletePickedCell();
+
+
+protected:
+    vtkFiberPickerCallback()
+    {
+        inputPort = nullptr;
+        this->FiberImage   = 0;
+        this->FibersManager= 0;
+        this->PickedFiber  = vtkPolyData::New();
+        this->PickedMapper = vtkPolyDataMapper::New();
+        this->PickedActor  = vtkActor::New();
+
+        this->PickedMapper->SetInputData ( this->PickedFiber );
+        this->PickedActor->SetMapper ( this->PickedMapper );
+        this->PickedActor->GetProperty()->SetColor ( 1.0, 0.0, 0.0 );
+        this->PickedActor->GetProperty()->SetLineWidth ( 5.0 );
+
+        this->PickedFiber->Initialize();
+        this->PickedFiber->Allocate();
+
+        this->PickedCellId = -1;
+    }
+
+    ~vtkFiberPickerCallback()
+    {
+        this->PickedFiber->Delete();
+        this->PickedMapper->Delete();
+        this->PickedActor->Delete();
+    }
+
+private:
+    vtkAlgorithmOutput *inputPort;
+    vtkPolyData *FiberImage;
+
+    vtkPolyData *PickedFiber;
+    vtkPolyDataMapper *PickedMapper;
+    vtkActor *PickedActor;
+    int PickedCellId;
+
+    vtkFibersManager *FibersManager;
 };
+
+
+
