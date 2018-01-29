@@ -156,6 +156,23 @@ vtkLookupTable* vtkLookupTableManager::GetLookupTable(const std::string & name)
     return vtkLookupTableManager::GetBWLookupTable();
 }
 
+vtkLookupTable* vtkLookupTableManager::removeLUTAlphaChannel(vtkLookupTable * lut)
+{
+    // remove the alpha channel from the LUT, it messes up the mesh
+    if (lut)
+    {
+        double values[4];
+        for (int i = 0; i < lut->GetNumberOfTableValues(); i++)
+        {
+            lut->GetTableValue(i, values);
+            values[3] = 1.0;
+            lut->SetTableValue(i, values);
+        }
+        return lut;
+    }
+    return nullptr;
+
+}
 
 vtkLookupTable* vtkLookupTableManager::GetBWLookupTable()
 {

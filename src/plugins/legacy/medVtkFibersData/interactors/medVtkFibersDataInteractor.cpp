@@ -600,7 +600,9 @@ void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
     }
     else
     {
-        d->manager->SetLookupTable(vtkLookupTableManager::GetLONILookupTable());
+        // remove the alpha channel from the LUT, it messes up the mesh
+        vtkLookupTable *lut = vtkLookupTableManager::removeLUTAlphaChannel(vtkLookupTableManager::GetLONILookupTable());
+        d->manager->SetLookupTable(lut);
         d->manager->SetColorModeToLocalFiberOrientation();
         for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
         {

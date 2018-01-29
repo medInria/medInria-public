@@ -456,19 +456,8 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     }
 
     // remove the alpha channel from the LUT, it messes up the mesh
-    if (lut)
-    {
-        double values[4];
-        for(int i = 0; i < lut->GetNumberOfTableValues(); i++)
-        {
-            lut->GetTableValue(i, values);
-            values[3] = 1.0;
-            lut->SetTableValue(i, values);
-        }
-
-        double * range = d->metaDataSet->GetCurrentScalarRange();
-        lut->SetRange(range);
-    }
+    vtkLookupTableManager::removeLUTAlphaChannel(lut);
+    lut->SetRange(d->metaDataSet->GetCurrentScalarRange());
 
     vtkMapper * mapper2d = d->actor2d->GetMapper();
     vtkMapper * mapper3d = d->actor3d->GetMapper();

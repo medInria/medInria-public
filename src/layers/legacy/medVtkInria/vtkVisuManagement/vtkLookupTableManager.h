@@ -116,6 +116,9 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
   //BTX
   static vtkLookupTable* GetLookupTable(const std::string &);
   //ETX
+
+  static vtkLookupTable* removeLUTAlphaChannel(vtkLookupTable * lut);
+
 protected:
   vtkLookupTableManager();
   ~vtkLookupTableManager();

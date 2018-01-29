@@ -48,7 +48,7 @@
 #include <stdio.h>
 
 #include "vtkFiberMapper.h"
-#include "vtkFiberKeyboardCallbak.h"
+#include "vtkFiberKeyboardCallback.h"
 #include "vtkFibersManagerCallback.h"
 #include "vtkFiberPickerCallback.h"
 

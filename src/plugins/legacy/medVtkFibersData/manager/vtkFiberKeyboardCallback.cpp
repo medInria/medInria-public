@@ -1,4 +1,4 @@
-#include "vtkFiberKeyboardCallbak.h"
+#include "vtkFiberKeyboardCallback.h"
 #include <vtkRenderWindowInteractor.h>
 
 void vtkFiberKeyboardCallback::Execute(vtkObject *caller, unsigned long event, void*)
