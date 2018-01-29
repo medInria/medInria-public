@@ -1,13 +1,13 @@
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2018. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
 
@@ -251,12 +251,10 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
     {
       // create rendering pipeline
       d->FiberBundlePipelineList[name] = new vtkFiberDataSetManagerPrivate::BundlePipeline;
-      d->FiberBundlePipelineList[name]->Actor->GetProperty()->SetColor (this->FiberDataSet->GetBundleList()[name].Red,
-									this->FiberDataSet->GetBundleList()[name].Green,
-									this->FiberDataSet->GetBundleList()[name].Blue);
+      d->FiberBundlePipelineList[name]->Actor->GetProperty()->SetColor (this->FiberDataSet->GetBundleList()[name].Red, this->FiberDataSet->GetBundleList()[name].Green, this->FiberDataSet->GetBundleList()[name].Blue);
       if (this->GetRenderer())
       {
-	this->GetRenderer()->AddViewProp ( d->FiberBundlePipelineList[name]->Actor );
+	    this->GetRenderer()->AddViewProp ( d->FiberBundlePipelineList[name]->Actor );
       }
     }
     
@@ -292,7 +290,6 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
         fiberMapper->SetInputData (bundle);
 	  }
 	  else
-
 	  {   
 	    vtkTubeFilter *tubeFilter = d->FiberBundlePipelineList[name]->TubeFilter;
 	    tubeFilter->SetRadius ( this->GetRadius() );
