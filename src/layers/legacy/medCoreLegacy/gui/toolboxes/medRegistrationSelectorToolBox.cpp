@@ -175,6 +175,7 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     //get rid of old toolBox
     if (d->currentToolBox)
     {
+        this->header()->aboutButton()->disconnect(d->currentToolBox);
         d->currentToolBox->hide();
         d->toolBoxLayout->removeWidget(d->currentToolBox);
         d->currentToolBox = NULL;
