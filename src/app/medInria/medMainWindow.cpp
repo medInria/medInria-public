@@ -94,6 +94,7 @@ public:
 
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
+    bool closeEventProcessed;
     QShortcut * shortcutShortcut;
 
     QToolButton *screenshotButton;
@@ -116,6 +117,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->setMinimumHeight ( 800 );
     this->setMinimumWidth ( 1200 );
 
+    d->closeEventProcessed = false;
 
     //  Setting up widgets
 
@@ -713,6 +715,12 @@ void medMainWindow::availableSpaceOnStatusBar()
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
+    if (d->closeEventProcessed)
+    {
+        event->ignore();
+        return;
+    }
+
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )
     {
         int res = QMessageBox::information(this,
@@ -737,11 +745,14 @@ void medMainWindow::closeEvent(QCloseEvent *event)
             QThreadPool::globalInstance()->waitForDone();
         }
     }
+
     if(this->saveModified() != QDialog::Accepted)
     {
         event->ignore();
         return;
     }
+
+    d->closeEventProcessed = true;
     this->saveSettings();
     event->accept();
 }
