@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -23,10 +23,10 @@ class medStartupSettingsWidgetPrivate;
 class MEDCORELEGACY_EXPORT medStartupSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
-    MED_SETTINGS_INTERFACE("Start Up","Startup settings")
+    MED_SETTINGS_INTERFACE("Start Up", "Startup settings")
 
-public:
-    medStartupSettingsWidget(QWidget *parent = 0);
+public :
+        medStartupSettingsWidget(QWidget *parent = 0);
 
 signals:
 
@@ -40,4 +40,9 @@ protected:
 private:
     medStartupSettingsWidgetPrivate *d;
 
+private slots:
+    void genericWorkspaceState(int pi_iState);
 };
+
+
+
