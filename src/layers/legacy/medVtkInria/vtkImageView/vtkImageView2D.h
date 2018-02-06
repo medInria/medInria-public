@@ -258,8 +258,8 @@ public:
 
     virtual vtkImageMapToColors *GetWindowLevel(int layer=0) const;
 
-    using vtkImageView::Get2DDisplayMapperInputAlgorithum;
-    virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithum(int layer) const;
+    using vtkImageView::Get2DDisplayMapperInputAlgorithm;
+    virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithm(int layer) const;
     virtual vtkImageAlgorithm* GetInputAlgorithm(int layer) const;
 
     //BTX

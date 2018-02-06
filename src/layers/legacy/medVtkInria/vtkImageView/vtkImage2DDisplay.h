@@ -16,7 +16,6 @@ public:
   vtkTypeMacro (vtkImage2DDisplay, vtkObject);
 
   virtual void SetInput(vtkAlgorithmOutput*  pi_poVtkAlgoPort);
-  //virtual vtkImageData* GetInput() { return this->Input; }
 
   virtual vtkLookupTable * GetLookupTable() const;
 

@@ -280,8 +280,8 @@ void vtkImageView2D::GetSliceRange(int &min, int &max) const
 {
   if (this->GetMedVtkImageInfo()->initialized)
   {
-      this->Get2DDisplayMapperInputAlgorithum()->UpdateInformation();
-      int* w_ext = this->Get2DDisplayMapperInputAlgorithum()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+      this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
+      int* w_ext = this->Get2DDisplayMapperInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
       min = w_ext[this->SliceOrientation * 2];
       max = w_ext[this->SliceOrientation * 2 + 1];
   }
@@ -2315,7 +2315,7 @@ vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ ) const
     else return NULL;
 }
 
-vtkAlgorithm* vtkImageView2D::Get2DDisplayMapperInputAlgorithum (int layer) const
+vtkAlgorithm* vtkImageView2D::Get2DDisplayMapperInputAlgorithm (int layer) const
 {
     return this->GetWindowLevel(layer);
 }

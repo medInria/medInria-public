@@ -477,8 +477,8 @@ public:
 
     vtkGetMacro(IsInteractorInstalled, int);
 
-    virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithum () const;
-    virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithum(int layer) const;
+    virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithm () const;
+    virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithm(int layer) const;
     virtual vtkImageAlgorithm* GetInputAlgorithm(int layer) const;
 
 protected:
