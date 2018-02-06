@@ -13,7 +13,7 @@
 
 #include <medDataManager.h>
 
-#include <dtkLog>
+#include <QDebug>
 
 #include <medAbstractDataFactory.h>
 #include <medDatabaseController.h>
@@ -98,9 +98,10 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     // If nothing in the tracker, we'll get a null weak pointer, thus a null shared pointer
     medAbstractData *dataObjRef = d->loadedDataObjectTracker.value(index);
 
-    if(dataObjRef) {
+    if(dataObjRef)
+    {
         // we found an existing instance of that object
-        dtkDebug()<<"medDataManager we found an existing instance of that object" <<dataObjRef->count();
+        qDebug()<<"medDataManager we found an existing instance of that object" <<dataObjRef->count();
         return dataObjRef;
     }
 
@@ -248,7 +249,7 @@ QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, co
     }
 
     if(dbc->dataSourceId() != toPatient.dataSourceId()) {
-        dtkWarn() << "medDataManager: Moving data accross controllers is not supported.";
+        dtkWarn() << "medDataManager: Moving data across controllers is not supported.";
     } else {
         newIndexList = dbc->moveStudy(indexStudy,toPatient);
     }
@@ -268,7 +269,7 @@ medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const med
     medDataIndex newIndex;
 
     if(dbc->dataSourceId() != toStudy.dataSourceId()) {
-        dtkWarn() << "medDataManager: Moving data accross controllers is not supported.";
+        dtkWarn() << "medDataManager: Moving data across controllers is not supported.";
     } else {
         newIndex = dbc->moveSerie(indexSerie,toStudy);
     }
@@ -300,7 +301,7 @@ void medDataManager::garbageCollect()
     Q_D(medDataManager);
     QMutexLocker locker(&(d->mutex));
 
-    // garbage collect datas that are only referenced by the manager
+    // garbage collect data that are only referenced by the manager
     QMutableHashIterator <medDataIndex, dtkSmartPointer<medAbstractData> > it(d->loadedDataObjectTracker);
     while(it.hasNext()) {
         it.next();
