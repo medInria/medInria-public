@@ -1081,7 +1081,9 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
 //----------------------------------------------------------------------------
 double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int component, int layer )
 {
-    if (!this->GetMedVtkImageInfo(layer) || !this->GetMedVtkImageInfo(layer)->initialized)
+    vtkImageAlgorithm* poAlgoTmp = dynamic_cast<vtkImageAlgorithm*>(this->GetInputAlgorithm(layer));
+
+    if (!poAlgoTmp || !(poAlgoTmp = dynamic_cast<vtkImageAlgorithm*>(poAlgoTmp->GetInputAlgorithm())) || !this->GetMedVtkImageInfo(layer) || !this->GetMedVtkImageInfo(layer)->initialized)
     {
         return 0.0;
     }
@@ -1089,6 +1091,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
     this->GetInputAlgorithm()->UpdateInformation();
+    vtkImageData* input = poAlgoTmp->GetOutput();
 
     int* w_extent = this->GetMedVtkImageInfo()->extent;
     if ((indices[0] < w_extent[0]) ||
@@ -1147,7 +1150,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
         this->GetInputAlgorithm(layer)->Update();
     }
 
-    return m_poInternalImageFromInput->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);//FloTODO
+    return input->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);
 
 }
 
@@ -1661,6 +1664,10 @@ vtkAlgorithm* vtkImageView::GetInputAlgorithm (int layer) const
     return this->WindowLevel->GetInputAlgorithm();
 }
 
+vtkAlgorithm* vtkImageView::GetInputAlgorithm2(int layer) const
+{
+    return this->WindowLevel->GetInputAlgorithm();
+}
 
 //----------------------------------------------------------------------------
 void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)

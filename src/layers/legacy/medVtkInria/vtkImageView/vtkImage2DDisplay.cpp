@@ -1,5 +1,6 @@
 #include "vtkImage2DDisplay.h"
 #include <vtkImageMapper3D.h>
+#include <vtkImageProperty.h>
 #include <vtkImageAlgorithm.h>
 #include <vtkAlgorithmOutput.h>
 
@@ -50,6 +51,7 @@ void vtkImage2DDisplay::SetInput(vtkAlgorithmOutput *pi_poVtkAlgoPort)
                 //poVtkImgTmp = this->WindowLevel->GetOutput();
             }
             this->ImageActor->GetMapper()->SetInputConnection(poVtkAlgoPortTmp);
+            //this->ImageActor->GetProperty()->SetInterpolationTypeToCubic();
         }
         else
         {
