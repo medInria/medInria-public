@@ -16,14 +16,15 @@ public:
   vtkTypeMacro (vtkImage2DDisplay, vtkObject);
 
   virtual void SetInput(vtkAlgorithmOutput*  pi_poVtkAlgoPort);
-  //virtual vtkImageData* GetInput() { return this->Input; }
 
   virtual vtkLookupTable * GetLookupTable() const;
 
   virtual vtkImageActor* GetImageActor() { return this->ImageActor; }
 
-  virtual vtkImageMapToColors* GetWindowLevel() const
-  { return this->WindowLevel; }
+  virtual vtkImageMapToColors* GetWindowLevel() const { return this->WindowLevel; }
+
+  virtual vtkImageAlgorithm* GetInputProducer() const { return this->InputProducer; }
+
   vtkSetMacro(ColorWindow, double);
   vtkGetMacro(ColorWindow,double);
   vtkSetMacro(ColorLevel, double);
@@ -46,7 +47,7 @@ protected:
 
 private:
   vtkSmartPointer<vtkImageMapToColors>        WindowLevel;
-  vtkSmartPointer<vtkImageData>               Input;
+  vtkSmartPointer<vtkImageAlgorithm>          InputProducer;
   vtkSmartPointer<vtkImageActor>              ImageActor;
   double                                      ColorWindow;
   double                                      ColorLevel;
