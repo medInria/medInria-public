@@ -22,8 +22,10 @@ public:
 
   virtual vtkImageActor* GetImageActor() { return this->ImageActor; }
 
-  virtual vtkImageMapToColors* GetWindowLevel() const
-  { return this->WindowLevel; }
+  virtual vtkImageMapToColors* GetWindowLevel() const { return this->WindowLevel; }
+
+  virtual vtkImageAlgorithm* GetInputProducer() const { return this->InputProducer; }
+
   vtkSetMacro(ColorWindow, double);
   vtkGetMacro(ColorWindow,double);
   vtkSetMacro(ColorLevel, double);
@@ -46,7 +48,7 @@ protected:
 
 private:
   vtkSmartPointer<vtkImageMapToColors>        WindowLevel;
-  vtkSmartPointer<vtkImageData>               Input;
+  vtkSmartPointer<vtkImageAlgorithm>          InputProducer;
   vtkSmartPointer<vtkImageActor>              ImageActor;
   double                                      ColorWindow;
   double                                      ColorLevel;

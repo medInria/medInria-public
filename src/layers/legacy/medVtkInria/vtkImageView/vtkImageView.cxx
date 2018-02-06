@@ -1081,17 +1081,17 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
 //----------------------------------------------------------------------------
 double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int component, int layer )
 {
-    vtkImageAlgorithm* poAlgoTmp = dynamic_cast<vtkImageAlgorithm*>(this->GetInputAlgorithm(layer));
+    vtkImageAlgorithm *poAlgoTmp = this->GetInputAlgorithm(layer);
 
-    if (!poAlgoTmp || !(poAlgoTmp = dynamic_cast<vtkImageAlgorithm*>(poAlgoTmp->GetInputAlgorithm())) || !this->GetMedVtkImageInfo(layer) || !this->GetMedVtkImageInfo(layer)->initialized)
+    if (!poAlgoTmp || !this->GetMedVtkImageInfo(layer) || !this->GetMedVtkImageInfo(layer)->initialized)
     {
         return 0.0;
     }
 
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
-    this->GetInputAlgorithm()->UpdateInformation();
-    vtkImageData* input = poAlgoTmp->GetOutput();
+    this->Get2DDisplayMapperInputAlgorithum()->UpdateInformation();
+    vtkImageData* inputImage = poAlgoTmp->GetOutput();
 
     int* w_extent = this->GetMedVtkImageInfo()->extent;
     if ((indices[0] < w_extent[0]) ||
@@ -1101,7 +1101,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
         (indices[2] < w_extent[4]) ||
         (indices[2] > w_extent[5]))
     {
-        return 0;
+        return 0.0;
     }
 
     // Is the requested point in the currently loaded data extent? If not, attempt to update.
@@ -1114,7 +1114,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
          (indices[2] > extent[5]) )
     {
 
-        int* u_extent = this->GetInputAlgorithm(layer)->GetUpdateExtent ();
+        int* u_extent = this->Get2DDisplayMapperInputAlgorithum(layer)->GetUpdateExtent ();
         if ( (indices[0] < u_extent[0]) ||
              (indices[0] > u_extent[1]) ||
              (indices[1] < u_extent[2]) ||
@@ -1123,14 +1123,13 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
              (indices[2] > u_extent[5]) )
         {
             int pointExtent [6] = { indices [0], indices [0], indices [1], indices [1], indices [2], indices [2] };
-            this->GetInputAlgorithm(layer)->UpdateExtent(pointExtent);
-            this->GetInputAlgorithm(layer)->Update();
+            this->Get2DDisplayMapperInputAlgorithum(layer)->UpdateExtent(pointExtent);
+            this->Get2DDisplayMapperInputAlgorithum(layer)->Update();
 
         } 
         else
         {
-
-            this->GetInputAlgorithm(layer)->Update ();
+            this->Get2DDisplayMapperInputAlgorithum(layer)->Update ();
             int* new_extent = this->GetMedVtkImageInfo()->extent;
             if ( (indices[0] < new_extent[0]) ||
                  (indices[0] > new_extent[1]) ||
@@ -1147,10 +1146,10 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
     else
     {
         // Need to be sure that the input is up to date. Otherwise we may be requesting bad data.
-        this->GetInputAlgorithm(layer)->Update();
+        this->Get2DDisplayMapperInputAlgorithum(layer)->Update();
     }
 
-    return input->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);
+    return inputImage->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);
 
 }
 
@@ -1271,7 +1270,7 @@ double vtkImageView::GetZoom()
 {
     if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
         return 1.0;
-    if (!this->GetInputAlgorithm() || !this->GetInputAlgorithm()->GetOutputInformation(0))
+    if (!this->Get2DDisplayMapperInputAlgorithum() || !this->Get2DDisplayMapperInputAlgorithum()->GetOutputInformation(0))
         return 1.0;
 
     vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
@@ -1653,20 +1652,20 @@ void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
 }
 
 //----------------------------------------------------------------------------
-vtkAlgorithm* vtkImageView::GetInputAlgorithm() const
+vtkAlgorithm* vtkImageView::Get2DDisplayMapperInputAlgorithum() const
 {
     int layer = this->GetCurrentLayer();
-    return this->GetInputAlgorithm(layer);
+    return this->Get2DDisplayMapperInputAlgorithum(layer);
 }
 
-vtkAlgorithm* vtkImageView::GetInputAlgorithm (int layer) const
+vtkAlgorithm* vtkImageView::Get2DDisplayMapperInputAlgorithum (int layer) const
 {
     return this->WindowLevel->GetInputAlgorithm();
 }
 
-vtkAlgorithm* vtkImageView::GetInputAlgorithm2(int layer) const
+vtkImageAlgorithm* vtkImageView::GetInputAlgorithm(int layer) const
 {
-    return this->WindowLevel->GetInputAlgorithm();
+    return dynamic_cast<vtkImageAlgorithm*>(this->WindowLevel->GetInputAlgorithm());
 }
 
 //----------------------------------------------------------------------------
