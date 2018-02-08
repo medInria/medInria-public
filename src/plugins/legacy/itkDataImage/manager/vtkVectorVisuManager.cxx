@@ -31,7 +31,7 @@ vtkVectorVisuManager::vtkVectorVisuManager()
     this->UserColor[0] = 1.; this->UserColor[1] = 1.; this->UserColor[2] = 1.;
 
     this->VOI = vtkExtractVOI::New();
-    this->VOI->SetSampleRate(1,1,1);
+    this->VOI->SetSampleRate(2,2,2);
 
     this->Assign = vtkAssignAttribute::New();
     Assign->SetInputConnection(this->VOI->GetOutputPort());
