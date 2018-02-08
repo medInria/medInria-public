@@ -253,7 +253,7 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
 
     medIntParameterL *sampleRateControl = new medIntParameterL("Sample Rate", this);
     sampleRateControl->setRange(1,10);
-    sampleRateControl->setValue(1);
+    sampleRateControl->setValue(2);
 
     medStringListParameterL *colorMode = new medStringListParameterL("Color mode", this);
     colorMode->addItem("Vector Magnitude");
