@@ -53,8 +53,8 @@ else()
   set(MEDINRIA_BIN "\${MEDINRIA_DIR}/bin/medInria")
 endif()
 
-set(MEDINRIA_PLUGINS_DIRS "\${MEDINRIA_DIR}/bin/plugins:\${MEDINRIA_USER_PLUGINS_DIRS}")
-set(MEDINRIA_PLUGINS_LEGACY_DIRS "\${MEDINRIA_DIR}/bin/plugins_legacy:\${MEDINRIA_USER_PLUGINS_DIRS_LEGACY}")
+set(MEDINRIA_PLUGINS_DIRS "\${MEDINRIA_DIR}/plugins:\${MEDINRIA_DIR}/bin/plugins:\${MEDINRIA_USER_PLUGINS_DIRS}")
+set(MEDINRIA_PLUGINS_LEGACY_DIRS "\${MEDINRIA_DIR}/plugins_legacy:\${MEDINRIA_DIR}/bin/plugins_legacy:\${MEDINRIA_USER_PLUGINS_DIRS_LEGACY}")
 
 configure_file(${CURRENT_SRC_DIR}/medInria.sh.in ${CURRENT_BIN_DIR}/medInria_launcher.sh @ONLY)
 install(PROGRAMS ${CURRENT_BIN_DIR}/medInria_launcher.sh
