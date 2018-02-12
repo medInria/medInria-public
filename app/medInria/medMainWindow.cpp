@@ -433,13 +433,8 @@ void medMainWindow::captureScreenshot()
     if ( ! QImageWriter::supportedImageFormats().contains(format) )
         format = "PNG";
 
-    QImage transparentImage = screenshot.toImage();
-    QImage outImage(transparentImage.size(), QImage::Format_RGB32);
-    outImage.fill(QColor(Qt::black).rgb());
-
-    QPainter painter(&outImage);
-    painter.drawImage(0,0,transparentImage);
-    outImage.save(fileName, format.constData());
+    QImage image = screenshot.toImage();
+    image.save(fileName, format.constData());
 }
 
 void medMainWindow::showFullScreen()

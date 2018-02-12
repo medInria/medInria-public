@@ -354,7 +354,6 @@ QColor vtkDataMeshInteractor::color() const
     return QColor::fromRgbF(r, b, g);
 }
 
-
 void vtkDataMeshInteractor::setRenderingType(const QString & type)
 {
     d->renderingParam->setValue(type);
