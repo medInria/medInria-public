@@ -288,7 +288,7 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   
   this->Callback->Execute (this->BoxWidget, 0, NULL);
 
-  this->Mapper->SetScalarRange(0.0, 1.0);
+  //this->Mapper->SetScalarRange(0.0, 1.0);
   
   int totalLines = this->Callback->GetOutput()->GetNumberOfLines();
   double ratio = (double)totalLines/(double)(this->MaximumNumberOfFibers);
@@ -624,7 +624,12 @@ int vtkFibersManager::GetNumberOfPointArrays() const
   return this->Mapper->GetInput()->GetPointData()->GetNumberOfArrays();
 }
 
-void vtkFibersManager::SetLookupTable (vtkScalarsToColors* lut)
+void vtkFibersManager::SetScalarRange(double *range)
+{
+    this->Mapper->SetScalarRange(range);
+}
+
+void vtkFibersManager::SetLookupTable(vtkScalarsToColors* lut)
 {
   this->Mapper->SetLookupTable (lut);
 }

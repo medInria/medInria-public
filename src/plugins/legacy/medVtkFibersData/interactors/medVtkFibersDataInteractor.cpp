@@ -53,13 +53,9 @@
 #include <medDropSite.h>
 
 #include <QInputDialog>
+#include <cmath>
 #include <QColorDialog>
-
-#ifdef WIN32
-    #define isFinite(double) _finite(double)
-#else
-    #define isFinite(double) std::isfinite(double)
-#endif
+#include <QFormLayout>
 
 
 class medVtkFibersDataInteractorPrivate
@@ -91,6 +87,11 @@ public:
     QList<medAbstractParameterL*> parameters;
 
     medStringListParameterL *colorFiberParameter;
+    medStringListParameterL *LutFiberParameter;
+    medBoolParameterL *alphaTransparencyParameter;
+    medDoubleParameterL *minIntensityParameter;
+    medDoubleParameterL *maxIntensityParameter;
+
     medBoolParameterL *gpuParameter;
     medBoolGroupParameterL *shapesDisplayedGroupParameter;
     medBoolParameterL *displayPolylinesParameter;
@@ -125,6 +126,8 @@ public:
     medIntParameterL *slicingParameter;
 
     vtkSmartPointer <vtkScalarsToColors> spoDefaultLut;
+    std::vector< std::vector<double> > oScalarRangeVect;
+    QWidget * poLutWidget;
 };
 
 template <class T>
@@ -252,6 +255,40 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->colorFiberParameter->addItem("Local orientation");
     d->colorFiberParameter->addItem("Global orientation");
     d->parameters << d->colorFiberParameter;
+
+    d->poLutWidget = nullptr;
+
+    d->LutFiberParameter = new medStringListParameterL("LutParameter", this);
+    d->LutFiberParameter->setToolTip("Choose type of LUT");
+    d->LutFiberParameter->getLabel()->setText(tr("Choose type of LUT:"));
+    d->LutFiberParameter->addItems(vtkLookupTableManager::GetAvailableLookupTablesInStringList());
+    d->LutFiberParameter->setValue(tr("Loni 2"));
+    d->parameters << d->LutFiberParameter;
+
+    d->alphaTransparencyParameter = new medBoolParameterL("ActivateTransparencyParameter", this);
+    d->alphaTransparencyParameter->setToolTip(tr("Activate transparency."));
+    d->alphaTransparencyParameter->setText(tr("Activate transparency"));
+    d->alphaTransparencyParameter->getCheckBox()->setEnabled(true);
+    d->parameters << d->alphaTransparencyParameter;
+
+    d->minIntensityParameter = new medDoubleParameterL("Min Intensity", this);
+    d->minIntensityParameter->setToolTip(tr("Min Intensity."));
+    d->minIntensityParameter->getLabel()->setText(tr("Min Intensity:"));
+    d->minIntensityParameter->setRange(0.0, 1.0);
+    d->minIntensityParameter->setValue(0);
+    d->parameters << d->minIntensityParameter;
+
+    d->maxIntensityParameter = new medDoubleParameterL("Max Intensity", this);
+    d->maxIntensityParameter->setToolTip(tr("Max Intensity."));
+    d->maxIntensityParameter->getLabel()->setText(tr("Max Intensity:"));
+    d->maxIntensityParameter->setRange(0.0, 1.0);
+    d->maxIntensityParameter->setValue(1);
+    d->parameters << d->maxIntensityParameter;
+
+    connect(d->maxIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(updateRange()));
+    connect(d->minIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(updateRange()));
+    connect(d->alphaTransparencyParameter, SIGNAL(valueChanged(bool)), this, SLOT(updateLut()));
+    connect(d->LutFiberParameter, SIGNAL(valueChanged(QString)), this, SLOT(updateLut()));
 
     d->gpuParameter = new medBoolParameterL("gpuFiberParameter", this);
     d->gpuParameter->setToolTip(tr("Select to use GPU hardware acceleration when possible."));
@@ -463,15 +500,26 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
         d->colorFiberParameter->addItem("Global orientation");
         vtkPolyData *fibersData = d->dataset->GetFibers();
         unsigned int numArrays = fibersData->GetPointData()->GetNumberOfArrays();
+        d->oScalarRangeVect.resize(numArrays);
         for (unsigned int i = 0;i < numArrays;++i)
         {
             vtkDataArray *tmpArray = fibersData->GetPointData()->GetArray(i);
+            double *pdfScalarRangeTmp = tmpArray->GetRange();
+            d->oScalarRangeVect[i].resize(2);
+            d->oScalarRangeVect[i][0] = pdfScalarRangeTmp[0];
+            d->oScalarRangeVect[i][1] = pdfScalarRangeTmp[1];
             if (tmpArray->GetNumberOfComponents() > 1)
                 continue;
 
             d->colorFiberParameter->addItem(fibersData->GetPointData()->GetArrayName(i));
         }
         d->colorFiberParameter->blockSignals(false);
+
+        double pdfTmp[2];
+        pdfTmp[0] = d->oScalarRangeVect[0][0];
+        pdfTmp[1] = d->oScalarRangeVect[0][1];
+
+        initWindowLevelParameters(pdfTmp);
 
         if (!data->hasMetaData("BundleList"))
             data->addMetaData("BundleList", QStringList());
@@ -492,6 +540,31 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
     }
 
     d->parameters << visibilityParameter();
+}
+
+void medVtkFibersDataInteractor::initWindowLevelParameters(double const * range)
+{
+    double window = range[1] - range[0];
+    double level = 0.5*(range[1] + range[0]);
+
+    double windowMin = 0;
+    double windowMax = 2.0 * window;
+    double halfWidth = 0.5 * window;
+    double levelMin = range[0] - halfWidth;
+    double levelMax = range[1] + halfWidth;
+
+    d->minIntensityParameter->blockSignals(true);
+    d->maxIntensityParameter->blockSignals(true);
+
+    d->minIntensityParameter->setRange(levelMin, levelMax);
+    d->maxIntensityParameter->setRange(levelMin, levelMax);
+    d->minIntensityParameter->setValue(range[0]);
+    d->maxIntensityParameter->setValue(range[1]);
+    d->view2d->SetColorRange((double*)range);
+    d->view3d->SetColorRange((double*)range);
+
+    d->maxIntensityParameter->blockSignals(false);
+    d->minIntensityParameter->blockSignals(false);
 }
 
 void medVtkFibersDataInteractor::changeBundlingItem(QStandardItem *item)
@@ -590,36 +663,90 @@ void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
 {
     if (mode == "Local orientation")
     {
+        d->poLutWidget->hide();
         d->manager->SetLookupTable(d->spoDefaultLut);
         d->manager->SetColorModeToLocalFiberOrientation();
     }
     else if (mode == "Global orientation")
     {
+        d->poLutWidget->hide();
         d->manager->SetLookupTable(d->spoDefaultLut);
         d->manager->SetColorModelToGlobalFiberOrientation();
     }
     else
     {
-        // remove the alpha channel from the LUT, it messes up the mesh
-        vtkLookupTable *lut = vtkLookupTableManager::removeLUTAlphaChannel(vtkLookupTableManager::GetLONILookupTable());
-        d->manager->SetLookupTable(lut);
-        d->manager->SetColorModeToLocalFiberOrientation();
-        for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
-        {
-            if (d->manager->GetPointArrayName (i))
-            {
-                QString pointArrayName = d->manager->GetPointArrayName (i);
-                if (pointArrayName == mode)
-                {
-                    d->manager->SetColorModeToPointArray (i);
-                    break;
-                }
-            }
-        }
+        updateFALut(mode);
+        d->manager->GetLookupTable()->SetRange(d->minIntensityParameter->value(), d->maxIntensityParameter->value());
+        d->poLutWidget->show();
     }
 
     d->view->render();
  }
+
+void medVtkFibersDataInteractor::updateRange()
+{
+    vtkLookupTable * lut = vtkLookupTable::SafeDownCast(d->manager->GetLookupTable());
+    if (lut)
+    {
+        medDoubleParameterL *sender = dynamic_cast<medDoubleParameterL *>(this->sender());
+        if (sender)
+        {
+            if (sender == d->minIntensityParameter && d->minIntensityParameter->value() >= d->maxIntensityParameter->value())
+            {
+                d->maxIntensityParameter->blockSignals(true);
+                d->maxIntensityParameter->setValue(d->minIntensityParameter->value());
+                d->maxIntensityParameter->blockSignals(false);
+            }
+            else if (sender == d->maxIntensityParameter && d->maxIntensityParameter->value() <= d->minIntensityParameter->value())
+            {
+                d->minIntensityParameter->blockSignals(true);
+                d->minIntensityParameter->setValue(d->maxIntensityParameter->value());
+                d->minIntensityParameter->blockSignals(false);
+            }
+        }
+        double scalarRange[2] = { d->minIntensityParameter->value(), d->maxIntensityParameter->value() };
+        d->manager->SetScalarRange(scalarRange);
+        lut->SetRange(d->minIntensityParameter->value(), d->maxIntensityParameter->value());
+        d->view->render();
+    }
+}
+
+void medVtkFibersDataInteractor::updateFALut(QString mode)
+{
+    QString lutName = d->LutFiberParameter->value();
+    vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
+    if (!d->alphaTransparencyParameter->value())
+    {
+        // remove the alpha channel from the LUT, it messes up the mesh
+        lut = vtkLookupTableManager::removeLUTAlphaChannel(lut);
+    }
+
+    d->manager->SetLookupTable(lut);
+    d->manager->SetColorModeToLocalFiberOrientation();
+    for (int i = 0; i < d->manager->GetNumberOfPointArrays(); i++)
+    {
+        if (d->manager->GetPointArrayName(i))
+        {
+            QString pointArrayName = d->manager->GetPointArrayName(i);
+            if (pointArrayName == mode)
+            {
+                double dfTmp2[2];
+                dfTmp2[0] = d->oScalarRangeVect[i][0];
+                dfTmp2[1] = d->oScalarRangeVect[i][1];
+                initWindowLevelParameters(dfTmp2);
+
+                d->manager->SetColorModeToPointArray(i);
+                break;
+            }
+        }
+    }
+}
+
+void medVtkFibersDataInteractor::updateLut()
+{
+    updateFALut(d->colorFiberParameter->value());
+    d->view->render();
+}
 
 void medVtkFibersDataInteractor::setBoxBooleanOperation(bool value)
 {
@@ -840,7 +967,7 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
             test = lines->GetNextCell (npts, ptids);
         }
 
-        if (isFinite (sumData / numberOfLines))
+        if (std::isfinite (sumData / numberOfLines))
         {
             mean[arrayName] = sumData / numberOfLines;
             min[arrayName] = minValue;
@@ -909,7 +1036,7 @@ void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &n
         test = lines->GetNextCell (npts, ptids);
     }
 
-    if (isFinite (sumData / numberOfLines))
+    if (std::isfinite (sumData / numberOfLines))
     {
         mean = sumData / numberOfLines;
         min = minValue;
@@ -1267,6 +1394,38 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
 
     toolBoxLayout->addWidget(d->colorFiberParameter->getLabel());
     toolBoxLayout->addWidget(d->colorFiberParameter->getComboBox());
+
+    ////////////////////////////////////////////////////////////////
+    // LUT and WindowLevel range for it 
+    QGroupBox *poGroupBoxLut = new QGroupBox(/*tr("LUT: ")*/);
+    poGroupBoxLut->setAlignment(Qt::AlignLeft);
+    //QWidget *poMinMaxGlobalWidget = new QWidget();
+    d->poLutWidget = poGroupBoxLut;
+    d->poLutWidget->hide();
+    QVBoxLayout *lutLayout = new QVBoxLayout(poGroupBoxLut);
+    QWidget *poMinMaxWidget = new QWidget();
+    QFormLayout *minMaxLayout = new QFormLayout(poMinMaxWidget);
+
+    lutLayout->addWidget(d->LutFiberParameter->getLabel());
+    lutLayout->addWidget(d->LutFiberParameter->getComboBox());
+    lutLayout->addWidget(d->alphaTransparencyParameter->getCheckBox());
+    lutLayout->addWidget(poMinMaxWidget);
+
+    d->minIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
+    d->maxIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
+    QHBoxLayout *minRangeLayout = new QHBoxLayout();
+    QHBoxLayout *maxRangeLayout = new QHBoxLayout();
+    minRangeLayout->addWidget(d->minIntensityParameter->getSlider());
+    minRangeLayout->addWidget(d->minIntensityParameter->getSpinBox());
+    maxRangeLayout->addWidget(d->maxIntensityParameter->getSlider());
+    maxRangeLayout->addWidget(d->maxIntensityParameter->getSpinBox());
+    minMaxLayout->addRow(d->minIntensityParameter->getLabel(), minRangeLayout);
+    minMaxLayout->addRow(d->maxIntensityParameter->getLabel(), maxRangeLayout);
+
+    toolBoxLayout->addWidget(poGroupBoxLut/*poMinMaxGlobalWidget*/);    
+    // Finish LUT and WindowLevel range for it 
+    ////////////////////////////////////////////////////////////////
+
     toolBoxLayout->addWidget(d->gpuParameter->getCheckBox());
     toolBoxLayout->addWidget(d->shapesDisplayedGroupParameter->getRadioButtonGroup());
     toolBoxLayout->addWidget(d->radiusParameter->getLabel());
@@ -1491,7 +1650,7 @@ void medVtkFibersDataInteractor::updateSlicingParam()
     if(!d->view->is2D())
         return;
     //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer droped) - RDE
+    // not according to vtkInria (ie. first layer dropped) - RDE
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
     d->slicingParameter->blockSignals(false);

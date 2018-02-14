@@ -56,6 +56,8 @@ public:
 
     virtual void setInputData(medAbstractData *data);
 
+    void initWindowLevelParameters(double const * range);
+
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBarWidget();
     virtual QWidget* buildToolBoxWidget();
@@ -142,6 +144,10 @@ public slots:
     void selectTubeMode(bool);
     void activateGPU (bool activate);
     void setFiberColorMode(QString mode);
+
+    void updateRange();
+    void updateFALut(QString mode);
+
     void setBoxBooleanOperation(bool value);
     void setProjection (const QString& value);
     void setRadius(int value);
@@ -180,6 +186,7 @@ public slots:
 
 protected slots:
     virtual void updateWidgets();
+    virtual void updateLut();
 
 protected:
     /**

@@ -20,6 +20,8 @@
 #include <vtkObject.h>
 #include <vtkLookupTable.h>
 
+#include <QStringList>
+
 class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
 {
 
@@ -111,6 +113,8 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
   //BTX
   static std::vector<std::string> GetAvailableLookupTables();
   //ETX
+
+  static QStringList GetAvailableLookupTablesInStringList();
   
   static vtkLookupTable* GetLookupTable(const int &);
   //BTX

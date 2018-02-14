@@ -88,6 +88,15 @@ std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
 }
 
 
+QStringList vtkLookupTableManager::GetAvailableLookupTablesInStringList()
+{
+    QStringList luts;
+    const std::vector<std::string> & vec = vtkLookupTableManager::GetAvailableLookupTables();
+    for (std::vector<std::string>::const_iterator it = vec.begin(); it < vec.end(); ++it)
+        luts.append(QString::fromStdString(*it));
+    return luts;
+}
+
 vtkLookupTable* vtkLookupTableManager::GetLookupTable(const int& n)
 {
   std::vector< std::string > luts = GetAvailableLookupTables();
