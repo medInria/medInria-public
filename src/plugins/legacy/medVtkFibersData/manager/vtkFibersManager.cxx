@@ -287,8 +287,6 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   this->PickerCallback->SetFiberImage ( this->GetInput() );
   
   this->Callback->Execute (this->BoxWidget, 0, NULL);
-
-  //this->Mapper->SetScalarRange(0.0, 1.0);
   
   int totalLines = this->Callback->GetOutput()->GetNumberOfLines();
   double ratio = (double)totalLines/(double)(this->MaximumNumberOfFibers);

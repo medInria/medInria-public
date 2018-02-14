@@ -244,8 +244,6 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor());
     d->roiManager->SetRenderWindowInteractor(d->render->GetInteractor());
 
-    //lut->Delete();
-
     d->toolboxWidget = NULL;
     d->bundleToolboxWidget = NULL;
 
