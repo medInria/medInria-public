@@ -540,26 +540,28 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
     d->parameters << visibilityParameter();
 }
 
-void medVtkFibersDataInteractor::initWindowLevelParameters(double const * range)
+void medVtkFibersDataInteractor::initWindowLevelParameters(double * range)
 {
     double window = range[1] - range[0];
-    double level = 0.5*(range[1] + range[0]);
 
-    double windowMin = 0;
-    double windowMax = 2.0 * window;
     double halfWidth = 0.5 * window;
     double levelMin = range[0] - halfWidth;
     double levelMax = range[1] + halfWidth;
+    double intensityStep = qMin(0.1, (levelMax - levelMin) / 1000);
 
     d->minIntensityParameter->blockSignals(true);
     d->maxIntensityParameter->blockSignals(true);
 
+    d->minIntensityParameter->setSingleStep(intensityStep);
+    d->minIntensityParameter->setDecimals(6);
+    d->maxIntensityParameter->setSingleStep(intensityStep);
+    d->maxIntensityParameter->setDecimals(6);
     d->minIntensityParameter->setRange(levelMin, levelMax);
     d->maxIntensityParameter->setRange(levelMin, levelMax);
     d->minIntensityParameter->setValue(range[0]);
     d->maxIntensityParameter->setValue(range[1]);
-    d->view2d->SetColorRange((double*)range);
-    d->view3d->SetColorRange((double*)range);
+    d->view2d->SetColorRange(range);
+    d->view3d->SetColorRange(range);
 
     d->maxIntensityParameter->blockSignals(false);
     d->minIntensityParameter->blockSignals(false);
@@ -673,7 +675,8 @@ void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
     }
     else
     {
-        updateFALut(mode);
+        switchMinMaxRangeSource(mode);
+        updateCustomLUT(mode);
         d->manager->GetLookupTable()->SetRange(d->minIntensityParameter->value(), d->maxIntensityParameter->value());
         d->poLutWidget->show();
     }
@@ -709,7 +712,7 @@ void medVtkFibersDataInteractor::updateRange()
     }
 }
 
-void medVtkFibersDataInteractor::updateFALut(QString mode)
+void medVtkFibersDataInteractor::updateCustomLUT(QString mode)
 {
     QString lutName = d->LutFiberParameter->value();
     vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
@@ -728,11 +731,6 @@ void medVtkFibersDataInteractor::updateFALut(QString mode)
             QString pointArrayName = d->manager->GetPointArrayName(i);
             if (pointArrayName == mode)
             {
-                double dfTmp2[2];
-                dfTmp2[0] = d->oScalarRangeVect[i][0];
-                dfTmp2[1] = d->oScalarRangeVect[i][1];
-                initWindowLevelParameters(dfTmp2);
-
                 d->manager->SetColorModeToPointArray(i);
                 break;
             }
@@ -740,9 +738,27 @@ void medVtkFibersDataInteractor::updateFALut(QString mode)
     }
 }
 
+void medVtkFibersDataInteractor::switchMinMaxRangeSource(QString mode)
+{
+    for (int i = 0; i < d->manager->GetNumberOfPointArrays(); i++)
+    {
+        if (d->manager->GetPointArrayName(i))
+        {
+            QString pointArrayName = d->manager->GetPointArrayName(i);
+            if (pointArrayName == mode)
+            {
+                double dfTmp2[2];
+                dfTmp2[0] = d->oScalarRangeVect[i][0];
+                dfTmp2[1] = d->oScalarRangeVect[i][1];
+                initWindowLevelParameters(dfTmp2);
+                break;
+            }
+        }
+    }
+}
 void medVtkFibersDataInteractor::updateLut()
 {
-    updateFALut(d->colorFiberParameter->value());
+    updateCustomLUT(d->colorFiberParameter->value());
     d->view->render();
 }
 
@@ -1080,6 +1096,7 @@ void medVtkFibersDataInteractor::clearStatistics(void)
     d->maxLengthList.clear();
     d->varLengthList.clear();
 }
+
 
 void medVtkFibersDataInteractor::setProjection(const QString& value)
 {

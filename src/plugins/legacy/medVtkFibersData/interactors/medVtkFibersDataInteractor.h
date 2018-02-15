@@ -56,7 +56,7 @@ public:
 
     virtual void setInputData(medAbstractData *data);
 
-    void initWindowLevelParameters(double const * range);
+    void initWindowLevelParameters(double * range);
 
     virtual QWidget* buildLayerWidget();
     virtual QWidget* buildToolBarWidget();
@@ -146,7 +146,7 @@ public slots:
     void setFiberColorMode(QString mode);
 
     void updateRange();
-    void updateFALut(QString mode);
+    void updateCustomLUT(QString mode);
 
     void setBoxBooleanOperation(bool value);
     void setProjection (const QString& value);
@@ -215,7 +215,7 @@ protected:
      */
     void clearStatistics();
 
-
+    void switchMinMaxRangeSource(QString mode);
 private:
     static QStringList dataHandled();
 
