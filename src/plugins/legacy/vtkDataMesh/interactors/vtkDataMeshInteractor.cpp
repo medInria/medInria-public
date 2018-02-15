@@ -53,6 +53,7 @@
 #include <vtkScalarBarActor.h>
 
 #include <vector>
+#include <QGroupBox>
 #include <QPushButton>
 #include <QDoubleSpinBox>
 #include <QSlider>
@@ -89,9 +90,10 @@ public:
     medBoolParameterL *edgeVisibleParam;
     medStringListParameterL *colorParam;
     medStringListParameterL *renderingParam;
-    medDoubleParameterL *minRange,*maxRange;
+    medDoubleParameterL *minIntensityParameter;
+    medDoubleParameterL *maxIntensityParameter;
 
-    QPushButton * range_button;
+    QWidget * poLutWidget;
     
     QList <medAbstractParameterL*> parameters;
 
@@ -117,12 +119,9 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->colorParam = NULL;
     d->renderingParam = NULL;
     d->slicingParameter = NULL;
-    d->minRange = 0;
-    d->maxRange = 0;
-
-    d->range_button = new QPushButton("Modify Range");
-    d->range_button->setCheckable(true);
-    connect(d->range_button,SIGNAL(toggled(bool)),this,SLOT(showRangeWidgets(bool)));
+    d->minIntensityParameter = 0;
+    d->maxIntensityParameter = 0;
+    d->poLutWidget = nullptr;
 }
 
 
@@ -262,11 +261,11 @@ void vtkDataMeshInteractor::setupParameters()
 
     d->parameters << this->visibilityParameter();
 
-    d->minRange = new medDoubleParameterL("Min",this);
-    d->maxRange = new medDoubleParameterL("Max",this);
+    d->minIntensityParameter = new medDoubleParameterL("Min Intensity:",this);
+    d->maxIntensityParameter = new medDoubleParameterL("Max Intensity:",this);
 
-    connect(d->minRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
-    connect(d->maxRange,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
+    connect(d->minIntensityParameter,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
+    connect(d->maxIntensityParameter,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
 
     this->updateWidgets();
 }
@@ -393,14 +392,11 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         mapper2d->SelectColorArray(qPrintable(attributeName));
         mapper3d->SelectColorArray(qPrintable(attributeName));
 
-        d->range_button->show();
+        d->poLutWidget->show();
         double * range = d->metaDataSet->GetCurrentScalarRange();
-        d->minRange->setRange(range[0],range[1]);
-        d->maxRange->setRange(range[0],range[1]);
-        d->minRange->setValue(range[0]);
-        d->maxRange->setValue(range[1]);
-        d->view2d->SetColorRange(range);
-        d->view3d->SetColorRange(range);
+
+        initWindowLevelParameters(range);
+
         
         this->setLut(d->lut.first);
 
@@ -409,8 +405,10 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     }
     else
     {
-        d->range_button->setChecked(false);
-        d->range_button->hide();
+        if (d->poLutWidget)
+        {
+            d->poLutWidget->hide();
+        }
         if(d->LUTParam)
             d->LUTParam->hide();
         if(d->colorParam)
@@ -423,6 +421,33 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     d->view->render();
 }
 
+
+void vtkDataMeshInteractor::initWindowLevelParameters(double * range)
+{
+    double window = range[1] - range[0];
+
+    double halfWidth = 0.5 * window;
+    double levelMin = range[0] - halfWidth;
+    double levelMax = range[1] + halfWidth;
+    double intensityStep = qMin(0.1, (levelMax - levelMin) / 1000);
+
+    d->minIntensityParameter->blockSignals(true);
+    d->maxIntensityParameter->blockSignals(true);
+
+    d->minIntensityParameter->setSingleStep(intensityStep);
+    d->minIntensityParameter->setDecimals(6);
+    d->maxIntensityParameter->setSingleStep(intensityStep);
+    d->maxIntensityParameter->setDecimals(6);
+    d->minIntensityParameter->setRange(levelMin, levelMax);
+    d->maxIntensityParameter->setRange(levelMin, levelMax);
+    d->minIntensityParameter->setValue(range[0]);
+    d->maxIntensityParameter->setValue(range[1]);
+    d->view2d->SetColorRange(range);
+    d->view3d->SetColorRange(range);
+
+    d->maxIntensityParameter->blockSignals(false);
+    d->minIntensityParameter->blockSignals(false);
+}
 
 QString vtkDataMeshInteractor::attribute() const
 {
@@ -542,26 +567,34 @@ QWidget* vtkDataMeshInteractor::buildLayerWidget()
 QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
 {
     QWidget *toolbox = new QWidget;
-    QFormLayout *layout = new QFormLayout(toolbox);
-    if(d->attributesParam)
-        layout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
 
-    layout->addRow(d->LUTParam->getLabel(), d->LUTParam->getComboBox());
-    layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
-    layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
-    layout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
-    layout->addRow(d->range_button);
-    d->minRange->getSlider()->setOrientation(Qt::Horizontal);
-    d->maxRange->getSlider()->setOrientation(Qt::Horizontal);
+    QFormLayout *formLayout = new QFormLayout(toolbox);
+    QGroupBox *poLutGroupBox = new QGroupBox();
+    d->poLutWidget = poLutGroupBox;
+
+    if(d->attributesParam)
+        formLayout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
+
+    formLayout->addRow(d->poLutWidget);
+    formLayout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
+    formLayout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
+    formLayout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
+
+    d->minIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
+    d->maxIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
+
+    QFormLayout *lutLayout = new QFormLayout(poLutGroupBox);
+    lutLayout->addRow(d->LUTParam->getLabel(), d->LUTParam->getComboBox());
     QHBoxLayout *minRangeLayout = new QHBoxLayout();
     QHBoxLayout *maxRangeLayout = new QHBoxLayout();
-    minRangeLayout->addWidget(d->minRange->getSlider());
-    minRangeLayout->addWidget(d->minRange->getSpinBox());
-    maxRangeLayout->addWidget(d->maxRange->getSlider());
-    maxRangeLayout->addWidget(d->maxRange->getSpinBox());
-    layout->addRow(d->minRange->getLabel(),minRangeLayout);
-    layout->addRow(d->maxRange->getLabel(),maxRangeLayout);
-    showRangeWidgets(false);
+    minRangeLayout->addWidget(d->minIntensityParameter->getSlider());
+    minRangeLayout->addWidget(d->minIntensityParameter->getSpinBox());
+    maxRangeLayout->addWidget(d->maxIntensityParameter->getSlider());
+    maxRangeLayout->addWidget(d->maxIntensityParameter->getSpinBox());
+    lutLayout->addRow(d->minIntensityParameter->getLabel(),minRangeLayout);
+    lutLayout->addRow(d->maxIntensityParameter->getLabel(),maxRangeLayout);
+    d->poLutWidget->hide();
+
     return toolbox;
 }
 
@@ -608,7 +641,7 @@ void vtkDataMeshInteractor::updateSlicingParam()
     if(!d->view->is2D())
         return;
     //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer droped) - RDE
+    // not according to vtkInria (ie. first layer dropped) - RDE
 
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
@@ -633,39 +666,25 @@ void vtkDataMeshInteractor::updateRange()
     medDoubleParameterL *sender = dynamic_cast<medDoubleParameterL *>(this->sender());
     if(sender)
     {
-        if( sender == d->minRange && d->minRange->value() >= d->maxRange->value() )
+        if( sender == d->minIntensityParameter && d->minIntensityParameter->value() >= d->maxIntensityParameter->value() )
         {
-            d->maxRange->blockSignals(true);
-            d->maxRange->setValue(d->minRange->value());
-            d->maxRange->blockSignals(false);
+            d->maxIntensityParameter->blockSignals(true);
+            d->maxIntensityParameter->setValue(d->minIntensityParameter->value());
+            d->maxIntensityParameter->blockSignals(false);
         }
-        else if( sender == d->maxRange && d->maxRange->value() <= d->minRange->value() )
+        else if( sender == d->maxIntensityParameter && d->maxIntensityParameter->value() <= d->minIntensityParameter->value() )
         {
-            d->minRange->blockSignals(true);
-            d->minRange->setValue(d->maxRange->value());
-            d->minRange->blockSignals(false);
+            d->minIntensityParameter->blockSignals(true);
+            d->minIntensityParameter->setValue(d->maxIntensityParameter->value());
+            d->minIntensityParameter->blockSignals(false);
         }
     }
     
-    lut->SetRange(d->minRange->value(),d->maxRange->value());
+    lut->SetRange(d->minIntensityParameter->value(),d->maxIntensityParameter->value());
     mapper2d->SetLookupTable(lut);
     mapper3d->SetLookupTable(lut);
     d->view3d->GetScalarBar()->SetLookupTable(lut);
     d->view2d->GetScalarBar()->SetLookupTable(lut);
 
     d->view->render();
-}
-
-void vtkDataMeshInteractor::showRangeWidgets(bool checked)
-{
-    if (checked)
-    {
-        d->maxRange->show();
-        d->minRange->show();
-    }
-    else
-    {
-        d->maxRange->hide();
-        d->minRange->hide();
-    }
 }

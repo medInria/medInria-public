@@ -63,6 +63,9 @@ public slots:
     void setEdgeVisibility(bool visible);
     void setRenderingType(const QString &type);
     void setAttribute(const QString & attribute);
+
+    void initWindowLevelParameters(double * range);
+
     void setLut(const QString &lutName);
 
     virtual void removeData();
@@ -85,7 +88,6 @@ private:
 private slots:
     void updateSlicingParam();
     void updateRange();
-    void showRangeWidgets(bool);
 
 private:
     vtkDataMeshInteractorPrivate * d;
