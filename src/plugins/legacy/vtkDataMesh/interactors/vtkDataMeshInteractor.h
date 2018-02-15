@@ -84,6 +84,8 @@ private:
 
 private slots:
     void updateSlicingParam();
+    void updateRange();
+    void showRangeWidgets(bool);
 
 private:
     vtkDataMeshInteractorPrivate * d;
