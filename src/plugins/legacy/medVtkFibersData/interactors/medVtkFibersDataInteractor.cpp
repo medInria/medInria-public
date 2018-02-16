@@ -29,6 +29,7 @@
 #include <vtkIsosurfaceManager.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
+#include <vtkScalarBarActor.h>
 
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
@@ -260,7 +261,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->LutFiberParameter->setToolTip("Choose type of LUT");
     d->LutFiberParameter->getLabel()->setText(tr("Choose type of LUT:"));
     d->LutFiberParameter->addItems(vtkLookupTableManager::GetAvailableLookupTablesInStringList());
-    d->LutFiberParameter->setValue(tr("Loni"));
+    d->LutFiberParameter->setValue("Loni");
     d->parameters << d->LutFiberParameter;
 
     d->alphaTransparencyParameter = new medBoolParameterL("ActivateTransparencyParameter", this);
@@ -735,6 +736,9 @@ void medVtkFibersDataInteractor::updateCustomLUT(QString mode)
             }
         }
     }
+
+    d->view3d->GetScalarBar()->SetLookupTable(lut);
+    d->view2d->GetScalarBar()->SetLookupTable(lut);
 }
 
 void medVtkFibersDataInteractor::switchMinMaxRangeSource(QString mode)
