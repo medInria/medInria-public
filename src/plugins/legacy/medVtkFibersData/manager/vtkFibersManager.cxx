@@ -121,6 +121,7 @@ vtkFibersManager::vtkFibersManager()
   else
   {
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    mapper->UseLookupTableScalarRangeOn();
     mapper->ImmediateModeRenderingOn();
     this->Mapper = mapper;
   }

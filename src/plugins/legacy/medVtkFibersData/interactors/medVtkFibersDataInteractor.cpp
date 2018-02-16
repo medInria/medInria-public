@@ -260,7 +260,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->LutFiberParameter->setToolTip("Choose type of LUT");
     d->LutFiberParameter->getLabel()->setText(tr("Choose type of LUT:"));
     d->LutFiberParameter->addItems(vtkLookupTableManager::GetAvailableLookupTablesInStringList());
-    d->LutFiberParameter->setValue(tr("Loni 2"));
+    d->LutFiberParameter->setValue(tr("Loni"));
     d->parameters << d->LutFiberParameter;
 
     d->alphaTransparencyParameter = new medBoolParameterL("ActivateTransparencyParameter", this);
@@ -705,8 +705,6 @@ void medVtkFibersDataInteractor::updateRange()
                 d->minIntensityParameter->blockSignals(false);
             }
         }
-        double scalarRange[2] = { d->minIntensityParameter->value(), d->maxIntensityParameter->value() };
-        d->manager->SetScalarRange(scalarRange);
         lut->SetRange(d->minIntensityParameter->value(), d->maxIntensityParameter->value());
         d->view->render();
     }
@@ -716,6 +714,7 @@ void medVtkFibersDataInteractor::updateCustomLUT(QString mode)
 {
     QString lutName = d->LutFiberParameter->value();
     vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
+    lut->SetRange(d->minIntensityParameter->value(), d->maxIntensityParameter->value());
     if (!d->alphaTransparencyParameter->value())
     {
         // remove the alpha channel from the LUT, it messes up the mesh
@@ -1414,7 +1413,6 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     // LUT and WindowLevel range for it 
     QGroupBox *poGroupBoxLut = new QGroupBox(/*tr("LUT: ")*/);
     poGroupBoxLut->setAlignment(Qt::AlignLeft);
-    //QWidget *poMinMaxGlobalWidget = new QWidget();
     d->poLutWidget = poGroupBoxLut;
     d->poLutWidget->hide();
     QVBoxLayout *lutLayout = new QVBoxLayout(poGroupBoxLut);
