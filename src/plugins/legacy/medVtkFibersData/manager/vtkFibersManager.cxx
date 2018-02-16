@@ -121,7 +121,7 @@ vtkFibersManager::vtkFibersManager()
   else
   {
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-    mapper->ImmediateModeRenderingOn();
+    mapper->UseLookupTableScalarRangeOn();
     this->Mapper = mapper;
   }
 
@@ -287,8 +287,6 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   this->PickerCallback->SetFiberImage ( this->GetInput() );
   
   this->Callback->Execute (this->BoxWidget, 0, NULL);
-
-  this->Mapper->SetScalarRange(0.0, 1.0);
   
   int totalLines = this->Callback->GetOutput()->GetNumberOfLines();
   double ratio = (double)totalLines/(double)(this->MaximumNumberOfFibers);
@@ -479,7 +477,6 @@ void vtkFibersManager::ChangeMapperToDefault()
   }
   
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-  mapper->ImmediateModeRenderingOn();  
   mapper->SetInputConnection( this->Callback->GetOutputPort() );
   this->Actor->SetMapper( mapper );
   
@@ -624,7 +621,7 @@ int vtkFibersManager::GetNumberOfPointArrays() const
   return this->Mapper->GetInput()->GetPointData()->GetNumberOfArrays();
 }
 
-void vtkFibersManager::SetLookupTable (vtkScalarsToColors* lut)
+void vtkFibersManager::SetLookupTable(vtkScalarsToColors* lut)
 {
   this->Mapper->SetLookupTable (lut);
 }

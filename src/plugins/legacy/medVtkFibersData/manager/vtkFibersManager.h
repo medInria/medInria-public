@@ -188,8 +188,8 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFibersManager : public vtkObject
   
   virtual int GetNumberOfPointArrays() const;
   
-  virtual void SetLookupTable (vtkScalarsToColors* lut);
-  
+  virtual void SetLookupTable(vtkScalarsToColors* lut);
+
   virtual vtkScalarsToColors* GetLookupTable() const;
   
   virtual void SetMaximumNumberOfFibers(int num);

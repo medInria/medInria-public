@@ -15,6 +15,10 @@
 #include <QtOpenGL>
 #include <QSurfaceFormat>
 
+#ifdef WIN32
+#include <QtPlatformHeaders/QWindowsWindowFunctions>
+#endif
+
 #include <medMainWindow.h>
 #include <medApplication.h>
 #include <medSplashScreen.h>
@@ -201,8 +205,7 @@ int main(int argc,char* argv[])
         mainwindow->setStartup(medMainWindow::WorkSpace,posargs);
 
     bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
-
-
+    
     const bool hasFullScreenArg   = application.arguments().contains("--fullscreen");
     const bool hasNoFullScreenArg = application.arguments().contains("--no-fullscreen");
     const bool hasWallArg         = application.arguments().contains("--wall");
@@ -225,6 +228,9 @@ int main(int argc,char* argv[])
     }
 
     mainwindow->setFullScreen(fullScreen);
+#ifdef WIN32
+    QWindowsWindowFunctions::setHasBorderInFullScreen(mainwindow->windowHandle(), true);
+#endif
 
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;
