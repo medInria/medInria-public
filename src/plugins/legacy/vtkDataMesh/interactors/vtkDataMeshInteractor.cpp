@@ -373,6 +373,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
         if(d->colorParam)
             d->colorParam->hide();
+
         if(d->LUTParam)
         {
             QStringList luts;
@@ -393,7 +394,8 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         mapper3d->SelectColorArray(qPrintable(attributeName));
 
         d->poLutWidget->show();
-        double * range = d->metaDataSet->GetCurrentScalarRange();
+        double range[2];
+        d->attribute->GetRange(range);
 
         initWindowLevelParameters(range);
 
