@@ -1856,7 +1856,7 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix,
     bounds[5] = floor(bounds[5]+0.5)+1;
 
     unsigned int numberOfLayers = GetNumberOfLayers();
-    UpdateBounds(bounds, layer, imageSize, imageSpacing, imageOrigin);
+    UpdateBounds(bounds, layer, matrix, imageSize, imageSpacing, imageOrigin);
 
     this->SetCurrentLayer(layer);
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
@@ -2081,7 +2081,7 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   return widget->GetActor();
 }
 
-void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int imageSize[3], const double imageSpacing[3], const double imageOrigin[3])
+void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, vtkMatrix4x4 *matrix, const int imageSize[3], const double imageSpacing[3], const double imageOrigin[3])
 {
     bool isImageOutBounded = false;
     double imageBounds[6];
@@ -2133,7 +2133,7 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, const int 
         m_vtkImageFromBoundsSourceGenerator->UpdateInformation();
         m_vtkImageFromBoundsSourceGenerator->Update();
 
-        SetInput(m_vtkImageFromBoundsSourceGenerator->GetOutputPort(), 0, layer);
+        SetInput(m_vtkImageFromBoundsSourceGenerator->GetOutputPort(), matrix, layer);
         vtkImageActor *actor = GetImageActor(layer);
         actor->SetOpacity(0.0);
         isImageOutBounded=false;

@@ -356,7 +356,7 @@ public:
     virtual void StoreColorWindow(double s,int layer);
     virtual void StoreColorLevel(double s,int layer);
 
-    virtual void UpdateBounds (const double bounds[6], int layer = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
+    virtual void UpdateBounds (const double bounds[6], int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
                              const double imageOrigin[] = 0);
 
     virtual vtkRenderer * GetRenderer() const;
