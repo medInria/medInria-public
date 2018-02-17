@@ -41,6 +41,11 @@ public slots:
     void setRenderer(QString);
     void enableCropping(bool);
 
+    // Handle hide show planes in MSR mode
+    void toggleMSRXPlane(bool);
+    void toggleMSRYPlane(bool);
+    void toggleMSRZPlane(bool);
+
 protected:
     virtual QWidget * buildToolBoxWidget();
     virtual QWidget * buildToolBarWidget();

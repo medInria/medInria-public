@@ -47,6 +47,10 @@ public:
     medStringListParameterL *renderer3DParameter;
     medBoolParameterL *croppingParameter;
 
+    // Handle hide / show planes in MSR
+    medBoolParameterL *actorXMSRParameter;
+    medBoolParameterL *actorYMSRParameter;
+    medBoolParameterL *actorZMSRParameter;
 };
 
 
@@ -87,9 +91,24 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
     d->croppingParameter = new medBoolParameterL("Cropping", this);
     connect(d->croppingParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableCropping(bool)));
 
+    d->actorXMSRParameter = new medBoolParameterL("Show X plane", this);
+    d->actorXMSRParameter->setValue(true);
+    connect(d->actorXMSRParameter, SIGNAL(valueChanged(bool)), this, SLOT(toggleMSRXPlane(bool)));
+
+    d->actorYMSRParameter = new medBoolParameterL("Show Y plane", this);
+    d->actorYMSRParameter->setValue(true);
+    connect(d->actorYMSRParameter, SIGNAL(valueChanged(bool)), this, SLOT(toggleMSRYPlane(bool)));
+
+    d->actorZMSRParameter = new medBoolParameterL("Show Z plane", this);
+    d->actorZMSRParameter->setValue(true);
+    connect(d->actorZMSRParameter, SIGNAL(valueChanged(bool)), this, SLOT(toggleMSRZPlane(bool)));
+
     this->setMode3D("MSR");
 
     d->parameters.append(d->mode3DParameter);
+    d->parameters.append(d->actorXMSRParameter);
+    d->parameters.append(d->actorYMSRParameter);
+    d->parameters.append(d->actorZMSRParameter);
     d->parameters.append(d->renderer3DParameter);
     d->parameters.append(d->croppingParameter);
 }
@@ -177,6 +196,11 @@ void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
     {
         d->view3d->SetRenderingModeToVR();
         d->view3d->SetVolumeRayCastFunctionToComposite();
+
+        d->actorXMSRParameter->hide();
+        d->actorYMSRParameter->hide();
+        d->actorZMSRParameter->hide();
+
         d->renderer3DParameter->show();
         d->croppingParameter->show();
         this->enableCropping(d->croppingParameter->value());
@@ -184,9 +208,15 @@ void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
     else if ( mode == "MSR" )
     {
         d->view3d->SetRenderingModeToPlanar();
-        d->view3d->ShowActorXOn();
-        d->view3d->ShowActorYOn();
-        d->view3d->ShowActorZOn();
+
+        this->toggleMSRXPlane(d->actorXMSRParameter->value());
+        this->toggleMSRYPlane(d->actorYMSRParameter->value());
+        this->toggleMSRZPlane(d->actorZMSRParameter->value());
+
+        d->actorXMSRParameter->show();
+        d->actorYMSRParameter->show();
+        d->actorZMSRParameter->show();
+
         d->renderer3DParameter->hide();
         d->croppingParameter->hide();
         this->enableCropping(false);
@@ -195,6 +225,11 @@ void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
     {
         d->view3d->SetRenderingModeToVR();
         d->view3d->SetVolumeRayCastFunctionToMaximumIntensityProjection();
+
+        d->actorXMSRParameter->hide();
+        d->actorYMSRParameter->hide();
+        d->actorZMSRParameter->hide();
+
         d->renderer3DParameter->show();
         d->croppingParameter->show();
         this->enableCropping(d->croppingParameter->value());
@@ -203,6 +238,11 @@ void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
     {
         d->view3d->SetRenderingModeToVR();
         d->view3d->SetVolumeRayCastFunctionToMinimumIntensityProjection();
+
+        d->actorXMSRParameter->hide();
+        d->actorYMSRParameter->hide();
+        d->actorZMSRParameter->hide();
+
         d->renderer3DParameter->show();
         d->croppingParameter->show();
         this->enableCropping(d->croppingParameter->value());
@@ -213,10 +253,45 @@ void medVtkViewItkDataImageNavigator::setMode3D(QString mode)
         d->view3d->ShowActorXOff();
         d->view3d->ShowActorYOff();
         d->view3d->ShowActorZOff();
+
+        d->actorXMSRParameter->hide();
+        d->actorYMSRParameter->hide();
+        d->actorZMSRParameter->hide();
+
         d->renderer3DParameter->hide();
         d->croppingParameter->hide();
         this->enableCropping(false);
     }
+
+    d->imageView->render();
+}
+
+void medVtkViewItkDataImageNavigator::toggleMSRXPlane(bool toggleValue)
+{
+    if (toggleValue)
+        d->view3d->ShowActorXOn();
+    else
+        d->view3d->ShowActorXOff();
+
+    d->imageView->render();
+}
+
+void medVtkViewItkDataImageNavigator::toggleMSRYPlane(bool toggleValue)
+{
+    if (toggleValue)
+        d->view3d->ShowActorYOn();
+    else
+        d->view3d->ShowActorYOff();
+
+    d->imageView->render();
+}
+
+void medVtkViewItkDataImageNavigator::toggleMSRZPlane(bool toggleValue)
+{
+    if (toggleValue)
+        d->view3d->ShowActorZOn();
+    else
+        d->view3d->ShowActorZOff();
 
     d->imageView->render();
 }
@@ -261,15 +336,13 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
     //TODO: Shouldn't we be able to save the cropping after?
 }
 
-
 /*=========================================================================
 
     protected
 
 =========================================================================*/
 
-
-QWidget *  medVtkViewItkDataImageNavigator::buildToolBoxWidget()
+QWidget *medVtkViewItkDataImageNavigator::buildToolBoxWidget()
 {
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
@@ -285,8 +358,3 @@ QWidget *medVtkViewItkDataImageNavigator::buildToolBarWidget()
     toolBarWidget->hide();
     return toolBarWidget;
 }
-
-
-
-
-
