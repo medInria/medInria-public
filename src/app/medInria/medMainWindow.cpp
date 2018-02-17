@@ -114,8 +114,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QApplication::setPalette(p);
 
     //  To avoid strange behaviours with the homepageshifter
-    this->setMinimumHeight ( 800 );
-    this->setMinimumWidth ( 1200 );
+    this->setMinimumHeight ( 600 );
+    this->setMinimumWidth ( 800 );
 
     d->closeEventProcessed = false;
 
