@@ -50,8 +50,12 @@
 #include <medAbstractImageView.h>
 #include <medIntParameterL.h>
 #include <medVtkViewBackend.h>
+#include <vtkScalarBarActor.h>
 
 #include <vector>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QDoubleSpinBox>
 #include <QSlider>
 #include <QFormLayout>
 #include <QLabel>
@@ -86,7 +90,11 @@ public:
     medBoolParameterL *edgeVisibleParam;
     medStringListParameterL *colorParam;
     medStringListParameterL *renderingParam;
+    medDoubleParameterL *minIntensityParameter;
+    medDoubleParameterL *maxIntensityParameter;
 
+    QWidget * poLutWidget;
+    
     QList <medAbstractParameterL*> parameters;
 
     medIntParameterL *slicingParameter;
@@ -111,6 +119,9 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->colorParam = NULL;
     d->renderingParam = NULL;
     d->slicingParameter = NULL;
+    d->minIntensityParameter = 0;
+    d->maxIntensityParameter = 0;
+    d->poLutWidget = nullptr;
 }
 
 
@@ -250,6 +261,12 @@ void vtkDataMeshInteractor::setupParameters()
 
     d->parameters << this->visibilityParameter();
 
+    d->minIntensityParameter = new medDoubleParameterL("Min Intensity:",this);
+    d->maxIntensityParameter = new medDoubleParameterL("Max Intensity:",this);
+
+    connect(d->minIntensityParameter,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
+    connect(d->maxIntensityParameter,SIGNAL(valueChanged(double)),this,SLOT(updateRange()));
+
     this->updateWidgets();
 }
 
@@ -356,6 +373,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
         if(d->colorParam)
             d->colorParam->hide();
+
         if(d->LUTParam)
         {
             QStringList luts;
@@ -375,6 +393,13 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         mapper2d->SelectColorArray(qPrintable(attributeName));
         mapper3d->SelectColorArray(qPrintable(attributeName));
 
+        d->poLutWidget->show();
+        double range[2];
+        d->attribute->GetRange(range);
+
+        initWindowLevelParameters(range);
+
+        
         this->setLut(d->lut.first);
 
         mapper2d->SetScalarVisibility(1);
@@ -382,6 +407,10 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     }
     else
     {
+        if (d->poLutWidget)
+        {
+            d->poLutWidget->hide();
+        }
         if(d->LUTParam)
             d->LUTParam->hide();
         if(d->colorParam)
@@ -394,6 +423,33 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     d->view->render();
 }
 
+
+void vtkDataMeshInteractor::initWindowLevelParameters(double * range)
+{
+    double window = range[1] - range[0];
+
+    double halfWidth = 0.5 * window;
+    double levelMin = range[0] - halfWidth;
+    double levelMax = range[1] + halfWidth;
+    double intensityStep = qMin(0.1, (levelMax - levelMin) / 1000);
+
+    d->minIntensityParameter->blockSignals(true);
+    d->maxIntensityParameter->blockSignals(true);
+
+    d->minIntensityParameter->setSingleStep(intensityStep);
+    d->minIntensityParameter->setDecimals(6);
+    d->maxIntensityParameter->setSingleStep(intensityStep);
+    d->maxIntensityParameter->setDecimals(6);
+    d->minIntensityParameter->setRange(levelMin, levelMax);
+    d->maxIntensityParameter->setRange(levelMin, levelMax);
+    d->minIntensityParameter->setValue(range[0]);
+    d->maxIntensityParameter->setValue(range[1]);
+    d->view2d->SetColorRange(range);
+    d->view3d->SetColorRange(range);
+
+    d->maxIntensityParameter->blockSignals(false);
+    d->minIntensityParameter->blockSignals(false);
+}
 
 QString vtkDataMeshInteractor::attribute() const
 {
@@ -409,7 +465,7 @@ void vtkDataMeshInteractor::setLut(const QString & lutName)
         lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
 
     if ( ! d->attribute)
-     return;
+        return;
 
     d->lut = LutPair(lut, lutName);
     this->setLut(lut);
@@ -469,6 +525,8 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     mapper2d->UseLookupTableScalarRangeOn();
     mapper3d->SetLookupTable(lut);
     mapper3d->UseLookupTableScalarRangeOn();
+    
+    updateRange();
 }
 
 
@@ -511,14 +569,33 @@ QWidget* vtkDataMeshInteractor::buildLayerWidget()
 QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
 {
     QWidget *toolbox = new QWidget;
-    QFormLayout *layout = new QFormLayout(toolbox);
-    if(d->attributesParam)
-        layout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
 
-    layout->addRow(d->LUTParam->getLabel(), d->LUTParam->getComboBox());
-    layout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
-    layout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
-    layout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
+    QFormLayout *formLayout = new QFormLayout(toolbox);
+    QGroupBox *poLutGroupBox = new QGroupBox();
+    d->poLutWidget = poLutGroupBox;
+
+    if(d->attributesParam)
+        formLayout->addRow(d->attributesParam->getLabel(), d->attributesParam->getComboBox());
+
+    formLayout->addRow(d->poLutWidget);
+    formLayout->addRow(d->edgeVisibleParam->getLabel(), d->edgeVisibleParam->getCheckBox());
+    formLayout->addRow(d->colorParam->getLabel(), d->colorParam->getComboBox());
+    formLayout->addRow(d->renderingParam->getLabel(), d->renderingParam->getComboBox());
+
+    d->minIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
+    d->maxIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
+
+    QFormLayout *lutLayout = new QFormLayout(poLutGroupBox);
+    lutLayout->addRow(d->LUTParam->getLabel(), d->LUTParam->getComboBox());
+    QHBoxLayout *minRangeLayout = new QHBoxLayout();
+    QHBoxLayout *maxRangeLayout = new QHBoxLayout();
+    minRangeLayout->addWidget(d->minIntensityParameter->getSlider());
+    minRangeLayout->addWidget(d->minIntensityParameter->getSpinBox());
+    maxRangeLayout->addWidget(d->maxIntensityParameter->getSlider());
+    maxRangeLayout->addWidget(d->maxIntensityParameter->getSpinBox());
+    lutLayout->addRow(d->minIntensityParameter->getLabel(),minRangeLayout);
+    lutLayout->addRow(d->maxIntensityParameter->getLabel(),maxRangeLayout);
+    d->poLutWidget->hide();
 
     return toolbox;
 }
@@ -566,11 +643,50 @@ void vtkDataMeshInteractor::updateSlicingParam()
     if(!d->view->is2D())
         return;
     //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer droped) - RDE
+    // not according to vtkInria (ie. first layer dropped) - RDE
 
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
     d->slicingParameter->blockSignals(false);
 
     d->slicingParameter->setValue(d->view2d->GetSlice());
+}
+
+void vtkDataMeshInteractor::updateRange()
+{
+    if (!d->metaDataSet)
+        return;
+    
+    vtkMapper * mapper2d = d->actor2d->GetMapper();
+    vtkMapper * mapper3d = d->actor3d->GetMapper();
+
+    vtkLookupTable * lut = vtkLookupTable::SafeDownCast(mapper3d->GetLookupTable());
+    
+    if (!lut)
+        return;
+    
+    medDoubleParameterL *sender = dynamic_cast<medDoubleParameterL *>(this->sender());
+    if(sender)
+    {
+        if( sender == d->minIntensityParameter && d->minIntensityParameter->value() >= d->maxIntensityParameter->value() )
+        {
+            d->maxIntensityParameter->blockSignals(true);
+            d->maxIntensityParameter->setValue(d->minIntensityParameter->value());
+            d->maxIntensityParameter->blockSignals(false);
+        }
+        else if( sender == d->maxIntensityParameter && d->maxIntensityParameter->value() <= d->minIntensityParameter->value() )
+        {
+            d->minIntensityParameter->blockSignals(true);
+            d->minIntensityParameter->setValue(d->maxIntensityParameter->value());
+            d->minIntensityParameter->blockSignals(false);
+        }
+    }
+    
+    lut->SetRange(d->minIntensityParameter->value(),d->maxIntensityParameter->value());
+    mapper2d->SetLookupTable(lut);
+    mapper3d->SetLookupTable(lut);
+    d->view3d->GetScalarBar()->SetLookupTable(lut);
+    d->view2d->GetScalarBar()->SetLookupTable(lut);
+
+    d->view->render();
 }
