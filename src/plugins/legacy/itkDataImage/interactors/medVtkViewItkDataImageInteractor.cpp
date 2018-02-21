@@ -65,6 +65,8 @@ public:
     medDoubleParameterL *minIntensityParameter;
     medDoubleParameterL *maxIntensityParameter;
 
+    medBoolParameterL *enableInterpolation;
+
     QMap <QString,QString> presetToLut;
 
     bool isFloatImage;
@@ -85,6 +87,8 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     d->presetParam = NULL;
     d->slicingParameter = NULL;
     d->enableWindowLevelParameter = NULL;
+
+    d->enableInterpolation = nullptr;
 
     d->isFloatImage = false;
     d->intensityStep = 0;
@@ -281,6 +285,11 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->enableWindowLevelParameter->setIcon(QIcon (":/icons/wlww.png"));
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWindowLevel(bool)));
+
+    d->enableInterpolation = new medBoolParameterL("Interpolate", this);
+    d->enableInterpolation->setToolTip("Active interpolation\n shortcut is :\n key 'n'");
+    d->enableInterpolation->setValue(true);
+    connect(d->enableInterpolation, SIGNAL(valueChanged(bool)), this, SLOT(interpolation(bool)));
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)),
             this, SLOT(updateSlicingParam()));
@@ -496,6 +505,8 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
     layout->addRow(d->lutParam->getLabel(), d->lutParam->getComboBox());
     layout->addRow(d->presetParam->getLabel(), d->presetParam->getComboBox());
 
+    layout->addRow(d->enableInterpolation->getLabel(), d->enableInterpolation->getWidget());
+
     return toolbox;
 }
 
@@ -600,11 +611,15 @@ void medVtkViewItkDataImageInteractor::update()
 
 void medVtkViewItkDataImageInteractor::updateWidgets()
 {
-    if(!d->view->is2D())
+    if (!d->view->is2D())
+    {
         d->slicingParameter->getSlider()->setEnabled(false);
+        d->enableInterpolation->getWidget()->setEnabled(false);
+    }
     else
     {
         d->slicingParameter->getSlider()->setEnabled(true);
+        d->enableInterpolation->getWidget()->setEnabled(true);
         this->updateSlicingParam();
     }
 }
@@ -659,4 +674,10 @@ void medVtkViewItkDataImageInteractor::enableWindowLevel(bool enable)
     if(enable)
         d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeWindowLevel );
 
+}
+
+void medVtkViewItkDataImageInteractor::interpolation(bool pi_bActive)
+{
+    d->view2d->SetInterpolate(pi_bActive, d->view2d->GetCurrentLayer());
+    d->view2d->Render();
 }

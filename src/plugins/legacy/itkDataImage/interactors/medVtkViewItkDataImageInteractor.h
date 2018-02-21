@@ -52,6 +52,7 @@ public slots:
     virtual void setLut(QString lut);
     void setWindowLevel(QHash<QString, QVariant>);
     void enableWindowLevel(bool enable);
+    void interpolation(bool pi_bActive);
 
     void setVisibility(bool);
 
