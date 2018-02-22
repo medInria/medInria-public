@@ -290,6 +290,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->enableInterpolation->setToolTip("Active interpolation\n shortcut is :\n key 'n'");
     d->enableInterpolation->setValue(true);
     connect(d->enableInterpolation, SIGNAL(valueChanged(bool)), this, SLOT(interpolation(bool)));
+    connect(d->view2d->qtSignalHandler, SIGNAL(interpolate(bool, int)), this, SLOT(updateInterpolateStatus(bool, int)));
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)),
             this, SLOT(updateSlicingParam()));
@@ -552,7 +553,15 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
     this->windowLevelParameter()->blockSignals(false);
 }
 
-void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> values)
+void medVtkViewItkDataImageInteractor::updateInterpolateStatus(bool pi_bStatus, int pi_iLayer)
+{
+    if (d->imageData && (pi_iLayer == d->view->layer(d->imageData)))
+    {
+        d->enableInterpolation->setValue(pi_bStatus);
+    }
+}
+
+void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString, QVariant> values)
 {
     if(values.size() != 2 )
     {
@@ -614,12 +623,14 @@ void medVtkViewItkDataImageInteractor::updateWidgets()
     if (!d->view->is2D())
     {
         d->slicingParameter->getSlider()->setEnabled(false);
-        d->enableInterpolation->getWidget()->setEnabled(false);
+        d->enableInterpolation->getLabel()->hide();
+        d->enableInterpolation->getWidget()->hide();
     }
     else
     {
         d->slicingParameter->getSlider()->setEnabled(true);
-        d->enableInterpolation->getWidget()->setEnabled(true);
+        d->enableInterpolation->getLabel()->show();
+        d->enableInterpolation->getWidget()->show();
         this->updateSlicingParam();
     }
 }

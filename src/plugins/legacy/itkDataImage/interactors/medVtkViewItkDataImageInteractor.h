@@ -76,6 +76,8 @@ private slots:
     void updateSlicingParam();
     void updateImageViewInternalLayer();
     void setWindowLevelFromMinMax();
+public slots:
+    void updateInterpolateStatus(bool pi_bStatus, int pi_iLayer);
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;
