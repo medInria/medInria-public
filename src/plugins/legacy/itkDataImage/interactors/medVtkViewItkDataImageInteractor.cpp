@@ -153,6 +153,7 @@ QList<medAbstractParameterL*> medVtkViewItkDataImageInteractor::linkableParamete
     params.append(d->minIntensityParameter);
     params.append(d->maxIntensityParameter);
     params.append(this->opacityParameter());
+    params.append(d->enableInterpolation);
 
     return params;
 }
@@ -623,14 +624,12 @@ void medVtkViewItkDataImageInteractor::updateWidgets()
     if (!d->view->is2D())
     {
         d->slicingParameter->getSlider()->setEnabled(false);
-        d->enableInterpolation->getLabel()->hide();
-        d->enableInterpolation->getWidget()->hide();
+        d->enableInterpolation->hide();
     }
     else
     {
         d->slicingParameter->getSlider()->setEnabled(true);
-        d->enableInterpolation->getLabel()->show();
-        d->enableInterpolation->getWidget()->show();
+        d->enableInterpolation->show();
         this->updateSlicingParam();
     }
 }

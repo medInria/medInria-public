@@ -93,8 +93,8 @@ class MEDVTKINRIA_EXPORT vtkImageView2DQtSignals : public QObject
 {
     Q_OBJECT
 public:
-    vtkImageView2DQtSignals() {};
-    ~vtkImageView2DQtSignals() {};
+    vtkImageView2DQtSignals() {}
+    ~vtkImageView2DQtSignals() {}
 
     void emitInterpolate(bool pi_bInterpolation, int pi_iLayer){emit interpolate(pi_bInterpolation, pi_iLayer);}
 
