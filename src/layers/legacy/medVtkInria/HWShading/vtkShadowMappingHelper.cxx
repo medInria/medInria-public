@@ -291,16 +291,10 @@ void vtkShadowMappingHelper::PreShadowMapRender(vtkCamera* lightCamera)
 
     // Set up projection parameters:
     glMatrixMode(GL_PROJECTION);
-#if VTK_MAJOR_VERSION>5 || (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION >=4)
+
     matrix->DeepCopy(lightCamera->GetProjectionTransformMatrix(1, 0, 1)); //TODO: replace first 1 by aspect ratio
-#else
-    matrix->DeepCopy(lightCamera->GetPerspectiveTransformMatrix(1, 0, 1)); //TODO: replace first 1 by aspect ratio
-#endif
     matrix->Transpose();
     glLoadMatrixd(matrix->Element[0]);
-
-
-
 
     // Also add this to the texture matrix.
     if( glActiveTexture )

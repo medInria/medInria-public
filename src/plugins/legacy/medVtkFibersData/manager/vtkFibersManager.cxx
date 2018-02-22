@@ -477,6 +477,7 @@ void vtkFibersManager::ChangeMapperToDefault()
   }
   
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+  mapper->UseLookupTableScalarRangeOn();
   mapper->SetInputConnection( this->Callback->GetOutputPort() );
   this->Actor->SetMapper( mapper );
   
