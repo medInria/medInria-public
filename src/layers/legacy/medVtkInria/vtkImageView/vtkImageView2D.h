@@ -23,6 +23,8 @@
 
 #include <vector>
 
+#include <QObject>
+
 class vtkImageActor;
 class vtkAxes2DWidget;
 class vtkRulerWidget;
@@ -87,6 +89,21 @@ class vtkImageAlgorithm;
 
  J) still some work to do on the annotations
  */
+class MEDVTKINRIA_EXPORT vtkImageView2DQtSignals : public QObject
+{
+    Q_OBJECT
+public:
+    vtkImageView2DQtSignals() {}
+    ~vtkImageView2DQtSignals() {}
+
+    void emitInterpolate(bool pi_bInterpolation, int pi_iLayer){emit interpolate(pi_bInterpolation, pi_iLayer);}
+
+signals:
+    void interpolate(bool, int);
+
+private:
+   
+};
 
 class MEDVTKINRIA_EXPORT vtkImageView2D : public vtkImageView
 {
@@ -469,5 +486,8 @@ protected:
 private:
     vtkImageView2D(const vtkImageView2D&);  // Not implemented.
     void operator=(const vtkImageView2D&);    // Not implemented.
+
+public:
+    vtkImageView2DQtSignals *qtSignalHandler;
 
 };

@@ -129,7 +129,8 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
 
         if (rwi->GetKeyCode() == 'n')
         {
-            this->Viewer->SetInterpolate ((this->Viewer->GetInterpolate() + 1)%2);
+            int iLayer = this->Viewer->GetCurrentLayer();
+            this->Viewer->SetInterpolate ((this->Viewer->GetInterpolate(iLayer) + 1)%2, iLayer);
             this->Viewer->Render();
         }
 

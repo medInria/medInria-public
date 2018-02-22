@@ -65,6 +65,8 @@ public:
     medDoubleParameterL *minIntensityParameter;
     medDoubleParameterL *maxIntensityParameter;
 
+    medBoolParameterL *enableInterpolation;
+
     QMap <QString,QString> presetToLut;
 
     bool isFloatImage;
@@ -85,6 +87,8 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
     d->presetParam = NULL;
     d->slicingParameter = NULL;
     d->enableWindowLevelParameter = NULL;
+
+    d->enableInterpolation = nullptr;
 
     d->isFloatImage = false;
     d->intensityStep = 0;
@@ -149,6 +153,7 @@ QList<medAbstractParameterL*> medVtkViewItkDataImageInteractor::linkableParamete
     params.append(d->minIntensityParameter);
     params.append(d->maxIntensityParameter);
     params.append(this->opacityParameter());
+    params.append(d->enableInterpolation);
 
     return params;
 }
@@ -281,6 +286,12 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     d->enableWindowLevelParameter->setIcon(QIcon (":/icons/wlww.png"));
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWindowLevel(bool)));
+
+    d->enableInterpolation = new medBoolParameterL("Interpolate", this);
+    d->enableInterpolation->setToolTip("Active interpolation\n shortcut is :\n key 'n'");
+    d->enableInterpolation->setValue(true);
+    connect(d->enableInterpolation, SIGNAL(valueChanged(bool)), this, SLOT(interpolation(bool)));
+    connect(d->view2d->qtSignalHandler, SIGNAL(interpolate(bool, int)), this, SLOT(updateInterpolateStatus(bool, int)));
 
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)),
             this, SLOT(updateSlicingParam()));
@@ -496,6 +507,8 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
     layout->addRow(d->lutParam->getLabel(), d->lutParam->getComboBox());
     layout->addRow(d->presetParam->getLabel(), d->presetParam->getComboBox());
 
+    layout->addRow(d->enableInterpolation->getLabel(), d->enableInterpolation->getWidget());
+
     return toolbox;
 }
 
@@ -541,7 +554,15 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
     this->windowLevelParameter()->blockSignals(false);
 }
 
-void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString,QVariant> values)
+void medVtkViewItkDataImageInteractor::updateInterpolateStatus(bool pi_bStatus, int pi_iLayer)
+{
+    if (d->imageData && (pi_iLayer == d->view->layer(d->imageData)))
+    {
+        d->enableInterpolation->setValue(pi_bStatus);
+    }
+}
+
+void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString, QVariant> values)
 {
     if(values.size() != 2 )
     {
@@ -600,11 +621,15 @@ void medVtkViewItkDataImageInteractor::update()
 
 void medVtkViewItkDataImageInteractor::updateWidgets()
 {
-    if(!d->view->is2D())
+    if (!d->view->is2D())
+    {
         d->slicingParameter->getSlider()->setEnabled(false);
+        d->enableInterpolation->hide();
+    }
     else
     {
         d->slicingParameter->getSlider()->setEnabled(true);
+        d->enableInterpolation->show();
         this->updateSlicingParam();
     }
 }
@@ -659,4 +684,10 @@ void medVtkViewItkDataImageInteractor::enableWindowLevel(bool enable)
     if(enable)
         d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeWindowLevel );
 
+}
+
+void medVtkViewItkDataImageInteractor::interpolation(bool pi_bActive)
+{
+    d->view2d->SetInterpolate(pi_bActive, d->view2d->GetCurrentLayer());
+    d->view2d->Render();
 }

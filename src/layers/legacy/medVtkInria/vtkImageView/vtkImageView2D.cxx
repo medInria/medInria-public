@@ -92,7 +92,7 @@ vtkStandardNewMacro(vtkImageView2D);
 //----------------------------------------------------------------------------
 vtkImageView2D::vtkImageView2D()
 {
-
+  this->qtSignalHandler = new vtkImageView2DQtSignals();
   this->Axes2DWidget        = vtkAxes2DWidget::New();
   this->RulerWidget         = vtkRulerWidget::New();
   this->DistanceWidget      = vtkDistanceWidget::New();
@@ -1686,8 +1686,8 @@ void vtkImageView2D::SetInterpolate(int val, int layer)
 {
   if (!this->HasLayer (layer))
     return;
-
   this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetInterpolate (val);
+  this->qtSignalHandler->emitInterpolate((bool)val, layer);
   this->Modified();
 }
 

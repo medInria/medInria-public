@@ -52,6 +52,7 @@ public slots:
     virtual void setLut(QString lut);
     void setWindowLevel(QHash<QString, QVariant>);
     void enableWindowLevel(bool enable);
+    void interpolation(bool pi_bActive);
 
     void setVisibility(bool);
 
@@ -75,6 +76,8 @@ private slots:
     void updateSlicingParam();
     void updateImageViewInternalLayer();
     void setWindowLevelFromMinMax();
+public slots:
+    void updateInterpolateStatus(bool pi_bStatus, int pi_iLayer);
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;
