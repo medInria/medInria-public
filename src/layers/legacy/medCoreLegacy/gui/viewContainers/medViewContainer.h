@@ -37,7 +37,6 @@ public:
         CLOSE_BUTTON_HIDDEN
     };
 
-private:
     enum DropArea
     {
         AREA_OUT = 0,
@@ -115,6 +114,10 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+
+    bool dropEventFromDataBase(QDropEvent * event);
+    bool dropEventFromFile(QDropEvent * event);
+
     void closeEvent(QCloseEvent * event);
 
     void recomputeStyleSheet();
@@ -123,6 +126,7 @@ protected slots:
     void openFromSystem();
     void updateToolBar();
     void dataReady(medDataIndex index, QUuid uuid);
+    void droppedDataReady(medDataIndex index, QUuid uuid);
 
 private slots:
     void removeInternView();
