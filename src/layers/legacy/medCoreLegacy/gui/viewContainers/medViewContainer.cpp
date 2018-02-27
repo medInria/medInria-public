@@ -82,6 +82,9 @@ public:
 
     medPoolIndicatorL* poolIndicator;
 
+    medViewContainer::DropArea oArea4ExternalDrop;
+    std::vector<std::pair<QUuid, bool> > oQuuidVect;
+
     ~medViewContainerPrivate()
     {
         if(view)
@@ -599,36 +602,78 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    const QMimeData *mimeData = event->mimeData();
-    medDataIndex index = medDataIndex::readMimeData(mimeData);
-    if(!index.isValidForSeries())
-        return;
-
-    if(d->userSplittable)
+    if (!dropEventFromFile(event))
     {
-        DropArea area = computeDropArea(event->pos().x(), event->pos().y());
-
-        if(area == AREA_TOP)
-            emit splitRequest(index, Qt::AlignTop);
-        else if(area == AREA_RIGHT)
-            emit splitRequest(index, Qt::AlignRight);
-        else if(area == AREA_BOTTOM)
-            emit splitRequest(index, Qt::AlignBottom);
-        else if(area == AREA_LEFT)
-            emit splitRequest(index, Qt::AlignLeft);
-        else if(area == AREA_CENTER)
-            this->addData(index);
+        dropEventFromDataBase(event);
     }
-    else
-        this->addData(index);
-
-    this->setStyleSheet(d->defaultStyleSheet);
-    if(d->selected)
-        this->highlight(d->highlightColor);
-
-    event->acceptProposedAction();
 }
 
+
+bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
+{
+    bool bRes = false;
+
+    const QMimeData *mimeData = event->mimeData();
+    medDataIndex index = medDataIndex::readMimeData(mimeData);
+    if (index.isValidForSeries())
+    {
+        if (d->userSplittable)
+        {
+            DropArea area = computeDropArea(event->pos().x(), event->pos().y());
+
+            if (area == AREA_TOP)
+                emit splitRequest(index, Qt::AlignTop);
+            else if (area == AREA_RIGHT)
+                emit splitRequest(index, Qt::AlignRight);
+            else if (area == AREA_BOTTOM)
+                emit splitRequest(index, Qt::AlignBottom);
+            else if (area == AREA_LEFT)
+                emit splitRequest(index, Qt::AlignLeft);
+            else if (area == AREA_CENTER)
+                this->addData(index);
+        }
+        else
+            this->addData(index);
+
+        this->setStyleSheet(d->defaultStyleSheet);
+        if (d->selected)
+            this->highlight(d->highlightColor);
+
+        event->acceptProposedAction();
+        bRes = true;
+    }
+
+    return bRes;
+}
+
+bool medViewContainer::dropEventFromFile(QDropEvent * event)
+{
+    bool bRes = false;
+
+    const QMimeData *mimeData = event->mimeData();
+    if (mimeData->hasUrls())
+    {
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+        d->oArea4ExternalDrop = computeDropArea(event->pos().x(), event->pos().y());
+        // extract the local paths of the files
+        for (int i = 0; i < urlList.size() && i < 8; ++i)
+        {
+            pathList.append(urlList.at(i).toLocalFile());
+        }
+        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex, QUuid)), this, SLOT(droppedDataReady(medDataIndex, QUuid)));
+        d->oQuuidVect.resize(pathList.size());
+        for (int i = 0; i < pathList.size(); ++i)
+        {
+            d->oQuuidVect[i].second = false;
+            d->oQuuidVect[i].first = medDataManager::instance()->importPath(pathList[i], true, false);
+        }
+        event->acceptProposedAction();
+        bRes = true;
+    }
+
+    return bRes;
+}
 
 void medViewContainer::addData(medAbstractData *data)
 {
@@ -758,9 +803,67 @@ void medViewContainer::dataReady(medDataIndex index, QUuid uuid)
     if(d->expectedUuid != uuid)
         return;
 
-    d->expectedUuid = QUuid();
+    d->expectedUuid = QUuid(); //RE-init/erase the expected Uuid
     disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
     this->addData(index);
+}
+
+void medViewContainer::droppedDataReady(medDataIndex index, QUuid uuid)
+{
+    bool bFind = false;
+    int i = 0;
+    while (!bFind && i<d->oQuuidVect.size())
+    {
+        if (!d->oQuuidVect[i].second)
+        {        
+            bFind = d->oQuuidVect[i].first == uuid;
+            if (!bFind)
+            {
+                ++i;
+            }
+            else
+            {
+                d->oQuuidVect[i].second = true;
+            }
+        }
+        else
+        {
+            ++i;
+        }
+    }
+
+    if (index.isValid())
+    {
+        if (d->userSplittable)
+        {
+
+            if (d->oArea4ExternalDrop == AREA_TOP)
+                emit splitRequest(index, Qt::AlignTop);
+            else if (d->oArea4ExternalDrop == AREA_RIGHT)
+                emit splitRequest(index, Qt::AlignRight);
+            else if (d->oArea4ExternalDrop == AREA_BOTTOM)
+                emit splitRequest(index, Qt::AlignBottom);
+            else if (d->oArea4ExternalDrop == AREA_LEFT)
+                emit splitRequest(index, Qt::AlignLeft);
+            else if (d->oArea4ExternalDrop == AREA_CENTER)
+                this->addData(index);
+        }
+        else
+        {
+            this->addData(index);
+        }
+    }
+
+    bool bDone4All = true;
+    for (i = 0; i < d->oQuuidVect.size(); ++i)
+    {
+        bDone4All &= d->oQuuidVect[i].second;
+    }
+    if (bDone4All)
+    {
+        disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex, QUuid)), this, SLOT(droppedDataReady(medDataIndex, QUuid)));
+        d->oQuuidVect.clear();
+    }
 }
 
 medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)
