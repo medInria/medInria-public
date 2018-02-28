@@ -58,6 +58,7 @@
 				<string>vtk</string>
 				<string>vtp</string>
 				<string>fib</string>
+				<string>fds</string>
 				<string>xml</string>
 			</array>
 			<key>CFBundleTypeName</key>
@@ -65,6 +66,18 @@
 			<key>LSHandlerRank</key>
 			<string>Default</string>
 		</dict>
+                <dict>
+                        <key>CFBundleTypeRole</key>
+                        <string>Viewer</string>
+                        <key>CFBundleTypeExtensions</key>
+                        <array>
+                                <string>mcm</string>
+                        </array>
+                        <key>CFBundleTypeName</key>
+                        <string>Multi-compartment model files</string>
+                        <key>LSHandlerRank</key>
+                        <string>Default</string>
+                </dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
