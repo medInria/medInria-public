@@ -43,7 +43,7 @@ vtkTensorVisuManager::vtkTensorVisuManager()
 
   this->Glyph = vtkTensorGlyph::New();
   this->Glyph->SetInputConnection( this->VOI->GetOutputPort() );
-  this->Glyph->SetScaleFactor(1.0);
+  this->Glyph->SetScaleFactor(1000.0);
   this->Glyph->ClampScalingOn();
   this->Glyph->ColorGlyphsOn();
 

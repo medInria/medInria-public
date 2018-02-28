@@ -104,7 +104,7 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
     d->filterDouble = NULL;
 
     d->minorScaling = 1;
-    d->majorScalingExponent = 0;
+    d->majorScalingExponent = 3;
 
     // set default properties
     d->manager->SetGlyphShapeToLine();
@@ -332,7 +332,7 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
 
     medIntParameterL *multiplierParam = new medIntParameterL("x10^", this);
     multiplierParam->setRange(-10, 10);
-    multiplierParam->setValue(0);
+    multiplierParam->setValue(3);
     d->parameters << multiplierParam;
 
     d->parameters << visibilityParameter();
