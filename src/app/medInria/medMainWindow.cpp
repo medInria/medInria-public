@@ -290,6 +290,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     // medQuickAccessMenu loads default workspace to open, so we can switch to it now
     d->quickAccessWidget->switchToCurrentlySelected();
+    this->setAcceptDrops(true);
 }
 
 medMainWindow::~medMainWindow()
@@ -702,6 +703,46 @@ int medMainWindow::saveModified( void )
     saveDialog->exec();
 
     return saveDialog->result();
+}
+
+void medMainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->acceptProposedAction();
+}
+
+void medMainWindow::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    event->accept();
+}
+
+void medMainWindow::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->acceptProposedAction();
+}
+
+void medMainWindow::dropEvent(QDropEvent *event)
+{
+    const QMimeData* mimeData = event->mimeData();
+
+    // check for our needed mime type, here a file or a list of files
+    if (mimeData->hasUrls())
+    {
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+
+        // extract the local paths of the files
+        for (int i = 0; i < urlList.size() && i < 32; ++i)
+        {
+            pathList.append(urlList.at(i).toLocalFile());
+        }
+
+        // call a function to open the files
+        for (int i = 0; i < pathList.size() ; ++i)
+        {
+            open(pathList[i]);
+        }
+        event->acceptProposedAction();
+    }
 }
 
 void medMainWindow::availableSpaceOnStatusBar()

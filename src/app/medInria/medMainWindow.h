@@ -117,6 +117,10 @@ protected:
     void mousePressEvent(QMouseEvent * event);
     int saveModified();
     bool event(QEvent * e);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dropEvent(QDropEvent *event);
 
 private:
     medMainWindowPrivate *d;
