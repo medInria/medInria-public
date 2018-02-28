@@ -743,19 +743,18 @@ void medVtkFibersDataInteractor::updateCustomLUT(QString mode)
 
 void medVtkFibersDataInteractor::switchMinMaxRangeSource(QString mode)
 {
-    for (int i = 0; i < d->manager->GetNumberOfPointArrays(); i++)
+    vtkPolyData *fibersData = d->dataset->GetFibers();
+    unsigned int numArrays = fibersData->GetPointData()->GetNumberOfArrays();
+
+    for (int i = 0; i < numArrays; i++)
     {
-        if (d->manager->GetPointArrayName(i))
+        if (fibersData->GetPointData()->GetArrayName(i) == mode)
         {
-            QString pointArrayName = d->manager->GetPointArrayName(i);
-            if (pointArrayName == mode)
-            {
-                double dfTmp2[2];
-                dfTmp2[0] = d->oScalarRangeVect[i][0];
-                dfTmp2[1] = d->oScalarRangeVect[i][1];
-                initWindowLevelParameters(dfTmp2);
-                break;
-            }
+            double dfTmp2[2];
+            dfTmp2[0] = d->oScalarRangeVect[i][0];
+            dfTmp2[1] = d->oScalarRangeVect[i][1];
+            initWindowLevelParameters(dfTmp2);
+            break;
         }
     }
 }
