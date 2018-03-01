@@ -561,8 +561,6 @@ void medVtkFibersDataInteractor::initWindowLevelParameters(double * range)
     d->maxIntensityParameter->setRange(levelMin, levelMax);
     d->minIntensityParameter->setValue(range[0]);
     d->maxIntensityParameter->setValue(range[1]);
-    d->view2d->SetColorRange(range);
-    d->view3d->SetColorRange(range);
 
     d->maxIntensityParameter->blockSignals(false);
     d->minIntensityParameter->blockSignals(false);
