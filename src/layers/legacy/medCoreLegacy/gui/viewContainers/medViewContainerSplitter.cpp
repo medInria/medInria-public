@@ -162,12 +162,14 @@ void medViewContainerSplitter::checkIfStillDeserveToLiveSpliter()
                 poTmp = parent();
                 poSplitterSon->hide();  //Line very important to avoid a QWidget transparent glitch. Hide the son before changing his parent.
                 poSplitterSon->setParent((QWidget*)poTmp); //Line very important to avoid a QWidget transparent glitch. Change parent of the son.
+                poSplitterSon->adjustContainersSize();
                 poSplitterParent = dynamic_cast<medViewContainerSplitter*>(poTmp);
                 if (poSplitterParent) //The parent is another splitter
                 {
                     int iOldIndex = poSplitterParent->indexOf(this);  //Compute good position by keeping the father's position.
                     this->setParent(nullptr); //This cuts the link with its father.
                     poSplitterParent->insertWidget(iOldIndex, poSplitterSon); //Insert at the good position.
+                    poSplitterParent->adjustContainersSize();
                     close();
                     deleteLater();
                 }
