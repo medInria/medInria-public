@@ -1,3 +1,14 @@
+medInria v3.0:
+- Switch Qt backend to Qt 5.x
+- Switch VTK to version 8.1, including a switch to OpenGL2 backend
+- new, experimental composer workspace to run pipelines
+- Introduce a new plugin framework for the previous purpose
+- A bunch of new image processing algorithms: ITK basic operations (morphology, arithmetic...), bias correction...
+- New data types for diffusion: multi-compartment models (view and estimation)
+- enable image drag and drop on the application
+- scale colormaps option for surface and fibers attributes
+- many more things under the hood !
+
 medInria v2.2.3:
 - Fix registration of images encoded in unsigned short
 - Add a colormap for label images
