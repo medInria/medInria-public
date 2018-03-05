@@ -31,6 +31,7 @@
 #include <itkConstantPadImageFilter.h>
 #include <itkOtsuThresholdImageFilter.h>
 #include <itkShrinkImageFilter.h>
+#include <itkCastImageFilter.h>
 #include <itkTimeProbe.h>
 
 #define NB_STEPS 18
@@ -206,17 +207,17 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     medJobExitStatus eRes = medAbstractJob::MED_JOB_EXIT_SUCCESS;
 
     typedef itk::Image<inputType, Dimension > ImageType;
+    typedef itk::Image <float, Dimension> OutputImageType;
     typedef itk::Image<unsigned char, Dimension> MaskImageType;
-    typedef itk::N4BiasFieldCorrectionImageFilter<ImageType, MaskImageType, ImageType> BiasFilter;
-    typedef itk::ConstantPadImageFilter<ImageType, ImageType> PadderType;
+    typedef itk::N4BiasFieldCorrectionImageFilter<OutputImageType, MaskImageType, OutputImageType> BiasFilter;
+    typedef itk::ConstantPadImageFilter<OutputImageType, OutputImageType> PadderType;
     typedef itk::ConstantPadImageFilter<MaskImageType, MaskImageType> MaskPadderType;
-    typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkerType;
+    typedef itk::ShrinkImageFilter<OutputImageType, OutputImageType> ShrinkerType;
     typedef itk::ShrinkImageFilter<MaskImageType, MaskImageType> MaskShrinkerType;
     typedef itk::BSplineControlPointImageFilter<typename BiasFilter::BiasFieldControlPointLatticeType, typename BiasFilter::ScalarImageType> BSplinerType;
-    typedef itk::ExpImageFilter<ImageType, ImageType> ExpFilterType;
-    typedef itk::DivideImageFilter<ImageType, ImageType, ImageType> DividerType;
-    typedef itk::ExtractImageFilter<ImageType, ImageType> CropperType;
-
+    typedef itk::ExpImageFilter<OutputImageType, OutputImageType> ExpFilterType;
+    typedef itk::DivideImageFilter<OutputImageType, OutputImageType, OutputImageType> DividerType;
+    typedef itk::ExtractImageFilter<OutputImageType, OutputImageType> CropperType;
 
     unsigned int uiThreadNb = static_cast<unsigned int>(m_poUIThreadNb->value());
     unsigned int uiShrinkFactors = static_cast<unsigned int>(m_poUIShrinkFactors->value());
@@ -240,6 +241,11 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     oInitialMeshResolutionVect[1] = static_cast<float>(m_poFInitialMeshResolutionVect2->value());
     oInitialMeshResolutionVect[2] = static_cast<float>(m_poFInitialMeshResolutionVect3->value());
 
+    typename ImageType::Pointer image = dynamic_cast<ImageType *>((itk::Object*)(this->input()->data()));
+    typedef itk::CastImageFilter <ImageType, OutputImageType> CastFilterType;
+    typename CastFilterType::Pointer castFilter = CastFilterType::New();
+    castFilter->SetInput(image);
+
     /********************************************************************************/
     /***************************** PREPARING STARTING *******************************/
     /********************************************************************************/
@@ -252,7 +258,6 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
     /*** 1 ******************* Read input image *******************************/
     ABORT_CHECKING(m_bAborting);
-    typename ImageType::Pointer image = dynamic_cast<ImageType *>((itk::Object*)(this->input()->data()));
     fProgression = 1;
     updateProgression(fProgression);
 
@@ -261,10 +266,10 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     itk::TimeProbe timer;
     timer.Start();
     typename MaskImageType::Pointer maskImage = ITK_NULLPTR;
-    typedef itk::OtsuThresholdImageFilter<ImageType, MaskImageType> ThresholderType;
+    typedef itk::OtsuThresholdImageFilter<OutputImageType, MaskImageType> ThresholderType;
     typename ThresholderType::Pointer otsu = ThresholderType::New();
     m_filter = otsu;
-    otsu->SetInput(image);
+    otsu->SetInput(castFilter->GetOutput());
     otsu->SetNumberOfHistogramBins(200);
     otsu->SetInsideValue(0);
     otsu->SetOutsideValue(1);
@@ -298,6 +303,8 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     typename ImageType::SizeType oImageSize = image->GetLargestPossibleRegion().GetSize();
     typename ImageType::PointType newOrigin = image->GetOrigin();
 
+    typename OutputImageType::Pointer outImage = castFilter->GetOutput();
+
     if (fSplineDistance > 0)
     {
         /*** 5 ******************* Compute number of control points  **************/
@@ -321,7 +328,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
         ABORT_CHECKING(m_bAborting);
         typename PadderType::Pointer imagePadder = PadderType::New();
         m_filter = imagePadder;
-        imagePadder->SetInput(image);
+        imagePadder->SetInput(castFilter->GetOutput());
         imagePadder->SetPadLowerBound(lowerBound);
         imagePadder->SetPadUpperBound(upperBound);
         imagePadder->SetConstant(0);
@@ -329,7 +336,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
         imagePadder->Update();
         updateProgression(fProgression);
 
-        image = imagePadder->GetOutput();
+        outImage = imagePadder->GetOutput();
 
         /*** 7 ******************** Handle the mask image *************************/
         ABORT_CHECKING(m_bAborting);
@@ -372,7 +379,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     ABORT_CHECKING(m_bAborting);
     typename ShrinkerType::Pointer imageShrinker = ShrinkerType::New();
     m_filter = imageShrinker;
-    imageShrinker->SetInput(image);
+    imageShrinker->SetInput(outImage);
 
     /*** 11 ******************* Shrinker mask *********************************/
     ABORT_CHECKING(m_bAborting);
@@ -438,7 +445,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
     /*********************** Logarithm phase ***************************/
     ABORT_CHECKING(m_bAborting);
-    typename ImageType::Pointer logField = ImageType::New();
+    typename OutputImageType::Pointer logField = OutputImageType::New();
     logField->SetOrigin(image->GetOrigin());
     logField->SetSpacing(image->GetSpacing());
     logField->SetRegions(image->GetLargestPossibleRegion());
@@ -447,7 +454,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
     itk::ImageRegionIterator<typename BiasFilter::ScalarImageType> IB(bspliner->GetOutput(), bspliner->GetOutput()->GetLargestPossibleRegion());
 
-    itk::ImageRegionIterator<ImageType> IF(logField, logField->GetLargestPossibleRegion());
+    itk::ImageRegionIterator<OutputImageType> IF(logField, logField->GetLargestPossibleRegion());
 
     for (IB.GoToBegin(), IF.GoToBegin(); !IB.IsAtEnd(); ++IB, ++IF)
     {
@@ -468,7 +475,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     ABORT_CHECKING(m_bAborting);
     typename DividerType::Pointer divider = DividerType::New();
     m_filter = divider;
-    divider->SetInput1(image);
+    divider->SetInput1(castFilter->GetOutput());
     divider->SetInput2(expFilter->GetOutput());
     divider->SetNumberOfThreads(uiThreadNb);
     divider->Update();
@@ -494,7 +501,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
     /********************** Write output image *************************/
     ABORT_CHECKING(m_bAborting);
-    medAbstractImageData *out = qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input()->identifier()));
+    medAbstractImageData *out = qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageFloat3"));
     out->setData(cropper->GetOutput());
     this->setOutput(out);
 
