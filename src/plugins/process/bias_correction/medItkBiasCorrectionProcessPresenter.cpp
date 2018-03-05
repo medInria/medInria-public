@@ -35,6 +35,7 @@ medItkBiasCorrectionProcessPresenter::medItkBiasCorrectionProcessPresenter(medIt
    m_poFPresenterWienerFilterNoise = new medDoubleParameterPresenter(m_process->getFWienerFilterNoise());
    m_poFPresenterbfFWHM = new medDoubleParameterPresenter(m_process->getFbfFWHM());
    m_poFPresenterConvergenceThreshold = new medDoubleParameterPresenter(m_process->getFConvergenceThreshold());
+   m_poFPresenterConvergenceThreshold->setDecimals(6);
    m_poFPresenterSplineDistance = new medDoubleParameterPresenter(m_process->getFSplineDistance());
    m_poFPresenterInitialMeshResolutionVect1 = new medDoubleParameterPresenter(m_process->getFInitialMeshResolutionVect1());
    m_poFPresenterInitialMeshResolutionVect2 = new medDoubleParameterPresenter(m_process->getFInitialMeshResolutionVect2());
