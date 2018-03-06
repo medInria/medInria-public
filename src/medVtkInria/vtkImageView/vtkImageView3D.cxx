@@ -1432,7 +1432,7 @@ vtkImageData * vtkImageView3D::GetInput(int layer) const
 
 void vtkImageView3D::castLayers()
 {
-  for(int i=0;i<LayerInfoVec.size();i++)
+  for(unsigned int i=0;i<LayerInfoVec.size();i++)
   { 
     if (LayerInfoVec[i].NeedCast)
     {
