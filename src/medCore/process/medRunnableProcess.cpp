@@ -63,7 +63,7 @@ void medRunnableProcess::internalRun()
         else
         {
             emit failure (this);
-            emit failure (res); // Can be connected to medToolBox::handleDisplayError(int error)
+            emit failure (res);
         }
     }
 }

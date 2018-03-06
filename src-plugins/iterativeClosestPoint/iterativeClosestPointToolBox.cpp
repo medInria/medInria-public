@@ -170,7 +170,6 @@ void iterativeClosestPointToolBox::run()
             medRunnableProcess *runProcess = new medRunnableProcess;
             runProcess->setProcess (d->process);
             connect (runProcess, SIGNAL (success   (QObject*)),    this, SLOT   (displayOutput()));
-            connect (runProcess, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
             this->addConnectionsAndStartJob(runProcess);
         }
         else

@@ -125,7 +125,6 @@ void medMaskApplicationToolBox::run()
 
         medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
-        connect (runProcess, SIGNAL(failure(int)), this, SLOT(handleDisplayError(int)));
         this->addConnectionsAndStartJob(runProcess);
     }
     else

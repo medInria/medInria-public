@@ -380,5 +380,6 @@ void medToolBox::addToolBoxConnections(medJobItem* job)
     connect (job, SIGNAL (cancelled (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
     connect (job, SIGNAL (success   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
     connect (job, SIGNAL (failure   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
+    connect (job, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
     connect (job, SIGNAL (activate(QObject*,bool)), getProgressionStack(), SLOT(setActive(QObject*,bool)));
 }
