@@ -81,15 +81,12 @@ public:
 
     medAbstractImageViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
-
-    medTriggerParameter *fourViewsParameter;
 };
 
 medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayeredView(parent),
     d(new medAbstractImageViewPrivate)
 {
     d->primaryNavigator = NULL;
-    d->fourViewsParameter = NULL;
 }
 
 medAbstractImageView::~medAbstractImageView()
@@ -100,17 +97,6 @@ medAbstractImageView::~medAbstractImageView()
     for(int i=c; i>=0; i--)
         removeLayer(i);
     delete d;
-}
-
-void medAbstractImageView::removeData(medAbstractData *data)
-{
-    medAbstractLayeredView::removeData(data);
-
-    if( this->layersCount() == 0 && d->fourViewsParameter)
-    {
-        delete d->fourViewsParameter;
-        d->fourViewsParameter = 0;
-    }
 }
 
 medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(medAbstractData* data)
@@ -231,16 +217,6 @@ bool medAbstractImageView::initialiseNavigators()
     return true;
 }
 
-QWidget* medAbstractImageView::toolBarWidget()
-{
-    QWidget* toolbar = medAbstractView::toolBarWidget();
-
-    if(toolbar->layout())
-        toolbar->layout()->addWidget(this->fourViewsParameter()->getPushButton());
-
-    return toolbar;
-}
-
 void medAbstractImageView::switchToFourViews()
 {
     medViewContainer *topLeftContainer = dynamic_cast <medViewContainer *> (this->parent());
@@ -356,20 +332,6 @@ medDoubleParameter *medAbstractImageView::opacityParameter(unsigned int layer)
     }
 
     return pInteractor->opacityParameter();
-}
-
-medTriggerParameter *medAbstractImageView::fourViewsParameter()
-{
-    if (!d->fourViewsParameter)
-    {
-        d->fourViewsParameter = new medTriggerParameter("Four views", this);
-        QIcon fourViewsIcon (":/icons/fourViews.png");
-        d->fourViewsParameter->setButtonIcon(fourViewsIcon);
-
-        connect(d->fourViewsParameter,SIGNAL(triggered()),this,SLOT(switchToFourViews()));
-    }
-
-    return d->fourViewsParameter;
 }
 
 /**

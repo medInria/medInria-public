@@ -33,6 +33,7 @@
         <file>icons/error_go.png</file>
         <file>icons/exclamation.png</file>
         <file>icons/eye.png</file>
+	<file>icons/Gaussian_Filter.png</file>
         <file>icons/help.png</file>
         <file>icons/help.svg</file>
         <file>icons/information.png</file>

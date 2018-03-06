@@ -51,8 +51,6 @@ public:
     medAbstractImageView(QObject * parent = 0);
     virtual ~medAbstractImageView();
 
-    virtual void removeData(medAbstractData *data);
-
     medImageView::Orientation orientation();
 
     virtual QPointF mapWorldToDisplayCoordinates( const QVector3D & worldVec ) = 0;
@@ -64,19 +62,15 @@ public:
     virtual qreal sliceThickness() = 0;
     virtual qreal scale() = 0;
 
-    virtual QWidget* toolBarWidget();
-
     medCompositeParameter *cameraParameter();
     medAbstractVector3DParameter *positionBeingViewedParameter();
     medCompositeParameter *windowLevelParameter(unsigned int layer);
     medDoubleParameter *opacityParameter(unsigned int layer);
-    medTriggerParameter *fourViewsParameter();
     medTimeLineParameter *timeLineParameter();
 
 public slots:
     void switchToFourViews();
     void setOrientation(medImageView::Orientation orientation);
-    virtual void showHistogram(bool){}; // hack for histogram
 
 signals:
     void orientationChanged();
