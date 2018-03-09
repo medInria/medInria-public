@@ -291,7 +291,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
     bool isvalid = this->GetMetaData<double>("Time", tmp);
     if (isvalid)
       this->Time = tmp;
-    
+
     return this->Time;
   }
   

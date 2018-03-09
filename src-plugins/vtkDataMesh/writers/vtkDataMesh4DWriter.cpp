@@ -11,20 +11,18 @@
 
 =========================================================================*/
 
-#include <vtkDataMesh4DWriter.h>
+#include "vtkDataMesh4DWriter.h"
 
-#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkLog/dtkLog.h>
+#include <medAbstractDataFactory.h>
 
-#include <vtkDataManagerWriter.h>
 #include <vtkDataManager.h>
+#include <vtkDataManagerWriter.h>
 #include <vtkMetaDataSetSequence.h>
-
 
 const char vtkDataMesh4DWriter::ID[] = "vtkDataMesh4DWriter";
 
-vtkDataMesh4DWriter::vtkDataMesh4DWriter()
+vtkDataMesh4DWriter::vtkDataMesh4DWriter() : vtkDataMeshWriterBase()
 {
   this->writer = vtkDataManagerWriter::New();
 }
@@ -42,14 +40,6 @@ QStringList vtkDataMesh4DWriter::handled() const
 QStringList vtkDataMesh4DWriter::s_handled()
 {
     return QStringList() << "vtkDataMesh4D";
-}
-
-bool vtkDataMesh4DWriter::canWrite(const QString& path)
-{
-    if ( ! this->data())
-        return false;
-
-    return dynamic_cast<vtkMetaDataSetSequence*>((vtkObject*)(this->data()->data()));
 }
 
 bool vtkDataMesh4DWriter::write(const QString& path)
@@ -70,6 +60,11 @@ bool vtkDataMesh4DWriter::write(const QString& path)
   if (!sequence)
     return false;
 
+  foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+  {
+      addMetaDataAsFieldData(dataSet);
+  }
+
   vtkDataManager* manager = vtkDataManager::New();
   manager->AddMetaDataSet (sequence);
 
@@ -77,6 +72,11 @@ bool vtkDataMesh4DWriter::write(const QString& path)
   this->writer->SetInput (manager);
   // this->writer->SetFileTypeToBinary();
   this->writer->Update();
+
+  foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+  {
+      clearMetaDataFieldData(dataSet);
+  }
 
   manager->Delete();
 
@@ -111,5 +111,3 @@ dtkAbstractDataWriter *createVtkDataMesh4DWriter()
 {
   return new vtkDataMesh4DWriter;
 }
-
-

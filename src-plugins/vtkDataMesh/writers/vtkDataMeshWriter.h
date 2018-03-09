@@ -13,26 +13,18 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractDataWriter.h>
+#include "vtkDataMeshPluginExport.h"
+#include "vtkDataMeshWriterBase.h"
 
-#include <vtkDataMeshPluginExport.h>
-#include <vtkMetaDataSet.h>
-
-class vtkDataSetWriter;
-
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataWriter
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriter : public vtkDataMeshWriterBase
 {
     Q_OBJECT
 
 public:
-    static const QString metaDataFieldPrefix;
-
-             vtkDataMeshWriter();
-    virtual ~vtkDataMeshWriter();
+    vtkDataMeshWriter();
 
     virtual QStringList handled() const;
     static  QStringList s_handled();
-
 
     virtual QString description() const;
     virtual QString identifier() const;
@@ -42,17 +34,10 @@ public:
     static bool registered();
 
 public slots:
-    bool write    (const QString& path);
-    bool canWrite (const QString& path);
+    bool write (const QString& path);
 
 private:
     static const char ID[];
-
-    void addMetaDataAsFieldData(vtkMetaDataSet* dataSet);
-    void clearMetaDataFieldData(vtkMetaDataSet* dataSet);
 };
 
-
 dtkAbstractDataWriter *createVtkDataMeshWriter();
-
-

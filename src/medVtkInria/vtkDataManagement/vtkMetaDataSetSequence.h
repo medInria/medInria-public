@@ -83,8 +83,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 
   typedef itk::Image<short,3> ShortImageType;
   typedef ShortImageType::DirectionType ShortDirectionType;
-  
-  
+
   /**
      Writes a file of a given scalar component type.
      Use with care. Please prefer using Write() 
@@ -449,6 +448,10 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   */
   double GetMaxTime() const;
   /**
+     Access to the duration of the sequence.
+  */
+  double GetSequenceDuration() const;
+  /**
      Access to the resolution of the sequence, i.e. the time step used.
   */
   double GetTimeResolution();
@@ -523,7 +526,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 
   vtkGetMacro (CurrentId, int);
   
- protected:
+protected:
   vtkMetaDataSetSequence();
   ~vtkMetaDataSetSequence();
 

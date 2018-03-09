@@ -11,18 +11,21 @@
 
 =========================================================================*/
 
-#include <vtkDataMesh4DReader.h>
-#include <vtkDataManagerReader.h>
-#include <vtkDataManager.h>
-#include <vtkMetaDataSetSequence.h>
-#include <vtkSmartPointer.h>
+#include "vtkDataMesh4DReader.h"
+#include "vtkDataManagerReader.h"
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 
+#include <vtkDataManager.h>
+#include <vtkFieldData.h>
+#include <vtkMetaDataSetSequence.h>
+#include <vtkSmartPointer.h>
+
 const char vtkDataMesh4DReader::ID[] = "vtkDataMesh4DReader";
 
-vtkDataMesh4DReader::vtkDataMesh4DReader(): dtkAbstractDataReader() {
+vtkDataMesh4DReader::vtkDataMesh4DReader(): vtkDataMeshReaderBase()
+{
     this->reader = vtkDataManagerReader::New();
 }
 
@@ -42,12 +45,6 @@ bool vtkDataMesh4DReader::canRead (const QString& path) {
     return this->reader->CanReadFile (path.toAscii().constData());
 }
 
-bool vtkDataMesh4DReader::canRead (const QStringList& paths) {
-    if (!paths.count())
-        return false;
-    return this->canRead ( paths[0].toAscii().constData() );
-}
-
 bool vtkDataMesh4DReader::readInformation (const QString& path) {
   
     medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
@@ -65,17 +62,9 @@ bool vtkDataMesh4DReader::readInformation (const QString& path) {
     return true;
 }
 
-bool vtkDataMesh4DReader::readInformation (const QStringList& paths) {
-    if (!paths.count())
-        return false;
-    return this->readInformation ( paths[0].toAscii().constData() );
-}
-
 bool vtkDataMesh4DReader::read (const QString& path) {
     this->setProgress (0);
-
     this->readInformation ( path );
-
     this->setProgress (50);
 
     qDebug() << "Can read with: " << this->identifier();
@@ -87,23 +76,40 @@ bool vtkDataMesh4DReader::read (const QString& path) {
 
         this->reader->SetFileName (path.toAscii().constData());
         this->reader->Update();
+
         vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (this->reader->GetOutput()->GetMetaDataSet ((unsigned int)0));
         if (sequence)
+        {
+            foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+            {
+                if (!extractMetaData(dataSet))
+                {
+                    qDebug() << metaObject()->className() << ": no metadata found in " << path;
+                }
+            }
+
+            // Remove field from top container of the sequence
+            vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
+            sequence->GetDataSet()->SetFieldData(newFieldData);
+
             medData->setData (sequence );
+        }
     }
 
     this->setProgress (100);
     return true;
 }
 
-bool vtkDataMesh4DReader::read (const QStringList& paths) {
-    if (!paths.count())
+bool vtkDataMesh4DReader::extractMetaData(vtkMetaDataSet* dataSet)
+{
+    if (extractMetaDataFromFieldData(dataSet))
+    {
+        return true;
+    }
+    else
+    {
         return false;
-    return this->read ( paths[0].toAscii().constData() );
-}
-
-void vtkDataMesh4DReader::setProgress (int value) {
-    emit progressed (value);
+    }
 }
 
 bool vtkDataMesh4DReader::registered() {

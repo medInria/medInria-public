@@ -150,7 +150,6 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
 {
     // primary
 
-
     medViewFactory* factory = medViewFactory::instance();
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())

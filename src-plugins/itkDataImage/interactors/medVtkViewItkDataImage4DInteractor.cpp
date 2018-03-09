@@ -13,18 +13,16 @@
 
 #include "medVtkViewItkDataImage4DInteractor.h"
 
-#include <vtkMetaDataSetSequence.h>
-#include <vtkActor.h>
-#include <vtkProperty.h>
+#include <medAbstractImageData.h>
+#include <medAbstractImageView.h>
+#include <medMetaDataKeys.h>
+#include <medViewFactory.h>
+#include <medVtkViewBackend.h>
+
 #include <vtkImageActor.h>
 #include <vtkImageProperty.h>
-
-#include <medAbstractImageView.h>
-#include <medVtkViewBackend.h>
-#include <medViewFactory.h>
-#include <medAbstractImageData.h>
-#include <medDoubleParameter.h>
-
+#include <vtkMetaDataSetSequence.h>
+#include <vtkSmartPointer.h>
 
 class medVtkViewItkDataImage4DInteractorPrivate
 {
@@ -143,12 +141,18 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
               AppendImageSequence<float>(data,d->view,d->sequence, layer)          ||
               AppendImageSequence<double>(data,d->view,d->sequence, layer))
         {
-            d->imageData->setMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
-            d->imageData->setMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
-                                                                           (double)d->sequence->GetMaxTime()));
+            double maxTime = 1.0;
+            if (data->hasMetaData(medMetaDataKeys::SeriesTime.key()))
+            {
+                maxTime = data->metadata(medMetaDataKeys::SeriesTime.key()).toDouble();
+            }
 
-            qDebug() << "SequenceDuration" << d->sequence->GetMaxTime();
-            qDebug() << "SequenceFrameRate" <<(double)d->sequence->GetNumberOfMetaDataSets() / (double)d->sequence->GetMaxTime();
+            double frameRate = (double)d->sequence->GetNumberOfMetaDataSets() / maxTime;
+            d->imageData->setMetaData("SequenceDuration", QString::number(maxTime));
+            d->imageData->setMetaData("SequenceFrameRate", QString::number(frameRate));
+
+            qDebug() << "SequenceDuration" << maxTime;
+            qDebug() << "SequenceFrameRate" << frameRate;
 
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);

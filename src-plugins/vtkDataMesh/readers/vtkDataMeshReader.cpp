@@ -11,26 +11,22 @@
 
 =========================================================================*/
 
-#include <vtkDataMeshReader.h>
+#include "vtkDataMeshReader.h"
 
+#include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 #include <medMetaDataKeys.h>
 
-#include <vtkDataMeshWriter.h>
 #include <vtkErrorCode.h>
-#include <vtkFieldData.h>
 #include <vtkMetaVolumeMesh.h>
 #include <vtkMetaSurfaceMesh.h>
-#include <vtkPolyData.h>
 #include <vtkPolyDataReader.h>
-#include <vtkStringArray.h>
+#include <vtkSmartPointer.h>
 
 const char vtkDataMeshReader::ID[] = "vtkDataMeshReader";
 
-vtkDataMeshReader::vtkDataMeshReader() : dtkAbstractDataReader() {
-}
-
-vtkDataMeshReader::~vtkDataMeshReader() {
+vtkDataMeshReader::vtkDataMeshReader() : vtkDataMeshReaderBase()
+{
 }
 
 QStringList vtkDataMeshReader::handled() const {
@@ -46,12 +42,6 @@ bool vtkDataMeshReader::canRead(const QString& path) {
            (vtkMetaSurfaceMesh::CanReadFile(path.toLocal8Bit().constData()) != 0);
 }
 
-bool vtkDataMeshReader::canRead(const QStringList& paths){
-    if (paths.empty())
-        return false;
-    return canRead(paths.first().toLocal8Bit().constData());
-}
-
 bool vtkDataMeshReader::readInformation(const QString& path) {
     medAbstractData *medData = medAbstractDataFactory::instance()->create("vtkDataMesh");
     this->setData(medData);
@@ -59,16 +49,12 @@ bool vtkDataMeshReader::readInformation(const QString& path) {
     return true;
 }
 
-bool vtkDataMeshReader::readInformation(const QStringList& paths) {
-    if (paths.empty())
-        return false;
-    return readInformation(paths.first().toLocal8Bit().constData());
-}
-
 bool vtkDataMeshReader::read(const QString& path) {
     setProgress(0);
     readInformation(path);
     setProgress(50);
+
+    qDebug() << "Can read with: " << this->identifier();
 
     if (medAbstractData * medData = dynamic_cast<medAbstractData*>(data()))
     {
@@ -132,38 +118,6 @@ bool vtkDataMeshReader::extractMetaData(QString path, vtkMetaDataSet* dataSet)
     }
 }
 
-bool vtkDataMeshReader::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)
-{
-    bool foundMetaData = false;
-    vtkFieldData* fieldData = dataSet->GetDataSet()->GetFieldData();
-    vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
-
-    for (int i = 0; i < fieldData->GetNumberOfArrays(); i++)
-    {
-        QString arrayName = fieldData->GetArrayName(i);
-
-        if (arrayName.startsWith(vtkDataMeshWriter::metaDataFieldPrefix))
-        {
-            foundMetaData = true;
-            vtkStringArray* array = static_cast<vtkStringArray*>(fieldData->GetAbstractArray(i));
-            QString metaDataKey = arrayName.remove(0, vtkDataMeshWriter::metaDataFieldPrefix.length());
-
-            for (int j = 0; j < array->GetSize(); j++)
-            {
-                data()->addMetaData(metaDataKey, QString(array->GetValue(j)));
-            }
-        }
-        else
-        {
-            newFieldData->AddArray(fieldData->GetAbstractArray(i));
-        }
-    }
-
-    dataSet->GetDataSet()->SetFieldData(newFieldData);
-
-    return foundMetaData;
-}
-
 // A previous version of vtkDataMeshWriter stored metadata in the header
 bool vtkDataMeshReader::extractMetaDataFromHeader(QString path, vtkMetaDataSet* dataSet)
 {
@@ -197,16 +151,6 @@ bool vtkDataMeshReader::extractCartoMetaData(vtkMetaDataSet* dataSet)
     {
         return false;
     }
-}
-
-bool vtkDataMeshReader::read(const QStringList& paths) {
-    if (paths.empty())
-        return false;
-    return read(paths.first().toLocal8Bit().constData());
-}
-
-void vtkDataMeshReader::setProgress(int value) {
-    emit progressed(value);
 }
 
 bool vtkDataMeshReader::registered() {

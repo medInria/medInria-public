@@ -22,7 +22,6 @@
 #include <medViewFactory.h>
 #include <medTimeLineParameter.h>
 
-
 class vtkDataMesh4DInteractorPrivate
 {
 public:
@@ -95,9 +94,14 @@ void vtkDataMesh4DInteractor::setInputData(medAbstractData *data)
         case vtkMetaDataSet::VTK_META_SURFACE_MESH:
         case vtkMetaDataSet::VTK_META_VOLUME_MESH:
             d->sequence = sequence;
-            d->data->setMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
+
+            d->data->setMetaData("SequenceDuration", QString::number(d->sequence->GetSequenceDuration()));
             d->data->setMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
-                                                                           (double)d->sequence->GetMaxTime()));
+                                                                      d->sequence->GetSequenceDuration()));
+
+            qDebug() << "SequenceDuration" << d->sequence->GetSequenceDuration();
+            qDebug() << "SequenceFrameRate" <<(double)d->sequence->GetNumberOfMetaDataSets() / d->sequence->GetSequenceDuration();
+
             break;
         default:
             break;
