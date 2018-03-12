@@ -35,10 +35,11 @@ class itkProcessRegistrationPrivate;
  * published there: http://gforge.inria.fr/projects/asclepiospublic/
  * to implement the registration algorithms.
  *
- * @note The process has the following dtk property: "transformType".
- * Each subclass should set accordingly the property with either "rigid", or "nonRigid".
+ * @note The process has the following dtk property: "outputFileType".
+ * Each subclass should set accordingly to the properties described in medRegistrationSelectorToolBox::onSaveTrans
+ * and itkProcessRegistration::itkProcessRegistration().
  * Example:
- * @code this->setProperty("transformType","rigid"); @endcode
+ * @code this->setProperty("outputFileType","text"); @endcode
  *
  *
 */
@@ -61,7 +62,6 @@ public:
     */
     virtual ~itkProcessRegistration();
 
-public:
     /**
      * @brief Image types.
      *
@@ -77,7 +77,6 @@ public:
         DOUBLE
     };
 
-public:
     /**
      * @brief Runs the process.
      *
@@ -149,7 +148,6 @@ public:
     * @return QString
     */
     virtual QString getTitleAndParameters() = 0;
-
 
 public slots:
     /**

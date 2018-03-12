@@ -155,7 +155,6 @@ void DiffeomorphicDemonsToolBox::run()
 
     if(!toolbox)
         return;
-
     
     d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("DiffeomorphicDemonsProcess"));
     if(!d->process)

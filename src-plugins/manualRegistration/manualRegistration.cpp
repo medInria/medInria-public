@@ -40,7 +40,7 @@ public:
     QList<manualRegistrationLandmark*> * MovingLandmarks;
 
     TransformType_Generic::Pointer  transform;
-    TransformName::TransformNameEnum transformTypeInt;
+    manualRegistration::TransformName transformTypeInt;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -50,9 +50,9 @@ public:
 manualRegistration::manualRegistration() : itkProcessRegistration(), d(new manualRegistrationPrivate)
 {
     d->proc = this;
- 
-    //set transform type for the exportation of the transformation to a file
-    this->setProperty("transformType","Rigid");
+
+    // Gives the exported file type for medRegistrationSelectorToolBox
+    this->setProperty("outputFileType","text");
 }
 
 manualRegistration::~manualRegistration()
@@ -78,31 +78,20 @@ QString manualRegistration::identifier() const
     return "manualRegistration";
 }
 
-
-// /////////////////////////////////////////////////////////////////
-// Templated Version of update
 // /////////////////////////////////////////////////////////////////
 
-
-template <typename PixelType>
-int manualRegistrationPrivate::update()
+template <class PixelType> int manualRegistrationPrivate::update()
 {
-    int res = DTK_FAILURE;
+    int res = medAbstractProcess::FAILURE;
 
-    if (transformTypeInt == TransformName::RIGID)
+    if (transformTypeInt == manualRegistration::RIGID)
     {
         res = applyRegistration<PixelType, TransformType_Rigid3D>();
     }
-    else if (transformTypeInt == TransformName::AFFINE)
+    else if (transformTypeInt == manualRegistration::AFFINE)
     {
-        if ((FixedLandmarks->count() >= 4) && (MovingLandmarks->count() >= 4))
-        {
-            res = applyRegistration<PixelType, TransformType_Affine>();
-        }
-        else
-        {
-            proc->displayMessageError("Affine transformation needs 4 landmarks minimum by dataset");
-        }
+        res = applyRegistration<PixelType, TransformType_Affine>();
+
     }
 
     return res;
@@ -156,9 +145,8 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     }
     catch( std::exception & err )
     {
-        qDebug(err.what());
-        proc->displayMessageError("Error initializing transformation");
-        return DTK_FAILURE;
+        qDebug() << "ExceptionObject caught (InitializeTransform): " << err.what();
+        return medAbstractProcess::FAILURE;
     }
 
     // Save transformation for future writing
@@ -183,9 +171,8 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     }
     catch (itk::ExceptionObject &err)
     {
-        qDebug(err.GetDescription());
-        proc->displayMessageError("Error applying transformation");
-        return DTK_FAILURE;
+        qDebug() << "ExceptionObject caught (resampler): " << err.GetDescription();
+        return medAbstractProcess::FAILURE;
     }
 
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
@@ -196,49 +183,49 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
         proc->output()->setData (result);
     }
 
-    return DTK_SUCCEED;
+    return medAbstractProcess::SUCCESS;
 }
 
 int manualRegistration::update(itkProcessRegistration::ImageType imgType)
 {
-    if(fixedImage().IsNull() || movingImages().isEmpty()
-            || movingImages()[0].IsNull())
+    // Cast has been done in itkProcessRegistration
+    if (imgType == itkProcessRegistration::FLOAT)
     {
-        displayMessageError("Either the fixed image or the moving image is empty");
-        return DTK_FAILURE;
+        return d->update<float>();
     }
 
-    if (imgType != itkProcessRegistration::FLOAT)
-    {
-        displayMessageError("Images type should be float");
-        return DTK_FAILURE;
-    }
-
-    return d->update<float>();
+    return medAbstractProcess::FAILURE;
 }
 
 itk::Transform<double,3,3>::Pointer manualRegistration::getTransform()
 {
-    return NULL;
+    return d->transform.GetPointer();
 }
 
 void manualRegistration::setParameter(int data)
 {
-    d->transformTypeInt = static_cast<TransformName::TransformNameEnum>(data);
+    d->transformTypeInt = static_cast<TransformName>(data);
 }
 
 QString manualRegistration::getTitleAndParameters()
 {
     QString titleAndParameters;
-    titleAndParameters += "ManualRegistration\n";
+    titleAndParameters += "ManualRegistration\n  ";
+
+    if (d->transformTypeInt == RIGID)
+    {
+        titleAndParameters += "Rigid method";
+    }
+    else if (d->transformTypeInt == AFFINE)
+    {
+        titleAndParameters += "Affine method";
+    }
     return titleAndParameters;
 }
 
 bool manualRegistration::writeTransform(const QString& file)
 {
-    typedef float PixelType;
-
-    typedef itk::Image< PixelType, 3 > RegImageType;
+    typedef itk::Image< TransformScalarType, 3 > RegImageType;
 
     try
     {
@@ -249,8 +236,7 @@ bool manualRegistration::writeTransform(const QString& file)
     }
     catch (std::exception& err)
     {
-        qDebug(err.what());
-        displayMessageError("Error writing transformation");
+        qDebug() << "ExceptionObject caught (writeTransform): " << err.what();
         return false;
     }
 
@@ -265,12 +251,6 @@ void manualRegistration::SetFixedLandmarks(QList<manualRegistrationLandmark*> * 
 void manualRegistration::SetMovingLandmarks(QList<manualRegistrationLandmark*> * movingLandmarks)
 {
     d->MovingLandmarks = movingLandmarks;
-}
-
-void manualRegistration::displayMessageError(QString error)
-{
-    qDebug() << this->description() + ": " + error;
-    medMessageController::instance()->showError(error, 3000);
 }
 
 // /////////////////////////////////////////////////////////////////

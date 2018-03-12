@@ -11,39 +11,13 @@
 
 =========================================================================*/
 
-#include <itkProcessRegistration.h>
+#include "itkProcessRegistration.h"
 
 #include <dtkCore/dtkSmartPointer.h>
-#include <medAbstractData.h>
-#include <medAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractDataWriter.h>
-
-// /////////////////////////////////////////////////////////////////
-//
-// /////////////////////////////////////////////////////////////////
-
-#include <itkCastImageFilter.h>
-
-#include <itkImageRegistrationMethod.h>
-#include <itkMattesMutualInformationImageToImageMetric.h>
-#include <itkLinearInterpolateImageFunction.h>
-#include <itkEuler3DTransform.h>
-#include <itkCenteredTransformInitializer.h>
-
-#include <itkImageLinearConstIteratorWithIndex.h>
-
-#include <itkImage.h>
-#include <itkImageFileReader.h>
-#include <itkImageFileWriter.h>
-#include <itkMetaImageIO.h>
-#include <itkResampleImageFilter.h>
 #include <itkCastImageFilter.h>
 #include <itkExtractImageFilter.h>
-
-#include <itkCommand.h>
-
-#include <time.h>
+#include <medAbstractDataFactory.h>
+#include <medMessageController.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationPrivate
@@ -56,7 +30,6 @@ public:
     unsigned int dimensions;
     itk::ImageBase<3>::Pointer fixedImage;
     QVector<itk::ImageBase<3>::Pointer> movingImages;
-    //itk::ImageBase<3>::Pointer movingImage;
     itkProcessRegistration::ImageType fixedImageType;
     itkProcessRegistration::ImageType movingImageType;
     dtkSmartPointer<medAbstractData> output;
@@ -78,8 +51,9 @@ itkProcessRegistration::itkProcessRegistration() : medAbstractRegistrationProces
     d->fixedImageType = itkProcessRegistration::FLOAT;
     d->movingImageType = itkProcessRegistration::FLOAT;
     QStringList types;
-    types << "rigid" << "nonRigid";
-    this->addProperty("transformType",types);
+
+    types << "text" << "notText";
+    this->addProperty("outputFileType",types);
     this->addMetaData("category","registration");
 }
 
@@ -97,7 +71,6 @@ itkProcessRegistration::~itkProcessRegistration()
 template <typename PixelType>
         void itkProcessRegistrationPrivate::setInput(medAbstractData * data,int channel)
 {
-    //typedef itk::Image<PixelType, 3> OutputImageType;
     itkProcessRegistration::ImageType inputType;
     if ( typeid(PixelType) == typeid(unsigned char) )
         inputType = itkProcessRegistration::UCHAR;
@@ -371,16 +344,14 @@ int itkProcessRegistration::update(itkProcessRegistration::ImageType)
 
 int itkProcessRegistration::update()
 {
-    if (!d->mutex.tryLock())
+    int retval = medAbstractProcess::FAILURE;
+
+    if (d->mutex.tryLock())
     {
-        return -1;
+        retval = update(d->fixedImageType);
+        d->mutex.unlock();
     }
 
-    if(d->fixedImage.IsNull() || d->movingImages.empty())
-        return 1;
-
-    int retval =  update(d->fixedImageType);
-    d->mutex.unlock();
     return retval;
 }
 
@@ -429,6 +400,7 @@ bool itkProcessRegistration::write(const QStringList& files)
     {
         return writeTransform(files.at(1));
     }
+
     return false;
 }
 

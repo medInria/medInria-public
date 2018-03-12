@@ -19,12 +19,6 @@
 
 class manualRegistrationPrivate;
 
-class TransformName
-{
-public:
-    enum TransformNameEnum {RIGID,AFFINE};
-};
-
 /**
  * @brief Registration process using diffeomorphic demons from itk.
  *
@@ -37,6 +31,9 @@ class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistration : public itkProcessRegi
     Q_OBJECT
 
 public:
+
+    enum TransformName {RIGID,AFFINE};
+
     /**
      * @brief Constructor.
      *
@@ -84,7 +81,15 @@ public:
     virtual int update(ImageType);
 
     virtual itk::Transform<double,3,3>::Pointer getTransform();
+
+    /**
+     * @brief Get parameters for tooltip in undo/redo area.
+     *
+     * @param void
+     * @return QString of the algorithm title & parameters
+    */
     virtual QString getTitleAndParameters();
+
     void SetFixedLandmarks(QList<manualRegistrationLandmark*>  * fixedLandmarks);
     void SetMovingLandmarks(QList<manualRegistrationLandmark*>  * movingLandmarks);
 
@@ -98,8 +103,6 @@ public:
     virtual bool writeTransform(const QString& file);
 
     void setParameter(int data);
-
-    void displayMessageError(QString error);
 
 private:
     manualRegistrationPrivate *d;
