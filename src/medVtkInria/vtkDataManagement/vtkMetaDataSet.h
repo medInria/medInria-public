@@ -17,12 +17,7 @@
 #include <medVtkInriaExport.h>
 #include <string>
 #include <vector>
-
-#if defined __APPLE__
 #include <unordered_map>
-#else
-#include <hash_map>
-#endif
 
 #ifdef WIN32
     #ifndef NAN

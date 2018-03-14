@@ -59,24 +59,6 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## add library
 ## #############################################################################
 
-# Due to the large number of template functions, windows needs an extra compile flag.
-# Currently this only affects x64/debug builds, but enabling this flag for others does no harm.
-if (MSVC)
-    set(bigobjFile itkFilters.cpp)
-    get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
-    if (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
-        set_source_files_properties(${bigobjFile}
-          PROPERTIES COMPILE_FLAGS
-          "/bigobj"
-          )
-    else()
-        set_source_files_properties(${bigobjFile}
-          PROPERTIES COMPILE_FLAGS
-         "${bigobjFile_COMPILE_FLAGS} /bigobj"
-         )
-    endif()
-endif()
-
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 
 ## #############################################################################
