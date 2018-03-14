@@ -61,7 +61,7 @@ medAbstractData* medDatabaseReader::run()
 
     query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
     query.bindValue ( ":id", patientDbId );
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
     {
@@ -73,7 +73,7 @@ medAbstractData* medDatabaseReader::run()
 
     query.prepare ( "SELECT name, uid, studyId FROM study WHERE id = :id" );
     query.bindValue ( ":id", studyDbId );
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
     {
@@ -88,7 +88,7 @@ medAbstractData* medDatabaseReader::run()
                      FROM series WHERE id = :id" );
 
     query.bindValue ( ":id", seriesDbId );
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
     {
@@ -115,7 +115,7 @@ medAbstractData* medDatabaseReader::run()
 
     query.prepare ( "SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series" );
     query.bindValue ( ":series", seriesDbId );
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     // now we might have both indexed and imported images in the same series
@@ -164,7 +164,7 @@ medAbstractData* medDatabaseReader::run()
 
         seriesQuery.prepare ( "SELECT thumbnail FROM series WHERE id = :id" );
         seriesQuery.bindValue ( ":id", seriesDbId );
-        if (!seriesQuery.exec())
+        if (!EXEC_QUERY(seriesQuery))
             qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
 
         if(seriesQuery.first())
@@ -234,7 +234,7 @@ QString medDatabaseReader::getFilePath()
     query.prepare ( "SELECT path, instance_path, isIndexed FROM image WHERE series = :series" );
     query.bindValue ( ":series", seriesDbId );
 
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     // indexed files have an empty string in 'instance_path' column

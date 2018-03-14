@@ -66,7 +66,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
     query.bindValue ( ":name", patientName );
     query.bindValue ( ":birthdate", birthDate );
 
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
@@ -99,7 +99,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
     query.bindValue ( ":name", patientName );
     query.bindValue ( ":birthdate", birthDate );
 
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
@@ -115,7 +115,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
         query.bindValue ( ":name", studyName );
         query.bindValue ( ":studyUid", studyUid );
 
-        if ( !query.exec() )
+        if ( !EXEC_QUERY(query) )
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
         if ( query.first() )
@@ -142,7 +142,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
             query.bindValue ( ":rows", rows );
             query.bindValue ( ":columns", columns );
 
-            if ( !query.exec() )
+            if ( !EXEC_QUERY(query) )
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if ( query.first() )
@@ -155,7 +155,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
                 query.bindValue ( ":series", seriesDbId );
                 query.bindValue ( ":name", imageName );
 
-                if ( !query.exec() )
+                if ( !EXEC_QUERY(query) )
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
                 if ( query.first() )
@@ -212,7 +212,7 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QS
     query.bindValue ( ":name", patientName );
     query.bindValue ( ":birthdate", birthDate );
 
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
@@ -230,7 +230,7 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QS
         query.bindValue ( ":birthdate", birthdate );
         query.bindValue ( ":gender",    gender );
         query.bindValue ( ":patientId", patientId);
-        query.exec();
+        EXEC_QUERY(query);
 
         patientDbId = query.lastInsertId().toInt();
     }
@@ -263,7 +263,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     query.bindValue ( ":studyName", studyName );
     query.bindValue ( ":studyUid", studyUid );
 
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
@@ -281,7 +281,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
         query.bindValue ( ":thumbnail", refThumbPath );
         query.bindValue ( ":studyId", studyId);
 
-        query.exec();
+        EXEC_QUERY(query);
 
         studyDbId = query.lastInsertId().toInt();
     }
@@ -328,7 +328,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     if( seriesName=="EmptySeries" )
         return seriesDbId;
 
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if ( query.first() )
@@ -389,7 +389,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         query.bindValue ( ":institution",    institution );
         query.bindValue ( ":report",         report );
 
-        if ( !query.exec() )
+        if ( !EXEC_QUERY(query) )
           qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
         seriesDbId = query.lastInsertId().toInt();
@@ -419,7 +419,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
             query.bindValue ( ":series", seriesDbId );
             query.bindValue ( ":name", fileInfo.fileName() + QString().setNum ( i ) );
 
-            if ( !query.exec() )
+            if ( !EXEC_QUERY(query) )
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if ( query.first() )
@@ -442,7 +442,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
                 QString relativeFilePath = medData->metaDataValues ( "FileName" ) [0];
                 query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 
-                if ( !query.exec() )
+                if ( !EXEC_QUERY(query) )
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             }
         }
@@ -457,7 +457,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
             query.bindValue ( ":series", seriesDbId );
             query.bindValue ( ":name", fileInfo.fileName() );
 
-            if ( !query.exec() )
+            if ( !EXEC_QUERY(query) )
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if ( query.first() )
@@ -483,7 +483,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
                 else
                     query.bindValue ( ":thumbnail", "" );
 
-                if ( !query.exec() )
+                if ( !EXEC_QUERY(query) )
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             }
         }
@@ -505,7 +505,7 @@ QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
     QSqlQuery query ( db );
     query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'" );
 
-    if ( !query.exec() )
+    if ( !EXEC_QUERY(query) )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     QStringList seriesNames;

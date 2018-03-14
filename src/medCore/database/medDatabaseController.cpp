@@ -35,16 +35,6 @@
 #include <medDatabaseReader.h>
 #include <medDatabaseRemover.h>
 
-#define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
-namespace {
-    inline bool execQuery( QSqlQuery & query, const char *file, int line ) {
-        if ( ! query.exec() ) {
-            qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-            return false;
-        }
-        return true;
-    }
-}
 class medDatabaseControllerPrivate
 {
 public:
@@ -191,10 +181,12 @@ bool medDatabaseController::createConnection(void)
 
     // optimize speed of sqlite db
     QSqlQuery query(m_database);
-    if ( !query.exec( QLatin1String( "PRAGMA synchronous = 0" ) ) ) {
+    if (!(query.prepare(QLatin1String("PRAGMA synchronous = 0"))
+          && EXEC_QUERY(query))) {
         qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
     }
-    if ( !query.exec( QLatin1String( "PRAGMA journal_mode=wal" ) ) ) {
+    if (!(query.prepare(QLatin1String("PRAGMA journal_mode=wal"))
+          && EXEC_QUERY(query))) {
         qDebug() << "Could not set sqlite write-ahead-log journal mode";
     }
 
@@ -226,7 +218,7 @@ medDataIndex medDatabaseController::indexForPatient (const QString &patientName)
 
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
@@ -245,7 +237,7 @@ medDataIndex medDatabaseController::indexForStudy(int id)
 
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", id);
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
@@ -269,7 +261,7 @@ medDataIndex medDatabaseController::indexForStudy(const QString &patientName, co
     query.bindValue(":id",   patientId);
     query.bindValue(":name", studyName);
 
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
@@ -290,7 +282,7 @@ medDataIndex medDatabaseController::indexForSeries(int id)
 
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", id);
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
@@ -298,7 +290,7 @@ medDataIndex medDatabaseController::indexForSeries(int id)
 
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
@@ -322,7 +314,7 @@ medDataIndex medDatabaseController::indexForSeries(const QString &patientName, c
     query.bindValue(":id",   studyId);
     query.bindValue(":name", seriesName);
 
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
@@ -344,7 +336,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
 
     query.prepare("SELECT series FROM image WHERE id = :id");
     query.bindValue(":id", id);
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
@@ -352,7 +344,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
 
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
@@ -360,7 +352,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
 
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
@@ -385,7 +377,7 @@ medDataIndex medDatabaseController::indexForImage(const QString &patientName, co
     query.bindValue(":id",   seriesId);
     query.bindValue(":name", imageName);
 
-    if(!query.exec())
+    if(!EXEC_QUERY(query))
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first()) {
@@ -450,7 +442,8 @@ void medDatabaseController::showOpeningError(QObject *sender)
 void medDatabaseController::createPatientTable(void)
 {
     QSqlQuery query(this->database());
-    query.exec(
+
+    query.prepare(
             "CREATE TABLE patient ("
             " id       INTEGER PRIMARY KEY,"
             " name        TEXT,"
@@ -460,13 +453,15 @@ void medDatabaseController::createPatientTable(void)
             " patientId   TEXT"
             ");"
             );
+
+    EXEC_QUERY(query);
 }
 
 void medDatabaseController::createStudyTable(void)
 {
     QSqlQuery query(this->database());
 
-    query.exec(
+    query.prepare(
             "CREATE TABLE study ("
             " id        INTEGER      PRIMARY KEY,"
             " patient   INTEGER," // FOREIGN KEY
@@ -476,12 +471,14 @@ void medDatabaseController::createStudyTable(void)
             " studyId      TEXT"
             ");"
             );
+
+    EXEC_QUERY(query);
 }
 
 void medDatabaseController::createSeriesTable(void)
 {
     QSqlQuery query(this->database());
-    query.exec(
+    query.prepare(
             "CREATE TABLE series ("
             " id       INTEGER      PRIMARY KEY,"
             " study    INTEGER," // FOREIGN KEY
@@ -511,6 +508,8 @@ void medDatabaseController::createSeriesTable(void)
             " report          TEXT"
             ");"
             );
+
+    EXEC_QUERY(query);
 }
 
 void medDatabaseController::createImageTable(void)
@@ -520,7 +519,7 @@ void medDatabaseController::createImageTable(void)
     // placeholder (number 64), and it was never read.
 
     QSqlQuery query(this->database());
-    query.exec(
+    query.prepare(
             "CREATE TABLE image ("
             " id         INTEGER      PRIMARY KEY,"
             " series     INTEGER," // FOREIGN KEY
@@ -532,6 +531,8 @@ void medDatabaseController::createImageTable(void)
             " isIndexed  BOOLEAN"
             ");"
             );
+
+    EXEC_QUERY(query);
 }
 
 /**
@@ -877,6 +878,18 @@ bool medDatabaseController::isPersistent(  ) const
     return true;
 }
 
+bool medDatabaseController::execQuery(QSqlQuery& query, const char* file, int line) const
+{
+    if (!query.exec())
+    {
+        qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        qDebug() << "The query was: " << query.lastQuery().simplified();
+        return false;
+    }
+
+    return true;
+}
+
 /** Remove / replace characters to transform into a pathname component. */
 QString medDatabaseController::stringForPath( const QString & name ) const
 {
@@ -926,7 +939,7 @@ bool medDatabaseController::contains(const medDataIndex &index) const
         if (imageId != -1)
             query.bindValue(":imID", imageId);
 
-        if(!query.exec())
+        if(!EXEC_QUERY(query))
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         if(query.first())
             return true;

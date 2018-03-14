@@ -28,20 +28,6 @@
 #include <medDatabaseController.h>
 #include <medStorage.h>
 
-#define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
-namespace
-{
-    inline bool execQuery ( QSqlQuery & query, const char *file, int line )
-    {
-        if ( ! query.exec() )
-        {
-            qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-            return false;
-        }
-        return true;
-    }
-}
-
 class medDatabaseRemoverPrivate
 {
 public:
