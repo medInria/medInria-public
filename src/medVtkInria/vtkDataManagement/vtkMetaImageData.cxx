@@ -120,7 +120,7 @@ unsigned int vtkMetaImageData::CanReadFile (const char* filename)
   try
   {
     
-    reader4d->GenerateOutputInformation();
+    reader4d->UpdateOutputInformation();
   }
   catch (itk::ExceptionObject &e)
   {
@@ -278,7 +278,7 @@ void vtkMetaImageData::Read (const char* filename)
   d_reader->SetFileName(filename);
   try
   {
-    d_reader->GenerateOutputInformation();
+    d_reader->UpdateOutputInformation();
   }
   catch(itk::ExceptionObject &e)
   {

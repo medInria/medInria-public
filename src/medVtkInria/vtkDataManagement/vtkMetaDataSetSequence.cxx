@@ -96,7 +96,7 @@ unsigned int vtkMetaDataSetSequence::CanReadFile (const char* filename)
   
   try
   {
-    reader4d->GenerateOutputInformation();
+    reader4d->UpdateOutputInformation();
   }
   catch (itk::ExceptionObject)
   {
@@ -137,7 +137,7 @@ void vtkMetaDataSetSequence::Read(const char* dirname)
       d_reader->SetFileName(dirname);
       try
       {
-	d_reader->GenerateOutputInformation();
+          d_reader->UpdateOutputInformation();
       }
       catch(itk::ExceptionObject &e)
       {
