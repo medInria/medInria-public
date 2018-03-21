@@ -77,6 +77,10 @@ class MEDVTKINRIA_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   virtual void ReadGMeshFile(const char* filename);
   virtual void WriteVtkFile (const char* filename);
 
+  /**
+     Internal method to read cells in medit format.
+  */
+  void ReadMeditCells(std::ifstream& file, vtkUnstructuredGrid* mesh, int nbCellPoints, vtkDataArray* attrArray);
 
  private:
   

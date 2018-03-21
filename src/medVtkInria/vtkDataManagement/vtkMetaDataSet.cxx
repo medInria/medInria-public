@@ -912,6 +912,62 @@ vtkDataArray* vtkMetaDataSet::GetArray (const char* name)
   return ret;
 }
 
+void vtkMetaDataSet::ClearInputStream(std::ifstream& file)
+{
+  file.clear();
+  file.seekg(0, file.beg);
+}
+
+bool vtkMetaDataSet::PlaceStreamCursor(std::ifstream& file, const char* token)
+{
+  std::string buf;
+  file >> buf;
+
+  while (file.good() && (buf.compare(token) != 0))
+  {
+    if (buf[0] == '#')
+    {
+        // special case, the line is a comment. Ignore.
+        std::getline(file, buf);
+    }
+    file >> buf;
+  }
+
+  if (file.good())
+  {
+    return true;
+  }
+  return false;
+}
+
+bool vtkMetaDataSet::IsMeditFormat(const char* filename)
+{
+    std::ifstream file(filename);
+    if(file.fail())
+    {
+      return false;
+    }
+
+    // Find medit header.
+    // The first keyword in medit files is "MeshVersionFormatted".
+    std::string header("MeshVersionFormatted");
+    std::string buf;
+    file >> buf;
+    // ignore all comments
+    while (file.good() && buf[0] == '#')
+    {
+        // ignore the rest of the line
+        std::getline(file, buf);
+        file >> buf;
+    }
+    // all comments have been ignored, now the cursor should
+    // be on the header keyword.
+    if (buf.compare(header) == 0)
+    {
+        return true;
+    }
+    return false;
+}
 
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::PrintSelf(ostream& os, vtkIndent indent)

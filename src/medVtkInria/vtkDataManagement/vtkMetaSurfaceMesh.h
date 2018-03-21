@@ -103,7 +103,12 @@ class MEDVTKINRIA_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
      Method called everytime the dataset changes for initialization
   */
   virtual void Initialize();
-  
+
+  /**
+     Internal method to read all medit format cells of a particular type
+  */
+  void ReadMeditCells(std::ifstream& file, vtkPolyData* mesh, int nbCellPoints, vtkDataArray* attrArray);
+ 
  private:
   
   vtkMetaSurfaceMesh(const vtkMetaSurfaceMesh&);       // Not implemented.
