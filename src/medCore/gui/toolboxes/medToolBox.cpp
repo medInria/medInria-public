@@ -324,7 +324,16 @@ void medToolBox::handleDisplayError(int error)
         displayMessageError("Inputs must be the same type");
         break;
     case medAbstractProcess::MISMATCHED_DATA_SIZES_ORIGIN_SPACING:
-        displayMessageError("Inputs must be the same size, origin, spacing");
+        displayMessageError("Inputs must have the same size, origin, spacing");
+        break;
+    case medAbstractProcess::MISMATCHED_DATA_SIZE:
+        displayMessageError("Inputs must have the same size");
+        break;
+    case medAbstractProcess::MISMATCHED_DATA_ORIGIN:
+        displayMessageError("Inputs must have the same origin");
+        break;
+    case medAbstractProcess::MISMATCHED_DATA_SPACING:
+        displayMessageError("Inputs must have the same spacing");
         break;
     default:
         displayMessageError("This action failed (undefined error)");

@@ -44,7 +44,7 @@ DiffeomorphicDemonsToolBox::DiffeomorphicDemonsToolBox(QWidget *parent) : medAbs
 
     QVBoxLayout* layout = new QVBoxLayout();
 
-    QLabel* explanation = new QLabel("Drop 2 datasets with same size, origin and spacing.\n");
+    QLabel* explanation = new QLabel("Drop 2 datasets with same size and spacing.\n");
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
     layout->addWidget(explanation);

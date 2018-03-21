@@ -138,6 +138,12 @@ public:
     */
     virtual QString getTitleAndParameters();
 
+    /**
+     * @brief testInputs() tests origin, dimension and spacing of the input
+     * @return medAbstractProcess::DataError according to the test result
+     */
+    medAbstractProcess::DataError testInputs();
+
 protected :
     /**
      * @brief Writes the transformation, in this case the displacement field,
