@@ -175,14 +175,15 @@ void medDataManager::exportData(medAbstractData* data)
     QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
     QHash<QString, dtkAbstractDataWriter*> possibleWriters=getPossibleWriters(data);
 
-    QFileDialog * exportDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
+    QFileDialog * exportDialog = new QFileDialog(0, tr("Exporting: please choose a file name and directory"));
     exportDialog->setOption(QFileDialog::DontUseNativeDialog);
     exportDialog->setAcceptMode(QFileDialog::AcceptSave);
 
     QComboBox* typesHandled = new QComboBox(exportDialog);
     // we use allWriters as the list of keys to make sure we traverse possibleWriters
     // in the order specified by the writers priorities.
-    foreach(QString type, allWriters) {
+    foreach(QString type, allWriters)
+    {
         if (!possibleWriters.contains(type))
             continue;
 
@@ -218,9 +219,40 @@ void medDataManager::exportData(medAbstractData* data)
         exportDialog->selectFile(defaultName);
     }
 
-    if ( exportDialog->exec() ) {
+    if ( exportDialog->exec() )
+    {
+        // Chosen format in combobox. Ex. "vtkDataMesh"
         QString chosenFormat = typesHandled->itemData(typesHandled->currentIndex()).toString();
-        this->exportDataToPath(data, exportDialog->selectedFiles().first().toUtf8(), chosenFormat);
+
+        // Combobox extension. Ex. ".vtk"
+        QString comboExtension = typesHandled->itemData(typesHandled->currentIndex(), Qt::UserRole+1).toString();
+
+        // Chosen extension in filename. Ex. "vtk"
+        QString finalFilename = exportDialog->selectedFiles().first().toUtf8();
+        QString userExtension = QFileInfo(finalFilename).suffix();
+
+        // Some extensions are linked to several formats:
+        // if the combobox and filename extensions are equal, no need to enter here.
+        if (!userExtension.isEmpty() && (comboExtension != ("."+userExtension)))
+        {
+            foreach(QString type, allWriters)
+            {
+                if (possibleWriters.contains(type))
+                {
+                    QStringList extensionList = possibleWriters[type]->supportedFileExtensions();
+
+                    if (extensionList.contains("." + userExtension))
+                    {
+                        // User has the last word about the file format, if it's a known format
+                        chosenFormat = type;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Send final type to export data
+        this->exportDataToPath(data, finalFilename, chosenFormat);
     }
 
     qDeleteAll(possibleWriters);
