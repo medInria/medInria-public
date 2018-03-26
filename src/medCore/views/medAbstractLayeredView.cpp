@@ -247,21 +247,24 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
     foreach(medDataIndex index, this->dataList())
     {
-        if (!dataList.contains(index)) {
+        if (!dataList.contains(index))
+        {
             medAbstractData *data = medDataManager::instance()->retrieveData(index);
             if (data)
+            {
                 this->removeLayer(this->layer(data));
+            }
         }
     }
-
     foreach(medDataIndex index, dataList)
     {
         medAbstractData *data = medDataManager::instance()->retrieveData(index);
-        if (!data)
+        if (!data || this->contains(data))
+        {
             continue;
+        }
 
         this->addLayer(data);
-
         unsigned int layerNumber = this->layer(data);
 
         QList<medLayerParameterGroup*> groupsLayer0 = medParameterGroupManager::instance()->layerGroups(this, this->layerData(0));
@@ -271,7 +274,9 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
             QString newGroup = groupsLayer0[0]->name() + " Layer " + QString::number(layerNumber+1);
             medLayerParameterGroup* layerGroup = medParameterGroupManager::instance()->layerGroup(newGroup);
             if(!layerGroup)
+            {
                 layerGroup = new medLayerParameterGroup(newGroup, this);
+            }
             layerGroup->setLinkAllParameters(true);
             layerGroup->addImpactedlayer(this, data);
         }
