@@ -13,8 +13,10 @@
 
 #include <medAbstractData.h>
 #include <medAbstractProcess.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medAbstractView.h>
 #include <medButton.h>
+#include <medDataManager.h>
 #include <medJobManager.h>
 #include <medMessageController.h>
 #include <medTabbedViewContainers.h>
@@ -383,6 +385,11 @@ void medToolBox::addConnectionsAndStartJob(medJobItem* job)
 
 void medToolBox::addToolBoxConnections(medJobItem* job)
 {
+    // If you want to deactivate the automatic import of process output, add:
+    // "enableOnProcessSuccessImportOutput(runProcess, false);"
+    // in your toolbox, after "addConnectionsAndStartJob(runProcess);"
+    enableOnProcessSuccessImportOutput(job, true);
+
     connect (job, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
     connect (job, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
     connect (job, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
@@ -391,4 +398,16 @@ void medToolBox::addToolBoxConnections(medJobItem* job)
     connect (job, SIGNAL (failure   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
     connect (job, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
     connect (job, SIGNAL (activate(QObject*,bool)), getProgressionStack(), SLOT(setActive(QObject*,bool)));
+}
+
+void medToolBox::enableOnProcessSuccessImportOutput(medJobItem* job, bool enable)
+{
+    if (enable)
+    {
+        connect(job, SIGNAL(success(QObject*)), this->getWorkspace(), SLOT(importProcessOutput()), Qt::UniqueConnection);
+    }
+    else
+    {
+        disconnect(job, SIGNAL(success(QObject*)), this->getWorkspace(), SLOT(importProcessOutput()));
+    }
 }

@@ -76,6 +76,9 @@ public:
     //! Get back progress bar from workspace
     medProgressionStack *getProgressionStack();
 
+    //! enable or disable the output automatic import after a process success
+    void enableOnProcessSuccessImportOutput(medJobItem *job, bool enable);
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.

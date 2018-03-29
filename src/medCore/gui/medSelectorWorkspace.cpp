@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include <medAbstractSelectableToolBox.h>
+#include <medDataManager.h>
 #include <medSelectorToolBox.h>
 #include <medSelectorWorkspace.h>
 
@@ -36,8 +38,6 @@ medSelectorWorkspace::medSelectorWorkspace(QWidget * parent, QString name, medSe
         d->selectorToolBox = toolbox;
     }
 
-    connect(d->selectorToolBox,SIGNAL(success()),this,SLOT(onProcessSuccess()));
-
     this->addToolBox(d->selectorToolBox);
     d->selectorToolBox->setTitle(name); // get workspace name
 }
@@ -51,4 +51,10 @@ medSelectorWorkspace::~medSelectorWorkspace(void)
 medSelectorToolBox* medSelectorWorkspace::selectorToolBox()
 {
     return d->selectorToolBox;
+}
+
+void medSelectorWorkspace::importProcessOutput()
+{
+    medAbstractData* output = selectorToolBox()->currentToolBox()->processOutput();
+    medDataManager::instance()->importData(output);
 }

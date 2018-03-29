@@ -51,7 +51,7 @@ signals:
 protected slots:
 
     void changeToolBoxInput();
-    void onProcessSuccess();
+    void importProcessOutput();
 
 private:
     medFilteringWorkspacePrivate *d;

@@ -35,7 +35,7 @@ public:
     medSelectorToolBox *selectorToolBox();
 
 protected slots:
-    virtual void onProcessSuccess(){}
+    virtual void importProcessOutput();
 
 private:
     medSelectorWorkspacePrivate *d;

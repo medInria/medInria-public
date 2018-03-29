@@ -30,9 +30,6 @@ public:
     medSegmentationWorkspace(QWidget * parent);
 
     static bool isUsable();
-
-protected slots:
-    void onProcessSuccess();
 };
 
 

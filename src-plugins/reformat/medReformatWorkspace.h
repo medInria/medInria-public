@@ -28,7 +28,4 @@ public:
 
     static bool isUsable();
     static bool registered();
-
-protected slots:
-    void onProcessSuccess();
 };

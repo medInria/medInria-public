@@ -1,7 +1,5 @@
 #include "medReformatWorkspace.h"
 
-#include <medAbstractSelectableToolBox.h>
-#include <medDataManager.h>
 #include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
@@ -23,10 +21,3 @@ bool medReformatWorkspace::registered()
 {
     return medWorkspaceFactory::instance()->registerWorkspace <medReformatWorkspace>();
 }
-
-void medReformatWorkspace::onProcessSuccess()
-{
-    medAbstractData * output = selectorToolBox()->currentToolBox()->processOutput();
-    medDataManager::instance()->importData(output);
-}
-

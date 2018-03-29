@@ -94,7 +94,7 @@ void medFilteringWorkspace::changeToolBoxInput()
 /**
  * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
  */
-void medFilteringWorkspace::onProcessSuccess()
+void medFilteringWorkspace::importProcessOutput()
 {
     if(selectorToolBox()->data())
     {

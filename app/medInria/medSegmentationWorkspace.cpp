@@ -13,8 +13,6 @@
 
 #include <medSegmentationWorkspace.h>
 
-#include <medAbstractSelectableToolBox.h>
-#include <medDataManager.h>
 #include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
@@ -30,10 +28,4 @@ bool medSegmentationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("Segmentation").size()!=0);
-}
-
-void medSegmentationWorkspace::onProcessSuccess()
-{
-    medAbstractData* output = selectorToolBox()->currentToolBox()->processOutput();
-    medDataManager::instance()->importData(output);
 }
