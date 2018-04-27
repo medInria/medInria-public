@@ -574,6 +574,11 @@ void vtkDataMeshInteractor::removeData()
         {
             d->view2d->RemoveDataSet(pointSet);
             d->view3d->RemoveDataSet(pointSet);
+            d->metaDataSet->RemoveActor(d->actor2d);
+            d->metaDataSet->RemoveActor(d->actor3d);
+            d->actor2d = 0;
+            d->actor3d = 0;
+
             d->view->render();
         }
     }
