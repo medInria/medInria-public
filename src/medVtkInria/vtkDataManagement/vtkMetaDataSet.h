@@ -19,6 +19,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include <QString>
+
 #ifdef WIN32
     #ifndef NAN
         static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
@@ -359,7 +361,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
   virtual double GetScalarNullValue(const char * arrayName);
   virtual void SetScalarNullValue(const char * arrayName, double nullValue);
 
-  virtual double* GetCurrentScalarRange();
+  virtual double* GetScalarRange(QString attributeName = QString());
   
   
   /**

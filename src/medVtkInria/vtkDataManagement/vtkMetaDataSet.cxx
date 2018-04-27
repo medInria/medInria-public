@@ -686,38 +686,29 @@ void vtkMetaDataSet::SetScalarNullValue(const char * arrayName, double nullValue
 }
 
 //----------------------------------------------------------------------------
-double* vtkMetaDataSet::GetCurrentScalarRange()
+double* vtkMetaDataSet::GetScalarRange(QString attributeName)
 {
-  double* val = new double[2];
-  val[0] = VTK_DOUBLE_MAX;
-  val[1] = VTK_DOUBLE_MIN;
+    double* val = new double[2];
+    val[0] = VTK_DOUBLE_MAX;
+    val[1] = VTK_DOUBLE_MIN;
 
-  if (this->GetCurrentScalarArray())
-  {
-    double nullValue = this->GetScalarNullValue(this->GetCurrentScalarArray()->GetName());
-    if (nullValue != nullValue) //NaN value
+    if (attributeName.trimmed().isEmpty())
     {
-        double* range2 = this->GetCurrentScalarArray()->GetRange();
-        val[0] = range2[0];
-        val[1] = range2[1];
+        QString temp (this->GetCurrentScalarArray()->GetName());
+        attributeName = temp;
     }
-    else
+
+    if (this->GetDataSet())
     {
-        vtkDataArray * array = this->GetCurrentScalarArray();
-        unsigned int nbTuples = array->GetNumberOfTuples();
-        for(unsigned int i = 0; i < nbTuples; ++i)
+        if (this->GetDataSet()->GetPointData()->HasArray(qPrintable(attributeName)))
         {
-            double t = array->GetTuple1(i);
-            if(fabs(t - nullValue) <= 1e-10) // t == nullValue with a margin of error
-            continue;
-            if (t < val[0]) val[0] = t;
-            if (t > val[1]) val[1] = t;
+            this->GetDataSet()->GetPointData()->GetArray(qPrintable(attributeName))->GetRange(val);
+        }
+        else if (this->GetDataSet()->GetCellData()->HasArray(qPrintable(attributeName)))
+        {
+            this->GetDataSet()->GetCellData()->GetArray(qPrintable(attributeName))->GetRange(val);
         }
     }
-  }
-
-  else if (this->GetDataSet() && ( val[0] == VTK_DOUBLE_MAX ) )
-      val = this->GetDataSet()->GetScalarRange();
 
     // if all values are null values, or if we don't have a current scalar array
     if ( val[0] == VTK_DOUBLE_MAX || val[1] == VTK_DOUBLE_MIN )
@@ -725,11 +716,9 @@ double* vtkMetaDataSet::GetCurrentScalarRange()
         val[0] = 0;
         val[1] = 1;
     }
-    
 
-  return val;
+    return val;
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::ColorByArray(vtkDataArray* array)

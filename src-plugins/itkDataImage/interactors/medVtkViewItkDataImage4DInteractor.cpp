@@ -157,7 +157,7 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
 
-            double* range = d->sequence->GetCurrentScalarRange();
+            double* range = d->sequence->GetScalarRange();
             d->view2d->SetColorRange(range);
             this->initWindowLevelParameters(range);
 
