@@ -479,18 +479,21 @@ void medDataManager::setWriterPriorities()
     QList<QString> writers = medAbstractDataFactory::instance()->writers();
     QMap<int, QString> writerPriorites;
 
-    int startIndex = 0;
+    // set vtkDataMeshWriter as a top priority writer
+    if(writers.contains("vtkDataMeshWriter"))
+    {
+        writers.move(writers.indexOf("vtkDataMeshWriter"),0);
+    }
 
-    // set itkMetaDataImageWriter as the top priority writer
+    // set itkMetaDataImageWriter as a top priority writer
     if(writers.contains("itkMetaDataImageWriter"))
     {
-        writerPriorites.insert(0, "itkMetaDataImageWriter");
-        startIndex = writers.removeOne("itkMetaDataImageWriter") ? 1 : 0;
+        writers.move(writers.indexOf("itkMetaDataImageWriter"),1);
     }
 
     for ( int i=0; i<writers.size(); i++ )
     {
-        writerPriorites.insert(startIndex+i, writers[i]);
+        writerPriorites.insert(i, writers[i]);
     }
 
     medAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
