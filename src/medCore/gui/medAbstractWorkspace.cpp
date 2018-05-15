@@ -293,6 +293,22 @@ void medAbstractWorkspace::updateMouseInteractionToolBox()
     }
 }
 
+QList<int> medAbstractWorkspace::getSelectedLayerIndices()
+{
+    QList<int> layerIndices;
+    foreach (QListWidgetItem* item, d->selectedLayers)
+    {
+        layerIndices.append(item->data(Qt::UserRole).toInt());
+    }
+    return layerIndices;
+}
+
+void medAbstractWorkspace::handleLayerSelectionChange()
+{
+    this->updateInteractorsToolBox();
+    emit layerSelectionChanged(getSelectedLayerIndices());
+}
+
 void medAbstractWorkspace::updateLayersToolBox()
 {
     d->layerListToolBox->body()->clear();
@@ -309,7 +325,7 @@ void medAbstractWorkspace::updateLayersToolBox()
     d->layerListWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
-    connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateInteractorsToolBox()));
+    connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(handleLayerSelectionChange()));
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
