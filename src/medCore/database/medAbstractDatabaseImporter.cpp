@@ -552,7 +552,6 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
         // it could be that we have already another image with this characteristics
         // so we would like to check whether the image filename is on the db
         // and if so we would add some suffix to distinguish it
-
         newSeriesDescription = ensureUniqueSeriesName(seriesDescription);
     }
     else
