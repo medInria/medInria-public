@@ -1,3 +1,25 @@
+MUSIC v2.2.0:
+- Add Translation volume toolbox
+- Export Video from view: by rotation or time. Export in OGG VORBIS or batch of JPEG.
+- MFS Simulation: add Inverse Problem Methods utility with methods that can be used in inverse problems in general and not only in MFS.
+- MFS Simulation: add automatic determination of the optimal regularization parameter using Creso, Zero Crossing, GCV, RGCV, ADPC and U-Curve methods.
+- MFS Simulation: can now save singular values, relative errors, correlation coefficients.
+- Import (CARTO) EPMap
+- Pipelines: export to RYTHMIA
+- Add Jenkins Ubuntu 12.04 server (in addition to 16.04)
+- Add Jenkins Windows 10 server
+- Adapt MUSIC to Visual Studio 2015 compilation
+- Switch to C++11 code
+- Switch to ITK 4.11
+- Change the view background color
+- Diffeormorphic toolbox can be used with different origins
+- Ergonomic changes on view buttons
+- Ctrl Space to switch between workspaces, add new icons
+- Manual Registration uses the undo/redo tool
+- OBJ writer/reader
+- STL writer/reader
+- Merge data, add fuse method for meshes and volumes
+
 MUSIC v2.1.0:
 - Fix pipeline export to other computer
 - Morphological kernel maximum value updated
