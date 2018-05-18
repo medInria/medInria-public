@@ -14,41 +14,21 @@
 #include "medWorkspaceArea.h"
 #include "medWorkspaceArea_p.h"
 
+#include "medDatabaseDataSource.h"
+#include "medDataSourceManager.h"
+#include "mscExportVideoDialog.h"
 
-#include <medAbstractDataFactory.h>
-#include <medAbstractData.h>
-#include <dtkCore/dtkGlobal.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <dtkVr/dtkVrHeadRecognizer.h>
-#include <dtkVr/dtkVrGestureRecognizer.h>
-
-#include <medAbstractDbController.h>
-#include <medSettingsManager.h>
-#include <medDataIndex.h>
-#include <medDataManager.h>
-#include <medAbstractView.h>
-#include <medMetaDataKeys.h>
-#include <medViewFactory.h>
-#include <medAbstractView.h>
 #include <medAbstractImageView.h>
-#include <medViewContainerSplitter.h>
-#include <medViewContainer.h>
-
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseController.h>
-
+#include <medAbstractProcess.h>
+#include <medParameterGroupManager.h>
+#include <medSettingsManager.h>
+#include <medTabbedViewContainers.h>
+#include <medTimeLineParameter.h>
 #include <medToolBox.h>
 #include <medToolBoxContainer.h>
 #include <medWorkspaceFactory.h>
-#include <medTabbedViewContainers.h>
-
-#include "medDatabaseDataSource.h"
-#include "medDataSourceManager.h"
-#include <medParameterGroupManager.h>
-
-#include <QtGui>
-#include <QGLWidget>
-
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
@@ -122,7 +102,125 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    return QPixmap::grabWindow(this->currentWorkspace()->stackedViewContainers()->currentWidget()->winId());
+    medAbstractView* currentView = currentWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
+    if (currentView != nullptr)
+    {
+        return QPixmap::grabWindow(currentView->viewWidget()->winId());
+    }
+    return QPixmap();
+}
+
+void medWorkspaceArea::grabVideo()
+{
+    medAbstractView* view = this->currentWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
+    if (view)
+    {
+        medAbstractProcess* process = qobject_cast<medAbstractProcess*>(dtkAbstractProcessFactory::instance()->create("msc::ExportVideo"));
+        medAbstractImageView* iview = dynamic_cast<medAbstractImageView*>(view);
+        medTimeLineParameter* timeLine = iview->timeLineParameter();
+
+        // Get number of frames for dialog window
+        int numberOfFrames = 1;
+        if (timeLine)
+        {
+            numberOfFrames = timeLine->numberOfFrame();
+        }
+
+        QVector<int> userParameters = getExportVideoDialogParameters(numberOfFrames);
+
+        if (userParameters.at(0) == 1) // User is ok to run the video export
+        {
+            // Needed to remove the shadow of the dialog window
+            iview->render();
+
+            int screenshotCount = 0;
+
+            if (userParameters.at(1) == 0) // Time video (for 4D datasets)
+            {
+                timeLine->unlockTimeLine();
+
+                for (int f=0; f<timeLine->numberOfFrame(); f+=userParameters.at(2))
+                {
+                    timeLine->setFrame(f);
+                    runExportVideoProcess(process, screenshotCount);
+                    screenshotCount++;
+                }
+
+                timeLine->lockTimeLine();
+            }
+            else // Rotation video
+            {
+                for (double rotation=0.0; rotation<360.0; rotation+=userParameters.at(2))
+                {
+                    iview->setRotation(rotation);
+                    runExportVideoProcess(process, screenshotCount);
+                    screenshotCount++;
+                }
+            }
+
+            // Compute the video and export it
+            process->update();
+
+            delete process;
+        }
+    }
+}
+
+QVector<int> medWorkspaceArea::getExportVideoDialogParameters(int numberOfFrames)
+{
+    mscExportVideoDialog *exportDialog = new mscExportVideoDialog(this, numberOfFrames);
+
+    QVector<int> results;
+
+    if(exportDialog->exec() == QDialog::Accepted)
+    {
+        results.append(1); // Accepted
+
+        QVector<int> resultsFromDialog = exportDialog->value();
+        results.append(resultsFromDialog.at(0));
+        results.append(resultsFromDialog.at(1));
+    }
+    else
+    {
+        results.append(0); // Cancelled
+    }
+
+    delete exportDialog;
+
+    return results;
+}
+
+void medWorkspaceArea::runExportVideoProcess(medAbstractProcess* process, int screenshotCount)
+{
+    // Get the current state of the view
+    QPixmap currentPixmap = grabScreenshot();
+    QImage currentQImage = currentPixmap.toImage();
+
+    int arraySize = 2
+            + (3
+               * currentQImage.size().width()
+               * currentQImage.size().height());
+
+    std::vector<int> pixelListOfCurrentScreenshot (arraySize);
+
+    // Two firsts values are width and height of the image
+    pixelListOfCurrentScreenshot[0] = currentQImage.size().width();
+    pixelListOfCurrentScreenshot[1] = currentQImage.size().height();
+
+    for (int i=0; i<currentQImage.size().width(); ++i)
+    {
+        for (int j=0; j<currentQImage.size().height(); ++j)
+        {
+            QColor color(currentQImage.pixel(i, j));
+            int index1D = 2 + (i * currentQImage.size().height() + j)*3;
+            pixelListOfCurrentScreenshot[index1D    ] = color.red();
+            pixelListOfCurrentScreenshot[index1D + 1] = color.green();
+            pixelListOfCurrentScreenshot[index1D + 2] = color.blue();
+        }
+    }
+
+    // Send for each screenshot the R, G, B int array to the process
+    process->setParameter(pixelListOfCurrentScreenshot.data(), screenshotCount);
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)

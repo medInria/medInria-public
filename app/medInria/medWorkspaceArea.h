@@ -15,6 +15,7 @@
 
 #include <QtGui>
 
+#include <medAbstractProcess.h>
 #include <medAbstractWorkspace.h>
 
 class medAbstractView;
@@ -52,6 +53,7 @@ public:
     ~medWorkspaceArea();
 
     QPixmap grabScreenshot();
+    void grabVideo();
 
     void setupWorkspace(const QString& id);
 
@@ -67,6 +69,18 @@ public:
 protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);
     void switchToStackedViewContainers(medTabbedViewContainers* stack);
+
+    /**
+     * @brief getExportVideoDialogParameters open a window displaying video export parameters and send results
+     */
+    QVector<int> getExportVideoDialogParameters(int numberOfFrames);
+
+    /**
+     * @brief runExportVideoProcess send each frame of the video to process
+     * @param process for video export
+     * @param current screenshot number
+     */
+    void runExportVideoProcess(medAbstractProcess *process, int screenshotCount);
 
 signals:
     void open(const medDataIndex&);

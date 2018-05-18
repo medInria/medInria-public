@@ -11,27 +11,28 @@
 
 =========================================================================*/
 
-#include <medVtkViewNavigator.h>
+#include "medVtkViewNavigator.h"
 
+#include <vtkCamera.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
-#include <vtkRenderWindow.h>
+#include <vtkMetaDataSet.h>
 #include <vtkRenderer.h>
-#include <vtkCamera.h>
+#include <vtkRenderWindow.h>
+#include <vtkTransform.h>
 
-#include <medVtkViewBackend.h>
-#include <medViewFactory.h>
-#include <medViewContainer.h>
-#include <medViewContainerSplitter.h>
 #include <medAbstractImageView.h>
+#include <medCompositeParameter.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
+#include <medTimeLineParameter.h>
 #include <medVector2DParameter.h>
 #include <medVector3DParameter.h>
-#include <medCompositeParameter.h>
-#include <medStringListParameter.h>
-#include <medTimeLineParameter.h>
+#include <medViewFactory.h>
+#include <medVtkViewBackend.h>
 
 /*=========================================================================
 
@@ -186,7 +187,6 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showScalarBarParameter
                     << this->positionBeingViewedParameter()
                     << this->timeLineParameter();
-
 
     //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),
@@ -510,6 +510,29 @@ void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
     d->view3d->GetInteractorStyle()->HandleObserversOn();
 }
 
+void medVtkViewNavigator::setRotationAngle(double angle)
+{
+    vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
+    d->view3d->GetBoxWidget()->GetTransform(t);
+
+    // Rotation in degree
+    t->RotateWXYZ(angle, 1, 1, 1);
+
+    foreach(medDataIndex index, d->parent->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->retrieveData(index);
+        if (data)
+        {
+            vtkMetaDataSet* dataset = reinterpret_cast<vtkMetaDataSet*>(data->data());
+
+            for(unsigned int i = 0; i < dataset->GetNumberOfActors(); i++)
+            {
+                dataset->GetActor(i)->SetUserTransform(t);
+            }
+        }
+    }
+    d->parent->render();
+}
 
 void medVtkViewNavigator::setAxial(bool axial)
 {

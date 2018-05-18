@@ -61,6 +61,7 @@ set(PLUGIN_LIST
   medMaskApplication                        ON
   mscAlgorithmPaint                         ON
   reformat                                  ON
+  mscExportVideo                            ON
   )   
 
 

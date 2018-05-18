@@ -16,13 +16,18 @@
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medMetaDataKeys.h>
+#include <medTimeLineParameter.h>
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>
 
+#include <vtkActor.h>
 #include <vtkImageActor.h>
 #include <vtkImageProperty.h>
 #include <vtkMetaDataSetSequence.h>
+#include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 
 class medVtkViewItkDataImage4DInteractorPrivate
 {
@@ -39,6 +44,7 @@ public:
 
     double currentTime;
 
+    vtkSmartPointer<vtkTextActor> textActor;
 };
 
 template <typename TYPE>
@@ -73,6 +79,8 @@ medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstra
     d->view3d = backend->view3D;
 
     d->currentTime = 0.0;
+
+    d->textActor = nullptr;
 }
 
 medVtkViewItkDataImage4DInteractor::~medVtkViewItkDataImage4DInteractor()
@@ -216,6 +224,44 @@ void medVtkViewItkDataImage4DInteractor::setCurrentTime(double time)
     if(d->sequence->GetTime() == time)
         return;
     d->sequence->UpdateToTime(time);
+
+    // Set the current time on the view if needed
+    QString displayedTime = d->view->timeLineParameter()->getDisplayedTime();
+    if (displayedTime != "")
+    {
+        // Refresh view size in case of resize
+        QSize size = d->view->viewWidget()->size();
+        int newSizeX = (int)((double)size.width()/90.0);
+        int newSizeY = (int)((double)size.height()/1.5);
+
+        // Display Time + Shift
+        if (d->textActor == nullptr)
+        {
+            d->textActor = vtkSmartPointer<vtkTextActor>::New();
+            d->textActor->SetInput(displayedTime.toStdString().c_str());
+            d->textActor->SetDisplayPosition(newSizeX, newSizeY);
+            d->textActor->GetTextProperty()->SetColor(1.0, 0.0, 0.0);
+            d->textActor->GetTextProperty()->SetFontSize(20);
+
+            d->view3d->GetRenderer()->AddViewProp(d->textActor);
+            d->view2d->GetRenderer()->AddViewProp(d->textActor);
+        }
+        else
+        {
+            d->textActor->SetInput(displayedTime.toStdString().c_str());
+            d->textActor->SetDisplayPosition(newSizeX, newSizeY);
+        }
+        d->view->render();
+    }
+    else
+    {
+        if (d->textActor != nullptr)
+        {
+            d->view3d->GetRenderer()->RemoveViewProp(d->textActor);
+            d->view2d->GetRenderer()->RemoveViewProp(d->textActor);
+            d->textActor = nullptr;
+        }
+    }
 }
 
 void medVtkViewItkDataImage4DInteractor::updateWidgets()

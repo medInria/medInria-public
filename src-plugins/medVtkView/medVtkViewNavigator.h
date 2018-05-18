@@ -83,6 +83,12 @@ protected slots:
     void setCameraFocalPoint(const QVector3D& focal);
     void setCameraParallelScale(double parallelScale);
 
+    /**
+     * @brief setRotation is used to rotate a 3D mesh
+     * @param angle type double, and in degree
+     */
+    void setRotationAngle(double angle);
+
     void setAxial(bool axial);
     void setCoronal(bool coronal);
     void setSagittal(bool sagittal);

@@ -45,6 +45,9 @@ public:
 
     virtual void trigger();
 
+    //! Get the visible time (+shift) which could be added to the view
+    QString getDisplayedTime();
+
 public slots:
     void setSpeedFactor(int speedFactor);
     void play(bool play = true);
@@ -56,8 +59,14 @@ public slots:
     void setLoop(bool loop);
     void reset();
 
+    void unlockTimeLine();
+    void lockTimeLine();
+
     void previousFrame();
     void nextFrame();
+
+    //! Compute the visible time (+shift) which could be added to the view
+    void computeDisplayedTime();
 
     virtual QWidget* getWidget();
     virtual QList<medAbstractParameter*> parametersCandidateToPool() const;
@@ -67,9 +76,6 @@ signals:
     void timeChanged(double time);
 
 private slots:
-    void unlockTimeLine();
-    void lockTimeLine();
-
     void updateTime(double time);
     void updateFrameLabel();
     void updateNumberOfFrameLabel();

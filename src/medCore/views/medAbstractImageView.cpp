@@ -30,8 +30,6 @@
 #include <medLayerParameterGroup.h>
 #include <medParameterGroupManager.h>
 
-
-
 /**
  * @fn QPointF medAbstractImageView::mapWorldToDisplayCoordinates( const QVector3D & worldVec )
  * @brief Convert from world coordinates to scene coordinates.
@@ -357,6 +355,21 @@ medTimeLineParameter *medAbstractImageView::timeLineParameter()
     }
 
     return pNavigator->timeLineParameter();
+}
+
+void medAbstractImageView::setRotation(double angle)
+{
+    medAbstractImageViewNavigator * nav = this->primaryNavigator();
+    if(nav)
+    {
+        // Set view in 3D if not done before
+        if (this->orientation() != medImageView::VIEW_ORIENTATION_3D)
+        {
+            this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+        }
+
+        nav->setRotationAngle(angle);
+    }
 }
 
 medImageView::Orientation medAbstractImageView::orientation()

@@ -109,6 +109,8 @@
         <file>icons/scene.png</file>
         <file>icons/user_add.png</file>
         <file>icons/user_edit.png</file>
+        <file>icons/movie.png</file>
+        <file>icons/movie_grey.png</file>
         <file>medInria.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/checkbox.png</file>
@@ -162,5 +164,6 @@
         <file>pixmaps/arrow-bot-disabled.png</file>
         <file>pixmaps/arrow-bot.png</file>
         <file>icons/adjust_size.png</file>
+        <file>icons/adjust_size_grey.png</file>
     </qresource>
 </RCC>

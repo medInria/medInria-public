@@ -78,7 +78,6 @@ public:
     
     virtual void restoreState(QDomElement* element);
 
-
     QUndoStack* undoStack() const;
 
 public slots:

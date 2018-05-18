@@ -45,7 +45,6 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
     int countVertices();
     int countEdges();
 
-
 private:
     vtkDataMesh4DPrivate* d;
 
