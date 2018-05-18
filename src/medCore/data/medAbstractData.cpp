@@ -43,6 +43,17 @@ medAbstractData::medAbstractData( medAbstractData *parent )
     this->moveToThread(QApplication::instance()->thread());
 }
 
+medAbstractData::medAbstractData(const medAbstractData& other)
+    : dtkAbstractData(other),
+      d(new medAbstractDataPrivate())
+{
+    *d = *other.d;
+    d->index = medDataIndex();
+    for (int i = 0; i < d->attachedData.count(); ++i)
+    {
+        d->attachedData[i] = dynamic_cast<medAttachedData*>(other.d->attachedData[i]->clone());
+    }
+}
 
 medAbstractData::~medAbstractData( void )
 {

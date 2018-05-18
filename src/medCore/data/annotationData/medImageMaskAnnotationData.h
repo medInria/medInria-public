@@ -35,6 +35,7 @@ class MEDCORE_EXPORT medImageMaskAnnotationData : public medAnnotationData
 
 public:
     medImageMaskAnnotationData();
+    medImageMaskAnnotationData(const medImageMaskAnnotationData& other);
     virtual ~medImageMaskAnnotationData();
 
     QString description() const;

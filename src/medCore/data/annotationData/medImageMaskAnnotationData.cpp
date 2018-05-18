@@ -20,6 +20,12 @@ medImageMaskAnnotationData::medImageMaskAnnotationData() :
 {
 }
 
+medImageMaskAnnotationData::medImageMaskAnnotationData(const medImageMaskAnnotationData& other)
+    : medAnnotationData(other)
+{
+    this->m_maskData = dynamic_cast<medAbstractImageData*>(other.m_maskData->clone());
+}
+
 medImageMaskAnnotationData::~medImageMaskAnnotationData()
 {
 }

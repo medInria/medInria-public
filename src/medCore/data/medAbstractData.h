@@ -31,6 +31,7 @@ class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 
 public:
     medAbstractData( medAbstractData * parent = NULL );
+    medAbstractData( const medAbstractData& other );
     virtual ~medAbstractData();
 
     void setDataIndex(const medDataIndex& index);

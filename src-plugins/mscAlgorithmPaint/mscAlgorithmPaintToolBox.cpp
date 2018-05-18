@@ -452,7 +452,7 @@ medAbstractData* AlgorithmPaintToolBox::processOutput()
     // Check if painted data on the volume
     if (!m_undoStacks->empty() && !m_undoStacks->value(currentView)->isEmpty())
     {
-        copyMetaDataToPaintedData();
+        copyMetaData(m_maskData, m_imageData);
         return m_maskData; // return output data
     }
     else
@@ -591,15 +591,20 @@ void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
     }
 }
 
-void AlgorithmPaintToolBox::copyMetaDataToPaintedData()
+void AlgorithmPaintToolBox::copyMetaData(medAbstractData* output,
+                                         medAbstractData* input)
 {
-    medUtilities::setDerivedMetaData(m_maskData, m_imageData, "painted");
+    medUtilities::setDerivedMetaData(output, input, "painted");
 }
 
 void AlgorithmPaintToolBox::import()
 {
-    copyMetaDataToPaintedData();
-    medDataManager::instance()->importData(m_maskData, false);
+    // import a copy of the mask
+    medAbstractData* output = dynamic_cast<medAbstractData*>(m_maskData->clone());
+    copyMetaData(output, m_imageData);
+
+    medDataManager::instance()->importData(output, false);
+
     maskHasBeenSaved = true;
 }
 
@@ -1064,8 +1069,18 @@ AlgorithmPaintToolBox::GenerateMinMaxValuesFromImage ()
 
     m_wandLowerThresholdSlider->setRange(m_MinValueImage, m_MaxValueImage);
     m_wandUpperThresholdSlider->setRange(m_MinValueImage, m_MaxValueImage);
-    m_wandLowerThresholdSlider->setValue(m_MinValueImage);
-    m_wandUpperThresholdSlider->setValue(m_MinValueImage);
+    // Try to keep the previously selected range: current min
+    // and max values are kept if they both lie in the new min
+    // and max.
+    double currentMinValue = m_wandLowerThresholdSlider->value();
+    double currentMaxValue = m_wandUpperThresholdSlider->value();
+    if ((currentMinValue < m_MinValueImage || currentMinValue > m_MaxValueImage) ||
+        (currentMaxValue < m_MinValueImage || currentMaxValue > m_MaxValueImage))
+    {
+        // reset to minimum image value
+        m_wandLowerThresholdSlider->setValue(m_MinValueImage);
+        m_wandUpperThresholdSlider->setValue(m_MinValueImage);
+    }
 
     // Set step when click on slider
     m_wandLowerThresholdSlider->getSlider()->setPageStep((m_MaxValueImage-m_MinValueImage)/10);

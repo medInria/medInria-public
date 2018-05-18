@@ -15,12 +15,21 @@
 
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkScalarImageToHistogramGenerator.h>
+#include <itkImageDuplicator.h>
 
 template <unsigned DIM,typename T>
 struct itkDataImagePrivateTypeBase {
     typedef typename itk::Image<T,DIM> ImageType;
 
     itkDataImagePrivateTypeBase(): image(0) { }
+    itkDataImagePrivateTypeBase(const itkDataImagePrivateTypeBase<DIM,T>& other) {
+        // create the filter that duplicates an image
+        auto duplicator = itk::ImageDuplicator<ImageType>::New();
+        duplicator->SetInputImage(other.image);
+        duplicator->Update();
+        this->image = duplicator->GetOutput();
+        this->thumbnails = other.thumbnails;
+    }
 
     typename ImageType::Pointer image;
     QList<QImage>               thumbnails;
@@ -30,7 +39,8 @@ template <unsigned DIM,typename T>
 class itkDataVectorImagePrivateType: public itkDataImagePrivateTypeBase<DIM,T> {
 public:
 
-    itkDataVectorImagePrivateType() { }
+    itkDataVectorImagePrivateType(): itkDataImagePrivateTypeBase<DIM,T>() { }
+    itkDataVectorImagePrivateType(const itkDataImagePrivateTypeBase<DIM,T>& other): itkDataImagePrivateTypeBase<DIM,T>(other) { }
 
     void reset() const { }
 
@@ -54,8 +64,22 @@ public:
     typedef typename itk::Statistics::ScalarImageToHistogramGenerator<ImageType> HistogramGeneratorType;
     typedef typename HistogramGeneratorType::HistogramType                       HistogramType;
 
-    itkDataScalarImagePrivateType(): histogram(0),range_min(0),range_max(0),histogram_min(0),histogram_max(0) {
+    itkDataScalarImagePrivateType(): itkDataImagePrivateTypeBase<DIM,T>(), histogram(0),range_min(0),range_max(0),histogram_min(0),histogram_max(0) {
         reset();
+    }
+    itkDataScalarImagePrivateType(const itkDataScalarImagePrivateType<DIM,T>& other): itkDataImagePrivateTypeBase<DIM,T>(other) {
+        this->histogram = other.histogram;
+        this->range_computed = other.range_computed;
+        this->range_min = other.range_min;
+        this->range_max = other.range_max;
+        this->histogram_min = other.histogram_min;
+        this->histogram_min = other.histogram_min;
+        if (other.histogram) {
+            this->histogram = dynamic_cast<HistogramType*>(other.histogram->CreateAnother().GetPointer());
+        }
+        else {
+            this->histogram = 0;
+        }
     }
 
     void reset() { range_computed = false; }
