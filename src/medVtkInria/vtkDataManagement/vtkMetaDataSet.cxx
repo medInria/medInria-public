@@ -694,8 +694,11 @@ double* vtkMetaDataSet::GetScalarRange(QString attributeName)
 
     if (attributeName.trimmed().isEmpty())
     {
-        QString temp (this->GetCurrentScalarArray()->GetName());
-        attributeName = temp;
+        if (this->GetCurrentScalarArray()) // 4D VTK, not 4D volume
+        {
+            QString temp (this->GetCurrentScalarArray()->GetName());
+            attributeName = temp;
+        }
     }
 
     if (this->GetDataSet())
