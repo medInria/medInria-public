@@ -86,8 +86,8 @@ protected slots:
     /**
      * @brief setRotation is used to rotate a 3D mesh
      * @param angle type double, and in degree
-     */
-    void setRotationAngle(double angle);
+    */
+    bool setRotationAngle(double angle);
 
     void setAxial(bool axial);
     void setCoronal(bool coronal);

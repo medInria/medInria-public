@@ -72,7 +72,7 @@ public:
      * @brief setRotation is used to rotate a 3D mesh
      * @param angle type double, and in degree
      */
-    void setRotation(double angle);
+    bool setRotation(double angle);
 
 public slots:
     void switchToFourViews();

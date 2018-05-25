@@ -111,7 +111,7 @@ medAbstractData* ExportVideo::output()
 
 int ExportVideo::update()
 {
-    if (!d->imagesArray.empty())
+    if (d->imagesArray.count() >= 2)
     {
         // Handle error of missing frame: ignore the frame by removing it
         d->imagesArray.resize(d->maximumFrame);
@@ -212,7 +212,6 @@ int ExportVideo::exportAsVideo()
 
         return medAbstractProcess::SUCCESS;
     }
-
     return medAbstractProcess::FAILURE;
 }
 

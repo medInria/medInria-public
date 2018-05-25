@@ -357,7 +357,7 @@ medTimeLineParameter *medAbstractImageView::timeLineParameter()
     return pNavigator->timeLineParameter();
 }
 
-void medAbstractImageView::setRotation(double angle)
+bool medAbstractImageView::setRotation(double angle)
 {
     medAbstractImageViewNavigator * nav = this->primaryNavigator();
     if(nav)
@@ -368,8 +368,10 @@ void medAbstractImageView::setRotation(double angle)
             this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
         }
 
-        nav->setRotationAngle(angle);
+        return nav->setRotationAngle(angle);
     }
+
+    return false;
 }
 
 medImageView::Orientation medAbstractImageView::orientation()

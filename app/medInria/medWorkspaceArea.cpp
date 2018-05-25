@@ -150,11 +150,19 @@ void medWorkspaceArea::grabVideo()
             }
             else // Rotation video
             {
+                bool res = true;
                 for (double rotation=0.0; rotation<360.0; rotation+=userParameters.at(2))
                 {
-                    iview->setRotation(rotation);
-                    runExportVideoProcess(process, screenshotCount);
-                    screenshotCount++;
+                    res = iview->setRotation(rotation);
+                    if (res)
+                    {
+                        runExportVideoProcess(process, screenshotCount);
+                        screenshotCount++;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
 

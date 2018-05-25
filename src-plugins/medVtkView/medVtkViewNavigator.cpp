@@ -510,7 +510,7 @@ void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
     d->view3d->GetInteractorStyle()->HandleObserversOn();
 }
 
-void medVtkViewNavigator::setRotationAngle(double angle)
+bool medVtkViewNavigator::setRotationAngle(double angle)
 {
     vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
     d->view3d->GetBoxWidget()->GetTransform(t);
@@ -521,7 +521,9 @@ void medVtkViewNavigator::setRotationAngle(double angle)
     foreach(medDataIndex index, d->parent->dataList())
     {
         medAbstractData *data = medDataManager::instance()->retrieveData(index);
-        if (data)
+
+        // We only apply rotation on meshes
+        if (data && data->identifier().contains("vtkDataMesh") )
         {
             vtkMetaDataSet* dataset = reinterpret_cast<vtkMetaDataSet*>(data->data());
 
@@ -530,8 +532,14 @@ void medVtkViewNavigator::setRotationAngle(double angle)
                 dataset->GetActor(i)->SetUserTransform(t);
             }
         }
+        else
+        {
+            return false;
+        }
     }
+
     d->parent->render();
+    return true;
 }
 
 void medVtkViewNavigator::setAxial(bool axial)
