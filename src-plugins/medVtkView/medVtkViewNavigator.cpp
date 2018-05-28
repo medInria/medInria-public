@@ -512,11 +512,17 @@ void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
 
 bool medVtkViewNavigator::setRotationAngle(double angle)
 {
-    vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
-    d->view3d->GetBoxWidget()->GetTransform(t);
+    vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
 
+    double* cameraPos = d->view3d->GetCameraFocalPoint();
+    double* cameraUp  = d->view3d->GetCameraViewUp(); // camera axis
+
+    // Translation needed for meshes not centered at 0, 0, 0
+    transform->Translate(cameraPos[0], cameraPos[1], cameraPos[2]);
     // Rotation in degree
-    t->RotateWXYZ(angle, 1, 1, 1);
+    transform->RotateWXYZ(angle, cameraUp[0], cameraUp[1], cameraUp[2]);
+    // Put back at original position
+    transform->Translate(-cameraPos[0], -cameraPos[1], -cameraPos[2]);
 
     foreach(medDataIndex index, d->parent->dataList())
     {
@@ -529,7 +535,7 @@ bool medVtkViewNavigator::setRotationAngle(double angle)
 
             for(unsigned int i = 0; i < dataset->GetNumberOfActors(); i++)
             {
-                dataset->GetActor(i)->SetUserTransform(t);
+                dataset->GetActor(i)->SetUserTransform(transform);
             }
         }
         else
