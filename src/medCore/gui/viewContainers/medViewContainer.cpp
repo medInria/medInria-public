@@ -800,6 +800,9 @@ void medViewContainer::closeEvent(QCloseEvent * /*event*/)
 
 void medViewContainer::openFromSystem()
 {
+    //Trick to use QString with accent
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+
     //  get last directory opened in settings.
     QString path;
     QFileDialog dialog(this);
