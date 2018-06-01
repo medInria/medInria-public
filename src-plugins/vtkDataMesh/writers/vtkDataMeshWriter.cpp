@@ -54,6 +54,9 @@ bool vtkDataMeshWriter::write(const QString& path)
 
   try
   {
+      setlocale(LC_NUMERIC, "C");
+      QLocale::setDefault(QLocale("C"));
+
       mesh->Write(path.toLocal8Bit().constData());
       clearMetaDataFieldData(mesh);
   }
