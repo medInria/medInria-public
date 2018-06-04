@@ -118,6 +118,10 @@ set(GET_REVISIONS_MODULE_PATH
 option(USE_GITHUB_SSH 
   "Use by default Git SSH addresses, requires public key set on github" OFF
   )
+  
+option(USE_GITLAB_INRIA_SSH 
+  "Use by default Git SSH addresses, requires public key set on Inria gitlab" OFF
+  )
 
 # Add CMAKE_MODULE_PATH to superProjectConfig.cmake, usefull for 
 # Asclepios and visages plugins
@@ -129,7 +133,17 @@ file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
     )\n\n
     set(USE_GITHUB_SSH ${USE_GITHUB_SSH})\n"
   )
-    
+
+# Add CMAKE_MODULE_PATH to superProjectConfig.cmake, usefull for 
+# Asclepios and visages plugins
+file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
+  "set(CMAKE_MODULE_PATH 
+    ${CMAKE_MODULE_PATH}
+    \${CMAKE_MODULE_PATH}
+    )\n\n
+    set(USE_GITLAB_INRIA_SSH ${USE_GITLAB_INRIA_SSH})\n"
+  )
+  
 # Add Qt dir
 file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
   "set(Qt5_DIR ${Qt5_DIR})\n\n"
