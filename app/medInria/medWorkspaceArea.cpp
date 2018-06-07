@@ -105,7 +105,10 @@ QPixmap medWorkspaceArea::grabScreenshot()
     medAbstractView* currentView = currentWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
     if (currentView != nullptr)
     {
-        return QPixmap::grabWindow(currentView->viewWidget()->winId());
+        QPixmap screenshot(currentView->viewWidget()->size());
+        currentView->viewWidget()->render(&screenshot);
+
+        return screenshot;
     }
     return QPixmap();
 }
