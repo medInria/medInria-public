@@ -137,11 +137,7 @@ file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
 # Add CMAKE_MODULE_PATH to superProjectConfig.cmake, usefull for 
 # Asclepios and visages plugins
 file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
-  "set(CMAKE_MODULE_PATH 
-    ${CMAKE_MODULE_PATH}
-    \${CMAKE_MODULE_PATH}
-    )\n\n
-    set(USE_GITLAB_INRIA_SSH ${USE_GITLAB_INRIA_SSH})\n"
+  "set(USE_GITLAB_INRIA_SSH ${USE_GITLAB_INRIA_SSH})\n"
   )
   
 # Add Qt dir
