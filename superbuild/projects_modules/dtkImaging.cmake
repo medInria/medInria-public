@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}d-tk/dtk-imaging.git)
+set(git_url ${GITLAB_INRIA_PREFIX}dtk/dtk-imaging.git)
 set(git_tag master)
 
 

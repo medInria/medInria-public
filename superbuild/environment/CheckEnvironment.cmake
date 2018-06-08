@@ -73,3 +73,29 @@ if (NOT ${SKIP_GITHUB_TESTS} AND ${USE_GITHUB_SSH})
   include(GithubSshTest)
 endif()
 
+
+
+## #############################################################################
+## Test ssh access for github
+## #############################################################################
+
+set (SKIP_GITLAB_INRIA_TESTS OFF CACHE BOOL 
+  "Set this to ON to skip GitHub access tests"
+  )
+mark_as_advanced(SKIP_GITLAB_INRIA_TESTS)
+
+if (NOT ${SKIP_GITLAB_INRIA_TESTS} AND ${USE_GITLAB_INRIA_SSH})
+  ## #############################################################################
+  ## Look for SSH
+  ## #############################################################################
+
+  find_program(SSH_BIN NAMES ssh)
+  if (NOT SSH_BIN)
+    message(SEND_ERROR 
+      "You need to install SSH and add it to the PATH environment variable."
+      )
+  else()
+    mark_as_advanced(SSH_BIN)
+  endif()
+  include(GitlabInriaSshTest)
+endif()
