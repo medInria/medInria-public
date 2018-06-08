@@ -15,7 +15,7 @@
 ## Add gitlab.inria.fr's SSH signature to the .ssh/known_hosts file
 ## #############################################################################
 
-set(GITLAB_INRIA_SIGN "gitlab.inria.fr ssh-rsa AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBAFldY2ft1ReZjFYPpe/wa5Vhl4YJfYz6IJOZaZxL924R44jrGWiR2/Misrug75NBsQB+UWs1iIyWZPk0AN45Sk="
+set(GITLAB_INRIA_SIGN "gitlab.inria.fr ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBAFldY2ft1ReZjFYPpe/wa5Vhl4YJfYz6IJOZaZxL924R44jrGWiR2/Misrug75NBsQB+UWs1iIyWZPk0AN45Sk="
   )
 
 file(TO_CMAKE_PATH ${HOME_PATH} HOME_PATH)
@@ -35,7 +35,7 @@ while(INDEX LESS N)
   math(EXPR INDEX "${INDEX} + 1" )
 endwhile()
 
-if ( NOT GITLAB_INRIA_FOUND)
+if (NOT GITLAB_INRIA_FOUND)
   message(STATUS 
     "Could not find Gitlab Inria's SSH signature, appending to ${SSH_KNOWN_HOSTS_PATH}..." 
     )
