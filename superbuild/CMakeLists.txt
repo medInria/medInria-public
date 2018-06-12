@@ -136,7 +136,7 @@ file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
 
 # Add CMAKE_MODULE_PATH to superProjectConfig.cmake, usefull for 
 # Asclepios and visages plugins
-file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
+file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
   "set(USE_GITLAB_INRIA_SSH ${USE_GITLAB_INRIA_SSH})\n"
   )
   
