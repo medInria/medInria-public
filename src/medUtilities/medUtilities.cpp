@@ -1,5 +1,9 @@
 #include "medUtilities.h"
 
+// dtk
+#include <dtkCore/dtkAbstractProcessFactory.h>
+
+// medinria
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medAbstractMeshData.h>
@@ -11,12 +15,18 @@
 #include <statsROI.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
-#include <vtkMatrix4x4.h>
 #include <vtkMetaDataSet.h>
+
+// vtk
+#include <vtkDataSet.h>
+#include <vtkPointData.h>
+#include <vtkCellData.h>
+#include <vtkFieldData.h>
 #include <vtkPolyData.h>
 #include <vtkRenderer.h>
+#include <vtkDataArray.h>
+#include <vtkMatrix4x4.h>
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
 
 void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData* original, QString derivationDescription, bool queryForDescription)
 {
@@ -248,4 +258,101 @@ double medUtilities::volume(dtkSmartPointer<medAbstractData> data)
     statsProcess.setParameter(statsROI::VOLUMEML);
     statsProcess.update();
     return statsProcess.output().at(0);
+}
+
+vtkDataArray* medUtilities::getArray(dtkSmartPointer<medAbstractData> data,
+                                     QString arrayName)
+{
+    vtkDataArray* result = nullptr;
+    if (data->identifier().contains("vtkDataMesh") ||
+        data->identifier().contains("EPMap"))
+    {
+        vtkMetaDataSet* metaData = static_cast<vtkMetaDataSet*>(data->data());
+        vtkDataSet* mesh = metaData->GetDataSet();
+        // try point data first
+        result = mesh->GetPointData()->GetArray(qPrintable(arrayName));
+        if (!result)
+        {
+            // try cell data
+            result = mesh->GetCellData()->GetArray(qPrintable(arrayName));
+            if (!result)
+            {
+                // try field data
+                result = mesh->GetFieldData()->GetArray(qPrintable(arrayName));
+            }
+        }
+    }
+    return result;
+}
+
+QList<double> medUtilities::peekArray(dtkSmartPointer<medAbstractData> data,
+                                      QString arrayName,
+                                      int index)
+{
+    QList<double> result;
+    vtkDataArray* array = getArray(data, arrayName);
+    if (array && (index < array->GetNumberOfTuples()))
+    {
+        int nbComponents = array->GetNumberOfComponents();
+        double* tuple = new double[nbComponents];
+        array->GetTuple(index, tuple);
+        for (int i = 0; i < nbComponents; ++i)
+        {
+            result.push_back(tuple[i]);
+        }
+        delete[] tuple;
+    }
+    return result;
+}
+
+QList<double> medUtilities::arrayRange(dtkSmartPointer<medAbstractData> data,
+                                       QString arrayName,
+                                       int component)
+{
+    QList<double> result;
+    vtkDataArray* array = getArray(data, arrayName);
+    if (array && (component < array->GetNumberOfComponents()))
+    {
+        double* range = new double[2]();
+        array->GetRange(range, component);
+        result.push_back(range[0]);
+        result.push_back(range[1]);
+        delete[] range;
+    }
+    return result;
+}
+
+QList<double> medUtilities::arrayStats(dtkSmartPointer<medAbstractData> data,
+                                       QString arrayName,
+                                       int component)
+{
+    QList<double> result;
+    vtkDataArray* array = getArray(data, arrayName);
+    if (array && (component < array->GetNumberOfComponents()))
+    {
+        vtkIdType nbTuples = array->GetNumberOfTuples();
+        // compute mean and variance
+        double value, tmpMean, delta, mean, variance;
+        value = tmpMean = delta =  mean = variance = 0.0;
+        for (vtkIdType i = 0; i < nbTuples; ++i)
+        {
+            value = array->GetComponent(i, component);
+            tmpMean = mean;
+            delta = value - mean;
+            mean += delta / (i + 1);
+            variance += delta * (value - tmpMean);
+        }
+        if (nbTuples > 1)
+        {
+            variance /= nbTuples - 1;
+        }
+        else
+        {
+            variance = 0.0;
+        }
+
+        result.push_back(mean);
+        result.push_back(std::sqrt(variance));
+    }
+    return result;
 }

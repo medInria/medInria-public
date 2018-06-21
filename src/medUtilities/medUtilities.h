@@ -6,6 +6,7 @@
 
 class medAbstractData;
 class medAbstractView;
+class vtkDataArray;
 
 class MEDUTILITIES_EXPORT medUtilities
 {
@@ -54,4 +55,53 @@ public:
     static double maximumValue(dtkSmartPointer<medAbstractData> data);
     static double volume(dtkSmartPointer<medAbstractData> data);
 
+    /**
+     * @brief Retrieves an array from input data. This functions first looks in
+     * point data, then cell data and finally in field data.
+     *
+     * @param[in] data input data, must be a mesh or map 
+     * @param[in] arrayName array to retrieve
+     * @return specified array if it exits, nullptr otherwise
+     */
+    static vtkDataArray* getArray(dtkSmartPointer<medAbstractData> data,
+                                  QString arrayName);
+
+    /**
+     * @brief Retrieve single tuple from a real-valued array.
+     *
+     * @param[in] data input data, must be a mesh or map
+     * @param[in] arrayName input array name
+     * @param[in] index tuple index
+     * @return tuple as a list. Returns a empty list on failure
+     */
+    static QList<double> peekArray(dtkSmartPointer<medAbstractData> data,
+                                   QString arrayName,
+                                   int index);
+    /**
+     * @brief Compute real-valued array range (min and max values).
+     *
+     * @param[in] data input data, must be a mesh or map
+     * @param[in] arrayName input array name
+     * @param[in] component range will be computed on this component.
+     *            Pass -1 to compute the L2 norm over all components.
+     * @return list with 2 values: minimum and maximum. Returns an empty
+     *         list on failure
+     */
+    static QList<double> arrayRange(dtkSmartPointer<medAbstractData> data,
+                                    QString arrayName,
+                                    int component = 0);
+
+    /**
+     * @brief Computes mean and standard deviation of an real-valued array.
+     * N.B. stats will be computed only on the first component.
+     *
+     * @param[in] data input data, must be a mesh or map
+     * @param[in] arrayName input array name
+     * @param[in] component stats will be computed on this component
+     * @return list with 2 values: mean and standard deviation (in that order).
+     *         Returns an empty list on failure.
+     */
+    static QList<double> arrayStats(dtkSmartPointer<medAbstractData> data,
+                                    QString arrayName,
+                                    int component = 0);
 };
