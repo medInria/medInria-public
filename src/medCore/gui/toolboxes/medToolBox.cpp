@@ -345,7 +345,7 @@ void medToolBox::handleDisplayError(int error)
 
 void medToolBox::displayMessageError(QString error)
 {
-    qDebug() << name() + ": " + error;
+    qDebug() << qPrintable(name() + ": " + error);
     medMessageController::instance()->showError(error,3000);
 }
 
