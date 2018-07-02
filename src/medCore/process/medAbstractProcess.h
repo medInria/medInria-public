@@ -43,6 +43,8 @@ public:
         DIMENSION_3D,   //! Not a 3D volume
         DIMENSION_4D,   //! Not a 4D volume
         MESH_TYPE,      //! Not a mesh
+        MESH_3D,        //! Not a 3D mesh
+        MESH_4D,        //! Not a 4D mesh
         NO_MESH,        //! Input can not be a mesh
         DATA_SIZE,      //! Inputs must be the same size
         MISMATCHED_DATA_TYPES, //! Inputs must be the same type

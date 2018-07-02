@@ -316,6 +316,12 @@ void medToolBox::handleDisplayError(int error)
     case medAbstractProcess::MESH_TYPE:
         displayMessageError("This toolbox is designed to be used with meshes");
         break;
+    case medAbstractProcess::MESH_3D:
+        displayMessageError("This toolbox is designed to be used with 3D meshes");
+        break;
+    case medAbstractProcess::MESH_4D:
+        displayMessageError("This toolbox is designed to be used with 4D meshes");
+        break;
     case medAbstractProcess::NO_MESH:
         displayMessageError("This toolbox is not designed to be used with meshes");
         break;
