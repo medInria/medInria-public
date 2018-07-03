@@ -78,21 +78,22 @@ bool vtkDataMesh4DReader::read (const QString& path) {
         this->reader->Update();
 
         vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (this->reader->GetOutput()->GetMetaDataSet ((unsigned int)0));
-        if (sequence)
+        if (sequence && sequence->GetNumberOfMetaDataSets() > 0)
         {
-            foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+            if (!extractMetaData(sequence->GetMetaDataSet(0)))
             {
-                if (!extractMetaData(dataSet))
-                {
-                    qDebug() << metaObject()->className() << ": no metadata found in " << path;
-                }
+                qDebug() << metaObject()->className() << ": no metadata found in " << path;
             }
 
             // Remove field from top container of the sequence
             vtkSmartPointer<vtkFieldData> newFieldData = vtkSmartPointer<vtkFieldData>::New();
             sequence->GetDataSet()->SetFieldData(newFieldData);
 
-            medData->setData (sequence );
+            medData->setData (sequence);
+        }
+        else
+        {
+            return false;
         }
     }
 
