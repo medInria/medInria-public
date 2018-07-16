@@ -670,9 +670,13 @@ void vtkDataMeshInteractor::setUpViewForThumbnail()
 void vtkDataMeshInteractor::updateWidgets()
 {
     if(!d->view->is2D())
+    {
         d->slicingParameter->getSlider()->setEnabled(false);
+        d->slicingParameter->hide();
+    }
     else
     {
+        d->slicingParameter->show();
         d->slicingParameter->getSlider()->setEnabled(true);
         this->updateSlicingParam();
     }

@@ -69,6 +69,7 @@ class medVtkViewNavigatorPrivate
     medBoolParameter *showRulerParameter;
     medBoolParameter *showAnnotationParameter;
     medBoolParameter *showScalarBarParameter;
+    medBoolParameter *showAnnotatedCubeParameter;
     
     QPushButton *fourImageSplitterButton;
 
@@ -141,21 +142,25 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showRulerParameter = new medBoolParameter("Ruler", this);
     d->showAnnotationParameter = new medBoolParameter("Annotations", this);
     d->showScalarBarParameter = new medBoolParameter("Scalar Bar", this);
+    d->showAnnotatedCubeParameter = new medBoolParameter("Annotated Cube", this);
 
     d->showAxesParameter->setText("Axes");
     d->showRulerParameter->setText("Ruler");
     d->showAnnotationParameter->setText("Annotations");
     d->showScalarBarParameter->setText("Scalar Bar");
+    d->showAnnotatedCubeParameter->setText("Annotated Cube");
 
     connect(d->showAxesParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAxes(bool)));
     connect(d->showRulerParameter, SIGNAL(valueChanged(bool)), this, SLOT(showRuler(bool)));
     connect(d->showAnnotationParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAnnotations(bool)));
     connect(d->showScalarBarParameter, SIGNAL(valueChanged(bool)), this, SLOT(showScalarBar(bool)));
+    connect(d->showAnnotatedCubeParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAnnotatedCube(bool)));
 
     d->showAxesParameter->setValue(false);
     d->showRulerParameter->setValue(true);
     d->showAnnotationParameter->setValue(true);
     d->showScalarBarParameter->setValue(false);
+    d->showAnnotatedCubeParameter->setValue(true);
     
     d->enableZooming = new medBoolParameter("Zooming", this);
     d->enableZooming->setIcon(QIcon (":/icons/magnify.png"));
@@ -185,6 +190,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showRulerParameter
                     << d->showAnnotationParameter
                     << d->showScalarBarParameter
+                    << d->showAnnotatedCubeParameter
                     << this->positionBeingViewedParameter()
                     << this->timeLineParameter();
 
@@ -192,6 +198,9 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     connect(this, SIGNAL(orientationChanged()),
             dynamic_cast<medAbstractImageView*>(parent), SIGNAL(orientationChanged()));
 
+    // these parameters are always shown
+    d->showScalarBarParameter->show();
+    d->showAnnotationParameter->show();
 }
 
 medVtkViewNavigator::~medVtkViewNavigator()
@@ -378,7 +387,8 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
     showOptionsLayout->addWidget(d->showRulerParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showAnnotationParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showScalarBarParameter->getCheckBox());
-    showOptionsLayout->setContentsMargins(0, 0, 0, 0);
+    showOptionsLayout->addWidget(d->showAnnotatedCubeParameter->getCheckBox());
+    showOptionsLayout->setContentsMargins(0, 0, 0, 10);
 
     QVBoxLayout* layout = new QVBoxLayout(toolBoxWidget);
     layout->addWidget(d->orientationParameter->getLabel());
@@ -600,6 +610,11 @@ void medVtkViewNavigator::showScalarBar(bool show)
     d->currentView->Render();
 }
 
+void medVtkViewNavigator::showAnnotatedCube(bool show)
+{
+    d->view3d->SetShowCube(static_cast<int>(show));
+    d->currentView->Render();
+}
 
 /*=========================================================================
 
@@ -683,15 +698,13 @@ void medVtkViewNavigator::updateWidgets()
     {
         d->showAxesParameter->hide();
         d->showRulerParameter->hide();
-        d->showAnnotationParameter->hide();
-        d->showScalarBarParameter->hide();
+        d->showAnnotatedCubeParameter->show();
     }
     else
     {
         d->showAxesParameter->show();
         d->showRulerParameter->show();
-        d->showAnnotationParameter->show();
-        d->showScalarBarParameter->show();
+        d->showAnnotatedCubeParameter->hide();
     }
 }
 
@@ -728,18 +741,20 @@ void medVtkViewNavigator::enableMeasuring(bool enable)
 
 void medVtkViewNavigator::restoreParameters(QHash<QString,QString> parameters)
 {
-	if(parameters.contains("Axes"))
-		d->showAxesParameter->setValue(medBoolParameter::fromString(parameters["Axes"]));
-	if(parameters.contains("Ruler"))
-		d->showRulerParameter->setValue(medBoolParameter::fromString(parameters["Ruler"]));
-	if(parameters.contains("Annotations"))
-		d->showAnnotationParameter->setValue(medBoolParameter::fromString(parameters["Annotations"]));
-	if(parameters.contains("Scalar Bar"))
-		d->showScalarBarParameter->setValue(medBoolParameter::fromString(parameters["Scalar Bar"]));
-	if(parameters.contains("Pan"))
-		setPan(medVector2DParameter::fromString(parameters["Pan"]));
-	if(parameters.contains("Position"))
-		setCameraPosition(medVector3DParameter::fromString(parameters["Position"]));
+    if(parameters.contains("Axes"))
+	d->showAxesParameter->setValue(medBoolParameter::fromString(parameters["Axes"]));
+    if(parameters.contains("Ruler"))
+	d->showRulerParameter->setValue(medBoolParameter::fromString(parameters["Ruler"]));
+    if(parameters.contains("Annotations"))
+	d->showAnnotationParameter->setValue(medBoolParameter::fromString(parameters["Annotations"]));
+    if(parameters.contains("Scalar Bar"))
+	d->showScalarBarParameter->setValue(medBoolParameter::fromString(parameters["Scalar Bar"]));
+    if(parameters.contains("Annotated Cube"))
+        d->showAnnotatedCubeParameter->setValue(medBoolParameter::fromString(parameters["Annotated Cube"]));
+    if(parameters.contains("Pan"))
+	setPan(medVector2DParameter::fromString(parameters["Pan"]));
+    if(parameters.contains("Position"))
+	setCameraPosition(medVector3DParameter::fromString(parameters["Position"]));
     if(parameters.contains("axial") && medBoolParameter::fromString(parameters["axial"]))
         setAxial(true);
     if(parameters.contains("coronal") && medBoolParameter::fromString(parameters["coronal"]))
