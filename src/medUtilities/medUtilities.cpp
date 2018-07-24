@@ -260,7 +260,7 @@ double medUtilities::volume(dtkSmartPointer<medAbstractData> data)
     return statsProcess.output().at(0);
 }
 
-vtkDataArray* medUtilities::getArray(dtkSmartPointer<medAbstractData> data,
+vtkDataArray* medUtilities::getArray(medAbstractData* data,
                                      QString arrayName)
 {
     vtkDataArray* result = nullptr;
@@ -285,7 +285,51 @@ vtkDataArray* medUtilities::getArray(dtkSmartPointer<medAbstractData> data,
     return result;
 }
 
-QList<double> medUtilities::peekArray(dtkSmartPointer<medAbstractData> data,
+int medUtilities::getArrayIndex(medAbstractData* data,
+                                QString arrayName,
+                                DataArrayType* arrayType)
+{
+    int arrayId = -1;
+    DataArrayType type;
+    if (data->identifier().contains("vtkDataMesh") ||
+        data->identifier().contains("EPMap"))
+    {
+        vtkMetaDataSet* metaData = static_cast<vtkMetaDataSet*>(data->data());
+        vtkDataSet* mesh = metaData->GetDataSet();
+        // try point data first
+        (void)mesh->GetPointData()->GetAbstractArray(qPrintable(arrayName), arrayId);
+        if (arrayId == -1)
+        {
+            (void)mesh->GetCellData()->GetAbstractArray(qPrintable(arrayName), arrayId);
+            if (arrayId == -1)
+            {
+                (void)mesh->GetFieldData()->GetAbstractArray(qPrintable(arrayName), arrayId);
+                if (arrayId != -1)
+                {
+                    type = DataArrayType::FIELD_ARRAY;
+                }
+            }
+            else
+            {
+                type = DataArrayType::CELL_ARRAY;
+            }
+        }
+        else
+        {
+            type = DataArrayType::POINT_ARRAY;
+        }
+    }
+
+    if (arrayType)
+    {
+        *arrayType = type;
+    }
+
+    return arrayId;
+}
+
+
+QList<double> medUtilities::peekArray(medAbstractData* data,
                                       QString arrayName,
                                       int index)
 {
@@ -305,41 +349,44 @@ QList<double> medUtilities::peekArray(dtkSmartPointer<medAbstractData> data,
     return result;
 }
 
-QList<double> medUtilities::arrayRange(dtkSmartPointer<medAbstractData> data,
-                                       QString arrayName,
-                                       int component)
+bool medUtilities::arrayRange(medAbstractData* data,
+                              QString arrayName,
+                              double* minRange,
+                              double* maxRange,
+                              int component)
 {
-    QList<double> result;
     vtkDataArray* array = getArray(data, arrayName);
     if (array && (component < array->GetNumberOfComponents()))
     {
         double* range = new double[2]();
         array->GetRange(range, component);
-        result.push_back(range[0]);
-        result.push_back(range[1]);
+        *minRange = range[0];
+        *maxRange = range[1];
         delete[] range;
+        return true;
     }
-    return result;
+    return false;
 }
 
-QList<double> medUtilities::arrayStats(dtkSmartPointer<medAbstractData> data,
-                                       QString arrayName,
-                                       int component)
+bool medUtilities::arrayStats(medAbstractData* data,
+                              QString arrayName,
+                              double* mean,
+                              double* stdDev,
+                              int component)
 {
-    QList<double> result;
     vtkDataArray* array = getArray(data, arrayName);
     if (array && (component < array->GetNumberOfComponents()))
     {
         vtkIdType nbTuples = array->GetNumberOfTuples();
         // compute mean and variance
-        double value, tmpMean, delta, mean, variance;
-        value = tmpMean = delta =  mean = variance = 0.0;
+        double value, tmpMean, delta, finalMean, variance;
+        value = tmpMean = delta =  finalMean = variance = 0.0;
         for (vtkIdType i = 0; i < nbTuples; ++i)
         {
             value = array->GetComponent(i, component);
-            tmpMean = mean;
-            delta = value - mean;
-            mean += delta / (i + 1);
+            tmpMean = finalMean;
+            delta = value - finalMean;
+            finalMean += delta / (i + 1);
             variance += delta * (value - tmpMean);
         }
         if (nbTuples > 1)
@@ -351,8 +398,9 @@ QList<double> medUtilities::arrayStats(dtkSmartPointer<medAbstractData> data,
             variance = 0.0;
         }
 
-        result.push_back(mean);
-        result.push_back(std::sqrt(variance));
+        *mean = finalMean;
+        *stdDev = std::sqrt(variance);
+        return true;
     }
-    return result;
+    return false;
 }
