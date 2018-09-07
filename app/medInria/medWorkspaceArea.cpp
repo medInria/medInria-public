@@ -28,6 +28,7 @@
 #include <medTimeLineParameter.h>
 #include <medToolBox.h>
 #include <medToolBoxContainer.h>
+#include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
@@ -102,13 +103,35 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    medAbstractView* currentView = currentWorkspace()->stackedViewContainers()->getFirstSelectedContainerView();
-    if (currentView != nullptr)
-    {
-        QPixmap screenshot(currentView->viewWidget()->size());
-        currentView->viewWidget()->render(&screenshot);
+    medTabbedViewContainers* tabbedContainers = currentWorkspace()->stackedViewContainers();
+    QList<medViewContainer*> currentContainerList = tabbedContainers->containersInTab(tabbedContainers->currentIndex());
 
-        return screenshot;
+    QList<medAbstractView*> selectedValidViewList;
+    foreach (medViewContainer* viewContainer, currentContainerList)
+    {
+        // Only takes into account selected non empty views
+        if ((viewContainer->view() != nullptr) && viewContainer->isSelected())
+        {
+            selectedValidViewList.push_back(viewContainer->view());
+        }
+    }
+
+    if (selectedValidViewList.count() != 0)
+    {
+        if (selectedValidViewList.count() == 1)
+        {
+            // Only one view
+            medAbstractView* currentView = selectedValidViewList.at(0);
+            QPixmap screenshot(currentView->viewWidget()->size());
+            currentView->viewWidget()->render(&screenshot);
+
+            return screenshot;
+        }
+        else
+        {
+            // Multiple selected views, we get the screenshot of the whole tab/container
+            return QPixmap::grabWindow(this->currentWorkspace()->stackedViewContainers()->currentWidget()->winId());
+        }
     }
     return QPixmap();
 }
