@@ -140,35 +140,48 @@ void resliceToolBox::startReformat()
 {
     if (d->currentView && getWorkspace())
     {
-        d->help0->hide();
-        d->reformatOptions->show();
-        d->b_startReslice->hide();
+        medAbstractData* data = d->currentView->layerData(d->currentView->currentLayer());
+        bool is3D = false;
+        if ((data->identifier().contains("itkDataImage"))
+                && (dynamic_cast<medAbstractImageData *>(data)->Dimension() == 3))
+        {
+            is3D = true;
+        }
 
-        if (!d->currentView->layersCount()) return;
+        if (d->currentView->layersCount() && is3D)
+        {
+            d->help0->hide();
+            d->reformatOptions->show();
+            d->b_startReslice->hide();
 
-        d->resliceViewer = new medResliceViewer(d->currentView,getWorkspace()->stackedViewContainers());
-        d->resliceViewer->setToolBox(this);
-        getWorkspace()->stackedViewContainers()->setAcceptDrops(false);
-        connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
-        medViewContainer * container = getWorkspace()->stackedViewContainers()->insertContainerInTab(0,"Reslice");
-        getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
-        container->setDefaultWidget(d->resliceViewer->viewWidget());
-        connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
+            d->resliceViewer = new medResliceViewer(d->currentView,getWorkspace()->stackedViewContainers());
+            d->resliceViewer->setToolBox(this);
+            getWorkspace()->stackedViewContainers()->setAcceptDrops(false);
+            connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
+            medViewContainer * container = getWorkspace()->stackedViewContainers()->insertContainerInTab(0,"Reslice");
+            getWorkspace()->stackedViewContainers()->setCurrentIndex(0);
+            container->setDefaultWidget(d->resliceViewer->viewWidget());
+            connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
 
-        connect(d->spacingX,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
-        connect(d->spacingY,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
-        connect(d->spacingZ,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
-        connect(d->b_saveImage,SIGNAL(clicked()),d->resliceViewer,SLOT(saveImage()));
+            connect(d->spacingX,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
+            connect(d->spacingY,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
+            connect(d->spacingZ,SIGNAL(valueChanged(double)),d->resliceViewer,SLOT(thickSlabChanged(double)));
+            connect(d->b_saveImage,SIGNAL(clicked()),d->resliceViewer,SLOT(saveImage()));
 
-        d->reformatedImage = 0;
+            d->reformatedImage = 0;
 
-        // close the initial tab which is not needed anymore
-        getWorkspace()->stackedViewContainers()->removeTab(1);
-        updateView();
+            // close the initial tab which is not needed anymore
+            getWorkspace()->stackedViewContainers()->removeTab(1);
+            updateView();
+        }
+        else
+        {
+            medMessageController::instance()->showError(tr("Drop a 3D volume in the view"), 3000);
+        }
     }
     else
     {
-        medMessageController::instance()->showError(tr("Drop a volume in the view"),3000);
+        medMessageController::instance()->showError(tr("Drop a 3D volume in the view"), 3000);
     }
 }
 
