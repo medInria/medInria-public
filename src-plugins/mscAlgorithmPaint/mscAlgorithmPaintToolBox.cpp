@@ -1,7 +1,10 @@
 #include "mscAlgorithmPaintToolBox.h"
 
+#include <dtkCore/dtkAbstractProcessFactory.h>
+
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkDanielssonDistanceMapImageFilter.h>
+#include <itkExceptionObject.h>
 #include <itkExtractImageFilter.h>
 #include <itkImageLinearIteratorWithIndex.h>
 #include <itkImageSliceIteratorWithIndex.h>
@@ -12,8 +15,12 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
+#include <medAbstractInteractor.h>
+#include <medAbstractLayeredView.h>
+#include <medAbstractParameter.h>
 #include <medAbstractProcess.h>
 #include <medDataManager.h>
+#include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medSelectorToolBox.h>
@@ -43,6 +50,9 @@ public:
     {
         m_paintState = m_cb->paintState();
         m_cb->m_applyButton->setDisabled(false);
+        m_cb->m_interpolateButton->setEnabled(true);
+        m_cb->m_addButton->setEnabled(true);
+        m_cb->m_eraseButton->setEnabled(true);
 
         if ( this->m_paintState == PaintState::DeleteStroke )
         {
@@ -77,8 +87,6 @@ public:
 
             if (m_paintState != PaintState::Wand)
             {
-                //m_cb->undoRedoCopyPasteModeOn = false;
-
                 // add current state to undo stack//
                 bool isInside;
                 MaskType::IndexType index;
@@ -86,12 +94,11 @@ public:
                 m_cb->setCurrentIdSlice(index[m_cb->currentPlaneIndex]);
 
                 // For undo/redo purposes -------------------------
-                QList<int> listIdSlice;
+                QList<unsigned int> listIdSlice;
                 listIdSlice.append(m_cb->currentIdSlice);
                 m_cb->addSliceToStack(view,m_cb->currentPlaneIndex,listIdSlice);
                 // -------------------------------------------------
                 this->m_points.push_back(posImage);
-                //m_cb->updateStroke( this,view );
             }
             else
             {
@@ -256,7 +263,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_brushSizeSlider = new medIntParameter("Brush Radius (mm)");
     m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSlider->setValue(4);
-    m_brushSizeSlider->setRange(1, 10);
+    m_brushSizeSlider->setRange(1, 30);
     m_brushSizeSlider->getSlider()->setPageStep(1);
     m_brushSizeSlider->getSlider()->setOrientation(Qt::Horizontal);
     m_brushSizeSlider->hide();
@@ -354,11 +361,12 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     QHBoxLayout * labelSelectionLayout = new QHBoxLayout();
 
+    int defaultLabelValue = 1;
     m_strokeLabelSpinBox = new QSpinBox();
     m_strokeLabelSpinBox->setToolTip(tr("Changes the painted label."));
-    m_strokeLabelSpinBox->setValue(1);
+    m_strokeLabelSpinBox->setValue(defaultLabelValue);
     m_strokeLabelSpinBox->setMinimum(1);
-    m_strokeLabelSpinBox->setMaximum(24);
+    m_strokeLabelSpinBox->setMaximum(23);
     m_strokeLabelSpinBox->hide();
     connect (m_strokeLabelSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLabel(int)));
 
@@ -369,6 +377,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_labelColorWidget->setText("");
     m_labelColorWidget->hide();
     connect(m_labelColorWidget, SIGNAL(clicked()), this, SLOT(setLabelColor()));
+    setLabel(defaultLabelValue);
 
     m_colorLabel = new QLabel(tr("Label:"));
     m_colorLabel->hide();
@@ -379,6 +388,21 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     labelSelectionLayout->addWidget( m_strokeLabelSpinBox );
 
     layout->addLayout( labelSelectionLayout );
+
+    m_addButton = new QPushButton( tr("Add") );
+    m_addButton->setToolTip(tr("Append mask to existing mask."));
+    m_addButton->setObjectName("addButton");
+    m_addButton->setDisabled(true);
+    m_addButton->hide();
+    m_eraseButton = new QPushButton( tr("Erase") );
+    m_eraseButton->setToolTip(tr("Delete mask from existing mask."));
+    m_eraseButton->setObjectName("eraseButton");
+    m_eraseButton->setDisabled(true);
+    m_eraseButton->hide();
+    QHBoxLayout * operationsButtonsLayout = new QHBoxLayout();
+    operationsButtonsLayout->addWidget(m_addButton);
+    operationsButtonsLayout->addWidget(m_eraseButton);
+    layout->addLayout(operationsButtonsLayout);
 
     m_applyButton = new QPushButton( tr("Save") );
     m_applyButton->setToolTip(tr("Save result to the Database"));
@@ -430,6 +454,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     currentIdSlice = 0;
     undoRedoCopyPasteModeOn = false;
     currentView = 0;
+    currentSliceLabel = 0;
 
     //Shortcuts
     connect(undo_shortcut,SIGNAL(activated()),this,SLOT(undo()));
@@ -441,10 +466,14 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     connect(reduceBrushSize_shortcut,SIGNAL(activated()),this,SLOT(reduceBrushSize()));
 
     maskHasBeenSaved = false;
+    interpolatedMaskPixelValue = 24;
+    setOfPaintBrushRois.clear();
+    slicingParameter = nullptr;
 }
 
 AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
 {
+    setOfPaintBrushRois.clear();
 }
 
 medAbstractData* AlgorithmPaintToolBox::processOutput()
@@ -452,9 +481,10 @@ medAbstractData* AlgorithmPaintToolBox::processOutput()
     // Check if painted data on the volume
     if (!m_undoStacks->empty() && !m_undoStacks->value(currentView)->isEmpty())
     {
+        updateMaskWithMasterLabel();
         copyMetaData(m_maskData, m_imageData);
         return m_maskData; // return output data
-    }
+     }
     else
     {
         return NULL;
@@ -597,12 +627,65 @@ void AlgorithmPaintToolBox::copyMetaData(medAbstractData* output,
     medUtilities::setDerivedMetaData(output, input, "painted");
 }
 
+void AlgorithmPaintToolBox::updateMaskWithMasterLabel()
+{
+    MaskType::RegionType inputRegion = m_itkMask->GetLargestPossibleRegion();
+    std::vector<std::pair<unsigned int, int>> masterRois;
+    for(auto it = setOfPaintBrushRois.begin(); it != setOfPaintBrushRois.end(); )
+    {
+        auto& pB = *it;
+        if( pB->isMasterRoi() )
+        {
+            masterRois.push_back(std::pair<unsigned int, int>(pB->getIdSlice(), pB->getLabel()));
+        }
+        ++it;
+    }
+    if (!masterRois.empty())
+    {
+        std::vector<std::tuple<int, unsigned int, unsigned int>> masterLabels;
+        unsigned int firstSlice, secondSlice;
+        int firstLabel, secondLabel;
+        for (auto it = masterRois.begin(); it != masterRois.end() - 1; )
+        {
+            firstSlice = (*it).first;
+            firstLabel = (*it).second;
+            advance(it, 1);
+            secondSlice = (*it).first;
+            secondLabel = (*it).second;
+            if (firstLabel == secondLabel)
+            {
+                masterLabels.push_back(std::make_tuple(firstLabel,firstSlice,secondSlice));
+            }
+        }
+
+        itk::ImageRegionIterator<MaskType> iterator(m_itkMask, inputRegion);
+        typename MaskType::IndexType index;
+        while(!iterator.IsAtEnd())
+        {
+            index = iterator.GetIndex();
+            if ( m_itkMask->GetPixel(index) == interpolatedMaskPixelValue )
+            {
+                for (std::vector<std::tuple<int, unsigned int, unsigned int>>::iterator it=masterLabels.begin(); it!=masterLabels.end(); ++it)
+                {
+                    if ( index[2] < std::get<2>(*it) && index[2] > std::get<1>(*it) )
+                    {
+                        m_itkMask->SetPixel(index, std::get<0>(*it));
+                    }
+                }
+            }
+            ++iterator;
+        }
+    }
+}
+
 void AlgorithmPaintToolBox::import()
 {
+    updateMaskWithMasterLabel();
     // import a copy of the mask
     medAbstractData* output = dynamic_cast<medAbstractData*>(m_maskData->clone());
-    copyMetaData(output, m_imageData);
 
+    //dtkSmartPointer <medAbstractData> thresholdMask = applyThresholdToMask(output);
+    copyMetaData(output, m_imageData);
     medDataManager::instance()->importData(output, false);
 
     maskHasBeenSaved = true;
@@ -653,6 +736,25 @@ void AlgorithmPaintToolBox::updateView()
             {
                 deactivateCustomedCursor(); // Deactivate painting cursor
             }
+
+            slicingParameter = nullptr;
+            foreach (medAbstractInteractor* interactor, qobject_cast<medAbstractLayeredView*>(currentView)->layerInteractors(0))
+            {
+                if (interactor->identifier() == "medVtkViewItkDataImageInteractor")
+                {
+                    foreach (medAbstractParameter* parameter, interactor->linkableParameters())
+                    {
+                        if (parameter->name() == "Slicing")
+                        {
+                            slicingParameter = qobject_cast<medIntParameter*>(parameter);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+
         }
     }
 }
@@ -789,7 +891,6 @@ void AlgorithmPaintToolBox::initializeMaskData( medAbstractData * imageData, med
 
     medAbstractImageData * mImage = qobject_cast<medAbstractImageData*>(imageData);
     Q_ASSERT(mImage);
-    //Q_ASSERT(mask->GetImageDimension() >= mImage->Dimension());
 
     MaskType::RegionType region;
     region.SetSize(0, ( mImage->Dimension() > 0 ? mImage->xDimension() : 1 ) );
@@ -842,7 +943,6 @@ void AlgorithmPaintToolBox::initializeMaskData( medAbstractData * imageData, med
         break;
     }
 
-    case 3:
     default:
     {
         itk::ImageBase <3> * imageDataOb = dynamic_cast<itk::ImageBase <3> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
@@ -972,7 +1072,7 @@ AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
         }
 
         // For undo/redo purposes -------------------------
-        QList<int> listIdSlice;
+        QList<unsigned int> listIdSlice;
         listIdSlice.append(index[planeIndex]);
         addSliceToStack(currentView,planeIndex,listIdSlice);
         // -------------------------------------------------
@@ -1007,7 +1107,7 @@ AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
 
         // For undo/redo purposes ------------------------- Save the current states of slices that are going to be modified by the segmentation
         unsigned int idSlice = index[planeIndex];
-        QList<int> listIdSlice;
+        QList<unsigned int> listIdSlice;
         listIdSlice.append(idSlice);
 
         while(!outFilterItr.IsAtEnd())
@@ -1090,6 +1190,10 @@ AlgorithmPaintToolBox::GenerateMinMaxValuesFromImage ()
 void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view)
 {
     setCurrentView(currentView);
+    if ( !isMask2dOnSlice() )
+    {
+        return;
+    }
 
     const double radius = m_brushSizeSlider->value(); // in image units.
 
@@ -1166,6 +1270,7 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     switch ( m_paintState )
     {
     case PaintState::Stroke :
+        // color of master roi (defined by user)
         pxValue = m_strokeLabelSpinBox->value();
         break;
     default:
@@ -1199,13 +1304,80 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
 
     if(!view->contains(m_maskAnnotationData))
     {
+        m_maskAnnotationData->setMetaData("SeriesDescription", "mask");
         view->addLayer(m_maskAnnotationData);
+        foreach (medAbstractInteractor* interactor, view->layerInteractors(getWorkspace()->getSelectedLayerIndices()[0]))
+        {
+            if (interactor->identifier() == "medAnnotationInteractor")
+            {
+                foreach (medAbstractParameter* parameter, interactor->linkableParameters())
+                {
+                    if (parameter->name() == "Opacity")
+                    {
+                        qobject_cast<medDoubleParameter*>(parameter)->setValue(0.4);
+                    }
+                }
+            }
+        }
 
         // Update Mouse Interaction ToolBox
         view->setCurrentLayer(0);
         getWorkspace()->updateMouseInteractionToolBox();
     }
+
+    if ( slicingParameter )
+    {
+        slicingParameter->getSlider()->addTick(currentIdSlice);
+        slicingParameter->getSlider()->update();
+    }
+
     m_maskAnnotationData->invokeModified();
+}
+
+bool AlgorithmPaintToolBox::isMask2dOnSlice()
+{
+    MaskType::IndexType index3D;
+    QVector3D vector = currentView->mapDisplayToWorldCoordinates(QPointF(0,0));
+    bool isInside;
+    int planeIndex = (int)AlgorithmPaintToolBox::computePlaneIndex(vector,index3D,isInside);
+    MaskType::RegionType inputRegion = m_itkMask->GetLargestPossibleRegion();
+    MaskType::SizeType   size      = inputRegion.GetSize();
+    MaskType::IndexType  start     = inputRegion.GetIndex();
+
+    Mask2dType::Pointer img = Mask2dType::New();
+    img = extract2DImageSlice(m_itkMask, planeIndex, currentIdSlice, size, start);
+    Mask2dIterator iterator(img,img->GetBufferedRegion());
+    iterator.GoToBegin();
+    typename Mask2dType::IndexType index2d;
+
+    while(!iterator.IsAtEnd())
+    {
+        index2d = iterator.GetIndex();
+        if ( img->GetPixel(index2d) == m_strokeLabelSpinBox->value() )
+        {
+            return true;
+        }
+        ++iterator;
+    }
+
+    if (m_paintState==PaintState::DeleteStroke)
+    {
+        if ( slicingParameter )
+        {
+            slicingParameter->getSlider()->removeTick(currentIdSlice);
+            slicingParameter->getSlider()->update();
+        }
+        for (auto& pB : setOfPaintBrushRois)
+        {
+            if (pB->getIdSlice() == currentIdSlice)
+            {
+                setOfPaintBrushRois.erase(pB);
+                break;
+            }
+        }
+        return false;
+    }
+    return true;
 }
 
 void AlgorithmPaintToolBox::showButtons( bool value )
@@ -1339,17 +1511,32 @@ void AlgorithmPaintToolBox::undo()
     region.SetSize(size);
     region.SetIndex(index2d);
 
-    QList<SlicePair> list;
-    for(int i = 0;i<previousState.first.length();i++)
+    PaintBrushSet list;
+    foreach(auto& prev, previousState.first )
     {
-        unsigned int idSlice = previousState.first[i].second;
+        unsigned int idSlice = prev->getIdSlice();
         Mask2dType::Pointer currentSlice = Mask2dType::New();
         currentSlice->SetRegions(region);
         currentSlice->Allocate();
-        copySliceFromMask3D(currentSlice,planeIndex,direction,idSlice);
-        pasteSliceToMask3D(previousState.first[i].first,previousState.second,direction,idSlice);
-        list.append(SlicePair(currentSlice,idSlice));
+        copySliceFromMask3D(currentSlice, planeIndex, direction, idSlice, false);
+        pasteSliceToMask3D(prev->getSlice(), planeIndex, direction, idSlice, false);
+        list.insert(new mscPaintBrush(currentSlice, idSlice, prev->isMasterRoi(), prev->getLabel() ));
+        for (auto& pB : setOfPaintBrushRois)
+        {
+            if (pB->getIdSlice() == idSlice)
+            {
+                setOfPaintBrushRois.erase(pB);
+                break;
+            }
+        }
+
+        if (slicingParameter)
+        {
+            slicingParameter->getSlider()->removeTick(idSlice);
+            slicingParameter->getSlider()->update();
+        }
     }
+
     PairListSlicePlaneId currentState = PairListSlicePlaneId(list,planeIndex);
     redo_stack->append(currentState);
 
@@ -1403,17 +1590,24 @@ void AlgorithmPaintToolBox::redo()
     region.SetSize(size);
     region.SetIndex(index2d);
 
-    QList<SlicePair> list;
-    for(int i = 0;i<nextState.first.length();i++)
+    PaintBrushSet list;
+    foreach(auto& next, nextState.first )
     {
-        unsigned int idSlice = nextState.first[i].second;
+        unsigned int idSlice = next->getIdSlice();
         Mask2dType::Pointer currentSlice = Mask2dType::New();
         currentSlice->SetRegions(region);
         currentSlice->Allocate();
-        copySliceFromMask3D(currentSlice,planeIndex,direction,idSlice);
-        pasteSliceToMask3D(nextState.first[i].first,nextState.second,direction,idSlice);
-        list.append(SlicePair(currentSlice,idSlice));
+        copySliceFromMask3D(currentSlice,planeIndex,direction,idSlice, false);
+        pasteSliceToMask3D(next->getSlice(),nextState.second,direction,idSlice, false);
+        list.insert(new mscPaintBrush(currentSlice, idSlice, next->isMasterRoi(), next->getLabel() ));
+        if (slicingParameter)
+        {
+            slicingParameter->getSlider()->addTick(idSlice);
+            slicingParameter->getSlider()->update();
+        }
+
     }
+
     PairListSlicePlaneId currentState = PairListSlicePlaneId(list,planeIndex);
     undo_stack->append(currentState);
     //
@@ -1423,10 +1617,9 @@ void AlgorithmPaintToolBox::redo()
     m_maskAnnotationData->invokeModified();
 }
 
-void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigned char planeIndex,QList<int> listIdSlice)
+void AlgorithmPaintToolBox::addSliceToStack(medAbstractView *view, const unsigned char planeIndex, QList<unsigned int> listIdSlice, bool isMaster)
 {
     // save the current state
-
     if (!currentView)
         return;
 
@@ -1458,19 +1651,30 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
     region.SetSize(size);
     region.SetIndex(index2d);
 
-
-    QList<SlicePair> list;
-    for(int i = 0;i<listIdSlice.length();i++)
+    PaintBrushSet setOfUndoRois;
+    setOfUndoRois.clear();
+    for(int i = 0;i<listIdSlice.size();i++)
     {
         unsigned int idSlice = listIdSlice[i];
+        for (auto& pB : setOfPaintBrushRois)
+        {
+            if (pB->getIdSlice() == idSlice)
+            {
+                setOfPaintBrushRois.erase(pB);
+                break;
+            }
+        }
         Mask2dType::Pointer currentSlice = Mask2dType::New();
         currentSlice->SetRegions(region);
         currentSlice->Allocate();
         copySliceFromMask3D(currentSlice,planeIndex,direction,idSlice);
-        list.append(SlicePair(currentSlice,idSlice));
+        setOfUndoRois.insert(new mscPaintBrush(currentSlice, idSlice, isMaster, m_strokeLabelSpinBox->value()));
+        slicingParameter->getSlider()->addTick(idSlice);
+        slicingParameter->getSlider()->update();
     }
+    setOfPaintBrushRois.insert(setOfUndoRois.begin(), setOfUndoRois.end());
 
-    m_undoStacks->value(view)->append(PairListSlicePlaneId(list,planeIndex));
+    m_undoStacks->value(view)->append(PairListSlicePlaneId(setOfUndoRois,planeIndex));
 
     if (m_redoStacks->contains(view))
             m_redoStacks->value(view)->clear();
@@ -1478,7 +1682,7 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView * view,const unsigne
 
 void AlgorithmPaintToolBox::clear()
 {
-   if (currentView && (currentView->layersCount()>0))
+    if (currentView && (currentView->layersCount()>0))
     {
         // remove the "no name" mask data in the view
         for(int unsigned i=0; i<currentView->layersCount(); i++)
@@ -1495,6 +1699,7 @@ void AlgorithmPaintToolBox::clear()
 
 void AlgorithmPaintToolBox::clearMask()
 {
+    setOfPaintBrushRois.clear();
     if ( m_maskData && m_itkMask )
     {
         m_itkMask->FillBuffer( MaskPixelValues::Unset );
@@ -1515,14 +1720,18 @@ void AlgorithmPaintToolBox::clearMask()
             }
         }
         m_applyButton->setDisabled(true);
+        m_interpolateButton->setDisabled(true);
     }
     m_imageData = NULL;
 
     if (m_undoStacks->value(currentView))
     {
         m_undoStacks->value(currentView)->clear();
-        m_redoStacks->value(currentView)->clear();
         m_undoStacks->remove(currentView);
+    }
+    if (m_redoStacks->value(currentView))
+    {
+        m_redoStacks->value(currentView)->clear();
         m_redoStacks->remove(currentView);
     }
 
@@ -1669,7 +1878,6 @@ void AlgorithmPaintToolBox::copySliceMask()
 
     m_copy.first->SetRegions(region);
     m_copy.first->Allocate();
-
     copySliceFromMask3D(m_copy.first,planeIndex,direction,slice);
 
     m_copy.second = planeIndex;
@@ -1680,7 +1888,6 @@ void AlgorithmPaintToolBox::pasteSliceMask()
 {
    if (!viewCopied || !currentView || currentView!=viewCopied || !m_copy.first || m_copy.second==-1)  // TODO add message No copy in buffer // TODO ADD MESSAGE NO CURRENT VIEW DEFINED FOR THE SEGEMENTAION TOOLBOX
         return;
-
     MaskType::IndexType index3D;
     QVector3D vec = currentView->mapDisplayToWorldCoordinates(QPointF(0,0));
     bool isInside;
@@ -1689,7 +1896,7 @@ void AlgorithmPaintToolBox::pasteSliceMask()
     if (planeIndex == -1 || planeIndex!=m_copy.second) // TODO add message previous copy failed or view orientation not similar
         return;
 
-    int slice = index3D[planeIndex];
+    unsigned int slice = index3D[planeIndex];
 
     unsigned int i, j;
     char direction[2];
@@ -1703,13 +1910,21 @@ void AlgorithmPaintToolBox::pasteSliceMask()
         }
     }
 
+    for (auto& pB : setOfPaintBrushRois)
+    {
+        if ( pB->getIdSlice() == slice)
+        {
+            pB->setMasterRoi(true);
+            break;
+        }
+
+    }
     // For undo/redo purposes -------------------------
-    QList<int> listIdSlice;
+    QList<unsigned int> listIdSlice;
     listIdSlice.append(slice);
     addSliceToStack(currentView,planeIndex,listIdSlice);
     // -------------------------------------------------
-
-    pasteSliceToMask3D(m_copy.first,planeIndex,direction,slice);
+    pasteSliceToMask3D(m_copy.first,planeIndex,direction,slice, true);
 
     m_itkMask->Modified();
     m_itkMask->GetPixelContainer()->Modified();
@@ -1757,7 +1972,8 @@ char AlgorithmPaintToolBox::computePlaneIndex(const QVector3D & vec,MaskType::In
     return planeIndex;
 }
 
-void AlgorithmPaintToolBox::copySliceFromMask3D(itk::Image<unsigned char,2>::Pointer copy,const char planeIndex,const char * direction,const unsigned int slice)
+void AlgorithmPaintToolBox::copySliceFromMask3D(itk::Image<unsigned char,2>::Pointer copy, const char planeIndex,
+                                                const char *direction, const unsigned int slice, bool becomesAMasterOne)
 {
     typedef itk::ImageLinearIteratorWithIndex< itk::Image<unsigned char,2> > LinearIteratorType;
     typedef itk::ImageSliceIteratorWithIndex< MaskType> SliceIteratorType;
@@ -1781,6 +1997,11 @@ void AlgorithmPaintToolBox::copySliceFromMask3D(itk::Image<unsigned char,2>::Poi
 
         while ( !It3d.IsAtEndOfLine() )
         {
+            if (It3d.Get() == interpolatedMaskPixelValue && becomesAMasterOne)
+            {
+                It3d.Set(m_strokeLabelSpinBox->value());
+
+            }
             It2d.Set(It3d.Get());
             ++It3d;
             ++It2d;
@@ -1790,7 +2011,9 @@ void AlgorithmPaintToolBox::copySliceFromMask3D(itk::Image<unsigned char,2>::Poi
     }
 }
 
-void AlgorithmPaintToolBox::pasteSliceToMask3D(const itk::Image<unsigned char,2>::Pointer image2D,const char planeIndex,const char * direction,const unsigned int slice)
+void AlgorithmPaintToolBox::pasteSliceToMask3D(const itk::Image<unsigned char,2>::Pointer image2D,
+                                               const char planeIndex,const char * direction,
+                                               const unsigned int slice, bool becomesAMasterOne)
 {
     typedef itk::ImageLinearIteratorWithIndex< itk::Image<unsigned char,2> > LinearIteratorType;
     typedef itk::ImageSliceIteratorWithIndex< MaskType> SliceIteratorType;
@@ -1814,12 +2037,55 @@ void AlgorithmPaintToolBox::pasteSliceToMask3D(const itk::Image<unsigned char,2>
 
         while ( !It3d.IsAtEndOfLine() )
         {
+            if ( It2d.Get() == interpolatedMaskPixelValue && becomesAMasterOne)
+            {
+                It2d.Set(m_strokeLabelSpinBox->value());
+            }
             It3d.Set(It2d.Get());
             ++It3d;
             ++It2d;
         }
         It2d.NextLine();
         It3d.NextLine();
+    }
+}
+
+void AlgorithmPaintToolBox::deleteSliceFromMask3D(unsigned int sliceIndex)
+{
+    typedef itk::ImageSliceIteratorWithIndex< MaskType> SliceIteratorType;
+    SliceIteratorType  It3d( m_itkMask, m_itkMask->GetLargestPossibleRegion() );
+    char direction[2];
+    unsigned int i, j;
+    for ( i = 0, j = 0; i < 3; ++i )
+    {
+        if (i != currentPlaneIndex )
+        {
+            direction[j] = i;
+            j++;
+        }
+    }
+    It3d.SetFirstDirection( direction[1]);
+    It3d.SetSecondDirection( direction[0] );
+
+    It3d.GoToBegin();
+
+    while ( !It3d.IsAtEndOfSlice() )
+    {
+        while(It3d.GetIndex()[currentPlaneIndex]!=sliceIndex && !It3d.IsAtEndOfSlice()){
+            It3d.NextSlice();
+        }
+
+        while ( !It3d.IsAtEndOfLine() )
+        {
+            It3d.Set(MaskPixelValues::Unset);
+            ++It3d;
+        }        
+        It3d.NextLine();
+    }
+    if ( slicingParameter )
+    {
+        slicingParameter->getSlider()->removeTick(sliceIndex);
+        slicingParameter->getSlider()->update();
     }
 }
 
@@ -1843,16 +2109,56 @@ void AlgorithmPaintToolBox::interpolate()
     {
         return;
     }
-
     this->setToolBoxOnWaitStatusForNonRunnableProcess();
 
+    std::vector<std::pair<unsigned int, int>> masterRois;
+    for(auto it = setOfPaintBrushRois.begin(); it != setOfPaintBrushRois.end(); )
+    {
+        auto& pB = *it;
+        if( pB->isMasterRoi() == false )
+        {
+            deleteSliceFromMask3D(pB->getIdSlice());
+            it = setOfPaintBrushRois.erase(it);
+        }
+        else
+        {
+            masterRois.push_back(std::pair<unsigned int, int>(pB->getIdSlice(), pB->getLabel()));
+            ++it;
+        }
+    }
+    if (!masterRois.empty())
+    {
+        unsigned int firstSlice, secondSlice;
+        int firstLabel, secondLabel;
+        for (auto it = masterRois.begin(); it != masterRois.end() - 1; )
+        {
+            firstSlice = (*it).first;
+            firstLabel = (*it).second;
+            advance(it, 1);
+            secondSlice = (*it).first;
+            secondLabel = (*it).second;
+            if (firstLabel == secondLabel)
+            {
+                currentSliceLabel = firstLabel;
+                interpolateBetween2PaintBrush(firstSlice, secondSlice);
+            }
+        }
+    }
+    this->setToolBoxOnReadyToUse();
+}
+
+void AlgorithmPaintToolBox::interpolateBetween2PaintBrush(unsigned int firstSlice, unsigned int secondSlice)
+{
     MaskType::IndexType index3D;
     QVector3D vector = currentView->mapDisplayToWorldCoordinates(QPointF(0,0));
     bool isInside;
     char planeIndex = AlgorithmPaintToolBox::computePlaneIndex(vector,index3D,isInside);
-
-    unsigned char label = m_strokeLabelSpinBox->value();
-
+    // TODO : Debug this toolbox to allow interpolation in axial & coronal view
+    if (planeIndex!=2)
+    {
+        qDebug()<<"interpolation is only available in sagittal view";
+        return;
+    }
     MaskType::RegionType inputRegion = m_itkMask->GetLargestPossibleRegion();
     MaskType::SizeType   size      = inputRegion.GetSize();
     MaskType::IndexType  start     = inputRegion.GetIndex();
@@ -1877,85 +2183,49 @@ void AlgorithmPaintToolBox::interpolate()
     Mask2dFloatType::Pointer distanceMapImg0   = Mask2dFloatType::New();
     Mask2dFloatType::Pointer distanceMapImg1   = Mask2dFloatType::New();
 
-    bool isD0,isD1;
-    unsigned int sizeZ = size[2];
     unsigned int center[2]={(unsigned int)size[0]/2u,(unsigned int)size[1]/2u};
-    img1 = extract2DImageSlice(m_itkMask, 2, 0, size, start);
-    isD1 = isData(img1,label);
-    isD0 = false;
-    unsigned int slice0=0,slice1=0;
+    img1 = extract2DImageSlice(m_itkMask, 2, secondSlice, size, start);
+    img0 = extract2DImageSlice(m_itkMask, 2, firstSlice, size, start);
     unsigned int coord0[2],coord1[2];
     double vec[2];
 
-    for (unsigned int i=0; i<(sizeZ-1); ++i)
+    if(secondSlice-firstSlice>1)
     {
-        if (!isD0 && isD1)
+        Mask2dIterator iterator0(img0,img0->GetBufferedRegion()); //Create image iterator
+        iterator0.GoToBegin();
+        Mask2dIterator iterator1(img1,img1->GetBufferedRegion()); //Create image iterator
+        iterator1.GoToBegin();
+
+        computeCentroid(iterator0,coord0);
+        computeCentroid(iterator1,coord1);
+
+        int C0C1[2]     = {(int)(coord1[0]-coord0[0]),(int)(coord1[1]-coord0[1])};
+        int C0center[2] = {(int)(center[0]-coord0[0]),(int)(center[1]-coord0[1])};
+        int C1center[2] = {(int)(center[0]-coord1[0]),(int)(center[1]-coord1[1])};
+
+        img0tr = translateImageByVec(img0,C0center);
+        img1tr = translateImageByVec(img1,C1center);
+
+        distanceMapImg0 = computeDistanceMap(img0tr);
+        distanceMapImg1 = computeDistanceMap(img1tr);
+
+        // For undo/redo purposes
+        QList<unsigned int> listIdSlice;
+        for (unsigned int j=firstSlice+1; j<secondSlice; ++j) // for each intermediate slice
         {
-            img0 = img1;
-            isD0 = isD1;
-            slice0=slice1;
+            listIdSlice.append(j);
         }
+        addSliceToStack(currentView,planeIndex,listIdSlice, false);
 
-        img1 = extract2DImageSlice(m_itkMask, 2, i+1, size, start);
-        isD1 = isData(img1,label);
-        slice1= i+1;
-
-        if (isD0 && isD1)       //if both images not empty
+        for (unsigned int j=firstSlice+1; j<secondSlice; ++j) // for each intermediate slice
         {
-            if(slice1-slice0>1)
-            {
-                Mask2dIterator iterator0(img0,img0->GetBufferedRegion()); //Create image iterator
-                iterator0.GoToBegin();
-                Mask2dIterator iterator1(img1,img1->GetBufferedRegion()); //Create image iterator
-                iterator1.GoToBegin();
-
-                computeCentroid(iterator0,coord0);
-                computeCentroid(iterator1,coord1);
-
-                int C0C1[2]     = {(int)(coord1[0]-coord0[0]),(int)(coord1[1]-coord0[1])};
-                int C0center[2] = {(int)(center[0]-coord0[0]),(int)(center[1]-coord0[1])};
-                int C1center[2] = {(int)(center[0]-coord1[0]),(int)(center[1]-coord1[1])};
-
-                img0tr = translateImageByVec(img0,C0center);
-                img1tr = translateImageByVec(img1,C1center);
-
-                distanceMapImg0 = computeDistanceMap(img0tr);
-                distanceMapImg1 = computeDistanceMap(img1tr);
-
-                // For undo/redo purposes
-                QList<int> listIdSlice;
-                for (unsigned int j=slice0+1; j<slice1; ++j) // for each intermediate slice
-                {
-                    listIdSlice.append(j);
-                }
-                addSliceToStack(currentView,planeIndex,listIdSlice);
-
-                for (unsigned int j=slice0+1; j<slice1; ++j) // for each intermediate slice
-                {
-                    // Interpolate the "j" intermediate slice and copy into output volume
-                    vec[0]= (((j-slice0)*(C0C1[0]/(float)(slice1-slice0))+coord0[0])-center[0]);
-                    vec[1]= (((j-slice0)*(C0C1[1]/(float)(slice1-slice0))+coord0[1])-center[1]);
-                    computeIntermediateSlice(distanceMapImg0, distanceMapImg1,slice0,slice1, j,itVolumOut,itMask,vec);
-                }
-            }
-            isD0=false;
+            // Interpolate the "j" intermediate slice and copy into output volume
+            vec[0]= (((j-firstSlice)*(C0C1[0]/(float)(secondSlice-firstSlice))+coord0[0])-center[0]);
+            vec[1]= (((j-firstSlice)*(C0C1[1]/(float)(secondSlice-firstSlice))+coord0[1])-center[1]);
+            computeIntermediateSlice(distanceMapImg0, distanceMapImg1,firstSlice,secondSlice, j,itVolumOut,itMask,vec);
         }
-    } // end for each slice
-
-    this->setToolBoxOnReadyToUse();
-}
-
-// Is there data to observe in the image ?
-bool AlgorithmPaintToolBox::isData(Mask2dType::Pointer input,unsigned char label)
-{
-    Mask2dIterator it(input, input->GetBufferedRegion());
-
-    for (it.GoToBegin(); !it.IsAtEnd(); ++it)
-    {
-        if (it.Get() == label) //data
-            return true;
     }
-    return false;
+
 }
 
 Mask2dType::Pointer AlgorithmPaintToolBox::extract2DImageSlice(MaskType::Pointer input,
@@ -1968,12 +2238,10 @@ Mask2dType::Pointer AlgorithmPaintToolBox::extract2DImageSlice(MaskType::Pointer
     size[plane] = 0;
     const unsigned int sliceNumber = slice;
     start[plane] = sliceNumber;
-
     // create the desired region
     MaskType::RegionType desiredRegion;
     desiredRegion.SetSize(size);
     desiredRegion.SetIndex(start);
-
     typedef itk::ExtractImageFilter < MaskType, Mask2dType > Extract2DType;
 
     // associate previous sequence and desired region
@@ -1982,7 +2250,6 @@ Mask2dType::Pointer AlgorithmPaintToolBox::extract2DImageSlice(MaskType::Pointer
     filter->SetInput(input);
     filter->SetDirectionCollapseToGuess();
     filter->Update();
-
     // extract the image
     return filter->GetOutput();
 }
@@ -2000,7 +2267,7 @@ Mask2dFloatType::Pointer AlgorithmPaintToolBox::computeDistanceMap(Mask2dType::P
     typedef itk::InvertIntensityImageFilter<Mask2dType,Mask2dType> invertFilterType;
     invertFilterType::Pointer invertFilter = invertFilterType::New();
 
-    invertFilter->SetMaximum(m_strokeLabelSpinBox->value());
+    invertFilter->SetMaximum(currentSliceLabel);
     invertFilter->SetInput(img);
     invertFilter->Update();
 
@@ -2028,7 +2295,7 @@ void AlgorithmPaintToolBox::computeCentroid(Mask2dIterator itmask,unsigned int *
 
     while(!itmask.IsAtEnd())
     {
-        if (itmask.Get()==m_strokeLabelSpinBox->value())
+        if (itmask.Get()==currentSliceLabel)
         {
             coord[0] += itmask.GetIndex()[0];
             coord[1] += itmask.GetIndex()[1];
@@ -2069,13 +2336,13 @@ Mask2dType::Pointer AlgorithmPaintToolBox::translateImageByVec(Mask2dType::Point
 
     while(!it1.IsAtEnd())
     {
-        if (it1.Get()==m_strokeLabelSpinBox->value())
+        if (it1.Get()==currentSliceLabel)
         {
             ind = it1.GetIndex();
             ind[0]=ind[0]+floor(vec[0]+0.5);
             ind[1]=ind[1]+floor(vec[1]+0.5);
             it2.SetIndex(ind);
-            it2.Set(m_strokeLabelSpinBox->value());
+            it2.Set(currentSliceLabel);
         }
      ++it1;
     }
@@ -2084,12 +2351,12 @@ Mask2dType::Pointer AlgorithmPaintToolBox::translateImageByVec(Mask2dType::Point
 
 // Compute the interpolated slice between two distance maps
 void AlgorithmPaintToolBox::computeIntermediateSlice(Mask2dFloatType::Pointer distanceMapImg0,
-                                                              Mask2dFloatType::Pointer distanceMapImg1,
-                                                              int slice0,
-                                                              int slice1,
-                                                              int j,
-                                                              MaskFloatIterator ito,
-                                                              MaskIterator itmask,double *vec)
+                                                     Mask2dFloatType::Pointer distanceMapImg1,
+                                                     unsigned int slice0,
+                                                     unsigned int slice1,
+                                                     int j,
+                                                     MaskFloatIterator ito,
+                                                     MaskIterator itmask,double *vec)
 {
     // iterators
     Mask2dFloatIterator iti0(distanceMapImg0, distanceMapImg0->GetBufferedRegion()); // volume in 0
@@ -2109,7 +2376,6 @@ void AlgorithmPaintToolBox::computeIntermediateSlice(Mask2dFloatType::Pointer di
 
     // For each pixel of the InterpolatedSlice image, compute the value
     float interpolatVal;
-
     int nbinterslice = slice1-slice0;
 
     while(!iti0.IsAtEnd())
@@ -2126,7 +2392,7 @@ void AlgorithmPaintToolBox::computeIntermediateSlice(Mask2dFloatType::Pointer di
             other[1]=other[1]+floor(vec[1]+0.5);
             other[2]=j;
             itmask.SetIndex(other);
-            itmask.Set(m_strokeLabelSpinBox->value());
+            itmask.Set(interpolatedMaskPixelValue);
             itmask.SetIndex(start);
         }
 
