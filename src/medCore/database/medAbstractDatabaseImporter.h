@@ -95,6 +95,9 @@ protected:
     QString generateUniqueVolumeId ( const medAbstractData* medData );
     QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
 
+    /**
+     * @brief Run when a temporary data in the database is permanently saved, or a data is created in the application
+     */
     void importData();
     void importFile();
 

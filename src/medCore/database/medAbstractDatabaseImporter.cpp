@@ -439,10 +439,13 @@ void medAbstractDatabaseImporter::importData()
     }
 
     populateMissingMetadata(d->data, "EmptySeries");
-    
-    if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
-        d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medInria" );
-        
+
+    // Information about the app and version of the application
+    QString attachedInfoApp = QString("generated with " +
+                                      QString(PROJECT_NAME) +
+                                      " " +
+                                      QString(MEDINRIA_VERSION));
+    d->data->setMetaData(medMetaDataKeys::Description.key(), attachedInfoApp);
 
     QString size ="";
     if ( medAbstractImageData *imagedata = dynamic_cast<medAbstractImageData*> ( d->data.data()) )

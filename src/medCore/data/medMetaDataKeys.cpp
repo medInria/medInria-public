@@ -28,7 +28,7 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key Age("Age", "Age"); // could be "00" format, or for instance "00Y"
     MEDCORE_EXPORT const Key BirthDate("BirthDate", "Birth Date"/*, QVariant::Date*/);
     MEDCORE_EXPORT const Key Gender("Gender", "Gender", QVariant::Char);
-    MEDCORE_EXPORT const Key Description("Description"); //what?
+    MEDCORE_EXPORT const Key Description("Description"); // Used to add the app name and version
 
     // STUDY
     MEDCORE_EXPORT const Key StudyID("StudyID", "Study ID");

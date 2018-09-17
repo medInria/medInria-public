@@ -95,7 +95,7 @@ namespace medMetaDataKeys {
     extern MEDCORE_EXPORT const Key Age;
     extern MEDCORE_EXPORT const Key BirthDate;
     extern MEDCORE_EXPORT const Key Gender;
-    extern MEDCORE_EXPORT const Key Description; //what?
+    extern MEDCORE_EXPORT const Key Description;
 
     // STUDY
     extern MEDCORE_EXPORT const Key StudyID;
