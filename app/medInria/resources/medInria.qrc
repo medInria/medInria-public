@@ -3,8 +3,10 @@
         <file>../../../LICENSE.txt</file>
         <file>../../../RELEASE_NOTES.txt</file>
         <file>medInria.ico</file>
-        <file>music_logo.png</file>
-        <file>music_logo_small.png</file>
+        <file>music_logo_light.png</file>
+        <file>music_logo_small_light.png</file>
+        <file>music_logo_dark.png</file>
+        <file>music_logo_small_dark.png</file>
         <file>icons/AxialIcon.png</file>
         <file>icons/CoronalIcon.png</file>
         <file>icons/SagittalIcon.png</file>
@@ -111,7 +113,8 @@
         <file>icons/user_edit.png</file>
         <file>icons/movie.png</file>
         <file>icons/movie_grey.png</file>
-        <file>medInria.qss</file>
+        <file>music_dark.qss</file>
+        <file>music_light.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/checkbox.png</file>
         <file>pixmaps/checkbox-checked.png</file>
@@ -165,5 +168,7 @@
         <file>pixmaps/arrow-bot.png</file>
         <file>icons/adjust_size.png</file>
         <file>icons/adjust_size_grey.png</file>
+        <file>icons/music-check.svg</file>
+        <file>icons/music-cross.svg</file>
     </qresource>
 </RCC>

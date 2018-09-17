@@ -25,6 +25,7 @@ public:
   QWidget* parent;
   QCheckBox* startInFullScreen;
   QComboBox* defaultStartingArea;
+  QComboBox* theme;
 
   medStartupSettingsWidgetPrivate();
   ~medStartupSettingsWidgetPrivate();
@@ -55,9 +56,15 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
         d->defaultStartingArea->addItem(detail->name);
 
+    d->theme = new QComboBox(this);
+    d->theme->addItem(tr("Light"));
+    d->theme->addItem(tr("Dark"));
+    d->theme->setToolTip(tr("Choose a theme displayed at start-up"));
+
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Fullscreen"),d->startInFullScreen);
     layout->addRow(tr("Starting area"), d->defaultStartingArea);
+    layout->addRow(tr("Theme"), d->theme);
     this->setLayout(layout);
 }
 
@@ -87,6 +94,15 @@ void medStartupSettingsWidget::read()
         index = d->defaultStartingArea->count() -1;
 
     d->defaultStartingArea->setCurrentIndex(index);
+
+    // Theme Settings
+    int indexTheme = mnger->value("startup", "theme", 0).toInt();
+    if (indexTheme < 0)
+        indexTheme = 0;
+    if (indexTheme > d->theme->count() -1)
+        indexTheme = d->theme->count() -1;
+    d->theme->setCurrentIndex(indexTheme);
+
 }
 
 bool medStartupSettingsWidget::write()
@@ -95,5 +111,8 @@ bool medStartupSettingsWidget::write()
     mnger->setValue("startup","fullscreen", d->startInFullScreen->isChecked());
     mnger->setValue("startup","default_starting_area",
                     d->defaultStartingArea->currentIndex());
+
+    mnger->setValue("startup","theme",
+                    d->theme->currentIndex());
     return true;
 }

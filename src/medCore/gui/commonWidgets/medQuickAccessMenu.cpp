@@ -329,6 +329,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     browserButton->setCursor(Qt::PointingHandCursor);
     browserButton->setStyleSheet("border: 0px;");
     browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
+    browserButton->setIconSize(QSize(16,16));
     browserButton->setText ( "Browser" );
     browserButton->setFixedHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
@@ -376,7 +377,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     buttonsList.clear();
 
     backgroundFrame = new QFrame(this);
-    backgroundFrame->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
+    backgroundFrame->setStyleSheet("border-radius: 0px;background-color: #6E6E6E;");
     QHBoxLayout *mainWidgetLayout = new QHBoxLayout;
     mainWidgetLayout->setMargin(0);
     mainWidgetLayout->setSpacing ( 0 );

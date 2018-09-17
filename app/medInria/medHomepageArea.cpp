@@ -127,13 +127,28 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medInriaLabel = new QLabel ( this );
-    QPixmap medLogo( ":music_logo.png" );
-    medLogo = medLogo.scaled(350, 150, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    // CSS
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QString qssLogoName;
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        qssLogoName = ":music_logo_light.png";
+        break;
+    case 1:
+        qssLogoName = ":music_logo_dark.png";
+        break;
+    }
+    QPixmap medLogo(qssLogoName);
+    medLogo = medLogo.scaled(350, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     medInriaLabel->setPixmap ( medLogo );
 
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( QString::fromUtf8("<b>%1</b> (%2) is a software developed in collaboration with "
+    textEdit->setHtml ( QString::fromUtf8("<br/><br/><b>%1</b> (%2) is a software developed in collaboration with "
                                           "the IHU LIRYC in order to propose functionalities "
                                           "dedicated to cardiac interventional planning and "
                                           "guidance, based on the medInria software platform."
@@ -322,8 +337,10 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutBasic->addWidget ( workspaceLabelBasic );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
+    //Only the macOS style differs by using 32 pixels instead of 16 pixels
+    browserButton->setIconSize(QSize(16,16));
     browserButton->setText ( "Browser" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );

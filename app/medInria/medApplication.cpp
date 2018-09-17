@@ -33,6 +33,7 @@
 #include <medRegistrationWorkspace.h>
 #include <medSeedPointAnnotationData.h>
 #include <medSegmentationWorkspace.h>
+#include <medSettingsManager.h>
 #include <medSettingsWidget.h>
 #include <medSettingsWidgetFactory.h>
 #include <medStartupSettingsWidget.h>
@@ -150,9 +151,24 @@ void medApplication::initialize()
     }
     d->mainWindow = NULL;
 
-    this->setWindowIcon(QIcon(":music_logo_small.png"));
+    // CSS
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
 
-    medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
+    QString qssFile;
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        qssFile = ":/music_light.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
+        break;
+    case 1:
+        qssFile = ":/music_dark.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_dark.png"));
+        break;
+    }
+    medStyleSheetParser parser(dtkReadFile(qssFile));
     this->setStyleSheet(parser.result());
 
     qRegisterMetaType<QUuid>("QUuid");
