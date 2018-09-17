@@ -99,7 +99,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     logButton->setMinimumHeight ( 30 );
     logButton->setMaximumWidth ( 150 );
     logButton->setMinimumWidth ( 150 );
-    logButton->setToolTip(tr("Open Log Directory"));
+    logButton->setToolTip(QString("Open Log Directory.\nThe log file is ")
+                             + QString(qApp->applicationName())
+                             + QString(".log"));
     logButton->setFocusPolicy ( Qt::NoFocus );
     logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
     logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
