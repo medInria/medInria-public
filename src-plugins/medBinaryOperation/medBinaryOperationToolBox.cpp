@@ -67,7 +67,7 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medAbstr
     d->orButton->setToolTip(tr("\"OR\" keeps keep positive pixels from both volumes."));
 
     d->notButton  = new QRadioButton(tr("NOT"), widget);
-    d->orButton->setToolTip(tr("\"NOT\" does an inversion of the volume."));
+    d->notButton->setToolTip(tr("\"NOT\" does an inversion of the volume."));
 
     QVBoxLayout *roiButtonLayout = new QVBoxLayout;
     roiButtonLayout->addWidget(d->dropsite);
