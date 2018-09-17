@@ -187,6 +187,9 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
 medVtkView::~medVtkView()
 {
+    // Remove the histogram if exists at removal of the view
+    showHistogram(false);
+
     disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
     disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(render()));
 

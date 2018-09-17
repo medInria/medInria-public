@@ -583,7 +583,10 @@ void medViewContainer::removeInternView()
     d->view = NULL;
     d->maximizedAction->setEnabled(false);
     d->saveSceneAction->setEnabled(false);
+
     d->histogramAction->setEnabled(false);
+    d->histogramAction->setChecked(false);
+
     d->defaultWidget->show();
     this->updateToolBar();
 
