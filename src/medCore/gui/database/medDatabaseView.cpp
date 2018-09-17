@@ -113,7 +113,9 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->header()->setDefaultAlignment(Qt::AlignCenter);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    this->setEditTriggers(QAbstractItemView:: SelectedClicked);
+    // Selected Clicked: "Editing starts when clicking on an already selected item."
+    // Edit Key: F2 for instance on Linux/Windows.
+    this->setEditTriggers(QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed);
 
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
