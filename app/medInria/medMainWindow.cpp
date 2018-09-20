@@ -441,9 +441,11 @@ void medMainWindow::captureScreenshot()
 
     if (!screenshot.isNull())
     {
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save screenshot as"),
-                                                        QDir::home().absolutePath(),
-                                                        QString(), 0, QFileDialog::HideNameFilterDetails);
+        QString fileName = QFileDialog::getSaveFileName(this,
+                                                        tr("Save screenshot as"),
+                                                        QString(QDir::home().absolutePath() + "/screen.png"),
+                                                        "Image files (*.png *.jpeg *jpg);;All files (*.*)",
+                                                        0);
 
         QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toAscii();
         if ( ! QImageWriter::supportedImageFormats().contains(format) )

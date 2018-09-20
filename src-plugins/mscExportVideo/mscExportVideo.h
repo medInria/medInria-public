@@ -24,6 +24,7 @@ public:
     enum VideoFormat
     {
         OGGVORBIS,
+        JPGBATCH
     };
 
 public slots:
@@ -36,6 +37,9 @@ public slots:
 
     //! The output function is needed in medAbstractProcess even if not used
     medAbstractData *output();
+
+    //! Adapt widgets in FileDialog according to the format type chosen
+    void handleWidgetDisplayAccordingToType(int index);
 
 protected:
 
