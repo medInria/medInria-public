@@ -50,7 +50,8 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
     LUT_GRAYRAINBOW,
     LUT_STERN,
     LUT_JET,
-    LUT_BINARY_MAP
+    LUT_BINARY_MAP,
+    LUT_CHANNELNESS
   };
   //ETX
 
@@ -111,6 +112,8 @@ class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
 
   static vtkLookupTable* GetBinaryMapLookupTable();
   
+  static vtkLookupTable* GetChannelnessLookupTable();
+
   //BTX
   static std::vector<std::string> GetAvailableLookupTables();
   //ETX

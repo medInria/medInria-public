@@ -35,6 +35,7 @@ vtkStandardNewMacro(vtkLookupTableManager);
 #include "lut/VRRedVessels.h"
 #include "lut/BlackBody.h"
 #include "lut/jet.h"
+#include "lut/Channelness.h"
 
 
 #include <time.h>
@@ -75,7 +76,8 @@ std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
 			  "Stern",
 			  "Black Body",
               "Jet",
-              "Binary Map"};
+              "Binary Map",
+              "Channelness"};
     
 
   std::vector<std::string> v_lutNames;
@@ -155,6 +157,8 @@ vtkLookupTable* vtkLookupTableManager::GetLookupTable(const std::string & name)
     return vtkLookupTableManager::GetJetLookupTable();
   else if (name == "Binary Map")
     return vtkLookupTableManager::GetBinaryMapLookupTable();
+  else if (name == "Channelness")
+    return vtkLookupTableManager::GetChannelnessLookupTable();
   else
     return vtkLookupTableManager::GetBWLookupTable();
 }
@@ -669,6 +673,20 @@ vtkLookupTable* vtkLookupTableManager::GetBinaryMapLookupTable()
         realHueValue += 1.0 / factor;
         if (realHueValue > 1.0)
             realHueValue -= 1.0;
+    }
+
+    return lut;
+}
+
+vtkLookupTable *vtkLookupTableManager::GetChannelnessLookupTable()
+{
+    vtkLookupTable* lut = vtkLookupTable::New();
+    lut->SetNumberOfTableValues(256);
+    lut->Build();
+
+    for( int i=0; i<256; i++)
+    {
+        lut->SetTableValue(i, (double)Channelness[i]/255.0, (double)Channelness[256+i]/255.0, (double)Channelness[256*2+i]/255.0, log (1.0+(double)(i)/255.0*9.0)/log (10.0) );
     }
 
     return lut;

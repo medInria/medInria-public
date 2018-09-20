@@ -40,6 +40,7 @@ vtkStandardNewMacro(vtkTransferFunctionPresets);
 #include "lut/GrayRainbow.h"
 #include "lut/Stern.h"
 #include "lut/BlackBody.h"
+#include "lut/Channelness.h"
 
 vtkTransferFunctionPresets::vtkTransferFunctionPresets()
 {}
@@ -83,6 +84,7 @@ std::vector< std::string > vtkTransferFunctionPresets::GetAvailablePresets()
   * it = "Stern";                  ++it;
   * it = "Black Body";             ++it;
   * it = "Binary Map";             ++it;
+  * it = "Channelness";            ++it;
 
   presetNames.erase( it, presetNames.end() );
 
@@ -160,6 +162,8 @@ void vtkTransferFunctionPresets::GetTransferFunction(
     Self::GetBlackBodyTransferFunction( rgb, alpha );
   else if (name == "Binary Map")
     Self::GetBinaryMapTransferFunction( rgb, alpha );
+  else if (name == "Channelness")
+    Self::GetChannelnessTransferFunction( rgb, alpha );
   else
     Self::GetBWTransferFunction( rgb, alpha );
 }
@@ -646,3 +650,11 @@ void vtkTransferFunctionPresets::GetBinaryMapTransferFunction(
     alpha->AddPoint(0.0, 1.0);
     alpha->AddPoint(1.0, 1.0);
 }
+
+void vtkTransferFunctionPresets::GetChannelnessTransferFunction(
+  vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
+{
+  vtkTransferFunctionPresets::GetTransferFunctionFromTable(
+    256, Channelness, true, rgb, alpha );
+}
+
