@@ -86,23 +86,8 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
-  ITKIOBioRad
-  ITKIOBMP
-  ITKIOGDCM
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOJPEG
-  ITKIOLSM
-  ITKIOMeta
-  ITKIOMRC
-  ITKIONIFTI
-  ITKIONRRD
-  ITKIOPNG
-  ITKIOStimulate
-  ITKIOVTK
-  ITKTensor
+  ${DTK_LIBRARIES}
+  ${ITK_LIBRARIES}
   medCore
   medLog
   medVtkInria

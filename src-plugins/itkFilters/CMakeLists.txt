@@ -67,9 +67,8 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
-  ITKCommon  
+  ${DTK_LIBRARIES}
+  ${ITK_LIBRARIES}
   medCore
   medUtilities
   )

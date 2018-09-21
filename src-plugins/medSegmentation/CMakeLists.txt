@@ -80,14 +80,11 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
-  ITKCommon
+  ${VTK_LIBRARIES}
+  ${ITK_LIBRARIES}
+  ${DTK_LIBRARIES}
   medCore
   medVtkInria
-  vtkCommon
-  vtkRendering
-  vtkVolumeRendering
   QVTK
   )
 
