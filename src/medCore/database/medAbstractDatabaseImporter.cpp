@@ -440,6 +440,9 @@ void medAbstractDatabaseImporter::importData()
 
     populateMissingMetadata(d->data, "EmptySeries");
 
+    if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
+         d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "data created internally" );
+
     // Information about the app and version of the application
     QString attachedInfoApp = QString("generated with " +
                                       QString(PROJECT_NAME) +
