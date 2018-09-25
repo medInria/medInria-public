@@ -88,6 +88,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${DTK_LIBRARIES}
   ${ITK_LIBRARIES}
+  ITKTensor
   medCore
   medLog
   medVtkInria
