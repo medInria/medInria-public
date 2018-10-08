@@ -755,8 +755,10 @@ dtkSmartPointer<dtkAbstractDataWriter> medAbstractDatabaseImporter::getSuitableW
 **/
 QStringList medAbstractDatabaseImporter::getAllFilesToBeProcessed ( QString fileOrDirectory )
 {
-    QString file = fileOrDirectory;
+    //Trick to use QString with accent
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
+    QString file = fileOrDirectory;
     QDir dir ( file );
     dir.setFilter ( QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot );
 
