@@ -10,7 +10,7 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxBody.h>
 #include <medToolBoxFactory.h>
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 #include <medViewContainer.h>
 #include <medVtkViewBackend.h>
 
@@ -56,8 +56,7 @@ public:
     void applyOrientationMatrix(double* worldPointIn, double* WorldPointOut);
     void applyInverseOrientationMatrix(double* worldPointIn, double* worldPointOut);
     void generateOutput();
-    template <typename DATA_TYPE, unsigned int DIMENSIONS>
-    medAbstractData* extractCroppedImage(medAbstractData* abstractData, const QString& destType, int* minIndices, int* maxIndices);
+    template <typename ImageType> int extractCroppedImage(medAbstractData* input, int* minIndices, int* maxIndices, medAbstractData** output);
     void setOutputMetaData(medAbstractData* output, medAbstractData* input, int columns, int rows);
     void replaceViewWithOutputData(medAbstractWorkspace& workspace);
     void importOutput();
@@ -430,63 +429,30 @@ void medCropToolBoxPrivate::generateOutput()
         medAbstractData* imageData = view->layerData(layer);
         medAbstractData* output = NULL;
 
-        QStringList imageTypes;
-        imageTypes << "itkDataImageChar3" << "itkDataImageUChar3" << "itkDataImageShort3" << "itkDataImageUShort3" << "itkDataImageInt3";
-        imageTypes << "itkDataImageUInt3" << "itkDataImageLong3" << "itkDataImageULong3" << "itkDataImageFloat3" << "itkDataImageDouble3";
-
-        switch (imageTypes.indexOf(imageData->identifier()))
+        if (DISPATCH_ON_3D_PIXEL_TYPE(&medCropToolBoxPrivate::extractCroppedImage, this, imageData, minIndices, maxIndices, &output) == DTK_SUCCEED)
         {
-        case 0:
-            output = extractCroppedImage<char, 3>(imageData, "itkDataImageChar3", minIndices, maxIndices);
-            break;
-        case 1:
-            output = extractCroppedImage<unsigned char, 3>(imageData, "itkDataImageUChar3", minIndices, maxIndices);
-            break;
-        case 2:
-            output = extractCroppedImage<short, 3>(imageData, "itkDataImageShort3", minIndices, maxIndices);
-            break;
-        case 3:
-            output = extractCroppedImage<unsigned short, 3>(imageData, "itkDataImageUShort3", minIndices, maxIndices);
-            break;
-        case 4:
-            output = extractCroppedImage<int, 3>(imageData, "itkDataImageInt3", minIndices, maxIndices);
-            break;
-        case 5:
-            output = extractCroppedImage<unsigned int, 3>(imageData, "itkDataImageUInt3", minIndices, maxIndices);
-            break;
-        case 6:
-            output = extractCroppedImage<long, 3>(imageData, "itkDataImageLong3", minIndices, maxIndices);
-            break;
-        case 7:
-            output = extractCroppedImage<unsigned long, 3>(imageData, "itkDataImageULong3", minIndices, maxIndices);
-            break;
-        case 8:
-            output = extractCroppedImage<float, 3>(imageData, "itkDataImageFloat3", minIndices, maxIndices);
-            break;
-        case 9:
-            output = extractCroppedImage<double, 3>(imageData, "itkDataImageDouble3", minIndices, maxIndices);
-            break;
-        default:
+            outputData.append(output);
+        }
+        else
+        {
             medMessageController::instance()->showError("Drop a 3D volume in the view",3000);
             qDebug()<<"medCropToolBoxPrivate::generateOutput id "<<imageData->identifier();
         }
-
-        outputData.append(output);
     }
 }
 
-template <typename DATA_TYPE, unsigned int DIMENSIONS>
-medAbstractData* medCropToolBoxPrivate::extractCroppedImage(medAbstractData* abstractData, const QString& destType, int* minIndices, int* maxIndices)
+template <typename ImageType>
+int medCropToolBoxPrivate::extractCroppedImage(medAbstractData* input, int* minIndices, int* maxIndices, medAbstractData** output)
 {
-    typedef itk::Image<DATA_TYPE, DIMENSIONS> ImageType;
-    typename ImageType::Pointer image = dynamic_cast<ImageType*>((itk::Object*)abstractData->data());
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(input->data());
+
     typedef itk::RegionOfInterestImageFilter<ImageType, ImageType> FilterType;
     typename FilterType::Pointer filter = FilterType::New();
     typename ImageType::IndexType desiredStart;
     typename ImageType::SizeType desiredSize;
-    typename ImageType::SizeType imageSize = image->GetLargestPossibleRegion().GetSize();
+    typename ImageType::SizeType imageSize = inputImage->GetLargestPossibleRegion().GetSize();
 
-    for (unsigned int i = 0; i < DIMENSIONS; i++)
+    for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
     {
         if (minIndices[i] > maxIndices[i])
         {
@@ -502,16 +468,16 @@ medAbstractData* medCropToolBoxPrivate::extractCroppedImage(medAbstractData* abs
 
     typename ImageType::RegionType desiredRegion(desiredStart, desiredSize);
     filter->SetRegionOfInterest(desiredRegion);
-    filter->SetInput(image);
+    filter->SetInput(inputImage);
     filter->Update();
 
     typename ImageType::Pointer filteredImage = filter->GetOutput();
-    medAbstractData* output = medAbstractDataFactory::instance()->create(destType);
-    output->setData(filteredImage);
+    *output = medAbstractDataFactory::instance()->create(input->identifier());
+    (*output)->setData(filteredImage);
 
-    setOutputMetaData(output, abstractData, desiredSize[0], desiredSize[1]);
+    setOutputMetaData(*output, input, desiredSize[0], desiredSize[1]);
 
-    return output;
+    return DTK_SUCCEED;
 }
 
 void medCropToolBoxPrivate::setOutputMetaData(medAbstractData* output, medAbstractData* input, int columns, int rows)

@@ -18,6 +18,7 @@
 
 #include <medAbstractProcess.h>
 #include <medAbstractDataFactory.h>
+#include <medUtilitiesITK.h>
 
 
 #include "itkN4BiasCorrection_p.h"
@@ -88,52 +89,7 @@ int itkN4BiasCorrection::update()
 
     if (d->input)
     {
-        QString id = d->input->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = d->update<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = d->update<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = d->update<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = d->update<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = d->update<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = d->update<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = d->update<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = d->update<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            res = d->update<float>();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            res = d->update<double>();
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkN4BiasCorrectionPrivate::update, d, d->input);
     }
 
     return res;

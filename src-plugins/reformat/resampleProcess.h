@@ -24,7 +24,7 @@ public:
         //! The output will be available through here
         medAbstractData *output(void);
 private:
-    template <class ImageType> void resample(const char * str);
+    template <class ImageType> int resample(medAbstractData* inputData);
     resampleProcessPrivate *d;
 };
 dtkAbstractProcess *createResampleProcess();

@@ -18,7 +18,7 @@
 #include <itkImage.h>
 #include <itkNormalizeImageFilter.h>
 
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 //-------------------------------------------------------------------------------------------
 
@@ -49,64 +49,21 @@ int itkFiltersNormalizeProcess::tryUpdate()
 
     if ( getInputData() )
     {
-        QString id = getInputData()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = updateProcess<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = updateProcess<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = updateProcess<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = updateProcess<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = updateProcess<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = updateProcess<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = updateProcess<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = updateProcess<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            res = updateProcess<float>();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            res = updateProcess<double>();
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkFiltersNormalizeProcess::updateProcess, this, getInputData());
     }
 
     return res;
 }
 
-template <class PixelType> int itkFiltersNormalizeProcess::updateProcess()
+template <class ImageType>
+int itkFiltersNormalizeProcess::updateProcess(medAbstractData* inputData)
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
+
     typedef itk::NormalizeImageFilter< ImageType, ImageType >  NormalizeFilterType;
     typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
 
-    normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    normalizeFilter->SetInput(inputImage);
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
@@ -118,7 +75,7 @@ template <class PixelType> int itkFiltersNormalizeProcess::updateProcess()
     getOutputData()->setData ( normalizeFilter->GetOutput() );
 
     //Set output description metadata
-    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), "normalize filter");
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, "normalize filter");
 
     return DTK_SUCCEED;
 }

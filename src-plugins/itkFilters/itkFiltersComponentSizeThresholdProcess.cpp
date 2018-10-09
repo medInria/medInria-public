@@ -22,7 +22,7 @@
 #include <itkRelabelComponentImageFilter.h>
 
 #include <medAbstractDataFactory.h>
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 class itkFiltersComponentSizeThresholdProcessPrivate
 {
@@ -82,89 +82,44 @@ int itkFiltersComponentSizeThresholdProcess::tryUpdate()
 
     if ( getInputData() )
     {
-        QString id = getInputData()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = updateProcess<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = updateProcess<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = updateProcess<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = updateProcess<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = updateProcess<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = updateProcess<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = updateProcess<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = updateProcess<unsigned long>();
-        }
-        else if ( id== "itkDataImageFloat3" )
-        {
-            if (castToUInt3<float>() == DTK_SUCCEED)
-            {
-                res = updateProcess<unsigned int>();
-            }
-        }
-        else if ( id== "itkDataImageDouble3" )
-        {
-            if(castToUInt3<double>() == DTK_SUCCEED)
-            {
-                res = updateProcess<unsigned int>();
-            }
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkFiltersComponentSizeThresholdProcess::updateProcess, this, getInputData());
     }
 
     return res;
 }
 
-template <class PixelType> int itkFiltersComponentSizeThresholdProcess::castToUInt3 ( void )
+template <class InputImageType>
+dtkSmartPointer<medAbstractData> itkFiltersComponentSizeThresholdProcess::castToOutputType(medAbstractData* inputData)
 {
     //we will later label the image so we don't care about precision.
-    typedef itk::Image< PixelType, 3 > InputImageType;
-    typedef itk::Image< unsigned int, 3 > OutputImageType;
     typedef itk::CastImageFilter< InputImageType, OutputImageType > CastFilterType;
 
     typename CastFilterType::Pointer  caster = CastFilterType::New();
-    typename InputImageType::Pointer im = dynamic_cast< InputImageType*>((itk::Object*)(getInputData()->data()));
+    typename InputImageType::Pointer im = static_cast<InputImageType*>(inputData->data());
     caster->SetInput(im);
     caster->Update();
 
-    setInputData(medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUInt3" ));
-    getInputData()->setData(caster->GetOutput());
+    dtkSmartPointer<medAbstractData> outputData = medAbstractDataFactory::instance()->createSmartPointer(medUtilitiesITK::itkDataImageId<OutputImageType>());
+    outputData->setData(caster->GetOutput());
 
-    return DTK_SUCCEED;
+    return outputData;
 }
 
-template <class PixelType> int itkFiltersComponentSizeThresholdProcess::updateProcess()
+template <class InputImageType>
+int itkFiltersComponentSizeThresholdProcess::updateProcess(medAbstractData* inputData)
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::Image< unsigned short, 3 > OutputImageType;
+    dtkSmartPointer<medAbstractData> adjustedInputData = inputData;
 
-    typedef itk::ConnectedComponentImageFilter <ImageType, OutputImageType> ConnectedComponentFilterType;
+    if (std::is_floating_point<typename InputImageType::PixelType>::value)
+    {
+        adjustedInputData = castToOutputType<InputImageType>(inputData);;
+    }
+
+    typename InputImageType::Pointer inputImage = static_cast<InputImageType*>(inputData->data());
+
+    typedef itk::ConnectedComponentImageFilter <InputImageType, OutputImageType> ConnectedComponentFilterType;
     typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
-    connectedComponentFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) (getInputData()->data() ) ) );
+    connectedComponentFilter->SetInput(inputImage);
     connectedComponentFilter->Update();
 
     // RELABEL COMPONENTS according to their sizes (0:largest(background))
@@ -190,11 +145,11 @@ template <class PixelType> int itkFiltersComponentSizeThresholdProcess::updatePr
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
     connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
 
-    setOutputData(medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUShort3" ));
+    setOutputData(medAbstractDataFactory::instance()->createSmartPointer(medUtilitiesITK::itkDataImageId<OutputImageType>()));
     getOutputData()->setData ( thresholdFilter->GetOutput() );
 
     QString newSeriesDescription = "connectedComponent " + QString::number(d->minimumSize);
-    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
 
     return DTK_SUCCEED;
 }

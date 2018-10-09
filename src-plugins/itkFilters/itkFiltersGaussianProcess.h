@@ -38,7 +38,7 @@ public slots:
     int tryUpdate();
 
 protected:
-    template <class PixelType> int updateProcess();
+    template <class ImageType> int updateProcess(medAbstractData* inputData);
 
 private:
     itkFiltersGaussianProcessPrivate *d;

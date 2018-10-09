@@ -38,8 +38,8 @@ public slots:
     int tryUpdate();
 
 protected:
-    template <class ImageType> void convertMmInPixels();
-    template <class PixelType> int updateProcess();
+    template <class ImageType> void convertMmInPixels(ImageType* image);
+    template <class ImageType> int updateProcess(medAbstractData* inputData);
 
 private:
     itkMorphologicalFiltersProcessBasePrivate *d;

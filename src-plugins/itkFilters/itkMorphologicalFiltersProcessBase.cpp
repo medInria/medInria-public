@@ -22,7 +22,7 @@
 #include <itkGrayscaleMorphologicalOpeningImageFilter.h>
 #include <itkImage.h>
 #include <itkMinimumMaximumImageFilter.h>
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 class itkMorphologicalFiltersProcessBasePrivate
 {
@@ -85,59 +85,14 @@ int itkMorphologicalFiltersProcessBase::tryUpdate()
 
     if (getInputData())
     {
-        QString id = getInputData()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = updateProcess<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = updateProcess<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = updateProcess<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = updateProcess<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = updateProcess<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = updateProcess<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = updateProcess<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = updateProcess<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            res = updateProcess<float>();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            res = updateProcess<double>();
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkMorphologicalFiltersProcessBase::updateProcess, this, getInputData());
     }
     return res;
 }
 
-template <class ImageType> void itkMorphologicalFiltersProcessBase::convertMmInPixels()
+template <class ImageType>
+void itkMorphologicalFiltersProcessBase::convertMmInPixels(ImageType* image)
 {
-    ImageType *image = dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) );
     for (unsigned int i=0; i<image->GetSpacing().Size(); i++)
     {
         d->radius[i] = floor((d->radius[i]/image->GetSpacing()[i])+0.5); //rounding
@@ -145,13 +100,14 @@ template <class ImageType> void itkMorphologicalFiltersProcessBase::convertMmInP
     }
 }
 
-template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess()
+template <class ImageType>
+int itkMorphologicalFiltersProcessBase::updateProcess(medAbstractData* inputData)
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
 
     if(!d->isRadiusInPixels)
     {
-        convertMmInPixels<ImageType>();
+        convertMmInPixels<ImageType>(inputImage);
     }
 
     typedef itk::FlatStructuringElement < 3> StructuringElementType;
@@ -179,7 +135,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
 
     typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
     typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
-    imageCalculatorFilter->SetInput( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    imageCalculatorFilter->SetInput(inputImage);
     imageCalculatorFilter->Update();
 
     typedef itk::KernelImageFilter< ImageType, ImageType, StructuringElementType >  FilterType;
@@ -242,7 +198,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
         return DTK_FAILURE;
     }
 
-    filter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    filter->SetInput(inputImage);
     filter->SetKernel ( kernel );
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -272,7 +228,7 @@ template <class PixelType> int itkMorphologicalFiltersProcessBase::updateProcess
                 " mm";
     }
 
-    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
 
     return DTK_SUCCEED;
 }

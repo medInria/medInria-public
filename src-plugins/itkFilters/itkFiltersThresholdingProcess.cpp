@@ -18,7 +18,7 @@
 #include <itkImage.h>
 #include <itkThresholdImageFilter.h>
 
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 class itkFiltersThresholdingProcessPrivate
 {
@@ -89,63 +89,20 @@ int itkFiltersThresholdingProcess::tryUpdate()
 
     if ( getInputData() )
     {
-        QString id = getInputData()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = updateProcess<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = updateProcess<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = updateProcess<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = updateProcess<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = updateProcess<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = updateProcess<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = updateProcess<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = updateProcess<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            res = updateProcess<float>();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            res = updateProcess<double>();
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkFiltersThresholdingProcess::updateProcess, this, getInputData());
     }
 
     return res;
 }
 
-template <class PixelType> int itkFiltersThresholdingProcess::updateProcess()
+template <class ImageType>
+int itkFiltersThresholdingProcess::updateProcess(medAbstractData* inputData)
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
+
     typedef itk::ThresholdImageFilter < ImageType>  ThresholdImageFilterType;
     typename ThresholdImageFilterType::Pointer thresholdFilter = ThresholdImageFilterType::New();
-    thresholdFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    thresholdFilter->SetInput(inputImage);
     if (d->comparisonOperator)
         thresholdFilter->SetUpper( d->threshold ); // <= threshold
     else
@@ -162,7 +119,7 @@ template <class PixelType> int itkFiltersThresholdingProcess::updateProcess()
     getOutputData()->setData ( thresholdFilter->GetOutput() );
 
     QString newSeriesDescription = "threshold " + QString::number(d->threshold);
-    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
 
     return DTK_SUCCEED;
 }

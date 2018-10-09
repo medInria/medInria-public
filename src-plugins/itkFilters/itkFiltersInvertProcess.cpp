@@ -18,7 +18,7 @@
 #include <itkImage.h>
 #include <itkInvertIntensityImageFilter.h>
 
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent)
     : itkFiltersProcessBase(parent)
@@ -47,85 +47,53 @@ int itkFiltersInvertProcess::tryUpdate()
 
     if ( getInputData() )
     {
-        QString id = getInputData()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = updateProcess<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = updateProcess<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = updateProcess<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = updateProcess<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = updateProcess<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = updateProcess<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = updateProcess<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = updateProcess<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" || "itkDataImageDouble3" )
-        {
-            qDebug() << "Error: Invert image filter does not suport floating pixel values";
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkFiltersInvertProcess::updateProcess, this, getInputData());
     }
 
     return res;
 }
 
-template <class PixelType> int itkFiltersInvertProcess::updateProcess()
+template <class ImageType>
+int itkFiltersInvertProcess::updateProcess(medAbstractData* inputData)
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::InvertIntensityImageFilter< ImageType, ImageType >  InvertFilterType;
-    typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
+    if (!std::is_integral<typename ImageType::PixelType>::value)
+    {
+        qDebug() << "Error: Invert image filter does not suport floating pixel values";
+        return medAbstractProcess::PIXEL_TYPE;
+    }
+    else
+    {
+        typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
 
-    // compute maximum intensity of image
-    typedef itk::MinimumMaximumImageCalculator< ImageType > MinMaxFilterType;
-    typename MinMaxFilterType::Pointer maxFilter = MinMaxFilterType::New();
+        typedef itk::InvertIntensityImageFilter< ImageType, ImageType >  InvertFilterType;
+        typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
 
-    maxFilter->SetImage( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
-    maxFilter->Compute();
-    PixelType maximum = maxFilter->GetMaximum();
-    PixelType minimum = maxFilter->GetMinimum();
+        // compute maximum intensity of image
+        typedef itk::MinimumMaximumImageCalculator< ImageType > MinMaxFilterType;
+        typename MinMaxFilterType::Pointer maxFilter = MinMaxFilterType::New();
 
-    invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
-    invertFilter->SetMaximum(maximum + minimum);
+        maxFilter->SetImage(inputImage);
+        maxFilter->Compute();
+        typename ImageType::PixelType maximum = maxFilter->GetMaximum();
+        typename ImageType::PixelType minimum = maxFilter->GetMinimum();
 
-    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
-    invertFilter->AddObserver ( itk::ProgressEvent(), callback );
+        invertFilter->SetInput(inputImage);
+        invertFilter->SetMaximum(maximum + minimum);
 
-    invertFilter->Update();
+        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+        callback->SetClientData ( ( void * ) this );
+        callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+        invertFilter->AddObserver ( itk::ProgressEvent(), callback );
 
-    getOutputData()->setData ( invertFilter->GetOutput() );
+        invertFilter->Update();
 
-    //Set output description metadata
-    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), "invert filter");
+        getOutputData()->setData ( invertFilter->GetOutput() );
 
-    return DTK_SUCCEED;
+        //Set output description metadata
+        medUtilities::setDerivedMetaData(getOutputData(), inputData, "invert filter");
+
+        return DTK_SUCCEED;
+    }
 }
 
 // /////////////////////////////////////////////////////////////////

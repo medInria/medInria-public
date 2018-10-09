@@ -18,11 +18,18 @@
 class itkFiltersComponentSizeThresholdProcessPrivate;
 class dtkAbstractData;
 
+namespace itk
+{
+template <typename PixelType, unsigned int Dimension> class Image;
+}
+
 class ITKFILTERSPLUGIN_EXPORT itkFiltersComponentSizeThresholdProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
     
 public:
+    typedef itk::Image<unsigned short, 3> OutputImageType;
+
     static const double defaultMinimumSize;
 
     itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess * parent = 0);
@@ -38,12 +45,11 @@ public slots:
     int tryUpdate();
 
 protected:
-    template <class PixelType> int castToUInt3();
-    template <class PixelType> int updateProcess();
+    template <class InputImageType> dtkSmartPointer<medAbstractData> castToOutputType(medAbstractData* inputData);
+    template <class InputImageType> int updateProcess(medAbstractData* inputData);
 
 private:
     itkFiltersComponentSizeThresholdProcessPrivate *d;
 };
 
 dtkAbstractProcess * createitkFiltersComponentSizeThresholdProcess(void);
-

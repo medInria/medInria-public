@@ -18,7 +18,7 @@
 #include <itkImage.h>
 #include <itkSmoothingRecursiveGaussianImageFilter.h>
 
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 class itkFiltersGaussianProcessPrivate
 {
@@ -78,64 +78,21 @@ int itkFiltersGaussianProcess::tryUpdate()
 
     if ( getInputData() )
     {
-        QString id = getInputData()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = updateProcess<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = updateProcess<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = updateProcess<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = updateProcess<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = updateProcess<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = updateProcess<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = updateProcess<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = updateProcess<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            res = updateProcess<float>();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            res = updateProcess<double>();
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkFiltersGaussianProcess::updateProcess, this, getInputData());
     }
     
     return res;
 }
 
-template <class PixelType> int itkFiltersGaussianProcess::updateProcess()
+template <class ImageType>
+int itkFiltersGaussianProcess::updateProcess(medAbstractData* inputData)
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
+
     typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
     typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
 
-    gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    gaussianFilter->SetInput(inputImage);
     gaussianFilter->SetSigma( d->sigma );
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -148,7 +105,7 @@ template <class PixelType> int itkFiltersGaussianProcess::updateProcess()
     getOutputData()->setData ( gaussianFilter->GetOutput() );
 
     QString newSeriesDescription = "gaussian filter " + QString::number(d->sigma);
-    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
 
     return DTK_SUCCEED;
 }

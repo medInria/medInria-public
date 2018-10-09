@@ -3,7 +3,7 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractProcess.h>
 #include <medMetaDataKeys.h>
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 #include <itkResampleImageFilter.h>
 #include <itkBSplineInterpolateImageFunction.h>
@@ -91,100 +91,30 @@ void resampleProcess::setParameter ( double data, int channel)
 
 int resampleProcess::update ( void )
 {
-    if ( !d->input )
+    int result = DTK_FAILURE;
+
+    if (!d->input)
     {
         qDebug() << "in update method : d->input is NULL";
-        return DTK_FAILURE;
     }
-    QString type = QString (d->input->identifier());
+    else
+    {
+        result = DISPATCH_ON_3D_PIXEL_TYPE(&resampleProcess::resample, this, d->input);
 
-    if ( type == "itkDataImageChar3" )
-    {
-        resample<itk::Image<char, 3> >("itkDataImageChar3");
+        if (result == medAbstractProcess::PIXEL_TYPE)
+        {
+            result = DISPATCH_ON_4D_PIXEL_TYPE(&resampleProcess::resample, this, d->input);
+        }
     }
-    else if ( type == "itkDataImageUChar3" )
-    {
-        resample<itk::Image<unsigned char, 3> >("itkDataImageUChar3");
-    }
-    else if ( type == "itkDataImageShort3" )
-    {
-        resample<itk::Image<short, 3> >("itkDataImageShort3");
-    }
-    else if ( type == "itkDataImageUShort3" )
-    {
-        resample<itk::Image<unsigned short, 3> >("itkDataImageUShort3");
-    }
-    else if ( type == "itkDataImageInt3" )
-    {
-        resample<itk::Image<int, 3> >("itkDataImageInt3");
-    }
-    else if ( type == "itkDataImageUInt3" )
-    {
-        resample<itk::Image<unsigned int, 3> >("itkDataImageUInt3");
-    }
-    else if ( type == "itkDataImageLong3" )
-    {
-        resample<itk::Image<long, 3> >("itkDataImageLong3");
-    }
-    else if ( type == "itkDataImageULong3" )
-    {
-        resample<itk::Image<unsigned long, 3> >("itkDataImageULong3");
-    }
-    else if ( type == "itkDataImageFloat3" )
-    {
-        resample<itk::Image<float, 3> >("itkDataImageFloat3");
-    }
-    else if ( type == "itkDataImageDouble3" )
-    {
-        resample<itk::Image<double, 3> >("itkDataImageDouble3" );
-    }
-    else if ( type == "itkDataImageChar4" )
-    {
-        resample<itk::Image<char, 4> >("itkDataImageChar4");
-    }
-    else if ( type == "itkDataImageUChar4" )
-    {
-        resample<itk::Image<unsigned char, 4> >("itkDataImageUChar4");
-    }
-    else if ( type == "itkDataImageShort4" )
-    {
-        resample<itk::Image<short, 4> >("itkDataImageShort4");
-    }
-    else if ( type == "itkDataImageUShort4" )
-    {
-        resample<itk::Image<unsigned short, 4> >("itkDataImageUShort4");
-    }
-    else if ( type == "itkDataImageInt4" )
-    {
-        resample<itk::Image<int, 4> >("itkDataImageInt4");
-    }
-    else if ( type == "itkDataImageUInt4" )
-    {
-        resample<itk::Image<unsigned int, 4> >("itkDataImageUInt4");
-    }
-    else if ( type == "itkDataImageLong4" )
-    {
-        resample<itk::Image<long, 4> >("itkDataImageLong4");
-    }
-    else if ( type == "itkDataImageULong4" )
-    {
-        resample<itk::Image<unsigned long, 4> >("itkDataImageULong4");
-    }
-    else if ( type == "itkDataImageFloat4" )
-    {
-        resample<itk::Image<float, 4> >("itkDataImageFloat4");
-    }
-    else if ( type == "itkDataImageDouble4" )
-    {
-        resample<itk::Image<double, 4> >("itkDataImageDouble4" );
-    }
-    return DTK_SUCCEED;
+
+    return result;
 }
 
-template <class ImageType> void resampleProcess::resample(const char *str)
+template <class ImageType>
+int resampleProcess::resample(medAbstractData* inputData)
 {
-    typename ImageType::Pointer inputImage =dynamic_cast<ImageType*>((itk::Object*)(d->input->data()));
-    
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
+
     typedef typename itk::ResampleImageFilter<ImageType, ImageType,double> ResampleFilterType;
 
     typename ResampleFilterType::Pointer resampleFilter = ResampleFilterType::New();
@@ -223,9 +153,11 @@ template <class ImageType> void resampleProcess::resample(const char *str)
     resampleFilter->SetOutputOrigin( inputImage->GetOrigin() );
     resampleFilter->SetOutputDirection(inputImage->GetDirection() );
     resampleFilter->UpdateLargestPossibleRegion();
-    d->output = medAbstractDataFactory::instance()->create(str);
+    d->output = medAbstractDataFactory::instance()->create(inputData->identifier());
     d->output->setData(resampleFilter->GetOutput());
-    medUtilities::setDerivedMetaData(d->output, d->input, "resampled");
+    medUtilities::setDerivedMetaData(d->output, inputData, "resampled");
+
+    return DTK_SUCCEED;
 }
 
 medAbstractData * resampleProcess::output ( void )

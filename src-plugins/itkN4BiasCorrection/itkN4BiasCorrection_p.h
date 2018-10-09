@@ -55,18 +55,17 @@ public:
     int bsplineOrder, splineDistance, shrinkFactor, nbHistogramBins;
     dtkSmartPointer<medAbstractData> biasField;
     
-    template <class PixelType> int update ( void )
+    template <class InputImageType>
+    int update(medAbstractData* inputData)
     {
-        const unsigned int ImageDimension = 3;
-        typedef itk::Image< PixelType, 3 > InputType;
-        typename InputType::Pointer inputImage = dynamic_cast<InputType *> ( ( itk::Object* ) ( input->data() ) );
+        typename InputImageType::Pointer inputImage = static_cast<InputImageType*>(inputData->data());
 
-        typedef itk::Image<float, 3> ImageType;
-        typedef itk::CastImageFilter<InputType, ImageType> CastType;
+        typedef itk::Image<float, 3> OutputImageType;
+        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
         typename CastType::Pointer caster = CastType::New();
         caster->SetInput(inputImage);
-        typename ImageType::Pointer image = caster->GetOutput();
+        typename OutputImageType::Pointer image = caster->GetOutput();
 
         output = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageFloat3");
         biasField = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageFloat3");
@@ -78,7 +77,7 @@ public:
         else
             maskImage = NULL;
 
-        typedef itk::N4BiasFieldCorrectionImageFilter<ImageType, MaskImageType, ImageType> CorrecterType;
+        typedef itk::N4BiasFieldCorrectionImageFilter<OutputImageType, MaskImageType, OutputImageType> CorrecterType;
 
         typename CorrecterType::Pointer correcter = CorrecterType::New();
 
@@ -116,7 +115,7 @@ public:
         else
         {
             qDebug() << "Mask not read. Creating Otsu mask." << endl;
-            typedef itk::OtsuThresholdImageFilter<ImageType, MaskImageType>
+            typedef itk::OtsuThresholdImageFilter<OutputImageType, MaskImageType>
                     ThresholderType;
             ThresholderType::Pointer otsu = ThresholderType::New();
             otsu->SetInput( image );
@@ -128,7 +127,7 @@ public:
             maskImage = otsu->GetOutput();
         }
 
-        typename ImageType::Pointer weightImage = NULL;
+        typename OutputImageType::Pointer weightImage = NULL;
         //TODO : Deal with weight images ?
         //if( weightImageName != "" )
         //{
@@ -182,14 +181,14 @@ public:
        * the user wants to specify things in terms of the spline distance.
        */
 
-        typename ImageType::IndexType imageIndex =
+        typename OutputImageType::IndexType imageIndex =
                 image->GetLargestPossibleRegion().GetIndex();
-        typename ImageType::SizeType imageSize =
+        typename OutputImageType::SizeType imageSize =
                 image->GetLargestPossibleRegion().GetSize();
         //typename ImageType::IndexType maskImageIndex =
         //maskImage->GetLargestPossibleRegion().GetIndex();
 
-        typename ImageType::PointType newOrigin = image->GetOrigin();
+        typename OutputImageType::PointType newOrigin = image->GetOrigin();
         
         if( bsplineOrder )
         {
@@ -201,11 +200,11 @@ public:
 
         if( splineDistance )
         {
-            unsigned long lowerBound[ImageDimension];
-            unsigned long upperBound[ImageDimension];
+            unsigned long lowerBound[InputImageType::ImageDimension];
+            unsigned long upperBound[InputImageType::ImageDimension];
             for( unsigned int i = 0; i < 3; i++ )
             {
-                float domain = static_cast<PixelType>( image->
+                float domain = static_cast<typename InputImageType::PixelType>( image->
                                                        GetLargestPossibleRegion().GetSize()[i] - 1 ) * image->GetSpacing()[i];
                 unsigned int numberOfSpans = static_cast<unsigned int>( vcl_ceil( domain / splineDistance ) );
                 unsigned long extraPadding = static_cast<unsigned long>( ( numberOfSpans
@@ -213,12 +212,12 @@ public:
                                                                            - domain ) / image->GetSpacing()[i] + 0.5 );
                 lowerBound[i] = static_cast<unsigned long>( 0.5 * extraPadding );
                 upperBound[i] = extraPadding - lowerBound[i];
-                newOrigin[i] -= ( static_cast<PixelType>( lowerBound[i] )
+                newOrigin[i] -= ( static_cast<typename InputImageType::PixelType>( lowerBound[i] )
                                   * image->GetSpacing()[i] );
                 numberOfControlPoints[i] = numberOfSpans + correcter->GetSplineOrder();
             }
 
-            typedef itk::ConstantPadImageFilter<ImageType, ImageType> PadderType;
+            typedef itk::ConstantPadImageFilter<OutputImageType, OutputImageType> PadderType;
             typename PadderType::Pointer padder = PadderType::New();
             padder->SetInput( image );
             padder->SetPadLowerBound( lowerBound );
@@ -249,9 +248,9 @@ public:
             correcter->SetNumberOfControlPoints( numberOfControlPoints );
         }
 
-        else if( initialMeshResolution.size() == ImageDimension )
+        else if( initialMeshResolution.size() == InputImageType::ImageDimension )
         {
-            for( unsigned int d = 0; d < ImageDimension; d++ )
+            for( unsigned int d = 0; d < InputImageType::ImageDimension; d++ )
             {
                 numberOfControlPoints[d] = static_cast<unsigned int>( initialMeshResolution[d] )
                         + correcter->GetSplineOrder();
@@ -259,7 +258,7 @@ public:
             correcter->SetNumberOfControlPoints( numberOfControlPoints );
         }
 
-        typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkerType;
+        typedef itk::ShrinkImageFilter<OutputImageType, OutputImageType> ShrinkerType;
         typename ShrinkerType::Pointer shrinker = ShrinkerType::New();
         shrinker->SetInput( image );
 
@@ -346,7 +345,7 @@ public:
         bspliner->SetSpacing( image->GetSpacing() );
         bspliner->Update();
 
-        typename ImageType::Pointer logField = ImageType::New();
+        typename OutputImageType::Pointer logField = OutputImageType::New();
         logField->SetOrigin( image->GetOrigin() );
         logField->SetSpacing( image->GetSpacing() );
         logField->SetRegions( image->GetLargestPossibleRegion() );
@@ -356,29 +355,29 @@ public:
         itk::ImageRegionIterator<CorrecterType::ScalarImageType> IB(
                     bspliner->GetOutput(),
                     bspliner->GetOutput()->GetLargestPossibleRegion() );
-        itk::ImageRegionIterator<ImageType> IF( logField,
+        itk::ImageRegionIterator<OutputImageType> IF( logField,
                                                 logField->GetLargestPossibleRegion() );
         for( IB.GoToBegin(), IF.GoToBegin(); !IB.IsAtEnd(); ++IB, ++IF )
         {
             IF.Set( IB.Get()[0] );
         }
 
-        typedef itk::ExpImageFilter<ImageType, ImageType> ExpFilterType;
+        typedef itk::ExpImageFilter<OutputImageType, OutputImageType> ExpFilterType;
         typename ExpFilterType::Pointer expFilter = ExpFilterType::New();
         expFilter->SetInput( logField );
         expFilter->Update();
 
-        typedef itk::DivideImageFilter<ImageType, ImageType, ImageType> DividerType;
+        typedef itk::DivideImageFilter<OutputImageType, OutputImageType, OutputImageType> DividerType;
         typename DividerType::Pointer divider = DividerType::New();
         divider->SetInput1( image );
         divider->SetInput2( expFilter->GetOutput() );
         divider->Update();
 
-        typename ImageType::RegionType inputRegion;
+        typename OutputImageType::RegionType inputRegion;
         inputRegion.SetIndex( imageIndex );
         inputRegion.SetSize( imageSize );
 
-        typedef itk::ExtractImageFilter<ImageType, ImageType> CropperType;
+        typedef itk::ExtractImageFilter<OutputImageType, OutputImageType> CropperType;
         typename CropperType::Pointer cropper = CropperType::New();
         cropper->SetInput( divider->GetOutput() );
         cropper->SetExtractionRegion( inputRegion );

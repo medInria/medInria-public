@@ -42,6 +42,8 @@ public slots:
     void run();
 
 private:
+    template <typename ImageType> int setupSpinBoxValues(medAbstractData*);
+
     void setupItkAddProcess();
     void setupItkSubtractProcess();
     void setupItkMultiplyProcess();

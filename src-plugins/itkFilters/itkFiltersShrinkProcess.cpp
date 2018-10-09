@@ -18,7 +18,7 @@
 #include <itkImage.h>
 #include <itkShrinkImageFilter.h>
 
-#include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 class itkFiltersShrinkProcessPrivate
 {
@@ -93,64 +93,21 @@ int itkFiltersShrinkProcess::tryUpdate()
 
     if ( getInputData() )
     {
-        QString id = getInputData()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = updateProcess<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = updateProcess<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = updateProcess<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = updateProcess<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = updateProcess<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = updateProcess<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = updateProcess<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = updateProcess<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            res = updateProcess<float>();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            res = updateProcess<double>();
-        }
-        else
-        {
-            res = medAbstractProcess::PIXEL_TYPE;
-        }
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkFiltersShrinkProcess::updateProcess, this, getInputData());
     }
 
     return res;
 }
 
-template <class PixelType> int itkFiltersShrinkProcess::updateProcess()
+template <class ImageType>
+int itkFiltersShrinkProcess::updateProcess(medAbstractData* inputData)
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
+
     typedef itk::ShrinkImageFilter< ImageType, ImageType >  ShrinkFilterType;
     typename ShrinkFilterType::Pointer shrinkFilter = ShrinkFilterType::New();
 
-    shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( getInputData()->data() ) ) );
+    shrinkFilter->SetInput(inputImage);
     shrinkFilter->SetShrinkFactors(d->shrinkFactors);
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -164,7 +121,7 @@ template <class PixelType> int itkFiltersShrinkProcess::updateProcess()
 
     //Set output description metadata
     QString newSeriesDescription = "shrink filter " + QString::number(d->shrinkFactors[0]) + "," + QString::number(d->shrinkFactors[1]) + "," + QString::number(d->shrinkFactors[2]);
-    medUtilities::setDerivedMetaData(getOutputData(), getInputData(), newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
 
     return DTK_SUCCEED;
 }
