@@ -53,6 +53,8 @@ public:
      */
     template <typename ImageType> static QString itkDataImageId();
 
+#ifndef SWIG
+
     template <typename TargetClass, typename... OtherArguments>
     static int dispatchOn3DPixelType(int (TargetClass::*char3Function)(medAbstractData*, OtherArguments...),
                                      int (TargetClass::*uchar3Function)(medAbstractData*, OtherArguments...),
@@ -144,8 +146,12 @@ private:
 
         return false;
     }
+
+#endif
+
 };
 
+#ifndef SWIG
 
 /** Call a function templated over the pixel type of an ITK image
  *  This macro will only check for 3D pixel types. The function signature must be of the form
@@ -199,3 +205,5 @@ private:
     function<medUtilitiesITK::itkImageDouble4>, \
     (instance), \
     __VA_ARGS__)
+
+#endif
