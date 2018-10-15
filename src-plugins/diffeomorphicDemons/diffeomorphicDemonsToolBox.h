@@ -17,11 +17,14 @@
 
 class DiffeomorphicDemonsToolBoxPrivate;
 
+/*!
+ * \brief Toolbox to apply automatic registration using the ITK Diffeomorphic demons implementation.
+ */
 class DiffeomorphicDemonsToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Diffeomorphic Demons",
-                          "Diffeomorphic demons registration using the ITK implementation",
+                          "Diffeomorphic demons registration using the ITK implementation.",
                           <<"Registration")
 public:
      DiffeomorphicDemonsToolBox(QWidget *parentToolBox = 0);

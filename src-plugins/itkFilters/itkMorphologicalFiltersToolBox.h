@@ -17,11 +17,23 @@
 
 class itkMorphologicalFiltersToolBoxPrivate;
 
+/*! \brief Toolbox to apply morphological filters to a volume.
+ *
+ * This toolbox has several named widgets which can be accessed in python pipelines:\n\n
+ * "Dilate" : medComboBox\n
+ * "kernelSize" : QDoubleSpinBox\n
+ * "mm" : QRadioButton\n
+ * "pixels" : QRadioButton\n
+ * "ballKernelButton" : QRadioButton\n
+ * "boxKernelButton" : QRadioButton\n
+ * "crossKernelButton" : QRadioButton\n
+ * "Run" : QPushButton
+ */
 class itkMorphologicalFiltersToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Morphological Filters",
-                          "ITK morphological filters, processing examples",
+                          "Apply ITK morphological filters.",
                           <<"Filtering")
 public:
     itkMorphologicalFiltersToolBox(QWidget *parentToolBox = 0);

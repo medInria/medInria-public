@@ -22,10 +22,9 @@ class dtkAbstractView;
 class dtkAbstractData;
 class medClutToolBoxPrivate;
 
-/**
-   \class medClutToolBox
-   \brief 
-*/
+/*!
+ * \brief Clut (colour look-up table) Editor toolBox.
+ */
 class MEDCLUTPLUGIN_EXPORT medClutToolBox : public medToolBox
 {
     Q_OBJECT

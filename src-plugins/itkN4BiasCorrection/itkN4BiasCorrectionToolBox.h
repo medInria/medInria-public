@@ -17,11 +17,25 @@
 
 class itkN4BiasCorrectionToolBoxPrivate;
 
+/*! \brief Toolbox to apply a N4 bias field correction algorithm to a volume.
+ *
+ * This toolbox has several named widgets which can be accessed in python pipelines:\n\n
+ * "runButton" : QPushButton\n
+ * "splineDistanceLayout" : QHBoxLayout\n
+ * "widthLayout" : QHBoxLayout\n
+ * "nbOfIterationsLayout" : QHBoxLayout\n
+ * "convThresholdLayout" : QHBoxLayout\n
+ * "bsplineOrderLayout" : QHBoxLayout\n
+ * "shrinkFactorLayout" : QHBoxLayout\n
+ * "nbHistogramBinsLayout" : QHBoxLayout\n
+ * "wienerNoiseLayout" : QHBoxLayout\n
+ * "saveBiasLayout" : QHBoxLayout
+ */
 class itkN4BiasCorrectionToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("N4 Bias Correction",
-                          "Apply the N4 bias field correction algorithm",<<"Filtering")
+                          "Apply the N4 bias field correction algorithm.",<<"Filtering")
 
 public:
     itkN4BiasCorrectionToolBox(QWidget *parent = 0);

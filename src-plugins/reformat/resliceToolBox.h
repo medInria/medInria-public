@@ -6,6 +6,18 @@
 
 class resliceToolBoxPrivate;
 
+/*! \brief Toolbox to reslice a volume.
+ *
+ * This toolbox has several named widgets which can be accessed in python pipelines:\n\n
+ * "startReformatButton" : QPushButton\n
+ * "stopReformatButton" : QPushButton\n
+ * "saveImageButton" : QPushButton\n
+ * "bySpacingOrDimension" : medComboBox\n
+ * "SpacingX" : QDoubleSpinBox\n
+ * "SpacingY" : QDoubleSpinBox\n
+ * "SpacingZ" : QDoubleSpinBox\n
+ * "help0" : QLabel
+ */
 class REFORMATPLUGIN_EXPORT resliceToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT

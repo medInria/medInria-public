@@ -53,12 +53,22 @@ typedef itk::ImageRegionIterator<Mask2dType>       Mask2dIterator;
 typedef itk::Image <float, 2>                      Mask2dFloatType;
 typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 
-//! Segmentation toolbox to allow manual painting of pixels
+/*! \brief Segmentation toolbox to apply manual painting of pixels.
+*
+* This toolbox has several named widgets which can be accessed in python pipelines:\n\n
+* "paintButton" : QPushButton\n
+* "Magic Wand" : QPushButton\n
+* "Upper Threshold" : medDoubleParameter\n
+* "Lower Threshold" : medDoubleParameter\n
+* "Activate 3D mode" : QCheckBox\n
+* "saveButton" : QPushButton\n
+* "clearMaskButton" : QPushButton
+*/
 class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Paint Segmentation",
-                          "Use paint and region growing tools",<<"Segmentation")
+                          "Use paint and region growing tools.",<<"Segmentation")
 public:
 
     typedef std::set<dtkSmartPointer<mscPaintBrush>, PaintBrushObjComparator> PaintBrushSet;

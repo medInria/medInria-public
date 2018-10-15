@@ -18,11 +18,19 @@
 
 class manualRegistrationToolBoxPrivate;
 
+/*! \brief Toolbox to register two images manually.
+ *
+ * This toolbox has several named widgets which can be accessed in python pipelines:\n\n
+ * "startManualRegistrationButton" : QPushButton\n
+ * "transformType" : medComboBox\n
+ * "computeRegistrationButton" : QPushButton\n
+ * "resetButton" : QPushButton
+ */
 class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Manual Registration",
-                          "Register two images manually",<<"Registration")
+                          "Register two images manually.",<<"Registration")
 
 public:
     manualRegistrationToolBox(QWidget *parent = 0);

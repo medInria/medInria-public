@@ -60,16 +60,17 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     //splineGridResolutionLayout->addWidget(splineGridResolutionLabel);
     //splineGridResolutionLayout->addWidget(d->splineGridResolutionText);
 
-    QLabel* splineDistanceLabel = new QLabel (tr("Spline Distance : "));
+    QLabel* splineDistanceLabel = new QLabel (tr("Spline Distance: "));
     d->splineDistanceSpinBox = new QDoubleSpinBox;
     d->splineDistanceSpinBox->setMaximum(500);
     d->splineDistanceSpinBox->setMinimum(0);
     d->splineDistanceSpinBox->setValue(200);
     QHBoxLayout * splineDistanceLayout = new QHBoxLayout();
+    splineDistanceLayout->setObjectName("splineDistanceLayout");
     splineDistanceLayout->addWidget(splineDistanceLabel);
     splineDistanceLayout->addWidget(d->splineDistanceSpinBox);
 
-    QLabel* widthLabel = new QLabel (tr("Bias Field Full Width at Half Maximum : "));
+    QLabel* widthLabel = new QLabel (tr("Bias Field Full Width at Half Maximum: "));
     widthLabel->setToolTip(
         "Parameter characterizing the width of the Gaussian deconvolution.\n Zero implies use of the default value = 0.15.");
     d->widthSpinBox = new QDoubleSpinBox;
@@ -77,21 +78,21 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     d->widthSpinBox->setMinimum(0);
     d->widthSpinBox->setValue(2);
     QHBoxLayout * widthLayout = new QHBoxLayout();
+    widthLayout->setObjectName("widthLayout");
     widthLayout->addWidget(widthLabel);
     widthLayout->addWidget(d->widthSpinBox);
 
-    QLabel * nbOfIterationsLabel = new QLabel("Number of Iterations : ");
+    QLabel * nbOfIterationsLabel = new QLabel("Number of Iterations: ");
     nbOfIterationsLabel->setToolTip(
         "Maximum number of iterations at each resolution.\nThe number of resolutions is implicitely defined by this parameter\n(the size of this list is the number of resolutions)");
     d->nbOfIterationsText = new QLineEdit;
-    //d->nbOfIterationsText->setMaxLength(8);
-    //d->nbOfIterationsText->setInputMask("000,000,000,000;");
     d->nbOfIterationsText->setText("200,100,100,50");
     QHBoxLayout * nbOfIterationsLayout = new QHBoxLayout();
+    nbOfIterationsLayout->setObjectName("nbOfIterationsLayout");
     nbOfIterationsLayout->addWidget(nbOfIterationsLabel);
     nbOfIterationsLayout->addWidget(d->nbOfIterationsText);
 
-    QLabel* convThresholdLabel = new QLabel (tr("Convergence threshold : "));
+    QLabel* convThresholdLabel = new QLabel (tr("Convergence threshold: "));
     convThresholdLabel->setToolTip(
         "Convergence is determined by the coefficient of variation of the\ndifference image between the current bias field estimate and the previous estimate.\n If this value is less than the specified threshold, the algorithm\nproceeds to the next fitting level or terminates if it is at the last level. ");
     d->convThresholdSpinBox = new QDoubleSpinBox;
@@ -100,10 +101,11 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     d->convThresholdSpinBox->setDecimals(4);
     d->convThresholdSpinBox->setValue(0.001);
     QHBoxLayout * convThresholdLayout = new QHBoxLayout();
+    convThresholdLayout->setObjectName("convThresholdLayout");
     convThresholdLayout->addWidget(convThresholdLabel);
     convThresholdLayout->addWidget(d->convThresholdSpinBox);
 
-    QLabel* bsplineOrderLabel = new QLabel (tr("B-Spline Order : "));
+    QLabel* bsplineOrderLabel = new QLabel (tr("B-Spline Order: "));
     bsplineOrderLabel->setToolTip(
         "Spline order defining the bias field estimate.\nCubic splines (order = 3) are typically used.");
     d->bsplineOrderSpinBox = new QSpinBox;
@@ -111,10 +113,11 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     d->bsplineOrderSpinBox->setMinimum(0);
     d->bsplineOrderSpinBox->setValue(3);
     QHBoxLayout * bsplineOrderLayout = new QHBoxLayout();
+    bsplineOrderLayout->setObjectName("bsplineOrderLayout");
     bsplineOrderLayout->addWidget(bsplineOrderLabel);
     bsplineOrderLayout->addWidget(d->bsplineOrderSpinBox);
 
-    QLabel* shrinkFactorLabel = new QLabel (tr("Shrink Factor : "));
+    QLabel* shrinkFactorLabel = new QLabel (tr("Shrink Factor: "));
     shrinkFactorLabel->setToolTip(
         "To lessen computation time, the input image can be resampled.\nThe shrink factor, specified as a single integer, describes\nthis resampling.  Shrink factors <= 4 are commonly used.");
     d->shrinkFactorSpinBox = new QSpinBox;
@@ -122,10 +125,11 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     d->shrinkFactorSpinBox->setMinimum(0);
     d->shrinkFactorSpinBox->setValue(4);
     QHBoxLayout * shrinkFactorLayout = new QHBoxLayout();
+    shrinkFactorLayout->setObjectName("shrinkFactorLayout");
     shrinkFactorLayout->addWidget(shrinkFactorLabel);
     shrinkFactorLayout->addWidget(d->shrinkFactorSpinBox);
 
-    QLabel* nbHistogramBinsLabel = new QLabel (tr("Number of Histogram Bins : "));
+    QLabel* nbHistogramBinsLabel = new QLabel (tr("Number of Histogram Bins: "));
     nbHistogramBinsLabel->setToolTip(
         "Number of bins defining the log input intensity histogram.\nZero implies use of the default value = 200.");
     d->nbHistogramBinsSpinBox = new QSpinBox;
@@ -133,10 +137,11 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     d->nbHistogramBinsSpinBox->setMinimum(0);
     d->nbHistogramBinsSpinBox->setValue(200);
     QHBoxLayout * nbHistogramBinsLayout = new QHBoxLayout();
+    nbHistogramBinsLayout->setObjectName("nbHistogramBinsLayout");
     nbHistogramBinsLayout->addWidget(nbHistogramBinsLabel);
     nbHistogramBinsLayout->addWidget(d->nbHistogramBinsSpinBox);
 
-    QLabel* wienerNoiseLabel = new QLabel (tr("Wiener Filter Noise : "));
+    QLabel* wienerNoiseLabel = new QLabel (tr("Wiener Filter Noise: "));
     wienerNoiseLabel->setToolTip(
         "Noise estimate defining the Wiener filter.\nZero implies use of the default value = 0.01.");
     d->wienerNoiseSpinBox = new QDoubleSpinBox;
@@ -144,13 +149,15 @@ itkN4BiasCorrectionToolBox::itkN4BiasCorrectionToolBox(QWidget *parent) : medAbs
     d->wienerNoiseSpinBox->setMinimum(0);
     d->wienerNoiseSpinBox->setValue(0.01);
     QHBoxLayout * wienerNoiseLayout = new QHBoxLayout();
+    wienerNoiseLayout->setObjectName("wienerNoiseLayout");
     wienerNoiseLayout->addWidget(wienerNoiseLabel);
     wienerNoiseLayout->addWidget(d->wienerNoiseSpinBox);
 
-    QLabel* saveBiasLabel = new QLabel (tr("Save bias field : "));
+    QLabel* saveBiasLabel = new QLabel (tr("Save bias field: "));
     d->saveBiasCheckBox = new QCheckBox();
     d->saveBiasCheckBox->setChecked(false);
     QHBoxLayout * saveBiasLayout = new QHBoxLayout();
+    saveBiasLayout->setObjectName("saveBiasLayout");
     saveBiasLayout->addWidget(saveBiasLabel);
     saveBiasLayout->addWidget(d->saveBiasCheckBox);
     

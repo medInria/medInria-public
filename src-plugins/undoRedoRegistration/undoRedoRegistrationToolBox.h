@@ -23,7 +23,7 @@ class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationToolBox : public med
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Stack of transformations",
-                          "short tooltip description",
+                          "Undo-Redo Registration toolbox.",
                           << "UndoRedoRegistration")
 public:
     undoRedoRegistrationToolBox(QWidget *parent = 0);
