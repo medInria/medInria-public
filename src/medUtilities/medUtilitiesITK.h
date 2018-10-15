@@ -206,4 +206,26 @@ private:
     (instance), \
     __VA_ARGS__)
 
+
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageChar3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageChar4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageUChar3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageUChar4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageShort3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageShort4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageUShort3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageUShort4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageInt3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageInt4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageUInt3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageUInt4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageLong3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageLong4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageULong3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageULong4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageFloat3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageFloat4>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageDouble3>();
+template<> MEDUTILITIES_EXPORT QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageDouble4>();
+
 #endif

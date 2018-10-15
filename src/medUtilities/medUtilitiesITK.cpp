@@ -29,6 +29,12 @@ double medUtilitiesITK::volume(dtkSmartPointer<medAbstractData> data)
     return statsProcess.output().at(0);
 }
 
+template <typename ImageType>
+QString medUtilitiesITK::itkDataImageId()
+{
+    return QString();
+}
+
 template <>
 QString medUtilitiesITK::itkDataImageId<medUtilitiesITK::itkImageChar3>()
 {
