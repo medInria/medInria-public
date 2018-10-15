@@ -69,6 +69,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     helpButton->setMinimumWidth ( 150 );
     helpButton->setFocusPolicy ( Qt::NoFocus );
     helpButton->setIcon ( QIcon ( ":icons/help.svg" ) );
+    helpButton->setIconSize(QSize(16,16));
     helpButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( helpButton,SIGNAL ( clicked() ),this, SLOT ( onShowHelp() ) );
 
@@ -80,6 +81,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setToolTip(QString("About ")+qApp->applicationName());
     aboutButton->setFocusPolicy ( Qt::NoFocus );
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
+    aboutButton->setIconSize(QSize(16,16));
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
 
@@ -104,6 +106,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                              + QString(".log"));
     logButton->setFocusPolicy ( Qt::NoFocus );
     logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
+    logButton->setIconSize(QSize(16,16));
     logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( openLogDirectory() ) );
 
@@ -115,6 +118,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setToolTip(QString("Configure ")+qApp->applicationName());
     settingsButton->setFocusPolicy ( Qt::NoFocus );
     settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
+    settingsButton->setIconSize(QSize(16,16));
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( settingsButton,SIGNAL ( clicked() ),this, SLOT ( onShowSettings() ) );
 
