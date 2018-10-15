@@ -160,12 +160,12 @@ void medApplication::initialize()
     {
     case 0:
     default:
-        qssFile = ":/music_light.qss";
-        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
-        break;
-    case 1:
         qssFile = ":/music_dark.qss";
         this->setWindowIcon(QIcon(":music_logo_small_dark.png"));
+        break;
+    case 1:
+        qssFile = ":/music_light.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
         break;
     }
     medStyleSheetParser parser(dtkReadFile(qssFile));
