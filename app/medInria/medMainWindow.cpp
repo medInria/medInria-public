@@ -143,12 +143,27 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
 
+    // CSS
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+
     //  Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
     d->quickAccessButton->setMinimumHeight(31);
     d->quickAccessButton->setStyleSheet("border: 0px;");
-    d->quickAccessButton->setIcon(QIcon(":music_logo_small.png"));
+
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        d->quickAccessButton->setIcon(QIcon(":music_logo_small_dark.png"));
+        break;
+    case 1:
+        d->quickAccessButton->setIcon(QIcon(":music_logo_small_light.png"));
+        break;
+    }
+
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( tr("Workspaces access menu") );
     connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(toggleQuickAccessVisibility()));
