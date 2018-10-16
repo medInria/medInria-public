@@ -1001,6 +1001,27 @@ std::string DCMTKImageIO::GetPatientStatus() const
     return this->GetMetaDataValueString ( "(0011,1010)", 0 );
 }
 
+// MUSIC
+std::string DCMTKImageIO::GetAcquisitionTime() const
+{
+    return this->GetMetaDataValueString ( "(0008,0032)", 0 );
+}
+
+std::string DCMTKImageIO::GetFlipAngle() const
+{
+    return this->GetMetaDataValueString ( "(0018,1314)", 0 );
+}
+
+std::string DCMTKImageIO::GetEchoTime() const
+{
+    return this->GetMetaDataValueString ( "(0018,0081)", 0 );
+}
+
+std::string DCMTKImageIO::GetRepetitionTime() const
+{
+    return this->GetMetaDataValueString ( "(0018,0080)", 0 );
+}
+
 void
 DCMTKImageIO
 ::SwapBytesIfNecessary( void* buffer, unsigned long numberOfPixels )

@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include "mscDatabaseMetadataItemDialog.h"
+
 #include <medDatabaseView.h>
 #include <medDataManager.h>
 #include <medAbstractDatabaseItem.h>
@@ -91,6 +93,7 @@ public:
     QAction *addPatientAction;
     QAction *addStudyAction;
     QAction *editAction;
+    QAction *metadataAction;
     QMenu *contextMenu;
 };
 
@@ -160,6 +163,11 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     d->editAction->setIconVisibleInMenu(true);
     d->editAction->setIcon(QIcon(":icons/page_edit.png"));
     connect(d->editAction, SIGNAL(triggered()), this, SLOT(onEditRequested()));
+
+    d->metadataAction = new QAction(tr("Metadata"), this);
+    d->metadataAction->setIconVisibleInMenu(true);
+    d->metadataAction->setIcon(QIcon(":icons/information.png"));
+    connect(d->metadataAction, SIGNAL(triggered()), this, SLOT(onMetadataRequested()));
 }
 
 medDatabaseView::~medDatabaseView(void)
@@ -222,6 +230,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
             d->editAction->setIcon(QIcon(":icons/page_edit.png"));
             d->contextMenu->addAction(d->viewAction);
             d->contextMenu->addAction(d->exportAction);
+            d->contextMenu->addAction(d->metadataAction);
             d->contextMenu->addAction(d->removeAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
                 d->contextMenu->addAction(d->saveAction);
@@ -616,5 +625,42 @@ void medDatabaseView::onOpeningFailed(const medDataIndex& index)
     {
 
         delegate->append(index);
+    }
+}
+
+/** Display metadata of selected item */
+void medDatabaseView::onMetadataRequested(void)
+{
+    QModelIndexList indexes = this->selectedIndexes();
+    if(indexes.count())
+    {
+        QModelIndex index = indexes.at(0);
+
+        medAbstractDatabaseItem *item = nullptr;
+
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        {
+            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+        }
+
+        if (item)
+        {
+            QVariant metadata;
+            QList<QString> keyList;
+            QList<QVariant> metadataList;
+
+            // Get back keys and metadata from the selected data
+            foreach (const medMetaDataKeys::Key* key, medMetaDataKeys::Key::all())
+            {
+                metadata = medDataManager::instance()->getMetaData(item->dataIndex(), key->key());
+
+                keyList.push_back(key->key());
+                metadataList.push_back(metadata);
+            }
+
+            // Create the information dialog
+            mscDatabaseMetadataItemDialog metadataDialog(keyList, metadataList, this);
+            metadataDialog.exec();
+        }
     }
 }

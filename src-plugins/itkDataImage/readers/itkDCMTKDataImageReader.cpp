@@ -400,7 +400,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         medData->setMetaData(medMetaDataKeys::SliceThickness.key(),  d->io->GetSliceThickness().c_str());
         //ImportationDate
         medData->setMetaData(medMetaDataKeys::AcquisitionDate.key(), d->io->GetAcquisitionDate().c_str());
-        //AcquisitionTime
+        medData->setMetaData(medMetaDataKeys::AcquisitionTime.key(), d->io->GetAcquisitionTime().c_str());
         medData->setMetaData(medMetaDataKeys::Comments.key(),        d->io->GetAcquisitionComments().c_str());
 
         QStringList filePaths;
@@ -429,6 +429,11 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         //PreferredDataReader
         //ImageID
         //ThumbnailPath
+
+        // MR Image
+        medData->setMetaData(medMetaDataKeys::FlipAngle.key(),      d->io->GetFlipAngle().c_str());
+        medData->setMetaData(medMetaDataKeys::EchoTime.key(),       d->io->GetEchoTime().c_str());
+        medData->setMetaData(medMetaDataKeys::RepetitionTime.key(), d->io->GetRepetitionTime().c_str());
     }
     else {
         qDebug() << "Unsupported pixel type";

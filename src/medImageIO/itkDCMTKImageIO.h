@@ -115,6 +115,12 @@ public:
     std::string GetRows() const;
     std::string GetColumns() const;
 
+    // msc
+    std::string GetAcquisitionTime() const;
+    std::string GetFlipAngle() const;
+    std::string GetEchoTime() const;
+    std::string GetRepetitionTime() const;
+
     const StringVectorType& GetOrderedFileNames() const
     { return m_OrderedFileNames; }
 

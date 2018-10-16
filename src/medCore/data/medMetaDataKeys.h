@@ -149,6 +149,11 @@ namespace medMetaDataKeys {
     extern MEDCORE_EXPORT const Key PreferredDataReader;
     extern MEDCORE_EXPORT const Key ImageID;
     extern MEDCORE_EXPORT const Key ThumbnailPath;
+
+    // MR Image
+    extern MEDCORE_EXPORT const Key FlipAngle;
+    extern MEDCORE_EXPORT const Key EchoTime;
+    extern MEDCORE_EXPORT const Key RepetitionTime;
 };
 
 
