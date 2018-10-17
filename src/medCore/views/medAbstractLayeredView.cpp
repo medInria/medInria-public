@@ -576,3 +576,8 @@ void medAbstractLayeredView::restoreState(QDomElement* element)
                         interactorList[i]->name()                      <<"v"<<interactorList[i]->version();
     }
 }
+
+void medAbstractLayeredView::resetCameraOnLayer(int layer)
+{
+    // base class does nothing for now.
+}

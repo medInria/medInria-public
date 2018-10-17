@@ -95,6 +95,8 @@ public slots:
 
     virtual void open(const medDataIndex& index);
 
+    void resetCameraOnSelectedLayer(QListWidgetItem* item);
+
 protected slots:
     void handleLayerSelectionChange();
     void changeCurrentLayer(int row);

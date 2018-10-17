@@ -305,10 +305,12 @@ public:
   virtual void SetPan(double* arg);
   virtual double* GetPan();
   virtual void GetPan(double pan[2]);
+
+  using vtkImageView::ResetCamera;
   /**
    Reset the camera in a nice way for the 2D view
    */
-  virtual void ResetCamera();
+  virtual void ResetCamera() override;
   /**
    Useful method that transform a display position into a world corrdinate point
    */

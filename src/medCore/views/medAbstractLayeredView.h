@@ -74,6 +74,8 @@ public:
     virtual void write(QString& path);
     virtual void restoreState(QDomElement* element);
 
+    virtual void resetCameraOnLayer(int layer);
+
 public slots:
     void setDataList(QList<medDataIndex> dataList);
     void removeLayer();

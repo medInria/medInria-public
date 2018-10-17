@@ -1079,18 +1079,9 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   actor->Delete();
 
   // If this is the first widget to be added, reset camera
-  if ( ! this->GetInput() ) {
-
-      vtkBoundingBox box;
-      box.AddBounds( arg->GetBounds() );
-
-    double center[3];
-    box.GetCenter(center);
-    this->SetCurrentPoint(center);
-    double bounds[6];
-    box.GetBounds(bounds);
-    this->Renderer->ResetCamera(bounds);
-
+  if ( ! this->GetInput() )
+  {
+    this->ResetCamera(arg);
   }
 
   this->DataSetCollection->AddItem (arg);

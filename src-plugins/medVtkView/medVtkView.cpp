@@ -48,6 +48,8 @@ PURPOSE.
 #include <medParameterPoolManager.h>
 #include <medSettingsManager.h>
 #include <medClutEditorToolBox/medClutEditorToolBox.h>
+#include <vtkMetaDataSet.h>
+#include <vtkPointSet.h>
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
@@ -573,6 +575,25 @@ void medVtkView::showHistogram(bool checked)
         d->transFun->setView(this);
         d->transFun->setMaximumHeight(350);
         d->transFun->show();
+    }
+}
+
+void medVtkView::resetCameraOnLayer(int layer)
+{
+    medAbstractData* data = layerData(layer);
+    if (data && (data->identifier() == "vtkDataMesh" || data->identifier() == "EPMap"))
+    {
+        vtkMetaDataSet* metaDataSet = static_cast<vtkMetaDataSet*>(data->data());
+        vtkDataSet* arg = metaDataSet->GetDataSet();
+        if(this->is2D())
+        {
+            d->view2d->ResetCamera(arg);
+        }
+        else
+        {
+            d->view3d->ResetCamera(arg);
+        }
+        this->render();
     }
 }
 
