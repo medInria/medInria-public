@@ -57,7 +57,6 @@ public:
     void applyInverseOrientationMatrix(double* worldPointIn, double* worldPointOut);
     void generateOutput();
     template <typename ImageType> int extractCroppedImage(medAbstractData* input, int* minIndices, int* maxIndices, medAbstractData** output);
-    void setOutputMetaData(medAbstractData* output, medAbstractData* input, int columns, int rows);
     void replaceViewWithOutputData(medAbstractWorkspace& workspace);
     void importOutput();
 };
@@ -475,16 +474,10 @@ int medCropToolBoxPrivate::extractCroppedImage(medAbstractData* input, int* minI
     *output = medAbstractDataFactory::instance()->create(input->identifier());
     (*output)->setData(filteredImage);
 
-    setOutputMetaData(*output, input, desiredSize[0], desiredSize[1]);
+    medUtilities::setDerivedMetaData(*output, input, "cropped");
+    medUtilitiesITK::updateMetadata<ImageType>(*output);
 
     return DTK_SUCCEED;
-}
-
-void medCropToolBoxPrivate::setOutputMetaData(medAbstractData* output, medAbstractData* input, int columns, int rows)
-{
-    medUtilities::setDerivedMetaData(output, input, "cropped");
-    output->setMetaData(medMetaDataKeys::Columns.key(), QString::number(columns));
-    output->setMetaData(medMetaDataKeys::Rows.key(), QString::number(rows));
 }
 
 void medCropToolBoxPrivate::replaceViewWithOutputData(medAbstractWorkspace& workspace)

@@ -396,7 +396,15 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         //Dimensions
         //NumberOfDimensions
         medData->setMetaData(medMetaDataKeys::Orientation.key(),     d->io->GetOrientation().c_str());
-        //Origin
+
+        // Add Origin
+        QString origin = "";
+        for (int i=0; i<d->io->GetNumberOfDimensions(); ++i)
+        {
+            origin += QString::number(d->io->GetOrigin(i)) + QString(" ");
+        }
+        medData->setMetaData(medMetaDataKeys::Origin.key(), origin.trimmed());
+
         medData->setMetaData(medMetaDataKeys::SliceThickness.key(),  d->io->GetSliceThickness().c_str());
         //ImportationDate
         medData->setMetaData(medMetaDataKeys::AcquisitionDate.key(), d->io->GetAcquisitionDate().c_str());

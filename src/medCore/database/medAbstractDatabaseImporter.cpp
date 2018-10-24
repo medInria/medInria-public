@@ -653,6 +653,21 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Report.key() ) )
         medData->setMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
+
+    if ( !medData->hasMetaData ( medMetaDataKeys::Origin.key() ) )
+        medData->setMetaData ( medMetaDataKeys::Origin.key(), QStringList() << "" );
+
+    if ( !medData->hasMetaData ( medMetaDataKeys::FlipAngle.key() ) )
+        medData->setMetaData ( medMetaDataKeys::FlipAngle.key(), QStringList() << "" );
+
+    if ( !medData->hasMetaData ( medMetaDataKeys::EchoTime.key() ) )
+        medData->setMetaData ( medMetaDataKeys::EchoTime.key(), QStringList() << "" );
+
+    if ( !medData->hasMetaData ( medMetaDataKeys::RepetitionTime.key() ) )
+        medData->setMetaData ( medMetaDataKeys::RepetitionTime.key(), QStringList() << "" );
+
+    if ( !medData->hasMetaData ( medMetaDataKeys::AcquisitionTime.key() ) )
+        medData->setMetaData ( medMetaDataKeys::AcquisitionTime.key(), QStringList() << "" );
 }
 
 //-----------------------------------------------------------------------------------------------------------

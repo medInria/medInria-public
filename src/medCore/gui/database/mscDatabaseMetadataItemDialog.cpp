@@ -27,7 +27,6 @@ public:
 
 mscDatabaseMetadataItemDialog::mscDatabaseMetadataItemDialog(QList<QString> keyList, QList<QVariant> metadataList, QWidget *parent):
     QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint), d (new mscDatabaseMetadataItemDialogPrivate)
-
 {
     QVBoxLayout *dialogLayout = new QVBoxLayout;
     setLayout(dialogLayout);

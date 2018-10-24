@@ -58,6 +58,7 @@ medAbstractData* medDatabaseReader::run()
             sliceThickness, rows, columns, refThumbPath, description, protocol,
             comments, status, acquisitiondate, importationdate, referee,
             institution, report, modality, seriesId;
+    QString origin, flipAngle, echoTime, repetitionTime, acquisitionTime;
 
     query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
     query.bindValue ( ":id", patientDbId );
@@ -84,7 +85,8 @@ medAbstractData* medDatabaseReader::run()
 
     query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, \
                      description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
-                     institution, report, modality, seriesId \
+                     institution, report, modality, seriesId, \
+                     origin, flipAngle, echoTime, repetitionTime, acquisitionTime \
                      FROM series WHERE id = :id" );
 
     query.bindValue ( ":id", seriesDbId );
@@ -111,6 +113,12 @@ medAbstractData* medDatabaseReader::run()
         report = query.value ( 16 ).toString();
         modality = query.value ( 17 ).toString();
         seriesId = query.value ( 18 ).toString();
+
+        origin          = query.value ( 19 ).toString();
+        flipAngle       = query.value ( 20 ).toString();
+        echoTime        = query.value ( 21 ).toString();
+        repetitionTime  = query.value ( 22 ).toString();
+        acquisitionTime = query.value ( 23 ).toString();
     }
 
     query.prepare ( "SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series" );
@@ -205,6 +213,12 @@ medAbstractData* medDatabaseReader::run()
         medMetaDataKeys::SequenceName.set ( medData, sequenceName );
         medMetaDataKeys::SliceThickness.set ( medData, sliceThickness );
         medMetaDataKeys::SeriesNumber.set(medData, seriesNumber);
+
+        medMetaDataKeys::Origin.set(medData, origin);
+        medMetaDataKeys::FlipAngle.set(medData, flipAngle);
+        medMetaDataKeys::EchoTime.set(medData, echoTime);
+        medMetaDataKeys::RepetitionTime.set(medData, repetitionTime);
+        medMetaDataKeys::AcquisitionTime.set(medData, acquisitionTime);
 
         emit success ( this );
     }

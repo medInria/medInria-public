@@ -360,9 +360,17 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         QString performer      = medMetaDataKeys::Performer.getFirstValue(medData);
         QString institution    = medMetaDataKeys::Institution.getFirstValue(medData);
         QString report         = medMetaDataKeys::Report.getFirstValue(medData);
+        QString origin          = medMetaDataKeys::Origin.getFirstValue(medData);
+        QString flipAngle       = medMetaDataKeys::FlipAngle.getFirstValue(medData);
+        QString echoTime        = medMetaDataKeys::EchoTime.getFirstValue(medData);
+        QString repetitionTime  = medMetaDataKeys::RepetitionTime.getFirstValue(medData);
+        QString acquisitionTime = medMetaDataKeys::AcquisitionTime.getFirstValue(medData);
 
-        query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) \
-                                     VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)" );
+        query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report, \
+                        origin, flipAngle, echoTime, repetitionTime, acquisitionTime) \
+                VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report, \
+                        :origin, :flipAngle, :echoTime, :repetitionTime, :acquisitionTime)" );
+
         query.bindValue ( ":study",          studyDbId );
         query.bindValue ( ":seriesId",       seriesId );
         query.bindValue ( ":size",           size );
@@ -388,6 +396,11 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         query.bindValue ( ":performer",      performer );
         query.bindValue ( ":institution",    institution );
         query.bindValue ( ":report",         report );
+        query.bindValue ( ":origin",           origin );
+        query.bindValue ( ":flipAngle",        flipAngle );
+        query.bindValue ( ":echoTime",         echoTime );
+        query.bindValue ( ":repetitionTime",   repetitionTime );
+        query.bindValue ( ":acquisitionTime",  acquisitionTime );
 
         if ( !EXEC_QUERY(query) )
           qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;

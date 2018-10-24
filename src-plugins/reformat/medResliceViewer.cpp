@@ -6,6 +6,7 @@
 #include <medAbstractLayeredView.h>
 #include <medSliderSpinboxPair.h>
 #include <medUtilities.h>
+#include <medUtilitiesITK.h>
 #include <medVtkViewBackend.h>
 #include <mscTransform.h>
 #include <vtkBorderRepresentation.h>
@@ -706,7 +707,6 @@ void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destTyp
 
     outputData = medAbstractDataFactory::instance()->createSmartPointer(destType);
     outputData->setData(filter->GetOutput());
-    medUtilities::setDerivedMetaData(outputData, inputData, "reformatted");
 
     // Apply resampling in pix
     if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Dimension")
@@ -719,7 +719,11 @@ void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destTyp
     compensateForRadiologicalView<DATA_TYPE>(outputImage);
     correctOutputTransform<DATA_TYPE>(outputImage, reslicer->GetResliceAxes());
 
+    // Final output image
     outputData->setData(outputImage);
+
+    medUtilities::setDerivedMetaData(outputData, inputData, "reformatted");
+    medUtilitiesITK::updateMetadata<ImageType>(outputData);
 }
 
 void medResliceViewer::applyResamplingPix()
