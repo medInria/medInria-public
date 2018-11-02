@@ -81,6 +81,65 @@ public:
 
     medIntParameterL *slicingParameter;
     PropertySmartPointer actorProperty;
+
+    template <typename TENSOR_IMAGE>
+    void setVTKFilter(medAbstractData* d,typename itk::ITKTensorsToVTKTensorsFilter<TENSOR_IMAGE>::Pointer& filter)
+    {
+        TENSOR_IMAGE *dataset = static_cast<TENSOR_IMAGE *>(d->data());
+
+        if (filter)
+            filter->Delete();
+
+        filter = itk::ITKTensorsToVTKTensorsFilter<TENSOR_IMAGE>::New();
+
+        filter->SetInput(dataset);
+        filter->UpdateOutputInformation();
+
+        //  This line generates the vtkSHs, otherwise is not generated, even if the next filter
+        //  in the pipeline is connected and Update() is called
+
+        filter->Update();
+
+        // we need to call this function because GetOutput() just returns the input
+        vtkStructuredPoints *tensors = filter->GetVTKTensors();
+        vtkMatrix4x4 *matrix = filter->GetDirectionMatrix();
+
+        itk::ImageBase<3>::DirectionType directions = dataset->GetDirection();
+        itk::ImageBase<3>::PointType origin = dataset->GetOrigin();
+        orientationMatrix = vtkMatrix4x4::New();
+        orientationMatrix->Identity();
+        for (int i=0; i<3; i++)
+            for (int j=0; j<3; j++)
+                orientationMatrix->SetElement (i, j, directions (i,j));
+        double v_origin[4], v_origin2[4];
+        for (int i=0; i<3; i++)
+            v_origin[i] = origin[i];
+        v_origin[3] = 1.0;
+        orientationMatrix->MultiplyPoint (v_origin, v_origin2);
+        for (int i=0; i<3; i++)
+            orientationMatrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+
+        double v_spacing[3];
+        for (int i=0; i<3; i++)
+            v_spacing[i] = dataset->GetSpacing()[i];
+
+        manager->SetInput(tensors);
+        manager->SetDirectionMatrix(matrix);
+
+        manager->ResetPosition();
+
+        manager->Update();
+
+        data = d;
+
+        if (view)
+        {
+            int* dim = manager->GetInput()->GetDimensions();
+            view2d->SetInput(manager->GetTensorVisuManagerAxial()->GetActor(), view->layer(data), orientationMatrix, dim, v_spacing, v_origin);
+            view2d->SetInput(manager->GetTensorVisuManagerSagittal()->GetActor(), view->layer(data), orientationMatrix, dim, v_spacing, v_origin);
+            view2d->SetInput(manager->GetTensorVisuManagerCoronal()->GetActor(), view->layer(data), orientationMatrix, dim, v_spacing, v_origin);
+        }
+    }
 };
 
 itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbstractView *parent):
@@ -176,115 +235,14 @@ void itkDataTensorImageVtkViewInteractor::setInputData(medAbstractData *data)
 
     // up to the moment 2 itk tensor image formats are supported
     // we need to convert them to vtkStructuredPoints so it's understood by the tensor manager
-    if (identifier.compare("itkDataTensorImageFloat3") == 0)
-    {
-        if (TensorImageTypeFloat *dataset = static_cast<TensorImageTypeFloat *>(data->data())) {
-
-            d->datasetFloat = dataset;
-
-            d->filterFloat = itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::New();
-
-            d->filterFloat->SetInput(dataset);
-            d->filterFloat->UpdateOutputInformation();
-
-            // this line generates the vtkTensors, otherwise is not generated, even if the next filter
-            // in the pipeline is connected and Update() is called
-            d->filterFloat->Update();
-
-            // we need to call this function because GetOutput() just returns the input
-            vtkStructuredPoints *tensors = d->filterFloat->GetVTKTensors();
-            vtkMatrix4x4 *matrix = d->filterFloat->GetDirectionMatrix();
-
-            itk::ImageBase<3>::DirectionType directions = dataset->GetDirection();
-            itk::ImageBase<3>::PointType origin = dataset->GetOrigin();
-            d->orientationMatrix = vtkMatrix4x4::New();
-            d->orientationMatrix->Identity();
-            for (int i=0; i<3; i++)
-                for (int j=0; j<3; j++)
-                    d->orientationMatrix->SetElement (i, j, directions (i,j));
-            double v_origin[4], v_origin2[4];
-            for (int i=0; i<3; i++)
-                v_origin[i] = origin[i];
-            v_origin[3] = 1.0;
-            d->orientationMatrix->MultiplyPoint (v_origin, v_origin2);
-            for (int i=0; i<3; i++)
-                d->orientationMatrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
-
-            double v_spacing[3];
-            for (int i=0; i<3; i++)
-                v_spacing[i] = dataset->GetSpacing()[i];
-
-            d->manager->SetInput(tensors);
-            d->manager->SetDirectionMatrix(matrix);
-
-            // TODO this should not be here once the toolbox is coded
-            d->manager->ResetPosition();
-
-            d->manager->Update();
-
-            if (d->view) {
-                int* dim = d->manager->GetInput()->GetDimensions();
-                d->view2d->SetInput( d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), d->orientationMatrix, dim, v_spacing, v_origin);
-                d->view2d->SetInput( d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim, v_spacing, v_origin);
-                d->view2d->SetInput( d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim, v_spacing, v_origin);
-            }
-
-            d->data = data;
-        }
-    }
-    else if (identifier.compare("itkDataTensorImageDouble3") == 0)
-    {
-        if (TensorImageTypeDouble *dataset = static_cast<TensorImageTypeDouble *>(data->data())) {
-
-            d->datasetDouble = dataset;
-
-            d->filterDouble = itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeDouble>::New();
-
-            d->filterDouble->SetInput(dataset);
-
-            // this line generates the vtkTensors, otherwise is not generated, even if the next filter
-            // in the pipeline is connected and Update() is called
-            d->filterDouble->Update();
-
-            // we need to call this function because GetOutput() just returns the input
-            vtkStructuredPoints* tensors = d->filterDouble->GetVTKTensors();
-            vtkMatrix4x4 *matrix = d->filterDouble->GetDirectionMatrix();
-
-            itk::ImageBase<3>::DirectionType directions = dataset->GetDirection();
-            itk::ImageBase<3>::PointType origin = dataset->GetOrigin();
-            d->orientationMatrix = vtkMatrix4x4::New();
-            d->orientationMatrix->Identity();
-            for (int i=0; i<3; i++)
-                for (int j=0; j<3; j++)
-                    d->orientationMatrix->SetElement (i, j, directions (i,j));
-            double v_origin[4], v_origin2[4];
-            for (int i=0; i<3; i++)
-                v_origin[i] = origin[i];
-            v_origin[3] = 1.0;
-            d->orientationMatrix->MultiplyPoint (v_origin, v_origin2);
-            for (int i=0; i<3; i++)
-                d->orientationMatrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
-
-            d->manager->SetInput(tensors);
-            d->manager->SetDirectionMatrix(matrix);
-
-            // TODO this should not be here once the toolbox is coded
-            d->manager->ResetPosition();
-
-            d->manager->Update();
-
-            if (d->view) {
-                int* dim = d->manager->GetInput()->GetDimensions();
-                d->view2d->SetInput(d->manager->GetTensorVisuManagerAxial()->GetActor(), d->view->layer(data), d->orientationMatrix, dim);
-                d->view2d->SetInput(d->manager->GetTensorVisuManagerSagittal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim);
-                d->view2d->SetInput(d->manager->GetTensorVisuManagerCoronal()->GetActor(), d->view->layer(data), d->orientationMatrix, dim);
-            }
-
-            d->data = data;
-        }
-    } else
+    if (identifier == "itkDataTensorImageFloat3")
+        d->setVTKFilter <TensorImageTypeFloat>(data,d->filterFloat);
+    else if (identifier == "itkDataTensorImageDouble3")
+        d->setVTKFilter <TensorImageTypeDouble>(data,d->filterDouble);
+    else
     {
         dtkDebug() << "Unrecognized tensor data type: " << identifier;
+        return;
     }
 
     d->actorProperty = itkDataTensorImageVtkViewInteractorPrivate::PropertySmartPointer::New();
