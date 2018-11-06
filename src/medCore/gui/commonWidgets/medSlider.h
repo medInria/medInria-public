@@ -31,6 +31,12 @@ protected:
     void paintEvent(QPaintEvent *ev);
     void mousePressEvent(QMouseEvent *event);
 
+    /**
+     * @brief getTickColor returns the color of the slider tick according to the application theme
+     * @return  QColor
+     */
+    QColor getTickColor();
+
 private:
     QList<int> ticksList;
 };

@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include "medSlider.h"
+#include "medSettingsManager.h"
 
 void medSlider::addTick(int position)
 {
@@ -60,8 +61,26 @@ void medSlider::paintEvent(QPaintEvent *ev)
                                                        maximum(),
                                                        ticksList.at(i),
                                                        width());
-
+        painter.setPen(this->getTickColor());
         painter.drawLine(position, 0, position, height());
+    }
+}
+
+QColor medSlider::getTickColor()
+{
+    // CSS
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        return QColor("cyan"); // Dark Theme
+        break;
+    case 1:
+        return QColor("blue"); // Light Theme
+        break;
     }
 }
 
