@@ -69,27 +69,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore 
   dtkLog
   medCore
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOGE
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKIOMRC
-  ${ITKIOPhilipsREC_LIBRARIES}
-  ITKIOTIFF
   ${DCMTK_LIBRARIES}
+  ${ITK_LIBRARIES}
   )
 
 if(APPLE)

@@ -68,31 +68,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   dtkLog
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOGE
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ${ITKIOPhilipsREC_LIBRARIES}
-  ITKIOStimulate
-  ITKStatistics
-  ITKIOTIFF
-  ITKIOTransformBase
-  ITKIOTransformHDF5
-  ITKIOTransformMatlab
-  ITKIOTransformInsightLegacy
-  ITKIOMRC
+  ${ITK_LIBRARIES}
   )
 
 
