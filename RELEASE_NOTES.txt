@@ -9,7 +9,7 @@ MUSIC v2.3.0:
 - Database: can edit name with F2 key
 - Database: right-click on a series and "Metadata" shows a window with metadata
 - Mesh: reset camera double-clicking on a view
-- New "Channelness" lookup
+- New "Channelness" lookup and toolbox
 - Solve icon size problem on mac
 - Change the way done, to do and not done steps are displayed in pipelines: add icons
 - Add a Histogram Matching toolbox
