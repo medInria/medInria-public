@@ -86,6 +86,8 @@ public:
     QScopedPointer<medVtkViewBackend> backend;
 
     QPointer<medClutEditorToolBox> transFun;
+
+    QMainWindow* mainWindow;
 };
 
 medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
@@ -141,6 +143,9 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
     d->viewWidget->SetRenderWindow(d->renWin);
     d->viewWidget->setCursor(QCursor(Qt::CrossCursor));
+
+    d->mainWindow = new QMainWindow();
+    d->mainWindow->setCentralWidget(d->viewWidget);
 
     d->backend.reset(new medVtkViewBackend(d->view2d, d->view3d, d->renWin));
 
@@ -238,6 +243,11 @@ QString medVtkView::description() const
 QWidget* medVtkView::viewWidget()
 {
     return d->viewWidget;
+}
+
+QMainWindow* medVtkView::mainWindow()
+{
+    return d->mainWindow;
 }
 
 void medVtkView::reset()

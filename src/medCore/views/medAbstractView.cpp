@@ -451,3 +451,8 @@ QUndoStack* medAbstractView::undoStack() const
 }
 
 void medAbstractView::restoreState(QDomElement* element){}
+
+QMainWindow* medAbstractView::mainWindow()
+{
+    return nullptr;
+}

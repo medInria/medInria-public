@@ -59,6 +59,8 @@ public:
 
     virtual QWidget* navigatorWidget();
     virtual QWidget *viewWidget() = 0;
+    virtual QMainWindow* mainWindow();
+
     virtual QWidget *mouseInteractionWidget();
     virtual QWidget* toolBarWidget();
 

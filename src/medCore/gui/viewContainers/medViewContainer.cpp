@@ -420,7 +420,14 @@ void medViewContainer::setView(medAbstractView *view)
 {
     if(d->view)
     {
-        d->view->viewWidget()->hide();
+        if (d->view->mainWindow())
+        {
+            d->view->mainWindow()->hide();
+        }
+        else
+        {
+            d->view->viewWidget()->hide();
+        }
         this->removeInternView();
     }
     if(view)
@@ -452,9 +459,15 @@ void medViewContainer::setView(medAbstractView *view)
 
         d->saveSceneAction->setEnabled(true);
         d->defaultWidget->hide();
-        d->mainLayout->addWidget(d->view->viewWidget(), 2, 0, 1, 1);
-        d->view->viewWidget()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
-        d->view->viewWidget()->show();
+
+        QWidget* mainWidget = d->view->mainWindow();
+        if (!mainWidget)
+        {
+            mainWidget = d->view->viewWidget();
+        }
+        d->mainLayout->addWidget(mainWidget, 2, 0, 1, 1);
+        mainWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
+        mainWidget->show();
 
         emit viewChanged();
     }
@@ -500,6 +513,11 @@ void medViewContainer::highlight(QString color)
     this->setStyleSheet(styleSheet);
     if(d->view)
     {
+        if (d->view->mainWindow())
+        {
+            d->view->mainWindow()->updateGeometry();
+            d->view->mainWindow()->update();
+        }
         d->view->viewWidget()->updateGeometry();
         d->view->viewWidget()->update();
     }
@@ -512,6 +530,11 @@ void medViewContainer::unHighlight()
     this->setStyleSheet("medViewContainer {border:1px solid #909090;}");
     if(d->view)
     {
+        if (d->view->mainWindow())
+        {
+            d->view->mainWindow()->updateGeometry();
+            d->view->mainWindow()->update();
+        }
         d->view->viewWidget()->updateGeometry();
         d->view->viewWidget()->update();
     }
