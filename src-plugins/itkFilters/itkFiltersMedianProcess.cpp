@@ -52,11 +52,8 @@ QString itkFiltersMedianProcess::description() const
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersMedianProcess::setParameter(double data, int channel)
+void itkFiltersMedianProcess::setParameter(double data)
 {
-    if (channel != 0)
-        return;
-
     d->medianSize = data;
 }
 

@@ -506,7 +506,7 @@ void itkFiltersToolBox::setupItkGaussianProcess()
 void itkFiltersToolBox::setupItkMedianProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMedianProcess" );
-    d->process->setParameter ( d->medianSizeFilterValue->value(), 0 );
+    d->process->setParameter ( d->medianSizeFilterValue->value());
     
     if (!d->process)
         return;
