@@ -21,7 +21,6 @@
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkTransferFunctionPresets.h>
-#include <vtkLookupTableManager.h>
 #include <vtkRenderWindow.h>
 #include <vtkImageData.h>
 #include <vtkImageActor.h>
@@ -330,14 +329,9 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
 
     d->minIntensityParameter = new medDoubleParameterL("Min Intensity", this);
     connect(d->minIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
-    d->minIntensityParameter->setRange(levelMin, levelMax);
 
     d->maxIntensityParameter = new medDoubleParameterL("Max Intensity", this);
     connect(d->maxIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
-    d->maxIntensityParameter->setRange(levelMin, levelMax);
-
-    d->minIntensityParameter->setValue(range[0]);
-    d->maxIntensityParameter->setValue(range[1]);
 
     if(d->isFloatImage)
     {
@@ -355,6 +349,12 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
         d->maxIntensityParameter->setSingleStep(d->intensityStep);
         d->maxIntensityParameter->setDecimals(0);
     }
+
+    d->minIntensityParameter->setRange(levelMin, levelMax);
+    d->maxIntensityParameter->setRange(levelMin, levelMax);
+
+    d->minIntensityParameter->setValue(range[0]);
+    d->maxIntensityParameter->setValue(range[1]);
 
     d->view->render();
 }
@@ -395,19 +395,8 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
 
     Presets::GetTransferFunction(value.toStdString(), rgb, alpha );
-
-    if (d->view->layer(d->imageData) == 0)
-        d->view2d->SetTransferFunctions(rgb, alpha, d->view->layer(d->imageData));
-    else
-    {
-        //TODO: find out why its not the same process - RDE
-        vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
-        d->view2d->SetLookupTable(lut, d->view->layer(d->imageData));
-        lut->Delete();
-    }
-
+    d->view2d->SetTransferFunctions(rgb, alpha, d->view->layer(d->imageData));
     d->view3d->SetTransferFunctions(rgb, alpha, d->view->layer(d->imageData));
-    d->view3d->SetLookupTable(vtkLookupTableManager::GetLookupTable(value.toStdString()), d->view->layer(d->imageData));
 
     rgb->Delete();
     alpha->Delete();
