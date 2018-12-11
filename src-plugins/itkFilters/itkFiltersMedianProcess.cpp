@@ -20,11 +20,20 @@
 
 #include <medUtilitiesITK.h>
 
+class itkFiltersMedianProcessPrivate
+{
+public:
+    double medianSize;
+};
+
+const double itkFiltersMedianProcess::defaultMedianSize = 1.0;
+
 //-------------------------------------------------------------------------------------------
 
 itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent) 
-    : itkFiltersProcessBase(parent)
+    : itkFiltersProcessBase(parent), d(new itkFiltersMedianProcessPrivate)
 {
+    d->medianSize = defaultMedianSize;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -39,6 +48,13 @@ bool itkFiltersMedianProcess::registered( void )
 QString itkFiltersMedianProcess::description() const
 {
     return tr("ITK median filter");
+}
+
+//-------------------------------------------------------------------------------------------
+
+void itkFiltersMedianProcess::setParameter(double data)
+{
+    d->medianSize = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -62,7 +78,11 @@ int itkFiltersMedianProcess::updateProcess(medAbstractData* inputData)
 
     typedef itk::MedianImageFilter< ImageType, ImageType >  MedianFilterType;
     typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
+    typename MedianFilterType::InputSizeType radius;
 
+    radius.Fill(d->medianSize);
+
+    medianFilter->SetRadius(radius);
     medianFilter->SetInput(inputImage);
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -75,7 +95,8 @@ int itkFiltersMedianProcess::updateProcess(medAbstractData* inputData)
     getOutputData()->setData ( medianFilter->GetOutput() );
 
     //Set output description metadata
-    medUtilities::setDerivedMetaData(getOutputData(), inputData, "median filter");
+    QString newSeriesDescription = "median filter " + QString::number(d->medianSize);
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
 
     return DTK_SUCCEED;
 }

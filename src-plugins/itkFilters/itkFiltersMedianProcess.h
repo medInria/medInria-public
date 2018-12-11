@@ -15,6 +15,7 @@
 
 #include <itkFiltersProcessBase.h>
 
+class itkFiltersMedianProcessPrivate;
 class medAbstractData;
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public itkFiltersProcessBase
@@ -22,6 +23,8 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public itkFiltersProcess
     Q_OBJECT
     
 public:
+    static const double defaultMedianSize;
+
     itkFiltersMedianProcess(itkFiltersMedianProcess * parent = 0);
 
     static bool registered ( void );
@@ -30,10 +33,15 @@ public:
     
 public slots:
 
+    void setParameter (double  data);
     int tryUpdate();
 
 protected:
     template <class ImageType> int updateProcess(medAbstractData* inputData);
+
+private:
+    itkFiltersMedianProcessPrivate *d;
+
 };
 
 dtkAbstractProcess * createitkFiltersMedianProcess(void);

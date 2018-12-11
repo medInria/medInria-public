@@ -27,6 +27,7 @@
 #include <itkFiltersComponentSizeThresholdProcess.h>
 #include <itkFiltersDivideProcess.h>
 #include <itkFiltersGaussianProcess.h>
+#include <itkFiltersMedianProcess.h>
 #include <itkFiltersMultiplyProcess.h>
 #include <itkFiltersShrinkProcess.h>
 #include <itkFiltersSubtractProcess.h>
@@ -65,6 +66,7 @@ public:
 
     QDoubleSpinBox * addFilterValue;
     QDoubleSpinBox * subtractFilterValue;
+    QDoubleSpinBox * medianSizeFilterValue;
     QDoubleSpinBox * multiplyFilterValue;
     QDoubleSpinBox * divideFilterValue;
     QDoubleSpinBox * gaussianFilterValue;
@@ -178,7 +180,19 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     normalizeFilterLayout->addWidget(normExplanation);
     d->normalizeFilterWidget->setLayout(normalizeFilterLayout);
 
+    //Median filter widgets
     d->medianFilterWidget = new QWidget(this);
+    d->medianSizeFilterValue = new QDoubleSpinBox;
+    d->medianSizeFilterValue->setMaximum ( 1000000000 );
+    d->medianSizeFilterValue->setValue ( itkFiltersMedianProcess::defaultMedianSize );
+    QLabel * medianSizeFilterLabel = new QLabel ( tr ( "Neighborhood size:" ) );
+    QHBoxLayout * medianSizeFilterLayout = new QHBoxLayout;
+    medianSizeFilterLayout->addWidget ( medianSizeFilterLabel );
+    medianSizeFilterLayout->addWidget ( d->medianSizeFilterValue );
+    medianSizeFilterLayout->addStretch ( 1 );
+    d->medianFilterWidget->setLayout ( medianSizeFilterLayout );
+
+
     d->invertFilterWidget = new QWidget(this);
 
     //Shrink filter widgets
@@ -492,6 +506,7 @@ void itkFiltersToolBox::setupItkGaussianProcess()
 void itkFiltersToolBox::setupItkMedianProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMedianProcess" );
+    d->process->setParameter ( d->medianSizeFilterValue->value());
     
     if (!d->process)
         return;
