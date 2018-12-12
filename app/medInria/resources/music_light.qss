@@ -1441,3 +1441,17 @@ QScrollArea
 {
     background: $GREY_VERY_LIGHT;
 }
+
+/*******************************************************************************
+     QDialog & cie
+ *******************************************************************************/
+
+ QFileDialog
+ {
+     background: $GREY_VERY_LIGHT;
+ }
+
+ QDialog
+ {
+     background: $GREY_VERY_LIGHT;
+ }
