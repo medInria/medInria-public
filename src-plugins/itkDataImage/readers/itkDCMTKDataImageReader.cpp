@@ -361,18 +361,18 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     {
         // PATIENT
         //PatientId
-        medData->setMetaData(medMetaDataKeys::PatientName.key(), d->io->GetPatientName().c_str());
+        medData->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromLatin1(d->io->GetPatientName().c_str()));
         medData->setMetaData(medMetaDataKeys::Age.key(),         d->io->GetPatientAge().c_str());
         medData->setMetaData(medMetaDataKeys::BirthDate.key(),   d->io->GetPatientDOB().c_str());
         medData->setMetaData(medMetaDataKeys::Gender.key(),      d->io->GetPatientSex().c_str());
-        medData->setMetaData(medMetaDataKeys::Description.key(), d->io->GetScanOptions().c_str());
+        medData->setMetaData(medMetaDataKeys::Description.key(), QString::fromLatin1(d->io->GetScanOptions().c_str()));
 
         // STUDY
         //StudyId
         medData->setMetaData(medMetaDataKeys::StudyDicomID.key(),     d->io->GetStudyID().c_str());
-        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), d->io->GetStudyDescription().c_str());
-        medData->setMetaData(medMetaDataKeys::Institution.key(),      d->io->GetInstitution().c_str());
-        medData->setMetaData(medMetaDataKeys::Referee.key(),          d->io->GetReferringPhysicianName().c_str());
+        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), QString::fromLatin1(d->io->GetStudyDescription().c_str()));
+        medData->setMetaData(medMetaDataKeys::Institution.key(),      QString::fromLatin1(d->io->GetInstitution().c_str()));
+        medData->setMetaData(medMetaDataKeys::Referee.key(),          QString::fromLatin1(d->io->GetReferringPhysicianName().c_str()));
         //StudyDate
         //StudyTime
 
@@ -381,10 +381,10 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         medData->setMetaData(medMetaDataKeys::SeriesDicomID.key(),     d->io->GetSeriesID().c_str());
         medData->setMetaData(medMetaDataKeys::SeriesNumber.key(),      d->io->GetSeriesNumber().c_str());
         medData->setMetaData(medMetaDataKeys::Modality.key(),          d->io->GetModality().c_str());
-        medData->setMetaData(medMetaDataKeys::Performer.key(),         d->io->GetPerformingPhysicianName().c_str());
+        medData->setMetaData(medMetaDataKeys::Performer.key(),         QString::fromLatin1(d->io->GetPerformingPhysicianName().c_str()));
         medData->setMetaData(medMetaDataKeys::Report.key(), "");
-        medData->setMetaData(medMetaDataKeys::Protocol.key(),          d->io->GetProtocolName().c_str());
-        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), d->io->GetSeriesDescription().c_str());
+        medData->setMetaData(medMetaDataKeys::Protocol.key(),          QString::fromLatin1(d->io->GetProtocolName().c_str()));
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QString::fromLatin1(d->io->GetSeriesDescription().c_str()));
         //SeriesDate
         //SeriesTime
         //SeriesThumbnail
@@ -399,7 +399,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 
         // Add Origin
         QString origin = "";
-        for (int i=0; i<d->io->GetNumberOfDimensions(); ++i)
+        for (unsigned int i=0; i<d->io->GetNumberOfDimensions(); ++i)
         {
             origin += QString::number(d->io->GetOrigin(i)) + QString(" ");
         }
@@ -409,21 +409,21 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         //ImportationDate
         medData->setMetaData(medMetaDataKeys::AcquisitionDate.key(), d->io->GetAcquisitionDate().c_str());
         medData->setMetaData(medMetaDataKeys::AcquisitionTime.key(), d->io->GetAcquisitionTime().c_str());
-        medData->setMetaData(medMetaDataKeys::Comments.key(),        d->io->GetAcquisitionComments().c_str());
+        medData->setMetaData(medMetaDataKeys::Comments.key(),        QString::fromLatin1(d->io->GetAcquisitionComments().c_str()));
 
         QStringList filePaths;
         for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++)
         {
             if (d->io->GetOrderedFileNames()[i] != "")
             {
-                filePaths << d->io->GetOrderedFileNames()[i].c_str();
+                filePaths << QString::fromLatin1(d->io->GetOrderedFileNames()[i].c_str());
             }
         }
 
         medData->addMetaData(medMetaDataKeys::FilePaths.key(), filePaths);
 
         medData->setMetaData(medMetaDataKeys::Status.key(),          d->io->GetPatientStatus().c_str());
-        medData->setMetaData(medMetaDataKeys::SequenceName.key(),    d->io->GetSequenceName().c_str());
+        medData->setMetaData(medMetaDataKeys::SequenceName.key(),    QString::fromLatin1(d->io->GetSequenceName().c_str()));
         //Size
         //VolumeUID
         //Spacing
