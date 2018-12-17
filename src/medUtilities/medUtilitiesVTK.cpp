@@ -142,25 +142,24 @@ bool medUtilitiesVTK::arrayRange(medAbstractData* data,
 }
 
 bool medUtilitiesVTK::arrayStats(medAbstractData* data,
-                              QString arrayName,
-                              double* mean,
-                              double* stdDev,
-                              int component)
+                                 QString arrayName,
+                                 double* mean,
+                                 double* stdDev,
+                                 int component)
 {
     vtkDataArray* array = getArray(data, arrayName);
     if (array && (component < array->GetNumberOfComponents()))
     {
         vtkIdType nbTuples = array->GetNumberOfTuples();
         // compute mean and variance
-        double value, tmpMean, delta, finalMean, variance;
-        value = tmpMean = delta =  finalMean = variance = 0.0;
+        double value, delta, finalMean, variance;
+        value = delta =  finalMean = variance = 0.0;
         for (vtkIdType i = 0; i < nbTuples; ++i)
         {
             value = array->GetComponent(i, component);
-            tmpMean = finalMean;
             delta = value - finalMean;
             finalMean += delta / (i + 1);
-            variance += delta * (value - tmpMean);
+            variance += delta * (value - finalMean);
         }
         if (nbTuples > 1)
         {
