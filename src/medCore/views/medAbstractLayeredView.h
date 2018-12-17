@@ -76,6 +76,9 @@ public:
 
     virtual void resetCameraOnLayer(int layer);
 
+    template <class Interactor>
+    Interactor* getLayerInteractorOfType(int layerIndex);
+
 public slots:
     void setDataList(QList<medDataIndex> dataList);
     void removeLayer();
@@ -109,3 +112,20 @@ private slots:
 private:
     medAbstractLayeredViewPrivate *d;
 };
+
+template <class Interactor>
+Interactor* medAbstractLayeredView::getLayerInteractorOfType(int layerId)
+{
+    const QList<medAbstractInteractor*> interactors = layerInteractors(layerId);
+    // get the correct interactor
+    Interactor* interactor = nullptr;
+    for (int i = 0; i < interactors.count(); ++i)
+    {
+        interactor = dynamic_cast<Interactor*>(interactors[i]);
+        if (interactor)
+        {
+            return interactor;
+        }
+    }
+    return nullptr;
+}

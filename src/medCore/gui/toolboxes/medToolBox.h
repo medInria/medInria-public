@@ -13,11 +13,12 @@
 
 #pragma once
 
-#include <medCoreExport.h>
+#include <medAbstractLayeredView.h>
 #include <medAbstractWorkspace.h>
 #include <medComboBox.h>
-#include <medProgressionStack.h>
+#include <medCoreExport.h>
 #include <medJobItem.h>
+#include <medProgressionStack.h>
 
 #include <QtGui>
 #include <QDomDocument>
