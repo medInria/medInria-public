@@ -515,8 +515,14 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
         d->colorFiberParameter->blockSignals(false);
 
         double pdfTmp[2];
-        pdfTmp[0] = d->oScalarRangeVect[0][0];
-        pdfTmp[1] = d->oScalarRangeVect[0][1];
+        pdfTmp[0] = 0.0;
+        pdfTmp[1] = 0.0;
+
+        if (numArrays > 0)
+        {
+            pdfTmp[0] = d->oScalarRangeVect[0][0];
+            pdfTmp[1] = d->oScalarRangeVect[0][1];
+        }
 
         initWindowLevelParameters(pdfTmp);
 
@@ -533,7 +539,7 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
 
         d->view2d->SetInput(d->actor, d->view->layer(d->data));
 
-        //TODO - harmonies all of this setInput method in vtkImageView.
+        //TODO - harmonise all of this setInput method in vtkImageView.
         d->view3d->GetRenderer()->AddActor(d->actor);
         this->updateWidgets();
     }
