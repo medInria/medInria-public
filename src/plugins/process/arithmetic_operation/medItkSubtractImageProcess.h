@@ -17,6 +17,7 @@
 
 #include <itkProcessObject.h>
 #include <itkSmartPointer.h>
+#include <itkImage.h>
 
 #include <medIntParameter.h>
 
@@ -43,7 +44,9 @@ public:
     virtual QString description() const;
 
 private:
-    template<class inputType> medAbstractJob::medJobExitStatus _run();
+    typedef itk::Image<double, 3> ImageType;
+    ImageType::Pointer CastImage(medAbstractImageData *data);
+    template <class inputType> ImageType::Pointer _cast(medAbstractImageData *data);
 
 private:
     itk::SmartPointer<itk::ProcessObject> m_filter;

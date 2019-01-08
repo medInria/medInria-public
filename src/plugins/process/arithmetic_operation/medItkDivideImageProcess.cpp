@@ -15,8 +15,8 @@
 
 #include <dtkLog>
 
-#include <itkImage.h>
 #include <itkDivideImageFilter.h>
+#include <itkCastImageFilter.h>
 #include <itkCommand.h>
 
 #include <medAbstractImageData.h>
@@ -46,95 +46,103 @@ QString medItkDivideImageProcess::description() const
     return "Use ITK DivideImageFilter to perform the division of two images.";
 }
 
-medAbstractJob::medJobExitStatus medItkDivideImageProcess::run()
+medItkDivideImageProcess::ImageType::Pointer medItkDivideImageProcess::CastImage(medAbstractImageData *data)
 {
-    medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
+    QString id = data->identifier();
+    ImageType::Pointer output;
 
-    if(this->input1() && this->input2())
+    if ( id == "itkDataImageChar3" )
     {
-        QString id =  this->input1()->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            jobExitSatus = this->_run<char>();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            jobExitSatus = this->_run<unsigned char>();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            jobExitSatus = this->_run<short>();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            jobExitSatus = this->_run<unsigned short>();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            jobExitSatus = this->_run<int>();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            jobExitSatus = this->_run<unsigned int>();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            jobExitSatus = this->_run<long>();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            jobExitSatus = this->_run<unsigned long>();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            jobExitSatus = this->_run<float>();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            jobExitSatus = this->_run<double>();
-        }
+        output = this->_cast<char>(data);
     }
-    return jobExitSatus;
+    else if ( id == "itkDataImageUChar3" )
+    {
+        output = this->_cast<unsigned char>(data);
+    }
+    else if ( id == "itkDataImageShort3" )
+    {
+        output = this->_cast<short>(data);
+    }
+    else if ( id == "itkDataImageUShort3" )
+    {
+        output = this->_cast<unsigned short>(data);
+    }
+    else if ( id == "itkDataImageInt3" )
+    {
+        output = this->_cast<int>(data);
+    }
+    else if ( id == "itkDataImageUInt3" )
+    {
+        output = this->_cast<unsigned int>(data);
+    }
+    else if ( id == "itkDataImageLong3" )
+    {
+        output = this->_cast<long>(data);
+    }
+    else if ( id== "itkDataImageULong3" )
+    {
+        output = this->_cast<unsigned long>(data);
+    }
+    else if ( id == "itkDataImageFloat3" )
+    {
+        output = this->_cast<float>(data);
+    }
+    else if ( id == "itkDataImageDouble3" )
+    {
+        output = this->_cast<double>(data);
+    }
+
+    return output;
 }
 
 template <class inputType>
-medAbstractJob::medJobExitStatus medItkDivideImageProcess::_run()
+medItkDivideImageProcess::ImageType::Pointer
+medItkDivideImageProcess::_cast(medAbstractImageData *data)
 {
-    typedef itk::Image<inputType, 3> ImageType;
+    typedef itk::Image <inputType, 3> InputImageType;
+    typedef itk::CastImageFilter <InputImageType, ImageType> CastFilterType;
 
-    typename ImageType::Pointer in1 = dynamic_cast<ImageType *>((itk::Object*)(this->input1()->data()));
-    typename ImageType::Pointer in2 = dynamic_cast<ImageType *>((itk::Object*)(this->input2()->data()));
+    typename CastFilterType::Pointer castFilter = CastFilterType::New();
+    castFilter->SetInput(dynamic_cast<InputImageType *>((itk::Object*)(data->data())));
+    castFilter->Update();
+    ImageType::Pointer output = castFilter->GetOutput();
 
-    if(in1.IsNotNull() && in2.IsNotNull())
+    return output;
+}
+
+medAbstractJob::medJobExitStatus medItkDivideImageProcess::run()
+{
+   if (!this->input1() || !this->input2())
+        return medAbstractJob::MED_JOB_EXIT_FAILURE;
+
+    ImageType::Pointer leftSideInput = this->CastImage(this->input1());
+    ImageType::Pointer rightSideInput = this->CastImage(this->input2());
+
+    typedef itk::DivideImageFilter<ImageType, ImageType, ImageType> FilterType;
+    typename FilterType::Pointer filter = FilterType::New();
+    m_filter = filter;
+
+    filter->SetInput1(leftSideInput);
+    filter->SetInput2(rightSideInput);
+
+    itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
+    callback->SetClientData((void*)this);
+    callback->SetCallback(medItkDivideImageProcess::eventCallback);
+    filter->AddObserver(itk::ProgressEvent(), callback);
+
+    try
     {
-        typedef itk::DivideImageFilter<ImageType, ImageType, ImageType> FilterType;
-        typename FilterType::Pointer filter = FilterType::New();
-        m_filter = filter;
-
-        filter->SetInput1(in1);
-        filter->SetInput2(in2);
-
-        itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
-        callback->SetClientData((void*)this);
-        callback->SetCallback(medItkDivideImageProcess::eventCallback);
-        filter->AddObserver(itk::ProgressEvent(), callback);
-
-        try
-        {
-            filter->Update();
-        }
-        catch(itk::ProcessAborted &e)
-        {
-            return medAbstractJob::MED_JOB_EXIT_CANCELLED;
-        }
-
-        medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create(this->input1()->identifier()));
-        out->setData(filter->GetOutput());
-        this->setOutput(out);
-        return medAbstractJob::MED_JOB_EXIT_SUCCESS;
+        filter->Update();
     }
-    return medAbstractJob::MED_JOB_EXIT_FAILURE;
+    catch(itk::ProcessAborted &e)
+    {
+        return medAbstractJob::MED_JOB_EXIT_CANCELLED;
+    }
+
+    medAbstractImageData *out= qobject_cast<medAbstractImageData *>(medAbstractDataFactory::instance()->create("itkDataImageDouble3"));
+    out->setData(filter->GetOutput());
+    this->setOutput(out);
+    return medAbstractJob::MED_JOB_EXIT_SUCCESS;
 }
 
 void medItkDivideImageProcess::cancel()
