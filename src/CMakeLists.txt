@@ -54,11 +54,15 @@ option(USE_OSPRay
 ## #############################################################################
 
 find_package(Qt5 REQUIRED COMPONENTS
+  Concurrent
   Core
   Gui
   Network
   OpenGL
+  Quick
   Sql
+  Svg
+  Test
   Widgets
   Xml
   )

@@ -16,6 +16,8 @@
 namespace medCore
 {
 
+DTK_DEFINE_LAYER_MANAGER;
+
 namespace pluginManager
 {
     void initialize(const QString& path)
@@ -25,26 +27,26 @@ namespace pluginManager
             if(realpath.isEmpty())
                 break;
 
-            medCore::arithmeticOperation::initialize(realpath);
-            medCore::dwiMasking::initialize(realpath);
-            medCore::diffusionModelEstimation::initialize(realpath);
-            medCore::diffusionScalarMaps::initialize(realpath);
-            medCore::tractography::initialize(realpath);
-            medCore::morphomathOperation::initialize(realpath);
-            medCore::maskImage::initialize(realpath);
-            medCore::singleFilterOperation::initialize(realpath);
-            medCore::dataConverter::initialize(realpath);
+            medCore::arithmeticOperation::pluginManager().initialize(realpath);
+            medCore::dwiMasking::pluginManager().initialize(realpath);
+            medCore::diffusionModelEstimation::pluginManager().initialize(realpath);
+            medCore::diffusionScalarMaps::pluginManager().initialize(realpath);
+            medCore::tractography::pluginManager().initialize(realpath);
+            medCore::morphomathOperation::pluginManager().initialize(realpath);
+            medCore::maskImage::pluginManager().initialize(realpath);
+            medCore::singleFilterOperation::pluginManager().initialize(realpath);
+            medCore::dataConverter::pluginManager().initialize(realpath);
         }
     }
 }
 
-DTK_DEFINE_CONCEPT(medAbstractProcess,generic)
-DTK_DEFINE_CONCEPT(medAbstractDWIMaskingProcess,dwiMasking)
-DTK_DEFINE_CONCEPT(medAbstractDiffusionModelEstimationProcess,diffusionModelEstimation)
-DTK_DEFINE_CONCEPT(medAbstractDiffusionScalarMapsProcess,diffusionScalarMaps)
-DTK_DEFINE_CONCEPT(medAbstractTractographyProcess,tractography)
-DTK_DEFINE_CONCEPT(medAbstractMaskImageProcess,maskImage)
-DTK_DEFINE_CONCEPT(medAbstractDataConverter,dataConverter)
+DTK_DEFINE_CONCEPT(medAbstractProcess,generic,medCore)
+DTK_DEFINE_CONCEPT(medAbstractDWIMaskingProcess,dwiMasking,medCore)
+DTK_DEFINE_CONCEPT(medAbstractDiffusionModelEstimationProcess,diffusionModelEstimation,medCore)
+DTK_DEFINE_CONCEPT(medAbstractDiffusionScalarMapsProcess,diffusionScalarMaps,medCore)
+DTK_DEFINE_CONCEPT(medAbstractTractographyProcess,tractography,medCore)
+DTK_DEFINE_CONCEPT(medAbstractMaskImageProcess,maskImage,medCore)
+DTK_DEFINE_CONCEPT(medAbstractDataConverter,dataConverter,medCore)
 
 // arithimetic
 namespace arithmeticOperation
@@ -63,11 +65,6 @@ namespace arithmeticOperation
     medAbstractArithmeticOperationProcessPluginFactory& pluginFactory(void)
     {
         return _private::factory;
-    }
-
-    void initialize(const QString& path)
-    {
-        pluginManager().initialize(path);
     }
 
     namespace addImage
@@ -129,10 +126,6 @@ namespace singleFilterOperation
     medAbstractSingleFilterOperationProcessPluginManager& pluginManager(void)
     {
         return _private::manager;
-    }
-    void initialize(const QString& path)
-    {
-        pluginManager().initialize(path);
     }
 
     namespace addFilter
@@ -336,10 +329,6 @@ namespace morphomathOperation
     medAbstractMorphomathOperationProcessPluginManager& pluginManager(void)
     {
         return _private::manager;
-    }
-    void initialize(const QString& path)
-    {
-        pluginManager().initialize(path);
     }
 
     namespace erodeImage
