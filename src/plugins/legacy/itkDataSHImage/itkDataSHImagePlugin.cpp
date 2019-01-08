@@ -89,7 +89,7 @@ QString itkDataSHImagePlugin::version() const {
 }
 
 QString itkDataSHImagePlugin::description() const {
-    return "Handle ITK SH images and their visualization. <br/> See  <a href=\"http://dx.doi.org/10.1002/mrm.21277 \">http://dx.doi.org/10.1002/mrm.21277 </a>.";
+    return "Handle ITK SH images and their visualization. <br/> See  <a href=\"https://doi.org/10.1002/mrm.21277 \">https://doi.org/10.1002/mrm.21277 </a>.";
 }
 
 QStringList itkDataSHImagePlugin::tags() const {
