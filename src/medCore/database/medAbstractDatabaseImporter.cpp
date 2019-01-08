@@ -722,10 +722,12 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
     }
 
     dtkSmartPointer<dtkAbstractDataReader> dataReader;
-    for (int i=0; i<readers.size(); i++) {
+    for (int i=0; i<readers.size(); i++)
+    {
         dataReader = medAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
+        dataReader->enableDeferredDeletion(false);
+
         if (dataReader->canRead(filename)) {
-            dataReader->enableDeferredDeletion(false);
             return dataReader;
         }
     }
