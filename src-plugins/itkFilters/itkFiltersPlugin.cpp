@@ -14,6 +14,7 @@
 #include <itkFiltersPlugin.h>
 
 #include <itkFiltersAddProcess.h>
+#include <itkFiltersBinaryThresholdingProcess.h>
 #include <itkFiltersSubtractProcess.h>
 #include <itkFiltersMultiplyProcess.h>
 #include <itkFiltersDivideProcess.h>
@@ -41,6 +42,7 @@ itkFiltersPlugin::itkFiltersPlugin(QObject* parent) : medPlugin (parent)
 bool itkFiltersPlugin::initialize()
 {
     if ( !itkFiltersAddProcess::registered() )       { dtkWarn() << "Unable to register itkFilters add process type";             }
+    if ( !itkFiltersBinaryThresholdingProcess::registered() )    { dtkWarn() << "Unable to register itkFilters binary thresholding filter process type";   }
     if ( !itkFiltersSubtractProcess::registered() )  { dtkWarn() << "Unable to register itkFilters subtract process type";        }
     if ( !itkFiltersMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
     if ( !itkFiltersDivideProcess::registered() )    { dtkWarn() << "Unable to register itkFilters divide process type";          }

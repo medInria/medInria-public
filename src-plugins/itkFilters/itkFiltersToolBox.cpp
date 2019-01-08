@@ -24,6 +24,7 @@
 
 #include <itkFiltersProcessBase.h>
 #include <itkFiltersAddProcess.h>
+#include <itkFiltersBinaryThresholdingProcess.h>
 #include <itkFiltersComponentSizeThresholdProcess.h>
 #include <itkFiltersDivideProcess.h>
 #include <itkFiltersGaussianProcess.h>
@@ -33,6 +34,7 @@
 #include <itkFiltersSubtractProcess.h>
 #include <itkFiltersThresholdingProcess.h>
 #include <itkFiltersWindowingProcess.h>
+#include <medDoubleParameter.h>
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
@@ -70,9 +72,18 @@ public:
     QDoubleSpinBox * multiplyFilterValue;
     QDoubleSpinBox * divideFilterValue;
     QDoubleSpinBox * gaussianFilterValue;
-    QDoubleSpinBox * thresholdFilterValue;
+    medDoubleParameter * thresholdFilterValue;
+    medDoubleParameter * thresholdLowerValue;
+    medDoubleParameter * thresholdUpperValue;
+
+    QWidget * thresholdValueWidget;
+    QWidget * thresholdUpperWidget;
+    QWidget * thresholdLowerWidget;
+    QWidget * buttonGroupWidget;
     QSpinBox * thresholdFilterValue2;
-    QRadioButton *greaterButton, *lowerButton;
+    QButtonGroup * valueButtonGroup;
+    QRadioButton * binaryThreshold;
+    QLabel * thresholdValueLabel;
     QSpinBox * shrink0Value;
     QSpinBox * shrink1Value;
     QSpinBox * shrink2Value;
@@ -262,38 +273,103 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
 
     //Threshold filter widgets
     d->thresholdFilterWidget = new QWidget(this);
-    d->thresholdFilterValue = new QDoubleSpinBox;
+
+    d->thresholdFilterValue = new medDoubleParameter( tr("Threshold Value"), this);
     d->thresholdFilterValue->setRange ( -10000, 10000 );
     d->thresholdFilterValue->setValue ( itkFiltersThresholdingProcess::defaultThreshold );
+    d->thresholdFilterValue->setObjectName("thresholdValue");
+
+    d->thresholdLowerValue = new medDoubleParameter( tr("Lower Value"), this);
+    d->thresholdLowerValue->setRange ( -10000, 10000 );
+    d->thresholdLowerValue->setValue ( itkFiltersThresholdingProcess::defaultLower );
+    d->thresholdLowerValue->setObjectName("lowerValue");
+
+    d->thresholdUpperValue = new medDoubleParameter( tr("Upper Value"), this);
+    d->thresholdUpperValue->setRange ( -10000, 10000 );
+    d->thresholdUpperValue->setValue ( itkFiltersThresholdingProcess::defaultUpper );
+    d->thresholdUpperValue->setObjectName("upperValue");
+
     d->thresholdFilterValue2 = new QSpinBox;
     d->thresholdFilterValue2->setRange ( -10000, 10000 );
     d->thresholdFilterValue2->setValue ( itkFiltersThresholdingProcess::defaultOutsideValue );
-    d->greaterButton = new QRadioButton(tr(" greater than: "), this);
-    d->greaterButton->setChecked(itkFiltersThresholdingProcess::defaultComparisonOperator);
-    d->lowerButton = new QRadioButton(tr(" lower than: "), this);
-    QLabel * thresholdFilterLabel = new QLabel ( tr ( "Set pixels values  :" ) );
-    QLabel * thresholdFilterLabel2 = new QLabel ( tr ( " to :" ) );
+    d->thresholdFilterValue2->setObjectName("outsideThresholdValue");
 
-    QVBoxLayout * greaterOrLowerLayout = new QVBoxLayout;
-    greaterOrLowerLayout->addWidget(d->greaterButton);
-    greaterOrLowerLayout->addWidget(d->lowerButton);
+    d->binaryThreshold = new QRadioButton(tr("Binarize Image"), this);
+    d->binaryThreshold->setObjectName("binaryThresholdButton");
+    connect(d->binaryThreshold, SIGNAL(toggled(bool)), this, SLOT(checkBinaryThreshold(bool)));
 
-    QHBoxLayout * thresholdFilterLayout1 = new QHBoxLayout;
-    thresholdFilterLayout1->addWidget ( thresholdFilterLabel );
-    thresholdFilterLayout1->addLayout ( greaterOrLowerLayout );
-    thresholdFilterLayout1->addWidget ( d->thresholdFilterValue );
+    QRadioButton* greaterButton = new QRadioButton(tr(" greater "), this);
+    greaterButton->setObjectName("greaterButton");
+    QRadioButton* lowerButton = new QRadioButton(tr(" lower "), this);
+    lowerButton->setObjectName("lowerButton");
+    QRadioButton* outsideButton = new QRadioButton(tr(" outside "), this);
+    outsideButton->setObjectName("outsideButton");
+
+    d->valueButtonGroup = new QButtonGroup;
+    d->valueButtonGroup->addButton(greaterButton, itkFiltersThresholdingProcess::upperButtonId);
+    d->valueButtonGroup->addButton(lowerButton, itkFiltersThresholdingProcess::lowerButtonId);
+    d->valueButtonGroup->addButton(outsideButton, itkFiltersThresholdingProcess::outsideButtonId);
+
+    QLabel * thresholdFilterLabel = new QLabel ( tr ( "Threshold Type  :" ) );
+    QLabel * thresholdFilterLabel2 = new QLabel ( tr ( "Outside Value :" ) );
+
+    d->buttonGroupWidget = new QWidget(this);
+    QHBoxLayout * greaterLowerOutsideLayout = new QHBoxLayout;
+    greaterLowerOutsideLayout->addWidget(greaterButton);
+    greaterLowerOutsideLayout->addWidget(lowerButton);
+    greaterLowerOutsideLayout->addWidget(outsideButton);
+    greaterLowerOutsideLayout->addStretch(-1);
+    d->buttonGroupWidget->setLayout(greaterLowerOutsideLayout);
+
+    d->thresholdLowerWidget = new QWidget(this);
+    QHBoxLayout * thresholdLowerLayout = new QHBoxLayout;
+    d->thresholdLowerValue->getSlider()->setOrientation(Qt::Horizontal);
+    thresholdLowerLayout->addWidget(d->thresholdLowerValue->getLabel());
+    thresholdLowerLayout->addWidget(d->thresholdLowerValue->getSlider());
+    thresholdLowerLayout->addWidget(d->thresholdLowerValue->getSpinBox());
+    d->thresholdLowerWidget->setLayout(thresholdLowerLayout);
+
+    d->thresholdUpperWidget = new QWidget(this);
+    QHBoxLayout * thresholdUpperLayout = new QHBoxLayout;
+    d->thresholdUpperValue->getSlider()->setOrientation(Qt::Horizontal);
+    thresholdUpperLayout->addWidget(d->thresholdUpperValue->getLabel());
+    thresholdUpperLayout->addWidget(d->thresholdUpperValue->getSlider());
+    thresholdUpperLayout->addWidget(d->thresholdUpperValue->getSpinBox());
+    d->thresholdUpperWidget->setLayout(thresholdUpperLayout);
+
+    d->thresholdValueWidget = new QWidget(this);
+    QHBoxLayout * thresholdValueLayout = new QHBoxLayout;
+    d->thresholdFilterValue->getSlider()->setOrientation(Qt::Horizontal);
+    thresholdValueLayout->addWidget(d->thresholdFilterValue->getLabel());
+    thresholdValueLayout->addWidget(d->thresholdFilterValue->getSlider());
+    thresholdValueLayout->addWidget(d->thresholdFilterValue->getSpinBox());
+    d->thresholdValueWidget->setLayout(thresholdValueLayout);
+
+    QWidget * outsideValueWidget = new QWidget(this);
+    QHBoxLayout * outsideValueLayout = new QHBoxLayout;
+    outsideValueLayout->addWidget ( thresholdFilterLabel2 );
+    outsideValueLayout->addWidget ( d->thresholdFilterValue2 );
+    outsideValueLayout->setSizeConstraint(QLayout::SetMaximumSize);
+    outsideValueWidget->setLayout(outsideValueLayout);
+
+    QVBoxLayout * thresholdFilterLayout1 = new QVBoxLayout;
+    thresholdFilterLayout1->addWidget( d->binaryThreshold );
+    thresholdFilterLayout1->addWidget( thresholdFilterLabel );
+    thresholdFilterLayout1->addWidget( d->buttonGroupWidget );
+    thresholdFilterLayout1->addWidget( d->thresholdLowerWidget );
+    thresholdFilterLayout1->addWidget( d->thresholdUpperWidget );
+    thresholdFilterLayout1->addWidget( d->thresholdValueWidget );
+    thresholdFilterLayout1->addWidget( outsideValueWidget );
     thresholdFilterLayout1->addStretch ( 1 );
-
-    QHBoxLayout * thresholdFilterLayout2 = new QHBoxLayout;
-    thresholdFilterLayout2->addWidget ( thresholdFilterLabel2 );
-    thresholdFilterLayout2->addWidget ( d->thresholdFilterValue2 );
-    thresholdFilterLayout2->addStretch ( 1 );
 
     QVBoxLayout * thresholdFilterLayout = new QVBoxLayout;
     thresholdFilterLayout->addLayout(thresholdFilterLayout1);
-    thresholdFilterLayout->addLayout(thresholdFilterLayout2);
+    thresholdFilterLayout->addStretch(-1);
 
     d->thresholdFilterWidget->setLayout ( thresholdFilterLayout );
+
+    connect(d->valueButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateThresholdToolboxBehaviour(int)));
+    greaterButton->click();
 
     //Size threshold Widget
     d->componentSizeThresholdFilterWidget = new QWidget(this);
@@ -443,6 +519,24 @@ int itkFiltersToolBox::setupSpinBoxValues(medAbstractData*)
     d->intensityOutputMinimumValue->setMaximum(std::numeric_limits<PixelType>::max());
     d->intensityOutputMaximumValue->setMinimum(std::numeric_limits<PixelType>::min());
     d->intensityOutputMaximumValue->setMaximum(std::numeric_limits<PixelType>::max());
+    d->thresholdLowerValue->setRange(itk::NumericTraits<PixelType>::NonpositiveMin(),
+                                      itk::NumericTraits<PixelType>::max());
+    d->thresholdLowerValue->setValue(itk::NumericTraits<PixelType>::NonpositiveMin());
+    d->thresholdUpperValue->setRange(itk::NumericTraits<PixelType>::NonpositiveMin(),
+                                      itk::NumericTraits<PixelType>::max());
+    d->thresholdUpperValue->setValue(itk::NumericTraits<PixelType>::max());
+    d->thresholdFilterValue->setRange(itk::NumericTraits<PixelType>::NonpositiveMin(),
+                                       itk::NumericTraits<PixelType>::max());
+    if ( d->binaryThreshold->isChecked() )
+    {
+        d->thresholdFilterValue->setValue ( itkFiltersBinaryThresholdingProcess::defaultInsideValue );
+
+    }
+    else
+    {
+        d->thresholdFilterValue->setValue (  itkFiltersThresholdingProcess::defaultThreshold  );
+
+    }
 
     return DTK_SUCCEED;
 }
@@ -563,13 +657,35 @@ void itkFiltersToolBox::setupItkWindowingProcess()
 
 void itkFiltersToolBox::setupItkThresholdingProcess()
 {
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkThresholdingProcess" );
-    if (!d->process)
-        return;
-    d->process->setInput ( this->selectorToolBox()->data() );
-    d->process->setParameter ( d->thresholdFilterValue->value(), 0);
-    d->process->setParameter ( (double)d->thresholdFilterValue2->value(), 1);
-    d->process->setParameter ( (double)d->greaterButton->isChecked(), 2);
+    if ( d->binaryThreshold->isChecked() )
+    {
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer( "itkBinaryThresholdingProcess" );
+        if (!d->process)
+            return;
+        d->process->setInput ( this->selectorToolBox()->data() );
+
+        d->process->setParameter ( (int)d->thresholdFilterValue->value(), 0);
+        d->process->setParameter ( (int)d->thresholdFilterValue2->value(), 1);
+
+        d->process->setParameter ( d->thresholdLowerValue->value(), 0);
+        d->process->setParameter ( d->thresholdUpperValue->value(), 1);
+
+    }
+    else
+    {
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkThresholdingProcess" );
+        if (!d->process)
+            return;
+
+        d->process->setInput ( this->selectorToolBox()->data() );
+
+        d->process->setParameter(d->valueButtonGroup->checkedId());
+
+        d->process->setParameter ( d->thresholdFilterValue->value(), 0);
+        d->process->setParameter ( d->thresholdLowerValue->value(), 1);
+        d->process->setParameter ( d->thresholdUpperValue->value(), 2);
+        d->process->setParameter ( (double)d->thresholdFilterValue2->value(), 3);
+    }
 }
 
 void itkFiltersToolBox::setupItkComponentSizeThresholdProcess()
@@ -703,6 +819,52 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
         break;
     default:
         d->addFilterWidget->show();
+    }
+}
+
+void itkFiltersToolBox::updateThresholdToolboxBehaviour(int id)
+{
+    if ( d->binaryThreshold->isChecked() )
+    {
+        d->thresholdValueWidget->setVisible(true);
+        d->thresholdLowerWidget->setVisible(true);
+        d->thresholdUpperWidget->setVisible(true);
+    }
+    else
+    {
+        if ( id==itkFiltersThresholdingProcess::upperButtonId ||
+             id==itkFiltersThresholdingProcess::lowerButtonId )
+        {
+            d->thresholdValueWidget->setVisible(true);
+            d->thresholdLowerWidget->setVisible(false);
+            d->thresholdUpperWidget->setVisible(false);
+        }
+        else if ( id==itkFiltersThresholdingProcess::outsideButtonId )
+        {
+            d->thresholdValueWidget->setVisible(false);
+            d->thresholdLowerWidget->setVisible(true);
+            d->thresholdUpperWidget->setVisible(true);
+        }
+    }
+}
+
+void itkFiltersToolBox::checkBinaryThreshold(bool checked)
+{
+    d->buttonGroupWidget->setVisible(!checked);
+
+    updateThresholdToolboxBehaviour(d->valueButtonGroup->checkedId());
+
+    d->thresholdFilterValue->getSlider()->setHidden(checked);
+    if ( checked )
+    {
+        d->thresholdFilterValue->getLabel()->setText( tr ( "Inside Value  :" ) );
+        d->thresholdFilterValue->setValue ( itkFiltersBinaryThresholdingProcess::defaultInsideValue );
+        d->thresholdFilterValue->setDecimals(0);
+    }
+    else
+    {
+        d->thresholdFilterValue->getLabel()->setText( tr ( "Threshold Value  :" ) );
+        d->thresholdFilterValue->setValue ( itkFiltersThresholdingProcess::defaultThreshold );
     }
 }
 

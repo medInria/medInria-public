@@ -15,32 +15,27 @@
 
 #include "itkFiltersProcessBase.h"
 
-class itkFiltersThresholdingProcessPrivate;
+class itkFiltersBinaryThresholdingProcessPrivate;
 class medAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersThresholdingProcess : public itkFiltersProcessBase
+class ITKFILTERSPLUGIN_EXPORT itkFiltersBinaryThresholdingProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
     
 public:
-    static const double defaultThreshold;
-    static const double defaultUpper;
-    static const double defaultLower;
-    static const int defaultOutsideValue;
-    static const int upperButtonId;
-    static const int lowerButtonId;
-    static const int outsideButtonId;
 
-    itkFiltersThresholdingProcess(itkFiltersThresholdingProcess * parent = 0);
-    itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other);
-    virtual ~itkFiltersThresholdingProcess(void);
+    static const double defaultInsideValue;
+
+    itkFiltersBinaryThresholdingProcess(itkFiltersBinaryThresholdingProcess * parent = 0);
+    itkFiltersBinaryThresholdingProcess(const itkFiltersBinaryThresholdingProcess& other);
+    virtual ~itkFiltersBinaryThresholdingProcess(void);
     static bool registered ( void );
 
     virtual QString description(void) const;
     
 public slots:
 
-    void setParameter (int data);
+    void setParameter (int data, int channel);
     void setParameter ( double  data, int channel );
     int tryUpdate();
 
@@ -48,9 +43,9 @@ protected:
     template <class ImageType> int updateProcess(medAbstractData* inputData);
 
 private:
-    itkFiltersThresholdingProcessPrivate *d;
+    itkFiltersBinaryThresholdingProcessPrivate *d;
 };
 
-dtkAbstractProcess * createitkFiltersThresholdingProcess(void);
+dtkAbstractProcess * createitkFiltersBinaryThresholdingProcess(void);
 
 
