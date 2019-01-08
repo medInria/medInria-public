@@ -354,9 +354,7 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool* FlipVecto
       We declare the Bmatrix of size n_s x n_b.
     */
     itk::VariableSizeMatrix<double> B(rank,n_s);
-
     vtkPoints* vertices = shell->GetPoints();
-    std::complex<float>  cplx_1;
 
     for (int i = 0; i < n_s;++i) {
 
