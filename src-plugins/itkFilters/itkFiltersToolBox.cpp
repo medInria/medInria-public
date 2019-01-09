@@ -535,7 +535,6 @@ int itkFiltersToolBox::setupSpinBoxValues(medAbstractData*)
     else
     {
         d->thresholdFilterValue->setValue (  itkFiltersThresholdingProcess::defaultThreshold  );
-
     }
 
     return DTK_SUCCEED;
@@ -545,9 +544,6 @@ void itkFiltersToolBox::setupItkAddProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkAddProcess" );
     
-    if (!d->process)
-        return;
-
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->addFilterValue->value(), 0 );
 }
@@ -557,9 +553,6 @@ void itkFiltersToolBox::setupItkSubtractProcess()
     qDebug() << "Subtract parameter (run) : " << d->subtractFilterValue->value();
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkSubtractProcess" );
     
-    if (!d->process)
-        return;
-
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->subtractFilterValue->value(), 0 );
 }
@@ -567,10 +560,7 @@ void itkFiltersToolBox::setupItkSubtractProcess()
 void itkFiltersToolBox::setupItkMultiplyProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMultiplyProcess" );
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->multiplyFilterValue->value(), 0 );
 }
@@ -578,10 +568,7 @@ void itkFiltersToolBox::setupItkMultiplyProcess()
 void itkFiltersToolBox::setupItkDivideProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDivideProcess" );
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->divideFilterValue->value(), 0 );
 }
@@ -589,10 +576,7 @@ void itkFiltersToolBox::setupItkDivideProcess()
 void itkFiltersToolBox::setupItkGaussianProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkGaussianProcess" );
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->gaussianFilterValue->value(), 0);
 }
@@ -601,40 +585,28 @@ void itkFiltersToolBox::setupItkMedianProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMedianProcess" );
     d->process->setParameter ( d->medianSizeFilterValue->value());
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
 }
 
 void itkFiltersToolBox::setupItkNormalizeProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkNormalizeProcess" );
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
 }
 
 void itkFiltersToolBox::setupItkInvertProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkInvertProcess" );
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
 }
 
 void itkFiltersToolBox::setupItkShrinkProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkShrinkProcess" );
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->shrink0Value->value(), 0 );
     d->process->setParameter ( d->shrink1Value->value(), 1 );
@@ -644,10 +616,7 @@ void itkFiltersToolBox::setupItkShrinkProcess()
 void itkFiltersToolBox::setupItkWindowingProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkWindowingProcess" );
-    
-    if (!d->process)
-        return;
-    
+        
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->intensityMinimumValue->value(), 0);
     d->process->setParameter ( d->intensityMaximumValue->value(), 1);
@@ -660,8 +629,7 @@ void itkFiltersToolBox::setupItkThresholdingProcess()
     if ( d->binaryThreshold->isChecked() )
     {
         d->process = dtkAbstractProcessFactory::instance()->createSmartPointer( "itkBinaryThresholdingProcess" );
-        if (!d->process)
-            return;
+
         d->process->setInput ( this->selectorToolBox()->data() );
 
         d->process->setParameter ( (int)d->thresholdFilterValue->value(), 0);
@@ -674,8 +642,6 @@ void itkFiltersToolBox::setupItkThresholdingProcess()
     else
     {
         d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkThresholdingProcess" );
-        if (!d->process)
-            return;
 
         d->process->setInput ( this->selectorToolBox()->data() );
 
@@ -691,9 +657,6 @@ void itkFiltersToolBox::setupItkThresholdingProcess()
 void itkFiltersToolBox::setupItkComponentSizeThresholdProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkComponentSizeThresholdProcess" );
-
-    if (!d->process)
-        return;
 
     d->process->setInput ( this->selectorToolBox()->data() );
     d->process->setParameter ( d->componentSizeThresholdFilterValue->value(), 0 );
