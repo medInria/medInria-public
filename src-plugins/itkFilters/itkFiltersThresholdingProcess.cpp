@@ -10,11 +10,9 @@
   PURPOSE.
 
 =========================================================================*/
-
-#include <itkFiltersThresholdingProcess.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
+#include <itkFiltersThresholdingProcess.h>
 #include <itkImage.h>
 #include <itkThresholdImageFilter.h>
 
@@ -25,7 +23,6 @@ class itkFiltersThresholdingProcessPrivate
 public:
     double thresholdValue, lowerValue, upperValue;
     int outsideValue;
-    //bool comparisonOperator;
     int thresholdType;
 };
 
@@ -82,23 +79,29 @@ void itkFiltersThresholdingProcess::setParameter(int data)
 
 void itkFiltersThresholdingProcess::setParameter(double data, int channel)
 {
-    if (channel > 3)
-        return;
     if (channel == 0)
+    {
         d->thresholdValue = data;
+    }
     if (channel == 1)
+    {
         d->lowerValue = data;
+    }
     if (channel == 2)
+    {
         d->upperValue = data;
+    }
     if (channel == 3)
+    {
         d->outsideValue = data;
+    }
 }
 
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersThresholdingProcess::tryUpdate()
 {   
-    int res = DTK_FAILURE;
+    int res = medAbstractProcess::FAILURE;
 
     if ( getInputData() )
     {
@@ -142,7 +145,7 @@ int itkFiltersThresholdingProcess::updateProcess(medAbstractData* inputData)
 
     QString newSeriesDescription = "threshold " + QString::number(d->thresholdValue);
     medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
-    return DTK_SUCCEED;
+    return medAbstractProcess::SUCCESS;
 }
 
 // /////////////////////////////////////////////////////////////////

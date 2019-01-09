@@ -310,8 +310,8 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->valueButtonGroup->addButton(lowerButton, itkFiltersThresholdingProcess::lowerButtonId);
     d->valueButtonGroup->addButton(outsideButton, itkFiltersThresholdingProcess::outsideButtonId);
 
-    QLabel * thresholdFilterLabel = new QLabel ( tr ( "Threshold Type  :" ) );
-    QLabel * thresholdFilterLabel2 = new QLabel ( tr ( "Outside Value :" ) );
+    QLabel * thresholdFilterLabel = new QLabel ( tr ( "Threshold Type " ) );
+    QLabel * thresholdFilterLabel2 = new QLabel ( tr ( "Outside Value " ) );
 
     d->buttonGroupWidget = new QWidget(this);
     QHBoxLayout * greaterLowerOutsideLayout = new QHBoxLayout;
@@ -857,13 +857,13 @@ void itkFiltersToolBox::checkBinaryThreshold(bool checked)
     d->thresholdFilterValue->getSlider()->setHidden(checked);
     if ( checked )
     {
-        d->thresholdFilterValue->getLabel()->setText( tr ( "Inside Value  :" ) );
+        d->thresholdFilterValue->getLabel()->setText( tr ( "Inside Value " ) );
         d->thresholdFilterValue->setValue ( itkFiltersBinaryThresholdingProcess::defaultInsideValue );
         d->thresholdFilterValue->setDecimals(0);
     }
     else
     {
-        d->thresholdFilterValue->getLabel()->setText( tr ( "Threshold Value  :" ) );
+        d->thresholdFilterValue->getLabel()->setText( tr ( "Threshold Value " ) );
         d->thresholdFilterValue->setValue ( itkFiltersThresholdingProcess::defaultThreshold );
     }
 }

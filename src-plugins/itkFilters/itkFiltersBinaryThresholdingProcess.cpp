@@ -10,13 +10,11 @@
   PURPOSE.
 
 =========================================================================*/
-
-#include <itkFiltersBinaryThresholdingProcess.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <itkImage.h>
 #include <itkBinaryThresholdImageFilter.h>
+#include <itkFiltersBinaryThresholdingProcess.h>
+#include <itkImage.h>
 
 #include <medUtilitiesITK.h>
 
@@ -68,33 +66,33 @@ QString itkFiltersBinaryThresholdingProcess::description() const
 
 void itkFiltersBinaryThresholdingProcess::setParameter(int data, int channel)
 {
-    if ( channel > 1 )
-    {
-        return;
-    }
     if (channel == 0)
+    {
         d->insideValue = data;
+    }
     if (channel == 1)
+    {
         d->outsideValue = data;
+    }
 }
 
 void itkFiltersBinaryThresholdingProcess::setParameter(double data, int channel)
 {
-    if ( channel > 1 )
-    {
-        return;
-    }
     if (channel == 0)
+    {
         d->lowerValue = data;
+    }
     if (channel == 1)
+    {
         d->upperValue = data;
+    }
 }
 
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersBinaryThresholdingProcess::tryUpdate()
 {   
-    int res = DTK_FAILURE;
+    int res = medAbstractProcess::FAILURE;
 
     if ( getInputData() )
     {
@@ -126,10 +124,9 @@ int itkFiltersBinaryThresholdingProcess::updateProcess(medAbstractData* inputDat
 
     getOutputData()->setData ( thresholdFilter->GetOutput() );
 
-    QString newSeriesDescription = "binaryThreshold " + QString::number(d->insideValue);
-    medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
+    medUtilities::setDerivedMetaData(getOutputData(), inputData, "binaryThreshold");
 
-    return DTK_SUCCEED;
+    return medAbstractProcess::SUCCESS;
 }
 
 // /////////////////////////////////////////////////////////////////
