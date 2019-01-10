@@ -73,7 +73,9 @@ public:
     vtkMetaDataSet* metaDataSet;
     ActorSmartPointer actor2d;
     ActorSmartPointer actor3d;
-    PropertySmartPointer actorProperty;
+    PropertySmartPointer actorProperty2D;
+    PropertySmartPointer actorProperty3D;
+
     LutPair lut;
     AttributeSmartPointer attribute;
     double imageBounds[6];
@@ -304,7 +306,9 @@ void vtkDataMeshInteractor::setupParameters()
 
 void vtkDataMeshInteractor::setOpacity(double value)
 {
-    d->actorProperty->SetOpacity(value);
+    d->actorProperty2D->SetOpacity(value);
+    d->actorProperty3D->SetOpacity(value);
+
     this->opacityParameter()->setValue(value);
     d->view->render();
 }
@@ -321,7 +325,8 @@ void vtkDataMeshInteractor::setVisibility(bool visible)
 void vtkDataMeshInteractor::setEdgeVisibility(bool visible)
 {
     int v = (visible) ? 1 : 0;
-    d->actorProperty->SetEdgeVisibility(v);
+    d->actorProperty2D->SetEdgeVisibility(v);
+    d->actorProperty3D->SetEdgeVisibility(v);
 
     d->view->render();
 }
@@ -329,7 +334,7 @@ void vtkDataMeshInteractor::setEdgeVisibility(bool visible)
 
 bool vtkDataMeshInteractor::edgeVisibility() const
 {
-    return (d->actorProperty->GetEdgeVisibility() == 1);
+    return (d->actorProperty3D->GetEdgeVisibility() == 1);
 }
 
 
@@ -340,7 +345,8 @@ void vtkDataMeshInteractor::setColor(QColor color)
 
     double r,g,b;
     color.getRgbF(&r, &g, &b);
-    d->actorProperty->SetColor(r, g, b);
+    d->actorProperty2D->SetColor(r, g, b);
+    d->actorProperty3D->SetColor(r, g, b);
 
     d->view->render();
 }
@@ -354,7 +360,7 @@ void vtkDataMeshInteractor::setColor(const QString &color)
 QColor vtkDataMeshInteractor::color() const
 {
     double r,g,b;
-    d->actorProperty->GetColor(r, g, b);
+    d->actorProperty3D->GetColor(r, g, b);
     return QColor::fromRgbF(r, b, g);
 }
 
@@ -363,11 +369,20 @@ void vtkDataMeshInteractor::setRenderingType(const QString & type)
     d->renderingParam->setValue(type);
     QString value = type.toLower();
     if (value == "wireframe")
-        d->actorProperty->SetRepresentationToWireframe ();
+    {
+        d->actorProperty2D->SetRepresentationToWireframe ();
+        d->actorProperty3D->SetRepresentationToWireframe ();
+    }
     else if (value == "surface")
-        d->actorProperty->SetRepresentationToSurface ();
+    {
+        d->actorProperty2D->SetRepresentationToSurface ();
+        d->actorProperty3D->SetRepresentationToSurface ();
+    }
     else if (value == "points")
-        d->actorProperty->SetRepresentationToPoints ();
+    {
+        d->actorProperty2D->SetRepresentationToPoints ();
+        d->actorProperty3D->SetRepresentationToPoints ();
+    }
 
     d->view->render();
 }
@@ -375,7 +390,7 @@ void vtkDataMeshInteractor::setRenderingType(const QString & type)
 
 QString vtkDataMeshInteractor::renderingType() const
 {
-    return QString::fromStdString(d->actorProperty->GetRepresentationAsString()).toLower();
+    return QString::fromStdString(d->actorProperty3D->GetRepresentationAsString()).toLower();
 }
 
 void vtkDataMeshInteractor::setMaxRange(double max)
@@ -513,9 +528,13 @@ void vtkDataMeshInteractor::updatePipeline ()
             d->metaDataSet->AddActor(d->actor2d);
             d->metaDataSet->AddActor(d->actor3d);
 
-            d->actorProperty = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
-            d->actor2d->SetProperty( d->actorProperty );
-            d->actor3d->SetProperty( d->actorProperty );
+            d->actorProperty2D = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
+            d->actorProperty3D = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
+
+            d->actorProperty2D->SetLighting(false);
+            d->actorProperty2D->SetLineWidth(3.0);
+            d->actor2d->SetProperty(d->actorProperty2D);
+            d->actor3d->SetProperty(d->actorProperty3D);
 
             d->view2d->UpdateBounds(pointSet->GetBounds(), d->view->layer(this->inputData()));
         }
