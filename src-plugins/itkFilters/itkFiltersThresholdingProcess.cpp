@@ -10,11 +10,9 @@
   PURPOSE.
 
 =========================================================================*/
-
-#include <itkFiltersThresholdingProcess.h>
-
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
+#include <itkFiltersThresholdingProcess.h>
 #include <itkImage.h>
 #include <itkThresholdImageFilter.h>
 
@@ -23,21 +21,27 @@
 class itkFiltersThresholdingProcessPrivate
 {
 public:
-    double threshold;
+    double thresholdValue, lowerValue, upperValue;
     int outsideValue;
-    bool comparisonOperator;
+    int thresholdType;
 };
 
 const double itkFiltersThresholdingProcess::defaultThreshold = 200.0;
+const double itkFiltersThresholdingProcess::defaultUpper = itk::NumericTraits<double>::max();
+const double itkFiltersThresholdingProcess::defaultLower = itk::NumericTraits<double>::NonpositiveMin();
 const int itkFiltersThresholdingProcess::defaultOutsideValue = 0;
-const bool itkFiltersThresholdingProcess::defaultComparisonOperator = true;
+const int itkFiltersThresholdingProcess::lowerButtonId = 0;
+const int itkFiltersThresholdingProcess::upperButtonId = 1;
+const int itkFiltersThresholdingProcess::outsideButtonId = 2;
 
 itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(itkFiltersThresholdingProcess *parent) 
     : itkFiltersProcessBase(parent), d(new itkFiltersThresholdingProcessPrivate)
 {   
-    d->threshold = defaultThreshold;
+    d->thresholdValue = defaultThreshold;
+    d->lowerValue = defaultLower;
+    d->upperValue = defaultUpper;
     d->outsideValue = defaultOutsideValue;
-    d->comparisonOperator = defaultComparisonOperator;
+    d->thresholdType = -1;
 }
 
 itkFiltersThresholdingProcess::itkFiltersThresholdingProcess(const itkFiltersThresholdingProcess& other)
@@ -68,24 +72,36 @@ QString itkFiltersThresholdingProcess::description() const
 
 //-------------------------------------------------------------------------------------------
 
+void itkFiltersThresholdingProcess::setParameter(int data)
+{
+    d->thresholdType = data;
+}
+
 void itkFiltersThresholdingProcess::setParameter(double data, int channel)
 {
-    if (channel > 2)
-        return;
-
     if (channel == 0)
-        d->threshold = data;
+    {
+        d->thresholdValue = data;
+    }
     if (channel == 1)
-        d->outsideValue = data;
+    {
+        d->lowerValue = data;
+    }
     if (channel == 2)
-        d->comparisonOperator = (bool)data;
+    {
+        d->upperValue = data;
+    }
+    if (channel == 3)
+    {
+        d->outsideValue = data;
+    }
 }
 
 //-------------------------------------------------------------------------------------------
 
 int itkFiltersThresholdingProcess::tryUpdate()
 {   
-    int res = DTK_FAILURE;
+    int res = medAbstractProcess::FAILURE;
 
     if ( getInputData() )
     {
@@ -103,10 +119,19 @@ int itkFiltersThresholdingProcess::updateProcess(medAbstractData* inputData)
     typedef itk::ThresholdImageFilter < ImageType>  ThresholdImageFilterType;
     typename ThresholdImageFilterType::Pointer thresholdFilter = ThresholdImageFilterType::New();
     thresholdFilter->SetInput(inputImage);
-    if (d->comparisonOperator)
-        thresholdFilter->SetUpper( d->threshold ); // <= threshold
-    else
-        thresholdFilter->SetLower( d->threshold );
+
+    if ( d->thresholdType == outsideButtonId ) // OutSide
+    {
+        thresholdFilter->ThresholdOutside(d->lowerValue, d->upperValue);
+    }
+    else if ( d->thresholdType == lowerButtonId ) // Below
+    {
+        thresholdFilter->ThresholdBelow(d->thresholdValue);
+    }
+    else if ( d->thresholdType == upperButtonId ) // Above
+    {
+        thresholdFilter->ThresholdAbove(d->thresholdValue);
+    }
     thresholdFilter->SetOutsideValue( d->outsideValue );
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
@@ -118,10 +143,9 @@ int itkFiltersThresholdingProcess::updateProcess(medAbstractData* inputData)
 
     getOutputData()->setData ( thresholdFilter->GetOutput() );
 
-    QString newSeriesDescription = "threshold " + QString::number(d->threshold);
+    QString newSeriesDescription = "threshold " + QString::number(d->thresholdValue);
     medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);
-
-    return DTK_SUCCEED;
+    return medAbstractProcess::SUCCESS;
 }
 
 // /////////////////////////////////////////////////////////////////
