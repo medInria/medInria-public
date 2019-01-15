@@ -194,9 +194,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
 medVtkView::~medVtkView()
 {
-    // Remove the histogram if exists at removal of the view
-    showHistogram(false);
-
     disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(updateDataListParameter(unsigned int)));
     disconnect(this,SIGNAL(layerRemoved(unsigned int)),this,SLOT(render()));
 
@@ -571,21 +568,22 @@ void medVtkView::showHistogram(bool checked)
 {
     if (!checked)
     {
-        if (d->transFun != NULL)
+        if (d->transFun != nullptr)
         {
-            delete d->transFun ;
-            d->transFun = NULL;
+            d->transFun->hide();
         }
     }
     else
     {
-        if (d->transFun)
-            return;
-        d->transFun = new medClutEditorToolBox();
-        d->mainWindow->parentWidget()->layout()->addWidget(d->transFun);
+        if (d->transFun == nullptr)
+        {
+            d->transFun = new medClutEditorToolBox();
+            d->mainWindow->parentWidget()->layout()->addWidget(d->transFun);
 
-        d->transFun->setView(this);
-        d->transFun->setMaximumHeight(350);
+            d->transFun->setView(this);
+            d->transFun->setMaximumHeight(350);
+        }
+
         d->transFun->show();
     }
 }
@@ -608,8 +606,3 @@ void medVtkView::resetCameraOnLayer(int layer)
         this->render();
     }
 }
-
-//void medVtkView::updateTransferFunction()
-//{
-//    d->transFun->clear(); //update()
-//}

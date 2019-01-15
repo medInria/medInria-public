@@ -148,20 +148,6 @@ medClutEditorToolBox::medClutEditorToolBox(QWidget *parent) : medToolBox(parent)
 
 medClutEditorToolBox::~medClutEditorToolBox(void)
 {
-    delete d->newAction;
-    delete d->loadTableAction;
-    delete d->saveTableAction;
-    // delete d->deleteTableAction;
-    // delete d->colorAction;
-    // delete d->deleteAction;
-    delete d->applyAction;
-    delete d->toggleDirectUpdateAction;
-    delete d->discreteModeAction;
-    delete d->infoAction;
-
-    delete d->scene;
-    delete d->view;
-    delete d->tables; //TODO: delete all the tables as well.
     delete d;
 }
 
