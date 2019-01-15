@@ -193,3 +193,32 @@ void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
         renderer3DParam->setValue("Ray Cast");
     }
 }
+
+void medUtilities::computeMeanAndVariance(QList<double> samples,
+                                          double* mean,
+                                          double* variance)
+{
+    double value, tmpVar, delta, finalMean;
+    *mean = *variance = value = tmpVar = finalMean = 0.0;
+    unsigned int nbSamples = samples.size();
+    // only one pass using Welford algorithm
+    for (unsigned int i = 0; i < nbSamples; ++i)
+    {
+        value = samples[i];
+        delta = value - finalMean;
+        finalMean += delta / (i + 1);
+        tmpVar  += delta * (value - finalMean);
+    }
+
+    if (nbSamples > 1)
+    {
+        tmpVar /= nbSamples - 1;
+    }
+    else
+    {
+        tmpVar = 0.0;
+    }
+
+    *mean = finalMean;
+    *variance = tmpVar;
+}

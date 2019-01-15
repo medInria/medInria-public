@@ -35,4 +35,6 @@ public:
     static void applyInverseOrientationMatrix(medAbstractView* view, double* inPoint, double* outPoint, bool withTranslation = true);
 
     static void switchTo3D(medAbstractView *view, Mode3DType mode3D = VR); // Display mesh in 3D orientation
+
+    static void computeMeanAndVariance(QList<double> samples, double* mean, double* variance);
 };

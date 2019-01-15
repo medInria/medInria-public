@@ -1,4 +1,5 @@
 #include "medUtilitiesVTK.h"
+#include "medUtilities.h"
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractData.h>
@@ -151,28 +152,16 @@ bool medUtilitiesVTK::arrayStats(medAbstractData* data,
     if (array && (component < array->GetNumberOfComponents()))
     {
         vtkIdType nbTuples = array->GetNumberOfTuples();
-        // compute mean and variance
-        double value, delta, finalMean, variance;
-        value = delta =  finalMean = variance = 0.0;
+        QList<double> samples;
+        double variance = 0.0;
         for (vtkIdType i = 0; i < nbTuples; ++i)
         {
-            value = array->GetComponent(i, component);
-            delta = value - finalMean;
-            finalMean += delta / (i + 1);
-            variance += delta * (value - finalMean);
+            samples.append(array->GetComponent(i, component));
         }
-        if (nbTuples > 1)
-        {
-            variance /= nbTuples - 1;
-        }
-        else
-        {
-            variance = 0.0;
-        }
-
-        *mean = finalMean;
+        medUtilities::computeMeanAndVariance(samples, mean, &variance);
         *stdDev = std::sqrt(variance);
         return true;
     }
     return false;
 }
+
