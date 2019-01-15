@@ -579,8 +579,10 @@ void medVtkView::showHistogram(bool checked)
     }
     else
     {
+        if (d->transFun)
+            return;
         d->transFun = new medClutEditorToolBox();
-        d->viewWidget->parentWidget()->layout()->addWidget(d->transFun);
+        d->mainWindow->parentWidget()->layout()->addWidget(d->transFun);
 
         d->transFun->setView(this);
         d->transFun->setMaximumHeight(350);
