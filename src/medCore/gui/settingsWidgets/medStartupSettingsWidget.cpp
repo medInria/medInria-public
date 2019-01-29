@@ -51,6 +51,8 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
 
     d->defaultStartingArea = new QComboBox(this);
+    d->defaultStartingArea->addItem(tr("Search"));
+    d->defaultStartingArea->setItemData(0, 0, Qt::UserRole - 1); // Search is disabled
     d->defaultStartingArea->addItem(tr("Homepage"));
     d->defaultStartingArea->addItem(tr("Browser"));
     foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
@@ -84,8 +86,8 @@ void medStartupSettingsWidget::read()
     medSettingsManager * mnger = medSettingsManager::instance();
     d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
 
-    //if nothing is configured then Browser is the default area
-    int index = mnger->value("startup", "default_starting_area", 0).toInt();
+    //if nothing is configured then Homepage is the default area
+    int index = mnger->value("startup", "default_starting_area", 1).toInt();
 
     // clamp range
     if (index < 0)

@@ -545,6 +545,11 @@ QComboBox QAbstractItemView
     outline: 0px;
 }
 
+QComboBox QAbstractItemView::disabled
+{
+    color:$BLUE_VERY_LIGHT;
+}
+
 /*******************************************************************************
      QCheckBox
  *******************************************************************************/

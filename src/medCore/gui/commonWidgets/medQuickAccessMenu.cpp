@@ -28,8 +28,14 @@
 medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::WindowFlags f ) : QWidget ( parent, f )
 {
     QVariant startupWorkspace = medSettingsManager::instance()->value("startup","default_starting_area");
-
     currentSelected = startupWorkspace.toInt();
+
+    // "Search" should not be the startup area
+    if (currentSelected == 0)
+    {
+        currentSelected = 1; // default is Homepage
+    }
+
     if (vertical)
         this->createVerticalQuickAccessMenu();
     else
@@ -147,20 +153,26 @@ void medQuickAccessMenu::switchToCurrentlySelected()
         emit menuHidden();
         return;
     }
-    
+
     if (currentSelected == 0)
+    {
+        emit searchSelected();
+        return;
+    }
+
+    if (currentSelected == 1)
     {
         emit homepageSelected();
         return;
     }
     
-    if (currentSelected == 1)
+    if (currentSelected == 2)
     {
         emit browserSelected();
         return;
     }
 
-    if (currentSelected >= 2)
+    if (currentSelected >= 3)
     {
         emit workspaceSelected(buttonsList[currentSelected]->identifier());
         return;
@@ -299,8 +311,32 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setMargin(0);
     workspaceButtonsLayout->setSpacing ( 0 );
-    
-    //Setup quick access menu title
+       
+    //Setup quick access menu title for toolbox tools
+    QLabel * toolboxeSearchLabel = new QLabel ( tr("<b>Search a toolbox</b>") );
+    toolboxeSearchLabel->setMaximumWidth(300);
+    toolboxeSearchLabel->setFixedHeight(25);
+    toolboxeSearchLabel->setAlignment(Qt::AlignCenter);
+    toolboxeSearchLabel->setTextFormat(Qt::RichText);
+    toolboxeSearchLabel->setObjectName("quickAccessMenuHeader"); // See qss file, dedicated format
+    workspaceButtonsLayout->addWidget(toolboxeSearchLabel);
+
+    //Find a toolbox
+    medHomepagePushButton* searchButton = new medHomepagePushButton ( this );
+    searchButton->setText("Search");
+    searchButton->setIdentifier("Search");
+    searchButton->setIcon(QIcon(":icons/magnifier.png"));
+    searchButton->setFixedHeight(40);
+    searchButton->setMaximumWidth(250);
+    searchButton->setMinimumWidth(250);
+    searchButton->setStyleSheet("border: 0px;");
+    searchButton->setFocusPolicy(Qt::NoFocus);
+    searchButton->setCursor(Qt::PointingHandCursor);
+    workspaceButtonsLayout->addWidget(searchButton);
+    QObject::connect ( searchButton, SIGNAL ( clicked() ), this, SIGNAL ( searchSelected() ) );
+    buttonsList.push_back(searchButton);
+
+    //Setup quick access menu title for workspace
     QLabel * workspaceLabel = new QLabel ( tr("<b>Switch to workspaces</b>") );
     workspaceLabel->setMaximumWidth(300);
     workspaceLabel->setFixedHeight(25);
@@ -308,7 +344,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     workspaceLabel->setTextFormat(Qt::RichText);
     workspaceLabel->setObjectName("quickAccessMenuHeader");
     workspaceButtonsLayout->addWidget(workspaceLabel);
-    
+
     //Setup homepage access button
     medHomepagePushButton * homeButton = new medHomepagePushButton ( this );
     homeButton->setText("Home");
@@ -434,4 +470,16 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     this->setFixedWidth ( 40 + 180 * ( 2 + workspaceDetails.size() ) );
     this->setFixedHeight ( 240 );
     this->setLayout(mainWidgetLayout);
+}
+
+void medQuickAccessMenu::manuallyClickOnWorkspaceButton(QString workspaceName)
+{
+    for (int i = 0;i < buttonsList.size();++i)
+    {
+        if (buttonsList[i]->text() == workspaceName)
+        {
+            buttonsList[i]->click();
+            break;
+        }
+    }
 }

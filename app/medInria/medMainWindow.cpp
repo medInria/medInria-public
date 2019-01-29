@@ -11,37 +11,31 @@
 
 =========================================================================*/
 
-#include <medMainWindow.h>
-
-#include <QtGui>
+#include "medMainWindow.h"
 
 #include <medBrowserArea.h>
-#include <medWorkspaceArea.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDataManager.h>
+#include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
-
-#include <medTabbedViewContainers.h>
-#include <medAbstractLayeredView.h>
-
-#include <medToolBox.h>
-
-#include <medSettingsManager.h>
-#include <medSettingsEditor.h>
-
-#include <medStatusBar.h>
+#include <medJobManager.h>
+#include <medLogger.h>
 #include <medQuickAccessMenu.h>
 #include <medSaveModifiedDialog.h>
-#include <medEmptyDbWarning.h>
-
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseController.h>
-
-#include <medJobManager.h>
-
-#include <medWorkspaceFactory.h>
-#include <medAbstractWorkspace.h>
+#include <medSelectorToolBox.h>
+#include <medSelectorWorkspace.h>
+#include <medSettingsEditor.h>
+#include <medSettingsManager.h>
+#include <medStatusBar.h>
+#include <medTabbedViewContainers.h>
+#include <medToolBoxFactory.h>
 #include <medVisualizationWorkspace.h>
+#include <medWorkspaceArea.h>
+#include <medWorkspaceFactory.h>
 
-#include <medLogger.h>
+#include <mscSearchToolboxDialog.h>
+
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
@@ -175,6 +169,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessWidget->move(QPoint(0, this->height() - d->quickAccessWidget->height() - 30));
 
     connect(d->quickAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideQuickAccess()));
+    connect(d->quickAccessWidget, SIGNAL(searchSelected()), this, SLOT(switchToSearchArea()));
     connect(d->quickAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->quickAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
     connect(d->quickAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
@@ -553,6 +548,58 @@ void medMainWindow::switchToBrowserArea()
     d->movieButton->setEnabled(false);
     d->adjustSizeButton->setEnabled(false);
     d->stack->setCurrentWidget(d->browserArea);
+}
+
+void medMainWindow::switchToSearchArea()
+{
+    // Create toolbox list
+    QHash<QString, QStringList> toolboxDataHash;
+    medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
+    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
+    {
+        QString workspaceName = detail->name;
+
+        foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(workspaceName))
+        {
+            medToolBoxDetails* toolboxDetails = tbFactory->toolBoxDetailsFromId(toolboxName);
+
+            QStringList current;
+            // Displayed toolbox name from MED_TOOLBOX_INTERFACE
+            current.append(toolboxDetails->name);
+            // Toolbox description found in MED_TOOLBOX_INTERFACE
+            current.append(toolboxDetails->description);
+            // Some toolboxes have multiple categories/workspace, we only keep the first
+            current.append(workspaceName);
+            // Internal toolbox name, class name
+            current.append(toolboxName);
+
+            // Some toolboxes have multiple workspace categories
+            if (toolboxDataHash[toolboxName].isEmpty())
+            {
+                toolboxDataHash[toolboxName] = current;
+            }
+        }
+    }
+
+    mscSearchToolboxDialog* dialog = new mscSearchToolboxDialog(this, toolboxDataHash);
+
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        // Get back workspace of toolbox chosen by user
+        // Name, Description, Workspace, Internal Name
+        QStringList chosenToolboxInfo = dialog->getFindText();
+        d->quickAccessWidget->manuallyClickOnWorkspaceButton(chosenToolboxInfo.at(2));
+
+        // Display asked toolbox
+        medSelectorToolBox* selector = static_cast<medSelectorWorkspace*>(d->workspaceArea->currentWorkspace())->selectorToolBox();
+        int toolboxIndex = selector->getIndexOfToolBox(chosenToolboxInfo.at(0));
+        if (toolboxIndex > 0)
+        {
+            selector->comboBox()->setCurrentIndex(toolboxIndex);
+            selector->changeCurrentToolBox(toolboxIndex);
+        }
+    }
 }
 
 void medMainWindow::switchToWorkspaceArea()

@@ -77,6 +77,7 @@ private slots:
     void captureScreenshot();
     void captureVideo();
 
+    void switchToSearchArea();
     void switchToBrowserArea();
     void switchToWorkspaceArea();
     void switchToHomepageArea();

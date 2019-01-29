@@ -152,6 +152,18 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
     }
 }
 
+int medSelectorToolBox::getIndexOfToolBox(const QString &toolboxName)
+{
+    for (int i=0; i<d->chooseComboBox->count(); ++i)
+    {
+        if(d->chooseComboBox->itemText(i) == toolboxName)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 medAbstractData* medSelectorToolBox::data()
 {
     return d->inputData;

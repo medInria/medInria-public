@@ -42,6 +42,8 @@ public:
      */
     medComboBox* comboBox();
 
+    int getIndexOfToolBox(const QString &toolboxName);
+
 signals:
     void inputChanged();
     void currentToolBoxChanged();
