@@ -374,7 +374,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     //Size threshold Widget
     d->componentSizeThresholdFilterWidget = new QWidget(this);
     d->componentSizeThresholdFilterValue = new QSpinBox;
-    d->componentSizeThresholdFilterValue->setObjectName("Minimum size of an object: ");
+    d->componentSizeThresholdFilterValue->setObjectName("componentSizeThresholdFilterValue");
     d->componentSizeThresholdFilterValue->setMaximum ( 100000 );
     d->componentSizeThresholdFilterValue->setValue ( itkFiltersComponentSizeThresholdProcess::defaultMinimumSize );
     QLabel * componentSizeThresholdFilterLabel = new QLabel ( tr ( "Minimum size in pixel of an object:" ) );

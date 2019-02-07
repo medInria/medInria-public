@@ -29,6 +29,10 @@ public:
 
     static double volume(dtkSmartPointer<medAbstractData> data);
 
+    static void meanVariance(dtkSmartPointer<medAbstractData> data,
+                             dtkSmartPointer<medAbstractData> mask,
+                             double *mean, double *variance);
+
     typedef itk::Image<char, 3> itkImageChar3;
     typedef itk::Image<unsigned char, 3> itkImageUChar3;
     typedef itk::Image<short, 3> itkImageShort3;
@@ -53,7 +57,7 @@ public:
     /** Identifier of the class used to store a specific itk image type, to be used with dtkAbstractDataFactory
      */
     template <typename ImageType> static QString itkDataImageId();
-
+    static QString itkDataImageId(QString type, unsigned int dimension = 3);
 #ifndef SWIG
 
     template <typename TargetClass, typename... OtherArguments>

@@ -29,10 +29,145 @@ double medUtilitiesITK::volume(dtkSmartPointer<medAbstractData> data)
     return statsProcess.output().at(0);
 }
 
+void medUtilitiesITK::meanVariance(dtkSmartPointer<medAbstractData> data,
+                                   dtkSmartPointer<medAbstractData> mask,
+                                   double *mean,
+                                   double *variance)
+{
+    statsROI statsProcess;
+    statsProcess.setInput(data, 0);
+    statsProcess.setInput(mask, 1);
+    statsProcess.setParameter(statsROI::MEANVARIANCE);
+    statsProcess.update();
+    *mean = statsProcess.output().at(0);
+    *variance = statsProcess.output().at(1);
+    return;
+}
+
 template <typename ImageType>
 QString medUtilitiesITK::itkDataImageId()
 {
     return QString();
+}
+
+QString medUtilitiesITK::itkDataImageId(QString type,  unsigned int dimension)
+{
+    if (dimension != 3 && dimension != 4)
+    {
+        return "";
+    }
+
+    if (type == "char")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<char, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<char, 4> >();
+        }
+    }
+    else if (type == "unsigned char")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<unsigned char, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<unsigned char, 4> >();
+        }
+    }
+    else if (type == "short")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<short, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<short, 4> >();
+        }
+    }
+    else if (type == "unsigned short")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<unsigned short, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<unsigned short, 4> >();
+        }
+    }
+    else if (type == "int")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<int, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<int, 4> >();
+        }
+    }
+    else if (type == "unsigned int")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<unsigned int, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<unsigned int, 4> >();
+        }
+    }
+    else if (type == "long")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<long, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<long, 4> >();
+        }
+    }
+    else if (type == "unsigned long")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<unsigned long, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<unsigned long, 4> >();
+        }
+    }
+    else if (type == "float")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<float, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<float, 4> >();
+        }
+    }
+    else if (type == "double")
+    {
+        if (dimension == 3)
+        {
+            return itkDataImageId<itk::Image<double, 3> >();
+        }
+        else if (dimension == 4)
+        {
+            return itkDataImageId<itk::Image<double, 4> >();
+        }
+    }
+    return "";
 }
 
 template <>
