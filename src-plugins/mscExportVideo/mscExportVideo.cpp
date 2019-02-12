@@ -2,9 +2,11 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
+#include <vtkFFMPEGWriter.h>
 #include <vtkImageCanvasSource2D.h>
 #include <vtkImageData.h>
 #include <vtkJPEGWriter.h>
+#include <vtkMPEG2Writer.h>
 #include <vtkOggTheoraWriter.h>
 #include <vtkQImageToImageSource.h>
 #include <vtkSmartPointer.h>
@@ -203,35 +205,56 @@ int ExportVideo::exportAsVideo()
     source->SetNumberOfScalarComponents(3);
     source->SetExtent(0, d->width-1, 0, d->height-1, 0, 0);
 
+    vtkSmartPointer<vtkGenericMovieWriter> writerVideo;
+
     if (d->format == OGGVORBIS)
     {
-        vtkSmartPointer<vtkOggTheoraWriter> writerVideo = vtkSmartPointer<vtkOggTheoraWriter>::New();
-        writerVideo->SetInputConnection(source->GetOutputPort());
-        writerVideo->SetFileName(d->filename.toStdString().c_str());
-        writerVideo->SetRate(d->frameRate);
-        writerVideo->SetSubsampling(d->subsampling); // OGG/OGV parameter
-        writerVideo->SetQuality(d->quality);
-        writerVideo->Start();
+        vtkSmartPointer<vtkOggTheoraWriter> writerVideoTmp = vtkSmartPointer<vtkOggTheoraWriter>::New();
+        writerVideoTmp->SetInputConnection(source->GetOutputPort());
+        writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
+        writerVideoTmp->SetRate(d->frameRate);
+        writerVideoTmp->SetSubsampling(d->subsampling);
+        writerVideoTmp->SetQuality(d->quality);
 
-        foreach (QImage qimage, d->imagesArray)
-        {
-            // Qt to VTK images (vtkImageData)
-            vtkSmartPointer<vtkQImageToImageSource> qimageToImageSource = vtkSmartPointer<vtkQImageToImageSource>::New();
-            qimageToImageSource->SetQImage(&qimage);
-            qimageToImageSource->Update();
-            vtkImageData* vtkImage = qimageToImageSource->GetOutput();
-
-            source->DrawImage(0, 0, vtkImage);
-            source->Update();
-
-            writerVideo->Write();
-        }
-
-        writerVideo->End();
-
-        return medAbstractProcess::SUCCESS;
+        writerVideo = writerVideoTmp;
     }
-    return medAbstractProcess::FAILURE;
+    else if (d->format == FFMPEG)
+    {
+        vtkSmartPointer<vtkFFMPEGWriter> writerVideoTmp = vtkSmartPointer<vtkFFMPEGWriter>::New();
+        writerVideoTmp->SetInputConnection(source->GetOutputPort());
+        writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
+        writerVideoTmp->SetRate(d->frameRate);
+
+        writerVideo = writerVideoTmp;
+    }
+    else if (d->format == MPEG2)
+    {
+        vtkSmartPointer<vtkMPEG2Writer> writerVideoTmp = vtkSmartPointer<vtkMPEG2Writer>::New();
+        writerVideoTmp->SetInputConnection(source->GetOutputPort());
+        writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
+
+        writerVideo = writerVideoTmp;
+    }
+
+    writerVideo->Start();
+
+    foreach (QImage qimage, d->imagesArray)
+    {
+        // Qt to VTK images (vtkImageData)
+        vtkSmartPointer<vtkQImageToImageSource> qimageToImageSource = vtkSmartPointer<vtkQImageToImageSource>::New();
+        qimageToImageSource->SetQImage(&qimage);
+        qimageToImageSource->Update();
+        vtkImageData* vtkImage = qimageToImageSource->GetOutput();
+
+        source->DrawImage(0, 0, vtkImage);
+        source->Update();
+
+        writerVideo->Write();
+    }
+
+    writerVideo->End();
+
+    return medAbstractProcess::SUCCESS;
 }
 
 int ExportVideo::displayFileDialog()
@@ -260,6 +283,8 @@ int ExportVideo::displayFileDialog()
     // and .ogx for multiplexed Ogg."
     d->formatComboBox->addItem("Ogg Vorbis (.ogv)", 0);
     d->formatComboBox->addItem("JPEG (.jpg .jpeg)", 1);
+    d->formatComboBox->addItem("FFMPEG (.avi)", 2);
+    d->formatComboBox->addItem("MPEG2 (.avi)", 3);
     d->formatComboBox->setCurrentIndex(d->format);
     gridbox->addWidget(new QLabel("Format", d->exportDialog), gridbox->rowCount()-1, 0);
     gridbox->addWidget(d->formatComboBox, gridbox->rowCount()-1, 1);
@@ -339,6 +364,30 @@ void ExportVideo::handleWidgetDisplayAccordingToType(int index)
     {
         // JPEG
         d->exportDialog->selectFile("image0.jpg");
+        d->frameRateSpinBox->hide();
+        d->frameRateLabel->hide();
+        d->subsamplingComboBox->hide();
+        d->subsamplingLabel->hide();
+        d->qualityComboBox->hide();
+        d->qualityLabel->hide();
+        break;
+    }
+    case FFMPEG:
+    {
+        // Video
+        d->exportDialog->selectFile("video.avi");
+        d->frameRateSpinBox->show();
+        d->frameRateLabel->show();
+        d->subsamplingComboBox->hide();
+        d->subsamplingLabel->hide();
+        d->qualityComboBox->hide();
+        d->qualityLabel->hide();
+        break;
+    }
+    case MPEG2:
+    {
+        // Video
+        d->exportDialog->selectFile("video.avi");
         d->frameRateSpinBox->hide();
         d->frameRateLabel->hide();
         d->subsamplingComboBox->hide();
