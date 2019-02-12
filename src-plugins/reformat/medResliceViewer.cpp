@@ -264,6 +264,11 @@ medResliceViewer::~medResliceViewer()
     vtkViewData = 0;
 }
 
+QString medResliceViewer::identifier() const
+{
+    return "medResliceViewer";
+}
+
 void medResliceViewer::setToolBox(resliceToolBox *tlbx)
 {
     reformaTlbx = tlbx;

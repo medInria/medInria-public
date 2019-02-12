@@ -51,6 +51,7 @@ public:
 
     medResliceViewer(medAbstractView * view,QWidget *parent =0);
     ~medResliceViewer();
+    virtual QString identifier() const;
     void setToolBox(resliceToolBox *);
 
     virtual QString description() const;
