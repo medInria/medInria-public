@@ -581,14 +581,13 @@ void medMainWindow::switchToSearchArea()
             }
         }
     }
+    mscSearchToolboxDialog dialog(this, toolboxDataHash);
 
-    mscSearchToolboxDialog* dialog = new mscSearchToolboxDialog(this, toolboxDataHash);
-
-    if (dialog->exec() == QDialog::Accepted)
+    if (dialog.exec() == QDialog::Accepted)
     {
         // Get back workspace of toolbox chosen by user
         // Name, Description, Workspace, Internal Name
-        QStringList chosenToolboxInfo = dialog->getFindText();
+        QStringList chosenToolboxInfo = dialog.getFindText();
         d->quickAccessWidget->manuallyClickOnWorkspaceButton(chosenToolboxInfo.at(2));
 
         // Display asked toolbox
