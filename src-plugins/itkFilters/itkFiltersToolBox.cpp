@@ -34,18 +34,25 @@
 #include <itkFiltersSubtractProcess.h>
 #include <itkFiltersThresholdingProcess.h>
 #include <itkFiltersWindowingProcess.h>
-#include <medDoubleParameter.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractImageData.h>
+#include <medAbstractImageView.h>
 #include <medAbstractSelectableToolBox.h>
+#include <medAbstractView.h>
+#include <medClutEditorToolBox.h>
+#include <medDoubleParameter.h>
 #include <medPluginManager.h>
 #include <medRunnableProcess.h>
 #include <medSelectorToolBox.h>
+#include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medUtilitiesITK.h>
+#include <medViewContainer.h>
 
+#include <QSet>
 #include <QtGui>
 
 #include <statsROI.h>
@@ -75,6 +82,7 @@ public:
     medDoubleParameter * thresholdFilterValue;
     medDoubleParameter * thresholdLowerValue;
     medDoubleParameter * thresholdUpperValue;
+    QPointer<medClutEditorToolBox> clutEditor;
 
     QWidget * thresholdValueWidget;
     QWidget * thresholdUpperWidget;
@@ -83,6 +91,7 @@ public:
     QSpinBox * thresholdFilterValue2;
     QButtonGroup * valueButtonGroup;
     QRadioButton * binaryThreshold;
+    QCheckBox * histogram;
     QLabel * thresholdValueLabel;
     QSpinBox * shrink0Value;
     QSpinBox * shrink1Value;
@@ -94,6 +103,9 @@ public:
     QDoubleSpinBox * intensityOutputMinimumValue;
     QDoubleSpinBox * intensityOutputMaximumValue;
 
+    double minValueImage;
+    double maxValueImage;
+    QColor minColor, maxColor, thresholdColor;
     medComboBox * filters;
     dtkSmartPointer <itkFiltersProcessBase> process;
 };
@@ -240,7 +252,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->intensityMaximumValue = new QDoubleSpinBox;
     d->intensityOutputMinimumValue = new QDoubleSpinBox;
     d->intensityOutputMaximumValue = new QDoubleSpinBox;
-    clear();
 
     QLabel * intensityMinimumLabel = new QLabel ( tr ( "Minimum:" ) );
     QHBoxLayout * intensityMinimumLayout = new QHBoxLayout;
@@ -288,6 +299,15 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->thresholdUpperValue->setRange ( -10000, 10000 );
     d->thresholdUpperValue->setValue ( itkFiltersThresholdingProcess::defaultUpper );
     d->thresholdUpperValue->setObjectName("upperValue");
+    QSignalMapper* signalMapper = new QSignalMapper(this);
+    signalMapper->setMapping(d->thresholdLowerValue, 0);
+    signalMapper->setMapping(d->thresholdUpperValue, 1);
+    signalMapper->setMapping(d->thresholdFilterValue, 2);
+
+    connect(d->thresholdLowerValue, SIGNAL(valueChanged(double)), signalMapper, SLOT (map()));
+    connect(d->thresholdUpperValue, SIGNAL(valueChanged(double)), signalMapper, SLOT (map()));
+    connect(d->thresholdFilterValue, SIGNAL(valueChanged(double)), signalMapper, SLOT (map()));
+    connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(updateClutEditorValue(int)));
 
     d->thresholdFilterValue2 = new QSpinBox;
     d->thresholdFilterValue2->setRange ( -10000, 10000 );
@@ -297,6 +317,12 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->binaryThreshold = new QRadioButton(tr("Binarize Image"), this);
     d->binaryThreshold->setObjectName("binaryThresholdButton");
     connect(d->binaryThreshold, SIGNAL(toggled(bool)), this, SLOT(checkBinaryThreshold(bool)));
+
+    d->histogram = new QCheckBox(tr("Open Histogram"), this);
+    d->histogram->setObjectName("histogram");
+    d->histogram->setDisabled(true);
+    connect(d->histogram, SIGNAL(stateChanged(int)), this, SLOT(showHistogram(int)), Qt::UniqueConnection);
+    clear();
 
     QRadioButton* greaterButton = new QRadioButton(tr(" greater "), this);
     greaterButton->setObjectName("greaterButton");
@@ -360,6 +386,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     thresholdFilterLayout1->addWidget( d->thresholdUpperWidget );
     thresholdFilterLayout1->addWidget( d->thresholdValueWidget );
     thresholdFilterLayout1->addWidget( outsideValueWidget );
+    thresholdFilterLayout1->addWidget( d->histogram );
     thresholdFilterLayout1->addStretch ( 1 );
 
     QVBoxLayout * thresholdFilterLayout = new QVBoxLayout;
@@ -370,6 +397,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
 
     connect(d->valueButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateThresholdToolboxBehaviour(int)));
     greaterButton->click();
+    d->clutEditor = nullptr;
 
     //Size threshold Widget
     d->componentSizeThresholdFilterWidget = new QWidget(this);
@@ -464,6 +492,12 @@ void itkFiltersToolBox::clear()
     d->intensityOutputMaximumValue->setMinimum (itkFiltersWindowingProcess::defaultMinimumIntensityValue);
     d->intensityOutputMaximumValue->setMaximum (itkFiltersWindowingProcess::defaultMaximumIntensityValue);
     d->intensityOutputMaximumValue->setValue (itkFiltersWindowingProcess::defaultMaximumIntensityValue);
+
+    d->histogram->setDisabled(true);
+    d->minColor = Qt::white;
+    d->maxColor = Qt::white;
+    d->thresholdColor = Qt::black;
+    d->minValueImage = d->maxValueImage = 0.;
 }
 
 void itkFiltersToolBox::update()
@@ -489,23 +523,33 @@ void itkFiltersToolBox::update()
         statsProcess.setInput(data, 0); //data
         statsProcess.setParameter(statsROI::MINMAX);
 
-        double m_MinValueImage = itkFiltersWindowingProcess::defaultMinimumIntensityValue;
-        double m_MaxValueImage = itkFiltersWindowingProcess::defaultMaximumIntensityValue;
+        d->minValueImage = itkFiltersWindowingProcess::defaultMinimumIntensityValue;
+        d->maxValueImage = itkFiltersWindowingProcess::defaultMaximumIntensityValue;
 
         if(statsProcess.update() == DTK_SUCCEED)
         {
-            m_MinValueImage = statsProcess.output().at(0);
-            m_MaxValueImage = statsProcess.output().at(1);
+            d->minValueImage = statsProcess.output().at(0);
+            d->maxValueImage = statsProcess.output().at(1);
         }
-        d->intensityMinimumValue->setValue(m_MinValueImage);
-        d->intensityMaximumValue->setValue(m_MaxValueImage);
-        d->intensityOutputMinimumValue->setValue(m_MinValueImage);
-        d->intensityOutputMaximumValue->setValue (m_MaxValueImage);
+        d->intensityMinimumValue->setValue(d->minValueImage);
+        d->intensityMaximumValue->setValue(d->maxValueImage);
+        d->intensityOutputMinimumValue->setValue(d->minValueImage);
+        d->intensityOutputMaximumValue->setValue (d->maxValueImage);
+
+        d->thresholdLowerValue->setValue(d->minValueImage);
+        d->thresholdUpperValue->setValue(d->maxValueImage);
+        if (d->valueButtonGroup->checkedId()==itkFiltersThresholdingProcess::lowerButtonId ||
+                d->valueButtonGroup->checkedId()==itkFiltersThresholdingProcess::upperButtonId )
+        {
+            d->thresholdFilterValue->setValue((d->minValueImage+d->maxValueImage)/2);
+        }
+        d->histogram->setEnabled(true);
+        updateHistogramView();
     }
 }
 
 template <typename ImageType>
-int itkFiltersToolBox::setupSpinBoxValues(medAbstractData*)
+int itkFiltersToolBox::setupSpinBoxValues(medAbstractData* data)
 {
     typedef typename ImageType::PixelType PixelType;
 
@@ -519,18 +563,10 @@ int itkFiltersToolBox::setupSpinBoxValues(medAbstractData*)
     d->intensityOutputMinimumValue->setMaximum(std::numeric_limits<PixelType>::max());
     d->intensityOutputMaximumValue->setMinimum(std::numeric_limits<PixelType>::min());
     d->intensityOutputMaximumValue->setMaximum(std::numeric_limits<PixelType>::max());
-    d->thresholdLowerValue->setRange(itk::NumericTraits<PixelType>::NonpositiveMin(),
-                                      itk::NumericTraits<PixelType>::max());
-    d->thresholdLowerValue->setValue(itk::NumericTraits<PixelType>::NonpositiveMin());
-    d->thresholdUpperValue->setRange(itk::NumericTraits<PixelType>::NonpositiveMin(),
-                                      itk::NumericTraits<PixelType>::max());
-    d->thresholdUpperValue->setValue(itk::NumericTraits<PixelType>::max());
-    d->thresholdFilterValue->setRange(itk::NumericTraits<PixelType>::NonpositiveMin(),
-                                       itk::NumericTraits<PixelType>::max());
+
     if ( d->binaryThreshold->isChecked() )
     {
         d->thresholdFilterValue->setValue ( itkFiltersBinaryThresholdingProcess::defaultInsideValue );
-
     }
     else
     {
@@ -637,7 +673,6 @@ void itkFiltersToolBox::setupItkThresholdingProcess()
 
         d->process->setParameter ( d->thresholdLowerValue->value(), 0);
         d->process->setParameter ( d->thresholdUpperValue->value(), 1);
-
     }
     else
     {
@@ -646,7 +681,6 @@ void itkFiltersToolBox::setupItkThresholdingProcess()
         d->process->setInput ( this->selectorToolBox()->data() );
 
         d->process->setParameter(d->valueButtonGroup->checkedId());
-
         d->process->setParameter ( d->thresholdFilterValue->value(), 0);
         d->process->setParameter ( d->thresholdLowerValue->value(), 1);
         d->process->setParameter ( d->thresholdUpperValue->value(), 2);
@@ -727,6 +761,246 @@ void itkFiltersToolBox::run ( void )
     this->addConnectionsAndStartJob(runProcess);
 }
 
+void itkFiltersToolBox::updateClutEditorValue(int label)
+{
+    if ( d->clutEditor != nullptr )
+    {
+        QList<medClutEditorVertex*>& vertices = d->clutEditor->getScene()->table()->vertices();
+        medClutEditorVertex* vertex;
+        QPointF value, coord;
+        QColor color;
+        double amount;
+        switch (label)
+        {
+            case 0:
+                amount = d->thresholdLowerValue->value() - vertices.first()->value().x();
+                d->clutEditor->getScene()->table()->vertices().first()->shiftValue(amount);
+                break;
+            case 1:
+                amount = d->thresholdUpperValue->value() - vertices.last()->value().x();
+                d->clutEditor->getScene()->table()->vertices().last()->shiftValue(amount);
+                break;
+            case 2:
+                if ( d->clutEditor->getScene()->table()->vertices().size() != 3 )
+                {
+                    return;
+                }
+                amount = d->thresholdFilterValue->value() - vertices.at(1)->value().x();
+                d->clutEditor->getScene()->table()->vertices().at(1)->shiftValue(amount);
+                break;
+            default:
+                return;
+        }
+        d->clutEditor->getScene()->updateCoordinates();
+        d->clutEditor->getScene()->table()->finalizeMoveSelection();
+        d->clutEditor->getScene()->table()->triggerVertexSet();
+    }
+}
+
+void itkFiltersToolBox::updateClutEditorView()
+{
+    if ( d->clutEditor != nullptr )
+    {
+        QList<medClutEditorVertex*>& vertices = d->clutEditor->getScene()->table()->vertices();
+        if ( vertices.size()==0 )
+            return;
+
+        if ( d->binaryThreshold->isChecked() || d->valueButtonGroup->checkedId()==itkFiltersThresholdingProcess::outsideButtonId )
+        {
+            QPointF minVal( d->thresholdLowerValue->value(), 1.);
+            QPointF minCoord = d->clutEditor->getScene()->valueToCoordinate(minVal);
+
+            QPointF maxVal( d->thresholdUpperValue->value(), 1.);
+            QPointF maxCoord = d->clutEditor->getScene()->valueToCoordinate(maxVal);
+
+            d->clutEditor->getScene()->table()->deleteAllVertices();
+
+            d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( minVal, minCoord, d->minColor, d->clutEditor->getScene()->table()));
+            d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( maxVal, maxCoord, d->maxColor, d->clutEditor->getScene()->table()));
+        }
+        else
+        {
+            QPointF minVal( d->thresholdLowerValue->value() , vertices.first()->value().y());
+            QPointF minCoord = d->clutEditor->getScene()->valueToCoordinate(minVal);
+            QColor minColor = Qt::white;
+
+            QPointF maxVal( d->thresholdUpperValue->value(), vertices.last()->value().y());
+            QPointF maxCoord = d->clutEditor->getScene()->valueToCoordinate(maxVal);
+            QColor maxColor = Qt::white;
+
+            QPointF value( d->thresholdFilterValue->value(), vertices.at(1)->value().y() );
+            if ( vertices.size()==2 )
+            {
+                value.setY(1.);
+
+            }
+            QPointF coord = d->clutEditor->getScene()->valueToCoordinate(value);
+
+            d->clutEditor->getScene()->table()->deleteAllVertices();
+
+            d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( minVal, minCoord, minColor, d->clutEditor->getScene()->table() ));
+            d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( maxVal, maxCoord, maxColor, d->clutEditor->getScene()->table() ));
+            d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( value, coord, d->thresholdColor, d->clutEditor->getScene()->table() ));
+
+            connect(d->clutEditor->getScene()->table()->vertices().at(1)->getColorAction(), SIGNAL(triggered()), this, SLOT(setThresholdColor()));
+
+            d->clutEditor->invertLUT(d->valueButtonGroup->checkedId()!=itkFiltersThresholdingProcess::upperButtonId);
+        }
+    }
+}
+
+void itkFiltersToolBox::setThresholdColor()
+{
+    if ( d->clutEditor->getScene()->table()->vertices().size() == 3 )
+    {
+        d->thresholdColor = d->clutEditor->getScene()->table()->vertices().at(1)->color();
+    }
+    else
+    {
+        d->thresholdColor = Qt::black;
+    }
+}
+
+void itkFiltersToolBox::showHistogram(int state)
+{
+    if ( !this->selectorToolBox()->data() )
+    {
+        return;
+    }
+
+    if ( getWorkspace() != nullptr && getWorkspace()->stackedViewContainers() != nullptr )
+    {
+        if ( state==Qt::Checked )
+        {
+            medAbstractView* medVtkView = dynamic_cast<medAbstractView*>(this->getWorkspace()->stackedViewContainers()->getFirstSelectedContainerView());
+            if (d->clutEditor == nullptr)
+            {
+                d->clutEditor = new medClutEditorToolBox();
+                medVtkView->mainWindow()->parentWidget()->layout()->addWidget(d->clutEditor);
+                d->clutEditor->forceLayer(0);
+                d->clutEditor->setData(selectorToolBox()->data());
+                d->clutEditor->setView(medVtkView);
+                d->clutEditor->setMaximumHeight(350);
+                connect(d->clutEditor->getScene()->table(), SIGNAL(vertexAdded()), this, SLOT(addVertex()), Qt::UniqueConnection);
+                connect(d->clutEditor->getScene()->table(), SIGNAL(vertexSet()), this, SLOT(updateSliders()), Qt::UniqueConnection);
+                connect(medVtkView,SIGNAL(closed()),this,SLOT(onViewClosed()), Qt::UniqueConnection);
+            }
+            d->clutEditor->setDiscreteMode(true);
+            d->clutEditor->show();
+            updateClutEditorView();
+        }
+        else
+        {
+            if (d->clutEditor != nullptr)
+            {
+                d->histogram->setChecked(false);
+
+                d->clutEditor->setDiscreteMode(false);
+                d->clutEditor->getScene()->table()->deleteAllVertices();
+                QPointF minVal( d->minValueImage , 0);
+                QPointF minCoord = d->clutEditor->getScene()->valueToCoordinate(minVal);
+                d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( minVal, minCoord, QColor(Qt::white), d->clutEditor->getScene()->table() ));
+                QPointF maxVal( d->maxValueImage, 1);
+                QPointF maxCoord = d->clutEditor->getScene()->valueToCoordinate(maxVal);
+                d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( maxVal, maxCoord, QColor(Qt::white), d->clutEditor->getScene()->table() ));
+                d->clutEditor->getScene()->table()->updateVerticesToDisplay();
+                d->clutEditor->hide();
+            }
+        }
+    }
+}
+
+void itkFiltersToolBox::addVertex()
+{
+    QList<medClutEditorVertex*> & vertices = d->clutEditor->getScene()->table()->vertices();
+
+    int maxTableSize = 0;
+    if (d->binaryThreshold->isChecked() || d->valueButtonGroup->checkedId()==itkFiltersThresholdingProcess::outsideButtonId )
+    {
+        maxTableSize = 2;
+    }
+    else
+    {
+        maxTableSize = 3;
+    }
+    if ( vertices.size() > maxTableSize )
+    {
+        d->clutEditor->getScene()->table()->setSelectedAllVertices(false);
+        for(int i = 1; i < vertices.size()-1; i++) //don't take first and last vertices
+        {
+            if ( vertices.at(i)->value().x() != d->thresholdFilterValue->value() )
+            {
+                vertices.at(i)->setSelected(true);
+            }
+        }
+        d->clutEditor->getScene()->table()->deleteSelection();
+    }
+}
+
+void itkFiltersToolBox::updateSliders()
+{
+    QList<medClutEditorVertex*> &vertices = d->clutEditor->getScene()->table()->vertices();
+    std::vector<double> thresholdsValueList;
+    if ( vertices.first()->value().x() != d->thresholdLowerValue->value() )
+    {
+        double lowerValue = vertices.first()->value().x();
+        d->thresholdLowerValue->blockSignals(true);
+        d->thresholdLowerValue->setValue(lowerValue);
+        d->thresholdLowerValue->blockSignals(false);
+    }
+    if ( vertices.last()->value().x() != d->thresholdUpperValue->value() )
+    {
+        double upperValue = vertices.last()->value().x();
+        d->thresholdUpperValue->blockSignals(true);
+        d->thresholdUpperValue->setValue(upperValue);
+        d->thresholdUpperValue->blockSignals(false);
+    }
+    if ( vertices.size()==3  && vertices.at(1)->value().x() != d->thresholdFilterValue->value() )
+    {
+        double filterValue = vertices.at(1)->value().x();
+        d->thresholdFilterValue->blockSignals(true);
+        d->thresholdFilterValue->setValue(filterValue);
+        d->thresholdFilterValue->blockSignals(false);
+    }
+}
+
+void itkFiltersToolBox::updateHistogramView()
+{
+    if ( ! selectorToolBox() || !(selectorToolBox()->data()) )
+    {
+        return;
+    }
+    bool thresholdIsVisible =  d->thresholdFilterWidget->isVisible();
+    d->histogram->setEnabled(thresholdIsVisible);
+    if ( getWorkspace()  &&
+         getWorkspace()->stackedViewContainers() )
+    {
+        medViewContainer* viewContainer = getWorkspace()->stackedViewContainers()->getFirstSelectedContainer();
+        if ( viewContainer )
+        {
+            getWorkspace()->stackedViewContainers()->removeTab(1);
+
+            viewContainer->enableHistogramAction(!thresholdIsVisible);
+            if ( thresholdIsVisible )
+            {
+                if ( viewContainer->histogramAction()->isChecked() )
+                {
+                    viewContainer->clickHistoAction(false);
+                }
+            }
+            else
+            {
+                if ( d->clutEditor != nullptr &&
+                     d->clutEditor->getScene() != nullptr )
+                {
+                    showHistogram(Qt::Unchecked);
+                    getWorkspace()->stackedViewContainers()->removeTab(1);
+                }
+            }
+        }
+    }
+}
+
 void itkFiltersToolBox::onFiltersActivated ( int index )
 {
     d->addFilterWidget->hide();
@@ -783,6 +1057,8 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
     default:
         d->addFilterWidget->show();
     }
+
+    updateHistogramView();
 }
 
 void itkFiltersToolBox::updateThresholdToolboxBehaviour(int id)
@@ -809,6 +1085,10 @@ void itkFiltersToolBox::updateThresholdToolboxBehaviour(int id)
             d->thresholdUpperWidget->setVisible(true);
         }
     }
+    if ( d->histogram->isChecked() )
+    {
+        updateClutEditorView();
+    }
 }
 
 void itkFiltersToolBox::checkBinaryThreshold(bool checked)
@@ -831,6 +1111,18 @@ void itkFiltersToolBox::checkBinaryThreshold(bool checked)
     }
 }
 
+void itkFiltersToolBox::onViewClosed()
+{
+    if (getWorkspace() != nullptr && getWorkspace()->stackedViewContainers() != nullptr )
+    {
+        getWorkspace()->stackedViewContainers()->removeTab(1);
+    }
+    d->clutEditor->reset();
+    delete d->clutEditor;
+    d->clutEditor = nullptr;
+    d->histogram->setChecked(false);
+}
+
 dtkPlugin* itkFiltersToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
@@ -838,8 +1130,8 @@ dtkPlugin* itkFiltersToolBox::plugin()
     return plugin;
 }
 
-
 medToolBox *createitkFiltersToolBox ( QWidget *parent )
 {
     return new itkFiltersToolBox ( parent );
 }
+

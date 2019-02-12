@@ -49,5 +49,7 @@ public:
     virtual int scalarValueMinCount();
     virtual int scalarValueMaxCount();
 
+    virtual void deleteHistogram(){};
+
     static const char* PixelMeaningMetaData;
 };

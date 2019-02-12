@@ -53,6 +53,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->isContextVisible = false;
     d->aboutPluginVisibility = false;
     d->plugin= NULL;
+    d->workspace = nullptr;
 
 
     d->layout = new QVBoxLayout(this);

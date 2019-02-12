@@ -51,6 +51,7 @@ public:
     QRectF boundingRect() const;
     QColor color() const;
     void setColor(QColor color);
+    QAction *getColorAction();
 
     void initiateMove();
     void finalizeMove();

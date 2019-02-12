@@ -29,6 +29,7 @@ class itkFiltersToolBoxPrivate;
  * "outsideButton" : QRadioButton\n
  * "binaryThresholdButton" : QRadioButton\n
  * "componentSizeThresholdFilterValue" : QSpinBox\n
+ * "histogram" : QCheckBox\n
  * "Run" : QPushButton
  */
 class itkFiltersToolBox : public medAbstractSelectableToolBox
@@ -47,17 +48,23 @@ public:
     dtkPlugin* plugin();
 
 public slots:
-
     void onFiltersActivated(int index);
-
     void clear();
     void update();
-
     void run();
 
+    void showHistogram(int state);
+    void updateHistogramView();
+    void updateSliders();
+    void addVertex();
+    void setThresholdColor();
+
 private slots:
+    void updateClutEditorValue(int label);
     void updateThresholdToolboxBehaviour(int id);
     void checkBinaryThreshold(bool checked);
+    void onViewClosed();
+    void updateClutEditorView();
 
 private:
     template <typename ImageType> int setupSpinBoxValues(medAbstractData*);

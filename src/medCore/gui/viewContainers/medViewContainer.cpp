@@ -1120,3 +1120,21 @@ void medViewContainer::displayMessageError(QString message)
     printInConsole(message);
     medMessageController::instance()->showError(message,3000);
 }
+
+void medViewContainer::clickHistoAction(bool checked)
+{
+    if ( checked != d->histogramAction->isChecked() )
+    {
+        d->histogramAction->toggle();
+    }
+}
+
+QAction* medViewContainer::histogramAction()
+{
+    return d->histogramAction;
+}
+
+void medViewContainer::enableHistogramAction(bool state)
+{
+    d->histogramAction->setEnabled(state);
+}

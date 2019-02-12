@@ -239,6 +239,11 @@ void medClutEditorVertex::showColorSelection()
         table->setColorOfSelection( d->color );
 }
 
+QAction* medClutEditorVertex::getColorAction()
+{
+    return d->setColorAction;
+}
+
 void medClutEditorVertex::setAlpha()
 {
     qreal alpha = qMax( 0.0, qMin( d->value.y(), 1.0 ) );

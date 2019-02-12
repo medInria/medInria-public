@@ -76,6 +76,7 @@ public:
     void removeColorIndicator(QColor color);
 
     bool userValidationForStudyDrop();
+    void enableHistogramAction(bool state);
 
 public slots:
     void setView(medAbstractView* view);
@@ -115,6 +116,9 @@ signals:
     void importFinished();
 
 
+public slots:
+    void clickHistoAction(bool checked);
+    QAction *histogramAction();
 protected:
     void focusInEvent(QFocusEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
