@@ -36,17 +36,25 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
 {
     d->filesystemWidget = new QWidget();
 
+    // Get previous path or default one
+    QString defaultPath = medSettingsManager::instance()->value("Browser", "default_pipeline_import_path").toString();
+
+    if (defaultPath.isEmpty())
+    {
+        defaultPath = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    }
+
     d->finder = new dtkFinder (d->filesystemWidget);
     d->finder->allowFileBookmarking(false);
     d->finder->allowMultipleSelection(true);
-    d->finder->setPath(QDir::homePath());
+    d->finder->setPath(defaultPath);
 
     d->path = new dtkFinderPathBar (d->filesystemWidget);
-    d->path->setPath(QDir::homePath());
+    d->path->setPath(defaultPath);
 
     d->toolbar = new dtkFinderToolBar (d->filesystemWidget);
     d->toolbar->setObjectName("toolbarWidget");
-    d->toolbar->setPath(QDir::homePath());
+    d->toolbar->setPath(defaultPath);
 
     d->infoText = new QLabel(d->filesystemWidget);
     d->infoText->setObjectName("fileSystemInfoText");
@@ -276,6 +284,8 @@ void medFileSystemDataSource::onFileClicked(const QFileInfo& info)
     else {
         d->infoText->setText("<b>" + info.fileName() + "</b> selected - <i>" + this->formatByteSize(info.size()) + "</i>");
     }
+
+    medSettingsManager::instance()->setValue("Browser", "default_pipeline_import_path", info.path());
 }
 
 QString medFileSystemDataSource::formatByteSize(qint64 bytes)
