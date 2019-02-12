@@ -721,18 +721,38 @@ void medMainWindow::hideShortcutAccess()
     this->activateWindow();
 }
 
-int medMainWindow::saveModified( void )
+int medMainWindow::saveModifiedAndOrValidateClosing()
 {
     QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
 
     if(indexes.isEmpty())
-        return QDialog::Accepted;
+    {
+        // No data to save, pop-up window to validate the closing
 
-    medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-    saveDialog->show();
-    saveDialog->exec();
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Closing");
+        msgBox.setText("Do you really want to exit?");
+        msgBox.setStandardButtons(QMessageBox::Yes);
+        msgBox.addButton(QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        if(msgBox.exec() == QMessageBox::Yes)
+        {
+            return QDialog::Accepted;
+        }
+        else
+        {
+            return QDialog::Rejected;
+        }
+    }
+    else
+    {
+        // User is asked to save, cancel or exit without saving temporary data
 
-    return saveDialog->result();
+        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+        saveDialog->show();
+        saveDialog->exec();
+        return saveDialog->result();
+    }
 }
 
 void medMainWindow::availableSpaceOnStatusBar()
@@ -772,7 +792,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
             QThreadPool::globalInstance()->waitForDone();
         }
     }
-    if(this->saveModified() != QDialog::Accepted)
+    if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
     {
         event->ignore();
         return;
