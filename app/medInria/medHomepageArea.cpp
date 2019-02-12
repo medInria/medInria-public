@@ -49,14 +49,14 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Setup the widget where the medInria general information are displayed
     d->infoWidget = new QWidget ( this );
-    d->infoWidget->setMinimumSize(400,300);
+    d->infoWidget->setMinimumSize(400,400);
 
     //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
 
     //Setup the about container widget (with a QTabWidget inside)
     d->aboutWidget = new QWidget ( this );
-    d->aboutWidget->setMinimumSize(400,300);
+    d->aboutWidget->setMinimumSize(400,400);
     d->aboutWidget->hide();
 
     //User widget content with settings, about and help buttons
@@ -311,7 +311,9 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 
     //Recompute the widgets position when the window is resized
     d->navigationWidget->setProperty ( "pos", QPoint ( 20 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() - 90 ) );
+
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 450,  this->height() - 50 ) );
+
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
