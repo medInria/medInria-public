@@ -90,6 +90,11 @@ target_link_libraries(${PROJECT_NAME}
   )
   
 if(APPLE)
+  add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change @rpath/lib${QTDCM_LIBS}.dylib ${QTDCM_LIBRARY_DIRS}/lib${QTDCM_LIBS}.dylib ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${PROJECT_NAME}.dylib
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR}
+  )
   FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})
 endif(APPLE)
 
