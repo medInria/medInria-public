@@ -39,7 +39,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url git://vtk.org/VTK.git)
-set(git_tag v8.1.2)
+set(git_tag v8.2.0)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
