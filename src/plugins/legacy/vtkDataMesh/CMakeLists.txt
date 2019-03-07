@@ -101,6 +101,7 @@ target_link_libraries(${TARGET_NAME}
   vtkIOXML
   vtkIOCore
   vtkIOLegacy
+  vtkIOExportPDF
   )
 
 
