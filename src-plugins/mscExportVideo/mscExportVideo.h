@@ -25,7 +25,8 @@ public:
     {
         OGGVORBIS,
         JPGBATCH,
-        FFMPEG
+        FFMPEG,
+        MPEG2
     };
 
 public slots:
