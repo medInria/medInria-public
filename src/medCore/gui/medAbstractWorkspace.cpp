@@ -578,7 +578,7 @@ void medAbstractWorkspace::removeLayer()
 
         if (layerView->layersCount() == 0) // remove the view if no more layer
         {
-            medViewContainerManager::instance()->container(containerUuid)->removeView();
+            medViewContainerManager::instance()->container(containerUuid)->checkIfStillDeserveToLiveContainer();
         }
     }
 }

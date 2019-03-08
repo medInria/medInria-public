@@ -244,7 +244,6 @@ int ExportVideo::exportAsVideo()
             writerVideoTmp->SetInputConnection(source->GetOutputPort());
             writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
             writerVideoTmp->SetRate(d->frameRate);
-
             writerVideo = writerVideoTmp;
         }
         else

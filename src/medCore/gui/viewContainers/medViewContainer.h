@@ -97,6 +97,9 @@ public slots:
     void unHighlight();
 
     void splitContainer(unsigned int numY, unsigned int numX);
+
+    void checkIfStillDeserveToLiveContainer();
+
     QString saveScene();
     void loadScene();
 

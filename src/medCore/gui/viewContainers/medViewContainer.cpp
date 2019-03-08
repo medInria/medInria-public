@@ -263,6 +263,12 @@ medViewContainer::~medViewContainer()
     delete d;
 }
 
+void medViewContainer::checkIfStillDeserveToLiveContainer()
+{
+    this->setParent(NULL);
+    this->close();
+}
+
 void medViewContainer::popupMenu()
 {
     QPoint pos = d->menuButton->mapToGlobal(QPoint(0, 0));
@@ -386,16 +392,16 @@ void medViewContainer::setClosingMode(medViewContainer::ClosingMode mode)
     case medViewContainer::CLOSE_CONTAINER:
         d->closeContainerButton->show();
         d->closeContainerButton->disconnect(this, SLOT(removeView()));
-        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(close()));
+        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(checkIfStillDeserveToLiveContainer()));
         break;
     case medViewContainer::CLOSE_VIEW:
         d->closeContainerButton->show();
-        d->closeContainerButton->disconnect(this, SLOT(close()));
+        d->closeContainerButton->disconnect(this, SLOT(checkIfStillDeserveToLiveContainer()));
         connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));
         break;
     case medViewContainer::CLOSE_BUTTON_HIDDEN:
         d->closeContainerButton->hide();
-        d->closeContainerButton->disconnect(this, SLOT(close()));
+        d->closeContainerButton->disconnect(this, SLOT(checkIfStillDeserveToLiveContainer()));
         connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));
         break;
     }
