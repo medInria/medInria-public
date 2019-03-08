@@ -1,3 +1,26 @@
+MUSIC v2.4.0:
+- Application compiles on Ubuntu 18
+- Video export in ffmpeg (Linux-Mac) or MPEG2 (Windows)
+- Median Filter: can choose neighborhood size
+- Closing pop-up in case of misclick
+- Add Binary Threshold process to Threshold toolbox
+- Add parameters for Threshold process: lower/upper/outside values
+- Add Histogram to Threshold toolbox
+- Path saved in Browser workspace
+- Add a Search Toolbox tool in quick menu, bottom left of application
+- Access to default Python interpreter in pipelines (simpleITK, tensorFlow, numpy, keras. Cf MUSIC website)
+- User can choose own Python interpreter (Python 2 required)
+- Vessel Segmentation: ability to generate multiple branches without bifurcation
+- Add support for 4D meshes attribute curve plotting
+- Add new Carto signal reader class
+- Add new E.A.M. Analysis workspace, to interact with EP maps
+- Add E.A.M Analysis toolboxes: "Data projection", "Data interpolation", "Border zone", "Map Utility" and "EAM Point Distribution"
+- Mesh Interactor: there are now two modes: point picking and cell picking.
+- Cell Cutter: toolbox for pipelines only. Enables to remove parts of meshes using interactor tools
+- Vest Similarity: sock similarity toolbox
+- Mask Projection toolbox: project one or more masks onto a mesh.
+- Add Thickness filter process 
+
 MUSIC v2.3.0:
 - New user manuals on GitLab Pages website
 - Add Doxygen files on the website for pipelines scripts dev
