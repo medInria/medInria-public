@@ -9,9 +9,9 @@
 #include <vtkQImageToImageSource.h>
 #include <vtkSmartPointer.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__linux__)
 #include <vtkMPEG2Writer.h>
-#else // Linux and Mac
+#else // Mac
 #include <vtkFFMPEGWriter.h>
 #endif
 
@@ -224,7 +224,7 @@ int ExportVideo::exportAsVideo()
     }
     else
     {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__linux__)
         if (d->format == MPEG2)
         {
             vtkSmartPointer<vtkMPEG2Writer> writerVideoTmp = vtkSmartPointer<vtkMPEG2Writer>::New();
@@ -300,7 +300,7 @@ int ExportVideo::displayFileDialog()
     // and .ogx for multiplexed Ogg."
     d->formatComboBox->addItem("Ogg Vorbis (.ogv)", OGGVORBIS);
     d->formatComboBox->addItem("JPEG (.jpg .jpeg)", JPGBATCH);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__linux__)
     d->formatComboBox->addItem("MPEG2 (.avi)", MPEG2);
 #else
     d->formatComboBox->addItem("FFMPEG (.avi)", FFMPEG);
