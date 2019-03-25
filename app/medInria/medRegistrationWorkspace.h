@@ -50,6 +50,10 @@ protected slots:
     void updateUserLayerClosable(int tabIndex);
     void updateFromRegistrationSuccess(medAbstractData *output);
 
+    void resetDefaultWidgetFixedContainer();
+    void resetDefaultWidgetMovingContainer();
+    void resetDefaultWidgetFuseContainer();
+
 private:
     medRegistrationWorkspacePrivate *d;
 };

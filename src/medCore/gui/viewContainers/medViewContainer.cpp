@@ -599,10 +599,11 @@ void medViewContainer::toggleHistogram(bool checked)
 
 void medViewContainer::removeView()
 {
-    if(!d->view)
-        return;
-
-    delete d->view;
+    if(d->view)
+    {
+        d->histogramAction->setChecked(false);
+        delete d->view;
+    }
     // removeInternView should be called, so no need to set d->view to NULL
     // or whatever else
 }

@@ -52,6 +52,8 @@ protected slots:
 
     void changeToolBoxInput();
     void importProcessOutput();
+    void resetDefaultWidgetInputContainer();
+    void resetDefaultWidgetOutputContainer();
 
 private:
     medFilteringWorkspacePrivate *d;

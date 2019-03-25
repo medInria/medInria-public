@@ -48,28 +48,13 @@ void medRegistrationWorkspace::setupViewContainerStack()
     medAbstractWorkspace::setupViewContainerStack();
 
     d->containers[Fixed] = this->stackedViewContainers()->containersInTab(0).at(0);
-    QLabel *fixedLabel = new QLabel(tr("FIXED"));
-    fixedLabel->setAlignment(Qt::AlignCenter);
-    d->containers[Fixed]->setDefaultWidget(fixedLabel);
-    d->containers[Fixed]->setMultiLayered(false);
-    d->containers[Fixed]->setUserSplittable(false);
-    d->containers[Fixed]->setClosingMode(medViewContainer::CLOSE_VIEW);
+    resetDefaultWidgetFixedContainer();
 
     d->containers[Moving] = d->containers[Fixed]->splitVertically();
-    QLabel *movingLabel = new QLabel(tr("MOVING"));
-    movingLabel->setAlignment(Qt::AlignCenter);
-    d->containers[Moving]->setDefaultWidget(movingLabel);
-    d->containers[Moving]->setUserSplittable(false);
-    d->containers[Moving]->setMultiLayered(false);
-    d->containers[Moving]->setClosingMode(medViewContainer::CLOSE_VIEW);
+    resetDefaultWidgetMovingContainer();
 
     d->containers[Fuse] = stackedViewContainers()->addContainerInTab(tr("Fuse"));
-    QLabel *fuseLabel = new QLabel(tr("FUSE"));
-    fuseLabel->setAlignment(Qt::AlignCenter);
-    d->containers[Fuse]->setDefaultWidget(fuseLabel);
-    d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-    d->containers[Fuse]->setUserSplittable(false);
-    d->containers[Fuse]->setAcceptDrops(false);
+    resetDefaultWidgetFuseContainer();
 
     connect(d->containers[Fixed], SIGNAL(viewContentChanged()),
             this, SLOT(updateFromFixedContainer()));
@@ -81,9 +66,43 @@ void medRegistrationWorkspace::setupViewContainerStack()
     connect(d->containers[Moving],SIGNAL(viewRemoved()),
             this, SLOT(updateFromMovingContainer()));
 
+    connect(d->containers[Fixed], SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetFixedContainer()));
+    connect(d->containers[Moving],SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetMovingContainer()));
+    connect(d->containers[Fuse],  SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetFuseContainer()));
+
     this->stackedViewContainers()->setCurrentIndex(Fixed);
     d->containers[Fixed]->setSelected(true);
     d->containers[Moving]->setSelected(false);
+}
+
+void medRegistrationWorkspace::resetDefaultWidgetFixedContainer()
+{
+    QLabel *fixedLabel = new QLabel(tr("FIXED"));
+    fixedLabel->setAlignment(Qt::AlignCenter);
+    d->containers[Fixed]->setDefaultWidget(fixedLabel);
+    d->containers[Fixed]->setMultiLayered(false);
+    d->containers[Fixed]->setUserSplittable(false);
+    d->containers[Fixed]->setClosingMode(medViewContainer::CLOSE_VIEW);
+}
+
+void medRegistrationWorkspace::resetDefaultWidgetMovingContainer()
+{
+    QLabel *movingLabel = new QLabel(tr("MOVING"));
+    movingLabel->setAlignment(Qt::AlignCenter);
+    d->containers[Moving]->setDefaultWidget(movingLabel);
+    d->containers[Moving]->setUserSplittable(false);
+    d->containers[Moving]->setMultiLayered(false);
+    d->containers[Moving]->setClosingMode(medViewContainer::CLOSE_VIEW);
+}
+
+void medRegistrationWorkspace::resetDefaultWidgetFuseContainer()
+{
+    QLabel *fuseLabel = new QLabel(tr("FUSE"));
+    fuseLabel->setAlignment(Qt::AlignCenter);
+    d->containers[Fuse]->setDefaultWidget(fuseLabel);
+    d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+    d->containers[Fuse]->setUserSplittable(false);
+    d->containers[Fuse]->setAcceptDrops(false);
 }
 
 void medRegistrationWorkspace::setInitialGroups()
