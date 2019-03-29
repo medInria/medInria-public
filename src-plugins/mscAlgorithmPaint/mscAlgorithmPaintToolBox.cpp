@@ -474,6 +474,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
 {
     setOfPaintBrushRois.clear();
+    this->clear();
 }
 
 medAbstractData* AlgorithmPaintToolBox::processOutput()
