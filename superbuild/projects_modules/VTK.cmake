@@ -57,6 +57,7 @@ set(cmake_args
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_thirdparts}
   -DCMAKE_C_FLAGS=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
+  -DCMAKE_MACOSX_RPATH:BOOL=OFF
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>  
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
