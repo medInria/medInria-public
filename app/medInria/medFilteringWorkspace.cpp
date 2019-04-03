@@ -83,23 +83,29 @@ void medFilteringWorkspace::changeToolBoxInput()
 
 void medFilteringWorkspace::resetDefaultWidgetInputContainer()
 {
-    QLabel *inputLabel = new QLabel("INPUT");
-    inputLabel->setAlignment(Qt::AlignCenter);
-    d->inputContainer->setDefaultWidget(inputLabel);
-    d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-    d->inputContainer->setUserSplittable(false);
-    d->inputContainer->setMultiLayered(false);
+    if(selectorToolBox()) //null when users close the software
+    {
+        QLabel *inputLabel = new QLabel("INPUT");
+        inputLabel->setAlignment(Qt::AlignCenter);
+        d->inputContainer->setDefaultWidget(inputLabel);
+        d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+        d->inputContainer->setUserSplittable(false);
+        d->inputContainer->setMultiLayered(false);
+    }
 }
 
 void medFilteringWorkspace::resetDefaultWidgetOutputContainer()
 {
-    QLabel *outputLabel = new QLabel("OUTPUT");
-    outputLabel->setAlignment(Qt::AlignCenter);
-    d->outputContainer->setDefaultWidget(outputLabel);
-    d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-    d->outputContainer->setUserSplittable(false);
-    d->outputContainer->setMultiLayered(false);
-    d->outputContainer->setUserOpenable(false);
+    if(selectorToolBox()) //null when users close the software
+    {
+        QLabel *outputLabel = new QLabel("OUTPUT");
+        outputLabel->setAlignment(Qt::AlignCenter);
+        d->outputContainer->setDefaultWidget(outputLabel);
+        d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+        d->outputContainer->setUserSplittable(false);
+        d->outputContainer->setMultiLayered(false);
+        d->outputContainer->setUserOpenable(false);
+    }
 }
 
 /**

@@ -77,32 +77,41 @@ void medRegistrationWorkspace::setupViewContainerStack()
 
 void medRegistrationWorkspace::resetDefaultWidgetFixedContainer()
 {
-    QLabel *fixedLabel = new QLabel(tr("FIXED"));
-    fixedLabel->setAlignment(Qt::AlignCenter);
-    d->containers[Fixed]->setDefaultWidget(fixedLabel);
-    d->containers[Fixed]->setMultiLayered(false);
-    d->containers[Fixed]->setUserSplittable(false);
-    d->containers[Fixed]->setClosingMode(medViewContainer::CLOSE_VIEW);
+    if(selectorToolBox()) //null when users close the software
+    {
+        QLabel *fixedLabel = new QLabel(tr("FIXED"));
+        fixedLabel->setAlignment(Qt::AlignCenter);
+        d->containers[Fixed]->setDefaultWidget(fixedLabel);
+        d->containers[Fixed]->setMultiLayered(false);
+        d->containers[Fixed]->setUserSplittable(false);
+        d->containers[Fixed]->setClosingMode(medViewContainer::CLOSE_VIEW);
+    }
 }
 
 void medRegistrationWorkspace::resetDefaultWidgetMovingContainer()
 {
-    QLabel *movingLabel = new QLabel(tr("MOVING"));
-    movingLabel->setAlignment(Qt::AlignCenter);
-    d->containers[Moving]->setDefaultWidget(movingLabel);
-    d->containers[Moving]->setUserSplittable(false);
-    d->containers[Moving]->setMultiLayered(false);
-    d->containers[Moving]->setClosingMode(medViewContainer::CLOSE_VIEW);
+    if(selectorToolBox()) //null when users close the software
+    {
+        QLabel *movingLabel = new QLabel(tr("MOVING"));
+        movingLabel->setAlignment(Qt::AlignCenter);
+        d->containers[Moving]->setDefaultWidget(movingLabel);
+        d->containers[Moving]->setUserSplittable(false);
+        d->containers[Moving]->setMultiLayered(false);
+        d->containers[Moving]->setClosingMode(medViewContainer::CLOSE_VIEW);
+    }
 }
 
 void medRegistrationWorkspace::resetDefaultWidgetFuseContainer()
 {
-    QLabel *fuseLabel = new QLabel(tr("FUSE"));
-    fuseLabel->setAlignment(Qt::AlignCenter);
-    d->containers[Fuse]->setDefaultWidget(fuseLabel);
-    d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-    d->containers[Fuse]->setUserSplittable(false);
-    d->containers[Fuse]->setAcceptDrops(false);
+    if(selectorToolBox()) //null when users close the software
+    {
+        QLabel *fuseLabel = new QLabel(tr("FUSE"));
+        fuseLabel->setAlignment(Qt::AlignCenter);
+        d->containers[Fuse]->setDefaultWidget(fuseLabel);
+        d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+        d->containers[Fuse]->setUserSplittable(false);
+        d->containers[Fuse]->setAcceptDrops(false);
+    }
 }
 
 void medRegistrationWorkspace::setInitialGroups()
