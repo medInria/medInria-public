@@ -20,6 +20,13 @@ class itkFiltersToolBoxPrivate;
 /*! \brief Toolbox to apply some itk filters.
  *
  * This toolbox has several named widgets which can be accessed in python pipelines:\n\n
+ * "addFilterValue" : medDoubleParameter\n
+ * "subtractFilterValue" : medDoubleParameter\n
+ * "multiplyFilterValue" : medDoubleParameter\n
+ * "divideFilterValue" : medDoubleParameter\n
+ * "gaussianFilterValue" : medDoubleParameter\n
+ * "medianSizeFilterValue" : medDoubleParameter\n
+ * "componentSizeThresholdFilterValue" : medIntParameter\n
  * "thresholdValue" : medDoubleParameter\n
  * "lowerValue" : medDoubleParameter\n
  * "upperValue" : medDoubleParameter\n

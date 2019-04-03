@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <itkImage.h>
-#include <itkSubtractImageFilter.h>
+#include <itkShiftScaleImageFilter.h>
 
 #include <medUtilitiesITK.h>
 
@@ -91,20 +91,22 @@ int itkFiltersSubtractProcess::updateProcess(medAbstractData* inputData)
 {
     typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
 
-    typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  SubtractFilterType;
-    typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
-
-    subtractFilter->SetInput(inputImage);
-    subtractFilter->SetConstant ( d->subtractValue );
+    using ShiftScaleFilterType = itk::ShiftScaleImageFilter<ImageType, ImageType >;
+    typename ShiftScaleFilterType::Pointer shiftFilter = ShiftScaleFilterType::New();
+    shiftFilter->SetInput( inputImage );
+    shiftFilter->SetScale( 1.0 );
+    // Shift in the limit of the image type
+    double negValue = -1.0 * d->subtractValue;
+    shiftFilter->SetShift( negValue );
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData ( ( void * ) this );
     callback->SetCallback ( itkFiltersProcessBase::eventCallback );
-    subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
+    shiftFilter->AddObserver ( itk::ProgressEvent(), callback );
 
-    subtractFilter->Update();
+    shiftFilter->Update();
 
-    getOutputData()->setData ( subtractFilter->GetOutput() );
+    getOutputData()->setData ( shiftFilter->GetOutput() );
 
     //Set output description metadata
     QString newSeriesDescription = "subtract filter " + QString::number(d->subtractValue);
