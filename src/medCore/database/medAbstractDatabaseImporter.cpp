@@ -345,11 +345,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         patientID = itPat.value();
         QString seriesID = itSer.value();
 
-        //qDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
-
         dtkSmartPointer<medAbstractData> imagemedData;
-
-        QFileInfo imagefileInfo ( filesPaths[0] );
 
         // 3.2) Try to read the whole image, not just the header
         bool readOnlyImageInformation = false;
@@ -566,16 +562,19 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
         newSeriesDescription = seriesDescription;
     }
 
-    if ( !medData->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
+    if ( !medData->hasMetaData ( medMetaDataKeys::PatientName.key() ) ||
+         medData->metadata(medMetaDataKeys::PatientName.key()).isEmpty() )
         medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << "John Doe" );
 
     if (!medData->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
       medData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << "0" );
 
-    if ( !medData->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) )
+    if ( !medData->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) ||
+        medData->metadata(medMetaDataKeys::StudyDescription.key()).isEmpty() )
         medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy" );
 
-    if ( !medData->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+    if ( !medData->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) ||
+         medData->metadata(medMetaDataKeys::SeriesDescription.key()).isEmpty() )
         medData->setMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )

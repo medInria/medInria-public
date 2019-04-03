@@ -22,6 +22,7 @@ public:
 
     QWidget* buttonsWidget;
     QWidget* noButtonsSelectedWidget;
+    QWidget* informationWidget;
 
     QPushButton* removeBt;
     QPushButton* viewBt;
@@ -54,6 +55,17 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
 
     d->buttonsWidget = new QWidget(this);
     d->noButtonsSelectedWidget = new QWidget(this);
+
+    // Information Widget for File System tab
+    d->informationWidget = new QWidget(this);
+    QLabel* informationLabel = new QLabel(tr("To import DICOMs, select the directory containing these files.\nDo not select them separately."),
+                                          d->informationWidget);
+    informationLabel->setObjectName("actionToolBoxLabel");
+    informationLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    informationLabel->setWordWrap(true);
+    QHBoxLayout* informationLayout = new QHBoxLayout(d->informationWidget);
+    informationLayout->addWidget(informationLabel, 0, Qt::AlignLeft);
+    this->addWidget(d->informationWidget);
 
     initializeItemToActionsMap();
 
@@ -98,6 +110,8 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
 
         // the order of the buttons in this list determines the order used to place them in the grid layout
         d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt << d->bookmarkBt;
+
+        d->informationWidget->setVisible(true);
     }
     else //IF DATABASE
     {
@@ -146,6 +160,8 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         
         d->buttonsList << d->viewBt << d->saveBt << d->exportBt << d->removeBt;
         d->buttonsList << d->newPatientBt << d->newStudyBt << d->editBt;
+
+        d->informationWidget->setVisible(false);
     }
 
     int COLUMNS = 3; // we will use 3 rows of 3 buttons each
@@ -168,6 +184,7 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
                 tr("Select any item to see possible actions."),
                 d->noButtonsSelectedWidget);
     noButtonsSelectedLabel->setObjectName("actionToolBoxLabel");
+
     // we use a layout to center the label
     QHBoxLayout* noButtonsSelectedLayout = new QHBoxLayout(d->noButtonsSelectedWidget);
     noButtonsSelectedLayout->addWidget(noButtonsSelectedLabel, 0, Qt::AlignCenter);

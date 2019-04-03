@@ -461,7 +461,6 @@ bool itkDCMTKDataImageReader::read (const QString& path)
 
 bool itkDCMTKDataImageReader::read(const QStringList& paths)
 {
-
     if (paths.size()==0)
         return false;
 
