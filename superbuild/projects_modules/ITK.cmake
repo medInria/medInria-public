@@ -88,6 +88,7 @@ ExternalProject_Add(${ep}
   GIT_TAG ${git_tag}
   PATCH_COMMAND ${ITK_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
+  CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""

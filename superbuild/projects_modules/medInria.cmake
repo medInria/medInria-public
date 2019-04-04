@@ -118,6 +118,7 @@ ExternalProject_Add(${ep}
   STAMP_DIR ${medinria_Stamp_DIR}
   UPDATE_COMMAND ""
   CMAKE_GENERATOR ${gen}
+  CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
