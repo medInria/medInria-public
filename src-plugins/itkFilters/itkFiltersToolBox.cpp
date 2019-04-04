@@ -771,31 +771,35 @@ void itkFiltersToolBox::updateClutEditorValue(int label)
     if ( d->clutEditor != nullptr )
     {
         QList<medClutEditorVertex*>& vertices = d->clutEditor->getScene()->table()->vertices();
-        double amount;
-        switch (label)
+
+        if (vertices.count() > 0)
         {
-            case 0:
-                amount = d->thresholdLowerValue->value() - vertices.first()->value().x();
-                d->clutEditor->getScene()->table()->vertices().first()->shiftValue(amount);
-                break;
-            case 1:
-                amount = d->thresholdUpperValue->value() - vertices.last()->value().x();
-                d->clutEditor->getScene()->table()->vertices().last()->shiftValue(amount);
-                break;
-            case 2:
-                if ( d->clutEditor->getScene()->table()->vertices().size() != 3 )
-                {
+            double amount;
+            switch (label)
+            {
+                case 0:
+                    amount = d->thresholdLowerValue->value() - vertices.first()->value().x();
+                    d->clutEditor->getScene()->table()->vertices().first()->shiftValue(amount);
+                    break;
+                case 1:
+                    amount = d->thresholdUpperValue->value() - vertices.last()->value().x();
+                    d->clutEditor->getScene()->table()->vertices().last()->shiftValue(amount);
+                    break;
+                case 2:
+                    if ( d->clutEditor->getScene()->table()->vertices().size() != 3 )
+                    {
+                        return;
+                    }
+                    amount = d->thresholdFilterValue->value() - vertices.at(1)->value().x();
+                    d->clutEditor->getScene()->table()->vertices().at(1)->shiftValue(amount);
+                    break;
+                default:
                     return;
-                }
-                amount = d->thresholdFilterValue->value() - vertices.at(1)->value().x();
-                d->clutEditor->getScene()->table()->vertices().at(1)->shiftValue(amount);
-                break;
-            default:
-                return;
+            }
+            d->clutEditor->getScene()->updateCoordinates();
+            d->clutEditor->getScene()->table()->finalizeMoveSelection();
+            d->clutEditor->getScene()->table()->triggerVertexSet();
         }
-        d->clutEditor->getScene()->updateCoordinates();
-        d->clutEditor->getScene()->table()->finalizeMoveSelection();
-        d->clutEditor->getScene()->table()->triggerVertexSet();
     }
 }
 
