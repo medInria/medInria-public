@@ -147,7 +147,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     // make it a parameter to get synch between state of the container and the maximized button.
     d->maximizedAction = new QAction(tr("Maximized"), d->toolBarMenu);
     d->maximizedAction->setToolTip("Toggle maximized / unmaximized");
-    d->maximizedAction->setCheckable(true);
     QIcon maximizedIcon(":/icons/maximize.svg");
     maximizedIcon.addFile(":/icons/un_maximize.svg", QSize(16,16), QIcon::Normal, QIcon::On);
 
