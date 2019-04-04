@@ -15,6 +15,7 @@
 
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
+#include <medIntParameter.h>
 #include <medMetaDataKeys.h>
 #include <medTimeLineParameter.h>
 #include <medViewFactory.h>
@@ -45,6 +46,7 @@ public:
     double currentTime;
 
     vtkSmartPointer<vtkTextActor> textActor;
+    medIntParameter *slicingParameter;
 };
 
 template <typename TYPE>
@@ -81,6 +83,7 @@ medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstra
     d->currentTime = 0.0;
 
     d->textActor = nullptr;
+    d->slicingParameter = nullptr;
 }
 
 medVtkViewItkDataImage4DInteractor::~medVtkViewItkDataImage4DInteractor()
@@ -168,6 +171,8 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
             double* range = d->sequence->GetScalarRange();
             d->view2d->SetColorRange(range);
             this->initWindowLevelParameters(range);
+
+            createSlicingParam();
 
             if(d->view->layer(d->imageData) == 0)
             {

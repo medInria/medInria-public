@@ -256,25 +256,13 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     else
        this->opacityParameter()->setValue(1);
 
-    d->slicingParameter = new medIntParameter("Slicing", this);
-    // slice orientation may differ from view orientation. Adapt slider range accordingly.
-    int orientationId = d->view2d->GetSliceOrientation();
-    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
-        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
-    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
-        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
-    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
-        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
-
-    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    createSlicingParam();
 
     d->enableWindowLevelParameter = new medBoolParameter("Windowing", this);
     d->enableWindowLevelParameter->setIcon(QIcon (":/icons/wlww.png"));
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWIndowLevel(bool)));
 
-    connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)),
-            this, SLOT(updateSlicingParam()));
     connect(d->view, SIGNAL(currentLayerChanged()), this, SLOT(updateImageViewInternalLayer()));
 
     if(d->view->layer(d->imageData) == 0)
@@ -682,22 +670,33 @@ void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
     d->view3d->SetCurrentLayer(d->view->layer(d->imageData));
 }
 
+void medVtkViewItkDataImageInteractor::createSlicingParam()
+{
+    d->slicingParameter = new medIntParameter("Slicing", this);
+
+    // slice orientation may differ from view orientation. Adapt slider range accordingly.
+    int orientationId = d->view2d->GetSliceOrientation();
+    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+    {
+        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
+    }
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+    {
+        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
+    }
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+    {
+        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
+    }
+
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
+}
+
 void medVtkViewItkDataImageInteractor::updateSlicingParam()
 {
     if(!d->view->is2D())
         return;
-
-    //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer droped) - RDE
-
-    // slice orientation may differ from view orientation. Adapt slider range accordingly.
-//    int orientationId = d->view2d->GetSliceOrientation();
-//    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
-//        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
-//        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
-//        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
 
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());

@@ -45,6 +45,7 @@ public:
     virtual QStringList handled() const;
     
     virtual void restoreParameters(QHash<QString,QString> parameters);
+    void createSlicingParam();
 
 public slots:
     virtual void setOpacity (double opacity);
