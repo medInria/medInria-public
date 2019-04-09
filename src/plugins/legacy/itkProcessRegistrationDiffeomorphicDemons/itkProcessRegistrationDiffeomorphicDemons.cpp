@@ -251,7 +251,7 @@ itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::g
         return registration->GetTransformation();
     }
     else
-        return NULL;
+        return nullptr;
 }
 
 QString itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){

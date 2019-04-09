@@ -36,9 +36,6 @@ include(${ITK_USE_FILE})
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
 
 ## #############################################################################
 ## List Sources
@@ -106,6 +103,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOGIPL
   ITKIOHDF5
   ITKIOJPEG
+  ITKIOJPEG2000
   ITKIOLSM
   ITKIOMeta
   ITKIOMINC

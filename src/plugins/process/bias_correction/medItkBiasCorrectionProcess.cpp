@@ -43,8 +43,8 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
     m_poUIThreadNb = new medIntParameter("ThreadNb", this);
     m_poUIThreadNb->setCaption("Number of threads");
     m_poUIThreadNb->setDescription("Set the number of computing treads");
-    m_poUIThreadNb->setRange(1, itk::MultiThreader::GetGlobalDefaultNumberOfThreads());
-    m_poUIThreadNb->setValue(itk::MultiThreader::GetGlobalDefaultNumberOfThreads());
+    m_poUIThreadNb->setRange(1, itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads());
+    m_poUIThreadNb->setValue(itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads());
 
     m_poUIShrinkFactors = new medIntParameter("Shrinkfactor", this);
     m_poUIShrinkFactors->setCaption("Shrink factor");
