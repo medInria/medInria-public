@@ -17,7 +17,7 @@ set(TARGET_NAME medItkSingleFilterOperationPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(ITK)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOTransformBase ITKTransform)
 include(${ITK_USE_FILE})
 
 ## #############################################################################

@@ -30,8 +30,32 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
+set(ITK_IMAGES_DEPENDENCIES
+	ITKIOMeta
+
+    #common formats for common images
+    ITKIOBMP
+    ITKIOJPEG
+    ITKIOJPEG2000
+    ITKIOPNG
+    ITKIOTIFF
+
+	#Medical images formats
+    ITKIOBruker
+    ITKIOHDF5
+	ITKIOGIPL
+    ITKIONIFTI
+    ITKIONRRD
+    ITKIOPhilipsREC
+)
+
+find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOGDCM ITKIOVTK ITKVtkGlue ${ITK_IMAGES_DEPENDENCIES})
 include(${ITK_USE_FILE})
+
+# itkLogForwarder used through medLog
+# vtkImageView2D  used through medVtkInria
+
+#WARNING USE VTK through ITKIOVTK and medLog, medVtkInria
 
 if (ITK_USE_SYSTEM_GDCM)
   add_definitions(-DITK_USE_SYSTEM_GDCM)
@@ -42,9 +66,6 @@ if (USE_OSPRay)
 endif()
 
 find_package(DCMTK REQUIRED NO_MODULE)
-
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
 
 
 ## #############################################################################
@@ -115,27 +136,7 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Widgets
   dtkCore
   dtkLog
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKIOGE
-  ITKIOMINC
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKIOMRC
   ITKStatistics
-  ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
   medCore
   medImageIO
   medLog

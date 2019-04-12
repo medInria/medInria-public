@@ -40,8 +40,8 @@ include(dtkPlugin)
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
+#find_package(ITK REQUIRED)
+#include(${ITK_USE_FILE})
 
 ## #################################################################
 ## Input

@@ -29,7 +29,6 @@
 #include <vtkRenderWindow.h>
 #include <vtkWindowToImageFilter.h>
 
-#include <QVTKWidget.h>
 #include <QApplication>
 
 class vtkDataMeshPrivate

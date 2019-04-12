@@ -21,9 +21,9 @@
 #include <vtkCommand.h>
 #include <vtkInteractorStyle.h>
 
-#include <itkImage.h>
-#include <itkRGBPixel.h>
-#include <itkRGBAPixel.h>
+// #include <itkImage.h>
+// #include <itkRGBPixel.h>
+// #include <itkRGBAPixel.h>
 
 #include <cstring>
 

@@ -21,9 +21,8 @@ set(TARGET_NAME medRegistration)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase)
 include(${ITK_USE_FILE})
-
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
