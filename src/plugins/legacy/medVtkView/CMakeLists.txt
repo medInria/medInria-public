@@ -31,11 +31,8 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt)
+find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkInteractionWidgets)
 include(${VTK_USE_FILE})
-
-#find_package(ITK REQUIRED)
-#include(${ITK_USE_FILE})
 
 
 ## #############################################################################

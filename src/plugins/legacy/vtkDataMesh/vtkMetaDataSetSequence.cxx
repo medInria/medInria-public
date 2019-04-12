@@ -37,9 +37,6 @@
 #include <vtkDoubleArray.h>
 #include <vtkDataArrayCollection.h>
 
-#include <itkPhilipsRECImageIO.h>
-#include <itkPhilipsPAR.h>
-
 #include <sstream>
 #include <algorithm> // for sort algorithm
 

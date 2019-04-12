@@ -17,7 +17,7 @@ set(TARGET_NAME medItkSingleFilterOperationPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOTransformBase ITKTransform)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageIntensity ITKSmoothing)
 include(${ITK_USE_FILE})
 
 ## #############################################################################

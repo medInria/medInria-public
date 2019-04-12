@@ -33,7 +33,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOImageBase ITKPDEDeformableRegistration)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOImageBase ITKPDEDeformableRegistration ITKIOTransformBase)
 include(${ITK_USE_FILE})
 
 

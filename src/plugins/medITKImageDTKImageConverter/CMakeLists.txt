@@ -17,8 +17,8 @@ set(TARGET_NAME medITKImageDTKImageConverterPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-#find_package(ITK)
-#include(${ITK_USE_FILE})
+find_package(ITK)
+include(${ITK_USE_FILE})
 
 find_package(dtkImaging REQUIRED)
 include_directories(${dtkImaging_INCLUDE_DIRS})
