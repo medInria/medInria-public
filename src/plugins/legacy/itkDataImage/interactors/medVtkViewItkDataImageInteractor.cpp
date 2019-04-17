@@ -21,6 +21,7 @@
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkTransferFunctionPresets.h>
+#include <vtkLookupTableManager.h>
 #include <vtkRenderWindow.h>
 #include <vtkImageData.h>
 #include <vtkImageActor.h>
@@ -395,11 +396,19 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
 
     Presets::GetTransferFunction(value.toStdString(), rgb, alpha );
-    d->view2d->SetTransferFunctions(rgb, alpha, d->view->layer(d->imageData));
+
+    vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
     d->view3d->SetTransferFunctions(rgb, alpha, d->view->layer(d->imageData));
+    d->view3d->SetLookupTable(lut, d->view->layer(d->imageData));
+
+    if (d->view->layer(d->imageData) == 0)
+        lut = vtkLookupTableManager::removeLUTAlphaChannel(lut);
+
+    d->view2d->SetLookupTable(lut, d->view->layer(d->imageData));
 
     rgb->Delete();
     alpha->Delete();
+    lut->Delete();
 
     update();
 }
