@@ -71,8 +71,23 @@ set(cmake_args
 ## Add external-project
 ## #############################################################################
 
+if(DEFINED ${EP_PATH_BUILD})
+  set(build_path "${EP_PATH_BUILD}/${ep}")
+  set(tmp_path   "${EP_PATH_BUILD}/tmp/${ep}")
+  set(stamp_path "${EP_PATH_BUILD}/Stamp/${ep}")
+else()
+  set(build_path "${EP_PATH_SOURCE}/${ep}-build")
+  set(tmp_path   "${EP_PREFIX}/tmp")
+  set(stamp_path "${EP_PATH_SOURCE}/src/${ep}-stamp")
+endif()
+
 ExternalProject_Add(${ep}
-  PREFIX ${EP_PREFIX_thirdparts}
+  PREFIX ${EP_PATH_SOURCE}
+  SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+  BINARY_DIR ${build_path}
+  TMP_DIR ${tmp_path}
+  STAMP_DIR ${stamp_path}
+  
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   CMAKE_GENERATOR ${gen}

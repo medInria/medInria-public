@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013. All rights reserved.
+# Copyright (c) INRIA 2013 - 2019. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,6 +10,80 @@
 #  PURPOSE.
 #
 ################################################################################
+
+## #############################################################################
+## Add common prefix for all external-projects
+## #############################################################################
+include(CMakeDependentOption)
+option(EP_CHECKBOX_CUSTOM_DIRS  "titi" OFF)
+CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_SIDE_BY_SIDE "toto" OFF "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
+CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_ON_TOP_LEVEL "tata" ON "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
+
+macro(ep_change_garde var )
+    if(NOT "${${var}_PEVIOUS}" STREQUAL "${${var}}")
+        set(${var}_PEVIOUS "${${var}}" CACHE INTERNAL "" FORCE)
+        set(${var}_change ON CACHE INTERNAL "" FORCE)
+    else()
+        set(${var}_change OFF CACHE INTERNAL "" FORCE)
+    endif()
+endmacro()
+    
+function(setOnTop)
+	set(EP_PREFIX "${EP_PATH_BASE}" CACHE INTERNAL "" FORCE)
+    if(EP_CHECKBOX_SIDE_BY_SIDE)
+        set(EP_PATH_SOURCE "${EP_PATH_BASE}"   CACHE FILEPATH "" FORCE)
+        unset(EP_PATH_BUILD CACHE)
+    else()
+        set(EP_PATH_SOURCE "${EP_PATH_BASE}/src"   CACHE FILEPATH "" FORCE)
+        set(EP_PATH_BUILD  "${EP_PATH_BASE}/build" CACHE FILEPATH "" FORCE)
+    endif()
+endfunction()
+
+function(setOnSrcDir)
+	set(EP_PREFIX "${CMAKE_SOURCE_DIR}/${EP_DIR_NAME}" CACHE INTERNAL "" FORCE)
+    set(EP_PATH_SOURCE "${CMAKE_SOURCE_DIR}/${EP_DIR_NAME}" CACHE FILEPATH "" FORCE)
+    if(NOT EP_CHECKBOX_SIDE_BY_SIDE)
+        set(EP_PATH_BUILD  "${CMAKE_BINARY_DIR}/${EP_DIR_NAME}" CACHE FILEPATH "" FORCE)
+    endif()
+endfunction()
+
+
+set(EP_CHECKBOX_ON_TOP_LEVEL_change OFF CACHE INTERNAL "" FORCE)
+set(EP_CHECKBOX_SIDE_BY_SIDE_change OFF CACHE INTERNAL "" FORCE)
+set(EP_PATH_BASE_change    OFF CACHE INTERNAL "" FORCE)
+set(EP_DIR_NAME_change     OFF CACHE INTERNAL "" FORCE)
+
+ep_change_garde(EP_CHECKBOX_ON_TOP_LEVEL)
+ep_change_garde(EP_CHECKBOX_SIDE_BY_SIDE)
+if(EP_CHECKBOX_CUSTOM_DIRS)
+    if(EP_CHECKBOX_ON_TOP_LEVEL_change)
+        unset(EP_PATH_BASE CACHE)
+        unset(EP_DIR_NAME  CACHE)
+		set(EP_PREFIX "${CMAKE_SOURCE_DIR}/ExtProjs" CACHE FILEPATH "" FORCE)
+        set(EP_PATH_SOURCE "${CMAKE_SOURCE_DIR}/ExtProjs" CACHE FILEPATH "" FORCE)
+		set(EP_PATH_BUILD  "${CMAKE_BINARY_DIR}/ExtProjs" CACHE FILEPATH "" FORCE)
+    endif()
+else()	
+    if(EP_CHECKBOX_ON_TOP_LEVEL)
+        if(EP_CHECKBOX_ON_TOP_LEVEL_change)
+            unset(EP_DIR_NAME CACHE)
+            set(EP_PATH_BASE "${CMAKE_SOURCE_DIR}_ExtProjs" CACHE FILEPATH "Base path of external-projects" FORCE)
+        endif()
+        ep_change_garde(EP_PATH_BASE)
+        if(EP_PATH_BASE_change OR EP_CHECKBOX_SIDE_BY_SIDE_change)
+            setOnTop()
+        endif()
+    else()
+        if(EP_CHECKBOX_ON_TOP_LEVEL_change)
+            unset(EP_PATH_BASE CACHE)
+            set(EP_DIR_NAME "ExtProjs" CACHE FILEPATH "Directory name of external-projects" FORCE)
+        endif()
+        ep_change_garde(EP_DIR_NAME)
+        if(EP_DIR_NAME_change OR EP_CHECKBOX_SIDE_BY_SIDE_change)
+            setOnSrcDir()
+        endif()
+    endif()
+endif()
 
 ## #############################################################################
 ## Add common variables for all external-projects

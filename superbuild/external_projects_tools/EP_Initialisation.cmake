@@ -34,12 +34,20 @@ if (WIN32)
     file(TO_CMAKE_PATH ${${ep}_DIR} ${ep}_DIR)
   endif()
   
+  if (DEFINED EP_PREFIX)
+    file(TO_CMAKE_PATH ${EP_PREFIX} EP_PREFIX)
+  endif()
+  
   if (DEFINED ${ep}_BINARY_DIR)
     file(TO_CMAKE_PATH ${${ep}_BINARY_DIR} ${ep}_BINARY_DIR)
   endif()
   
-  if (DEFINED EP_PREFIX_thirdparts)
-    file(TO_CMAKE_PATH ${EP_PREFIX_thirdparts} EP_PREFIX_thirdparts)
+  if (DEFINED EP_PATH_SOURCE)
+    file(TO_CMAKE_PATH ${EP_PATH_SOURCE} EP_PATH_SOURCE)
+  endif()
+  
+  if (DEFINED EP_PATH_BUILD)
+    file(TO_CMAKE_PATH ${EP_PATH_BUILD} EP_PATH_BUILD)
   endif()
 endif()
 
@@ -75,9 +83,15 @@ else()
         )\n"
       )
     else()
+	  if(DEFINED EP_PATH_BUILD)
+	      set(build_dir ${EP_PATH_BUILD})
+	  else()
+	      set(build_dir "${EP_PATH_SOURCE}/${ep}-build" )
+	  endif()
+	  
       file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
         "find_package(${ep} REQUIRED
-          PATHS \"${EP_PREFIX_thirdparts}/src/${ep}-build\" 
+          PATHS \"${build_dir}\" 
           PATH_SUFFIXES install build
           NO_CMAKE_BUILDS_PATH
           )\n"
