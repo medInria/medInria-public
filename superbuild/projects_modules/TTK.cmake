@@ -55,7 +55,7 @@ endif()
 
 set(cmake_args
   ${ep_common_cache_args}
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_thirdparts}
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_extenals_projects}
   -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
@@ -77,8 +77,8 @@ if(DEFINED ${EP_PATH_BUILD})
   set(stamp_path "${EP_PATH_BUILD}/Stamp/${ep}")
 else()
   set(build_path "${EP_PATH_SOURCE}/${ep}-build")
-  set(tmp_path   "${EP_PREFIX}/tmp")
-  set(stamp_path "${EP_PATH_SOURCE}/src/${ep}-stamp")
+  set(tmp_path   "${EP_PATH_SOURCE}/tmp")
+  set(stamp_path "${EP_PATH_SOURCE}/${ep}-stamp")
 endif()
 
 ExternalProject_Add(${ep}

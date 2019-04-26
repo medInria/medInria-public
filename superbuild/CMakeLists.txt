@@ -28,9 +28,6 @@ find_package(Qt5 REQUIRED COMPONENTS
   Quick
   )
 
-find_package(Boost REQUIRED)
-
-
 ## #############################################################################
 ## Add exteral projects
 ## #############################################################################
@@ -79,7 +76,7 @@ endif()
 ## #############################################################################
 
 unset(CMAKE_BUILD_TYPE CACHE)
-set(CMAKE_BUILD_TYPE_thirdparts Release CACHE STRING "Build type configuration for third parts libraries.")
+set(CMAKE_BUILD_TYPE_extenals_projects Release CACHE STRING "Build type configuration for externals projects libraries.")
 set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration specific to medInria.")
 
 

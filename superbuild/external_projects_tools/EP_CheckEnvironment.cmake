@@ -76,11 +76,11 @@ endif()
 
 
 ## #############################################################################
-## Test ssh access for github
+## Test ssh access for gitlab Inria
 ## #############################################################################
 
 set (SKIP_GITLAB_INRIA_TESTS OFF CACHE BOOL 
-  "Set this to ON to skip GitHub access tests"
+  "Set this to ON to skip GitLab Inria access tests"
   )
 mark_as_advanced(SKIP_GITLAB_INRIA_TESTS)
 
