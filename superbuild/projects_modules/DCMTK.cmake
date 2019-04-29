@@ -89,15 +89,7 @@ ep_GeneratePatchCommand(DCMTK DCMTK_PATCH_COMMAND DCMTK_STL.patch)
 ## Add external-project
 ## #############################################################################
 
-if(DEFINED ${EP_PATH_BUILD})
-  set(build_path "${EP_PATH_BUILD}/${ep}")
-  set(tmp_path   "${EP_PATH_BUILD}/tmp/${ep}")
-  set(stamp_path "${EP_PATH_BUILD}/Stamp/${ep}")
-else()
-  set(build_path "${EP_PATH_SOURCE}/${ep}-build")
-  set(tmp_path   "${EP_PATH_SOURCE}/tmp")
-  set(stamp_path "${EP_PATH_SOURCE}/${ep}-stamp")
-endif()
+epComputPath(${ep})
 
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
@@ -120,8 +112,10 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
+
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+
 
 endif() #NOT USE_SYSTEM_ep
 

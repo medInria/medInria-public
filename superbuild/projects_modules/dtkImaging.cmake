@@ -71,15 +71,7 @@ set(cmake_args
 ## Add external-project
 ## #############################################################################
 
-if(DEFINED ${EP_PATH_BUILD})
-  set(build_path "${EP_PATH_BUILD}/${ep}")
-  set(tmp_path   "${EP_PATH_BUILD}/tmp/${ep}")
-  set(stamp_path "${EP_PATH_BUILD}/Stamp/${ep}")
-else()
-  set(build_path "${EP_PATH_SOURCE}/${ep}-build")
-  set(tmp_path   "${EP_PATH_SOURCE}/tmp")
-  set(stamp_path "${EP_PATH_SOURCE}/${ep}-stamp")
-endif()
+epComputPath(${ep})
 
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
