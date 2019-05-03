@@ -36,6 +36,9 @@ list_source_files(${TARGET_NAME}
   areas/workspaces/segmentation
   areas/workspaces/visualization
   )
+  
+message("toto ${CMAKE_CURRENT_SOURCE_DIR}/workspaces")
+message(${${TARGET_NAME}_SOURCES})
 
 ##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${TARGET_NAME}
