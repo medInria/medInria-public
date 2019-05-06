@@ -113,6 +113,7 @@ void medDoubleParameterL::setRange(double min, double max)
         d->spinBox->setRange(min, max);
     if(d->slider)
         d->slider->setRange(0,convertToInt(max));
+    updateInternWigets();
 }
 
 void medDoubleParameterL::setSingleStep(double step)
