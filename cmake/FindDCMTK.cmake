@@ -81,59 +81,57 @@ endif()
 
 # Find all libraries, store debug and release separately
 foreach(lib
-    dcmpstat
-    dcmsr
-    dcmsign
-    dcmtls
-    dcmqrdb
-    dcmnet
-    dcmjpeg
+    charls
+    cmr
+    dcmdata
+    dcmdsig
+    dcmfg
     dcmimage
     dcmimgle
-    dcmdata
-    oflog
-    ofstd
+    dcmiod
+    dcmjpeg
+    dcmjpls
+    dcmnet
+    dcmpmap
+    dcmpstat
+    dcmqrdb
+    dcmrt
+    dcmseg
+    dcmsr
+    dcmtls
+    dcmtract
+    dcmwlm
+    i2d
     ijg12
     ijg16
     ijg8
+    oflog
+    ofstd
     )
 
   # Find Release libraries
-  find_library(DCMTK_${lib}_LIBRARY_RELEASE
+  find_library(DCMTK_${lib}_LIBRARY
     ${lib}
     PATHS
+    ${DCMTK_DIR}/lib
     ${DCMTK_DIR}/${lib}/libsrc
     ${DCMTK_DIR}/${lib}/libsrc/Release
     ${DCMTK_DIR}/${lib}/Release
     ${DCMTK_DIR}/Release/lib
-    ${DCMTK_DIR}/lib
-    ${DCMTK_DIR}/dcmjpeg/lib${lib}/Release
-    NO_DEFAULT_PATH
-    )
-
-  # Find Debug libraries
-  find_library(DCMTK_${lib}_LIBRARY_DEBUG
-    ${lib}
-    PATHS
-    ${DCMTK_DIR}/${lib}/libsrc
     ${DCMTK_DIR}/${lib}/libsrc/Debug
     ${DCMTK_DIR}/${lib}/Debug
     ${DCMTK_DIR}/Debug/lib
-    ${DCMTK_DIR}/lib
+    ${DCMTK_DIR}/dcmjpeg/lib${lib}/Release
     ${DCMTK_DIR}/dcmjpeg/lib${lib}/Debug
     NO_DEFAULT_PATH
     )
 
-  mark_as_advanced(DCMTK_${lib}_LIBRARY_RELEASE)
-  mark_as_advanced(DCMTK_${lib}_LIBRARY_DEBUG)
+
+  mark_as_advanced(DCMTK_${lib}_LIBRARY)
 
   # Add libraries to variable according to build type
-  if(DCMTK_${lib}_LIBRARY_RELEASE)
-    list(APPEND DCMTK_LIBRARIES optimized ${DCMTK_${lib}_LIBRARY_RELEASE})
-  endif()
-
-  if(DCMTK_${lib}_LIBRARY_DEBUG)
-    list(APPEND DCMTK_LIBRARIES debug ${DCMTK_${lib}_LIBRARY_DEBUG})
+  if(DCMTK_${lib}_LIBRARY)
+    list(APPEND DCMTK_LIBRARIES ${DCMTK_${lib}_LIBRARY})
   endif()
 
 endforeach()
@@ -167,34 +165,48 @@ endif()
 
 set(DCMTK_config_TEST_HEADER osconfig.h)
 set(DCMTK_dcmdata_TEST_HEADER dctypes.h)
+set(DCMTK_dcmfg_TEST_HEADER fg.h)
 set(DCMTK_dcmimage_TEST_HEADER dicoimg.h)
 set(DCMTK_dcmimgle_TEST_HEADER dcmimage.h)
+set(DCMTK_dcmiod_TEST_HEADER ioddef.h)
 set(DCMTK_dcmjpeg_TEST_HEADER djdecode.h)
+set(DCMTK_dcmjpls_TEST_HEADER djdecode.h)
 set(DCMTK_dcmnet_TEST_HEADER assoc.h)
+set(DCMTK_dcmpmap_TEST_HEADER dpmtypes.h)
 set(DCMTK_dcmpstat_TEST_HEADER dcmpstat.h)
 set(DCMTK_dcmqrdb_TEST_HEADER dcmqrdba.h)
+set(DCMTK_dcmrt_TEST_HEADER drttypes.h)
+set(DCMTK_dcmseg_TEST_HEADER segment.h)
 set(DCMTK_dcmsign_TEST_HEADER sicert.h)
 set(DCMTK_dcmsr_TEST_HEADER dsrtree.h)
 set(DCMTK_dcmtls_TEST_HEADER tlslayer.h)
+set(DCMTK_dcmtract_TEST_HEADER trctypes.h)
+set(DCMTK_dcmwlm_TEST_HEADER wltypdef.h)
 set(DCMTK_ofstd_TEST_HEADER ofstdinc.h)
 set(DCMTK_oflog_TEST_HEADER oflog.h)
-set(DCMTK_dcmjpls_TEST_HEADER djlsutil.h)
 
 set(DCMTK_INCLUDE_DIR_NAMES)
 
 foreach(dir
     config
     dcmdata
+    dcmfg
     dcmimage
     dcmimgle
+    dcmiod
     dcmjpeg
     dcmjpls
     dcmnet
+    dcmpmap
     dcmpstat
     dcmqrdb
+    dcmrt
+    dcmseg
     dcmsign
     dcmsr
     dcmtls
+    dcmtract
+    dcmwlm
     ofstd
     oflog)
   if(EXTDCMTK_SOURCE_DIR)
