@@ -244,7 +244,7 @@ endforeach()
 list(APPEND DCMTK_INCLUDE_DIRS ${DCMTK_DIR}/include)
 
 if(WIN32)
-  list(APPEND DCMTK_LIBRARIES netapi32 wsock32)
+  list(APPEND DCMTK_LIBRARIES iphlpapi ws2_32 netapi32 wsock32)
 endif()
 
 if(DCMTK_ofstd_INCLUDE_DIR)
