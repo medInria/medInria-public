@@ -11,18 +11,12 @@
 #
 ################################################################################
 
-macro(FixDCMTKMacInstall)
-
-  foreach(library ${DCMTK_LIBRARIES})
-    get_filename_component(lib ${library} NAME_WE)
-    if (EXISTS ${DCMTK_DIR}/lib/${lib}.dylib)
-      foreach(linkedlibrary ${DCMTK_LIBRARIES})
-        get_filename_component(linkedlib ${linkedlibrary} NAME_WE)
-        if (EXISTS ${DCMTK_DIR}/lib/${linkedlib}.dylib)
-          execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change ${linkedlib}.dylib ${DCMTK_DIR}/lib/${linkedlib}.dylib ${DCMTK_DIR}/lib/${lib}.dylib)
-        endif()
-      endforeach()
-    endif()
+macro(FixDCMTKMacInstall target_libraries dcmtk_libraries dcmtk_dir)
+  foreach(targetLib ${target_libraries})
+    foreach(linkedlibrary ${dcmtk_libraries})
+      get_filename_component(linkedlib ${linkedlibrary} NAME_WE)
+      execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change ${linkedlib}.12.dylib ${dcmtk_dir}/lib/${linkedlib}.12.dylib ${targetLib})
+    endforeach()
   endforeach()
 
 endmacro(FixDCMTKMacInstall)
