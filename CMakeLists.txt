@@ -96,12 +96,6 @@ if (WIN32)
 ${Boost_INCLUDE_DIR})
 endif()
 
-find_package(DCMTK REQUIRED)
-# Do this once and for all
-if(APPLE)
-  FixDCMTKMacInstall("${DCMTK_LIBRARIES}" "${DCMTK_LIBRARIES}" "${DCMTK_DIR}")
-endif(APPLE)
-
 
 ## #############################################################################
 ## Qt Automoc

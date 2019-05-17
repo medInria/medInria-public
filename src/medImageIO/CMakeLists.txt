@@ -24,6 +24,9 @@ include(${ITK_USE_FILE})
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
+find_package(DCMTK REQUIRED)
+
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -78,6 +81,10 @@ endif(APPLE)
 ## #############################################################################
 ## install
 ## #############################################################################
+
+if(APPLE)
+  FixDCMTKMacInstall()
+endif()
 
 set_lib_install_rules(${PROJECT_NAME} 
   ${${PROJECT_NAME}_HEADERS}

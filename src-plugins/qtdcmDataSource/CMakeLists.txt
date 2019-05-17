@@ -36,6 +36,8 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+find_package(DCMTK REQUIRED)
+
 find_package(QtDCM REQUIRED)
 include(${QTDCM_USE_FILE})
 
@@ -88,8 +90,6 @@ target_link_libraries(${PROJECT_NAME}
   )
   
 if(APPLE)
-  set(QTDCM_LIBRARIES "${QTDCM_DIR}/lib/lib${QTDCM_LIBS}.dylib")
-  FixDCMTKMacInstall("${QTDCM_LIBRARIES}" "${DCMTK_LIBRARIES}" "${DCMTK_DIR}")
   add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change @rpath/lib${QTDCM_LIBS}.dylib ${QTDCM_LIBRARY_DIRS}/lib${QTDCM_LIBS}.dylib ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${PROJECT_NAME}.dylib
@@ -97,7 +97,6 @@ if(APPLE)
   )
   FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})
 endif(APPLE)
-
 
 
 ## #############################################################################
