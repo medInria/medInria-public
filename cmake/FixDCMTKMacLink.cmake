@@ -13,31 +13,15 @@
 
 macro(FixDCMTKMacLink lib_name)
 
-  set(dcmtkLibs 
-    dcmdata 
-    dcmimage 
-    dcmimgle 
-    dcmjpeg 
-    dcmnet 
-    dcmpstat 
-    dcmqrdb 
-    dcmsr 
-    dcmtls 
-    ijg12 
-    ijg16 
-    ijg8 
-    oflog 
-    ofstd
+  foreach(library ${DCMTK_LIBRARIES})
+    get_filename_component(lib ${library} NAME_WE)
+    # TODO: find a way to do this properly 
+    set(lib "${lib}.12.dylib")
+    add_custom_command(TARGET ${lib_name}
+      POST_BUILD
+      COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change ${lib} ${DCMTK_DIR}/lib/${lib} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${lib_name}.dylib
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR}
     )
-
-  foreach(lib ${dcmtkLibs})
-    if(EXISTS "${DCMTK_DIR}/lib/lib${lib}.dylib")
-      add_custom_command(TARGET ${lib_name}
-	      POST_BUILD
-	      COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change lib${lib}.dylib ${DCMTK_DIR}/lib/lib${lib}.dylib ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${lib_name}.dylib
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR}
-        )
-    endif()
   endforeach()
 
 endmacro(FixDCMTKMacLink)

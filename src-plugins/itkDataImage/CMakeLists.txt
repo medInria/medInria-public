@@ -86,6 +86,7 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_CFILES})
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
+  ${DCMTK_LIBRARIES}
   ${QT_LIBRARIES}
   ${DTK_LIBRARIES}
   ${VTK_LIBRARIES}
