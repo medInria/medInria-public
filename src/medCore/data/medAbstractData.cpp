@@ -211,8 +211,7 @@ void medAbstractData::generateThumbnail()
     if ( ! gpu.vendor.toLower().contains("intel"))
         offscreenCapable = true;
 #elif defined(Q_OS_LINUX)
-    // only works on NVidia
-    if (gpu.vendor.toLower().contains("nvidia"))
+    if (gpu.vendor.toLower().contains("nvidia") || gpu.vendor.toLower().contains("intel"))
         offscreenCapable = true;
 #endif
 
