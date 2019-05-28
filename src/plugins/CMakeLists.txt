@@ -79,5 +79,5 @@ if(BUILD_COMPOSITEDATASET_PLUGIN)
 endif()
 
 if (BUILD_EXAMPLE_PLUGINS)
-  add_subdirectory(examples)
+  add_subdirectory(legacy/examples)
 endif()

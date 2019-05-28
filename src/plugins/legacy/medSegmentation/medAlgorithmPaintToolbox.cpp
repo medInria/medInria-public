@@ -27,7 +27,6 @@
 #include <medClickAndMoveEventFilter.h>
 #include <medClearMaskCommand.h>
 
-#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
 #include <dtkCoreSupport/dtkGlobal.h>
 

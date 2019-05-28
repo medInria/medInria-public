@@ -14,7 +14,6 @@
 #include <medAnnotationInteractor.h>
 
 #include <medAbstractData.h>
-#include <dtkCoreSupport/dtkAbstractViewFactory.h>
 #include <dtkLog/dtkLog.h>
 
 #include <medAnnotationData.h>

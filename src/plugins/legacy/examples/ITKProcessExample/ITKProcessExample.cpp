@@ -13,8 +13,8 @@
 
 #include <ITKProcessExample.h>
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractDataFactory.h>
 
 #include <itkImage.h>
 #include <itkDiscreteGaussianImageFilter.h>

@@ -13,9 +13,12 @@
 
 #pragma once
 
-#include <QTabWidget>
-#include <QTreeWidgetItem>
-#include <QTableWidgetItem>
+#include "qobjectdefs.h"  // for Q_OBJECT, signals, slots
+#include "qstring.h"      // for QString
+#include "qtabwidget.h"   // for QTabWidget
+class QObject;
+class QTreeWidgetItem;
+class QWidget;
 class medPluginWidgetPrivate;
 
 class medPluginWidget : public QTabWidget

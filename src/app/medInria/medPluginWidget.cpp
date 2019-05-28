@@ -21,8 +21,23 @@
 #include <dtkCoreSupport/dtkPlugin.h>
 #include <dtkGuiSupport/dtkAboutPlugin.h>
 
-#include <QtGui>
-#include <QtWidgets>
+#include "qabstractitemview.h"                         // for QAbstractItemView, QAbstractItemView::SelectionBehavior::SelectRows, QAbstractItemView::SelectionMode::SingleSelection
+#include "qboxlayout.h"                                // for QHBoxLayout, QVBoxLayout
+#include "qdialog.h"                                   // for QDialog
+#include "qframe.h"                                    // for QFrame, QFrame::Shape::NoFrame
+#include "qglobal.h"                                   // for foreach, Q_UNUSED
+#include "qheaderview.h"                               // for QHeaderView
+#include "qlist.h"                                     // for QList
+#include "qnamespace.h"                                // for SortOrder::AscendingOrder, WidgetAttribute::WA_MacShowFocusRect, FocusPolicy::NoFocus
+#include "qobject.h"                                   // for QObject
+#include "qpushbutton.h"                               // for QPushButton
+#include "qsizepolicy.h"                               // for QSizePolicy, QSizePolicy::Policy::Expanding
+#include "qstringlist.h"                               // for QStringList
+#include "qtextedit.h"                                 // for QTextEdit
+#include "qtreewidget.h"                               // for QTreeWidget, QTreeWidgetItem
+#include "vcruntime_new.h"                             // for operator new, operator delete
+#include <stddef.h>                                    // for NULL
+class QWidget;
 
 
 ////////////////////////////////////////////////////////////////////////////////

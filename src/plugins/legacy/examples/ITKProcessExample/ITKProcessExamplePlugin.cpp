@@ -92,4 +92,4 @@ QStringList ITKProcessExamplePlugin::types() const
     return QStringList() << "ITKProcessExample";
 }
 
-Q_EXPORT_PLUGIN2(ITKProcessExamplePlugin, ITKProcessExamplePlugin)
+//Q_EXPORT_PLUGIN2(ITKProcessExamplePlugin, ITKProcessExamplePlugin)
