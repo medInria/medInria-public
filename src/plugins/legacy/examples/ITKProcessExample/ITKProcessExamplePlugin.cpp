@@ -41,7 +41,7 @@ ITKProcessExamplePlugin::~ITKProcessExamplePlugin()
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool ITKProcessExamplePlugin::initialize()
