@@ -21,7 +21,6 @@
 #include <medAbstractImageData.h>
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <dtkCoreSupport/dtkAbstractProcess.h>
-#include <dtkCoreSupport/dtkAbstractViewFactory.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractView.h>

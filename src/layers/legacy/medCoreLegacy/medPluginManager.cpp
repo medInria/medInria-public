@@ -13,11 +13,7 @@
 
 #include <medPluginManager.h>
 
-#include <QtCore>
-
-#include <dtkCoreSupport/dtkPluginManager.h>
 #include <dtkCoreSupport/dtkPlugin.h>
-#include <medStorage.h>
 
 
 class medPluginManagerPrivate

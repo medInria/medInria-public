@@ -20,7 +20,6 @@
 
 #include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
-#include <dtkCoreSupport/dtkAbstractDataFactory.h>
 #include <dtkCoreSupport/dtkAbstractData.h>
 
 #include <medPluginManager.h>

@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkAbstractData.h>
 
 #include <ITKProcessExamplePluginExport.h>
 
