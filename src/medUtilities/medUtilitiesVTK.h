@@ -6,6 +6,7 @@
 
 class medAbstractData;
 class vtkDataArray;
+class vtkLinearTransform;
 
 class MEDUTILITIES_EXPORT medUtilitiesVTK
 {
@@ -77,13 +78,24 @@ public:
      *
      * @param[in] data input data, must be a mesh or map
      * @param[in] arrayName input array name
+     * @param[out] mean computed mean
+     * @param[out] stdDev computed standard deviation
      * @param[in] component stats will be computed on this component
-     * @return list with 2 values: mean and standard deviation (in that order).
-     *         Returns an empty list on failure.
+     * @return false on failure, true otherwise
      */
     static bool arrayStats(medAbstractData* data,
                            QString arrayName,
                            double* mean,
                            double* stdDev,
                            int component = 0);
+
+    /**
+     * @brief Applies the parameter linear transformation to a list of arrays
+     * @param data input data, must be a mesh or map
+     * @param arrayNames the transformation will be applied to these arrays
+     * @param transformFilter describes the transformation
+     */
+    static void transformCoordinates(medAbstractData* data,
+                                     QStringList arrayNames,
+                                     vtkLinearTransform* transformFilter);
 };

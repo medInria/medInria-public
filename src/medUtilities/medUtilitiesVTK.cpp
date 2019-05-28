@@ -4,10 +4,12 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractData.h>
 #include <medAbstractProcess.h>
+
 #include <vtkCellData.h>
 #include <vtkDataArray.h>
 #include <vtkDataSet.h>
 #include <vtkFieldData.h>
+#include <vtkLinearTransform.h>
 #include <vtkMetaDataSet.h>
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
@@ -165,3 +167,34 @@ bool medUtilitiesVTK::arrayStats(medAbstractData* data,
     return false;
 }
 
+void medUtilitiesVTK::transformCoordinates(medAbstractData* data,
+                                           QStringList arrayNames,
+                                           vtkLinearTransform* transformFilter)
+{
+    foreach (QString arrayName, arrayNames)
+    {
+        vtkDataArray* array = getArray(data, arrayName);
+        if (array)
+        {
+            // nbComponents must be a multiple of 3
+            int nbComponents = array->GetNumberOfComponents();
+            if ((nbComponents % 3) == 0)
+            {
+                // this array contains coordinates that must be transformed
+                double* inPt = new double[nbComponents];
+                double* outPt = new double[nbComponents];
+                for (vtkIdType k = 0; k < array->GetNumberOfTuples(); ++k)
+                {
+                    array->GetTuple(k, inPt);
+                    for (int l = 0; l < nbComponents / 3; ++l)
+                    {
+                        transformFilter->InternalTransformPoint(inPt + l * 3, outPt + l * 3);
+                    }
+                    array->SetTuple(k, outPt);
+                }
+                delete[] inPt;
+                delete[] outPt;
+            }
+        }
+    }
+}
