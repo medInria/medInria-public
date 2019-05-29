@@ -12,6 +12,8 @@ class vtkInformationVector;
 class vtkIterativeClosestPointTransform;
 
 #include "vtkMath.h"
+#include <vtkLinearTransform.h>
+#include <vtkTransformPolyDataFilter.h>
 #include "iterativeClosestPointPluginExport.h"
 
 class ITERATIVECLOSESTPOINTPLUGIN_EXPORT vtkICPFilter : public vtkPolyDataAlgorithm
@@ -44,6 +46,8 @@ public:
 
     vtkSmartPointer<vtkIterativeClosestPointTransform> GetICPTransform();
 
+    vtkLinearTransform* GetLinearTransform();
+
     void Update();
 
 protected:
@@ -64,6 +68,7 @@ private:
     vtkPolyData* Target;
     int bStartByMatchingCentroids;
     int bTransformation;
+    vtkSmartPointer<vtkTransformPolyDataFilter> TransformFilter2;
 
     int bCheckMeanDistance;
     double ScaleFactor;

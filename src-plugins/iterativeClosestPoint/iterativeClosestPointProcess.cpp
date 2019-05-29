@@ -18,8 +18,12 @@
 
 #include <medAbstractDataFactory.h>
 #include <medUtilities.h>
+#include <medUtilitiesVTK.h>
 
 #include <vtkICPFilter.h>
+#include <vtkIterativeClosestPointTransform.h>
+#include <vtkLandmarkTransform.h>
+#include <vtkLinearTransform.h>
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkSmartPointer.h>
@@ -83,17 +87,18 @@ QString iterativeClosestPointProcess::description() const
 
 void iterativeClosestPointProcess::setInput(medAbstractData *data, int channel)
 {
-    if ( !data  || data->identifier()!="vtkDataMesh")
-        return;
-    
-    if (channel==0)
+    if (data && (data->identifier().contains("vtkDataMesh") ||
+                 data->identifier().contains("EPMap")))
     {
-        d->inputSource = data;
-    }
-    
-    if (channel==1)
-    {
-        d->inputTarget = data;
+        if (channel==0)
+        {
+            d->inputSource = data;
+        }
+
+        if (channel==1)
+        {
+            d->inputTarget = data;
+        }
     }
 }    
 
@@ -137,7 +142,7 @@ int iterativeClosestPointProcess::update()
     if ( !d->inputSource || !d->inputTarget )
         return DTK_FAILURE;
 
-    vtkSmartPointer<vtkICPFilter> ICPFilter = vtkICPFilter::New();
+    vtkSmartPointer<vtkICPFilter> ICPFilter = vtkSmartPointer<vtkICPFilter>::New();
     
     vtkMetaDataSet * source_dataset = static_cast<vtkMetaDataSet*>(d->inputSource->data());
     vtkMetaDataSet * target_dataset = static_cast<vtkMetaDataSet*>(d->inputTarget->data());
@@ -160,9 +165,19 @@ int iterativeClosestPointProcess::update()
     vtkMetaSurfaceMesh * output_mesh = vtkMetaSurfaceMesh::New();
     output_mesh->SetDataSet(output_polyData);
 
-    d->output = medAbstractDataFactory::instance()->createSmartPointer ( "vtkDataMesh" );
+    d->output = medAbstractDataFactory::instance()->createSmartPointer(d->inputSource->identifier());
     d->output->setData(output_mesh);
     medUtilities::setDerivedMetaData(d->output, d->inputSource, "ICP");
+    output_mesh->Delete();
+
+    // manually transform catheter coordinates;
+    if (d->output->identifier().contains("EPMap"))
+    {
+        QStringList arrayNames;
+        arrayNames << "KT_Coordinates" << "_catheter_electrode_positions";
+        vtkLinearTransform* transform = ICPFilter->GetLinearTransform();
+        medUtilitiesVTK::transformCoordinates(d->output, arrayNames, transform);
+    }
 
     return DTK_SUCCEED;
 }
