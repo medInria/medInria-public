@@ -28,6 +28,7 @@
 #include <medWorkspaceFactory.h>
 #include <medAbstractWorkspaceLegacy.h>
 #include <medFilteringWorkspace.h>
+#include <medFilteringWorkspaceL.h>
 #include <medDiffusionWorkspace.h>
 #include <medRegistrationWorkspace.h>
 #include <medVisualizationWorkspace.h>
@@ -172,7 +173,8 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
-    viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
+	viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
+	viewerWSpaceFactory->registerWorkspace<medFilteringWorkspaceL>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
 
     bool genericWorkpace = medSettingsManager::instance()->value("startup", "genericWorkspace", false).toBool();
