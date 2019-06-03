@@ -27,7 +27,7 @@ class dtkAbstractView;
 class medFilteringWorkspaceL : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
-    MED_WORKSPACE_INTERFACE("FilteringLegacy",
+    MED_WORKSPACE_INTERFACE("Filtering Legacy",
                             "Workspace to apply filters to images.",
                             "Methodology")
 public:
@@ -36,7 +36,7 @@ public:
 
     static bool isUsable();
 
-    void setupViewContainerStack ();
+    void setupTabbedViewContainer();
 
     virtual void open(const medDataIndex &index);
 

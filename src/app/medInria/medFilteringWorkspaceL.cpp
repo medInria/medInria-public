@@ -63,7 +63,7 @@ medFilteringWorkspaceL::~medFilteringWorkspaceL()
 /**
  * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
  */
-void medFilteringWorkspaceL::setupViewContainerStack()
+void medFilteringWorkspaceL::setupTabbedViewContainer()
 {
     if ( !this->tabbedViewContainers()->count() )
     {
