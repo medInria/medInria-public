@@ -61,14 +61,14 @@ bool vtkDataMeshReader::read(const QString& path) {
         if (!(medData->identifier() == "vtkDataMesh"))
             return false;
 
-        vtkMetaDataSet * dataSet = NULL;
+        vtkSmartPointer<vtkMetaDataSet> dataSet = NULL;
         if (vtkMetaVolumeMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
         {
-            dataSet = vtkMetaVolumeMesh::New();
+            dataSet = vtkSmartPointer<vtkMetaVolumeMesh>::New();
         }
         else if ( vtkMetaSurfaceMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
         {
-            dataSet = vtkMetaSurfaceMesh::New();
+            dataSet = vtkSmartPointer<vtkMetaSurfaceMesh>::New();
         }
         else
         {
