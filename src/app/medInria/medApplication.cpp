@@ -198,8 +198,10 @@ void medApplication::initialize()
     QDir plugins_dir;
 #ifdef Q_OS_MAC
     plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
-#else
+#elif Q_OS_WIN
     plugins_dir = qApp->applicationDirPath() + "/../plugins";
+#else
+    plugins_dir = qApp->applicationDirPath() + "/plugins";
 #endif
     defaultPath = plugins_dir.absolutePath();
 
