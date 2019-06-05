@@ -40,6 +40,7 @@ list_source_files(${TARGET_NAME}
   views/navigators
   parameters
   resources
+  medUtilities
   )
 
 list_header_directories_to_include(${TARGET_NAME}
