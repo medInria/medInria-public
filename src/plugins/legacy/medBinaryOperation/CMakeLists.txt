@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME medMaskApplicationPlugin)
+set(TARGET_NAME medBinaryOperationPlugin)
 
 ## #############################################################################
 ## Setup version numbering
