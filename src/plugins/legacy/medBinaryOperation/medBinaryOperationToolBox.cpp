@@ -23,6 +23,7 @@
 #include <medJobManagerL.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medMessageController.h>
+#include <medMetaDataKeys.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
@@ -97,7 +98,6 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medFilte
     this->addWidget(runButton);
 
     d->secondInput = nullptr;
-    d->progression_stack = new medProgressionStack();
 }
 
 medBinaryOperationToolBox::~medBinaryOperationToolBox()
@@ -105,7 +105,7 @@ medBinaryOperationToolBox::~medBinaryOperationToolBox()
     // clear ROIs and related GUI elements
     clearDropsite();
 
-    delete d;    
+    delete d;
 }
 
 bool medBinaryOperationToolBox::registered()
@@ -179,16 +179,7 @@ void medBinaryOperationToolBox::run()
         medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
 
-        //TODO This paragraph could be factorized by music
-        // In each process, these lines are all the same
-        // See this->addConnectionsAndStartJob(runProcess);
-        d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-
-        connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-        connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-
-        medJobManagerL::instance()->registerJobItem(runProcess);
-        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+	this->addConnectionsAndStartJob(runProcess);
     }
     else
     {

@@ -70,7 +70,7 @@ int itkNotOperator::run(medAbstractData* inputData)
     notFilter->Update();
 
     QString identifier = inputData->identifier();
-    m_output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
+    m_output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
 
     m_output->setData(notFilter->GetOutput());
 
@@ -82,7 +82,7 @@ int itkNotOperator::run(medAbstractData* inputData)
     medUtilities::setDerivedMetaData(m_output, inputData, "NOT");
 
     return medAbstractProcessLegacy::SUCCESS;
-}        
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
