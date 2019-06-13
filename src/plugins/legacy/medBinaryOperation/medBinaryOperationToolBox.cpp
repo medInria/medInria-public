@@ -23,7 +23,6 @@
 #include <medJobManagerL.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medMessageController.h>
-#include <medMetaDataKeys.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>

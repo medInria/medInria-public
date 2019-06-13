@@ -53,9 +53,9 @@ int itkNotOperator::update()
 
 
 template <class ImageType>
-int itkNotOperator::run(medAbstractData* inputData)
+int itkNotOperator::run()
 {
-    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(m_inputA->data());
 
     typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
     typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
@@ -69,7 +69,7 @@ int itkNotOperator::run(medAbstractData* inputData)
     notFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     notFilter->Update();
 
-    QString identifier = inputData->identifier();
+    QString identifier = m_inputA->identifier();
     m_output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
 
     m_output->setData(notFilter->GetOutput());
@@ -79,7 +79,7 @@ int itkNotOperator::run(medAbstractData* inputData)
         return medAbstractProcessLegacy::FAILURE;
     }
 
-    medUtilities::setDerivedMetaData(m_output, inputData, "NOT");
+    medUtilities::setDerivedMetaData(m_output, m_inputA, "NOT");
 
     return medAbstractProcessLegacy::SUCCESS;
 }
