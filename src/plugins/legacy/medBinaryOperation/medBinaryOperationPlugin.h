@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <dtkCoreSupport/dtkPlugin.h>
-
 #include "medBinaryOperationPluginExport.h"
 
-class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationPlugin : public dtkPlugin
+#include <medPluginLegacy.h>
+
+class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationPlugin : public medPluginLegacy
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "fr.inria.medBinaryOperationPlugin" FILE "medBinaryOperationPlugin.json")
@@ -31,8 +31,4 @@ public:
     virtual QString description() const;
     virtual QString version() const;
     virtual QStringList types() const;
-
-    //TODO class medPlugin
-    virtual bool uninitialize();
-    virtual QStringList tags(void) const;
 };

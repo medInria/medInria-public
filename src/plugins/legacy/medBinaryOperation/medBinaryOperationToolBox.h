@@ -45,9 +45,9 @@ signals:
     
 public slots:
     void run();
-    void update (medAbstractData*){}
 
 protected slots:
+    void update (medAbstractData*){}
 
     /** Slot called when external input finishes being imported. */
     virtual void onSecondInputImported(const medDataIndex &index);

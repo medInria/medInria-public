@@ -13,20 +13,16 @@
 
 #include "medBinaryOperationToolBox.h"
 
-#include <QtGui>
+#include <itkAndOperator.h>
+#include <itkNotOperator.h>
+#include <itkOrOperator.h>
+#include <itkXorOperator.h>
 
-#include <dtkCoreSupport/dtkAbstractProcess.h>
-#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-#include <dtkCoreSupport/dtkSmartPointer.h>
-
-#include <medAbstractDbController.h>
-#include <medAbstractImageData.h>
 #include <medDataManager.h>
 #include <medDropSite.h>
 #include <medJobManagerL.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medMessageController.h>
-#include <medMetaDataKeys.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
@@ -35,8 +31,7 @@
 class medBinaryOperationToolBoxPrivate
 {
 public:
-    
-    dtkSmartPointer <dtkAbstractProcess> process;
+    dtkSmartPointer<medBinaryOperatorBase> process;
     medDropSite *dropsite;
     dtkSmartPointer<medAbstractData> secondInput;
 
@@ -98,13 +93,10 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medFilte
     this->addWidget(widget);
 
     QPushButton *runButton = new QPushButton(tr("Run"), this);
-    
-    this->addWidget(runButton);
-    
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
+    this->addWidget(runButton);
 
     d->secondInput = nullptr;
-
     d->progression_stack = new medProgressionStack();
 }
 
@@ -140,28 +132,32 @@ medAbstractData* medBinaryOperationToolBox::processOutput()
 
 void medBinaryOperationToolBox::onXorButtonToggled(bool value)
 {
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkXorOperator");
+    Q_UNUSED(value);
+    d->process = new itkXorOperator;
     d->dropsite->setEnabled(true); //Need two inputs
     d->clearDropsiteButton->setEnabled(true);
 }
 
 void medBinaryOperationToolBox::onAndButtonToggled(bool value)
 {
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkAndOperator");
+    Q_UNUSED(value);
+    d->process = new itkAndOperator;
     d->dropsite->setEnabled(true); //Need two inputs
     d->clearDropsiteButton->setEnabled(true);
 }
 
 void medBinaryOperationToolBox::onOrButtonToggled(bool value)
 {
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkOrOperator");
+    Q_UNUSED(value);
+    d->process = new itkOrOperator;
     d->dropsite->setEnabled(true); //Need two inputs
     d->clearDropsiteButton->setEnabled(true);
 }
 
 void medBinaryOperationToolBox::onNotButtonToggled(bool value)
 {
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkNotOperator");
+    Q_UNUSED(value);
+    d->process = new itkNotOperator;
     clearDropsite();
     d->dropsite->setEnabled(false); //Need one input
     d->clearDropsiteButton->setEnabled(false);
@@ -173,10 +169,9 @@ void medBinaryOperationToolBox::run()
     {
         if (!d->process)
         {
-            d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkXorOperator");
+            // Default process
+            d->process = new itkXorOperator;
         }
-
-        //this->setToolBoxOnWaitStatus();
 
         d->process->setInput(this->parentToolBox()->data(), 0);
         d->process->setInput(d->secondInput, 1);
@@ -197,7 +192,7 @@ void medBinaryOperationToolBox::run()
     }
     else
     {
-        medMessageController::instance()->showError(tr("Drop a volume in the view and a mask in the drop area"),3000);
+        medMessageController::instance()->showError(tr("Drop a mask in the view, and a 2nd mask in the drop area if needed"),3000);
     }
 }
 
@@ -219,11 +214,10 @@ void medBinaryOperationToolBox::onDropSiteClicked()
 {
     QString roiFileName = QFileDialog::getOpenFileName(this, tr("Open ROI"), "", tr("Image file (*.*)"));
 
-    if (roiFileName.isEmpty())
+    if (!roiFileName.isEmpty())
     {
-        return;
+        medDataManager* mdm = medDataManager::instance();
+        connect(mdm, SIGNAL(dataAdded(const medDataIndex &)), this, SLOT(onRoiImported(const medDataIndex &)));
+        mdm->importPath(roiFileName, true, false);
     }
-    medDataManager* mdm = medDataManager::instance();
-    connect(mdm, SIGNAL(dataAdded(const medDataIndex &)), this, SLOT(onRoiImported(const medDataIndex &)));
-    mdm->importPath(roiFileName, true, false);
 }

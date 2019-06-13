@@ -13,19 +13,14 @@
 
 #include "medMaskApplication.h"
 
-#include <dtkCoreSupport/dtkAbstractProcess.h>
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
-#include <medAbstractImageData.h>
-#include <medAbstractData.h>
-#include <medAbstractDataFactory.h>
-#include <medDataManager.h>
-#include <medMetaDataKeys.h>
-#include <medUtilities.h>
-
 #include <itkMaskImageFilter.h>
 #include <itkMinimumMaximumImageCalculator.h>
+
+#include <medAbstractDataFactory.h>
+#include <medUtilities.h>
 
 // /////////////////////////////////////////////////////////////////
 // medMaskApplicationPrivate
@@ -93,19 +88,16 @@ public:
 // medMaskApplication
 // /////////////////////////////////////////////////////////////////
 
-medMaskApplication::medMaskApplication() : dtkAbstractProcess(), d(new medMaskApplicationPrivate)
+medMaskApplication::medMaskApplication() : medAbstractProcessLegacy(), d(new medMaskApplicationPrivate)
 {
     d->input  = nullptr;
     d->mask   = nullptr;
     d->output = nullptr;
-    d->maskBackgroundValue = 0;
+    d->maskBackgroundValue = 0.0;
 }
 
 medMaskApplication::~medMaskApplication()
 {
-    d->input  = nullptr;
-    d->mask   = nullptr;
-    d->output = nullptr;
     delete d;
     d = nullptr;
 }
@@ -133,12 +125,9 @@ void medMaskApplication::setInput(medAbstractData *data, int channel)
     }
 }
 
-void medMaskApplication::setParameter(double data, int channel)
+void medMaskApplication::setParameter(double data)
 {
-    if(!channel)
-    {
-        d->maskBackgroundValue = data;
-    }
+    d->maskBackgroundValue = data;
 }
 
 void medMaskApplication::clearInput(int channel)
