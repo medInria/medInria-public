@@ -1,8 +1,6 @@
 
 #include "medBinaryOperatorBase.h"
 
-#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-
 #include <itkAndImageFilter.h>
 #include <itkCastImageFilter.h>
 #include <itkOrImageFilter.h>
@@ -22,8 +20,7 @@ template <class ImageType> itk::Image<unsigned char, 3>::Pointer castToUChar3(me
     return output;
 }
 
-
-medBinaryOperatorBase::medBinaryOperatorBase() : dtkAbstractProcess()
+medBinaryOperatorBase::medBinaryOperatorBase() : medAbstractProcessLegacy()
 {
     m_inputA = nullptr;
     m_inputB = nullptr;
@@ -57,7 +54,7 @@ int medBinaryOperatorBase::update()
     if (m_inputA)
     {
         QString id = m_inputA->identifier();
-        
+
         if ( id == "itkDataImageChar3" )
         {
             res = run< itk::Image <char,3> >();
@@ -240,7 +237,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
         return DTK_FAILURE;
     }
 
-    m_output = medAbstractDataFactory::instance()->createSmartPointer ( "itkDataImageUChar3" );
+    m_output = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
     m_output->setData(filter->GetOutput());
 
     QString derivedDescription = description() + " " + m_inputB->metadata(medMetaDataKeys::SeriesDescription.key());

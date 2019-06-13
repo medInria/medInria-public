@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include <dtkCoreSupport/dtkPlugin.h>
+#include <medPluginLegacy.h>
 #include "medMaskApplicationPluginExport.h"
 
-class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationPlugin : public dtkPlugin
+class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationPlugin : public medPluginLegacy
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "fr.inria.medMaskApplicationPlugin" FILE "medMaskApplicationPlugin.json")
@@ -31,5 +31,4 @@ public:
     virtual QString name() const;
     virtual QString version() const;
     virtual QStringList types() const;
-    virtual QStringList tags(void) const;
 };

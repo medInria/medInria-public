@@ -15,14 +15,14 @@
 
 #include "medBinaryOperationPluginExport.h"
 
-#include <dtkCoreSupport/dtkAbstractProcess.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractData.h>
+#include <medAbstractProcessLegacy.h>
 
 class medBinaryOperatorBasePrivate;
 
-class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperatorBase : public dtkAbstractProcess
+class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperatorBase : public medAbstractProcessLegacy
 {
     Q_OBJECT
     
@@ -49,5 +49,4 @@ protected:
     dtkSmartPointer <medAbstractData> m_inputB;
     dtkSmartPointer <medAbstractData> m_output;
 };
-
 

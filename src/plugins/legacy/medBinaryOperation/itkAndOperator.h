@@ -13,8 +13,6 @@
 
 #pragma once
 
-#include <dtkCoreSupport/dtkAbstractProcess.h>
-
 #include "medBinaryOperatorBase.h"
 #include "medBinaryOperationPluginExport.h"
 

@@ -13,16 +13,14 @@
 
 #pragma once
 
-#include <dtkCoreSupport/dtkAbstractProcess.h>
-
-#include <itkImage.h>
-
 #include "medMaskApplicationPluginExport.h"
+
 #include <medAbstractData.h>
+#include <medAbstractProcessLegacy.h>
 
 class medMaskApplicationPrivate;
 
-class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplication : public dtkAbstractProcess
+class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplication : public medAbstractProcessLegacy
 {
     Q_OBJECT
     
@@ -38,7 +36,7 @@ public:
 
     void clearInput(int channel);
 
-    void setParameter(double, int);
+    void setParameter(double);
     
 public slots:
     

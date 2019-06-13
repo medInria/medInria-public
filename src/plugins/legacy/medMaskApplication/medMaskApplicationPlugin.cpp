@@ -15,7 +15,7 @@
 #include "medMaskApplicationPlugin.h"
 #include "medMaskApplicationToolBox.h"
 
-medMaskApplicationPlugin::medMaskApplicationPlugin(QObject *parent) : dtkPlugin(parent)
+medMaskApplicationPlugin::medMaskApplicationPlugin(QObject *parent) : medPluginLegacy(parent)
 {
 }
 
@@ -61,9 +61,4 @@ QString medMaskApplicationPlugin::version() const
 QStringList medMaskApplicationPlugin::types() const
 {
     return QStringList() << "medMaskApplication";
-}
-
-QStringList medMaskApplicationPlugin::tags() const
-{
-    return QStringList();
 }

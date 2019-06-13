@@ -18,7 +18,7 @@
 #include "medBinaryOperationPlugin.h"
 #include "medBinaryOperationToolBox.h"
 
-medBinaryOperationPlugin::medBinaryOperationPlugin(QObject *parent) : dtkPlugin(parent)
+medBinaryOperationPlugin::medBinaryOperationPlugin(QObject *parent) : medPluginLegacy(parent)
 {
 }
 
@@ -77,16 +77,4 @@ QString medBinaryOperationPlugin::version() const
 QStringList medBinaryOperationPlugin::types() const
 {
     return QStringList() << "medBinaryOperation";
-}
-
-// TODO medPlugin
-bool medBinaryOperationPlugin::uninitialize()
-{
-    return true;
-}
-
-// TODO medPlugin
-QStringList medBinaryOperationPlugin::tags() const
-{
-    return QStringList();
 }

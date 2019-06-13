@@ -15,8 +15,6 @@
 
 #include "medMaskApplicationPluginExport.h"
 
-#include <medAbstractDataFactory.h>
-#include <medDataManager.h>
 #include <medFilteringAbstractToolBox.h>
 
 class medMaskApplicationToolBoxPrivate;
