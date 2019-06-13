@@ -445,9 +445,9 @@ void vtkImageView3D::InstallInteractor()
 //----------------------------------------------------------------------------
 void vtkImageView3D::UnInstallInteractor()
 {
-    this->BoxWidget->SetInteractor (NULL);
-    this->PlaneWidget->SetInteractor (NULL);
-    this->Marker->SetInteractor (NULL);
+    this->BoxWidget->SetInteractor (nullptr);
+    this->PlaneWidget->SetInteractor (nullptr);
+    this->Marker->SetInteractor (nullptr);
 
     if (this->Interactor)
     {
@@ -457,8 +457,8 @@ void vtkImageView3D::UnInstallInteractor()
             this->RenderWindow->RemoveRenderer(poRenderer);
             poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
         }
-        this->Interactor->SetRenderWindow (NULL);
-        this->Interactor->SetInteractorStyle (NULL);
+        this->Interactor->SetRenderWindow (nullptr);
+        this->Interactor->SetInteractorStyle (nullptr);
     }
     this->IsInteractorInstalled = 0;
 }
@@ -580,7 +580,7 @@ void vtkImageView3D::InternalUpdate()
     bool multichannelInput = (this->m_poInternalImageFromInput->GetScalarType() == VTK_UNSIGNED_CHAR &&
                               (this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 3 ||
                                this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 4 ));
-    if(this->GetMedVtkImageInfo() == NULL || !this->GetMedVtkImageInfo()->initialized)
+    if(this->GetMedVtkImageInfo() == nullptr || !this->GetMedVtkImageInfo()->initialized)
     {
         this->Renderer->RemoveAllViewProps();
         //TODO apparently RemoveAllViewProps() is not enough, though it should be
@@ -813,7 +813,7 @@ void vtkImageView3D::SetColorLevel (double s,int layer)
 void vtkImageView3D::UpdateVolumeFunctions(int layer)
 {
   vtkLookupTable* lookuptable = this->GetLookupTable(layer);
-  if ( !this->GetUseLookupTable(layer) || lookuptable == NULL )
+  if ( !this->GetUseLookupTable(layer) || lookuptable == nullptr )
     return;
 
   vtkColorTransferFunction * color   =
@@ -1110,11 +1110,11 @@ int vtkImageView3D::GetNumberOfLayers() const
     // so we need one more check to know the real number of layer
     if( this->LayerInfoVec.size() == 1)
     {
-        if( this->LayerInfoVec.at(0).ImageDisplay->GetVtkImageInfo() == NULL)
+        if( this->LayerInfoVec.at(0).ImageDisplay->GetVtkImageInfo() == nullptr)
             return 0;
         else return 1;
     }
-    else return this->LayerInfoVec.size();
+    else return static_cast<int>(this->LayerInfoVec.size());
 }
 
 //----------------------------------------------------------------------------
@@ -1141,7 +1141,7 @@ void vtkImageView3D::RemoveAllLayers()
 {
   while (this->LayerInfoVec.size() > 1)
   {
-    this->RemoveLayer (this->LayerInfoVec.size() -1);
+    this->RemoveLayer (static_cast<int>(this->LayerInfoVec.size() -1));
   }
 }
 
@@ -1153,7 +1153,7 @@ vtkImage3DDisplay * vtkImageView3D::GetImage3DDisplayForLayer( int layer ) const
   {
       return this->LayerInfoVec.at(layer).ImageDisplay;
   }
-  else return NULL;
+  else return nullptr;
 }
 
 void vtkImageView3D::ApplyColorTransferFunction(vtkScalarsToColors * colors,
@@ -1169,7 +1169,7 @@ vtkColorTransferFunction * vtkImageView3D::GetColorTransferFunction(int layer) c
   if (this->HasLayer(layer))
     //warning if it does not exist, a default one is created.
     return this->VolumeProperty->GetRGBTransferFunction(layer);
-  else return NULL;
+  else return nullptr;
 }
 
 vtkPiecewiseFunction * vtkImageView3D::GetOpacityTransferFunction(int layer) const
@@ -1177,7 +1177,7 @@ vtkPiecewiseFunction * vtkImageView3D::GetOpacityTransferFunction(int layer) con
   if (this->HasLayer(layer))
     //warning if it does not exist, a default one is created.
     return this->VolumeProperty->GetScalarOpacity(layer);
-  else return NULL;
+  else return nullptr;
 }
 
 void vtkImageView3D::StoreColorTransferFunction(vtkColorTransferFunction *ctf, int layer)
@@ -1208,7 +1208,7 @@ vtkLookupTable * vtkImageView3D::GetLookupTable(int layer) const
 {
   vtkImage3DDisplay * imageDisplay = this->GetImage3DDisplayForLayer(layer);
   if (!imageDisplay)
-    return NULL;
+    return nullptr;
   return imageDisplay->GetLookupTable();
 }
 
@@ -1272,6 +1272,6 @@ medVtkImageInfo* vtkImageView3D::GetMedVtkImageInfo(int layer /*= 0*/) const
 {
   vtkImage3DDisplay * imageDisplay = this->GetImage3DDisplayForLayer(layer);
   if (!imageDisplay)
-    return NULL;
+    return nullptr;
   return imageDisplay->GetVtkImageInfo();
 }

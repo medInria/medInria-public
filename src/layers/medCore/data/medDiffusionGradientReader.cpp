@@ -141,7 +141,7 @@ void medDiffusionGradientReader::readBVecFile(QString gradientFileName)
         while (!iss.eof());
     }
 
-    unsigned int numDirections = trVecs[0].size();
+    unsigned int numDirections = static_cast<unsigned int>(trVecs[0].size());
 
     d->gradients.resize(numDirections);
     for (unsigned int i = 0;i < numDirections;++i)

@@ -265,7 +265,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     ABORT_CHECKING(m_bAborting);
     itk::TimeProbe timer;
     timer.Start();
-    typename MaskImageType::Pointer maskImage = ITK_NULLPTR;
+    typename MaskImageType::Pointer maskImage = nullptr;
     typedef itk::OtsuThresholdImageFilter<OutputImageType, MaskImageType> ThresholderType;
     typename ThresholderType::Pointer otsu = ThresholderType::New();
     m_filter = otsu;
@@ -273,8 +273,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     otsu->SetNumberOfHistogramBins(200);
     otsu->SetInsideValue(0);
     otsu->SetOutsideValue(1);
-
-    otsu->SetNumberOfThreads(uiThreadNb);
+    otsu->SetNumberOfWorkUnits(uiThreadNb);
     otsu->Update();
     updateProgression(fProgression);
     maskImage = otsu->GetOutput();
@@ -332,7 +331,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
         imagePadder->SetPadLowerBound(lowerBound);
         imagePadder->SetPadUpperBound(upperBound);
         imagePadder->SetConstant(0);
-        imagePadder->SetNumberOfThreads(uiThreadNb);
+        imagePadder->SetNumberOfWorkUnits(uiThreadNb);
         imagePadder->Update();
         updateProgression(fProgression);
 
@@ -346,7 +345,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
         maskPadder->SetPadLowerBound(lowerBound);
         maskPadder->SetPadUpperBound(upperBound);
         maskPadder->SetConstant(0);
-        maskPadder->SetNumberOfThreads(uiThreadNb);
+        maskPadder->SetNumberOfWorkUnits(uiThreadNb);
         maskPadder->Update();
         updateProgression(fProgression);
 
@@ -391,8 +390,8 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     ABORT_CHECKING(m_bAborting);
     imageShrinker->SetShrinkFactors(uiShrinkFactors);
     maskShrinker->SetShrinkFactors(uiShrinkFactors);
-    imageShrinker->SetNumberOfThreads(uiThreadNb);
-    maskShrinker->SetNumberOfThreads(uiThreadNb);
+    imageShrinker->SetNumberOfWorkUnits(uiThreadNb);
+    maskShrinker->SetNumberOfWorkUnits(uiThreadNb);
     imageShrinker->Update();
     updateProgression(fProgression);
     maskShrinker->Update();
@@ -411,7 +410,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     ABORT_CHECKING(m_bAborting);
     try
     {
-        filter->SetNumberOfThreads(uiThreadNb);
+        filter->SetNumberOfWorkUnits(uiThreadNb);
         filter->Update();
         updateProgression(fProgression, 5);
     }
@@ -438,7 +437,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     bspliner->SetOrigin(newOrigin);
     bspliner->SetDirection(image->GetDirection());
     bspliner->SetSpacing(image->GetSpacing());
-    bspliner->SetNumberOfThreads(uiThreadNb);
+    bspliner->SetNumberOfWorkUnits(uiThreadNb);
     bspliner->Update();
     updateProgression(fProgression);
 
@@ -467,7 +466,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     typename ExpFilterType::Pointer expFilter = ExpFilterType::New();
     m_filter = expFilter;
     expFilter->SetInput(logField);
-    expFilter->SetNumberOfThreads(uiThreadNb);
+    expFilter->SetNumberOfWorkUnits(uiThreadNb);
     expFilter->Update();
     updateProgression(fProgression);
 
@@ -477,7 +476,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     m_filter = divider;
     divider->SetInput1(castFilter->GetOutput());
     divider->SetInput2(expFilter->GetOutput());
-    divider->SetNumberOfThreads(uiThreadNb);
+    divider->SetNumberOfWorkUnits(uiThreadNb);
     divider->Update();
     updateProgression(fProgression);
 
@@ -495,7 +494,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     cropper->SetInput(divider->GetOutput());
     cropper->SetExtractionRegion(inputRegion);
     cropper->SetDirectionCollapseToSubmatrix();
-    cropper->SetNumberOfThreads(uiThreadNb);
+    cropper->SetNumberOfWorkUnits(uiThreadNb);
     cropper->Update();
     updateProgression(fProgression);
 

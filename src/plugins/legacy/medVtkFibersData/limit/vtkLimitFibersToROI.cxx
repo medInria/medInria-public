@@ -27,7 +27,10 @@
 
 #include <algorithm>
 
-//extern int vtkrint(double a);
+#ifdef WIN32
+#define snprintf sprintf_s
+//#define strncpy(x, y, z) strcpy_s(x, z, y)
+#endif
 
 
 vtkStandardNewMacro(vtkLimitFibersToROI);
@@ -135,7 +138,7 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
   }
 
   std::sort ( Labels.begin(), Labels.end() );
-  unsigned int numLabels = Labels.size();
+  unsigned int numLabels = static_cast<unsigned int>(Labels.size());
   
   vtkDebugMacro ( << "Number Of Valid ROIs: " << numLabels );
 
@@ -169,7 +172,7 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
   int cellId = 0;
 
   char tmp[256];
-  sprintf (tmp,"%d ROIs to process.", (int)Labels.size());
+  snprintf (tmp, 256, "%d ROIs to process.", (int)Labels.size());
   this->SetProgressText (tmp);
 
   if( !Labels.size() )
@@ -253,7 +256,7 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
     
     bool insert = true;
 
-    // 0: NULL
+    // 0: nullptr
     // 1: NOT
     // 2: AND
     

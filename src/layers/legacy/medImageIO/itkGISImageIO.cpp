@@ -18,6 +18,11 @@
 
 #include <fstream>
 
+#ifdef WIN32
+#define snprintf sprintf_s
+//#define strncpy(x, y, z) strcpy_s(x, z, y)
+#endif
+
 namespace itk
 {
 
@@ -203,7 +208,7 @@ namespace itk
     else
     {
       char message[512];
-      sprintf( message, "Error: Unsupported pixel type: %s.", s_type.c_str());
+      snprintf( message, 512, "Error: Unsupported pixel type: %s.", s_type.c_str());
       throw itk::ExceptionObject(__FILE__,__LINE__,message);
     }
     

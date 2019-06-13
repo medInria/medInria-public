@@ -42,7 +42,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v5.0rc01)
+set(git_tag v5.0.0)
 
 
 ## #############################################################################
@@ -69,6 +69,7 @@ set(cmake_args
   -DModule_ITKIOPhilipsREC:BOOL=ON
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
+  -DITK_LEGACY_REMOVE:BOOL=ON
   -DVTK_DIR:PATH=${VTK_DIR}
   )
 

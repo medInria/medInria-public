@@ -28,7 +28,7 @@ medItkSubtractImageProcess::medItkSubtractImageProcess(QObject *parent)
     : medAbstractSubtractImageProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkSubtractImageProcess::~medItkSubtractImageProcess()
@@ -134,7 +134,7 @@ medAbstractJob::medJobExitStatus medItkSubtractImageProcess::run()
     {
         filter->Update();
     }
-    catch(itk::ProcessAborted &e)
+    catch(itk::ProcessAborted &)
     {
         return medAbstractJob::MED_JOB_EXIT_CANCELLED;
     }

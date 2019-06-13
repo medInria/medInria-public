@@ -31,7 +31,7 @@ medItkSubtractProcess::medItkSubtractProcess(QObject *parent)
     : medAbstractSubtractFilterProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkSubtractProcess::~medItkSubtractProcess()
@@ -128,7 +128,7 @@ medAbstractJob::medJobExitStatus medItkSubtractProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

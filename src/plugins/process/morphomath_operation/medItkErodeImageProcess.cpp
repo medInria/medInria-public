@@ -28,7 +28,7 @@ medItkErodeImageProcess::medItkErodeImageProcess(QObject *parent)
     : medAbstractErodeImageProcess(parent)
 
 {
-   m_filter = NULL;
+   m_filter = nullptr;
 }
 
 medItkErodeImageProcess::~medItkErodeImageProcess()
@@ -127,7 +127,7 @@ medAbstractJob::medJobExitStatus medItkErodeImageProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
