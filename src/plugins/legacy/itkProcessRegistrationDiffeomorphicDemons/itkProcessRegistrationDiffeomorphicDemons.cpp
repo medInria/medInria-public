@@ -11,27 +11,12 @@
 
 =========================================================================*/
 
-#include <itkProcessRegistrationDiffeomorphicDemons.h>
+#include "itkProcessRegistrationDiffeomorphicDemons.h"
 
-#include <medAbstractData.h>
-#include <medAbstractDataFactory.h>
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-
-// /////////////////////////////////////////////////////////////////
-//
-// /////////////////////////////////////////////////////////////////
-
-#include <itkImageRegistrationMethod.h>
-
-#include <itkImage.h>
-#include <itkResampleImageFilter.h>
-
-#include <time.h>
-
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
+#include <itkChangeInformationImageFilter.h>
 #include <rpiCommonTools.hxx>
-#include <registrationFactory.h>
-
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsDiffeomorphicDemonsPrivate
@@ -42,9 +27,9 @@ class itkProcessRegistrationDiffeomorphicDemonsPrivate
 public:
     itkProcessRegistrationDiffeomorphicDemons * proc;
     template <class PixelType>
-            int update();
+    int update();
     template < typename TFixedImage, typename TMovingImage >
-           bool write(const QString&);
+    bool write(const QString&);
     void * registrationMethod ;
 
     std::vector<unsigned int> iterations;
@@ -63,15 +48,16 @@ public:
 itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDemons() : itkProcessRegistration(), d(new itkProcessRegistrationDiffeomorphicDemonsPrivate)
 {
     d->proc = this;
-    d->registrationMethod = NULL ;
+    d->registrationMethod = nullptr;
     d->updateRule = 0;
     d->gradientType = 0;
     d->maximumUpdateStepLength = 2.0;
     d->updateFieldStandardDeviation = 0.0;
     d->displacementFieldStandardDeviation = 1.5;
     d->useHistogramMatching = false;
-    //set transform type for the exportation of the transformation to a file
-    this->setProperty("transformType","nonRigid");
+
+    // Gives the exported file type for medRegistrationSelectorToolBox
+    this->setProperty("outputFileType", "notText");
 }
 
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
@@ -87,7 +73,7 @@ itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicD
 bool itkProcessRegistrationDiffeomorphicDemons::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkProcessRegistrationDiffeomorphicDemons",
-              createitkProcessRegistrationDiffeomorphicDemons);
+                                                                      createitkProcessRegistrationDiffeomorphicDemons);
 }
 
 QString itkProcessRegistrationDiffeomorphicDemons::description() const
@@ -107,24 +93,37 @@ QString itkProcessRegistrationDiffeomorphicDemons::identifier() const
 
 
 template <typename PixelType>
-        int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
+int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
 
-    //unfortunately diffeomorphic demons only work with double or float types...
-    // so we need to use a cast filter.
     typedef itk::Image< float, 3 > RegImageType;
     typedef double TransformScalarType;
-    typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                    TransformScalarType > RegistrationType;
+
+    int testResult = proc->testInputs();
+    if (testResult != medAbstractProcessLegacy::SUCCESS)
+    {
+        return testResult;
+    }
+
+    FixedImageType* inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
+    FixedImageType* inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
+
+    // The output volume is going to located at the origin/direction of the fixed input. Needed for rpi::DiffeomorphicDemons
+    typedef itk::ChangeInformationImageFilter< FixedImageType > FilterType;
+    typename FilterType::Pointer filter = FilterType::New();
+    filter->SetOutputOrigin(inputFixed->GetOrigin());
+    filter->ChangeOriginOn();
+    filter->SetOutputDirection(inputFixed->GetDirection());
+    filter->ChangeDirectionOn();
+    filter->SetInput(inputMoving);
+
+    typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType, TransformScalarType > RegistrationType;
     RegistrationType * registration = new RegistrationType;
-
     registrationMethod = registration;
-
-    registration->SetFixedImage((FixedImageType*)proc->fixedImage().GetPointer());
-    registration->SetMovingImage((MovingImageType*)proc->movingImages()[0].GetPointer());
-
+    registration->SetFixedImage(inputFixed);
+    registration->SetMovingImage(filter->GetOutput());
     registration->SetNumberOfIterations(iterations);
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
     registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviation);
@@ -134,101 +133,113 @@ template <typename PixelType>
     // Set update rule
     switch( updateRule )
     {
-    case 0:
-        registration->SetUpdateRule( RegistrationType::UPDATE_DIFFEOMORPHIC ); break;
-    case 1:
-        registration->SetUpdateRule( RegistrationType::UPDATE_ADDITIVE );      break;
-    case 2:
-        registration->SetUpdateRule( RegistrationType::UPDATE_COMPOSITIVE );   break;
-    default:
-        throw std::runtime_error( "Update rule must fit in the range [0,2]." );
+        case 0:
+            registration->SetUpdateRule( RegistrationType::UPDATE_DIFFEOMORPHIC ); break;
+        case 1:
+            registration->SetUpdateRule( RegistrationType::UPDATE_ADDITIVE );      break;
+        case 2:
+            registration->SetUpdateRule( RegistrationType::UPDATE_COMPOSITIVE );   break;
+        default:
+            throw std::runtime_error( "Update rule must fit in the range [0,2]." );
     }
 
     // Set gradient type
     switch( gradientType )
     {
-    case 0:
-        registration->SetGradientType( RegistrationType::GRADIENT_SYMMETRIZED );
-        break;
-    case 1:
-        registration->SetGradientType( RegistrationType::GRADIENT_FIXED_IMAGE );
-        break;
-    case 2:
-        registration->SetGradientType( RegistrationType::GRADIENT_WARPED_MOVING_IMAGE );
-        break;
-    case 3:
-        registration->SetGradientType( RegistrationType::GRADIENT_MAPPED_MOVING_IMAGE );
-        break;
-    default:
-        throw std::runtime_error( "Gradient type must fit in the range [0,3]." );
+        case 0:
+            registration->SetGradientType( RegistrationType::GRADIENT_SYMMETRIZED );
+            break;
+        case 1:
+            registration->SetGradientType( RegistrationType::GRADIENT_FIXED_IMAGE );
+            break;
+        case 2:
+            registration->SetGradientType( RegistrationType::GRADIENT_WARPED_MOVING_IMAGE );
+            break;
+        case 3:
+            registration->SetGradientType( RegistrationType::GRADIENT_MAPPED_MOVING_IMAGE );
+            break;
+        default:
+            throw std::runtime_error( "Gradient type must fit in the range [0,3]." );
     }
 
     // Print method parameters
     QString methodParameters = proc->getTitleAndParameters();
-    
-    dtkDebug() << "METHOD PARAMETERS";
-    dtkDebug() << methodParameters;
+
+    qDebug() << "METHOD PARAMETERS";
+    qDebug() << methodParameters;
 
     // Run the registration
     time_t t1 = clock();
-    try {
+    try
+    {
         registration->StartRegistration();
     }
     catch( std::exception & err )
     {
-        dtkDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
-        return 1;
+        qDebug() << "ExceptionObject caught (StartRegistration): " << err.what();
+        return medAbstractProcessLegacy::FAILURE;
     }
     time_t t2 = clock();
 
-    dtkDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
+    qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
     emit proc->progressed(80);
-    
+
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
+    resampler->SetInput((const MovingImageType*) inputMoving);
     resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
     resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
 
-    try {
+    try
+    {
         resampler->Update();
     }
-    catch (itk::ExceptionObject &e) {
-        dtkDebug() << e.GetDescription();
-        return 1;
+    catch (itk::ExceptionObject & err)
+    {
+        qDebug() << "ExceptionObject caught (resampler): " << err.GetDescription();
+        return medAbstractProcessLegacy::FAILURE;
     }
 
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    dtkDebug() << "Resampled? ";
     result->DisconnectPipeline();
-    
+
     if (proc->output())
         proc->output()->setData (result);
-        
-    return 0;
+
+    return medAbstractProcessLegacy::SUCCESS;
+}
+
+medAbstractProcessLegacy::DataError itkProcessRegistrationDiffeomorphicDemons::testInputs()
+{
+    if (d->proc->fixedImage()->GetLargestPossibleRegion().GetSize()
+            != d->proc->movingImages()[0]->GetLargestPossibleRegion().GetSize())
+    {
+        return medAbstractProcessLegacy::MISMATCHED_DATA_SIZE;
+    }
+
+    if (d->proc->fixedImage()->GetSpacing()
+            != d->proc->movingImages()[0]->GetSpacing())
+    {
+        return medAbstractProcessLegacy::MISMATCHED_DATA_SPACING;
+    }
+
+    return medAbstractProcessLegacy::SUCCESS;
 }
 
 int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
 {
-    if(fixedImage().IsNull() || movingImages().isEmpty()
-            || movingImages()[0].IsNull())
+    // Cast has been done in itkProcessRegistration
+    if (imgType == itkProcessRegistration::FLOAT)
     {
-        dtkWarn() << "Either the fixed image or the moving image is Null";
-        return 1;
+        return d->update<float>();
     }
 
-    if (imgType != itkProcessRegistration::FLOAT)
-    {
-        dtkWarn() << "the imageType should be float, and it's :"<<imgType;
-        return 1;
-    }
-
-    return d->update<float>();
+    return medAbstractProcessLegacy::FAILURE;
 }
 
 itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::getTransform(){
@@ -258,35 +269,35 @@ QString itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
     titleAndParameters += "  Max number of iterations   : " + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())) + "\n";
     switch (registration->GetUpdateRule())
     {
-        case 0:
-            titleAndParameters += "  Update rule   : DIFFEOMORPHIC\n";
-            break;
-        case 1:
-            titleAndParameters += "  Update rule   : ADDITIVE\n";
-            break;
-        case 2:
-            titleAndParameters += "  Update rule   : COMPOSITIVE\n";
-            break;
-        default:
-            titleAndParameters += "  Update rule   : Unknown\n";
+    case 0:
+        titleAndParameters += "  Update rule   : DIFFEOMORPHIC\n";
+        break;
+    case 1:
+        titleAndParameters += "  Update rule   : ADDITIVE\n";
+        break;
+    case 2:
+        titleAndParameters += "  Update rule   : COMPOSITIVE\n";
+        break;
+    default:
+        titleAndParameters += "  Update rule   : Unknown\n";
     }
 
     switch( registration->GetGradientType() )
     {
-        case 0:
-            titleAndParameters += "  Gradient type   : SYMMETRIZED\n";
-            break;
-        case 1:
-            titleAndParameters += "  Gradient type   : FIXED_IMAGE\n";
-            break;
-        case 2:
-            titleAndParameters += "  Gradient type   : WARPED_MOVING_IMAGE\n";
-            break;
-        case 3:
-            titleAndParameters += "  Gradient type   : MAPPED_MOVING_IMAGE\n";
-            break;
-        default:
-            titleAndParameters += "  Gradient type   : Unknown\n";
+    case 0:
+        titleAndParameters += "  Gradient type   : SYMMETRIZED\n";
+        break;
+    case 1:
+        titleAndParameters += "  Gradient type   : FIXED_IMAGE\n";
+        break;
+    case 2:
+        titleAndParameters += "  Gradient type   : WARPED_MOVING_IMAGE\n";
+        break;
+    case 3:
+        titleAndParameters += "  Gradient type   : MAPPED_MOVING_IMAGE\n";
+        break;
+    default:
+        titleAndParameters += "  Gradient type   : Unknown\n";
     }
 
     titleAndParameters += "  Maximum step length   : " + QString::number(registration->GetMaximumUpdateStepLength()) + " (voxel unit)\n";
@@ -311,8 +322,9 @@ bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& fi
                         registration->GetTransformation(),
                         file.toStdString());
         }
-        catch (std::exception)
+        catch (std::exception& err)
         {
+            qDebug() << "ExceptionObject caught (writeTransform): " << err.what();
             return false;
         }
         return true;

@@ -15,6 +15,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <medProgressionStack.h>
 
 #include <medCoreLegacyExport.h>
 class QUuid;
@@ -74,6 +75,8 @@ public:
     bool isUserLayerPoolable() const;
     bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
+
+    medProgressionStack *getProgressionStack();
 
 public slots:
     virtual void clear();

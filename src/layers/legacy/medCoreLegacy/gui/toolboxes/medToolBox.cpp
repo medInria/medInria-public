@@ -12,14 +12,16 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
-
+#include <medAbstractProcessLegacy.h>
 #include <medAbstractView.h>
-
+#include <medAbstractWorkspaceLegacy.h>
+#include <medButton.h>
+#include <medJobManagerL.h>
+#include <medMessageController.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medToolBoxBody.h>
 #include <medToolBoxTab.h>
-#include <medButton.h>
 
 #include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkCoreSupport/dtkPlugin>
@@ -36,6 +38,7 @@ public:
     bool isContextVisible;
     bool aboutPluginVisibility;
     dtkPlugin* plugin;
+    medAbstractWorkspaceLegacy* workspace;
 
 public:
     QVBoxLayout *layout;
@@ -43,7 +46,7 @@ public:
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
 {
-    //d->view = 0;
+    d->workspace = nullptr;
 
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
@@ -268,7 +271,7 @@ void medToolBox::onAboutButtonClicked()
         dtkDebug() << "about plugin" << d->plugin->name();
 
         QDialog * dial = new QDialog(this);
-        QString windowTitle = tr("medInria: about ");
+        QString windowTitle = tr("About ");
         windowTitle += d->plugin->name();
         dial->setWindowTitle(windowTitle);
         dtkAboutPlugin * apWidget = new dtkAboutPlugin(d->plugin,dial);
@@ -294,5 +297,134 @@ void medToolBox::onAboutButtonClicked()
     else
     {
         dtkWarn() << "No plugin set for toolbox" << d->header->title();
+    }
+}
+
+medAbstractWorkspaceLegacy* medToolBox::getWorkspace()
+{
+    return d->workspace;
+}
+
+void medToolBox::setWorkspace(medAbstractWorkspaceLegacy* workspace)
+{
+    d->workspace = workspace;
+}
+
+void medToolBox::displayMessageError(QString error)
+{
+    qDebug() << qPrintable(name() + ": " + error);
+    medMessageController::instance()->showError(error, 3000);
+}
+
+void medToolBox::handleDisplayError(int error)
+{
+    // Handle volume(s)/mesh(es) error
+    switch (error)
+    {
+    case medAbstractProcessLegacy::PIXEL_TYPE:
+        displayMessageError("Pixel type not yet implemented");
+        break;
+    case medAbstractProcessLegacy::DIMENSION_3D:
+        displayMessageError("This toolbox is designed to be used with 3D volumes");
+        break;
+    case medAbstractProcessLegacy::DIMENSION_4D:
+        displayMessageError("This toolbox is designed to be used with 4D volumes");
+        break;
+    case medAbstractProcessLegacy::MESH_TYPE:
+        displayMessageError("This toolbox is designed to be used with meshes");
+        break;
+    case medAbstractProcessLegacy::MESH_3D:
+        displayMessageError("This toolbox is designed to be used with 3D meshes");
+        break;
+    case medAbstractProcessLegacy::MESH_4D:
+        displayMessageError("This toolbox is designed to be used with 4D meshes");
+        break;
+    case medAbstractProcessLegacy::NO_MESH:
+        displayMessageError("This toolbox is not designed to be used with meshes");
+        break;
+    case medAbstractProcessLegacy::DATA_SIZE:
+        displayMessageError("Inputs must be the same size");
+        break;
+    case medAbstractProcessLegacy::MISMATCHED_DATA_TYPES:
+        displayMessageError("Inputs must be the same type");
+        break;
+    case medAbstractProcessLegacy::MISMATCHED_DATA_SIZES_ORIGIN_SPACING:
+        displayMessageError("Inputs must have the same size, origin, spacing");
+        break;
+    case medAbstractProcessLegacy::MISMATCHED_DATA_SIZE:
+        displayMessageError("Inputs must have the same size");
+        break;
+    case medAbstractProcessLegacy::MISMATCHED_DATA_ORIGIN:
+        displayMessageError("Inputs must have the same origin");
+        break;
+    case medAbstractProcessLegacy::MISMATCHED_DATA_SPACING:
+        displayMessageError("Inputs must have the same spacing");
+        break;
+    default:
+        displayMessageError("This action failed (undefined error)");
+        break;
+    }
+}
+
+void medToolBox::setToolBoxOnWaitStatus()
+{
+    this->setDisabled(true);
+}
+
+void medToolBox::setToolBoxOnWaitStatusForNonRunnableProcess()
+{
+    setToolBoxOnWaitStatus();
+
+    // Needed for non-medRunnableProcess functions
+    this->repaint();
+    QApplication::processEvents();
+}
+
+void medToolBox::setToolBoxOnReadyToUse()
+{
+    this->setDisabled(false);
+}
+
+medProgressionStack* medToolBox::getProgressionStack()
+{
+    return getWorkspace()->getProgressionStack();
+}
+
+void medToolBox::addConnectionsAndStartJob(medJobItemL* job)
+{
+    addToolBoxConnections(job);
+
+    getProgressionStack()->addJobItem(job, "Progress "+this->name()+":");
+
+    medJobManagerL::instance()->registerJobItem(job);
+    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(job));
+}
+
+void medToolBox::addToolBoxConnections(medJobItemL* job)
+{
+    // If you want to deactivate the automatic import of process output, add:
+    // "enableOnProcessSuccessImportOutput(runProcess, false);"
+    // in your toolbox, after "addConnectionsAndStartJob(runProcess);"
+    enableOnProcessSuccessImportOutput(job, true);
+
+    connect (job, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
+    connect (job, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));
+    connect (job, SIGNAL (cancelled (QObject*)),    this, SIGNAL (failure ()));
+    connect (job, SIGNAL (cancelled (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
+    connect (job, SIGNAL (success   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
+    connect (job, SIGNAL (failure   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
+    connect (job, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
+    connect (job, SIGNAL (activate(QObject*, bool)), getProgressionStack(), SLOT(setActive(QObject*,bool)));
+}
+
+void medToolBox::enableOnProcessSuccessImportOutput(medJobItemL *job, bool enable)
+{
+    if (enable)
+    {
+        connect(job, SIGNAL(success(QObject*)), this->getWorkspace(), SLOT(importProcessOutput()), Qt::UniqueConnection);
+    }
+    else
+    {
+        disconnect(job, SIGNAL(success(QObject*)), this->getWorkspace(), SLOT(importProcessOutput()));
     }
 }

@@ -43,7 +43,8 @@ public:
     medLayerParameterGroupL *movingLayerGroup;
 };
 
-medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspaceLegacy(parent), d(new medRegistrationWorkspacePrivate)
+medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) :
+    medAbstractWorkspaceLegacy(parent), d(new medRegistrationWorkspacePrivate)
 {
     // -- Registration toolbox --
 
@@ -64,11 +65,9 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
     layerGroups.append(d->movingLayerGroup);
     this->setLayerGroups(layerGroups);
 
-//    this->setUserLayerPoolable(false);
     connect(this->tabbedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
     connect(d->registrationToolBox, SIGNAL(movingDataRegistered(medAbstractData*)), this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
     connect(d->registrationToolBox, SIGNAL(destroyed()), this, SLOT(removeSlectorInternToolBox()));
-
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -79,7 +78,6 @@ medRegistrationWorkspace::~medRegistrationWorkspace(void)
 
 void medRegistrationWorkspace::setupTabbedViewContainer()
 {
-
     //the stack has been instantiated in constructor
     if (!this->tabbedViewContainers()->count())
     {

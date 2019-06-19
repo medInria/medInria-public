@@ -29,8 +29,8 @@ QString medChop(const QString& string)
 {
     QString result = string;
 
-    if(string.size() > 15) {
-        result.resize(12);
+    if(string.size() > 25) {
+        result.resize(22);
         result.append("...");
     }
 
@@ -99,7 +99,8 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     d->completeLabels.insert(sender, completeLabel);
 
     QPushButton *button= new QPushButton(widget);
-    button->setText("C");
+    button->setIcon(QIcon(":icons/cross.svg"));
+
     connect(button,SIGNAL(clicked()), this,SLOT(sendCancelRequest()));
     d->buttons.insert(sender,button);
     d->buttonsSender.insert(button, sender);
@@ -224,6 +225,12 @@ void medProgressionStack::addJobItem(medJobItemL* job, QString label)
     connect(job, SIGNAL(disableCancel(QObject*)), this, SLOT(disableCancel(QObject *)));
 
     this->setLabel(job, label);
+
+    // Cancel button is automatically deactivated
+    this->disableCancel(job);
+
+    // Moving bar is automatically set
+    this->setActive(job, true);
 }
 
 /**
