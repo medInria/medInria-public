@@ -71,8 +71,8 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
     this->setTitle (tr("Filtering View"));
     this->addWidget(displayWidget);
 
-    d->inputData = NULL;
-    d->currentToolBox = NULL;
+    d->inputData = nullptr;
+    d->currentToolBox = nullptr;
 }
 
 medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
@@ -125,20 +125,21 @@ void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
         {
             d->currentToolBox->hide();
             d->filterLayout->removeWidget ( d->currentToolBox );
-            d->currentToolBox = 0;
+            d->currentToolBox = nullptr;
             this->setAboutPluginVisibility(false);
         }
         return;
     }
 
     toolbox->setFilteringToolBox(this);
+    toolbox->setWorkspace(this->getWorkspace());
 
     //get rid of old toolBox
     if (d->currentToolBox)
     {
         d->currentToolBox->hide();
         d->filterLayout->removeWidget ( d->currentToolBox );
-        d->currentToolBox = NULL;
+        d->currentToolBox = nullptr;
     }
 
     d->currentToolBox = toolbox;

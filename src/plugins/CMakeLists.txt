@@ -52,6 +52,7 @@ set(PLUGIN_LIST
   legacy/medVtkView                                                      ON
   legacy/medMaskApplication                                              ON
   legacy/medBinaryOperation                                              ON
+  legacy/manualRegistration                                              ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON

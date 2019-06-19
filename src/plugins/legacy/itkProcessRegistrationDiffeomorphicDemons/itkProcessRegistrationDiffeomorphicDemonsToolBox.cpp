@@ -11,26 +11,16 @@
 
 =========================================================================*/
 
-#include <itkProcessRegistrationDiffeomorphicDemons.h>
-#include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
+#include "itkProcessRegistrationDiffeomorphicDemons.h"
+#include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
 
-#include <QtGui>
-
-#include <medAbstractDataFactory.h>
-#include <medAbstractData.h>
-#include <medAbstractImageData.h>
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-#include <dtkCoreSupport/dtkAbstractProcess.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
-#include <medAbstractView.h>
-#include <medRunnableProcess.h>
-#include <medJobManagerL.h>
 #include <medPluginManager.h>
-
-#include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
-#include <medProgressionStack.h>
+#include <medRunnableProcess.h>
+#include <medToolBoxFactory.h>
 
 #include <rpiCommonTools.hxx>
 
@@ -38,7 +28,6 @@ class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
-    medProgressionStack * progressionStack;
     QComboBox * updateRuleBox;
     QComboBox * gradientTypeBox;
     QDoubleSpinBox * maxStepLengthBox;
@@ -50,47 +39,49 @@ public:
 
 itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
 {
-    QWidget *widget = new QWidget(this);
+    QWidget* widget = new QWidget(this);
 
-    QPushButton *runButton = new QPushButton(tr("Run"), this);
-    runButton->setToolTip(tr("Start Registration"));
+    QVBoxLayout* layout = new QVBoxLayout();
 
-    QFormLayout *layout = new QFormLayout(widget);
+    QLabel* explanation = new QLabel("Drop 2 datasets with same size and spacing.\n");
+    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    explanation->setWordWrap(true);
+    layout->addWidget(explanation);
 
-    d->iterationsBox = new QLineEdit(this);
+    d->iterationsBox = new QLineEdit();
     d->iterationsBox->setText("15x10x5");
     d->iterationsBox->setToolTip(tr("Each number of iteration per level must be separated by \"x\". From coarser to finest levels"));
 
-    d->maxStepLengthBox = new QDoubleSpinBox(this);
+    d->maxStepLengthBox = new QDoubleSpinBox();
     d->maxStepLengthBox->setMinimum(0);
     d->maxStepLengthBox->setMaximum(1000);
     d->maxStepLengthBox->setSingleStep(0.01);
     d->maxStepLengthBox->setValue(2.0);
     d->maxStepLengthBox->setToolTip(tr(
-                "Maximum length of an update vector (voxel units)."
-                " Setting it to 0 implies no restrictions will be made"
-                " on the step length."));
+                                        "Maximum length of an update vector (voxel units)."
+                                        " Setting it to 0 implies no restrictions will be made"
+                                        " on the step length."));
 
-    d->updateFieldStdDevBox = new QDoubleSpinBox(this);
+    d->updateFieldStdDevBox = new QDoubleSpinBox();
     d->updateFieldStdDevBox->setMinimum(0);
     d->updateFieldStdDevBox->setMaximum(1000);
     d->updateFieldStdDevBox->setSingleStep(0.01);
     d->updateFieldStdDevBox->setValue(0.0);
     d->updateFieldStdDevBox->setToolTip(tr(
-                "Standard deviation of the Gaussian smoothing"
-                "of the update field (voxel units). Setting it below 0.1"
-                "means no smoothing will be performed (default 0.0)."));
+                                            "Standard deviation of the Gaussian smoothing"
+                                            " of the update field (voxel units). Setting it below 0.1"
+                                            " means no smoothing will be performed (default 0.0)."));
 
-    d->disFieldStdDevBox = new QDoubleSpinBox(this);
+    d->disFieldStdDevBox = new QDoubleSpinBox();
     d->disFieldStdDevBox->setMinimum(0);
     d->disFieldStdDevBox->setMaximum(1000);
     d->disFieldStdDevBox->setSingleStep(0.01);
     d->disFieldStdDevBox->setValue(1.5);
     d->disFieldStdDevBox->setToolTip(tr(
-                "Standard deviation of the Gaussian smoothing of "
-                "the displacement field (voxel units). Setting it below 0.1 "
-                "means no smoothing will be performed (default 1.5)."));
-    d->updateRuleBox = new QComboBox(this);
+                                         "Standard deviation of the Gaussian smoothing of"
+                                         " the displacement field (voxel units). Setting it below 0.1"
+                                         " means no smoothing will be performed (default 1.5)."));
+    d->updateRuleBox = new QComboBox();
     QStringList updateRules;
     updateRules<< tr("Diffeomorphic") << tr ("Additive") << tr("Compositive");
     d->updateRuleBox->addItems(updateRules);
@@ -99,45 +90,39 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     d->updateRuleBox->setItemData(1,"s <- s + u",Qt::ToolTipRole);
     d->updateRuleBox->setItemData(2,"s <- s o (Id+u)",Qt::ToolTipRole);
 
-    d->gradientTypeBox = new QComboBox(this);
+    d->gradientTypeBox = new QComboBox();
     d->gradientTypeBox->setToolTip(tr(
-                "Type of gradient used for computing the demons force."));
+                                       "Type of gradient used for computing the demons force."));
     QStringList gradientTypes;
     gradientTypes<< tr("Symmetrized") << tr ("Fixed Image")
                  << tr("Warped Moving Image")
                  << tr("Mapped Moving Image");
     d->gradientTypeBox->addItems(gradientTypes);
-    d->useHistogramBox =  new QCheckBox(this);
+    d->useHistogramBox =  new QCheckBox();
     d->useHistogramBox->setChecked(false);
     d->useHistogramBox->setToolTip(tr(
-                "Use histogram matching before processing?"));
+                                       "Use histogram matching before processing?"));
 
-    this->setTitle("Diffeomorphic Demons");
-    layout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
-    layout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
-    layout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);
-    layout->addRow(new QLabel(tr("Max. Update Step Length"),this),d->maxStepLengthBox);
-    layout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),
-                   d->updateFieldStdDevBox);
-    layout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),
-                   d->disFieldStdDevBox);
-    layout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
+    QFormLayout* formLayout = new QFormLayout();
+    formLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
+    formLayout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
+    formLayout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
+    formLayout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);
+    formLayout->addRow(new QLabel(tr("Max. Update Step Length"),this),d->maxStepLengthBox);
+    formLayout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),
+                       d->updateFieldStdDevBox);
+    formLayout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),
+                       d->disFieldStdDevBox);
+    formLayout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
+    layout->addLayout(formLayout);
 
-    // progression stack
-    d->progressionStack = new medProgressionStack(widget);
-//    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-//    progressStackLayout->addWidget(d->progressionStack);
+    // Run button
+    QPushButton *runButton = new QPushButton(tr("Run"));
+    runButton->setToolTip(tr("Start Registration"));
+    layout->addWidget(runButton);
 
+    widget->setLayout(layout);
     this->addWidget(widget);
-    this->addWidget(runButton);
-    this->addWidget(d->progressionStack);
-
-    //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin(
-                "itkProcessRegistrationDiffeomorphicDemonsPlugin");
-    setAboutPluginButton(plugin);
-    setAboutPluginVisibility(true);
 
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
@@ -146,7 +131,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeom
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
@@ -155,71 +140,64 @@ bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
             registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>();
 }
 
+dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "Diffeomorphic Demons" );
+    return plugin;
+}
+
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 {
-
-    if(!this->parentToolBox())
-        return;
-
-    medAbstractRegistrationProcess *process;
-    process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
-    if(!process)
-        return;
-
-    this->parentToolBox()->setProcess(process);
-
-    //TODO smartPointing have to be managed only in abstract processes -rde
-    dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
-    dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
-
-    if (!fixedData || !movingData)
-        return;
-
-    // Many choices here
-
-    itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
-    if (!process_Registration)
+    if(this->parentToolBox())
     {
-        dtkWarn() << "registration process doesn't exist" ;
-        return;
+        medAbstractRegistrationProcess *process =
+                dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+
+        medRegistrationSelectorToolBox* toolbox = this->parentToolBox();
+        if(toolbox) // toolbox empty in Pipelines and not Registration workspace
+        {
+            toolbox->setProcess(process);
+        }
+
+        //TODO smartPointing have to be managed only in abstract processes -rde
+        dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
+        dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
+
+        if (fixedData && movingData)
+        {
+            // Many choices here
+            itkProcessRegistrationDiffeomorphicDemons *process_Registration =
+                    dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
+            process_Registration->setDisplacementFieldStandardDeviation(
+                        d->disFieldStdDevBox->value());
+            process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
+            process_Registration->setUpdateRule(d->updateRuleBox->currentIndex());
+            process_Registration->setUpdateFieldStandardDeviation(d->updateFieldStdDevBox->value());
+            process_Registration->setMaximumUpdateLength(d->maxStepLengthBox->value());
+            process_Registration->setUseHistogramMatching(d->useHistogramBox->isChecked());
+
+            try
+            {
+                process_Registration->setNumberOfIterations(
+                            rpi::StringToVector<unsigned int>(
+                                d->iterationsBox->text().toStdString()));
+            }
+            catch (std::exception& err)
+            {
+                qDebug()<<"ExceptionObject caught in "<<metaObject()->className();
+                qDebug()<<err.what();
+                return;
+            }
+
+            this->setToolBoxOnWaitStatus();
+
+            process_Registration->setFixedInput(fixedData);
+            process_Registration->setMovingInput(movingData);
+
+            medRunnableProcess *runProcess = new medRunnableProcess;
+            runProcess->setProcess (process);
+            this->addConnectionsAndStartJob(runProcess);
+        }
     }
-    process_Registration->setDisplacementFieldStandardDeviation(
-                d->disFieldStdDevBox->value());
-    process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
-    process_Registration->setUpdateRule(d->updateRuleBox->currentIndex());
-    process_Registration->setUpdateFieldStandardDeviation(d->updateFieldStdDevBox->value());
-    process_Registration->setMaximumUpdateLength(d->maxStepLengthBox->value());
-    process_Registration->setUseHistogramMatching(d->useHistogramBox->isChecked());
-    try {
-        process_Registration->setNumberOfIterations(
-                    rpi::StringToVector<unsigned int>(
-                        d->iterationsBox->text().toStdString()));
-    }
-    catch ( std::exception & )
-    {
-        dtkDebug() << "wrong iteration format";
-        return;
-    }
-
-    process_Registration->setFixedInput(fixedData);
-    process_Registration->setMovingInput(movingData);
-
-    medRunnableProcess *runProcess = new medRunnableProcess;
-
-    runProcess->setProcess (process);
-
-    d->progressionStack->addJobItem(runProcess, tr("Progress:"));
-    d->progressionStack->setActive(runProcess,true);
-    d->progressionStack->disableCancel(runProcess);
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-    //First have the moving progress bar,
-    //and then display the remaining % when known
-    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progressionStack, SLOT(setActive(QObject*,bool)));
-
-    medJobManagerL::instance()->registerJobItem(runProcess,process->identifier());
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }

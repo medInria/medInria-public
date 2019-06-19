@@ -32,6 +32,27 @@ public:
     medAbstractProcessLegacy( medAbstractProcessLegacy * parent = NULL );
     virtual ~medAbstractProcessLegacy();
 
+    enum DataError
+    {
+        SUCCESS = DTK_SUCCEED,
+        FAILURE = DTK_FAILURE,
+
+        PIXEL_TYPE = 1 + SUCCESS * SUCCESS + FAILURE * FAILURE, //! Pixel type not yet implemented
+        DIMENSION_3D,   //! Not a 3D volume
+        DIMENSION_4D,   //! Not a 4D volume
+        MESH_TYPE,      //! Not a mesh
+        MESH_3D,        //! Not a 3D mesh
+        MESH_4D,        //! Not a 4D mesh
+        NO_MESH,        //! Input can not be a mesh
+        DATA_SIZE,      //! Inputs must be the same size
+        MISMATCHED_DATA_TYPES, //! Inputs must be the same type
+        MISMATCHED_DATA_SIZES_ORIGIN_SPACING, //! Inputs should have the same size, origin, spacing
+        MISMATCHED_DATA_SIZE,    //! Inputs should have the same size
+        MISMATCHED_DATA_ORIGIN,  //! Inputs should have the same origin
+        MISMATCHED_DATA_SPACING, //! Inputs should have the same spacing
+        UNDEFINED,      //! Miscellanous
+    };
+
 public slots:
     virtual medAbstractData *output() = 0;
     virtual int update () = 0;

@@ -20,11 +20,9 @@
 
 #include <medDataManager.h>
 #include <medDropSite.h>
-#include <medJobManagerL.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRunnableProcess.h>
 #include <medToolBoxFactory.h>
 
@@ -40,8 +38,6 @@ public:
     QRadioButton *orButton;
     QRadioButton *notButton;
     QPushButton  *clearDropsiteButton;
-
-    medProgressionStack * progression_stack;
 };
 
 medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medBinaryOperationToolBoxPrivate)
@@ -97,7 +93,6 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medFilte
     this->addWidget(runButton);
 
     d->secondInput = nullptr;
-    d->progression_stack = new medProgressionStack();
 }
 
 medBinaryOperationToolBox::~medBinaryOperationToolBox()
@@ -167,6 +162,8 @@ void medBinaryOperationToolBox::run()
 {
     if (this->parentToolBox()->data())
     {
+        this->setToolBoxOnWaitStatus();
+
         if (!d->process)
         {
             // Default process
@@ -176,23 +173,13 @@ void medBinaryOperationToolBox::run()
         d->process->setInput(this->parentToolBox()->data(), 0);
         d->process->setInput(d->secondInput, 1);
 
-        medRunnableProcess *runProcess = new medRunnableProcess;
+        medRunnableProcess* runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
-
-        //TODO This paragraph could be factorized by music
-        // In each process, these lines are all the same
-        // See this->addConnectionsAndStartJob(runProcess);
-        d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-
-        connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-        connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-
-        medJobManagerL::instance()->registerJobItem(runProcess);
-        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+        this->addConnectionsAndStartJob(runProcess);
     }
     else
     {
-        medMessageController::instance()->showError(tr("Drop a mask in the view, and a 2nd mask in the drop area if needed"),3000);
+        displayMessageError("Drop a mask in the view, and a 2nd mask in the drop area if needed");
     }
 }
 

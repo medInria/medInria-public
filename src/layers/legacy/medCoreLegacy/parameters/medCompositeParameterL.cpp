@@ -136,6 +136,11 @@ QList<QVariant> medCompositeParameterL::values() const
     return d->variants.values();
 }
 
+QVariant medCompositeParameterL::value( const QString key) const
+{
+    return d->variants[key];
+}
+
 void medCompositeParameterL::updateInternWigets()
 {
     QHash<QString, QVariant>::const_iterator i = d->variants.constBegin();
