@@ -97,7 +97,7 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
 
     d->layersToolBox = new medToolBox;
     d->layersToolBox->setTitle("Layer settings");
-    d->layersToolBox->hide();
+    d->layersToolBox->show();
 
     d->layerListToolBox = new medToolBox;
     d->layerListToolBox->header()->hide();
