@@ -11,35 +11,26 @@
 
 =========================================================================*/
 
-#include <medAbstractWorkspaceLegacy.h>
+#include "medAbstractWorkspaceLegacy.h"
 
-#include <QUuid>
-#include <QWidgetAction>
-
-#include <medDataIndex.h>
-#include <medSettingsManager.h>
-#include <medToolBox.h>
-#include <medViewContainer.h>
-#include <medViewContainerManager.h>
-#include <medTabbedViewContainers.h>
-#include <medAbstractView.h>
 #include <medAbstractLayeredView.h>
-#include <medToolBoxHeader.h>
-#include <medAbstractInteractor.h>
-#include <medMetaDataKeys.h>
+#include <medAbstractView.h>
 #include <medBoolParameterL.h>
-#include <medStringListParameterL.h>
-#include <medParameterPoolL.h>
-#include <medAbstractParameterL.h>
 #include <medDataManager.h>
-#include <medPoolIndicatorL.h>
+#include <medLayerParameterGroupL.h>
 #include <medLinkMenu.h>
 #include <medListWidget.h>
-#include <medAbstractParameterGroupL.h>
-#include <medViewParameterGroupL.h>
-#include <medLayerParameterGroupL.h>
+#include <medMetaDataKeys.h>
 #include <medParameterGroupManagerL.h>
-
+#include <medParameterPoolL.h>
+#include <medPoolIndicatorL.h>
+#include <medTabbedViewContainers.h>
+#include <medToolBox.h>
+#include <medToolBoxBody.h>
+#include <medToolBoxHeader.h>
+#include <medViewContainer.h>
+#include <medViewContainerManager.h>
+#include <medViewParameterGroupL.h>
 
 class medAbstractWorkspaceLegacyPrivate
 {
@@ -59,6 +50,7 @@ public:
 
     QList<medToolBox*> toolBoxes;
     medToolBox *selectionToolBox;
+    medToolBox *layersToolBox;
     medToolBox *layerListToolBox;
     medToolBox *interactorToolBox;
     medToolBox *navigatorToolBox;
@@ -81,7 +73,7 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
 {
     d->parent = parent;
 
-    d->selectionToolBox = new medToolBox(parent);
+    d->selectionToolBox = new medToolBox;
     d->selectionToolBox->setTitle("Selection");
     d->selectionToolBox->header()->hide();
     d->selectionToolBox->hide();
@@ -103,24 +95,26 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
     d->navigatorToolBox->hide();
     d->selectionToolBox->addWidget(d->navigatorToolBox);
 
+    d->layersToolBox = new medToolBox;
+    d->layersToolBox->setTitle("Layer settings");
+    d->layersToolBox->hide();
+
     d->layerListToolBox = new medToolBox;
-    d->layerListToolBox->setTitle("Layer settings");
-    d->layerListToolBox->hide();
-    d->selectionToolBox->addWidget(d->layerListToolBox);
+    d->layerListToolBox->header()->hide();
+    d->layersToolBox->addWidget(d->layerListToolBox);
 
     d->interactorToolBox = new medToolBox;
-    d->interactorToolBox->setTitle("Interactors");
     d->interactorToolBox->header()->hide();
-    d->interactorToolBox->hide();
-
-    d->selectionToolBox->addWidget(d->interactorToolBox);
+    d->layersToolBox->addWidget(d->interactorToolBox);
 
     d->progressionStack = new medProgressionStack();
+
+    d->selectionToolBox->addWidget(d->layersToolBox);
     d->selectionToolBox->addWidget(d->progressionStack);
 
     d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    d->layerListWidget = NULL;
+    d->layerListWidget = nullptr;
 
     d->temporaryPoolForInteractors = new medParameterPoolL(this);
 
@@ -128,14 +122,14 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
     this->setUserLayerPoolable(true);
     this->setUserViewPoolable(true);
 
-    d->viewLinkMenu = NULL;
-    d->layerLinkMenu = NULL;
+    d->viewLinkMenu = nullptr;
+    d->layerLinkMenu = nullptr;
 }
 
 medAbstractWorkspaceLegacy::~medAbstractWorkspaceLegacy(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medAbstractWorkspaceLegacy::addToolBox(medToolBox *toolbox)
@@ -211,7 +205,7 @@ void medAbstractWorkspaceLegacy::updateNavigatorsToolBox()
 {
     d->navigatorToolBox->clear();
 
-    medAbstractView* view = NULL;
+    medAbstractView* view = nullptr;
     QList<QWidget*>  navigators;
     QStringList viewType;
 
@@ -283,7 +277,7 @@ void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
 
 void medAbstractWorkspaceLegacy::updateLayersToolBox()
 {
-    d->layerListToolBox->clear();
+    d->layerListToolBox->body()->clear();
     d->containerForLayerWidgetsItem.clear();
     d->selectedLayers.clear();
     d->poolIndicators.clear();
@@ -291,7 +285,6 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
     delete d->layerListWidget;
     d->layerListWidget = new medListWidget;
     d->layerListWidget->setAlternatingRowColors(true);
-
     d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     d->layerListWidget->setFocusPolicy(Qt::NoFocus);
     d->layerListWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -306,15 +299,6 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
         medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(container->view());
         if(layeredView)
         {
-            if(d->layerListWidget->count() != 0)
-            {
-                // add an empty widget to separate layers from different views
-                QListWidgetItem * item = new QListWidgetItem;
-                item->setSizeHint(QSize(10, 10));
-                item->setFlags(Qt::NoItemFlags);
-                d->layerListWidget->addItem(item);
-            }
-
             for(int layer = layeredView->layersCount() - 1; layer >= 0; --layer)
             {
                 if(layer < 0)
@@ -330,16 +314,15 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                 QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
 
                 QHBoxLayout* layout = new QHBoxLayout(layerWidget);
-                layout->setContentsMargins(0,0,10,0);
+                layout->setContentsMargins(0,0,5,0);
 
                 medBoolParameterL* visibilityParam = dynamic_cast<medBoolParameterL*>(layeredView->visibilityParameter(layer));
                 QPushButton* thumbnailButton = visibilityParam->getPushButton();
 
                 QFont myFont;
                 QFontMetrics fm(myFont);
-                //TODO: could be nice to elide according to current width (update when resize)
-                QString text = fm.elidedText(name, Qt::ElideRight, 100);
-                QLabel *layerName = new QLabel("<font color='Black'>"+text+"</font>", layerWidget);
+                QString text = fm.elidedText(name, Qt::ElideRight, 160);
+                QLabel *layerName = new QLabel("<b>"+text+"</b>", layerWidget);
                 layerName->setToolTip(name);
 
                 layout->addWidget(thumbnailButton);
@@ -398,13 +381,18 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                 d->layerListWidget->blockSignals(false);
 
             }
+            // add the layer widgets
+            if (layeredView->layersCount() > 0)
+            {
+                d->layersToolBox->show();
+                d->layerListToolBox->addWidget(d->layerListWidget);
+
+                // resize layerListWidget to number of item
+                d->layerListWidget->setFixedHeight(d->layerListWidget->sizeHintForRow(0) * d->layerListWidget->count() + 2 * d->layerListWidget->frameWidth());
+                d->layerListWidget->show();
+            }
         }
     }
-    // add the layer widgets
-    d->layerListToolBox->show();
-    d->layerListToolBox->addWidget(d->layerListWidget);
-
-    d->layerListWidget->show();
 
     this->updateInteractorsToolBox();
 }
@@ -440,7 +428,7 @@ void medAbstractWorkspaceLegacy::updateInteractorsToolBox()
         containerMng->container(uuid)->highlight();
     }
     d->interactorToolBox->hide();
-    d->interactorToolBox->clear();
+    d->interactorToolBox->body()->clear();
 
     if(!d->layerListWidget)
         return;
