@@ -160,8 +160,6 @@ vtkImageView::vtkImageView()
 
 vtkImageView::~vtkImageView()
 {
-    std::cout<<"deleting a view"<<std::endl;
-
     this->OrientationTransform->SetInput ( NULL );
 
     this->OrientationMatrix->Delete();
@@ -210,12 +208,6 @@ vtkImageView::~vtkImageView()
         this->m_poInternalImageFromInput = nullptr;
         this->m_poInputVtkAlgoOutput = nullptr;
     }
-
-    //delete this->Impl;
-
-    std::cout<<"deleting a view. done"<<std::endl;
-
-
 }
 
 //----------------------------------------------------------------------------

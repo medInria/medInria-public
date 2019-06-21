@@ -11,51 +11,29 @@
 
 =========================================================================*/
 
-#include <medApplication.h>
-
-#include <locale.h>
-
-#include <QtGui>
-#include <QList>
-
-#include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkLog/dtkLog.h>
-#include <dtkCoreSupport/dtkAbstractData.h>
-
-#include <medPluginManager.h>
-
-
-#include <medWorkspaceFactory.h>
-#include <medAbstractWorkspaceLegacy.h>
-#include <medFilteringWorkspace.h>
-#include <medFilteringWorkspaceL.h>
-#include <medDiffusionWorkspace.h>
-#include <medRegistrationWorkspace.h>
-#include <medVisualizationWorkspace.h>
-#include <medSegmentationWorkspace.h>
+#include "medApplication.h"
 
 #include <medAbstractDataFactory.h>
-#include <medSeedPointAnnotationData.h>
-
-#include <medSettingsWidgetFactory.h>
-#include <medSettingsWidget.h>
-#include <medStartupSettingsWidget.h>
+#include <medCore.h>
 #include <medDatabaseSettingsWidget.h>
-
 #include <medDataManager.h>
 #include <medDatabaseController.h>
-#include <medDatabaseNonPersistentController.h>
-
-#include <medMainWindow.h>
-
-#include <medStyleSheetParser.h>
+#include <medDiffusionWorkspace.h>
+#include <medFilteringWorkspace.h>
+#include <medFilteringWorkspaceL.h>
 #include <medGenericWorkspace.h>
-
-#include <medCore.h>
-#include <medAbstractArithmeticOperationProcess.h>
-
-#include <medJobManager.h>
+#include <medLogger.h>
+#include <medMainWindow.h>
+#include <medPluginManager.h>
+#include <medRegistrationWorkspace.h>
+#include <medSeedPointAnnotationData.h>
+#include <medSegmentationWorkspace.h>
 #include <medSettingsManager.h>
+#include <medSettingsWidgetFactory.h>
+#include <medStartupSettingsWidget.h>
+#include <medStyleSheetParser.h>
+#include <medVisualizationWorkspace.h>
+#include <medWorkspaceFactory.h>
 
 class medApplicationPrivate
 {
@@ -72,28 +50,23 @@ medApplication::medApplication(int & argc, char**argv) :
     QtSingleApplication(argc,argv),
     d(new medApplicationPrivate)
 {
-    d->mainWindow = NULL;
+    d->mainWindow = nullptr;
 
     this->setApplicationName("medInria");
-    dtkDebug() << "Version:" << MEDINRIA_VERSION;
     this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("inria");
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
+    medLogger::initialize();
+
+    dtkInfo() << "####################################";
+    dtkInfo() << "Version: "    << MEDINRIA_VERSION;
+    dtkInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
+
     QApplication::setStyle(QStyleFactory::create("fusion"));
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
     this->setStyleSheet(parser.result());
-
-    //  Redirect msgs to the logs
-
-    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
-                     this, SLOT(redirectErrorMessageToLog(const QString&)) );
-    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
-                     this, SLOT(redirectMessageToLog(QString)) );
-
-    QObject::connect(this,SIGNAL(messageReceived(const QString&)),
-                     this,SLOT(redirectMessageToLog(QString)));
 
     this->initialize();
 }
@@ -128,16 +101,6 @@ void medApplication::setMainWindow(medMainWindow *mw)
     QVariant var = QVariant::fromValue((QObject*)d->mainWindow);
     this->setProperty("MainWindow",var);
     d->systemOpenInstructions.clear();
-}
-
-void medApplication::redirectMessageToLog(const QString &message)
-{
-    dtkTrace()<< message;
-}
-
-void medApplication::redirectErrorMessageToLog(const QString &message)
-{
-    dtkError()<< message;
 }
 
 void medApplication::redirectMessageToSplash(const QString &message)
