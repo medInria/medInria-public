@@ -118,7 +118,7 @@ void medMaskApplicationToolBox::run()
     }
     else
     {
-        medMessageController::instance()->showError(tr("Drop a volume in the view and a mask in the drop area"),3000);
+        displayMessageError("Drop a volume in the view and a mask in the drop area");
     }
 }
 
@@ -136,5 +136,5 @@ void medMaskApplicationToolBox::clearMask(void)
     {
         d->process->clearInput(0);
     }
-    d->mask = 0;
+    d->mask = nullptr;
 }

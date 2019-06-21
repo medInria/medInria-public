@@ -55,6 +55,12 @@ if (ACTIVATE_WALL_OPTION)
   add_definitions(-DACTIVATE_WALL_OPTION)
 endif()
 
+## #############################################################################
+## Variable
+## #############################################################################
+
+string(TIMESTAMP BUILD_DATE "\"%d_%m_%Y\"")
+add_definitions(-DMEDINRIA_BUILD_DATE=${BUILD_DATE})
 
 ## #############################################################################
 ## OS specificites

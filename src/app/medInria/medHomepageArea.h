@@ -38,6 +38,7 @@ public slots:
     void onShowHelp();
     void onShowInfo();
     void onShowComposer();
+    void openLogDirectory();
 
 signals:
     /**

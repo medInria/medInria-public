@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include "medLogger.h"
+
 #include <medMainWindow.h>
 
 #include <QtGui>
@@ -759,6 +761,8 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         return;
     }
 
+    dtkInfo() << "### Application is closing...";
+
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )
     {
         int res = QMessageBox::information(this,
@@ -792,7 +796,11 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 
     d->closeEventProcessed = true;
     this->saveSettings();
+
     event->accept();
+
+    dtkInfo() << "####################################";
+    medLogger::finalize();
 }
 
 

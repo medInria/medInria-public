@@ -89,6 +89,20 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( pluginButton,SIGNAL ( clicked() ),this, SLOT ( onShowPlugin() ) );
 
+    medHomepageButton * logButton = new medHomepageButton ( this );
+    logButton->setText ( "Log" );
+    logButton->setMinimumHeight ( 30 );
+    logButton->setMaximumWidth ( 150 );
+    logButton->setMinimumWidth ( 150 );
+    logButton->setToolTip(QString("Open Log Directory.\nThe log file is ")
+                             + QString(qApp->applicationName())
+                             + QString(".log"));
+    logButton->setFocusPolicy ( Qt::NoFocus );
+    logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
+    logButton->setIconSize(QSize(16,16));
+    logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( openLogDirectory() ) );
+
     medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
@@ -104,7 +118,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
-    userButtonsLayout->insertWidget ( 3, helpButton );
+    userButtonsLayout->insertWidget ( 3, logButton );
+    userButtonsLayout->insertWidget ( 4, helpButton );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
@@ -467,4 +482,10 @@ void medHomepageArea::onShowSettings()
 void medHomepageArea::onShowComposer()
 {
     emit showComposer();
+}
+
+void medHomepageArea::openLogDirectory()
+{
+    QString path = QFileInfo(dtkLogPath(qApp)).path();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
