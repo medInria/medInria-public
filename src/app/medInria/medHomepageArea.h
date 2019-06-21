@@ -27,8 +27,6 @@ public:
 
     void initPage();
 
-    QParallelAnimationGroup * getAnimation();
-
     void resizeEvent( QResizeEvent * event );
 
 public slots:
