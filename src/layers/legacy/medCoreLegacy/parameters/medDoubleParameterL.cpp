@@ -183,6 +183,7 @@ QSlider* medDoubleParameterL::getSlider()
         d->slider->setRange(0, convertToInt(d->max));
         d->slider->setSingleStep(d->step);
         d->slider->setValue(convertToInt(m_value));
+        d->slider->setStyleSheet("QSlider::handle:horizontal {width: 15px;}");
 
         this->addToInternWidgets(d->slider);
         connect(d->slider, SIGNAL(destroyed()), this, SLOT(removeInternSlider()));
