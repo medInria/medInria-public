@@ -197,88 +197,97 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         QFileInfo fileInfo ( file );
 
-        dtkSmartPointer<medAbstractData> medData;
-
-        // 2.1) Try reading file information, just the header not the whole file
-
-        bool readOnlyImageInformation = true;
-        medData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation );
-
-        if ( !medData )
+        if (fileInfo.size() != 0)
         {
-            dtkWarn() << "Reader was unable to read: " << fileInfo.filePath();
-            continue;
-        }
+            dtkSmartPointer<medAbstractData> medData;
 
-        // 2.2) Fill missing metadata
-        populateMissingMetadata ( medData, med::smartBaseName(fileInfo.fileName()) );
-        QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
-        QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
-        tmpPatientId = patientName + birthDate;
+            // 2.1) Try reading file information, just the header not the whole file
 
-        if(tmpPatientId != currentPatientId)
-        {
-          currentPatientId = tmpPatientId;
+            bool readOnlyImageInformation = true;
+            medData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation );
 
-          patientID = getPatientID(patientName, birthDate);
-        }
+            if ( !medData )
+            {
+                dtkWarn() << "Reader was unable to read: " << fileInfo.filePath();
+                continue;
+            }
 
-        medData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
+            // 2.2) Fill missing metadata
+            populateMissingMetadata ( medData, med::smartBaseName(fileInfo.fileName()) );
+            QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
+            QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
+            tmpPatientId = patientName + birthDate;
 
-        tmpSeriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+            if(tmpPatientId != currentPatientId)
+            {
+                currentPatientId = tmpPatientId;
 
-        if (tmpSeriesUid != currentSeriesUid)
-        {
-          currentSeriesUid = tmpSeriesUid;
-          currentSeriesId = medMetaDataKeys::SeriesID.getFirstValue(medData);
-        }
-        else
-          medData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << currentSeriesId );
+                patientID = getPatientID(patientName, birthDate);
+            }
 
-        // 2.3) Generate an unique id for each volume
-        // all images of the same volume should share the same id
-        QString volumeId = generateUniqueVolumeId ( medData );
+            medData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
 
-        // check whether the image belongs to a new volume
-        if ( !volumeUniqueIdToVolumeNumber.contains ( volumeId ) )
-        {
-            volumeUniqueIdToVolumeNumber[volumeId] = volumeNumber;
-            volumeNumber++;
-        }
+            tmpSeriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
 
-        // 2.3) a) Determine future file name and path based on patient/study/series/image
-        // i.e.: where we will write the imported image
-        QString imageFileName = determineFutureImageFileName ( medData, volumeUniqueIdToVolumeNumber[volumeId] );
-        #ifdef Q_OS_WIN32
-                if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
-                {
-                    emit showError ( tr ( "Your database path is too long" ), 5000 );
-                    emit dataImported(medDataIndex(), d->uuid);
+            if (tmpSeriesUid != currentSeriesUid)
+            {
+                currentSeriesUid = tmpSeriesUid;
+                currentSeriesId = medMetaDataKeys::SeriesID.getFirstValue(medData);
+            }
+            else
+                medData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << currentSeriesId );
+
+            // 2.3) Generate an unique id for each volume
+            // all images of the same volume should share the same id
+            QString volumeId = generateUniqueVolumeId ( medData );
+
+            // check whether the image belongs to a new volume
+            if ( !volumeUniqueIdToVolumeNumber.contains ( volumeId ) )
+            {
+                volumeUniqueIdToVolumeNumber[volumeId] = volumeNumber;
+                volumeNumber++;
+            }
+
+            // 2.3) a) Determine future file name and path based on patient/study/series/image
+            // i.e.: where we will write the imported image
+            QString imageFileName = determineFutureImageFileName ( medData, volumeUniqueIdToVolumeNumber[volumeId] );
+#ifdef Q_OS_WIN32
+            if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
+            {
+                emit showError ( tr ( "Your database path is too long" ), 5000 );
+                emit dataImported(medDataIndex(), d->uuid);
                 emit failure ( this );
                 return;
-                }
-            #endif
-        // 2.3) b) Find the proper extension according to the type of the data
-        // i.e.: in which format we will write the file in our database
-        QString futureExtension  = determineFutureImageExtensionByDataType ( medData );
+            }
+#endif
+            // 2.3) b) Find the proper extension according to the type of the data
+            // i.e.: in which format we will write the file in our database
+            QString futureExtension  = determineFutureImageExtensionByDataType ( medData );
 
-        // we care whether we can write the image or not if we are importing
-        if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
-            emit showError(tr("Could not save file due to unhandled data type: ") + medData->identifier(), 5000);
-            continue;
+            // we care whether we can write the image or not if we are importing
+            if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
+                emit showError(tr("Could not save file due to unhandled data type: ") + medData->identifier(), 5000);
+                continue;
+            }
+
+            imageFileName = imageFileName + futureExtension;
+
+            // 2.3) c) Add the image to a map for writing them all in medInria's database in a posterior step
+
+            // First check if patient/study/series/image path already exists in the database
+            // Should we emit a message otherwise ??? TO
+            if ( !checkIfExists ( medData, fileInfo.fileName() ) )
+            {
+                imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
+                imagesGroupedByPatient[imageFileName] = patientID;
+                imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
+            }
         }
-
-        imageFileName = imageFileName + futureExtension;
-
-        // 2.3) c) Add the image to a map for writing them all in medInria's database in a posterior step
-
-        // First check if patient/study/series/image path already exists in the database
-        // Should we emit a message otherwise ??? TO
-        if ( !checkIfExists ( medData, fileInfo.fileName() ) )
+        else
         {
-            imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
-            imagesGroupedByPatient[imageFileName] = patientID;
-            imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
+            QString error = QString(tr("Could not read empty file: ") + fileInfo.completeBaseName());
+            qWarning() << __FUNCTION__ << error;
+            emit showError(error, 5000);
         }
     }
 
