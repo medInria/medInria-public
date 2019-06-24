@@ -13,35 +13,25 @@
 
 #include "vtkImageViewCornerAnnotation.h"
 
-#include "vtkImageMapToWindowLevelColors.h"
-#include "vtkImageData.h"
-#include "vtkImageActor.h"
-#include "vtkTextMapper.h"
-#include "vtkObjectFactory.h"
-
-
-#include "vtkAlgorithmOutput.h"
-#include "vtkPropCollection.h"
-#include "vtkTextMapper.h"
-#include "vtkTextProperty.h"
-#include "vtkViewport.h"
-#include "vtkWindow.h"
-#include "vtkCamera.h"
-#include "vtkRenderer.h"
-#include "vtkMath.h"
-#include "vtkMatrix4x4.h"
-
 #include "vtkImageView2D.h"
+#include "medVtkImageInfo.h"
 
-#include <cmath>
+#include <vtkCamera.h>
+#include <vtkImageActor.h>
+#include <vtkImageData.h>
+#include <vtkImageMapToWindowLevelColors.h>
+#include <vtkMatrix4x4.h>
+#include <vtkObjectFactory.h>
+#include <vtkRenderer.h>
+#include <vtkTextMapper.h>
+#include <vtkTextProperty.h>
+#include <vtkWindow.h>
 
-vtkStandardNewMacro(vtkImageViewCornerAnnotation);
-
-
+vtkStandardNewMacro(vtkImageViewCornerAnnotation)
 
 vtkImageViewCornerAnnotation::vtkImageViewCornerAnnotation()
 {
-    this->ImageView = 0;
+    this->ImageView = nullptr;
 }
 
 vtkImageViewCornerAnnotation::~vtkImageViewCornerAnnotation()
@@ -52,14 +42,14 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
                                                vtkImageMapToWindowLevelColors *wl)
 {
     int i;
-    char *text = NULL, *text2 = NULL;
+    char *text = nullptr, *text2 = nullptr;
     int slice = 0, slice_max = 0;
-    char *rpos = NULL, *tmp = NULL;
+    char *rpos = nullptr, *tmp = nullptr;
     double window = 0, level = 0;
     long int windowi = 0, leveli = 0;
-    vtkImageData *ia_input = NULL;
-    medVtkImageInfo *wl_input = NULL;
-    vtkCamera *cam = NULL;
+    vtkImageData *ia_input = nullptr;
+    medVtkImageInfo *wl_input = nullptr;
+    vtkCamera *cam = nullptr;
 
     int input_type_is_float = 0;
     int size_x = -1, size_y = -1, size_z = -1;
@@ -153,11 +143,21 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
         }
     }
 
-
-    if (ia)
+    if (view2d && ia)
     {
-        slice = ia->GetSliceNumber() - ia->GetSliceNumberMin() + 1;
-        slice_max = ia->GetSliceNumberMax() - ia->GetSliceNumberMin() + 1;
+        int min, max, orientation;
+        double position[3]={0.0, 0.0, 0.0};
+
+        view2d->GetSliceRange(min,max);
+        slice = view2d->GetSlice() - min +1;
+        slice_max = max - min + 1;
+
+        orientation = view2d->GetSliceOrientation();
+        coord[orientation]=slice-1;
+
+        this->ImageView->GetWorldCoordinatesFromImageCoordinates(coord, position);
+        pos_z = position[orientation];
+
         ia_input = ia->GetInput();
         if (!wl_input && ia_input)
         {
@@ -165,7 +165,6 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
                                    ia_input->GetScalarType() == VTK_DOUBLE);
         }
     }
-
 
     // search for tokens, replace and then assign to TextMappers
     for (i = 0; i < 4; i++)
