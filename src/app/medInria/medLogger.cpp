@@ -46,6 +46,11 @@ void medLogger::redirectQtMessage(QtMsgType type, const QString& message)
 
         switch (type)
         {
+            case QtInfoMsg:
+            {
+                dtkInfo() << message;
+                break;
+            }
             case QtDebugMsg:
             {
                 dtkDebug() << message;

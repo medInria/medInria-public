@@ -60,33 +60,31 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
 
     initializeItemToActionsMap();
 
-
     d->viewBt = new QPushButton(d->buttonsWidget);
     d->viewBt->setAccessibleName("View");
     d->viewBt->setText(tr("View"));
-    d->viewBt->setToolTip(tr("Load and visualize the currently selected item."));
+    d->viewBt->setToolTip(tr("Temporarily import (if the data is not already in the database)\nand visualize the currently selected item."));
     d->viewBt->setIcon(QIcon(":/icons/eye.png"));
     connect(d->viewBt, SIGNAL(clicked()), this, SIGNAL(viewClicked()));
-
 
     if (FILE_SYSTEM)
     {
         d->loadBt = new QPushButton(d->buttonsWidget);
-        d->loadBt->setAccessibleName("Load");
-        d->loadBt->setText(tr("Load"));
-        d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
+        d->loadBt->setAccessibleName("Temporary Import");
+        d->loadBt->setText(tr("Temporary Import"));
+        d->loadBt->setToolTip(tr("Temporarily import the item(s) so as they can be used inside the application,\nbut do not include them in the database."));
         d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
 
         d->importBt = new QPushButton(d->buttonsWidget);
         d->importBt->setAccessibleName("Import");
         d->importBt->setText(tr("Import"));
-        d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
+        d->importBt->setToolTip(tr("Import (copy) item(s) into the database."));
         d->importBt->setIcon(QIcon(":/icons/import.png"));
 
         d->indexBt = new QPushButton(d->buttonsWidget);
         d->indexBt->setAccessibleName("Index");
         d->indexBt->setText(tr("Index"));
-        d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
+        d->indexBt->setToolTip(tr("Include the item(s) into the database but do not import (copy) them."));
         d->indexBt->setIcon(QIcon(":/icons/finger.png"));
 
         d->bookmarkBt = new QPushButton(d->buttonsWidget);
@@ -152,7 +150,7 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         d->buttonsList << d->newPatientBt << d->newStudyBt << d->editBt;
     }
 
-    int COLUMNS = 4; // we will use 3 rows of 4 buttons each
+    int COLUMNS = 3; // we will use 3 rows of 3 buttons each
     int i = 0;
     QGridLayout *gridLayout = new QGridLayout(d->buttonsWidget);
     gridLayout->setHorizontalSpacing(4);
@@ -182,10 +180,8 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
 
 medActionsToolBox::~medActionsToolBox()
 {
-//    delete d->itemToActions;
-//    d->itemToActions = NULL;
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -313,17 +309,17 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions.insert("Folders", "Bookmark");
     d->itemToActions.insert("Folders", "Import");
     d->itemToActions.insert("Folders", "Index");
-    d->itemToActions.insert("Folders", "Load");
+    d->itemToActions.insert("Folders", "Temporary Import");
     d->itemToActions.insert("Folders", "View");
 
     d->itemToActions.insert("Files", "Import");
     d->itemToActions.insert("Files", "Index");
-    d->itemToActions.insert("Files", "Load");
+    d->itemToActions.insert("Files", "Temporary Import");
     d->itemToActions.insert("Files", "View");
 
     d->itemToActions.insert("Files & Folders", "Import");
     d->itemToActions.insert("Files & Folders", "Index");
-    d->itemToActions.insert("Files & Folders", "Load");
+    d->itemToActions.insert("Files & Folders", "Temporary Import");
     d->itemToActions.insert("Files & Folders", "View");
 
     d->itemToActions.insert("Multiple Select", "Remove");
