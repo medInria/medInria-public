@@ -84,7 +84,7 @@ public:
     medDoubleParameter * thresholdLowerValue;
     medDoubleParameter * thresholdUpperValue;
     QPointer<medClutEditorToolBox> clutEditor;
-
+    QLabel * infoThreshold;
     QWidget * thresholdValueWidget;
     QWidget * thresholdUpperWidget;
     QWidget * thresholdLowerWidget;
@@ -288,19 +288,22 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
     d->thresholdFilterWidget = new QWidget(this);
 
     d->thresholdFilterValue = new medDoubleParameter( tr("Threshold Value"), this);
-    d->thresholdFilterValue->setRange ( -10000, 10000 );
+    d->thresholdFilterValue->setRange ( std::numeric_limits<double>::lowest() , std::numeric_limits<double>::max() );
     d->thresholdFilterValue->setValue ( itkFiltersThresholdingProcess::defaultThreshold );
     d->thresholdFilterValue->setObjectName("thresholdValue");
 
     d->thresholdLowerValue = new medDoubleParameter( tr("Lower Value"), this);
-    d->thresholdLowerValue->setRange ( -10000, 10000 );
+    d->thresholdLowerValue->setRange ( std::numeric_limits<double>::lowest() , std::numeric_limits<double>::max() );
     d->thresholdLowerValue->setValue ( itkFiltersThresholdingProcess::defaultLower );
     d->thresholdLowerValue->setObjectName("lowerValue");
+    d->thresholdLowerValue->setDecimals(10);
 
     d->thresholdUpperValue = new medDoubleParameter( tr("Upper Value"), this);
-    d->thresholdUpperValue->setRange ( -10000, 10000 );
+    d->thresholdUpperValue->setRange ( std::numeric_limits<double>::lowest() , std::numeric_limits<double>::max() );
     d->thresholdUpperValue->setValue ( itkFiltersThresholdingProcess::defaultUpper );
     d->thresholdUpperValue->setObjectName("upperValue");
+    d->thresholdUpperValue->setDecimals(10);
+
     QSignalMapper* signalMapper = new QSignalMapper(this);
     signalMapper->setMapping(d->thresholdLowerValue, 0);
     signalMapper->setMapping(d->thresholdUpperValue, 1);
@@ -318,6 +321,8 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
 
     d->binaryThreshold = new QRadioButton(tr("Binarize Image"), this);
     d->binaryThreshold->setObjectName("binaryThresholdButton");
+    d->infoThreshold = new QLabel("Values equal to the threshold value are not set to OutsideValue.");
+    d->infoThreshold->setWordWrap(true);
     connect(d->binaryThreshold, SIGNAL(toggled(bool)), this, SLOT(checkBinaryThreshold(bool)));
 
     d->histogram = new QCheckBox(tr("Open Histogram"), this);
@@ -382,6 +387,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medAbstractSelectable
 
     QVBoxLayout * thresholdFilterLayout1 = new QVBoxLayout;
     thresholdFilterLayout1->addWidget( d->binaryThreshold );
+    thresholdFilterLayout1->addWidget( d->infoThreshold );
     thresholdFilterLayout1->addWidget( thresholdFilterLabel );
     thresholdFilterLayout1->addWidget( d->buttonGroupWidget );
     thresholdFilterLayout1->addWidget( d->thresholdLowerWidget );
@@ -1109,11 +1115,13 @@ void itkFiltersToolBox::checkBinaryThreshold(bool checked)
         d->thresholdFilterValue->getLabel()->setText( tr ( "Inside Value " ) );
         d->thresholdFilterValue->setValue ( itkFiltersBinaryThresholdingProcess::defaultInsideValue );
         d->thresholdFilterValue->setDecimals(0);
+        d->infoThreshold->setText("Values equal to either threshold is considered to be between the thresholds.");
     }
     else
     {
         d->thresholdFilterValue->getLabel()->setText( tr ( "Threshold Value " ) );
         d->thresholdFilterValue->setValue ( itkFiltersThresholdingProcess::defaultThreshold );
+        d->infoThreshold->setText("Values equal to the threshold value are not set to OutsideValue." );
     }
 }
 

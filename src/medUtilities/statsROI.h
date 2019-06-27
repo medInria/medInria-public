@@ -26,6 +26,7 @@ public:
     std::vector<double> computedOutput;
     enum statsParameter {MEANVARIANCE, VOLUMEML, MINMAX};
     statsParameter chooseFct;
+    double outsideValue;
 
     statsROI();
     virtual ~statsROI();
@@ -35,7 +36,8 @@ public:
        
     //! Parameters are set through here, channel allows to handle multiple parameters
     void setParameter(statsParameter fct);
-
+    //! Parameter used only with VOLUMEML statsParameter
+    void setParameter(double outsideValue);
     //! Method to actually start the filter
     int update();
     

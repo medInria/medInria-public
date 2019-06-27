@@ -174,7 +174,7 @@ public:
                     px[0] = x;
                     px[1] = y;
                     px[2] = sl;
-                    if (m_itkMask->GetPixel(px)!=0)
+                    if (m_itkMask->GetPixel(px)!=composite->outsideValue)
                     {
                         nbPixInMask++;
                     }
@@ -219,6 +219,7 @@ statsROI::statsROI()
 {
     this->computedOutput.empty();
     chooseFct = MEANVARIANCE;
+    outsideValue = 0;
 }
 
 statsROI::~statsROI()
@@ -244,6 +245,11 @@ void statsROI::setInput (medAbstractData *data, int channel)
 void statsROI::setParameter(statsParameter fct)
 {
     chooseFct = fct;
+}
+
+void statsROI::setParameter(double outsideValue)
+{
+    this->outsideValue = outsideValue;
 }
 
 // Convert medAbstractData to ITK volume
