@@ -76,12 +76,12 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
 
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
 {
-	d->proc = nullptr;
-	typedef itk::Image< float, 3 >  RegImageType;
-	delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType, float > *>(d->registrationMethod);
-	d->registrationMethod = nullptr;
-	delete d;
-	d = nullptr;
+    d->proc = nullptr;
+    typedef itk::Image< float, 3 >  RegImageType;
+    delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType, float > *>(d->registrationMethod);
+    d->registrationMethod = nullptr;
+    delete d;
+    d = nullptr;
 }
 
 bool itkProcessRegistrationDiffeomorphicDemons::registered()

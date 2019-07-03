@@ -31,7 +31,7 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 set(ITK_IMAGES_DEPENDENCIES
-	ITKIOMeta
+    ITKIOMeta
 
     #common formats for common images
     ITKIOBMP
@@ -40,10 +40,10 @@ set(ITK_IMAGES_DEPENDENCIES
     ITKIOPNG
     ITKIOTIFF
 
-	#Medical images formats
+    #Medical images formats
     ITKIOBruker
     ITKIOHDF5
-	ITKIOGIPL
+    ITKIOGIPL
     ITKIONIFTI
     ITKIONRRD
     ITKIOPhilipsREC

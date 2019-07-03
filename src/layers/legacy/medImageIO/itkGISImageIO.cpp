@@ -20,7 +20,6 @@
 
 #ifdef WIN32
 #define snprintf sprintf_s
-//#define strncpy(x, y, z) strcpy_s(x, z, y)
 #endif
 
 namespace itk
