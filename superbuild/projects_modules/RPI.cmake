@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
+set(git_url ${GITHUB_PREFIX}medInria/RPI.git)
 set(git_tag master)
 
 ## #############################################################################
