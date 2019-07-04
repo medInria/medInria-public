@@ -203,7 +203,7 @@ template <typename PixelType>
             }
             catch(itk::ExceptionObject &ex)
             {
-                dtkDebug() << "Extraction failed" << ex.what();
+                dtkDebug() << "Extraction failed:  " << ex.what();
                 return ;
             }
             movingImages[i] = extractFilter->GetOutput();
