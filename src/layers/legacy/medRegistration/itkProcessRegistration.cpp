@@ -72,8 +72,8 @@ public:
 
 itkProcessRegistration::itkProcessRegistration() : medAbstractRegistrationProcess(), d(new itkProcessRegistrationPrivate)
 {
-    d->fixedImage = NULL;
-    d->output = NULL;
+    d->fixedImage = nullptr;
+    d->output = nullptr;
     d->dimensions=3;
     d->fixedImageType = itkProcessRegistration::FLOAT;
     d->movingImageType = itkProcessRegistration::FLOAT;
@@ -174,7 +174,7 @@ template <typename PixelType>
             }
             catch(itk::ExceptionObject &ex)
             {
-                dtkDebug() << "Extraction failed";
+                dtkDebug() << "Extraction failed:  " << ex.what();
                 return ;
             }
             fixedImage = extractFilter->GetOutput();
@@ -203,7 +203,7 @@ template <typename PixelType>
             }
             catch(itk::ExceptionObject &ex)
             {
-                dtkDebug() << "Extraction failed";
+                dtkDebug() << "Extraction failed:  " << ex.what();
                 return ;
             }
             movingImages[i] = extractFilter->GetOutput();
@@ -442,7 +442,7 @@ bool itkProcessRegistration::writeTransform(const QString& file)
 
 bool itkProcessRegistration::write(const QString& file)
 {
-    if (output() == NULL)
+    if (output() == nullptr)
     {
         dtkDebug() << "the registration method hasn't been run yet.";
         return false;

@@ -13,8 +13,6 @@
 
 #include "medVtkViewItkVectorFieldInteractor.h"
 
-#include <QVTKWidget.h>
-
 #include <vtkPointData.h>
 #include <vtkActor.h>
 #include <vtkRenderer.h>

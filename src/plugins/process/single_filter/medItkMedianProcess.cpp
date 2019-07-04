@@ -27,7 +27,7 @@ medItkMedianProcess::medItkMedianProcess(QObject *parent)
     : medAbstractMedianFilterProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkMedianProcess::~medItkMedianProcess()
@@ -122,7 +122,7 @@ medAbstractJob::medJobExitStatus medItkMedianProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

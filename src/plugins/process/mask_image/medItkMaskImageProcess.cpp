@@ -29,7 +29,7 @@ medItkMaskImageProcess::medItkMaskImageProcess(QObject *parent)
     : medAbstractMaskImageProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkMaskImageProcess::~medItkMaskImageProcess()
@@ -195,7 +195,7 @@ medAbstractJob::medJobExitStatus medItkMaskImageProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

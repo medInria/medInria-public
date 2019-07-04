@@ -17,7 +17,7 @@ set(TARGET_NAME medItkArithmeticOperationProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(ITK)
+find_package(ITK REQUIRED COMPONENTS ITKMathematicalMorphology)
 include(${ITK_USE_FILE})
 
 ## #############################################################################

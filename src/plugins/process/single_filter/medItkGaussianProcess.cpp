@@ -27,7 +27,7 @@ medItkGaussianProcess::medItkGaussianProcess(QObject *parent)
     : medAbstractGaussianFilterProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkGaussianProcess::~medItkGaussianProcess()
@@ -122,7 +122,7 @@ medAbstractJob::medJobExitStatus medItkGaussianProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
