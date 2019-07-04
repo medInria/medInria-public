@@ -39,7 +39,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/TTK-Public.git)
+set(git_url ${GITHUB_PREFIX}medInria/TTK.git)
 set(git_tag master)
 
 
@@ -49,8 +49,12 @@ set(git_tag master)
 
 # set compilation flags
 if (UNIX)
-  set(${ep}_c_flags "${${ep}_c_flags} -Wall -Wno-inconsistent-missing-override")
-  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall -Wno-inconsistent-missing-override")
+  set(${ep}_c_flags "${${ep}_c_flags} -Wall")
+  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wno-inconsistent-missing-override")
 endif()
 
 set(cmake_args

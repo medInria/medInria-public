@@ -32,10 +32,8 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
-if(ITK_FOUND)
-   include(${ITK_USE_FILE})
-endif(ITK_FOUND)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKIOMeta ITKIOImageBase)
+include(${ITK_USE_FILE})
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})

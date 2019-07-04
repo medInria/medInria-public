@@ -18,13 +18,6 @@
 #include <string>
 #include <vector>
 
-#include <itkExtractImageFilter.h>
-#include <itkImageRegionIterator.h>
-#include <itkImageRegion.h>
-#include <itkImage.h>
-
-
-
 /**
    \class vtkMetaDataSetSequence vtkMetaDataSetSequence.h "vtkMetaDataSetSequence.h"
    \brief usefull class to handle a sequence (serie) of vtkMetaDataSet

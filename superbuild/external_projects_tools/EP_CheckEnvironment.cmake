@@ -26,9 +26,13 @@ if (WIN32)
   # GitBash
   find_program(BASH_BIN NAMES bash)
   if (NOT BASH_BIN)
-    message( SEND_ERROR 
-      "You need to install GitBash and add it to the PATH environment variable." 
-      )
+    if(EXISTS $ENV{ProgramFiles}/Git/git-bash.exe)
+	  set(BASH_BIN "$ENV{ProgramFiles}/Git/git-bash.exe" CACHE FILEPATH "Path to git bash program" FORCE)
+	endif()
+  endif()
+  
+  if (NOT BASH_BIN)
+    message( SEND_ERROR "You need to install GitBash and add it to the PATH environment variable.")
   else()
       mark_as_advanced(BASH_BIN)
   endif()
@@ -41,9 +45,7 @@ endif()
 ## #############################################################################
 find_program(GIT_BIN NAMES git)
 if (NOT GIT_BIN)
-  message(SEND_ERROR 
-    "You need to install Git and add it to the PATH environment variable." 
-    )
+  message(SEND_ERROR  "You need to install Git and add it to the PATH environment variable.")
 else()
   mark_as_advanced(GIT_BIN)
 endif()
@@ -52,9 +54,7 @@ endif()
 ## Test ssh access for github
 ## #############################################################################
 
-set (SKIP_GITHUB_TESTS OFF CACHE BOOL 
-  "Set this to ON to skip GitHub access tests"
-  )
+set (SKIP_GITHUB_TESTS OFF CACHE BOOL "Set this to ON to skip GitHub access tests")
 mark_as_advanced(SKIP_GITHUB_TESTS)
 
 if (NOT ${SKIP_GITHUB_TESTS} AND ${USE_GITHUB_SSH})
@@ -64,9 +64,7 @@ if (NOT ${SKIP_GITHUB_TESTS} AND ${USE_GITHUB_SSH})
 
   find_program(SSH_BIN NAMES ssh)
   if (NOT SSH_BIN)
-    message(SEND_ERROR 
-      "You need to install SSH and add it to the PATH environment variable."
-      )
+    message(SEND_ERROR "You need to install SSH and add it to the PATH environment variable.")
   else()
     mark_as_advanced(SSH_BIN)
   endif()
@@ -91,9 +89,7 @@ if (NOT ${SKIP_GITLAB_INRIA_TESTS} AND ${USE_GITLAB_INRIA_SSH})
 
   find_program(SSH_BIN NAMES ssh)
   if (NOT SSH_BIN)
-    message(SEND_ERROR 
-      "You need to install SSH and add it to the PATH environment variable."
-      )
+    message(SEND_ERROR "You need to install SSH and add it to the PATH environment variable.")
   else()
     mark_as_advanced(SSH_BIN)
   endif()

@@ -30,14 +30,14 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED  COMPONENTS ITKIOImageBase ITKIOMeta ITKIONRRD ITKIONIFTI)
 include(${ITK_USE_FILE})
+    
+find_package(VTK REQUIRED  COMPONENTS vtkCommonCore vtkCommonExecutionModel vtkRenderingCore vtkImagingCore vtkInteractionStyle vtkInteractionWidgets)
+include(${VTK_USE_FILE})
 
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
-
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
 
 
 ## #############################################################################
@@ -106,6 +106,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOGIPL
   ITKIOHDF5
   ITKIOJPEG
+  ITKIOJPEG2000
   ITKIOLSM
   ITKIOMeta
   ITKIOMINC

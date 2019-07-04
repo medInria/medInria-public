@@ -30,11 +30,10 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKLabelMap ITKVtkGlue ITKRegionGrowing)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
+#WARNING USE VTK through medVtkInria and ITKVtkGlue
 
 
 ## #############################################################################
