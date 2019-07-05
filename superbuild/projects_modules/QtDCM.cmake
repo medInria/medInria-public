@@ -59,7 +59,7 @@ endif()
 
 set(cmake_args
   ${ep_common_cache_args}
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_extenals_projects}
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
@@ -92,8 +92,7 @@ ExternalProject_Add(${ep}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
-  )
-  
+  )  
 
 ## #############################################################################
 ## Set variable to provide infos about the project
@@ -101,7 +100,6 @@ ExternalProject_Add(${ep}
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
 
 endif() #NOT USE_SYSTEM_ep
 

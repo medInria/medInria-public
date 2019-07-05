@@ -59,7 +59,7 @@ endif()
 
 set(cmake_args
   ${ep_common_cache_args}
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_extenals_projects}
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  

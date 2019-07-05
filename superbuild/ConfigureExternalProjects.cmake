@@ -24,7 +24,7 @@ set(ep_path_build_comment  "Sources path of the Externals projects")
 
 option(EP_CHECKBOX_CUSTOM_DIRS  "Allow to specify manually paths of externals projects " OFF)
 CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_SIDE_BY_SIDE "Put build soure and build directories of externals projects side by side" OFF "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
-CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_ON_TOP_LEVEL "Put directory of externals projects at the same level of medInria" ON "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
+CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_ON_TOP_LEVEL "Put directory of externals projects at the same level of the application" ON "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
 
 macro(ep_change_garde var )
   if(NOT "${${var}_PEVIOUS}" STREQUAL "${${var}}")
