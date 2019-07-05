@@ -70,8 +70,7 @@ void medAbstractMorphomathOperationProcess::setOutput(medAbstractImageData *data
 
     foreach ( QString metaData, d->input->metaDataList() )
     {
-        if (!d->output->hasMetaData(metaData))
-            d->output->addMetaData ( metaData, d->input->metaDataValues ( metaData ) );
+        d->output->setMetaData ( metaData, d->input->metaDataValues ( metaData ) );
     }
 
     foreach ( QString property, d->input->propertyList() )

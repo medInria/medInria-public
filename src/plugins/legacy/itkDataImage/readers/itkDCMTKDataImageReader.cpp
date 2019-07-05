@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -279,7 +279,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         d->io->ReadImageInformation();
     }
     catch (itk::ExceptionObject &e) {
-        dtkDebug() << e.GetDescription();
+        qDebug() << e.GetDescription();
         return false;
     }
 
@@ -326,7 +326,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 imagetypestring << "Double";
                 break;
             default:
-                dtkDebug() << "Unrecognized component type: " << d->io->GetComponentType();
+                qDebug() << "Unrecognized component type: " << d->io->GetComponentType();
                 return false;
             }
 
@@ -347,124 +347,108 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 break;
 
             default:
-                dtkDebug() << "Unrecognized component type";
+                qDebug() << "Unrecognized component type";
                 return false;
             }
         }
         else {
-            dtkDebug() << "Unsupported pixel type";
+            qDebug() << "Unsupported pixel type";
             return false;
         }
     }
 
-    if (medData) {
+    if (medData)
+    {
+        // PATIENT
+        //PatientId
+        medData->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromLatin1(d->io->GetPatientName().c_str()));
+        medData->setMetaData(medMetaDataKeys::Age.key(),         d->io->GetPatientAge().c_str());
+        medData->setMetaData(medMetaDataKeys::BirthDate.key(),   d->io->GetPatientDOB().c_str());
+        medData->setMetaData(medMetaDataKeys::Gender.key(),      d->io->GetPatientSex().c_str());
+        medData->setMetaData(medMetaDataKeys::Description.key(), QString::fromLatin1(d->io->GetScanOptions().c_str()));
 
-     QStringList patientName;
-    QStringList studyName;
-    QStringList seriesName;
+        // STUDY
+        //StudyId
+        medData->setMetaData(medMetaDataKeys::StudyDicomID.key(),     d->io->GetStudyID().c_str());
+        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), QString::fromLatin1(d->io->GetStudyDescription().c_str()));
+        medData->setMetaData(medMetaDataKeys::Institution.key(),      QString::fromLatin1(d->io->GetInstitution().c_str()));
+        medData->setMetaData(medMetaDataKeys::Referee.key(),          QString::fromLatin1(d->io->GetReferringPhysicianName().c_str()));
+        //StudyDate
+        //StudyTime
 
-    QStringList studyDicomId;
-    QStringList seriesDicomId;
-    QStringList orientation;
-    QStringList seriesNumber;
-    QStringList sequenceName;
-    QStringList sliceThickness;
-    QStringList rows;
-    QStringList columns;
+        // SERIES
+        //SeriesID
+        medData->setMetaData(medMetaDataKeys::SeriesDicomID.key(),     d->io->GetSeriesID().c_str());
+        medData->setMetaData(medMetaDataKeys::SeriesNumber.key(),      d->io->GetSeriesNumber().c_str());
+        medData->setMetaData(medMetaDataKeys::Modality.key(),          d->io->GetModality().c_str());
+        medData->setMetaData(medMetaDataKeys::Performer.key(),         QString::fromLatin1(d->io->GetPerformingPhysicianName().c_str()));
+        medData->setMetaData(medMetaDataKeys::Report.key(), "");
+        medData->setMetaData(medMetaDataKeys::Protocol.key(),          QString::fromLatin1(d->io->GetProtocolName().c_str()));
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QString::fromLatin1(d->io->GetSeriesDescription().c_str()));
+        //SeriesDate
+        //SeriesTime
+        //SeriesThumbnail
 
-    QStringList age;
-    QStringList birthdate;
-    QStringList gender;
-    QStringList desc;
-    QStringList modality;
-    QStringList acqdate;
-    QStringList importdate;
-    QStringList referee;
-    QStringList performer;
-    QStringList institution;
-    QStringList report;
-    QStringList protocol;
-    QStringList comments;
-    QStringList status;
+        // IMAGE
+        //SOPInstanceUID
+        medData->setMetaData(medMetaDataKeys::Columns.key(),         d->io->GetColumns().c_str());
+        medData->setMetaData(medMetaDataKeys::Rows.key(),            d->io->GetRows().c_str());
+        //Dimensions
+        //NumberOfDimensions
+        medData->setMetaData(medMetaDataKeys::Orientation.key(),     d->io->GetOrientation().c_str());
 
-    QStringList filePaths;
+        // Add Origin
+        QString origin = "";
+        for (unsigned int i=0; i<d->io->GetNumberOfDimensions(); ++i)
+        {
+            origin += QString::number(d->io->GetOrigin(i)) + QString(" ");
+        }
+        medData->setMetaData(medMetaDataKeys::Origin.key(), origin.trimmed());
 
-    patientName << d->io->GetPatientName().c_str();
-    studyName   << d->io->GetStudyDescription().c_str();
-    seriesName  << d->io->GetSeriesDescription().c_str();
+        medData->setMetaData(medMetaDataKeys::SliceThickness.key(),  d->io->GetSliceThickness().c_str());
+        //ImportationDate
+        medData->setMetaData(medMetaDataKeys::AcquisitionDate.key(), d->io->GetAcquisitionDate().c_str());
+        medData->setMetaData(medMetaDataKeys::AcquisitionTime.key(), d->io->GetAcquisitionTime().c_str());
+        medData->setMetaData(medMetaDataKeys::Comments.key(),        QString::fromLatin1(d->io->GetAcquisitionComments().c_str()));
 
-    studyDicomId        << d->io->GetStudyID().c_str();
-    seriesDicomId       << d->io->GetSeriesID().c_str();
+        QStringList filePaths;
+        for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++)
+        {
+            if (d->io->GetOrderedFileNames()[i] != "")
+            {
+                filePaths << QString::fromLatin1(d->io->GetOrderedFileNames()[i].c_str());
+            }
+        }
 
-    orientation    << d->io->GetOrientation().c_str();
-    seriesNumber   << d->io->GetSeriesNumber().c_str();
-    sequenceName   << d->io->GetSequenceName().c_str();
-    sliceThickness << d->io->GetSliceThickness().c_str();
-    rows           << d->io->GetRows().c_str();
-    columns        << d->io->GetColumns().c_str();
-    age            << d->io->GetPatientAge().c_str();
-    birthdate      << d->io->GetPatientDOB().c_str();
-    gender         << d->io->GetPatientSex().c_str();
-    desc           << d->io->GetScanOptions().c_str();
-    modality       << d->io->GetModality().c_str();
-    acqdate        << d->io->GetAcquisitionDate().c_str();
-    referee        << d->io->GetReferringPhysicianName().c_str();
-    performer      << d->io->GetPerformingPhysicianName().c_str();
-    institution    << d->io->GetInstitution().c_str();
-    protocol       << d->io->GetProtocolName().c_str();
-    comments       << d->io->GetAcquisitionComments().c_str();
-    status         << d->io->GetPatientStatus().c_str();
-    report << "";
+        medData->addMetaData(medMetaDataKeys::FilePaths.key(), filePaths);
 
-    for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
-      filePaths << d->io->GetOrderedFileNames()[i].c_str();
+        medData->setMetaData(medMetaDataKeys::Status.key(),          d->io->GetPatientStatus().c_str());
+        medData->setMetaData(medMetaDataKeys::SequenceName.key(),    QString::fromLatin1(d->io->GetSequenceName().c_str()));
+        //Size
+        //VolumeUID
+        //Spacing
+        //XSpacing
+        //YSpacing
+        //ZSpacing
+        //NumberOfComponents
+        //ComponentType
+        //PixelType
+        //medDataType
+        //PreferredDataReader
+        //ImageID
+        //ThumbnailPath
 
-    if (!medData->hasMetaData(medMetaDataKeys::PatientName.key() ))
-      medData->addMetaData(medMetaDataKeys::PatientName.key(), patientName );
-    else
-      medData->setMetaData(medMetaDataKeys::PatientName.key(), patientName );
-
-    if (!medData->hasMetaData(medMetaDataKeys::StudyDescription.key() ))
-      medData->addMetaData(medMetaDataKeys::StudyDescription.key(), studyName );
-    else
-      medData->setMetaData(medMetaDataKeys::StudyDescription.key(), studyName );
-
-    if (!medData->hasMetaData (medMetaDataKeys::SeriesDescription.key() ))
-      medData->addMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName );
-    else
-      medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName );
-
-    medData->setMetaData(medMetaDataKeys::StudyDicomID.key(),    studyDicomId);
-    medData->setMetaData(medMetaDataKeys::SeriesDicomID.key(),   seriesDicomId);
-    medData->setMetaData(medMetaDataKeys::Orientation.key(),     orientation);
-    medData->setMetaData(medMetaDataKeys::SeriesNumber.key(),    seriesNumber);
-    medData->setMetaData(medMetaDataKeys::SequenceName.key(),    sequenceName);
-    medData->setMetaData(medMetaDataKeys::SliceThickness.key(),  sliceThickness);
-    medData->setMetaData(medMetaDataKeys::Rows.key(),            rows);
-    medData->setMetaData(medMetaDataKeys::Columns.key(),         columns);
-    medData->setMetaData(medMetaDataKeys::Age.key(),             age);
-    medData->setMetaData(medMetaDataKeys::BirthDate.key(),       birthdate);
-    medData->setMetaData(medMetaDataKeys::Gender.key(),          gender);
-    medData->setMetaData(medMetaDataKeys::Description.key(),     desc);
-    medData->setMetaData(medMetaDataKeys::Modality.key(),        modality);
-    medData->setMetaData(medMetaDataKeys::AcquisitionDate.key(), acqdate);
-    medData->setMetaData(medMetaDataKeys::Referee.key(),         referee);
-    medData->setMetaData(medMetaDataKeys::Performer.key(),       performer);
-    medData->setMetaData(medMetaDataKeys::Institution.key(),     institution);
-    medData->setMetaData(medMetaDataKeys::Report.key(),          report);
-    medData->setMetaData(medMetaDataKeys::Protocol.key(),        protocol);
-    medData->setMetaData(medMetaDataKeys::Comments.key(),        comments);
-    medData->setMetaData(medMetaDataKeys::Status.key(),          status);
-
-    medData->addMetaData(medMetaDataKeys::FilePaths.key(),      filePaths);
-
+        // MR Image
+        medData->setMetaData(medMetaDataKeys::FlipAngle.key(),      d->io->GetFlipAngle().c_str());
+        medData->setMetaData(medMetaDataKeys::EchoTime.key(),       d->io->GetEchoTime().c_str());
+        medData->setMetaData(medMetaDataKeys::RepetitionTime.key(), d->io->GetRepetitionTime().c_str());
 
     }
     else {
-      dtkDebug() << "Unsupported pixel type";
-      return false;
+        qDebug() << "Unsupported pixel type";
+        return false;
     }
-    
+
     return true;
   }
 
@@ -478,7 +462,6 @@ bool itkDCMTKDataImageReader::read (const QString& path)
 
 bool itkDCMTKDataImageReader::read(const QStringList& paths)
 {
-
     if (paths.size()==0)
         return false;
 
@@ -511,11 +494,11 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
             else if (medData->identifier()=="itkDataImageShort4")  { ReadImage<short,4>(medData,d->io,paths);                        }
             else if (medData->identifier()=="itkDataImageChar4")   { ReadImage<char,4>(medData,d->io,paths);                         }
             else {
-                dtkWarn() << "Unrecognized pixel type";
+                qWarning() << "Unrecognized pixel type";
                 return false;
             }
         } catch (itk::ExceptionObject &e) {
-            dtkDebug() << e.GetDescription();
+            qDebug() << e.GetDescription();
             return false;
         }
 
@@ -528,8 +511,9 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
         while(it!=dictionary.End()) {
             if (MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>(it->second.GetPointer())) {
                 const StringVectorType &values = metaData->GetMetaDataObjectValue();
-                for (unsigned int i=0; i<values.size(); i++) {
-                    medData->addMetaData(it->first.c_str(),values[i].c_str());
+                for (unsigned int i=0; i<values.size(); i++)
+                {
+                    medData->addMetaData(it->first.c_str(), values[i].c_str());
                 }
             }
             ++it;

@@ -13,11 +13,13 @@
 
 #pragma once
 
+
+#include <medCoreLegacyExport.h>
+
 #include <QSortFilterProxyModel>
 #include <QVector>
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
 
 /**
  * Proxy model that sits between a model and a view and filters + sorts items
@@ -38,8 +40,8 @@ protected slots:
     bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
     bool customFilterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 private:
-    mutable bool isCheckingChild;
-    mutable bool isCheckingParent;
+    mutable unsigned int isCheckingChildren;
+    mutable unsigned int isCheckingParents;
     QHash<int,QRegExp> filterVector;
     mutable int currentKey;
     mutable QRegExp currentValue;

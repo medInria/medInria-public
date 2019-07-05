@@ -14,13 +14,14 @@
 #pragma once
 
 #include <QWidget>
-
 #include <medCoreLegacyExport.h>
 
 class medDatabaseCompactWidgetPrivate;
+class medDatabaseSearchPanel;
 class medDatabaseView;
 class medDatabasePreview;
 class medDataIndex;
+
 
 /**
 * @brief
@@ -29,14 +30,18 @@ class MEDCORELEGACY_EXPORT medDatabaseCompactWidget: public QWidget
 {
     Q_OBJECT
 public :
-    medDatabaseCompactWidget(QWidget *parent = NULL);
+    medDatabaseCompactWidget(QWidget *parent = nullptr);
     virtual ~medDatabaseCompactWidget();
 
-    void setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview);
+    void setSearchPanelViewAndPreview(medDatabaseSearchPanel *panel, medDatabaseView *view,
+                                      medDatabasePreview *preview);
 
 protected:
     void resizeEvent(QResizeEvent *event);
 
+    void createLayout();
+    void createDatabaseToolBox();
+    void placeDatabaseWidgets();
 
 signals:
     void open(const medDataIndex& index);

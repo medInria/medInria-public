@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include "mscDatabaseMetadataItemDialog.h"
+
 #include <medDatabaseView.h>
 #include <medDataManager.h>
 #include <medAbstractDatabaseItem.h>
@@ -91,6 +93,7 @@ public:
     QAction *addPatientAction;
     QAction *addStudyAction;
     QAction *editAction;
+    QAction *metadataAction;
     QMenu *contextMenu;
 };
 
@@ -106,13 +109,16 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->setAlternatingRowColors(true);
     this->setAnimated(false);
     this->setSortingEnabled(true);
+    this->sortByColumn(0, Qt::AscendingOrder);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->header()->setStretchLastSection(true);
     this->header()->setDefaultAlignment(Qt::AlignCenter);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    this->setEditTriggers(QAbstractItemView:: SelectedClicked);
+    // Selected Clicked: "Editing starts when clicking on an already selected item."
+    // Edit Key: F2 for instance on Linux/Windows.
+    this->setEditTriggers(QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed);
 
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
@@ -158,6 +164,10 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     d->editAction->setIcon(QIcon(":icons/page_edit.png"));
     connect(d->editAction, SIGNAL(triggered()), this, SLOT(onEditRequested()));
 
+    d->metadataAction = new QAction(tr("Metadata"), this);
+    d->metadataAction->setIconVisibleInMenu(true);
+    d->metadataAction->setIcon(QIcon(":icons/information.png"));
+    connect(d->metadataAction, SIGNAL(triggered()), this, SLOT(onMetadataRequested()));
 }
 
 medDatabaseView::~medDatabaseView(void)
@@ -229,6 +239,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
                 d->editAction->setIcon(QIcon(":icons/page_edit.png"));
                 d->contextMenu->addAction(d->viewAction);
                 d->contextMenu->addAction(d->exportAction);
+                d->contextMenu->addAction(d->metadataAction);
                 d->contextMenu->addAction(d->removeAction);
                 if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
                     d->contextMenu->addAction(d->saveAction);
@@ -483,10 +494,10 @@ void medDatabaseView::onCreatePatientRequested(void)
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
-        medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-        medData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
-        medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
-        medData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
+        medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+        medData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
+        medData->setMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
+        medData->setMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
 
         medDataManager::instance()->importData(medData, editDialog.isPersistent());
     }
@@ -537,12 +548,12 @@ void medDatabaseView::onCreateStudyRequested(void)
             // Need to be rethought
             medAbstractData* medData = new medAbstractData();
 
-            medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-            medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
-            medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+            medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+            medData->setMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
+            medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
             
-            medData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-            medData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+            medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
+            medData->setMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
 
             medDataManager::instance()->importData(medData, editDialog.isPersistent());
         }
@@ -569,6 +580,16 @@ void medDatabaseView::onEditRequested(void)
         QList<QVariant> values = item->values();
         QList<QString> labels;
         
+        // Users are not allowed to change ThumbnailPath attribute.
+        for (int i = 0; i<attributes.count(); i++)
+        {
+            if (attributes.at(i).toString() == "ThumbnailPath")
+            {
+                attributes.removeAt(i);
+                values.removeAt(i);
+            }
+        }
+
         foreach(QVariant attrib, attributes)
         {
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
@@ -605,5 +626,42 @@ void medDatabaseView::onOpeningFailed(const medDataIndex& index)
     {
 
         delegate->append(index);
+    }
+}
+
+/** Display metadata of selected item */
+void medDatabaseView::onMetadataRequested(void)
+{
+    QModelIndexList indexes = this->selectedIndexes();
+    if(indexes.count())
+    {
+        QModelIndex index = indexes.at(0);
+
+        medAbstractDatabaseItem *item = nullptr;
+
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        {
+            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+        }
+
+        if (item)
+        {
+            QVariant metadata;
+            QList<QString> keyList;
+            QList<QVariant> metadataList;
+
+            // Get back keys and metadata from the selected data
+            foreach (const medMetaDataKeys::Key* key, medMetaDataKeys::Key::all())
+            {
+                metadata = medDataManager::instance()->getMetaData(item->dataIndex(), key->key());
+
+                keyList.push_back(key->key());
+                metadataList.push_back(metadata);
+            }
+
+            // Create the information dialog
+            mscDatabaseMetadataItemDialog metadataDialog(keyList, metadataList, this);
+            metadataDialog.exec();
+        }
     }
 }

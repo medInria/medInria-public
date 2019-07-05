@@ -233,18 +233,12 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QS
     }
     else
     {
-        QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
         QString birthdate      = medMetaDataKeys::BirthDate.getFirstValue(medData);
         QString gender         = medMetaDataKeys::Gender.getFirstValue(medData);
 
         query.prepare ( "INSERT INTO patient (name, thumbnail, birthdate, gender, patientId) VALUES (:name, :thumbnail, :birthdate, :gender, :patientId)" );
         query.bindValue ( ":name", patientName );
-
-        // actually, in the database preview, thumbnails are retrieved from the series and not from this field
-        // when this field is set, it can causes problems when moving studies or series and deleting a patient
-        //query.bindValue ( ":thumbnail", refThumbPath );
         query.bindValue ( ":thumbnail", QString("") );
-
         query.bindValue ( ":birthdate", birthdate );
         query.bindValue ( ":gender",    gender );
         query.bindValue ( ":patientId", patientId);
@@ -294,7 +288,8 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     {
         QString refThumbPath = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
 
-        query.prepare ( "INSERT INTO study (patient, name, uid, thumbnail, studyId) VALUES (:patient, :studyName, :studyUid, :thumbnail, :studyId)" );
+        query.prepare ( "INSERT INTO study (patient, name, uid, thumbnail, studyId) "
+                        "VALUES (:patient, :studyName, :studyUid, :thumbnail, :studyId)" );
         query.bindValue ( ":patient", patientDbId );
         query.bindValue ( ":studyName", studyName );
         query.bindValue ( ":studyUid", studyUid );
@@ -331,7 +326,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     QString rows           = medMetaDataKeys::Rows.getFirstValue(medData);
     QString columns        = medMetaDataKeys::Columns.getFirstValue(medData);
 
-    if( seriesName=="EmptySerie" )
+    if( seriesName=="EmptySeries" )
         return seriesDbId;
 
     query.prepare ( "SELECT * FROM series WHERE study = :study AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
@@ -345,12 +340,12 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     query.bindValue ( ":rows", rows );
     query.bindValue ( ":columns", columns );
 
-    if( seriesName=="EmptySerie" )
+    if( seriesName=="EmptySeries" )
         return seriesDbId;
 
     if ( !query.exec() )
     {
-        dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     }
 
     if ( query.first() )
@@ -382,9 +377,17 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         QString performer      = medMetaDataKeys::Performer.getFirstValue(medData);
         QString institution    = medMetaDataKeys::Institution.getFirstValue(medData);
         QString report         = medMetaDataKeys::Report.getFirstValue(medData);
+        QString origin          = medMetaDataKeys::Origin.getFirstValue(medData);
+        QString flipAngle       = medMetaDataKeys::FlipAngle.getFirstValue(medData);
+        QString echoTime        = medMetaDataKeys::EchoTime.getFirstValue(medData);
+        QString repetitionTime  = medMetaDataKeys::RepetitionTime.getFirstValue(medData);
+        QString acquisitionTime = medMetaDataKeys::AcquisitionTime.getFirstValue(medData);
 
-        query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) \
-                                     VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)" );
+        query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report, \
+                        origin, flipAngle, echoTime, repetitionTime, acquisitionTime) \
+                VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report, \
+                        :origin, :flipAngle, :echoTime, :repetitionTime, :acquisitionTime)" );
+
         query.bindValue ( ":study",          studyDbId );
         query.bindValue ( ":seriesId",       seriesId );
         query.bindValue ( ":size",           size );
@@ -410,10 +413,15 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         query.bindValue ( ":performer",      performer );
         query.bindValue ( ":institution",    institution );
         query.bindValue ( ":report",         report );
+        query.bindValue ( ":origin",           origin );
+        query.bindValue ( ":flipAngle",        flipAngle );
+        query.bindValue ( ":echoTime",         echoTime );
+        query.bindValue ( ":repetitionTime",   repetitionTime );
+        query.bindValue ( ":acquisitionTime",  acquisitionTime );
 
         if ( !query.exec() )
         {
-          dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
 
         seriesDbId = query.lastInsertId().toInt();
@@ -450,7 +458,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
 
             if ( query.first() )
             {
-                ; //dtkDebug() << "Image" << file << "already in database";
+                ; // Image already in database
             }
             else
             {
@@ -492,11 +500,12 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
 
             if ( query.first() )
             {
-                ; //dtkDebug() << "Image" << file << "already in database";
+                ; // Image already in database
             }
             else
             {
-                query.prepare ( "INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)" );
+                query.prepare ( "INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) "
+                                "VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)" );
                 query.bindValue ( ":series", seriesDbId );
                 query.bindValue ( ":name", fileInfo.fileName() );
                 query.bindValue ( ":path", fileInfo.filePath() );
@@ -509,7 +518,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
                 query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 
                 if ( i < thumbPaths.count() )
-                    query.bindValue ( ":thumbnail", thumbPaths[i] );
+                    query.bindValue ( ":thumbnail", thumbPaths[0] );
                 else
                     query.bindValue ( ":thumbnail", "" );
 
@@ -549,15 +558,21 @@ QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
         seriesNames << sname;
     }
 
-    QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
     int suffix = 0;
 
+    if (seriesName == "")
+    {
+        newSeriesName = "UnnamedSeries";
+    }
+
+    QString originalSeriesName = newSeriesName;
+
     while (seriesNames.contains(newSeriesName))
     {
-       // it exist
+        // it exist
         suffix++;
-        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        newSeriesName = originalSeriesName + " (copy " + QString::number(suffix) + ")";
     }
 
     return newSeriesName;

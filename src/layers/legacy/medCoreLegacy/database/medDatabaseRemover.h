@@ -13,12 +13,11 @@
 
 #pragma once
 
-#include <QtCore/QObject>
-
+#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 #include <medJobItemL.h>
-
-#include <medCoreLegacyExport.h>
+#include <QtCore/QObject>
+#include <QSqlQuery>
 
 class medDatabaseRemoverPrivate;
 
@@ -33,7 +32,6 @@ class MEDCORELEGACY_EXPORT medDatabaseRemover : public medJobItemL
 public:
      medDatabaseRemover(const medDataIndex &index);
     ~medDatabaseRemover();
-
 
 signals:
 
@@ -51,21 +49,20 @@ protected:
 
     void removeImage( int patientId, int studyId, int seriesId, int imageId);
 
-
     bool isSeriesEmpty( int seriesId );
     void removeSeries( int patientId, int studyId, int seriesId );
+
     bool isStudyEmpty( int studyId );
     void removeStudy( int patientId, int studyId );
+
     bool isPatientEmpty( int patientId );
     void removePatient( int patientId );
 
     void removeFile( const QString & filename );
-
+    void removeThumbnailIfNeeded(QSqlQuery query);
     void removeDataFile( const medDataIndex &index, const QString & filename );
     bool removeTableRow( const QString &table, int id );
 
 private:
     medDatabaseRemoverPrivate *d;
 };
-
-

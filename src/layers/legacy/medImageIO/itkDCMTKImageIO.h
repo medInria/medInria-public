@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -65,7 +65,7 @@ public:
     typedef MultiThreadedImageIOBase::RegionType                    RegionType;
 
     typedef std::vector<std::string>                                StringVectorType;
-    
+
     typedef std::map<std::string, int>                              NameToIndexMapType;
     typedef std::map<int, std::list<std::string> >                  IndexToNamesMapType;
     typedef std::set< double >                                      SliceLocationSetType;
@@ -73,7 +73,7 @@ public:
     typedef std::multimap< double, std::string, double_fuzzy_less > SliceLocationToNamesMultiMapType;
 
     static double MAXIMUM_GAP;
-    
+
     bool CanReadFile(const char*);
     void ReadImageInformation();
 
@@ -115,6 +115,12 @@ public:
     std::string GetRows() const;
     std::string GetColumns() const;
 
+    // MR
+    std::string GetAcquisitionTime() const;
+    std::string GetFlipAngle() const;
+    std::string GetEchoTime() const;
+    std::string GetRepetitionTime() const;
+
     const StringVectorType& GetOrderedFileNames() const
     { return m_OrderedFileNames; }
 
@@ -133,7 +139,7 @@ public:
         }
         return value;
     }
-    
+
     inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const
     {
         const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
@@ -153,7 +159,7 @@ public:
     }
 
 protected:
-    
+
     DCMTKImageIO();
     ~DCMTKImageIO();
     void PrintSelf(std::ostream& os, Indent indent) const;
@@ -175,18 +181,18 @@ protected:
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
     inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );
-    
+
 private:
     DCMTKImageIO(const Self&);
     void operator=(const Self&);
-    
+
     StringVectorType           m_OrderedFileNames;
     std::string                m_Directory;
 
     SliceLocationSetType             m_LocationSet;
     NameToIndexMapType               m_FilenameToIndexMap;
     SliceLocationToNamesMultiMapType m_LocationToFilenamesMap;
-    
+
     StringVectorType           m_EmptyVector;
 };
 

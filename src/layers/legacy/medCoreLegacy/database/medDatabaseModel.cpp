@@ -60,7 +60,7 @@ public:
 
     QHash<medDataIndex, QModelIndex> medIndexMap;
 
-    enum { DataCount = 12 };
+    enum { DataCount = 13 };
 };
 
 medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
@@ -130,7 +130,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->seAttributes[i++] = medMetaDataKeys::Performer.key();
     d->seAttributes[i++] = medMetaDataKeys::Institution.key();
     d->seAttributes[i++] = medMetaDataKeys::Report.key();
-
+    d->seAttributes[i++] = medMetaDataKeys::ThumbnailPath.key();
 
     d->ptDefaultData =  d->data;
     d->ptDefaultData[0] = tr("[No Patient Name]");
@@ -179,10 +179,11 @@ bool medDatabaseModel::hasChildren ( const QModelIndex & parent ) const
 
 int medDatabaseModel::columnCount(const QModelIndex& parent) const
 {
+    //-1: do not take into account Thumbnail for columns display
     if (parent.isValid())
-        return static_cast<medAbstractDatabaseItem *>(parent.internalPointer())->columnCount();
+        return static_cast<medAbstractDatabaseItem *>(parent.internalPointer())->columnCount()-1;
     else
-        return d->root->columnCount();
+        return d->root->columnCount()-1;
 }
 
 int medDatabaseModel::columnIndex(const QString& title) const
@@ -463,6 +464,8 @@ QMimeData *medDatabaseModel::mimeData(const QModelIndexList &indexes) const
 
 bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
+    // Called if the user moves a dataset from the DB to another position in the DB
+
     Q_UNUSED(row);
 
     if (action == Qt::IgnoreAction)
