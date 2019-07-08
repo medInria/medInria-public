@@ -34,6 +34,8 @@ public:
     medAbstractData( const medAbstractData& other );
     virtual ~medAbstractData();
 
+    virtual medAbstractData* clone() override;
+
     void setDataIndex(const medDataIndex& index);
     medDataIndex dataIndex() const;
 

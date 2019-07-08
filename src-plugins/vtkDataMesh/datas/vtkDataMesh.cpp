@@ -35,18 +35,35 @@ class vtkDataMeshPrivate
 {
 public:
   vtkSmartPointer<vtkMetaDataSet> mesh;
-  QList<QImage>          thumbnails;
+  QList<QImage> thumbnails;
 };
 
-vtkDataMesh::vtkDataMesh(): medAbstractMeshData(), d (new vtkDataMeshPrivate)
+vtkDataMesh::vtkDataMesh()
+  : medAbstractMeshData(),
+    d (new vtkDataMeshPrivate())
 {
   this->moveToThread(QApplication::instance()->thread());
-  d->mesh = 0;
+  d->mesh = nullptr;
 }
+
+vtkDataMesh::vtkDataMesh(const vtkDataMesh& other)
+  : medAbstractMeshData(other),
+    d (new vtkDataMeshPrivate())
+{
+  this->moveToThread(QApplication::instance()->thread());
+
+  d->thumbnails = other.d->thumbnails;
+  d->mesh = other.d->mesh->Clone();
+}
+
 vtkDataMesh::~vtkDataMesh()
 {
   delete d;
-  d = 0;
+}
+
+vtkDataMesh* vtkDataMesh::clone()
+{
+  return new vtkDataMesh(*this);
 }
 
 bool vtkDataMesh::registered()

@@ -59,9 +59,19 @@ vtkMetaSurfaceMesh::vtkMetaSurfaceMesh()
   this->Type = vtkMetaDataSet::VTK_META_SURFACE_MESH;
 }
 
+vtkMetaSurfaceMesh::vtkMetaSurfaceMesh(const vtkMetaSurfaceMesh& other)
+    : vtkMetaDataSet(other)
+{
+}
+
 //----------------------------------------------------------------------------
 vtkMetaSurfaceMesh::~vtkMetaSurfaceMesh()
 {
+}
+
+vtkMetaSurfaceMesh* vtkMetaSurfaceMesh::Clone()
+{
+  return new vtkMetaSurfaceMesh(*this);
 }
 
 //----------------------------------------------------------------------------
@@ -84,7 +94,7 @@ void vtkMetaSurfaceMesh::Initialize()
 vtkPolyData* vtkMetaSurfaceMesh::GetPolyData() const
 {
   if (!this->DataSet)
-    return NULL;
+    return nullptr;
   return vtkPolyData::SafeDownCast (this->DataSet);
 }
 
@@ -693,7 +703,7 @@ void vtkMetaSurfaceMesh::CreateWirePolyData()
 void vtkMetaSurfaceMesh::ReadMeditCells(std::ifstream& file, vtkPolyData* mesh, int nbCellPoints, vtkDataArray* attrArray)
 {
   // get cell array
-  vtkCellArray* cells = NULL;
+  vtkCellArray* cells = nullptr;
   switch (nbCellPoints)
   {
     case 1:

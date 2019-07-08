@@ -14,15 +14,13 @@
 #include <vtkMetaImageData.h>
 #include "vtkObjectFactory.h"
 
-
 #include <vtkImageData.h>
 #include <vtkImageCast.h>
-
+#include <vtkVolumeProperty.h>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaImageData );
 vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
-
 
 #include <itkMatrix.h>
 #include <itkImage.h>
@@ -33,8 +31,7 @@ vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
 #include <vtkPNGReader.h>
 #include <vtkJPEGReader.h>
 #include <vtkTIFFReader.h>
-#include <vtkMatrix4x4.h>
-  
+#include <vtkMatrix4x4.h>  
 
 //----------------------------------------------------------------------------
 vtkMetaImageData::vtkMetaImageData()
@@ -47,10 +44,29 @@ vtkMetaImageData::vtkMetaImageData()
   
 }
 
+vtkMetaImageData::vtkMetaImageData(const vtkMetaImageData& other)
+  : vtkMetaDataSet(other)
+{
+    this->OrientationMatrix = vtkMatrix4x4::New();
+    this->OrientationMatrix->DeepCopy(other.OrientationMatrix);
+
+    this->VolumeProperty = nullptr;
+    if (other.VolumeProperty)
+    {
+        this->VolumeProperty = vtkVolumeProperty::New();
+        this->VolumeProperty->DeepCopy(other.VolumeProperty);
+    }
+}
+
 //----------------------------------------------------------------------------
 vtkMetaImageData::~vtkMetaImageData()
 {
   this->OrientationMatrix->Delete();
+}
+
+vtkMetaImageData* vtkMetaImageData::Clone()
+{
+    return new vtkMetaImageData(*this);
 }
 
 //----------------------------------------------------------------------------
@@ -65,7 +81,7 @@ void vtkMetaImageData::SetDataSet(vtkDataSet* dataset)
 vtkImageData* vtkMetaImageData::GetImageData() const
 {
   if (!this->DataSet)
-    return NULL;
+    return nullptr;
   return vtkImageData::SafeDownCast (this->DataSet);
 }
 
@@ -158,7 +174,7 @@ itk::ImageBase<3>* vtkMetaImageData::GetItkImage()
 {
   if (!this->GetImageData())
   {
-    return NULL;
+    return nullptr;
   }
 
   if (m_ItkImage.IsNull())

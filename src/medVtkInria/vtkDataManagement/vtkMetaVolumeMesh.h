@@ -39,6 +39,8 @@ class MEDVTKINRIA_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   static vtkMetaVolumeMesh* New();
   vtkTypeRevisionMacro(vtkMetaVolumeMesh,vtkMetaDataSet);
 
+  virtual vtkMetaVolumeMesh* Clone() override;
+
   //BTX
   enum
   {
@@ -69,6 +71,7 @@ class MEDVTKINRIA_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   
  protected:
   vtkMetaVolumeMesh();
+  vtkMetaVolumeMesh(const vtkMetaVolumeMesh&);
   ~vtkMetaVolumeMesh();
 
   virtual void Initialize();
@@ -84,7 +87,6 @@ class MEDVTKINRIA_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
 
  private:
   
-  vtkMetaVolumeMesh(const vtkMetaVolumeMesh&);      // Not implemented.
   void operator=(const vtkMetaVolumeMesh&);        // Not implemented.
 
 };

@@ -55,6 +55,8 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   vtkTypeRevisionMacro(vtkMetaDataSetSequence,vtkMetaDataSet);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
+  virtual vtkMetaDataSetSequence* Clone() override;
+
   /**
      Read and Write the Sequence into a directory
   */
@@ -528,6 +530,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   
 protected:
   vtkMetaDataSetSequence();
+  vtkMetaDataSetSequence(const vtkMetaDataSetSequence& other);
   ~vtkMetaDataSetSequence();
 
   /**
@@ -549,7 +552,6 @@ protected:
   
  private:
   
-  vtkMetaDataSetSequence(const vtkMetaDataSetSequence&);      // Not implemented.
   void operator=(const vtkMetaDataSetSequence&);              // Not implemented.
 
   int    CurrentId;

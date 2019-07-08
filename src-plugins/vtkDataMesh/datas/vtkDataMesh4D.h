@@ -27,7 +27,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
                        "Mesh time sequence.")
  public:
     vtkDataMesh4D();
+    vtkDataMesh4D(const vtkDataMesh4D& other);
     ~vtkDataMesh4D();
+
+    vtkDataMesh4D* clone() override;
 
     static bool registered();
 

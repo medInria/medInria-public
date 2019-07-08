@@ -27,7 +27,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractMeshData
                        "Mesh data based of vtkPolyData for surface meshes and vtkUnstructuredGrid for volume meshes.")
  public:
     vtkDataMesh();
+    vtkDataMesh(const vtkDataMesh& other);
     ~vtkDataMesh();
+
+    vtkDataMesh* clone() override;
 
     static bool registered();
 

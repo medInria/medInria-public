@@ -62,6 +62,8 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
   vtkTypeRevisionMacro(vtkMetaDataSet,vtkDataObject);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
+  virtual vtkMetaDataSet* Clone();
+
   //BTX
   typedef itk::MetaDataDictionary DictionaryType;
   /**
@@ -379,6 +381,7 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
   
  protected:
   vtkMetaDataSet();
+  vtkMetaDataSet(const vtkMetaDataSet& other);
   ~vtkMetaDataSet();
 
   /**
@@ -434,7 +437,6 @@ class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
   
  private:
   
-  vtkMetaDataSet(const vtkMetaDataSet&);        // Not implemented.
   void operator=(const vtkMetaDataSet&);        // Not implemented.
 
   //BTX

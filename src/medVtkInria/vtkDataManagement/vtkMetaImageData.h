@@ -80,8 +80,8 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
 
   vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4);
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
-  
-  
+
+  virtual vtkMetaImageData* Clone() override;
 
   //BTX
   typedef float ImageComponentType;
@@ -435,13 +435,13 @@ class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
   
  protected:
   vtkMetaImageData();
+  vtkMetaImageData(const vtkMetaImageData&);
   ~vtkMetaImageData();
 
   vtkVolumeProperty* VolumeProperty;
   
  private:
   
-  vtkMetaImageData(const vtkMetaImageData&);      // Not implemented.
   void operator=(const vtkMetaImageData&);        // Not implemented.
 
   vtkMatrix4x4* OrientationMatrix;

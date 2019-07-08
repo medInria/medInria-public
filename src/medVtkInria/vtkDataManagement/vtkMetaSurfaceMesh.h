@@ -45,6 +45,8 @@ class MEDVTKINRIA_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   static vtkMetaSurfaceMesh* New();
   vtkTypeRevisionMacro(vtkMetaSurfaceMesh,vtkMetaDataSet);
 
+  virtual vtkMetaSurfaceMesh* Clone() override;
+
   //BTX
   enum
   {
@@ -89,6 +91,7 @@ class MEDVTKINRIA_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
 
  protected:
   vtkMetaSurfaceMesh();
+  vtkMetaSurfaceMesh(const vtkMetaSurfaceMesh&);
   ~vtkMetaSurfaceMesh();
 
   virtual void ReadVtkFile(const char* filename);
@@ -111,7 +114,6 @@ class MEDVTKINRIA_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
  
  private:
   
-  vtkMetaSurfaceMesh(const vtkMetaSurfaceMesh&);       // Not implemented.
   void operator=(const vtkMetaSurfaceMesh&);        // Not implemented.
 
 };
