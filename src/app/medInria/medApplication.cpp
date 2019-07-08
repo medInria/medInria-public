@@ -193,7 +193,7 @@ void medApplication::initialize()
 
     // process layer:
     QString pluginsPath = getenv("MEDINRIA_PLUGINS_DIR");
-    QString defaultPath;    
+    QString defaultPath;
     QDir plugins_dir;
 #ifdef Q_OS_MAC
     plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
