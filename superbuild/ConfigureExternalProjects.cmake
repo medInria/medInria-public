@@ -12,7 +12,7 @@
 ################################################################################
 
 ## #############################################################################
-## Add common diffrent types of path for all external-projects
+## Add common different types of path for all external-projects
 ## #############################################################################
 include(CMakeDependentOption)
 
@@ -23,12 +23,12 @@ set(ep_path_source_comment "Sources path of the externals projects")
 set(ep_path_build_comment  "Sources path of the Externals projects")
 
 option(EP_CHECKBOX_CUSTOM_DIRS  "Allow to specify manually paths of externals projects " OFF)
-CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_SIDE_BY_SIDE "Put build soure and build directories of externals projects side by side" OFF "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
+CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_SIDE_BY_SIDE "Put build source and build directories of externals projects side by side" OFF "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
 CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_ON_TOP_LEVEL "Put directory of externals projects at the same level of the application" ON "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
 
 macro(ep_change_garde var )
-  if(NOT "${${var}_PEVIOUS}" STREQUAL "${${var}}")
-    set(${var}_PEVIOUS "${${var}}" CACHE INTERNAL "" FORCE)
+  if(NOT "${${var}_PREVIOUS}" STREQUAL "${${var}}")
+    set(${var}_PREVIOUS "${${var}}" CACHE INTERNAL "" FORCE)
     set(${var}_change ON CACHE INTERNAL "" FORCE)
   else()
     set(${var}_change OFF CACHE INTERNAL "" FORCE)
@@ -77,7 +77,7 @@ else()
   if(EP_CHECKBOX_ON_TOP_LEVEL)
     if(EP_CHECKBOX_ON_TOP_LEVEL_change)
       unset(EP_DIR_NAME CACHE)
-	  unset(EP_DIR_NAME_PEVIOUS CACHE)
+	  unset(EP_DIR_NAME_PREVIOUS CACHE)
       set(EP_PATH_BASE "${CMAKE_SOURCE_DIR}_ExtProjs" CACHE FILEPATH ${ep_path_base_comment}   FORCE)
     endif()
     ep_change_garde(EP_PATH_BASE)
@@ -87,7 +87,7 @@ else()
   else()
     if(EP_CHECKBOX_ON_TOP_LEVEL_change)
       unset(EP_PATH_BASE CACHE)
-	  unset(EP_PATH_BASE_PEVIOUS CACHE)
+	  unset(EP_PATH_BASE_PREVIOUS CACHE)
       set(EP_DIR_NAME  "ExtProjs"                    CACHE FILEPATH ${ep_dir_name_comment}     FORCE)
     endif()
     ep_change_garde(EP_DIR_NAME)
