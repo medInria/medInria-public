@@ -46,15 +46,29 @@
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaDataSetSequence );
 
-
 //----------------------------------------------------------------------------
 vtkMetaDataSetSequence::vtkMetaDataSetSequence()
+  : vtkMetaDataSet()
 {
     this->SequenceDuration = 2.0;
     this->CurrentId = -1;
     this->Type = vtkMetaDataSet::VTK_META_UNKNOWN;
     this->SameGeometryFlag = true;
     this->ParseAttributes = true;
+}
+
+vtkMetaDataSetSequence::vtkMetaDataSetSequence(const vtkMetaDataSetSequence& other)
+  : vtkMetaDataSet(other)
+{
+    this->SequenceDuration = other.SequenceDuration;
+    this->CurrentId = other.CurrentId;
+    this->SameGeometryFlag = other.SameGeometryFlag;
+    this->ParseAttributes = other.ParseAttributes;
+
+    for (unsigned int i = 0; i < other.MetaDataSetList.size(); ++i)
+    {
+        this->MetaDataSetList.push_back(other.MetaDataSetList[i]->Clone());
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -73,12 +87,17 @@ void vtkMetaDataSetSequence::Initialize()
     this->Superclass::Initialize();
 }
 
+vtkMetaDataSetSequence* vtkMetaDataSetSequence::Clone()
+{
+    return new vtkMetaDataSetSequence(*this);
+}
+
 //----------------------------------------------------------------------------
 void vtkMetaDataSetSequence::AddMetaDataSet (vtkMetaDataSet *metadataset)
 {
     if (!metadataset)
     {
-        vtkErrorMacro(<<"NULL object !"<<endl);
+        vtkErrorMacro(<<"nullptr object !"<<endl);
         throw vtkErrorCode::UserError;
     }
 
@@ -189,7 +208,7 @@ void vtkMetaDataSetSequence::RemoveAllMetaDataSets()
 vtkMetaDataSet*vtkMetaDataSetSequence::GetMetaDataSet (unsigned int i)
 {
     if (i>=this->MetaDataSetList.size())
-        return NULL;
+        return nullptr;
     return this->MetaDataSetList[i];
 }
 
@@ -212,7 +231,7 @@ vtkMetaDataSet*vtkMetaDataSetSequence::FindMetaDataSet (const char *name)
         if (strcmp (this->MetaDataSetList[i]->GetName(), name) == 0)
             return this->MetaDataSetList[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -261,7 +280,7 @@ void vtkMetaDataSetSequence::BuildMetaDataSetFromMetaDataSet (vtkMetaDataSet *me
     this->CopyInformation(metadataset);
     this->SetProperty (metadataset->GetProperty());
 
-    vtkDataSet *dataset = NULL;
+    vtkDataSet *dataset = nullptr;
 
     switch (metadataset->GetDataSet()->GetDataObjectType())
     {
@@ -487,7 +506,7 @@ double*vtkMetaDataSetSequence::GetCurrentScalarRange()
 
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {
-        double *range = this->MetaDataSetList[i]->GetCurrentScalarRange();
+        double *range = this->MetaDataSetList[i]->GetScalarRange();
 
         if (val[0] > range[0])
             val[0] = range[0];
@@ -653,7 +672,7 @@ vtkDoubleArray*vtkMetaDataSetSequence::GenerateFollowerTimeTable(const char *arr
     {
         vtkWarningMacro(<<"array "<<arrayname<<" not found in all sequence instances"<<endl);
         ret->Delete();
-        return NULL;
+        return nullptr;
     }
 
 
@@ -677,7 +696,7 @@ vtkDoubleArray*vtkMetaDataSetSequence::GenerateMetaDataTimeTable(const char *met
         {
             vtkWarningMacro(<<"metadata "<<metadatakey<<" not found in all sequence frames"<<endl);
             ret->Delete();
-            return NULL;
+            return nullptr;
         }
         ret->InsertNextValue (val);
     }

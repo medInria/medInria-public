@@ -58,9 +58,19 @@ vtkMetaSurfaceMesh::vtkMetaSurfaceMesh()
   this->Type = vtkMetaDataSet::VTK_META_SURFACE_MESH;
 }
 
+vtkMetaSurfaceMesh::vtkMetaSurfaceMesh(const vtkMetaSurfaceMesh& other)
+    : vtkMetaDataSet(other)
+{
+}
+
 //----------------------------------------------------------------------------
 vtkMetaSurfaceMesh::~vtkMetaSurfaceMesh()
 {
+}
+
+vtkMetaSurfaceMesh* vtkMetaSurfaceMesh::Clone()
+{
+  return new vtkMetaSurfaceMesh(*this);
 }
 
 //----------------------------------------------------------------------------
@@ -83,7 +93,7 @@ void vtkMetaSurfaceMesh::Initialize()
 vtkPolyData* vtkMetaSurfaceMesh::GetPolyData() const
 {
   if (!this->DataSet)
-    return NULL;
+    return nullptr;
   return vtkPolyData::SafeDownCast (this->DataSet);
 }
 

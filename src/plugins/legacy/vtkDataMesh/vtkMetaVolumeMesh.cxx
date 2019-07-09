@@ -47,10 +47,20 @@ vtkMetaVolumeMesh::vtkMetaVolumeMesh()
   this->Type = vtkMetaDataSet::VTK_META_VOLUME_MESH;
 }
 
+vtkMetaVolumeMesh::vtkMetaVolumeMesh(const vtkMetaVolumeMesh& other)
+  : vtkMetaDataSet(other)
+{
+}
+
 //----------------------------------------------------------------------------
 vtkMetaVolumeMesh::~vtkMetaVolumeMesh()
 {
 
+}
+
+vtkMetaVolumeMesh* vtkMetaVolumeMesh::Clone()
+{
+  return new vtkMetaVolumeMesh(*this);
 }
 
 //----------------------------------------------------------------------------
@@ -76,7 +86,7 @@ void vtkMetaVolumeMesh::Initialize()
 vtkUnstructuredGrid* vtkMetaVolumeMesh::GetUnstructuredGrid() const
 {
   if (!this->DataSet)
-    return NULL;
+    return nullptr;
   return vtkUnstructuredGrid::SafeDownCast (this->DataSet);
 }
 

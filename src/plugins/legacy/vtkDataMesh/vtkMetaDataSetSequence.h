@@ -54,6 +54,8 @@ class VTKDATAMESHPLUGIN_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   vtkTypeMacro(vtkMetaDataSetSequence,vtkMetaDataSet);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
+  virtual vtkMetaDataSetSequence* Clone() override;
+
   //ETX
   /**
      Insert a vtkMetaDataSet at the end of the sequence list
@@ -215,8 +217,9 @@ class VTKDATAMESHPLUGIN_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 
   vtkGetMacro (CurrentId, int);
   
- protected:
+protected:
   vtkMetaDataSetSequence();
+  vtkMetaDataSetSequence(const vtkMetaDataSetSequence& other);
   ~vtkMetaDataSetSequence();
 
   /**
@@ -233,10 +236,7 @@ class VTKDATAMESHPLUGIN_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   std::vector<vtkMetaDataSet*> MetaDataSetList;
   //ETX
 
-  
  private:
-  
-  vtkMetaDataSetSequence(const vtkMetaDataSetSequence&);      // Not implemented.
   void operator=(const vtkMetaDataSetSequence&);              // Not implemented.
 
   int    CurrentId;

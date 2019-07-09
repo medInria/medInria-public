@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -27,7 +27,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractMeshData
                        "Mesh data based of vtkPolyData for surface meshes and vtkUnstructuredGrid for volume meshes.")
  public:
     vtkDataMesh();
+    vtkDataMesh(const vtkDataMesh& other);
     ~vtkDataMesh();
+
+    vtkDataMesh* clone() override;
 
     static bool registered();
 
