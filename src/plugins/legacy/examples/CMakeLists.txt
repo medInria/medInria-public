@@ -12,4 +12,3 @@
 ################################################################################
 
 add_subdirectory(ITKProcessExample)
-add_subdirectory(exampleProcessImageFilter)

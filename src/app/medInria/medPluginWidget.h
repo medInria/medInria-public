@@ -14,8 +14,7 @@
 #pragma once
 
 #include <QTabWidget>
-#include <QTreeWidgetItem>
-#include <QTableWidgetItem>
+class QTreeWidgetItem;
 class medPluginWidgetPrivate;
 
 class medPluginWidget : public QTabWidget

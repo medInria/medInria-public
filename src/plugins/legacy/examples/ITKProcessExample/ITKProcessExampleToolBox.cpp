@@ -14,20 +14,20 @@
 #include <ITKProcessExample.h>
 #include <ITKProcessExampleToolBox.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <dtkCoreSupport/dtkAbstractDataFactory.h>
+#include <dtkCoreSupport/dtkAbstractData.h>
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkAbstractViewFactory.h>
+#include <dtkCoreSupport/dtkAbstractView.h>
+#include <dtkCoreSupport/dtkAbstractViewInteractor.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medRunnableProcess.h>
-#include <medJobManager.h>
+#include <medJobManagerL.h>
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
@@ -97,21 +97,16 @@ ITKProcessExampleToolBox::~ITKProcessExampleToolBox()
 
 bool ITKProcessExampleToolBox::registered()
 {
-    return medToolBoxFactory::instance()->registerToolBox
-            <ITKProcessExampleToolBox>(
-                "itkGaussianBlurExample",
-                "ITK Gaussian Blur Filter Example",
-                "Applis Gaussian Blur to a view",
-                QStringList()<<"filtering");
+    return medToolBoxFactory::instance()->registerToolBox<ITKProcessExampleToolBox>();
 }
 
 
-dtkAbstractData* ITKProcessExampleToolBox::processOutput()
+medAbstractData* ITKProcessExampleToolBox::processOutput()
 {
     if(!d->process)
         return NULL;
 
-    return d->process->output();
+    return static_cast<medAbstractData*>(d->process->output());
 }
 
 void ITKProcessExampleToolBox::run()
@@ -136,7 +131,7 @@ void ITKProcessExampleToolBox::run()
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
 
-    medJobManager::instance()->registerJobItem(runProcess);
+    medJobManagerL::instance()->registerJobItem(runProcess);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 
 }
@@ -145,4 +140,9 @@ dtkPlugin* ITKProcessExampleToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
     return pm->plugin("ITKProcessExamplePlugin");
+}
+
+void ITKProcessExampleToolBox::update(medAbstractData *data)
+{
+
 }

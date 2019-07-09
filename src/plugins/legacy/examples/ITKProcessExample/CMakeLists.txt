@@ -11,18 +11,16 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 2.8.1)
-
-project(ITKProcessExamplePlugin)
+set(TARGET_NAME ITKProcessExamplePlugin)
 
 ## #################################################################
 ## Setup version numbering
 ## #################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 
-string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
@@ -40,18 +38,26 @@ find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
 ## #################################################################
-## Input
+## List Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  ITKProcessExamplePlugin.h
-  ITKProcessExampleToolBox.h
-  ITKProcessExample.h)
+list_source_files(${TARGET_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  
+  
+## #############################################################################
+## include directories.
+## #############################################################################
 
-set(${PROJECT_NAME}_SOURCES
-  ITKProcessExamplePlugin.cpp
-  ITKProcessExampleToolBox.cpp
-  ITKProcessExample.cpp)
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
+
 
 ## #################################################################
 ## Build rules
@@ -62,37 +68,41 @@ configure_file(
       ${CMAKE_CURRENT_BINARY_DIR}/ITKProcessExampleDefinitions.h
       )
 
-qt5_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES})
+## #################################################################
+## add library
+## #################################################################
 
-target_link_libraries(${PROJECT_NAME}
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES})
+  
+  
+## #############################################################################
+## Link
+## #############################################################################
+
+
+target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
-  dtkCore dtkLog
-  medCore
-  medGui
+  dtkCore
+  dtkLog
   ITKCommon
+  medCore
 )
-
-#dtk_build_doc(ITKProcessExamplePlugin)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(${PROJECT_NAME}Testing
+add_executable(${TARGET_NAME}Testing
   ITKProcessExampleTestingApp.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}Testing
-  ${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}Testing
+  ${TARGET_NAME}
 )
 
 ## #################################################################
 ## Install rules
 ## #################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+set_plugin_install_rules_legacy(${TARGET_NAME})
+

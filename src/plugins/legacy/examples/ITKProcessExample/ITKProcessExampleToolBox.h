@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #pragma once
-#define ITKPROCESSEXAMPLEDENOISINGTOOLBOX_H
 
 #include <medFilteringAbstractToolBox.h>
 
@@ -21,14 +20,16 @@ class ITKProcessExampleToolBoxPrivate;
 class ITKProcessExampleToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
+    MED_TOOLBOX_INTERFACE("itkGaussianBlurExample", "ITK Gaussian Blur Filter Example", << "filtering")
 
 public:
      ITKProcessExampleToolBox(QWidget *parentToolBox = 0);
     ~ITKProcessExampleToolBox();
 
     static bool registered();
-    dtkAbstractData* processOutput();
+    medAbstractData* processOutput();
     dtkPlugin* plugin();
+    void update(medAbstractData *data);
 
 signals:
     void success();
@@ -41,6 +42,3 @@ public slots:
 private:
     ITKProcessExampleToolBoxPrivate *d;
 };
-
-
-

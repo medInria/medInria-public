@@ -16,7 +16,6 @@
 #include <dtkCoreSupport/dtkSmartPointer.h>
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
 
 // /////////////////////////////////////////////////////////////////

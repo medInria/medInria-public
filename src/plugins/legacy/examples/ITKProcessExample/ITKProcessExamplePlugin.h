@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include <ITKProcessExamplePluginExport.h>
 
@@ -22,6 +22,7 @@ class ITKPROCESSEXAMPLEPLUGIN_EXPORT ITKProcessExamplePluginPrivate;
 class ITKPROCESSEXAMPLEPLUGIN_EXPORT ITKProcessExamplePlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.ITKProcessExamplePlugin" FILE "ITKProcessExamplePlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

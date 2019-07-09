@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkPluginManager.h>
+#include <dtkCoreSupport/dtkAbstractData.h>
+#include <dtkCoreSupport/dtkAbstractDataFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkGlobal.h>
+#include <dtkCoreSupport/dtkPluginManager.h>
 
 #include <QtCore>
 #include <QtGui>
