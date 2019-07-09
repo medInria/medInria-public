@@ -13,6 +13,10 @@
 
 cmake_minimum_required(VERSION 3.2)
 
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 NEW)
+endif()
+
 if(NOT DEFINED ${MEDINRIA_SUPERBUILD_VERSION})
     set(MEDINRIA_SUPERBUILD_VERSION 3.0.1)
 endif()
