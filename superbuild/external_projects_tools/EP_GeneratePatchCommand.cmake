@@ -6,11 +6,11 @@ function(ep_GeneratePatchCommand ep OutVar)
     find_program(GIT_BIN NAMES git)
     foreach (patch ${ARGN})
         execute_process(COMMAND ${GIT_BIN} apply --ignore-whitespace  --check ${CMAKE_SOURCE_DIR}/superbuild/patches/${patch}
-                        WORKING_DIRECTORY ${EP_PREFIX_thirdparts}/src/${ep}
+                        WORKING_DIRECTORY ${EP_PATH_SOURCE}/${ep}
                         RESULT_VARIABLE PATCH_OK
                         OUTPUT_QUIET
                         ERROR_QUIET)
-        if (PATCH_OK EQUAL 0 OR NOT EXISTS ${EP_PREFIX_thirdparts}/src/${ep})
+        if (PATCH_OK EQUAL 0 OR NOT EXISTS ${EP_PATH_SOURCE}/${ep})
             set(PATCHES_TO_APPLY ${PATCHES_TO_APPLY} ${CMAKE_SOURCE_DIR}/superbuild/patches/${patch})
         endif()
     endforeach()
