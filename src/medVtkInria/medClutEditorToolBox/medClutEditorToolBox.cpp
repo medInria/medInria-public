@@ -120,6 +120,11 @@ medClutEditorToolBox::medClutEditorToolBox(QWidget *parent) : medToolBox(parent)
 
 medClutEditorToolBox::~medClutEditorToolBox(void)
 {
+    foreach (medClutEditorTable* table, d->tables)
+    {
+        delete table;
+    }
+
     delete d->scene;
     delete d->view;
     delete d;
