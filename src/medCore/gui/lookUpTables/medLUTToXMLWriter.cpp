@@ -46,32 +46,41 @@ bool medLUTToXMLWriter::writeFile(QIODevice *device)
     d->xml.writeStartDocument();
     d->xml.writeDTD("<!DOCTYPE medLUTs>");
     d->xml.writeStartElement("medLUTs");
-    d->xml.writeAttribute("version", "1.0");
+    d->xml.writeAttribute("version", "1.1");
+
     foreach (medClutEditorTable * table, d->tables)
+    {
         d->writeTable(*table);
+    }
     d->xml.writeEndDocument();
     return true;
 }
 
-void medLUTToXMLWriterPrivate::writeTable(const medClutEditorTable & table){
+void medLUTToXMLWriterPrivate::writeTable(const medClutEditorTable & table)
+{
     xml.writeStartElement("table");
     xml.writeAttribute("title", table.title());
-    qDebug()<< table.title();
-    qDebug()<< "size: " << table.vertices().count();
-    foreach (const medClutEditorVertex * vertex, table.vertices())
-        writeNode(*vertex);
-    xml.writeEndElement();
+    qDebug()<< "Table Title -> "<<table.title();
+    qDebug()<< "Number of vertices -> " << table.vertices().count();
+
+    // If the table has at least a node
+    if (table.vertices().count() > 0)
+    {
+        foreach (const medClutEditorVertex * vertex, table.vertices())
+        {
+            writeNode(*vertex);
+        }
+        xml.writeEndElement();
+    }
 }
 
 void medLUTToXMLWriterPrivate::writeNode(const medClutEditorVertex & vertex)
 {
     QString node;
-    //position
-    qDebug()<< "vertex: "<< (long int )&vertex;
-    qDebug() << "node:" << vertex.pos();
-    qDebug() << "color" <<vertex.color();
-    node.sprintf("%.4f;%.4f;%d;%d;%d;%d",vertex.pos().x(),
-                 vertex.pos().y(),
+
+    node.sprintf("%.4f;%.4f;%d;%d;%d;%d",
+                 vertex.value().x(),
+                 vertex.value().y(),
                  vertex.color().red(),
                  vertex.color().green(),
                  vertex.color().blue(),

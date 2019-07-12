@@ -23,7 +23,7 @@ class medXMLToLUTReaderPrivate;
 
 class MEDCORE_EXPORT medXMLToLUTReader {
 public:
-    medXMLToLUTReader(QList<medClutEditorTable*> * tables);
+    medXMLToLUTReader(QList<medClutEditorTable*> * tables, medClutEditorScene *scene);
     ~medXMLToLUTReader();
     bool read(QIODevice *device);
     QString errorString() const;

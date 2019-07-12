@@ -20,16 +20,19 @@ class medXMLToLUTReaderPrivate{
 public:
     QXmlStreamReader xml;
     QList<medClutEditorTable *> *tables;
+    medClutEditorScene* scene;
     void readLUT();
     void readTable();
     void readNode(medClutEditorTable & table);
 };
 
 
-medXMLToLUTReader::medXMLToLUTReader (QList<medClutEditorTable*> * tables):
+medXMLToLUTReader::medXMLToLUTReader (QList<medClutEditorTable*> * tables,
+                                      medClutEditorScene* scene):
         d(new medXMLToLUTReaderPrivate)
 {
     d->tables = tables;
+    d->scene = scene;
 }
 
 
@@ -45,10 +48,10 @@ bool medXMLToLUTReader::read(QIODevice *device)
 
     if (d->xml.readNextStartElement())
     {
-        if (d->xml.name() == "medLUTs" && d->xml.attributes().value("version") == "1.0")
+        if (d->xml.name() == "medLUTs" && d->xml.attributes().value("version") == "1.1")
             d->readLUT();
         else
-            d->xml.raiseError(QObject::tr("The file is not a medLUT version 1.0 file."));
+            d->xml.raiseError(QObject::tr("The file is not a medLUT version 1.1 file."));
     }
 
     return !d->xml.error();
@@ -98,15 +101,20 @@ void medXMLToLUTReaderPrivate::readNode(medClutEditorTable & table)
      Q_ASSERT(xml.isStartElement() && xml.name() == "node");
      QString node = xml.readElementText();
      QStringList sl = node.split(';');
-     if (sl.count() != 6){
+
+     if (sl.count() != 6)
+     {
          qDebug() << "node not compliant with 6 coordinates scheme";
          return;
      }
-     // table.addVertex(new medClutEditorVertex(sl.at(0).toDouble(),
-     //                                         sl.at(1).toDouble(),
-     //                                         QColor(sl.at(2).toInt(),
-     //                                                sl.at(3).toInt(),
-     //                                                sl.at(4).toInt(),
-     //                                                sl.at(5).toInt())));
 
- }
+     QPointF nodeValue (sl.at(0).toDouble(), sl.at(1).toDouble());
+     QPointF nodeCoord = scene->valueToCoordinate(nodeValue);
+
+     table.addVertex(new medClutEditorVertex(nodeValue,
+                                             nodeCoord,
+                                             QColor(sl.at(2).toInt(),
+                                                    sl.at(3).toInt(),
+                                                    sl.at(4).toInt(),
+                                                    sl.at(5).toInt())));
+}

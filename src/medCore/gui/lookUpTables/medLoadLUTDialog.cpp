@@ -18,7 +18,7 @@ medLoadLUTDialog::medLoadLUTDialog(const QStringList & titles, QWidget *parent) 
 {
     setModal(Qt::WindowModal);
     setInputMode(QInputDialog::TextInput);
-    setLabelText(tr("Choose a transfert Function:"));
+    setLabelText(tr("Choose a table name:"));
     setComboBoxItems(titles);;
     setOkButtonText(tr("Choose"));
 }

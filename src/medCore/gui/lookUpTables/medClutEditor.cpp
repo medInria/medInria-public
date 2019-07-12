@@ -336,10 +336,10 @@ void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             table->constrainMoveSelection( this, withShift );
             table->triggerVertexMoving();
     }
+
     d->setValueSpinBox->setValue((double)this->value().x());
-    // this->updateValue();
-    // qDebug() << "[" << (long int) this << "] value: " << d->value;
-    // qDebug() << "[" << (long int) this << "] coord: " << this->pos();
+
+    this->updateValue();
 }
 
 void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -573,7 +573,8 @@ void medClutEditorTable::constrainMoveSelection( medClutEditorVertex * driver,
     }
 
     int n = d->principalVertices.count();
-    for ( int i = 0 ; i < n; ++i ) {
+    for ( int i = 0 ; i < n; ++i )
+    {
         medClutEditorVertex * vertex = d->principalVertices.at( i );
 
         if ( vertex->isSelected() )
@@ -583,22 +584,28 @@ void medClutEditorTable::constrainMoveSelection( medClutEditorVertex * driver,
         qreal right = vertex->x() + 1.0;
 
         for ( int j = i - 1; j >= 0; --j )
-            if ( d->principalVertices.at( j )->isSelected() ) {
+        {
+            if ( d->principalVertices.at( j )->isSelected() )
+            {
                 left = d->principalVertices.at( j )->x() + static_cast<qreal>( i - j );
                 break;
             }
+        }
 
-            for ( int j = i + 1; j < n; ++j )
-                if ( d->principalVertices.at( j )->isSelected() ) {
-                    right = d->principalVertices.at( j )->x() + static_cast<qreal>( i - j );
-                    break;
-                }
+        for ( int j = i + 1; j < n; ++j )
+        {
+            if ( d->principalVertices.at( j )->isSelected() )
+            {
+                right = d->principalVertices.at( j )->x() + static_cast<qreal>( i - j );
+                break;
+            }
+        }
 
-                QRectF limits = box;
-                limits.setLeft( left );
-                limits.setRight( right );
+        QRectF limits = box;
+        limits.setLeft( left );
+        limits.setRight( right );
 
-                vertex->forceGeometricalConstraints( limits );
+        vertex->forceGeometricalConstraints( limits );
     }
 }
 
