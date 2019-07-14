@@ -179,7 +179,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
             size_t len = strlen(this->CornerText[i]) + 1000;
             text  = new char[len];
             text2 = new char[len];
-            strncpy_s(text, len, this->CornerText[i], strlen(this->CornerText[i]));
+            strncpy(text, this->CornerText[i], strlen(this->CornerText[i]));
 
             // now do the replacements
 
