@@ -45,12 +45,10 @@ vtkStandardNewMacro(vtkImageViewCornerAnnotation);
 
 vtkImageViewCornerAnnotation::vtkImageViewCornerAnnotation()
 {
-    this->ImageView = 0;
+    this->ImageView = nullptr;
 }
 
-vtkImageViewCornerAnnotation::~vtkImageViewCornerAnnotation()
-{
-}
+vtkImageViewCornerAnnotation::~vtkImageViewCornerAnnotation() = default;
 
 void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
                                                vtkImageMapToWindowLevelColors *wl)
@@ -179,7 +177,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
             size_t len = strlen(this->CornerText[i]) + 1000;
             text  = new char[len];
             text2 = new char[len];
-            strncpy(text, this->CornerText[i], strlen(this->CornerText[i]));
+            strncpy(text, this->CornerText[i], strlen(this->CornerText[i])+1);
 
             // now do the replacements
 
@@ -594,7 +592,8 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
     }
 }
 
-namespace {
+namespace 
+{
 // Ported from old vtkTextMapper implementation
     int GetNumberOfLines(const char *str)
     {
