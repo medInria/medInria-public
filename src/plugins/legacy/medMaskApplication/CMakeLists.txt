@@ -67,7 +67,6 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_QRC}
   )
 
-
 ## #############################################################################
 ## Link
 ## #############################################################################
@@ -78,6 +77,7 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   ITKCommon
   medCore
+  medUtilities
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

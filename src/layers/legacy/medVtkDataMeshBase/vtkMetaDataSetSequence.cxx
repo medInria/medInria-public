@@ -14,7 +14,6 @@
 #include <vtkMetaDataSetSequence.h>
 #include "vtkObjectFactory.h"
 
-
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkMetaVolumeMesh.h>

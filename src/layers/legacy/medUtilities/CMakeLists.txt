@@ -2,89 +2,57 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013 - 2018. All rights reserved.
+# Copyright (c) INRIA 2013 - 2014. All rights reserved.
 # See LICENSE.txt for details.
-#
+# 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
 ################################################################################
 
-set(TARGET_NAME vtkDataMeshPlugin)
+set(TARGET_NAME medUtilities)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-## #############################################################################
-## Resolve dependencies
+## Find required
 ## #############################################################################
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonDataModel vtkRenderingCore vtkRenderingVolumeOpenGL2 vtkInteractionStyle vtkInteractionWidgets vtkIOParallelXML vtkIOImage vtkIOGeometry  vtkIOExport vtkRenderingContext2D)
+find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
 include(${VTK_USE_FILE})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-
 ## #############################################################################
-## List Sources
+## List sources
 ## #############################################################################
 
 list_source_files(${TARGET_NAME}
-  .
-  datas
-  interactors
-  navigators
-  readers
-  writers
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
-
-
-## #############################################################################
-## include directorie.
-## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
-
-## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if (MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${TARGET_NAME}_PCH
-    ${MEDPLUGINSPCH_H}
-    ${MEDPLUGINSPCH_CPP}
-    ${${TARGET_NAME}_SOURCES}
-    )
-endif()
-
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_PCH}
-  ${${TARGET_NAME}_CFILES}
-  )
+${${TARGET_NAME}_CFILES})
 
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC
+  ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
 
 ## #############################################################################
 ## Link
@@ -92,21 +60,47 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
   dtkCore
   dtkLog
-  itksys
+  ${OPENGL_LIBRARIES}
   medCore
-  medLog
+  medCoreLegacy
   medVtkInria
-  vtkIOXML
-  vtkIOCore
-  vtkIOLegacy
   medVtkDataMeshBase
+  ITKCommon
+  vtkCommonCore
+  vtkCommonSystem
+  vtkImagingColor
+  vtkImagingGeneral
+  vtkImagingHybrid
+  vtkIOCore
+  vtkIOExportOpenGL2
+  vtkIOGeometry
+  vtkIOImage
+  vtkIOLegacy
+  vtkIOXML
+  vtkRenderingAnnotation
+  vtkRenderingCore
+  vtkRenderingOpenGL2
+  vtkRenderingVolumeOpenGL2
+  vtkRenderingContextOpenGL2
+  ${VTK_OSPRAY_RENDERING_LIBRARY}
+  vtkInteractionWidgets
+  vtkInteractionStyle
+  vtkFiltersExtraction
+  vtkFiltersModeling
+  vtkImagingStencil
+  vtkFiltersGeometry
+  vtksys
+  itksys
   )
 
 
 ## #############################################################################
-## Install rules
+## install
 ## #############################################################################
 
-set_plugin_install_rules_legacy(${TARGET_NAME})
+set_lib_install_rules(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
