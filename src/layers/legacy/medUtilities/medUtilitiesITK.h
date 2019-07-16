@@ -1,6 +1,5 @@
 #pragma once
 
-#include "medUtilities.h"
 #include "medUtilitiesExport.h"
 
 #include <dtkCoreSupport/dtkSmartPointer>

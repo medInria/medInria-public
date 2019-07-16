@@ -1,20 +1,5 @@
 #pragma once
 
-#include <itkImage.h>
-
-#include <medAbstractData.h>
-
-#include <QMatrix4x4>
-#include <QString>
-
-#include <vtkMatrix4x4.h>
-#include <vtkMatrixToLinearTransform.h>
-#include <vtkMetaDataSet.h>
-#include <vtkPointSet.h>
-#include <vtkSmartPointer.h>
-#include <vtkTransform.h>
-#include <vtkTransformFilter.h>
-
 class medAbstractData;
 class vtkMatrix4x4;
 class vtkMetaDataSet;

@@ -28,6 +28,7 @@ class MEDCORELEGACY_EXPORT medAbstractProcessLegacy : public dtkAbstractProcess
 public:
     medAbstractProcessLegacy( medAbstractProcessLegacy * parent = nullptr );
     virtual ~medAbstractProcessLegacy();
+    virtual void setInput ( medAbstractData *data, int channel = 0 ){}
 
     enum DataError
     {
@@ -58,7 +59,6 @@ private:
     using dtkAbstractProcess::onCanceled;
     using dtkAbstractProcess::read;
     using dtkAbstractProcess::write;
-    using dtkAbstractProcess::setParameter;
     using dtkAbstractProcess::setInput;
     using dtkAbstractProcess::setData;
     //TODO rename our output methode

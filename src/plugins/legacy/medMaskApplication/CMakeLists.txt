@@ -44,10 +44,8 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-
-
 ## #############################################################################
-## include directorie.
+## include directories
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
@@ -73,8 +71,6 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
   ITKCommon
   medCore
   medUtilities

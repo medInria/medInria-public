@@ -3,18 +3,13 @@
 
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
-#include <medAbstractData.h>
 #include <medAbstractProcessLegacy.h>
 
 #include <vtkCellData.h>
-#include <vtkDataArray.h>
-#include <vtkDataSet.h>
-#include <vtkFieldData.h>
 #include <vtkLinearTransform.h>
 #include <vtkMetaDataSet.h>
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
-#include <vtkRenderer.h>
 
 medAbstractData* medUtilitiesVTK::changeMaxNumberOfMeshTriangles(medAbstractData *mesh, int maxNumber)
 {
@@ -28,8 +23,8 @@ medAbstractData* medUtilitiesVTK::changeMaxNumberOfMeshTriangles(medAbstractData
         double decimateValue = 1.0 - (double)maxNumber/(double)initialNumber;
 
         dtkSmartPointer<medAbstractProcessLegacy> process = dtkAbstractProcessFactory::instance()->createSmartPointer("medDecimateMeshProcess");
-        //process->setInput(mesh);
-        //process->setParameter(decimateValue);
+        process->setInput(mesh);
+        process->setParameter(decimateValue);
         process->update();
 
         return process->output();

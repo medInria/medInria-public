@@ -20,7 +20,7 @@ set(TARGET_NAME medUtilities)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
+find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets )
 include(${VTK_USE_FILE})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
@@ -46,7 +46,7 @@ add_library(${TARGET_NAME} SHARED
 ${${TARGET_NAME}_CFILES})
 
 ## #############################################################################
-## include directorie.
+## include directories
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
@@ -60,40 +60,10 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
-  ${ITK_LIBRARIES}
-  dtkCore
-  dtkLog
-  ${OPENGL_LIBRARIES}
   medCore
   medCoreLegacy
   medVtkInria
   medVtkDataMeshBase
-  ITKCommon
-  vtkCommonCore
-  vtkCommonSystem
-  vtkImagingColor
-  vtkImagingGeneral
-  vtkImagingHybrid
-  vtkIOCore
-  vtkIOExportOpenGL2
-  vtkIOGeometry
-  vtkIOImage
-  vtkIOLegacy
-  vtkIOXML
-  vtkRenderingAnnotation
-  vtkRenderingCore
-  vtkRenderingOpenGL2
-  vtkRenderingVolumeOpenGL2
-  vtkRenderingContextOpenGL2
-  ${VTK_OSPRAY_RENDERING_LIBRARY}
-  vtkInteractionWidgets
-  vtkInteractionStyle
-  vtkFiltersExtraction
-  vtkFiltersModeling
-  vtkImagingStencil
-  vtkFiltersGeometry
-  vtksys
-  itksys
   )
 
 

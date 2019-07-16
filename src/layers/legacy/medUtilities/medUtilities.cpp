@@ -2,7 +2,6 @@
 
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
-#include <medAbstractView.h>
 #include <medMetaDataKeys.h>
 #include <medStringListParameterL.h>
 #include <medVtkViewBackend.h>
@@ -10,7 +9,6 @@
 #include <QLineEdit>
 #include <QInputDialog>
 
-#include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkMatrix4x4.h>
 

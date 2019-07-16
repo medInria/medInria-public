@@ -17,8 +17,6 @@
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
-//#include <itkImage.h>
-
 #include <medAbstractData.h>
 
 class MEDUTILITIES_EXPORT statsROI
