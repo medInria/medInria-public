@@ -63,17 +63,8 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
 {
     d->proc = nullptr;
-    switch(fixedImageType()){
-    //only float will be used here, diffeoMorphic demons only work on float and double.
-
-    default:
-    {
-        typedef itk::Image< float, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
-    }
-        break;
-    }
+    typedef itk::Image< float, 3 >  RegImageType;
+    delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType, float > *>(d->registrationMethod);
     d->registrationMethod = nullptr;
     delete d;
     d = nullptr;

@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "vtkDataMeshPluginExport.h"
+
 #include <medAbstractNavigator.h>
 #include <QFormLayout>
 #include <QSlider>
@@ -20,7 +22,7 @@
 
 class vtkDataMeshNavigatorPrivate;
 
-class vtkDataMeshNavigator: public medAbstractNavigator
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshNavigator: public medAbstractNavigator
 {
     Q_OBJECT
 
