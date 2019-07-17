@@ -28,7 +28,7 @@ medItkMultiplyImageProcess::medItkMultiplyImageProcess(QObject *parent)
     : medAbstractMultiplyImageProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkMultiplyImageProcess::~medItkMultiplyImageProcess()
@@ -134,7 +134,7 @@ medAbstractJob::medJobExitStatus medItkMultiplyImageProcess::run()
     {
         filter->Update();
     }
-    catch(itk::ProcessAborted &e)
+    catch(itk::ProcessAborted &)
     {
         return medAbstractJob::MED_JOB_EXIT_CANCELLED;
     }

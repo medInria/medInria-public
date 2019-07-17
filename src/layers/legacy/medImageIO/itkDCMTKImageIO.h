@@ -30,7 +30,7 @@
 
 class DcmElement;
 
-class double_fuzzy_less : public std::binary_function<double,double,bool>
+class double_fuzzy_less
 {
 public:
     double_fuzzy_less( double arg_ = 1e-7 ) : epsilon(arg_) {}

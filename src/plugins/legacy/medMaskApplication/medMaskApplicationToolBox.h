@@ -32,8 +32,8 @@ class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medFilt
 public:
     medMaskApplicationToolBox(QWidget *parent = 0);
     ~medMaskApplicationToolBox();
-    
-    medAbstractData *processOutput();
+
+    medAbstractData *processOutput() override;
     
     static bool registered();
     dtkPlugin * plugin();

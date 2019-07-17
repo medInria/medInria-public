@@ -17,11 +17,8 @@ set(TARGET_NAME medVtkInria)
 ## Find required
 ## #############################################################################
 
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
 include(${VTK_USE_FILE})
-
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
 
 find_package(OpenGL REQUIRED)
 
@@ -133,28 +130,6 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
   medCoreLegacy
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKIOGE
-  ITKIOMINC
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ${ITKIOPhilipsREC_LIBRARIES}
-  ITKIOMRC
-  ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
-  ITKVTK
   vtkCommonCore
   vtkCommonSystem
   vtkImagingColor

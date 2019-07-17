@@ -27,7 +27,7 @@ medItkShrinkProcess::medItkShrinkProcess(QObject *parent)
     : medAbstractShrinkFilterProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkShrinkProcess::~medItkShrinkProcess()
@@ -128,7 +128,7 @@ medAbstractJob::medJobExitStatus medItkShrinkProcess::_run()
         {
             shrinkFilter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

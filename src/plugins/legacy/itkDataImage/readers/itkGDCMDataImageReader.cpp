@@ -66,7 +66,7 @@ void Read4DImage(medAbstractData* medData, itk::GDCMImageIO::Pointer io, itkGDCM
         typename SeriesReaderType::Pointer seriesreader = SeriesReaderType::New();
         seriesreader->UseStreamingOn();
 
-        typename SubImageType::Pointer t_image = 0;
+        typename SubImageType::Pointer t_image = nullptr;
 
         seriesreader->SetFileNames(it->second);
         seriesreader->SetImageIO(io);

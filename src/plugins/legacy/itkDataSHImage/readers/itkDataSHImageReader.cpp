@@ -166,7 +166,7 @@ bool itkDataSHImageReader::read (const QString &path)
 
             typedef itk::ImageFileReader<SHImageType> ReaderType;
 
-            SHImageType::Pointer image = 0;
+            SHImageType::Pointer image = nullptr;
 
             ReaderType::Pointer reader = ReaderType::New();
             reader->SetFileName ( path.toLatin1().constData() );
@@ -185,7 +185,7 @@ bool itkDataSHImageReader::read (const QString &path)
 
             typedef itk::ImageFileReader<SHImageType> ReaderType;
 
-            SHImageType::Pointer image = 0;
+            SHImageType::Pointer image = nullptr;
 
             ReaderType::Pointer reader = ReaderType::New();
             reader->SetFileName ( path.toLatin1().constData() );

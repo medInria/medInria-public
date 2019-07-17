@@ -20,7 +20,7 @@ class ITKProcessExampleToolBoxPrivate;
 class ITKProcessExampleToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
-	MED_TOOLBOX_INTERFACE("itkGaussianBlurExample", "ITK Gaussian Blur Filter Example", << "filtering")
+    MED_TOOLBOX_INTERFACE("itkGaussianBlurExample", "ITK Gaussian Blur Filter Example", << "filtering")
 
 public:
      ITKProcessExampleToolBox(QWidget *parentToolBox = 0);
@@ -29,7 +29,7 @@ public:
     static bool registered();
     medAbstractData* processOutput();
     dtkPlugin* plugin();
-	void update(medAbstractData *data);
+    void update(medAbstractData *data);
 
 signals:
     void success();

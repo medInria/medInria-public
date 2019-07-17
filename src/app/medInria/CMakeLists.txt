@@ -25,6 +25,16 @@ include_directories(${dtk_INCLUDE_DIRS})
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  areas/browser
+  areas/composer
+  areas/homepage
+  areas/workspaces
+  areas/workspaces/diffusion
+  areas/workspaces/filtering
+  areas/workspaces/generic
+  areas/workspaces/registration
+  areas/workspaces/segmentation
+  areas/workspaces/visualization
   )
 
 ##  see cmake/module/list_header_directories_to_include.cmake

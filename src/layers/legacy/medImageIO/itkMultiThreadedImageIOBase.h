@@ -14,7 +14,7 @@
 #pragma once
 
 #include <itkImageIOBase.h>
-#include <itkMultiThreader.h>
+#include <itkMultiThreaderBase.h>
 #include <itkImageRegion.h>
 
 #include <medImageIOExport.h>
@@ -38,7 +38,7 @@ namespace itk //TODO no namespace please ! (and no class name prifixed with othe
     typedef ImageRegion<1>           RegionType;
 
     
-    itkGetObjectMacro (MultiThreader, MultiThreader);
+    itkGetObjectMacro (MultiThreaderBase, MultiThreaderBase);
 
 
     /**
@@ -85,7 +85,7 @@ namespace itk //TODO no namespace please ! (and no class name prifixed with othe
     FileNameVectorType m_FileNames;
 
     
-    MultiThreader::Pointer m_MultiThreader;
+    MultiThreaderBase::Pointer m_MultiThreaderBase;
     int                    m_NumberOfThreads;
     
   };

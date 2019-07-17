@@ -13,8 +13,9 @@
 
 #pragma once
 
+#include "vtkDataMeshPluginExport.h"
+
 #include <vtkXMLReader.h>
-#include <vtkDataMeshPluginExport.h>
 
 class vtkDataManager;
 class vtkMetaDataSet;
