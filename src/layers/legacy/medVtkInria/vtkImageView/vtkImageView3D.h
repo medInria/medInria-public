@@ -15,6 +15,8 @@
 
 #include <medVtkInriaExport.h>
 
+#include <vector>
+
 #include <vtkImageView.h>
 #include <vtkOrientedBoxWidget.h>
 
@@ -24,6 +26,7 @@
 #include <vtkOrientationMarkerWidget.h>
 #include <vtkVolumeProperty.h>
 #include <vtkSmartPointer.h>
+
 
 class vtkVolume;
 class vtkPiecewiseFunction;

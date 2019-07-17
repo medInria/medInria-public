@@ -13,8 +13,9 @@
 
 #pragma once
 
+#include "vtkDataMeshPluginExport.h"
+
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
-#include <vtkDataMeshPluginExport.h>
 
 class vtkDataSetReader;
 

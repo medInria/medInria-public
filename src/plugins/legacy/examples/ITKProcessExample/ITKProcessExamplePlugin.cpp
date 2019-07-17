@@ -41,7 +41,7 @@ ITKProcessExamplePlugin::~ITKProcessExamplePlugin()
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool ITKProcessExamplePlugin::initialize()
@@ -91,5 +91,3 @@ QStringList ITKProcessExamplePlugin::types() const
 {
     return QStringList() << "ITKProcessExample";
 }
-
-//Q_EXPORT_PLUGIN2(ITKProcessExamplePlugin, ITKProcessExamplePlugin)

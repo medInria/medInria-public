@@ -41,7 +41,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
-set(git_tag master)
+set(git_tag ITK5)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -59,7 +59,7 @@ endif()
 
 set(cmake_args
   ${ep_common_cache_args}
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_thirdparts}
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
@@ -74,8 +74,15 @@ set(cmake_args
 ## Add external-project
 ## #############################################################################
 
+epComputPath(${ep})
+
 ExternalProject_Add(${ep}
-  PREFIX ${EP_PREFIX_thirdparts}
+  PREFIX ${EP_PATH_SOURCE}
+  SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+  BINARY_DIR ${build_path}
+  TMP_DIR ${tmp_path}
+  STAMP_DIR ${stamp_path}
+  
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   CMAKE_GENERATOR ${gen}

@@ -13,8 +13,6 @@
 
 #include <medVtkViewItkDataImageInteractor.h>
 
-#include <QVTKWidget.h>
-
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
 

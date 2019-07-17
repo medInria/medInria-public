@@ -11,8 +11,10 @@
   PURPOSE.
 
 =========================================================================*/
+
+#include "vtkDataMeshPluginExport.h"
+
 #include <vtkXMLWriter.h>
-#include <vtkDataMeshPluginExport.h>
 #include <string>
 
 class vtkDataManager;

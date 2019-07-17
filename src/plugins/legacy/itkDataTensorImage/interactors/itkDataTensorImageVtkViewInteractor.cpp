@@ -13,8 +13,6 @@
 
 #include <itkDataTensorImageVtkViewInteractor.h>
 
-#include <QVTKWidget.h>
-
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
 #include <vtkPointSet.h>

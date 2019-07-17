@@ -28,13 +28,8 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
-
-
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
-
 
 find_package(DCMTK REQUIRED NO_MODULE)
 

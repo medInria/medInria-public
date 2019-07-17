@@ -13,17 +13,12 @@
 
 #pragma once
 
+#include "medVtkDataMeshBaseExport.h"
+
 #include <vtkMetaDataSet.h>
-#include <vtkDataMeshPluginExport.h>
+
 #include <string>
 #include <vector>
-
-#include <itkExtractImageFilter.h>
-#include <itkImageRegionIterator.h>
-#include <itkImageRegion.h>
-#include <itkImage.h>
-
-
 
 /**
    \class vtkMetaDataSetSequence vtkMetaDataSetSequence.h "vtkMetaDataSetSequence.h"
@@ -46,7 +41,7 @@
 
 class vtkDoubleArray;
 
-class VTKDATAMESHPLUGIN_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
+class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 {
  public:
 
