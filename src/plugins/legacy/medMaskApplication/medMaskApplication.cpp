@@ -20,12 +20,14 @@
 #include <medAbstractImageData.h>
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
+#include <medAbstractProcessLegacy.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medUtilities.h>
 
 #include <itkMaskImageFilter.h>
 #include <itkMinimumMaximumImageCalculator.h>
+
 
 // /////////////////////////////////////////////////////////////////
 // medMaskApplicationPrivate
@@ -78,14 +80,14 @@ public:
             {
                 std::cerr << "ExceptionObject caught in medMaskApplication!" << std::endl;
                 std::cerr << err << std::endl;
-                return DTK_FAILURE;
+                return medAbstractProcessLegacy::FAILURE;
             }
 
             medUtilities::setDerivedMetaData(output, input, "masked");
 
-            return DTK_SUCCEED;
+            return medAbstractProcessLegacy::SUCCESS;
         }
-        return DTK_FAILURE;
+        return medAbstractProcessLegacy::FAILURE;
     }
 };
 
@@ -157,7 +159,7 @@ void medMaskApplication::clearInput(int channel)
 
 int medMaskApplication::update()
 {
-    int res = DTK_FAILURE;
+    int res = medAbstractProcessLegacy::FAILURE;
 
     if (d->input)
     {
@@ -203,12 +205,10 @@ int medMaskApplication::update()
         {
             res = updateMaskType<double>();
         }
-        //TODO: this is used in music to display dedicated error messages
-        //to users, according to the error type. Here, the pixel type is wrong.
-        //else
-        //{
-            //res = medAbstractProcess::PIXEL_TYPE;
-        //}
+        else
+        {
+            res = medAbstractProcessLegacy::PIXEL_TYPE;
+        }
     }
     return res;
 }
@@ -216,7 +216,7 @@ int medMaskApplication::update()
 template <typename IMAGE>
 int medMaskApplication::updateMaskType()
 {
-    int res = DTK_FAILURE;
+    int res = medAbstractProcessLegacy::FAILURE;
 
     if (d->mask)
     {
@@ -262,10 +262,10 @@ int medMaskApplication::updateMaskType()
         {
             res = d->update<IMAGE, double>();
         }
-        //else
-        //{
-            //res = medAbstractProcess::PIXEL_TYPE;
-        //}
+        else
+        {
+            res = medAbstractProcessLegacy::PIXEL_TYPE;
+        }
     }
     return res;
 }
