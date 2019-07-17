@@ -49,7 +49,7 @@ void medBinaryOperatorBase::setInput(medAbstractData *data, int channel)
 
 int medBinaryOperatorBase::update()
 {
-    int res = DTK_FAILURE;
+    int res = medAbstractProcessLegacy::FAILURE;
 
     if (m_inputA)
     {
@@ -95,19 +95,17 @@ int medBinaryOperatorBase::update()
         {
             res = run< itk::Image <double,3> >();
         }
-        //TODO: this is used in music to display dedicated error messages
-        //to users, according to the error type. Here, the pixel type is wrong.
-        //else
-        //{
-            //res = medAbstractProcess::PIXEL_TYPE;
-        //}
+        else
+        {
+            res = medAbstractProcessLegacy::PIXEL_TYPE;
+        }
     }
     return res;
 }
 
 template <class ImageType> int medBinaryOperatorBase::run()
 {
-    int res = DTK_FAILURE;
+    int res = medAbstractProcessLegacy::FAILURE;
 
     if (m_inputB)
     {
@@ -153,12 +151,10 @@ template <class ImageType> int medBinaryOperatorBase::run()
         {
             res = runProcess< ImageType, itk::Image <double,3> >();
         }
-        //TODO: this is used in music to display dedicated error messages
-        //to users, according to the error type. Here, the pixel type is wrong.
-//        else
-//        {
-//            res = medAbstractProcess::PIXEL_TYPE;
-//        }
+        else
+        {
+            res = medAbstractProcessLegacy::PIXEL_TYPE;
+        }
     }
     return res;
 }
@@ -167,7 +163,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 {
     if ( !m_inputA->data() || !m_inputB->data())
     {
-        return DTK_FAILURE;
+        return medAbstractProcessLegacy::FAILURE;
     }
 
     typedef itk::Image<unsigned char, 3> ImageTypeOutput;
@@ -194,9 +190,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     
     if (imageA->GetLargestPossibleRegion().GetSize() != imageB->GetLargestPossibleRegion().GetSize())
     {
-        //TODO music3 error messages
-        //return medAbstractProcess::DATA_SIZE;
-        return DTK_FAILURE;
+        return medAbstractProcessLegacy::DATA_SIZE;
     }
 
     typedef itk::InPlaceImageFilter< ImageTypeOutput, ImageTypeOutput >  FilterType;
@@ -234,7 +228,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     {
         std::cerr << "ExceptionObject caught in "<< metaObject()->className() << std::endl;
         std::cerr << err << std::endl;
-        return DTK_FAILURE;
+        return medAbstractProcessLegacy::FAILURE;
     }
 
     m_output = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
@@ -243,7 +237,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     QString derivedDescription = description() + " " + m_inputB->metadata(medMetaDataKeys::SeriesDescription.key());
     medUtilities::setDerivedMetaData(m_output, m_inputA, derivedDescription);
 
-    return DTK_SUCCEED;
+    return medAbstractProcessLegacy::SUCCESS;
 }
 
 medAbstractData * medBinaryOperatorBase::output()

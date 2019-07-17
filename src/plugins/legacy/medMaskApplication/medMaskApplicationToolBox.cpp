@@ -148,5 +148,5 @@ void medMaskApplicationToolBox::clearMask(void)
     {
         d->process->clearInput(0);
     }
-    d->mask = 0;
+    d->mask = nullptr;
 }

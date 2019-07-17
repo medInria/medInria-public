@@ -20,6 +20,7 @@
 
 #include <medAbstractDataFactory.h>
 #include <medUtilities.h>
+#include <medUtilitiesITK.h>
 
 bool itkNotOperator::registered()
 {
@@ -41,69 +42,20 @@ void itkNotOperator::setInput (medAbstractData *data, int channel)
 
 int itkNotOperator::update()
 {
-    int res = DTK_FAILURE;
+    int res = medAbstractProcessLegacy::FAILURE;
 
     if (m_inputA)
     {
-        //TODO music3 where can it be added in medInria3?
-        //res = DISPATCH_ON_3D_PIXEL_TYPE(&itkNotOperator::run, this, m_inputA);
-        QString id = m_inputA->identifier();
-
-        if ( id == "itkDataImageChar3" )
-        {
-            res = run< itk::Image <char,3> >();
-        }
-        else if ( id == "itkDataImageUChar3" )
-        {
-            res = run< itk::Image <unsigned char,3> >();
-        }
-        else if ( id == "itkDataImageShort3" )
-        {
-            res = run< itk::Image <short,3> >();
-        }
-        else if ( id == "itkDataImageUShort3" )
-        {
-            res = run< itk::Image <unsigned short,3> >();
-        }
-        else if ( id == "itkDataImageInt3" )
-        {
-            res = run< itk::Image <int,3> >();
-        }
-        else if ( id == "itkDataImageUInt3" )
-        {
-            res = run< itk::Image <unsigned int,3> >();
-        }
-        else if ( id == "itkDataImageLong3" )
-        {
-            res = run< itk::Image <long,3> >();
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            res = run< itk::Image <unsigned long,3> >();
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            res = run< itk::Image <float,3> >();
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            res = run< itk::Image <double,3> >();
-        }
-        //TODO: this is used in music to display dedicated error messages
-        //to users, according to the error type. Here, the pixel type is wrong.
-        //else
-        //{
-            //res = medAbstractProcess::PIXEL_TYPE;
-        //}
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&itkNotOperator::run, this, m_inputA);
     }
     return res;
 }
 
 
 template <class ImageType>
-int itkNotOperator::run()
+int itkNotOperator::run(medAbstractData* inputData)
 {
-    typename ImageType::Pointer inputImage = static_cast<ImageType*>(m_inputA->data());
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
 
     typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
     typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
@@ -117,19 +69,19 @@ int itkNotOperator::run()
     notFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     notFilter->Update();
 
-    QString identifier = m_inputA->identifier();
-    m_output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
+    QString identifier = inputData->identifier();
+    m_output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
 
     m_output->setData(notFilter->GetOutput());
 
     if (!m_output)
     {
-        return DTK_FAILURE;
+        return medAbstractProcessLegacy::FAILURE;
     }
 
-    medUtilities::setDerivedMetaData(m_output, m_inputA, "NOT");
+    medUtilities::setDerivedMetaData(m_output, inputData, "NOT");
 
-    return DTK_SUCCEED;
+    return medAbstractProcessLegacy::SUCCESS;
 }        
 
 // /////////////////////////////////////////////////////////////////
