@@ -53,9 +53,9 @@ int itkNotOperator::update()
 
 
 template <class ImageType>
-int itkNotOperator::run()
+int itkNotOperator::run(medAbstractData* inputData)
 {
-    typename ImageType::Pointer inputImage = static_cast<ImageType*>(m_inputA->data());
+    typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
 
     typedef itk::MinimumMaximumImageFilter <ImageType> ImageCalculatorFilterType;
     typename ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
@@ -69,8 +69,8 @@ int itkNotOperator::run()
     notFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     notFilter->Update();
 
-    QString identifier = m_inputA->identifier();
-    m_output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
+    QString identifier = inputData->identifier();
+    m_output = medAbstractDataFactory::instance()->createSmartPointer ( identifier );
 
     m_output->setData(notFilter->GetOutput());
 
