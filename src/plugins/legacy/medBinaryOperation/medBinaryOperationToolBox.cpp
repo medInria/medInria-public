@@ -175,7 +175,7 @@ void medBinaryOperationToolBox::run()
 
         medRunnableProcess* runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
-	this->addConnectionsAndStartJob(runProcess);
+        this->addConnectionsAndStartJob(runProcess);
     }
     else
     {
