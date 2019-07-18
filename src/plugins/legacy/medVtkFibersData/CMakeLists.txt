@@ -30,10 +30,10 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED COMPONENTS  vtkImagingCore vtkIOLegacy vtkIOXML vtkRenderingCore vtkRenderingOpenGL2 vtkInteractionWidgets) 
 include(${VTK_USE_FILE})
 
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKVtkGlue)
 include(${ITK_USE_FILE})
 
 find_package(TTK REQUIRED)
@@ -105,6 +105,8 @@ target_link_libraries(${TARGET_NAME}
   medLog
   medVtkInria
   ttkAlgorithms
+  ITKCommon
+  ITKVtkGlue
   )
 
 

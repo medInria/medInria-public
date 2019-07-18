@@ -38,7 +38,7 @@ medLUTToXMLWriter::medLUTToXMLWriter (const QList<medClutEditorTable *> & tables
 medLUTToXMLWriter::~medLUTToXMLWriter()
 {
    delete d;
-   d = NULL;
+   d = nullptr;
 }
 
 
@@ -69,7 +69,7 @@ void medLUTToXMLWriterPrivate::writeNode(const medClutEditorVertex & vertex)
 {
     QString node;
     //position
-    dtkDebug()<< "vertex: "<< (long int )&vertex;
+    dtkDebug()<< "vertex: "<< reinterpret_cast<uintptr_t>(&vertex);
     dtkDebug() << "node:" << vertex.pos();
     dtkDebug() << "color" <<vertex.color();
     node.sprintf("%.4f;%.4f;%d;%d;%d;%d",vertex.pos().x(),

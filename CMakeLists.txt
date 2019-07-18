@@ -11,13 +11,17 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.3)
+
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 NEW)
+endif()
 
 if(NOT DEFINED ${MEDINRIA_SUPERBUILD_VERSION})
     set(MEDINRIA_SUPERBUILD_VERSION 3.0.1)
 endif()
 
-SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD 17)
 
 project(MEDINRIA_SUPERBUILD VERSION ${MEDINRIA_SUPERBUILD_VERSION})
 

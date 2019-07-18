@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 2.8.1)
+cmake_minimum_required(VERSION 3.3)
 
 project(medCompositeDataSetsPlugin)
 
@@ -39,9 +39,6 @@ include(dtkPlugin)
 
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
-
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
 
 ## #################################################################
 ## Input

@@ -23,8 +23,6 @@
 #include <vtkDataSetSurfaceFilter.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyDataNormals.h>
-// #include <vtkActor.h>
-
 
 #include <vtkPoints.h>
 #include <vtkPointData.h>

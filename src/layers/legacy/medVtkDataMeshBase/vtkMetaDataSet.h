@@ -12,7 +12,8 @@
 
 =========================================================================*/
 
-#include <vtkDataMeshPluginExport.h>
+#include "medVtkDataMeshBaseExport.h"
+
 #include <vtkDataObject.h>
 #include <string>
 #include <vector>
@@ -40,7 +41,7 @@ class vtkScalarsToColors;
 class vtkPolyData;
 
 
-class VTKDATAMESHPLUGIN_EXPORT vtkMetaDataSet: public vtkDataObject
+class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
 {
  public:
 

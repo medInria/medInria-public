@@ -39,10 +39,12 @@ set(CPACK_BINARY_TBZ2 OFF)
 set(CPACK_BINARY_TGZ ON)
 set(CPACK_BINARY_TZ OFF)
 
-set(CPACK_SOURCE_TBZ2 OFF)
-set(CPACK_SOURCE_TGZ OFF)
-set(CPACK_SOURCE_TZ OFF)
-set(CPACK_SOURCE_ZIP OFF)
+option(CPACK_SOURCE_RPM  "Enable to build RPM source packages"  OFF)
+option(CPACK_SOURCE_TBZ2 "Enable to build TBZ2 source packages" OFF)
+option(CPACK_SOURCE_TGZ  "Enable to build TGZ source packages"  OFF)
+option(CPACK_SOURCE_TXZ  "Enable to build TXZ source packages"  OFF)
+option(CPACK_SOURCE_TZ   "Enable to build TZ source packages"   OFF)
+option(CPACK_SOURCE_ZIP  "Enable to build ZIP source packages"  OFF)
 
 # Set cpack variables specific to the plateform
 
