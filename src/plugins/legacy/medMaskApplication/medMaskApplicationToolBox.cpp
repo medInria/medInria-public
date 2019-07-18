@@ -19,10 +19,8 @@
 #include <medDataManager.h>
 #include <medDropSite.h>
 #include <medFilteringSelectorToolBox.h>
-#include <medJobManagerL.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
-#include <medProgressionStack.h>
 #include <medRunnableProcess.h>
 #include <medToolBoxFactory.h>
 
@@ -31,14 +29,14 @@ class medMaskApplicationToolBoxPrivate
 public:
     
     dtkSmartPointer <medMaskApplication> process;
-    medDropSite *maskDropSite;
+    medDropSite* maskDropSite;
     QDoubleSpinBox* backgroundSpinBox;
 
     dtkSmartPointer<medAbstractData> mask;
-    medProgressionStack * progression_stack;
 };
 
-medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
+medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) :
+    medFilteringAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     this->addWidget(widget);
@@ -71,8 +69,6 @@ medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) : medFilte
     QPushButton *runButton = new QPushButton(tr("Run"), this);
     this->addWidget(runButton);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
-
-    d->progression_stack = new medProgressionStack();
 }
 
 medMaskApplicationToolBox::~medMaskApplicationToolBox()
@@ -106,7 +102,9 @@ void medMaskApplicationToolBox::run()
 {
     if (d->mask && this->parentToolBox()->data())
     {
-        if(!d->process)
+        this->setToolBoxOnWaitStatus();
+
+        if (!d->process)
         {
             d->process = new medMaskApplication;
         }
@@ -116,17 +114,7 @@ void medMaskApplicationToolBox::run()
 
         medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
-
-        //TODO This paragraph could be factorized by music
-        // In each process, these lines are all the same
-        // See this->addConnectionsAndStartJob(runProcess);
-        d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-
-        connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-        connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-
-        medJobManagerL::instance()->registerJobItem(runProcess);
-        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+        this->addConnectionsAndStartJob(runProcess);
     }
     else
     {

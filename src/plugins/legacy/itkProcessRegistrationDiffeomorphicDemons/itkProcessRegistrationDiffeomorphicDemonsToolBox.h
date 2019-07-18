@@ -27,7 +27,7 @@ public:
      itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parentToolBox = 0);
     ~itkProcessRegistrationDiffeomorphicDemonsToolBox();
 
-public:
+    dtkPlugin * plugin() override;
     static bool registered();
 
 public slots:

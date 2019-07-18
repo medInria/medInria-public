@@ -49,6 +49,9 @@ public:
     // TODO mutualize all of this
     void setSplitter(int index, medViewContainerSplitter* splitter);
 
+    medViewContainer* getFirstSelectedContainer();
+    medAbstractView*  getFirstSelectedContainerView();
+
 public slots:
     medViewContainer* addContainerInTabUnNamed();
     medViewContainer* addContainerInTabNamed(const QString &name);

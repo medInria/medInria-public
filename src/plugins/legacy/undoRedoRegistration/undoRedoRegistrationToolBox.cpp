@@ -11,6 +11,7 @@
 
 =========================================================================*/
 
+#include <medPluginManager.h>
 #include <undoRedoRegistration.h>
 #include <undoRedoRegistrationToolBox.h>
 
@@ -79,7 +80,6 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     this->setTitle(tr("Stack of transformations"));
     connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QString)),this,SLOT(addTransformationIntoList(int, QString)));
     connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
-
 }
 
 undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)
@@ -92,6 +92,13 @@ undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)
 bool undoRedoRegistrationToolBox::registered(void)
 {
     return medToolBoxFactory::instance()-> registerToolBox<undoRedoRegistrationToolBox>();
+}
+
+dtkPlugin* undoRedoRegistrationToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "undoRedoRegistration" );
+    return plugin;
 }
 
 void undoRedoRegistrationToolBox::onUndo()

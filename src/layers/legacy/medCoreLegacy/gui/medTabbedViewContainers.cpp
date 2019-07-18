@@ -121,6 +121,32 @@ QList <QUuid> medTabbedViewContainers::containersSelected()
     return d->containerSelectedForTabIndex.value(this->currentIndex());
 }
 
+medViewContainer* medTabbedViewContainers::getFirstSelectedContainer()
+{
+    QList<QUuid> listUuid = containersSelected();
+    medViewContainer* view = nullptr;
+
+    if (listUuid.count() > 0)
+    {
+        // only keep the first selected container
+        view = medViewContainerManager::instance()->container(listUuid[0]);
+    }
+
+    return view;
+}
+
+medAbstractView* medTabbedViewContainers::getFirstSelectedContainerView()
+{
+    medViewContainer* currentFirstContainer = getFirstSelectedContainer();
+    medAbstractView* view = nullptr;
+
+    if (currentFirstContainer)
+    {
+        view = currentFirstContainer->view();
+    }
+    return view;
+}
+
 QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
 {
     QList<medAbstractView*> views;

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -72,9 +72,12 @@ public:
 
     medLinkMenu *viewLinkMenu;
     medLinkMenu *layerLinkMenu;
+
+    medProgressionStack* progressionStack;
 };
 
-medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent) : QObject(parent), d(new medAbstractWorkspaceLegacyPrivate)
+medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
+    : QObject(parent), d(new medAbstractWorkspaceLegacyPrivate)
 {
     d->parent = parent;
 
@@ -109,7 +112,11 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent) : QObjec
     d->interactorToolBox->setTitle("Interactors");
     d->interactorToolBox->header()->hide();
     d->interactorToolBox->hide();
+
     d->selectionToolBox->addWidget(d->interactorToolBox);
+
+    d->progressionStack = new medProgressionStack();
+    d->selectionToolBox->addWidget(d->progressionStack);
 
     d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -133,12 +140,14 @@ medAbstractWorkspaceLegacy::~medAbstractWorkspaceLegacy(void)
 
 void medAbstractWorkspaceLegacy::addToolBox(medToolBox *toolbox)
 {
+    toolbox->setWorkspace(this);
     d->toolBoxes.append(toolbox);
     d->selectionToolBox->addWidget(toolbox);
 }
 
 void medAbstractWorkspaceLegacy::removeToolBox(medToolBox *toolbox)
 {
+    toolbox->setWorkspace(nullptr);
     d->toolBoxes.removeOne(toolbox);
     d->selectionToolBox->removeWidget(toolbox);
 }
@@ -899,4 +908,9 @@ void medAbstractWorkspaceLegacy::changeLayerGroupColor(QString group, QColor col
 {
     medLayerParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->layerGroup(group, this->identifier());
     paramGroup->setColor(color);
+}
+
+medProgressionStack* medAbstractWorkspaceLegacy::getProgressionStack()
+{
+    return d->progressionStack;
 }

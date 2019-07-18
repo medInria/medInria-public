@@ -25,10 +25,12 @@ class MEDCORELEGACY_EXPORT medRegistrationAbstractToolBox : public medToolBox
     Q_OBJECT
 
 public:
-             medRegistrationAbstractToolBox(QWidget *parentToolBox = 0);
+    medRegistrationAbstractToolBox(QWidget *parentToolBox = nullptr);
     virtual ~medRegistrationAbstractToolBox();
 
     virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
+
+    virtual dtkPlugin* plugin() = 0;
 
 protected:
     medRegistrationSelectorToolBox *parentToolBox();

@@ -77,8 +77,9 @@ itkProcessRegistration::itkProcessRegistration() : medAbstractRegistrationProces
     d->fixedImageType = itkProcessRegistration::FLOAT;
     d->movingImageType = itkProcessRegistration::FLOAT;
     QStringList types;
-    types << "rigid" << "nonRigid";
-    this->addProperty("transformType",types);
+
+    types << "text" << "notText";
+    this->addProperty("outputFileType",types);
     this->addMetaData("category","registration");
 }
 

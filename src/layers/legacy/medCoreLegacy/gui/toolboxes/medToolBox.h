@@ -16,7 +16,10 @@
 #include <QtGui>
 #include <QtWidgets>
 
+#include <medAbstractWorkspaceLegacy.h>
 #include <medCoreLegacyExport.h>
+#include <medJobItemL.h>
+#include <medProgressionStack.h>
 
 class dtkAbstractView;
 class medAbstractData;
@@ -61,6 +64,15 @@ public:
     virtual QString description() const {return QString();}
     virtual QStringList categories() const {return QStringList();}
 
+    virtual void setWorkspace(medAbstractWorkspaceLegacy* workspace);
+    medAbstractWorkspaceLegacy* getWorkspace();
+
+    //! Display a qDebug and a medMessageController
+    void displayMessageError(QString error);
+
+    //! Get back progress bar from workspace
+    medProgressionStack *getProgressionStack();
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.
@@ -98,6 +110,24 @@ public slots:
     const QStringList ValidDataTypes();
     void addValidDataType(const QString & dataType);
     void show();
+
+    //! Switch between errors
+    void handleDisplayError(int);
+
+    //! Deactivate toolbox
+    void setToolBoxOnWaitStatus();
+
+    //! Deactivate toolbox in function non using medRunnableProcess
+    void setToolBoxOnWaitStatusForNonRunnableProcess();
+
+    //! Enable toolbox
+    void setToolBoxOnReadyToUse();
+
+    //! Add default connection and start a process
+    void addConnectionsAndStartJob(medJobItemL *job);
+
+    //! Default connections between a toolbox and a process (success, failure, etc)
+    void addToolBoxConnections(medJobItemL *job);
 
 protected slots:
     void onAboutButtonClicked();

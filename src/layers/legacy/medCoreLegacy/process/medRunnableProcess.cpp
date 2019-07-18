@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include "medAbstractProcessLegacy.h"
+
 #include <medRunnableProcess.h>
 
 #include <dtkCoreSupport/dtkAbstractProcess.h>
@@ -52,11 +54,19 @@ dtkAbstractProcess * medRunnableProcess::getProcess()
 
 void medRunnableProcess::internalRun()
 {
-    if (d->process) {
-        if (d->process->update() == 0)
+    if (d->process)
+    {
+        int res = d->process->update();
+
+        if (res == medAbstractProcessLegacy::SUCCESS)
+        {
             emit success (this);
+        }
         else
+        {
             emit failure (this);
+            emit failure (res);
+        }
     }
 }
 

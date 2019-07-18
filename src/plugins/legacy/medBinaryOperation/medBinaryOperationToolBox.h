@@ -60,6 +60,7 @@ protected slots:
     virtual void onDropSiteClicked();
 
     virtual void clearDropsite();
+
     void onXorButtonToggled(bool value);
     void onAndButtonToggled(bool value);
     void onOrButtonToggled(bool value);

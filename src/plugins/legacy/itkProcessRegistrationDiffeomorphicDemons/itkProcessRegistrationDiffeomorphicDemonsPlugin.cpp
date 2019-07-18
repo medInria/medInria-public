@@ -11,54 +11,37 @@
 
 =========================================================================*/
 
-#include <itkProcessRegistrationDiffeomorphicDemons.h>
-#include <itkProcessRegistrationDiffeomorphicDemonsPlugin.h>
-#include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
-
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// itkProcessRegistrationDiffeomorphicDemonsPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class itkProcessRegistrationDiffeomorphicDemonsPluginPrivate
-{
-public:
-    // Class variables go here.
-};
+#include "itkProcessRegistrationDiffeomorphicDemons.h"
+#include "itkProcessRegistrationDiffeomorphicDemonsPlugin.h"
+#include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsPlugin
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistrationDiffeomorphicDemonsPlugin::itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent) : dtkPlugin(parent), d(new itkProcessRegistrationDiffeomorphicDemonsPluginPrivate)
+itkProcessRegistrationDiffeomorphicDemonsPlugin::itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent):
+    medPluginLegacy(parent)
 {
-
-}
-
-itkProcessRegistrationDiffeomorphicDemonsPlugin::~itkProcessRegistrationDiffeomorphicDemonsPlugin()
-{
-    delete d;
-
-    d = NULL;
 }
 
 bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize()
 {
-    if (!itkProcessRegistrationDiffeomorphicDemons::registered())        { dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons type";    }
-    if (!itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()) { dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons toolbox"; }
+    if (!itkProcessRegistrationDiffeomorphicDemons::registered())
+    {
+        dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons type";
+    }
 
-    return true;
-}
+    if (!itkProcessRegistrationDiffeomorphicDemonsToolBox::registered())
+    {
+        dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons toolbox";
+    }
 
-bool itkProcessRegistrationDiffeomorphicDemonsPlugin::uninitialize()
-{
     return true;
 }
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name() const
 {
-    return "itkProcessRegistrationDiffeomorphicDemonsPlugin";
+    return "Diffeomorphic Demons";
 }
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::contact() const
@@ -85,29 +68,13 @@ QString itkProcessRegistrationDiffeomorphicDemonsPlugin::description() const
     return tr("Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>");
 }
 
-
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::version() const
 {
     return ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_VERSION;
 }
 
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::dependencies() const
-{
-    return QStringList();
-}
-
-
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::tags() const
-{
-    return QStringList();
-}
-
-
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::types() const
 {
     return QStringList() << "itkProcessRegistrationDiffeomorphicDemons";
 }
-
-//Q_EXPORT_PLUGIN2(itkProcessRegistrationDiffeomorphicDemonsPlugin, itkProcessRegistrationDiffeomorphicDemonsPlugin)
-
 

@@ -49,4 +49,3 @@ protected:
     dtkSmartPointer <medAbstractData> m_inputB;
     dtkSmartPointer <medAbstractData> m_output;
 };
-

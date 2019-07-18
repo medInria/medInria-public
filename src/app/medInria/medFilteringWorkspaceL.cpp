@@ -36,11 +36,11 @@ public:
     medViewContainer *inputContainer;
     medViewContainer *outputContainer;
 
-
     medAbstractData *filterOutput;
 };
 
-medFilteringWorkspaceL::medFilteringWorkspaceL(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medFilteringWorkspaceLPrivate)
+medFilteringWorkspaceL::medFilteringWorkspaceL(QWidget *parent) :
+    medAbstractWorkspaceLegacy(parent), d(new medFilteringWorkspaceLPrivate)
 {
     d->filteringToolBox = new medFilteringSelectorToolBox(parent);
     connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
