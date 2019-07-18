@@ -748,7 +748,7 @@ void medVtkFibersDataInteractor::switchMinMaxRangeSource(QString mode)
     vtkPolyData *fibersData = d->dataset->GetFibers();
     unsigned int numArrays = fibersData->GetPointData()->GetNumberOfArrays();
 
-    for (int i = 0; i < numArrays; i++)
+    for (unsigned int i = 0; i < numArrays; i++)
     {
         if (fibersData->GetPointData()->GetArrayName(i) == mode)
         {

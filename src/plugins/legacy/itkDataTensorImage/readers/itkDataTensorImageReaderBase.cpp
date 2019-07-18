@@ -160,7 +160,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 
 	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
 	    
-	    VectorImageType::Pointer image = 0;
+	    VectorImageType::Pointer image = nullptr;
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);
@@ -223,7 +223,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 
 	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
 	    
-	    VectorImageType::Pointer image = 0;
+	    VectorImageType::Pointer image = nullptr;
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);
@@ -293,7 +293,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 
 	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
 	    
-	    VectorImageType::Pointer image = 0;
+	    VectorImageType::Pointer image = nullptr;
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);
@@ -355,7 +355,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 
 	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
 	    
-	    VectorImageType::Pointer image = 0;
+	    VectorImageType::Pointer image = nullptr;
 	    {
 	      ReaderType::Pointer reader = ReaderType::New();
 	      reader->SetImageIO (this->io);

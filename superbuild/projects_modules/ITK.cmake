@@ -42,7 +42,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v4.13.2)
+set(git_tag v5.0.0)
 
 
 ## #############################################################################
@@ -57,7 +57,7 @@ endif()
 
 set(cmake_args
   ${ep_common_cache_args}
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_thirdparts}
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_MACOSX_RPATH:BOOL=OFF
@@ -69,6 +69,7 @@ set(cmake_args
   -DModule_ITKIOPhilipsREC:BOOL=ON
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
+  -DITK_LEGACY_REMOVE:BOOL=ON
   -DVTK_DIR:PATH=${VTK_DIR}
   )
 
@@ -82,8 +83,15 @@ ep_GeneratePatchCommand(ITK ITK_PATCH_COMMAND ITK_Mac.patch)
 ## Add external-project
 ## #############################################################################
 
+epComputPath(${ep})
+
 ExternalProject_Add(${ep}
-  PREFIX ${EP_PREFIX_thirdparts}
+  PREFIX ${EP_PATH_SOURCE}
+  SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+  BINARY_DIR ${build_path}
+  TMP_DIR ${tmp_path}
+  STAMP_DIR ${stamp_path}
+  
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   PATCH_COMMAND ${ITK_PATCH_COMMAND}

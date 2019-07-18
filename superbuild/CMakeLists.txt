@@ -30,7 +30,6 @@ find_package(Qt5 REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED)
 
-
 ## #############################################################################
 ## Add exteral projects
 ## #############################################################################
@@ -79,18 +78,9 @@ endif()
 ## #############################################################################
 
 unset(CMAKE_BUILD_TYPE CACHE)
-set(CMAKE_BUILD_TYPE_thirdparts Release CACHE STRING "Build type configuration for third parts libraries.")
+set(CMAKE_BUILD_TYPE_externals_projects Release CACHE STRING "Build type configuration for externals projects libraries.")
 set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration specific to medInria.")
 
-
-## #############################################################################
-## Third parts prefix
-## #############################################################################
-
-set(EP_PREFIX_thirdparts 
-  ${CMAKE_SOURCE_DIR}/thirdparts CACHE STRING 
-  "Prefix path where to download and build third parts libraries."
-  )
 
 ## #############################################################################
 ## medInria dirs.
@@ -106,14 +96,9 @@ set(medInria_STAMP_DIR ${CMAKE_BINARY_DIR}/medInria-stamp)
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/environment
-  ${CMAKE_CURRENT_SOURCE_DIR}/configuration_steps
+  ${CMAKE_CURRENT_SOURCE_DIR}/external_projects_tools
   ${CMAKE_MODULE_PATH}
     )
-
-set(GET_REVISIONS_MODULE_PATH
-  ${CMAKE_CURRENT_SOURCE_DIR}/get_revisions
-  )
 
 option(USE_GITHUB_SSH 
   "Use by default Git SSH addresses, requires public key set on github" OFF
@@ -145,13 +130,6 @@ file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
   "set(Qt5_DIR ${Qt5_DIR})\n\n"
   )
 
-# Add path of the get_revisions module to superProjectConfig.cmake
-file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
-  "set(GET_REVISIONS_MODULE_PATH 
-    ${GET_REVISIONS_MODULE_PATH}
-    )\n\n"
-  ) 
-
 set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/projects_modules
   ${CMAKE_SOURCE_DIR}/packaging
@@ -173,15 +151,12 @@ set(global_targets
 # This adds targets that will be run in each external-projects
 set_property(DIRECTORY PROPERTY EP_STEP_TARGETS ${global_targets})
 
-# foreach (target ${global_targets})
-#   add_custom_target(${target})
-# endforeach()
 
 ## #############################################################################
 ## Check build environment
 ## #############################################################################
 
-include(CheckEnvironment)
+include(EP_CheckEnvironment)
 
 ## #############################################################################
 ## Configure external-projects

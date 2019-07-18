@@ -13,9 +13,10 @@
 
 #pragma once
 
+#include "vtkDataMeshPluginExport.h"
+
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
 
-#include <vtkDataMeshPluginExport.h>
 class vtkDataManagerWriter;
 
 

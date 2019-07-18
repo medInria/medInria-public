@@ -15,7 +15,7 @@
 
 #include <dtkCoreSupport/dtkPlugin.h>
 
-#include <vtkDataMeshPluginExport.h>
+#include "vtkDataMeshPluginExport.h"
 
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPluginPrivate;
 

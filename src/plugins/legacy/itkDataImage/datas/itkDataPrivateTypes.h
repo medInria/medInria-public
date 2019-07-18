@@ -20,7 +20,7 @@ template <unsigned DIM,typename T>
 struct itkDataImagePrivateTypeBase {
     typedef typename itk::Image<T,DIM> ImageType;
 
-    itkDataImagePrivateTypeBase(): image(0) { }
+    itkDataImagePrivateTypeBase(): image(nullptr) { }
 
     typename ImageType::Pointer image;
     QList<QImage>               thumbnails;
@@ -54,7 +54,7 @@ public:
     typedef typename itk::Statistics::ScalarImageToHistogramGenerator<ImageType> HistogramGeneratorType;
     typedef typename HistogramGeneratorType::HistogramType                       HistogramType;
 
-    itkDataScalarImagePrivateType(): histogram(0),range_min(0),range_max(0),histogram_min(0),histogram_max(0) {
+    itkDataScalarImagePrivateType(): histogram(nullptr),range_min(0),range_max(0),histogram_min(0),histogram_max(0) {
         reset();
     }
 
