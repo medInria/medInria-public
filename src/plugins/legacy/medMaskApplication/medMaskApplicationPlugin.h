@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,33 +14,22 @@
 #pragma once
 
 #include <dtkCoreSupport/dtkPlugin.h>
+#include "medMaskApplicationPluginExport.h"
 
-#include "vtkDataMeshPluginExport.h"
-
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPluginPrivate;
-
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPlugin : public dtkPlugin
+class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationPlugin : public dtkPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "fr.inria.vtkDataMeshPlugin" FILE "vtkDataMeshPlugin.json")
+    Q_PLUGIN_METADATA(IID "fr.inria.medMaskApplicationPlugin" FILE "medMaskApplicationPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:
-     vtkDataMeshPlugin(QObject *parent = 0);
-    ~vtkDataMeshPlugin();
-
+    medMaskApplicationPlugin(QObject *parent = 0);
     virtual bool initialize();
-    virtual bool uninitialize();
+    virtual bool uninitialize(void);
 
-    virtual QString name() const;
     virtual QString description() const;
+    virtual QString name() const;
     virtual QString version() const;
-
-    virtual QStringList tags() const;
     virtual QStringList types() const;
-
-private:
-     vtkDataMeshPluginPrivate *d;
+    virtual QStringList tags(void) const;
 };
-
-

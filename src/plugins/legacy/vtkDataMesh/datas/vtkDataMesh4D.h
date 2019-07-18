@@ -13,10 +13,10 @@
 
 #pragma once
 
+#include "vtkDataMeshPluginExport.h"
+
 #include <medAbstractMeshData.h>
 #include <dtkCoreSupport/dtkGlobal.h>
-
-#include <vtkDataMeshPluginExport.h>
 
 class vtkDataMesh4DPrivate;
 

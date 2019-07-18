@@ -70,8 +70,10 @@ void medPluginManager::readSettings(void)
     QString defaultPath;
 #ifdef Q_OS_MAC
     plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
-#else
+#elif defined(Q_OS_WIN)
     plugins_dir = qApp->applicationDirPath() + "/../plugins_legacy";
+#else
+    plugins_dir = qApp->applicationDirPath() + "/plugins_legacy";
 #endif
     defaultPath = plugins_dir.absolutePath();
 
@@ -79,15 +81,20 @@ void medPluginManager::readSettings(void)
     QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
 
     if ( !pluginVarArray.isEmpty() )
+    {
         setPath( QString(pluginVarArray.constData()));
+    }
     else
+    {
         setPath(defaultPath);
+    }
 
-    if(path().isEmpty())
+    if(!QDir(path()).exists())
     {
         qWarning() << "Your config does not seem to be set correctly.";
-        qWarning() << "Please set plugins.path.";
+        qWarning() << "Please set "                  << QString(PLUGIN_PATH_VAR_NAME);
         qWarning() << "Default directory would be: " << defaultPath;
+        qWarning() << "Actual directory is: "        << path();
     }
 }
 

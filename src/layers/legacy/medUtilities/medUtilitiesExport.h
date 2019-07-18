@@ -11,16 +11,13 @@
 
 =========================================================================*/
 
-#pragma once
-
 #ifdef WIN32
-    #ifdef %1Plugin_EXPORTS
-        #define %2PLUGIN_EXPORT __declspec(dllexport) 
+    #ifdef medUtilities_EXPORTS
+        #define MEDUTILITIES_EXPORT __declspec(dllexport) 
     #else
-        #define %2PLUGIN_EXPORT __declspec(dllimport) 
+        #define MEDUTILITIES_EXPORT __declspec(dllimport) 
     #endif
 #else
-    #define %2PLUGIN_EXPORT
+    #define MEDUTILITIES_EXPORT	
 #endif
-
 
