@@ -173,7 +173,7 @@ void medBinaryOperationToolBox::run()
         d->process->setInput(this->parentToolBox()->data(), 0);
         d->process->setInput(d->secondInput, 1);
 
-        medRunnableProcess* runProcess = new medRunnableProcess;
+        medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
         this->addConnectionsAndStartJob(runProcess);
     }

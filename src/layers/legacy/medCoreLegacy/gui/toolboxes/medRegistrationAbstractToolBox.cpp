@@ -22,14 +22,14 @@ public:
 
 medRegistrationAbstractToolBox::medRegistrationAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationAbstractToolBoxPrivate)
 {
-    d->parent = NULL;
+    d->parent = nullptr;
 }
 
 medRegistrationAbstractToolBox::~medRegistrationAbstractToolBox(void)
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 void medRegistrationAbstractToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox)
