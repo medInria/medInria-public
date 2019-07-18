@@ -13,14 +13,21 @@
 
 #pragma once
 
-#ifdef WIN32
-    #ifdef medMaskApplicationPlugin_EXPORTS
-        #define MEDMASKAPPLICATIONPLUGIN_EXPORT __declspec(dllexport) 
-    #else
-        #define MEDMASKAPPLICATIONPLUGIN_EXPORT __declspec(dllimport) 
-    #endif
-#else
-    #define MEDMASKAPPLICATIONPLUGIN_EXPORT
-#endif
+#include "medBinaryOperatorBase.h"
+#include "medBinaryOperationPluginExport.h"
+
+class itkOrOperatorPrivate;
+
+class MEDBINARYOPERATIONPLUGIN_EXPORT itkOrOperator : public medBinaryOperatorBase
+{
+    Q_OBJECT
+    
+public:
+
+    virtual QString description() const;    
+    static bool registered();
+};
+
+dtkAbstractProcess *createitkOrOperator();
 
 

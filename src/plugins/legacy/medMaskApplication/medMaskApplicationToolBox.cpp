@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,22 +14,13 @@
 #include "medMaskApplication.h"
 #include "medMaskApplicationToolBox.h"
 
-#include <QtGui>
-
-#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-#include <dtkCoreSupport/dtkAbstractProcess.h>
-#include <dtkCoreSupport/dtkAbstractViewFactory.h>
-#include <dtkCoreSupport/dtkAbstractViewInteractor.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
-#include <medAbstractImageData.h>
-#include <medAbstractView.h>
 #include <medDataManager.h>
 #include <medDropSite.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medJobManagerL.h>
 #include <medMessageController.h>
-#include <medMetaDataKeys.h>
 #include <medPluginManager.h>
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
@@ -117,11 +108,11 @@ void medMaskApplicationToolBox::run()
     {
         if(!d->process)
         {
-            d->process= new medMaskApplication;
+            d->process = new medMaskApplication;
         }
         d->process->setInput(d->mask, 0);
         d->process->setInput(this->parentToolBox()->data(), 1);
-        d->process->setParameter(d->backgroundSpinBox->value(), 0);
+        d->process->setParameter(d->backgroundSpinBox->value());
 
         medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
@@ -157,5 +148,5 @@ void medMaskApplicationToolBox::clearMask(void)
     {
         d->process->clearInput(0);
     }
-    d->mask = 0;
+    d->mask = nullptr;
 }

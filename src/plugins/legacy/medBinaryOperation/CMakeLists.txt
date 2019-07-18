@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME medMaskApplicationPlugin)
+set(TARGET_NAME medBinaryOperationPlugin)
 
 ## #############################################################################
 ## Setup version numbering
@@ -69,6 +69,8 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
+  dtkCore
+  dtkLog
   ITKCommon
   medCore
   medUtilities

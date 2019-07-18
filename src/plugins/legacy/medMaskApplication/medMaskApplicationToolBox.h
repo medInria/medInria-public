@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -15,8 +15,6 @@
 
 #include "medMaskApplicationPluginExport.h"
 
-#include <medAbstractDataFactory.h>
-#include <medDataManager.h>
 #include <medFilteringAbstractToolBox.h>
 
 class medMaskApplicationToolBoxPrivate;

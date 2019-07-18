@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -15,7 +15,7 @@
 #include "medMaskApplicationPlugin.h"
 #include "medMaskApplicationToolBox.h"
 
-medMaskApplicationPlugin::medMaskApplicationPlugin(QObject *parent) : dtkPlugin(parent)
+medMaskApplicationPlugin::medMaskApplicationPlugin(QObject *parent) : medPluginLegacy(parent)
 {
 }
 
@@ -61,9 +61,4 @@ QString medMaskApplicationPlugin::version() const
 QStringList medMaskApplicationPlugin::types() const
 {
     return QStringList() << "medMaskApplication";
-}
-
-QStringList medMaskApplicationPlugin::tags() const
-{
-    return QStringList();
 }

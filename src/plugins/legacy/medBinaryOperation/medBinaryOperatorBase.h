@@ -13,46 +13,40 @@
 
 #pragma once
 
-#include "medMaskApplicationPluginExport.h"
+#include "medBinaryOperationPluginExport.h"
+
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractData.h>
 #include <medAbstractProcessLegacy.h>
 
-class medMaskApplicationPrivate;
+class medBinaryOperatorBasePrivate;
 
-class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplication : public medAbstractProcessLegacy
+class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperatorBase : public medAbstractProcessLegacy
 {
     Q_OBJECT
     
 public:
-    medMaskApplication();
-    virtual ~medMaskApplication();
-    
-    virtual QString description() const;
-    
-    static bool registered();
+    medBinaryOperatorBase();
+    virtual ~medBinaryOperatorBase();
 
-    template <typename IMAGE> int updateMaskType();
+    template <class ImageType> int run();
+    template <class ImageType, class ImageType2> int runProcess();
 
-    void clearInput(int channel);
-
-    void setParameter(double data);
-    
 public slots:
     
     //! Input data to the plugin is set through here
     void setInput(medAbstractData *data, int channel);
-    
+
     //! Method to actually start the filter
-    int update();
+    virtual int update();
     
     //! The output will be available through here
     medAbstractData *output();
-    
-private:
-    medMaskApplicationPrivate *d;
+
+protected:
+    dtkSmartPointer <medAbstractData> m_inputA;
+    dtkSmartPointer <medAbstractData> m_inputB;
+    dtkSmartPointer <medAbstractData> m_output;
 };
-
-dtkAbstractProcess *createMedMaskApplication();
-
 
