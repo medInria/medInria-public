@@ -100,7 +100,7 @@ medBinaryOperationToolBox::~medBinaryOperationToolBox()
     // clear ROIs and related GUI elements
     clearDropsite();
 
-    delete d;    
+    delete d;
 }
 
 bool medBinaryOperationToolBox::registered()

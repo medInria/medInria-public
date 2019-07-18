@@ -163,7 +163,7 @@ medAbstractJob::medJobExitStatus medItkDWIBasicThresholdingProcess::_run()
         {
             m_thresholdfilter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

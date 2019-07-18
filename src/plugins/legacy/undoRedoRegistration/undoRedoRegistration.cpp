@@ -39,7 +39,7 @@ QString undoRedoRegistration::description(void) const
 }
 
 bool undoRedoRegistration::writeTransform(const QString& file){return false;}
-itk::Transform<double,3,3>::Pointer undoRedoRegistration::getTransform(){return NULL;}
+itk::Transform<double,3,3>::Pointer undoRedoRegistration::getTransform(){return nullptr;}
 QString undoRedoRegistration::getTitleAndParameters(){return QString();}
 
 void undoRedoRegistration::undo()

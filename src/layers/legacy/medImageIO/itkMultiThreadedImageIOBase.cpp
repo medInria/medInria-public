@@ -22,8 +22,8 @@ namespace itk
   MultiThreadedImageIOBase::MultiThreadedImageIOBase() :
     m_NumberOfThreads(0)
   {
-    m_MultiThreader = MultiThreader::New();
-    this->SetNumberOfThreads ( m_MultiThreader->GetNumberOfThreads() );
+    m_MultiThreaderBase = MultiThreaderBase::New();
+    this->SetNumberOfThreads ( m_MultiThreaderBase->GetNumberOfWorkUnits() );
   }
 
   
@@ -74,12 +74,12 @@ namespace itk
     str.Reader = this;
     str.Buffer = buffer;
     
-    this->GetMultiThreader()->SetNumberOfThreads( this->GetNumberOfThreads() );
-    this->GetMultiThreader()->SetSingleMethod   ( this->ThreaderCallback, &str );
+    this->GetMultiThreaderBase()->SetNumberOfWorkUnits( this->GetNumberOfThreads() );
+    this->GetMultiThreaderBase()->SetSingleMethod   ( this->ThreaderCallback, &str );
 
-    itkDebugMacro (<< "Executing with " << this->GetMultiThreader()->GetNumberOfThreads() << " threads.\n");
+    itkDebugMacro (<< "Executing with " << this->GetMultiThreaderBase()->GetNumberOfWorkUnits() << " threads.\n");
     // multithread the execution
-    this->GetMultiThreader()->SingleMethodExecute();
+    this->GetMultiThreaderBase()->SingleMethodExecute();
   }
   
 
@@ -110,10 +110,10 @@ namespace itk
     ThreadStruct *str;
     int total, threadId, threadCount;
     
-    threadId    = ((MultiThreader::ThreadInfoStruct *)(arg))->ThreadID;
-    threadCount = ((MultiThreader::ThreadInfoStruct *)(arg))->NumberOfThreads;
+    threadId    = ((MultiThreaderBase::WorkUnitInfo *)(arg))->WorkUnitID;
+    threadCount = ((MultiThreaderBase::WorkUnitInfo *)(arg))->NumberOfWorkUnits;
 	  
-    str = (ThreadStruct *)(((MultiThreader::ThreadInfoStruct *)(arg))->UserData);
+    str = (ThreadStruct *)(((MultiThreaderBase::WorkUnitInfo *)(arg))->UserData);
     
     RegionType region;
     total = str->Reader->SplitRequestedRegion (threadId, threadCount, region);
@@ -129,7 +129,7 @@ namespace itk
     //   few threads idle.
     //   }
     
-    return ITK_THREAD_RETURN_VALUE;
+    return ITK_THREAD_RETURN_DEFAULT_VALUE;
   }
   
   

@@ -22,11 +22,11 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 # find itk
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
 # find vtk
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore)
 include(${VTK_USE_FILE})
 
 

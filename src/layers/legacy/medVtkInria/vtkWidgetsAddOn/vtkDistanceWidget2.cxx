@@ -151,7 +151,7 @@ void vtkDistanceWidget2::OnMouseMove()
 
   // Interact, if desired
   this->EventCallbackCommand->SetAbortFlag(1);
-  this->InvokeEvent(vtkCommand::InteractionEvent,NULL);
+  this->InvokeEvent(vtkCommand::InteractionEvent,nullptr);
 
   double pt1[3], pt2[3], pt[3];
   this->GetPoint1(pt1);
@@ -163,7 +163,7 @@ void vtkDistanceWidget2::OnMouseMove()
   double distance = std::sqrt (pt[0]*pt[0] +pt[1]*pt[1] + pt[2]*pt[2]);
   
   char buffer[32];
-  sprintf(buffer,
+  snprintf(buffer, 32,
 	  "distance: %g mm",
 	  distance);
   this->Caption->SetCaption (buffer);

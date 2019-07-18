@@ -518,7 +518,8 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers* tab
         d->leftContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
         d->rightContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
         d->bottomContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-        d->currentView = 0; // we dont need it anymore.
+
+        d->currentView = nullptr; // we dont need it anymore.
 
         synchroniseMovingFuseView();
     }

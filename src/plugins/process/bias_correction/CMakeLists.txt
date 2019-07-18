@@ -17,7 +17,7 @@ set(TARGET_NAME medItkBiasCorrectionProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(ITK)
+find_package(ITK REQUIRED COMPONENTS ITKBiasCorrection ITKKLMRegionGrowing ITKMathematicalMorphology)
 include(${ITK_USE_FILE})
 
 ## #############################################################################
