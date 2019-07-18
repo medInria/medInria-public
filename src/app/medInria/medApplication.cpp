@@ -136,8 +136,8 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
-	viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
-	viewerWSpaceFactory->registerWorkspace<medFilteringWorkspaceL>();
+    viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
+    viewerWSpaceFactory->registerWorkspace<medFilteringWorkspaceL>();
     viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
 
     bool genericWorkpace = medSettingsManager::instance()->value("startup", "genericWorkspace", false).toBool();

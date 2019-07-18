@@ -30,10 +30,10 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta )
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED COMPONENTS vtkCommonExecutionModel vtkRenderingCore vtkInteractionWidgets)
 include(${VTK_USE_FILE})
 
 if (APPLE OR WIN32)
@@ -106,6 +106,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOGIPL
   ITKIOHDF5
   ITKIOJPEG
+  ITKIOJPEG2000
   ITKIOLSM
   ITKIOMRC
   ITKIOMeta

@@ -42,7 +42,7 @@ void medBinaryOperatorBase::setInput(medAbstractData *data, int channel)
     }
 
     if (channel == 1)
-    {        
+    {
         m_inputB = data;
     }
 }
@@ -110,7 +110,7 @@ template <class ImageType> int medBinaryOperatorBase::run()
     if (m_inputB)
     {
         QString id = m_inputB->identifier();
-        
+
         if ( id == "itkDataImageChar3" )
         {
             res = runProcess< ImageType, itk::Image <char,3> >();
@@ -187,7 +187,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     {
         imageB = dynamic_cast< ImageTypeOutput*>((itk::Object*)(m_inputB->data()));
     }
-    
+
     if (imageA->GetLargestPossibleRegion().GetSize() != imageB->GetLargestPossibleRegion().GetSize())
     {
         return medAbstractProcessLegacy::DATA_SIZE;
@@ -195,7 +195,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
 
     typedef itk::InPlaceImageFilter< ImageTypeOutput, ImageTypeOutput >  FilterType;
     typename FilterType::Pointer filter;
-    
+
     if(description() == "AND")
     {
         typedef itk::AndImageFilter <ImageTypeOutput, ImageTypeOutput, ImageTypeOutput> AndImageFilterType;

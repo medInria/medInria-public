@@ -54,7 +54,7 @@ endif()
 
 set(cmake_args
   ${ep_common_cache_args}
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_thirdparts}
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_MACOSX_RPATH:BOOL=OFF
@@ -81,8 +81,15 @@ endif()
 ## Add external-project
 ## #############################################################################
 
+epComputPath(${ep})
+
 ExternalProject_Add(${ep}
-  PREFIX ${EP_PREFIX_thirdparts}
+  PREFIX ${EP_PATH_SOURCE}
+  SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+  BINARY_DIR ${build_path}
+  TMP_DIR ${tmp_path}
+  STAMP_DIR ${stamp_path}
+  
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   CMAKE_GENERATOR ${gen}
@@ -101,7 +108,7 @@ ExternalProject_Add(${ep}
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
+
 endif() #NOT USE_SYSTEM_ep
 
-endfunction(VTK_project)
-
+endfunction()

@@ -31,7 +31,7 @@ medItkDivideProcess::medItkDivideProcess(QObject *parent)
     : medAbstractDivideFilterProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkDivideProcess::~medItkDivideProcess()
@@ -128,7 +128,7 @@ medAbstractJob::medJobExitStatus medItkDivideProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

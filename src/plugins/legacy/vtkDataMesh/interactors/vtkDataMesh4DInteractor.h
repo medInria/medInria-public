@@ -13,11 +13,13 @@
 
 #pragma once
 
+#include "vtkDataMeshPluginExport.h"
+
 #include <vtkDataMeshInteractor.h>
 
 class vtkDataMesh4DInteractorPrivate;
 
-class vtkDataMesh4DInteractor : public vtkDataMeshInteractor
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4DInteractor : public vtkDataMeshInteractor
 {
     Q_OBJECT
 

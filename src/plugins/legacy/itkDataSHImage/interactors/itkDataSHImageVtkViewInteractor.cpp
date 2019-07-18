@@ -13,8 +13,6 @@
 
 #include <itkDataSHImageVtkViewInteractor.h>
 
-#include <QVTKWidget.h>
-
 #include <vtkSphericalHarmonicManager.h>
 #include <vtkStructuredPoints.h>
 

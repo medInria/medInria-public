@@ -29,7 +29,7 @@ public:
     static bool registered();
 
     int update();
-    template <class ImageType> int run();
+    template <class ImageType> int run(medAbstractData* inputData);
 
 public slots:
     
