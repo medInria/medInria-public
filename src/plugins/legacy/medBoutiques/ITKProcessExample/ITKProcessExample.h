@@ -40,7 +40,7 @@ public slots:
     int update();
     dtkAbstractData *output();
 
-    //bool write(QString file);
+    // bool write(QString file);
 
 private:
     ITKProcessExamplePrivate *d;
