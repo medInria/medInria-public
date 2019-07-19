@@ -63,7 +63,7 @@ public slots:
     void onJobAdded(medJobItemL* item, QString jobName);
 
 private:
-    void setUndoRedoProcessInputs();
+    bool setUndoRedoProcessInputs();
     medRegistrationSelectorToolBoxPrivate *d;
 };
 
