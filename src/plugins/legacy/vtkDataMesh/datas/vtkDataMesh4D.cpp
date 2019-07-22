@@ -30,7 +30,6 @@
 #include <vtkWindowToImageFilter.h>
 
 #include <QApplication>
-#include <QVTKWidget.h>
 
 class vtkDataMesh4DPrivate
 {

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,16 +11,12 @@
 
 =========================================================================*/
 
-#pragma once
-
 #ifdef WIN32
-    #ifdef %1Plugin_EXPORTS
-        #define %2PLUGIN_EXPORT __declspec(dllexport) 
+    #ifdef medVtkDataMeshBase_EXPORTS
+        #define MEDVTKDATAMESHBASE_EXPORT __declspec(dllexport) 
     #else
-        #define %2PLUGIN_EXPORT __declspec(dllimport) 
+        #define MEDVTKDATAMESHBASE_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define %2PLUGIN_EXPORT
+    #define MEDVTKDATAMESHBASE_EXPORT
 #endif
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -100,7 +100,7 @@ medBinaryOperationToolBox::~medBinaryOperationToolBox()
     // clear ROIs and related GUI elements
     clearDropsite();
 
-    delete d;    
+    delete d;
 }
 
 bool medBinaryOperationToolBox::registered()
@@ -173,7 +173,7 @@ void medBinaryOperationToolBox::run()
         d->process->setInput(this->parentToolBox()->data(), 0);
         d->process->setInput(d->secondInput, 1);
 
-        medRunnableProcess* runProcess = new medRunnableProcess;
+        medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess (d->process);
         this->addConnectionsAndStartJob(runProcess);
     }

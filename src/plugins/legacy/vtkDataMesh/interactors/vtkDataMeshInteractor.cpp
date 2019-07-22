@@ -13,8 +13,6 @@
 
 #include <vtkDataMeshInteractor.h>
 
-#include <QVTKWidget.h>
-
 #include <vtkCamera.h>
 #include <vtkActor.h>
 #include <vtkDataSetSurfaceFilter.h>

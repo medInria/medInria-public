@@ -38,7 +38,7 @@ public:
     bool isContextVisible;
     bool aboutPluginVisibility;
     dtkPlugin* plugin;
-    medAbstractWorkspaceLegacy* workspace;
+    medAbstractWorkspaceLegacy *workspace;
 
 public:
     QVBoxLayout *layout;
@@ -52,7 +52,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->body = new medToolBoxBody(this);
     d->isContextVisible = false;
     d->aboutPluginVisibility = false;
-    d->plugin= NULL;
+    d->plugin = nullptr;
 
 
     d->layout = new QVBoxLayout(this);
@@ -69,7 +69,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
 medToolBox::~medToolBox(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -305,7 +305,7 @@ medAbstractWorkspaceLegacy* medToolBox::getWorkspace()
     return d->workspace;
 }
 
-void medToolBox::setWorkspace(medAbstractWorkspaceLegacy* workspace)
+void medToolBox::setWorkspace(medAbstractWorkspaceLegacy *workspace)
 {
     d->workspace = workspace;
 }
@@ -390,7 +390,7 @@ medProgressionStack* medToolBox::getProgressionStack()
     return getWorkspace()->getProgressionStack();
 }
 
-void medToolBox::addConnectionsAndStartJob(medJobItemL* job)
+void medToolBox::addConnectionsAndStartJob(medJobItemL *job)
 {
     addToolBoxConnections(job);
 
@@ -400,7 +400,7 @@ void medToolBox::addConnectionsAndStartJob(medJobItemL* job)
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(job));
 }
 
-void medToolBox::addToolBoxConnections(medJobItemL* job)
+void medToolBox::addToolBoxConnections(medJobItemL *job)
 {
     connect (job, SIGNAL (success   (QObject*)),    this, SIGNAL (success ()));
     connect (job, SIGNAL (failure   (QObject*)),    this, SIGNAL (failure ()));

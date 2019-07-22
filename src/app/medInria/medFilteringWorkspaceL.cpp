@@ -57,7 +57,7 @@ medFilteringWorkspaceL::medFilteringWorkspaceL(QWidget *parent) :
 medFilteringWorkspaceL::~medFilteringWorkspaceL()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**

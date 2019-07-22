@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include <medAbstractMeshData.h>
+#include "vtkDataMeshPluginExport.h"
 
-#include <vtkDataMeshPluginExport.h>
+#include <medAbstractMeshData.h>
 
 class vtkDataMesh4DPrivate;
 

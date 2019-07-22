@@ -18,9 +18,6 @@
 
 #include <medCoreLegacyExport.h>
 
-class medAbstractProcessLegacyPrivate;
-
-
 /**
  * Extending dtkAbstractProcess class to hold more specific information
  */
@@ -29,8 +26,9 @@ class MEDCORELEGACY_EXPORT medAbstractProcessLegacy : public dtkAbstractProcess
     Q_OBJECT
 
 public:
-    medAbstractProcessLegacy( medAbstractProcessLegacy * parent = NULL );
+    medAbstractProcessLegacy( medAbstractProcessLegacy * parent = nullptr );
     virtual ~medAbstractProcessLegacy();
+    virtual void setInput ( medAbstractData *data, int channel = 0 ){}
 
     enum DataError
     {
@@ -61,17 +59,12 @@ private:
     using dtkAbstractProcess::onCanceled;
     using dtkAbstractProcess::read;
     using dtkAbstractProcess::write;
-    using dtkAbstractProcess::setParameter;
     using dtkAbstractProcess::setInput;
     using dtkAbstractProcess::setData;
     //TODO rename our output methode
     //using dtkAbstractProcess::output;
     using dtkAbstractProcess::data;
     using dtkAbstractProcess::channelCount;
-
-private:
-    medAbstractProcessLegacyPrivate* d;
-
 };
 
 

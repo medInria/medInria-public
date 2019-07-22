@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013 - 2014. All rights reserved.
+# Copyright (c) INRIA 2013 - 2019. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -22,8 +22,6 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 ## #############################################################################
@@ -71,10 +69,9 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
   ITKCommon
   medCore
+  medUtilities
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

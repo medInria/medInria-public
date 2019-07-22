@@ -27,7 +27,7 @@ medItkInvertProcess::medItkInvertProcess(QObject *parent)
     : medAbstractInvertFilterProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkInvertProcess::~medItkInvertProcess()
@@ -121,7 +121,7 @@ medAbstractJob::medJobExitStatus medItkInvertProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

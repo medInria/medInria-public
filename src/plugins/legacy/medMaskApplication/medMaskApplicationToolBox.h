@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -32,8 +32,8 @@ class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medFilt
 public:
     medMaskApplicationToolBox(QWidget *parent = 0);
     ~medMaskApplicationToolBox();
-    
-    medAbstractData *processOutput();
+
+    medAbstractData *processOutput() override;
     
     static bool registered();
     dtkPlugin * plugin();

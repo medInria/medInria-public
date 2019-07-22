@@ -13,12 +13,11 @@
 
 #pragma once
 
+#include "vtkDataMeshPluginExport.h"
+
 #include <medAbstractImageViewInteractor.h>
 
 #include <vtkPointSet.h>
-
-#include <vtkDataMeshPluginExport.h>
-
 
 class vtkDataMeshInteractorPrivate;
 

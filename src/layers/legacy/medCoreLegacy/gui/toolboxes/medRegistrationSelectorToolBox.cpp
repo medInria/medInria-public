@@ -414,20 +414,16 @@ void medRegistrationSelectorToolBox::onJobAdded(medJobItemL* item, QString jobNa
 bool medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
-    setUndoRedoProcessInputs();
+    return setUndoRedoProcessInputs();
 }
 
 bool medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
-    setUndoRedoProcessInputs();
+    return setUndoRedoProcessInputs();
 }
 
-void medRegistrationSelectorToolBox::setUndoRedoProcessInputs()
+bool medRegistrationSelectorToolBox::setUndoRedoProcessInputs()
 {
-    if(d->undoRedoProcess)
-    {
-        d->undoRedoProcess->setFixedInput(d->fixedData);
-        d->undoRedoProcess->setMovingInput(d->movingData);
-    }
+    return d->undoRedoProcess && d->undoRedoProcess->setFixedInput(d->fixedData) && d->undoRedoProcess->setMovingInput(d->movingData);
 }

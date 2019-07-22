@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,14 +12,18 @@
 
 =========================================================================*/
 
-#pragma once
+#include <medVtkDataMeshBaseExport.h>
 
-#include <vtkDataObject.h>
-#include <medVtkInriaExport.h>
-#include <string>
-#include <vector>
+#include <itkMetaDataObject.h>
+#include <itkMetaDataDictionary.h>
 
 #include <QString>
+
+#include <vtkDataObject.h>
+#include <vtkDataSet.h>
+
+#include <string>
+#include <vector>
 
 #ifdef WIN32
     #ifndef NAN
@@ -27,11 +32,6 @@
     #endif
 #endif
 
-
-#include <vtkDataSet.h>
-
-#include <itkMetaDataObject.h>
-#include <itkMetaDataDictionary.h>
 /**
    \class vtkMetaDataSet vtkMetaDataSet.h "vtkMetaDataSet.h"
    \brief Abstract class for vtkDataset handling
@@ -52,7 +52,7 @@ class vtkPolyData;
 class vtkLookupTable;
 
 
-class MEDVTKINRIA_EXPORT vtkMetaDataSet: public vtkDataObject
+class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
 {
  public:
 

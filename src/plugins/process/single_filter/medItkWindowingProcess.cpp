@@ -29,7 +29,7 @@ medItkWindowingProcess::medItkWindowingProcess(QObject *parent)
     : medAbstractWindowingFilterProcess(parent)
 
 {
-    m_filter = NULL;
+    m_filter = nullptr;
 }
 
 medItkWindowingProcess::~medItkWindowingProcess()
@@ -134,7 +134,7 @@ medAbstractJob::medJobExitStatus medItkWindowingProcess::_run()
         {
             filter->Update();
         }
-        catch(itk::ProcessAborted &e)
+        catch(itk::ProcessAborted &)
         {
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }

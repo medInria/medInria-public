@@ -1,17 +1,16 @@
 #include "medUtilities.h"
 
-#include <QInputDialog>
-
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
-#include <medAbstractView.h>
 #include <medMetaDataKeys.h>
 #include <medStringListParameterL.h>
+#include <medVtkViewBackend.h>
 
-//#include <medVtkViewBackend.h>
-//#include <vtkImageView2D.h>
-//#include <vtkImageView3D.h>
-//#include <vtkMatrix4x4.h>
+#include <QLineEdit>
+#include <QInputDialog>
+
+#include <vtkImageView3D.h>
+#include <vtkMatrix4x4.h>
 
 void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData* original, QString derivationDescription, bool queryForDescription)
 {
@@ -105,7 +104,7 @@ void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
 
     QString generatedSOPInstanceID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
     data->setMetaData(medMetaDataKeys::SOPInstanceUID.key(), generatedSOPInstanceID);
-
+    
     QString generatedSeriesDicomID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
     data->setMetaData(medMetaDataKeys::SeriesDicomID.key(), generatedSeriesDicomID);
 }
@@ -113,7 +112,7 @@ void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
 void medUtilities::querySeriesDescription(medAbstractData* data)
 {
     QString currentDescription = data->metadata(medMetaDataKeys::SeriesDescription.key());
-    QString queriedDescription = QInputDialog::getText(NULL, "Series description", "Enter the name of the series :",
+    QString queriedDescription = QInputDialog::getText(nullptr, "Series description", "Enter the name of the series:",
                                                        QLineEdit::Normal, currentDescription);
     if (!queriedDescription.isEmpty())
     {
@@ -123,8 +122,7 @@ void medUtilities::querySeriesDescription(medAbstractData* data)
     data->setMetaData(medMetaDataKeys::SeriesDescription.key(), currentDescription);
 }
 
-//TODO: this needs to be moved at a place where medVtkViewBackend can be reached
-/*void medUtilities::applyOrientationMatrix(medAbstractView* view, double* inPoint, double* outPoint, bool withTranslation)
+void medUtilities::applyOrientationMatrix(medAbstractView* view, double* inPoint, double* outPoint, bool withTranslation)
 {
     double homogeneousVector[4];
     vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
@@ -144,7 +142,7 @@ void medUtilities::applyInverseOrientationMatrix(medAbstractView* view, double* 
     homogeneousVector[3] = withTranslation ? 1 : 0;
     view3D->GetInvertOrientationMatrix()->MultiplyPoint(homogeneousVector, homogeneousVector);
     std::copy(homogeneousVector, homogeneousVector + 3, outPoint);
-}*/
+}
 
 void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
 {

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -29,7 +29,7 @@ public:
     static bool registered();
 
     int update();
-    template <class ImageType> int run();
+    template <class ImageType> int run(medAbstractData* inputData);
 
 public slots:
     

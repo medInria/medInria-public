@@ -2,7 +2,7 @@
 
 medInria
 
-Copyright (c) INRIA 2013. All rights reserved.
+Copyright (c) INRIA 2013 - 2019. All rights reserved.
 See LICENSE.txt for details.
 
 This software is distributed WITHOUT ANY WARRANTY; without even
@@ -518,7 +518,8 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers* tab
         d->leftContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
         d->rightContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
         d->bottomContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-        d->currentView = 0; // we dont need it anymore.
+
+        d->currentView = nullptr; // we dont need it anymore.
 
         synchroniseMovingFuseView();
     }

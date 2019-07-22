@@ -14,7 +14,6 @@
 #include <vtkMetaDataSetSequence.h>
 #include "vtkObjectFactory.h"
 
-
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkMetaVolumeMesh.h>
@@ -36,9 +35,6 @@
 #include <vtkCellArray.h>
 #include <vtkDoubleArray.h>
 #include <vtkDataArrayCollection.h>
-
-#include <itkPhilipsRECImageIO.h>
-#include <itkPhilipsPAR.h>
 
 #include <sstream>
 #include <algorithm> // for sort algorithm

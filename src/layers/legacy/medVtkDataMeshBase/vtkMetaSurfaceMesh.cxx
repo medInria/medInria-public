@@ -17,7 +17,6 @@
 #include <vtkPolyData.h>
 #include <vtkPolyDataNormals.h>
 #include <vtkPolyDataMapper.h>
-// #include <vtkActor.h>
 #include <vtkProperty.h>
 #include <vtkCellData.h>
 #include <vtkCellArray.h>

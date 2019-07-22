@@ -30,6 +30,10 @@
 #include <sstream>
 #include <time.h>
 
+#ifdef WIN32
+#define snprintf sprintf_s
+#endif
+
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkDataManager );
 
@@ -55,7 +59,7 @@ vtkDataManager::~vtkDataManager()
 vtkMetaDataSet*vtkDataManager::GetMetaDataSet (unsigned int id) const
 {
     if (id >= this->MetaDataSetList.size())
-        return NULL;
+        return nullptr;
     return this->MetaDataSetList[id];
 }
 
@@ -65,7 +69,7 @@ vtkMetaDataSet*vtkDataManager::GetMetaDataSet (const char *name) const
     unsigned int id = 0;
 
     if (!this->IsNameInManager(name, id))
-        return NULL;
+        return nullptr;
 
     return this->MetaDataSetList[id];
 }
@@ -76,7 +80,7 @@ vtkMetaDataSet*vtkDataManager::GetMetaDataSetFromTag (const char *tag) const
     unsigned int id = 0;
 
     if (!this->IsTagInManager(tag, id))
-        return NULL;
+        return nullptr;
 
     return this->MetaDataSetList[id];
 }
@@ -138,7 +142,7 @@ void vtkDataManager::UpdateSequencesToTime (double time)
 {
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {
-        vtkMetaDataSetSequence *sequence = NULL;
+        vtkMetaDataSetSequence *sequence = nullptr;
         sequence = vtkMetaDataSetSequence::SafeDownCast(this->MetaDataSetList[i]);
         if (sequence)
         {
@@ -151,7 +155,7 @@ void vtkDataManager::UpdateSequencesToIndex (unsigned int id)
 {
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {
-        vtkMetaDataSetSequence *sequence = NULL;
+        vtkMetaDataSetSequence *sequence = nullptr;
         sequence = vtkMetaDataSetSequence::SafeDownCast(this->MetaDataSetList[i]);
         if (sequence)
         {
@@ -164,7 +168,7 @@ void vtkDataManager::UpdateSequencesMatchingTagToTime (const char *tag, double t
 {
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {
-        vtkMetaDataSetSequence *sequence = NULL;
+        vtkMetaDataSetSequence *sequence = nullptr;
         sequence = vtkMetaDataSetSequence::SafeDownCast(this->MetaDataSetList[i]);
         if (sequence && (strcmp (sequence->GetTag(), tag) == 0))
         {
@@ -178,7 +182,7 @@ double vtkDataManager::GetSequencesRangeMin()
     double min = 9999999;
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {
-        vtkMetaDataSetSequence *sequence = NULL;
+        vtkMetaDataSetSequence *sequence = nullptr;
         sequence = vtkMetaDataSetSequence::SafeDownCast(this->MetaDataSetList[i]);
         if (sequence)
         {
@@ -195,7 +199,7 @@ double vtkDataManager::GetSequencesRangeMax()
     double max = -9999999;
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {
-        vtkMetaDataSetSequence *sequence = NULL;
+        vtkMetaDataSetSequence *sequence = nullptr;
         sequence = vtkMetaDataSetSequence::SafeDownCast(this->MetaDataSetList[i]);
         if (sequence)
         {
@@ -212,7 +216,7 @@ unsigned int vtkDataManager::GetSequencesMaxNumber()
     unsigned int max = 0;
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {
-        vtkMetaDataSetSequence *sequence = NULL;
+        vtkMetaDataSetSequence *sequence = nullptr;
         sequence = vtkMetaDataSetSequence::SafeDownCast(this->MetaDataSetList[i]);
         if (sequence)
         {
@@ -334,7 +338,7 @@ const char*vtkDataManager::CreateDefaultName (unsigned int type, const char *fil
     {
         std::string filename_str = vtksys::SystemTools::GetFilenameWithoutExtension(vtksys::SystemTools::GetFilenameName (filename));
 
-        sprintf (ret, "%s", filename_str.c_str());
+        snprintf (ret, 512, "%s", filename_str.c_str());
         unsigned int id = 0;
 
         if (!this->IsNameInManager (ret, id))
@@ -350,16 +354,16 @@ const char*vtkDataManager::CreateDefaultName (unsigned int type, const char *fil
         switch (type)
         {
             case vtkMetaDataSet::VTK_META_IMAGE_DATA:
-                sprintf (ret, "image_%i", id);
+                snprintf (ret, 512, "image_%i", id);
                 break;
             case vtkMetaDataSet::VTK_META_SURFACE_MESH:
-                sprintf (ret, "mesh_%i", id);
+                snprintf (ret, 512, "mesh_%i", id);
                 break;
             case vtkMetaDataSet::VTK_META_VOLUME_MESH:
-                sprintf (ret, "tetra_%i", id);
+                snprintf (ret, 512, "tetra_%i", id);
                 break;
             default:
-                sprintf (ret, "unknown_%i", id);
+                snprintf (ret, 512, "unknown_%i", id);
                 break;
         }
         unsigned int dummy = 0;
@@ -395,7 +399,7 @@ vtkMetaDataSet*vtkDataManager::ReadFile (const char *filename, const char *name,
         return this->ScanDirectoryForSequence (filename);
     }
 
-    vtkMetaDataSet *metadataset = NULL;
+    vtkMetaDataSet *metadataset = nullptr;
 
     if (vtkMetaVolumeMesh::CanReadFile (filename))
     {
@@ -415,7 +419,7 @@ vtkMetaDataSet*vtkDataManager::ReadFile (const char *filename, const char *name,
     {
         metadataset->Read(filename);
 
-        if (name == NULL)
+        if (name == nullptr)
             metadataset->SetName (vtksys::SystemTools::GetFilenameWithoutExtension(vtksys::SystemTools::GetFilenameName (filename).c_str()).c_str());
         else
             metadataset->SetName (name);
@@ -432,7 +436,7 @@ vtkMetaDataSet*vtkDataManager::ReadFile (const char *filename, const char *name,
     }
 
 
-    return NULL;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -531,7 +535,7 @@ vtkMetaDataSetSequence*vtkDataManager::ScanDirectoryForSequence (const char *dir
 vtkMetaDataSet*vtkDataManager::DuplicateMetaDataSet(vtkMetaDataSet *input)
 {
     vtkMetaDataSet *metadataset;
-    vtkDataSet *dataset = NULL;
+    vtkDataSet *dataset = nullptr;
 
     switch(input->GetType())
     {
@@ -544,7 +548,7 @@ vtkMetaDataSet*vtkDataManager::DuplicateMetaDataSet(vtkMetaDataSet *input)
             dataset = vtkUnstructuredGrid::New();
             break;
         default:
-            return NULL;
+            return nullptr;
     }
 
     if (input->GetDataSet())

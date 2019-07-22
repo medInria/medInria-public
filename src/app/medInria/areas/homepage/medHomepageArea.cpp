@@ -12,9 +12,6 @@
 =========================================================================*/
 
 #include <medHomepageArea.h>
-#ifdef MEDINRIA_HAS_REVISIONS
-    #include <medRevisions.h>
-#endif
 
 #include <medHomepageButton.h>
 #include <medPluginWidget.h>
@@ -162,10 +159,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                 "<center>Inria, Copyright 2013</center>")
             .arg(qApp->applicationName())
             .arg(qApp->applicationVersion());
-
-#ifdef MEDINRIA_HAS_REVISIONS
-    aboutText += QString::fromLocal8Bit(REVISIONS);
-#endif
 
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
