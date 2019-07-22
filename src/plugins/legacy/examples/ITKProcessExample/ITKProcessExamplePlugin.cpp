@@ -91,4 +91,3 @@ QStringList ITKProcessExamplePlugin::types() const
 {
     return QStringList() << "ITKProcessExample";
 }
-kk
