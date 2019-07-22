@@ -146,8 +146,8 @@ public:
         double mean =  sum / v.size();
 
         std::vector<double> diff(v.size());
-        std::transform(v.begin(), v.end(), diff.begin(),
-                       std::bind2nd(std::minus<double>(), mean));
+        std::transform(v.begin(), v.end(), diff.begin(), [mean](double dDiffVal) {return dDiffVal - mean; });
+
         double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
         double stdev = std::sqrt(sq_sum / v.size());
 

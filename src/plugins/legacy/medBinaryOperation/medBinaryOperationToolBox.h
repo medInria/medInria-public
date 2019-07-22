@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -60,10 +60,11 @@ protected slots:
     virtual void onDropSiteClicked();
 
     virtual void clearDropsite();
-    void onXorButtonToggled(bool);
-    void onAndButtonToggled(bool);
-    void onOrButtonToggled(bool);
-    void onNotButtonToggled(bool);
+
+    void onXorButtonToggled(bool value);
+    void onAndButtonToggled(bool value);
+    void onOrButtonToggled(bool value);
+    void onNotButtonToggled(bool value);
     
 private:
     medBinaryOperationToolBoxPrivate *d;
