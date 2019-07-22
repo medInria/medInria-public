@@ -69,7 +69,7 @@ int itkNotOperator::run(medAbstractData* inputData)
     notFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     notFilter->Update();
 
-    QString identifier = m_inputA->identifier();
+    QString identifier = inputData->identifier();
     m_output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
 
     m_output->setData(notFilter->GetOutput());

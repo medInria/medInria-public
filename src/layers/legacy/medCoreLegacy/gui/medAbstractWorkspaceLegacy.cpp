@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medAbstractWorkspaceLegacy.h"
+#include <medAbstractWorkspaceLegacy.h>
 
 #include <medAbstractLayeredView.h>
 #include <medAbstractView.h>
