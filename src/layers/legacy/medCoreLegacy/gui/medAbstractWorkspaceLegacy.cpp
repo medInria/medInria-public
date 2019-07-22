@@ -112,6 +112,9 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
     d->selectionToolBox->addWidget(d->layersToolBox);
     d->selectionToolBox->addWidget(d->progressionStack);
 
+    d->progressionStack = new medProgressionStack();
+    d->selectionToolBox->addWidget(d->progressionStack);
+
     d->layerListToolBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     d->layerListWidget = nullptr;
