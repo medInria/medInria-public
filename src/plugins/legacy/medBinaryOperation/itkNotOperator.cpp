@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -69,7 +69,7 @@ int itkNotOperator::run(medAbstractData* inputData)
     notFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
     notFilter->Update();
 
-    QString identifier = m_inputA->identifier();
+    QString identifier = inputData->identifier();
     m_output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
 
     m_output->setData(notFilter->GetOutput());
@@ -79,10 +79,10 @@ int itkNotOperator::run(medAbstractData* inputData)
         return medAbstractProcessLegacy::FAILURE;
     }
 
-    medUtilities::setDerivedMetaData(m_output, m_inputA, "NOT");
+    medUtilities::setDerivedMetaData(m_output, inputData, "NOT");
 
     return medAbstractProcessLegacy::SUCCESS;
-}
+}        
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
