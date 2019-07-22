@@ -136,7 +136,7 @@ QList<QVariant> medCompositeParameterL::values() const
     return d->variants.values();
 }
 
-QVariant medCompositeParameterL::value( const QString key) const
+QVariant medCompositeParameterL::value(const QString key) const
 {
     return d->variants[key];
 }
