@@ -14,17 +14,20 @@
 #pragma once
 
 #include <medFilteringAbstractToolBox.h>
+#include "medBoutiquesSearchTools.h"
+#include "medBoutiquesInvocation.h"
+#include "medBoutiquesExecution.h"
 
-class ITKProcessExampleToolBoxPrivate;
+class medBoutiquesToolBoxPrivate;
 
-class ITKProcessExampleToolBox : public medFilteringAbstractToolBox
+class medBoutiquesToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("itkGaussianBlurExample", "ITK Gaussian Blur Filter Example", << "filtering")
+    MED_TOOLBOX_INTERFACE("medBoutiques", "Boutiques in medInria", << "filtering")
 
 public:
-     ITKProcessExampleToolBox(QWidget *parentToolBox = 0);
-    ~ITKProcessExampleToolBox();
+     medBoutiquesToolBox(QWidget *parentToolBox = 0);
+    ~medBoutiquesToolBox();
 
     static bool registered();
     medAbstractData* processOutput();
@@ -35,10 +38,10 @@ signals:
     void success();
     void failure();
 
-public slots:
+// public slots:
 
-    void run();
+//     void run();
 
 private:
-    ITKProcessExampleToolBoxPrivate *d;
+    medBoutiquesToolBoxPrivate *d;
 };

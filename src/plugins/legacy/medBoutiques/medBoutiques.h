@@ -16,18 +16,18 @@
 #include <dtkCoreSupport/dtkAbstractProcess.h>
 #include <dtkCoreSupport/dtkAbstractData.h>
 
-#include <ITKProcessExamplePluginExport.h>
+#include <medBoutiquesPluginExport.h>
 
-class ITKProcessExamplePrivate;
+class medBoutiquesPrivate;
 class dtkAbstractData;
 
-class ITKPROCESSEXAMPLEPLUGIN_EXPORT ITKProcessExample : public dtkAbstractProcess
+class MEDBOUTIQUESPLUGIN_EXPORT medBoutiques : public dtkAbstractProcess
 {
     Q_OBJECT
 
 public:
-             ITKProcessExample();
-    virtual ~ITKProcessExample();
+             medBoutiques();
+    virtual ~medBoutiques();
 
     virtual QString description() const;
 
@@ -43,9 +43,9 @@ public slots:
     // bool write(QString file);
 
 private:
-    ITKProcessExamplePrivate *d;
+    medBoutiquesPrivate *d;
 };
 
-dtkAbstractProcess *createITKProcessExample();
+dtkAbstractProcess *createmedBoutiques();
 
 

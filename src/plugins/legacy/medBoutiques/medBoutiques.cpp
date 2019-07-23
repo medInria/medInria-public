@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <ITKProcessExample.h>
+#include <medBoutiques.h>
 
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <dtkCoreSupport/dtkAbstractDataFactory.h>
@@ -21,10 +21,10 @@
 #include <itkSmoothingRecursiveGaussianImageFilter.h>
 
 // /////////////////////////////////////////////////////////////////
-// ITKProcessExamplePrivate
+// medBoutiquesPrivate
 // /////////////////////////////////////////////////////////////////
 
-class ITKProcessExamplePrivate
+class medBoutiquesPrivate
 {
 public:
     dtkAbstractData *input;
@@ -33,7 +33,7 @@ public:
     template <class PixelType> int update();
 };
 
-template <class PixelType> int ITKProcessExamplePrivate::update()
+template <class PixelType> int medBoutiquesPrivate::update()
 {
     qDebug() << "entering method d->update<" << typeid(PixelType).name() << ">";
 
@@ -59,32 +59,32 @@ template <class PixelType> int ITKProcessExamplePrivate::update()
 }
 
 // /////////////////////////////////////////////////////////////////
-// ITKProcessExample
+// medBoutiques
 // /////////////////////////////////////////////////////////////////
 
-ITKProcessExample::ITKProcessExample() : dtkAbstractProcess(), d(new ITKProcessExamplePrivate)
+medBoutiques::medBoutiques() : dtkAbstractProcess(), d(new medBoutiquesPrivate)
 {
     d->output = NULL;
     d->sigma = 4.0;
 }
 
-ITKProcessExample::~ITKProcessExample()
+medBoutiques::~medBoutiques()
 {
     delete d;
     d = NULL;
 }
 
-bool ITKProcessExample::registered()
+bool medBoutiques::registered()
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("ITKProcessExampleGaussianBlur", createITKProcessExample);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("medBoutiquesGaussianBlur", createmedBoutiques);
 }
 
-QString ITKProcessExample::description() const
+QString medBoutiques::description() const
 {
-    return "ITKProcessExampleGaussianBlur";
+    return "medBoutiquesGaussianBlur";
 }
 
-void ITKProcessExample::setInput(dtkAbstractData *data)
+void medBoutiques::setInput(dtkAbstractData *data)
 {
     if (!data)
         return;
@@ -97,7 +97,7 @@ void ITKProcessExample::setInput(dtkAbstractData *data)
     qDebug() << "in method setInput, d->input =" << d->input;
 }
 
-void ITKProcessExample::setParameter(double  data, int channel)
+void medBoutiques::setParameter(double  data, int channel)
 {
     switch (channel){
 
@@ -109,7 +109,7 @@ void ITKProcessExample::setParameter(double  data, int channel)
         }
 }
 
-int ITKProcessExample::update()
+int medBoutiques::update()
 {
     qDebug() << "entering method update";
 
@@ -162,7 +162,7 @@ int ITKProcessExample::update()
     return EXIT_SUCCESS;
 }
 
-dtkAbstractData * ITKProcessExample::output()
+dtkAbstractData * medBoutiques::output()
 {
     return (d->output);
 }
@@ -171,7 +171,7 @@ dtkAbstractData * ITKProcessExample::output()
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess * createITKProcessExample()
+dtkAbstractProcess * createmedBoutiques()
 {
-    return new ITKProcessExample;
+    return new medBoutiques;
 }

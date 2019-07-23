@@ -11,83 +11,83 @@
 
 =========================================================================*/
 
-#include <ITKProcessExample.h>
-#include <ITKProcessExamplePlugin.h>
-#include <ITKProcessExampleToolBox.h>
-#include <ITKProcessExampleDefinitions.h>
+#include <medBoutiques.h>
+#include <medBoutiquesPlugin.h>
+#include <medBoutiquesToolBox.h>
+#include <medBoutiquesDefinitions.h>
 
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// ITKProcessExamplePluginPrivate
+// medBoutiquesPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class ITKProcessExamplePluginPrivate
+class medBoutiquesPluginPrivate
 {
 public:
     // Class variables go here.
 };
 
 // /////////////////////////////////////////////////////////////////
-// ITKProcessExamplePlugin
+// medBoutiquesPlugin
 // /////////////////////////////////////////////////////////////////
 
-ITKProcessExamplePlugin::ITKProcessExamplePlugin(QObject *parent) : dtkPlugin(parent), d(new ITKProcessExamplePluginPrivate)
+medBoutiquesPlugin::medBoutiquesPlugin(QObject *parent) : dtkPlugin(parent), d(new medBoutiquesPluginPrivate)
 {
 
 }
 
-ITKProcessExamplePlugin::~ITKProcessExamplePlugin()
+medBoutiquesPlugin::~medBoutiquesPlugin()
 {
     delete d;
 
     d = nullptr;
 }
 
-bool ITKProcessExamplePlugin::initialize()
+bool medBoutiquesPlugin::initialize()
 {
-    if(!ITKProcessExample::registered()) {
-        dtkWarn() << "Unable to register ITKProcessExample type";
+    if(!medBoutiques::registered()) {
+        dtkWarn() << "Unable to register medBoutiques type";
     }
 
-    if(!ITKProcessExampleToolBox::registered()) {
-        dtkWarn() << "Unable to register ITKProcessExample toolbox";
+    if(!medBoutiquesToolBox::registered()) {
+        dtkWarn() << "Unable to register medBoutiques toolbox";
     }
 
     return true;
 }
 
-bool ITKProcessExamplePlugin::uninitialize()
+bool medBoutiquesPlugin::uninitialize()
 {
     return true;
 }
 
-QString ITKProcessExamplePlugin::name() const
+QString medBoutiquesPlugin::name() const
 {
-    return "ITKProcessExamplePlugin";
+    return "medBoutiquesPlugin";
 }
 
-QString ITKProcessExamplePlugin::contact() const
+QString medBoutiquesPlugin::contact() const
 {
     return QString::fromUtf8("Clément Philipot clement.philipot@inria.fr");
 }
 
-QString ITKProcessExamplePlugin::version() const
+QString medBoutiquesPlugin::version() const
 {
     return PLUGIN_VERSION;
 }
 
-QString ITKProcessExamplePlugin::description() const
+QString medBoutiquesPlugin::description() const
 {
     return "ITK GaussianBlur Filter Example Plugin";
 }
 
-QStringList ITKProcessExamplePlugin::tags() const
+QStringList medBoutiquesPlugin::tags() const
 {
     return QStringList() << "ITK" << "process" << "gaussianblur" << "filerexample" << "preprocessing";
 }
 
-QStringList ITKProcessExamplePlugin::types() const
+QStringList medBoutiquesPlugin::types() const
 {
-    return QStringList() << "ITKProcessExample";
+    return QStringList() << "medBoutiques";
 }

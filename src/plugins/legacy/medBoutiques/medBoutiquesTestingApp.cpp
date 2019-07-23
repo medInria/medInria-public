@@ -25,7 +25,7 @@
 int main(int argc, char **argv)
 {
     QCoreApplication application(argc, argv);
-    application.setApplicationName("ITKProcessExampleTesting");
+    application.setApplicationName("medBoutiquesTesting");
     application.setApplicationVersion("0.0.1");
     application.setOrganizationName("INRIA");
     application.setOrganizationDomain("FR");
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     inputImage->enableReader("itkNrrdDataImageReader");
     inputImage->read(argv[1]);
 
-    dtkAbstractProcess *worker = dynamic_cast <dtkAbstractProcess *>(dtkAbstractProcessFactory::instance()->create("ITKProcessExampleGaussianBlur"));
+    dtkAbstractProcess *worker = dynamic_cast <dtkAbstractProcess *>(dtkAbstractProcessFactory::instance()->create("medBoutiquesGaussianBlur"));
 
     worker->setInput(inputImage);
     worker->setParameter(2.0,0);

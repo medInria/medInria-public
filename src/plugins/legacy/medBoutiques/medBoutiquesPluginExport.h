@@ -14,13 +14,13 @@
 #pragma once
 
 #ifdef WIN32
-    #ifdef ITKProcessExamplePlugin_EXPORTS
-        #define ITKPROCESSEXAMPLEPLUGIN_EXPORT __declspec(dllexport) 
+    #ifdef medBoutiquesPlugin_EXPORTS
+        #define MEDBOUTIQUESPLUGIN_EXPORT __declspec(dllexport) 
     #else
-        #define ITKPROCESSEXAMPLEPLUGIN_EXPORT __declspec(dllimport) 
+        #define MEDBOUTIQUESPLUGIN_EXPORT __declspec(dllimport) 
     #endif
 #else
-    #define ITKPROCESSEXAMPLEPLUGIN_EXPORT
+    #define MEDBOUTIQUESPLUGIN_EXPORT
 #endif
 
 

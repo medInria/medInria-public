@@ -15,19 +15,19 @@
 
 #include <dtkCoreSupport/dtkPlugin.h>
 
-#include <ITKProcessExamplePluginExport.h>
+#include <medBoutiquesPluginExport.h>
 
-class ITKPROCESSEXAMPLEPLUGIN_EXPORT ITKProcessExamplePluginPrivate;
+class MEDBOUTIQUESPLUGIN_EXPORT medBoutiquesPluginPrivate;
 
-class ITKPROCESSEXAMPLEPLUGIN_EXPORT ITKProcessExamplePlugin : public dtkPlugin
+class MEDBOUTIQUESPLUGIN_EXPORT medBoutiquesPlugin : public dtkPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "fr.inria.ITKProcessExamplePlugin" FILE "ITKProcessExamplePlugin.json")
+    Q_PLUGIN_METADATA(IID "fr.inria.medBoutiquesPlugin" FILE "medBoutiquesPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:
-     ITKProcessExamplePlugin(QObject *parent = 0);
-    ~ITKProcessExamplePlugin();
+     medBoutiquesPlugin(QObject *parent = 0);
+    ~medBoutiquesPlugin();
 
     virtual bool initialize();
     virtual bool uninitialize();
@@ -41,7 +41,7 @@ public:
     virtual QStringList types() const;
 
 private:
-    ITKProcessExamplePluginPrivate *d;
+    medBoutiquesPluginPrivate *d;
 };
 
 
