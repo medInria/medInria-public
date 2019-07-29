@@ -124,6 +124,7 @@ QList <QUuid> medTabbedViewContainers::containersSelected()
 medViewContainer* medTabbedViewContainers::getFirstSelectedContainer()
 {
     QList<QUuid> listUuid = containersSelected();
+
     medViewContainer* view = nullptr;
 
     if (listUuid.count() > 0)
@@ -138,6 +139,7 @@ medViewContainer* medTabbedViewContainers::getFirstSelectedContainer()
 medAbstractView* medTabbedViewContainers::getFirstSelectedContainerView()
 {
     medViewContainer* currentFirstContainer = getFirstSelectedContainer();
+
     medAbstractView* view = nullptr;
 
     if (currentFirstContainer)
