@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -78,7 +78,7 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
 medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -102,7 +102,7 @@ medAbstractData*  medFilteringSelectorToolBox::data()
  */
 void medFilteringSelectorToolBox::changeCurrentToolBox ( int index )
 {    
-    medFilteringAbstractToolBox *toolbox = NULL;
+    medFilteringAbstractToolBox *toolbox = nullptr;
     //get identifier for toolbox.
     QString identifier = d->chooseFilter->itemData(index).toString();
     if (d->toolBoxes.contains (identifier))
@@ -164,8 +164,8 @@ void medFilteringSelectorToolBox::onInputSelected(medAbstractData *data)
 {   
     d->inputData = data;
 
-    if (d->inputData != NULL && !d->inputData->dataIndex().isValidForSeries())
-        d->inputData = NULL;
+    if (d->inputData != nullptr && !d->inputData->dataIndex().isValidForSeries())
+        d->inputData = nullptr;
 
     if(d->currentToolBox)
         d->currentToolBox->update(d->inputData);
@@ -176,7 +176,7 @@ void medFilteringSelectorToolBox::onInputSelected(medAbstractData *data)
  */
 void medFilteringSelectorToolBox::clear()
 {
-    d->inputData = NULL;
+    d->inputData = nullptr;
 
     if(d->currentToolBox)
         d->currentToolBox->update(d->inputData);

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,19 +11,14 @@
 
 =========================================================================*/
 
-#include <medAbstractData.h>
 #include <medAbstractProcessLegacy.h>
-#include <medAbstractView.h>
-#include <medAbstractWorkspaceLegacy.h>
 #include <medButton.h>
 #include <medJobManagerL.h>
 #include <medMessageController.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medToolBoxBody.h>
-#include <medToolBoxTab.h>
 
-#include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkCoreSupport/dtkPlugin>
 #include <dtkGuiSupport/dtkAboutPlugin.h>
 
@@ -64,6 +59,8 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     connect(d->header,SIGNAL(triggered()),this,SLOT(switchMinimize()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    this->setTitle(this->name());
 }
 
 medToolBox::~medToolBox(void)
@@ -141,18 +138,6 @@ medToolBoxHeader *medToolBox::header(void) const
 medToolBoxBody *medToolBox::body(void) const
 {
     return d->body;
-}
-
-/**
- * @brief Clears the toolbox.
- *
- * Resets the parameters within the tolbox,
- * for instance when the current patient changed or the view.
- *
-*/
-void medToolBox::clear(void)
-{
-    d->body->clear();
 }
 
 /**
@@ -256,7 +241,7 @@ void medToolBox::setAboutPluginButton(dtkPlugin *plugin)
     }
     else
     {
-        dtkWarn() << "no aboutButton found for toolbox" << d->header->title();
+        qWarning() << "no aboutButton found for toolbox" << d->header->title();
     }
 }
 
@@ -268,7 +253,7 @@ void medToolBox::onAboutButtonClicked()
 {
     if(d->plugin)
     {
-        dtkDebug() << "about plugin" << d->plugin->name();
+        qDebug() << "about plugin" << d->plugin->name();
 
         QDialog * dial = new QDialog(this);
         QString windowTitle = tr("About ");
@@ -296,7 +281,7 @@ void medToolBox::onAboutButtonClicked()
     }
     else
     {
-        dtkWarn() << "No plugin set for toolbox" << d->header->title();
+        qWarning() << "No plugin set for toolbox" << d->header->title();
     }
 }
 

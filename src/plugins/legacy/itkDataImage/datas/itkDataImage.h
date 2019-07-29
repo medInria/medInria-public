@@ -2,9 +2,9 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -24,16 +24,28 @@
 #include <itkDataPrivateTypes.h>
 
 template <unsigned DIM,typename T>
-struct ImagePrivateType: public itkDataScalarImagePrivateType<DIM,T> { };
+struct ImagePrivateType: public itkDataScalarImagePrivateType<DIM,T> {
+    ImagePrivateType(): itkDataScalarImagePrivateType<DIM,T>() { }
+    ImagePrivateType(const ImagePrivateType& other): itkDataScalarImagePrivateType<DIM,T>(other) { }
+};
 
 template <unsigned DIM,typename T,unsigned N>
-struct ImagePrivateType<DIM,itk::Vector<T,N> >: public itkDataVectorImagePrivateType<DIM,itk::Vector<T,N> > { };
+struct ImagePrivateType<DIM,itk::Vector<T,N> >: public itkDataVectorImagePrivateType<DIM,itk::Vector<T,N> > {
+    ImagePrivateType(): itkDataVectorImagePrivateType<DIM,itk::Vector<T,N> > () { }
+    ImagePrivateType(const ImagePrivateType& other): itkDataVectorImagePrivateType<DIM,itk::Vector<T,N> >(other) { }
+};
 
 template <unsigned DIM,typename T>
-struct ImagePrivateType<DIM,itk::RGBPixel<T> >: public itkDataVectorImagePrivateType<DIM,itk::RGBPixel<T> > { };
+struct ImagePrivateType<DIM,itk::RGBPixel<T> >: public itkDataVectorImagePrivateType<DIM,itk::RGBPixel<T> > {
+    ImagePrivateType(): itkDataVectorImagePrivateType<DIM,itk::RGBPixel<T> >() { }
+    ImagePrivateType(const ImagePrivateType& other): itkDataVectorImagePrivateType<DIM,itk::RGBPixel<T> >(other) { }
+};
 
 template <unsigned DIM,typename T>
-struct ImagePrivateType<DIM,itk::RGBAPixel<T> >: public itkDataVectorImagePrivateType<DIM,itk::RGBAPixel<T> > { };
+struct ImagePrivateType<DIM,itk::RGBAPixel<T> >: public itkDataVectorImagePrivateType<DIM,itk::RGBAPixel<T> > {
+    ImagePrivateType(): itkDataVectorImagePrivateType<DIM,itk::RGBAPixel<T> >() { }
+    ImagePrivateType(const ImagePrivateType& other): itkDataVectorImagePrivateType<DIM,itk::RGBAPixel<T> >(other) { }
+};
 
 template <unsigned DIM,typename T,const char* ID>
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractTypedImageData<DIM,T> {
@@ -51,10 +63,10 @@ public:
     enum { Dimension=DIM };
 
     itkDataImage(): medAbstractTypedImageData<DIM,T>(),d(new PrivateMember) { }
-
+    itkDataImage(const itkDataImage& other): medAbstractTypedImageData<DIM,T>(), d(new PrivateMember(*(other.d))) { }
     ~itkDataImage() {
         delete d;
-        d = 0;
+        d = nullptr;
     }
 
     static QString staticIdentifier() { return ID; }
@@ -62,8 +74,11 @@ public:
         return medAbstractDataFactory::instance()->registerDataType<itkDataImage<DIM,T,ID> >();
     }
 
-    // Inherited slots (through virtual member functions).
+    virtual itkDataImage* clone() {
+        return new itkDataImage(*this);
+    }
 
+    // Inherited slots (through virtual member functions).
     void* output() { return d->image.GetPointer(); }
     void* data() { return d->image.GetPointer(); }
 
@@ -71,7 +86,7 @@ public:
         typedef typename PrivateMember::ImageType ImageType;
         typename ImageType::Pointer image = dynamic_cast<ImageType*>(static_cast<itk::Object*>(data));
         if (image.IsNull()) {
-            dtkDebug() << "Cannot cast data to correct data type";
+            qDebug() << "Cannot cast data to correct data type";
             return;
         }
         d->image = image;

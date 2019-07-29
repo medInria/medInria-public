@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -30,7 +30,8 @@ class MEDCORELEGACY_EXPORT medAbstractData : public dtkAbstractData
     Q_OBJECT
 
 public:
-    medAbstractData( medAbstractData * parent = NULL );
+    medAbstractData( medAbstractData *parent = nullptr );
+    medAbstractData( const medAbstractData &other );
     virtual ~medAbstractData();
 
     virtual medAbstractData* clone() override;

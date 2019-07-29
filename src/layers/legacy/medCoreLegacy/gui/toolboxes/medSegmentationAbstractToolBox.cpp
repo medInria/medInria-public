@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,27 +13,50 @@
 
 #include <medSegmentationSelectorToolBox.h>
 #include <medSegmentationAbstractToolBox.h>
+#include <medTabbedViewContainers.h>
 
 class medSegmentationAbstractToolBoxPrivate
 {
 public:
-    medSegmentationSelectorToolBox * segmentationToolBox;
+    medSegmentationSelectorToolBox *selectorToolBox;
 };
 
 //! Parent should be a medSegmentationSelectorToolBox
 medSegmentationAbstractToolBox::medSegmentationAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medSegmentationAbstractToolBoxPrivate)
 {
-    d->segmentationToolBox = qobject_cast<medSegmentationSelectorToolBox*>(parent);
+    d->selectorToolBox = qobject_cast<medSegmentationSelectorToolBox*>(parent);
 }
 
 medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
-//! Get the segmentationToolbox (usually one instance)
-medSegmentationSelectorToolBox *medSegmentationAbstractToolBox::segmentationToolBox(void)
+medSegmentationSelectorToolBox *medSegmentationAbstractToolBox::selectorToolBox(void)
 {
-    return d->segmentationToolBox;
+    return d->selectorToolBox;
+}
+
+void medSegmentationAbstractToolBox::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event);
+    updateView();
+
+    if (getWorkspace())
+    {
+        connect(getWorkspace()->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),
+                this, SLOT(updateView()), Qt::UniqueConnection);
+    }
+}
+
+void medSegmentationAbstractToolBox::hideEvent(QHideEvent *event)
+{
+    Q_UNUSED(event);
+
+    if (getWorkspace())
+    {
+        disconnect(getWorkspace()->tabbedViewContainers(), SIGNAL(containersSelectedChanged()), this,
+                   SLOT(updateView()));
+    }
 }

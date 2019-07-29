@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -76,6 +76,8 @@ public:
     bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
 
+    QList<int> getSelectedLayerIndices();
+
     medProgressionStack *getProgressionStack();
 
 public slots:
@@ -92,6 +94,7 @@ public slots:
     virtual void open(const medDataIndex& index);
 
 protected slots:
+    void handleLayerSelectionChange();
     void changeCurrentLayer(int row);
     void removeLayer();
 
@@ -116,6 +119,9 @@ private slots:
 
     void changeViewGroupColor(QString group, QColor color);
     void changeLayerGroupColor(QString group, QColor color);
+
+signals:
+    void layerSelectionChanged(QList<int> selectedLayersIndices);
 
 private:
     QWidget* buildViewLinkMenu();

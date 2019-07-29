@@ -31,15 +31,7 @@ public:
     medAnnotationData( );
     virtual ~medAnnotationData();
 
-
-signals:
-
-public slots:
-
-protected:
-
 private:
-
     class medAnnotationDataPrivate;
     medAnnotationDataPrivate * d;
 };

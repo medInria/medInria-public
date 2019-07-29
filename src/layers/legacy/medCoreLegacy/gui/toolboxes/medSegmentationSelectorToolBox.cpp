@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,117 +11,177 @@
 
 =========================================================================*/
 
-#include <medSegmentationSelectorToolBox.h>
-
-#include <medToolBoxFactory.h>
-#include <medToolBoxTab.h>
 #include <medSegmentationAbstractToolBox.h>
+#include <medSegmentationSelectorToolBox.h>
+#include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
-#include <medViewEventFilter.h>
-
-#include <QtGui>
-
 
 class medSegmentationSelectorToolBoxPrivate
 {
 public:
-    QComboBox *chooseSegmentationComboBox;
-    medSegmentationAbstractToolBox * currentSegmentationToolBox;
-    QHash<QString, medSegmentationAbstractToolBox*> segmentationToolBoxes;
+    QComboBox *chooseComboBox;
+    medSegmentationAbstractToolBox * currentToolBox;
+    QHash<QString, medSegmentationAbstractToolBox*> toolBoxes;
     QVBoxLayout *mainLayout;
+
+    medAbstractData *inputData;
 };
 
 medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent) :
     medToolBox(parent),
     d(new medSegmentationSelectorToolBoxPrivate)
 {
-    d->currentSegmentationToolBox = NULL;
+    d->currentToolBox = nullptr;
 
-
-    d->chooseSegmentationComboBox = new QComboBox;
-    //TODO algorithm is not the best IMO - RDE
-    d->chooseSegmentationComboBox->addItem("Choose algorithm");
-    d->chooseSegmentationComboBox->setToolTip(tr("Browse through the list of available segmentation algorithm"));
+    d->chooseComboBox = new QComboBox;
+    d->chooseComboBox->addItem("* Choose a toolbox *");
+    d->chooseComboBox->setToolTip(tr("Choose a toolbox in the list"));
+    d->chooseComboBox->setItemData(0, "Choose a toolbox", Qt::ToolTipRole);
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
-    int i = 1; //account for the choose Filter item
+
+    // Get informations about the workspace toolboxes:
+    // displayed name, description for tooltip, and identifier
+    QHash<QString, QStringList> toolboxDataHash;
     foreach(QString toolboxName, tbFactory->toolBoxesFromCategory("segmentation"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolboxName);
-        d->chooseSegmentationComboBox->addItem(details->name, toolboxName);
-        d->chooseSegmentationComboBox->setItemData(i,
-                                                   details->description,
-                                                   Qt::ToolTipRole);
+
+        QStringList current;
+        current.append(toolboxName);
+        current.append(details->description);
+        toolboxDataHash[details->name] = current;
+    }
+
+    // Sort toolboxes names alphabetically
+    QList<QString> names = toolboxDataHash.keys();
+    qSort(names.begin(), names.end());
+
+    int i = 1; // toolboxes positions
+    foreach( QString name, names )
+    {
+        QStringList values = toolboxDataHash.value(name);
+        d->chooseComboBox->addItem(name, values.at(0));
+        d->chooseComboBox->setItemData(i, values.at(1), Qt::ToolTipRole);
         i++;
     }
 
-    connect(d->chooseSegmentationComboBox, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
+    connect(d->chooseComboBox, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
     QWidget *mainWidget = new QWidget;
     d->mainLayout = new QVBoxLayout;
 
-    d->chooseSegmentationComboBox->adjustSize();
-    d->mainLayout->addWidget(d->chooseSegmentationComboBox);
+    d->chooseComboBox->adjustSize();
+    d->mainLayout->addWidget(d->chooseComboBox);
     mainWidget->setLayout(d->mainLayout);
+
     this->addWidget(mainWidget);
+
     this->setTitle("Segmentation");
 }
 
 medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 medSegmentationAbstractToolBox* medSegmentationSelectorToolBox::currentToolBox()
 {
-    return d->currentSegmentationToolBox;
+    return d->currentToolBox;
 }
-
 
 void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
 {
-    medSegmentationAbstractToolBox *toolbox = NULL;
-    //get identifier for toolbox.
-    QString identifier = d->chooseSegmentationComboBox->itemData(index).toString();
-    if (d->segmentationToolBoxes.contains (identifier))
-        toolbox = d->segmentationToolBoxes[identifier];
+    // Get current toolbox identifier from combobox
+    QString identifier = d->chooseComboBox->itemData(index).toString();
+    this->changeCurrentToolBox(identifier);
+}
+
+void medSegmentationSelectorToolBox::changeCurrentToolBox(const QString &identifier)
+{
+    medSegmentationAbstractToolBox *toolbox = nullptr;
+
+    if (d->toolBoxes.contains(identifier))
+    {
+        toolbox = d->toolBoxes[identifier];
+    }
     else
     {
         medToolBox* tb = medToolBoxFactory::instance()->createToolBox(identifier, this);
         toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
         if (toolbox)
         {
+            toolbox->setWorkspace(getWorkspace());
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
-            d->segmentationToolBoxes[identifier] = toolbox;
-            connect(toolbox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
-                    this, SIGNAL(installEventFilterRequest(medViewEventFilter*)),
-                    Qt::UniqueConnection);
+            d->toolBoxes[identifier] = toolbox;
         }
     }
 
-    if(d->currentSegmentationToolBox)
+    if(d->currentToolBox)
     {
-        d->currentSegmentationToolBox->hide();
-        d->mainLayout->removeWidget(d->currentSegmentationToolBox);
-        d->currentSegmentationToolBox = NULL;
+        // Remove previous tlbx from current tlbx
+        d->currentToolBox->hide();
+        d->currentToolBox->clear();
+
+        d->mainLayout->removeWidget(d->currentToolBox);
+        d->currentToolBox = nullptr;
     }
 
-    if(!toolbox)
+    if(toolbox)
+    {
+        d->currentToolBox = toolbox;
+        d->currentToolBox->header()->hide();
+
+        dtkPlugin* plugin = d->currentToolBox->plugin();
+        this->setAboutPluginButton(plugin);
+        this->setAboutPluginVisibility(true);
+
+        d->currentToolBox->show();
+        d->mainLayout->addWidget(d->currentToolBox);
+
+        connect(d->currentToolBox, SIGNAL(success()), this, SIGNAL(success()), Qt::UniqueConnection);
+        connect(d->currentToolBox, SIGNAL(failure()), this, SIGNAL(failure()), Qt::UniqueConnection);
+
+        emit currentToolBoxChanged();
+    }
+    else
     {
         this->setAboutPluginVisibility(false);
-        return;
     }
+}
 
-    d->currentSegmentationToolBox = toolbox;
-    d->currentSegmentationToolBox->header()->hide();
+int medSegmentationSelectorToolBox::getIndexOfToolBox(const QString &toolboxName)
+{
+    for (int i=0; i<d->chooseComboBox->count(); ++i)
+    {
+        if(d->chooseComboBox->itemText(i) == toolboxName)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
 
-    dtkPlugin* plugin = d->currentSegmentationToolBox->plugin();
-    this->setAboutPluginButton(plugin);
-    this->setAboutPluginVisibility(true);
+medAbstractData* medSegmentationSelectorToolBox::data()
+{
+    return d->inputData;
+}
 
-    d->currentSegmentationToolBox->show();
-    d->mainLayout->addWidget(d->currentSegmentationToolBox);
 
-    connect ( d->currentSegmentationToolBox, SIGNAL(success()), this, SIGNAL(success()));
+QComboBox* medSegmentationSelectorToolBox::comboBox()
+{
+    return d->chooseComboBox;
+}
+
+void medSegmentationSelectorToolBox::onInputSelected(medAbstractData *data)
+{
+    d->inputData = data;
+    emit inputChanged();
+}
+
+void medSegmentationSelectorToolBox::clear()
+{
+    d->inputData = nullptr;
+    emit inputChanged();
 }

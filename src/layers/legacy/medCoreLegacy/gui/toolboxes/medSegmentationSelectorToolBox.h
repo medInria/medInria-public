@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -26,18 +26,47 @@ class MEDCORELEGACY_EXPORT medSegmentationSelectorToolBox : public medToolBox
     Q_OBJECT
 
 public:
-     medSegmentationSelectorToolBox(QWidget *parent = 0);
+     medSegmentationSelectorToolBox(QWidget *parent = nullptr);
     ~medSegmentationSelectorToolBox();
 
+     /**
+      * @brief returns input data
+      */
+     medAbstractData* data();
+
+     /**
+      * @brief returns current selected toolbox
+      */
      medSegmentationAbstractToolBox* currentToolBox();
 
+     /**
+      * @brief returns the comboBox
+      */
+     QComboBox* comboBox();
+
+     int getIndexOfToolBox(const QString &toolboxName);
+
 signals:
-     void installEventFilterRequest(medViewEventFilter *filter);
      void inputChanged();
+     void currentToolBoxChanged();
 
 public slots:
-    void changeCurrentToolBox(int index);
+     /**
+      * @brief instantiates the right process toolbox according to its description
+      */
+     virtual void changeCurrentToolBox(int index);
+     virtual void changeCurrentToolBox(const QString &identifier);
 
+     /**
+      * @brief clear input data and the current process toolbox
+      */
+     virtual void clear();
+
+     /**
+      * @brief retrieve data from the selected input image index
+      * @param index
+      */
+     void onInputSelected(medAbstractData *data);
 
 private:
     medSegmentationSelectorToolBoxPrivate *d;

@@ -4,37 +4,23 @@
 
  Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
+#ifndef POLYGONROIPLUGINEXPORT_H
+#define POLYGONROIPLUGINEXPORT_H
 
-#include <medAnnotationData.h>
+#ifdef WIN32
+    #ifdef polygonRoiPlugin_EXPORTS
+        #define POLYGONROIPLUGIN_EXPORT __declspec(dllexport) 
+    #else
+        #define POLYGONROIPLUGIN_EXPORT __declspec(dllimport) 
+    #endif
+#else
+    #define POLYGONROIPLUGIN_EXPORT
+#endif
 
-#include <medAbstractData.h>
-
-class medAnnotationData::medAnnotationDataPrivate
-{
-public:
-};
-
-medAnnotationData::medAnnotationData()
-    : medAttachedData(),
-    d( new medAnnotationDataPrivate )
-{
-}
-
-medAnnotationData::~medAnnotationData()
-{
-    delete d;
-    d = nullptr;
-}
-
-
-
-
-
-
-
+#endif

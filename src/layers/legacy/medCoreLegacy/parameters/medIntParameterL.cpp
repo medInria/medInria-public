@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,9 +12,9 @@
 =========================================================================*/
 
 #include <medIntParameterL.h>
+#include <medSlider.h>
 
 #include <QSpinBox>
-#include <QSlider>
 
 class medIntParameterLPrivate
 {
@@ -23,7 +23,7 @@ public:
     int max;
 
     QSpinBox *spinBox;
-    QSlider *slider;
+    medSlider *slider;
 
     ~medIntParameterLPrivate()
     {
@@ -42,8 +42,8 @@ medIntParameterL::medIntParameterL(QString name, QObject* parent):
     d->min = 0;
     d->max = 100;
     m_value = 0;
-    d->spinBox = NULL;
-    d->slider = NULL;
+    d->spinBox = nullptr;
+    d->slider = nullptr;
 }
 
 medIntParameterL::~medIntParameterL()
@@ -91,11 +91,11 @@ void medIntParameterL::setRange(int min, int max)
         d->slider->setRange(min, max);
 }
 
-QSlider* medIntParameterL::getSlider()
+medSlider* medIntParameterL::getSlider()
 {
     if(!d->slider)
     {
-        d->slider = new QSlider;
+        d->slider = new medSlider;
         d->slider->setRange(d->min, d->max);
         d->slider->setValue(m_value);
         d->slider->setStyleSheet("QSlider::handle:horizontal {width: 15px;}");
@@ -131,13 +131,13 @@ QWidget* medIntParameterL::getWidget()
 void medIntParameterL::removeInternSlider()
 {
     this->removeFromInternWidgets(d->slider);
-    d->slider = NULL;
+    d->slider = nullptr;
 }
 
 void medIntParameterL::removeInternSpinBox()
 {
     this->removeFromInternWidgets(d->spinBox);
-    d->spinBox = NULL;
+    d->spinBox = nullptr;
 }
 
 

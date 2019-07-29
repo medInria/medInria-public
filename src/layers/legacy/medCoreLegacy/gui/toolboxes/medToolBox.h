@@ -42,7 +42,7 @@ class MEDCORELEGACY_EXPORT medToolBox : public QWidget
     Q_OBJECT
 
 public:
-    medToolBox(QWidget *parent = 0);
+    medToolBox(QWidget *parent = nullptr);
     virtual ~medToolBox();
 
     void addWidget(QWidget *widget);
@@ -104,7 +104,7 @@ signals:
     void failure();
 
 public slots:
-    virtual void clear();
+    virtual void clear(){}
     void switchMinimize();
     void setValidDataTypes(const QStringList & dataTypes);
     const QStringList ValidDataTypes();
@@ -128,6 +128,8 @@ public slots:
 
     //! Default connections between a toolbox and a process (success, failure, etc)
     void addToolBoxConnections(medJobItemL *job);
+
+    virtual void updateView(){}
 
 protected slots:
     void onAboutButtonClicked();
