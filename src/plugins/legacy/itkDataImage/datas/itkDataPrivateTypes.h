@@ -22,7 +22,8 @@ struct itkDataImagePrivateTypeBase {
     typedef typename itk::Image<T,DIM> ImageType;
 
     itkDataImagePrivateTypeBase(): image(nullptr) { }
-    itkDataImagePrivateTypeBase(const itkDataImagePrivateTypeBase<DIM,T>& other) {
+    itkDataImagePrivateTypeBase(const itkDataImagePrivateTypeBase<DIM,T>& other)
+    {
         // create the filter that duplicates an image
         auto duplicator = itk::ImageDuplicator<ImageType>::New();
         duplicator->SetInputImage(other.image);
@@ -67,18 +68,21 @@ public:
     itkDataScalarImagePrivateType(): itkDataImagePrivateTypeBase<DIM,T>(), histogram(nullptr),range_min(0),range_max(0),histogram_min(0),histogram_max(0) {
         reset();
     }
-    itkDataScalarImagePrivateType(const itkDataScalarImagePrivateType<DIM,T>& other): itkDataImagePrivateTypeBase<DIM,T>(other) {
+    itkDataScalarImagePrivateType(const itkDataScalarImagePrivateType<DIM,T>& other): itkDataImagePrivateTypeBase<DIM,T>(other)
+    {
         this->histogram = other.histogram;
         this->range_computed = other.range_computed;
         this->range_min = other.range_min;
         this->range_max = other.range_max;
         this->histogram_min = other.histogram_min;
         this->histogram_min = other.histogram_min;
-        if (other.histogram) {
+        if (other.histogram)
+        {
             this->histogram = dynamic_cast<HistogramType*>(other.histogram->CreateAnother().GetPointer());
         }
-        else {
-            this->histogram = 0;
+        else
+        {
+            this->histogram = nullptr;
         }
     }
 
@@ -87,7 +91,9 @@ public:
     int minRangeValue() {
         computeRange();
         if (!range_computed)
+        {
             qDebug() << "Cannot compute range";
+        }
         return range_min;
     }
 

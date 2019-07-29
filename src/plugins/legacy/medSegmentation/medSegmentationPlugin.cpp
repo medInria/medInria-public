@@ -13,7 +13,6 @@
 
 #include <medSegmentationPlugin.h>
 
-//#include <medAlgorithmInitializer.h>
 #include <medAnnotationInteractor.h>
 
 // /////////////////////////////////////////////////////////////////
