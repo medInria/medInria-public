@@ -24,7 +24,11 @@ endforeach()
 
 foreach (dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
 	set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/bin/plugins_legacy")
-endforeach() 
+endforeach()
+
+foreach (dir ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
+        set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/bin/plugins_legacy")
+endforeach()
 
 ExternalProject_Get_Property(medInria binary_dir)
 
