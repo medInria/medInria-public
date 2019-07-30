@@ -2,10 +2,10 @@
 #include <string>
 #include <regex>
 #include <QtWidgets>
-#include "medBoutiquesSearchTools.h"
+#include "medBoutiquesSearchToolsWidget.h"
 
 
-medBoutiquesSearchTools::medBoutiquesSearchTools(QWidget *parent) : QWidget(parent)
+medBoutiquesSearchToolsWidget::medBoutiquesSearchToolsWidget(QWidget *parent) : QWidget(parent)
 {
     this->searchLineEdit = new QLineEdit();
     this->searchLineEdit->setPlaceholderText("Search a tool in Boutiques...");
@@ -37,21 +37,22 @@ medBoutiquesSearchTools::medBoutiquesSearchTools(QWidget *parent) : QWidget(pare
     layout->addWidget(this->info);
     this->setLayout(layout);
 
-    connect(this->button, &QPushButton::clicked, this, &medBoutiquesSearchTools::searchBoutiquesTools);
-    connect(this->searchLineEdit, &QLineEdit::returnPressed, this, &medBoutiquesSearchTools::searchBoutiquesTools);
+    connect(this->button, &QPushButton::clicked, this, &medBoutiquesSearchToolsWidget::searchBoutiquesTools);
+    connect(this->searchLineEdit, &QLineEdit::returnPressed, this, &medBoutiquesSearchToolsWidget::searchBoutiquesTools);
 
     this->createProcesses();
 }
 
-SearchResult *medBoutiquesSearchTools::getSelectedTool()
+SearchResult *medBoutiquesSearchToolsWidget::getSelectedTool()
 {
     int currentRow = this->table->currentRow();
     return currentRow >= 0 && currentRow < int(this->searchResults.size()) ? &this->searchResults[static_cast<unsigned int>(currentRow)] : nullptr;
 }
 
-void medBoutiquesSearchTools::createTable()
+void medBoutiquesSearchToolsWidget::createTable()
 {
     this->table = new QTableWidget();
+    this->table->setMinimumHeight(150);
     this->table->setRowCount(0);
     this->table->setColumnCount(4);
     this->table->move(0, 0);
@@ -59,22 +60,22 @@ void medBoutiquesSearchTools::createTable()
     this->table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     this->table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->table->setHorizontalHeaderLabels({ "ID", "Title", "Description", "Downloads" });
-    connect(this->table, &QTableWidget::itemSelectionChanged, this, &medBoutiquesSearchTools::selectionChanged);
+    connect(this->table, &QTableWidget::itemSelectionChanged, this, &medBoutiquesSearchToolsWidget::selectionChanged);
     this->table->hide();
 }
 
-void medBoutiquesSearchTools::createProcesses()
+void medBoutiquesSearchToolsWidget::createProcesses()
 {
     this->searchProcess = new QProcess(this);
-    connect(this->searchProcess, &QProcess::errorOccurred, this, &medBoutiquesSearchTools::errorOccurred);
-    connect(this->searchProcess, &QProcess::started, this, &medBoutiquesSearchTools::searchProcessStarted);
-    connect(this->searchProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &medBoutiquesSearchTools::searchProcessFinished);
+    connect(this->searchProcess, &QProcess::errorOccurred, this, &medBoutiquesSearchToolsWidget::errorOccurred);
+    connect(this->searchProcess, &QProcess::started, this, &medBoutiquesSearchToolsWidget::searchProcessStarted);
+    connect(this->searchProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &medBoutiquesSearchToolsWidget::searchProcessFinished);
 
     this->pprintProcess = new QProcess(this);
-    connect(this->pprintProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &medBoutiquesSearchTools::pprintProcessFinished);
+    connect(this->pprintProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &medBoutiquesSearchToolsWidget::pprintProcessFinished);
 }
 
-void medBoutiquesSearchTools::selectionChanged()
+void medBoutiquesSearchToolsWidget::selectionChanged()
 {
     SearchResult *tool = this->getSelectedTool();
     if(tool == nullptr) {
@@ -86,7 +87,7 @@ void medBoutiquesSearchTools::selectionChanged()
     this->loadingLabel->setText("Getting tool help...");
 }
 
-void medBoutiquesSearchTools::pprintProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void medBoutiquesSearchToolsWidget::pprintProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     Q_UNUSED(exitCode)
     Q_UNUSED(exitStatus)
@@ -99,7 +100,7 @@ void medBoutiquesSearchTools::pprintProcessFinished(int exitCode, QProcess::Exit
     emit toolSelected();
 }
 
-void medBoutiquesSearchTools::searchBoutiquesTools()
+void medBoutiquesSearchToolsWidget::searchBoutiquesTools()
 {
     this->loadingLabel->show();
     this->table->hide();
@@ -135,18 +136,18 @@ static inline string trim(string s) {
     return s;
 }
 
-void medBoutiquesSearchTools::errorOccurred(QProcess::ProcessError error)
+void medBoutiquesSearchToolsWidget::errorOccurred(QProcess::ProcessError error)
 {
     Q_UNUSED(error)
     this->loadingLabel->setText("An error occurred while searching the tool.");
 }
 
-void medBoutiquesSearchTools::searchProcessStarted()
+void medBoutiquesSearchToolsWidget::searchProcessStarted()
 {
     this->loadingLabel->setText("Searching for tools...");
 }
 
-void medBoutiquesSearchTools::searchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void medBoutiquesSearchToolsWidget::searchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     Q_UNUSED(exitCode)
     Q_UNUSED(exitStatus)

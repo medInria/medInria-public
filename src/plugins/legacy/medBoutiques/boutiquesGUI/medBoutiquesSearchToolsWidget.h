@@ -1,5 +1,5 @@
-#ifndef MEDBOUTIQUESSEARCHTOOLS_H
-#define MEDBOUTIQUESSEARCHTOOLS_H
+#ifndef MEDBOUTIQUESSEARCHTOOLSWIDGET_H
+#define MEDBOUTIQUESSEARCHTOOLSWIDGET_H
 
 #include <vector>
 #include <QWidget>
@@ -27,11 +27,11 @@ struct SearchResult {
     int downloads;
 };
 
-class medBoutiquesSearchTools : public QWidget
+class medBoutiquesSearchToolsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit medBoutiquesSearchTools(QWidget *parent = nullptr);
+    explicit medBoutiquesSearchToolsWidget(QWidget *parent = nullptr);
 
     SearchResult *getSelectedTool();
 
@@ -64,4 +64,4 @@ private:
     std::vector<SearchResult> searchResults;
 };
 
-#endif // MEDBOUTIQUESSEARCHTOOLS_H
+#endif // MEDBOUTIQUESSEARCHTOOLSWIDGET_H

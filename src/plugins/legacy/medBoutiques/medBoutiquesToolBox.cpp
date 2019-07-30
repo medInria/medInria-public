@@ -34,16 +34,19 @@
 #include <medFilteringSelectorToolBox.h>
 #include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
+#include <medDataManager.h>
 
 #include <QtGui>
+
+#include "boutiquesGUI/medBoutiquesFileHandler.h"
 
 class medBoutiquesToolBoxPrivate
 {
 public:
 
-    medBoutiquesSearchTools *searchToolsWidget;
-    medBoutiquesInvocation *invocationWidget;
-    medBoutiquesExecution *executionWidget;
+    medBoutiquesSearchToolsWidget *searchToolsWidget;
+    medBoutiquesInvocationWidget *invocationWidget;
+    medBoutiquesExecutionWidget *executionWidget;
 
     QLineEdit *variance;
     dtkSmartPointer <dtkAbstractProcess> process;
@@ -53,17 +56,17 @@ public:
 medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medBoutiquesToolBoxPrivate)
 {
 
-    d->searchToolsWidget = new medBoutiquesSearchTools(parent);
-    d->invocationWidget = new medBoutiquesInvocation(parent, d->searchToolsWidget);
-    d->executionWidget = new medBoutiquesExecution(parent, d->searchToolsWidget, d->invocationWidget);
+    d->searchToolsWidget = new medBoutiquesSearchToolsWidget(parent);
+    d->invocationWidget = new medBoutiquesInvocationWidget(parent, d->searchToolsWidget, new medBoutiquesFileHandler(this));
+    d->executionWidget = new medBoutiquesExecutionWidget(parent, d->searchToolsWidget, d->invocationWidget);
 
     d->invocationWidget->hide();
     d->executionWidget->hide();
 
-    connect(d->searchToolsWidget, &medBoutiquesSearchTools::toolSelected, d->invocationWidget, &medBoutiquesInvocation::toolSelected);
-    connect(d->searchToolsWidget, &medBoutiquesSearchTools::toolSelected, d->executionWidget, &medBoutiquesExecution::toolSelected);
-    connect(d->searchToolsWidget, &medBoutiquesSearchTools::toolDeselected, d->invocationWidget, &medBoutiquesInvocation::toolDeselected);
-    connect(d->searchToolsWidget, &medBoutiquesSearchTools::toolDeselected, d->executionWidget, &medBoutiquesExecution::toolDeselected);
+    connect(d->searchToolsWidget, &medBoutiquesSearchToolsWidget::toolSelected, d->invocationWidget, &medBoutiquesInvocationWidget::toolSelected);
+    connect(d->searchToolsWidget, &medBoutiquesSearchToolsWidget::toolSelected, d->executionWidget, &medBoutiquesExecutionWidget::toolSelected);
+    connect(d->searchToolsWidget, &medBoutiquesSearchToolsWidget::toolDeselected, d->invocationWidget, &medBoutiquesInvocationWidget::toolDeselected);
+    connect(d->searchToolsWidget, &medBoutiquesSearchToolsWidget::toolDeselected, d->executionWidget, &medBoutiquesExecutionWidget::toolDeselected);
 
     QWidget *centralWidget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout();
@@ -132,6 +135,14 @@ medAbstractData* medBoutiquesToolBox::processOutput()
         return NULL;
 
     return static_cast<medAbstractData*>(d->process->output());
+}
+
+medAbstractData* medBoutiquesToolBox::getInput()
+{
+     if(!this->parentToolBox())
+         return nullptr;
+
+     return this->parentToolBox()->data();
 }
 
 // void medBoutiquesToolBox::run()

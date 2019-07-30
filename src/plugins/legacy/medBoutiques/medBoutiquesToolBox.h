@@ -14,9 +14,10 @@
 #pragma once
 
 #include <medFilteringAbstractToolBox.h>
-#include "medBoutiquesSearchTools.h"
-#include "medBoutiquesInvocation.h"
-#include "medBoutiquesExecution.h"
+#include "boutiquesGUI/medBoutiquesSearchToolsWidget.h"
+#include "boutiquesGUI/medBoutiquesInvocationWidget.h"
+#include "boutiquesGUI/medBoutiquesInvocationGUIWidget.h"
+#include "boutiquesGUI/medBoutiquesExecutionWidget.h"
 
 class medBoutiquesToolBoxPrivate;
 
@@ -31,6 +32,7 @@ public:
 
     static bool registered();
     medAbstractData* processOutput();
+    medAbstractData* getInput();
     dtkPlugin* plugin();
     void update(medAbstractData *data);
 

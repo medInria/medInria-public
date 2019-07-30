@@ -1,11 +1,11 @@
 #include <regex>
 #include <QtWidgets>
-#include "medBoutiquesExecution.h"
+#include "medBoutiquesExecutionWidget.h"
 
-medBoutiquesExecution::medBoutiquesExecution(QWidget *parent, medBoutiquesSearchTools *searchToolsWidget, medBoutiquesInvocation *invocationWidget) :
+medBoutiquesExecutionWidget::medBoutiquesExecutionWidget(QWidget *parent, medBoutiquesSearchToolsWidget *searchToolsWidget, medBoutiquesInvocationWidget *invocationWidget) :
     QWidget(parent), searchToolsWidget(searchToolsWidget), invocationWidget(invocationWidget)
 {
-    connect(this->invocationWidget->invocationGUIWidget, &medBoutiquesInvocationGUI::invocationChanged, this, &medBoutiquesExecution::invocationChanged);
+    connect(this->invocationWidget->invocationGUIWidget, &medBoutiquesInvocationGUIWidget::invocationChanged, this, &medBoutiquesExecutionWidget::invocationChanged);
     this->layout = new QVBoxLayout();
 
     this->generatedCommandLabel = new QLabel("Generated command:");
@@ -15,6 +15,7 @@ medBoutiquesExecution::medBoutiquesExecution(QWidget *parent, medBoutiquesSearch
     this->cancelButton->hide();
 
     this->output = new QTextEdit();
+    this->output->setMinimumHeight(300);
     this->output->setReadOnly(true);
 
     this->layout->addWidget(this->generatedCommandLabel);
@@ -23,22 +24,22 @@ medBoutiquesExecution::medBoutiquesExecution(QWidget *parent, medBoutiquesSearch
     this->layout->addWidget(this->cancelButton);
     this->layout->addWidget(this->output);
 
-    connect(this->executeButton, &QPushButton::clicked, this, &medBoutiquesExecution::executeTool);
-    connect(this->cancelButton, &QPushButton::clicked, this, &medBoutiquesExecution::cancelExecution);
+    connect(this->executeButton, &QPushButton::clicked, this, &medBoutiquesExecutionWidget::executeTool);
+    connect(this->cancelButton, &QPushButton::clicked, this, &medBoutiquesExecutionWidget::cancelExecution);
 
     this->executionProcess = new QProcess(this);
-    connect(this->executionProcess, &QProcess::errorOccurred, this, &medBoutiquesExecution::errorOccurred);
-    connect(this->executionProcess, &QProcess::readyRead, this, &medBoutiquesExecution::dataReady);
-    connect(this->executionProcess, &QProcess::started, this, &medBoutiquesExecution::executionProcessStarted);
-    connect(this->executionProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &medBoutiquesExecution::executionProcessFinished);
+    connect(this->executionProcess, &QProcess::errorOccurred, this, &medBoutiquesExecutionWidget::errorOccurred);
+    connect(this->executionProcess, &QProcess::readyRead, this, &medBoutiquesExecutionWidget::dataReady);
+    connect(this->executionProcess, &QProcess::started, this, &medBoutiquesExecutionWidget::executionProcessStarted);
+    connect(this->executionProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &medBoutiquesExecutionWidget::executionProcessFinished);
 
     this->simulationProcess = new QProcess(this);
-    connect(this->simulationProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &medBoutiquesExecution::simulationProcessFinished);
+    connect(this->simulationProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &medBoutiquesExecutionWidget::simulationProcessFinished);
 
     this->setLayout(this->layout);
 }
 
-QString medBoutiquesExecution::getTemporaryInvocationFile()
+QString medBoutiquesExecutionWidget::getTemporaryInvocationFile()
 {
     QDir temp = QDir::tempPath();
     temp.filePath("invocation.json");
@@ -52,7 +53,7 @@ QString medBoutiquesExecution::getTemporaryInvocationFile()
     return temporaryInvocationFilePath;
 }
 
-void medBoutiquesExecution::invocationChanged()
+void medBoutiquesExecutionWidget::invocationChanged()
 {
     SearchResult *tool = this->searchToolsWidget->getSelectedTool();
 
@@ -66,13 +67,13 @@ void medBoutiquesExecution::invocationChanged()
     this->simulationProcess->start(BOSH_PATH, {"exec", "simulate", "-i", temporaryInvocationFilePath.toStdString().c_str(), tool->id.c_str()});
 }
 
-void medBoutiquesExecution::simulationProcessFinished()
+void medBoutiquesExecutionWidget::simulationProcessFinished()
 {
     QString output = QString::fromUtf8(this->simulationProcess->readAll());
     this->generatedCommand->setText(output);
 }
 
-void medBoutiquesExecution::executeTool()
+void medBoutiquesExecutionWidget::executeTool()
 {
     SearchResult *tool = this->searchToolsWidget->getSelectedTool();
 
@@ -80,22 +81,38 @@ void medBoutiquesExecution::executeTool()
     {
         return;
     }
+    QString currentPath = QDir::currentPath();
+    QString boshPath = QFileInfo(BOSH_PATH).absoluteFilePath();
+
+    // The current directory changes in "invocationWidget->setAndGetAbsoluteDirectories()"
+    const QStringList &directories = this->invocationWidget->setAndGetAbsoluteDirectories();
 
     QString temporaryInvocationFilePath = this->getTemporaryInvocationFile();
 
     this->executionProcess->kill();
-    this->executionProcess->start(BOSH_PATH, {"exec", "launch", "-s", tool->id.c_str(), temporaryInvocationFilePath.toStdString().c_str()});
+    QStringList args({"exec", "launch", "-s", tool->id.c_str(), temporaryInvocationFilePath.toStdString().c_str()});
+
+    for(const QString &directory: directories)
+    {
+        args.push_back("-v");
+        args.push_back(directory + ":" + directory);
+    }
+    this->executionProcess->kill();
+
+    this->executionProcess->start(boshPath, args);
     this->output->clear();
+
+    QDir::setCurrent(currentPath);
 }
 
-void medBoutiquesExecution::cancelExecution()
+void medBoutiquesExecutionWidget::cancelExecution()
 {
     this->executionProcess->kill();
     this->executeButton->show();
     this->cancelButton->show();
 }
 
-void medBoutiquesExecution::print(const QString& text)
+void medBoutiquesExecutionWidget::print(const QString& text)
 {
     QTextCursor cursor = this->output->textCursor();
     cursor.movePosition(cursor.End);
@@ -103,21 +120,21 @@ void medBoutiquesExecution::print(const QString& text)
     this->output->ensureCursorVisible();
 }
 
-void medBoutiquesExecution::executionProcessStarted()
+void medBoutiquesExecutionWidget::executionProcessStarted()
 {
     this->print("Process started...\n\n");
     this->executeButton->hide();
     this->cancelButton->show();
 }
 
-void medBoutiquesExecution::executionProcessFinished()
+void medBoutiquesExecutionWidget::executionProcessFinished()
 {
     this->print("Process finished.");
     this->executeButton->show();
     this->cancelButton->hide();
 }
 
-void medBoutiquesExecution::dataReady()
+void medBoutiquesExecutionWidget::dataReady()
 {
     QString output = QString::fromUtf8(this->executionProcess->readAll());
 
@@ -127,18 +144,18 @@ void medBoutiquesExecution::dataReady()
     this->print(QString::fromStdString(outputClean));
 }
 
-void medBoutiquesExecution::errorOccurred(QProcess::ProcessError error)
+void medBoutiquesExecutionWidget::errorOccurred(QProcess::ProcessError error)
 {
     Q_UNUSED(error)
     this->print("An error occured during the process execution.\n\n");
 }
 
-void medBoutiquesExecution::toolSelected()
+void medBoutiquesExecutionWidget::toolSelected()
 {
     this->show();
 }
 
-void medBoutiquesExecution::toolDeselected()
+void medBoutiquesExecutionWidget::toolDeselected()
 {
     this->hide();
 }

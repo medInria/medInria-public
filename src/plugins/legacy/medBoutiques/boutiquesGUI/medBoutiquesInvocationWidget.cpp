@@ -1,11 +1,13 @@
 #include <QtWidgets>
-#include "medBoutiquesInvocation.h"
+#include "medBoutiquesInvocationWidget.h"
 
-medBoutiquesInvocation::medBoutiquesInvocation(QWidget *parent, medBoutiquesSearchTools *searchToolsWidget) : QWidget(parent), searchToolsWidget(searchToolsWidget)
+medBoutiquesInvocationWidget::medBoutiquesInvocationWidget(QWidget *parent, medBoutiquesSearchToolsWidget *searchToolsWidget, medBoutiquesAbstractFileHandler *medBoutiquesFileHandler) :
+    QWidget(parent),
+    searchToolsWidget(searchToolsWidget)
 {
     this->layout = new QVBoxLayout();
 
-    this->invocationGUIWidget = new medBoutiquesInvocationGUI(this, this->searchToolsWidget);
+    this->invocationGUIWidget = new medBoutiquesInvocationGUIWidget(this, this->searchToolsWidget, medBoutiquesFileHandler);
     this->openInvocationButton = new QPushButton("Open invocation file");
 
     this->invocationEditor = new QTextEdit();
@@ -17,17 +19,31 @@ medBoutiquesInvocation::medBoutiquesInvocation(QWidget *parent, medBoutiquesSear
     this->layout->addWidget(this->invocationEditor);
     this->layout->addWidget(this->saveInvocationButton);
 
-    connect(this->openInvocationButton, &QPushButton::clicked, this, &medBoutiquesInvocation::openInvocationFile);
-    connect(this->saveInvocationButton, &QPushButton::clicked, this, &medBoutiquesInvocation::saveInvocationFile);
-    connect(this->invocationGUIWidget, &medBoutiquesInvocationGUI::invocationChanged, this, &medBoutiquesInvocation::invocationChanged);
+    connect(this->openInvocationButton, &QPushButton::clicked, this, &medBoutiquesInvocationWidget::openInvocationFile);
+    connect(this->saveInvocationButton, &QPushButton::clicked, this, &medBoutiquesInvocationWidget::saveInvocationFile);
+    connect(this->invocationGUIWidget, &medBoutiquesInvocationGUIWidget::invocationChanged, this, &medBoutiquesInvocationWidget::invocationChanged);
 
     this->setLayout(this->layout);
 
     this->generateInvocationProcess = new QProcess(this);
-    connect(this->generateInvocationProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &medBoutiquesInvocation::generateInvocationProcessFinished);
+    connect(this->generateInvocationProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &medBoutiquesInvocationWidget::generateInvocationProcessFinished);
 }
 
-void medBoutiquesInvocation::generateInvocationFile()
+QStringList medBoutiquesInvocationWidget::setAndGetAbsoluteDirectories()
+{
+    QStringList directories;
+    QString invocationString = this->invocationEditor->toPlainText();
+    QJsonObject invocationJsonAbsolutePath = QJsonDocument::fromJson(invocationString.toUtf8()).object();
+
+    this->invocationGUIWidget->populateDirectories(invocationJsonAbsolutePath, directories);
+
+    QJsonDocument document(invocationJsonAbsolutePath);
+    QByteArray output = document.toJson(QJsonDocument::Indented);
+    this->invocationEditor->setText(output);
+    return directories;
+}
+
+void medBoutiquesInvocationWidget::generateInvocationFile()
 {
     const SearchResult* tool = this->searchToolsWidget->getSelectedTool();
     if(tool == nullptr)
@@ -45,7 +61,7 @@ void medBoutiquesInvocation::generateInvocationFile()
     this->generateInvocationProcess->start(BOSH_PATH, args);
 }
 
-void medBoutiquesInvocation::generateInvocationProcessFinished()
+void medBoutiquesInvocationWidget::generateInvocationProcessFinished()
 {
     QByteArray result = this->generateInvocationProcess->readAll();
     this->invocationJSON = QJsonDocument::fromJson(result).object();
@@ -53,7 +69,7 @@ void medBoutiquesInvocation::generateInvocationProcessFinished()
     this->invocationGUIWidget->parseDescriptor(&this->invocationJSON);
 }
 
-void medBoutiquesInvocation::openInvocationFile()
+void medBoutiquesInvocationWidget::openInvocationFile()
 {
     const QString& name = QFileDialog::getOpenFileName(this, "Open invocation file");
 
@@ -67,14 +83,14 @@ void medBoutiquesInvocation::openInvocationFile()
     this->invocationEditor->setText(text);
 }
 
-void medBoutiquesInvocation::invocationChanged()
+void medBoutiquesInvocationWidget::invocationChanged()
 {
     QJsonDocument document(this->invocationJSON);
     QByteArray output = document.toJson(QJsonDocument::Indented);
     this->invocationEditor->setText(output);
 }
 
-void medBoutiquesInvocation::saveInvocationFile()
+void medBoutiquesInvocationWidget::saveInvocationFile()
 {
     const QString& name = QFileDialog::getSaveFileName(this, "Save invocation file");
     QFile file(name);
@@ -83,13 +99,13 @@ void medBoutiquesInvocation::saveInvocationFile()
     file.write(this->invocationEditor->toPlainText().toUtf8());
 }
 
-void medBoutiquesInvocation::toolSelected()
+void medBoutiquesInvocationWidget::toolSelected()
 {
     this->show();
     this->generateInvocationFile();
 }
 
-void medBoutiquesInvocation::toolDeselected()
+void medBoutiquesInvocationWidget::toolDeselected()
 {
     this->hide();
 }

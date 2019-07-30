@@ -43,8 +43,8 @@ include(${ITK_USE_FILE})
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  boutiquesGUI
   )
-  
   
 ## #############################################################################
 ## include directories.

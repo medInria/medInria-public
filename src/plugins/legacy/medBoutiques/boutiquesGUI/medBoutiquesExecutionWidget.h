@@ -1,19 +1,19 @@
-#ifndef MEDBOUTIQUESEXECUTION_H
-#define MEDBOUTIQUESEXECUTION_H
+#ifndef MEDBOUTIQUESEXECUTIONWIDGET_H
+#define MEDBOUTIQUESEXECUTIONWIDGET_H
 
 #include <QWidget>
-#include "medBoutiquesSearchTools.h"
-#include "medBoutiquesInvocation.h"
+#include "medBoutiquesSearchToolsWidget.h"
+#include "medBoutiquesInvocationWidget.h"
 
 QT_BEGIN_NAMESPACE
 QT_END_NAMESPACE
 
-class medBoutiquesExecution : public QWidget
+class medBoutiquesExecutionWidget : public QWidget
 {
     Q_OBJECT
 public:
-    medBoutiquesSearchTools *searchToolsWidget;
-    medBoutiquesInvocation *invocationWidget;
+    medBoutiquesSearchToolsWidget *searchToolsWidget;
+    medBoutiquesInvocationWidget *invocationWidget;
     QLayout *layout;
     QLabel *generatedCommandLabel;
     QTextEdit *generatedCommand;
@@ -24,7 +24,7 @@ public:
     QProcess *simulationProcess;
 
 public:
-    explicit medBoutiquesExecution(QWidget *parent = nullptr, medBoutiquesSearchTools *searchToolsWidget = nullptr, medBoutiquesInvocation *invocationWidget = nullptr);
+    explicit medBoutiquesExecutionWidget(QWidget *parent = nullptr, medBoutiquesSearchToolsWidget *searchToolsWidget = nullptr, medBoutiquesInvocationWidget *invocationWidget = nullptr);
 
 private:
     QString getTemporaryInvocationFile();
@@ -45,4 +45,4 @@ public slots:
     void toolDeselected();
 };
 
-#endif // MEDBOUTIQUESEXECUTION_H
+#endif // MEDBOUTIQUESEXECUTIONWIDGET_H
