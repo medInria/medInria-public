@@ -10,7 +10,7 @@
 //#define TEST_DRAGGABLE_INPUTS
 
 #ifdef BOUTIQUE_GUI_STANDALONE
-#define BOUTIQUES_DIRECTORY "/../BoutiquesGUI-Data"
+#define BOUTIQUES_DIRECTORY "/../BoutiquesGUI-Data/"
 #else
 #define BOUTIQUES_DIRECTORY "/BoutiquesGUI-Data/"
 #endif

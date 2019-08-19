@@ -46,5 +46,22 @@ signals:
      void open_waitForImportedSignal(medDataIndex index, QUuid uuid);
 
 private:
+    // Check the "installed" setting: perform install checks if false, ignore install otherwise
+    void checkBoutiquesInstallation();
+
+    // Perform installation check: verify that python and docker can run properly and warn the user otherwise
+    // Set the "installed" setting to "true" if everything works fine
+    void installBoutiques(QJsonObject *settings = nullptr);
+
+    // Set the "installed" setting to "true"
+    void setBoutiquesInstalled(QJsonObject *settings);
+
+    // Check that the python command works ("python" on Linux and OS X, "$EXEC_PATH/BoutiquesGUI-DATA/python/python.exe" on Windows)
+    bool isPythonWorking(const QString &version = "");
+
+    // Check that the docker command works "docker"
+    bool isDockerWorking();
+
+private:
      medBoutiquesToolBoxPrivate *d;
 };
