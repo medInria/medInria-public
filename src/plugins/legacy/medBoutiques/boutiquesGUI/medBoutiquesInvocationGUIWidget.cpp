@@ -12,6 +12,7 @@ medBoutiquesInvocationGUIWidget::medBoutiquesInvocationGUIWidget(QWidget *parent
 {
     this->layout = new QVBoxLayout(this);
     this->setMinimumHeight(750);
+//    this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::MinimumExpanding);
     this->scrollArea = new QScrollArea(this);
 //    this->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     this->scrollArea->setWidgetResizable(true);
@@ -92,7 +93,7 @@ void medBoutiquesInvocationGUIWidget::removeMutuallyExclusiveParameters(const QS
     }
 }
 
-QJsonArray medBoutiquesInvocationGUIWidget::stringToArray(const QString &string)
+inline QJsonArray medBoutiquesInvocationGUIWidget::stringToArray(const QString &string)
 {
     QJsonDocument jsonDocument(QJsonDocument::fromJson(QByteArray::fromStdString("[" + string.toStdString() + "]")));
     return jsonDocument.array();
@@ -283,9 +284,10 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
 
     QVBoxLayout *groupLayout = new QVBoxLayout(this->group);
     this->group->setLayout(groupLayout);
-    SearchResult *searchResult = this->searchToolsWidget->getSelectedTool();
+    ToolDescription *searchResult = this->searchToolsWidget->getSelectedTool();
 
-    QString descriptorFileName = QString::fromStdString(searchResult->id).replace(QChar('.'), QChar('-')) + ".json";
+    QString id = QString::fromStdString(searchResult->id.toStdString()); // deep copy the string
+    QString descriptorFileName = id.replace(QChar('.'), QChar('-')) + ".json";
     QDir cacheDirectory(QDir::homePath() + "/.cache/boutiques");
 
     QFile file(cacheDirectory.absoluteFilePath(descriptorFileName));
@@ -313,6 +315,7 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
     }
 
     this->idToInputObject.clear();
+    this->selectedOutputId.clear();
 
     QJsonArray inputArray = json["inputs"].toArray();
     for (int i = 0 ; i<inputArray.size() ; ++i)
@@ -367,6 +370,8 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
         destinationLayouts.push_back(pair<QGroupBox*, QVBoxLayout*>(groupAndLayout.first, groupIsOptional ? optionalInputsGroupAndLayout.second : mainInputsGroupAndLayout.second));
     }
 
+    bool noOptionalInput = true;
+
     for (auto& idAndInputObject: idToInputObject)
     {
         const QString &inputId = idAndInputObject.first;
@@ -378,6 +383,8 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
         const QString &inputDescription = inputObject.description["description"].toString();
         const QJsonValue &inputValue = this->invocationJSON->value(inputId);
         bool inputIsOptional = inputObject.description["optional"].toBool();
+
+        noOptionalInput &= !inputIsOptional;
 
         QWidget *widget = nullptr;
         QLayout *parentLayout = nullptr;
@@ -491,7 +498,10 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                         QString text = lineEdit->text();
                         text += text.length() > 0 ? ", " : "";
                         const QString &currentInputFilePath = this->fileHandler->createTemporaryInputFileForCurrentInput();
-                        lineEdit->setText(text + "\"" + currentInputFilePath + "\"");
+                        if(!currentInputFilePath.isEmpty())
+                        {
+                            lineEdit->setText(text + "\"" + currentInputFilePath + "\"");
+                        }
                     } );
 
                     layout->addWidget(SetCurrentInputPushButton);
@@ -529,25 +539,25 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
             }
             else
             {
-                if( (inputType == "String" || inputType == "Number") && inputObject.description.contains("value-choices") && inputObject.description["value-choices"].isArray()  && inputObject.description["value-choices"].toArray().size() > 0)
+                if(     (inputType == "String" || inputType == "Number") &&
+                        inputObject.description.contains("value-choices") &&
+                        inputObject.description["value-choices"].isArray()  &&
+                        inputObject.description["value-choices"].toArray().size() > 0)
                 {
                     const QJsonArray &choices = inputObject.description["value-choices"].toArray();
                     QComboBox *comboBox = new QComboBox();
                     layout->addWidget(comboBox);
+                    bool isInt = inputObject.description["integer"].toBool();
                     connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, inputId](){ this->valueChanged(inputId); });
-                    inputObject.getValue = [comboBox]() { return comboBox->currentText(); };
-                    bool anItemIsEmpty = false;
+                    inputObject.getValue = [comboBox, inputType, isInt]()
+                    {
+                        const QString &text = comboBox->currentText();
+                        return inputType == "String" ? QJsonValue(text) : isInt ? QJsonValue(text.toInt()) : QJsonValue(text.toDouble());
+                    };
                     for(const auto &choice: choices)
                     {
-                        anItemIsEmpty |= choice.toString().isEmpty();
-                    }
-                    if(inputIsOptional && !anItemIsEmpty)
-                    {
-                        comboBox->addItem("");
-                    }
-                    for(const auto &choice: choices)
-                    {
-                        comboBox->addItem(choice.toString());
+                        const QString &value = inputType == "String" ? choice.toString() : QString::number( isInt ? choice.toInt() : choice.toDouble());
+                        comboBox->addItem(value);
                     }
                 }
                 else if(inputType == "String")
@@ -618,9 +628,9 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                     connect(selectFilePushButton, &QPushButton::clicked, [this, inputName, lineEdit]() { lineEdit->setText(QFileDialog::getOpenFileName(this, "Select " + inputName)); } );
                     layout->addWidget(selectFilePushButton);
 
-                    QPushButton *SetCurrentInputPushButton = new QPushButton("Set input");
-                    connect(SetCurrentInputPushButton, &QPushButton::clicked, [this, lineEdit]() { lineEdit->setText(this->fileHandler->createTemporaryInputFileForCurrentInput()); } );
-                    layout->addWidget(SetCurrentInputPushButton);
+                    QPushButton *setInputPushButton = new QPushButton("Set input");
+                    connect(setInputPushButton, &QPushButton::clicked, [this, lineEdit]() { lineEdit->setText(this->fileHandler->createTemporaryInputFileForCurrentInput()); } );
+                    layout->addWidget(setInputPushButton);
 
                     widget->setAcceptDrops(true);
 
@@ -637,8 +647,37 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                         {
                             filePath = this->fileHandler->createTemporaryInputFileForMimeData(mimeData);
                         }
-                        lineEdit->setText(filePath);
+                        if(!filePath.isEmpty())
+                        {
+                            lineEdit->setText(filePath);
+                        }
                     });
+                }
+
+                if(inputType == "String")
+                {
+                    bool foundCorrespondingOutput = false;
+                    const QString &inputValueKey = inputObject.description["value-key"].toString();
+                    for (int i = 0 ; i<this->outputFiles.size() ; ++i)
+                    {
+                        const QJsonObject &outputFilesDescription = this->outputFiles[i].toObject();
+                        const QString &pathTemplate = outputFilesDescription["path-template"].toString();
+                        if(pathTemplate.contains(inputValueKey) && this->fileHandler->hasKnownExtension(pathTemplate))
+                        {
+                            if(this->selectedOutputId.isEmpty())
+                            {
+                                this->selectedOutputId = outputFilesDescription["id"].toString();
+                            }
+                            foundCorrespondingOutput = true;
+                            break;
+                        }
+                    }
+                    if(foundCorrespondingOutput)
+                    {
+                        QPushButton *toggleOutputPushButton = new QPushButton("Set output");
+                        connect(toggleOutputPushButton, &QPushButton::clicked, [this, toggleOutputPushButton, inputId]() { this->toggleOutputFile(toggleOutputPushButton, inputId); } );
+                        layout->addWidget(toggleOutputPushButton);
+                    }
                 }
             }
             widget->setToolTip(inputDescription);
@@ -683,6 +722,13 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
     }
     groupLayout->addWidget(mainInputsGroupAndLayout.first);
     groupLayout->addWidget(optionalInputsGroupAndLayout.first);
+    groupLayout->addStretch();
+    if(noOptionalInput)
+    {
+        optionalInputGroup->hide();
+    }
+
+    this->emitInvocationChanged();
 }
 
 bool medBoutiquesInvocationGUIWidget::generateCompleteInvocation()
@@ -690,7 +736,7 @@ bool medBoutiquesInvocationGUIWidget::generateCompleteInvocation()
     return this->optionalInputGroup != nullptr && this->optionalInputGroup->isChecked();
 }
 
-void medBoutiquesInvocationGUIWidget::populateDirectories(QJsonObject &invocationJSON, QStringList &directories)
+void medBoutiquesInvocationGUIWidget::populateDirectoriesAndSetOutputFileName(QJsonObject &invocationJSON, QStringList &directories)
 {
     QDir::setCurrent(QDir::homePath());
 
@@ -709,7 +755,13 @@ void medBoutiquesInvocationGUIWidget::populateDirectories(QJsonObject &invocatio
         }
     }
     this->populateInputDirectories(invocationJSON, directories, hasChangedCurrentDirectory);
-    this->populateOutputDirectories(invocationJSON, directories, hasChangedCurrentDirectory);
+    this->populateOutputDirectoriesAndSetOutputFileName(invocationJSON, directories, hasChangedCurrentDirectory);
+
+}
+
+QString medBoutiquesInvocationGUIWidget::getOutputFileName()
+{
+    return this->outputFileName;
 }
 
 void medBoutiquesInvocationGUIWidget::askChangeCurrentDirectory()
@@ -782,7 +834,7 @@ void medBoutiquesInvocationGUIWidget::populateInputDirectories(const QJsonObject
    }
 }
 
-void medBoutiquesInvocationGUIWidget::populateOutputDirectories(const QJsonObject &invocationJSON, QStringList &directories, bool &hasChangedCurrentDirectory)
+void medBoutiquesInvocationGUIWidget::populateOutputDirectoriesAndSetOutputFileName(const QJsonObject &invocationJSON, QStringList &directories, bool &hasChangedCurrentDirectory)
 {
     for (auto& idAndInputObject: idToInputObject)
     {
@@ -829,8 +881,89 @@ void medBoutiquesInvocationGUIWidget::populateOutputDirectories(const QJsonObjec
                             directories.append(absolutePath);
                         }
                     }
+                    if(outputFilesDescription["id"].toString() == this->selectedOutputId)
+                    {
+                        this->outputFileName = fileInfo.absoluteFilePath();
+                    }
                 }
             }
         }
+    }
+}
+
+void medBoutiquesInvocationGUIWidget::toggleOutputFile(QPushButton *toggleOutputPushButton, const QString &inputId)
+{
+    if(toggleOutputPushButton->text() == "Unset output")
+    {
+        this->selectedOutputId.clear();
+        toggleOutputPushButton->setText("Set output");
+        return;
+    }
+    const InputObject &inputObject = this->idToInputObject.at(inputId);
+    const QString &inputValueKey = inputObject.description["value-key"].toString();
+
+    struct OutputFile {
+        QString name;
+        QString description;
+        QString id;
+        OutputFile(const QString &name, const QString &description, const QString &id): name(name), description(description), id(id) {}
+    };
+
+    vector<OutputFile> outputFiles;
+    for (int i = 0 ; i<this->outputFiles.size() ; ++i)
+    {
+        const QJsonObject &outputFilesDescription = this->outputFiles[i].toObject();
+        const QString &pathTemplate = outputFilesDescription["path-template"].toString();
+        if(pathTemplate.contains(inputValueKey) && this->fileHandler->hasKnownExtension(pathTemplate))
+        {
+            const QString &outputName = outputFilesDescription["name"].toString();
+            const QString &outputDescription = outputFilesDescription["description"].toString();
+            outputFiles.push_back(OutputFile(outputName + "(" + pathTemplate + ")", outputDescription, outputFilesDescription["id"].toString()));
+        }
+    }
+
+    if(outputFiles.size() <= 0)
+    {
+        return;
+    }
+    else if (outputFiles.size() == 1)
+    {
+        this->selectedOutputId = outputFiles[0].id;
+        toggleOutputPushButton->setText("Unset output");
+    }
+    else
+    {
+        QDialog messageBox;
+
+        QVBoxLayout *messageBoxLayout = new QVBoxLayout();
+        messageBox.setLayout(messageBoxLayout);
+
+        QLabel *title = new QLabel("<b>Please select an output file type</b>");
+        QLabel *message = new QLabel("There are multiple output files associated with this input string, please select the one which will be displayed as output.");
+        QLabel *descriptionLabel = new QLabel("");
+        QPushButton *okButton = new QPushButton("Ok");
+
+        connect(okButton, &QPushButton::clicked, [&messageBox]() { messageBox.close(); } );
+
+        messageBoxLayout->addWidget(title);
+        messageBoxLayout->addWidget(message);
+
+        QComboBox* typeComboBox = new QComboBox();
+
+        for(const auto &outputFile : outputFiles)
+        {
+            typeComboBox->addItem(outputFile.name, outputFile.description);
+            typeComboBox->setItemData(typeComboBox->count() - 1, outputFile.id, Qt::UserRole + 1);
+        }
+        connect(typeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [typeComboBox, descriptionLabel](int itemIndex) { descriptionLabel->setText(typeComboBox->itemData(itemIndex).toString()); } );
+
+        messageBoxLayout->addWidget(typeComboBox);
+        messageBoxLayout->addWidget(descriptionLabel);
+        messageBoxLayout->addWidget(okButton);
+
+        messageBox.exec();
+
+        this->selectedOutputId = typeComboBox->itemData(typeComboBox->currentIndex(), Qt::UserRole + 1).toString();
+        toggleOutputPushButton->setText("Unset output");
     }
 }

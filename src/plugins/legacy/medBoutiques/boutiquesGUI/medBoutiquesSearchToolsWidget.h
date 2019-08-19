@@ -4,8 +4,9 @@
 #include <vector>
 #include <QWidget>
 #include <QProcess>
-
-#define BOSH_PATH "../bosh"
+#include <QJsonObject>
+#include <QJsonArray>
+#include "medBoutiquesConfiguration.h"
 
 QT_BEGIN_NAMESPACE
 class QVBoxLayout;
@@ -15,29 +16,59 @@ class QLineEdit;
 class QGroupBox;
 class QLabel;
 class QTableWidget;
+class QTreeView;
+class QStandardItemModel;
+class QSortFilterProxyModel;
 class QTextEdit;
 QT_END_NAMESPACE
 
 using namespace std;
 
-struct SearchResult {
-    string id;
-    string title;
-    string description;
-    int downloads;
+struct ToolDescription {
+    QString id;
+    QString title;
+    QString description;
+    int nDownloads;
 };
 
 class medBoutiquesSearchToolsWidget : public QWidget
 {
     Q_OBJECT
+
+private:
+    QLineEdit* searchLineEdit;
+    QPushButton* button;
+    QGroupBox* searchGroupBox;
+    QLabel* loadingLabel;
+    QTableWidget* table;
+    QStandardItemModel *toolModel;
+    QSortFilterProxyModel *proxyToolModel;
+    QTreeView *searchView;
+    QLabel* infoLabel;
+    QTextEdit* info;
+    QProcess* searchProcess;
+    QProcess* pprintProcess;
+    QProcess* toolDatabaseProcess;
+    vector<ToolDescription> searchResults;
+    vector<ToolDescription> allTools;
+    QJsonArray descriptors;
+    bool toolDatabaseUpdated;
+    bool ignorePPrintError;
+
 public:
     explicit medBoutiquesSearchToolsWidget(QWidget *parent = nullptr);
 
-    SearchResult *getSelectedTool();
+    ToolDescription *getSelectedTool();
 
 private:
-    void createTable();
+    void createSearchView();
     void createProcesses();
+    void downloadToolDatabase();
+    void loadToolDatabase();
+    QStringList readSearchResults(QString &output);
+    void parseSearchResults(const QStringList &lines, vector<ToolDescription> &searchResults);
+    void addSearchResult(const ToolDescription &toolDescription, const unsigned int toolDescriptionIndex);
+    void displaySearchResults();
 
 signals:
     void toolSelected();
@@ -50,18 +81,10 @@ public slots:
     void searchProcessStarted();
     void searchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void pprintProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
-
-private:
-    QLineEdit* searchLineEdit;
-    QPushButton* button;
-    QGroupBox* searchGroupBox;
-    QLabel* loadingLabel;
-    QTableWidget* table;
-    QLabel* infoLabel;
-    QTextEdit* info;
-    QProcess* searchProcess;
-    QProcess* pprintProcess;
-    std::vector<SearchResult> searchResults;
+    void createToolDatabase(int exitCode, QProcess::ExitStatus exitStatus);
+    void pullProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+protected slots:
+    void searchChanged();
 };
 
 #endif // MEDBOUTIQUESSEARCHTOOLSWIDGET_H

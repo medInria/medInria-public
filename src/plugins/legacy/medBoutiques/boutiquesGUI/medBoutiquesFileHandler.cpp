@@ -1,15 +1,21 @@
 #include "medBoutiquesFileHandler.h"
 
+#include <iostream>
 #include <QtWidgets>
+
+#ifndef BOUTIQUE_GUI_STANDALONE
+
 #include "medDataIndex.h"
 #include "medDataManager.h"
 #include "medAbstractDataFactory.h"
 #include "medMessageController.h"
+#include "medBoutiquesToolBox.h"
+
+#endif
 
 medBoutiquesFileHandler::medBoutiquesFileHandler(medBoutiquesToolBox *toolbox): toolbox(toolbox)
 {
-
-    QFile file(PREFERRED_FORMATS_SETTINGS_PATH);
+    QFile file(BoutiquesPaths::Settings());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return;
@@ -24,10 +30,15 @@ medBoutiquesFileHandler::medBoutiquesFileHandler(medBoutiquesToolBox *toolbox): 
     }
 
     this->preferredFormatsAndExtensions = json["preferredFormatsAndExtensions"].toArray();
+
+    this->outputExtensions = json["outputExtensions"].toArray();
 }
 
 void medBoutiquesFileHandler::checkAcceptDragEvent(QDragEnterEvent *event)
 {
+#ifdef BOUTIQUE_GUI_STANDALONE
+    event->acceptProposedAction();
+#else
     const QMimeData *mimeData = event->mimeData();
     if (mimeData->hasUrls())
     {
@@ -38,10 +49,19 @@ void medBoutiquesFileHandler::checkAcceptDragEvent(QDragEnterEvent *event)
     {
         event->acceptProposedAction();
     }
+#endif
 }
 
 QList<FormatObject> medBoutiquesFileHandler::getFileFormatsForData(medAbstractData *data)
 {
+#ifdef BOUTIQUE_GUI_STANDALONE
+    Q_UNUSED(data)
+    QList<FormatObject> fileFormats;
+    fileFormats.push_back(FormatObject("Type 1", "Description 1", {".ext1", ".ext2"}));
+    fileFormats.push_back(FormatObject("Type 2", "Description 2", {".ext3", ".ext4"}));
+    return fileFormats;
+#else
+    QList<FormatObject> fileFormats;
     QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
     QHash<QString, dtkAbstractDataWriter*> possibleWriters;
 
@@ -52,8 +72,6 @@ QList<FormatObject> medBoutiquesFileHandler::getFileFormatsForData(medAbstractDa
         else
             delete writer;
     }
-
-    QList<FormatObject> fileFormats;
 
     if (possibleWriters.isEmpty()) {
         medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
@@ -70,12 +88,18 @@ QList<FormatObject> medBoutiquesFileHandler::getFileFormatsForData(medAbstractDa
         fileFormats.append(FormatObject(type, possibleWriters[type]->description(), extensions));
     }
     return fileFormats;
+#endif
 }
 
 FormatAndExtension medBoutiquesFileHandler::getFormatAndExtensionForData(medAbstractData *data)
 {
-    const QString &dataType = data->identifier();
+#ifdef BOUTIQUE_GUI_STANDALONE
+    Q_UNUSED(data)
+    FormatAndExtension formatAndExtension("Type 1", ".ext1");
+    return formatAndExtension;
+#else
     FormatAndExtension formatAndExtension;
+    const QString &dataType = data->identifier();
     if(this->dataTypeToFormatAndExtension.contains(dataType))
     {
         formatAndExtension = FormatAndExtension(this->dataTypeToFormatAndExtension[dataType].toArray());
@@ -107,10 +131,15 @@ FormatAndExtension medBoutiquesFileHandler::getFormatAndExtensionForData(medAbst
         }
     }
     return formatAndExtension;
+#endif
 }
 
 QString medBoutiquesFileHandler::createTemporaryInputFileForMimeData(const QMimeData *mimeData)
 {
+#ifdef BOUTIQUE_GUI_STANDALONE
+    Q_UNUSED(mimeData)
+    return this->createTemporaryInputFile(nullptr, "Type 2", ".ext2");
+#else
     medDataIndex index = medDataIndex::readMimeData(mimeData);
     if (index.isValidForSeries())
     {
@@ -119,13 +148,31 @@ QString medBoutiquesFileHandler::createTemporaryInputFileForMimeData(const QMime
         return this->createTemporaryInputFile(data, formatAndExtension.type, formatAndExtension.extension);
     }
     return "";
+#endif
 }
 
 QString medBoutiquesFileHandler::createTemporaryInputFileForCurrentInput()
 {
+#ifdef BOUTIQUE_GUI_STANDALONE
+    return this->createTemporaryInputFile(nullptr, "Type 1", ".ext1");
+#else
     medAbstractData *data = toolbox->getInput();
     const FormatAndExtension &formatAndExtension = this->getFormatAndExtensionForData(data);
     return this->createTemporaryInputFile(data, formatAndExtension.type, formatAndExtension.extension);
+#endif
+}
+
+bool medBoutiquesFileHandler::hasKnownExtension(const QString &fileName)
+{
+    for (int i = 0 ; i<this->outputExtensions.size() ; ++i)
+    {
+        const QString &outputExtension = this->outputExtensions[i].toString();
+        if(fileName.endsWith(outputExtension))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 FormatAndExtension medBoutiquesFileHandler::getFormatForInputFile(const QString &dataType, const QList<FormatObject> &fileFormats)
@@ -155,9 +202,8 @@ FormatAndExtension medBoutiquesFileHandler::getFormatForInputFile(const QString 
     for(const FormatObject &formatObject : fileFormats)
     {
         QStandardItem* item = new QStandardItem( formatObject.description );
-        item->setData( "parent", Qt::AccessibleDescriptionRole );
-        item->setData(formatObject.extensions.first(), Qt::UserRole + 1);
-        item->setData(formatObject.type, Qt::UserRole + 2);
+        item->setData(formatObject.extensions.first(), Qt::UserRole + 0);
+        item->setData(formatObject.type, Qt::UserRole + 1);
         QFont font = item->font();
         font.setBold( true );
         item->setFont( font );
@@ -166,9 +212,9 @@ FormatAndExtension medBoutiquesFileHandler::getFormatForInputFile(const QString 
         model->appendRow( item );
         for(const QString &extension: formatObject.extensions)
         {
-            typeComboBox->addItem(extension, QVariant("Child"));
-            typeComboBox->setItemData(typeComboBox->count() - 1, extension, Qt::UserRole + 1);
-            typeComboBox->setItemData(typeComboBox->count() - 1, formatObject.type, Qt::UserRole + 2);
+            typeComboBox->addItem(extension);
+            typeComboBox->setItemData(typeComboBox->count() - 1, extension, Qt::UserRole + 0);
+            typeComboBox->setItemData(typeComboBox->count() - 1, formatObject.type, Qt::UserRole + 1);
         }
     }
 
@@ -226,10 +272,13 @@ FormatAndExtension medBoutiquesFileHandler::getFormatForInputFile(const QString 
 
 QString medBoutiquesFileHandler::createTemporaryInputFile(medAbstractData *data, const QString &chosenType, const QString &chosenExtension)
 {
-    QTemporaryFile file("XXXXXX" + chosenType + chosenExtension);
+    Q_UNUSED(data)
+    QTemporaryFile file("XXXXXX_" + chosenType + chosenExtension);
     if (file.open()) {
         QString absoluteFilePath = QFileInfo(file).absoluteFilePath();
+#ifndef BOUTIQUE_GUI_STANDALONE
         medDataManager::instance()->exportDataToPath(data, absoluteFilePath, chosenType);
+#endif
         return absoluteFilePath;
     }
     return "";
@@ -238,7 +287,7 @@ QString medBoutiquesFileHandler::createTemporaryInputFile(medAbstractData *data,
 
 void medBoutiquesFileHandler::savePreferredFormatSettings()
 {
-    QFile file(PREFERRED_FORMATS_SETTINGS_PATH);
+    QFile file(BoutiquesPaths::Settings());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         return;
@@ -246,6 +295,7 @@ void medBoutiquesFileHandler::savePreferredFormatSettings()
     QJsonObject preferredFormats;
     preferredFormats["dataTypeToFormatAndExtension"] = this->dataTypeToFormatAndExtension;
     preferredFormats["preferredFormatsAndExtensions"] = this->preferredFormatsAndExtensions;
+    preferredFormats["outputExtensions"] = this->outputExtensions;
     QJsonDocument document(preferredFormats);
     file.write(document.toJson());
 }

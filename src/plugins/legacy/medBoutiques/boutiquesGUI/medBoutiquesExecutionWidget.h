@@ -2,6 +2,7 @@
 #define MEDBOUTIQUESEXECUTIONWIDGET_H
 
 #include <QWidget>
+#include "medBoutiquesConfiguration.h"
 #include "medBoutiquesSearchToolsWidget.h"
 #include "medBoutiquesInvocationWidget.h"
 
@@ -14,6 +15,8 @@ class medBoutiquesExecutionWidget : public QWidget
 public:
     medBoutiquesSearchToolsWidget *searchToolsWidget;
     medBoutiquesInvocationWidget *invocationWidget;
+
+private:
     QLayout *layout;
     QLabel *generatedCommandLabel;
     QTextEdit *generatedCommand;
@@ -31,6 +34,7 @@ private:
     void print(const QString& text);
 
 signals:
+    void success(const QString outputFileName);
 
 public slots:
     void invocationChanged();

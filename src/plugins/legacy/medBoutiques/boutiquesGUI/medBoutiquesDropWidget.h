@@ -2,6 +2,7 @@
 #define MEDBOUTIQUESDROPWIDGET_H
 
 #include <QWidget>
+#include "medBoutiquesConfiguration.h"
 
 class medBoutiquesDropWidget : public QWidget
 {

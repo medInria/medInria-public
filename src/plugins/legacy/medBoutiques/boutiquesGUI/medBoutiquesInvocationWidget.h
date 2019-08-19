@@ -2,6 +2,7 @@
 #define MEDBOUTIQUESINVOCATIONWIDGET_H
 
 #include <QWidget>
+#include "medBoutiquesConfiguration.h"
 #include "medBoutiquesSearchToolsWidget.h"
 #include "medBoutiquesInvocationGUIWidget.h"
 #include "medBoutiquesAbstractFileHandler.h"
@@ -26,7 +27,7 @@ private:
 
 public:
     explicit medBoutiquesInvocationWidget(QWidget *parent = nullptr, medBoutiquesSearchToolsWidget *searchToolsWidget = nullptr, medBoutiquesAbstractFileHandler *medBoutiquesFileHandler = nullptr);
-    QStringList setAndGetAbsoluteDirectories();
+    void setAndGetAbsoluteDirectories(QStringList &directories);
 
 private:
     void generateInvocationFile();

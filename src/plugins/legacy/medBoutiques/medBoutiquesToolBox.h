@@ -14,6 +14,7 @@
 #pragma once
 
 #include <medFilteringAbstractToolBox.h>
+#include <medDataIndex.h>
 #include "boutiquesGUI/medBoutiquesSearchToolsWidget.h"
 #include "boutiquesGUI/medBoutiquesInvocationWidget.h"
 #include "boutiquesGUI/medBoutiquesInvocationGUIWidget.h"
@@ -27,7 +28,7 @@ class medBoutiquesToolBox : public medFilteringAbstractToolBox
     MED_TOOLBOX_INTERFACE("medBoutiques", "Boutiques in medInria", << "filtering")
 
 public:
-     medBoutiquesToolBox(QWidget *parentToolBox = 0);
+     medBoutiquesToolBox(QWidget *parentToolBox = nullptr);
     ~medBoutiquesToolBox();
 
     static bool registered();
@@ -40,10 +41,10 @@ signals:
     void success();
     void failure();
 
-// public slots:
-
-//     void run();
+ public slots:
+     void executionSuccess(const QString &outputFileName);
+     void open_waitForImportedSignal(medDataIndex index, QUuid uuid);
 
 private:
-    medBoutiquesToolBoxPrivate *d;
+     medBoutiquesToolBoxPrivate *d;
 };

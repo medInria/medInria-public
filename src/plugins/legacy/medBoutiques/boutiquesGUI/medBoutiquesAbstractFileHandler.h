@@ -3,12 +3,13 @@
 
 #include <QWidget>
 #include <QMimeData>
+#include "medBoutiquesConfiguration.h"
 
 struct FormatAndExtension {
     QString type;
     QString extension;
     FormatAndExtension() {}
-    FormatAndExtension(const QString &type, QString &extension): type(type), extension(extension) {}
+    FormatAndExtension(const QString &type, const QString &extension): type(type), extension(extension) {}
     FormatAndExtension(const QJsonArray &typeAndExtension);
 };
 
@@ -36,6 +37,7 @@ public:
     virtual void checkAcceptDragEvent(QDragEnterEvent *event) = 0;
     virtual QString createTemporaryInputFileForMimeData(const QMimeData *mimeData) = 0;
     virtual QString createTemporaryInputFileForCurrentInput() = 0;
+    virtual bool hasKnownExtension(const QString &fileName) = 0;
 };
 
 #endif // MEDBOUTIQUESABSTRACTFILEHANDLER_H

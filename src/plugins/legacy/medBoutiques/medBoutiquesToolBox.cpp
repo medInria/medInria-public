@@ -47,10 +47,8 @@ public:
     medBoutiquesSearchToolsWidget *searchToolsWidget;
     medBoutiquesInvocationWidget *invocationWidget;
     medBoutiquesExecutionWidget *executionWidget;
-
-    QLineEdit *variance;
-    dtkSmartPointer <dtkAbstractProcess> process;
-    medProgressionStack * progression_stack;
+    medAbstractData *output;
+    QList<QUuid> expectedUuids;
 };
 
 medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medBoutiquesToolBoxPrivate)
@@ -59,6 +57,7 @@ medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medFilteringAbstract
     d->searchToolsWidget = new medBoutiquesSearchToolsWidget(parent);
     d->invocationWidget = new medBoutiquesInvocationWidget(parent, d->searchToolsWidget, new medBoutiquesFileHandler(this));
     d->executionWidget = new medBoutiquesExecutionWidget(parent, d->searchToolsWidget, d->invocationWidget);
+    d->output = nullptr;
 
     d->invocationWidget->hide();
     d->executionWidget->hide();
@@ -67,6 +66,7 @@ medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medFilteringAbstract
     connect(d->searchToolsWidget, &medBoutiquesSearchToolsWidget::toolSelected, d->executionWidget, &medBoutiquesExecutionWidget::toolSelected);
     connect(d->searchToolsWidget, &medBoutiquesSearchToolsWidget::toolDeselected, d->invocationWidget, &medBoutiquesInvocationWidget::toolDeselected);
     connect(d->searchToolsWidget, &medBoutiquesSearchToolsWidget::toolDeselected, d->executionWidget, &medBoutiquesExecutionWidget::toolDeselected);
+    connect(d->executionWidget, &medBoutiquesExecutionWidget::success, this, &medBoutiquesToolBox::executionSuccess);
 
     QWidget *centralWidget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout();
@@ -74,32 +74,6 @@ medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medFilteringAbstract
     layout->addWidget(d->invocationWidget);
     layout->addWidget(d->executionWidget);
     centralWidget->setLayout(layout);
-
-    // // Parameters:
-
-    // QLabel *varianceLabel = new QLabel("Sigma : ");
-    // d->variance = new QLineEdit("1.0");
-
-    // QHBoxLayout *varianceLayout = new QHBoxLayout();
-    // varianceLayout->addWidget(varianceLabel);
-    // varianceLayout->addWidget(d->variance);
-
-    // // Run button:
-
-    // QPushButton *runButton = new QPushButton(tr("Run"));
-
-    // // Principal layout:
-
-    // QWidget *widget = new QWidget(this);
-
-    // d->progression_stack = new medProgressionStack(widget);
-
-    // QVBoxLayout *layprinc = new QVBoxLayout();
-    // layprinc->addLayout(varianceLayout);
-    // layprinc->addWidget(runButton);
-    // layprinc->addWidget(d->progression_stack);
-
-    // widget->setLayout(layprinc);
 
     // Main toolbox:
     this->setTitle("Boutiques");
@@ -112,15 +86,12 @@ medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medFilteringAbstract
     setAboutPluginButton(plugin);
     setAboutPluginVisibility(true);
 
-    // connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
-
 }
 
 medBoutiquesToolBox::~medBoutiquesToolBox()
 {
     delete d;
-
-    d = NULL;
+    d = nullptr;
 }
 
 bool medBoutiquesToolBox::registered()
@@ -131,10 +102,7 @@ bool medBoutiquesToolBox::registered()
 
 medAbstractData* medBoutiquesToolBox::processOutput()
 {
-    if(!d->process)
-        return NULL;
-
-    return static_cast<medAbstractData*>(d->process->output());
+    return d == nullptr ? nullptr : d->output;
 }
 
 medAbstractData* medBoutiquesToolBox::getInput()
@@ -180,5 +148,24 @@ dtkPlugin* medBoutiquesToolBox::plugin()
 
 void medBoutiquesToolBox::update(medAbstractData *data)
 {
+    Q_UNUSED(data)
+}
 
+void medBoutiquesToolBox::executionSuccess(const QString &outputFileName)
+{
+    QUuid uuid = medDataManager::instance()->importPath(outputFileName, false);
+    d->expectedUuids.append(uuid);
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex, QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
+}
+
+void medBoutiquesToolBox::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
+{
+    if(d->expectedUuids.contains(uuid)) {
+        d->expectedUuids.removeAll(uuid);
+        disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        if (index.isValid()) {
+            d->output = medDataManager::instance()->retrieveData(index);
+            emit success();
+        }
+    }
 }

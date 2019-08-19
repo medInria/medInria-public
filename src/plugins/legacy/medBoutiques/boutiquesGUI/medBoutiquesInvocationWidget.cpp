@@ -1,3 +1,4 @@
+#include <iostream>
 #include <QtWidgets>
 #include "medBoutiquesInvocationWidget.h"
 
@@ -29,36 +30,40 @@ medBoutiquesInvocationWidget::medBoutiquesInvocationWidget(QWidget *parent, medB
     connect(this->generateInvocationProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &medBoutiquesInvocationWidget::generateInvocationProcessFinished);
 }
 
-QStringList medBoutiquesInvocationWidget::setAndGetAbsoluteDirectories()
+void medBoutiquesInvocationWidget::setAndGetAbsoluteDirectories(QStringList &directories)
 {
-    QStringList directories;
     QString invocationString = this->invocationEditor->toPlainText();
     QJsonObject invocationJsonAbsolutePath = QJsonDocument::fromJson(invocationString.toUtf8()).object();
 
-    this->invocationGUIWidget->populateDirectories(invocationJsonAbsolutePath, directories);
+    this->invocationGUIWidget->populateDirectoriesAndSetOutputFileName(invocationJsonAbsolutePath, directories);
 
     QJsonDocument document(invocationJsonAbsolutePath);
     QByteArray output = document.toJson(QJsonDocument::Indented);
     this->invocationEditor->setText(output);
-    return directories;
 }
 
 void medBoutiquesInvocationWidget::generateInvocationFile()
 {
-    const SearchResult* tool = this->searchToolsWidget->getSelectedTool();
+    if(this->generateInvocationProcess->state() != QProcess::NotRunning)
+    {
+        this->generateInvocationProcess->kill();
+        QTimer::singleShot(100, this, &medBoutiquesInvocationWidget::generateInvocationFile);
+        return;
+    }
+
+    const ToolDescription* tool = this->searchToolsWidget->getSelectedTool();
     if(tool == nullptr)
     {
         return;
     }
 
-    QStringList args({"example"});
+    QStringList args({BoutiquesPaths::Bosh(), "example"});
     if(this->invocationGUIWidget->generateCompleteInvocation())
     {
         args.append("--complete");
     }
-    args.append(tool->id.c_str());
-    this->generateInvocationProcess->kill();
-    this->generateInvocationProcess->start(BOSH_PATH, args);
+    args.append(tool->id);
+    this->generateInvocationProcess->start(BoutiquesPaths::Python(), args);
 }
 
 void medBoutiquesInvocationWidget::generateInvocationProcessFinished()

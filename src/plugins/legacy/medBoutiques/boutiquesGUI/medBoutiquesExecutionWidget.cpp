@@ -1,3 +1,4 @@
+#include <iostream>
 #include <regex>
 #include <QtWidgets>
 #include "medBoutiquesExecutionWidget.h"
@@ -55,7 +56,14 @@ QString medBoutiquesExecutionWidget::getTemporaryInvocationFile()
 
 void medBoutiquesExecutionWidget::invocationChanged()
 {
-    SearchResult *tool = this->searchToolsWidget->getSelectedTool();
+    if(this->simulationProcess->state() != QProcess::NotRunning)
+    {
+        this->simulationProcess->kill();
+        QTimer::singleShot(100, this, &medBoutiquesExecutionWidget::invocationChanged);
+        return;
+    }
+
+    ToolDescription *tool = this->searchToolsWidget->getSelectedTool();
 
     if(tool == nullptr)
     {
@@ -63,8 +71,7 @@ void medBoutiquesExecutionWidget::invocationChanged()
     }
     QString temporaryInvocationFilePath = this->getTemporaryInvocationFile();
 
-    this->simulationProcess->kill();
-    this->simulationProcess->start(BOSH_PATH, {"exec", "simulate", "-i", temporaryInvocationFilePath.toStdString().c_str(), tool->id.c_str()});
+    this->simulationProcess->start(BoutiquesPaths::Python(), {BoutiquesPaths::Bosh(), "exec", "simulate", "-i", temporaryInvocationFilePath, tool->id});
 }
 
 void medBoutiquesExecutionWidget::simulationProcessFinished()
@@ -75,31 +82,36 @@ void medBoutiquesExecutionWidget::simulationProcessFinished()
 
 void medBoutiquesExecutionWidget::executeTool()
 {
-    SearchResult *tool = this->searchToolsWidget->getSelectedTool();
+
+    if(this->executionProcess->state() != QProcess::NotRunning)
+    {
+        this->executionProcess->kill();
+        QTimer::singleShot(100, this, &medBoutiquesExecutionWidget::executeTool);
+        return;
+    }
+
+    ToolDescription *tool = this->searchToolsWidget->getSelectedTool();
 
     if(tool == nullptr)
     {
         return;
     }
     QString currentPath = QDir::currentPath();
-    QString boshPath = QFileInfo(BOSH_PATH).absoluteFilePath();
 
-    // The current directory changes in "invocationWidget->setAndGetAbsoluteDirectories()"
-    const QStringList &directories = this->invocationWidget->setAndGetAbsoluteDirectories();
+    QStringList directories;
+    this->invocationWidget->setAndGetAbsoluteDirectories(directories);
 
     QString temporaryInvocationFilePath = this->getTemporaryInvocationFile();
 
-    this->executionProcess->kill();
-    QStringList args({"exec", "launch", "-s", tool->id.c_str(), temporaryInvocationFilePath.toStdString().c_str()});
+    QStringList args({BoutiquesPaths::Bosh(), "exec", "launch", "-s", tool->id, temporaryInvocationFilePath});
 
     for(const QString &directory: directories)
     {
         args.push_back("-v");
         args.push_back(directory + ":" + directory);
     }
-    this->executionProcess->kill();
 
-    this->executionProcess->start(boshPath, args);
+    this->executionProcess->start(BoutiquesPaths::Python(), args);
     this->output->clear();
 
     QDir::setCurrent(currentPath);
@@ -132,6 +144,8 @@ void medBoutiquesExecutionWidget::executionProcessFinished()
     this->print("Process finished.");
     this->executeButton->show();
     this->cancelButton->hide();
+
+    emit success(this->invocationWidget->invocationGUIWidget->getOutputFileName());
 }
 
 void medBoutiquesExecutionWidget::dataReady()
