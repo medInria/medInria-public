@@ -6,6 +6,10 @@
 medBoutiquesExecutionWidget::medBoutiquesExecutionWidget(QWidget *parent, medBoutiquesSearchToolsWidget *searchToolsWidget, medBoutiquesInvocationWidget *invocationWidget) :
     QWidget(parent), searchToolsWidget(searchToolsWidget), invocationWidget(invocationWidget)
 {
+    // Create the execution GUI:
+    //  - a text edit to display the generated  command which will be given to the boutiques tool
+    //  - buttons to execute / cancel the exec process (when one is shown, the other is hidden)
+    //  - a read only text edit to display the process output
     connect(this->invocationWidget->invocationGUIWidget, &medBoutiquesInvocationGUIWidget::invocationChanged, this, &medBoutiquesExecutionWidget::invocationChanged);
     this->layout = new QVBoxLayout();
 
@@ -28,6 +32,7 @@ medBoutiquesExecutionWidget::medBoutiquesExecutionWidget(QWidget *parent, medBou
     connect(this->executeButton, &QPushButton::clicked, this, &medBoutiquesExecutionWidget::executeTool);
     connect(this->cancelButton, &QPushButton::clicked, this, &medBoutiquesExecutionWidget::cancelExecution);
 
+    // Create the execution and the simulation processes
     this->executionProcess = new QProcess(this);
     connect(this->executionProcess, &QProcess::errorOccurred, this, &medBoutiquesExecutionWidget::errorOccurred);
     connect(this->executionProcess, &QProcess::readyRead, this, &medBoutiquesExecutionWidget::dataReady);
@@ -42,6 +47,7 @@ medBoutiquesExecutionWidget::medBoutiquesExecutionWidget(QWidget *parent, medBou
 
 QString medBoutiquesExecutionWidget::getTemporaryInvocationFile()
 {
+    // Write the temporary invocation file if possible, return an empty path otherwise
     QDir temp = QDir::tempPath();
     temp.filePath("invocation.json");
 
@@ -58,19 +64,20 @@ void medBoutiquesExecutionWidget::invocationChanged()
 {
     if(this->simulationProcess->state() != QProcess::NotRunning)
     {
+        // If the simulation is running: kill the process and retry invocationChanged()
         this->simulationProcess->kill();
         QTimer::singleShot(100, this, &medBoutiquesExecutionWidget::invocationChanged);
         return;
     }
 
     ToolDescription *tool = this->searchToolsWidget->getSelectedTool();
-
     if(tool == nullptr)
     {
         return;
     }
-    QString temporaryInvocationFilePath = this->getTemporaryInvocationFile();
 
+    // Launch the simulation to generate the command line of the boutiques tool: bosh exec simulate -i temporaryInvocationFile toolID
+    QString temporaryInvocationFilePath = this->getTemporaryInvocationFile();
     this->simulationProcess->start(BoutiquesPaths::Python(), {BoutiquesPaths::Bosh(), "exec", "simulate", "-i", temporaryInvocationFilePath, tool->id});
 }
 
@@ -82,7 +89,7 @@ void medBoutiquesExecutionWidget::simulationProcessFinished()
 
 void medBoutiquesExecutionWidget::executeTool()
 {
-
+    // If the execution is running: kill the process and retry executeTool()
     if(this->executionProcess->state() != QProcess::NotRunning)
     {
         this->executionProcess->kill();
@@ -91,16 +98,18 @@ void medBoutiquesExecutionWidget::executeTool()
     }
 
     ToolDescription *tool = this->searchToolsWidget->getSelectedTool();
-
     if(tool == nullptr)
     {
         return;
     }
-    QString currentPath = QDir::currentPath();
 
+    // Get the input and output directories which must be mounted to make them accessible by docker
+    // Also generate the output file name to open it in medInria once the process is finished
+    QString currentPath = QDir::currentPath();
     QStringList directories;
     this->invocationWidget->setAndGetAbsoluteDirectories(directories);
 
+    // Launch the boutiques tool process execution: bosh exec launch -s toolID temporaryInvocationFile
     QString temporaryInvocationFilePath = this->getTemporaryInvocationFile();
 
     QStringList args({BoutiquesPaths::Bosh(), "exec", "launch", "-s", tool->id, temporaryInvocationFilePath});

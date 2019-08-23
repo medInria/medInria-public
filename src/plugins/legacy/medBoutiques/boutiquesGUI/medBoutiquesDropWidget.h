@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "medBoutiquesConfiguration.h"
 
+// A simple widget which emits drop, dragMove and dragEnter signals when it receives dropEvent, dragMoveEvent and dragEnterEvent respetively
+// Used to be able to react to drag events without writing a new dedicated widget overriding events which each time
 class medBoutiquesDropWidget : public QWidget
 {
     Q_OBJECT

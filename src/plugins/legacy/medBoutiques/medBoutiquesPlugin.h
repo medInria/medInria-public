@@ -26,7 +26,7 @@ class MEDBOUTIQUESPLUGIN_EXPORT medBoutiquesPlugin : public dtkPlugin
     Q_INTERFACES(dtkPlugin)
 
 public:
-     medBoutiquesPlugin(QObject *parent = 0);
+     medBoutiquesPlugin(QObject *parent = nullptr);
     ~medBoutiquesPlugin();
 
     virtual bool initialize();

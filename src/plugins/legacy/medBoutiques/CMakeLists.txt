@@ -92,13 +92,13 @@ target_link_libraries(${TARGET_NAME}
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(${TARGET_NAME}Testing
-  medBoutiquesTestingApp.cpp
-)
+#add_executable(${TARGET_NAME}Testing
+#  medBoutiquesTestingApp.cpp
+#)
 
-target_link_libraries(${TARGET_NAME}Testing
-  ${TARGET_NAME}
-)
+#target_link_libraries(${TARGET_NAME}Testing
+#  ${TARGET_NAME}
+#)
 
 ## #################################################################
 ## Install rules

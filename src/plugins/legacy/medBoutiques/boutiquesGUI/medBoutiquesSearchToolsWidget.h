@@ -24,6 +24,7 @@ QT_END_NAMESPACE
 
 using namespace std;
 
+// The data structure to store search results
 struct ToolDescription {
     QString id;
     QString title;
@@ -40,25 +41,33 @@ private:
     QPushButton* button;
     QGroupBox* searchGroupBox;
     QLabel* loadingLabel;
-    QTableWidget* table;
-    QStandardItemModel *toolModel;
-    QSortFilterProxyModel *proxyToolModel;
+    QStandardItemModel *toolModel;              // Tool model containing all tools
+    QSortFilterProxyModel *proxyToolModel;      // Tool model used to filter tools according to the user search input
+                                                // (automatically filters the items show in the search view)
     QTreeView *searchView;
     QLabel* infoLabel;
+    QLabel* infoShortDescription;
+    QPushButton* moreInfoButton;
     QTextEdit* info;
     QProcess* searchProcess;
     QProcess* pprintProcess;
     QProcess* toolDatabaseProcess;
-    vector<ToolDescription> searchResults;
-    vector<ToolDescription> allTools;
-    QJsonArray descriptors;
-    bool toolDatabaseUpdated;
-    bool ignorePPrintError;
+    vector<ToolDescription> allTools;           // All available tools in Boutiques (from the files in ~/.cache/boutiques)
+    vector<ToolDescription> searchResults;      // Tools from the search results if the entire database all-descriptors.json is not loaded, otherwise equals allTools
+                                                // (necessary to avoid overwriting search results when the database finishes loading in the background)
+    QJsonObject descriptors;                     // All descriptors from all tools (read from "all-descriptors.json")
+    bool toolDatabaseUpdated;                   // True when the tool database was just updated and toolModel must be updated
+    bool ignorePPrintError;                     // Ignore the pprint (to display the tool help) error when killing the pprint process
+                                                // (when selecting a new tool while the previous pprint was not terminated)
 
 public:
     explicit medBoutiquesSearchToolsWidget(QWidget *parent = nullptr);
 
+    // Get selected tool from toolModel
     ToolDescription *getSelectedTool();
+    // Get selected tool descriptor
+    // Either from the database "~/.cache/boutiques/all-descriptors.json" or, if not found in the databse, from the file "~/.cache/boutiques/zenodo-TOOL_ID.json"
+    const QJsonObject getSelectedToolDescriptor();
 
 private:
     void createSearchView();
@@ -69,6 +78,9 @@ private:
     void parseSearchResults(const QStringList &lines, vector<ToolDescription> &searchResults);
     void addSearchResult(const ToolDescription &toolDescription, const unsigned int toolDescriptionIndex);
     void displaySearchResults();
+    void prettyPrint();
+    // Get selected tool descriptor from tool id
+    const QJsonObject getToolDescriptor(const QString &toolId);
 
 signals:
     void toolSelected();
@@ -85,6 +97,7 @@ public slots:
     void pullProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 protected slots:
     void searchChanged();
+    void toggleMoreInfo();
 };
 
 #endif // MEDBOUTIQUESSEARCHTOOLSWIDGET_H

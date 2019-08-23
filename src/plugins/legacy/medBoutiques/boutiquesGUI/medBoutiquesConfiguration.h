@@ -7,7 +7,7 @@
 #include <QDir>
 
 // #define BOUTIQUE_GUI_STANDALONE
-//#define TEST_DRAGGABLE_INPUTS
+// #define TEST_DRAGGABLE_INPUTS
 
 #ifdef BOUTIQUE_GUI_STANDALONE
 #define BOUTIQUES_DIRECTORY "/../BoutiquesGUI-Data/"
@@ -23,6 +23,7 @@
 #endif
 
 #define BOUTIQUES_GUI_SETTINGS_PATH "boutiques-gui-settings.json"
+#define BOUTIQUES_TEMPORARY_DIR "/TemporaryFiles/"
 #define DOCKER_PATH "docker"
 #define BOSH_PATH "boutiques/bosh.py"
 #define VCREDIS_PATH "vc_redist.x86.exe"
@@ -31,6 +32,14 @@ class BoutiquesPaths {
 public:
     static QString Boutiques() {
         return QDir(QCoreApplication::applicationDirPath() + BOUTIQUES_DIRECTORY).absolutePath();
+    }
+
+    static QDir BoutiquesTemp() {
+        QDir temporaryDirectory(QCoreApplication::applicationDirPath() + BOUTIQUES_DIRECTORY + BOUTIQUES_TEMPORARY_DIR);
+        if (!temporaryDirectory.exists()){
+          temporaryDirectory.mkpath(".");
+        }
+        return temporaryDirectory;
     }
 
     static QString Settings() {

@@ -18,8 +18,7 @@
 
 #include <medBoutiquesPluginExport.h>
 
-class medBoutiquesPrivate;
-class dtkAbstractData;
+// medBoutiques is a plugin to run Boutiques tools in medInria
 
 class MEDBOUTIQUESPLUGIN_EXPORT medBoutiques : public dtkAbstractProcess
 {
@@ -33,17 +32,6 @@ public:
 
     static bool registered();
 
-public slots:
-
-    void setInput(dtkAbstractData *data);
-    void setParameter(double  data, int channel);
-    int update();
-    dtkAbstractData *output();
-
-    // bool write(QString file);
-
-private:
-    medBoutiquesPrivate *d;
 };
 
 dtkAbstractProcess *createmedBoutiques();

@@ -69,7 +69,7 @@ QString medBoutiquesPlugin::name() const
 
 QString medBoutiquesPlugin::contact() const
 {
-    return QString::fromUtf8("Clément Philipot clement.philipot@inria.fr");
+    return QString::fromUtf8("Arthur Masson arthur.masson@inria.fr");
 }
 
 QString medBoutiquesPlugin::version() const
@@ -79,12 +79,12 @@ QString medBoutiquesPlugin::version() const
 
 QString medBoutiquesPlugin::description() const
 {
-    return "ITK GaussianBlur Filter Example Plugin";
+    return "Interface to use Boutiques tools in medInria";
 }
 
 QStringList medBoutiquesPlugin::tags() const
 {
-    return QStringList() << "ITK" << "process" << "gaussianblur" << "filerexample" << "preprocessing";
+    return QStringList() << "Boutiques" << "process";
 }
 
 QStringList medBoutiquesPlugin::types() const

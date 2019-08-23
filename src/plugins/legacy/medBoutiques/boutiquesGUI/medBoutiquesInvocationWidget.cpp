@@ -6,6 +6,11 @@ medBoutiquesInvocationWidget::medBoutiquesInvocationWidget(QWidget *parent, medB
     QWidget(parent),
     searchToolsWidget(searchToolsWidget)
 {
+    // Create the invocation GUI:
+    //  - an open invocation file button
+    //  - the automatically generated invocation gui
+    //  - the invocation editor which will be automatically updated by the above invocation gui, but which can be edited by the user (this is the invocation data which will be used in the end)
+    //  - a save invocation button
     this->layout = new QVBoxLayout();
 
     this->invocationGUIWidget = new medBoutiquesInvocationGUIWidget(this, this->searchToolsWidget, medBoutiquesFileHandler);
@@ -32,9 +37,11 @@ medBoutiquesInvocationWidget::medBoutiquesInvocationWidget(QWidget *parent, medB
 
 void medBoutiquesInvocationWidget::setAndGetAbsoluteDirectories(QStringList &directories)
 {
+    // Parse the invocationEditor to get the final invocation values (the values from the invocation GUI might have been modified by the user)
     QString invocationString = this->invocationEditor->toPlainText();
     QJsonObject invocationJsonAbsolutePath = QJsonDocument::fromJson(invocationString.toUtf8()).object();
 
+    // Populate directories, set all paths to absolute paths, and update the invocation editor accordingly
     this->invocationGUIWidget->populateDirectoriesAndSetOutputFileName(invocationJsonAbsolutePath, directories);
 
     QJsonDocument document(invocationJsonAbsolutePath);
@@ -44,6 +51,7 @@ void medBoutiquesInvocationWidget::setAndGetAbsoluteDirectories(QStringList &dir
 
 void medBoutiquesInvocationWidget::generateInvocationFile()
 {
+    // If the invocation generation is running: kill the process and retry generateInvocationFile()
     if(this->generateInvocationProcess->state() != QProcess::NotRunning)
     {
         this->generateInvocationProcess->kill();
@@ -57,8 +65,11 @@ void medBoutiquesInvocationWidget::generateInvocationFile()
         return;
     }
 
+    // Generate invocation:
+    //  - if there are some optional parameters: generate complete invocation:           bosh example --complete toolID
+    //  - otherwise: generate minimal invocation:                                        bosh example toolID
     QStringList args({BoutiquesPaths::Bosh(), "example"});
-    if(this->invocationGUIWidget->generateCompleteInvocation())
+    if(this->invocationGUIWidget->mustGenerateCompleteInvocation())
     {
         args.append("--complete");
     }
@@ -68,6 +79,7 @@ void medBoutiquesInvocationWidget::generateInvocationFile()
 
 void medBoutiquesInvocationWidget::generateInvocationProcessFinished()
 {
+    // Read invocation process results, update the invocation editor, and update the invocation GUI widget with the new values
     QByteArray result = this->generateInvocationProcess->readAll();
     this->invocationJSON = QJsonDocument::fromJson(result).object();
     this->invocationEditor->setText(QString::fromUtf8(result));

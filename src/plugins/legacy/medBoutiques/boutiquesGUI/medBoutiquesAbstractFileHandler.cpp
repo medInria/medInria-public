@@ -12,7 +12,7 @@ FormatAndExtension::FormatAndExtension(const QJsonArray &typeAndExtension) {
     this->extension = typeAndExtension[1].toString();
 }
 
-medBoutiquesAbstractFileHandler::medBoutiquesAbstractFileHandler()
+medBoutiquesAbstractFileHandler::medBoutiquesAbstractFileHandler():QObject()
 {
 
 }

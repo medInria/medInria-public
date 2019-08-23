@@ -27,11 +27,19 @@ If everything works properly (both `python` and `docker` can be executed), Bouti
 
 BoutiquesGUI will run `boutiques/bosh.py` (the boutiques command line tool), which will in turn run `boutiques` for python3 if launched with python3 (`boutiques/boutiques-python3`), or python2 otherwise.
 
+## Database
+
+BoutiquesGUI downloads the entire tool database form zenodo (search the 1000 first boutiques tools on Zenodo) at each startup.
+
+The database is stored and updated in the file "~ /.cache/boutiques/all-descriptors.json".
+This is useful to keep BoutiquesGUI working when the zenodo database is down (we can then rely on the data stored in "all-descriptors.json"), and to get instantaneous search result.
+This process is executed on the background, and updates the database once all descriptors are pulled from Zenodo.
+
 ## Settings
 
 The BoutiquesGUI settings are managed automatically, although it could also be set manually.
 
- - `dataTypeToFormatAndExtension`: describes which format to associate with each data type. When converting an input to a temporary file (BoutiquesGUI saves medInria input data / images to temporary files to feed them to boutiques) the file format will be given by this settings, depending on the data type. When the user sets a parameter as input (by drag-and-dropping data, or with the corresponding `Set input` button), BoutiquesGUI opens a dialog to choose a format from a list of formats compatible with the data type (only if no compatible format is found in `dataTypeToFormatAndExtension` or `preferredFormatsAndExtensions`). This setting is updated when the user chooses a format to associate with the data type. 
+ - `dataTypeToFormatAndExtension`: describes which format to associate with each data type. When converting an input data to a temporary file (BoutiquesGUI saves medInria input data / images to temporary files to feed them to boutiques) the file format will be given by this settings, depending on the data type. When the user sets a parameter as input (by drag-and-dropping data, or with the corresponding `Set input` button), BoutiquesGUI opens a dialog to choose a format from a list of formats compatible with the data type (only if no compatible format is found in `dataTypeToFormatAndExtension` or `preferredFormatsAndExtensions`). This setting is updated when the user chooses a format to associate with the data type. 
 
  - `preferredFormatsAndExtensions`: also used to determine the format of temporary files, but instead of associating each data type to a format, it just enumerates the preferred formats and extensions. If the data type is not found in the `dataTypeToFormatAndExtension` map, BoutiquesGUI will use the first compatible format in the `preferredFormatsAndExtensions` list.
 
