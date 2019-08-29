@@ -49,11 +49,14 @@ public:
     QString createTemporaryInputFileForCurrentInput() override;
 
     // Delete temporary files once the boutiques tool process is finished
-    virtual void deleteTemporaryFiles() override;
+    void deleteTemporaryFiles() override;
 
     // Check if the file name has a known extension that can be opened in medInria
     // Used to filter which parameter can be set as output (to open them automatically once the process is finished)
     bool hasKnownExtension(const QString &fileName) override;
+
+    // Normalize path so that Windows path follow this format: /c/a/windows/path (do nothing on linux, only affect path starting with a capital letter and a colon, as in C:/Users/)
+    QString normalizePath(const QString &path) override;
 
 private:
     // Returns all file formats compatible with the data

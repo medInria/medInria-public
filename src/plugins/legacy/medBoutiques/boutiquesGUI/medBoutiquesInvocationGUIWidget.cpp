@@ -816,7 +816,7 @@ void medBoutiquesInvocationGUIWidget::populateAbsolutePath(const QJsonValue &fil
         return;
     }
     // Add the resulting absolute path to the current directories (to mount them later)
-    const QString &path = fileInfo.absolutePath();
+    const QString &path = this->fileHandler->normalizePath(fileInfo.absolutePath());
     if(!directories.contains(path))
     {
         directories.append(path);
@@ -908,7 +908,7 @@ void medBoutiquesInvocationGUIWidget::populateOutputDirectoriesAndSetOutputFileN
                     }
 
                     // Add the absolute path to the list of directories to mount
-                    const QString &absolutePath = fileInfo.absolutePath();
+                    const QString &absolutePath = this->fileHandler->normalizePath(fileInfo.absolutePath());
                     if(!directories.contains(absolutePath))
                     {
                         directories.append(absolutePath);

@@ -202,6 +202,17 @@ bool medBoutiquesFileHandler::hasKnownExtension(const QString &fileName)
     return false;
 }
 
+QString medBoutiquesFileHandler::normalizePath(const QString &path)
+{
+    QRegularExpression regExp("^[A-Z]:");
+    if(regExp.match(path).hasMatch())
+    {
+        QString newPath = QString(path).replace("\\", "/");
+        return "/" + QString(newPath[0].toLower()) + newPath.mid(2);
+    }
+    return path;
+}
+
 FormatAndExtension medBoutiquesFileHandler::askFormatAndExtensionForData(const QString &dataType, const QList<FormatObject> &fileFormats)
 {
     // Create a dialog with a combo box to select the format and extension for the given format
