@@ -3,6 +3,8 @@
 #include <QtWidgets>
 #include "medBoutiquesExecutionWidget.h"
 
+#include "medBoutiquesAbstractFileHandler.h"
+
 medBoutiquesExecutionWidget::medBoutiquesExecutionWidget(QWidget *parent, medBoutiquesSearchToolsWidget *searchToolsWidget, medBoutiquesInvocationWidget *invocationWidget) :
     QWidget(parent), searchToolsWidget(searchToolsWidget), invocationWidget(invocationWidget)
 {
@@ -112,7 +114,13 @@ void medBoutiquesExecutionWidget::executeTool()
     // Launch the boutiques tool process execution: bosh exec launch -s toolID temporaryInvocationFile
     QString temporaryInvocationFilePath = this->getTemporaryInvocationFile();
 
-    QStringList args({BoutiquesPaths::Bosh(), "exec", "launch", "-s", tool->id, temporaryInvocationFilePath});
+    QStringList args({BoutiquesPaths::Bosh(), "exec", "launch"});
+#ifndef Q_OS_WIN
+    // Streams stdout and stderr in real time during execution.
+    // Does not work on windows (problem with the "chmod 755 script.sh" command)
+    args.append("-s");
+#endif
+    args.append({tool->id, temporaryInvocationFilePath});
 
     for(const QString &directory: directories)
     {

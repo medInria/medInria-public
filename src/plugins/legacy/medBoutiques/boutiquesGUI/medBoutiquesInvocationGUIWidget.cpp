@@ -477,7 +477,11 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                     // If input is a list of files: a "Select files" push button opens a dialog to select multiple files
                     QPushButton *pushButton = new QPushButton("Select files");
 
-                    connect(pushButton, &QPushButton::clicked, [this, inputName, lineEdit]() { lineEdit->setText("\"" + QFileDialog::getOpenFileNames(this, "Select " + inputName).join("\", \"") + "\""); } );
+                    connect(pushButton, &QPushButton::clicked, [this, inputName, lineEdit]()
+                    {
+                        lineEdit->setText("\"" + this->fileHandler->normalizePaths( QFileDialog::getOpenFileNames(this, "Select " + inputName) ).join("\", \"") + "\"");
+                    });
+
                     layout->addWidget(pushButton);
 
                     // Create the button to add the current input data to the list (save the current input data to a temporary file, and add the resulting path)
@@ -507,7 +511,7 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                         if(mimeData->hasUrls())
                         {
                             // if the objects are files: just add the file paths to the list
-                            const QList<QUrl> &urls= mimeData->urls();
+                            const QList<QUrl> &urls = mimeData->urls();
                             for (int i = 0 ; i < urls.size() ; ++i)
                             {
                                 paths.append(urls.at(i).toLocalFile());
@@ -624,7 +628,10 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                     layout->addWidget(lineEdit);
 
                     QPushButton *selectFilePushButton = new QPushButton("Select file");
-                    connect(selectFilePushButton, &QPushButton::clicked, [this, inputName, lineEdit]() { lineEdit->setText(QFileDialog::getOpenFileName(this, "Select " + inputName)); } );
+                    connect(selectFilePushButton, &QPushButton::clicked, [this, inputName, lineEdit]()
+                    {
+                        lineEdit->setText(this->fileHandler->normalizePath(QFileDialog::getOpenFileName(this, "Select " + inputName)));
+                    } );
                     layout->addWidget(selectFilePushButton);
 
                     QPushButton *setInputPushButton = new QPushButton("Set input");
@@ -816,7 +823,7 @@ void medBoutiquesInvocationGUIWidget::populateAbsolutePath(const QJsonValue &fil
         return;
     }
     // Add the resulting absolute path to the current directories (to mount them later)
-    const QString &path = this->fileHandler->normalizePath(fileInfo.absolutePath());
+    const QString &path = this->fileHandler->normalizePath(fileInfo.path());
     if(!directories.contains(path))
     {
         directories.append(path);
@@ -908,10 +915,11 @@ void medBoutiquesInvocationGUIWidget::populateOutputDirectoriesAndSetOutputFileN
                     }
 
                     // Add the absolute path to the list of directories to mount
-                    const QString &absolutePath = this->fileHandler->normalizePath(fileInfo.absolutePath());
-                    if(!directories.contains(absolutePath))
+                    const QString &absolutePath = fileInfo.isRelative() ? fileInfo.absolutePath() : fileInfo.path();
+                    const QString &normalizedPath = this->fileHandler->normalizePath(absolutePath);
+                    if(!directories.contains(normalizedPath))
                     {
-                        directories.append(absolutePath);
+                        directories.append(normalizedPath);
                     }
 
                     // Set the output file name (to automatically open it in medInria when the process is over)

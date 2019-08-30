@@ -295,8 +295,8 @@ void medBoutiquesSearchToolsWidget::prettyPrint()
 
     // Start "bosh pprint"
     this->ignorePPrintError = false;
-    this->pprintProcess->start(BoutiquesPaths::Python(), {BoutiquesPaths::Bosh(), "pprint", tool->id});
     this->loadingLabel->setText("Getting tool help...");
+    this->pprintProcess->start(BoutiquesPaths::Python(), {BoutiquesPaths::Bosh(), "pprint", tool->id});
 }
 
 void medBoutiquesSearchToolsWidget::pprintProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -364,10 +364,9 @@ void medBoutiquesSearchToolsWidget::searchBoutiquesTools()
     // Launch "bosh search" to query the Zenodo database
     QString searchQuery = this->searchLineEdit->text();
 
-    this->searchProcess->start(BoutiquesPaths::Python(), {BoutiquesPaths::Bosh(), "search", "-m 50", searchQuery});
-
     this->loadingLabel->setText("Search launched...");
     this->searchResults.clear();
+    this->searchProcess->start(BoutiquesPaths::Python(), {BoutiquesPaths::Bosh(), "search", "-m 50", searchQuery});
 }
 
 void medBoutiquesSearchToolsWidget::errorOccurred(QProcess::ProcessError error)

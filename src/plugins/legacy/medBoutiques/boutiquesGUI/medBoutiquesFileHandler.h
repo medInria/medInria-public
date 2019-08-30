@@ -57,6 +57,7 @@ public:
 
     // Normalize path so that Windows path follow this format: /c/a/windows/path (do nothing on linux, only affect path starting with a capital letter and a colon, as in C:/Users/)
     QString normalizePath(const QString &path) override;
+    QStringList normalizePaths(const QStringList &paths) override;
 
 private:
     // Returns all file formats compatible with the data

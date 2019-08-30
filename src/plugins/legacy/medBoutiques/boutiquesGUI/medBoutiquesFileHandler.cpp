@@ -213,6 +213,16 @@ QString medBoutiquesFileHandler::normalizePath(const QString &path)
     return path;
 }
 
+QStringList medBoutiquesFileHandler::normalizePaths(const QStringList &paths)
+{
+    QStringList normalizedPaths;
+    for(const QString &file:paths)
+    {
+        normalizedPaths.append(this->normalizePath(file));
+    }
+    return normalizedPaths;
+}
+
 FormatAndExtension medBoutiquesFileHandler::askFormatAndExtensionForData(const QString &dataType, const QList<FormatObject> &fileFormats)
 {
     // Create a dialog with a combo box to select the format and extension for the given format
@@ -325,7 +335,7 @@ QString medBoutiquesFileHandler::createTemporaryInputFile(medAbstractData *data,
 #ifndef BOUTIQUE_GUI_STANDALONE
         medDataManager::instance()->exportDataToPath(data, absoluteFilePath, chosenType);
 #endif
-        return absoluteFilePath;
+        return this->normalizePath(absoluteFilePath);
     }
     return "";
 }

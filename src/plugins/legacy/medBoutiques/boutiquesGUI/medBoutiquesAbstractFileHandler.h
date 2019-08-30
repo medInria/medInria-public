@@ -43,6 +43,7 @@ public:
     virtual void deleteTemporaryFiles() = 0;
     virtual bool hasKnownExtension(const QString &fileName) = 0;
     virtual QString normalizePath(const QString &path) = 0;
+    virtual QStringList normalizePaths(const QStringList &paths) = 0;
 };
 
 #endif // MEDBOUTIQUESABSTRACTFILEHANDLER_H
