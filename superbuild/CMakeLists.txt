@@ -76,6 +76,10 @@ else()
       )
 endif()
 
+list(APPEND external_projects
+    MUSIC_plugins
+    )
+
 if (USE_OSPRay)
   SET(ospray_DIR CACHE PATH "The directory containing a CMAKE configuration file for OSPRay")
   SET(OSPRAY_INSTALL_DIR CACHE PATH "Install location of OSPRay")
