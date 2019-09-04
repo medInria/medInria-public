@@ -14,58 +14,40 @@
 #include <medHomepageArea.h>
 
 #include <medHomepageButton.h>
-#include <medAbstractWorkspaceLegacy.h>
-#include <medToolBoxFactory.h>
-#include <medWorkspaceFactory.h>
-#include <medSettingsManager.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
-
+#include <medWorkspaceFactory.h>
 
 class medHomepageAreaPrivate
 {
 public:
     QStackedWidget* stackedWidget;
     QWidget * navigationWidget;
-    QPropertyAnimation * navigationAnimation;
-
     QWidget * userWidget;
-    QPropertyAnimation * userAnimation;
-
     QWidget * infoWidget;
-    QPropertyAnimation * infoAnimation;
-
     QWidget * aboutWidget;
     QTabWidget * aboutTabWidget;
     QWidget * pluginWidget;
     QWidget * settingsWidget;
     medSettingsEditor* settingsEditor;
-
-    QParallelAnimationGroup * animation;
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
     //Setup navigation widget (with buttons for accessing available workspaces)
     d->navigationWidget = new QWidget ( this );
-    d->navigationWidget->setMinimumWidth ( 400 );
 
     //Setup the widget where the medInria general information are displayed
     d->infoWidget = new QWidget ( this );
-    d->infoWidget->setMinimumSize(400,300);
+    d->infoWidget->setMinimumSize(400, 400);
 
     //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
-    d->userWidget->setMinimumWidth ( 250 );
-    d->userWidget->setMaximumWidth ( 350 ); //TODO: find the right solution
-    d->userWidget->setMinimumHeight ( 40 );
 
     //Setup the about container widget (with a QTabWidget inside)
     d->aboutWidget = new QWidget ( this );
-    d->aboutWidget->setMinimumSize(400,300);
-
+    d->aboutWidget->setMinimumSize(400, 400);
     d->aboutWidget->hide();
-
 
     //User widget content with settings, about and help buttons
     QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
@@ -77,6 +59,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     helpButton->setMinimumWidth ( 150 );
     helpButton->setFocusPolicy ( Qt::NoFocus );
     helpButton->setIcon ( QIcon ( ":icons/help.svg" ) );
+    helpButton->setIconSize(QSize(16,16));
     helpButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( helpButton,SIGNAL ( clicked() ),this, SLOT ( onShowHelp() ) );
 
@@ -85,9 +68,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
-    aboutButton->setToolTip(tr("About medInria"));
+    aboutButton->setToolTip(QString("About ")+qApp->applicationName());
     aboutButton->setFocusPolicy ( Qt::NoFocus );
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
+    aboutButton->setIconSize(QSize(16,16));
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
 
@@ -107,9 +91,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
-    settingsButton->setToolTip(tr("Configure medInria"));
+    settingsButton->setToolTip(QString("Configure ")+qApp->applicationName());
     settingsButton->setFocusPolicy ( Qt::NoFocus );
     settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
+    settingsButton->setIconSize(QSize(16,16));
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( settingsButton,SIGNAL ( clicked() ),this, SLOT ( onShowSettings() ) );
 
@@ -117,15 +102,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 1, pluginButton );
     userButtonsLayout->insertWidget ( 2, aboutButton );
     userButtonsLayout->insertWidget ( 3, helpButton );
-    //no need to set the layout the userWidget is the parent of the layout already.
-//    d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medInriaLabel = new QLabel ( this );
     QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );
     medInriaLabel->setPixmap ( medLogo );
-//     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
     textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
@@ -138,13 +120,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                            "MR processing and tractography." ));
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
-    textEdit->setMaximumHeight ( 200 );
+    textEdit->setMaximumHeight(300);
+    textEdit->setMinimumHeight(250);
     infoLayout->insertWidget ( 0,medInriaLabel );
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
 
-    //no need to set the layout, the infoWidget is the parent of the layout already.
-//    d->infoWidget->setLayout ( infoLayout );
     d->infoWidget->setMaximumHeight ( medInriaLabel->height() + textEdit->height() );
 
     //About widget
@@ -157,11 +138,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
 
-    QString aboutText = QString(tr("<br/><br/>"
-                      "medInria %1 is a medical imaging platform developed at "
-                      "Inria<br/><br/>"
-                      "<center>Inria, Copyright 2013</center>"))
-                      .arg(qApp->applicationVersion());
+    QString aboutText = QString::fromUtf8(
+                "%1 (%2) is a medical imaging platform developed at "
+                "Inria.<br/>"
+                "<center>Inria, Copyright 2013</center>")
+            .arg(qApp->applicationName())
+            .arg(qApp->applicationVersion());
 
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
@@ -173,10 +155,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
     QFile license ( ":LICENSE.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
-    QString licenseContent = license.readAll();
-    license.close();
-    aboutLicenseTextEdit->setText ( licenseContent );
+    QTextStream licenseContent(&license);
+    licenseContent.setCodec("UTF-8");
+    aboutLicenseTextEdit->setText ( licenseContent.readAll() );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
+    license.close();
 
     QTextEdit * releaseNotesTextEdit = new QTextEdit(this);
     QFile releaseNotes ( ":RELEASE_NOTES.txt" );
@@ -274,68 +257,36 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->stackedWidget->addWidget(d->settingsWidget);
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
     d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
-
-    //Setup homepage animations
-    d->animation = new QParallelAnimationGroup ( this );
-    d->navigationAnimation = new QPropertyAnimation ( d->navigationWidget, "pos" );
-    d->navigationAnimation->setDuration ( 750 );
-    d->navigationAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
-    d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 4 ) );
-
-    d->userAnimation = new QPropertyAnimation ( d->userWidget, "pos" );
-    d->userAnimation->setDuration ( 750 );
-    d->userAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->userAnimation->setStartValue ( QPoint ( this->width() + 250,  this->height() - 90 ) );
-    d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 90 ) );
-
-    d->infoAnimation = new QPropertyAnimation ( d->stackedWidget, "pos" );
-    d->infoAnimation->setDuration ( 750 );
-    d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->infoAnimation->setStartValue ( QPoint ( this->width() + 100 , this->height() / 5 ) );
-    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
-
-    d->animation->addAnimation ( d->navigationAnimation );
-    d->animation->addAnimation ( d->userAnimation );
-    d->animation->addAnimation ( d->infoAnimation );
-
 }
 
 medHomepageArea::~medHomepageArea()
 {
     delete d;
-
-    d = NULL;
+    d = nullptr;
 }
 
 void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
+    Q_UNUSED(event);
+
     //Recompute the widgets position when the window is resized
-    d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
+    d->navigationWidget->setProperty ( "pos", QPoint ( 20 ,  this->height() / 4 ) );
+
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 450,  this->height() - 50 ) );
+
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
     if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
+    {
         stackedWidgetHeight = d->stackedWidget->minimumHeight();
+    }
     d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
 
     int stackedWidgetWidth =  this->width() / 2 - 50 ;
-
     d->stackedWidget->setMaximumWidth(stackedWidgetWidth);
-    //TODO: this is ugly, find a way to use the right policy here...
+
     d->stackedWidget->resize(stackedWidgetWidth,stackedWidgetHeight);
-//    dtkDebug()<< d->stackedWidget->maximumSize();
-
-    //Update the animations as well
-    d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
-    d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 4 ) );
-
-    d->userAnimation->setStartValue ( QPoint ( this->width() + 50,  this->height() - 90 ) );
-    d->userAnimation->setEndValue ( QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-
-    d->infoAnimation->setStartValue ( QPoint ( this->width() , this->height() / 5 ) );
-    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 }
 
 void medHomepageArea::initPage()
@@ -462,11 +413,6 @@ void medHomepageArea::initPage()
     d->navigationWidget->setLayout ( workspaceButtonsLayout );
 }
 
-QParallelAnimationGroup* medHomepageArea::getAnimation()
-{
-    return d->animation;
-}
-
 void medHomepageArea::onShowBrowser()
 {
     emit showBrowser();
@@ -490,8 +436,6 @@ void medHomepageArea::onShowPlugin()
     d->pluginWidget->setFocus();
 }
 
-
-
 void medHomepageArea::onShowInfo()
 {
     d->stackedWidget->setCurrentWidget(d->infoWidget);
@@ -512,10 +456,6 @@ void medHomepageArea::onShowSettings()
 
     d->settingsWidget->setFocus();
 }
-
-
-
-
 
 void medHomepageArea::onShowComposer()
 {

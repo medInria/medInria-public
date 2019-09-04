@@ -512,9 +512,6 @@ void medMainWindow::switchToHomepageArea()
 
     d->screenshotButton->setEnabled(false);
     d->adjustSizeButton->setEnabled(false);
-
-    if (d->homepageArea->getAnimation())
-        d->homepageArea->getAnimation()->start();
 }
 
 void medMainWindow::switchToBrowserArea()

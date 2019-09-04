@@ -32,7 +32,7 @@ class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medFilt
 public:
     medMaskApplicationToolBox(QWidget *parent = 0);
     ~medMaskApplicationToolBox();
-    
+
     medAbstractData *processOutput() override;
     
     static bool registered();
