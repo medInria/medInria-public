@@ -36,7 +36,7 @@ public:
         Tractography
     };
 
-     medDiffusionSelectorToolBox(QWidget *parent = 0, SelectorType type = Estimation);
+     medDiffusionSelectorToolBox(QWidget *parent = nullptr, SelectorType type = Estimation);
     ~medDiffusionSelectorToolBox();
 
     void addInputImage(medAbstractImageData *data);
