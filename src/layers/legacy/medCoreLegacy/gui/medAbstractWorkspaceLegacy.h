@@ -52,7 +52,7 @@ class MEDCORELEGACY_EXPORT medAbstractWorkspaceLegacy : public QObject
 
 public:
 
-    medAbstractWorkspaceLegacy(QWidget *parent=0);
+    medAbstractWorkspaceLegacy(QWidget *parent = nullptr);
     virtual ~medAbstractWorkspaceLegacy();
 
     virtual QString identifier() const = 0;
@@ -66,7 +66,7 @@ public:
     bool isDatabaseVisible() const;
     void setToolBoxesVisibility(bool);
     bool areToolBoxesVisible() const;
-    virtual void setupTabbedViewContainer() = 0;
+    virtual void setupTabbedViewContainer();
     medTabbedViewContainers * tabbedViewContainers() const;
 
     void setUserLayerPoolable(bool poolable);
@@ -75,6 +75,7 @@ public:
     bool isUserLayerPoolable() const;
     bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
+    virtual void setInitialGroups();
 
     QList<int> getSelectedLayerIndices();
 

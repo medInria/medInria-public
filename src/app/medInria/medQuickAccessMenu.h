@@ -32,6 +32,8 @@ public:
 
     void switchToCurrentlySelected ();
 
+    void manuallyClickOnWorkspaceButton(QString workspaceName);
+
 protected:
     void focusOutEvent(QFocusEvent * event);
 
@@ -52,6 +54,7 @@ signals:
     void composerSelected();
     void areaSelected(QString);
     void workspaceSelected(QString);
+    void searchSelected();
 
 private:
     int currentSelected;

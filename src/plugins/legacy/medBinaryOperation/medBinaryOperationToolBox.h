@@ -16,22 +16,22 @@
 #include "medBinaryOperationPluginExport.h"
 
 #include <medDataIndex.h>
-#include <medFilteringAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 class medBinaryOperationToolBoxPrivate;
 
 /*!
  * \brief Toolbox to compute binary operations between masks (OR, AND, XOR, etc.).
  */
-class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationToolBox : public medFilteringAbstractToolBox
+class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Binary Operation",
                           "Compute binary operations between masks (OR, AND, XOR, etc.).",
-                          <<"filtering")
+                          <<"Filtering Legacy")
     
 public:
-    medBinaryOperationToolBox(QWidget *parent = 0);
+    medBinaryOperationToolBox(QWidget *parent = nullptr);
     ~medBinaryOperationToolBox();
     
     medAbstractData *processOutput();

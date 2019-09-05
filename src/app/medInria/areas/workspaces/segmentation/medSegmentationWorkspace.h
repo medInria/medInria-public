@@ -13,38 +13,22 @@
 
 #pragma once
 
-#include <medAbstractWorkspaceLegacy.h>
-
-class medAbstractView;
-class medViewEventFilter;
-
-class medSegmentationWorkspacePrivate;
-class medSegmentationSelectorToolBox;
+#include <medSelectorWorkspace.h>
 
 /**
  * class medSegmentationWorkspace
  * Defines the segmentation workspace.
  */
-class medSegmentationWorkspace : public medAbstractWorkspaceLegacy
+class medSegmentationWorkspace : public medSelectorWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Segmentation",
                             "Workspace to extract structures from an image using segmentation.",
                             "Methodology")
 public:
-    medSegmentationWorkspace(QWidget *parent = nullptr);
-
-    virtual ~medSegmentationWorkspace();
+    medSegmentationWorkspace(QWidget * parent);
 
     static bool isUsable();
-
-    //! Implement abstract method in base class.
-    void setupTabbedViewContainer();
-
-    medSegmentationSelectorToolBox *selectorToolBox();
-
-private:
-    medSegmentationWorkspacePrivate *d;
 };
 
 

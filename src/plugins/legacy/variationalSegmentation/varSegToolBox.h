@@ -14,7 +14,7 @@
 #ifndef VarSegToolBox_H
 #define VarSegToolBox_H
 
-#include <medSegmentationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <vtkLandmarkSegmentationController.h>
 
 class medAbstractData;
@@ -30,17 +30,17 @@ class VarSegToolBoxPrivate;
 /*!
  * \brief Segmentation toolbox to apply manual painting of pixels.
  */
-class VarSegToolBox : public medSegmentationAbstractToolBox
+class VarSegToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Variational Segmentation",
                           "Apply variational segmentation on a dataset",
-                          <<"segmentation")
+                          <<"Segmentation")
 
     VarSegToolBox( QWidget *parent );
     virtual ~VarSegToolBox();
 
-    static medSegmentationAbstractToolBox *createInstance( QWidget *parent );
+    static medAbstractSelectableToolBox *createInstance( QWidget *parent );
 
     static QString s_description();
     static QString s_identifier();

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2014. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,25 +11,26 @@
 
 =========================================================================*/
 
-#include <medSegmentationAbstractToolBox.h>
-#include <medSegmentationSelectorToolBox.h>
+#include <medAbstractSelectableToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
+#include <medToolBoxTab.h>
 
-class medSegmentationSelectorToolBoxPrivate
+class medSelectorToolBoxPrivate
 {
 public:
     QComboBox *chooseComboBox;
-    medSegmentationAbstractToolBox * currentToolBox;
-    QHash<QString, medSegmentationAbstractToolBox*> toolBoxes;
+    medAbstractSelectableToolBox * currentToolBox;
+    QHash<QString, medAbstractSelectableToolBox*> toolBoxes;
     QVBoxLayout *mainLayout;
 
     medAbstractData *inputData;
 };
 
-medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent) :
+medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
     medToolBox(parent),
-    d(new medSegmentationSelectorToolBoxPrivate)
+    d(new medSelectorToolBoxPrivate)
 {
     d->currentToolBox = nullptr;
 
@@ -43,7 +44,7 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent) 
     // Get informations about the workspace toolboxes:
     // displayed name, description for tooltip, and identifier
     QHash<QString, QStringList> toolboxDataHash;
-    foreach(QString toolboxName, tbFactory->toolBoxesFromCategory("segmentation"))
+    foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(tlbxId))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolboxName);
 
@@ -77,39 +78,39 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox(QWidget *parent) 
 
     this->addWidget(mainWidget);
 
-    this->setTitle("Segmentation");
+    clear();
 }
 
-medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox(void)
+medSelectorToolBox::~medSelectorToolBox(void)
 {
     delete d;
     d = nullptr;
 }
 
-medSegmentationAbstractToolBox* medSegmentationSelectorToolBox::currentToolBox()
+medAbstractSelectableToolBox* medSelectorToolBox::currentToolBox()
 {
     return d->currentToolBox;
 }
 
-void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
+void medSelectorToolBox::changeCurrentToolBox ( int index )
 {
     // Get current toolbox identifier from combobox
     QString identifier = d->chooseComboBox->itemData(index).toString();
     this->changeCurrentToolBox(identifier);
 }
 
-void medSegmentationSelectorToolBox::changeCurrentToolBox(const QString &identifier)
+void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
 {
-    medSegmentationAbstractToolBox *toolbox = nullptr;
+    medAbstractSelectableToolBox *toolbox = nullptr;
 
-    if (d->toolBoxes.contains(identifier))
+    if (d->toolBoxes.contains (identifier))
     {
         toolbox = d->toolBoxes[identifier];
     }
     else
     {
         medToolBox* tb = medToolBoxFactory::instance()->createToolBox(identifier, this);
-        toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
+        toolbox = qobject_cast<medAbstractSelectableToolBox*>(tb);
         if (toolbox)
         {
             toolbox->setWorkspace(getWorkspace());
@@ -151,7 +152,7 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(const QString &identif
     }
 }
 
-int medSegmentationSelectorToolBox::getIndexOfToolBox(const QString &toolboxName)
+int medSelectorToolBox::getIndexOfToolBox(const QString &toolboxName)
 {
     for (int i=0; i<d->chooseComboBox->count(); ++i)
     {
@@ -163,24 +164,24 @@ int medSegmentationSelectorToolBox::getIndexOfToolBox(const QString &toolboxName
     return -1;
 }
 
-medAbstractData* medSegmentationSelectorToolBox::data()
+medAbstractData* medSelectorToolBox::data()
 {
     return d->inputData;
 }
 
 
-QComboBox* medSegmentationSelectorToolBox::comboBox()
+QComboBox *medSelectorToolBox::comboBox()
 {
     return d->chooseComboBox;
 }
 
-void medSegmentationSelectorToolBox::onInputSelected(medAbstractData *data)
+void medSelectorToolBox::onInputSelected(medAbstractData *data)
 {
     d->inputData = data;
     emit inputChanged();
 }
 
-void medSegmentationSelectorToolBox::clear()
+void medSelectorToolBox::clear()
 {
     d->inputData = nullptr;
     emit inputChanged();

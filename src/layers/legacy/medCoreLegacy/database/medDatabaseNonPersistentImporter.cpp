@@ -32,7 +32,7 @@
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (const QString& file, const QUuid& uuid )
 : medAbstractDatabaseImporter(file, uuid, true)
 {
-    dtkDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
+    qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (const QStrin
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (medAbstractData* medData, const QUuid &uuid )
 : medAbstractDatabaseImporter(medData, uuid, true)
 {
-    dtkDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
+    qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -104,11 +104,11 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
-    medDatabaseNonPersistentItem *patientItem = NULL;
+    medDatabaseNonPersistentItem *patientItem = nullptr;
 
     if ( databaseIndex.isValid() )
     {
-        dtkDebug() << "Patient exists in the database, I reuse his Id";
+        qDebug() << "Patient exists in the database, I reuse his Id";
         patientDbId = databaseIndex.patientId();
     }
     else
@@ -131,7 +131,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
     medDataIndex index;
 
-    if ( patientItem == NULL )
+    if ( patientItem == nullptr )
     {
         // create an item for patient
         patientItem = new medDatabaseNonPersistentItem;
@@ -167,7 +167,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
         if ( databaseIndex.isValid() )
         {
-            dtkDebug() << "Study exists in the database, I reuse its Id";
+            qDebug() << "Study exists in the database, I reuse its Id";
             studyDbId = databaseIndex.studyId();
         }
         else
@@ -185,7 +185,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         {
             studyDbId = npdc->studyId ( true );
         }
-        if ( studyItem == NULL )
+        if ( studyItem == nullptr )
         {
             // create an item for study
             studyItem = new medDatabaseNonPersistentItem;

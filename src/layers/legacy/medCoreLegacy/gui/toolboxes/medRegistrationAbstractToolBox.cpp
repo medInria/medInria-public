@@ -20,7 +20,8 @@ public:
     medRegistrationSelectorToolBox *parent;
 };
 
-medRegistrationAbstractToolBox::medRegistrationAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationAbstractToolBoxPrivate)
+medRegistrationAbstractToolBox::medRegistrationAbstractToolBox(QWidget *parent)
+    : medToolBox(parent), d(new medRegistrationAbstractToolBoxPrivate)
 {
     d->parent = nullptr;
 }

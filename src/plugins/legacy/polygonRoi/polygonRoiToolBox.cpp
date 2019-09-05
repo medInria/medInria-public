@@ -171,7 +171,7 @@ void contourWidgetObserver::Execute ( vtkObject *caller, unsigned long event, vo
 }
 
 polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
-    medSegmentationAbstractToolBox(parent)
+    medAbstractSelectableToolBox(parent)
 {
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);

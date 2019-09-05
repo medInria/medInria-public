@@ -178,6 +178,15 @@ void medAbstractWorkspaceLegacy::clear()
     return;
 }
 
+void medAbstractWorkspaceLegacy::setupTabbedViewContainer()
+{
+    if (!tabbedViewContainers()->count())
+    {
+        this->tabbedViewContainers()->addContainerInTabNamed(this->name());
+    }
+    this->tabbedViewContainers()->lockTabs();
+}
+
 void medAbstractWorkspaceLegacy::setToolBoxesVisibility (bool value)
 {
     d->toolBoxesVisibility = value;
@@ -906,6 +915,16 @@ void medAbstractWorkspaceLegacy::setLayerGroups(QList<medLayerParameterGroupL*> 
 {
     foreach(medLayerParameterGroupL* group, groups)
         addLayerGroup(group);
+}
+
+void medAbstractWorkspaceLegacy::setInitialGroups()
+{
+    medViewParameterGroupL *viewGroup1 = new medViewParameterGroupL("View Group 1", this, this->identifier());
+    viewGroup1->setLinkAllParameters(true);
+    viewGroup1->removeParameter("DataList");
+
+    medViewParameterGroupL *layerGroup1 = new medViewParameterGroupL("Layer Group 1", this, this->identifier());
+    layerGroup1->setLinkAllParameters(true);
 }
 
 void medAbstractWorkspaceLegacy::changeViewGroupColor(QString group, QColor color)

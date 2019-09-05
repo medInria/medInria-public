@@ -2,16 +2,15 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <medPluginManager.h>
 #include <undoRedoRegistration.h>
 #include <undoRedoRegistrationToolBox.h>
 
@@ -77,7 +76,6 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
 
     addWidget(layoutSection);
 
-    this->setTitle(tr("Stack of transformations"));
     connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QString)),this,SLOT(addTransformationIntoList(int, QString)));
     connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
 }
@@ -86,19 +84,12 @@ undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool undoRedoRegistrationToolBox::registered(void)
 {
     return medToolBoxFactory::instance()-> registerToolBox<undoRedoRegistrationToolBox>();
-}
-
-dtkPlugin* undoRedoRegistrationToolBox::plugin()
-{
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "undoRedoRegistration" );
-    return plugin;
 }
 
 void undoRedoRegistrationToolBox::onUndo()
@@ -193,13 +184,15 @@ void undoRedoRegistrationToolBox::updatePositionArrow(int newStep){
     }
 }
 
-void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox){
+void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox)
+{
     medRegistrationAbstractToolBox::setRegistrationToolBox(toolbox);
     toolbox->setUndoRedoProcess(d->m_UndoRedo);
     connect(this->parentToolBox(),SIGNAL(success()),this,SLOT(onRegistrationSuccess()));
 }
 
-void undoRedoRegistrationToolBox::onRegistrationSuccess(){
+void undoRedoRegistrationToolBox::onRegistrationSuccess()
+{
     registrationFactory::instance()->addTransformation(static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTransform(),static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTitleAndParameters());
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
     d->m_UndoRedo->generateOutput(true,this->parentToolBox()->process());

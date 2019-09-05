@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QtCore>
-#include <medAbstractWorkspaceLegacy.h>
+#include <medSelectorWorkspace.h>
 
 class medFilteringWorkspaceLPrivate;
 class medViewContainerStack;
@@ -24,14 +24,14 @@ class dtkAbstractView;
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medFilteringWorkspaceL : public medAbstractWorkspaceLegacy
+class medFilteringWorkspaceL : public medSelectorWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Filtering Legacy",
                             "Workspace to apply filters to images.",
                             "Methodology")
 public:
-    medFilteringWorkspaceL(QWidget *parent = 0);
+    medFilteringWorkspaceL(QWidget *parent = nullptr);
     ~medFilteringWorkspaceL();
 
     static bool isUsable();
@@ -53,7 +53,9 @@ signals:
 protected slots:
 
     void changeToolBoxInput();
-    void onProcessSuccess();
+    void importProcessOutput();
+    void resetDefaultWidgetInputContainer();
+    void resetDefaultWidgetOutputContainer();
 
 private:
     medFilteringWorkspaceLPrivate *d;

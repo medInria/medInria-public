@@ -11,16 +11,17 @@
 
 =========================================================================*/
 #pragma once
-#include "medAbstractRoi.h"
-#include "medRoiManager.h"
-#include "polygonRoi.h"
-#include "polygonRoiPluginExport.h"
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <itkImage.h>
 
-#include <medSegmentationAbstractToolBox.h>
+#include <medAbstractRoi.h>
+#include <medAbstractSelectableToolBox.h>
+#include <medRoiManager.h>
+
+#include <polygonRoi.h>
+#include <polygonRoiPluginExport.h>
 
 #include <vtkInriaInteractorStylePolygonRepulsor.h>
 #include <vtkPolygon.h>
@@ -42,12 +43,13 @@ typedef itk::Image<unsigned char, 3> UChar3ImageType;
  * "repulsorTool" : QPushButton\n
  * "generateBinaryImageButton" : QPushButton
  */
-class POLYGONROIPLUGIN_EXPORT polygonRoiToolBox : public medSegmentationAbstractToolBox
+class POLYGONROIPLUGIN_EXPORT polygonRoiToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
 
     MED_TOOLBOX_INTERFACE("Polygon Roi",
-        "Used to create Polygon ROI",<<"segmentation")
+                          "Used to create Polygon ROI",
+                          <<"Segmentation")
 
 public:
 

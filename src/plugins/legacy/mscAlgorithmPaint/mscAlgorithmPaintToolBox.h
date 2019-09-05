@@ -16,8 +16,8 @@
 #include "mscPaintBrush.h"
 
 #include <medAbstractData.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medDoubleParameterL.h>
-#include <medSegmentationAbstractToolBox.h>
 #include <medImageMaskAnnotationData.h>
 #include <medIntParameterL.h>
 #include <medViewEventFilter.h>
@@ -76,11 +76,12 @@ typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 * "saveButton" : QPushButton\n
 * "clearMaskButton" : QPushButton
 */
-class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medSegmentationAbstractToolBox
+class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Paint Segmentation",
-                          "Use paint and region growing tools.",<<"segmentation")
+                          "Use paint and region growing tools.",
+                          <<"Segmentation")
 public:
 
     typedef std::set<dtkSmartPointer<mscPaintBrush>, PaintBrushObjComparator> PaintBrushSet;

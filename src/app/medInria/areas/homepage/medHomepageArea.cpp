@@ -418,7 +418,7 @@ void medHomepageArea::initPage()
     if (workspaceButtonsLayoutClinical->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutClinical);
     if (workspaceButtonsLayoutOther->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutOther);
 
-    for (int i = 0; i < oLayoutVect.size(); ++i)
+    for (int i = 0; i < (int)oLayoutVect.size(); ++i)
     {
         workspaceButtonsLayout->setColumnMinimumWidth(i, 120);
         workspaceButtonsLayout->addLayout(oLayoutVect[i], 0, i);

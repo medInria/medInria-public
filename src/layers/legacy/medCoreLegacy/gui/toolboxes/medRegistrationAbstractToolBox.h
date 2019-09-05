@@ -31,7 +31,7 @@ public:
 
     virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
-    virtual dtkPlugin* plugin() = 0;
+    virtual medAbstractData* getOutput(){return nullptr;}
 
 protected:
     medRegistrationSelectorToolBox *parentToolBox();

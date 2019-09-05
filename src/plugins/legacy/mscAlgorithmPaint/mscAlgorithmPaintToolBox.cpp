@@ -36,7 +36,7 @@
 #include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
-#include <medSegmentationSelectorToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medUtilities.h>
@@ -253,7 +253,7 @@ private :
 };
 
 AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
-    medSegmentationAbstractToolBox(parent),
+    medAbstractSelectableToolBox(parent),
     m_paintState(PaintState::None)
 {
     // instanciate the event filter only once

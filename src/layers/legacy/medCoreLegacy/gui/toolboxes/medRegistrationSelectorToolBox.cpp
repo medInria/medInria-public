@@ -2,26 +2,24 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include "medRegistrationAbstractToolBox.h"
-#include "medRegistrationSelectorToolBox.h"
-
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractRegistrationProcess.h>
-#include <medButton.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medDataManager.h>
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
-#include <medRunnableProcess.h>
+#include <medRegistrationAbstractToolBox.h>
+#include <medRegistrationSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
 
@@ -29,8 +27,6 @@ class medRegistrationSelectorToolBoxPrivate
 {
 public:
     QPushButton * saveTransButton;
-
-    QComboBox *toolboxes;
 
     QVBoxLayout *toolBoxLayout;
 
@@ -41,14 +37,12 @@ public:
     dtkSmartPointer <medAbstractRegistrationProcess> undoRedoProcess;
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
-    medRegistrationAbstractToolBox * currentToolBox;
     QString nameOfCurrentAlgorithm;
     QString savePath;
-
 };
 
-medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) :
-    medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
+medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, QString name)
+    : medSelectorToolBox(parent, name), d(new medRegistrationSelectorToolBoxPrivate)
 {
     d->fixedData  = nullptr;
     d->movingData = nullptr;
@@ -57,21 +51,14 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->undoRedoToolBox = nullptr;
     d->nameOfCurrentAlgorithm = "";
     d->savePath = QDir::homePath();
-    // Process section
 
+    // Process section
     d->saveTransButton = new QPushButton(tr("Export Last Transf."),this);
     d->saveTransButton->setToolTip(
                 tr("Export the resulting transformation of the last algorithm to the File System"));
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
 
-
     // --- Setting up custom toolboxes list ---
-
-    d->toolboxes = new QComboBox(this);
-    d->toolboxes->addItem(tr("Choose algorithm"));
-    d->toolboxes->setToolTip(
-                tr( "Choose the registration algorithm"
-                    " amongst the loaded plugins" ));
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
 
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration"))
@@ -79,47 +66,26 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
         if(!tb)
-            dtkWarn() << "Unable to instantiate" << details->name << "toolbox";
+        {
+            qWarning() << "Unable to instantiate" << details->name << "toolbox";
+        }
         else
         {
             tb->header()->hide();
             d->undoRedoToolBox = tb;
             d->undoRedoToolBox->setRegistrationToolBox(this);
+            d->undoRedoToolBox->setWorkspace(getWorkspace());
         }
     }
-    int i=1;
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
-    {
-        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
-        d->toolboxes->addItem(details->name, toolbox);
-        d->toolboxes->setItemData(i,
-                                  details->description,
-                                  Qt::ToolTipRole);
-        i++;
-    }
-
-    connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
-
-    // ---
-    QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
-    layoutButtonGroup->addButton(d->saveTransButton);
-
-    QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
-    layoutButtonLayout->addWidget(d->saveTransButton);
-
 
     QWidget *toolBoxWidget =  new QWidget;
     d->toolBoxLayout = new QVBoxLayout(toolBoxWidget);
-    d->toolBoxLayout->addLayout(layoutButtonLayout);
-    d->toolBoxLayout->addWidget(d->toolboxes);
+    d->toolBoxLayout->addWidget(d->saveTransButton);
 
     if (d->undoRedoToolBox)
         this->addWidget(d->undoRedoToolBox);
 
     this->addWidget(toolBoxWidget);
-
-    this->setTitle(tr("Registration"));
-    d->currentToolBox = nullptr;
 
     //Connect Message Controller:
     connect(this,SIGNAL(showError(const QString&,unsigned int)),
@@ -131,7 +97,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
 {
     delete d;
-
     d = nullptr;
 }
 
@@ -147,7 +112,6 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
     return d->movingData;
 }
 
-
 /**
  * Sets up the toolbox chosen and remove the old one.
  *
@@ -155,59 +119,24 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
  */
 void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 {
-    //get rid of old toolBox
-    if (d->currentToolBox)
-    {
-        this->header()->aboutButton()->disconnect(d->currentToolBox);
-        d->currentToolBox->hide();
-        d->toolBoxLayout->removeWidget(d->currentToolBox);
-        d->currentToolBox = nullptr;
-    }
+    medSelectorToolBox::changeCurrentToolBox(index);
 
-    //get identifier for toolbox.
-    QString id = d->toolboxes->itemData(index).toString();
-
-    medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
-
-    if(!toolbox) 
-    {
-        this->setAboutPluginVisibility(false);
-        dtkWarn() << "Unable to instantiate" << id << "toolbox";
-        return;
-    }
-
-    d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
-
-    toolbox->setRegistrationToolBox(this);
-    toolbox->setWorkspace(this->getWorkspace());
-
-    d->currentToolBox = toolbox;
-    d->currentToolBox->show();
-    d->currentToolBox->header()->hide();
-    d->toolBoxLayout->addWidget(d->currentToolBox);
-
-    connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
-    connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
-    connect (toolbox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
-    connect (toolbox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
-
-    dtkPlugin* plugin = toolbox->plugin();
-    this->setAboutPluginButton(plugin);
-    this->setAboutPluginVisibility(true);
+    connect (currentToolBox(), SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (currentToolBox(), SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
     if (!d->undoRedoProcess && !d->undoRedoToolBox)
     {
-        connect(toolbox,SIGNAL(success()),this,SLOT(handleOutput()));
+        connect(currentToolBox(), SIGNAL(success()), this, SLOT(handleOutput()));
     }
 }
-
 
 //! Clears the toolbox.
 void medRegistrationSelectorToolBox::clear(void)
 {
-    //maybe clear the currentToolBox?
-    if (d->currentToolBox)
-        d->currentToolBox->clear();
+    if (currentToolBox())
+    {
+        currentToolBox()->clear();
+    }
 }
 
 //! Gets the process.
@@ -246,7 +175,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 {
     if (!d->movingData)
     {
-        emit showError(tr  ("Please Select a moving image before saving"),3000);
+        emit showError(tr  ("Please select a moving image before saving"),3000);
         return;
     }
     if (!d->process )
@@ -259,7 +188,6 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     QString fileTypeSuggestion;
     QString filterSelected;
     QHash<QString,QString> suffix;
-
     if (d->process->hasProperty("outputFileType"))
     {
         if (d->process->property("outputFileType") == "text")
@@ -339,22 +267,39 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     d->savePath = QDir::homePath();
 }
 
+
 void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString algoName)
 {
     medAbstractData *output(nullptr);
     if (type == algorithm)
+    {
         if (d->process)
+        {
             output = dynamic_cast<medAbstractData*>(d->process->output());
-        else return;
+        }
+        else
+        {
+            return;
+        }
+    }
     else
+    {
         if (d->undoRedoProcess)
+        {
             output = dynamic_cast<medAbstractData*>(d->undoRedoProcess->output());
-        else return;
+        }
+        else
+        {
+            return;
+        }
+    }
 
     // We manage the new description of the image
     QString newDescription = "";
     if(d->movingData)
+    {
         newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+    }
 
     if (type==algorithm || type==redo)
     {
@@ -362,23 +307,28 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
         {
             algoName = d->nameOfCurrentAlgorithm.remove(" "); // we remove the spaces to reduce the size of the QString as much as possible
         }
-        if (newDescription.contains("registered"))
-            newDescription += "-" + algoName + "\n";
-        else
-            newDescription += " registered\n-" + algoName+ "\n";
+
+        if (!newDescription.contains("registered"))
+        {
+            newDescription += " registered";
+        }
+        if (algoName != "")
+        {
+            newDescription += "(" + algoName + ")";
+        }
     }
-    else if (type == undo)
+    else if (type == undo || type == reset)
     {
-        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1);
-        if (newDescription.count("-") == 0)
-            newDescription.remove(" registered\n");
+        int last = newDescription.lastIndexOf(" registered");
+        newDescription.remove(last, newDescription.size()-last);
     }
-    else if (type == reset)
+
+    if (type == reset)
     {
-        if (newDescription.lastIndexOf(" registered") != -1)
-            newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
         if(!d->fixedData || !d->movingData)
+        {
             return;
+        }
     }
 
     foreach(QString metaData, d->fixedData->metaDataList())
@@ -399,31 +349,28 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     emit movingDataRegistered(output);
 }
 
-void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
+void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable)
+{
     this->setEnabled(enable);
 }
 
-void medRegistrationSelectorToolBox::onJobAdded(medJobItemL* item, QString jobName){
-    if (d->process)
-        if (jobName == d->process->identifier()){
-            dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
-            if (proc==d->process)
-                enableSelectorToolBox(false);
-        }
-}
-bool medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
+void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
 {
     d->fixedData = data;
-    return setUndoRedoProcessInputs();
+    setUndoRedoProcessInputs();
 }
 
-bool medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
+void medRegistrationSelectorToolBox::setMovingData(medAbstractData *data)
 {
     d->movingData = data;
-    return setUndoRedoProcessInputs();
+    setUndoRedoProcessInputs();
 }
 
-bool medRegistrationSelectorToolBox::setUndoRedoProcessInputs()
+void medRegistrationSelectorToolBox::setUndoRedoProcessInputs()
 {
-    return d->undoRedoProcess && d->undoRedoProcess->setFixedInput(d->fixedData) && d->undoRedoProcess->setMovingInput(d->movingData);
+    if(d->undoRedoProcess)
+    {
+        d->undoRedoProcess->setFixedInput(d->fixedData);
+        d->undoRedoProcess->setMovingInput(d->movingData);
+    }
 }

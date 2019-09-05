@@ -15,22 +15,22 @@
 
 #include "medMaskApplicationPluginExport.h"
 
-#include <medFilteringAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 
 class medMaskApplicationToolBoxPrivate;
 
 /*!
  * \brief Toolbox to apply a mask to an image.
  */
-class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medFilteringAbstractToolBox
+class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Mask Application",
                           "Apply a mask to an image.",
-                          <<"filtering")
+                          <<"Filtering Legacy")
 
 public:
-    medMaskApplicationToolBox(QWidget *parent = 0);
+    medMaskApplicationToolBox(QWidget *parent = nullptr);
     ~medMaskApplicationToolBox();
 
     medAbstractData *processOutput() override;

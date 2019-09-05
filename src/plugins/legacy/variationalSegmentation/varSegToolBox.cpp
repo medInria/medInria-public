@@ -56,7 +56,7 @@ public:
 };
 
 VarSegToolBox::VarSegToolBox(QWidget *parent )
-    : medSegmentationAbstractToolBox(parent)
+    : medAbstractSelectableToolBox(parent)
     , d(new VarSegToolBoxPrivate)
 {
     QWidget *displayWidget = new QWidget(this);
@@ -112,7 +112,7 @@ VarSegToolBox::~VarSegToolBox()
 }
 
 //static
-medSegmentationAbstractToolBox *VarSegToolBox::createInstance(QWidget *parent )
+medAbstractSelectableToolBox *VarSegToolBox::createInstance(QWidget *parent )
 {
     return new VarSegToolBox(parent);
 }
