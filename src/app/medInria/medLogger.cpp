@@ -1,6 +1,12 @@
 #include "medLogger.h"
-#include <filesystem>
 #include <fstream>
+#if __has_include("myinclude.h")
+  #include <filesystem>
+  namespace fs = std::filesystem;
+#else
+  #include <experimental/filesystem>
+  namespace fs = std::experimental::filesystem;
+#endif
 
 class medLoggerPrivate
 {
@@ -103,7 +109,6 @@ medLogger::~medLogger()
 
 void medLogger::truncateLogFileIfHeavy()
 {
-    namespace fs = std::filesystem;
     qint64 filesize = QFileInfo(dtkLogPath(qApp)).size();
 
     // Over 5Mo, the file is truncated from the beginning (old lines are discarded)
