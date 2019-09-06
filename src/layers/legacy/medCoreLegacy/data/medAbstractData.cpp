@@ -49,7 +49,7 @@ medAbstractData::medAbstractData( medAbstractData *parent )
 medAbstractData::~medAbstractData( void )
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 medAbstractData* medAbstractData::clone(void)
@@ -86,7 +86,7 @@ medDataIndex medAbstractData::dataIndex() const
 */
 medAbstractData * medAbstractData::convert(const QString &toType)
 {
-    medAbstractData *conversion = NULL;
+    medAbstractData *conversion = nullptr;
 
     foreach (QString converterId, medAbstractDataFactory::instance()->converters())
     {
