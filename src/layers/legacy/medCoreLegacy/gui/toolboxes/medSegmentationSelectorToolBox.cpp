@@ -92,6 +92,7 @@ void medSegmentationSelectorToolBox::changeCurrentToolBox(int index)
         toolbox = qobject_cast<medSegmentationAbstractToolBox*>(tb);
         if (toolbox)
         {
+            toolbox->setWorkspace(getWorkspace());
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             d->segmentationToolBoxes[identifier] = toolbox;
             connect(toolbox, SIGNAL(installEventFilterRequest(medViewEventFilter*)),

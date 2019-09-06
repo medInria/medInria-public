@@ -60,10 +60,10 @@ medDiffusionModelEstimationMetaProcessPresenter::medDiffusionModelEstimationMeta
             this, &medDiffusionModelEstimationMetaProcessPresenter::_importOutput,
             Qt::QueuedConnection);
 
-    d->modelEstimationPresenter = 0;
-    d->dwiMaskCalculatorPresenter = 0;
-    d->dwiMaskCalculatorWidget = 0;
-    d->modelEstimationWidget = 0;
+    d->modelEstimationPresenter = nullptr;
+    d->dwiMaskCalculatorPresenter = nullptr;
+    d->dwiMaskCalculatorWidget = nullptr;
+    d->modelEstimationWidget = nullptr;
 }
 
 medDiffusionModelEstimationMetaProcessPresenter::~medDiffusionModelEstimationMetaProcessPresenter()
@@ -81,7 +81,7 @@ QWidget *medDiffusionModelEstimationMetaProcessPresenter::buildToolBoxWidget()
     QVBoxLayout *tbLayout = new QVBoxLayout;
     tbWidget->setLayout(tbLayout);
 
-    QLabel *dwiMaskingLabel = new QLabel(tr("DWI masking algorithm:"));
+    QLabel *dwiMaskingLabel = new QLabel(tr("DWI masking"));
     QHBoxLayout *dwiMaskingComboLayout = new QHBoxLayout;
     dwiMaskingComboLayout->addWidget(dwiMaskingLabel);
     d->dwiMaskingComboBox = new QComboBox;
@@ -103,7 +103,7 @@ QWidget *medDiffusionModelEstimationMetaProcessPresenter::buildToolBoxWidget()
     tbLayout->addWidget(d->dwiMaskCalculatorWidget);
     d->dwiMaskCalculatorWidget->hide();
 
-    QLabel *modelEstimationLabel = new QLabel(tr("Estimation algorithm:"));
+    QLabel *modelEstimationLabel = new QLabel(tr("Estimation"));
     QHBoxLayout *modelEstimationComboLayout = new QHBoxLayout;
     modelEstimationComboLayout->addWidget(modelEstimationLabel);
     d->modelEstimationComboBox = new QComboBox;
