@@ -1,6 +1,6 @@
 #include "medLogger.h"
 #include <fstream>
-#if __has_include("myinclude.h")
+#if __has_include(<filesystem.h>)
   #include <filesystem>
   namespace fs = std::filesystem;
 #else
