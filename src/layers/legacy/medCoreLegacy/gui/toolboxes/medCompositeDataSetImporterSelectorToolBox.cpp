@@ -139,7 +139,7 @@ void medCompositeDataSetImporterSelectorToolBox::initialize()
     connect(d->import,SIGNAL(clicked()),this,SLOT(onImportClicked()));
 
     //  Load button
-    d->load = new QPushButton (tr("Load"),mainwidget);
+    d->load = new QPushButton (tr("Temporary Import"),mainwidget);
     d->load->setMaximumWidth(buttonWidth);
     connect(d->load,SIGNAL(clicked()),this,SLOT(onLoadClicked()));
 

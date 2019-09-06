@@ -66,7 +66,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     QAction *indexAction = new QAction(tr("Index"), this);
     indexAction->setIconVisibleInMenu(true);
     indexAction->setIcon(QIcon(":icons/finger.png"));
-    QAction *loadAction = new QAction(tr("Load"), this);
+    QAction *loadAction = new QAction(tr("Temporary Import"), this);
     loadAction->setIconVisibleInMenu(true);
     loadAction->setIcon(QIcon(":icons/document-open.png"));
     QAction *viewAction = new QAction(tr("View"), this);
