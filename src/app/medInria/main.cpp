@@ -191,11 +191,9 @@ int main(int argc,char* argv[])
         }
     }
     // END OF DATABASE INITIALISATION
-    dtkLogger::instance().setLevel("trace");
-    dtkLogger::instance().attachConsole();
+
     medPluginManager::instance()->setVerboseLoading(true);
     medPluginManager::instance()->initialize();
-
 
     //Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
     medMainWindow *mainwindow = new medMainWindow;
@@ -257,6 +255,8 @@ int main(int argc,char* argv[])
     application.setMainWindow(mainwindow);
 
     forceShow(*mainwindow);
+
+    dtkInfo() << "### Application is running...";
 
     //  Start main loop.
     const int status = application.exec();

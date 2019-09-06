@@ -65,6 +65,12 @@ if (ACTIVATE_WALL_OPTION)
   add_definitions(-DACTIVATE_WALL_OPTION)
 endif()
 
+## #############################################################################
+## Variable
+## #############################################################################
+
+string(TIMESTAMP BUILD_DATE "\"%d_%m_%Y\"")
+add_definitions(-DMEDINRIA_BUILD_DATE=${BUILD_DATE})
 
 ## #############################################################################
 ## OS specificites
@@ -133,6 +139,12 @@ target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   medPacs
   )
+
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+    target_link_libraries(${TARGET_NAME} stdc++fs)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "[cC][lL][aA][nN][gG]")
+    target_link_libraries(${TARGET_NAME} c++fs)
+endif()
 
 ## #############################################################################
 ## install
