@@ -1,5 +1,5 @@
 #include "medLogger.h"
-
+#include <filesystem>
 #include <fstream>
 
 class medLoggerPrivate
@@ -88,8 +88,7 @@ medLogger::medLogger() : d(new medLoggerPrivate)
     dtkLogger::instance().redirectCout();
 
     // Redirect Qt messages
-    QObject::connect(this, SIGNAL(newQtMessage(QtMsgType,QString)),
-                     this, SLOT(redirectQtMessage(QtMsgType,QString)));
+    QObject::connect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
     qInstallMessageHandler(qtMessageHandler);
 }
 
@@ -98,37 +97,37 @@ medLogger::~medLogger()
     dtkLogger::instance().detachFile(dtkLogPath(qApp));
     dtkLogger::instance().detachConsole();
 
-    QObject::disconnect(this, SIGNAL(newQtMessage(QtMsgType,QString)),
-                        this, SLOT(redirectQtMessage(QtMsgType,QString)));
+    QObject::disconnect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
     qInstallMessageHandler(nullptr);
 }
 
 void medLogger::truncateLogFileIfHeavy()
 {
+    namespace fs = std::filesystem;
     qint64 filesize = QFileInfo(dtkLogPath(qApp)).size();
 
     // Over 5Mo, the file is truncated from the beginning (old lines are discarded)
     if (filesize > d->maxLogSize)
     {
-        QString path = dtkLogPath(qApp);
+        fs::path path = dtkLogPath(qApp).toStdString();
 
         std::ifstream fin;
-        fin.open(path.toUtf8());
+        fin.open(path);
         fin.seekg(filesize - d->minLogSize); // file is going to be cut to minLogSize size
 
         std::string keptText;
         std::string line;
         while (getline(fin,line))
         {
-            keptText += line;
+            keptText += line; //TODO redo with stringstream because it's very poor programing with string
             keptText += "\n";
         }
 
         fin.close();
-        std::remove(path.toUtf8());
+        fs::remove(path);
 
         std::ofstream newLogFile;
-        newLogFile.open(path.toUtf8());
+        newLogFile.open(path);
         newLogFile << keptText;
         newLogFile.close();
     }
