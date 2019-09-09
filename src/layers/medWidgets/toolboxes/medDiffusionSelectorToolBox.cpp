@@ -52,11 +52,11 @@ public:
 
 medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, SelectorType type) : medToolBox(parent), d(new medDiffusionSelectorToolBoxPrivate)
 {
-    d->currentProcess = 0;
-    d->currentProcessPresenter = 0;
-    d->currentToolBox = 0;
-    d->processOutput = 0;
-    d->methodCombo = 0;
+    d->currentProcess = nullptr;
+    d->currentProcessPresenter = nullptr;
+    d->currentToolBox = nullptr;
+    d->processOutput = nullptr;
+    d->methodCombo = nullptr;
     d->selectorType = type;
 
     // /////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     d->mainLayout = new QVBoxLayout(mainPage);
     QHBoxLayout *inputLayout = new QHBoxLayout;
     QLabel *inputDescriptionLabel = new QLabel(mainPage);
-    inputDescriptionLabel->setText(tr("Input image:"));
+    inputDescriptionLabel->setText(tr("Input image"));
     inputLayout->addWidget(inputDescriptionLabel);
 
     d->chooseInput = new QComboBox(mainPage);
@@ -105,7 +105,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
         }
 
         case ScalarMaps:
-            labelTitle = tr("Scalar maps:");
+            labelTitle = tr("Scalar maps");
             foreach(QString pluginKey, medCore::diffusionScalarMaps::pluginFactory().keys())
             {
                 medAbstractProcess *process = medCore::diffusionScalarMaps::pluginFactory().create(pluginKey);
@@ -115,7 +115,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
 
         case Tractography:
         default:
-            labelTitle = tr("Tractography algorithm:");
+            labelTitle = tr("Tractography algorithm");
             foreach(QString pluginKey, medCore::tractography::pluginFactory().keys())
             {
                 medAbstractProcess *process = medCore::tractography::pluginFactory().create(pluginKey);
@@ -144,7 +144,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
 medDiffusionSelectorToolBox::~medDiffusionSelectorToolBox(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medDiffusionSelectorToolBox::chooseProcess(int id)
@@ -159,7 +159,7 @@ void medDiffusionSelectorToolBox::chooseProcess(int id)
     {
         case Estimation:
         {
-            dtkWarn() << "Should not be here anymore: processes for estimation are handled inside the meta process";
+            qWarning() << "Should not be here anymore: processes for estimation are handled inside the meta process";
             break;
         }
 
@@ -206,7 +206,7 @@ void medDiffusionSelectorToolBox::chooseProcess(int id)
     {
         d->currentToolBox->hide();
         d->mainLayout->removeWidget ( d->currentToolBox );
-        d->currentToolBox = 0;
+        d->currentToolBox = nullptr;
     }
 
     d->currentToolBox = d->currentProcessPresenter->buildToolBoxWidget();
@@ -216,7 +216,7 @@ void medDiffusionSelectorToolBox::chooseProcess(int id)
 medAbstractData *medDiffusionSelectorToolBox::processOutput()
 {
     if (!d->currentProcess)
-        return 0;
+        return nullptr;
 
     switch(d->selectorType)
     {

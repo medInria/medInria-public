@@ -251,13 +251,13 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
 
     d->compo_button = new QPushButton("Composition", buttons);
     d->compo_button->setObjectName("medComposerAreaSegmentedButtonLeft");
-    d->compo_button->setFixedSize(75, 25);
+    d->compo_button->setFixedSize(100, 25);
     d->compo_button->setCheckable(true);
     d->compo_button->setChecked(true);
 
     d->distr_button = new QPushButton("Distribution", buttons);
     d->distr_button->setObjectName("medComposerAreaSegmentedButtonMiddle");
-    d->distr_button->setFixedSize(75, 25);
+    d->distr_button->setFixedSize(100, 25);
     d->distr_button->setCheckable(true);
 
     d->debug_button = new QPushButton("Debug", buttons);

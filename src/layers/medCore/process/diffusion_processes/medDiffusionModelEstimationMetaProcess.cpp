@@ -36,12 +36,12 @@ public:
 medDiffusionModelEstimationMetaProcess::medDiffusionModelEstimationMetaProcess(QObject *parent)
     : medAbstractProcess(parent), d(new medDiffusionModelEstimationMetaProcessPrivate)
 {
-    d->input = 0;
-    d->output = 0;
+    d->input = nullptr;
+    d->output = nullptr;
 
-    d->dwiMaskCalculator = 0;
+    d->dwiMaskCalculator = nullptr;
     d->dwiMaskApplyer = medCore::maskImage::pluginFactory().create("medItkMaskImageProcess");
-    d->modelEstimator = 0;
+    d->modelEstimator = nullptr;
 }
 
 medDiffusionModelEstimationMetaProcess::~medDiffusionModelEstimationMetaProcess()
