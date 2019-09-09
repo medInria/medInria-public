@@ -71,7 +71,7 @@ medAbstractDatabaseImporter::~medAbstractDatabaseImporter ( void )
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 /**
