@@ -49,7 +49,7 @@ medAbstractData::medAbstractData( medAbstractData *parent )
 medAbstractData::~medAbstractData( void )
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
