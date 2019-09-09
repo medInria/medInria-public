@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -39,7 +39,7 @@ public:
 
     QList<medToolBox*> getToolBoxes();
 
-QString description() const;
+    QString description() const;
 
 public slots:
     void onOpeningFailed(const medDataIndex& index, QUuid);
@@ -49,7 +49,7 @@ signals:
 
 protected slots:
     void onFilter(const QString &text, int column);
-
+    void compactFilter(const QString &text, int column);
 
 private:
     medDatabaseDataSourcePrivate* d;

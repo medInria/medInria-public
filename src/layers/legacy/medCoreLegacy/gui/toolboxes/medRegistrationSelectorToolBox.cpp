@@ -382,7 +382,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     }
 
     foreach(QString metaData, d->fixedData->metaDataList())
-        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
+        output->setMetaData(metaData,d->fixedData->metaDataValues(metaData));
 
     foreach(QString property, d->fixedData->propertyList())
         output->addProperty(property,d->fixedData->propertyValues(property));

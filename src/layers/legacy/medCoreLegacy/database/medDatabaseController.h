@@ -13,12 +13,13 @@
 
 #pragma once
 
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
-
-#include <medAbstractDbController.h>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 #include <medCoreLegacyExport.h>
+#include <medAbstractDbController.h>
+
+#define EXEC_QUERY(q) medDatabaseController::instance()->execQuery(q, __FILE__ , __LINE__ )
 
 class medAbstractData;
 class medDatabaseControllerPrivate;
@@ -69,6 +70,10 @@ public:
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
     virtual bool isPersistent() const;
+
+    bool execQuery(QSqlQuery& query, const char* file = nullptr, int line = -1) const;
+
+    void addTextColumnToSeriesTableIfNeeded(QSqlQuery query, QString columnName);
 
 public slots:
 

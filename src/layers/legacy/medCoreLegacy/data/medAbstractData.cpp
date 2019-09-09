@@ -42,16 +42,14 @@ medAbstractData::medAbstractData( medAbstractData *parent )
     : dtkAbstractData(parent)
     , d(new medAbstractDataPrivate)
 {
-    dtkDebug() << "constructing medAbstractData: ";
     this->moveToThread(QApplication::instance()->thread());
 }
 
 
 medAbstractData::~medAbstractData( void )
 {
-    dtkDebug() << "deleting data with index " << d->index.asString();
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -97,7 +95,7 @@ medAbstractData * medAbstractData::convert(const QString &toType)
             if(conversion)
             {
                 foreach(QString metaDataKey, this->metaDataList())
-                    conversion->addMetaData(metaDataKey, this->metaDataValues(metaDataKey));
+                    conversion->setMetaData(metaDataKey, this->metaDataValues(metaDataKey));
 
                 foreach(QString propertyKey, this->propertyList())
                     conversion->addProperty(propertyKey, this->propertyValues(propertyKey));

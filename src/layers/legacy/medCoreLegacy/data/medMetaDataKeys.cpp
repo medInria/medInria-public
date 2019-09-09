@@ -27,10 +27,10 @@ namespace medMetaDataKeys {
     // PATIENT
     MEDCORELEGACY_EXPORT const Key PatientID("PatientID");
     MEDCORELEGACY_EXPORT const Key PatientName("PatientName", "Patient Name");
-    MEDCORELEGACY_EXPORT const Key Age("Age", "Age", QVariant::UInt);
+    MEDCORELEGACY_EXPORT const Key Age("Age", "Age"); // could be "00" format, or for instance "00Y"
     MEDCORELEGACY_EXPORT const Key BirthDate("BirthDate", "Birth Date"/*, QVariant::Date*/);
     MEDCORELEGACY_EXPORT const Key Gender("Gender", "Gender", QVariant::Char);
-    MEDCORELEGACY_EXPORT const Key Description("Description"); //what?
+    MEDCORELEGACY_EXPORT const Key Description("Description"); // Used to add the app name and version
 
     // STUDY
     MEDCORELEGACY_EXPORT const Key StudyID("StudyID", "Study ID");
@@ -84,5 +84,10 @@ namespace medMetaDataKeys {
     MEDCORELEGACY_EXPORT const Key PreferredDataReader("PreferredDataReader", "Preferred Data Reader");
     MEDCORELEGACY_EXPORT const Key ImageID("ImageID");
     MEDCORELEGACY_EXPORT const Key ThumbnailPath("ThumbnailPath", "Thumbnail Path");
+
+    // MR Image
+    MEDCORELEGACY_EXPORT const Key FlipAngle("FlipAngle");
+    MEDCORELEGACY_EXPORT const Key EchoTime("EchoTime");
+    MEDCORELEGACY_EXPORT const Key RepetitionTime("RepetitionTime");
 };
 

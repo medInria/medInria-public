@@ -71,6 +71,7 @@ public slots:
     void onCreatePatientRequested();
     void onCreateStudyRequested();
     void onEditRequested();
+    void onMetadataRequested();
 
 protected slots:
     virtual void updateContextMenu(const QPoint&);

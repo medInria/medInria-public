@@ -18,7 +18,6 @@
 #include <medAbstractDataFactory.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medDatabaseExporter.h>
 #include <medMessageController.h>
 #include <medJobManagerL.h>
 #include <medPluginManager.h>
@@ -39,7 +38,7 @@ public:
         nonPersDbController = medDatabaseNonPersistentController::instance();
 
         if( ! dbController || ! nonPersDbController) {
-            dtkFatal() << "One of the DB controllers could not be created !";
+            qCritical() << "One of the DB controllers could not be created !";
         }
     }
 
@@ -101,7 +100,6 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     if(dataObjRef)
     {
         // we found an existing instance of that object
-        qDebug()<<"medDataManager we found an existing instance of that object" <<dataObjRef->count();
         return dataObjRef;
     }
 
@@ -146,7 +144,28 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     controller->importPath(dataPath, uuid, indexWithoutCopying);
     return uuid;
 }
+/** @brief return writers able to handle the data *Memory management is the responsability of the caller*
 
+*/
+QHash<QString, dtkAbstractDataWriter*> medDataManager::getPossibleWriters(medAbstractData* data)
+{
+    Q_D(medDataManager);
+    QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
+    QHash<QString, dtkAbstractDataWriter*> possibleWriters;
+
+    foreach(QString writerType, allWriters)
+    {
+        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
+        if (writer->handled().contains(data->identifier()))
+            possibleWriters[writerType] = writer;
+        else
+            delete writer;
+    }
+    if (possibleWriters.isEmpty())
+        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
+
+    return possibleWriters;
+}
 
 void medDataManager::exportData(medAbstractData* data)
 {
@@ -154,31 +173,18 @@ void medDataManager::exportData(medAbstractData* data)
         return;
 
     Q_D(medDataManager);
-
     QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
-    QHash<QString, dtkAbstractDataWriter*> possibleWriters;
+    QHash<QString, dtkAbstractDataWriter*> possibleWriters=getPossibleWriters(data);
 
-    foreach(QString writerType, allWriters) {
-        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
-        if (writer->handled().contains(data->identifier()))
-            possibleWriters[writerType] = writer;
-        else
-            delete writer;
-    }
-
-    if (possibleWriters.isEmpty()) {
-        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
-        return;
-    }
-
-    QFileDialog * exportDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
+    QFileDialog * exportDialog = new QFileDialog(0, tr("Exporting: please choose a file name and directory"));
     exportDialog->setOption(QFileDialog::DontUseNativeDialog);
     exportDialog->setAcceptMode(QFileDialog::AcceptSave);
 
     QComboBox* typesHandled = new QComboBox(exportDialog);
     // we use allWriters as the list of keys to make sure we traverse possibleWriters
     // in the order specified by the writers priorities.
-    foreach(QString type, allWriters) {
+    foreach(QString type, allWriters)
+    {
         if (!possibleWriters.contains(type))
             continue;
 
@@ -214,9 +220,40 @@ void medDataManager::exportData(medAbstractData* data)
         exportDialog->selectFile(defaultName);
     }
 
-    if ( exportDialog->exec() ) {
+    if ( exportDialog->exec() )
+    {
+        // Chosen format in combobox. Ex. "vtkDataMesh"
         QString chosenFormat = typesHandled->itemData(typesHandled->currentIndex()).toString();
-        this->exportDataToPath(data, exportDialog->selectedFiles().first(), chosenFormat);
+
+        // Combobox extension. Ex. ".vtk"
+        QString comboExtension = typesHandled->itemData(typesHandled->currentIndex(), Qt::UserRole+1).toString();
+
+        // Chosen extension in filename. Ex. "vtk"
+        QString finalFilename = exportDialog->selectedFiles().first().toUtf8();
+        QString userExtension = QFileInfo(finalFilename).suffix();
+
+        // Some extensions are linked to several formats:
+        // if the combobox and filename extensions are equal, no need to enter here.
+        if (!userExtension.isEmpty() && (comboExtension != ("."+userExtension)))
+        {
+            foreach(QString type, allWriters)
+            {
+                if (possibleWriters.contains(type))
+                {
+                    QStringList extensionList = possibleWriters[type]->supportedFileExtensions();
+
+                    if (extensionList.contains("." + userExtension))
+                    {
+                        // User has the last word about the file format, if it's a known format
+                        chosenFormat = type;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Send final type to export data
+        this->exportDataToPath(data, finalFilename, chosenFormat);
     }
 
     qDeleteAll(possibleWriters);
@@ -227,17 +264,39 @@ void medDataManager::exportData(medAbstractData* data)
 void medDataManager::exportDataToPath(medAbstractData *data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
+    launchExporter(exporter, filename);
+}
+
+void medDataManager::launchExporter(medDatabaseExporter* exporter, const QString & filename)
+{
     QFileInfo info(filename);
     medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
 
     connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(exporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(exporter, SIGNAL(success(QObject *)), this, SIGNAL(exportFinished()));
+    connect(exporter, SIGNAL(failure(QObject *)), this, SIGNAL(exportFinished()));
 
     medJobManagerL::instance()->registerJobItem(exporter);
     QThreadPool::globalInstance()->start(exporter);
 }
 
+QList<medDataIndex> medDataManager::getSeriesListFromStudy(const medDataIndex& indexStudy)
+{
+    Q_D(medDataManager);
+    QList<medDataIndex> indexList;
+
+    medAbstractDbController * dbc = d->controllerForDataSource(indexStudy.dataSourceId());
+
+    if (dbc)
+    {
+        // Get the list of each series from that study index
+        indexList = dbc->series(indexStudy);
+    }
+
+    return indexList;
+}
 
 QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
@@ -249,7 +308,7 @@ QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, co
     }
 
     if(dbc->dataSourceId() != toPatient.dataSourceId()) {
-        dtkWarn() << "medDataManager: Moving data across controllers is not supported.";
+        qWarning() << "medDataManager: Moving data accross controllers is not supported.";
     } else {
         newIndexList = dbc->moveStudy(indexStudy,toPatient);
     }
@@ -269,7 +328,7 @@ medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const med
     medDataIndex newIndex;
 
     if(dbc->dataSourceId() != toStudy.dataSourceId()) {
-        dtkWarn() << "medDataManager: Moving data across controllers is not supported.";
+        qWarning() << "medDataManager: Moving data accross controllers is not supported.";
     } else {
         newIndex = dbc->moveSerie(indexSerie,toStudy);
     }
@@ -307,7 +366,7 @@ void medDataManager::garbageCollect()
         it.next();
         medAbstractData *data = it.value();
         if(data->count() <= 1) {
-            dtkDebug()<<"medDataManager garbage collected " << data->dataIndex();
+            qDebug()<<"medDataManager garbage collected " << data->dataIndex();
             it.remove();
         }
     }
@@ -347,13 +406,28 @@ QUuid medDataManager::makePersistent(medAbstractData* data)
     return jobUuid;
 }
 
+QString medDataManager::getMetaData(const medDataIndex& index, const QString& key)
+{
+    Q_D(medDataManager);
+    medAbstractDbController* dbc = d->controllerForDataSource(index.dataSourceId());
+
+    if (dbc != nullptr)
+    {
+        return dbc->metaData(index, key);
+    }
+    else
+    {
+        return QString();
+    }
+}
 
 bool medDataManager::setMetadata(const medDataIndex& index, const QString& key, const QString& value)
 {
     Q_D(medDataManager);
     medAbstractDbController * dbc = d->controllerForDataSource( index.dataSourceId() );
 
-    if(dbc->setMetaData( index, key, value )) {
+    if((dbc != nullptr) && (dbc->setMetaData(index, key, value)))
+    {
         emit metadataModified(index, key, value);
         return true;
     }
@@ -400,18 +474,21 @@ void medDataManager::setWriterPriorities()
     QList<QString> writers = medAbstractDataFactory::instance()->writers();
     QMap<int, QString> writerPriorites;
 
-    int startIndex = 0;
+    // set vtkDataMeshWriter as a top priority writer
+    if(writers.contains("vtkDataMeshWriter"))
+    {
+        writers.move(writers.indexOf("vtkDataMeshWriter"),0);
+    }
 
-    // set itkMetaDataImageWriter as the top priority writer
+    // set itkMetaDataImageWriter as a top priority writer
     if(writers.contains("itkMetaDataImageWriter"))
     {
-        writerPriorites.insert(0, "itkMetaDataImageWriter");
-        startIndex = writers.removeOne("itkMetaDataImageWriter") ? 1 : 0;
+        writers.move(writers.indexOf("itkMetaDataImageWriter"),1);
     }
 
     for ( int i=0; i<writers.size(); i++ )
     {
-        writerPriorites.insert(startIndex+i, writers[i]);
+        writerPriorites.insert(i, writers[i]);
     }
 
     medAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);

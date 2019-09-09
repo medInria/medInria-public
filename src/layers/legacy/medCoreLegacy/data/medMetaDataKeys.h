@@ -97,7 +97,7 @@ namespace medMetaDataKeys {
     extern MEDCORELEGACY_EXPORT const Key Age;
     extern MEDCORELEGACY_EXPORT const Key BirthDate;
     extern MEDCORELEGACY_EXPORT const Key Gender;
-    extern MEDCORELEGACY_EXPORT const Key Description; //what?
+    extern MEDCORELEGACY_EXPORT const Key Description;
 
     // STUDY
     extern MEDCORELEGACY_EXPORT const Key StudyID;
@@ -151,6 +151,11 @@ namespace medMetaDataKeys {
     extern MEDCORELEGACY_EXPORT const Key PreferredDataReader;
     extern MEDCORELEGACY_EXPORT const Key ImageID;
     extern MEDCORELEGACY_EXPORT const Key ThumbnailPath;
+
+    // MR Image
+    extern MEDCORELEGACY_EXPORT const Key FlipAngle;
+    extern MEDCORELEGACY_EXPORT const Key EchoTime;
+    extern MEDCORELEGACY_EXPORT const Key RepetitionTime;
 };
 
 

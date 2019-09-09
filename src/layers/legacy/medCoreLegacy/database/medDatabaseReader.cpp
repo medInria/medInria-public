@@ -49,7 +49,6 @@ medAbstractData* medDatabaseReader::run()
     QVariant patientDbId = d->index.patientId();
     QVariant   studyDbId = d->index.studyId();
     QVariant  seriesDbId = d->index.seriesId();
-    QVariant   imageDbId = d->index.imageId();
 
     QSqlQuery query(medDatabaseController::instance()->database());
 
@@ -59,6 +58,7 @@ medAbstractData* medDatabaseReader::run()
             sliceThickness, rows, columns, refThumbPath, description, protocol,
             comments, status, acquisitiondate, importationdate, referee,
             institution, report, modality, seriesId;
+    QString origin, flipAngle, echoTime, repetitionTime, acquisitionTime;
 
     query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
     query.bindValue ( ":id", patientDbId );
@@ -91,7 +91,8 @@ medAbstractData* medDatabaseReader::run()
 
     query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, \
                      description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
-                     institution, report, modality, seriesId \
+                     institution, report, modality, seriesId, \
+                     origin, flipAngle, echoTime, repetitionTime, acquisitionTime \
                      FROM series WHERE id = :id" );
 
     query.bindValue ( ":id", seriesDbId );
@@ -121,6 +122,13 @@ medAbstractData* medDatabaseReader::run()
         report = query.value ( 16 ).toString();
         modality = query.value ( 17 ).toString();
         seriesId = query.value ( 18 ).toString();
+
+        // MR
+        origin          = query.value ( 19 ).toString();
+        flipAngle       = query.value ( 20 ).toString();
+        echoTime        = query.value ( 21 ).toString();
+        repetitionTime  = query.value ( 22 ).toString();
+        acquisitionTime = query.value ( 23 ).toString();
     }
 
     query.prepare ( "SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series" );
@@ -186,39 +194,46 @@ medAbstractData* medDatabaseReader::run()
             seriesThumbnail = seriesQuery.value ( 0 );
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            medMetaDataKeys::SeriesThumbnail.add (medData, thumbPath);
+            medMetaDataKeys::SeriesThumbnail.set (medData, thumbPath);
         }
         else
         {
             dtkWarn() << "Thumbnailpath not found";
         }
 
-        medMetaDataKeys::PatientID.add ( medData, patientId );
-        medMetaDataKeys::PatientName.add ( medData, patientName );
-        medMetaDataKeys::BirthDate.add ( medData, birthdate );
-        medMetaDataKeys::Gender.add ( medData, gender );
-        medMetaDataKeys::StudyDescription.add ( medData, studyName );
-        medMetaDataKeys::StudyID.add ( medData, studyId );
-        medMetaDataKeys::StudyDicomID.add ( medData, studyUid );
-        medMetaDataKeys::SeriesDescription.add ( medData, seriesName );
-        medMetaDataKeys::SeriesID.add ( medData, seriesId );
-        medMetaDataKeys::SeriesDicomID.add ( medData, seriesUid );
-        medMetaDataKeys::Orientation.add ( medData, orientation );
-        medMetaDataKeys::Columns.add ( medData, columns );
-        medMetaDataKeys::Rows.add ( medData, rows );
-        medMetaDataKeys::AcquisitionDate.add ( medData, acquisitiondate );
-        medMetaDataKeys::Comments.add ( medData, comments );
-        medMetaDataKeys::Description.add ( medData, description );
-        medMetaDataKeys::ImportationDate.add ( medData, importationdate );
-        medMetaDataKeys::Modality.add ( medData, modality );
-        medMetaDataKeys::Protocol.add ( medData, protocol );
-        medMetaDataKeys::Referee.add ( medData, referee );
-        medMetaDataKeys::Institution.add ( medData, institution );
-        medMetaDataKeys::Report.add ( medData, report );
-        medMetaDataKeys::Status.add ( medData, status );
-        medMetaDataKeys::SequenceName.add ( medData, sequenceName );
-        medMetaDataKeys::SliceThickness.add ( medData, sliceThickness );
-        medMetaDataKeys::SeriesNumber.add(medData, seriesNumber);
+        medMetaDataKeys::PatientID.set ( medData, patientId );
+        medMetaDataKeys::PatientName.set ( medData, patientName );
+        medMetaDataKeys::BirthDate.set ( medData, birthdate );
+        medMetaDataKeys::Gender.set ( medData, gender );
+        medMetaDataKeys::StudyDescription.set ( medData, studyName );
+        medMetaDataKeys::StudyID.set ( medData, studyId );
+        medMetaDataKeys::StudyDicomID.set ( medData, studyUid );
+        medMetaDataKeys::SeriesDescription.set ( medData, seriesName );
+        medMetaDataKeys::SeriesID.set ( medData, seriesId );
+        medMetaDataKeys::SeriesDicomID.set ( medData, seriesUid );
+        medMetaDataKeys::Orientation.set ( medData, orientation );
+        medMetaDataKeys::Columns.set ( medData, columns );
+        medMetaDataKeys::Rows.set ( medData, rows );
+        medMetaDataKeys::AcquisitionDate.set ( medData, acquisitiondate );
+        medMetaDataKeys::Comments.set ( medData, comments );
+        medMetaDataKeys::Description.set ( medData, description );
+        medMetaDataKeys::ImportationDate.set ( medData, importationdate );
+        medMetaDataKeys::Modality.set ( medData, modality );
+        medMetaDataKeys::Protocol.set ( medData, protocol );
+        medMetaDataKeys::Referee.set ( medData, referee );
+        medMetaDataKeys::Institution.set ( medData, institution );
+        medMetaDataKeys::Report.set ( medData, report );
+        medMetaDataKeys::Status.set ( medData, status );
+        medMetaDataKeys::SequenceName.set ( medData, sequenceName );
+        medMetaDataKeys::SliceThickness.set ( medData, sliceThickness );
+        medMetaDataKeys::SeriesNumber.set(medData, seriesNumber);
+
+        // MR
+        medMetaDataKeys::Origin.set(medData, origin);
+        medMetaDataKeys::FlipAngle.set(medData, flipAngle);
+        medMetaDataKeys::EchoTime.set(medData, echoTime);
+        medMetaDataKeys::RepetitionTime.set(medData, repetitionTime);
+        medMetaDataKeys::AcquisitionTime.set(medData, acquisitionTime);
 
         emit success ( this );
     }
@@ -239,10 +254,7 @@ qint64 medDatabaseReader::getDataSize()
 
 QString medDatabaseReader::getFilePath()
 {
-    QVariant patientDbId = d->index.patientId();
-    QVariant   studyDbId = d->index.studyId();
     QVariant  seriesDbId = d->index.seriesId();
-    QVariant   imageDbId = d->index.imageId();
 
     QSqlQuery query (medDatabaseController::instance()->database());
 

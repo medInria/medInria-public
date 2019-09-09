@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -85,10 +85,6 @@ void medDatabasePreviewStaticScene::addImage(const medDataIndex &index)
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
     pixmap->setPixmap(medDataManager::instance()->thumbnail(index));
-    QTransform transfo;
-    transfo=transfo.scale(d->baseWidth / pixmap->boundingRect().width(),
-                  d->baseHeight / pixmap->boundingRect().height());
-    pixmap->setTransform(transfo);
     this->addItem(pixmap);
 
     switch(nbItem)
@@ -237,7 +233,8 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
     d->label->setObjectName("previewLabel");
     d->label->setText("Nothing selected");
 
-    this->setMinimumSize(184, 184);
+    this->setMinimumSize(180, 180);
+    this->setMaximumSize(180, 180);
 
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

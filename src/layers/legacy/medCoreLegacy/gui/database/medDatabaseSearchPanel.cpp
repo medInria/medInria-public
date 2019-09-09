@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -30,12 +30,14 @@ public:
 
 EditCombo::EditCombo( QString txt, int clmn )
 {
-    this->label.setText(txt);
     this->column = clmn;
+
+    this->edit.setToolTip(txt);
+    this->edit.setPlaceholderText(QString("Search by ")+txt);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(&edit);
-    layout->addWidget(&label);
+    layout->setContentsMargins(0,0,0,0);
 
     connect(&edit, SIGNAL(textChanged(const QString &)), this, SLOT(onTextChanged(const QString &)));
 }
@@ -56,15 +58,17 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
     d->page = new QWidget(this);
 
     d->columnBox = new QComboBox();
-	d->columnBox->setToolTip(tr("Search criteria"));
+    d->columnBox->setToolTip(tr("Search criteria"));
 
     d->addButton = new QPushButton("+");
     d->addButton->setFocusPolicy(Qt::NoFocus);
-	d->addButton->setToolTip(tr("Add a search criterion"));
-	
+    d->addButton->setToolTip(tr("Add a search criterion"));
+    d->addButton->setFixedWidth(10);
+
     d->removeButton = new QPushButton("-");
     d->removeButton->setFocusPolicy(Qt::NoFocus);
-	d->removeButton->setToolTip(tr("Remove a search criterion"));
+    d->removeButton->setToolTip(tr("Remove a search criterion"));
+    d->removeButton->setFixedWidth(10);
 
     QHBoxLayout *vlayout = new QHBoxLayout();
     vlayout->addWidget(d->columnBox);
@@ -73,7 +77,7 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
 
     d->layout = new QVBoxLayout();
 
-    this->setTitle(tr("Filter"));
+    this->setTitle(tr("Database Filter"));
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->addLayout(vlayout);
@@ -102,12 +106,13 @@ void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
 
     foreach(QString columnName, columns)
     {
-        d->columnBox->addItem(columnName);
+        if (columnName != "")
+        {
+            d->columnBox->addItem(columnName);
+        }
     }
 
-    //d->columnBox->setCurrentIndex(2); // debug
     addBox(); // add patient name
-
 }
 
 void medDatabaseSearchPanel::addBox( )

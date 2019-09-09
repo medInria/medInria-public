@@ -15,7 +15,6 @@
 
 #include <medDataIndex.h>
 #include <medToolBox.h>
-
 #include <medCoreLegacyExport.h>
 
 class medActionsToolBoxPrivate;
@@ -65,10 +64,10 @@ signals:
 public slots:
 
     void patientSelected(const medDataIndex& index);
+    void studySelected(const medDataIndex& index);
     void seriesSelected(const medDataIndex& index);
     void noPatientOrSeriesSelected();
     void selectedPathsChanged(const QStringList& paths);
-    void multipleEntriesSelected(const QVector<medDataIndex>& selectedIndexes);
 
 protected:
 

@@ -370,23 +370,9 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
         rows           << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0010));
         columns        << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0011));
 
-        //  TODO: Use the medMetaDataKeys iteration scheme...
-
-        if (!medData->hasMetaData(medMetaDataKeys::PatientName.key()))
-            medData->addMetaData(medMetaDataKeys::PatientName.key(),patientName);
-        else
-            medData->setMetaData(medMetaDataKeys::PatientName.key(),patientName);
-
-        if (!medData->hasMetaData(medMetaDataKeys::StudyDescription.key()))
-            medData->addMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
-        else
-            medData->setMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
-
-        if (!medData->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-            medData->addMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
-        else
-            medData->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
-
+        medData->setMetaData(medMetaDataKeys::PatientName.key(),patientName);
+        medData->setMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
         medData->setMetaData(medMetaDataKeys::StudyID.key(),studyId);
         medData->setMetaData(medMetaDataKeys::SeriesID.key(),seriesId);
         medData->setMetaData(medMetaDataKeys::Orientation.key(),orientation);

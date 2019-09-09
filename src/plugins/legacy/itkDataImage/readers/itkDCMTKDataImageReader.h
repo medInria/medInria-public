@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,6 +15,7 @@
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <itkDataImagePluginExport.h>
+#include <medAbstractData.h>
 
 class itkDCMTKDataImageReaderPrivate;
 
@@ -36,19 +37,19 @@ public:
     static bool registered();
 
     friend class itk::SliceReadCommand;
-    
+
 public slots:
     bool canRead (const QString& path);
     bool canRead (const QStringList& paths);
 
     bool readInformation (const QString& path);
     bool readInformation (const QStringList& paths);
-    
+
     bool read (const QString& path);
     bool read (const QStringList& paths);
 
     void setProgress (int value);
-    
+
 private:
 
     itkDCMTKDataImageReaderPrivate *d;

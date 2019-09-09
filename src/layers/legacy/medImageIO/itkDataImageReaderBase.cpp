@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -42,6 +42,9 @@ bool itkDataImageReaderBase::canRead (const QString& path)
     if (this->io.IsNull())
         return false;
 
+    // Avoid to display log of each metadata not read by itk::ImageIOBase
+    this->io->SetGlobalWarningDisplay(false);
+
     if (!this->io->CanReadFile( path.toLatin1().constData() ))
     {
         return false;
@@ -58,7 +61,7 @@ bool itkDataImageReaderBase::canRead (const QString& path)
            this->io->ReadImageInformation();
         }
         catch (itk::ExceptionObject &e) {
-           dtkDebug() << e.GetDescription();
+           qDebug() << e.GetDescription();
            return false;
         }
 
@@ -92,7 +95,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
     }
     catch (itk::ExceptionObject &e)
     {
-        dtkDebug() << e.GetDescription();
+        qDebug() << e.GetDescription();
         return false;
     }
 
@@ -104,7 +107,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         const int  dim  = this->io->GetNumberOfDimensions();
         if (!(dim>0 && dim<=4))
         {
-            dtkDebug() << "Unrecognized component type";
+            qDebug() << "Unrecognized component type";
             return false;
         }
         const char cdim = '0'+((dim<=3) ? 3 : 4);
@@ -153,7 +156,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 break;
 
             default:
-                dtkDebug() << "Unrecognized component type";
+                qDebug() << "Unrecognized component type";
                 return false;
         }
     }
@@ -168,7 +171,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 break;
 
             default:
-                dtkDebug() << "Unrecognized component type";
+                qDebug() << "Unrecognized component type";
                 return false;
         }
     }
@@ -187,7 +190,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorDouble3");
                 break;
             default:
-                dtkDebug() << "Unrecognized component type";
+                qDebug() << "Unrecognized component type";
                 return false;
         }
     }
@@ -202,13 +205,13 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             break;
 
         default:
-            dtkDebug() << "Unrecognized component type";
+            qDebug() << "Unrecognized component type";
             return false;
         }
     }
     else
     {
-        dtkDebug() << "Unsupported pixel type";
+        qDebug() << "Unsupported pixel type";
         return false;
     }
 
@@ -242,19 +245,55 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     TReader->SetImageIO(this->io);
     TReader->SetFileName(path.toLatin1().constData());
     TReader->SetUseStreaming(true);
+    TReader->Update();
+
     typename Image::Pointer im = TReader->GetOutput();
     medData->setData(im);
 
-    //  Recover the pixel meaning from the intent_name.
-
-    const itk::MetaDataDictionary dict = im->GetMetaDataDictionary();
-    std::string PixMeaning;
-    if (itk::ExposeMetaData(dict,"intent_name",PixMeaning))
-        medData->addMetaData(medAbstractImageData::PixelMeaningMetaData,QString(PixMeaning.c_str()));
-
-    TReader->Update();
+    extractMetaData();
 
     return true;
+}
+
+void itkDataImageReaderBase::extractMetaData()
+{
+    itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
+    itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
+    std::vector<std::string> keys = metaDataDictionary.GetKeys();
+
+    for (unsigned int i = 0; i < keys.size(); i++)
+    {
+        std::string key = keys[i];
+        std::string value;
+        itk::ExposeMetaData(metaDataDictionary, key, value);
+        QString metaDataKey;
+
+        if (key == "intent_name")
+        {
+            metaDataKey = medAbstractImageData::PixelMeaningMetaData;
+        }
+        else if (key == "MED_MODALITY")
+        {
+            metaDataKey = medMetaDataKeys::Modality.key();
+        }
+        else if (key == "MED_ORIENTATION")
+        {
+            metaDataKey = medMetaDataKeys::Orientation.key();
+        }
+        else
+        {
+            const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(key.c_str());
+            if (medKey)
+            {
+                metaDataKey = medKey->key();
+            }
+        }
+
+        if (!metaDataKey.isEmpty())
+        {
+            data()->setMetaData(metaDataKey, QString(value.c_str()));
+        }
+    }
 }
 
 bool itkDataImageReaderBase::read(const QString& path)
@@ -303,13 +342,13 @@ bool itkDataImageReaderBase::read(const QString& path)
               read_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               read_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {
-            dtkWarn() << "Unrecognized pixel type";
+            qWarning() << "Unrecognized pixel type";
             return false;
         }
     }
     catch (itk::ExceptionObject &e)
     {
-        dtkWarn() << e.GetDescription();
+        qWarning() << e.GetDescription();
         return false;
     }
 

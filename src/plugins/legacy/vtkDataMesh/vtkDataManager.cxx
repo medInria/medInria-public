@@ -47,8 +47,6 @@ vtkDataManager::vtkDataManager()
 //----------------------------------------------------------------------------
 vtkDataManager::~vtkDataManager()
 {
-    std::cout<<"deleting vtkDataManager"<<std::endl;
-
     // should delete all metadatasets...
     for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
     {

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -18,8 +18,8 @@
 medDatabaseProxyModel::medDatabaseProxyModel( QObject *parent /*= 0*/ ):
     QSortFilterProxyModel(parent)
 {
-    isCheckingChild = false;
-    isCheckingParent = false;
+    isCheckingChildren = 0;
+    isCheckingParents = 0;
 }
 
 medDatabaseProxyModel::~medDatabaseProxyModel()
@@ -52,7 +52,7 @@ bool medDatabaseProxyModel::filterAcceptsColumn( int source_column, const QModel
 void medDatabaseProxyModel::setFilterRegExpWithColumn( const QRegExp &regExp, int column )
 {
     filterVector[column] = regExp;
-    filterChanged();
+    invalidateFilter();
 }
 
 void medDatabaseProxyModel::clearAllFilters()
@@ -62,41 +62,47 @@ void medDatabaseProxyModel::clearAllFilters()
 
 bool medDatabaseProxyModel::customFilterAcceptsRow( int source_row, const QModelIndex & source_parent ) const
 {
-
     // get the current model index
     QModelIndex current(sourceModel()->index(source_row, 0, source_parent));
     // get the data we want to check
     QModelIndex index = sourceModel()->index(source_row, currentKey, source_parent);
 
     // show all children if parent is valid
-    if (current.parent().isValid() && !isCheckingChild && !isCheckingParent)
+    if (current.parent().isValid() && (isCheckingChildren == 0))
     {
-        isCheckingParent = true;
+        isCheckingParents++;
         if(customFilterAcceptsRow(current.parent().row(), current.parent().parent()))
+        {
+            isCheckingParents--;
             return true;
+        }
+
+        isCheckingParents--;
     }
 
     // show the parent if one child is valid
-    if(sourceModel()->hasChildren(current) && !isCheckingChild && !isCheckingParent )
+    if(sourceModel()->hasChildren(current) && (isCheckingParents == 0))
     {
         bool atLeastOneValidChild = false;
+        isCheckingChildren++;
+
         int i = 0;
         while(!atLeastOneValidChild)
         {
             const QModelIndex child(current.child(i, 0  ));
             if(!child.isValid())
                 break;
-            isCheckingChild = true;
             atLeastOneValidChild = customFilterAcceptsRow(i, current);
             i++;
         }
         if (atLeastOneValidChild)
+        {
+            isCheckingChildren--;
             return true;
-    }
+        }
 
-    // set back
-    isCheckingParent = false;
-    isCheckingChild = false;
+        isCheckingChildren--;
+    }
 
     // ignoring invalid items
     if (!current.isValid() || !index.isValid())

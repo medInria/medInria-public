@@ -95,8 +95,8 @@ void vtkDataMesh4DInteractor::setInputData(medAbstractData *data)
         case vtkMetaDataSet::VTK_META_SURFACE_MESH:
         case vtkMetaDataSet::VTK_META_VOLUME_MESH:
             d->sequence = sequence;
-            d->data->addMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
-            d->data->addMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
+            d->data->setMetaData("SequenceDuration", QString::number(d->sequence->GetMaxTime()));
+            d->data->setMetaData("SequenceFrameRate", QString::number((double)d->sequence->GetNumberOfMetaDataSets() /
                                                                            (double)d->sequence->GetMaxTime()));
             break;
         default:

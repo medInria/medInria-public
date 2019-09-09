@@ -69,8 +69,7 @@ void medAbstractArithmeticOperationProcess::setOutput(medAbstractImageData *data
 
     foreach ( QString metaData, d->input1->metaDataList() )
     {
-        if (!d->output->hasMetaData(metaData))
-            d->output->addMetaData ( metaData, d->input1->metaDataValues ( metaData ) );
+        d->output->setMetaData ( metaData, d->input1->metaDataValues ( metaData ) );
     }
 
     foreach ( QString property, d->input1->propertyList() )
