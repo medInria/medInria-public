@@ -40,12 +40,20 @@ public:
 vtkDataMesh4D::vtkDataMesh4D(): medAbstractMeshData(), d (new vtkDataMesh4DPrivate)
 {
   this->moveToThread(QApplication::instance()->thread());
-  d->meshsequence = NULL;
+  d->meshsequence = nullptr;
 }
+
+vtkDataMesh4D::vtkDataMesh4D(const vtkDataMesh4D &other)
+  : medAbstractMeshData(other),
+    d (new vtkDataMesh4DPrivate())
+{
+  this->moveToThread(QApplication::instance()->thread());
+  d->meshsequence = other.d->meshsequence->Clone();
+}
+
 vtkDataMesh4D::~vtkDataMesh4D()
 {
   delete d;
-  d = NULL;
 }
 
 bool vtkDataMesh4D::registered()
@@ -53,19 +61,24 @@ bool vtkDataMesh4D::registered()
   return medAbstractDataFactory::instance()->registerDataType<vtkDataMesh4D>();
 }
 
+vtkDataMesh4D* vtkDataMesh4D::clone()
+{
+  return new vtkDataMesh4D(*this);
+}
+
 void vtkDataMesh4D::setData(void *data)
 {
   vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast( (vtkObject*) data );
   if (!sequence)
   {
-    dtkDebug() << "Cannot cast data to correct data type";
+    qDebug() << "Cannot cast data to correct data type";
     return;
   }
 
   if ( (sequence->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH) &&
        (sequence->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH) )
   {
-    dtkDebug() << "Cannot cast data to correct data type";
+    qDebug() << "Cannot cast data to correct data type";
     return;
   }
 

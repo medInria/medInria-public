@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -16,7 +16,6 @@
 #include "vtkDataMeshPluginExport.h"
 
 #include <medAbstractMeshData.h>
-#include <dtkCoreSupport/dtkGlobal.h>
 
 class vtkDataMesh4DPrivate;
 
@@ -27,7 +26,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
                        "Mesh time sequence.")
  public:
     vtkDataMesh4D();
+    vtkDataMesh4D(const vtkDataMesh4D& other);
     ~vtkDataMesh4D();
+
+    vtkDataMesh4D* clone() override;
 
     static bool registered();
 
@@ -44,7 +46,6 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
 
     int countVertices();
     int countEdges();
-
 
 private:
     vtkDataMesh4DPrivate* d;

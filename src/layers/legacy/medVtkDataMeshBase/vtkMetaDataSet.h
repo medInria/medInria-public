@@ -5,32 +5,42 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include "medVtkDataMeshBaseExport.h"
-
-#include <vtkDataObject.h>
-#include <string>
-#include <vector>
-
-#include <vtkDataSet.h>
+#include <medVtkDataMeshBaseExport.h>
 
 #include <itkMetaDataObject.h>
 #include <itkMetaDataDictionary.h>
+
+#include <QString>
+
+#include <vtkDataObject.h>
+#include <vtkDataSet.h>
+
+#include <string>
+#include <vector>
+
+#ifdef WIN32
+    #ifndef NAN
+        static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+        #define NAN (*(const float *) __nan)
+    #endif
+#endif
+
 /**
    \class vtkMetaDataSet vtkMetaDataSet.h "vtkMetaDataSet.h"
    \brief Abstract class for vtkDataset handling
    \author Nicolas Toussaint
-   
+
    This class is a powerfull vtk Addon class that helps handling a vtkDataSet.
    see the lower level classes for details
    \see
-   vtkMetaSurfaceMesh vtkMetaVolumeMesh vtkDataManager
+   vtkMetaImageData vtkMetaSurfaceMesh vtkMetaVolumeMesh vtkDataManager
 */
 
 class vtkDataArrayCollection;
@@ -39,6 +49,7 @@ class vtkActor;
 class vtkActorCollection;
 class vtkScalarsToColors;
 class vtkPolyData;
+class vtkLookupTable;
 
 
 class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
@@ -48,6 +59,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   static vtkMetaDataSet* New();
   vtkTypeMacro(vtkMetaDataSet,vtkDataObject);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
+
+  virtual vtkMetaDataSet* Clone();
 
   //BTX
   typedef itk::MetaDataDictionary DictionaryType;
@@ -76,9 +89,9 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
       itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
     else
       itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
-    
+
   }
-  
+
   /**
      Get a metadataset dictionary value with this method
      Example :
@@ -86,7 +99,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   */
   template <class type> inline bool GetMetaData (std::string key, type &ret)
   {
-    
+
     //type toret;//=vtkMetaDataSet::VTK_META_UNKNOWN; // to be implemanted with good template
     bool valid = itk::ExposeMetaData<type>(this->MetaDataDictionary, key, ret);
     //ret = toret;
@@ -103,17 +116,17 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
 
     return ret;
   }
-  
 
-  
+
+
   //ETX
-    
+
   //BTX
   enum DataSetTypeId
   {
     VTK_META_IMAGE_DATA      = 0,
     VTK_META_SURFACE_MESH    = 1,
-    VTK_META_VOLUME_MESH     = 2,    
+    VTK_META_VOLUME_MESH     = 2,
     VTK_META_DATATYPE_NUMBER = 3,
     VTK_META_UNKNOWN = 10000
   };
@@ -125,24 +138,36 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   virtual void SetDataSet (vtkDataSet* dataset);
   /**
      Get the dataset associated with the metadataset
-  */ 
+  */
   vtkGetObjectMacro (DataSet, vtkDataSet);
   /**
      Get the type of the metadataset :
       vtkMetaDataSet::VTK_META_IMAGE_DATA, vtkMetaDataSet::VTK_META_SURFACE_MESH,
       vtkMetaDataSet::VTK_META_VOLUME_MESH, or vtkMetaDataSet::VTK_META_UNKNOWN
-  */ 
+  */
   vtkGetMacro (Type, unsigned int);
   vtkSetMacro (Type, unsigned int);
-  
+
 
   /**
      Access to the visualization property of the metadataset
      downcast the object to the write type :
      vtkProperty for vtkMetaSurfaceMesh
+     vtkVolumeProperty for vtkMetaImageData
   */
   vtkGetObjectMacro(Property, vtkObject);
   vtkSetObjectMacro(Property, vtkObject);
+
+  /**
+ Access to the visualization property of the metadataset
+ downcast the object to the write type :
+ Lookuptable specified in the vtkfile for vtkMetaSurfaceMesh
+ */
+ void SetLookupTable (vtkLookupTable* array);
+ vtkLookupTable* GetLookupTable (void)
+ {
+    return this->LookupTable;
+ }
 
   /**
      Add an actor to the metadataset. Use this method
@@ -198,12 +223,12 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   vtkSetMacro(PickedCellId, int);
   /**
      Get/Set methods fot the metadataset name
-  */ 
+  */
   virtual const char* GetName() const;
   virtual void        SetName (const char* name);
   /**
      Get/Set methods fot the metadataset current file path
-  */ 
+  */
   virtual const char* GetFilePath() const;
   virtual void        SetFilePath (const char* path);
   /**
@@ -214,11 +239,11 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   virtual void        SetTag (const char* path);
   /**
      Overridden methods for read and write the dataset
-  */ 
+  */
   virtual void Read  (const char* filename);
   virtual void Write (const char* filename);
   /**
-     read and assign some scalars to the dataset (should be point set). 
+     read and assign some scalars to the dataset (should be point set).
      Either vtkMetaSurfaceMesh or vtkMetaVolumeMesh. The scalars are casted in float type
      for memory purpose. the scalars are added to the PointData or CellData of the dataset
      according to a flag written in the file.
@@ -228,8 +253,10 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
      nb dim (integers. nb is the number of Tuples of the field; dim is the Tuple size)\n\n
   */
   virtual void ReadData (const char* filename);
+  virtual void ReadCSVData(const char* filename); // specific for CSV files
+
   /**
-     read and assign some scalars to the dataset (should be point set). 
+     read and assign some scalars to the dataset (should be point set).
      Either vtkMetaSurfaceMesh or vtkMetaVolumeMesh. The scalars are casted in float type
      for memory purpose. the scalars are added to the PointData or CellData of the dataset
      according to a flag written in the file.
@@ -260,10 +287,10 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
     bool isvalid = this->GetMetaData<double>("Time", tmp);
     if (isvalid)
       this->Time = tmp;
-    
+
     return this->Time;
   }
-  
+
   /**
      Copy some informations from a given metadataset
      It corresponds basically to all metadataset characteristics unless the vtkDataSet
@@ -277,9 +304,9 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   virtual void GetColorArrayCollection(vtkDataArrayCollection* collection);
 
   /**
-     Access to the collection of vtkDataArray contained in this metadataset. 
+     Access to the collection of vtkDataArray contained in this metadataset.
      These arrays do not have any colorization purpose. They are stored for the user
-     convenience. 
+     convenience.
   */
   virtual vtkDataArrayCollection* GetArrayCollection()
   {
@@ -297,7 +324,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
      Access to this dataarray by its name with GetArray()
   */
   virtual void AddArray (vtkDataArray* array);
-  
+
   /**
      Use this method to colorize the actors of this metadata by a given vtkDataArray
      The array must be contained by the member vtkDataSet of this metadataset.
@@ -312,7 +339,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
      Get/Set the scalar visibility, operates on the actors
   */
   virtual bool GetScalarVisibility();
-  
+
   /**
      Get/Set the scalar visibility, operates on the actors
   */
@@ -330,9 +357,12 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
     this->CurrentScalarArray = array;
   }
 
-  virtual double* GetCurrentScalarRange();
-  
-  
+  virtual double GetScalarNullValue(const char * arrayName);
+  virtual void SetScalarNullValue(const char * arrayName, double nullValue);
+
+  virtual double* GetScalarRange(QString attributeName = QString());
+
+
   /**
      Description:
      Lock/Unlock flag
@@ -340,15 +370,16 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   vtkGetMacro(Lock, int);
   vtkSetClampMacro(Lock, int, 0, 1);
   vtkBooleanMacro(Lock, int);
-  
+
 
   virtual void CreateWirePolyData(){};
-  
+
   vtkGetObjectMacro (WirePolyData, vtkPolyData);
   void SetWirePolyData(vtkPolyData* data);
-  
+
  protected:
   vtkMetaDataSet();
+  vtkMetaDataSet(const vtkMetaDataSet& other);
   ~vtkMetaDataSet();
 
   /**
@@ -361,34 +392,49 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   virtual void Initialize();
 
   /**
-     Internal use : read and assign positions to the dataset (should be point set). 
+     Internal use : read and assign positions to the dataset (should be point set).
      Either vtkMetaSurfaceMesh or vtkMetaVolumeMesh
   */
   virtual void ReadPosition(const char* filename);
   /**
-     Internal use : read and assign some scalars to the dataset (should be point set). 
+     Internal use : read and assign some scalars to the dataset (should be point set).
      Either vtkMetaSurfaceMesh or vtkMetaVolumeMesh. The scalars are casted in float type
-     for memory purpose. 
+     for memory purpose.
   */
   virtual void ReadDataInternal(const char* filename);
 
-  
+  /**
+     Internal use : resets parameter input file stream.
+     Used by reading methods.
+  */
+  static void ClearInputStream(std::ifstream& file);
+
+  /**
+     Internal use : find token in input stream
+  */
+  static bool PlaceStreamCursor(std::ifstream& file, const char* token);
+
+  /**
+     Internal use : return true if the file is a medit mesh
+  */
+  static bool IsMeditFormat(const char* filename);
+
   unsigned int Type;
 
   int PickedPointId;
   int PickedCellId;
-  
+
   vtkDataSet* DataSet;
   vtkActorCollection* ActorList;
   double      Time;
   vtkObject*  Property;
   vtkDataArrayCollection* ArrayCollection;
+  vtkLookupTable* LookupTable;
 
   vtkDataArray* CurrentScalarArray;
-  
+
  private:
-  
-  vtkMetaDataSet(const vtkMetaDataSet&);        // Not implemented.
+
   void operator=(const vtkMetaDataSet&);        // Not implemented.
 
   //BTX
@@ -398,16 +444,11 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   //ETX
 
   int Lock;
-  
+
   //BTX
   DictionaryType MetaDataDictionary;
   //ETX
 
   vtkPolyData* WirePolyData;
-  
-  
- 
+  std::map<const char *, double> ScalarNullValues;
 };
-
-
-

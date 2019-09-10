@@ -315,9 +315,15 @@ QVector3D medVtkView::viewCenter()
 {
     vtkRenderer * ren;
     if(this->is2D())
+    {
         ren = d->view2d->GetRenderer();
+    }
     else
-        ren = d->view3d->GetRenderer();    double fp[3];
+    {
+        ren = d->view3d->GetRenderer();
+    }
+
+    double fp[3];
     ren->GetActiveCamera()->GetFocalPoint( fp);
     return QVector3D( fp[0], fp[1], fp[2] );
 }
@@ -327,9 +333,15 @@ QVector3D medVtkView::viewPlaneNormal()
     double vpn[3];
     vtkRenderer * ren;
     if(this->is2D())
+    {
         ren = d->view2d->GetRenderer();
+    }
     else
-        ren = d->view3d->GetRenderer();    ren->GetActiveCamera()->GetViewPlaneNormal(vpn);
+    {
+        ren = d->view3d->GetRenderer();
+    }
+
+    ren->GetActiveCamera()->GetViewPlaneNormal(vpn);
     return QVector3D(vpn[0], vpn[1], vpn[2]);
 }
 
@@ -338,9 +350,13 @@ QVector3D medVtkView::viewUp()
     double vup[3];
     vtkRenderer * ren;
     if(this->is2D())
+    {
         ren = d->view2d->GetRenderer();
+    }
     else
+    {
         ren = d->view3d->GetRenderer();
+    }
 
     ren->GetActiveCamera()->GetViewUp(vup);
     return QVector3D(vup[0], vup[1], vup[2]);

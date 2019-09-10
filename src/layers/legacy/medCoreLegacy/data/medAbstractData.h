@@ -30,8 +30,11 @@ class MEDCORELEGACY_EXPORT medAbstractData : public dtkAbstractData
     Q_OBJECT
 
 public:
-    medAbstractData( medAbstractData * parent = NULL );
+    medAbstractData( medAbstractData * parent = nullptr );
+    medAbstractData( const medAbstractData& other );
     virtual ~medAbstractData();
+
+    virtual medAbstractData* clone() override;
 
     void setDataIndex(const medDataIndex& index);
     medDataIndex dataIndex() const;

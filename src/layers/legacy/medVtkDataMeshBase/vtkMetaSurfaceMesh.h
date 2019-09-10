@@ -46,6 +46,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   static vtkMetaSurfaceMesh* New();
   vtkTypeMacro(vtkMetaSurfaceMesh,vtkMetaDataSet);
 
+  virtual vtkMetaSurfaceMesh* Clone() override;
+
   //BTX
   enum
   {
@@ -88,8 +90,9 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
 
   virtual void CreateWirePolyData();
 
- protected:
+protected:
   vtkMetaSurfaceMesh();
+  vtkMetaSurfaceMesh(const vtkMetaSurfaceMesh&);
   ~vtkMetaSurfaceMesh();
 
   virtual void ReadVtkFile(const char* filename);
@@ -105,9 +108,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   */
   virtual void Initialize();
   
- private:
-  
-  vtkMetaSurfaceMesh(const vtkMetaSurfaceMesh&);       // Not implemented.
+private:
   void operator=(const vtkMetaSurfaceMesh&);        // Not implemented.
 
 };

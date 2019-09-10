@@ -45,11 +45,27 @@ medAbstractData::medAbstractData( medAbstractData *parent )
     this->moveToThread(QApplication::instance()->thread());
 }
 
+medAbstractData::medAbstractData(const medAbstractData& other)
+    : dtkAbstractData(other),
+      d(new medAbstractDataPrivate())
+{
+    *d = *other.d;
+    d->index = medDataIndex();
+    for (int i = 0; i < d->attachedData.count(); ++i)
+    {
+        d->attachedData[i] = dynamic_cast<medAttachedData*>(other.d->attachedData[i]->clone());
+    }
+}
 
 medAbstractData::~medAbstractData( void )
 {
     delete d;
     d = nullptr;
+}
+
+medAbstractData* medAbstractData::clone(void)
+{
+    return new medAbstractData(*this);
 }
 
 /**
@@ -81,7 +97,7 @@ medDataIndex medAbstractData::dataIndex() const
 */
 medAbstractData * medAbstractData::convert(const QString &toType)
 {
-    medAbstractData *conversion = NULL;
+    medAbstractData *conversion = nullptr;
 
     foreach (QString converterId, medAbstractDataFactory::instance()->converters())
     {

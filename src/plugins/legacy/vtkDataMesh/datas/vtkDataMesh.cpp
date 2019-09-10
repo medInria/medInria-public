@@ -4,30 +4,19 @@
 
  Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <vtkDataMesh.h>
-#include <vtkMetaDataSet.h>
+#include "vtkDataMesh.h"
 
 #include <medAbstractDataFactory.h>
 
+#include <vtkMetaDataSet.h>
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
-#include <vtkUnstructuredGrid.h>
-
-#include <vtkPNGWriter.h>
-#include <vtkDataSetSurfaceFilter.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkActor.h>
-#include <vtkProperty.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkWindowToImageFilter.h>
 
 #include <QApplication>
 
@@ -35,18 +24,35 @@ class vtkDataMeshPrivate
 {
 public:
   vtkSmartPointer<vtkMetaDataSet> mesh;
-  QList<QImage>          thumbnails;
+  QList<QImage> thumbnails;
 };
 
-vtkDataMesh::vtkDataMesh(): medAbstractMeshData(), d (new vtkDataMeshPrivate)
+vtkDataMesh::vtkDataMesh()
+  : medAbstractMeshData(),
+    d (new vtkDataMeshPrivate())
 {
   this->moveToThread(QApplication::instance()->thread());
-  d->mesh = 0;
+  d->mesh = nullptr;
 }
+
+vtkDataMesh::vtkDataMesh(const vtkDataMesh& other)
+  : medAbstractMeshData(other),
+    d (new vtkDataMeshPrivate())
+{
+  this->moveToThread(QApplication::instance()->thread());
+
+  d->thumbnails = other.d->thumbnails;
+  d->mesh = other.d->mesh->Clone();
+}
+
 vtkDataMesh::~vtkDataMesh()
 {
   delete d;
-  d = 0;
+}
+
+vtkDataMesh* vtkDataMesh::clone()
+{
+  return new vtkDataMesh(*this);
 }
 
 bool vtkDataMesh::registered()
@@ -59,14 +65,14 @@ void vtkDataMesh::setData(void *data)
   vtkMetaDataSet * mesh = vtkMetaDataSet::SafeDownCast( (vtkObject*) data );
   if (!mesh)
   {
-    dtkDebug() << "Cannot cast data to correct data type";
+    qDebug() << "Cannot cast data to correct data type";
     return;
   }
 
   if ( (mesh->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH) &&
        (mesh->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH) )
   {
-    dtkDebug() << "Cannot cast data to correct data type";
+    qDebug() << "Cannot cast data to correct data type";
     return;
   }
 
