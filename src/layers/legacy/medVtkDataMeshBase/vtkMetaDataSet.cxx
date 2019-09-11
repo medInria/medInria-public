@@ -552,7 +552,7 @@ void vtkMetaDataSet::ReadDataInternal(const char* filename)
 
 void vtkMetaDataSet::ReadCSVData(const char* filename)
 {
-    vtkDelimitedTextReader* csvReader=vtkDelimitedTextReader::New();
+    vtkDelimitedTextReader* csvReader = vtkDelimitedTextReader::New();
 
     try
     {
@@ -566,14 +566,19 @@ void vtkMetaDataSet::ReadCSVData(const char* filename)
         csvReader->Delete();
         return;
     }
-    int numberOfLines=csvReader->GetOutput()->GetNumberOfRows();
 
-    bool PointAttribute=false,CellAttribute=false;
+    int numberOfLines = csvReader->GetOutput()->GetNumberOfRows();
 
-    if(numberOfLines==this->GetDataSet()->GetNumberOfPoints())
-        PointAttribute=true;
-    else if(numberOfLines==this->GetDataSet()->GetNumberOfCells())
-        CellAttribute=true;
+    bool PointAttribute = false, CellAttribute = false;
+
+    if(numberOfLines == this->GetDataSet()->GetNumberOfPoints())
+    {
+        PointAttribute = true;
+    }
+    else if(numberOfLines == this->GetDataSet()->GetNumberOfCells())
+    {
+        CellAttribute = true;
+    }
     else
     {
         vtkErrorMacro("number of lines dont match either point data or cell data");
@@ -596,11 +601,11 @@ void vtkMetaDataSet::ReadCSVData(const char* filename)
             float* tuple = new float[1];
             for (int t=0; t<numberOfLines; t++)
             {
-                tuple[0]=(csvReader->GetOutput()->GetValue(t,i)).ToFloat();
+                tuple[0] = (csvReader->GetOutput()->GetValue(t,i)).ToFloat();
                 array->InsertNextTypedTuple (tuple);
             }
             delete tuple;
-            this->GetDataSet()->GetPointData()->AddArray (array);
+            this->GetDataSet()->GetPointData()->AddArray(array);
         }
     }
 
@@ -676,15 +681,20 @@ void vtkMetaDataSet::CopyInformation (vtkMetaDataSet* metadataset)
 //----------------------------------------------------------------------------
 double vtkMetaDataSet::GetScalarNullValue(const char * arrayName)
 {
-    if ( ! this->GetDataSet())
-    return NAN;
+    if (!this->GetDataSet())
+    {
+        return NAN;
+    }
 
     vtkDataArray * array = this->GetDataSet()->GetPointData()->GetArray(arrayName);
-    if ( ! array)
+    if (!array)
+    {
         array = this->GetDataSet()->GetCellData()->GetArray(arrayName);
-    if ( ! array || ScalarNullValues.find(arrayName) == ScalarNullValues.end())
+    }
+    if (!array || ScalarNullValues.find(arrayName) == ScalarNullValues.end())
+    {
         return NAN;
-
+    }
     return ScalarNullValues[arrayName];
 }
 
@@ -692,16 +702,22 @@ double vtkMetaDataSet::GetScalarNullValue(const char * arrayName)
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::SetScalarNullValue(const char * arrayName, double nullValue)
 {
- if ( ! this->GetDataSet())
-    return;
+    if (!this->GetDataSet())
+    {
+        return;
+    }
 
- vtkDataArray * array = this->GetDataSet()->GetPointData()->GetArray(arrayName);
- if ( ! array)
-    array = this->GetDataSet()->GetCellData()->GetArray(arrayName);
- if ( ! array)
-    return;
+    vtkDataArray * array = this->GetDataSet()->GetPointData()->GetArray(arrayName);
+    if (!array)
+    {
+        array = this->GetDataSet()->GetCellData()->GetArray(arrayName);
+    }
+    if (!array)
+    {
+        return;
+    }
 
- ScalarNullValues[arrayName] = nullValue;
+    ScalarNullValues[arrayName] = nullValue;
 }
 
 //----------------------------------------------------------------------------
@@ -925,30 +941,30 @@ vtkDataArray* vtkMetaDataSet::GetArray (const char* name)
 
 void vtkMetaDataSet::ClearInputStream(std::ifstream& file)
 {
-  file.clear();
-  file.seekg(0, file.beg);
+    file.clear();
+    file.seekg(0, file.beg);
 }
 
 bool vtkMetaDataSet::PlaceStreamCursor(std::ifstream& file, const char* token)
 {
-  std::string buf;
-  file >> buf;
-
-  while (file.good() && (buf.compare(token) != 0))
-  {
-    if (buf[0] == '#')
-    {
-        // special case, the line is a comment. Ignore.
-        std::getline(file, buf);
-    }
+    std::string buf;
     file >> buf;
-  }
 
-  if (file.good())
-  {
-    return true;
-  }
-  return false;
+    while (file.good() && (buf.compare(token) != 0))
+    {
+        if (buf[0] == '#')
+        {
+            // special case, the line is a comment. Ignore.
+            std::getline(file, buf);
+        }
+        file >> buf;
+    }
+
+    if (file.good())
+    {
+        return true;
+    }
+    return false;
 }
 
 bool vtkMetaDataSet::IsMeditFormat(const char* filename)
@@ -956,7 +972,7 @@ bool vtkMetaDataSet::IsMeditFormat(const char* filename)
     std::ifstream file(filename);
     if(file.fail())
     {
-      return false;
+        return false;
     }
 
     // Find medit header.

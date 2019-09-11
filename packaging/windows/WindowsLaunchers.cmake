@@ -15,11 +15,15 @@ set(CURRENT_SRC_DIR ${CMAKE_SOURCE_DIR}/packaging/windows)
 
 foreach (dir ${PRIVATE_PLUGINS_DIRS})
     set(DEV_PLUGINS_DIRS "${DEV_PLUGINS_DIRS}:${dir}/plugins/%1")
-endforeach() 
+endforeach()
 
 foreach (dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
     set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/plugins_legacy/%1")
 endforeach() 
+
+foreach (dir ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
+    set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/plugins_legacy/%1")
+endforeach()
 
 set(WIN_TYPE x86)
 if (CMAKE_GENERATOR MATCHES "Win64")

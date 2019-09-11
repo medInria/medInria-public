@@ -41,5 +41,13 @@ add_library(medWidgets UNKNOWN IMPORTED)
 find_library(medWidgets_LIBRARY NAMES medWidgets PATHS @medWidgets_LIBRARY_DIR@ @medWidgets_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
 set_target_properties(medWidgets PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medWidgets_INCLUDE_DIRS@" IMPORTED_LOCATION ${medWidgets_LIBRARY})
 
+add_library(medUtilities UNKNOWN IMPORTED)
+find_library(medUtilities_LIBRARY NAMES medUtilities PATHS @medUtilities_LIBRARY_DIR@ @medUtilities_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+set_target_properties(medUtilities PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medUtilities_INCLUDE_DIRS@" IMPORTED_LOCATION ${medUtilities_LIBRARY})
+
+add_library(medVtkDataMeshBase UNKNOWN IMPORTED)
+find_library(medVtkDataMeshBase_LIBRARY NAMES medVtkDataMeshBase PATHS @medVtkDataMeshBase_LIBRARY_DIR@ @medVtkDataMeshBase_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+set_target_properties(medVtkDataMeshBase PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkDataMeshBase_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkDataMeshBase_LIBRARY})
+
 set(medInria_CMAKE_DIR @medInria_CMAKE_DIR@)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${medInria_CMAKE_DIR}")

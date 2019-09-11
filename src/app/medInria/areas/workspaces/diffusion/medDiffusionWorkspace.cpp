@@ -39,7 +39,7 @@ public:
 
 medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorkspaceLegacy(parent), d(new medDiffusionWorkspacePrivate)
 {
-    d->diffusionContainer = 0;
+    d->diffusionContainer = nullptr;
 
     // -- Bundling toolbox --
     d->fiberBundlingToolBox = medToolBoxFactory::instance()->createToolBox("medFiberBundlingToolBox", parent);
@@ -82,7 +82,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorks
 medDiffusionWorkspace::~medDiffusionWorkspace()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medDiffusionWorkspace::setupTabbedViewContainer()
@@ -201,7 +201,7 @@ void medDiffusionWorkspace::addToolBoxInput(medAbstractData *data)
     if (medData->Dimension() == 4)
         d->diffusionEstimationToolBox->addInputImage(medData);
 
-    if (dynamic_cast<medAbstractDiffusionModelImageData*>(medData) != 0)
+    if (dynamic_cast<medAbstractDiffusionModelImageData*>(medData) != nullptr)
     {
         d->diffusionScalarMapsToolBox->addInputImage(medData);
         d->diffusionTractographyToolBox->addInputImage(medData);

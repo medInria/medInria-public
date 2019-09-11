@@ -31,7 +31,7 @@ medAbstractLayeredViewInteractor::medAbstractLayeredViewInteractor(medAbstractVi
     medAbstractViewInteractor(parent), d(new medAbstractLayeredViewInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractLayeredView *>(parent);
-    d->visibilityParameter = NULL;
+    d->visibilityParameter = nullptr;
 }
 
 medAbstractLayeredViewInteractor::~medAbstractLayeredViewInteractor()
@@ -41,11 +41,13 @@ medAbstractLayeredViewInteractor::~medAbstractLayeredViewInteractor()
 
 medAbstractBoolParameterL* medAbstractLayeredViewInteractor::visibilityParameter()
 {
-    if(!d->visibilityParameter)
+    bool newVisibilityParameter = !d->visibilityParameter;
+    if(newVisibilityParameter)
     {
         d->visibilityParameter = new medBoolParameterL("Visibility", this);
         connect(d->visibilityParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
     }
+
     if(d->visibilityParameter->getPushButton()->icon().isNull())
     {
         if(this->inputData())
@@ -63,7 +65,10 @@ medAbstractBoolParameterL* medAbstractLayeredViewInteractor::visibilityParameter
             thumbnailButton->setIcon(thumbnailIcon);
             thumbnailButton->setIconSize(QSize(22,22));
             thumbnailButton->setCheckable(true);
-            thumbnailButton->setChecked(true);
+            if (newVisibilityParameter)
+            {
+                thumbnailButton->setChecked(true);
+            }
             thumbnailButton->setFlat(true);
         }
     }

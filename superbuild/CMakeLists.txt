@@ -54,7 +54,7 @@ list(APPEND external_projects
   TTK 
   DCMTK 
   QtDCM 
-  dtk 
+  dtk
   )
 
 if (USE_DTKIMAGING)
@@ -138,6 +138,8 @@ set(CMAKE_MODULE_PATH
 
 set(PRIVATE_PLUGINS_DIRS "" CACHE PATH "Folders containing private plugins, separated by ';'")
 set(PRIVATE_PLUGINS_LEGACY_DIRS "" CACHE PATH "Folders containing legacy private plugins, separated by ';'")
+
+set(EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS "")
 
 ## #############################################################################
 ## Add Targets
