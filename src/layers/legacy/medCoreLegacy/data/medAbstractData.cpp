@@ -68,11 +68,6 @@ medAbstractData* medAbstractData::clone(void)
     return new medAbstractData(*this);
 }
 
-medAbstractData* medAbstractData::clone(void)
-{
-    return new medAbstractData(*this);
-}
-
 /**
 * Attach a meddataindex to the data to carry it arround
 * @param const medDataIndex & index

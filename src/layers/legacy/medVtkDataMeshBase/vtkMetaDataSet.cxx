@@ -566,7 +566,6 @@ void vtkMetaDataSet::ReadCSVData(const char* filename)
         csvReader->Delete();
         return;
     }
-
     int numberOfLines = csvReader->GetOutput()->GetNumberOfRows();
 
     bool PointAttribute = false, CellAttribute = false;
@@ -586,11 +585,11 @@ void vtkMetaDataSet::ReadCSVData(const char* filename)
         return;
     }
 
-    std::string Fieldnames="Field_";
+    std::string Fieldnames = "Field_";
     std::stringstream ss;
     if(PointAttribute)
     {
-        for(int i=0;i<csvReader->GetOutput()->GetNumberOfColumns();i++)
+        for(int i=0; i<csvReader->GetOutput()->GetNumberOfColumns(); i++)
         {
             vtkFloatArray* array = vtkFloatArray::New();
             ss << i;
