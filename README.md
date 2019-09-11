@@ -21,6 +21,8 @@ You are welcome to fork the project from github and make a contribution by sendi
 You can also help us to track and correct bug by posting your issue on :
 - https://github.com/medInria/medInria-public/issues.
 
+Please read  https://github.com/medInria/medInria-public/blob/master/CONTRIBUTING.md
+
 ### Documentation
 
 Find more documentation on our wiki : 
