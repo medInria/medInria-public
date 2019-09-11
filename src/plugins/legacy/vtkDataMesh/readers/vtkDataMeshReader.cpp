@@ -13,13 +13,12 @@
 
 #include <vtkDataMeshReader.h>
 
-#include <vtkErrorCode.h>
-
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 
 #include <vtkMetaVolumeMesh.h>
 #include <vtkMetaSurfaceMesh.h>
+#include <vtkSmartPointer.h>
 
 const char vtkDataMeshReader::ID[] = "vtkDataMeshReader";
 
@@ -67,25 +66,25 @@ bool vtkDataMeshReader::read(const QString& path) {
     readInformation(path);
     setProgress(50);
 
-    dtkDebug() << "Can read with: " << identifier();
+    qDebug() << "Can read with: " << identifier();
 
     if (medAbstractData * medData = dynamic_cast<medAbstractData*>(data()))
     {
         if (!(medData->identifier() == "vtkDataMesh"))
             return false;
 
-        vtkMetaDataSet * dataSet = NULL;
+        vtkSmartPointer<vtkMetaDataSet> dataSet = nullptr;
         if (vtkMetaVolumeMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
         {
-            dataSet = vtkMetaVolumeMesh::New();
+            dataSet = vtkSmartPointer<vtkMetaVolumeMesh>::New();
         }
         else if ( vtkMetaSurfaceMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
         {
-            dataSet = vtkMetaSurfaceMesh::New();
+            dataSet = vtkSmartPointer<vtkMetaSurfaceMesh>::New();
         }
         else
         {
-            dtkDebug() << "Loading the vtkDataMesh failed, it's neither a surface or volume mesh !";
+            qDebug() << "Loading the vtkDataMesh failed, it's neither a surface nor a volume mesh!";
             return false;
         }
 
@@ -94,7 +93,7 @@ bool vtkDataMeshReader::read(const QString& path) {
             dataSet->Read(path.toLocal8Bit().constData());
         } catch (...)
         {
-            dtkDebug() << "Loading the vtkDataMesh failed, error while parsing !";
+            qDebug() << "Loading the vtkDataMesh failed, error while parsing!";
             return false;
         }
 
