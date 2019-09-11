@@ -176,23 +176,29 @@ void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
             }
         }
 
-        switch(mode3D)
+        if(mode3DParam)
         {
-        case VR:
-            mode3DParam->setValue("VR");
-            break;
-        case MIP_MAXIMUM:
-            mode3DParam->setValue("MIP - Maximum");
-            break;
-        case MIP_MINIMUM:
-            mode3DParam->setValue("MIP - Minimum");
-            break;
-        case MSR:
-            mode3DParam->setValue("MSR");
-            break;
-        }
+            switch(mode3D)
+            {
+                case VR:
+                    mode3DParam->setValue("VR");
+                    break;
+                case MIP_MAXIMUM:
+                    mode3DParam->setValue("MIP - Maximum");
+                    break;
+                case MIP_MINIMUM:
+                    mode3DParam->setValue("MIP - Minimum");
+                    break;
+                case MSR:
+                    mode3DParam->setValue("MSR");
+                    break;
+            }
 
-        renderer3DParam->setValue("Ray Cast");
+            if(renderer3DParam)
+            {
+                renderer3DParam->setValue("Ray Cast");
+            }
+        }
     }
 }
 
