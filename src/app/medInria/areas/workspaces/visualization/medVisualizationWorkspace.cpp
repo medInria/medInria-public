@@ -11,17 +11,7 @@
 
 =========================================================================*/
 
-#include <medTabbedViewContainers.h>
 #include <medVisualizationWorkspace.h>
-
-void medVisualizationWorkspace::setupTabbedViewContainer()
-{
-    if (!tabbedViewContainers()->count())
-    {
-        this->tabbedViewContainers()->addContainerInTabNamed(this->name());
-    }
-    this->tabbedViewContainers()->unlockTabs();
-}
 
 bool medVisualizationWorkspace::isUsable()
 {

@@ -25,8 +25,6 @@ public:
     medVisualizationWorkspace(QWidget *parent = nullptr): medAbstractWorkspaceLegacy(parent){}
 
     static bool isUsable();
-
-    void setupTabbedViewContainer();
 };
 
 

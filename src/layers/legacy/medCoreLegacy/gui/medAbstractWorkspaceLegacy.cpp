@@ -185,6 +185,7 @@ void medAbstractWorkspaceLegacy::setupTabbedViewContainer()
         this->tabbedViewContainers()->addContainerInTabNamed(this->name());
     }
     this->tabbedViewContainers()->lockTabs();
+    this->tabbedViewContainers()->setKeepLeastOne(true);
 }
 
 void medAbstractWorkspaceLegacy::setToolBoxesVisibility (bool value)
