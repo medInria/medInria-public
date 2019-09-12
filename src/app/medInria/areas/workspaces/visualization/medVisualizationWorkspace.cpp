@@ -14,16 +14,16 @@
 #include <medTabbedViewContainers.h>
 #include <medVisualizationWorkspace.h>
 
-bool medVisualizationWorkspace::isUsable()
-{
-    return true; // for the time being, no test is defined.
-}
-
-void medVisualizationWorkspace::setupViewContainerStack()
+void medVisualizationWorkspace::setupTabbedViewContainer()
 {
     if (!tabbedViewContainers()->count())
     {
         this->tabbedViewContainers()->addContainerInTabNamed(this->name());
     }
     this->tabbedViewContainers()->unlockTabs();
+}
+
+bool medVisualizationWorkspace::isUsable()
+{
+    return true; // for the time being, no test is defined.
 }
