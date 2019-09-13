@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -522,15 +522,15 @@ void medMainWindow::switchToSearchArea()
 {
     // Create toolbox list
     QHash<QString, QStringList> toolboxDataHash;
-    medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
+    medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
-    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
+    foreach ( medWorkspaceFactory::Details *detail, workspaceDetails )
     {
         QString workspaceName = detail->name;
 
         foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(workspaceName))
         {
-            medToolBoxDetails* toolboxDetails = tbFactory->toolBoxDetailsFromId(toolboxName);
+            medToolBoxDetails *toolboxDetails = tbFactory->toolBoxDetailsFromId(toolboxName);
 
             QStringList current;
             // Displayed toolbox name from MED_TOOLBOX_INTERFACE
@@ -559,7 +559,7 @@ void medMainWindow::switchToSearchArea()
         d->quickAccessWidget->manuallyClickOnWorkspaceButton(chosenToolboxInfo.at(2));
 
         // Display asked toolbox
-        medSelectorToolBox* selector = static_cast<medSelectorWorkspace*>(d->workspaceArea->currentWorkspace())->selectorToolBox();
+        medSelectorToolBox *selector = static_cast<medSelectorWorkspace*>(d->workspaceArea->currentWorkspace())->selectorToolBox();
         int toolboxIndex = selector->getIndexOfToolBox(chosenToolboxInfo.at(0));
         if (toolboxIndex > 0)
         {

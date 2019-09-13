@@ -96,7 +96,7 @@ void vtkLandmarkSegmentationControllerCommand::Execute ( vtkObject *caller, unsi
         int X, Y;
         X = rwi->GetEventPosition()[0];
         Y = rwi->GetEventPosition()[1];
-        vtkRenderer* renderer = rwi->FindPokedRenderer(X,Y);
+        vtkRenderer *renderer = rwi->FindPokedRenderer(X,Y);
         if (!renderer)
         {
             return;
@@ -334,21 +334,21 @@ void vtkLandmarkSegmentationController::SetConstraints (vtkPointSet *arg)
 }
 
 //----------------------------------------------------------------------------
-vtkLandmarkWidget* vtkLandmarkSegmentationController::AddConstraint (double* pos, int type)
+vtkLandmarkWidget* vtkLandmarkSegmentationController::AddConstraint (double *pos, int type)
 {
     if (!this->InteractorCollection)
     {
         return nullptr;
     }
     this->GetInteractorCollection()->InitTraversal();
-    vtkRenderWindowInteractor* item = vtkRenderWindowInteractor::SafeDownCast (this->GetInteractorCollection()->GetNextItemAsObject());
+    vtkRenderWindowInteractor *item = vtkRenderWindowInteractor::SafeDownCast (this->GetInteractorCollection()->GetNextItemAsObject());
     int cpt = 0;
 
     vtkLandmarkWidget *initial_landmark = nullptr;
     while(item)
     {
         vtkLandmarkWidget *l = vtkLandmarkWidget::New();
-        vtkPointHandleRepresentation2D * pointRep = vtkPointHandleRepresentation2D::New();
+        vtkPointHandleRepresentation2D *pointRep = vtkPointHandleRepresentation2D::New();
         pointRep->SetWorldPosition(pos);
         pointRep->BuildRepresentation();
 

@@ -26,7 +26,7 @@ class medSegmentationWorkspace : public medSelectorWorkspace
                             "Workspace to extract structures from an image using segmentation.",
                             "Methodology")
 public:
-    medSegmentationWorkspace(QWidget * parent);
+    medSegmentationWorkspace(QWidget *parent);
 
     static bool isUsable();
 };

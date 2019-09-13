@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <medToolBox.h>
 #include <medCoreLegacyExport.h>
+#include <medToolBox.h>
 
 class medAbstractData;
 class medSelectorToolBox;
@@ -27,7 +27,7 @@ class MEDCORELEGACY_EXPORT medAbstractSelectableToolBox : public medToolBox
 
 public:
     medAbstractSelectableToolBox(QWidget *parent = nullptr);
-    virtual ~medAbstractSelectableToolBox();
+    ~medAbstractSelectableToolBox() override;
 
     virtual dtkPlugin* plugin() = 0;
 

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -151,7 +151,7 @@ dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
 
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 {
-    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+    medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
     if(toolbox) // toolbox empty in Pipelines and not Registration workspace
     {

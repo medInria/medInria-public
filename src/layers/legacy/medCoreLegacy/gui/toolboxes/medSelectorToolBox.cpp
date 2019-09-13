@@ -21,7 +21,7 @@ class medSelectorToolBoxPrivate
 {
 public:
     QComboBox *chooseComboBox;
-    medAbstractSelectableToolBox * currentToolBox;
+    medAbstractSelectableToolBox *currentToolBox;
     QHash<QString, medAbstractSelectableToolBox*> toolBoxes;
     QVBoxLayout *mainLayout;
 
@@ -39,14 +39,14 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
     d->chooseComboBox->setToolTip(tr("Choose a toolbox in the list"));
     d->chooseComboBox->setItemData(0, "Choose a toolbox", Qt::ToolTipRole);
 
-    medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
+    medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
 
     // Get informations about the workspace toolboxes:
     // displayed name, description for tooltip, and identifier
     QHash<QString, QStringList> toolboxDataHash;
     foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(tlbxId))
     {
-        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolboxName);
+        medToolBoxDetails *details = tbFactory->toolBoxDetailsFromId(toolboxName);
 
         QStringList current;
         current.append(toolboxName);
@@ -92,7 +92,7 @@ medAbstractSelectableToolBox* medSelectorToolBox::currentToolBox()
     return d->currentToolBox;
 }
 
-void medSelectorToolBox::changeCurrentToolBox ( int index )
+void medSelectorToolBox::changeCurrentToolBox(int index)
 {
     // Get current toolbox identifier from combobox
     QString identifier = d->chooseComboBox->itemData(index).toString();
@@ -109,7 +109,7 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
     }
     else
     {
-        medToolBox* tb = medToolBoxFactory::instance()->createToolBox(identifier, this);
+        medToolBox *tb = medToolBoxFactory::instance()->createToolBox(identifier, this);
         toolbox = qobject_cast<medAbstractSelectableToolBox*>(tb);
         if (toolbox)
         {
@@ -134,7 +134,7 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
         d->currentToolBox = toolbox;
         d->currentToolBox->header()->hide();
 
-        dtkPlugin* plugin = d->currentToolBox->plugin();
+        dtkPlugin *plugin = d->currentToolBox->plugin();
         this->setAboutPluginButton(plugin);
         this->setAboutPluginVisibility(true);
 

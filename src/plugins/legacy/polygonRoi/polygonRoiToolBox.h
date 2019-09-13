@@ -53,7 +53,7 @@ class POLYGONROIPLUGIN_EXPORT polygonRoiToolBox : public medAbstractSelectableTo
 
 public:
 
-    static const char* generateBinaryImageButtonName;
+    static const char *generateBinaryImageButtonName;
 
     typedef QPair<unsigned int,unsigned int> PlaneIndexSlicePair;
     typedef QList<QPair<vtkSmartPointer<vtkContourWidget> , PlaneIndexSlicePair> > listOfPair_CurveSlice;
@@ -66,7 +66,7 @@ public:
     static bool registered();
     dtkPlugin* plugin();
     medAbstractData *processOutput();
-    void setCurrentView(medAbstractView * view);
+    void setCurrentView(medAbstractView *view);
 
 public slots:
 
@@ -99,24 +99,24 @@ protected:
     void generateBinaryImage();
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
     void reorderPolygon(vtkPolyData * poly);
-    QList<vtkPolyData* > generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1,vtkSmartPointer<vtkPolyData> curve2,int nb);
+    QList<vtkPolyData* > generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1,vtkSmartPointer<vtkPolyData> curve2, int nb);
     QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > createImagePolygons(QList<QPair<vtkPolyData*,PlaneIndexSlicePair> > &listPoly);
 
-    QList<medSeriesOfRoi*> * getListOfView(medAbstractView * view);
-    void resampleCurve(vtkPolyData * poly,int nbPoints);
-    void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData ); // copy of a function in painttoolbox
+    QList<medSeriesOfRoi*> * getListOfView(medAbstractView *view);
+    void resampleCurve(vtkPolyData *poly, int nbPoints);
+    void initializeMaskData( medAbstractData *imageData, medAbstractData *maskData ); // copy of a function in painttoolbox
     int computePlaneIndex();
     void clear();
 
 private:
 
-    medAbstractImageView * currentView;
-    medToolBox* roiManagementToolBox;
-    QPushButton * addNewCurve;
-    QPushButton * generateBinaryImage_button;
-    QPushButton * repulsorTool;
-    QPushButton * interpolate;
-    QPushButton * extractRoiButton;
+    medAbstractImageView *currentView;
+    medToolBox *roiManagementToolBox;
+    QPushButton *addNewCurve;
+    QPushButton *generateBinaryImage_button;
+    QPushButton *repulsorTool;
+    QPushButton *interpolate;
+    QPushButton *extractRoiButton;
 
     MapPlaneIndex viewsPlaneIndex;
 
@@ -126,16 +126,15 @@ private:
 
     RoiStatistics stats;
 
-    vtkInriaInteractorStylePolygonRepulsor * interactorStyleRepulsor;
+    vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
 
     friend class contourWidgetObserver;
 
     dtkSmartPointer<medAbstractData> m_maskData; // Output
 
-    UChar3ImageType::Pointer castToUChar3(medAbstractImageData * input);
-    void addPointToBuffer(vtkImageView2D* view2d, vtkSmartPointer<vtkPoints>  bufferPoints, itk::ImageBase<3>::IndexType point);
+    UChar3ImageType::Pointer castToUChar3(medAbstractImageData *input);
+    void addPointToBuffer(vtkImageView2D* view2d, vtkSmartPointer<vtkPoints> bufferPoints, itk::ImageBase<3>::IndexType point);
     void getContourIndices(vtkImageView2D*, UChar3ImageType::Pointer, UChar3ImageType::IndexType, vtkSmartPointer<vtkPoints>);
 
     static const int HANDLE_PERIOD  = 5;
-
 };

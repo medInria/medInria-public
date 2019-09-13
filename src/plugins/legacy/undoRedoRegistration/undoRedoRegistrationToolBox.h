@@ -29,16 +29,16 @@ public:
     undoRedoRegistrationToolBox(QWidget *parent = nullptr);
     ~undoRedoRegistrationToolBox(void);
     
-    static bool registered(void);
+    static bool registered();
     void updatePositionArrow(int);
-    undoRedoRegistration::RegImageType::Pointer output(void);
+    undoRedoRegistration::RegImageType::Pointer output();
     
     virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
 public slots:
-    void onUndo(void);
-    void onRedo(void);
-    void onTransformationStackReset(void);
+    void onUndo();
+    void onRedo();
+    void onTransformationStackReset();
     void addTransformationIntoList(int, QString);
     void onRegistrationSuccess();
 

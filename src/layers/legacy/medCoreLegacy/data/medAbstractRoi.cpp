@@ -1,3 +1,15 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 #include <medAbstractRoi.h>
 
 class medAbstractRoiPrivate
@@ -11,8 +23,7 @@ public:
 };
 
 medAbstractRoi::medAbstractRoi( dtkAbstractObject *parent )
-    : dtkAbstractObject(parent)
-    , d(new medAbstractRoiPrivate)
+    : dtkAbstractObject(parent), d(new medAbstractRoiPrivate)
 {
     d->isSelected = false;
 }
@@ -30,7 +41,7 @@ unsigned int medAbstractRoi::getIdSlice() const
 
 void medAbstractRoi::setIdSlice(unsigned int idSlice)
 {
-    d->idSlice=idSlice;
+    d->idSlice = idSlice;
 }
 
 unsigned char medAbstractRoi::getOrientation()
@@ -40,7 +51,7 @@ unsigned char medAbstractRoi::getOrientation()
 
 void medAbstractRoi::setOrientation(unsigned char orientation)
 {
-    d->orientation=orientation;
+    d->orientation = orientation;
 }
 
 bool medAbstractRoi::isSelected()

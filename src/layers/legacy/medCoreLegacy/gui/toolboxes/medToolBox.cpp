@@ -401,7 +401,7 @@ void medToolBox::addToolBoxConnections(medJobItemL *job)
     connect (job, SIGNAL (activate(QObject*, bool)), getProgressionStack(), SLOT(setActive(QObject*,bool)));
 }
 
-void medToolBox::enableOnProcessSuccessImportOutput(medJobItemL* job, bool enable)
+void medToolBox::enableOnProcessSuccessImportOutput(medJobItemL *job, bool enable)
 {
     if (enable)
     {

@@ -12,9 +12,9 @@
 =========================================================================*/
 #pragma once
 
-#include "vtkOrientedGlyphFocalPlaneContourRepresentation.h"
-
 #include <polygonRoiPluginExport.h>
+
+#include <vtkOrientedGlyphFocalPlaneContourRepresentation.h>
 #include <vtkSmartPointer.h>
 
 class vtkProperty2D;
@@ -35,22 +35,22 @@ public:
 
     // Description:
     // Standard methods for instances of this class.
-    vtkTypeMacro(vtkContourOverlayRepresentation, vtkOrientedGlyphFocalPlaneContourRepresentation);
+    vtkTypeMacro(vtkContourOverlayRepresentation, vtkOrientedGlyphFocalPlaneContourRepresentation)
 
     // Description:
     // The class maintains its true contour locations based on display co-ords
     // This method syncs the world co-ords data structure with the display co-ords.
     virtual void UpdateContourWorldPositionsBasedOnDisplayPositions();
 
-    vtkSetMacro(needToSaveState,bool);
-    vtkGetMacro(needToSaveState,bool);
+    vtkSetMacro(needToSaveState, bool)
+    vtkGetMacro(needToSaveState, bool)
 
     int CanUndo(); 
     int CanRedo(); 
     int SaveState();
     void Undo();
     void Redo();
-    virtual void Initialize(vtkPolyData* polyData){Superclass::Initialize(polyData);};
+    virtual void Initialize(vtkPolyData* polyData){Superclass::Initialize(polyData);}
     virtual void WidgetInteraction(double eventPos[2]);
 
     /**

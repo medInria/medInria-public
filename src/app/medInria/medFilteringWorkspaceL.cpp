@@ -31,7 +31,8 @@ public:
     medAbstractData *filterOutput;
 };
 
-medFilteringWorkspaceL::medFilteringWorkspaceL(QWidget *parent): medSelectorWorkspace (parent, staticName()), d(new medFilteringWorkspaceLPrivate)
+medFilteringWorkspaceL::medFilteringWorkspaceL(QWidget *parent)
+    : medSelectorWorkspace (parent, staticName()), d(new medFilteringWorkspaceLPrivate)
 {
     connect(this->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),
             selectorToolBox(), SIGNAL(inputChanged()));

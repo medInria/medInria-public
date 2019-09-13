@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -418,7 +418,7 @@ void medHomepageArea::initPage()
     if (workspaceButtonsLayoutClinical->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutClinical);
     if (workspaceButtonsLayoutOther->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutOther);
 
-    for (int i = 0; i < (int)oLayoutVect.size(); ++i)
+    for (int i = 0; i < static_cast<int>(oLayoutVect.size()); ++i)
     {
         workspaceButtonsLayout->setColumnMinimumWidth(i, 120);
         workspaceButtonsLayout->addLayout(oLayoutVect[i], 0, i);

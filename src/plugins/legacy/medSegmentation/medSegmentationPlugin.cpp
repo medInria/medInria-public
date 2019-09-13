@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -31,7 +31,8 @@ const char * medSegmentationPluginPrivate::s_Name = "segmentationPlugin";
 // Plugin
 // /////////////////////////////////////////////////////////////////
 
-medSegmentationPlugin::medSegmentationPlugin(QObject *parent) : medPluginLegacy(parent), d(new medSegmentationPluginPrivate)
+medSegmentationPlugin::medSegmentationPlugin(QObject *parent)
+    : medPluginLegacy(parent), d(new medSegmentationPluginPrivate)
 {
 
 }

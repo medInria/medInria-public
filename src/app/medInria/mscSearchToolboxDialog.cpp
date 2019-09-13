@@ -2,7 +2,7 @@
 
 medInria
 
-Copyright (c) INRIA 2013 - 2014. All rights reserved.
+Copyright (c) INRIA 2013 - 2019. All rights reserved.
 See LICENSE.txt for details.
 
 This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,23 +16,12 @@ PURPOSE.
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <QtGui>
-
-class mscSearchToolboxDialogPrivate
-{
-public:
-    QPushButton *findButton;
-    QLineEdit *lineEdit;
-    QStringList findText;
-    QTreeWidget* tree;
-    QHash<QString, QStringList> toolboxDataHash;
-};
 
 mscSearchToolboxDialog::mscSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash)
-    : QDialog(parent), d (new mscSearchToolboxDialogPrivate)
+    : QDialog(parent)
 {
-    d->findText.clear();
-    d->toolboxDataHash = toolboxDataHash;
+    findText.clear();
+    toolboxDataHash = toolboxDataHash;
 
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
@@ -45,9 +34,9 @@ mscSearchToolboxDialog::mscSearchToolboxDialog(QWidget *parent, QHash<QString, Q
     QLabel *findLabel = new QLabel(tr("Enter the name of a toolbox, or a tag"));
     findLayout->addWidget(findLabel);
 
-    d->lineEdit = new QLineEdit;
-    findLayout->addWidget(d->lineEdit);
-    connect(d->lineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(searchTextChanged(const QString&)));
+    lineEdit = new QLineEdit;
+    findLayout->addWidget(lineEdit);
+    connect(lineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(searchTextChanged(const QString&)));
 
     layout->addLayout(findLayout);
 
@@ -55,62 +44,57 @@ mscSearchToolboxDialog::mscSearchToolboxDialog(QWidget *parent, QHash<QString, Q
     QLabel *propositionLabel = new QLabel(tr("Searching list (double-click on a toolbox to open it)"));
     layout->addWidget(propositionLabel);
 
-    d->tree = new QTreeWidget();
-    d->tree->setFrameStyle(QFrame::NoFrame);
-    d->tree->setAttribute(Qt::WA_MacShowFocusRect, false);
-    d->tree->setUniformRowHeights(true);
-    d->tree->setAlternatingRowColors(true);
-    d->tree->setAnimated(true);
-    d->tree->setSelectionBehavior(QAbstractItemView::SelectRows);
-    d->tree->setSelectionMode(QAbstractItemView::SingleSelection);
-    d->tree->header()->setStretchLastSection(true);
-    d->tree->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    d->tree->setColumnCount(4);
-    layout->addWidget(d->tree);
+    tree = new QTreeWidget();
+    tree->setFrameStyle(QFrame::NoFrame);
+    tree->setAttribute(Qt::WA_MacShowFocusRect, false);
+    tree->setUniformRowHeights(true);
+    tree->setAlternatingRowColors(true);
+    tree->setAnimated(true);
+    tree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tree->setSelectionMode(QAbstractItemView::SingleSelection);
+    tree->header()->setStretchLastSection(true);
+    tree->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tree->setColumnCount(4);
+    layout->addWidget(tree);
 
     // Create tree columns
     QStringList treeColumns;
     treeColumns << tr("Name") << tr("Description") << tr("Workspace") << tr("Internal Name");
-    d->tree->setHeaderLabels(treeColumns);
-    d->tree->setColumnWidth(0, 200);
-    d->tree->setColumnWidth(1, 400);
-    d->tree->setColumnWidth(2, 200);
-    d->tree->setColumnWidth(3, 100);
-    layout->addWidget(d->tree);
+    tree->setHeaderLabels(treeColumns);
+    tree->setColumnWidth(0, 200);
+    tree->setColumnWidth(1, 400);
+    tree->setColumnWidth(2, 200);
+    tree->setColumnWidth(3, 100);
+    layout->addWidget(tree);
 
     // Populate the tree
     int cpt = 0;
     foreach (auto current, toolboxDataHash)
     {
-        QTreeWidgetItem * item = new QTreeWidgetItem(d->tree);
+        QTreeWidgetItem * item = new QTreeWidgetItem(tree);
         item->setText(0, current.at(0));
         item->setText(1, current.at(1));
         item->setText(2, current.at(2));
         item->setText(3, current.at(3));
-        d->tree->addTopLevelItem(item);
+        tree->addTopLevelItem(item);
         cpt++;
     }
 
-    d->tree->setSortingEnabled(true);
-    d->tree->sortByColumn(0, Qt::AscendingOrder);
+    tree->setSortingEnabled(true);
+    tree->sortByColumn(0, Qt::AscendingOrder);
     this->adjustSize();
-    d->tree->setMinimumSize(700,600);
+    tree->setMinimumSize(700,600);
 
-    connect(d->tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(searchItemDoubleClicked(QTreeWidgetItem*, int)));
-}
-
-mscSearchToolboxDialog::~mscSearchToolboxDialog()
-{
-    delete d;
+    connect(tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(searchItemDoubleClicked(QTreeWidgetItem*, int)));
 }
 
 void mscSearchToolboxDialog::searchTextChanged(const QString& text)
 {
     // List of items which match the search text
-    QList<QTreeWidgetItem*> clist = d->tree->findItems(text, Qt::MatchContains|Qt::MatchRecursive, 0);
+    QList<QTreeWidgetItem*> clist = tree->findItems(text, Qt::MatchContains|Qt::MatchRecursive, 0);
 
     // First we hide every item from the list
-    QList<QTreeWidgetItem *> allItems = d->tree->findItems(
+    QList<QTreeWidgetItem *> allItems = tree->findItems(
                 QString("*"), Qt::MatchWrap | Qt::MatchWildcard | Qt::MatchRecursive);
     foreach(QTreeWidgetItem* item, allItems)
     {
@@ -132,11 +116,11 @@ void mscSearchToolboxDialog::searchItemDoubleClicked(QTreeWidgetItem* item, int 
     res.append(item->text(1));
     res.append(item->text(2));
     res.append(item->text(3));
-    d->findText = res;
+    findText = res;
     accept();
 }
 
 QStringList mscSearchToolboxDialog::getFindText()
 {
-    return d->findText;
+    return findText;
 }

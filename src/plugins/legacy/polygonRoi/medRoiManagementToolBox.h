@@ -25,7 +25,8 @@ class medRoiManagementToolBox : public medToolBox
     Q_OBJECT
 
     MED_TOOLBOX_INTERFACE("Roi Management",
-        "medRoiManagementToolBox",<<"")
+                          "medRoiManagementToolBox",
+                          <<"")
 
 public:
 
@@ -66,7 +67,7 @@ class medRoiItemWidget : public QWidget
 public:
     typedef QPair<unsigned int,unsigned int> PairInd;
 
-    explicit medRoiItemWidget(QString name,PairInd indexes,QWidget * parent = 0);
+    explicit medRoiItemWidget(QString name, PairInd indexes, QWidget *parent = nullptr);
 
     virtual ~medRoiItemWidget();
 
@@ -80,6 +81,6 @@ protected slots:
     void emitDeleteWidget();
 
 private:
-    QLabel * roiInfo;
+    QLabel *roiInfo;
     PairInd indexes;
 };

@@ -29,31 +29,31 @@ class POLYGONROIPLUGIN_EXPORT vtkInriaInteractorStylePolygonRepulsor : public vt
 {
 public:
     static vtkInriaInteractorStylePolygonRepulsor *New();
-    vtkTypeMacro(vtkInriaInteractorStylePolygonRepulsor, vtkInteractorStyleImageView2D);
+    vtkTypeMacro(vtkInriaInteractorStylePolygonRepulsor, vtkInteractorStyleImageView2D)
     void PrintSelf(ostream& os, vtkIndent indent);
 
     virtual void OnMouseMove();
     virtual void OnLeftButtonDown();
     virtual void OnLeftButtonUp();
-    void SetCurrentView(medAbstractView*);
+    void SetCurrentView(medAbstractView *view);
     bool IsInRepulsorDisk(double *pt);
-    vtkGetObjectMacro(RepulsorActor,vtkCircleActor2D);
-    vtkGetObjectMacro(RepulsorProperty,vtkProperty2D);
+    vtkGetObjectMacro(RepulsorActor,vtkCircleActor2D)
+    vtkGetObjectMacro(RepulsorProperty,vtkProperty2D)
 
 protected:
     vtkInriaInteractorStylePolygonRepulsor();
     ~vtkInriaInteractorStylePolygonRepulsor();
 
     virtual void RedefinePolygons();
-    void ReallyDeletePoint(vtkSmartPointer<vtkPoints> points, vtkIdList * idList);
-    void  DisplayPointFromPolygon(double * displayPoint, QList<double*> list,int ind);
+    void ReallyDeletePoint(vtkSmartPointer<vtkPoints> points, vtkIdList *idList);
+    void  DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind);
 
     int Position[2];
     int On;
     int Radius;
-    medAbstractView * CurrentView;
-    vtkCircleActor2D * RepulsorActor;
-    vtkProperty2D * RepulsorProperty;
+    medAbstractView *CurrentView;
+    vtkCircleActor2D *RepulsorActor;
+    vtkProperty2D *RepulsorProperty;
     QList<polygonRoi*> ListPolygonsToSave;
 
 private:

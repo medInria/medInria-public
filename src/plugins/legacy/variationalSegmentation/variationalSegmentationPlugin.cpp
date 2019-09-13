@@ -26,7 +26,7 @@ bool variationalSegmentationPlugin::initialize()
     {
         qDebug() << "Unable to register variationalSegmentation type";
     }
-    medToolBoxFactory * factory = medToolBoxFactory::instance();
+    medToolBoxFactory *factory = medToolBoxFactory::instance();
 
     if(!factory->registerToolBox<mseg::VarSegToolBox>())
     {

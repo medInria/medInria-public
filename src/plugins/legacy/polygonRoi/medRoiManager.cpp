@@ -10,7 +10,7 @@
   PURPOSE.
 
 =========================================================================*/
-#include "medRoiManager.h"
+#include <medRoiManager.h>
 
 #include <QTreeWidget>
 
@@ -24,17 +24,17 @@ public:
     typedef QList<medSeriesOfRoi*> ListOfSeriesOfRois;
     typedef QPair<unsigned int,unsigned int> PairInd;
 
-    medAbstractView * currentView;
+    medAbstractView *currentView;
 
     QList<QTreeWidget*> listOfPages;
 
-    QHash<medAbstractView*,ListOfSeriesOfRois*> * viewsRoisSeries;
+    QHash<medAbstractView*,ListOfSeriesOfRois*> *viewsRoisSeries;
     QPair<medAbstractView*,ListRois*> *copyList;
 
-    QHash<medAbstractView*,QUndoStack*> * hashViewUndoStack;
+    QHash<medAbstractView*,QUndoStack*> *hashViewUndoStack;
 };
 
-medRoiManager *medRoiManager::instance(void)
+medRoiManager *medRoiManager::instance()
 {
     if(!s_instance)
     {
@@ -43,21 +43,21 @@ medRoiManager *medRoiManager::instance(void)
     return s_instance;
 }
 
-medRoiManager::medRoiManager(void) : d(new medRoiManagerPrivate)
+medRoiManager::medRoiManager() : d(new medRoiManagerPrivate)
 {
-    d->viewsRoisSeries = new QHash<medAbstractView*,ListOfSeriesOfRois *>();
-    d->hashViewUndoStack = new QHash<medAbstractView*,QUndoStack*>();
-    d->copyList = new QPair<medAbstractView*,ListRois*>();
+    d->viewsRoisSeries = new QHash<medAbstractView*, ListOfSeriesOfRois *>();
+    d->hashViewUndoStack = new QHash<medAbstractView*, QUndoStack*>();
+    d->copyList = new QPair<medAbstractView*, ListRois*>();
     d->copyList->second = new ListRois();
-    d->copyList->first=0;
+    d->copyList->first = nullptr;
 }
 
-medRoiManager::~medRoiManager(void)
+medRoiManager::~medRoiManager()
 {
     delete d;
     d = nullptr;
 }
-void medRoiManager::destroy( void )
+void medRoiManager::destroy()
 {
     if (s_instance)
     {
@@ -80,9 +80,9 @@ void medRoiManager::addRoi(medAbstractView *view, medAbstractRoi *roi, QString s
     bool added = false;
     if (!d->viewsRoisSeries->contains(view))
     {
-        ListOfSeriesOfRois * series = new ListOfSeriesOfRois();
-        d->viewsRoisSeries->insert(view,series);
-        connect(view,SIGNAL(closed()),this,SLOT(removeView()));
+        ListOfSeriesOfRois *series = new ListOfSeriesOfRois();
+        d->viewsRoisSeries->insert(view, series);
+        connect(view, SIGNAL(closed()), this, SLOT(removeView()));
     }
     else
     {
@@ -100,7 +100,7 @@ void medRoiManager::addRoi(medAbstractView *view, medAbstractRoi *roi, QString s
     }
     if (!added)
     {
-        ListRois * listRois = new ListRois();
+        ListRois *listRois = new ListRois();
         listRois->append(roi);
         d->viewsRoisSeries->value(view)->append(new medSeriesOfRoi(seriesName,listRois));
     }
@@ -124,12 +124,12 @@ void medRoiManager::sortListOfRois(QString seriesName)
     }
 }
 
-bool medRoiManager::sliceIndexLessThan(medAbstractRoi* a, medAbstractRoi* b)
+bool medRoiManager::sliceIndexLessThan(medAbstractRoi *a, medAbstractRoi *b)
 {
     return a->getIdSlice() < b->getIdSlice();
 }
 
-void medRoiManager::deleteRoi(medAbstractView* view ,medAbstractRoi* roi, QString seriesName)
+void medRoiManager::deleteRoi(medAbstractView *view, medAbstractRoi *roi, QString seriesName)
 {
     if (view)
     {
@@ -155,11 +155,11 @@ void medRoiManager::deleteRoi(medAbstractView* view ,medAbstractRoi* roi, QStrin
     }
 }
 
-void medRoiManager::addToUndoRedoStack(QUndoCommand* command)
+void medRoiManager::addToUndoRedoStack(QUndoCommand *command)
 {
     if (!d->hashViewUndoStack->contains(d->currentView))
     {
-        d->hashViewUndoStack->insert(d->currentView,new QUndoStack());
+        d->hashViewUndoStack->insert(d->currentView, new QUndoStack());
     }
     d->hashViewUndoStack->value(d->currentView)->push(command);
 }
@@ -221,7 +221,7 @@ void medRoiManager::paste()
     }
     for(int i = 0; i < d->copyList->second->size(); i++)
     {
-        AddRoiCommand * command = new AddRoiCommand(d->currentView,d->copyList->second->at(i)->getCopy(d->currentView),"Polygon rois","NewRoi");
+        AddRoiCommand *command = new AddRoiCommand(d->currentView,d->copyList->second->at(i)->getCopy(d->currentView),"Polygon rois","NewRoi");
         addToUndoRedoStack(command);
     }
 }
@@ -238,13 +238,12 @@ QList<QPair<unsigned int,unsigned int> > * medRoiManager::getSelectedRois()
 
 void medRoiManager::removeView()
 {
-    medAbstractView * view = qobject_cast<medAbstractView*>(QObject::sender());
-    if (!view)
+    medAbstractView *view = qobject_cast<medAbstractView*>(QObject::sender());
+    if (view)
     {
-        return;
+        delete d->viewsRoisSeries->take(view);
+        delete d->hashViewUndoStack->take(view);
     }
-    delete d->viewsRoisSeries->take(view);
-    delete d->hashViewUndoStack->take(view);
 }
 
 medRoiManager *medRoiManager::s_instance = nullptr;
@@ -255,13 +254,17 @@ medRoiManager *medRoiManager::s_instance = nullptr;
 void medSeriesOfRoi::Off()
 {
     for(int i = 0; i < rois->size(); i++)
+    {
         rois->at(i)->Off();
+    }
 }
 
 void medSeriesOfRoi::On()
 {
     for(int i = 0; i < rois->size(); i++)
+    {
         rois->at(i)->On();
+    }
 }
 
 QString medSeriesOfRoi::info()
@@ -272,12 +275,16 @@ QString medSeriesOfRoi::info()
 void medSeriesOfRoi::select()
 {
     for(int i = 0; i < rois->size(); i++)
+    {
         rois->at(i)->select();
+    }
 }
 void medSeriesOfRoi::unselect()
 {
     for(int i = 0; i < rois->size(); i++)
+    {
         rois->at(i)->unselect();
+    }
 }
 
 void medSeriesOfRoi::computeStatistics()

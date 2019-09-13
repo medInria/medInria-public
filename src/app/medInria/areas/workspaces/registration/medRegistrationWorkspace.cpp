@@ -26,9 +26,9 @@
 class medRegistrationWorkspacePrivate
 {
 public:
-    medViewContainer* containers[3]; // fixed/moving/fuse
+    medViewContainer *containers[3]; // fixed/moving/fuse
     medViewParameterGroupL *viewGroup;
-    medLayerParameterGroupL* layerGroups[2]; // fixed/moving
+    medLayerParameterGroupL *layerGroups[2]; // fixed/moving
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent)
@@ -151,17 +151,17 @@ void medRegistrationWorkspace::updateFromMovingContainer()
 
 void medRegistrationWorkspace::updateFromContainer(medRegistrationWorkspace::ContainerIndex containerIndex)
 {
-    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+    medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
     if(toolbox)
     {
         if(!d->containers[containerIndex]->view())
         {
-            medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
+            medAbstractLayeredView *fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
             if(fuseView)
             {
-                medAbstractData* dataInView      = containerIndex==Fixed? toolbox->fixedData() : toolbox->movingData();
-                medAbstractData* dataInOtherView = containerIndex==Fixed? toolbox->movingData() : toolbox->fixedData();
+                medAbstractData *dataInView      = containerIndex==Fixed? toolbox->fixedData() : toolbox->movingData();
+                medAbstractData *dataInOtherView = containerIndex==Fixed? toolbox->movingData() : toolbox->fixedData();
 
                 if(fuseView->layer(dataInView) == 0)
                 {
@@ -185,18 +185,20 @@ void medRegistrationWorkspace::updateFromContainer(medRegistrationWorkspace::Con
         }
         else
         {
-            medAbstractLayeredView* currentView  = dynamic_cast<medAbstractLayeredView*>(d->containers[containerIndex]->view());
+            medAbstractLayeredView *currentView  = dynamic_cast<medAbstractLayeredView*>(d->containers[containerIndex]->view());
             if(!currentView)
             {
-                qWarning() << "Non layered view are not suported yet in registration workspace.";
+                qWarning() << "Non layered views are not supported yet in Registration workspace.";
                 return;
             }
 
             medAbstractData *currentData = currentView->layerData(currentView->currentLayer());
 
-            medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
+            medAbstractLayeredView *fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
             if(fuseView)
+            {
                 fuseView->removeData(currentData);
+            }
 
             d->containers[Fuse]->addData(currentData);
             fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
@@ -222,9 +224,13 @@ void medRegistrationWorkspace::updateFromContainer(medRegistrationWorkspace::Con
 void medRegistrationWorkspace::updateUserLayerClosable(int tabIndex)
 {
     if(tabIndex == 0)
+    {
         this->setUserLayerClosable(true);
+    }
     else
+    {
         this->setUserLayerClosable(false);
+    }
 }
 
 void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *output)
@@ -240,17 +246,17 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         d->containers[Fuse]->addData(output);
 
         // Relink the views...
-        medAbstractLayeredView* movingView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Moving]->view());
+        medAbstractLayeredView *movingView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Moving]->view());
         if(!movingView)
         {
-            qWarning() << "Non layered view are not suported yet in registration workspace.";
+            qWarning() << "Non layered views are not supported yet in Registration workspace.";
             return;
         }
 
-        medAbstractLayeredView* fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
+        medAbstractLayeredView *fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
         if(!fuseView)
         {
-            qWarning() << "Non layered view are not suported yet in registration workspace.";
+            qWarning() << "Non layered views are not supported yet in Registration workspace.";
             return;
         }
 

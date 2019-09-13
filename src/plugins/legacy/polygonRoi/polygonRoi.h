@@ -28,7 +28,7 @@ class POLYGONROIPLUGIN_EXPORT polygonRoi : public medAbstractRoi
     Q_OBJECT
 
 public:
-    polygonRoi(vtkImageView2D * view, medAbstractRoi * parent = nullptr );
+    polygonRoi(vtkImageView2D *view, medAbstractRoi *parent = nullptr );
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
@@ -59,15 +59,13 @@ public slots:
     virtual void undo();
     virtual void redo();
     virtual void saveState();
-    virtual bool copyROI(medAbstractView *);
-    virtual medAbstractRoi * getCopy(medAbstractView *);
-    virtual QList<medAbstractRoi*> * interpolate(medAbstractRoi*);  
+    virtual bool copyROI(medAbstractView *view);
+    virtual medAbstractRoi * getCopy(medAbstractView *view);
+    virtual QList<medAbstractRoi*> * interpolate(medAbstractRoi *roi);
     
 private:
-    polygonRoiPrivate * d;
+    polygonRoiPrivate *d;
     friend class PolygonRoiObserver;
     void setColor(double[]);
     virtual void setRightColor();
 };
-
-

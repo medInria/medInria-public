@@ -128,7 +128,7 @@ public:
     polygonRoi *copyRoi;
 };
 
-polygonRoi::polygonRoi(vtkImageView2D * view, medAbstractRoi *parent )
+polygonRoi::polygonRoi(vtkImageView2D *view, medAbstractRoi *parent )
     : medAbstractRoi(parent)
     , d(new polygonRoiPrivate)
 {
@@ -162,7 +162,7 @@ polygonRoi::polygonRoi(vtkImageView2D * view, medAbstractRoi *parent )
 }
 
 
-polygonRoi::~polygonRoi( void )
+polygonRoi::~polygonRoi()
 {
     delete d;
     d = nullptr;
@@ -175,14 +175,14 @@ vtkContourWidget * polygonRoi::getContour()
 
 void polygonRoi::undo()
 {
-    vtkContourOverlayRepresentation * contourRep =
+    vtkContourOverlayRepresentation *contourRep =
             dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     contourRep->Undo();
 }
 
 void polygonRoi::redo()
 {
-    vtkContourOverlayRepresentation * contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     contourRep->Redo();
 }
 
@@ -237,7 +237,7 @@ void polygonRoi::showOrHide()
         return;
     }
 
-    if (getIdSlice()==(unsigned int)d->view->GetSlice() && getOrientation()==(unsigned char)d->view->GetViewOrientation())
+    if (getIdSlice() == (unsigned int)d->view->GetSlice() && getOrientation() == (unsigned char)d->view->GetViewOrientation())
     {
         On();
     }
@@ -272,7 +272,7 @@ QString polygonRoi::type()
 
 QString polygonRoi::info()
 {
-    QString info = "Orientation : ";
+    QString info = "Orientation: ";
     switch (getOrientation())
     {
         case 0:
@@ -309,16 +309,16 @@ void polygonRoi::saveState()
     {
         return;
     }
-    RoiUndoRedo * command = new RoiUndoRedo(this,type());
+    RoiUndoRedo *command = new RoiUndoRedo(this,type());
     medRoiManager::instance()->addToUndoRedoStack(command);
     emit stateSaved();
 }
 
-bool polygonRoi::copyROI(medAbstractView * view)
+bool polygonRoi::copyROI(medAbstractView *view)
 {
     if (getContour()->GetWidgetState()==2)
     {
-        vtkImageView2D * view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
+        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
         d->copyRoi = new polygonRoi(view2d);
         vtkSmartPointer<vtkPolyData> Nodes = vtkSmartPointer<vtkPolyData>::New();
         d->contour->GetContourRepresentation()->GetNodePolyData(Nodes);
@@ -333,13 +333,13 @@ bool polygonRoi::copyROI(medAbstractView * view)
     }
 }
 
-medAbstractRoi * polygonRoi::getCopy(medAbstractView * view) 
+medAbstractRoi * polygonRoi::getCopy(medAbstractView *view)
 {
-    vtkImageView2D * view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
     d->copyRoi->setOrientation(view2d->GetViewOrientation());
     d->copyRoi->setIdSlice(view2d->GetSlice());
     d->copyRoi->forceInvisibilityOff();
-    polygonRoi * copyRoi = d->copyRoi;
+    polygonRoi *copyRoi = d->copyRoi;
     copyROI(view);
     dynamic_cast<vtkContourOverlayRepresentation*>(copyRoi->getContour()->GetContourRepresentation())->SaveState();
     return copyRoi;
@@ -350,14 +350,14 @@ bool polygonRoi::isVisible()
     return (d->contour->GetEnabled());
 }
 
-QList<medAbstractRoi*> * polygonRoi::interpolate(medAbstractRoi* roi)
+QList<medAbstractRoi*> * polygonRoi::interpolate(medAbstractRoi *roi)
 {
     return nullptr;
 }
 
 void polygonRoi::setColor(double newColor[])
 {
-    vtkContourOverlayRepresentation * contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     contourRep->GetLinesProperty()->SetColor(newColor);
 }
 

@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include <medSlider.h>
 #include <medSettingsManager.h>
+#include <medSlider.h>
 
 #include <QStyle>
 
@@ -52,7 +52,6 @@ void medSlider::removeAllTicks()
 
 void medSlider::paintEvent(QPaintEvent *event)
 {
-
     QSlider::paintEvent(event);
 
     QPainter painter(this);

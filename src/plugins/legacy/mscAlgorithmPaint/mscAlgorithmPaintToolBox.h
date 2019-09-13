@@ -12,8 +12,8 @@
 =========================================================================*/
 #pragma once
 
-#include "mscAlgorithmPaintPluginExport.h"
-#include "mscPaintBrush.h"
+#include <mscAlgorithmPaintPluginExport.h>
+#include <mscPaintBrush.h>
 
 #include <medAbstractData.h>
 #include <medAbstractSelectableToolBox.h>
@@ -39,7 +39,7 @@ class ClickAndMoveEventFilter;
 
 struct PaintBrushObjComparator
 {
-    bool operator()(mscPaintBrush* lhs, mscPaintBrush* rhs) const
+    bool operator()(mscPaintBrush *lhs, mscPaintBrush *rhs) const
     {
         return lhs->getIdSlice() < rhs->getIdSlice();
     }
@@ -97,8 +97,9 @@ public:
     inline PaintState::E paintState(){return m_paintState;}
 
     bool getSeedPlanted();
-    void setSeedPlanted(bool,MaskType::IndexType,unsigned int,double);
-    void setSeed(QVector3D);
+    void setSeedPlanted(bool val, MaskType::IndexType index,
+                        unsigned int planeIndex, double value);
+    void setSeed(QVector3D point);
 
     inline void setCurrentIdSlice(unsigned int id){currentIdSlice = id;}
     inline unsigned int getCurrentIdSlice(){return currentIdSlice;}
@@ -107,13 +108,14 @@ public:
     void setParameter(int channel, int value);
     void setCurrentView(medAbstractImageView* view);
 
-    Mask2dType::Pointer extract2DImageSlice(MaskType::Pointer input,int plane,int slice,
-                                            MaskType::SizeType size,MaskType::IndexType start);
+    Mask2dType::Pointer extract2DImageSlice(MaskType::Pointer input, int plane, int slice,
+                                            MaskType::SizeType size, MaskType::IndexType start);
     Mask2dFloatType::Pointer computeDistanceMap(Mask2dType::Pointer img);
-    void computeIntermediateSlice(Mask2dFloatType::Pointer distanceMapImg0,Mask2dFloatType::Pointer distanceMapImg1,unsigned int slice0,
-                                                              unsigned int slice1,int j,MaskFloatIterator ito,MaskIterator itMask,double *vec);
-    void computeCentroid(Mask2dIterator itmask,unsigned int *coord);
-    Mask2dType::Pointer translateImageByVec(Mask2dType::Pointer img,int *vec);
+    void computeIntermediateSlice(Mask2dFloatType::Pointer distanceMapImg0, Mask2dFloatType::Pointer distanceMapImg1,
+                                  unsigned int slice0, unsigned int slice1, int j,
+                                  MaskFloatIterator ito, MaskIterator itMask, double *vec);
+    void computeCentroid(Mask2dIterator itmask, unsigned int *coord);
+    Mask2dType::Pointer translateImageByVec(Mask2dType::Pointer img, int *vec);
 
     dtkPlugin* plugin();
 
@@ -128,8 +130,8 @@ public slots:
     void activateMagicWand();
     void updateMagicWandComputationSpeed();
 
-    void copyMetaData(medAbstractData* output,
-                      medAbstractData* input);
+    void copyMetaData(medAbstractData *output,
+                      medAbstractData *input);
     void import();
 
     void setLabel(int newVal);
@@ -137,13 +139,14 @@ public slots:
 
     void updateMagicWandComputation();
 
-    void updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view);
-    void updateWandRegion(medAbstractImageView * view, QVector3D &vec);
+    void updateStroke(ClickAndMoveEventFilter *filter, medAbstractImageView *view);
+    void updateWandRegion(medAbstractImageView *view, QVector3D &vec);
     void updateMouseInteraction();
 
     void undo();
     void redo();
-    void addSliceToStack(medAbstractView * view,const unsigned char planeIndex,QList<unsigned int> listIdSlice, bool isMaster = true);
+    void addSliceToStack(medAbstractView *view, const unsigned char planeIndex,
+                         QList<unsigned int> listIdSlice, bool isMaster = true);
 
     virtual void clear();
     void clearMask();
@@ -169,7 +172,7 @@ protected:
     // update with seed point data.
     void updateTableRow(int row);
 
-    void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
+    void initializeMaskData( medAbstractData *imageData, medAbstractData *maskData );
 
     void showButtons( bool value);
 
@@ -179,14 +182,14 @@ protected:
 
     void addBrushSize(int size);
 
-    char computePlaneIndex(const QVector3D &,MaskType::IndexType & ,bool& isInside);
+    char computePlaneIndex(const QVector3D &, MaskType::IndexType &, bool& isInside);
 
-    void copySliceFromMask3D(itk::Image<unsigned char,2>::Pointer copy,const char planeIndex,
-                             const char * direction,const unsigned int slice, bool becomesAMasterOne = true);
+    void copySliceFromMask3D(itk::Image<unsigned char,2>::Pointer copy, const char planeIndex,
+                             const char * direction, const unsigned int slice, bool becomesAMasterOne = true);
     void pasteSliceToMask3D(itk::Image<unsigned char,2>::Pointer image2D, const char planeIndex,
                             const char * direction, const unsigned int slice, bool becomesAMasterOne = true);
 
-    void addViewEventFilter(medViewEventFilter * filter );
+    void addViewEventFilter(medViewEventFilter *filter);
 
     void setButtonsDisabled(bool disable);
 
@@ -243,9 +246,9 @@ private:
     QPair<Mask2dType::Pointer,char> m_copy;
 
     // undo_redo_feature's attributes
-    QHash<medAbstractView*,QStack<PairListSlicePlaneId>*> * m_undoStacks,*m_redoStacks;
-    medAbstractImageView* currentView;
-    medAbstractImageView * viewCopied;
+    QHash<medAbstractView*,QStack<PairListSlicePlaneId>*> *m_undoStacks,*m_redoStacks;
+    medAbstractImageView *currentView;
+    medAbstractImageView *viewCopied;
 
     unsigned int currentPlaneIndex; //plane Index of the current/last operation
     unsigned int currentIdSlice; // current slice;
@@ -264,7 +267,7 @@ private:
 
     PaintState::E m_paintState;
 
-    medIntParameterL* slicingParameter;
+    medIntParameterL *slicingParameter;
     void updateMaskWithMasterLabel();
     bool isMask2dOnSlice();
 };

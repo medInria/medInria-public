@@ -19,7 +19,7 @@ polygonRoiPlugin::polygonRoiPlugin(QObject *parent) : medPluginLegacy(parent)
 {
 }
 
-bool polygonRoiPlugin::initialize(void)
+bool polygonRoiPlugin::initialize()
 {
      if(!polygonRoiToolBox::registered())
      {
@@ -32,12 +32,12 @@ bool polygonRoiPlugin::initialize(void)
     return true;
 }
 
-QString polygonRoiPlugin::name(void) const
+QString polygonRoiPlugin::name() const
 {
     return "Polygon ROI";
 }
 
-QString polygonRoiPlugin::description(void) const
+QString polygonRoiPlugin::description() const
 {
     QString description = \
             tr("Segment, interpolate Regions of Interest (ROI) on your volume. \
@@ -45,12 +45,12 @@ QString polygonRoiPlugin::description(void) const
     return description;
 }
 
-QString polygonRoiPlugin::version(void) const
+QString polygonRoiPlugin::version() const
 {
     return POLYGONROIPLUGIN_VERSION;
 }
 
-QStringList polygonRoiPlugin::types(void) const
+QStringList polygonRoiPlugin::types() const
 {
     return QStringList() << "polygonRoi";
 }

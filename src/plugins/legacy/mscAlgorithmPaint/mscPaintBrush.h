@@ -68,9 +68,9 @@ public:
     Mask2dType::Pointer getSlice();
 
     int getLabel();
+
 private:
     mscPaintBrushPrivate* d;
     void setRightColor() override;
-
 };
 }

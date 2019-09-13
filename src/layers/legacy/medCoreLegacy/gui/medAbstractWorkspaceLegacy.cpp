@@ -290,7 +290,7 @@ void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
 QList<int> medAbstractWorkspaceLegacy::getSelectedLayerIndices()
 {
     QList<int> layerIndices;
-    foreach (QListWidgetItem* item, d->selectedLayers)
+    foreach (QListWidgetItem *item, d->selectedLayers)
     {
         layerIndices.append(item->data(Qt::UserRole).toInt());
     }

@@ -93,7 +93,7 @@ public:
     void AddBrothers(vtkLandmarkWidget *littleBrother);
     void showOrHide2DWidget();
     void updateLandmarksPosFromWidget2D();
-    void PropagateEventToLittleBrothers(unsigned long event, vtkLandmarkWidget * l);
+    void PropagateEventToLittleBrothers(unsigned long event, vtkLandmarkWidget *l);
     void updatePosition(double *worldPos);
     void cleanUpLittleBrothersReferences();
 

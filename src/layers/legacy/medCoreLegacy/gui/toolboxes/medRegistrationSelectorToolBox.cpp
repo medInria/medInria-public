@@ -188,6 +188,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     QString fileTypeSuggestion;
     QString filterSelected;
     QHash<QString,QString> suffix;
+
     if (d->process->hasProperty("outputFileType"))
     {
         if (d->process->property("outputFileType") == "text")
@@ -266,7 +267,6 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     }
     d->savePath = QDir::homePath();
 }
-
 
 void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString algoName)
 {
@@ -354,7 +354,7 @@ void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable)
     this->setEnabled(enable);
 }
 
-void medRegistrationSelectorToolBox::setFixedData(medAbstractData* data)
+void medRegistrationSelectorToolBox::setFixedData(medAbstractData *data)
 {
     d->fixedData = data;
     setUndoRedoProcessInputs();

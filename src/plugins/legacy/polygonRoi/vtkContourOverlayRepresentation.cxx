@@ -21,14 +21,14 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 
-vtkStandardNewMacro(vtkContourOverlayRepresentation);
+vtkStandardNewMacro(vtkContourOverlayRepresentation)
 
 //----------------------------------------------------------------------
 vtkContourOverlayRepresentation::vtkContourOverlayRepresentation()
 {
     this->InteractionOffset[0] = 0.5;
     this->InteractionOffset[1] = 0.5;
-    needToSaveState=true;
+    needToSaveState = true;
 }
 
 //----------------------------------------------------------------------
@@ -41,7 +41,7 @@ void vtkContourOverlayRepresentation::UpdateContourWorldPositionsBasedOnDisplayP
     double dispPos[3];
     double W[4];
 
-    for(unsigned int i=0;i<this->Internal->Nodes.size();i++)
+    for(unsigned int i=0; i<this->Internal->Nodes.size(); i++)
     {
         W[0] = this->Internal->Nodes[i]->WorldPosition[0];
         W[1] = this->Internal->Nodes[i]->WorldPosition[1];
@@ -52,7 +52,7 @@ void vtkContourOverlayRepresentation::UpdateContourWorldPositionsBasedOnDisplayP
         this->Internal->Nodes[i]->NormalizedDisplayPosition[0] = dispPos[0];
         this->Internal->Nodes[i]->NormalizedDisplayPosition[1] = dispPos[1];
 
-        for (unsigned int j=0;j<this->Internal->Nodes[i]->Points.size();j++)
+        for (unsigned int j=0; j<this->Internal->Nodes[i]->Points.size(); j++)
         {
             W[0] = this->Internal->Nodes[i]->Points[j]->WorldPosition[0];
             W[1] = this->Internal->Nodes[i]->Points[j]->WorldPosition[1];
@@ -79,9 +79,14 @@ int vtkContourOverlayRepresentation::CanRedo()
 int vtkContourOverlayRepresentation::SaveState()
 {
     if (!needToSaveState)
+    {
         return 0;
+    }
     else
+    {
         needToSaveState = false;
+    }
+
     // We save NodeAsPolyData and the slope of each node
     vtkSmartPointer<vtkPolyData> Nodes = vtkPolyData::New();
     GetNodePolyData(Nodes);
@@ -92,7 +97,7 @@ int vtkContourOverlayRepresentation::SaveState()
 
 void vtkContourOverlayRepresentation::Undo()
 {
-    if (undo_stack.size()>1)
+    if (undo_stack.size() > 1)
     {
         redo_stack.push_back(undo_stack.at(undo_stack.size()-1));
         undo_stack.pop_back();
@@ -103,7 +108,7 @@ void vtkContourOverlayRepresentation::Undo()
 
 void vtkContourOverlayRepresentation::Redo()
 {
-    if (redo_stack.size()>0)
+    if (redo_stack.size() > 0)
     {
         vtkSmartPointer<vtkPolyData> Nodes = redo_stack.at(redo_stack.size()-1);
         undo_stack.push_back(Nodes);

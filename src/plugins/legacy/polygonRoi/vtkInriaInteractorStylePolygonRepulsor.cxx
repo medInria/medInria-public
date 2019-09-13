@@ -10,21 +10,22 @@
   PURPOSE.
 
 =========================================================================*/
-#include "vtkInriaInteractorStylePolygonRepulsor.h"
-#include "vtkCallbackCommand.h"
-#include "vtkNew.h"
-#include "vtkObjectFactory.h"
-#include "vtkRenderer.h"
-#include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
-#include <vtkSmartPointer.h>
 #include <medRoiManager.h>
-#include <vtkPolyData.h>
-#include <vtkContourRepresentation.h>
-#include <vtkMath.h>
-#include <vtkContourOverlayRepresentation.h>
 
-vtkStandardNewMacro(vtkInriaInteractorStylePolygonRepulsor);
+#include <vtkCallbackCommand.h>
+#include <vtkContourOverlayRepresentation.h>
+#include <vtkContourRepresentation.h>
+#include <vtkInriaInteractorStylePolygonRepulsor.h>
+#include <vtkMath.h>
+#include <vtkNew.h>
+#include <vtkObjectFactory.h>
+#include <vtkPolyData.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkSmartPointer.h>
+
+vtkStandardNewMacro(vtkInriaInteractorStylePolygonRepulsor)
 
 //----------------------------------------------------------------------------
 vtkInriaInteractorStylePolygonRepulsor::vtkInriaInteractorStylePolygonRepulsor()
@@ -63,7 +64,7 @@ void vtkInriaInteractorStylePolygonRepulsor::OnMouseMove()
 
     this->Position[0] = this->Interactor->GetEventPosition()[0];
     this->Position[1] = this->Interactor->GetEventPosition()[1];
-    this->RepulsorActor->SetCenter(this->Position[0],this->Position[1]);
+    this->RepulsorActor->SetCenter(this->Position[0], this->Position[1]);
     this->RedefinePolygons();
     this->Interactor->Render();
 }
@@ -84,37 +85,38 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonDown()
 
     this->CurrentRenderer->AddViewProp(this->RepulsorActor);
     this->RepulsorActor->SetVisibility(0);
+
     //-------------------------------------------COMPUTE RADIUS--------------------------------------------------------------//
     QList<double> DistanceList;
     if (medRoiManager::instance()->getSeriesOfRoi()->contains(this->CurrentView))
     {
-        medRoiManager::ListOfSeriesOfRois * listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(this->CurrentView);
-        for (int i=0;i<listSeries->size();i++)
+        medRoiManager::ListOfSeriesOfRois *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(this->CurrentView);
+        for (int i=0; i<listSeries->size(); i++)
         {
-            medRoiManager::ListRois * listRois = listSeries->at(i)->getListOfRois();
-            for(int j = 0;j<listRois->size();j++)
+            medRoiManager::ListRois *listRois = listSeries->at(i)->getListOfRois();
+            for(int j = 0; j<listRois->size(); j++)
             {
-                polygonRoi * roi = qobject_cast<polygonRoi*>(listRois->at(j));
+                polygonRoi *roi = qobject_cast<polygonRoi*>(listRois->at(j));
                 if (roi->isVisible())
                 {
-                    vtkContourWidget * contour = roi->getContour();
-                    vtkPolyData * polyData = contour->GetContourRepresentation()->GetContourRepresentationAsPolyData();
-                    vtkPoints * points = polyData->GetPoints();
-                    double * ptWorld;
+                    vtkContourWidget *contour = roi->getContour();
+                    vtkPolyData *polyData = contour->GetContourRepresentation()->GetContourRepresentationAsPolyData();
+                    vtkPoints *points = polyData->GetPoints();
+                    double *ptWorld;
                     double PositionDouble[3];
                     PositionDouble[0] = (double)Position[0];
                     PositionDouble[1] = (double)Position[1];
                     PositionDouble[2] = 0.0;
 
-                    for (int k = 0; k < points->GetNumberOfPoints();k++)
+                    for (int k = 0; k < points->GetNumberOfPoints(); k++)
                     {
                         ptWorld = points->GetPoint(k);
-                        double * ptDisplay;
-                        this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->SetWorldPoint(ptWorld);
-                        this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->WorldToDisplay();
-                        ptDisplay = this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->GetDisplayPoint();
+                        double *ptDisplay;
+                        this->Interactor->FindPokedRenderer(this->Position[0], this->Position[1])->SetWorldPoint(ptWorld);
+                        this->Interactor->FindPokedRenderer(this->Position[0], this->Position[1])->WorldToDisplay();
+                        ptDisplay = this->Interactor->FindPokedRenderer(this->Position[0], this->Position[1])->GetDisplayPoint();
 
-                        double distance = sqrt(vtkMath::Distance2BetweenPoints(ptDisplay,PositionDouble));
+                        double distance = sqrt(vtkMath::Distance2BetweenPoints(ptDisplay, PositionDouble));
                         DistanceList.append(distance);
                     }
                 }
@@ -123,12 +125,13 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonDown()
         if (!DistanceList.isEmpty())
         {
             qSort(DistanceList);
+
             //-------------------------------------------COMPUTE RADIUS--------------------------------------------------------------//
             this->Radius = (int)((DistanceList[0]+0.5)*0.8); 
         }
     }
     this->RepulsorActor->SetRadius(this->Radius);
-    this->RepulsorActor->SetCenter(this->Position[0],this->Position[1]);
+    this->RepulsorActor->SetCenter(this->Position[0], this->Position[1]);
     this->RepulsorActor->SetVisibility(1);
     this->Interactor->Render();
 }
@@ -145,7 +148,7 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
     this->On = 0;
     this->Interactor->Render();
 
-    for(int i = 0;i<this->ListPolygonsToSave.size();i++)
+    for(int i = 0; i<this->ListPolygonsToSave.size(); i++)
     {
         vtkContourOverlayRepresentation::SafeDownCast(this->ListPolygonsToSave[i]->getContour()->GetContourRepresentation())->SetneedToSaveState(true);
         this->ListPolygonsToSave[i]->saveState();
@@ -154,7 +157,7 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
 }
 
 //----------------------------------------------------------------------------
-void vtkInriaInteractorStylePolygonRepulsor::SetCurrentView(medAbstractView* view)
+void vtkInriaInteractorStylePolygonRepulsor::SetCurrentView(medAbstractView *view)
 {
     OnLeftButtonUp();
     this->CurrentView = view;
@@ -167,11 +170,11 @@ void vtkInriaInteractorStylePolygonRepulsor::PrintSelf(ostream& os, vtkIndent in
     os << indent << "Position: " << this->Position[0] << "," << this->Position[1] << endl;
 }
 
-bool vtkInriaInteractorStylePolygonRepulsor::IsInRepulsorDisk(double * pt)
+bool vtkInriaInteractorStylePolygonRepulsor::IsInRepulsorDisk(double *pt)
 {
     int X =(pt[0]-Position[0]);
     int Y =(pt[1]-Position[1]);
-    int RadiusSquare = this->Radius*this->Radius;
+    int RadiusSquare = this->Radius * this->Radius;
     return (X*X + Y*Y < RadiusSquare);
 }
 
@@ -179,25 +182,25 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
 {
     if (medRoiManager::instance()->getSeriesOfRoi()->contains(this->CurrentView))
     {
-        medRoiManager::ListOfSeriesOfRois * listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(this->CurrentView);
+        medRoiManager::ListOfSeriesOfRois *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(this->CurrentView);
         for (int i=0;i<listSeries->size();i++)
         {
-            medRoiManager::ListRois * listRois = listSeries->at(i)->getListOfRois();
+            medRoiManager::ListRois *listRois = listSeries->at(i)->getListOfRois();
             for(int j = 0;j<listRois->size();j++)
             {
-                polygonRoi * roi = qobject_cast<polygonRoi*>(listRois->at(j));
+                polygonRoi *roi = qobject_cast<polygonRoi*>(listRois->at(j));
                 bool contourChanged = false;
                 if (roi->isVisible())
                 {
-                    vtkContourWidget * contour = roi->getContour();
-                    vtkPolyData * polyData = vtkPolyData::New();
+                    vtkContourWidget *contour = roi->getContour();
+                    vtkPolyData *polyData = vtkPolyData::New();
                     contour->GetContourRepresentation()->GetNodePolyData(polyData);
-                    vtkPoints * points = polyData->GetPoints();
+                    vtkPoints *points = polyData->GetPoints();
                     int n = 0;
                     QList<double*> listPoints;
                     for (int k = 0; k < points->GetNumberOfPoints();k++)
                     {
-                        double * point = new double[3]();
+                        double *point = new double[3]();
                         point[0] = points->GetPoint(k)[0];
                         point[1] = points->GetPoint(k)[1];
                         point[2] = points->GetPoint(k)[2];
@@ -221,20 +224,26 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                             pt1[1] += pt1dy/pt1d*this->Radius-pt1dy;
                             this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->SetDisplayPoint(pt1);
                             this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->DisplayToWorld();
-                            double * ptWorldtmp = this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->GetWorldPoint();
-                            double * ptWorld1 = new double[3]();
+                            double *ptWorldtmp = this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->GetWorldPoint();
+                            double *ptWorld1 = new double[3]();
                             ptWorld1[0] = ptWorldtmp[0];
                             ptWorld1[1] = ptWorldtmp[1];
                             ptWorld1[2] = ptWorldtmp[2];
                             listPoints.replace(k,ptWorld1);
                             contourChanged= true;
+
                             for( int delta = -1; delta <= 1; delta++ )
                             {
                                 int D = k+delta;
                                 if(D==-1)
+                                {
                                     D = listPoints.size()-1;
+                                }
                                 else if(D==listPoints.size())
+                                {
                                     D = 0;
+                                }
+
                                 if(D!=k && D>=0 && D<listPoints.size())
                                 {
                                     double pt2[3];
@@ -243,7 +252,10 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                                     if(distance<=minD && distance<this->Radius)
                                     {
                                         listPoints.removeAt(D);
-                                        if(delta==-1) k--;
+                                        if(delta==-1)
+                                        {
+                                            k--;
+                                        }
                                     }
                                     else if((distance>=maxD || distance>=this->Radius*1.5) && n<maxN)
                                     {
@@ -254,12 +266,15 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
 
                                         this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->SetDisplayPoint(pt3);
                                         this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->DisplayToWorld();
-                                        double * ptWorld3 = new double[3]();
+                                        double *ptWorld3 = new double[3]();
                                         ptWorld3[0] = ptWorldtmp[0];
                                         ptWorld3[1] = ptWorldtmp[1];
                                         ptWorld3[2] = ptWorldtmp[2];
                                         int index = (delta==-1)? k : k+1;
-                                        if(delta==-1) k++;
+                                        if(delta==-1)
+                                        {
+                                            k++;
+                                        }
                                         listPoints.insert(index,ptWorld3);
                                         n++;
                                     }
@@ -270,12 +285,16 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                     if (contourChanged)
                     {
                         points->Reset();
-                        for (int k = 0; k < listPoints.size();k++)
+                        for (int k = 0; k < listPoints.size(); k++)
+                        {
                             points->InsertNextPoint(listPoints[k]);
+                        }
                         polyData->SetPoints(points);
                         contour->Initialize(polyData);
                         if (!this->ListPolygonsToSave.contains(roi))
+                        {
                             this->ListPolygonsToSave.append(roi);
+                        }
                         roi->getContour()->InvokeEvent(vtkCommand::MouseMoveEvent); //to acknowledge that the ROI has changed
                     }
                 }
@@ -284,10 +303,12 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
     }
 }
 
-void vtkInriaInteractorStylePolygonRepulsor::DisplayPointFromPolygon(double * displayPoint, QList<double*> list,int ind)
+void vtkInriaInteractorStylePolygonRepulsor::DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind)
 {
-    this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->SetWorldPoint(list[ind]);
-    this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->WorldToDisplay();
-    double * ptDisplay = this->Interactor->FindPokedRenderer(this->Position[0],this->Position[1])->GetDisplayPoint();
-    displayPoint[0] = ptDisplay[0];displayPoint[1] = ptDisplay[1];displayPoint[2] = ptDisplay[2];
+    this->Interactor->FindPokedRenderer(this->Position[0], this->Position[1])->SetWorldPoint(list[ind]);
+    this->Interactor->FindPokedRenderer(this->Position[0], this->Position[1])->WorldToDisplay();
+    double *ptDisplay = this->Interactor->FindPokedRenderer(this->Position[0], this->Position[1])->GetDisplayPoint();
+    displayPoint[0] = ptDisplay[0];
+    displayPoint[1] = ptDisplay[1];
+    displayPoint[2] = ptDisplay[2];
 }

@@ -190,10 +190,10 @@ void manualRegistrationToolBox::startManualRegistration()
         return;
     }
 
-    medTabbedViewContainers* tabContainers = getWorkspace()->tabbedViewContainers();
+    medTabbedViewContainers *tabContainers = getWorkspace()->tabbedViewContainers();
     d->regOn = true;
 
-    medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+    medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
     if (toolbox)
     {
         dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
@@ -341,7 +341,7 @@ void manualRegistrationToolBox::computeRegistration()
 
             d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("manualRegistration"));
 
-            medRegistrationSelectorToolBox* toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+            medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
             if(toolbox) // toolbox empty in Pipelines and not Registration workspace
             {
                 toolbox->setProcess(d->process);

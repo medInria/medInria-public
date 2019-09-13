@@ -10,7 +10,7 @@
   PURPOSE.
 
 =========================================================================*/
-#include "variationalSegmentation.h"
+#include <variationalSegmentation.h>
 
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 

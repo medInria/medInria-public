@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -355,7 +355,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     workspaceButtonsLayout->setSpacing ( 0 );
 
     //Setup quick access menu title for toolbox tools
-    QLabel * toolboxeSearchLabel = new QLabel ( tr("<b>Search a toolbox</b>") );
+    QLabel *toolboxeSearchLabel = new QLabel ( tr("<b>Search a toolbox</b>") );
     toolboxeSearchLabel->setMaximumWidth(300);
     toolboxeSearchLabel->setFixedHeight(25);
     toolboxeSearchLabel->setAlignment(Qt::AlignCenter);
@@ -364,7 +364,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     workspaceButtonsLayout->addWidget(toolboxeSearchLabel);
 
     //Find a toolbox
-    medHomepagePushButton* searchButton = new medHomepagePushButton ( this );
+    medHomepagePushButton *searchButton = new medHomepagePushButton ( this );
     searchButton->setText("Search");
     searchButton->setIdentifier("Search");
     searchButton->setIcon(QIcon(":icons/magnifier.png"));

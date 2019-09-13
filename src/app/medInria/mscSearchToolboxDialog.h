@@ -2,7 +2,7 @@
 
 medInria
 
-Copyright (c) INRIA 2013 - 2014. All rights reserved.
+Copyright (c) INRIA 2013 - 2019. All rights reserved.
 See LICENSE.txt for details.
 
 This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,7 +18,6 @@ PURPOSE.
 
 class QLineEdit;
 class QPushButton;
-class mscSearchToolboxDialogPrivate;
 
 class mscSearchToolboxDialog : public QDialog
 {
@@ -26,7 +25,6 @@ class mscSearchToolboxDialog : public QDialog
 
 public:
     mscSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash);
-    virtual ~mscSearchToolboxDialog();
     QStringList getFindText();
 
 protected slots:
@@ -43,6 +41,10 @@ protected slots:
     void searchItemDoubleClicked(QTreeWidgetItem* item, int column);
 
 private:
-    mscSearchToolboxDialogPrivate *d;
+    QPushButton *findButton;
+    QLineEdit *lineEdit;
+    QStringList findText;
+    QTreeWidget *tree;
+    QHash<QString, QStringList> toolboxDataHash;
 };
 #endif

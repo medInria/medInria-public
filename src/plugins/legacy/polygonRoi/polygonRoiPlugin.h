@@ -22,12 +22,12 @@ class POLYGONROIPLUGIN_EXPORT polygonRoiPlugin : public medPluginLegacy
     Q_INTERFACES(dtkPlugin)
 
 public:
-    polygonRoiPlugin(QObject *parent = 0);
-    virtual bool initialize(void);
+    polygonRoiPlugin(QObject *parent = nullptr);
+    virtual bool initialize();
     
-    virtual QString name(void) const;
-    virtual QString description(void) const;
-    virtual QString version (void) const;
-    virtual QStringList types(void) const;
+    virtual QString name() const;
+    virtual QString description() const;
+    virtual QString version () const;
+    virtual QStringList types() const;
 };
 

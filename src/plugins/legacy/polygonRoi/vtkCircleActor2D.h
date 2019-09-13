@@ -11,8 +11,9 @@
 
 =========================================================================*/
 #pragma once
-#include <vtkActor2D.h>
+
 #include <polygonRoiPluginExport.h>
+#include <vtkActor2D.h>
 
 class vtkPolyDataMapper2D;
 class vtkPolyData;
@@ -20,7 +21,7 @@ class vtkPolyData;
 class POLYGONROIPLUGIN_EXPORT vtkCircleActor2D : public vtkActor2D
 {
 public:
-    vtkTypeMacro(vtkCircleActor2D,vtkActor2D);
+    vtkTypeMacro(vtkCircleActor2D,vtkActor2D)
     void PrintSelf(ostream& os, vtkIndent indent);
 
     // Description:
@@ -29,8 +30,8 @@ public:
 
     // Description:
     // Draw the Circle
-    int RenderOverlay(vtkViewport* viewport);
-    int RenderOpaqueGeometry(vtkViewport* viewport);
+    int RenderOverlay(vtkViewport *viewport);
+    int RenderOpaqueGeometry(vtkViewport *viewport);
     virtual int RenderTranslucentPolygonalGeometry(vtkViewport *) {return 0;}
 
     // Description:
@@ -47,10 +48,10 @@ public:
     // Shallow copy of an Circle actor. Overloads the virtual vtkProp method.
     void ShallowCopy(vtkProp *prop);
 
-    vtkSetVector2Macro(Center,double);
-    vtkGetVectorMacro(Center,double,3);
-    vtkSetMacro(Radius,int);
-    vtkGetMacro(Radius,int);
+    vtkSetVector2Macro(Center,double)
+    vtkGetVectorMacro(Center,double,3)
+    vtkSetMacro(Radius,int)
+    vtkGetMacro(Radius,int)
 
 protected:
     vtkCircleActor2D();

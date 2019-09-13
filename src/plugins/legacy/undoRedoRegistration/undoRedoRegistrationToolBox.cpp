@@ -11,23 +11,22 @@
 
 =========================================================================*/
 
-#include <undoRedoRegistration.h>
-#include <undoRedoRegistrationToolBox.h>
+#include <dtkCoreSupport/dtkAbstractProcess.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <QtGui>
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkCoreSupport/dtkAbstractProcess.h>
-#include <dtkCoreSupport/dtkSmartPointer.h>
-
 #include <medAbstractView.h>
 #include <medAbstractImageData.h>
-
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
+
 #include <registrationFactory.h>
 
+#include <undoRedoRegistration.h>
+#include <undoRedoRegistrationToolBox.h>
 
 class undoRedoRegistrationToolBoxPrivate
 {

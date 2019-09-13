@@ -15,8 +15,9 @@
 #include <itkImage.h>
 #include <itkImageRegionIterator.h>
 #include <itkRGBPixel.h>
-#include "itkScalarToRGBColormapImageFilter.h"
-#include "mscPaintBrush.h"
+#include <itkScalarToRGBColormapImageFilter.h>
+
+#include <mscPaintBrush.h>
 
 namespace msc
 {

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -28,7 +28,7 @@ medAbstractSelectableToolBox::medAbstractSelectableToolBox(QWidget *parent)
     d->selectorToolBox = qobject_cast<medSelectorToolBox*>(parent);
 }
 
-medAbstractSelectableToolBox::~medAbstractSelectableToolBox(void)
+medAbstractSelectableToolBox::~medAbstractSelectableToolBox()
 {
     delete d;
     d = nullptr;
@@ -39,7 +39,7 @@ void medAbstractSelectableToolBox::setSelectorToolBox(medSelectorToolBox *toolbo
     d->selectorToolBox = toolbox;
 }
 
-medSelectorToolBox *medAbstractSelectableToolBox::selectorToolBox(void)
+medSelectorToolBox *medAbstractSelectableToolBox::selectorToolBox()
 {
     return d->selectorToolBox;
 }

@@ -10,17 +10,17 @@
   PURPOSE.
 
 =========================================================================*/
-#include <vtkCircleActor2D.h>
-#include "vtkPolyDataMapper2D.h"
-#include "vtkLineSource.h"
-#include "vtkProperty.h"
-#include "vtkRenderer.h"
-#include "vtkObjectFactory.h"
-#include "vtkInteractorObserver.h"
-#include "vtkMath.h"
 #include <vtkCellArray.h>
+#include <vtkCircleActor2D.h>
+#include <vtkInteractorObserver.h>
+#include <vtkLineSource.h>
+#include <vtkMath.h>
+#include <vtkObjectFactory.h>
+#include <vtkPolyDataMapper2D.h>
+#include <vtkProperty.h>
+#include <vtkRenderer.h>
 
-vtkStandardNewMacro(vtkCircleActor2D);
+vtkStandardNewMacro(vtkCircleActor2D)
 
 //----------------------------------------------------------------------------
 // Instantiate this object.
@@ -47,13 +47,13 @@ vtkCircleActor2D::~vtkCircleActor2D()
 
 int vtkCircleActor2D::RenderOpaqueGeometry(vtkViewport *viewport)
 {
-    int renderedSomething=0;
+    int renderedSomething = 0;
 
     this->BuildCircle(viewport);
 
-    if ( this->Visibility  )
+    if ( this->Visibility )
     {
-        renderedSomething= Superclass::RenderOpaqueGeometry(viewport);
+        renderedSomething = Superclass::RenderOpaqueGeometry(viewport);
     }
     
     return renderedSomething;
@@ -64,13 +64,13 @@ int vtkCircleActor2D::RenderOpaqueGeometry(vtkViewport *viewport)
 
 int vtkCircleActor2D::RenderOverlay(vtkViewport *viewport)
 {
-    int renderedSomething=0;
+    int renderedSomething = 0;
 
     // Everything is built, just have to render
 
     if ( this->Visibility )
     {
-        renderedSomething= Superclass::RenderOverlay(viewport);
+        renderedSomething = Superclass::RenderOverlay(viewport);
     }
 
     return renderedSomething;
@@ -119,23 +119,24 @@ void vtkCircleActor2D::BuildCircle(vtkViewport *viewport)
     pts->Initialize();
     this->Circle->SetPoints(pts);
     this->Circle->SetLines(lines);
+
     // Compute Circle
     int nbPoints = 360;
     double deltaAngle = 2*vtkMath::Pi()/(double)(nbPoints);
     double pt[3];
-    for(int i=0;i<nbPoints;i++)
+    for(int i=0; i<nbPoints; i++)
     {
         pt[0] = Center[0] + Radius * cosf(deltaAngle*i);
         pt[1] = Center[1] + Radius * sinf(deltaAngle*i);
         pt[2] = 0.0;
 
-        pts->InsertNextPoint(pt[0],pt[1],0); 
+        pts->InsertNextPoint(pt[0], pt[1], 0);
         if (i>0)
         {
-            ptIds[0] =i-1;
-            ptIds[1] =i;
+            ptIds[0] = i-1;
+            ptIds[1] = i;
             lines->InsertNextCell(2, ptIds);
-            if (i==nbPoints-1)
+            if (i == nbPoints-1)
             {
                 ptIds[0] = i;
                 ptIds[1] = 0;

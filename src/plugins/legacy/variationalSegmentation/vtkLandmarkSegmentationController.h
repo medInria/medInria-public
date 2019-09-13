@@ -95,7 +95,7 @@ public:
 
     void RefreshConstraints();
 
-    vtkLandmarkWidget* AddConstraint (double * pos, int type);
+    vtkLandmarkWidget* AddConstraint (double *pos, int type);
     bool RemoveConstraint (vtkLandmarkWidget *arg);
 
     void setViews2D(QList<vtkImageView2D*> *views);
@@ -103,6 +103,7 @@ public:
     {
         return Views2D;
     }
+
     void setViews3D(QList<vtkImageView3D*> *views);
     QList<vtkImageView3D*> * getViews3D()
     {
@@ -113,10 +114,12 @@ public:
     {
         mode3D = val;
     }
+
     bool getMode3D()
     {
         return mode3D;
     }
+
     bool getModeMPR()
     {
         return modeMPR;
@@ -124,7 +127,7 @@ public:
 
     binaryType::Pointer GetBinaryImage();
 
-    void setOutputSize(int x,int y,int z)
+    void setOutputSize(int x, int y, int z)
     {
         outputSize[0] = x;
         outputSize[1] = y;
@@ -149,19 +152,19 @@ private:
     ImageType::Pointer          m_Input;
     FilterType::Pointer         m_Filter;
     ConverterType::Pointer      m_Converter;
-    vtkMatrixToLinearTransform* Transformer;
-    vtkContourFilter*           SurfaceExtractor;
+    vtkMatrixToLinearTransform *Transformer;
+    vtkContourFilter           *SurfaceExtractor;
     ConstraintListType          Constraints;
-    vtkCollection*              LandmarkCollection;
-    vtkCollection*              TotalLandmarkCollection;
-    vtkCollection*              InteractorCollection;
+    vtkCollection              *LandmarkCollection;
+    vtkCollection              *TotalLandmarkCollection;
+    vtkCollection              *InteractorCollection;
     unsigned int                Enabled;
-    vtkLandmarkSegmentationControllerCommand* Command;
-    vtkPolyDataMapper*          Mapper;
-    vtkActor*                   Actor;
+    vtkLandmarkSegmentationControllerCommand *Command;
+    vtkPolyDataMapper         *Mapper;
+    vtkActor                  *Actor;
     double                      LandmarkRadius;
-    QList<vtkImageView2D*> * Views2D;
-    QList<vtkImageView3D*> * Views3D;
+    QList<vtkImageView2D*> *Views2D;
+    QList<vtkImageView3D*> *Views3D;
     bool mode3D;
     bool modeMPR;
     ImageType::Pointer implicitFunction;

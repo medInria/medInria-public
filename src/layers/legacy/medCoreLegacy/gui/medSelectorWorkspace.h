@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -21,16 +21,16 @@ class medSelectorToolBox;
 
 /**
  * class medSelectorWorkspace
- * Defines the Selector workspace.
+ * Defines the Selector workspace which has a tool to select toolboxes.
  */
 class MEDCORELEGACY_EXPORT medSelectorWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
 
 public:
-    medSelectorWorkspace(QWidget * parent, QString name, medSelectorToolBox *selectorToolbox = nullptr);
+    medSelectorWorkspace(QWidget *parent, QString name, medSelectorToolBox *selectorToolbox = nullptr);
 
-    virtual ~medSelectorWorkspace();
+    ~medSelectorWorkspace() override;
 
     medSelectorToolBox *selectorToolBox();
 

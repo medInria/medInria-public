@@ -148,8 +148,8 @@ void VarSegToolBox::updateLandmarksRenderer(QString key, QString value)
         return;
     }
     
-    medAbstractView * v = qobject_cast<medAbstractView*>(this->sender());
-    if (v!=d->currentView || !d->controller)
+    medAbstractView *v = qobject_cast<medAbstractView*>(this->sender());
+    if (v != d->currentView || !d->controller)
     {
         return;
     }
@@ -307,7 +307,7 @@ void VarSegToolBox::startSegmentation()
         }
     }
 
-    vtkCollection* interactorcollection = vtkCollection::New();
+    vtkCollection *interactorcollection = vtkCollection::New();
     if (d->mprOn)
     {
         for(int i=0; i<4; i++)
@@ -409,7 +409,7 @@ void VarSegToolBox::startSegmentation()
         d->views2D->append(static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D);
         d->views3D->append(static_cast<medVtkViewBackend*>(d->currentView->backend())->view3D);
     }
-    for (int i = 0;i<d->medViews.size();i++)
+    for (int i = 0; i<d->medViews.size(); i++)
     {
         d->views2D->at(i)->AddDataSet (d->controller->GetOutput());
         d->views3D->at(i)->AddDataSet (d->controller->GetOutput());
@@ -462,7 +462,7 @@ void VarSegToolBox::endSegmentation()
 
     if (d->controller)
     {
-        for (int i = 0;i<d->medViews.size();i++)
+        for (int i = 0; i<d->medViews.size(); i++)
         {
             if(d->currentView)
             {

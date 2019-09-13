@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2014. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -27,7 +27,7 @@ public:
     QPointer<medSelectorToolBox> selectorToolBox;
 };
 
-medSelectorWorkspace::medSelectorWorkspace(QWidget * parent, QString name, medSelectorToolBox* toolbox)
+medSelectorWorkspace::medSelectorWorkspace(QWidget *parent, QString name, medSelectorToolBox *toolbox)
     : medAbstractWorkspaceLegacy(parent), d(new medSelectorWorkspacePrivate)
 {
     if(!toolbox)
@@ -56,6 +56,6 @@ medSelectorToolBox* medSelectorWorkspace::selectorToolBox()
 
 void medSelectorWorkspace::importProcessOutput()
 {
-    medAbstractData* output = selectorToolBox()->currentToolBox()->processOutput();
+    medAbstractData *output = selectorToolBox()->currentToolBox()->processOutput();
     medDataManager::instance()->importData(output);
 }

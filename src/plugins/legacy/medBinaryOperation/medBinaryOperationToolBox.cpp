@@ -40,7 +40,8 @@ public:
     QPushButton  *clearDropsiteButton;
 };
 
-medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new medBinaryOperationToolBoxPrivate)
+medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent)
+    : medAbstractSelectableToolBox(parent), d(new medBinaryOperationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     

@@ -1,3 +1,15 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 #pragma once
 
 #include <dtkCoreSupport/dtkAbstractObject.h>
@@ -53,8 +65,8 @@ public:
 
     void setMasterRoi(bool);
     bool isMasterRoi() const;
-public slots:
 
+public slots:
     virtual void select();
     virtual void unselect();
     virtual void undo() = 0;
@@ -76,12 +88,20 @@ private:
 class MEDCORELEGACY_EXPORT RoiUndoRedo : public QUndoCommand
  {
  public:
-     RoiUndoRedo(medAbstractRoi * roi, const QString &text)
-         : m_roi(roi) {setText(text); }
+     RoiUndoRedo(medAbstractRoi *roi, const QString &text)
+         : m_roi(roi)
+     {
+         setText(text);
+     }
      virtual void undo()
-         { m_roi->undo(); }
+     {
+         m_roi->undo();
+     }
      virtual void redo()
-         { m_roi->redo();}
+     {
+         m_roi->redo();
+     }
+
  private:
-    medAbstractRoi * m_roi;
+    medAbstractRoi *m_roi;
  };
