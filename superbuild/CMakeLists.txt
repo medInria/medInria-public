@@ -77,7 +77,8 @@ else()
 endif()
 
 list(APPEND external_projects
-    MUSIC_plugins
+    music-plugins
+    music-plugins-liryc
     )
 
 if (USE_OSPRay)

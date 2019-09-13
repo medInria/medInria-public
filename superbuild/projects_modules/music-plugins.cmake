@@ -1,6 +1,6 @@
-function(MUSIC_plugins_project)
+function(music_plugins_project)
 
-    set(external_project MUSIC_plugins)
+    set(external_project music-plugins)
 
     list(APPEND ${external_project}_dependencies
         medInria
