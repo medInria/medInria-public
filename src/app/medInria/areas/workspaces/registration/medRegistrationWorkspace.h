@@ -40,7 +40,7 @@ public:
     ~medRegistrationWorkspace();
 
     static bool isUsable();
-    void setupTabbedViewContainer ();
+    void setupTabbedViewContainer();
     void setInitialGroups() override;
 
 protected slots:

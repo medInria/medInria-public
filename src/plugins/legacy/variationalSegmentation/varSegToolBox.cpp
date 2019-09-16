@@ -112,7 +112,7 @@ VarSegToolBox::~VarSegToolBox()
 }
 
 //static
-medAbstractSelectableToolBox *VarSegToolBox::createInstance(QWidget *parent )
+medAbstractSelectableToolBox *VarSegToolBox::createInstance(QWidget *parent)
 {
     return new VarSegToolBox(parent);
 }

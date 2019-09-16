@@ -17,8 +17,8 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 
-medSegmentationWorkspace::medSegmentationWorkspace(QWidget *parent) :
-medSelectorWorkspace(parent, staticName())
+medSegmentationWorkspace::medSegmentationWorkspace(QWidget *parent)
+    : medSelectorWorkspace(parent, staticName())
 {
     connect(this->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),
             selectorToolBox(), SIGNAL(inputChanged()));

@@ -31,8 +31,7 @@ public:
 };
 
 mscPaintBrush::mscPaintBrush(Mask2dType::Pointer slice, int id, bool isMaster, int label, medAbstractRoi* parent)
-    : medAbstractRoi(parent),
-      d(new mscPaintBrushPrivate)
+    : medAbstractRoi(parent), d(new mscPaintBrushPrivate)
 {
     setIdSlice(id);
     d->slice = slice;
@@ -50,7 +49,6 @@ Mask2dType::Pointer mscPaintBrush::getSlice()
 {
     return d->slice;
 }
-
 
 void mscPaintBrush::setRightColor()
 {

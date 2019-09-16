@@ -83,7 +83,9 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
     d->toolBoxLayout->addWidget(d->saveTransButton);
 
     if (d->undoRedoToolBox)
+    {
         this->addWidget(d->undoRedoToolBox);
+    }
 
     this->addWidget(toolBoxWidget);
 

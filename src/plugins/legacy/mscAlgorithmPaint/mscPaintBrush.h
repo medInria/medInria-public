@@ -22,7 +22,7 @@ namespace msc
 
 class mscPaintBrushPrivate;
 
-typedef itk::Image <unsigned char, 2>              Mask2dType;
+typedef itk::Image <unsigned char, 2> Mask2dType;
 
 class MSCALGORITHMPAINT_EXPORT mscPaintBrush : public medAbstractRoi
 {

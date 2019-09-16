@@ -33,9 +33,11 @@ vtkInriaInteractorStylePolygonRepulsor::vtkInriaInteractorStylePolygonRepulsor()
     this->Position[0] = this->Position[1] = 0;
     this->On = 0;
     this->Radius = 25;
+
     this->RepulsorProperty = vtkProperty2D::New();
     this->RepulsorProperty->SetColor(1,0.6,0);
     this->RepulsorProperty->SetLineWidth(3);
+
     this->RepulsorActor = vtkCircleActor2D::New();
     this->RepulsorActor->SetVisibility(0);
     this->RepulsorActor->SetProperty(this->RepulsorProperty);
@@ -172,8 +174,8 @@ void vtkInriaInteractorStylePolygonRepulsor::PrintSelf(ostream& os, vtkIndent in
 
 bool vtkInriaInteractorStylePolygonRepulsor::IsInRepulsorDisk(double *pt)
 {
-    int X =(pt[0]-Position[0]);
-    int Y =(pt[1]-Position[1]);
+    int X = pt[0]-Position[0];
+    int Y = pt[1]-Position[1];
     int RadiusSquare = this->Radius * this->Radius;
     return (X*X + Y*Y < RadiusSquare);
 }
@@ -183,10 +185,10 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
     if (medRoiManager::instance()->getSeriesOfRoi()->contains(this->CurrentView))
     {
         medRoiManager::ListOfSeriesOfRois *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(this->CurrentView);
-        for (int i=0;i<listSeries->size();i++)
+        for (int i=0; i<listSeries->size(); i++)
         {
             medRoiManager::ListRois *listRois = listSeries->at(i)->getListOfRois();
-            for(int j = 0;j<listRois->size();j++)
+            for(int j = 0; j<listRois->size(); j++)
             {
                 polygonRoi *roi = qobject_cast<polygonRoi*>(listRois->at(j));
                 bool contourChanged = false;
@@ -198,7 +200,7 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                     vtkPoints *points = polyData->GetPoints();
                     int n = 0;
                     QList<double*> listPoints;
-                    for (int k = 0; k < points->GetNumberOfPoints();k++)
+                    for (int k = 0; k < points->GetNumberOfPoints(); k++)
                     {
                         double *point = new double[3]();
                         point[0] = points->GetPoint(k)[0];
@@ -206,7 +208,7 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                         point[2] = points->GetPoint(k)[2];
                         listPoints.append(point);
                     }
-                    for (int k = 0; k < listPoints.size() ;k++)
+                    for (int k = 0; k < listPoints.size(); k++)
                     {
                         float maxN = 10.0;
                         float minD = 10.0;
@@ -215,9 +217,9 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                         DisplayPointFromPolygon(pt1,listPoints,k);
                         if (this->IsInRepulsorDisk(pt1)) 
                         {
-                            double pt1dx = (pt1[0]-this->Position[0]);
+                            double pt1dx = pt1[0]-this->Position[0];
                             double pt1dx2 = pt1dx * pt1dx;
-                            double pt1dy =  (pt1[1]-this->Position[1]);
+                            double pt1dy =  pt1[1]-this->Position[1];
                             double  pt1dy2 = pt1dy * pt1dy;
                             double pt1d = sqrt(pt1dx2 + pt1dy2);
                             pt1[0] += pt1dx/pt1d*this->Radius-pt1dx;

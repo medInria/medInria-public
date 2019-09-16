@@ -28,9 +28,8 @@ public:
     medAbstractData *inputData;
 };
 
-medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId) :
-    medToolBox(parent),
-    d(new medSelectorToolBoxPrivate)
+medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
+    : medToolBox(parent), d(new medSelectorToolBoxPrivate)
 {
     d->currentToolBox = nullptr;
 
@@ -168,7 +167,6 @@ medAbstractData* medSelectorToolBox::data()
 {
     return d->inputData;
 }
-
 
 QComboBox *medSelectorToolBox::comboBox()
 {

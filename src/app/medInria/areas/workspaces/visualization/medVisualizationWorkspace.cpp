@@ -11,9 +11,17 @@
 
 =========================================================================*/
 
+#include <medTabbedViewContainers.h>
 #include <medVisualizationWorkspace.h>
 
 bool medVisualizationWorkspace::isUsable()
 {
     return true; // for the time being, no test is defined.
+}
+
+void medVisualizationWorkspace::setupTabbedViewContainer()
+{
+    medAbstractWorkspaceLegacy::setupTabbedViewContainer();
+
+    this->tabbedViewContainers()->unlockTabs();
 }

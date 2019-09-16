@@ -161,7 +161,6 @@ polygonRoi::polygonRoi(vtkImageView2D *view, medAbstractRoi *parent )
     setMasterRoi(true);
 }
 
-
 polygonRoi::~polygonRoi()
 {
     delete d;
