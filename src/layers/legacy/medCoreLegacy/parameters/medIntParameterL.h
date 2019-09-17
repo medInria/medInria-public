@@ -15,7 +15,7 @@
 
 #include <medAbstractParameterL.h>
 #include <medCoreLegacyExport.h>
-#include <medSlider.h>
+#include <medSliderL.h>
 
 class QWidget;
 class QSpinBox;
@@ -33,7 +33,7 @@ public:
 
     void setRange(int min, int max);
     QSpinBox* getSpinBox();
-    medSlider *getSlider();
+    medSliderL *getSlider();
 
     virtual QWidget* getWidget();
 

@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medIntParameterL.h>
-#include <medSlider.h>
 
 #include <QSpinBox>
 
@@ -23,7 +22,7 @@ public:
     int max;
 
     QSpinBox *spinBox;
-    medSlider *slider;
+    medSliderL *slider;
 
     ~medIntParameterLPrivate()
     {
@@ -91,11 +90,11 @@ void medIntParameterL::setRange(int min, int max)
         d->slider->setRange(min, max);
 }
 
-medSlider* medIntParameterL::getSlider()
+medSliderL* medIntParameterL::getSlider()
 {
     if(!d->slider)
     {
-        d->slider = new medSlider;
+        d->slider = new medSliderL;
         d->slider->setRange(d->min, d->max);
         d->slider->setValue(m_value);
         d->slider->setStyleSheet("QSlider::handle:horizontal {width: 15px;}");

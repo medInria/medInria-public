@@ -12,11 +12,11 @@
 =========================================================================*/
 
 #include <medSettingsManager.h>
-#include <medSlider.h>
+#include <medSliderL.h>
 
 #include <QStyle>
 
-void medSlider::addTick(int position)
+void medSliderL::addTick(int position)
 {
     if( (ticksList.isEmpty()) || !ticksList.contains(position))
     {
@@ -24,7 +24,7 @@ void medSlider::addTick(int position)
     }
 }
 
-int medSlider::tickCount()
+int medSliderL::tickCount()
 {
     if (!ticksList.isEmpty())
     {
@@ -34,7 +34,7 @@ int medSlider::tickCount()
     return 0;
 }
 
-void medSlider::removeTick(int position)
+void medSliderL::removeTick(int position)
 {
     if (!ticksList.isEmpty())
     {
@@ -42,7 +42,7 @@ void medSlider::removeTick(int position)
     }
 }
 
-void medSlider::removeAllTicks()
+void medSliderL::removeAllTicks()
 {
     if (!ticksList.isEmpty())
     {
@@ -50,7 +50,7 @@ void medSlider::removeAllTicks()
     }
 }
 
-void medSlider::paintEvent(QPaintEvent *event)
+void medSliderL::paintEvent(QPaintEvent *event)
 {
     QSlider::paintEvent(event);
 
@@ -67,12 +67,12 @@ void medSlider::paintEvent(QPaintEvent *event)
     }
 }
 
-QColor medSlider::getTickColor()
+QColor medSliderL::getTickColor()
 {
     return QColor(239, 109, 59, 255);
 }
 
-void medSlider::mousePressEvent(QMouseEvent *event)
+void medSliderL::mousePressEvent(QMouseEvent *event)
 {
     QSlider::mousePressEvent(event);
     setValue(QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()));

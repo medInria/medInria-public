@@ -1146,7 +1146,7 @@ void polygonRoiToolBox::clear()
 
     if(currentView)
     {
-        // We need to update the medSlider
+        // We need to update the medSliderL
         roiManagementToolBox->updateView();
 
         ListRois *list;

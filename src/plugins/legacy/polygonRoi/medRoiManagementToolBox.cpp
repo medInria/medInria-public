@@ -15,7 +15,6 @@
 #include <medAbstractRoi.h>
 #include <medIntParameterL.h>
 #include <medRoiManagementToolBox.h>
-#include <medSlider.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxTab.h>
