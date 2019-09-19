@@ -218,9 +218,11 @@ void medAbstractData::generateThumbnail()
     if ( ! gpu.vendor.toLower().contains("intel"))
         offscreenCapable = true;
 #elif defined(Q_OS_LINUX)
-    // only works on NVidia
-    if (gpu.vendor.toLower().contains("nvidia"))
+    if (gpu.vendor.toLower().contains("nvidia")
+            || gpu.vendor.toLower().contains("intel"))
+    {
         offscreenCapable = true;
+    }
 #endif
 
     dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
@@ -234,19 +236,19 @@ void medAbstractData::generateThumbnail()
         // We need to get a handle to the main window, so we can A) find its position, and B) ensure it is drawn over the temporary window
         const QVariant property = QApplication::instance()->property("MainWindow");
         QObject* qObject = property.value<QObject*>();
+
         if (qObject)
         {
             QMainWindow* aMainWindow = dynamic_cast<QMainWindow*>(qObject);
             QWidget * viewWidget = view->viewWidget();
 
-            // Show our view in a seperate, temporary window
+            // Show our view in a separate, temporary window
             viewWidget->show();
             // position the temporary window behind the main application
             viewWidget->move(aMainWindow->geometry().x(), aMainWindow->geometry().y());
             // and raise the main window above the temporary
             aMainWindow->raise();
         }
-
         // We need to wait for the window manager to finish animating before we can continue.
     #ifdef Q_OS_X11
         qt_x11_wait_for_window_manager(viewWidget);
