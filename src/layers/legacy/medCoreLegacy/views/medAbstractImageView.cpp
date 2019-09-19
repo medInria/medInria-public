@@ -83,15 +83,12 @@ public:
 
     medAbstractImageViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
-
-    medTriggerParameterL *fourViewsParameter;
 };
 
 medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayeredView(parent),
     d(new medAbstractImageViewPrivate)
 {
-    d->primaryNavigator = NULL;
-    d->fourViewsParameter = NULL;
+    d->primaryNavigator = nullptr;
 }
 
 medAbstractImageView::~medAbstractImageView()
@@ -104,21 +101,10 @@ medAbstractImageView::~medAbstractImageView()
     delete d;
 }
 
-void medAbstractImageView::removeData(medAbstractData *data)
-{
-    medAbstractLayeredView::removeData(data);
-
-    if( this->layersCount() == 0 && d->fourViewsParameter)
-    {
-        delete d->fourViewsParameter;
-        d->fourViewsParameter = 0;
-    }
-}
-
 medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(medAbstractData* data)
 {
     if(d->primaryInteractorsHash.isEmpty())
-        return NULL;
+        return nullptr;
 
     return d->primaryInteractorsHash.value(data);
 }
@@ -233,16 +219,6 @@ bool medAbstractImageView::initialiseNavigators()
     return true;
 }
 
-QWidget* medAbstractImageView::toolBarWidget()
-{
-    QWidget* toolbar = medAbstractView::toolBarWidget();
-
-    if(toolbar->layout())
-        toolbar->layout()->addWidget(this->fourViewsParameter()->getPushButton());
-
-    return toolbar;
-}
-
 void medAbstractImageView::switchToFourViews()
 {
     medViewContainer *topLeftContainer = dynamic_cast <medViewContainer *> (this->parent());
@@ -343,7 +319,7 @@ medAbstractVector3DParameterL *medAbstractImageView::positionBeingViewedParamete
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pNavigator->positionBeingViewedParameter();
@@ -354,24 +330,10 @@ medDoubleParameterL *medAbstractImageView::opacityParameter(unsigned int layer)
     medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);
     if(!pInteractor)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pInteractor->opacityParameter();
-}
-
-medTriggerParameterL *medAbstractImageView::fourViewsParameter()
-{
-    if (!d->fourViewsParameter)
-    {
-        d->fourViewsParameter = new medTriggerParameterL("Four views", this);
-        QIcon fourViewsIcon (":/icons/fourViews.png");
-        d->fourViewsParameter->setButtonIcon(fourViewsIcon);
-
-        connect(d->fourViewsParameter,SIGNAL(triggered()),this,SLOT(switchToFourViews()));
-    }
-
-    return d->fourViewsParameter;
 }
 
 /**
@@ -383,7 +345,7 @@ medCompositeParameterL *medAbstractImageView::windowLevelParameter(unsigned int 
     medAbstractImageViewInteractor* pInteractor = this->primaryInteractor(layer);
     if(!pInteractor)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pInteractor->windowLevelParameter();
@@ -394,7 +356,7 @@ medTimeLineParameterL *medAbstractImageView::timeLineParameter()
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pNavigator->timeLineParameter();

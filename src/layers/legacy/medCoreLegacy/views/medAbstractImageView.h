@@ -48,10 +48,8 @@ class MEDCORELEGACY_EXPORT medAbstractImageView: public medAbstractLayeredView
     Q_OBJECT
 
 public:
-    medAbstractImageView(QObject * parent = 0);
+    medAbstractImageView(QObject * parent = nullptr);
     virtual ~medAbstractImageView();
-
-    virtual void removeData(medAbstractData *data);
 
     medImageView::Orientation orientation();
 
@@ -64,24 +62,19 @@ public:
     virtual qreal sliceThickness() = 0;
     virtual qreal scale() = 0;
 
-    virtual QWidget* toolBarWidget();
-
     medCompositeParameterL *cameraParameter();
     medAbstractVector3DParameterL *positionBeingViewedParameter();
     medCompositeParameterL *windowLevelParameter(unsigned int layer);
     medDoubleParameterL *opacityParameter(unsigned int layer);
-    medTriggerParameterL *fourViewsParameter();
     medTimeLineParameterL *timeLineParameter();
 
 public slots:
     void switchToFourViews();
     void setOrientation(medImageView::Orientation orientation);
 
-
 signals:
     void orientationChanged();
     void currentTimeChanged(const double &time);
-
 
 protected:
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data);
