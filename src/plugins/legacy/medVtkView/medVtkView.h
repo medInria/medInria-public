@@ -49,6 +49,14 @@ public:
     medBoolParameterL* rubberBandZoomParameter() const;
 
     virtual void setOffscreenRendering(bool isOffscreen);
+
+    /**
+     * @brief resetCameraOnLayer changes the camera focus onto the
+     * bounding box's centroid of parameter layer's data.
+     * @param layer index
+     */
+    virtual void resetCameraOnLayer(int layer);
+
 public slots:
     virtual void reset();
     virtual void render();

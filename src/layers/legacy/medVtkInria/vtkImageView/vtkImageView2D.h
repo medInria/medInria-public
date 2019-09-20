@@ -257,7 +257,7 @@ public:
    the the back of his head, and his left ear.
    */
     ///\todo Why not adding cardiologic conventions where we look at the patient in oblique angles ?
-    vtkGetMacro (ViewConvention, int);
+    vtkGetMacro (ViewConvention, int)
     virtual void SetViewConvention (int convention);
 
     virtual void GetWorldCoordinatesForSlice (int slice, double* position);
@@ -268,8 +268,10 @@ public:
     virtual double* GetPan();
     virtual void GetPan(double pan[2]);
 
+    using vtkImageView::ResetCamera;
+
     virtual void Reset();
-    virtual void ResetCamera();
+    virtual void ResetCamera() override;
 
     virtual void GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position);
 
@@ -285,12 +287,12 @@ public:
    This instance is in charge of observing the interactorstyle (GetInteractorStyle())
    and update things accordingly in the view (i.e. the slice number when moving slice).
    */
-    vtkGetObjectMacro (Command, vtkImageView2DCommand);
+    vtkGetObjectMacro (Command, vtkImageView2DCommand)
     //ETX
 
     virtual void SetInterpolate (int val, int layer=0);
     virtual int  GetInterpolate (int layer = 0) const;
-    vtkBooleanMacro (Interpolate, int);
+    vtkBooleanMacro (Interpolate, int)
 
 
     virtual void SetShowAnnotations (int);

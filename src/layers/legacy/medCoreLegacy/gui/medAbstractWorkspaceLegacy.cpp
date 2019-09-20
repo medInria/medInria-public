@@ -198,7 +198,6 @@ bool medAbstractWorkspaceLegacy::areToolBoxesVisible() const
     return d->toolBoxesVisibility;
 }
 
-
 void medAbstractWorkspaceLegacy::clearWorkspaceToolBoxes()
 {
     foreach(medToolBox* tb,d->toolBoxes)
@@ -303,6 +302,21 @@ void medAbstractWorkspaceLegacy::handleLayerSelectionChange()
     emit layerSelectionChanged(getSelectedLayerIndices());
 }
 
+void medAbstractWorkspaceLegacy::resetCameraOnSelectedLayer(QListWidgetItem *item)
+{
+    QUuid uuid = d->containerForLayerWidgetsItem.value(item);
+    medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+    if (container)
+    {
+        medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(container->view());
+        if (layeredView)
+        {
+            int currentLayer = item->data(Qt::UserRole).toInt();
+            layeredView->resetCameraOnLayer(currentLayer);
+        }
+    }
+}
+
 void medAbstractWorkspaceLegacy::updateLayersToolBox()
 {
     d->layerListToolBox->body()->clear();
@@ -319,6 +333,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
 
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
     connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(handleLayerSelectionChange()));
+    connect(d->layerListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(resetCameraOnSelectedLayer(QListWidgetItem*)));
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {

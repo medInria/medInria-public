@@ -45,10 +45,10 @@
 #include "vtkCommand.h"
 #include "vtkImageView2DCommand.h"
 
-#include <vtkRendererCollection.h>
-#include <vtkImageReader2.h>
 #include <vtkAlgorithmOutput.h>
-
+#include <vtkImageReader2.h>
+#include <vtkBoundingBox.h>
+#include <vtkRendererCollection.h>
 
 #ifdef WIN32
 #define snprintf _snprintf_s
@@ -1306,6 +1306,20 @@ void vtkImageView::ResetCamera()
     this->SetZoom (1.0);
     this->InvokeEvent (vtkImageView2DCommand::CameraZoomEvent);
     this->InvokeEvent (vtkImageView2DCommand::CameraPanEvent);
+}
+
+void vtkImageView::ResetCamera(vtkDataSet *arg)
+{
+    vtkBoundingBox box;
+    box.AddBounds(arg->GetBounds());
+
+    double center[3];
+    box.GetCenter(center);
+    this->SetCurrentPoint(center);
+
+    double bounds[6];
+    box.GetBounds(bounds);
+    this->GetRenderer()->ResetCamera(bounds);
 }
 
 //----------------------------------------------------------------------------
