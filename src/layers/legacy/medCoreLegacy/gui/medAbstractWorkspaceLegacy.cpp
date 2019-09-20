@@ -563,12 +563,24 @@ void medAbstractWorkspaceLegacy::removeLayer()
     int layer = item->data(Qt::UserRole).toInt();
 
     medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
-    if(!layerView)
-        return;
+    if(layerView)
+    {
+        layerView->removeLayer(layer);
 
-    layerView->removeLayer(layer);
-
-    this->updateLayersToolBox();
+        if (layerView->layersCount() == 0) // remove the view if no more layer
+        {
+            if ( medViewContainerManager::instance()->container(containerUuid)->closingMode() == medViewContainer::CLOSE_CONTAINER )
+            {
+                medViewContainerManager::instance()->container(containerUuid)->checkIfStillDeserveToLiveContainer();
+            }
+            else
+            {
+                // For containers that we want to keep even if there are no views/data in it, as in Filtering
+                medViewContainerManager::instance()->container(containerUuid)->removeView();
+            }
+        }
+        this->updateLayersToolBox();
+    }
 }
 
 

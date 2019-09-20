@@ -237,7 +237,7 @@ medViewContainer::~medViewContainer()
 
 void medViewContainer::checkIfStillDeserveToLiveContainer()
 {
-    this->setParent(NULL);    
+    this->setParent(nullptr);
     this->close();
 }
 
