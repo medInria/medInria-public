@@ -30,7 +30,7 @@ if (CMAKE_GENERATOR MATCHES "Win64")
     set(WIN_TYPE x64)
 endif()
 
-set(VS_TYPE "VS140COMNTOOLS")
+set(VS_TYPE "VS141COMNTOOLS")
 
 configure_file(${CURRENT_SRC_DIR}/medInria.bat.in     medInria.bat     @ONLY)
 configure_file(${CURRENT_SRC_DIR}/medInria-dev.bat.in medInria-dev.bat @ONLY)

@@ -135,8 +135,6 @@ if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_definitions(-DQT_NO_DEBUG)
 endif()
 
-add_definitions(-DITK_LEGACY_REMOVE)
-
 ## #############################################################################
 ## Windows specificity
 ## #############################################################################
@@ -158,6 +156,7 @@ if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT medInria)
 
 ################################################################################
 # Setup Configuration files
