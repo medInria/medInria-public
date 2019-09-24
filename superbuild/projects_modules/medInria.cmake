@@ -138,6 +138,29 @@ set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
 ExternalProject_Get_Property(${ep} source_dir)
 set(${ep}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
+  
+  
+if (WIN32)
+  file(TO_NATIVE_PATH ${ITK_DIR}                 ITK_BIN_BASE)
+  file(TO_NATIVE_PATH ${VTK_DIR}                 VTK_BIN_BASE)
+  file(TO_NATIVE_PATH ${dtk_DIR}                 DTK_BIN_BASE)
+  file(TO_NATIVE_PATH ${_qt5Core_install_prefix} QT5_BIN_BASE)
+  file(TO_NATIVE_PATH ${medInria_BINARY_DIR}     MED_BIN_BASE)
+  
+  set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:MinSizeRel>:MinSizeRel>$<$<CONFIG:RelWithDebugInfo>:RelWithDebugInfo>)
+  
+  set(MED_BIN_BASE ${MED_BIN_BASE}\\bin\\${CONFIG_MODE})  
+  
+  add_custom_command(TARGET ${ep}
+          POST_BUILD
+          COMMAND for %%I in (${ITK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll) do del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI
+          COMMAND for %%I in (${VTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll) do del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI
+          COMMAND for %%I in (${DTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll) do del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI
+          COMMAND for %%I in (${QT5_BIN_BASE}\\bin\\*.dll)                 do del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI
+  		)
+endif()
+
+
 
 endif() #NOT USE_SYSTEM_ep
 
