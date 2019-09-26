@@ -653,26 +653,13 @@ void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
 
 void medVtkViewItkDataImageInteractor::updateSlicingParam()
 {
-    if(!d->view->is2D())
-        return;
-
-    //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer droped) - RDE
-
-    // slice orientation may differ from view orientation. Adapt slider range accordingly.
-//    int orientationId = d->view2d->GetSliceOrientation();
-//    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
-//        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
-//        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
-//        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
-
-    d->slicingParameter->blockSignals(true);
-    d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
-    d->slicingParameter->blockSignals(false);
-
-    d->slicingParameter->setValue(d->view2d->GetSlice());
+    if(d->view->is2D())
+    {
+        d->slicingParameter->blockSignals(true);
+        d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
+        d->slicingParameter->setValue(d->view2d->GetSlice());
+        d->slicingParameter->blockSignals(false);
+    }
 }
 
 void medVtkViewItkDataImageInteractor::enableWindowLevel(bool enable)
