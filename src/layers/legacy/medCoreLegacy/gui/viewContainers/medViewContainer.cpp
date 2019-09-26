@@ -106,7 +106,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
-    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series here from the left panel or"));
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or"));
     QPushButton *openButton= new QPushButton(tr("open a file from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
     defaultLayout->addWidget(defaultLabel);
@@ -634,7 +634,9 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
 
     const QMimeData *mimeData = event->mimeData();
     medDataIndex index = medDataIndex::readMimeData(mimeData);
-    if (index.isValidForSeries())
+
+    // User can drop a study or a series into the view
+    if(index.isValidForSeries() || index.isValidForStudy())
     {
         if (d->userSplittable)
         {
@@ -733,14 +735,58 @@ void medViewContainer::addData(medDataIndex index)
 {
     if( ! d->expectedUuid.isNull())
         return; // we're already waiting for a import to finish, don't accept other data
-    this->addData(medDataManager::instance()->retrieveData(index));
+
+    if (index.isValidForSeries())
+    {
+        this->addData(medDataManager::instance()->retrieveData(index));
+    }
+    else if (index.isValidForStudy())
+    {
+        // We get the list of each series from that study index, and open it
+        QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
+        if (seriesList.count() > 0)
+        {
+            bool userIsOk = true;
+
+            if (seriesList.count() > 10)
+            {
+                userIsOk = userValidationForStudyDrop();
+            }
+
+            if (userIsOk)
+            {
+                foreach (medDataIndex seriesIndex, seriesList)
+                {
+                    this->addData(medDataManager::instance()->retrieveData(seriesIndex));
+                }
+            }
+        }
+    }
 }
 
+bool medViewContainer::userValidationForStudyDrop()
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Study Drop");
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setText("Are you sure you want to open this study?");
+    msgBox.setInformativeText("This action is going to open every data from the study.");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+
+    if (msgBox.exec() == QMessageBox::Yes)
+    {
+        return true;
+    }
+    return false;
+}
 
 medViewContainer * medViewContainer::splitHorizontally()
 {
     if(!d->parent)
+    {
         return nullptr;
+    }
 
     return d->parent->splitHorizontally(this);
 }
@@ -748,7 +794,9 @@ medViewContainer * medViewContainer::splitHorizontally()
 medViewContainer * medViewContainer::splitVertically()
 {
     if(!d->parent)
+    {
         return nullptr;
+    }
 
     return d->parent->splitVertically(this);
 }
@@ -756,7 +804,9 @@ medViewContainer * medViewContainer::splitVertically()
 medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
 {
     if(!d->parent)
+    {
         return nullptr;
+    }
 
     return d->parent->split(this, alignement);
 }

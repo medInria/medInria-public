@@ -597,13 +597,28 @@ void medAbstractWorkspaceLegacy::buildTemporaryPool()
 
 void medAbstractWorkspaceLegacy::open(const medDataIndex &index)
 {
+    // Called after right click->View on a series/study, or double-click on a series
     QList<QUuid> containersSelected = d->viewContainerStack->containersSelected();
     if(containersSelected.size() != 1)
         return;
 
     medViewContainer *container = medViewContainerManager::instance()->container(containersSelected.first());
     if(index.isValidForSeries())
+    {
         container->addData(medDataManager::instance()->retrieveData(index));
+    }
+    else if(index.isValidForStudy())
+    {
+        // We get the list of each series from that study index, and open it
+        QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
+        if (seriesList.count() > 0)
+        {
+            foreach (medDataIndex seriesIndex, seriesList)
+            {
+                container->addData(medDataManager::instance()->retrieveData(seriesIndex));
+            }
+        }
+    }
 }
 
 void medAbstractWorkspaceLegacy::setUserLayerPoolable(bool poolable)

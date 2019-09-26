@@ -283,6 +283,8 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 /** Opens the currently selected item. */
 void medDatabaseView::onViewSelectedItemRequested(void)
 {
+    // Called when the user right click->View in DB on a series/study
+
     if(!this->selectedIndexes().count())
         return;
 
@@ -291,12 +293,12 @@ void medDatabaseView::onViewSelectedItemRequested(void)
     if(!index.isValid())
         return;
 
-    medAbstractDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = nullptr;
 
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
-    if (item && (item->dataIndex().isValidForSeries()))
+    if (item && (item->dataIndex().isValidForSeries() || item->dataIndex().isValidForStudy()))
     {
         emit open(item->dataIndex ());
     }
