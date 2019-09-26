@@ -383,22 +383,32 @@ void medMainWindow::open(const QString & path)
 {
     QEventLoop loop;
     QUuid uuid = medDataManager::instance()->importPath(path, false);
-    d->expectedUuids.append(uuid);
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
-            this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
-    while( d->expectedUuids.contains(uuid)) {
-        loop.processEvents(QEventLoop::ExcludeUserInputEvents);
+    if (!uuid.isNull())
+    {
+        d->expectedUuids.append(uuid);
+        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        while( d->expectedUuids.contains(uuid))
+        {
+            loop.processEvents(QEventLoop::ExcludeUserInputEvents);
+        }
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText(path + " is not valid");
+        msgBox.exec();
     }
 }
 
 
 void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
 {
-    if(d->expectedUuids.contains(uuid)) {
+    if(d->expectedUuids.contains(uuid))
+    {
         d->expectedUuids.removeAll(uuid);
-        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)),
-                   this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
-        if (index.isValid()) {
+        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        if (index.isValid())
+        {
             this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
             d->workspaceArea->currentWorkspace()->open(index);
         }
