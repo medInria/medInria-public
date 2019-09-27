@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -35,20 +35,21 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
 
 public:
     medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white,
-            QGraphicsItem *parent = 0);
+            QGraphicsItem *parent = nullptr);
     medClutEditorVertex( const medClutEditorVertex & other,
-                         QGraphicsItem *parent = 0);
+                         QGraphicsItem *parent = nullptr);
     ~medClutEditorVertex();
 
     const QPointF & value() const;
     void shiftValue( qreal amount, bool forceConstraints = true );
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = 0);
+               QWidget *widget = nullptr);
 
     QRectF boundingRect() const;
     QColor color() const;
     void setColor(QColor color);
+    QAction *getColorAction();
 
     void initiateMove();
     void finalizeMove();
@@ -61,9 +62,14 @@ public:
     void updateValue();
 
     static bool LessThan(const medClutEditorVertex *v1,
-                         const medClutEditorVertex *v2) {
+                         const medClutEditorVertex *v2)
+    {
         return (v1->x() < v2->x());
     }
+
+public slots:
+    void setValue (void);
+    void showColorSelection();
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -87,9 +93,8 @@ class medClutEditorTable : public QObject, public QGraphicsItem
     Q_OBJECT
 
 public:
-    //medClutEditorTable(QGraphicsItem *parent = 0);
     medClutEditorTable(const medClutEditorTable & table);
-    medClutEditorTable(const QString & title = "Unknown", QGraphicsItem *parent = 0);
+    medClutEditorTable(const QString & title = "Unknown", QGraphicsItem *parent = nullptr);
     ~medClutEditorTable();
 
     const QString & title() const;
@@ -99,9 +104,14 @@ public:
     void setMinRange( qreal min, qreal max );
     void setSize( const QSizeF & size );
     const QSizeF & size() const;
-    // void setRange( qreal min, qreal max );
+
+    void setDiscreteMode(bool);
+    void invertLUT(bool);
+    QHash<medClutEditorVertex *, medClutEditorVertex *> *calculateCoupledVertices(QList<medClutEditorVertex *>);
+    void updateVerticesToDisplay();
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
+    void deleteAllVertices();
     QList<medClutEditorVertex *> & vertices();
     const QList<medClutEditorVertex *> & vertices() const;
 
@@ -128,26 +138,22 @@ public:
     void simplifyTransferFunction();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = 0);
+               QWidget *widget = nullptr);
 
     void changeDisplayAlpha( qreal step );
     void resetDisplayAlpha();
 
-    void triggerVertexChanged();
-    // void keyPressEvent(QKeyEvent *event);
-    // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void triggerVertexMoving();
+    void triggerVertexSet();
 
 signals:
-    void vertexChanged();
+    void vertexMoving();
+    void vertexSet();
     void vertexRemoved();
     void vertexAdded();
-
-// public slots:
-//     void onDeleteVertex(medClutEditorVertex * v);
+    void switchMode();
 
 private:
-    void deleteAllVertices();
-
     medClutEditorTablePrivate *d;
 };
 
@@ -160,11 +166,8 @@ class medClutEditorHistogramPrivate;
 class medClutEditorHistogram : public QGraphicsItem
 {
 public:
-     medClutEditorHistogram(QGraphicsItem *parent = 0);
+     medClutEditorHistogram(QGraphicsItem *parent = nullptr);
     ~medClutEditorHistogram();
-
-    // QSizeF size() const;
-    // void setSize( QSizeF s );
 
     void range( qreal & min, qreal & max ) const;
     qreal getRangeMin() const;
@@ -175,13 +178,12 @@ public:
     void setValues(const QMap<qreal, qreal> & bins);
     void addValue(qreal intensity, qreal number);
     void adjustScales();
-    // QPointF valueToCoordinate( QPointF value ) const;
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = 0);
+               QWidget *widget = nullptr);
 
     QRectF boundingRect() const;
 
@@ -199,7 +201,7 @@ class medClutEditorScenePrivate;
 class medClutEditorScene : public QGraphicsScene
 {
 public:
-     medClutEditorScene(QObject *parent = 0);
+     medClutEditorScene(QObject *parent = nullptr);
     ~medClutEditorScene();
 
     medClutEditorTable * table();
@@ -216,7 +218,7 @@ public:
     void adjustRange();
     void scaleRange( qreal factor );
     void shiftRange( qreal amount );
-    // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
 private:
     medClutEditorScenePrivate * d;
 };
@@ -229,7 +231,7 @@ private:
 class medClutEditorView : public QGraphicsView
 {
 public:
-     medClutEditorView(QWidget *parent = 0);
+     medClutEditorView(QWidget *parent = nullptr);
     ~medClutEditorView();
 
 protected:
@@ -242,45 +244,3 @@ protected:
     void mousePressEvent   ( QMouseEvent  * event );
     void mouseReleaseEvent ( QMouseEvent  * event );
 };
-
-
-
-// /////////////////////////////////////////////////////////////////
-// medClutEditor
-// /////////////////////////////////////////////////////////////////
-
-class medClutEditorPrivate;
-
-class MEDCORELEGACY_EXPORT medClutEditor : public QWidget
-{
-    Q_OBJECT
-
-public:
-     medClutEditor(QWidget *parent = 0);
-    ~medClutEditor();
-
-    void setData(medAbstractData *data);
-    void setView(medAbstractImageView *view, bool force = false);
-    void applyTable();
-
-protected:
-    void initializeTable();
-    void deleteTable();
-
-    void mousePressEvent(QMouseEvent *event);
-
-protected slots:
-    void onNewTableAction();
-    void onLoadTableAction();
-    void onSaveTableAction();
-    // void onDeleteTableAction();
-    void onApplyTablesAction();
-    // void onColorAction();
-    // void onDeleteAction();
-    void onVertexMoved();
-    void onToggleDirectUpdateAction();
-private:
-    medClutEditorPrivate *d;
-};
-
-

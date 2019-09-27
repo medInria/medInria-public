@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,7 +18,7 @@ medLoadLUTDialog::medLoadLUTDialog(const QStringList & titles, QWidget *parent) 
 {
     setModal(Qt::WindowModal);
     setInputMode(QInputDialog::TextInput);
-    setLabelText(tr("Choose a transfert Function:"));
+    setLabelText(tr("Choose a table name:"));
     setComboBoxItems(titles);;
     setOkButtonText(tr("Choose"));
 }

@@ -75,7 +75,7 @@ public:
     QAction* fourSplitAction;
 
     QPushButton* closeContainerButton;
-
+    QAction* histogramAction;
     QAction* maximizedAction;
 
     QString defaultStyleSheet;
@@ -146,12 +146,21 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->hSplitAction->setIconVisibleInMenu(true);
     connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()));
 
+    // Four Split actions
     d->fourSplitAction = new QAction(tr("4 split"), d->toolBarMenu);
     d->fourSplitAction->setIcon(QIcon(":/icons/fourViews.png"));
     d->fourSplitAction->setToolTip(tr("Split in 4 views"));
     d->fourSplitAction->setIconVisibleInMenu(true);
     connect(d->fourSplitAction, SIGNAL(triggered()), this, SIGNAL(requestFourSplit()));
     d->fourSplitAction->setEnabled(false);
+
+    // Histogram actions
+    d->histogramAction = new QAction(tr("Open Histogram"), d->toolBarMenu);
+    d->histogramAction->setCheckable(true);
+    d->histogramAction->setIcon(QIcon(":/icons/Gaussian_Filter.png"));
+    d->histogramAction->setToolTip("Open a histogram");
+    d->histogramAction->setIconVisibleInMenu(true);
+    d->histogramAction->setEnabled(false);
 
     // make it a parameter to get synch between state of the container and the maximized button.
     d->maximizedAction = new QAction(tr("Maximize"), d->toolBarMenu);
@@ -188,7 +197,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarMenu->addActions(QList<QAction*>() << d->vSplitAction << d->hSplitAction << d->fourSplitAction);
     d->toolBarMenu->addMenu(d->presetMenu);
     d->toolBarMenu->addSeparator();
-    d->toolBarMenu->addActions(QList<QAction*>() << d->maximizedAction);
+    d->toolBarMenu->addActions(QList<QAction*>() << d->histogramAction);
 
     d->poolIndicator = new medPoolIndicatorL;
 
@@ -433,6 +442,11 @@ void medViewContainer::setView(medAbstractView *view)
                 d->fourSplitAction->setEnabled(true);
                 connect(this, SIGNAL(requestFourSplit()), imageView, SLOT(switchToFourViews()));
             }
+
+            connect(d->histogramAction, SIGNAL(toggled(bool)), this, SLOT(toggleHistogram(bool)));
+            connect(d->histogramAction, SIGNAL(toggled(bool)), imageView, SLOT(showHistogram(bool)));
+
+            d->histogramAction->setEnabled(true);
         }
 
         d->defaultWidget->hide();
@@ -540,13 +554,26 @@ bool medViewContainer::isMaximized() const
     return d->maximizedAction->isChecked();
 }
 
+void medViewContainer::toggleHistogram(bool checked)
+{
+    if (checked)
+    {
+        d->histogramAction->setText("Close Histogram");
+    }
+    else
+    {
+        d->histogramAction->setText("Open Histogram");
+    }
+}
+
 void medViewContainer::removeView()
 {
-    if(!d->view)
-        return;
-
-    emit dataAdded(nullptr);
-    delete d->view;
+    if(d->view)
+    {
+        d->histogramAction->setChecked(false);
+        emit dataAdded(nullptr);
+        delete d->view;
+    }
     // removeInternView should be called, so no need to set d->view to NULL
     // or whatever else
 }
@@ -555,6 +582,10 @@ void medViewContainer::removeInternView()
 {
     d->view = nullptr;
     d->maximizedAction->setEnabled(false);
+
+    d->histogramAction->setEnabled(false);
+    d->histogramAction->setChecked(false);
+
     d->defaultWidget->show();
     this->updateToolBar();
 
@@ -982,4 +1013,22 @@ void medViewContainer::addColorIndicator(QColor color, QString description)
 void medViewContainer::removeColorIndicator(QColor color)
 {
     d->poolIndicator->removeColorIndicator(color);
+}
+
+void medViewContainer::clickHistoAction(bool checked)
+{
+    if ( checked != d->histogramAction->isChecked() )
+    {
+        d->histogramAction->toggle();
+    }
+}
+
+QAction* medViewContainer::histogramAction()
+{
+    return d->histogramAction;
+}
+
+void medViewContainer::enableHistogramAction(bool state)
+{
+    d->histogramAction->setEnabled(state);
 }
