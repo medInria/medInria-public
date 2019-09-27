@@ -41,6 +41,7 @@ list_source_files(${TARGET_NAME}
   vtkVisuManagement/lut
   HWShading
   HWShading/helpers
+  medClutEditorToolBox
   )
 
 list_header_directories_to_include(${TARGET_NAME}

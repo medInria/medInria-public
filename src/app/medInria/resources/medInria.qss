@@ -1009,6 +1009,11 @@ QMenu::indicator:exclusive:checked
     image: url(:/pixmaps/radio-checked.png);
 }
 
+QMenu::item:checked /* appearance of a 'checked' menu item */
+{
+    background: $MENU_ITEM_SELECTED_BACKGROUND;
+}
+
 QMenu::separator
 {
     border: $MENU_SEPARATOR_BORDER;

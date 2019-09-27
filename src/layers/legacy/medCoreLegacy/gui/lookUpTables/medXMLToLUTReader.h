@@ -18,15 +18,16 @@
 #include <qstring.h>
 #include <qlist.h>
 
-
 class medXMLToLUTReaderPrivate;
 
-class medXMLToLUTReader {
+class medXMLToLUTReader
+{
 public:
-    medXMLToLUTReader(QList<medClutEditorTable*> * tables);
+    medXMLToLUTReader(QList<medClutEditorTable*> * tables, medClutEditorScene *scene);
     ~medXMLToLUTReader();
     bool read(QIODevice *device);
     QString errorString() const;
+
 private:
     medXMLToLUTReaderPrivate * d;
 };
