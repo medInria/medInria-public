@@ -135,8 +135,6 @@ if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_definitions(-DQT_NO_DEBUG)
 endif()
 
-add_definitions(-DITK_LEGACY_REMOVE)
-
 ## #############################################################################
 ## Windows specificity
 ## #############################################################################

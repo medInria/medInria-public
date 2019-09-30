@@ -62,8 +62,7 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
-  ${ITK_LIBRARIES}
+  vtkIOInfovis
   medCore
   medLog
   medVtkInria
