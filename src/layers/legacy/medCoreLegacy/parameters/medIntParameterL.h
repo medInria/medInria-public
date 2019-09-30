@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,8 +14,8 @@
 #pragma once
 
 #include <medAbstractParameterL.h>
-
 #include <medCoreLegacyExport.h>
+#include <medSliderL.h>
 
 class QWidget;
 class QSpinBox;
@@ -28,12 +28,12 @@ class MEDCORELEGACY_EXPORT medIntParameterL : public medAbstractIntParameterL
     Q_OBJECT
 
 public:
-    medIntParameterL(QString name = "Unknow int parameter", QObject* parent = 0);
+    medIntParameterL(QString name = "Unknown int parameter", QObject* parent = nullptr);
     virtual ~medIntParameterL();
 
     void setRange(int min, int max);
     QSpinBox* getSpinBox();
-    QSlider* getSlider();
+    medSliderL *getSlider();
 
     virtual QWidget* getWidget();
 

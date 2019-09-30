@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -35,9 +35,11 @@ public:
     QDoubleSpinBox * updateFieldStdDevBox;
     QCheckBox * useHistogramBox;
     QLineEdit * iterationsBox;
+    medAbstractRegistrationProcess *process;
 };
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
+itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent)
+    : medAbstractSelectableToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
 {
     QWidget* widget = new QWidget(this);
 
@@ -149,26 +151,24 @@ dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
 
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 {
-    if(this->parentToolBox())
-    {
-        medAbstractRegistrationProcess *process =
-                dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+    medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
-        medRegistrationSelectorToolBox* toolbox = this->parentToolBox();
-        if(toolbox) // toolbox empty in Pipelines and not Registration workspace
-        {
-            toolbox->setProcess(process);
-        }
+    if(toolbox) // toolbox empty in Pipelines and not Registration workspace
+    {
+        d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+        toolbox->setProcess(d->process);
 
         //TODO smartPointing have to be managed only in abstract processes -rde
-        dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
-        dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
+        dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
+        dtkSmartPointer<medAbstractData> movingData(toolbox->movingData());
 
         if (fixedData && movingData)
         {
+            this->setToolBoxOnWaitStatus();
+
             // Many choices here
             itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-                    dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
+                    dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(d->process);
             process_Registration->setDisplacementFieldStandardDeviation(
                         d->disFieldStdDevBox->value());
             process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
@@ -187,17 +187,34 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
             {
                 qDebug()<<"ExceptionObject caught in "<<metaObject()->className();
                 qDebug()<<err.what();
+                this->setToolBoxOnReadyToUse();
                 return;
             }
-
-            this->setToolBoxOnWaitStatus();
 
             process_Registration->setFixedInput(fixedData);
             process_Registration->setMovingInput(movingData);
 
             medRunnableProcess *runProcess = new medRunnableProcess;
-            runProcess->setProcess (process);
+            runProcess->setProcess (d->process);
             this->addConnectionsAndStartJob(runProcess);
         }
+    }
+}
+
+medAbstractData* itkProcessRegistrationDiffeomorphicDemonsToolBox::processOutput()
+{
+    // If called from pipelines, and run() not called before.
+    if(!d->process)
+    {
+        run();
+    }
+
+    if(d->process)
+    {
+        return d->process->output();
+    }
+    else
+    {
+        return nullptr;
     }
 }

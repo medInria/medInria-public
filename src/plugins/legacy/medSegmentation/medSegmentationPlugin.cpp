@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,10 +13,7 @@
 
 #include <medSegmentationPlugin.h>
 
-#include <medAlgorithmInitializer.h>
 #include <medAnnotationInteractor.h>
-
-#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // PluginPrivate
@@ -34,7 +31,8 @@ const char * medSegmentationPluginPrivate::s_Name = "segmentationPlugin";
 // Plugin
 // /////////////////////////////////////////////////////////////////
 
-medSegmentationPlugin::medSegmentationPlugin(QObject *parent) : dtkPlugin(parent), d(new medSegmentationPluginPrivate)
+medSegmentationPlugin::medSegmentationPlugin(QObject *parent)
+    : medPluginLegacy(parent), d(new medSegmentationPluginPrivate)
 {
 
 }
@@ -42,17 +40,17 @@ medSegmentationPlugin::medSegmentationPlugin(QObject *parent) : dtkPlugin(parent
 medSegmentationPlugin::~medSegmentationPlugin()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 bool medSegmentationPlugin::initialize()
 {
     if(!medAnnotationInteractor::registered())
     {
-        dtkDebug() << "Unable to register medAnnotationInteractor";
+        qDebug() << "Unable to register medAnnotationInteractor";
     }
 
-    return medAlgorithmInitializer::initialize();
+    return true;
 }
 
 bool medSegmentationPlugin::uninitialize()
@@ -103,15 +101,3 @@ QString medSegmentationPlugin::identifier() const
 {
     return medSegmentationPluginPrivate::s_Name;
 }
-
-QStringList medSegmentationPlugin::tags() const
-{
-    return QStringList();
-}
-
-QStringList medSegmentationPlugin::types() const
-{
-    return QStringList();
-}
-
-//Q_EXPORT_PLUGIN2(medSegmentationPlugin, medSegmentationPlugin)

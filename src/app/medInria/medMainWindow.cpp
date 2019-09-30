@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,62 +11,40 @@
 
 =========================================================================*/
 
-#include "medLogger.h"
+#include <dtkComposerWidget.h>
 
+#include <medBrowserArea.h>
+#include <medComposerArea.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDataManager.h>
+#include <medEmptyDbWarning.h>
+#include <medHomepageArea.h>
+#include <medJobManagerL.h>
+#include <medLogger.h>
 #include <medMainWindow.h>
+#include <medQuickAccessMenu.h>
+#include <medSaveModifiedDialog.h>
+#include <medSelectorToolBox.h>
+#include <medSelectorWorkspace.h>
+#include <medSettingsEditor.h>
+#include <medSettingsManager.h>
+#include <medStatusBar.h>
+#include <medTabbedViewContainers.h>
+#include <medToolBoxFactory.h>
+#include <medVisualizationWorkspace.h>
+#include <medWorkspaceArea.h>
+#include <medWorkspaceFactory.h>
+#include <mscSearchToolboxDialog.h>
 
 #include <QtGui>
 #include <QtWidgets>
-
-#include <medBrowserArea.h>
-#include <medWorkspaceArea.h>
-#include <medHomepageArea.h>
-#include <medComposerArea.h>
-
-#include <medTabbedViewContainers.h>
-
-#include <medSettingsManager.h>
-#include <medSettingsEditor.h>
-
-#include <medStatusBar.h>
-#include <medQuickAccessMenu.h>
-#include <medSaveModifiedDialog.h>
-#include <medEmptyDbWarning.h>
-
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseController.h>
-
-#include <medJobManagerL.h>
-
-#include <medWorkspaceFactory.h>
-#include <medVisualizationWorkspace.h>
-
-#include <dtkComposerWidget.h>
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
 #else
 # define CONTROL_KEY "Ctrl"
 #endif
-
-//--------------------------------------------------------------------------
-// medMainWindowStyle
-
-/*class medMainWindowStyle : public QStyle
-{
-public:
-    void drawPrimitive ( PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0 ) const
-    {
-        switch ( element )
-        {
-        case PE_FrameFocusRect:
-            break;
-        default:
-            QStyle::drawPrimitive ( element, option, painter, widget );
-            break;
-        }
-    }
-};*/
 
 //--------------------------------------------------------------------------
 // medMainWindow
@@ -165,6 +143,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessWidget->move(QPoint(0, this->height() - d->quickAccessWidget->height() - 30));
 
     connect(d->quickAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideQuickAccess()));
+    connect(d->quickAccessWidget, SIGNAL(searchSelected()), this, SLOT(switchToSearchArea()));
     connect(d->quickAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->quickAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
     connect(d->quickAccessWidget, SIGNAL(composerSelected()), this, SLOT(switchToComposerArea()));
@@ -298,7 +277,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 medMainWindow::~medMainWindow()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medMainWindow::mousePressEvent ( QMouseEvent* event )
@@ -547,6 +526,57 @@ void medMainWindow::switchToBrowserArea()
     d->screenshotButton->setEnabled(false);
     d->adjustSizeButton->setEnabled(false);
     d->stack->setCurrentWidget(d->browserArea);
+}
+
+void medMainWindow::switchToSearchArea()
+{
+    // Create toolbox list
+    QHash<QString, QStringList> toolboxDataHash;
+    medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
+    foreach ( medWorkspaceFactory::Details *detail, workspaceDetails )
+    {
+        QString workspaceName = detail->name;
+
+        foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(workspaceName))
+        {
+            medToolBoxDetails *toolboxDetails = tbFactory->toolBoxDetailsFromId(toolboxName);
+
+            QStringList current;
+            // Displayed toolbox name from MED_TOOLBOX_INTERFACE
+            current.append(toolboxDetails->name);
+            // Toolbox description found in MED_TOOLBOX_INTERFACE
+            current.append(toolboxDetails->description);
+            // Some toolboxes have multiple categories/workspace, we only keep the first
+            current.append(workspaceName);
+            // Internal toolbox name, class name
+            current.append(toolboxName);
+
+            // Some toolboxes have multiple workspace categories
+            if (toolboxDataHash[toolboxName].isEmpty())
+            {
+                toolboxDataHash[toolboxName] = current;
+            }
+        }
+    }
+    mscSearchToolboxDialog dialog(this, toolboxDataHash);
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        // Get back workspace of toolbox chosen by user
+        // Name, Description, Workspace, Internal Name
+        QStringList chosenToolboxInfo = dialog.getFindText();
+        d->quickAccessWidget->manuallyClickOnWorkspaceButton(chosenToolboxInfo.at(2));
+
+        // Display asked toolbox
+        medSelectorToolBox *selector = static_cast<medSelectorWorkspace*>(d->workspaceArea->currentWorkspace())->selectorToolBox();
+        int toolboxIndex = selector->getIndexOfToolBox(chosenToolboxInfo.at(0));
+        if (toolboxIndex > 0)
+        {
+            selector->comboBox()->setCurrentIndex(toolboxIndex);
+            selector->changeCurrentToolBox(toolboxIndex);
+        }
+    }
 }
 
 void medMainWindow::switchToWorkspaceArea()

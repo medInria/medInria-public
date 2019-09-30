@@ -20,10 +20,10 @@
 
 #include <medDataManager.h>
 #include <medDropSite.h>
-#include <medFilteringSelectorToolBox.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medRunnableProcess.h>
+#include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 
 class medBinaryOperationToolBoxPrivate
@@ -40,7 +40,8 @@ public:
     QPushButton  *clearDropsiteButton;
 };
 
-medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medBinaryOperationToolBoxPrivate)
+medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent)
+    : medAbstractSelectableToolBox(parent), d(new medBinaryOperationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     
@@ -160,7 +161,7 @@ void medBinaryOperationToolBox::onNotButtonToggled(bool value)
 
 void medBinaryOperationToolBox::run()
 {
-    if (this->parentToolBox()->data())
+    if (this->selectorToolBox()->data())
     {
         this->setToolBoxOnWaitStatus();
 
@@ -170,7 +171,7 @@ void medBinaryOperationToolBox::run()
             d->process = new itkXorOperator;
         }
 
-        d->process->setInput(this->parentToolBox()->data(), 0);
+        d->process->setInput(this->selectorToolBox()->data(), 0);
         d->process->setInput(d->secondInput, 1);
 
         medRunnableProcess *runProcess = new medRunnableProcess;

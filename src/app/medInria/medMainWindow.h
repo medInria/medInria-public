@@ -73,17 +73,15 @@ private slots:
     void captureScreenshot();
 
     void switchToBrowserArea();
+    void switchToSearchArea();
     void switchToWorkspaceArea();
     void switchToHomepageArea();
     void switchToComposerArea();
-
 
     void toggleQuickAccessVisibility();
     void hideQuickAccess();
     void showShortcutAccess();
     void hideShortcutAccess();
-
-
 
     void availableSpaceOnStatusBar();
 

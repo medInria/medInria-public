@@ -1,0 +1,276 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+#include "vtkContourOverlayRepresentation.h"
+
+#include <vtkCommand.h>
+#include <vtkInteractorObserver.h>
+#include <vtkMath.h>
+#include <vtkObjectFactory.h>
+#include <vtkPointPlacer.h>
+#include <vtkPolyData.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+
+vtkStandardNewMacro(vtkContourOverlayRepresentation)
+
+//----------------------------------------------------------------------
+vtkContourOverlayRepresentation::vtkContourOverlayRepresentation()
+{
+    this->InteractionOffset[0] = 0.5;
+    this->InteractionOffset[1] = 0.5;
+    needToSaveState = true;
+}
+
+//----------------------------------------------------------------------
+vtkContourOverlayRepresentation::~vtkContourOverlayRepresentation()
+{
+}
+
+void vtkContourOverlayRepresentation::UpdateContourWorldPositionsBasedOnDisplayPositions()
+{
+    double dispPos[3];
+    double W[4];
+
+    for(unsigned int i=0; i<this->Internal->Nodes.size(); i++)
+    {
+        W[0] = this->Internal->Nodes[i]->WorldPosition[0];
+        W[1] = this->Internal->Nodes[i]->WorldPosition[1];
+        W[2] = this->Internal->Nodes[i]->WorldPosition[2];
+
+        vtkInteractorObserver::ComputeWorldToDisplay(this->Renderer,W[0], W[1], W[2], dispPos);
+        this->Renderer->DisplayToNormalizedDisplay( dispPos[0], dispPos[1] );
+        this->Internal->Nodes[i]->NormalizedDisplayPosition[0] = dispPos[0];
+        this->Internal->Nodes[i]->NormalizedDisplayPosition[1] = dispPos[1];
+
+        for (unsigned int j=0; j<this->Internal->Nodes[i]->Points.size(); j++)
+        {
+            W[0] = this->Internal->Nodes[i]->Points[j]->WorldPosition[0];
+            W[1] = this->Internal->Nodes[i]->Points[j]->WorldPosition[1];
+            W[2] = this->Internal->Nodes[i]->Points[j]->WorldPosition[2];
+
+            vtkInteractorObserver::ComputeWorldToDisplay(this->Renderer, W[0], W[1], W[2], dispPos);
+            this->Renderer->DisplayToNormalizedDisplay( dispPos[0], dispPos[1] );
+            this->Internal->Nodes[i]->Points[j]->NormalizedDisplayPosition[0] = dispPos[0];
+            this->Internal->Nodes[i]->Points[j]->NormalizedDisplayPosition[1] = dispPos[1];
+        }
+    }
+}
+
+int vtkContourOverlayRepresentation::CanUndo()
+{
+    return 1;
+} 
+
+int vtkContourOverlayRepresentation::CanRedo()
+{
+    return 1;
+} 
+
+int vtkContourOverlayRepresentation::SaveState()
+{
+    if (!needToSaveState)
+    {
+        return 0;
+    }
+    else
+    {
+        needToSaveState = false;
+    }
+
+    // We save NodeAsPolyData and the slope of each node
+    vtkSmartPointer<vtkPolyData> Nodes = vtkPolyData::New();
+    GetNodePolyData(Nodes);
+    undo_stack.push_back(Nodes);
+    redo_stack.clear();
+    return 1;
+}
+
+void vtkContourOverlayRepresentation::Undo()
+{
+    if (undo_stack.size() > 1)
+    {
+        redo_stack.push_back(undo_stack.at(undo_stack.size()-1));
+        undo_stack.pop_back();
+        vtkSmartPointer<vtkPolyData> Nodes = undo_stack.at(undo_stack.size()-1);
+        this->Initialize(Nodes);
+    }
+}
+
+void vtkContourOverlayRepresentation::Redo()
+{
+    if (redo_stack.size() > 0)
+    {
+        vtkSmartPointer<vtkPolyData> Nodes = redo_stack.at(redo_stack.size()-1);
+        undo_stack.push_back(Nodes);
+        redo_stack.pop_back();
+        this->Initialize(Nodes);
+    }
+}
+
+void vtkContourOverlayRepresentation::WidgetInteraction(double eventPos[2])
+{
+    Superclass::WidgetInteraction(eventPos);
+    needToSaveState = true;
+}
+
+int vtkContourOverlayRepresentation::ComputeInteractionState(int X, int Y, int vtkNotUsed(modified))
+{
+    double pos[3], xyz[3];
+
+    // Cursor position in display
+    xyz[0] = static_cast<double>(X);
+    xyz[1] = static_cast<double>(Y);
+    xyz[2] = 1.0;
+
+    bool foundNearbyPoint = false;
+
+    // Check if a contour point is nearby the cursor position
+    for (int i=0; i<this->GetNumberOfNodes(); i++)
+    {
+        this->GetNthNodeDisplayPosition(i, pos);
+
+        double tol2 = this->PixelTolerance * this->PixelTolerance;
+
+        if ( vtkMath::Distance2BetweenPoints(xyz,pos) <= tol2 )
+        {
+            if (this->Renderer && this->Renderer->GetRenderWindow())
+            {
+                this->Renderer->GetRenderWindow()->SetCurrentCursor(VTK_CURSOR_HAND);
+            }
+            this->InteractionState = vtkContourRepresentation::Nearby;
+            foundNearbyPoint = true;
+            break;
+        }
+    }
+
+    if (foundNearbyPoint == false)
+    {
+        if (this->Renderer && this->Renderer->GetRenderWindow())
+        {
+            this->Renderer->GetRenderWindow()->SetCurrentCursor(VTK_CURSOR_CROSSHAIR);
+        }
+        this->InteractionState = vtkContourRepresentation::Outside;
+    }
+
+    return this->InteractionState;
+}
+
+int vtkContourOverlayRepresentation::DeleteLastNode()
+{
+    int result = Superclass::DeleteLastNode();
+    if (result)
+    {
+        needToSaveState = true;
+    }
+    return result;
+}
+
+int vtkContourOverlayRepresentation::DeleteActiveNode()
+{
+    int result = Superclass::DeleteActiveNode();
+    if (result)
+    {
+        needToSaveState = true;
+    }
+    return result;
+}
+
+int vtkContourOverlayRepresentation::DeleteNthNode( int n )
+{
+    int result = Superclass::DeleteNthNode(n);
+    if (result)
+    {
+        needToSaveState = true;
+    }
+    return result;
+}
+
+void vtkContourOverlayRepresentation::ClearAllNodes()
+{
+    Superclass::ClearAllNodes();
+}
+
+int vtkContourOverlayRepresentation::AddNodeOnContour( int X, int Y )
+{
+    int result = Superclass::AddNodeOnContour(X,Y);
+    if (result)
+    {
+        needToSaveState = true;
+    }
+    return result;
+}
+
+int vtkContourOverlayRepresentation::AddNodeOnContourAtIndex(int X, int Y, int idx)
+{
+    double worldPos[3];
+    double worldOrient[9] = {1.0,0.0,0.0,
+                             0.0,1.0,0.0,
+                             0.0,0.0,1.0};
+
+    // Compute the world position from the display position
+    // based on the concrete representation's constraints
+    // If this is not a valid display location return 0
+    double displayPos[2];
+    displayPos[0] = X;
+    displayPos[1] = Y;
+    if ( !this->PointPlacer->ComputeWorldPosition( this->Renderer,
+                                                   displayPos, worldPos,
+                                                   worldOrient) )
+    {
+        return 0;
+    }
+
+    double pos[3];
+
+    if ( !this->PointPlacer->ComputeWorldPosition( this->Renderer,
+                                                   displayPos,
+                                                   pos,
+                                                   worldPos,
+                                                   worldOrient) )
+    {
+        return 0;
+    }
+
+    // Add a new point at this position
+    vtkContourRepresentationNode *node = new vtkContourRepresentationNode;
+    node->WorldPosition[0] = worldPos[0];
+    node->WorldPosition[1] = worldPos[1];
+    node->WorldPosition[2] = worldPos[2];
+    node->Selected = 0;
+
+    this->GetRendererComputedDisplayPositionFromWorldPosition(
+                worldPos, worldOrient, node->NormalizedDisplayPosition );
+    this->Renderer->DisplayToNormalizedDisplay(
+                node->NormalizedDisplayPosition[0],
+            node->NormalizedDisplayPosition[1] );
+
+    memcpy(node->WorldOrientation, worldOrient, 9*sizeof(double) );
+
+    this->Internal->Nodes.insert(this->Internal->Nodes.begin() + idx, node);
+
+    this->UpdateLines( idx );
+    this->NeedToRender = 1;
+    this->needToSaveState = true;
+    return 1;
+}
+
+int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition( int X, int Y )
+{
+    int result = Superclass::AddNodeAtDisplayPosition(X,Y);
+    if (result)
+    {
+        needToSaveState = true;
+    }
+    this->InvokeEvent(vtkCommand::PlacePointEvent);
+    return result;
+}

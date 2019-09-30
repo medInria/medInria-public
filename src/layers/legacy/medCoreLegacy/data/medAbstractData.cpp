@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,15 +13,14 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-
-#include <medDataIndex.h>
-#include <medAttachedData.h>
-#include <medAbstractLayeredView.h>
-#include <medViewFactory.h>
 #include <medAbstractImageView.h>
+#include <medAttachedData.h>
+#include <medDataIndex.h>
 #include <medGlobalDefs.h>
+#include <medViewFactory.h>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
+
 #include <QApplication>
 #include <QMainWindow>
 
@@ -45,7 +44,7 @@ medAbstractData::medAbstractData( medAbstractData *parent )
     this->moveToThread(QApplication::instance()->thread());
 }
 
-medAbstractData::medAbstractData(const medAbstractData& other)
+medAbstractData::medAbstractData(const medAbstractData &other)
     : dtkAbstractData(other),
       d(new medAbstractDataPrivate())
 {
@@ -176,7 +175,7 @@ void medAbstractData::removeAttachedData( medAttachedData * data )
     d->attachedData.removeAll( data );
     if ( n > d->attachedData.count() ) {
         emit attachedDataRemoved( data );
-        data->setParentData(NULL);
+        data->setParentData(nullptr);
     }
 }
 

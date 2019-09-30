@@ -13,10 +13,9 @@
 
 #pragma once
 
-#include <medToolBox.h>
-#include <medJobItemL.h>
-
 #include <medCoreLegacyExport.h>
+#include <medJobItemL.h>
+#include <medSelectorToolBox.h>
 
 class medAbstractRegistrationProcess;
 class medAbstractImageView;
@@ -24,12 +23,12 @@ class medAbstractImageData;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
 
-class MEDCORELEGACY_EXPORT medRegistrationSelectorToolBox : public medToolBox
+class MEDCORELEGACY_EXPORT medRegistrationSelectorToolBox : public medSelectorToolBox
 {
     Q_OBJECT
 
 public:
-     medRegistrationSelectorToolBox(QWidget *parent = 0);
+     medRegistrationSelectorToolBox(QWidget *parent, QString name);
     ~medRegistrationSelectorToolBox();
 
     medAbstractData *fixedData();
@@ -43,8 +42,8 @@ public:
 
     QString getNameOfCurrentAlgorithm();
 
-    bool setFixedData(medAbstractData* data);
-    bool setMovingData(medAbstractData* data);
+    void setFixedData(medAbstractData *data);
+    void setMovingData(medAbstractData *data);
 
     enum typeOfOperation { algorithm, undo, redo, reset };
 
@@ -60,10 +59,9 @@ public slots:
     void onSaveTrans();
     void handleOutput(typeOfOperation type=algorithm,QString algoName="");
     void enableSelectorToolBox(bool enable = true);
-    void onJobAdded(medJobItemL* item, QString jobName);
 
 private:
-    bool setUndoRedoProcessInputs();
+    void setUndoRedoProcessInputs();
     medRegistrationSelectorToolBoxPrivate *d;
 };
 

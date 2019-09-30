@@ -42,7 +42,7 @@ class MEDCORELEGACY_EXPORT medToolBox : public QWidget
     Q_OBJECT
 
 public:
-    medToolBox(QWidget *parent = 0);
+    medToolBox(QWidget *parent = nullptr);
     virtual ~medToolBox();
 
     void addWidget(QWidget *widget);
@@ -72,6 +72,9 @@ public:
 
     //! Get back progress bar from workspace
     medProgressionStack *getProgressionStack();
+
+    //! enable or disable the output automatic import after a process success
+    void enableOnProcessSuccessImportOutput(medJobItemL *job, bool enable);
 
 signals:
     /**
@@ -104,7 +107,7 @@ signals:
     void failure();
 
 public slots:
-    virtual void clear();
+    virtual void clear(){}
     void switchMinimize();
     void setValidDataTypes(const QStringList & dataTypes);
     const QStringList ValidDataTypes();
@@ -128,6 +131,8 @@ public slots:
 
     //! Default connections between a toolbox and a process (success, failure, etc)
     void addToolBoxConnections(medJobItemL *job);
+
+    virtual void updateView(){}
 
 protected slots:
     void onAboutButtonClicked();

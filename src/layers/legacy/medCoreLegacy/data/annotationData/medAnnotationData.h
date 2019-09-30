@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -31,15 +31,7 @@ public:
     medAnnotationData( );
     virtual ~medAnnotationData();
 
-
-signals:
-
-public slots:
-
-protected:
-
 private:
-
     class medAnnotationDataPrivate;
     medAnnotationDataPrivate * d;
 };

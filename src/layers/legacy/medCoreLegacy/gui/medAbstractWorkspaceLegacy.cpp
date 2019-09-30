@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -107,10 +107,7 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
     d->interactorToolBox->header()->hide();
     d->layersToolBox->addWidget(d->interactorToolBox);
 
-    d->progressionStack = new medProgressionStack();
-
     d->selectionToolBox->addWidget(d->layersToolBox);
-    d->selectionToolBox->addWidget(d->progressionStack);
 
     d->progressionStack = new medProgressionStack();
     d->selectionToolBox->addWidget(d->progressionStack);
@@ -181,6 +178,16 @@ void medAbstractWorkspaceLegacy::clear()
     return;
 }
 
+void medAbstractWorkspaceLegacy::setupTabbedViewContainer()
+{
+    if (!tabbedViewContainers()->count())
+    {
+        this->tabbedViewContainers()->addContainerInTabNamed(this->name());
+    }
+    this->tabbedViewContainers()->lockTabs();
+    this->tabbedViewContainers()->setKeepLeastOne(true);
+}
+
 void medAbstractWorkspaceLegacy::setToolBoxesVisibility (bool value)
 {
     d->toolBoxesVisibility = value;
@@ -195,7 +202,9 @@ bool medAbstractWorkspaceLegacy::areToolBoxesVisible() const
 void medAbstractWorkspaceLegacy::clearWorkspaceToolBoxes()
 {
     foreach(medToolBox* tb,d->toolBoxes)
-        tb->clear();
+    {
+        tb->body()->clear();
+    }
 }
 
 void medAbstractWorkspaceLegacy::addNewTab()
@@ -206,7 +215,7 @@ void medAbstractWorkspaceLegacy::addNewTab()
 
 void medAbstractWorkspaceLegacy::updateNavigatorsToolBox()
 {
-    d->navigatorToolBox->clear();
+    d->navigatorToolBox->body()->clear();
 
     medAbstractView* view = nullptr;
     QList<QWidget*>  navigators;
@@ -250,7 +259,7 @@ void medAbstractWorkspaceLegacy::updateNavigatorsToolBox()
 
 void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
 {
-    d->mouseInteractionToolBox->clear();
+    d->mouseInteractionToolBox->body()->clear();
 
     QList<QWidget*>  navigators;
     QStringList viewType;
@@ -278,6 +287,22 @@ void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
     }
 }
 
+QList<int> medAbstractWorkspaceLegacy::getSelectedLayerIndices()
+{
+    QList<int> layerIndices;
+    foreach (QListWidgetItem *item, d->selectedLayers)
+    {
+        layerIndices.append(item->data(Qt::UserRole).toInt());
+    }
+    return layerIndices;
+}
+
+void medAbstractWorkspaceLegacy::handleLayerSelectionChange()
+{
+    this->updateInteractorsToolBox();
+    emit layerSelectionChanged(getSelectedLayerIndices());
+}
+
 void medAbstractWorkspaceLegacy::updateLayersToolBox()
 {
     d->layerListToolBox->body()->clear();
@@ -293,7 +318,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
     d->layerListWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     connect(d->layerListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(changeCurrentLayer(int)));
-    connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateInteractorsToolBox()));
+    connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(handleLayerSelectionChange()));
 
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -601,6 +626,8 @@ QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
 {
     QWidget *linkWidget = new QWidget;
     QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+    linkLayout->setContentsMargins(80, 5, 5, 5);
+    linkLayout->setSpacing(0);
 
     d->viewLinkMenu = new medLinkMenu(linkWidget);
     connect(d->viewLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
@@ -706,6 +733,8 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
 
     QWidget *linkWidget = new QWidget;
     QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+    linkLayout->setContentsMargins(80, 5, 5, 5);
+    linkLayout->setSpacing(0);
 
     d->layerLinkMenu = new medLinkMenu(linkWidget);
     connect(d->layerLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addLayerstoGroup(QString)));
@@ -887,6 +916,16 @@ void medAbstractWorkspaceLegacy::setLayerGroups(QList<medLayerParameterGroupL*> 
 {
     foreach(medLayerParameterGroupL* group, groups)
         addLayerGroup(group);
+}
+
+void medAbstractWorkspaceLegacy::setInitialGroups()
+{
+    medViewParameterGroupL *viewGroup1 = new medViewParameterGroupL("View Group 1", this, this->identifier());
+    viewGroup1->setLinkAllParameters(true);
+    viewGroup1->removeParameter("DataList");
+
+    medViewParameterGroupL *layerGroup1 = new medViewParameterGroupL("Layer Group 1", this, this->identifier());
+    layerGroup1->setLinkAllParameters(true);
 }
 
 void medAbstractWorkspaceLegacy::changeViewGroupColor(QString group, QColor color)

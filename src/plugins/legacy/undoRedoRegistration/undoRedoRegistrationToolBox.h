@@ -22,24 +22,23 @@ class undoRedoRegistrationToolBoxPrivate;
 class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationToolBox : public medRegistrationAbstractToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("undoRedoRegistration",
-                          "short tooltip description",
+    MED_TOOLBOX_INTERFACE("Stack of transformations",
+                          "Undo-Redo Registration toolbox.",
                           << "UndoRedoRegistration")
 public:
-    undoRedoRegistrationToolBox(QWidget *parent = 0);
+    undoRedoRegistrationToolBox(QWidget *parent = nullptr);
     ~undoRedoRegistrationToolBox(void);
     
-    static bool registered(void);
+    static bool registered();
     void updatePositionArrow(int);
-    undoRedoRegistration::RegImageType::Pointer output(void);
+    undoRedoRegistration::RegImageType::Pointer output();
     
     virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
-    dtkPlugin * plugin() override;
 
 public slots:
-    void onUndo(void);
-    void onRedo(void);
-    void onTransformationStackReset(void);
+    void onUndo();
+    void onRedo();
+    void onTransformationStackReset();
     void addTransformationIntoList(int, QString);
     void onRegistrationSuccess();
 

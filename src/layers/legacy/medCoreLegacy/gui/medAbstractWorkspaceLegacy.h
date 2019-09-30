@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -52,7 +52,7 @@ class MEDCORELEGACY_EXPORT medAbstractWorkspaceLegacy : public QObject
 
 public:
 
-    medAbstractWorkspaceLegacy(QWidget *parent=0);
+    medAbstractWorkspaceLegacy(QWidget *parent = nullptr);
     virtual ~medAbstractWorkspaceLegacy();
 
     virtual QString identifier() const = 0;
@@ -66,7 +66,7 @@ public:
     bool isDatabaseVisible() const;
     void setToolBoxesVisibility(bool);
     bool areToolBoxesVisible() const;
-    virtual void setupTabbedViewContainer() = 0;
+    virtual void setupTabbedViewContainer();
     medTabbedViewContainers * tabbedViewContainers() const;
 
     void setUserLayerPoolable(bool poolable);
@@ -75,6 +75,9 @@ public:
     bool isUserLayerPoolable() const;
     bool isUserViewPoolable() const;
     bool isUserLayerClosable() const;
+    virtual void setInitialGroups();
+
+    QList<int> getSelectedLayerIndices();
 
     medProgressionStack *getProgressionStack();
 
@@ -92,6 +95,7 @@ public slots:
     virtual void open(const medDataIndex& index);
 
 protected slots:
+    void handleLayerSelectionChange();
     void changeCurrentLayer(int row);
     void removeLayer();
 
@@ -116,6 +120,9 @@ private slots:
 
     void changeViewGroupColor(QString group, QColor color);
     void changeLayerGroupColor(QString group, QColor color);
+
+signals:
+    void layerSelectionChanged(QList<int> selectedLayersIndices);
 
 private:
     QWidget* buildViewLinkMenu();
