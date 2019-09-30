@@ -138,7 +138,7 @@ int resampleProcess::resample(medAbstractData* inputData)
     typedef typename itk::ResampleImageFilter<ImageType, ImageType,double> ResampleFilterType;
 
     typename ResampleFilterType::Pointer resampleFilter = ResampleFilterType::New();
-    
+
     // Fetch original image size.
     const typename ImageType::RegionType& inputRegion = inputImage->GetLargestPossibleRegion();
     const typename ImageType::SizeType& vnInputSize = inputRegion.GetSize();
@@ -161,12 +161,12 @@ int resampleProcess::resample(medAbstractData* inputData)
         d->dimY =  floor((vfInputSpacing[1] * (double) nOldY / (double) vfOutputSpacing[1]) +0.5);
         d->dimZ =  floor((vfInputSpacing[2] * (double) nOldZ / (double) vfOutputSpacing[2]) +0.5);
     }
-    
+
     typename ImageType::SizeType vnOutputSize;
     vnOutputSize[0] = d->dimX;
     vnOutputSize[1] = d->dimY;
     vnOutputSize[2] = d->dimZ;
-    
+
     resampleFilter->SetInput(inputImage);
     resampleFilter->SetSize(vnOutputSize);
     resampleFilter->SetOutputSpacing(vfOutputSpacing);

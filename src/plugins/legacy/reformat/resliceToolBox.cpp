@@ -269,7 +269,7 @@ void resliceToolBox::displayInfoOnCurrentView()
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D;
 
     if (d->bySpacingOrDimension->currentIndex() == 0) // Spacing
-    {        
+    {
         double *spacing = view2d->GetMedVtkImageInfo()->spacing;
         d->spacingX->setValue(spacing[0]);
         d->spacingY->setValue(spacing[1]);
