@@ -1,3 +1,10 @@
+#include <vtkMatrix4x4.h>
+#include <vtkMatrixToLinearTransform.h>
+#include <vtkMetaDataSet.h>
+#include <vtkPointSet.h>
+#include <vtkSmartPointer.h>
+#include <vtkTransformFilter.h>
+
 #pragma once
 
 class medAbstractData;
@@ -248,7 +255,7 @@ void applyTransform(vtkMetaDataSet& mesh, const vtkMatrix4x4& transform)
     matrixToTransform->SetInput(transformCopy);
 
     vtkSmartPointer<vtkTransformFilter> transformFilter = vtkSmartPointer<vtkTransformFilter>::New();
-    transformFilter->SetInput(mesh.GetDataSet());
+    transformFilter->SetInputData(mesh.GetDataSet());
     transformFilter->SetTransform(matrixToTransform);
     transformFilter->Update();
 

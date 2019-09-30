@@ -57,6 +57,7 @@ set(PLUGIN_LIST
   legacy/mscAlgorithmPaint                                               ON
   legacy/variationalSegmentation                                         ON
   legacy/voiCutter                                                       ON
+  legacy/reformat                                                        ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON
