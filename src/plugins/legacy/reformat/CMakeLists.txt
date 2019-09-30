@@ -75,8 +75,8 @@ target_link_libraries(${TARGET_NAME}
   ITKCommon
   medCore
   medVtkInria
-  QVTK
   medUtilities
+  vtkInteractionImage
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

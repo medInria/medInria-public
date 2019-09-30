@@ -13,25 +13,28 @@
 #pragma once
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
+
 #include <itkImage.h>
+
 #include <medAbstractView.h>
+
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QVTKWidget.h>
+
 #include <resliceToolBox.h>
-#include <vtkImageData.h>
+
 #include <vtkImagePlaneWidget.h>
+#include <vtkImageView3D.h>
 #include <vtkResliceImageViewer.h>
 #include <vtkSmartPointer.h>
-#include <vtkMatrix4x4.h>
-#include <vtkImageView3D.h>
 
 class QVTKFrame : public QFrame
 {
 public:
-    QVTKFrame(QWidget * parent):QFrame(parent)
+    QVTKFrame(QWidget *parent) : QFrame(parent)
     {
-        QHBoxLayout * layout = new QHBoxLayout(this);
+        QHBoxLayout *layout = new QHBoxLayout(this);
         view = new QVTKWidget(this);
         layout->addWidget(view);
         this->setLayout(layout);
@@ -48,7 +51,7 @@ public:
     }
 
 private:
-    QVTKWidget * view;
+    QVTKWidget *view;
 
 };
 

@@ -17,17 +17,15 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractLayeredView.h>
 #include <medDataManager.h>
-#include <medMetaDataKeys.h>
+#include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
-#include <medToolBoxBody.h>
 #include <medToolBoxFactory.h>
 #include <medUtilities.h>
 #include <medUtilitiesITK.h>
 #include <medViewContainer.h>
 #include <medVtkViewBackend.h>
 
-#include <medMessageController.h>
 #include <vtkBorderRepresentation.h>
 #include <vtkBorderWidget.h>
 #include <vtkCamera.h>

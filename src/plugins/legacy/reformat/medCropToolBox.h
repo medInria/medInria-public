@@ -12,7 +12,6 @@
 =========================================================================*/
 #pragma once
 
-#include <medAbstractWorkspaceLegacy.h>
 #include <medAbstractSelectableToolBox.h>
 #include <reformatPluginExport.h>
 

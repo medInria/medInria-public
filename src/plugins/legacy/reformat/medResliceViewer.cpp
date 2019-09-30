@@ -14,6 +14,7 @@
 #include "resampleProcess.h"
 
 #include <itkVTKImageToImageFilter.h>
+
 #include <medAbstractDataFactory.h>
 #include <medAbstractLayeredView.h>
 #include <medSliderSpinboxPair.h>
@@ -21,19 +22,18 @@
 #include <medUtilitiesITK.h>
 #include <medVtkViewBackend.h>
 #include <mscTransform.h>
-#include <vtkBorderRepresentation.h>
+
 #include <vtkCamera.h>
 #include <vtkCellPicker.h>
+#include <vtkImageData.h>
 #include <vtkImageMapToColors.h>
+#include <vtkImageReslice.h>
 #include <vtkImageSlabReslice.h>
-#include <vtkImageView3D.h>
-#include <vtkMath.h>
 #include <vtkMatrix4x4.h>
 #include <vtkPlane.h>
 #include <vtkPlaneSource.h>
 #include <vtkProperty.h>
 #include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
 #include <vtkResliceCursor.h>
 #include <vtkResliceCursorActor.h>
 #include <vtkResliceCursorPolyDataAlgorithm.h>
@@ -53,13 +53,13 @@ public:
     {
         switch (ev)
         {
-        case vtkResliceCursorWidget::ResliceAxesChangedEvent:
-            reformatViewer->ensureOrthogonalPlanes();
-            break;
-        case vtkResliceCursorWidget::ResetCursorEvent:
-            reformatViewer->resetViews();
-            reformatViewer->applyRadiologicalConvention();
-            break;
+            case vtkResliceCursorWidget::ResliceAxesChangedEvent:
+                reformatViewer->ensureOrthogonalPlanes();
+                break;
+            case vtkResliceCursorWidget::ResetCursorEvent:
+                reformatViewer->resetViews();
+                reformatViewer->applyRadiologicalConvention();
+                break;
         }
 
         vtkImagePlaneWidget *ipw = dynamic_cast< vtkImagePlaneWidget* >( caller );
@@ -125,8 +125,8 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     inputData = static_cast<medAbstractLayeredView*>(view)->layerData(0);
     view3d = static_cast<medVtkViewBackend*>(view->backend())->view3D;
 
-    int *imageDims;
-    imageDims = view3d->GetMedVtkImageInfo()->dimensions;
+    int *imageDims = view3d->GetMedVtkImageInfo()->dimensions;
+    outputSpacing  = view3d->GetMedVtkImageInfo()->spacing;
 
     viewBody = new QWidget(parent);
     for (int i = 0; i < 3; i++)
@@ -166,7 +166,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
     viewBody->setLayout(gridLayout);
     
-    views[0]->SetRenderWindow(riw[0]->GetRenderWindow()); 
+    views[0]->SetRenderWindow(riw[0]->GetRenderWindow());
     riw[0]->SetupInteractor(views[0]->GetRenderWindow()->GetInteractor());
 
     views[1]->SetRenderWindow(riw[1]->GetRenderWindow());
@@ -185,12 +185,10 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
         rep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
 
-        riw[i]->SetInputData(view3d->GetInputAlgorithm(0)->GetImageDataInput(0));
+        riw[i]->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
         riw[i]->SetSliceOrientation(i);
         riw[i]->SetResliceModeToOblique();
     }
-
-    outputSpacing = view3d->GetMedVtkImageInfo()->spacing;
 
     vtkSmartPointer<vtkCellPicker> picker = vtkSmartPointer<vtkCellPicker>::New();
     picker->SetTolerance(0.005);
@@ -220,7 +218,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         planeWidget[i]->SetTexturePlaneProperty(ipwProp);
         planeWidget[i]->TextureInterpolateOff();
         planeWidget[i]->SetResliceInterpolateToLinear();
-        planeWidget[i]->SetInputData(view3d->GetInputAlgorithm(0)->GetImageDataInput(0));
+        planeWidget[i]->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
         planeWidget[i]->SetPlaneOrientation(i);
         planeWidget[i]->SetSliceIndex(imageDims[i]/2);
         planeWidget[i]->DisplayTextOn();
@@ -310,8 +308,8 @@ void medResliceViewer::SetBlendMode(int m)
     for (int i = 0; i < 3; i++)
     {
         vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(
-            vtkResliceCursorThickLineRepresentation::SafeDownCast(
-            riw[i]->GetResliceCursorWidget()->GetRepresentation())->GetReslice());
+                    vtkResliceCursorThickLineRepresentation::SafeDownCast(
+                        riw[i]->GetResliceCursorWidget()->GetRepresentation())->GetReslice());
         thickSlabReslice->SetBlendMode(m);
         riw[i]->Render();
     }
@@ -364,7 +362,7 @@ void medResliceViewer::saveImage()
     calculateResliceMatrix(resliceMatrix);
 
     vtkImageReslice *reslicerTop = vtkImageReslice::New();
-   reslicerTop->SetInputData(view3d->GetInputAlgorithm(0)->GetInput());
+    reslicerTop->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
     reslicerTop->AutoCropOutputOn();
     reslicerTop->SetResliceAxes(resliceMatrix);
     reslicerTop->SetBackgroundLevel(riw[0]->GetInput()->GetScalarRange()[0]); // todo: set the background value in an automatic way.
@@ -380,36 +378,36 @@ void medResliceViewer::saveImage()
     // Apply orientation changes
     switch (view3d->GetMedVtkImageInfo()->scalarType)
     {
-    case VTK_CHAR:
-        generateOutput<char>(reslicerTop, "itkDataImageChar3");
-        break;
-    case VTK_UNSIGNED_CHAR:
-        generateOutput<unsigned char>(reslicerTop, "itkDataImageUChar3");
-        break;
-    case VTK_SHORT:
-        generateOutput<short>(reslicerTop, "itkDataImageShort3");
-        break;
-    case VTK_UNSIGNED_SHORT:
-        generateOutput<unsigned short>(reslicerTop, "itkDataImageUShort3");
-        break;
-    case VTK_INT:
-        generateOutput<int>(reslicerTop, "itkDataImageInt3");
-        break;
-    case VTK_UNSIGNED_INT:
-        generateOutput<unsigned int>(reslicerTop, "itkDataImageUInt3");
-        break;
-    case VTK_LONG:
-        generateOutput<long>(reslicerTop, "itkDataImageLong3");
-        break;
-    case VTK_UNSIGNED_LONG:
-        generateOutput<unsigned long>(reslicerTop, "itkDataImageULong3");
-        break;
-    case VTK_FLOAT:
-        generateOutput<float>(reslicerTop, "itkDataImageFloat3");
-        break;
-    case VTK_DOUBLE:
-        generateOutput<double>(reslicerTop, "itkDataImageDouble3");
-        break;
+        case VTK_CHAR:
+            generateOutput<char>(reslicerTop, "itkDataImageChar3");
+            break;
+        case VTK_UNSIGNED_CHAR:
+            generateOutput<unsigned char>(reslicerTop, "itkDataImageUChar3");
+            break;
+        case VTK_SHORT:
+            generateOutput<short>(reslicerTop, "itkDataImageShort3");
+            break;
+        case VTK_UNSIGNED_SHORT:
+            generateOutput<unsigned short>(reslicerTop, "itkDataImageUShort3");
+            break;
+        case VTK_INT:
+            generateOutput<int>(reslicerTop, "itkDataImageInt3");
+            break;
+        case VTK_UNSIGNED_INT:
+            generateOutput<unsigned int>(reslicerTop, "itkDataImageUInt3");
+            break;
+        case VTK_LONG:
+            generateOutput<long>(reslicerTop, "itkDataImageLong3");
+            break;
+        case VTK_UNSIGNED_LONG:
+            generateOutput<unsigned long>(reslicerTop, "itkDataImageULong3");
+            break;
+        case VTK_FLOAT:
+            generateOutput<float>(reslicerTop, "itkDataImageFloat3");
+            break;
+        case VTK_DOUBLE:
+            generateOutput<double>(reslicerTop, "itkDataImageDouble3");
+            break;
     }
 
     emit imageReformatedGenerated();
@@ -417,11 +415,11 @@ void medResliceViewer::saveImage()
 
 void medResliceViewer::thickSlabChanged(double val)
 {
-    QDoubleSpinBox * spinBoxSender = qobject_cast<QDoubleSpinBox*>(QObject::sender());
+    QDoubleSpinBox *spinBoxSender = qobject_cast<QDoubleSpinBox*>(QObject::sender());
 
     if (spinBoxSender)
     {
-        double x,y,z;
+        double x, y, z;
         riw[2]->GetResliceCursor()->GetThickness(x,y,z);
 
         if (spinBoxSender->accessibleName()=="SpacingX")
@@ -456,7 +454,7 @@ void medResliceViewer::thickSlabChanged(double val)
 
 void medResliceViewer::extentChanged(int val)
 {
-    medSliderSpinboxPair * pairSender = qobject_cast<medSliderSpinboxPair*>(QObject::sender());
+    medSliderSpinboxPair *pairSender = qobject_cast<medSliderSpinboxPair*>(QObject::sender());
 
     if (pairSender)
     {
@@ -471,16 +469,16 @@ void medResliceViewer::extentChanged(int val)
     }
 }
 
-bool medResliceViewer::eventFilter(QObject * object,QEvent * event)
+bool medResliceViewer::eventFilter(QObject *object, QEvent *event)
 {
     if (!qobject_cast<QVTKWidget*>(object))
     {
         return true;
     }
 
-    if (event->type()==QEvent::FocusIn)
+    if (event->type() == QEvent::FocusIn)
     {
-        for(int i = 0;i<3;i++)
+        for(int i=0; i<3; i++)
         {
             if (views[i]==object)
             {
@@ -576,30 +574,30 @@ void medResliceViewer::calculateResliceMatrix(vtkMatrix4x4* result)
 
     switch (selectedView)
     {
-    case 0:
-        outputX = resliceY;
-        outputY = resliceZ;
-        outputZ = resliceX;
-        outputOrigin[0] = resliceOrigin[1];
-        outputOrigin[1] = resliceOrigin[2];
-        outputOrigin[2] = resliceOrigin[0];
-        break;
-    case 1:
-        outputX = resliceZ;
-        outputY = resliceX;
-        outputZ = resliceY;
-        outputOrigin[0] = resliceOrigin[2];
-        outputOrigin[1] = resliceOrigin[0];
-        outputOrigin[2] = resliceOrigin[1];
-        break;
-    default:
-        outputX = resliceX;
-        outputY = resliceY;
-        outputZ = resliceZ;
-        outputOrigin[0] = resliceOrigin[0];
-        outputOrigin[1] = resliceOrigin[1];
-        outputOrigin[2] = resliceOrigin[2];
-        break;
+        case 0:
+            outputX = resliceY;
+            outputY = resliceZ;
+            outputZ = resliceX;
+            outputOrigin[0] = resliceOrigin[1];
+            outputOrigin[1] = resliceOrigin[2];
+            outputOrigin[2] = resliceOrigin[0];
+            break;
+        case 1:
+            outputX = resliceZ;
+            outputY = resliceX;
+            outputZ = resliceY;
+            outputOrigin[0] = resliceOrigin[2];
+            outputOrigin[1] = resliceOrigin[0];
+            outputOrigin[2] = resliceOrigin[1];
+            break;
+        default:
+            outputX = resliceX;
+            outputY = resliceY;
+            outputZ = resliceZ;
+            outputOrigin[0] = resliceOrigin[0];
+            outputOrigin[1] = resliceOrigin[1];
+            outputOrigin[2] = resliceOrigin[2];
+            break;
     }
 
     result->Identity();
@@ -665,7 +663,7 @@ void medResliceViewer::updatePlaneNormals()
 {
     for (int i = 0; i < 3; i++)
     {
-        double* normal = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(i)->GetNormal();
+        double *normal = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(i)->GetNormal();
         std::copy(normal, normal + 3, planeNormal[i]);
     }
 }
@@ -674,9 +672,9 @@ void medResliceViewer::updatePlaneNormals()
 void medResliceViewer::ensureOrthogonalPlanes()
 {
     int movingPlaneIndex = findMovingPlaneIndex();
-    vtkPlane* movingPlane = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(movingPlaneIndex);
-    vtkPlane* fixedPlane1 = getResliceImageViewer(0)->GetResliceCursor()->GetPlane((movingPlaneIndex + 1) % 3);
-    vtkPlane* fixedPlane2 = getResliceImageViewer(0)->GetResliceCursor()->GetPlane((movingPlaneIndex + 2) % 3);
+    vtkPlane *movingPlane = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(movingPlaneIndex);
+    vtkPlane *fixedPlane1 = getResliceImageViewer(0)->GetResliceCursor()->GetPlane((movingPlaneIndex + 1) % 3);
+    vtkPlane *fixedPlane2 = getResliceImageViewer(0)->GetResliceCursor()->GetPlane((movingPlaneIndex + 2) % 3);
 
     makePlaneOrthogonalToOtherPlanes(fixedPlane1, movingPlane, fixedPlane2);
     makePlaneOrthogonalToOtherPlanes(fixedPlane2, movingPlane, fixedPlane1);
@@ -692,7 +690,7 @@ int medResliceViewer::findMovingPlaneIndex()
     for (int i = 0; i < 3; i++)
     {
         vtkPlane* plane = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(i);
-        double* currentNormal = plane->GetNormal();
+        double *currentNormal = plane->GetNormal();
         double normalDifference = 0;
         for (int j = 0; j < 3; j++)
         {
@@ -786,7 +784,7 @@ void medResliceViewer::compensateForRadiologicalView(itk::Image<DATA_TYPE, 3>* o
 
 /*
  * The new image "contains" a rotated version of the initial image.
- * The corrective transformation is composed of the following :
+ * The corrective transformation is composed of the following:
  * 1. Inverse of the output image transformation. This places the image with it's origin at (0, 0, 0)
  * and its axes aligned with the world axes.
  * 2. Translate the image so that its center is at (0, 0, 0). This places the center of rotation at

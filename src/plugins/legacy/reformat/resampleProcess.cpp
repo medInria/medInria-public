@@ -10,16 +10,19 @@
   PURPOSE.
 
 =========================================================================*/
-#include "resampleProcess.h"
+
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-#include <medAbstractDataFactory.h>
-#include <medAbstractProcess.h>
-#include <medMetaDataKeys.h>
-#include <medUtilitiesITK.h>
 
 #include <itkResampleImageFilter.h>
 #include <itkBSplineInterpolateImageFunction.h>
+
+#include <medAbstractDataFactory.h>
+#include <medAbstractProcess.h>
+#include <medMetaDataKeys.h>
 #include <medUtilities.h>
+#include <medUtilitiesITK.h>
+
+#include <resampleProcess.h>
 
 // /////////////////////////////////////////////////////////////////
 // resampleProcessPrivate
