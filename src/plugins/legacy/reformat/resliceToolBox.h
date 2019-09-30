@@ -13,8 +13,7 @@
 #pragma once
 
 #include <medAbstractSelectableToolBox.h>
-#include <medAbstractWorkspaceLegacy.h>
-#include "reformatPluginExport.h"
+#include <reformatPluginExport.h>
 
 class resliceToolBoxPrivate;
 

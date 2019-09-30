@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medSelectorWorkspace.h>
-#include "reformatPluginExport.h"
+#include <reformatPluginExport.h>
     
 class REFORMATPLUGIN_EXPORT medReformatWorkspace : public medSelectorWorkspace
 {

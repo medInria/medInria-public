@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medPluginLegacy.h>
-#include "reformatPluginExport.h"
+#include <reformatPluginExport.h>
 
 class REFORMATPLUGIN_EXPORT reformatPlugin : public medPluginLegacy
 {

@@ -12,8 +12,9 @@
 =========================================================================*/
 
 #include <medCropToolBox.h>
-#include "medReformatWorkspace.h"
-#include "reformatPlugin.h"
+#include <medReformatWorkspace.h>
+
+#include <reformatPlugin.h>
 #include <resliceToolBox.h>
 #include <resampleProcess.h>
 

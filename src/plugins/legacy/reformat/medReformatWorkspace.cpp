@@ -25,7 +25,7 @@ medReformatWorkspace::medReformatWorkspace(QWidget *parent) : medSelectorWorkspa
 
 bool medReformatWorkspace::isUsable()
 {
-    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
+    medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("Reformat").size()!=0);
 }
 
