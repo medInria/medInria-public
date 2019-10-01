@@ -151,7 +151,7 @@ void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
         medAbstractImageView* imageView = qobject_cast<medAbstractImageView*>(view);
         imageView->setOrientation(medImageView::VIEW_ORIENTATION_3D);
 
-        medStringListParameterL * mode3DParam = 0, *renderer3DParam = 0;
+        medStringListParameterL *mode3DParam = nullptr, *renderer3DParam = nullptr;
 
         foreach (medAbstractNavigator* navigator, view->navigators())
         {
@@ -196,7 +196,7 @@ void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
 
             if(renderer3DParam)
             {
-                renderer3DParam->setValue("Ray Cast");
+                renderer3DParam->setValue("Default");
             }
         }
     }
